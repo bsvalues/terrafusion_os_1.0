@@ -340,4 +340,120 @@ public class SqlServerDeepProfileReaderIntegrationTests
             conn);
         await cmd.ExecuteNonQueryAsync();
     }
+
+    // ── Spatial-skip policy (FIX-B2.7B) ──────────────────────────────────
+    //
+    // PACS spatial columns are out of lane for SyncAtlas deep profile.
+    // Real-engine verification of "skip works" is done two ways:
+    //
+    //   1. The B2.7-SMOKE run against full SQL Server PACS_Training is
+    //      the ultimate proof: tables with real geometry columns now
+    //      pass the deep pass instead of failing with "the geometry data
+    //      type cannot be selected as DISTINCT because it is not
+    //      comparable."
+    //
+    //   2. These integration tests pin the policy at the live engine
+    //      using a ColumnRef declared as "geometry" against an actual
+    //      NVARCHAR column on the seeded fixture table. Per ColumnRef's
+    //      own doc comment ("the deep-profile reader doesn't re-query
+    //      sys.columns for column types") the type is caller-supplied,
+    //      so this exercises the spatial-skip filter end-to-end without
+    //      requiring spatial CLR support in azure-sql-edge (which it
+    //      doesn't have). The "skipped column never appears in the
+    //      result.Columns rows" is the live-engine assertion.
+
+    [Fact]
+    public async System.Threading.Tasks.Task ProfileTableAsync_SpatialColumnDeclared_IsSkippedFromColumnStats()
+    {
+        await using var conn = await _fixture.OpenConnectionAsync();
+        var sut = new SqlServerDeepProfileReader(conn);
+
+        // Declare PropertyClass as "geometry" — the reader must skip it,
+        // but the live engine must still produce stats for the rest of
+        // the table. This is the "skip works at orchestration level" proof.
+        var declaredColumns = new[]
+        {
+            new ColumnRef("ParcelId",         "int",      IsNullable: false),
+            new ColumnRef("ParcelNumber",     "nvarchar", IsNullable: false),
+            new ColumnRef("PropertyClass",    "geometry", IsNullable: false),  // policy-skip
+            new ColumnRef("NeighborhoodCode", "geography",IsNullable: true),   // policy-skip
+            new ColumnRef("LandValue",        "decimal",  IsNullable: false),
+        };
+
+        var result = await sut.ProfileTableAsync(Schema, Table, declaredColumns);
+
+        // Table-level row still produced — structural row count untouched.
+        result.Table.RowCount.Should().Be(100L);
+        result.Table.SamplingMethod.Should().Be("Full");
+
+        // Column-stats rows: only the 3 non-spatial columns survive.
+        result.Columns.Select(c => c.ColumnName).Should().BeEquivalentTo(new[]
+        {
+            "ParcelId", "ParcelNumber", "LandValue",
+        });
+
+        // Specifically: spatial columns produced zero column-stats rows.
+        result.Columns.Should().NotContain(c => c.ColumnName == "PropertyClass");
+        result.Columns.Should().NotContain(c => c.ColumnName == "NeighborhoodCode");
+
+        // And no code candidates fired off the skipped columns either.
+        result.CodeCandidates.Should().NotContain(c => c.ColumnName == "PropertyClass");
+        result.CodeCandidates.Should().NotContain(c => c.ColumnName == "NeighborhoodCode");
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task ProfileTableAsync_NonSpatialColumnsContinueProfilingNormally()
+    {
+        // Co-tests the spatial skip against the rest of the table: the
+        // surviving columns must produce the SAME stats as the no-skip
+        // path. Pins that the filter is purely subtractive — it doesn't
+        // alter the SQL shape or numbers for the kept columns.
+        await using var conn = await _fixture.OpenConnectionAsync();
+        var sut = new SqlServerDeepProfileReader(conn);
+
+        var declaredColumns = new[]
+        {
+            new ColumnRef("ParcelId",         "int",      IsNullable: false),
+            new ColumnRef("ParcelNumber",     "nvarchar", IsNullable: false),
+            new ColumnRef("PropertyClass",    "geometry", IsNullable: false),  // policy-skip
+            new ColumnRef("LandValue",        "decimal",  IsNullable: false),
+        };
+
+        var result = await sut.ProfileTableAsync(Schema, Table, declaredColumns);
+
+        // ParcelNumber: 100 distinct rows over 100 sample (high cardinality).
+        var parcelNumber = result.Columns.Single(c => c.ColumnName == "ParcelNumber");
+        parcelNumber.NullCount.Should().Be(0);
+        parcelNumber.DistinctCount.Should().Be(100);
+
+        // LandValue: same min/max as the all-columns test
+        // (75000 → 500000, fill rows at 200000 don't shift).
+        var landValue = result.Columns.Single(c => c.ColumnName == "LandValue");
+        decimal.Parse(landValue.MinValue!).Should().Be(75000m);
+        decimal.Parse(landValue.MaxValue!).Should().Be(500000m);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task ProfileTableAsync_AllSpatialColumns_ProducesEmptyColumnStatsButTableRow()
+    {
+        // PACS heritage tables that hold only a parcel-id + geometry
+        // collapse to "structural-only" once the spatial filter runs.
+        // The reader must not crash, and must still produce a TableStats
+        // row so the verify SQL's "did this batch persist anything"
+        // probe sees the row.
+        await using var conn = await _fixture.OpenConnectionAsync();
+        var sut = new SqlServerDeepProfileReader(conn);
+
+        var declaredColumns = new[]
+        {
+            new ColumnRef("ParcelNumber",     "geometry",  IsNullable: false), // policy-skip
+            new ColumnRef("NeighborhoodCode", "geography", IsNullable: true),  // policy-skip
+        };
+
+        var result = await sut.ProfileTableAsync(Schema, Table, declaredColumns);
+
+        result.Table.RowCount.Should().Be(100L);
+        result.Columns.Should().BeEmpty();
+        result.CodeCandidates.Should().BeEmpty();
+    }
 }

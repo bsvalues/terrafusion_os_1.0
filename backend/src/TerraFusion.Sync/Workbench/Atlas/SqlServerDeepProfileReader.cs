@@ -288,6 +288,69 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
     }
 
     /// <summary>
+    /// True when <paramref name="sqlType"/> is a SQL Server spatial type
+    /// (<c>geometry</c> or <c>geography</c>, case-insensitive).
+    ///
+    /// <para><b>FIX-B2.7B architectural decision (PACS spatial-skip policy).</b>
+    /// Benton County GIS truth is external to PACS — it lands in TerraAtlas
+    /// from SHP files, geodatabases, or the ArcGIS API. PACS-side spatial
+    /// columns (e.g. <c>__AAPARCEL_</c> heritage tables that carry a
+    /// <c>geometry</c> shape) are NOT authoritative; treating them as such
+    /// would create mapping pressure from valuation data into operational GIS
+    /// truth, which inverts the suite boundary.</para>
+    ///
+    /// <para>Concretely the deep profiler must not run <c>DISTINCT</c>,
+    /// <c>GROUP BY</c>, or <c>MIN</c>/<c>MAX</c> over spatial values — SQL
+    /// Server rejects all three with errors like <i>"the geometry data type
+    /// cannot be selected as DISTINCT because it is not comparable."</i> The
+    /// reader filters spatial columns out of the per-table column list at the
+    /// top of <see cref="ProfileTableAsync"/>, so they never appear in any
+    /// aggregation, sample, top-N, or code-candidate query.</para>
+    ///
+    /// <para>Out-of-band signal: the structural atlas (Slice B1) already
+    /// records that the column exists, with its declared type. Downstream
+    /// observability can detect "the structural pass saw geometry, the deep
+    /// pass produced no column-stats row" → policy skip, not a profile
+    /// failure.</para>
+    /// </summary>
+    public static bool IsSpatialType(string sqlType)
+    {
+        ArgumentNullException.ThrowIfNull(sqlType);
+
+        return string.Equals(sqlType, "geometry",  StringComparison.OrdinalIgnoreCase)
+            || string.Equals(sqlType, "geography", StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
+    /// Returns the subset of <paramref name="columns"/> that are eligible for
+    /// deep profiling — currently the spatial-skip policy (FIX-B2.7B) is the
+    /// only filter, but the helper is named for the policy intent rather than
+    /// the type so future skip rules (e.g. encrypted columns, computed
+    /// columns of unsupported provenance) extend in one place.
+    ///
+    /// Returns a <see cref="List{ColumnRef}"/> rather than an
+    /// <c>IEnumerable</c> because the caller indexes the result alongside
+    /// <c>columnStats[i]</c> from the aggregation reader, so a stable random-
+    /// access list is part of the contract.
+    /// </summary>
+    public static List<ColumnRef> FilterProfilableColumns(IReadOnlyList<ColumnRef> columns)
+    {
+        ArgumentNullException.ThrowIfNull(columns);
+
+        var result = new List<ColumnRef>(columns.Count);
+        foreach (var col in columns)
+        {
+            if (IsSpatialType(col.DataType))
+            {
+                continue;
+            }
+
+            result.Add(col);
+        }
+        return result;
+    }
+
+    /// <summary>
     /// Builds the random-sample-values query for a single column: returns up
     /// to <see cref="SampleValuesPerColumn"/> rows from the materialized
     /// sample, ordered by NEWID() so the orchestrator can take the first 10
@@ -445,11 +508,28 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
         CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(columns);
-        if (columns.Count == 0)
+
+        // FIX-B2.7B: PACS spatial-skip policy.
+        // Benton County GIS truth is external to PACS (SHP / geodatabase /
+        // ArcGIS API → TerraAtlas). PACS-side geometry/geography columns
+        // are not authoritative cartographic data, and SQL Server rejects
+        // DISTINCT/MIN/MAX over those CLR types ("the geometry data type
+        // cannot be selected as DISTINCT because it is not comparable").
+        // Filter spatial columns out at the top so the reader never asks
+        // the engine to aggregate them. The structural atlas (B1) already
+        // records that they exist with their declared type — downstream
+        // observability can detect "structural saw it, deep stats absent"
+        // as a policy skip rather than a profile failure.
+        var profilableColumns = FilterProfilableColumns(columns);
+
+        if (profilableColumns.Count == 0)
         {
-            // Empty-column table: persist a stats row and return. Matches the
-            // structural atlas behavior when a table has no columns visible
-            // (rare, but possible with permission-restricted accounts).
+            // Empty-column or all-spatial table: persist a stats row and
+            // return. Matches the structural atlas behavior when a table
+            // has no columns visible (rare, possible with permission-
+            // restricted accounts) — and the all-spatial case where every
+            // column is policy-skipped (common for PACS heritage tables
+            // like __AAPARCEL_ that hold only a parcel-id + geometry).
             var emptyTable = await ReadRowCountAsync(schemaName, tableName, ct);
             return new DeepProfileResult(
                 Table:          new TableStatsRecord(schemaName, tableName, emptyTable.Count, emptyTable.IsExact, 0, "Full"),
@@ -462,13 +542,18 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
         var plan = PlanSampling(rowCount, isExact);
 
         // 2. Materialize sample to temp table; capture actual sample size.
+        //    The materialization SELECT * INTO copies every column including
+        //    spatial ones — that's fine, T-SQL doesn't object to copying
+        //    geometry into a temp table; it only objects to aggregating it.
+        //    Filtering at the column-aggregation level is sufficient.
         await ExecuteNonQueryAsync(BuildSampleMaterializationSql(schemaName, tableName, plan), ct);
         var sampleSize = await ScalarIntAsync("SELECT COUNT_BIG(*) FROM #tf_deep_profile_sample;", ct);
 
         try
         {
-            // 3. Per-column aggregation in a single round trip.
-            var columnStats = await ReadColumnAggregationAsync(schemaName, tableName, columns, sampleSize, ct);
+            // 3. Per-column aggregation in a single round trip — over the
+            //    spatial-filtered column set only.
+            var columnStats = await ReadColumnAggregationAsync(schemaName, tableName, profilableColumns, sampleSize, ct);
 
             // 4. Top-N + sample-values for code candidates only (avoid running
             //    these expensive scans for every column).
@@ -477,7 +562,7 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
             for (var i = 0; i < columnStats.Count; i++)
             {
                 var stats = columnStats[i];
-                var col   = columns[i];
+                var col   = profilableColumns[i];
 
                 var sampleValuesJson = await ReadSampleValuesJsonAsync(col.Name, ct);
                 var withSamples      = stats with { SampleValuesJson = sampleValuesJson };

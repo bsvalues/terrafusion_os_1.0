@@ -343,6 +343,142 @@ public class SqlServerDeepProfileReaderTests
         operand.Should().Be(expected);
     }
 
+    // ── Spatial-skip policy (FIX-B2.7B) ──────────────────────────────────
+    //
+    // PACS spatial columns (geometry, geography) must NOT be deep-profiled.
+    // Benton County GIS truth lives in TerraAtlas (SHP / geodatabase /
+    // ArcGIS API), not in the assessor system. SQL Server also rejects
+    // DISTINCT/MIN/MAX over spatial CLR types — discovered when B2.7-SMOKE
+    // hit `[dbo].[__AAPARCEL_]`:
+    //
+    //   The geometry data type cannot be selected as DISTINCT because it
+    //   is not comparable.
+    //
+    // The reader filters spatial columns at the top of ProfileTableAsync.
+    // These tests pin both the type predicate and the filter helper, plus
+    // the SQL-builder absence (no DISTINCT/MIN/MAX/sample/top against a
+    // spatial column once the caller has applied the filter).
+
+    [Theory]
+    [InlineData("geometry",  true)]
+    [InlineData("GEOMETRY",  true)]
+    [InlineData("Geometry",  true)]
+    [InlineData("geography", true)]
+    [InlineData("GEOGRAPHY", true)]
+    [InlineData("Geography", true)]
+    [InlineData("int",       false)]
+    [InlineData("varchar",   false)]
+    [InlineData("nvarchar",  false)]
+    [InlineData("bit",       false)]
+    [InlineData("decimal",   false)]
+    [InlineData("datetime2", false)]
+    public void IsSpatialType_RecognizesGeometryAndGeographyCaseInsensitively(string sqlType, bool expected)
+    {
+        SqlServerDeepProfileReader.IsSpatialType(sqlType).Should().Be(expected);
+    }
+
+    [Fact]
+    public void IsSpatialType_ThrowsOnNullType()
+    {
+        Action act = () => SqlServerDeepProfileReader.IsSpatialType(null!);
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void FilterProfilableColumns_DropsGeometryAndGeographyAndPreservesOrder()
+    {
+        var input = new[]
+        {
+            new ColumnRef("ParcelId",   "int",      IsNullable: false),
+            new ColumnRef("Boundary",   "geometry", IsNullable: true),  // skipped
+            new ColumnRef("HoodCd",     "varchar",  IsNullable: true),
+            new ColumnRef("Centroid",   "GEOGRAPHY",IsNullable: true),  // skipped (case-insensitive)
+            new ColumnRef("LandValue",  "decimal",  IsNullable: false),
+        };
+
+        var filtered = SqlServerDeepProfileReader.FilterProfilableColumns(input);
+
+        filtered.Select(c => c.Name).Should().ContainInOrder("ParcelId", "HoodCd", "LandValue");
+        filtered.Should().NotContain(c => c.Name == "Boundary");
+        filtered.Should().NotContain(c => c.Name == "Centroid");
+    }
+
+    [Fact]
+    public void FilterProfilableColumns_AllSpatial_ReturnsEmpty()
+    {
+        // PACS heritage tables like __AAPARCEL_ that hold only a parcel
+        // identifier and a geometry collapse to "structural-only" — the
+        // column list comes back empty so ProfileTableAsync short-circuits.
+        var input = new[]
+        {
+            new ColumnRef("Boundary", "geometry",  IsNullable: true),
+            new ColumnRef("Centroid", "geography", IsNullable: true),
+        };
+
+        var filtered = SqlServerDeepProfileReader.FilterProfilableColumns(input);
+
+        filtered.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void FilterProfilableColumns_NoSpatial_ReturnsAllOriginalColumns()
+    {
+        var input = new[]
+        {
+            new ColumnRef("ParcelId",  "int",      IsNullable: false),
+            new ColumnRef("HoodCd",    "varchar",  IsNullable: true),
+            new ColumnRef("LandValue", "decimal",  IsNullable: false),
+        };
+
+        var filtered = SqlServerDeepProfileReader.FilterProfilableColumns(input);
+
+        filtered.Should().HaveCount(3);
+        filtered.Should().BeEquivalentTo(input);
+    }
+
+    [Fact]
+    public void FilterProfilableColumns_ThrowsOnNullInput()
+    {
+        Action act = () => SqlServerDeepProfileReader.FilterProfilableColumns(null!);
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void BuildColumnAggregationSql_GivenFilteredList_DoesNotReferenceSpatialColumn()
+    {
+        // Once FilterProfilableColumns has stripped the spatial entries,
+        // none of the sub-builders should see them. This pins that the
+        // surviving SQL has no DISTINCT/MIN/MAX/UNION pointed at a spatial
+        // column — the failure mode that broke the B2.7-SMOKE.
+        var input = new[]
+        {
+            new ColumnRef("ParcelId",  "int",      IsNullable: false),
+            new ColumnRef("Boundary",  "geometry", IsNullable: true),
+            new ColumnRef("HoodCd",    "varchar",  IsNullable: true),
+        };
+
+        var profilable = SqlServerDeepProfileReader.FilterProfilableColumns(input);
+
+        var sql = SqlServerDeepProfileReader.BuildColumnAggregationSql(profilable);
+
+        sql.Should().Contain("[ParcelId]");
+        sql.Should().Contain("[HoodCd]");
+        sql.Should().NotContain("[Boundary]");
+        sql.Should().NotContain("Boundary");
+    }
+
+    [Fact]
+    public void DetectCodeCandidate_NeverFiresOnSpatialType()
+    {
+        // Defensive: even if a caller bypassed the filter and handed a
+        // spatial column's stats to the heuristic, IsCodeCandidateType
+        // already gates by SQL type and won't promote geometry/geography.
+        var stats = StatsWith(distinctCount: 3, exact: true);
+
+        SqlServerDeepProfileReader.DetectCodeCandidate(stats, "geometry",  10_000).Should().BeNull();
+        SqlServerDeepProfileReader.DetectCodeCandidate(stats, "geography", 10_000).Should().BeNull();
+    }
+
     [Fact]
     public void BuildSampleValuesSql_IncludesNewIdOrderingAndTopGuard()
     {

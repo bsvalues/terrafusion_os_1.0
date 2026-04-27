@@ -53,6 +53,28 @@ SyncAtlas does **not**:
 - Pull PACS rows into production tables.
 - Replace TerraFusion Sync.
 - Expose an HTTP endpoint (B1.9 deferred to post-MVP).
+- **Profile PACS spatial columns as authoritative GIS data.** Benton County
+  spatial truth is external to PACS — it lands in **TerraAtlas** from SHP
+  files, geodatabases, or the ArcGIS API. PACS-side `geometry` /
+  `geography` columns (e.g. heritage tables like `__AAPARCEL_` that carry a
+  parcel boundary on the assessor side) are policy-skipped from the
+  deep-profile pass:
+  - Their existence is still recorded by the structural atlas (Slice B1)
+    with the declared SQL type. Downstream observability can detect
+    "structural saw a spatial column, deep stats absent" → known skip.
+  - The deep pass does **not** run `DISTINCT`, `GROUP BY`, `MIN`, `MAX`,
+    sample, or top-N queries against spatial columns. SQL Server itself
+    rejects all of those over CLR spatial types ("the geometry data type
+    cannot be selected as DISTINCT because it is not comparable") — but
+    the architectural reason for the skip predates the engine error: PACS
+    spatial values are not the source of truth, so building stats over
+    them would create false mapping pressure into operational GIS.
+  - Treat the skip as the suite boundary: TerraAtlas / ArcGIS / SHP /
+    geodatabase ingestion own spatial profiling and mapping. Valuation /
+    admin sync does not mutate GIS artifacts. See FIX-B2.7B
+    (`fix/syncatlas-skip-pacs-spatial-columns`) for the implementation
+    landing — `SqlServerDeepProfileReader.IsSpatialType` and
+    `FilterProfilableColumns` are the policy entry points.
 
 ## Architecture
 
