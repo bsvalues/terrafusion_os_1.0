@@ -119,6 +119,13 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<SyncProfileConstraint> SyncProfileConstraints { get; set; }
   public DbSet<SyncProfileCode> SyncProfileCodes { get; set; }
 
+  // R3 Sync Data Profile — deep-profile statistics output (Slice B2)
+  // (Sample-based row counts, null %, distinct counts, top values,
+  //  code-table candidate detection.)
+  public DbSet<SyncProfileTableStats> SyncProfileTableStats { get; set; }
+  public DbSet<SyncProfileColumnStats> SyncProfileColumnStats { get; set; }
+  public DbSet<SyncProfileCodeCandidate> SyncProfileCodeCandidates { get; set; }
+
   // Codex 3-6-9 Framework Entities
   public DbSet<CodexMetric> CodexMetrics { get; set; }
   public DbSet<CodexScore> CodexScores { get; set; }
@@ -670,6 +677,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     modelBuilder.ApplyConfiguration(new SyncProfileTriggerConfiguration());
     modelBuilder.ApplyConfiguration(new SyncProfileConstraintConfiguration());
     modelBuilder.ApplyConfiguration(new SyncProfileCodeConfiguration());
+
+    // R3 Sync Data Profile (Slice B2 — deep profile statistics)
+    modelBuilder.ApplyConfiguration(new SyncProfileTableStatsConfiguration());
+    modelBuilder.ApplyConfiguration(new SyncProfileColumnStatsConfiguration());
+    modelBuilder.ApplyConfiguration(new SyncProfileCodeCandidateConfiguration());
 
     // NOTE: TerraFusionGPT Suite configurations temporarily disabled due to circular dependency
     // These configurations are defined in TerraFusion.Data\Configurations\GPTConfiguration.cs.disabled
