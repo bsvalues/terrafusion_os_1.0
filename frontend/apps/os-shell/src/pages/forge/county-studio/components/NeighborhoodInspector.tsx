@@ -4,7 +4,9 @@
 // neighborhood's rollup aggregates with IAAO compliance lamps.
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
+import activateModule from '@/orchestration/moduleActivation';
 import type { RollupComplianceStatus } from '../types/countyStudio.types';
 
 const MetricRow = ({ label, value, color }: { label: string; value: string; color?: string }) => (
@@ -17,6 +19,27 @@ const MetricRow = ({ label, value, color }: { label: string; value: string; colo
   </div>
 );
 
+const handoffBtnStyle: React.CSSProperties = {
+  display: 'block',
+  width: '100%',
+  padding: '8px 10px',
+  borderRadius: 4,
+  border: '1px solid hsl(var(--tf-border))',
+  background: 'transparent',
+  color: 'hsl(var(--tf-fg))',
+  fontSize: 11,
+  fontWeight: 600,
+  cursor: 'pointer',
+  textAlign: 'left',
+  marginBottom: 6,
+};
+
+const disabledHandoffBtnStyle: React.CSSProperties = {
+  ...handoffBtnStyle,
+  opacity: 0.55,
+  cursor: 'not-allowed',
+};
+
 function complianceLamp(status: RollupComplianceStatus): { color: string; label: string } {
   switch (status) {
     case 'IaaoCompliant':      return { color: '#22c55e', label: 'IAAO Compliant' };
@@ -26,9 +49,17 @@ function complianceLamp(status: RollupComplianceStatus): { color: string; label:
 }
 
 export function NeighborhoodInspector() {
-  const { neighborhoodRollup, selectedNeighborhood } = useCountyStudioStore();
+  const {
+    neighborhoodRollup,
+    selectedNeighborhood,
+    selectedNeighborhoodRevalArea,
+    activeStudy,
+  } = useCountyStudioStore();
+  const navigate = useNavigate();
   const row = selectedNeighborhood
-    ? neighborhoodRollup.find((r) => r.neighborhoodCode === selectedNeighborhood)
+    ? neighborhoodRollup.find((r) =>
+        r.neighborhoodCode === selectedNeighborhood
+        && (selectedNeighborhoodRevalArea === null || r.revalArea === selectedNeighborhoodRevalArea))
     : null;
 
   if (!row) {
@@ -52,11 +83,54 @@ export function NeighborhoodInspector() {
   const prdColor = row.prd === null ? 'hsl(var(--tf-muted))' : row.prd >= 0.98 && row.prd <= 1.03 ? '#22c55e' : '#f59e0b';
   const stabColor = row.stabilityScore < 60 ? '#ef4444' : row.stabilityScore < 80 ? '#f59e0b' : '#22c55e';
 
+  const launchRollupModule = (moduleId: string) => {
+    if (!activeStudy) return;
+    void activateModule(moduleId, {
+      source: 'system',
+      metadata: {
+        countyId: activeStudy.countyId,
+        countyName: activeStudy.countyName,
+        taxYear: activeStudy.taxYear,
+        city: row.city,
+        neighborhoodCode: row.neighborhoodCode,
+        neighborhoodName: row.neighborhoodName,
+        revalArea: row.revalArea,
+        rollupScope: 'neighborhood',
+      },
+    });
+  };
+
+  const handleOpenAtlas = () => {
+    if (!activeStudy) return;
+    const params = new URLSearchParams({
+      studyId: activeStudy.studyId,
+      countyId: activeStudy.countyId,
+      taxYear: String(activeStudy.taxYear),
+      city: row.city,
+      neighborhoodCode: row.neighborhoodCode,
+    });
+    if (row.revalArea !== null) {
+      params.set('revalArea', String(row.revalArea));
+    }
+    if (activeStudy.countyName) {
+      params.set('countyName', activeStudy.countyName);
+    }
+    navigate(`/forge/atlas-live?${params.toString()}`);
+  };
+
   return (
     <div data-testid="neighborhood-inspector" style={{ padding: '12px 16px' }}>
       <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 4 }}>{row.neighborhoodName}</div>
       <div style={{ fontSize: 11, color: 'hsl(var(--tf-muted))', marginBottom: 12 }}>
         {row.city} · {row.segmentCount} segments · {row.parcelCount.toLocaleString()} parcels
+      </div>
+      {row.revalArea !== null && (
+        <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', marginBottom: 8 }}>
+          Cycle / reval area: {row.revalArea}
+        </div>
+      )}
+      <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', marginBottom: 12 }}>
+        Neighborhood is the operative rollup. Drill one level deeper for reval-area segment action.
       </div>
 
       <div
@@ -77,6 +151,77 @@ export function NeighborhoodInspector() {
       <MetricRow label="Risk Score"      value={row.riskScore.toFixed(0)} />
       <MetricRow label="Exceptions"      value={String(row.exceptionCount)} />
       <MetricRow label="Exception Rate"  value={`${(row.exceptionRate * 100).toFixed(1)}%`} />
+
+      <div style={{ marginTop: 14 }}>
+        <div
+          style={{
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: 1,
+            textTransform: 'uppercase',
+            color: 'hsl(var(--tf-muted))',
+            marginBottom: 6,
+          }}
+        >
+          Route Action
+        </div>
+        <button
+          type="button"
+          data-testid="neighborhood-inspector-handoff-atlas"
+          onClick={handleOpenAtlas}
+          style={handoffBtnStyle}
+        >
+          <div style={{ fontSize: 12, fontWeight: 700 }}>See neighborhood on map</div>
+          <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', marginTop: 2 }}>
+            Open Atlas Live scoped to {row.neighborhoodName}.
+          </div>
+        </button>
+        <button
+          type="button"
+          data-testid="neighborhood-inspector-handoff-salesforge"
+          onClick={() => launchRollupModule('sales-forge')}
+          style={handoffBtnStyle}
+        >
+          <div style={{ fontSize: 12, fontWeight: 700 }}>Review sales in SalesForge</div>
+          <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', marginTop: 2 }}>
+            Carry county and neighborhood scope into the live sales lane.
+          </div>
+        </button>
+        <button
+          type="button"
+          data-testid="neighborhood-inspector-handoff-costforge"
+          onClick={() => launchRollupModule('costforge')}
+          style={handoffBtnStyle}
+        >
+          <div style={{ fontSize: 12, fontWeight: 700 }}>Open cost review in CostForge</div>
+          <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', marginTop: 2 }}>
+            Continue correction routing without leaving the operative neighborhood context.
+          </div>
+        </button>
+        <button
+          type="button"
+          data-testid="neighborhood-inspector-handoff-compsforge"
+          onClick={() => launchRollupModule('comps-forge')}
+          style={handoffBtnStyle}
+        >
+          <div style={{ fontSize: 12, fontWeight: 700 }}>Open comps in CompsForge</div>
+          <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', marginTop: 2 }}>
+            Start comp review here, then bind to a parcel subject when you narrow to a reval-area segment.
+          </div>
+        </button>
+        <button
+          type="button"
+          data-testid="neighborhood-inspector-handoff-workbench-disabled"
+          disabled
+          title="Parcel-level work opens only from Atlas or segment scope."
+          style={disabledHandoffBtnStyle}
+        >
+          <div style={{ fontSize: 12, fontWeight: 700 }}>Parcel workbench stays downstream</div>
+          <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', marginTop: 2 }}>
+            Drill to a segment or route through Atlas before opening parcel-level action.
+          </div>
+        </button>
+      </div>
     </div>
   );
 }

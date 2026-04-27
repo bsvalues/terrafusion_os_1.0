@@ -62,6 +62,10 @@ export interface CountySegmentDto {
   segmentSetId: string;
   name: string;
   segmentType: string;
+  geographyRef: string | null;
+  revalArea: number | null;
+  buildingType: string | null;
+  qualityGrade: string | null;
   parcelCount: number;
   /** Nullable on server for sparse-sample segments — UI must null-guard. */
   medianRatio: number | null;
@@ -72,7 +76,6 @@ export interface CountySegmentDto {
   stabilityScore: number;
   riskScore: number;
   exceptionCount: number;
-  geographyRef: string | null;
 }
 
 export interface CountyCohortDto {
@@ -140,6 +143,10 @@ export interface CityRollupRowDto {
   exceptionRate: number;
   worstSegmentName: string | null;
   worstSegmentMedianRatio: number | null;
+  worstSegmentNeighborhoodCode: string | null;
+  worstSegmentRevalArea: number | null;
+  worstSegmentBuildingType: string | null;
+  worstSegmentQualityGrade: string | null;
   complianceStatus: RollupComplianceStatus;
 }
 
@@ -147,6 +154,7 @@ export interface NeighborhoodRollupRowDto {
   neighborhoodCode: string;
   neighborhoodName: string;
   city: string;
+  revalArea: number | null;
   segmentCount: number;
   parcelCount: number;
   medianRatio: number | null;
@@ -161,7 +169,9 @@ export interface NeighborhoodRollupRowDto {
 
 /**
  * Drill level for the County Studio center panel.
- *   'county'       — CityRollupTable visible.
+ *   'county'       — County health + city overview visible. Cities are overview
+ *                    geography only; the operative assessment units remain
+ *                    neighborhood and reval-area segments.
  *   'city'         — NeighborhoodRollupTable filtered to selectedCity.
  *   'neighborhood' — SegmentTable filtered to selectedNeighborhood's GeographyRef.
  * Segment-level detail lives in the RightRail's ObjectInspector, selected via
@@ -186,6 +196,9 @@ export interface HealthAlertDto {
   segmentId: string;
   segmentName: string;
   neighborhoodCode: string | null;
+  revalArea: number | null;
+  buildingType: string | null;
+  qualityGrade: string | null;
   city: string | null;
   parcelCount: number;
   medianRatio: number | null;
@@ -250,6 +263,9 @@ export interface CountySegmentDetailDto {
   segmentType: string;
   city: string | null;
   neighborhoodCode: string | null;
+  revalArea: number | null;
+  buildingType: string | null;
+  qualityGrade: string | null;
   parcelCount: number;
   medianRatio: number | null;
   cod: number | null;
@@ -310,6 +326,7 @@ export interface SegmentActionContextDto {
   segmentType: string;
   city: string | null;
   neighborhoodCode: string | null;
+  revalArea: number | null;
   /** Capped at 1000; when truncated TotalParcels carries the true count. */
   parcelIds: string[];
   totalParcels: number;

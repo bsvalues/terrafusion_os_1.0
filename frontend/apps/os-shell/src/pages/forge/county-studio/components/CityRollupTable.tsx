@@ -10,6 +10,10 @@
 import React, { useState } from 'react';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import type { CityRollupRowDto, RollupComplianceStatus } from '../types/countyStudio.types';
+import {
+  formatOperationalPrimary,
+  parseSegmentIdentity,
+} from '../utils/segmentIdentity';
 
 type SortKey = keyof Pick<
   CityRollupRowDto,
@@ -223,13 +227,22 @@ export function CityRollupTable() {
                 Status
               </th>
               <th style={{ padding: '6px 8px', fontSize: 11, color: 'hsl(var(--tf-muted))', background: 'hsl(var(--tf-bg))', borderBottom: '1px solid hsl(var(--tf-border))' }}>
-                Worst Segment
+                Worst Segment (Reval / Neighborhood)
               </th>
             </tr>
           </thead>
           <tbody>
             {sorted.map((row) => {
               const badge = complianceStyle(row.complianceStatus);
+              const worstSegment = row.worstSegmentName
+                ? parseSegmentIdentity(row.worstSegmentName, {
+                    neighborhoodCode: row.worstSegmentNeighborhoodCode,
+                    revalArea: row.worstSegmentRevalArea,
+                    buildingType: row.worstSegmentBuildingType,
+                    qualityGrade: row.worstSegmentQualityGrade,
+                  })
+                : null;
+              const worstSegmentLabel = worstSegment ? formatOperationalPrimary(worstSegment) : row.worstSegmentName;
               return (
                 <tr
                   key={row.city}
@@ -272,12 +285,20 @@ export function CityRollupTable() {
                     </span>
                   </td>
                   <td style={{ padding: '7px 8px', fontSize: 11, color: 'hsl(var(--tf-muted))', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {row.worstSegmentName ?? '—'}
-                    {row.worstSegmentMedianRatio !== null && row.worstSegmentName && (
-                      <span style={{ marginLeft: 6, color: ratioColor(row.worstSegmentMedianRatio) }}>
-                        ({row.worstSegmentMedianRatio.toFixed(3)})
-                      </span>
-                    )}
+                    {row.worstSegmentName ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        <span style={{ color: 'hsl(var(--tf-fg))' }}>
+                          {worstSegmentLabel}
+                        </span>
+                        {row.worstSegmentMedianRatio !== null && (
+                          <span style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>
+                            <span style={{ color: ratioColor(row.worstSegmentMedianRatio) }}>
+                              ({row.worstSegmentMedianRatio.toFixed(3)})
+                            </span>
+                          </span>
+                        )}
+                      </div>
+                    ) : '—'}
                   </td>
                 </tr>
               );

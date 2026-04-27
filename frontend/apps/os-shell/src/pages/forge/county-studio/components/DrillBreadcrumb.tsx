@@ -8,6 +8,7 @@
 
 import React from 'react';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
+import { describeOperationalScope, parseSegmentIdentity } from '../utils/segmentIdentity';
 
 function crumbStyle(active: boolean, clickable: boolean): React.CSSProperties {
   return {
@@ -28,7 +29,7 @@ const Separator = () => (
 
 export function DrillBreadcrumb() {
   const {
-    drillLevel, selectedCity, selectedNeighborhood, selectedSegmentId,
+    drillLevel, selectedCity, selectedNeighborhood, selectedNeighborhoodRevalArea, selectedSegmentId,
     segments, drillToCounty, drillToCity,
   } = useCountyStudioStore();
 
@@ -79,7 +80,12 @@ export function DrillBreadcrumb() {
             aria-current={drillLevel === 'neighborhood' && !selectedSegment ? 'page' : undefined}
             style={crumbStyle(drillLevel === 'neighborhood' && !selectedSegment, false)}
           >
-            {selectedNeighborhood}
+            {describeOperationalScope(
+              parseSegmentIdentity(selectedNeighborhood, {
+                neighborhoodCode: selectedNeighborhood,
+                revalArea: selectedNeighborhoodRevalArea,
+              }),
+            )}
           </span>
         </>
       )}
@@ -92,7 +98,14 @@ export function DrillBreadcrumb() {
             aria-current="page"
             style={crumbStyle(true, false)}
           >
-            {selectedSegment.name}
+            {describeOperationalScope(
+              parseSegmentIdentity(selectedSegment.name, {
+                neighborhoodCode: selectedSegment.geographyRef,
+                revalArea: selectedSegment.revalArea,
+                buildingType: selectedSegment.buildingType,
+                qualityGrade: selectedSegment.qualityGrade,
+              }),
+            )}
           </span>
         </>
       )}

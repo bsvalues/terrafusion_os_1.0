@@ -702,9 +702,37 @@ export function ObjectInspector() {
     );
   }
 
+  const segmentNeighborhoodCode = detail?.neighborhoodCode ?? seg.geographyRef;
+  const segmentRevalArea = detail?.revalArea ?? seg.revalArea;
+  const segmentBuildingType = detail?.buildingType ?? seg.buildingType;
+  const segmentQualityGrade = detail?.qualityGrade ?? seg.qualityGrade;
+  const segmentScopeLabel = [
+    segmentNeighborhoodCode ? `Neighborhood ${segmentNeighborhoodCode}` : null,
+    segmentRevalArea !== null && segmentRevalArea !== undefined ? `Reval ${segmentRevalArea}` : null,
+  ].filter((value): value is string => !!value).join(' · ') || seg.name;
+
+  const segmentDescriptor = [segmentBuildingType, segmentQualityGrade]
+    .filter((value): value is string => !!value)
+    .join(' · ');
+
   const handleOpenAtlas = () => {
     if (!activeStudy) return;
-    navigate(`/forge/atlas-live?studyId=${activeStudy.studyId}&segmentId=${seg.segmentId}&countyId=${activeStudy.countyId}`);
+    const params = new URLSearchParams({
+      studyId: activeStudy.studyId,
+      segmentId: seg.segmentId,
+      countyId: activeStudy.countyId,
+      taxYear: String(activeStudy.taxYear),
+    });
+    if (activeStudy.countyName) {
+      params.set('countyName', activeStudy.countyName);
+    }
+    if (seg.geographyRef) {
+      params.set('neighborhoodCode', seg.geographyRef);
+    }
+    if (segmentRevalArea !== null && segmentRevalArea !== undefined) {
+      params.set('revalArea', String(segmentRevalArea));
+    }
+    navigate(`/forge/atlas-live?${params.toString()}`);
   };
   const handleFindParcels = () => {
     void activateModule('property-workbench', {
@@ -715,9 +743,10 @@ export function ObjectInspector() {
 
   return (
     <div style={{ padding: '12px 16px' }} data-testid="object-inspector">
-      <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 4 }}>{seg.name}</div>
+      <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 4 }}>{segmentScopeLabel}</div>
       <div style={{ fontSize: 11, color: 'hsl(var(--tf-muted))', marginBottom: 12 }}>
         {seg.segmentType} · {seg.parcelCount.toLocaleString()} parcels
+        {segmentDescriptor ? ` · ${segmentDescriptor}` : ''}
       </div>
 
       <Tabs defaultValue="metrics">

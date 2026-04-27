@@ -5,12 +5,23 @@
 // is found, compliance lamp status attribute, worstSegmentName visibility.
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { act } from 'react';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { CityInspector } from '../components/CityInspector';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import type { CityRollupRowDto } from '../types/countyStudio.types';
+
+const navigateMock = vi.fn();
+const activateModuleMock = vi.fn();
+
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => navigateMock,
+}));
+
+vi.mock('@/orchestration/moduleActivation', () => ({
+  default: (...args: unknown[]) => activateModuleMock(...args),
+}));
 
 const MOCK_CITY_ROW: CityRollupRowDto = {
   city: 'West Richland',
@@ -40,8 +51,20 @@ function setup(selectedCity: string | null, rows: CityRollupRowDto[] = [MOCK_CIT
 beforeEach(() => {
   act(() => {
     useCountyStudioStore.getState().setCityRollup([]);
-    useCountyStudioStore.setState({ selectedCity: null });
+    useCountyStudioStore.setState({
+      selectedCity: null,
+      activeStudy: {
+        studyId: 'study-benton-2026',
+        countyId: 'benton',
+        countyName: 'Benton County',
+        taxYear: 2026,
+        studyType: 'AnnualRevaluation',
+        status: 'InProgress',
+      },
+    });
   });
+  navigateMock.mockReset();
+  activateModuleMock.mockReset();
 });
 
 describe('CityInspector', () => {
@@ -114,7 +137,9 @@ describe('CityInspector', () => {
       useCountyStudioStore.setState({ selectedCity: 'West Richland' });
     });
     render(<CityInspector />);
-    expect(screen.getByText('WR-R3 South')).toBeInTheDocument();
+    // segmentIdentity.formatOperationalPrimary now prefixes neighborhood codes
+    // with "Neighborhood ", so match the bare code via partial regex.
+    expect(screen.getAllByText(/WR-R3 South/).length).toBeGreaterThan(0);
     expect(screen.getByText(/Worst segment/i)).toBeInTheDocument();
   });
 
@@ -143,5 +168,63 @@ describe('CityInspector', () => {
     // All three metric rows with null values show "—"
     const dashes = screen.getAllByText('—');
     expect(dashes.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('routes city scope to Atlas Live', () => {
+    act(() => {
+      useCountyStudioStore.getState().setCityRollup([MOCK_CITY_ROW]);
+      useCountyStudioStore.setState({ selectedCity: 'West Richland' });
+    });
+    render(<CityInspector />);
+    fireEvent.click(screen.getByTestId('city-inspector-handoff-atlas'));
+    expect(navigateMock).toHaveBeenCalledWith(
+      expect.stringContaining('/forge/atlas-live?')
+    );
+    expect(navigateMock.mock.calls[0]?.[0]).toContain('countyId=benton');
+    expect(navigateMock.mock.calls[0]?.[0]).toContain('city=West+Richland');
+  });
+
+  it('routes city scope into downstream forge modules', () => {
+    act(() => {
+      useCountyStudioStore.getState().setCityRollup([MOCK_CITY_ROW]);
+      useCountyStudioStore.setState({ selectedCity: 'West Richland' });
+    });
+    render(<CityInspector />);
+
+    fireEvent.click(screen.getByTestId('city-inspector-handoff-salesforge'));
+    fireEvent.click(screen.getByTestId('city-inspector-handoff-costforge'));
+    fireEvent.click(screen.getByTestId('city-inspector-handoff-compsforge'));
+
+    expect(activateModuleMock).toHaveBeenNthCalledWith(1, 'sales-forge', expect.objectContaining({
+      source: 'system',
+      metadata: expect.objectContaining({
+        countyId: 'benton',
+        city: 'West Richland',
+        rollupScope: 'city',
+      }),
+    }));
+    expect(activateModuleMock).toHaveBeenNthCalledWith(2, 'costforge', expect.objectContaining({
+      metadata: expect.objectContaining({
+        countyId: 'benton',
+        city: 'West Richland',
+        rollupScope: 'city',
+      }),
+    }));
+    expect(activateModuleMock).toHaveBeenNthCalledWith(3, 'comps-forge', expect.objectContaining({
+      metadata: expect.objectContaining({
+        countyId: 'benton',
+        city: 'West Richland',
+        rollupScope: 'city',
+      }),
+    }));
+  });
+
+  it('keeps parcel workbench disabled at city scope', () => {
+    act(() => {
+      useCountyStudioStore.getState().setCityRollup([MOCK_CITY_ROW]);
+      useCountyStudioStore.setState({ selectedCity: 'West Richland' });
+    });
+    render(<CityInspector />);
+    expect(screen.getByTestId('city-inspector-handoff-workbench-disabled')).toBeDisabled();
   });
 });

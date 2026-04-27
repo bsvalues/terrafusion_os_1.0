@@ -132,7 +132,7 @@ test.describe('County Studio + Atlas Live — canonical workflow', () => {
     });
 
     // Top bar with "Atlas Live View" label
-    await expect(page.getByText(/Atlas Live View/i)).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByTestId('atlas-live-title')).toBeVisible({ timeout: 15_000 });
 
     // Sync badge — AtlasSyncBadge shows one of LIVE / STAGED / SNAPSHOT /
     // DISCONNECTED. In E2E against an empty DB, DISCONNECTED is expected.

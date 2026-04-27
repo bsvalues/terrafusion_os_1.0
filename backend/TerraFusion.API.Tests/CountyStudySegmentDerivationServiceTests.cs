@@ -11,6 +11,7 @@
 using System.Text.Json;
 using TerraFusion.API.Tests.TestHelpers;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Entities.Pacs;
 using TerraFusion.Core.Services;
 using Xunit;
 using Task = System.Threading.Tasks.Task;
@@ -53,11 +54,13 @@ public sealed class CountyStudySegmentDerivationServiceTests : IDisposable
         string neighborhood,
         string buildingType,
         string? qualityGrade,
-        decimal assessedValue)
+        decimal assessedValue,
+        string? propertyId = null)
     {
         _db.Properties.Add(new Property
         {
             Id            = Guid.NewGuid(),
+            PropertyId    = propertyId ?? parcelId,
             ParcelId      = parcelId,
             ParcelNumber  = parcelId,
             CountyId      = CountyId,
@@ -77,6 +80,21 @@ public sealed class CountyStudySegmentDerivationServiceTests : IDisposable
             CountyId     = CountyId,
             UpdatedAt    = DateTime.UtcNow,
             UpdatedBy    = "test",
+        });
+        _db.SaveChanges();
+    }
+
+    private void SeedPacsValuation(int pacsPropId, string? neighborhoodCode, int? cycle)
+    {
+        _db.Set<PacsValuation>().Add(new PacsValuation
+        {
+            Id = Guid.NewGuid(),
+            ParcelId = Guid.NewGuid(),
+            PacsPropId = pacsPropId,
+            PropValYear = TaxYear,
+            SupNum = 0,
+            NeighborhoodCode = neighborhoodCode,
+            Cycle = cycle,
         });
         _db.SaveChanges();
     }
@@ -258,6 +276,70 @@ public sealed class CountyStudySegmentDerivationServiceTests : IDisposable
         var rule = JsonDocument.Parse(seg.RuleDefinition!).RootElement;
         Assert.Equal("UNKNOWN", rule.GetProperty("neighborhood").GetString());
         Assert.Equal("UNKNOWN", rule.GetProperty("qualityGrade").GetString());
+    }
+
+    [Fact]
+    public async Task DeriveAsync_UsesAuthoritativeCycleField_ForRevalArea()
+    {
+        var study = SeedStudy();
+        SeedParcel("P1", neighborhood: "63000", buildingType: "R1", qualityGrade: "STANDARD", assessedValue: 300_000m, propertyId: "101");
+        SeedPacsValuation(101, neighborhoodCode: "63000", cycle: 6);
+
+        await _sut.DeriveAsync(study.StudyId, "tester");
+
+        var seg = _db.CountySegments.Single();
+        var rule = JsonDocument.Parse(seg.RuleDefinition!).RootElement;
+        Assert.Equal("63000", rule.GetProperty("neighborhood").GetString());
+        Assert.Equal(6, rule.GetProperty("revalArea").GetInt32());
+    }
+
+    [Fact]
+    public async Task DeriveAsync_DoesNotInferRevalAreaFromNeighborhood_WhenCycleMissing()
+    {
+        var study = SeedStudy();
+        SeedParcel("P1", neighborhood: "63000", buildingType: "R1", qualityGrade: "STANDARD", assessedValue: 300_000m, propertyId: "102");
+        SeedPacsValuation(102, neighborhoodCode: "63000", cycle: null);
+
+        await _sut.DeriveAsync(study.StudyId, "tester");
+
+        var seg = _db.CountySegments.Single();
+        var rule = JsonDocument.Parse(seg.RuleDefinition!).RootElement;
+        Assert.Equal("63000", rule.GetProperty("neighborhood").GetString());
+        Assert.Equal(JsonValueKind.Null, rule.GetProperty("revalArea").ValueKind);
+    }
+
+    [Fact]
+    public async Task DeriveAsync_SameNeighborhoodDifferentCycles_CreatesSeparateSegments()
+    {
+        var study = SeedStudy();
+
+        SeedParcel("P1", neighborhood: "63000", buildingType: "R1", qualityGrade: "STANDARD", assessedValue: 300_000m, propertyId: "201");
+        SeedParcel("P2", neighborhood: "63000", buildingType: "R1", qualityGrade: "STANDARD", assessedValue: 305_000m, propertyId: "202");
+        SeedParcel("P3", neighborhood: "63000", buildingType: "R1", qualityGrade: "STANDARD", assessedValue: 310_000m, propertyId: "203");
+        SeedParcel("P4", neighborhood: "63000", buildingType: "R1", qualityGrade: "STANDARD", assessedValue: 315_000m, propertyId: "204");
+
+        SeedPacsValuation(201, neighborhoodCode: "63000", cycle: 2);
+        SeedPacsValuation(202, neighborhoodCode: "63000", cycle: 2);
+        SeedPacsValuation(203, neighborhoodCode: "63000", cycle: 3);
+        SeedPacsValuation(204, neighborhoodCode: "63000", cycle: 3);
+
+        await _sut.DeriveAsync(study.StudyId, "tester");
+
+        var segments = _db.CountySegments
+            .ToList();
+
+        Assert.Equal(2, segments.Count);
+        var revalAreas = segments
+            .Select(seg => JsonDocument.Parse(seg.RuleDefinition!).RootElement.GetProperty("revalArea").GetInt32())
+            .OrderBy(v => v)
+            .ToArray();
+
+        Assert.Equal(new[] { 2, 3 }, revalAreas);
+        Assert.All(segments, seg =>
+        {
+            Assert.Equal("63000", seg.GeographyRef);
+            Assert.Equal(2, seg.ParcelCount);
+        });
     }
 
     /// <summary>

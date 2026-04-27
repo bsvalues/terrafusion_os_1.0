@@ -23,6 +23,7 @@ import type {
   ProblemClass,
   SegmentDiagnosisDto,
 } from '../types/countyStudio.types';
+import { parseSegmentIdentity } from '../utils/segmentIdentity';
 
 const CLASS_BAR: Record<ProblemClass, string> = {
   Data:     '#ef4444',
@@ -347,10 +348,14 @@ export function CountyDiagnosisModal({ studyId, open, onClose }: CountyDiagnosis
                       key={dx.segmentId}
                       dx={dx}
                       onDrill={(target) => {
+                        const identity = parseSegmentIdentity(target.segmentName, {
+                          neighborhoodCode: target.neighborhoodCode,
+                        });
                         drillToSegment(
                           target.city ?? 'Unincorporated',
                           target.neighborhoodCode ?? 'UNKNOWN',
                           target.segmentId,
+                          identity.revalArea ? Number(identity.revalArea) : null,
                         );
                         onClose();
                       }}

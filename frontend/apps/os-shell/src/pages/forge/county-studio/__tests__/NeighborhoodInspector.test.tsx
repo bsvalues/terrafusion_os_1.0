@@ -5,17 +5,29 @@
 // a matching row exists, compliance lamp status attribute, null metric display.
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { act } from 'react';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { NeighborhoodInspector } from '../components/NeighborhoodInspector';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import type { NeighborhoodRollupRowDto } from '../types/countyStudio.types';
+
+const navigateMock = vi.fn();
+const activateModuleMock = vi.fn();
+
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => navigateMock,
+}));
+
+vi.mock('@/orchestration/moduleActivation', () => ({
+  default: (...args: unknown[]) => activateModuleMock(...args),
+}));
 
 const MOCK_NBHD_ROW: NeighborhoodRollupRowDto = {
   neighborhoodCode: 'NBHD-WR01',
   neighborhoodName: 'West Richland Estates',
   city: 'West Richland',
+  revalArea: 4,
   segmentCount: 2,
   parcelCount: 3840,
   medianRatio: 0.96,
@@ -31,15 +43,31 @@ const MOCK_NBHD_ROW: NeighborhoodRollupRowDto = {
 function setNbhd(code: string | null, rows: NeighborhoodRollupRowDto[] = [MOCK_NBHD_ROW]) {
   act(() => {
     useCountyStudioStore.getState().setNeighborhoodRollup(rows);
-    useCountyStudioStore.setState({ selectedNeighborhood: code });
+    useCountyStudioStore.setState({
+      selectedNeighborhood: code,
+      selectedNeighborhoodRevalArea: code ? rows[0]?.revalArea ?? null : null,
+    });
   });
 }
 
 beforeEach(() => {
   act(() => {
     useCountyStudioStore.getState().setNeighborhoodRollup([]);
-    useCountyStudioStore.setState({ selectedNeighborhood: null });
+    useCountyStudioStore.setState({
+      selectedNeighborhood: null,
+      activeStudy: {
+        studyId: 'study-benton-2026',
+        countyId: 'benton',
+        countyName: 'Benton County',
+        taxYear: 2026,
+        studyType: 'AnnualRevaluation',
+        status: 'InProgress',
+      },
+      selectedNeighborhoodRevalArea: null,
+    });
   });
+  navigateMock.mockReset();
+  activateModuleMock.mockReset();
 });
 
 describe('NeighborhoodInspector', () => {
@@ -73,6 +101,7 @@ describe('NeighborhoodInspector', () => {
     expect(panel).toHaveTextContent('West Richland');
     expect(panel).toHaveTextContent('2 segments');
     expect(panel).toHaveTextContent('3,840');
+    expect(panel).toHaveTextContent('Cycle / reval area: 4');
   });
 
   it('compliance lamp has data-status="IaaoCompliant"', () => {
@@ -123,5 +152,58 @@ describe('NeighborhoodInspector', () => {
     render(<NeighborhoodInspector />);
     const dashes = screen.getAllByText('—');
     expect(dashes.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('routes neighborhood scope to Atlas Live', () => {
+    setNbhd('NBHD-WR01');
+    render(<NeighborhoodInspector />);
+    fireEvent.click(screen.getByTestId('neighborhood-inspector-handoff-atlas'));
+    expect(navigateMock).toHaveBeenCalledWith(
+      expect.stringContaining('/forge/atlas-live?')
+    );
+    expect(navigateMock.mock.calls[0]?.[0]).toContain('countyId=benton');
+    expect(navigateMock.mock.calls[0]?.[0]).toContain('neighborhoodCode=NBHD-WR01');
+    expect(navigateMock.mock.calls[0]?.[0]).toContain('revalArea=4');
+  });
+
+  it('routes neighborhood scope into downstream forge modules', () => {
+    setNbhd('NBHD-WR01');
+    render(<NeighborhoodInspector />);
+
+    fireEvent.click(screen.getByTestId('neighborhood-inspector-handoff-salesforge'));
+    fireEvent.click(screen.getByTestId('neighborhood-inspector-handoff-costforge'));
+    fireEvent.click(screen.getByTestId('neighborhood-inspector-handoff-compsforge'));
+
+    expect(activateModuleMock).toHaveBeenNthCalledWith(1, 'sales-forge', expect.objectContaining({
+      source: 'system',
+      metadata: expect.objectContaining({
+        countyId: 'benton',
+        neighborhoodCode: 'NBHD-WR01',
+        revalArea: 4,
+        rollupScope: 'neighborhood',
+      }),
+    }));
+    expect(activateModuleMock).toHaveBeenNthCalledWith(2, 'costforge', expect.objectContaining({
+      metadata: expect.objectContaining({
+        countyId: 'benton',
+        neighborhoodCode: 'NBHD-WR01',
+        revalArea: 4,
+        rollupScope: 'neighborhood',
+      }),
+    }));
+    expect(activateModuleMock).toHaveBeenNthCalledWith(3, 'comps-forge', expect.objectContaining({
+      metadata: expect.objectContaining({
+        countyId: 'benton',
+        neighborhoodCode: 'NBHD-WR01',
+        revalArea: 4,
+        rollupScope: 'neighborhood',
+      }),
+    }));
+  });
+
+  it('keeps parcel workbench disabled at neighborhood rollup scope', () => {
+    setNbhd('NBHD-WR01');
+    render(<NeighborhoodInspector />);
+    expect(screen.getByTestId('neighborhood-inspector-handoff-workbench-disabled')).toBeDisabled();
   });
 });

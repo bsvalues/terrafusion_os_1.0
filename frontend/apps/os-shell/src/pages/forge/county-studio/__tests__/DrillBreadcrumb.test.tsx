@@ -31,34 +31,37 @@ describe('DrillBreadcrumb', () => {
 
   it('renders full chain at neighborhood level', () => {
     act(() => {
-      useCountyStudioStore.getState().drillToNeighborhood('Richland', 'NBHD-R1');
+      useCountyStudioStore.getState().drillToNeighborhood('Richland', 'NBHD-R1', 2);
     });
     render(<DrillBreadcrumb />);
     expect(screen.getByTestId('crumb-county')).toBeInTheDocument();
     expect(screen.getByTestId('crumb-city')).toHaveTextContent('Richland');
-    expect(screen.getByTestId('crumb-neighborhood')).toHaveTextContent('NBHD-R1');
+    expect(screen.getByTestId('crumb-neighborhood')).toHaveTextContent('Neighborhood NBHD-R1 · Reval 2');
   });
 
   it('renders segment crumb when a segment is selected', () => {
     const segment: CountySegmentDto = {
       segmentId: 'seg-1', segmentSetId: 'ss-1',
       name: 'NBHD-R1 · R1 · STANDARD', segmentType: 'Residential',
+      revalArea: 2,
+      buildingType: 'R1',
+      qualityGrade: 'STANDARD',
       parcelCount: 42, medianRatio: 0.95, cod: 8.1, prd: 1.01,
       stabilityScore: 82, riskScore: 22, exceptionCount: 0,
       geographyRef: 'NBHD-R1',
     };
     act(() => {
-      useCountyStudioStore.getState().drillToNeighborhood('Richland', 'NBHD-R1');
+      useCountyStudioStore.getState().drillToNeighborhood('Richland', 'NBHD-R1', 2);
       useCountyStudioStore.getState().setSegments([segment]);
       useCountyStudioStore.getState().selectSegment('seg-1');
     });
     render(<DrillBreadcrumb />);
-    expect(screen.getByTestId('crumb-segment')).toHaveTextContent('NBHD-R1 · R1 · STANDARD');
+    expect(screen.getByTestId('crumb-segment')).toHaveTextContent('Neighborhood NBHD-R1 · Reval 2');
   });
 
   it('clicking County crumb collapses drill', () => {
     act(() => {
-      useCountyStudioStore.getState().drillToNeighborhood('Richland', 'NBHD-R1');
+      useCountyStudioStore.getState().drillToNeighborhood('Richland', 'NBHD-R1', 2);
     });
     render(<DrillBreadcrumb />);
     fireEvent.click(screen.getByTestId('crumb-county'));
@@ -70,7 +73,7 @@ describe('DrillBreadcrumb', () => {
 
   it('clicking City crumb collapses to city (clearing neighborhood)', () => {
     act(() => {
-      useCountyStudioStore.getState().drillToNeighborhood('Kennewick', 'NBHD-K1');
+      useCountyStudioStore.getState().drillToNeighborhood('Kennewick', 'NBHD-K1', 5);
     });
     render(<DrillBreadcrumb />);
     fireEvent.click(screen.getByTestId('crumb-city'));
@@ -78,5 +81,6 @@ describe('DrillBreadcrumb', () => {
     expect(s.drillLevel).toBe('city');
     expect(s.selectedCity).toBe('Kennewick');
     expect(s.selectedNeighborhood).toBeNull();
+    expect(s.selectedNeighborhoodRevalArea).toBeNull();
   });
 });

@@ -18,12 +18,13 @@
  * (that panel is where stratum selection becomes visible).
  */
 
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense, useLayoutEffect } from 'react';
 import activateModule from '@/orchestration/moduleActivation';
 import { useSalesForgeStore } from './salesForgeStore';
 import { RunningStatsPanel } from './components/RunningStatsPanel';
 import type { SalesForgeTab } from './salesForgeTypes';
 import { isWashingtonLaunchDataEnabled, WASHINGTON_COUNTIES } from './washingtonLaunchApi';
+import { parseRollupHandoff } from '../shared/rollupHandoff';
 import './SalesForge.css';
 
 const QualificationQueuePanel = lazy(() =>
@@ -103,34 +104,37 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   const setTaxYear        = useSalesForgeStore((s) => s.setTaxYear);
   const setSelectedStratum = useSalesForgeStore((s) => s.setSelectedStratumKey);
   const setContextSegment = useSalesForgeStore((s) => s.setContextSegment);
+  const applyCountyStudioScope = useSalesForgeStore((s) => s.applyCountyStudioScope);
   const contextSegmentId    = useSalesForgeStore((s) => s.contextSegmentId);
   const contextSegmentLabel = useSalesForgeStore((s) => s.contextSegmentLabel);
   const committedFilters = useSalesForgeStore((s) => s.committedFilters);
   const launchDataMode = isWashingtonLaunchDataEnabled();
+  const handoff = parseRollupHandoff(metadata);
   const selectedCounty = WASHINGTON_COUNTIES.find((county) => county.code === committedFilters.countyCode);
 
-  // ── Consume County Studio handoff metadata on mount ────────────────────
-  // Runs exactly once per mount so store state isn't re-clobbered on rerender.
-  useEffect(() => {
+  // ── Consume County Studio handoff metadata before child fetch effects ───
+  useLayoutEffect(() => {
     if (!metadata) return;
     const parsed = parseDeeplinkQuery(metadata.deeplinkQuery);
+    const stratum = handoff.stratumKey ?? parsed.stratum ?? null;
+    const year = handoff.taxYear ?? parsed.year ?? null;
+    const segmentId = handoff.segmentId ?? parsed.segmentId ?? null;
+    const label = handoff.segmentLabel;
 
-    const stratumFromMeta = typeof metadata.stratumKey === 'string' ? metadata.stratumKey : null;
-    const stratum = stratumFromMeta ?? parsed.stratum ?? null;
-
-    const yearFromMeta = typeof metadata.taxYear === 'number' ? metadata.taxYear : null;
-    const year = yearFromMeta ?? parsed.year ?? null;
-
-    const segmentFromMeta = typeof metadata.segmentId === 'string' ? metadata.segmentId : null;
-    const segmentId = segmentFromMeta ?? parsed.segmentId ?? null;
-
-    const label = typeof metadata.segmentLabel === 'string' ? metadata.segmentLabel : null;
+    if (handoff.countyCode) {
+      applyCountyStudioScope(
+        handoff.countyCode,
+        handoff.rollupScope === 'neighborhood' ? handoff.neighborhoodCode : null,
+      );
+    }
 
     if (stratum) {
       setSelectedStratum(stratum);
-      // Land on AI AUDIT so stratum selection becomes visible — that's where
-      // the Inspector's "reconcile sales" reader goes next.
       setActiveTab('ai-audit');
+    } else if (handoff.rollupScope === 'neighborhood' && handoff.neighborhoodCode) {
+      setActiveTab('neighborhoods');
+    } else if (handoff.rollupScope === 'city') {
+      setActiveTab('queue');
     }
     if (year !== null) {
       setTaxYear(year);
@@ -138,8 +142,21 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
     if (segmentId) {
       setContextSegment(segmentId, label);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [
+    applyCountyStudioScope,
+    handoff.countyCode,
+    handoff.neighborhoodCode,
+    handoff.rollupScope,
+    handoff.segmentId,
+    handoff.segmentLabel,
+    handoff.stratumKey,
+    handoff.taxYear,
+    metadata,
+    setActiveTab,
+    setContextSegment,
+    setSelectedStratum,
+    setTaxYear,
+  ]);
 
   const handleBackToCountyStudio = () => {
     // Re-open County Studio via the canonical activation pipeline so the
@@ -181,13 +198,35 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
                 ← From County Studio · Segment {contextSegmentLabel ?? contextSegmentId}
               </button>
             )}
+            {handoff.rollupScope === 'city' && handoff.city && (
+              <span className="forge-chip forge-chip--neutral">
+                City overview · {handoff.city}
+              </span>
+            )}
+            {handoff.rollupScope === 'neighborhood' && handoff.neighborhoodCode && (
+              <span className="forge-chip forge-chip--neutral">
+                Neighborhood · {handoff.neighborhoodName ?? handoff.neighborhoodCode}
+                {handoff.revalArea !== null ? ` · Reval ${handoff.revalArea}` : ''}
+              </span>
+            )}
             <span className="forge-chip forge-chip--neutral">{taxYear} study year</span>
-            <span className="forge-chip forge-chip--neutral">{selectedCounty?.name ?? 'Benton'} County</span>
+            <span className="forge-chip forge-chip--neutral">{selectedCounty?.name ?? handoff.countyName ?? 'County scope required'} County</span>
             <span className="forge-chip forge-chip--success">
               {launchDataMode ? 'Washington launch data package' : 'Live TerraFusion API'}
             </span>
           </div>
         </div>
+        {handoff.rollupScope === 'city' && handoff.city && (
+          <p className="sf-header__source-note">
+            County Studio handed off a city overview for {handoff.city}. Counties actually qualify and defend sales by reval area and neighborhood, so city scope remains triage-only until you narrow below the city rollup.
+          </p>
+        )}
+        {handoff.rollupScope === 'neighborhood' && handoff.neighborhoodCode && (
+          <p className="sf-header__source-note">
+            County Studio handed off neighborhood {handoff.neighborhoodName ?? handoff.neighborhoodCode}
+            {handoff.revalArea !== null ? ` in reval ${handoff.revalArea}` : ''}. SalesForge is pinned to that county and neighborhood because counties track reval area and neighborhood before parcel-level action.
+          </p>
+        )}
         {launchDataMode && (
           <p className="sf-header__source-note">
             Hosted preview reads the Prometheus Washington data package: 39 counties, TerraFusion neighborhood codes, and provenance-bearing sale records.

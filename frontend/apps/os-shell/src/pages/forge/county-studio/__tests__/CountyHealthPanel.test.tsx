@@ -44,6 +44,7 @@ const alert = (
   segmentId: 'seg-1',
   segmentName: 'NBHD-K1 · R1 · GOOD',
   neighborhoodCode: 'NBHD-K1',
+  revalArea: 2,
   city: 'Kennewick',
   parcelCount: 120,
   medianRatio: 0.88,
@@ -179,7 +180,31 @@ describe('CountyHealthPanel', () => {
     expect(s.drillLevel).toBe('neighborhood');
     expect(s.selectedCity).toBe('Richland');
     expect(s.selectedNeighborhood).toBe('NBHD-R1');
+    expect(s.selectedNeighborhoodRevalArea).toBe(2);
     expect(s.selectedSegmentId).toBe('s2');
+  });
+
+  it('does not render raw building tokens as if they were segment identity in top alerts', () => {
+    act(() => {
+      useCountyStudioStore.getState().setHealthSummary(
+        summary({
+          topAlerts: [
+            alert({
+              segmentId: 'dirty-1',
+              segmentName: '63000 · C · UNKNOWN',
+              neighborhoodCode: '63000',
+              buildingType: 'C',
+              qualityGrade: 'UNKNOWN',
+            }),
+          ],
+        }),
+      );
+      useCountyStudioStore.getState().setLoadStatus('healthSummary', 'success');
+    });
+
+    render(<CountyHealthPanel />);
+    expect(screen.getByText((content) => content.includes('Neighborhood 63000'))).toBeInTheDocument();
+    expect(screen.queryByText(/^C$/)).not.toBeInTheDocument();
   });
 
   it('severity bars show Critical / Warning / Healthy counts', () => {

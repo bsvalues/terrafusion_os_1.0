@@ -60,8 +60,8 @@ function CompareTab() {
 
   if (!scenarioPreview || scenarioPreview.deltas.length === 0) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'hsl(var(--tf-muted))', fontSize: 12 }}>
-        No active scenario preview — save a scenario to compare.
+      <div data-testid="compare-tab-empty" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'hsl(var(--tf-muted))', fontSize: 12, textAlign: 'center', padding: 16 }}>
+        No active scenario preview — open the Scenario tab and preview impact to populate before/after deltas.
       </div>
     );
   }

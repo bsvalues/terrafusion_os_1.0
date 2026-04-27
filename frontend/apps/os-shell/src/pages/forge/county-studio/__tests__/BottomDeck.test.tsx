@@ -60,6 +60,12 @@ describe('BottomDeck', () => {
     expect(screen.getByTestId('warnings-panel')).toBeInTheDocument();
   });
 
+  it('compare tab shows preview-first guidance when no scenario preview exists', () => {
+    render(<BottomDeck />);
+    fireEvent.click(screen.getByText('Before / After'));
+    expect(screen.getByTestId('compare-tab-empty')).toHaveTextContent(/preview impact/i);
+  });
+
   it('shows no-segments message when segments empty', () => {
     act(() => {
       useCountyStudioStore.getState().setSegments([]);

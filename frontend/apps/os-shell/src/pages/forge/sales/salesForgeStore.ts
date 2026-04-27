@@ -92,6 +92,7 @@ interface SalesForgeState {
   setSelectedStratumKey: (key: string | null) => void;
   setTaxYear: (year: number) => void;
   setContextSegment: (segmentId: string | null, label?: string | null) => void;
+  applyCountyStudioScope: (countyCode: string, hood?: string | null) => void;
   setQueueTab: (tab: QueueTab) => void;
   setQueuePage: (page: number) => void;
   setFilterForm: (form: Partial<FilterForm>) => void;
@@ -181,6 +182,31 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
 
   setContextSegment: (segmentId, label = null) =>
     set({ contextSegmentId: segmentId, contextSegmentLabel: label }),
+
+  applyCountyStudioScope: (countyCode, hood = null) =>
+    set({
+      filterForm: {
+        ...EMPTY_FILTER_FORM,
+        countyCode,
+        hood: hood ?? '',
+      },
+      committedFilters: {
+        ...EMPTY_COMMITTED,
+        countyCode,
+        hood,
+      },
+      queuePage: 1,
+      queueData: null,
+      queueError: null,
+      saleDetail: null,
+      detailError: null,
+      runningStats: null,
+      statsError: null,
+      hoodStats: null,
+      hoodStatsError: null,
+      codeAudit: null,
+      codeAuditError: null,
+    }),
 
   setQueueTab: (tab) =>
     set({ queueTab: tab, queuePage: 1, queueData: null, queueError: null }),

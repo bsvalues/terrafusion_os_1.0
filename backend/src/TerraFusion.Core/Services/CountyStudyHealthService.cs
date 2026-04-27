@@ -216,6 +216,7 @@ public class CountyStudyHealthService : ICountyStudyHealthService
     private static HealthAlertDto BuildSegmentAlert(
         CountySegment seg, Dictionary<Guid, string> segmentCityMap)
     {
+        var metadata = CountySegmentMetadataSupport.Parse(seg.RuleDefinition, seg.GeographyRef);
         var (risk, reasons) = ComputeCompositeRisk(
             cod: seg.CoefficientOfDispersion,
             median: seg.MedianRatio,
@@ -228,7 +229,10 @@ public class CountyStudyHealthService : ICountyStudyHealthService
         return new HealthAlertDto(
             SegmentId: seg.SegmentId,
             SegmentName: seg.Name,
-            NeighborhoodCode: seg.GeographyRef,
+            NeighborhoodCode: metadata.NeighborhoodCode,
+            RevalArea: metadata.RevalArea,
+            BuildingType: metadata.BuildingType,
+            QualityGrade: metadata.QualityGrade,
             City: city,
             ParcelCount: seg.ParcelCount,
             MedianRatio: seg.MedianRatio,

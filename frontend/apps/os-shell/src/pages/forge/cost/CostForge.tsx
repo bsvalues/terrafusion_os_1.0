@@ -14,8 +14,9 @@
  *   segmentId:     string — drives the "Scoped From" chip.
  *   segmentLabel:  string — human label for the chip.
  */
-import React, { Suspense, useEffect, useRef } from 'react';
+import React, { Suspense, useEffect, useLayoutEffect, useRef } from 'react';
 import activateModule from '@/orchestration/moduleActivation';
+import { parseRollupHandoff } from '../shared/rollupHandoff';
 import './CostForge.css';
 import { getCostForgeCountyBadgeLabel } from './countyScope';
 import {
@@ -177,33 +178,48 @@ export default function CostForge({ metadata }: CostForgeProps = {}) {
   const taxYear      = useCostForgeWorkspaceStore((s) => s.taxYear);
   const setTaxYear   = useCostForgeWorkspaceStore((s) => s.setTaxYear);
   const setHandoffContext    = useCostForgeWorkspaceStore((s) => s.setHandoffContext);
+  const setSelectedHood      = useCostForgeWorkspaceStore((s) => s.setSelectedHood);
   const contextStratumKey    = useCostForgeWorkspaceStore((s) => s.contextStratumKey);
   const contextSegmentId     = useCostForgeWorkspaceStore((s) => s.contextSegmentId);
   const contextSegmentLabel  = useCostForgeWorkspaceStore((s) => s.contextSegmentLabel);
   const abortRef     = useRef<AbortController | null>(null);
+  const handoff = parseRollupHandoff(metadata);
 
-  // ── Consume County Studio handoff metadata on mount ─────────────────────
-  useEffect(() => {
+  // ── Consume County Studio handoff metadata before child fetch effects ───
+  useLayoutEffect(() => {
     if (!metadata) return;
     const parsed = parseDeeplinkQuery(metadata.deeplinkQuery);
-
-    const stratumFromMeta = typeof metadata.stratumKey === 'string' ? metadata.stratumKey : null;
-    const stratum = stratumFromMeta ?? parsed.stratum ?? null;
-
-    const yearFromMeta = typeof metadata.taxYear === 'number' ? metadata.taxYear : null;
-    const year = yearFromMeta ?? parsed.year ?? null;
-
-    const segmentFromMeta = typeof metadata.segmentId === 'string' ? metadata.segmentId : null;
-    const segmentId = segmentFromMeta ?? parsed.segmentId ?? null;
-
-    const label = typeof metadata.segmentLabel === 'string' ? metadata.segmentLabel : null;
+    const stratum = handoff.stratumKey ?? parsed.stratum ?? null;
+    const year = handoff.taxYear ?? parsed.year ?? null;
+    const segmentId = handoff.segmentId ?? parsed.segmentId ?? null;
+    const label = handoff.segmentLabel;
 
     if (year !== null) setTaxYear(year);
     if (stratum || segmentId) {
       setHandoffContext(stratum, segmentId, label);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (handoff.rollupScope === 'neighborhood' && handoff.neighborhoodCode) {
+      setSelectedHood(handoff.neighborhoodCode);
+      setActiveTab('hood-audit');
+    } else if (handoff.rollupScope === 'city') {
+      setSelectedHood(null);
+      if (!stratum && !segmentId) {
+        setActiveTab('triage');
+      }
+    }
+  }, [
+    handoff.neighborhoodCode,
+    handoff.rollupScope,
+    handoff.segmentId,
+    handoff.segmentLabel,
+    handoff.stratumKey,
+    handoff.taxYear,
+    metadata,
+    setActiveTab,
+    setHandoffContext,
+    setSelectedHood,
+    setTaxYear,
+  ]);
 
   useEffect(() => {
     abortRef.current = new AbortController();
@@ -251,6 +267,15 @@ export default function CostForge({ metadata }: CostForgeProps = {}) {
                 {contextStratumKey ? ` · Stratum ${contextStratumKey}` : ''}
               </button>
             )}
+            {handoff.rollupScope === 'city' && handoff.city && (
+              <span className="forge-chip">City overview · {handoff.city}</span>
+            )}
+            {handoff.rollupScope === 'neighborhood' && handoff.neighborhoodCode && (
+              <span className="forge-chip">
+                Neighborhood · {handoff.neighborhoodName ?? handoff.neighborhoodCode}
+                {handoff.revalArea !== null ? ` · Reval ${handoff.revalArea}` : ''}
+              </span>
+            )}
             {/* Tax year selector */}
             <select
               value={taxYear}
@@ -274,6 +299,29 @@ export default function CostForge({ metadata }: CostForgeProps = {}) {
             <span className="forge-chip">{countyBadgeLabel}</span>
           </div>
         </div>
+        {handoff.rollupScope === 'city' && handoff.city && (
+          <div
+            style={{
+              padding: '6px 0 2px',
+              fontSize: '0.75rem',
+              color: 'var(--cf-muted)',
+            }}
+          >
+            City scope from County Studio is triage-only. Counties actually calibrate by reval area and neighborhood, so CostForge stays in the county neighborhood matrix until you drill below the city rollup.
+          </div>
+        )}
+        {handoff.rollupScope === 'neighborhood' && handoff.neighborhoodCode && (
+          <div
+            style={{
+              padding: '6px 0 2px',
+              fontSize: '0.75rem',
+              color: 'var(--cf-muted)',
+            }}
+          >
+            County Studio handed off neighborhood {handoff.neighborhoodName ?? handoff.neighborhoodCode}
+            {handoff.revalArea !== null ? ` in reval ${handoff.revalArea}` : ''}. CostForge opens directly into hood audit because neighborhood and reval area are the operative county cost segments.
+          </div>
+        )}
         <nav className="cf-tabbar" role="tablist" aria-label="CostForge tabs">
           {TABS.map((tab) => (
             <button

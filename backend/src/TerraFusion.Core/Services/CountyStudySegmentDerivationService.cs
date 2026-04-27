@@ -7,6 +7,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Entities.Pacs;
 using TerraFusion.Core.Interfaces;
 
 namespace TerraFusion.Core.Services;
@@ -40,7 +41,7 @@ public class CountyStudySegmentDerivationService : ICountyStudySegmentDerivation
 
         // ── Step 1: Load parcel-level data for the study's county + tax year ──
         // Left-join CamaCharacteristics so parcels without CAMA still group under UNKNOWN.
-        var parcels = await (
+        var canonicalParcels = await (
             from p in _db.Properties.AsNoTracking()
             where p.CountyId == countyId && p.TaxYear == taxYear
             join c in _db.CamaCharacteristics.AsNoTracking()
@@ -48,12 +49,60 @@ public class CountyStudySegmentDerivationService : ICountyStudySegmentDerivation
             from c in cj.DefaultIfEmpty()
             select new
             {
+                p.PropertyId,
                 p.ParcelId,
                 p.AssessedValue,
                 Neighborhood = p.Neighborhood,
                 BuildingType = c != null ? c.BuildingType : null,
                 QualityGrade = c != null ? c.QualityGrade : null,
             }).ToListAsync(ct);
+
+        // Benton PACS reval/cycle is keyed by PacsPropId, not canonical ParcelId (GeoId string).
+        // Resolve the optional Benton metadata separately so counties without PACS still
+        // derive cleanly and reval only comes from its authoritative cycle field.
+        var pacsPropIds = canonicalParcels
+            .Select(p => int.TryParse(p.PropertyId, out var pacsPropId) ? pacsPropId : (int?)null)
+            .Where(pacsPropId => pacsPropId.HasValue)
+            .Select(pacsPropId => pacsPropId!.Value)
+            .Distinct()
+            .ToList();
+
+        var pacsMetadataByPropId = pacsPropIds.Count == 0
+            ? new Dictionary<int, (string? NeighborhoodCode, int? Cycle)>()
+            : await _db.Set<PacsValuation>()
+                .AsNoTracking()
+                .Where(v => v.SupNum == 0 && v.PropValYear == taxYear && pacsPropIds.Contains(v.PacsPropId))
+                .Select(v => new
+                {
+                    v.PacsPropId,
+                    v.NeighborhoodCode,
+                    v.Cycle,
+                })
+                .ToDictionaryAsync(
+                    v => v.PacsPropId,
+                    v => (v.NeighborhoodCode, v.Cycle),
+                    ct);
+
+        var parcels = canonicalParcels
+            .Select(p =>
+            {
+                var pacsPropId = int.TryParse(p.PropertyId, out var parsed) ? parsed : (int?)null;
+                var pacsMetadata = pacsPropId.HasValue && pacsMetadataByPropId.TryGetValue(pacsPropId.Value, out var metadata)
+                    ? metadata
+                    : default;
+                return new
+                {
+                    p.ParcelId,
+                    p.AssessedValue,
+                    Neighborhood = !string.IsNullOrWhiteSpace(pacsMetadata.NeighborhoodCode)
+                        ? pacsMetadata.NeighborhoodCode
+                        : p.Neighborhood,
+                    Cycle = pacsMetadata.Cycle,
+                    p.BuildingType,
+                    p.QualityGrade,
+                };
+            })
+            .ToList();
 
         // ── Step 2: Load qualified sales for ratio stats ──
         // Use the two-year window common to the ratio-study endpoint. Ratio is
@@ -77,9 +126,10 @@ public class CountyStudySegmentDerivationService : ICountyStudySegmentDerivation
         var groups = parcels
             .GroupBy(p => new
             {
-                Neighborhood = string.IsNullOrWhiteSpace(p.Neighborhood) ? "UNKNOWN" : p.Neighborhood!,
-                BuildingType = string.IsNullOrWhiteSpace(p.BuildingType) ? "UNKNOWN" : p.BuildingType!,
-                QualityGrade = string.IsNullOrWhiteSpace(p.QualityGrade) ? "UNKNOWN" : p.QualityGrade!,
+                Neighborhood = CountySegmentMetadataSupport.NormalizeToken(p.Neighborhood),
+                RevalArea = CountySegmentMetadataSupport.NormalizeRevalArea(p.Cycle),
+                BuildingType = CountySegmentMetadataSupport.NormalizeToken(p.BuildingType),
+                QualityGrade = CountySegmentMetadataSupport.NormalizeToken(p.QualityGrade),
             })
             .ToList();
 
@@ -189,12 +239,11 @@ public class CountyStudySegmentDerivationService : ICountyStudySegmentDerivation
                 Name                    = $"{group.Key.Neighborhood} · {group.Key.BuildingType} · {group.Key.QualityGrade}",
                 SegmentType             = MapSegmentType(group.Key.BuildingType),
                 GeographyRef            = group.Key.Neighborhood,
-                RuleDefinition = System.Text.Json.JsonSerializer.Serialize(new
-                {
-                    neighborhood = group.Key.Neighborhood,
-                    buildingType = group.Key.BuildingType,
-                    qualityGrade = group.Key.QualityGrade,
-                }),
+                RuleDefinition          = CountySegmentMetadataSupport.SerializeRuleDefinition(
+                    group.Key.Neighborhood,
+                    group.Key.BuildingType,
+                    group.Key.QualityGrade,
+                    group.Key.RevalArea),
                 ParcelCount             = members.Count,
                 MedianRatio             = medianRatio.HasValue ? Math.Round(medianRatio.Value, 4) : null,
                 CoefficientOfDispersion = cod.HasValue         ? Math.Round(cod.Value,         2) : null,

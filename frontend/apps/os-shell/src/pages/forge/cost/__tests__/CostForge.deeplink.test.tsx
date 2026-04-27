@@ -42,6 +42,7 @@ function resetStore() {
     s.setActiveTab('triage');
     s.setTaxYear(2026);
     s.setHandoffContext(null, null, null);
+    s.setSelectedHood(null);
   });
 }
 
@@ -96,6 +97,49 @@ describe('CostForge — County Studio deeplink consumption (Task D2)', () => {
     expect(s.contextSegmentId).toBe('seg-7');
     const chip = screen.getByTestId('cf-scoped-from-chip');
     expect(chip.textContent).toMatch(/seg-7/);
+  });
+
+  it('drills neighborhood rollups directly into hood audit', () => {
+    render(
+      <CostForge
+        metadata={{
+          countyName: 'Benton County',
+          taxYear: 2026,
+          rollupScope: 'neighborhood',
+          neighborhoodCode: 'NBHD-K1',
+          neighborhoodName: 'Kennewick Core',
+        }}
+      />
+    );
+
+    const s = useCostForgeWorkspaceStore.getState();
+    expect(s.selectedHoodCd).toBe('NBHD-K1');
+    expect(s.activeTab).toBe('hood-audit');
+    expect(screen.getAllByText(/Kennewick Core/).length).toBeGreaterThan(0);
+    expect(
+      screen.getByText(/neighborhood and reval area are the operative county cost segments/i),
+    ).toBeInTheDocument();
+  });
+
+  it('keeps city overview handoffs in triage mode', () => {
+    render(
+      <CostForge
+        metadata={{
+          countyName: 'Benton County',
+          taxYear: 2026,
+          rollupScope: 'city',
+          city: 'Kennewick',
+        }}
+      />
+    );
+
+    const s = useCostForgeWorkspaceStore.getState();
+    expect(s.selectedHoodCd).toBeNull();
+    expect(s.activeTab).toBe('triage');
+    expect(screen.getByText(/City overview · Kennewick/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/counties actually calibrate by reval area and neighborhood/i),
+    ).toBeInTheDocument();
   });
 
   it('Scoped From chip click fires activateModule("county-studio") with segmentId', () => {

@@ -1,9 +1,4 @@
-// Applies projection overlays from atlasLiveStore onto the Mapbox GL JS map.
-// No DOM output — purely side-effectful.
-// Write-lane law: reads overlays from store (placed by useAtlasLiveHub) and PAINTS them.
-// Never writes to TerraFusionDbContext or emits commits.
-
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAtlasLiveStore } from '@/stores/atlasLiveStore';
 
 function ratioToColor(ratio: number): string {
@@ -21,60 +16,92 @@ function deltaToColor(deltaPercent: number): string {
   return '#3b82f6';
 }
 
+type AtlasMapFeatureTarget = {
+  source: string;
+  id: string;
+};
+
+type AtlasMapHandle = {
+  setFeatureState: (target: AtlasMapFeatureTarget, state: Record<string, unknown>) => void;
+  removeFeatureState?: (target: AtlasMapFeatureTarget) => void;
+  isStyleLoaded?: () => boolean;
+};
+
 interface Props {
   map: unknown | null;
 }
 
+function applyColorForOverlayValue(overlayType: string, value: number, styleHints: Record<string, unknown>, explicitColor?: string): string {
+  if (explicitColor) return explicitColor;
+
+  switch (overlayType) {
+    case 'scenario-delta':
+      return deltaToColor(value);
+    case 'cohort-shade':
+      return typeof styleHints.fillColor === 'string' ? styleHints.fillColor : '#22c55e';
+    case 'edge-warnings':
+      return value >= 3 ? '#ef4444' : value >= 2 ? '#f59e0b' : '#facc15';
+    case 'metric-overlay':
+    default:
+      return ratioToColor(value);
+  }
+}
+
 export function AtlasOverlayManager({ map }: Props) {
   const { activeOverlays } = useAtlasLiveStore();
+  const previousParcelIdsRef = useRef<string[]>([]);
 
   useEffect(() => {
-    if (!map) return;
+    const atlasMap = map as AtlasMapHandle | null;
+    if (!atlasMap) return;
+    if (atlasMap.isStyleLoaded && !atlasMap.isStyleLoaded()) return;
 
-    activeOverlays.forEach((overlay) => {
-      if (overlay.type === 'metric-overlay') {
-        const features = overlay.values
-          .filter((v) => v.parcelId != null)
-          .map((v) => ({
-            parcelId: v.parcelId,
-            value: v.value,
-            color: v.color ?? ratioToColor(v.value),
-          }));
-
-        if (typeof window !== 'undefined') {
-          (window as Record<string, unknown>)[`__atlas_overlay_${overlay.id}`] = features;
+    previousParcelIdsRef.current.forEach((parcelId) => {
+      const target = { source: 'parcels', id: parcelId };
+      try {
+        if (atlasMap.removeFeatureState) {
+          atlasMap.removeFeatureState(target);
+        } else {
+          atlasMap.setFeatureState(target, {
+            atlasOverlayActive: false,
+            atlasColor: null,
+          });
         }
-      }
-
-      if (overlay.type === 'scenario-delta') {
-        const deltaMap: Record<string, string> = {};
-        overlay.values.forEach((v) => {
-          if (v.parcelId) deltaMap[v.parcelId] = deltaToColor(v.value);
-        });
-        if (typeof window !== 'undefined') {
-          (window as Record<string, unknown>)[`__atlas_overlay_${overlay.id}`] = deltaMap;
-        }
-      }
-
-      if (overlay.type === 'cohort-shade') {
-        const parcelSet = new Set(overlay.values.map((v) => v.parcelId).filter(Boolean));
-        if (typeof window !== 'undefined') {
-          (window as Record<string, unknown>)[`__atlas_overlay_${overlay.id}`] = parcelSet;
-        }
+      } catch {
+        // Source may not be ready yet; Atlas Live will retry on the next render.
       }
     });
 
-    if (typeof window !== 'undefined') {
-      const activeIds = new Set(activeOverlays.map((o) => o.id));
-      Object.keys(window)
-        .filter((k) => k.startsWith('__atlas_overlay_'))
-        .forEach((k) => {
-          const id = k.replace('__atlas_overlay_', '');
-          if (!activeIds.has(id)) {
-            delete (window as Record<string, unknown>)[k];
-          }
-        });
+    const latestOverlay = activeOverlays[activeOverlays.length - 1];
+    if (!latestOverlay) {
+      previousParcelIdsRef.current = [];
+      return;
     }
+
+    const nextParcelIds: string[] = [];
+
+    latestOverlay.values.forEach((value) => {
+      if (!value.parcelId) return;
+      nextParcelIds.push(value.parcelId);
+      try {
+        atlasMap.setFeatureState(
+          { source: 'parcels', id: value.parcelId },
+          {
+            atlasOverlayActive: true,
+            atlasColor: applyColorForOverlayValue(
+              latestOverlay.type,
+              value.value,
+              latestOverlay.styleHints,
+              value.color,
+            ),
+          },
+        );
+      } catch {
+        // Source may not be ready yet; Atlas Live will retry on the next render.
+      }
+    });
+
+    previousParcelIdsRef.current = nextParcelIds;
   }, [activeOverlays, map]);
 
   return null;

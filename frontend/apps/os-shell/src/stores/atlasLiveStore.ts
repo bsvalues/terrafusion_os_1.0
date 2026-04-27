@@ -4,6 +4,11 @@ import type { AtlasSyncState, SelectionTool, ActiveOverlay } from '../pages/forg
 
 export interface AtlasLiveState {
   studyId: string | null;
+  countyId: string | null;
+  countyName: string | null;
+  countyCode: string | null;
+  segmentId: string | null;
+  neighborhoodCode: string | null;
   syncState: AtlasSyncState;
   activeTool: SelectionTool;
   lassoActive: boolean;
@@ -12,6 +17,13 @@ export interface AtlasLiveState {
   zoom: number;
 
   setStudyId: (studyId: string | null) => void;
+  setCountyScope: (scope: {
+    countyId?: string | null;
+    countyName?: string | null;
+    countyCode?: string | null;
+    segmentId?: string | null;
+    neighborhoodCode?: string | null;
+  }) => void;
   setSyncState: (state: AtlasSyncState) => void;
   setActiveTool: (tool: SelectionTool) => void;
   setLassoActive: (active: boolean) => void;
@@ -25,6 +37,11 @@ export const useAtlasLiveStore = create<AtlasLiveState>()(
   devtools(
     (set) => ({
       studyId: null,
+      countyId: null,
+      countyName: null,
+      countyCode: null,
+      segmentId: null,
+      neighborhoodCode: null,
       syncState: 'DISCONNECTED',
       activeTool: 'none',
       lassoActive: false,
@@ -33,6 +50,18 @@ export const useAtlasLiveStore = create<AtlasLiveState>()(
       zoom: 10,
 
       setStudyId: (studyId) => set({ studyId }, false, 'setStudyId'),
+      setCountyScope: (scope) =>
+        set(
+          {
+            countyId: scope.countyId ?? null,
+            countyName: scope.countyName ?? null,
+            countyCode: scope.countyCode ?? null,
+            segmentId: scope.segmentId ?? null,
+            neighborhoodCode: scope.neighborhoodCode ?? null,
+          },
+          false,
+          'setCountyScope'
+        ),
       setSyncState: (syncState) => set({ syncState }, false, 'setSyncState'),
       setActiveTool: (activeTool) => set({ activeTool }, false, 'setActiveTool'),
       setLassoActive: (lassoActive) => set({ lassoActive }, false, 'setLassoActive'),

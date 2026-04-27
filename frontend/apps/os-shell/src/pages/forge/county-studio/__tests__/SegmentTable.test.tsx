@@ -9,7 +9,7 @@ const MOCK_SEGMENTS: CountySegmentDto[] = [
   {
     segmentId: 's1',
     segmentSetId: 'ss1',
-    name: 'West Richland R1',
+    name: 'NBHD-WR1 · R1 · STANDARD',
     segmentType: 'Residential',
     parcelCount: 412,
     medianRatio: 0.97,
@@ -18,12 +18,12 @@ const MOCK_SEGMENTS: CountySegmentDto[] = [
     stabilityScore: 72,
     riskScore: 35,
     exceptionCount: 8,
-    geographyRef: null,
+    geographyRef: 'NBHD-WR1',
   },
   {
     segmentId: 's2',
     segmentSetId: 'ss1',
-    name: 'Kennewick C1',
+    name: 'NBHD-KC1 · C1 · COMM',
     segmentType: 'Commercial',
     parcelCount: 89,
     medianRatio: 0.84,
@@ -32,13 +32,14 @@ const MOCK_SEGMENTS: CountySegmentDto[] = [
     stabilityScore: 48,
     riskScore: 78,
     exceptionCount: 22,
-    geographyRef: null,
+    geographyRef: 'NBHD-KC1',
   },
 ];
 
 describe('SegmentTable', () => {
   beforeEach(() => {
     act(() => {
+      useCountyStudioStore.getState().setStudy(null);
       useCountyStudioStore.getState().setSegments(MOCK_SEGMENTS);
       useCountyStudioStore.getState().selectSegment(null);
     });
@@ -46,8 +47,10 @@ describe('SegmentTable', () => {
 
   it('renders one row per segment', () => {
     render(<SegmentTable />);
-    expect(screen.getByText('West Richland R1')).toBeInTheDocument();
-    expect(screen.getByText('Kennewick C1')).toBeInTheDocument();
+    expect(screen.getByText('Neighborhood NBHD-WR1')).toBeInTheDocument();
+    expect(screen.getByText('Neighborhood NBHD-KC1')).toBeInTheDocument();
+    expect(screen.getByText('Residential · R1 · STANDARD')).toBeInTheDocument();
+    expect(screen.getByText('Commercial · C1 · COMM')).toBeInTheDocument();
   });
 
   it('renders column headers', () => {
@@ -61,7 +64,7 @@ describe('SegmentTable', () => {
 
   it('selecting a row calls selectSegment in the store', () => {
     render(<SegmentTable />);
-    fireEvent.click(screen.getByText('West Richland R1'));
+    fireEvent.click(screen.getByText('Neighborhood NBHD-WR1'));
     expect(useCountyStudioStore.getState().selectedSegmentId).toBe('s1');
   });
 
@@ -81,16 +84,37 @@ describe('SegmentTable', () => {
     expect(screen.getByText(/no segments loaded/i)).toBeInTheDocument();
   });
 
+  it('shows derive-first guidance when a study is open but no segment set is active yet', () => {
+    act(() => {
+      useCountyStudioStore.getState().setStudy({
+        studyId: 'study-1',
+        countyId: 'benton',
+        taxYear: 2026,
+        studyType: 'RatioStudy',
+        status: 'Active',
+        baselineVersion: null,
+        activeSegmentSetId: null,
+        createdAt: '',
+        updatedAt: '',
+        createdBy: 'test',
+        updatedBy: 'test',
+      });
+      useCountyStudioStore.getState().setSegments([]);
+    });
+    render(<SegmentTable />);
+    expect(screen.getByTestId('segment-table-empty-derive')).toHaveTextContent(/derive segment metrics/i);
+  });
+
   it('filter prop hides non-matching segments', () => {
     render(<SegmentTable filter={(s) => s.riskScore > 50} />);
-    // s2 (Kennewick C1) has riskScore 78, s1 (West Richland R1) has 35
-    expect(screen.queryByText('West Richland R1')).not.toBeInTheDocument();
-    expect(screen.getByText('Kennewick C1')).toBeInTheDocument();
+    // s2 has riskScore 78, s1 has 35
+    expect(screen.queryByText('Neighborhood NBHD-WR1')).not.toBeInTheDocument();
+    expect(screen.getByText('Neighborhood NBHD-KC1')).toBeInTheDocument();
   });
 
   it('shows all segments when no filter is provided', () => {
     render(<SegmentTable />);
-    expect(screen.getByText('West Richland R1')).toBeInTheDocument();
-    expect(screen.getByText('Kennewick C1')).toBeInTheDocument();
+    expect(screen.getByText('Neighborhood NBHD-WR1')).toBeInTheDocument();
+    expect(screen.getByText('Neighborhood NBHD-KC1')).toBeInTheDocument();
   });
 });

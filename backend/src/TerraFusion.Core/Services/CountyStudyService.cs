@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Entities.Pacs;
 using TerraFusion.Core.Interfaces;
 
 namespace TerraFusion.Core.Services;
@@ -774,6 +775,9 @@ public class CountyStudyService : ICountyStudyService
                 .Where(s => s.MedianRatio.HasValue)
                 .OrderByDescending(s => Math.Abs(s.MedianRatio!.Value - 1.0m))
                 .FirstOrDefault();
+            var worstSegMetadata = worstSeg is null
+                ? null
+                : CountySegmentMetadataSupport.Parse(worstSeg.RuleDefinition, worstSeg.GeographyRef);
 
             var compliance = ClassifyCompliance(medianRatio, cod, prd);
 
@@ -788,6 +792,10 @@ public class CountyStudyService : ICountyStudyService
                 ExceptionRate: exceptionRate,
                 WorstSegmentName: worstSeg?.Name,
                 WorstSegmentMedianRatio: worstSeg?.MedianRatio,
+                WorstSegmentNeighborhoodCode: worstSegMetadata?.NeighborhoodCode,
+                WorstSegmentRevalArea: worstSegMetadata?.RevalArea,
+                WorstSegmentBuildingType: worstSegMetadata?.BuildingType,
+                WorstSegmentQualityGrade: worstSegMetadata?.QualityGrade,
                 ComplianceStatus: compliance.ToString()));
         }
 
@@ -809,16 +817,23 @@ public class CountyStudyService : ICountyStudyService
                 .ToList();
         }
 
-        // Group segments by neighborhood (GeographyRef).
+        // Group segments by neighborhood + reval area so Benton hood/cycle
+        // combinations stay distinct through the rollup.
         var rows = new List<NeighborhoodRollupRowDto>();
         var byNeighborhood = segments
-            .GroupBy(s => s.GeographyRef ?? "UNKNOWN")
-            .OrderBy(g => g.Key);
+            .GroupBy(s =>
+            {
+                var metadata = CountySegmentMetadataSupport.Parse(s.RuleDefinition, s.GeographyRef);
+                return (NeighborhoodCode: metadata.NeighborhoodCode, RevalArea: metadata.RevalArea);
+            })
+            .OrderBy(g => g.Key.NeighborhoodCode)
+            .ThenBy(g => g.Key.RevalArea ?? int.MaxValue);
 
         foreach (var group in byNeighborhood)
         {
             var segsInHood = group.ToList();
-            var hoodCode = group.Key;
+            var hoodCode = group.Key.NeighborhoodCode;
+            var revalArea = group.Key.RevalArea;
 
             // Neighborhood's city = modal city among its segments.
             var hoodCity = segsInHood
@@ -829,7 +844,7 @@ public class CountyStudyService : ICountyStudyService
                 .First().Key;
 
             var parcelRows = perParcel
-                .Where(p => p.NeighborhoodCode == hoodCode)
+                .Where(p => p.NeighborhoodCode == hoodCode && p.RevalArea == revalArea)
                 .ToList();
 
             int parcelCount = segsInHood.Sum(s => s.ParcelCount);
@@ -861,6 +876,7 @@ public class CountyStudyService : ICountyStudyService
                 NeighborhoodCode: hoodCode,
                 NeighborhoodName: hoodCode,      // no human name dictionary available yet
                 City: hoodCity,
+                RevalArea: revalArea,
                 SegmentCount: segsInHood.Count,
                 ParcelCount: parcelCount,
                 MedianRatio: medianRatio.HasValue ? Math.Round(medianRatio.Value, 4) : null,
@@ -886,6 +902,7 @@ public class CountyStudyService : ICountyStudyService
     private record RollupParcelRow(
         string ParcelId,
         string NeighborhoodCode,
+        int? RevalArea,
         string BuildingType,
         string QualityGrade,
         decimal AssessedValue,
@@ -914,22 +931,11 @@ public class CountyStudyService : ICountyStudyService
             .Where(s => s.SegmentSetId == setId)
             .ToListAsync();
 
-        // Collect every (neighborhood × buildingType × qualityGrade) grouping
-        // key in the set so we can resolve parcels in a single scan.
-        var groupKeys = new HashSet<(string Hood, string BldgType, string Quality)>();
+        var groupKeys = new HashSet<(string Hood, int? RevalArea, string BldgType, string Quality)>();
         foreach (var seg in segments)
         {
-            if (string.IsNullOrWhiteSpace(seg.RuleDefinition)) continue;
-            try
-            {
-                var rule = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(seg.RuleDefinition);
-                if (rule == null) continue;
-                var hood = rule.TryGetValue("neighborhood", out var h) && h.ValueKind == JsonValueKind.String ? (h.GetString() ?? "UNKNOWN") : "UNKNOWN";
-                var bldg = rule.TryGetValue("buildingType", out var b) && b.ValueKind == JsonValueKind.String ? (b.GetString() ?? "UNKNOWN") : "UNKNOWN";
-                var qual = rule.TryGetValue("qualityGrade", out var q) && q.ValueKind == JsonValueKind.String ? (q.GetString() ?? "UNKNOWN") : "UNKNOWN";
-                groupKeys.Add((hood, bldg, qual));
-            }
-            catch (JsonException) { /* skip malformed */ }
+            var metadata = CountySegmentMetadataSupport.Parse(seg.RuleDefinition, seg.GeographyRef);
+            groupKeys.Add((metadata.NeighborhoodCode, metadata.RevalArea, metadata.BuildingType, metadata.QualityGrade));
         }
 
         if (groupKeys.Count == 0)
@@ -947,6 +953,7 @@ public class CountyStudyService : ICountyStudyService
             from c in cj.DefaultIfEmpty()
             select new
             {
+                p.PropertyId,
                 p.ParcelId,
                 p.AssessedValue,
                 Neighborhood = p.Neighborhood,
@@ -956,14 +963,46 @@ public class CountyStudyService : ICountyStudyService
                 SitusCity    = p.SitusCity,
             }).ToListAsync();
 
+        var pacsPropIds = parcels
+            .Select(p => int.TryParse(p.PropertyId, out var pacsPropId) ? pacsPropId : (int?)null)
+            .Where(pacsPropId => pacsPropId.HasValue)
+            .Select(pacsPropId => pacsPropId!.Value)
+            .Distinct()
+            .ToList();
+
+        Dictionary<int, (string? NeighborhoodCode, int? Cycle)> pacsMetadataByPropId = pacsPropIds.Count == 0
+            ? new Dictionary<int, (string? NeighborhoodCode, int? Cycle)>()
+            : await _db.Set<PacsValuation>()
+                .AsNoTracking()
+                .Where(v => v.SupNum == 0 && v.PropValYear == taxYear && pacsPropIds.Contains(v.PacsPropId))
+                .Select(v => new
+                {
+                    v.PacsPropId,
+                    v.NeighborhoodCode,
+                    v.Cycle,
+                })
+                .ToDictionaryAsync(
+                    v => v.PacsPropId,
+                    v => (v.NeighborhoodCode, CountySegmentMetadataSupport.NormalizeRevalArea(v.Cycle)));
+
         // Filter to parcels in scope for the segment set's grouping keys.
-        var inScope = new List<(string ParcelId, string Hood, string BldgType, string Quality, decimal Assessed, string City)>();
+        var inScope = new List<(string ParcelId, string Hood, int? RevalArea, string BldgType, string Quality, decimal Assessed, string City)>();
         foreach (var pc in parcels)
         {
+            var pacsPropId = int.TryParse(pc.PropertyId, out var parsedPropId) ? parsedPropId : (int?)null;
+            var pacsMetadata = pacsPropId.HasValue && pacsMetadataByPropId.TryGetValue(pacsPropId.Value, out var metadata)
+                ? metadata
+                : (NeighborhoodCode: (string?)null, Cycle: (int?)null);
+            var hood = !string.IsNullOrWhiteSpace(pacsMetadata.NeighborhoodCode)
+                ? pacsMetadata.NeighborhoodCode!
+                : !string.IsNullOrWhiteSpace(pc.Neighborhood)
+                    ? pc.Neighborhood!
+                    : "UNKNOWN";
             var key = (
-                Hood:     string.IsNullOrWhiteSpace(pc.Neighborhood) ? "UNKNOWN" : pc.Neighborhood!,
+                Hood: hood,
+                RevalArea: (int?)pacsMetadata.Cycle,
                 BldgType: string.IsNullOrWhiteSpace(pc.BuildingType) ? "UNKNOWN" : pc.BuildingType!,
-                Quality:  string.IsNullOrWhiteSpace(pc.QualityGrade) ? "UNKNOWN" : pc.QualityGrade!
+                Quality: string.IsNullOrWhiteSpace(pc.QualityGrade) ? "UNKNOWN" : pc.QualityGrade!
             );
             if (!groupKeys.Contains(key)) continue;
 
@@ -971,7 +1010,7 @@ public class CountyStudyService : ICountyStudyService
             var cityRaw = !string.IsNullOrWhiteSpace(pc.City) ? pc.City : pc.SitusCity;
             var city = NormalizeCity(cityRaw);
 
-            inScope.Add((pc.ParcelId, key.Hood, key.BldgType, key.Quality, pc.AssessedValue, city));
+            inScope.Add((ParcelId: pc.ParcelId, Hood: key.Hood, RevalArea: key.RevalArea, BldgType: key.BldgType, Quality: key.Quality, Assessed: pc.AssessedValue, City: city));
         }
 
         if (inScope.Count == 0)
@@ -1003,6 +1042,7 @@ public class CountyStudyService : ICountyStudyService
             perParcel.Add(new RollupParcelRow(
                 ParcelId: p.ParcelId,
                 NeighborhoodCode: p.Hood,
+                RevalArea: p.RevalArea,
                 BuildingType: p.BldgType,
                 QualityGrade: p.Quality,
                 AssessedValue: p.Assessed,
@@ -1023,26 +1063,16 @@ public class CountyStudyService : ICountyStudyService
         List<CountySegment> segments,
         List<RollupParcelRow> perParcel)
     {
-        // Derive each segment's grouping key once from its RuleDefinition.
-        var keyBySegment = new Dictionary<Guid, (string Hood, string BldgType, string Quality)>();
+        // Derive each segment's grouping key once from canonical metadata.
+        var keyBySegment = new Dictionary<Guid, (string Hood, int? RevalArea, string BldgType, string Quality)>();
         foreach (var seg in segments)
         {
-            if (string.IsNullOrWhiteSpace(seg.RuleDefinition)) continue;
-            try
-            {
-                var rule = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(seg.RuleDefinition);
-                if (rule == null) continue;
-                var hood = rule.TryGetValue("neighborhood", out var h) && h.ValueKind == JsonValueKind.String ? (h.GetString() ?? "UNKNOWN") : "UNKNOWN";
-                var bldg = rule.TryGetValue("buildingType", out var b) && b.ValueKind == JsonValueKind.String ? (b.GetString() ?? "UNKNOWN") : "UNKNOWN";
-                var qual = rule.TryGetValue("qualityGrade", out var q) && q.ValueKind == JsonValueKind.String ? (q.GetString() ?? "UNKNOWN") : "UNKNOWN";
-                keyBySegment[seg.SegmentId] = (hood, bldg, qual);
-            }
-            catch (JsonException) { /* no key → segment falls through to Unincorporated */ }
+            var metadata = CountySegmentMetadataSupport.Parse(seg.RuleDefinition, seg.GeographyRef);
+            keyBySegment[seg.SegmentId] = (metadata.NeighborhoodCode, metadata.RevalArea, metadata.BuildingType, metadata.QualityGrade);
         }
 
-        // Index parcels by their grouping key.
         var parcelsByKey = perParcel
-            .GroupBy(p => (p.NeighborhoodCode, p.BuildingType, p.QualityGrade))
+            .GroupBy(p => (p.NeighborhoodCode, p.RevalArea, p.BuildingType, p.QualityGrade))
             .ToDictionary(g => g.Key, g => g.ToList());
 
         var map = new Dictionary<Guid, string>();
@@ -1166,10 +1196,26 @@ public class CountyStudyService : ICountyStudyService
         new(ss.SegmentSetId, ss.StudyId, ss.Name, ss.SourceType.ToString(),
             ss.Version, ss.IsBaseline, segmentCount);
 
-    private static CountySegmentDto MapSegment(CountySegment s) =>
-        new(s.SegmentId, s.SegmentSetId, s.Name, s.SegmentType.ToString(),
-            s.GeographyRef, s.ParcelCount, s.MedianRatio, s.CoefficientOfDispersion,
-            s.PriceRelatedDifferential, s.StabilityScore, s.RiskScore, s.ExceptionCount);
+    private static CountySegmentDto MapSegment(CountySegment s)
+    {
+        var metadata = CountySegmentMetadataSupport.Parse(s.RuleDefinition, s.GeographyRef);
+        return new CountySegmentDto(
+            s.SegmentId,
+            s.SegmentSetId,
+            s.Name,
+            s.SegmentType.ToString(),
+            s.GeographyRef,
+            metadata.RevalArea,
+            metadata.BuildingType,
+            metadata.QualityGrade,
+            s.ParcelCount,
+            s.MedianRatio,
+            s.CoefficientOfDispersion,
+            s.PriceRelatedDifferential,
+            s.StabilityScore,
+            s.RiskScore,
+            s.ExceptionCount);
+    }
 
     private static CountyCohortDto MapCohort(CountyCohort c) =>
         new(c.CohortId, c.StudyId, c.Name, c.SelectionType.ToString(),

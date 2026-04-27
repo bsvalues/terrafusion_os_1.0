@@ -101,4 +101,33 @@ describe('CityRollupTable', () => {
     // Kennewick exceptionRate=0.0065 → "0.7%" (rounded to 1 decimal)
     expect(screen.getByText('0.7%')).toBeInTheDocument();
   });
+
+  it('preserves hood_cd and keeps reval separate in worst-segment rollups', () => {
+    act(() => {
+      useCountyStudioStore.getState().setCityRollup([
+        {
+          city: 'Kennewick',
+          segmentCount: 6,
+          parcelCount: 1240,
+          medianRatio: 0.95,
+          cod: 12.3,
+          prd: 1.01,
+          exceptionCount: 8,
+          exceptionRate: 0.0065,
+          worstSegmentName: '52100 401B · R · UNKNOWN',
+          worstSegmentNeighborhoodCode: '52100 401B',
+          worstSegmentRevalArea: null,
+          worstSegmentBuildingType: 'R',
+          worstSegmentQualityGrade: 'UNKNOWN',
+          worstSegmentMedianRatio: 14.742,
+          complianceStatus: 'IaaoCompliant',
+        },
+      ]);
+      useCountyStudioStore.getState().setLoadStatus('cityRollup', 'success');
+    });
+
+    render(<CityRollupTable />);
+    expect(screen.getByText('Neighborhood 52100 401B')).toBeInTheDocument();
+    expect(screen.queryByText(/MHOME|PERMC|R · R/)).not.toBeInTheDocument();
+  });
 });

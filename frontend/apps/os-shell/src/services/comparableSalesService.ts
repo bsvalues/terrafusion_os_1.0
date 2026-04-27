@@ -28,6 +28,11 @@ export interface ComparableSale {
   salePrice: number;
   propertyType: string;
   address: string;
+  countyCode?: string | null;
+  countyName?: string | null;
+  city?: string | null;
+  neighborhoodCode?: string | null;
+  currentNeighborhoodCode?: string | null;
   grossLivingArea: number | null;
   lotSizeSqft: number | null;
   yearBuilt: number | null;
@@ -251,6 +256,11 @@ function toComparableSale(record: LaunchSaleRecord): ComparableSale {
     salePrice: record.adjustedSalePrice ?? record.salePrice ?? 0,
     propertyType: record.useCode ?? 'unknown',
     address: addressForSale(record),
+    countyCode: record.countyCode,
+    countyName: WASHINGTON_COUNTIES.find((county) => county.code === record.countyCode)?.name ?? null,
+    city: record.situsCity,
+    neighborhoodCode: record.neighborhoodCode,
+    currentNeighborhoodCode: record.currentNeighborhoodCode,
     grossLivingArea: null,
     lotSizeSqft: (() => {
       const acres = numberOrNull(record.acres);

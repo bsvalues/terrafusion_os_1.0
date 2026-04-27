@@ -56,6 +56,7 @@ function resetStore() {
     s.setSelectedStratumKey(null);
     s.setTaxYear(2026);
     s.setContextSegment(null);
+    s.clearFilters();
   });
 }
 
@@ -120,6 +121,57 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
     // Label is unknown, chip still renders using the segmentId.
     const chip = screen.getByTestId('sf-scoped-from-chip');
     expect(chip.textContent).toMatch(/seg-7/);
+  });
+
+  it('applies neighborhood rollup scope to county and hood filters', async () => {
+    render(
+      <SalesForge
+        metadata={{
+          countyName: 'Benton County',
+          taxYear: 2026,
+          rollupScope: 'neighborhood',
+          neighborhoodCode: 'NBHD-WR01',
+          neighborhoodName: 'West Richland Estates',
+        }}
+      />
+    );
+
+    await waitFor(() => {
+      const s = useSalesForgeStore.getState();
+      expect(s.committedFilters.countyCode).toBe('005');
+      expect(s.committedFilters.hood).toBe('NBHD-WR01');
+      expect(s.activeTab).toBe('neighborhoods');
+    });
+
+    expect(screen.getAllByText(/West Richland Estates/).length).toBeGreaterThan(0);
+    expect(
+      screen.getByText(/counties track reval area and neighborhood before parcel-level action/i),
+    ).toBeInTheDocument();
+  });
+
+  it('keeps city overview handoffs honest and county-scoped', async () => {
+    render(
+      <SalesForge
+        metadata={{
+          countyName: 'Benton County',
+          taxYear: 2026,
+          rollupScope: 'city',
+          city: 'Kennewick',
+        }}
+      />
+    );
+
+    await waitFor(() => {
+      const s = useSalesForgeStore.getState();
+      expect(s.committedFilters.countyCode).toBe('005');
+      expect(s.committedFilters.hood).toBeNull();
+      expect(s.activeTab).toBe('queue');
+    });
+
+    expect(screen.getAllByText(/city overview/i).length).toBeGreaterThan(0);
+    expect(
+      screen.getByText(/city scope remains triage-only until you narrow below the city rollup/i),
+    ).toBeInTheDocument();
   });
 
   it('Scoped From chip click fires activateModule("county-studio") with segmentId', () => {
