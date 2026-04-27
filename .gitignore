@@ -100,6 +100,11 @@ pids/
 *.seed
 *.pid.lock
 
+# Local service-registry snapshot — written by the API on each dev run
+# (Pid + LastUpdated timestamps churn on every start). Kept local only
+# so it never shows up as a phantom diff in unrelated slices.
+backend/service-registry.json
+
 # Coverage directory used by tools like istanbul
 coverage/
 *.lcov
