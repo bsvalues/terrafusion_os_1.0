@@ -5,11 +5,13 @@ using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Entities.Pacs;
 using TerraFusion.Core.Entities.Sync;
+using TerraFusion.Core.Entities.Sync.Mapping;
 using TerraFusion.Core.Entities.Sync.Profile;
 using TerraFusion.Core.Models;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Data.Configurations;
 using TerraFusion.Data.Configurations.Sync;
+using TerraFusion.Data.Configurations.Sync.Mapping;
 using TerraFusion.Data.Configurations.Sync.Profile;
 // NOTE: TerraFusion.AI.Entities cannot be referenced here due to circular dependency
 // AI-specific DbSets are added via partial class or extension in TerraFusion.AI project
@@ -125,6 +127,13 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<SyncProfileTableStats> SyncProfileTableStats { get; set; }
   public DbSet<SyncProfileColumnStats> SyncProfileColumnStats { get; set; }
   public DbSet<SyncProfileCodeCandidate> SyncProfileCodeCandidates { get; set; }
+
+  // R3 Sync Mapping Workbook — county-scoped canonical-mapping decisions
+  // seeded off a B2 deep-profile batch (Slice C2). Stores reviewable
+  // decisions only; transforms that consume them are Slice C3+.
+  public DbSet<SyncMappingWorkbook> SyncMappingWorkbooks { get; set; }
+  public DbSet<SyncMappingColumn> SyncMappingColumns { get; set; }
+  public DbSet<SyncMappingCodeValue> SyncMappingCodeValues { get; set; }
 
   // Codex 3-6-9 Framework Entities
   public DbSet<CodexMetric> CodexMetrics { get; set; }
@@ -682,6 +691,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     modelBuilder.ApplyConfiguration(new SyncProfileTableStatsConfiguration());
     modelBuilder.ApplyConfiguration(new SyncProfileColumnStatsConfiguration());
     modelBuilder.ApplyConfiguration(new SyncProfileCodeCandidateConfiguration());
+
+    // R3 Sync Mapping Workbook (Slice C2 — durable mapping decisions)
+    modelBuilder.ApplyConfiguration(new SyncMappingWorkbookConfiguration());
+    modelBuilder.ApplyConfiguration(new SyncMappingColumnConfiguration());
+    modelBuilder.ApplyConfiguration(new SyncMappingCodeValueConfiguration());
 
     // NOTE: TerraFusionGPT Suite configurations temporarily disabled due to circular dependency
     // These configurations are defined in TerraFusion.Data\Configurations\GPTConfiguration.cs.disabled
