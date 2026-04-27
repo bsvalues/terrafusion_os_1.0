@@ -57,10 +57,15 @@ internal static class Program
 
         try
         {
-            // Slices C4 + C5 + C8-C + C9-B + C10-B: explicit six-way mode dispatch.
-            // Workbook generate / export / qualify-sales / edit / lock modes
-            // never hit the SQL Server profiler path, so a missing
-            // --connection-id is fine in those branches.
+            // Slices C4 + C5 + C8-C + C9-B + C10-B + C11-B: explicit
+            // seven-way mode dispatch. Workbook generate / export /
+            // qualify-sales / edit / lock / batch-edit modes never hit
+            // the SQL Server profiler path, so a missing --connection-id
+            // is fine in those branches.
+            if (args.BatchEditMappingWorkbook)
+            {
+                return await RunBatchEditMappingWorkbookAsync(args, cts.Token);
+            }
             if (args.LockMappingWorkbook)
             {
                 return await RunLockMappingWorkbookAsync(args, cts.Token);
@@ -748,6 +753,148 @@ internal static class Program
         Console.WriteLine($"  Status:                  {result.Status}");
         Console.WriteLine($"  Columns Validated:     {result.ColumnsValidated,7:N0}");
         Console.WriteLine($"  Code Values Validated: {result.CodeValuesValidated,7:N0}");
+        Console.WriteLine("─────────────────────────────────────────────");
+
+        return 0;
+    }
+
+    /// <summary>
+    /// Slice C11-B: Mapping Workbook batch edit. Reads the operator-
+    /// authored CSV, validates every row, then either prints the
+    /// planned mutations (--dry-run) or applies them in a single
+    /// transaction (--apply). All-or-nothing semantics: any validation
+    /// error means zero rows mutate. The four C11-A Hard Guards live in
+    /// the C11-B service:
+    ///   1. Workbook must be Status='Draft'.
+    ///   2. Workbook must belong to the supplied countyId.
+    ///   3. Atomicity: validate-then-apply, single SaveChangesAsync.
+    ///   4. No auto-exclusion of WAC codes — the CSV row's explicit
+    ///      is_excluded=true is the only path.
+    /// </summary>
+    private static async Task<int> RunBatchEditMappingWorkbookAsync(CliArgs args, CancellationToken ct)
+    {
+        // Parser invariants: BatchEditMappingWorkbook=true ⇒ WorkbookId,
+        // InputCsvPath, and exactly one of DryRun/Apply set.
+        var workbookId = args.WorkbookId
+            ?? throw new InvalidOperationException("Batch-edit mode reached without --workbook-id; this is a parser invariant violation.");
+        var csvPath = args.InputCsvPath
+            ?? throw new InvalidOperationException("Batch-edit mode reached without --input-csv; this is a parser invariant violation.");
+
+        if (!File.Exists(csvPath))
+        {
+            await Console.Error.WriteLineAsync($"sync-atlas: input CSV not found: {csvPath}");
+            return 2;
+        }
+
+        string csvText;
+        try
+        {
+            csvText = await File.ReadAllTextAsync(csvPath, ct);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            await Console.Error.WriteLineAsync($"sync-atlas: failed to read CSV {csvPath}: {ex.Message}");
+            return 2;
+        }
+
+        var parseResult = BatchEditCsvParser.Parse(csvText);
+        if (parseResult.HeaderError is not null)
+        {
+            await Console.Error.WriteLineAsync($"sync-atlas: {parseResult.HeaderError}");
+            return 2;
+        }
+
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:DefaultConnection"] = args.TerraFusionDbConnectionString
+            })
+            .AddEnvironmentVariables()
+            .Build();
+
+        var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
+            .UseNpgsql(args.TerraFusionDbConnectionString, npg =>
+            {
+                npg.MigrationsAssembly("TerraFusion.Data");
+                npg.EnableRetryOnFailure(maxRetryCount: 3);
+            })
+            .Options;
+
+        await using var db = new TerraFusionDbContext(options, configuration);
+
+        var service = new SyncMappingWorkbookBatchEditService(db);
+        var mode = args.BatchEditApply
+            ? SyncMappingWorkbookBatchEditMode.Apply
+            : SyncMappingWorkbookBatchEditMode.DryRun;
+
+        Console.WriteLine($"sync-atlas: batch edit ({(mode == SyncMappingWorkbookBatchEditMode.Apply ? "APPLY" : "DRY-RUN")}) for workbook {workbookId}...");
+        Console.WriteLine($"sync-atlas:   input csv:  {csvPath}");
+        Console.WriteLine($"sync-atlas:   total rows: {parseResult.Rows.Count}");
+        Console.WriteLine($"sync-atlas:   operator:   {args.OperatorId}");
+
+        SyncMappingWorkbookBatchEditResult result;
+        try
+        {
+            result = await service.ApplyAsync(args.CountyId, workbookId, parseResult.Rows, mode, ct);
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Status guard / cross-county / concurrent-modification —
+            // verbatim message + exit 2.
+            await Console.Error.WriteLineAsync($"sync-atlas: {ex.Message}");
+            return 2;
+        }
+        catch (ArgumentException ex)
+        {
+            // Service-side defense-in-depth (parser usually catches first).
+            await Console.Error.WriteLineAsync($"sync-atlas: {ex.Message}");
+            return 1;
+        }
+
+        if (result.Outcome == SyncMappingWorkbookBatchEditOutcome.ValidationFailed)
+        {
+            await Console.Error.WriteLineAsync(string.Empty);
+            await Console.Error.WriteLineAsync($"sync-atlas: batch edit validation failed for workbook {workbookId}");
+            await Console.Error.WriteLineAsync("─────────────────────────────────────────────");
+            await Console.Error.WriteLineAsync($"  {"Line",4}  {"Scope",-10}  {"Source",-48}  Error");
+            await Console.Error.WriteLineAsync("─────────────────────────────────────────────");
+            foreach (var err in result.Errors)
+            {
+                var src = err.SourceLabel.Length > 48 ? err.SourceLabel[..45] + "..." : err.SourceLabel;
+                await Console.Error.WriteLineAsync($"  {err.LineNumber,4}  {err.Scope,-10}  {src,-48}  {err.Message}");
+            }
+            await Console.Error.WriteLineAsync("─────────────────────────────────────────────");
+            await Console.Error.WriteLineAsync($"  Validation errors: {result.Errors.Count}");
+            await Console.Error.WriteLineAsync($"  Rows that would apply: 0");
+            await Console.Error.WriteLineAsync("─────────────────────────────────────────────");
+            return 2;
+        }
+
+        var outcomeLabel = result.Outcome == SyncMappingWorkbookBatchEditOutcome.Applied
+            ? "applied"
+            : "dry-run (no mutations applied)";
+        var auditLine = result.Outcome == SyncMappingWorkbookBatchEditOutcome.Applied
+            ? "1 (workbook UpdatedAt bumped once)"
+            : "none (dry-run)";
+
+        Console.WriteLine();
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine($"  Mapping Workbook:  {result.WorkbookId}");
+        Console.WriteLine($"  Mode:              {outcomeLabel}");
+        Console.WriteLine($"  Rows Validated:    {result.RowsValidated,5:N0}");
+        Console.WriteLine($"  Rows To Mutate:    {result.RowsToMutate,5:N0}");
+        Console.WriteLine($"  Audit Stamp Bump:  {auditLine}");
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine($"  Per-scope summary:");
+        Console.WriteLine($"    column rows:     {result.ColumnRowCount,5:N0}");
+        Console.WriteLine($"    code_value rows: {result.CodeValueRowCount,5:N0}");
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine($"  Per-status summary:");
+        Console.WriteLine($"    → Mapped:        {result.MappedCount,5:N0}");
+        Console.WriteLine($"    → Excluded:      {result.ExcludedCount,5:N0}");
+        Console.WriteLine($"    → Deferred:      {result.DeferredCount,5:N0}");
+        Console.WriteLine($"    → InProgress:    {result.InProgressCount,5:N0}");
+        Console.WriteLine($"    → NeedsReview:   {result.NeedsReviewCount,5:N0}");
         Console.WriteLine("─────────────────────────────────────────────");
 
         return 0;

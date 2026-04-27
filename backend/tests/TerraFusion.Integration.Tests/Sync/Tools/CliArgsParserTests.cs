@@ -2036,4 +2036,334 @@ public class CliArgsParserTests
         usage.Should().Contain("Slice C10-B");
         usage.Should().Contain("Draft→Mapped");
     }
+
+    // ── Slice C11-B — Mapping Workbook batch edit ──────────────────────
+    //
+    // Seven-way mode mutex now: profile / generate / export / qualify /
+    // edit / lock / batch-edit. Batch-edit requires --workbook-id +
+    // --input-csv + exactly one of --dry-run / --apply.
+
+    [Fact]
+    public void Parse_BatchEditMappingWorkbookSetsMode()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--batch-edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--input-csv", "/tmp/edits.csv",
+            "--dry-run",
+        });
+
+        err.Should().BeNull();
+        args!.BatchEditMappingWorkbook.Should().BeTrue();
+        args.WorkbookId.Should().Be(Guid.Parse(ValidWorkbookId));
+        args.InputCsvPath.Should().Be("/tmp/edits.csv");
+        args.BatchEditDryRun.Should().BeTrue();
+        args.BatchEditApply.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Parse_BatchEditRequiresWorkbookId()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--batch-edit-mapping-workbook",
+            // no --workbook-id
+            "--input-csv", "/tmp/edits.csv",
+            "--dry-run",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--workbook-id");
+        err.Should().Contain("--batch-edit-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_BatchEditRequiresInputCsv()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--batch-edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            // no --input-csv
+            "--dry-run",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--input-csv");
+        err.Should().Contain("--batch-edit-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_BatchEditRequiresExactlyOneOfDryRunOrApply()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--batch-edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--input-csv", "/tmp/edits.csv",
+            // neither --dry-run nor --apply
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--dry-run");
+        err.Should().Contain("--apply");
+    }
+
+    [Fact]
+    public void Parse_BatchEditRejectsBothDryRunAndApply()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--batch-edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--input-csv", "/tmp/edits.csv",
+            "--dry-run",
+            "--apply",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("mutually exclusive");
+        err.Should().Contain("--dry-run");
+        err.Should().Contain("--apply");
+    }
+
+    [Fact]
+    public void Parse_BatchEditRejectsProfileFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--batch-edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--input-csv", "/tmp/edits.csv",
+            "--dry-run",
+            "--deep-profile",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--deep-profile");
+        err.Should().Contain("Mapping Workbook batch edit");
+    }
+
+    [Fact]
+    public void Parse_BatchEditRejectsGenerateFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--batch-edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--input-csv", "/tmp/edits.csv",
+            "--apply",
+            "--workbook-name", "should-be-rejected",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--workbook-name");
+        err.Should().Contain("--generate-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_BatchEditRejectsExportFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--batch-edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--input-csv", "/tmp/edits.csv",
+            "--apply",
+            "--output-dir", "/tmp/should-be-rejected",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--output-dir");
+        err.Should().Contain("--export-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_BatchEditRejectsQualifyFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--batch-edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--input-csv", "/tmp/edits.csv",
+            "--apply",
+            "--source-connection-id", ValidConnection,
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--source-connection-id");
+        err.Should().Contain("--qualify-sales");
+    }
+
+    [Fact]
+    public void Parse_BatchEditRejectsSingleRowEditFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--batch-edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--input-csv", "/tmp/edits.csv",
+            "--apply",
+            "--source", "dbo.sale.wac_cd",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--source");
+        err.Should().Contain("--edit-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_BatchEditMutuallyExclusiveWithLockMode()
+    {
+        // Seven-way mutex check: batch-edit + lock-mapping-workbook
+        // fails with the mutex error.
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--batch-edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--input-csv", "/tmp/edits.csv",
+            "--apply",
+            "--lock-mapping-workbook",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("mutually exclusive");
+        err.Should().Contain("--batch-edit-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_BatchEditMutuallyExclusiveWithEditMode()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--batch-edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--input-csv", "/tmp/edits.csv",
+            "--apply",
+            "--edit-mapping-workbook",
+            "--source", "dbo.sale.wac_cd",
+            "--review-status", "Mapped",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("mutually exclusive");
+    }
+
+    [Fact]
+    public void Parse_BatchEditFlagsRejectedInOtherModes()
+    {
+        // --input-csv in profile mode → rejected.
+        var (a1, e1) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--input-csv", "/tmp/edits.csv",
+        });
+        a1.Should().BeNull();
+        e1.Should().Contain("--input-csv");
+        e1.Should().Contain("--batch-edit-mapping-workbook");
+
+        // --dry-run in qualify mode → rejected.
+        var (a2, e2) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--qualify-sales",
+            "--workbook-id", ValidWorkbookId,
+            "--source-connection-id", ValidConnection,
+            "--max-sales", "10",
+            "--dry-run",
+        });
+        a2.Should().BeNull();
+        e2.Should().Contain("--dry-run");
+        e2.Should().Contain("--batch-edit-mapping-workbook");
+
+        // --apply in lock mode → rejected.
+        var (a3, e3) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--lock-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--apply",
+        });
+        a3.Should().BeNull();
+        e3.Should().Contain("--apply");
+        e3.Should().Contain("--batch-edit-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_BatchEditMode_ExistingModesRemainCompatible()
+    {
+        // Sanity: adding the seventh mode must not regress the other six.
+        var profile = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+        });
+        profile.Error.Should().BeNull();
+        profile.Args!.BatchEditMappingWorkbook.Should().BeFalse();
+
+        var lockMode = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--lock-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+        });
+        lockMode.Error.Should().BeNull();
+        lockMode.Args!.LockMappingWorkbook.Should().BeTrue();
+        lockMode.Args.BatchEditMappingWorkbook.Should().BeFalse();
+
+        var edit = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+            "--review-status", "Mapped",
+        });
+        edit.Error.Should().BeNull();
+        edit.Args!.EditMappingWorkbook.Should().BeTrue();
+        edit.Args.BatchEditMappingWorkbook.Should().BeFalse();
+    }
+
+    [Fact]
+    public void UsageText_IncludesBatchEditMode()
+    {
+        var usage = CliArgsParser.UsageText;
+        usage.Should().Contain("--batch-edit-mapping-workbook");
+        usage.Should().Contain("--input-csv");
+        usage.Should().Contain("--dry-run");
+        usage.Should().Contain("--apply");
+        usage.Should().Contain("Slice C11-B");
+    }
 }
