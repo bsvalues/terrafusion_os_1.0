@@ -144,6 +144,7 @@
     <PackageVersion Include="Bogus" Version="35.3.0" />
     <PackageVersion Include="Testcontainers" Version="3.7.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="3.7.0" />
+    <PackageVersion Include="Testcontainers.MsSql" Version="3.7.0" />
     <PackageVersion Include="Npgsql" Version="8.0.5" />
   </ItemGroup>
   <!-- OpenTelemetry -->
