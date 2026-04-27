@@ -22,7 +22,10 @@ public sealed class SqlServerDeepProfileReaderFactory : IDeepProfileReaderFactor
         _secretResolver = secretResolver;
     }
 
-    public async Task<IDeepProfileReaderSession> OpenAsync(SyncSourceConnection connection, CancellationToken ct = default)
+    public async Task<IDeepProfileReaderSession> OpenAsync(
+        SyncSourceConnection connection,
+        DeepProfileTimeoutBudget? timeoutBudget = null,
+        CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(connection);
 
@@ -32,12 +35,18 @@ public sealed class SqlServerDeepProfileReaderFactory : IDeepProfileReaderFactor
                 $"SqlServerDeepProfileReaderFactory cannot handle ConnectionType '{connection.ConnectionType}'.");
         }
 
+        // FIX-B2.7E: Plumb the per-command-class timeout budget into the
+        // reader so MIN/MAX/sample materialization use the long
+        // (Materialization/Aggregation) ceilings while metadata roundtrips
+        // keep the short (Metadata) ceiling.
+        var effectiveBudget = (timeoutBudget ?? DeepProfileTimeoutBudget.Default).Validate();
+
         var connectionString = SqlServerMetadataReaderFactory.BuildConnectionString(connection, _secretResolver);
         var sqlConnection = new SqlConnection(connectionString);
         try
         {
             await sqlConnection.OpenAsync(ct);
-            var reader = new SqlServerDeepProfileReader(sqlConnection);
+            var reader = new SqlServerDeepProfileReader(sqlConnection, effectiveBudget);
             return new SqlServerDeepProfileSession(sqlConnection, reader);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)

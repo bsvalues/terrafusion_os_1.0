@@ -33,6 +33,124 @@ public class SqlServerDeepProfileReaderTests
         act.Should().NotThrow();
     }
 
+    // ── Timeout budget record (FIX-B2.7E) ────────────────────────────────
+    //
+    // The two-argument constructor accepts an explicit
+    // DeepProfileTimeoutBudget; the one-argument ctor delegates to it with
+    // the Default. These unit tests pin the record's defaults and the
+    // null/zero/negative validation guards. End-to-end "the budget value
+    // actually reaches cmd.CommandTimeout" is verified by the live
+    // BernoulliSample integration test against a >100K-row fixture (the
+    // shape that originally tripped the cascade in B2.7-OLTP).
+
+    [Fact]
+    public void DeepProfileTimeoutBudget_Default_HasSensibleValues()
+    {
+        var budget = DeepProfileTimeoutBudget.Default;
+
+        // 30 s for short metadata roundtrips (row-count estimate, exact
+        // COUNT_BIG, post-materialization temp count, DROP TABLE).
+        budget.MetadataSeconds.Should().Be(30);
+
+        // 5 minutes for the SELECT * INTO #temp materialization. Generous
+        // enough to handle 8M-row PACS tables with wide column lists; tight
+        // enough to surface pathological cases.
+        budget.MaterializationSeconds.Should().Be(300);
+
+        // 5 minutes for per-column UNION ALL aggregation + sample / top-N
+        // reads against the materialized temp.
+        budget.AggregationSeconds.Should().Be(300);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void DeepProfileTimeoutBudget_Validate_RejectsNonPositiveMetadata(int seconds)
+    {
+        Action act = () => new DeepProfileTimeoutBudget(MetadataSeconds: seconds).Validate();
+        act.Should().Throw<ArgumentOutOfRangeException>().WithMessage("*positive*");
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void DeepProfileTimeoutBudget_Validate_RejectsNonPositiveMaterialization(int seconds)
+    {
+        Action act = () => new DeepProfileTimeoutBudget(MaterializationSeconds: seconds).Validate();
+        act.Should().Throw<ArgumentOutOfRangeException>().WithMessage("*positive*");
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void DeepProfileTimeoutBudget_Validate_RejectsNonPositiveAggregation(int seconds)
+    {
+        Action act = () => new DeepProfileTimeoutBudget(AggregationSeconds: seconds).Validate();
+        act.Should().Throw<ArgumentOutOfRangeException>().WithMessage("*positive*");
+    }
+
+    [Fact]
+    public void DeepProfileTimeoutBudget_Validate_AllowsCustomPositiveValues()
+    {
+        var budget = new DeepProfileTimeoutBudget(
+            MetadataSeconds:       60,
+            MaterializationSeconds: 900,
+            AggregationSeconds:     600);
+
+        var act = () => budget.Validate();
+
+        act.Should().NotThrow();
+        budget.MetadataSeconds.Should().Be(60);
+        budget.MaterializationSeconds.Should().Be(900);
+        budget.AggregationSeconds.Should().Be(600);
+    }
+
+    [Fact]
+    public void Constructor_TwoArg_AcceptsCustomTimeoutBudget()
+    {
+        using var connection = new SqlConnection("Server=.;Database=tempdb;Integrated Security=True;TrustServerCertificate=True");
+        var budget = new DeepProfileTimeoutBudget(
+            MetadataSeconds:       45,
+            MaterializationSeconds: 240,
+            AggregationSeconds:     180);
+
+        var act = () => new SqlServerDeepProfileReader(connection, budget);
+
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void Constructor_TwoArg_RejectsNullBudget()
+    {
+        using var connection = new SqlConnection("Server=.;Database=tempdb;Integrated Security=True;TrustServerCertificate=True");
+
+        Action act = () => new SqlServerDeepProfileReader(connection, null!);
+
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void Constructor_TwoArg_RejectsInvalidBudget()
+    {
+        using var connection = new SqlConnection("Server=.;Database=tempdb;Integrated Security=True;TrustServerCertificate=True");
+        var bad = new DeepProfileTimeoutBudget(MetadataSeconds: -5);
+
+        Action act = () => new SqlServerDeepProfileReader(connection, bad);
+
+        act.Should().Throw<ArgumentOutOfRangeException>();
+    }
+
+    [Fact]
+    public void Constructor_OneArg_DelegatesToDefaultBudget()
+    {
+        using var connection = new SqlConnection("Server=.;Database=tempdb;Integrated Security=True;TrustServerCertificate=True");
+        // Smoke: the one-arg ctor must not throw, must pick the Default
+        // budget, and must therefore behave identically to the two-arg
+        // ctor with Default explicitly passed.
+        var act = () => new SqlServerDeepProfileReader(connection);
+        act.Should().NotThrow();
+    }
+
     // ── Sampling plan (B2.0 decision) ────────────────────────────────────
 
     [Theory]

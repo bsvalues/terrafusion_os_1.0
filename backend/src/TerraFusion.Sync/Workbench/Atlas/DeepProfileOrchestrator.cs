@@ -25,6 +25,65 @@ public sealed record DeepProfileTableFailure(
     string Reason);
 
 /// <summary>
+/// Per-command-class timeout budget for the deep-profile reader (FIX-B2.7E).
+///
+/// Discovered in B2.7-OLTP: ADO.NET's default <c>CommandTimeout</c> is 30
+/// seconds, which is comfortable for the metadata roundtrips (row-count
+/// estimate, exact COUNT_BIG, temp-table count, DROP TABLE) but too tight
+/// for the materialization step that <c>SELECT * INTO #temp</c>'s a sample
+/// out of a multi-million-row PACS table. The first table to trip the timer
+/// (<c>dbo.imprv</c>, 2.2M rows on populated <c>pacs_oltp</c>) blew up,
+/// poisoned the SqlConnection, and cascaded "BeginExecuteReader requires
+/// an open and available Connection" across every subsequent table.
+///
+/// <para>The budget splits commands into three classes:
+/// <list type="bullet">
+/// <item><b>Metadata</b> — short queries that stay snappy: row-count
+/// estimates from <c>sys.partitions</c>, exact <c>COUNT_BIG(*)</c>,
+/// the post-materialization temp-table count, the DROP TABLE cleanup.
+/// Default 30 s — same as ADO.NET's default; bumping these would just
+/// hide bugs.</item>
+/// <item><b>Materialization</b> — the <c>SELECT * INTO #temp</c> with
+/// <c>TABLESAMPLE</c>. Wide column lists, full-row copies, optional LOBs;
+/// runtime is dominated by I/O, not logic. Default 300 s (5 minutes). On
+/// an 8M-row table with a few hundred wide columns the page-clustered
+/// SYSTEM sample read + temp-table copy can run a few minutes against
+/// modest hardware; this budget is generous enough to not falsely trip
+/// while still bounding pathological cases.</item>
+/// <item><b>Aggregation</b> — per-column UNION ALL aggregates over
+/// the materialized sample, plus <c>BuildSampleValuesSql</c> and
+/// <c>BuildTopValuesSql</c> follow-ups. The sample lives in the temp
+/// table so these run against ≤ 10K rows, but a table with hundreds of
+/// columns produces a long UNION ALL and the optimizer's plan can grow
+/// non-trivially. Default 300 s — same envelope as Materialization for
+/// symmetry.</item>
+/// </list>
+/// </para>
+///
+/// All three are configurable per orchestrator run; <see cref="Default"/>
+/// captures the values above. The budget is plumbed orchestrator →
+/// factory → reader at session-open time so future per-table tuning is
+/// possible without re-opening the session.
+/// </summary>
+public sealed record DeepProfileTimeoutBudget(
+    int MetadataSeconds       = 30,
+    int MaterializationSeconds = 300,
+    int AggregationSeconds    = 300)
+{
+    /// <summary>Sensible defaults: 30 / 300 / 300.</summary>
+    public static DeepProfileTimeoutBudget Default { get; } = new();
+
+    /// <summary>Validate at construction-time that the values are positive.</summary>
+    public DeepProfileTimeoutBudget Validate()
+    {
+        if (MetadataSeconds       <= 0) throw new ArgumentOutOfRangeException(nameof(MetadataSeconds),       "Must be positive.");
+        if (MaterializationSeconds <= 0) throw new ArgumentOutOfRangeException(nameof(MaterializationSeconds), "Must be positive.");
+        if (AggregationSeconds    <= 0) throw new ArgumentOutOfRangeException(nameof(AggregationSeconds),    "Must be positive.");
+        return this;
+    }
+}
+
+/// <summary>
 /// Operator-facing safety controls for a deep-profile run (Slice B2.5A).
 ///
 /// Both options are independent and additive:
@@ -109,11 +168,28 @@ public sealed class DeepProfileOrchestrator : IDeepProfileOrchestrator
     private readonly TerraFusionDbContext _db;
     private readonly IDeepProfileReaderFactory _readerFactory;
     private readonly IDeepProfilePersistenceService _persistence;
+    private readonly DeepProfileTimeoutBudget _timeoutBudget;
 
     public DeepProfileOrchestrator(
         TerraFusionDbContext db,
         IDeepProfileReaderFactory readerFactory,
         IDeepProfilePersistenceService persistence)
+        : this(db, readerFactory, persistence, timeoutBudget: null)
+    {
+    }
+
+    /// <summary>
+    /// Construct with an explicit per-command-class timeout budget
+    /// (FIX-B2.7E). Pass <c>null</c> to use <see cref="DeepProfileTimeoutBudget.Default"/>.
+    /// The budget is forwarded to <see cref="IDeepProfileReaderFactory.OpenAsync"/>
+    /// for every per-table session, so a single configured budget governs
+    /// the whole orchestration run.
+    /// </summary>
+    public DeepProfileOrchestrator(
+        TerraFusionDbContext db,
+        IDeepProfileReaderFactory readerFactory,
+        IDeepProfilePersistenceService persistence,
+        DeepProfileTimeoutBudget? timeoutBudget)
     {
         ArgumentNullException.ThrowIfNull(db);
         ArgumentNullException.ThrowIfNull(readerFactory);
@@ -121,6 +197,7 @@ public sealed class DeepProfileOrchestrator : IDeepProfileOrchestrator
         _db = db;
         _readerFactory = readerFactory;
         _persistence = persistence;
+        _timeoutBudget = (timeoutBudget ?? DeepProfileTimeoutBudget.Default).Validate();
     }
 
     public async Task<DeepProfileOrchestrationResult> RunAsync(
@@ -209,8 +286,17 @@ public sealed class DeepProfileOrchestrator : IDeepProfileOrchestrator
         var skipped  = truncatedSkip;
         var failures = new List<DeepProfileTableFailure>();
 
-        await using var session = await _readerFactory.OpenAsync(connection, ct);
-
+        // FIX-B2.7E: per-table session lifecycle. Previously the orchestrator
+        // opened ONE session and reused it across all tables in the batch.
+        // When B2.7-OLTP hit dbo.imprv (2.2M rows), the materialization
+        // exceeded ADO.NET's default 30 s CommandTimeout — the resulting
+        // SqlException put the SqlConnection into a broken state, and every
+        // subsequent table on the same connection failed with
+        //   "BeginExecuteReader requires an open and available Connection."
+        // Per-table sessions sidestep the cascade entirely. Connection
+        // pooling makes the open/dispose pair cheap (≈1 ms after the first).
+        // The timeout budget is now plumbed through OpenAsync so each
+        // session inherits the same per-command-class ceilings.
         foreach (var table in tables)
         {
             ct.ThrowIfCancellationRequested();
@@ -233,6 +319,8 @@ public sealed class DeepProfileOrchestrator : IDeepProfileOrchestrator
 
             try
             {
+                await using var session = await _readerFactory.OpenAsync(connection, _timeoutBudget, ct);
+
                 var result = await session.Reader.ProfileTableAsync(
                     table.SchemaName, table.TableName, refs, ct);
                 await _persistence.PersistAsync(countyId, batchId, result, ct);
@@ -244,6 +332,10 @@ public sealed class DeepProfileOrchestrator : IDeepProfileOrchestrator
             }
             catch (Exception ex)
             {
+                // FIX-B2.7E: a failure here disposes the per-table session
+                // via the using-block; the next iteration opens a fresh
+                // session against a healthy connection from the pool. No
+                // cascade.
                 failed++;
                 failures.Add(new DeepProfileTableFailure(
                     SchemaName: table.SchemaName,

@@ -57,11 +57,25 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
     public const int SampleValuesPerColumn = 10;
 
     private readonly SqlConnection _connection;
+    private readonly DeepProfileTimeoutBudget _timeoutBudget;
 
     public SqlServerDeepProfileReader(SqlConnection connection)
+        : this(connection, DeepProfileTimeoutBudget.Default)
+    {
+    }
+
+    /// <summary>
+    /// Construct with an explicit timeout budget (FIX-B2.7E). The budget
+    /// is split per command class — short ceilings for metadata/cleanup,
+    /// long ceilings for sample materialization and per-column aggregation.
+    /// See <see cref="DeepProfileTimeoutBudget"/>.
+    /// </summary>
+    public SqlServerDeepProfileReader(SqlConnection connection, DeepProfileTimeoutBudget timeoutBudget)
     {
         ArgumentNullException.ThrowIfNull(connection);
+        ArgumentNullException.ThrowIfNull(timeoutBudget);
         _connection = connection;
+        _timeoutBudget = timeoutBudget.Validate();
     }
 
     // ── Sampling plan (B2.0 decision) ────────────────────────────────────
@@ -641,8 +655,19 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
         //    spatial ones — that's fine, T-SQL doesn't object to copying
         //    geometry into a temp table; it only objects to aggregating it.
         //    Filtering at the column-aggregation level is sufficient.
-        await ExecuteNonQueryAsync(BuildSampleMaterializationSql(schemaName, tableName, plan), ct);
-        var sampleSize = await ScalarIntAsync("SELECT COUNT_BIG(*) FROM #tf_deep_profile_sample;", ct);
+        //
+        //    FIX-B2.7E: this is THE expensive command (full-row copy +
+        //    TABLESAMPLE scan against potentially millions of rows). Use the
+        //    Materialization budget; everything else stays on the short
+        //    Metadata budget.
+        await ExecuteNonQueryAsync(
+            BuildSampleMaterializationSql(schemaName, tableName, plan),
+            _timeoutBudget.MaterializationSeconds,
+            ct);
+        var sampleSize = await ScalarIntAsync(
+            "SELECT COUNT_BIG(*) FROM #tf_deep_profile_sample;",
+            _timeoutBudget.MetadataSeconds,
+            ct);
 
         try
         {
@@ -691,7 +716,27 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
             //    Session-local temps auto-drop on disconnect, but in a long-
             //    lived connection the orchestrator may profile many tables
             //    in sequence.
-            await ExecuteNonQueryAsync("DROP TABLE IF EXISTS #tf_deep_profile_sample;", ct);
+            //
+            //    FIX-B2.7E: cleanup is metadata-cheap; short timeout. If the
+            //    enclosing materialization or aggregation already broke the
+            //    connection, this DROP TABLE may itself throw — but the
+            //    finally is still the right place for it because session-
+            //    local temps auto-drop on connection close, so a failure
+            //    here is benign in the per-table session world (the session
+            //    is about to be disposed anyway).
+            try
+            {
+                await ExecuteNonQueryAsync(
+                    "DROP TABLE IF EXISTS #tf_deep_profile_sample;",
+                    _timeoutBudget.MetadataSeconds,
+                    ct);
+            }
+            catch (Exception cleanupEx) when (cleanupEx is not OperationCanceledException)
+            {
+                // Swallow: the per-table session is about to be disposed
+                // (orchestrator opens a new session per table — see
+                // FIX-B2.7E). The temp table dies with the connection.
+            }
         }
     }
 
@@ -701,14 +746,18 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
         string schemaName, string tableName, CancellationToken ct)
     {
         // Always fetch the estimate first — it's cheap and tells us whether
-        // we can afford an exact COUNT(*).
+        // we can afford an exact COUNT(*). Both reads are metadata-class.
         var estimate = await ScalarLongAsync(
-            BuildRowCountEstimateSql(schemaName, tableName), ct);
+            BuildRowCountEstimateSql(schemaName, tableName),
+            _timeoutBudget.MetadataSeconds,
+            ct);
 
         if (estimate <= FullThresholdRowCount)
         {
             var exact = await ScalarLongAsync(
-                BuildExactRowCountSql(schemaName, tableName), ct);
+                BuildExactRowCountSql(schemaName, tableName),
+                _timeoutBudget.MetadataSeconds,
+                ct);
             return (exact, IsExact: true);
         }
 
@@ -722,8 +771,14 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
         long sampleSize,
         CancellationToken ct)
     {
+        // FIX-B2.7E: per-column UNION ALL aggregation runs against the
+        // materialized sample (≤ 10K rows for big tables) but a wide column
+        // list still produces a long plan. Aggregation budget.
         var sql = BuildColumnAggregationSql(columns);
-        await using var cmd = new SqlCommand(sql, _connection);
+        await using var cmd = new SqlCommand(sql, _connection)
+        {
+            CommandTimeout = _timeoutBudget.AggregationSeconds,
+        };
         await using var reader = await cmd.ExecuteReaderAsync(ct);
 
         var records = new List<ColumnStatsRecord>(columns.Count);
@@ -761,7 +816,12 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
 
     private async Task<string?> ReadSampleValuesJsonAsync(string columnName, CancellationToken ct)
     {
-        await using var cmd = new SqlCommand(BuildSampleValuesSql(columnName), _connection);
+        // FIX-B2.7E: aggregation-class — runs against the materialized temp
+        // sample, ORDER BY NEWID() can be moderately expensive.
+        await using var cmd = new SqlCommand(BuildSampleValuesSql(columnName), _connection)
+        {
+            CommandTimeout = _timeoutBudget.AggregationSeconds,
+        };
         await using var reader = await cmd.ExecuteReaderAsync(ct);
 
         var values = new List<string?>(SampleValuesPerColumn);
@@ -774,7 +834,12 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
 
     private async Task<string?> ReadTopValuesJsonAsync(string columnName, CancellationToken ct)
     {
-        await using var cmd = new SqlCommand(BuildTopValuesSql(columnName), _connection);
+        // FIX-B2.7E: aggregation-class — GROUP BY + ORDER BY against the
+        // sample temp table.
+        await using var cmd = new SqlCommand(BuildTopValuesSql(columnName), _connection)
+        {
+            CommandTimeout = _timeoutBudget.AggregationSeconds,
+        };
         await using var reader = await cmd.ExecuteReaderAsync(ct);
 
         var rows = new List<TopValueRow>(TopValuesKept);
@@ -787,15 +852,21 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
         return rows.Count == 0 ? null : JsonSerializer.Serialize(rows);
     }
 
-    private async Task ExecuteNonQueryAsync(string sql, CancellationToken ct)
+    private async Task ExecuteNonQueryAsync(string sql, int timeoutSeconds, CancellationToken ct)
     {
-        await using var cmd = new SqlCommand(sql, _connection);
+        await using var cmd = new SqlCommand(sql, _connection)
+        {
+            CommandTimeout = timeoutSeconds,
+        };
         await cmd.ExecuteNonQueryAsync(ct);
     }
 
-    private async Task<long> ScalarLongAsync(string sql, CancellationToken ct)
+    private async Task<long> ScalarLongAsync(string sql, int timeoutSeconds, CancellationToken ct)
     {
-        await using var cmd = new SqlCommand(sql, _connection);
+        await using var cmd = new SqlCommand(sql, _connection)
+        {
+            CommandTimeout = timeoutSeconds,
+        };
         var raw = await cmd.ExecuteScalarAsync(ct);
         return raw switch
         {
@@ -808,9 +879,9 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
         };
     }
 
-    private async Task<long> ScalarIntAsync(string sql, CancellationToken ct)
+    private async Task<long> ScalarIntAsync(string sql, int timeoutSeconds, CancellationToken ct)
     {
-        return await ScalarLongAsync(sql, ct);
+        return await ScalarLongAsync(sql, timeoutSeconds, ct);
     }
 
     private sealed record TopValueRow(string? Value, int Count);

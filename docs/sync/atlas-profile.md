@@ -425,6 +425,45 @@ schema (`SyncProfileTableStats`, `SyncProfileColumnStats`,
 > entire table just to draw a sample, which defeats the purpose of
 > sampling on multi-million-row PACS tables.
 
+> **Timeout budget + per-table session lifecycle (FIX-B2.7E).**
+> Continuation of B2.7-OLTP. After FIX-B2.7D resolved the dialect bug,
+> the rerun surfaced two coupled problems: (1) ADO.NET's default 30 s
+> `CommandTimeout` was too tight for the `SELECT * INTO #temp` against
+> a 2.2M-row PACS table, so `dbo.imprv` timed out; and (2) the
+> orchestrator was sharing one `SqlConnection` across the whole batch,
+> so the timeout poisoned the connection and every subsequent table
+> failed with `BeginExecuteReader requires an open and available
+> Connection.`
+>
+> Fix is in two halves:
+>
+> 1. **Per-command-class timeout budget** — `DeepProfileTimeoutBudget`
+>    (defined alongside `DeepProfileOptions` in
+>    `DeepProfileOrchestrator.cs`) splits commands into three classes
+>    with default seconds:
+>
+>    | Class | Default | What it covers |
+>    |---|---|---|
+>    | `MetadataSeconds` | 30 | row-count estimate from `sys.partitions`, exact `COUNT_BIG(*)`, post-materialization temp count, `DROP TABLE IF EXISTS` cleanup |
+>    | `MaterializationSeconds` | 300 | `SELECT * INTO #tf_deep_profile_sample FROM <table> TABLESAMPLE SYSTEM (n PERCENT)` — the big-row-copy step |
+>    | `AggregationSeconds` | 300 | per-column UNION ALL aggregates, `BuildSampleValuesSql`, `BuildTopValuesSql` (all over the materialized temp sample) |
+>
+>    The budget is plumbed orchestrator → factory → reader at session
+>    open. Custom budgets can be injected through the
+>    `DeepProfileOrchestrator(db, factory, persistence, timeoutBudget)`
+>    overload; the legacy 3-arg constructor preserves the previous
+>    "default budget" behavior for SyncAtlas CLI compatibility.
+>
+> 2. **Per-table session lifecycle** — the orchestrator now opens a
+>    fresh `IDeepProfileReaderSession` for each profilable table
+>    instead of sharing one across the batch. Connection pooling makes
+>    the open/dispose pair cheap (≈1 ms after the first call). When a
+>    table fails, the per-table `await using` disposes the broken
+>    session immediately and the next iteration draws a healthy
+>    connection from the pool — no cascade. Pinned by orchestrator
+>    tests `RunAsync_OpensIndependentSessionPerProfilableTable` and
+>    `RunAsync_FailedTable_NextTableStillGetsFreshSession`.
+
 ```bash
 # 1. Same prerequisites as B1.7: TerraFusion Postgres + tf-mssql + the
 #    SyncSourceConnection seeded for Benton PACS Training.
