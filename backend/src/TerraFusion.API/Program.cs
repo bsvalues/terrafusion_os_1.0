@@ -2791,9 +2791,15 @@ try
   // CARD-06: Seed Properties from PacsParcel in Development (idempotent).
   // Respect TF_SKIP_DEV_SEEDERS env var — useful when starting against a
   // Postgres DB that already has canonical data (avoids unique-key conflicts).
-  if (app.Environment.IsDevelopment() &&
-      !string.Equals(Environment.GetEnvironmentVariable("TF_SKIP_DEV_SEEDERS"), "true", StringComparison.OrdinalIgnoreCase) &&
-      !string.Equals(Environment.GetEnvironmentVariable("TF_SKIP_DEV_SEEDERS"), "1", StringComparison.OrdinalIgnoreCase))
+  var skipDevSeedersValue = Environment.GetEnvironmentVariable("TF_SKIP_DEV_SEEDERS")?.Trim();
+  var skipDevSeedersArg = args.Any(arg => string.Equals(arg, "--skip-dev-seeders", StringComparison.OrdinalIgnoreCase));
+  var shouldSkipDevSeeders = skipDevSeedersArg ||
+                              string.Equals(skipDevSeedersValue, "true", StringComparison.OrdinalIgnoreCase) ||
+                              string.Equals(skipDevSeedersValue, "1", StringComparison.OrdinalIgnoreCase);
+
+  Console.WriteLine($"[STARTUP] Dev seeders skip={shouldSkipDevSeeders} (arg={skipDevSeedersArg}, TF_SKIP_DEV_SEEDERS={skipDevSeedersValue ?? "<null>"})");
+
+  if (app.Environment.IsDevelopment() && !shouldSkipDevSeeders)
   {
     using var devSeedScope = app.Services.CreateScope();
     var devPropSeeder = devSeedScope.ServiceProvider

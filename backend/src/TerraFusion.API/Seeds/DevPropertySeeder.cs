@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Entities.Pacs;
 using TerraFusion.Data;
@@ -18,6 +19,8 @@ namespace TerraFusion.API.Seeds;
 /// </summary>
 public sealed class DevPropertySeeder
 {
+    private const string BentonCountyFips = "53005";
+
     private readonly TerraFusionDbContext _db;
     private readonly ILogger<DevPropertySeeder> _logger;
 
@@ -29,12 +32,27 @@ public sealed class DevPropertySeeder
 
     public async SystemTask SeedAsync(CancellationToken ct = default)
     {
+        var skipEnvValue = Environment.GetEnvironmentVariable("TF_SKIP_DEV_SEEDERS")?.Trim();
+        var hasSkipArg = Environment.GetCommandLineArgs()
+            .Any(arg => string.Equals(arg, "--skip-dev-seeders", StringComparison.OrdinalIgnoreCase));
+
+        _logger.LogInformation(
+            "[DevPropertySeeder] Skip check: arg={HasSkipArg}, TF_SKIP_DEV_SEEDERS={SkipEnvValue}",
+            hasSkipArg,
+            skipEnvValue ?? "<null>");
+
+        if (ShouldSkipDevSeeders())
+        {
+            _logger.LogInformation("[DevPropertySeeder] Skip signal detected — skipping dev property seeding.");
+            return;
+        }
+
         var propertiesPopulated = await _db.Properties.AnyAsync(ct);
 
         // Ensure Benton County row exists. Look up by FipsCode (stable key);
         // Name may be "Benton" or "Benton County" depending on seed lineage.
         var bentonCounty = await _db.Counties
-            .FirstOrDefaultAsync(c => c.FipsCode == "53005", ct);
+            .FirstOrDefaultAsync(c => c.FipsCode == BentonCountyFips, ct);
 
         if (bentonCounty is null)
         {
@@ -43,15 +61,34 @@ public sealed class DevPropertySeeder
                 Id = Guid.NewGuid(),
                 Name = "Benton",
                 State = "WA",
-                FipsCode = "53005",
+                FipsCode = BentonCountyFips,
                 Population = 206873,
                 Area = 1703.0,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
             };
             _db.Counties.Add(bentonCounty);
-            await _db.SaveChangesAsync(ct);
-            _logger.LogInformation("[DevPropertySeeder] Created Benton County row (Id={Id}).", bentonCounty.Id);
+
+            try
+            {
+                await _db.SaveChangesAsync(ct);
+                _logger.LogInformation("[DevPropertySeeder] Created Benton County row (Id={Id}).", bentonCounty.Id);
+            }
+            catch (DbUpdateException ex)
+            {
+                _db.Entry(bentonCounty).State = EntityState.Detached;
+                bentonCounty = await _db.Counties.FirstOrDefaultAsync(c => c.FipsCode == BentonCountyFips, ct);
+
+                if (bentonCounty is null)
+                {
+                    throw;
+                }
+
+                _logger.LogInformation(
+                    "[DevPropertySeeder] Reused existing Benton County row after county insert failed ({Message}) (Id={Id}).",
+                    ex.InnerException?.Message ?? ex.Message,
+                    bentonCounty.Id);
+            }
         }
 
         var countyId = bentonCounty.Id;
@@ -314,12 +351,31 @@ public sealed class DevPropertySeeder
         };
     }
 
+    private static bool ShouldSkipDevSeeders()
+    {
+        var envValue = Environment.GetEnvironmentVariable("TF_SKIP_DEV_SEEDERS")?.Trim();
+        if (string.Equals(envValue, "true", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(envValue, "1", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return Environment.GetCommandLineArgs()
+            .Any(arg => string.Equals(arg, "--skip-dev-seeders", StringComparison.OrdinalIgnoreCase));
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // Dev fixtures: specific canonical sample parcels that must always exist.
     // Idempotent — skips if the parcel already exists.
     // ─────────────────────────────────────────────────────────────────────────
     public async SystemTask EnsureFixturesAsync(CancellationToken ct = default)
     {
+        if (ShouldSkipDevSeeders())
+        {
+            _logger.LogInformation("[DevPropertySeeder] Skip signal detected — skipping dev fixtures.");
+            return;
+        }
+
         var bentonCounty = await _db.Counties
             .FirstOrDefaultAsync(c => c.Name == "Benton" && c.State == "WA", ct);
         if (bentonCounty is null)
