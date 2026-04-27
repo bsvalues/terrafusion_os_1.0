@@ -22,7 +22,7 @@ Excluded: `.git/`, `node_modules/`, `bin/`, `obj/`
 | `TF_DEV_DB_PASSWORD` | `backend/compose.dev.yml`, `backend/api-unified/appsettings.Development.json`, `compose/docker-compose.dev.enhanced.yml` | Local Postgres container | Dev-only. Prod uses separate DB credential. |
 | `TF_DEV_JWT_SECRET` | `backend/api-unified/appsettings.Development.json`, `backend/src/TerraFusion.Operations/appsettings.Development.json`, `backend/publish/appsettings.Development.json` | JWT signing in dev | Dev-only static value. Prod uses `TF_JWT_SECRET`. |
 | `TF_DEV_ENCRYPTION_KEY` | `backend/api-unified/appsettings.Development.json` | Data-at-rest encryption key in dev | Must be 256-bit. |
-| `TF_DEV_PACS_PASSWORD` | `backend/src/TerraFusion.API/appsettings.Development.json` | SA password for tf-mssql container | Resolved via `appsettings.Development.local.json` (gitignored). Value: `TF_Pacs2026!` |
+| `TF_DEV_PACS_PASSWORD` | `backend/src/TerraFusion.API/appsettings.Development.json` | SA password for tf-mssql container | Resolved via `appsettings.Development.local.json` (gitignored). Value: `<redacted-local-dev-sql-password>` |
 | `TF_DEV_GRAFANA_PASSWORD` | `backend/ai-models/BENTON_COUNTY_CHAMPIONSHIP_PLAYBOOK/docker-compose.yml` | Grafana admin UI in dev | Low priority for Phase 35. |
 | `TF_DEV_PGADMIN_PASSWORD` | `backend/compose.dev.yml` | pgAdmin dev UI | Low priority for Phase 35. |
 | `TF_DEV_KEYCLOAK_PASSWORD` | `.ci_artifacts_local/docker-compose.dev.yml` | Keycloak dev admin | Phase 35 scope if Keycloak is in compose slice. |

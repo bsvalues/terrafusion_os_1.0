@@ -1526,7 +1526,7 @@ cd c:\Users\bsval\terrafusion_os_1.0\QUARANTINE\top-level-dirs\workspaces\JCHARR
 
 # This builds DACPACs and deploys them in correct dependency order,
 # then runs create_api_service_account.sql to provision pacs_api_svc.
-$env:SA_PASSWORD = "TF_Pacs2026!"
+$env:SA_PASSWORD = "<redacted-local-dev-sql-password>"
 .\Make.ps1 publish-sql
 `
 

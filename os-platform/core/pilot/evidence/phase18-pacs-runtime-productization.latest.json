@@ -34,8 +34,8 @@
       "ok": true,
       "detail": "Development connection contract points parcel truth to pacs_oltp and sales truth to pacs_golive",
       "payload": {
-        "pacsConnection": "Server=localhost,1433;Database=pacs_oltp;User Id=sa;Password=TF_Pacs2026!;TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;",
-        "pacsSalesConnection": "Server=localhost,1433;Database=pacs_golive;User Id=sa;Password=TF_Pacs2026!;TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;"
+        "pacsConnection": "Server=localhost,1433;Database=pacs_oltp;User Id=sa;Password=<redacted-local-dev-sql-password>;TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;",
+        "pacsSalesConnection": "Server=localhost,1433;Database=pacs_golive;User Id=sa;Password=<redacted-local-dev-sql-password>;TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;"
       },
       "blocker": null
     },

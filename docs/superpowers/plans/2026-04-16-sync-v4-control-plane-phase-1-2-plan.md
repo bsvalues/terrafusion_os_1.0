@@ -1984,7 +1984,7 @@ Append to `docker-compose.dev.yml`:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "TF_Pacs2026!"
+      MSSQL_SA_PASSWORD: "<redacted-local-dev-sql-password>"
       MSSQL_PID: "Developer"
       MSSQL_AGENT_ENABLED: "true"
     ports: ["1433:1433"]
@@ -2010,7 +2010,7 @@ The Benton PACS backup is at `E:\PACS\pacs_oltp_backup_2026_01_15_170502_7994110
 ```bash
 # copy .bak into ./backups/ (or mount from E:)
 docker compose exec mssql /opt/mssql-tools/bin/sqlcmd \
-  -S localhost -U sa -P 'TF_Pacs2026!' \
+  -S localhost -U sa -P '<redacted-local-dev-sql-password>' \
   -Q "RESTORE DATABASE pacs_oltp FROM DISK='/var/opt/mssql/backup/pacs_oltp_backup_2026_01_15_170502_7994110.bak' WITH MOVE 'pacs_oltp' TO '/var/opt/mssql/data/pacs_oltp.mdf', MOVE 'pacs_oltp_log' TO '/var/opt/mssql/data/pacs_oltp_log.ldf', REPLACE"
 ```
 

@@ -22,7 +22,7 @@
 ```powershell
 # Restore full PACS database from archived backups
 # This extracts RAR archives, starts SQL Server, restores 16.8 GB backup
-pwsh ops/dev/restore-pacs-from-archives.ps1 -SaPassword "TF_Pacs2026!"
+pwsh ops/dev/restore-pacs-from-archives.ps1 -SaPassword "<redacted-local-dev-sql-password>"
 ```
 
 **Expected output**: `PASS: 4/4 smoke checks passed`
@@ -44,7 +44,7 @@ docker cp ops/dev/pacs-contract-views.sql tf-mssql:/tmp/
 
 # Execute it
 docker exec tf-mssql /opt/mssql-tools18/bin/sqlcmd `
-  -S localhost -U sa -P "TF_Pacs2026!" -C `
+  -S localhost -U sa -P "<redacted-local-dev-sql-password>" -C `
   -i /tmp/pacs-contract-views.sql
 ```
 
@@ -138,7 +138,7 @@ $r.Content | ConvertFrom-Json | ConvertTo-Json -Depth 5
 ```powershell
 # Property 10007: Miller Gordon A & Glenda J, 106 8th Street, Prosser WA
 docker exec tf-mssql /opt/mssql-tools18/bin/sqlcmd `
-  -S localhost -U sa -P "TF_Pacs2026!" -C -d pacs_oltp -Q "
+  -S localhost -U sa -P "<redacted-local-dev-sql-password>" -C -d pacs_oltp -Q "
   SELECT prop_id, geo_id, situs_addr, assessed_val, market_val, appr_year
   FROM vw_TerraFusion_Property_Core
   WHERE prop_id = 10007;
