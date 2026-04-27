@@ -397,6 +397,64 @@ dotnet run --project backend/tools/SyncAtlas --no-build -- \
 echo "exit=${PIPESTATUS[0]}"
 ```
 
+#### Bounded smoke runs (Slice B2.5A operator safety controls)
+
+A full deep profile against ~2,087 PACS tables is the unknown-runtime
+case. Two CLI flags (Slice B2.5A) bound the work so the operator can
+prove timing and failure shape against a small subset *before* spending
+hours on the full corpus. Both flags require `--deep-profile`:
+
+`--deep-profile-max-tables N` caps the iteration at the first N tables
+(after the deterministic schema/name sort). Anything past N appears as
+`Skipped` in the summary so the operator sees the cap-induced delta.
+
+```bash
+# 25-table smoke — enough rows to characterize per-table runtime,
+# small enough to abort cheaply if something explodes.
+dotnet run --project backend/tools/SyncAtlas --no-build -- \
+  --db "$TF_DB" \
+  --county-id "19190019-1919-1919-1919-191919191919" \
+  --connection-id "8e4944c7-9628-448e-b7a6-0053d58ff5ac" \
+  --operator "$USER" \
+  --deep-profile \
+  --deep-profile-max-tables 25
+```
+
+`--deep-profile-include schema.table[,schema.table…]` restricts the
+deep pass to a comma-separated allowlist of fully-qualified names.
+Names that don't match the structural batch are silently dropped
+(typo-tolerant). Match is case-insensitive.
+
+```bash
+# Targeted: just three known PACS tables, useful for proving the
+# code-candidate detector against well-understood code-lookup columns.
+dotnet run --project backend/tools/SyncAtlas --no-build -- \
+  --db "$TF_DB" \
+  --county-id "19190019-1919-1919-1919-191919191919" \
+  --connection-id "8e4944c7-9628-448e-b7a6-0053d58ff5ac" \
+  --operator "$USER" \
+  --deep-profile \
+  --deep-profile-include dbo.property,dbo.property_val,dbo.sale
+```
+
+The two flags compose: include filter applies first, then the cap
+truncates the include-filtered set. Tables filtered out don't count
+toward `TablesAttempted`; tables truncated by the cap do (they're the
+operator-selected corpus, just not the iterated set).
+
+The recommended B2.7 escalation path:
+
+  1. Run `--deep-profile-max-tables 25` first. Confirm CLI behavior,
+     measure per-table cost, eyeball one or two `SyncProfileColumnStats`
+     rows for shape sanity.
+  2. Run `--deep-profile-include` against ~5–10 specifically-targeted
+     PACS tables (property, property_val, sale, imprv, attribute_val,
+     deed, owner, etc.) to prove the chain works against the kinds of
+     tables that matter for Slice C mapping. Capture timings.
+  3. Decide whether the full corpus run is safe as-is, or whether it
+     needs a true B2.5 (priority / concurrency) follow-up before being
+     attempted. Real timings from steps 1–2 inform the decision.
+
 After the run, inspect the B2.1 stats rows with the staged verification SQL:
 
 ```bash

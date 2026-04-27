@@ -219,4 +219,179 @@ public class CliArgsParserTests
     {
         CliArgsParser.UsageText.Should().Contain("--deep-profile");
     }
+
+    // ── --deep-profile-include + --deep-profile-max-tables (Slice B2.5A) ─
+
+    [Fact]
+    public void Parse_DefaultsIncludeListEmptyAndMaxTablesNull()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--deep-profile",
+        });
+
+        err.Should().BeNull();
+        args!.DeepProfileIncludeQualifiedNames.Should().BeEmpty();
+        args.DeepProfileMaxTables.Should().BeNull();
+    }
+
+    [Fact]
+    public void Parse_DeepProfileInclude_ParsesCommaSeparatedQualifiedNames()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--deep-profile",
+            "--deep-profile-include", "dbo.property,dbo.property_val,dbo.sale",
+        });
+
+        err.Should().BeNull();
+        args!.DeepProfileIncludeQualifiedNames.Should().BeEquivalentTo(new[]
+        {
+            "dbo.property", "dbo.property_val", "dbo.sale",
+        });
+    }
+
+    [Fact]
+    public void Parse_DeepProfileInclude_TrimsWhitespaceAroundEntries()
+    {
+        // Operators frequently paste lists with trailing whitespace from
+        // the IDE — the parser should be lenient about that, but still
+        // treat each entry as a single qualified name.
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--deep-profile",
+            "--deep-profile-include", " dbo.property , dbo.sale ",
+        });
+
+        err.Should().BeNull();
+        args!.DeepProfileIncludeQualifiedNames.Should().BeEquivalentTo(new[]
+        {
+            "dbo.property", "dbo.sale",
+        });
+    }
+
+    [Theory]
+    [InlineData("invalid")]            // no dot
+    [InlineData(".table")]             // empty schema
+    [InlineData("schema.")]            // empty table
+    [InlineData("schema.table.extra")] // too many dots
+    public void Parse_DeepProfileInclude_RejectsBadEntry(string entry)
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--deep-profile",
+            "--deep-profile-include", entry,
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--deep-profile-include");
+        err.Should().Contain("schema.table");
+    }
+
+    [Fact]
+    public void Parse_DeepProfileInclude_RequiresDeepProfileFlag()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            // NOTE: no --deep-profile here.
+            "--deep-profile-include", "dbo.property",
+        });
+
+        args.Should().BeNull();
+        err.Should().Be("--deep-profile-include requires --deep-profile");
+    }
+
+    [Fact]
+    public void Parse_DeepProfileMaxTables_ParsesPositiveInteger()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--deep-profile",
+            "--deep-profile-max-tables", "25",
+        });
+
+        err.Should().BeNull();
+        args!.DeepProfileMaxTables.Should().Be(25);
+    }
+
+    [Theory]
+    [InlineData("0")]
+    [InlineData("-1")]
+    [InlineData("not-a-number")]
+    public void Parse_DeepProfileMaxTables_RejectsNonPositiveOrNonInt(string value)
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--deep-profile",
+            "--deep-profile-max-tables", value,
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--deep-profile-max-tables");
+        err.Should().Contain("positive integer");
+    }
+
+    [Fact]
+    public void Parse_DeepProfileMaxTables_RequiresDeepProfileFlag()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            // NOTE: no --deep-profile here.
+            "--deep-profile-max-tables", "10",
+        });
+
+        args.Should().BeNull();
+        err.Should().Be("--deep-profile-max-tables requires --deep-profile");
+    }
+
+    [Fact]
+    public void Parse_AllB25AFlagsTogether_AreAccepted()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--deep-profile",
+            "--deep-profile-include", "dbo.property,dbo.sale",
+            "--deep-profile-max-tables", "5",
+        });
+
+        err.Should().BeNull();
+        args!.DeepProfile.Should().BeTrue();
+        args.DeepProfileIncludeQualifiedNames.Should().HaveCount(2);
+        args.DeepProfileMaxTables.Should().Be(5);
+    }
+
+    [Fact]
+    public void UsageText_MentionsB25ASafetyControls()
+    {
+        var usage = CliArgsParser.UsageText;
+        usage.Should().Contain("--deep-profile-include");
+        usage.Should().Contain("--deep-profile-max-tables");
+    }
 }

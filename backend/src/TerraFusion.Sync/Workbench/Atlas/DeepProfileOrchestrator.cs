@@ -25,6 +25,53 @@ public sealed record DeepProfileTableFailure(
     string Reason);
 
 /// <summary>
+/// Operator-facing safety controls for a deep-profile run (Slice B2.5A).
+///
+/// Both options are independent and additive:
+///   - <see cref="IncludeQualifiedNames"/> filters the candidate-table set
+///     down to a caller-supplied allowlist of fully-qualified
+///     <c>"schema.table"</c> strings (case-insensitive). Names that don't
+///     match anything in the structural batch are silently ignored —
+///     callers iterate over a possibly-large set, and a typo shouldn't
+///     abort a long run. Missing or empty list = no filter (current
+///     orchestrator behavior).
+///   - <see cref="MaxTables"/> caps the iteration after include filtering
+///     and (schema, table) ordering. Caller sees the FIRST N tables in
+///     deterministic order. Missing = no cap.
+///
+/// When both are set, include filter applies first, then max-tables
+/// truncates the result. Tables that would have been profiled but were
+/// truncated by the cap count as <c>TablesSkipped</c> in the result so
+/// the operator-facing summary reports the budget vs the corpus
+/// honestly.
+/// </summary>
+public sealed record DeepProfileOptions(
+    IReadOnlyCollection<string>? IncludeQualifiedNames = null,
+    int? MaxTables = null)
+{
+    public static DeepProfileOptions None { get; } = new();
+
+    /// <summary>True iff <paramref name="schema"/>.<paramref name="table"/> matches the include allowlist (or no allowlist set).</summary>
+    public bool MatchesInclude(string schema, string table)
+    {
+        if (IncludeQualifiedNames is null || IncludeQualifiedNames.Count == 0)
+        {
+            return true;
+        }
+
+        var qualified = $"{schema}.{table}";
+        foreach (var entry in IncludeQualifiedNames)
+        {
+            if (string.Equals(entry, qualified, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+/// <summary>
 /// Orchestrates a B2 deep-profile pass for a SyncBatch that already has B1
 /// structural metadata persisted. Reads <c>SyncProfileTable</c> +
 /// <c>SyncProfileColumn</c> rows for the batch to discover what to profile,
@@ -53,6 +100,7 @@ public interface IDeepProfileOrchestrator
         Guid countyId,
         Guid sourceConnectionId,
         string operatorId,
+        DeepProfileOptions? options = null,
         CancellationToken ct = default);
 }
 
@@ -80,6 +128,7 @@ public sealed class DeepProfileOrchestrator : IDeepProfileOrchestrator
         Guid countyId,
         Guid sourceConnectionId,
         string operatorId,
+        DeepProfileOptions? options = null,
         CancellationToken ct = default)
     {
         if (batchId == Guid.Empty)
@@ -90,7 +139,14 @@ public sealed class DeepProfileOrchestrator : IDeepProfileOrchestrator
             throw new ArgumentException("SourceConnectionId is required.", nameof(sourceConnectionId));
         if (string.IsNullOrWhiteSpace(operatorId))
             throw new ArgumentException("OperatorId is required.", nameof(operatorId));
+        if (options is { MaxTables: int max } && max <= 0)
+        {
+            throw new ArgumentException(
+                "DeepProfileOptions.MaxTables must be positive when set.",
+                nameof(options));
+        }
 
+        var effectiveOptions = options ?? DeepProfileOptions.None;
         var startedAt = DateTimeOffset.UtcNow;
 
         // Connection lookup, county-scoped — same guard as AtlasProfiler.
@@ -109,13 +165,34 @@ public sealed class DeepProfileOrchestrator : IDeepProfileOrchestrator
 
         // Pull the structural rows for this batch. Filter out views — deep
         // profile only sampples real tables (see comment block on this class).
-        var tables = await _db.SyncProfileTables
+        var allTables = await _db.SyncProfileTables
             .Where(t => t.SyncBatchId == batchId
                      && t.CountyId    == countyId
                      && !t.IsView)
             .OrderBy(t => t.SchemaName)
             .ThenBy(t => t.TableName)
             .ToListAsync(ct);
+
+        // Slice B2.5A safety controls:
+        //   1. Filter to the operator's --deep-profile-include allowlist (if any).
+        //      Names that don't match the structural batch are silently dropped
+        //      so a typo can't abort the run.
+        //   2. Cap at --deep-profile-max-tables (if set) AFTER include filter
+        //      and the deterministic (schema, table) sort. Tables that survive
+        //      the include filter but get truncated by the cap count toward
+        //      `tablesAttempted` (the corpus the operator picked) but are
+        //      reported as `Skipped` (they didn't actually run).
+        var matchedTables = allTables
+            .Where(t => effectiveOptions.MatchesInclude(t.SchemaName, t.TableName))
+            .ToList();
+
+        var truncatedSkip = 0;
+        IReadOnlyList<SyncProfileTable> tables = matchedTables;
+        if (effectiveOptions.MaxTables is int maxTables && maxTables < matchedTables.Count)
+        {
+            truncatedSkip = matchedTables.Count - maxTables;
+            tables = matchedTables.Take(maxTables).ToList();
+        }
 
         var allColumns = await _db.SyncProfileColumns
             .Where(c => c.SyncBatchId == batchId && c.CountyId == countyId)
@@ -129,7 +206,7 @@ public sealed class DeepProfileOrchestrator : IDeepProfileOrchestrator
 
         var profiled = 0;
         var failed   = 0;
-        var skipped  = 0;
+        var skipped  = truncatedSkip;
         var failures = new List<DeepProfileTableFailure>();
 
         await using var session = await _readerFactory.OpenAsync(connection, ct);
@@ -175,9 +252,12 @@ public sealed class DeepProfileOrchestrator : IDeepProfileOrchestrator
             }
         }
 
+        // TablesAttempted reflects the corpus the operator selected (the
+        // include-filtered set), NOT the post-cap iterated set. The cap-
+        // induced delta lands in `Skipped` so the summary surfaces it.
         return new DeepProfileOrchestrationResult(
             BatchId:          batchId,
-            TablesAttempted:  tables.Count,
+            TablesAttempted:  matchedTables.Count,
             TablesProfiled:   profiled,
             TablesFailed:     failed,
             TablesSkipped:    skipped,
