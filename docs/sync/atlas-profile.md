@@ -10,12 +10,15 @@ SyncAtlas is currently:
 | Source connection-backed | yes |
 | CLI runnable | yes |
 | Docker SQL Server integration-tested | yes |
-| Real local `pacs_training` operator-tested | **blocked** |
+| Real local `pacs_training` operator-tested | **yes** (B1.7 PASS) |
+| SQL Auth via external secret resolver | yes (B1.6.5) |
 
-**B1.7 is blocked because `jcharrispacs/pacs_training` is not reachable on the operator machine.**
-This is an environment availability issue, not a SyncAtlas code failure. See the
-[B1.7 Resume Checklist](#b17-resume-checklist) below for how to complete B1.7
-when the local SQL Server is back up.
+**B1.7 passed against the real local PACS_Training database** in the operator's
+`tf-mssql` Docker SQL Server, end-to-end, exit code `0`, ~9min58s, with
+**35,795 metadata rows persisted** to TerraFusion DB and zero source-system
+credentials in any captured artifact. See the
+[B1.7 Operator Proof](#b17-operator-proof) section below for the full evidence
+block including SyncBatch.Id, per-domain counts, and reproduction steps.
 
 ## What SyncAtlas Does
 
@@ -40,29 +43,27 @@ canonical landing schema and operational tables.
 
 SyncAtlas does **not**:
 
-- Store source-system passwords in the repository.
+- Store source-system passwords in the repository or the TerraFusion DB.
 - Pull PACS rows into production tables.
 - Replace TerraFusion Sync.
 - Expose an HTTP endpoint (B1.9 deferred to post-MVP).
-- Prove the real local PACS training database unless run against `pacs_training`.
-
-> **Synthetic PACS-shaped data may prove the CLI path, but it does not satisfy B1.7.**
-> B1.7's purpose is specifically to demonstrate that SyncAtlas operates correctly
-> against the actual local `jcharrispacs/pacs_training` source. Substituting
-> synthetic data and calling B1.7 done would poison the proof chain.
 
 ## Architecture
 
 ```text
 ┌─────────────────────────────┐
 │ SQL Server source           │
-│ (e.g. jcharrispacs/pacs_*)  │
+│ (e.g. jcharrispacs/pacs_*   │
+│  or local tf-mssql Docker)  │
 └──────────────┬──────────────┘
                │ Windows Integrated Auth (default)
+               │   — or —
+               │ SqlAuth: Username from entity,
+               │          Password from ISecretResolver (B1.6.5)
                ▼
 ┌─────────────────────────────┐
-│ SyncSourceConnection row    │  (TerraFusion DB; no plaintext passwords)
-│ (CountyId, Server, Database) │
+│ SyncSourceConnection row    │  (TerraFusion DB; no plaintext passwords,
+│ (CountyId, Server, Database)│   no Password column by structural test)
 └──────────────┬──────────────┘
                │ resolved by
                ▼
@@ -136,11 +137,20 @@ Before running SyncAtlas, the TerraFusion DB must contain:
    - `CountyId` matching the operator's county.
    - `IsActive = true`.
    - `Server`, `Database`, and `ConnectionType = 'SqlServer'` populated.
-   - `AuthMode = 'WindowsIntegrated'` (default).
+   - `AuthMode` of either:
+     - `'WindowsIntegrated'` (default) — uses the operator's Windows credentials,
+       no resolver invoked, suited to domain-joined Windows SQL Server hosts; or
+     - `'SqlAuth'` — `Username` populated on the entity; password resolved at
+       runtime via the `ISecretResolver` path landed in B1.6.5 (see
+       [SQL Auth Secret Resolution](#sql-auth-secret-resolution) below). Required
+       for Linux-hosted SQL Server (e.g. the local `tf-mssql` Docker container)
+       which cannot do Windows Integrated without Kerberos / AD setup.
 3. A reachable SQL Server source database, accessible via the credentials
-   resolved at runtime (Windows Integrated by default).
-4. **No plaintext source-system passwords stored in any repo file.** SqlAuth
-   credentials must resolve from external secret storage at connection time.
+   resolved at runtime.
+4. **No plaintext source-system passwords stored in any repo file or DB column.**
+   `SyncSourceConnection` has no `Password` / `PasswordHash` / `Secret` property
+   (B1.2 structural test enforces this). SqlAuth credentials must resolve from
+   external secret storage at connection time.
 
 For local Benton County testing:
 
@@ -216,8 +226,10 @@ chars).
 | B1.4 | `4d9a26d6b` | `AtlasProfiler` orchestrator landed; 7/7 orchestration tests with fake reader |
 | B1.5 | `f469f419e` | CLI runner landed; 13/13 argument-parser tests |
 | B1.6 | `fbb29955d` | Docker SQL Server integration tests passed; **10/10 against live `azure-sql-edge` container** |
-| **B1.7** | — | **Blocked: local `jcharrispacs/pacs_training` unavailable** |
-| B1.8 | (this commit) | Documentation |
+| B1.6.5 | `ea7f6c144` | External SQL Auth secret resolver landed; 14/14 resolver + factory-auth tests (incl. `HasNoPasswordColumn` re-asserted on the `ISecretResolver` path) |
+| B1.6.5+ | `671652433` | `AdditionalOptions` parser bugfix + 2 regression tests pinning credential preservation and the forbidden-key drop policy |
+| **B1.7** | `91860c85c` | **PASS — real local `PACS_Training` profile run; 35,795 metadata rows persisted, exit 0, ~9min58s** (full proof block below) |
+| B1.8 | (this commit) | Documentation reconciled to the post-B1.7 state |
 
 ### B1.6 Docker proof note
 
@@ -228,99 +240,149 @@ reliably on the operator's Docker host (multiple 22-minute `sqlcmd -Q "SELECT 1"
 loops with no progress). `azure-sql-edge` becomes ready in ~80 seconds. The
 deviation is documented in the B1.6 commit message.
 
-### B1.7 blocked state
+### B1.7 Operator Proof
 
-When this slice was attempted, the operator's local environment showed:
+SyncAtlas was run end-to-end against the operator's real local PACS_Training
+database in the `tf-mssql` Docker SQL Server. Status: **PASS**, exit code `0`,
+no synthetic substitution.
 
-- TerraFusion Postgres: ✅ up (`terrafusion-postgres-dev`, healthy)
-- `Counties` row: ✅ Benton County present
-- `SyncSourceConnections` table: ✅ exists, 0 rows
-- `SyncBatches` table: ✅ exists, 0 rows
-- `jcharrispacs/pacs_training` SQL Server: ❌ not reachable (no `sqlservr.exe` process; no SQL Server engine service installed on the host)
+**Run identifiers**
 
-Without a reachable SQL Server source, the CLI cannot demonstrate the operator
-workflow against real PACS data. **Substituting synthetic data does not satisfy
-B1.7** — the slice exists specifically to prove behavior against the real local
-source.
+| Field | Value |
+|---|---|
+| `SyncBatch.Id` | `0eac0299-c6da-4d80-96de-861cd95b4339` |
+| `SyncSourceConnection.Id` | `8e4944c7-9628-448e-b7a6-0053d58ff5ac` |
+| `CountyId` | `19190019-1919-1919-1919-191919191919` (Benton County, FIPS 53005) |
+| Source database | `PACS_Training` (`localhost,1433`, `tf-mssql` Docker, mssql/server:2022-latest) |
+| `AuthMode` | `SqlAuth` |
+| `Username` | `sa` |
+| Password resolution | `SYNCATLAS_SECRET_8E4944C79628448EB7A60053D58FF5AC` env var (B1.6.5 path) |
+| Started (UTC) | `2026-04-27T05:53:38.2744441` |
+| Completed (UTC) | `2026-04-27T06:03:34.8611287` |
+| Elapsed | `00:09:58.8682455` |
 
-## B1.7 Resume Checklist
+**Discovered metadata counts** (CLI summary matches DB-persisted counts exactly):
 
-Resume B1.7 only when the real local SQL Server source (`jcharrispacs/pacs_training`
-or equivalent) is available.
+| Domain | Rows |
+|---|---:|
+| Tables | 2,087 |
+| Columns | 29,394 |
+| Views | 0 |
+| Procedures | 3 |
+| UDFs | 1 |
+| Triggers | 827 |
+| Constraints | 3,483 |
+| **Total `SyncBatch.ReadCount`** | **35,795** |
+
+**Success criteria** — all met:
+
+- [x] SyncAtlas exits with code `0`
+- [x] `SyncBatches` row with `Mode = 'profile'` + `Status = 'completed'` scoped to Benton County
+- [x] `Tables`, `Columns`, and `Constraints` counts all non-zero
+- [x] CLI output captured to `backend/artifacts/sync-atlas/b1.7-pacs-training-profile.txt`
+- [x] `SyncBatch.ReadCount` (35,795) equals the sum across all per-domain counts
+- [x] Zero source-system credentials present in any captured artifact (verified by scan)
+
+**Bugfix landed mid-slice** (commit `671652433`): the first attempt failed with
+`Login failed for user ''` because `SqlConnectionStringBuilder.Keys` enumerates
+all known keywords, not just keys present in the input — the prior overlay loop
+in `SqlServerMetadataReaderFactory.BuildConnectionString` was iterating those
+keys and zeroing out the resolver-supplied `UserID` / `Password` with empty
+defaults. The fix replaced the overlay with a manual `;`-split parser that:
+
+1. Applies only keys explicitly present in `AdditionalOptions`.
+2. Silently drops any key in a forbidden set (`User ID`, `Password`,
+   `Integrated Security`, etc.) — defense in depth so `AdditionalOptions` can
+   never overwrite resolver-supplied credentials.
+
+Two regression tests pin both behaviors:
+
+- `BuildConnectionString_AdditionalOptions_DoNotClobberSqlAuthCredentials`
+- `BuildConnectionString_AdditionalOptions_StripsForbiddenCredentialKeys`
+
+**Evidence artifacts** (gitignored per repo convention; preserved locally for
+operator review, intentionally not committed to keep the repo source-credential-
+free):
+
+- `backend/artifacts/sync-atlas/b1.7-pacs-training-profile.txt` — CLI output
+- `backend/artifacts/sync-atlas/b1.7-pacs-training-batches.txt` — `SyncBatches` row dump
+- `backend/artifacts/sync-atlas/b1.7-pacs-training-counts.txt` — per-domain DB counts
+- `backend/artifacts/sync-atlas/b1.7-pacs-training-verify.sql` — re-runnable verification SQL
+- `backend/artifacts/sync-atlas/b1.7-pacs-training-summary.md` — full operator-facing summary
+
+### Reproducing the B1.7 run
+
+The original blocker (`jcharrispacs/pacs_training` not reachable on the operator
+host) was resolved by spinning up the local `tf-mssql` Docker container and
+restoring the PACS_Training database into it. Any operator with the same local
+setup can reproduce as follows:
 
 ```bash
-# 1. Confirm TerraFusion Postgres is up.
+# 1. TerraFusion Postgres up.
 docker ps --filter "name=terrafusion-postgres-dev"
 
-# 2. Confirm SQL Server is reachable.
-#    Use whatever local tooling identifies your SQL Server engine:
-#    - net start | grep -i sql      (Windows service)
-#    - tasklist | grep sqlservr     (Windows process)
-#    - docker ps | grep sql         (Docker-hosted)
-#    Then verify the source database accepts a "SELECT 1" with the operator's
-#    Windows credentials.
+# 2. Source SQL Server up (tf-mssql Docker, listening on localhost:1433),
+#    PACS_Training database restored, sa account enabled.
+docker ps --filter "name=tf-mssql"
 
-# 3. Confirm Benton County exists in TerraFusion DB.
-#    CountyId: 19190019-1919-1919-1919-191919191919
+# 3. Set the connection-specific secret in the OPERATOR's shell only —
+#    never in a file, never in git. The variable name is derived from the
+#    SyncSourceConnection.Id with dashes removed and uppercased.
+export SYNCATLAS_SECRET_8E4944C79628448EB7A60053D58FF5AC='<sa password>'
 
-# 4. Confirm or seed a SyncSourceConnection for pacs_training.
-#    Required fields:
-#      CountyId        = 19190019-1919-1919-1919-191919191919
-#      Name            = "Benton PACS Training"
-#      SourceSystem    = "PACS"
-#      ConnectionType  = "SqlServer"
-#      Server          = "jcharrispacs"  (or the host the SQL engine listens on)
-#      Database        = "pacs_training"
-#      AuthMode        = "WindowsIntegrated"
-#      IsActive        = true
-#    No password column exists by design.
+# 4. Run SyncAtlas.
+export TF_DB='<terrafusion postgres connection string from operator shell>'
 
-# 5. Run SyncAtlas.
-export TF_DB='Host=localhost;Port=5432;Database=terrafusion;Username=postgres'
-export TF_COUNTY_ID='19190019-1919-1919-1919-191919191919'
-export TF_SYNC_SOURCE_CONNECTION_ID='<guid from step 4>'
-export TF_OPERATOR="${USER:-operator}"
-
-mkdir -p backend/artifacts/sync-atlas
-
-dotnet run --project backend/tools/SyncAtlas -- \
+dotnet run --project backend/tools/SyncAtlas --no-build -- \
   --db "$TF_DB" \
-  --county-id "$TF_COUNTY_ID" \
-  --connection-id "$TF_SYNC_SOURCE_CONNECTION_ID" \
-  --operator "$TF_OPERATOR" \
+  --county-id "19190019-1919-1919-1919-191919191919" \
+  --connection-id "8e4944c7-9628-448e-b7a6-0053d58ff5ac" \
+  --operator "$USER" \
   | tee backend/artifacts/sync-atlas/b1.7-pacs-training-profile.txt
 
 echo "exit=${PIPESTATUS[0]}"
 ```
 
-PowerShell variant of the run step:
+Expected: exit `0`, ~10 minutes, ~35,795 metadata rows persisted to TerraFusion
+DB. If the secret env var is missing or empty, SyncAtlas fails fast with a
+name-bearing error: `Required secret environment variable 'SYNCATLAS_SECRET_…'
+is not set or is empty.`
 
-```powershell
-dotnet run --project backend/tools/SyncAtlas -- `
-  --db "$env:TF_DB" `
-  --county-id "$env:TF_COUNTY_ID" `
-  --connection-id "$env:TF_SYNC_SOURCE_CONNECTION_ID" `
-  --operator "$env:TF_OPERATOR" `
-  | Tee-Object backend/artifacts/sync-atlas/b1.7-pacs-training-profile.txt
+## SQL Auth Secret Resolution
 
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+When `SyncSourceConnection.AuthMode = 'SqlAuth'`, SyncAtlas resolves the
+password through `ISecretResolver` at connection-open time. The default
+implementation, `EnvironmentSecretResolver`, reads the value from a process
+environment variable named by convention:
+
+```text
+SYNCATLAS_SECRET_<connection-id-no-dashes-uppercase>
 ```
 
-### B1.7 success criteria
+For example, `SyncSourceConnection.Id = 8e4944c7-9628-448e-b7a6-0053d58ff5ac`
+maps to `SYNCATLAS_SECRET_8E4944C79628448EB7A60053D58FF5AC`. The same name is
+produced by `SyncAtlasSecretNames.ForSqlAuthPassword(connectionId)` so the
+factory, the resolver, and the operator runbook all agree on the env-var name
+for any given connection.
 
-B1.7 is complete only when **all** of the following hold:
+Doctrine pinned by tests:
 
-- SyncAtlas exits with code `0`.
-- TerraFusion DB contains a `SyncBatches` row with `Mode = 'profile'`,
-  `Status = 'completed'`, scoped to Benton County.
-- `Tables`, `Columns`, and `Constraints` counts are all non-zero.
-- The captured CLI output is saved to
-  `backend/artifacts/sync-atlas/b1.7-pacs-training-profile.txt`.
-- No source-system credentials appear in the captured artifacts.
+- `SyncSourceConnection` has **no** `Password` / `PasswordHash` / `Secret` /
+  `ApiKey` property — structural assertion in `SyncSourceConnectionSchemaTests`
+  and re-asserted in `SqlServerMetadataReaderFactoryAuthTests`.
+- The Windows Integrated path is **never** routed through the resolver
+  (verified by injecting a `ThrowingSecretResolver` test double on Win-auth
+  connections).
+- `AdditionalOptions` **cannot** override credentials — the parser drops
+  `User ID`, `Password`, `Integrated Security`, and `Trusted_Connection` keys
+  silently if present.
+- A missing or empty secret env var fails the run with a name-bearing
+  `InvalidOperationException` rather than producing a zero-credential
+  connection string.
 
-If `Tables = 0` or `Columns = 0`, treat the run as a failure and do not mark
-B1.7 complete — even if exit code was 0. A zero-row profile against `pacs_training`
-indicates a misconfigured source connection.
+Operators set the secret env var in their own shell session before invoking
+SyncAtlas. The value is never logged, never persisted to the DB, and never
+written to any file SyncAtlas controls.
 
 ## Non-Goals
 
@@ -328,9 +390,16 @@ B1.8 does not add:
 
 - HTTP endpoints (B1.9 deferred post-MVP)
 - UI surfaces
-- Synthetic-PACS substitutions for B1.7
 - Sync import behavior (separate slice)
 - Cleanup of PACS / Harris / CAMA violator references (separate slice)
+
+> **On synthetic data:** SyncAtlas's CLI path can be exercised against any SQL
+> Server source whose `sys.*` catalog views are populated. B1.6 used
+> `azure-sql-edge` as a pure CI integration substrate. **B1.7 was deliberately
+> NOT satisfied by synthetic data** — its purpose was to prove the end-to-end
+> operator workflow against the real local PACS_Training source, and that proof
+> now stands on commit `91860c85c` with the counts captured in
+> [B1.7 Operator Proof](#b17-operator-proof) above.
 
 ## Related Memory
 
