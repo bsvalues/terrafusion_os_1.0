@@ -2366,4 +2366,243 @@ public class CliArgsParserTests
         usage.Should().Contain("--apply");
         usage.Should().Contain("Slice C11-B");
     }
+
+    // ── Slice C14-B — Mapping Workbook review progress ─────────────────
+    //
+    // Eight-way mode mutex now: profile / generate / export / qualify /
+    // edit / lock / batch-edit / review-progress. Progress mode requires
+    // only --workbook-id; rejects all other modes' input flags;
+    // tolerates --connection-id (the read-only service never queries
+    // PACS).
+
+    [Fact]
+    public void Parse_MappingReviewProgressSetsMode()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--mapping-review-progress",
+            "--workbook-id", ValidWorkbookId,
+        });
+
+        err.Should().BeNull();
+        args!.MappingReviewProgress.Should().BeTrue();
+        args.WorkbookId.Should().Be(Guid.Parse(ValidWorkbookId));
+        args.GenerateMappingWorkbook.Should().BeFalse();
+        args.ExportMappingWorkbook.Should().BeFalse();
+        args.QualifySales.Should().BeFalse();
+        args.EditMappingWorkbook.Should().BeFalse();
+        args.LockMappingWorkbook.Should().BeFalse();
+        args.BatchEditMappingWorkbook.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Parse_ProgressRequiresWorkbookId()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--mapping-review-progress",
+            // no --workbook-id
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--workbook-id");
+        err.Should().Contain("--mapping-review-progress");
+    }
+
+    [Fact]
+    public void Parse_ProgressRejectsProfileFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--mapping-review-progress",
+            "--workbook-id", ValidWorkbookId,
+            "--deep-profile",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--deep-profile");
+        err.Should().Contain("Mapping Workbook review progress");
+    }
+
+    [Fact]
+    public void Parse_ProgressRejectsGenerateFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--mapping-review-progress",
+            "--workbook-id", ValidWorkbookId,
+            "--workbook-name", "should-be-rejected",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--workbook-name");
+        err.Should().Contain("--generate-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_ProgressRejectsExportFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--mapping-review-progress",
+            "--workbook-id", ValidWorkbookId,
+            "--output-dir", "/tmp/should-be-rejected",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--output-dir");
+        err.Should().Contain("--export-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_ProgressRejectsQualifyFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--mapping-review-progress",
+            "--workbook-id", ValidWorkbookId,
+            "--source-connection-id", ValidConnection,
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--source-connection-id");
+        err.Should().Contain("--qualify-sales");
+    }
+
+    [Fact]
+    public void Parse_ProgressRejectsEditFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--mapping-review-progress",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--source");
+        err.Should().Contain("--edit-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_ProgressRejectsBatchEditFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--mapping-review-progress",
+            "--workbook-id", ValidWorkbookId,
+            "--input-csv", "/tmp/edits.csv",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--input-csv");
+        err.Should().Contain("--batch-edit-mapping-workbook");
+    }
+
+    [Theory]
+    [InlineData("--generate-mapping-workbook")]
+    [InlineData("--export-mapping-workbook")]
+    [InlineData("--qualify-sales")]
+    [InlineData("--edit-mapping-workbook")]
+    [InlineData("--lock-mapping-workbook")]
+    [InlineData("--batch-edit-mapping-workbook")]
+    public void Parse_ProgressMutuallyExclusiveWithOtherModes(string otherModeFlag)
+    {
+        // Eight-way mutex sanity: progress + any other mode toggle
+        // fails with the mutex error, not a per-flag error.
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--mapping-review-progress",
+            "--workbook-id", ValidWorkbookId,
+            otherModeFlag,
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("mutually exclusive");
+        err.Should().Contain("--mapping-review-progress");
+    }
+
+    [Fact]
+    public void Parse_ProgressMode_ExistingModesRemainCompatible()
+    {
+        // Sanity: adding the eighth mode must not regress the other seven.
+        var profile = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+        });
+        profile.Error.Should().BeNull();
+        profile.Args!.MappingReviewProgress.Should().BeFalse();
+
+        var batch = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--batch-edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--input-csv", "/tmp/x.csv",
+            "--dry-run",
+        });
+        batch.Error.Should().BeNull();
+        batch.Args!.BatchEditMappingWorkbook.Should().BeTrue();
+        batch.Args.MappingReviewProgress.Should().BeFalse();
+
+        var lockMode = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--lock-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+        });
+        lockMode.Error.Should().BeNull();
+        lockMode.Args!.LockMappingWorkbook.Should().BeTrue();
+        lockMode.Args.MappingReviewProgress.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Parse_ProgressTolratesConnectionId()
+    {
+        // The progress service never queries PACS, so --connection-id
+        // is tolerated (matches lock-mode posture).
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,  // tolerated
+            "--mapping-review-progress",
+            "--workbook-id", ValidWorkbookId,
+        });
+
+        err.Should().BeNull();
+        args!.MappingReviewProgress.Should().BeTrue();
+        args.ConnectionId.Should().Be(Guid.Parse(ValidConnection));
+    }
+
+    [Fact]
+    public void UsageText_IncludesProgressMode()
+    {
+        var usage = CliArgsParser.UsageText;
+        usage.Should().Contain("--mapping-review-progress");
+        usage.Should().Contain("Slice C14-B");
+        usage.Should().Contain("read-only");
+    }
 }

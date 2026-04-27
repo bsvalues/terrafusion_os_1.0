@@ -57,11 +57,16 @@ internal static class Program
 
         try
         {
-            // Slices C4 + C5 + C8-C + C9-B + C10-B + C11-B: explicit
-            // seven-way mode dispatch. Workbook generate / export /
-            // qualify-sales / edit / lock / batch-edit modes never hit
-            // the SQL Server profiler path, so a missing --connection-id
-            // is fine in those branches.
+            // Slices C4 + C5 + C8-C + C9-B + C10-B + C11-B + C14-B:
+            // explicit eight-way mode dispatch. Workbook generate /
+            // export / qualify-sales / edit / lock / batch-edit /
+            // review-progress modes never hit the SQL Server profiler
+            // path, so a missing --connection-id is fine in those
+            // branches.
+            if (args.MappingReviewProgress)
+            {
+                return await RunMappingReviewProgressAsync(args, cts.Token);
+            }
             if (args.BatchEditMappingWorkbook)
             {
                 return await RunBatchEditMappingWorkbookAsync(args, cts.Token);
@@ -898,5 +903,206 @@ internal static class Program
         Console.WriteLine("─────────────────────────────────────────────");
 
         return 0;
+    }
+
+    /// <summary>
+    /// Slice C14-B: read-only Mapping Workbook review progress
+    /// dashboard. Never mutates anything. Prints six sections
+    /// (workbook summary, status counts, lane breakdown, top
+    /// blocking columns, sales review focus, lock readiness) to
+    /// stdout in the same visual style as the rest of the
+    /// SyncAtlas CLI.
+    /// </summary>
+    private static async Task<int> RunMappingReviewProgressAsync(CliArgs args, CancellationToken ct)
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:DefaultConnection"] = args.TerraFusionDbConnectionString
+            })
+            .AddEnvironmentVariables()
+            .Build();
+
+        var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
+            .UseNpgsql(args.TerraFusionDbConnectionString, npg =>
+            {
+                npg.MigrationsAssembly("TerraFusion.Data");
+                npg.EnableRetryOnFailure(maxRetryCount: 3);
+            })
+            .Options;
+
+        await using var db = new TerraFusionDbContext(options, configuration);
+
+        // Parser invariant: MappingReviewProgress=true ⇒ WorkbookId set.
+        var workbookId = args.WorkbookId
+            ?? throw new InvalidOperationException("Progress mode reached without --workbook-id; this is a parser invariant violation.");
+
+        var service = new SyncMappingWorkbookReviewProgressService(db);
+
+        Console.WriteLine($"sync-atlas: Mapping Workbook review progress for county {args.CountyId}...");
+        Console.WriteLine($"sync-atlas:   workbook id: {workbookId}");
+
+        SyncMappingWorkbookReviewProgressReport report;
+        try
+        {
+            report = await service.GetReportAsync(args.CountyId, workbookId, ct);
+        }
+        catch (InvalidOperationException ex)
+        {
+            await Console.Error.WriteLineAsync($"sync-atlas: {ex.Message}");
+            return 2;
+        }
+        catch (ArgumentException ex)
+        {
+            await Console.Error.WriteLineAsync($"sync-atlas: {ex.Message}");
+            return 1;
+        }
+
+        PrintReviewProgressReport(report);
+        return 0;
+    }
+
+    private static void PrintReviewProgressReport(SyncMappingWorkbookReviewProgressReport r)
+    {
+        // Section 1: Workbook Summary
+        var lockReadinessHeadline = r.LockReadiness.Status switch
+        {
+            SyncMappingReviewLockReadinessStatus.Ready =>
+                "READY (run --lock-mapping-workbook to flip Status to Mapped)",
+            SyncMappingReviewLockReadinessStatus.AlreadyLocked =>
+                $"already {r.Status}",
+            _ =>
+                $"not ready ({r.LockReadiness.BlockingCodeValues:N0} code-values + " +
+                $"{r.LockReadiness.BlockingColumns:N0} columns blocking)",
+        };
+
+        Console.WriteLine();
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine("  Workbook Summary");
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine($"  Workbook Id:        {r.WorkbookId}");
+        Console.WriteLine($"  Name:               {r.WorkbookName}");
+        Console.WriteLine($"  Status:             {r.Status}");
+        Console.WriteLine($"  County Id:          {r.CountyId}");
+        Console.WriteLine($"  Source Connection:  {r.SourceConnectionId}");
+        Console.WriteLine($"  Profile Batch:      {r.ProfileBatchId}");
+        Console.WriteLine($"  Created:            {r.CreatedAt:O}");
+        Console.WriteLine($"  Updated:            {r.UpdatedAt:O}");
+        Console.WriteLine($"  Created By:         {r.CreatedBy ?? "(none)"}");
+        Console.WriteLine($"  Updated By:         {r.UpdatedBy ?? "(none)"}");
+        Console.WriteLine($"  Columns:            {r.ColumnCount,7:N0}");
+        Console.WriteLine($"  Code Values:        {r.CodeValueCount,7:N0}");
+        Console.WriteLine($"  Lock Readiness:     {lockReadinessHeadline}");
+
+        // Section 2: Review Status Counts
+        Console.WriteLine();
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine("  Review Status Counts");
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine($"  {"Scope",-12} {"NeedsReview",11} {"InProgress",10} {"Mapped",6} {"Excluded",8} {"Deferred",8} {"Terminal",8} {"NonTerminal",11}");
+        PrintStatusCountsRow("Columns",     r.ColumnStatusCounts);
+        PrintStatusCountsRow("Code Values", r.CodeValueStatusCounts);
+
+        // Section 3: Lane Breakdown
+        Console.WriteLine();
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine("  Lane Breakdown (sorted by % complete, ascending)");
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine($"  {"Lane",-16} {"Columns",7} {"CodeValues",10} {"Terminal",8} {"NonTerminal",11} {"Percent",7}");
+        foreach (var lane in r.LaneBreakdown)
+        {
+            var pct = lane.PercentComplete is null ? "n/a" : $"{lane.PercentComplete:0.0}%";
+            Console.WriteLine(
+                $"  {lane.Lane,-16} " +
+                $"{lane.Columns,7:N0} {lane.CodeValues,10:N0} " +
+                $"{lane.Terminal,8:N0} {lane.NonTerminal,11:N0} " +
+                $"{pct,7}");
+        }
+
+        // Section 4: Top Blocking Columns
+        Console.WriteLine();
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine($"  Top Blocking Columns (top {SyncMappingWorkbookReviewProgressService.TopBlockingColumnsCap} by NonTerminal desc)");
+        Console.WriteLine("─────────────────────────────────────────────");
+        if (r.TopBlockingColumns.Count == 0)
+        {
+            Console.WriteLine("  (no blocking columns — every column is fully reviewed)");
+        }
+        else
+        {
+            Console.WriteLine($"  {"Source",-44} {"Lane",-14} {"NonTerminal",11} {"Terminal",8} {"Total",6}");
+            foreach (var b in r.TopBlockingColumns)
+            {
+                var src = $"{b.SourceSchema}.{b.SourceTable}.{b.SourceColumn}";
+                var truncated = src.Length > 44 ? src[..41] + "..." : src;
+                Console.WriteLine(
+                    $"  {truncated,-44} " +
+                    $"{b.Lane,-14} " +
+                    $"{b.NonTerminal,11:N0} {b.Terminal,8:N0} {b.Total,6:N0}");
+            }
+        }
+
+        // Section 5: Sales Review Focus
+        Console.WriteLine();
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine("  Sales Review Focus (pinned)");
+        Console.WriteLine("─────────────────────────────────────────────");
+        if (r.SalesFocus.Count == 0)
+        {
+            Console.WriteLine("  (neither sale.wac_cd nor sale.sl_ratio_type_cd is in this workbook)");
+        }
+        else
+        {
+            Console.WriteLine($"  {"Source",-32} {"ColumnReviewStatus",-18} {"CodeValues",10} {"Terminal",8} {"NonTerminal",11} {"Percent",7}");
+            foreach (var sf in r.SalesFocus)
+            {
+                var src = $"{sf.SourceSchema}.{sf.SourceTable}.{sf.SourceColumn}";
+                var truncated = src.Length > 32 ? src[..29] + "..." : src;
+                var pct = sf.PercentComplete is null ? "n/a" : $"{sf.PercentComplete:0.0}%";
+                Console.WriteLine(
+                    $"  {truncated,-32} " +
+                    $"{sf.ColumnReviewStatus,-18} " +
+                    $"{sf.CodeValues,10:N0} {sf.Terminal,8:N0} {sf.NonTerminal,11:N0} " +
+                    $"{pct,7}");
+            }
+        }
+
+        // Section 6: Lock Readiness
+        Console.WriteLine();
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine("  Lock Readiness");
+        Console.WriteLine("─────────────────────────────────────────────");
+        switch (r.LockReadiness.Status)
+        {
+            case SyncMappingReviewLockReadinessStatus.Ready:
+                Console.WriteLine("  Status:               READY");
+                Console.WriteLine("  Blocking Columns:                      0");
+                Console.WriteLine("  Blocking Code Values:                  0");
+                Console.WriteLine("  First Lockable When:  now — run --lock-mapping-workbook to flip Status to Mapped.");
+                break;
+            case SyncMappingReviewLockReadinessStatus.AlreadyLocked:
+                Console.WriteLine($"  Status:               already {r.Status}");
+                Console.WriteLine("  Blocking Columns:                      0");
+                Console.WriteLine("  Blocking Code Values:                  0");
+                Console.WriteLine("  First Lockable When:  workbook already past the Draft stage; lock cannot be re-run.");
+                break;
+            default:
+                Console.WriteLine("  Status:               not ready");
+                Console.WriteLine($"  Blocking Columns:     {r.LockReadiness.BlockingColumns,18:N0}  (NeedsReview / InProgress)");
+                Console.WriteLine($"  Blocking Code Values: {r.LockReadiness.BlockingCodeValues,18:N0}  (NeedsReview / InProgress)");
+                Console.WriteLine("  First Lockable When:  every column AND every code-value reaches a terminal status");
+                Console.WriteLine("                        (Mapped / Excluded / Deferred).");
+                break;
+        }
+        Console.WriteLine("─────────────────────────────────────────────");
+    }
+
+    private static void PrintStatusCountsRow(string label, SyncMappingReviewStatusCounts c)
+    {
+        Console.WriteLine(
+            $"  {label,-12} " +
+            $"{c.NeedsReview,11:N0} {c.InProgress,10:N0} " +
+            $"{c.Mapped,6:N0} {c.Excluded,8:N0} {c.Deferred,8:N0} " +
+            $"{c.Terminal,8:N0} {c.NonTerminal,11:N0}");
     }
 }
