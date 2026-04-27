@@ -36,12 +36,26 @@ public sealed class CostForgeDashboardStatsTests : IDisposable
     public CostForgeDashboardStatsTests()
     {
         _db = TestDbContextFactory.CreateInMemoryContext();
+        // CostForgeController.ResolveCountyContextAsync() reads the countyId
+        // claim from User and looks up the County in _db. Without these two
+        // pieces, every endpoint NREs on User access (no ControllerContext).
+        _db.Counties.Add(new TerraFusion.Core.Entities.County
+        {
+            Id        = CountyId,
+            Name      = "Test County",
+            FipsCode  = "00001",
+            State     = "WA",
+        });
+        _db.SaveChanges();
         _sut = new CostForgeController(
             Mock.Of<ICostForgeService>(),
             Mock.Of<ICostForgeAIService>(),
             _db,
             Mock.Of<TerraFusion.Abstractions.Interfaces.IAuditLogger>(),
-            NullLogger<CostForgeController>.Instance);
+            NullLogger<CostForgeController>.Instance)
+        {
+            ControllerContext = TestHelpers.ControllerTestSetup.WithCountyClaim(CountyId),
+        };
     }
 
     public void Dispose() => _db.Dispose();

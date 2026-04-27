@@ -42,7 +42,7 @@ public sealed class CountyStudioAiNarrativeSamples
             Prb:                  prb,
             Vei:                  80m,
             EquityClassification: "Fair",
-            BentonEquityScore:    80m,
+            EquityScore:          80m,
             RatioCount:           ratioCount,
             YearHistory:          history ?? new List<SegmentYearPoint>(),
             ComplianceStatus:     "IaaoCompliant",

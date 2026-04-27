@@ -291,23 +291,44 @@ public sealed class CountyStudyRollupTests : IDisposable
 
     // ── Controller tests (HTTP surface) ────────────────────────────────────
 
-    private static CountyStudyController BuildController(ICountyStudyService svc)
+    private static CountyStudyController BuildController(
+        ICountyStudyService svc,
+        Guid? countyClaim = null,
+        Action<TerraFusion.Data.TerraFusionDbContext>? seed = null)
     {
-        var resolver = new Mock<ICountyResolver>();
-        resolver
-            .Setup(r => r.ResolveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns<string, CancellationToken>((s, _) => Task.FromResult(Guid.Parse(s)));
+        var claimId   = countyClaim ?? ControllerTestSetup.DefaultCountyClaimId;
+        var resolver  = ControllerTestSetup.EchoCountyResolver();
         var derive    = new Mock<ICountyStudySegmentDerivationService>();
         var health    = new Mock<ICountyStudyHealthService>();
         var inspector = new Mock<ICountyStudyInspectorService>();
         var ai        = new Mock<ICountyStudioAiService>();
-        return new(svc, resolver.Object, derive.Object, health.Object, inspector.Object,
-            ai.Object, NullLogger<CountyStudyController>.Instance);
+        var db        = TestDbContextFactory.CreateInMemoryContext();
+        if (seed is not null)
+        {
+            seed(db);
+            db.SaveChanges();
+        }
+        var controller = new CountyStudyController(svc, db, resolver, derive.Object, health.Object,
+            inspector.Object, ai.Object, NullLogger<CountyStudyController>.Instance);
+        controller.ControllerContext = ControllerTestSetup.WithCountyClaim(claimId);
+        return controller;
     }
+
+    /// <summary>Seed action for a CountyStudySession matching studyId/countyId.</summary>
+    private static Action<TerraFusion.Data.TerraFusionDbContext> SeedStudy(Guid studyId, Guid countyId) =>
+        db => db.CountyStudySessions.Add(new CountyStudySession
+        {
+            StudyId    = studyId,
+            CountyId   = countyId,
+            CountyName = "Test County",
+            TaxYear    = 2026,
+        });
 
     [Fact]
     public async Task CityRollupController_Returns200_WithList()
     {
+        var studyId  = Guid.NewGuid();
+        var countyId = ControllerTestSetup.DefaultCountyClaimId;
         var svcMock = new Mock<ICountyStudyService>();
         var expected = new List<CityRollupRowDto>
         {
@@ -316,8 +337,8 @@ public sealed class CountyStudyRollupTests : IDisposable
         };
         svcMock.Setup(s => s.GetCityRollupAsync(It.IsAny<Guid>())).ReturnsAsync(expected);
 
-        var controller = BuildController(svcMock.Object);
-        var result = await controller.GetCityRollup(Guid.NewGuid());
+        var controller = BuildController(svcMock.Object, countyId, SeedStudy(studyId, countyId));
+        var result = await controller.GetCityRollup(studyId);
 
         var ok = Assert.IsType<OkObjectResult>(result);
         var list = Assert.IsAssignableFrom<List<CityRollupRowDto>>(ok.Value);
@@ -328,12 +349,14 @@ public sealed class CountyStudyRollupTests : IDisposable
     [Fact]
     public async Task CityRollupController_Returns409_WhenNoActiveSegmentSet()
     {
+        var studyId  = Guid.NewGuid();
+        var countyId = ControllerTestSetup.DefaultCountyClaimId;
         var svcMock = new Mock<ICountyStudyService>();
         svcMock.Setup(s => s.GetCityRollupAsync(It.IsAny<Guid>()))
                .ThrowsAsync(new InvalidOperationException("Study x has no active segment set. Derive first."));
 
-        var controller = BuildController(svcMock.Object);
-        var result = await controller.GetCityRollup(Guid.NewGuid());
+        var controller = BuildController(svcMock.Object, countyId, SeedStudy(studyId, countyId));
+        var result = await controller.GetCityRollup(studyId);
 
         var conflict = Assert.IsType<ConflictObjectResult>(result);
         Assert.Equal(409, conflict.StatusCode);
@@ -342,6 +365,8 @@ public sealed class CountyStudyRollupTests : IDisposable
     [Fact]
     public async Task NeighborhoodRollupController_PropagatesCityFilter()
     {
+        var studyId  = Guid.NewGuid();
+        var countyId = ControllerTestSetup.DefaultCountyClaimId;
         var svcMock = new Mock<ICountyStudyService>();
         svcMock.Setup(s => s.GetNeighborhoodRollupAsync(It.IsAny<Guid>(), "Kennewick"))
                .ReturnsAsync(new List<NeighborhoodRollupRowDto>
@@ -349,8 +374,8 @@ public sealed class CountyStudyRollupTests : IDisposable
                    new("NBHD-K1", "NBHD-K1", "Kennewick", 2, 10, 0.95m, 3.0m, 1.0m, 85m, 22m, 0, 0m, nameof(RollupComplianceStatus.IaaoCompliant)),
                });
 
-        var controller = BuildController(svcMock.Object);
-        var result = await controller.GetNeighborhoodRollup(Guid.NewGuid(), "Kennewick");
+        var controller = BuildController(svcMock.Object, countyId, SeedStudy(studyId, countyId));
+        var result = await controller.GetNeighborhoodRollup(studyId, "Kennewick");
 
         var ok = Assert.IsType<OkObjectResult>(result);
         var list = Assert.IsAssignableFrom<List<NeighborhoodRollupRowDto>>(ok.Value);
@@ -362,12 +387,14 @@ public sealed class CountyStudyRollupTests : IDisposable
     [Fact]
     public async Task NeighborhoodRollupController_Returns409_WhenNoActiveSegmentSet()
     {
+        var studyId  = Guid.NewGuid();
+        var countyId = ControllerTestSetup.DefaultCountyClaimId;
         var svcMock = new Mock<ICountyStudyService>();
         svcMock.Setup(s => s.GetNeighborhoodRollupAsync(It.IsAny<Guid>(), It.IsAny<string?>()))
                .ThrowsAsync(new InvalidOperationException("Study x has no active segment set. Please derive."));
 
-        var controller = BuildController(svcMock.Object);
-        var result = await controller.GetNeighborhoodRollup(Guid.NewGuid(), null);
+        var controller = BuildController(svcMock.Object, countyId, SeedStudy(studyId, countyId));
+        var result = await controller.GetNeighborhoodRollup(studyId, null);
 
         var conflict = Assert.IsType<ConflictObjectResult>(result);
         Assert.Equal(409, conflict.StatusCode);

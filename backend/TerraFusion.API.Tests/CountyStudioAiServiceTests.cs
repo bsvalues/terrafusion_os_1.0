@@ -70,7 +70,7 @@ public sealed class CountyStudioAiServiceTests
             Prb:                  prb,
             Vei:                  vei,
             EquityClassification: classification,
-            BentonEquityScore:    80m,
+            EquityScore:          80m,
             RatioCount:           ratioCount,
             YearHistory:          history ?? new List<SegmentYearPoint>(),
             ComplianceStatus:     "IaaoCompliant",

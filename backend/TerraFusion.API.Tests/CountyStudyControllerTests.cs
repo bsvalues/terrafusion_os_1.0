@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using TerraFusion.API.Controllers;
+using TerraFusion.API.Tests.TestHelpers;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Interfaces;
@@ -19,23 +20,51 @@ namespace TerraFusion.API.Tests;
 
 public class CountyStudyControllerTests
 {
-    private static CountyStudyController BuildController(ICountyStudyService svc)
+    private static CountyStudyController BuildController(
+        ICountyStudyService svc,
+        Guid? countyClaim = null,
+        Action<TerraFusion.Data.TerraFusionDbContext>? seed = null)
     {
-        var resolver = new Mock<ICountyResolver>();
-        // Default behavior: parse any Guid-string input back to that Guid.
-        resolver
-            .Setup(r => r.ResolveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns<string, CancellationToken>((s, _) =>
-                Guid.TryParse(s, out var g)
-                    ? Task.FromResult(g)
-                    : throw new CountyNotFoundException(s));
+        // The resolver echoes any Guid-string input back, so the controller's
+        // claim path (TryResolveAsync) and request path (ResolveAsync) both
+        // resolve cleanly. The ControllerContext claim defaults to a fixed
+        // DefaultCountyClaimId; tests with a local Guid.NewGuid() countyId
+        // should pass that Guid as countyClaim so the cross-county scope
+        // check (requestedCountyId == scopedCountyId) is satisfied AND the
+        // service-mock setup (which typically pins to that same Guid) is hit.
+        //
+        // The optional `seed` action lets a test populate the in-memory db
+        // before the controller runs — required for endpoints that consult
+        // _db directly (e.g. EnsureStudyScopeAsync, EnsureCohortScopeAsync).
+        var claimId   = countyClaim ?? ControllerTestSetup.DefaultCountyClaimId;
+        var resolver  = ControllerTestSetup.EchoCountyResolver();
         var derive    = new Mock<ICountyStudySegmentDerivationService>();
         var health    = new Mock<ICountyStudyHealthService>();
         var inspector = new Mock<ICountyStudyInspectorService>();
         var ai        = new Mock<ICountyStudioAiService>();
-        return new(svc, resolver.Object, derive.Object, health.Object, inspector.Object,
-            ai.Object, NullLogger<CountyStudyController>.Instance);
+        var db        = TestDbContextFactory.CreateInMemoryContext();
+        if (seed is not null)
+        {
+            seed(db);
+            db.SaveChanges();
+        }
+        var controller = new CountyStudyController(svc, db, resolver, derive.Object, health.Object,
+            inspector.Object, ai.Object, NullLogger<CountyStudyController>.Instance);
+        controller.ControllerContext = ControllerTestSetup.WithCountyClaim(claimId);
+        return controller;
     }
+
+    /// <summary>Seed action that adds a minimal CountyStudySession matching the given studyId/countyId.</summary>
+    private static Action<TerraFusion.Data.TerraFusionDbContext> SeedStudy(Guid studyId, Guid countyId) =>
+        db => db.CountyStudySessions.Add(new CountyStudySession
+        {
+            StudyId   = studyId,
+            CountyId  = countyId,
+            CountyName = "Test County",
+            TaxYear   = 2026,
+            StudyType = StudyType.RatioStudy,
+            Status    = StudyStatus.Draft,
+        });
 
     // ── Studies ───────────────────────────────────────────────────────────────
 
@@ -55,7 +84,7 @@ public class CountyStudyControllerTests
         svcMock.Setup(s => s.CreateStudyAsync(It.IsAny<CreateStudyRequest>(), It.IsAny<string>()))
                .ReturnsAsync(expected);
 
-        var controller = BuildController(svcMock.Object);
+        var controller = BuildController(svcMock.Object, countyId);
         var req        = new CreateStudyRequest(countyId.ToString(), 2026, StudyType.RatioStudy, null);
 
         var result = await controller.CreateStudy(req);
@@ -97,7 +126,7 @@ public class CountyStudyControllerTests
         svcMock.Setup(s => s.GetStudiesAsync(countyId))
                .ReturnsAsync(studies);
 
-        var controller = BuildController(svcMock.Object);
+        var controller = BuildController(svcMock.Object, countyId);
 
         var result = await controller.GetStudies(countyId.ToString(), CancellationToken.None);
 
@@ -113,6 +142,7 @@ public class CountyStudyControllerTests
     {
         var studyId  = Guid.NewGuid();
         var cohortId = Guid.NewGuid();
+        var countyId = ControllerTestSetup.DefaultCountyClaimId;
 
         var expected = new CountyCohortDto(
             cohortId, studyId, "West Richland R1",
@@ -124,7 +154,7 @@ public class CountyStudyControllerTests
         svcMock.Setup(s => s.CreateCohortAsync(It.IsAny<CreateCohortRequest>(), It.IsAny<string>()))
                .ReturnsAsync(expected);
 
-        var controller = BuildController(svcMock.Object);
+        var controller = BuildController(svcMock.Object, countyId, SeedStudy(studyId, countyId));
         var req = new CreateCohortRequest(
             studyId, "West Richland R1",
             CohortSelectionType.Segment,
@@ -159,7 +189,7 @@ public class CountyStudyControllerTests
         svcMock.Setup(s => s.UpdateStudyStatusAsync(studyId, "Active", It.IsAny<string>()))
                .ReturnsAsync(expected);
 
-        var controller = BuildController(svcMock.Object);
+        var controller = BuildController(svcMock.Object, countyId, SeedStudy(studyId, countyId));
 
         var result = await controller.UpdateStudyStatus(studyId, new UpdateStudyStatusRequest("Active"));
 
@@ -188,26 +218,38 @@ public class CountyStudyControllerTests
     [Fact]
     public async Task DeriveSegments_Returns400_WhenServiceThrowsInvalidOperation()
     {
-        var studyId = Guid.NewGuid();
+        var studyId  = Guid.NewGuid();
+        var countyId = ControllerTestSetup.DefaultCountyClaimId;
 
         var deriveMock = new Mock<ICountyStudySegmentDerivationService>();
         deriveMock
             .Setup(d => d.DeriveAsync(studyId, It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException($"Study {studyId} not found"));
 
-        var resolver      = new Mock<ICountyResolver>();
+        var resolver      = ControllerTestSetup.EchoCountyResolver();
         var svcMock       = new Mock<ICountyStudyService>();
         var healthMock    = new Mock<ICountyStudyHealthService>();
         var inspectorMock = new Mock<ICountyStudyInspectorService>();
         var aiMock        = new Mock<ICountyStudioAiService>();
+        var db            = TestDbContextFactory.CreateInMemoryContext();
+        db.CountyStudySessions.Add(new CountyStudySession
+        {
+            StudyId   = studyId,
+            CountyId  = countyId,
+            CountyName = "Test County",
+            TaxYear   = 2026,
+        });
+        db.SaveChanges();
         var controller = new CountyStudyController(
             svcMock.Object,
-            resolver.Object,
+            db,
+            resolver,
             deriveMock.Object,
             healthMock.Object,
             inspectorMock.Object,
             aiMock.Object,
             NullLogger<CountyStudyController>.Instance);
+        controller.ControllerContext = ControllerTestSetup.WithCountyClaim(countyId);
 
         var result = await controller.DeriveSegments(studyId, CancellationToken.None);
 
@@ -231,19 +273,31 @@ public class CountyStudyControllerTests
             .Setup(d => d.DeriveAsync(studyId, It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expected);
 
-        var resolver      = new Mock<ICountyResolver>();
+        var countyId = ControllerTestSetup.DefaultCountyClaimId;
+        var resolver      = ControllerTestSetup.EchoCountyResolver();
         var svcMock       = new Mock<ICountyStudyService>();
         var healthMock    = new Mock<ICountyStudyHealthService>();
         var inspectorMock = new Mock<ICountyStudyInspectorService>();
         var aiMock        = new Mock<ICountyStudioAiService>();
+        var db            = TestDbContextFactory.CreateInMemoryContext();
+        db.CountyStudySessions.Add(new CountyStudySession
+        {
+            StudyId   = studyId,
+            CountyId  = countyId,
+            CountyName = "Test County",
+            TaxYear   = 2026,
+        });
+        db.SaveChanges();
         var controller = new CountyStudyController(
             svcMock.Object,
-            resolver.Object,
+            db,
+            resolver,
             deriveMock.Object,
             healthMock.Object,
             inspectorMock.Object,
             aiMock.Object,
             NullLogger<CountyStudyController>.Instance);
+        controller.ControllerContext = ControllerTestSetup.WithCountyClaim(countyId);
 
         var result = await controller.DeriveSegments(studyId, CancellationToken.None);
 
