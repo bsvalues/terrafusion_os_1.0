@@ -575,4 +575,155 @@ public class SyncMappingWorkbookBatchEditServiceTests
         anchorAfter.CanonicalValue.Should().Be(anchorBefore.CanonicalValue);
         anchorAfter.Notes.Should().Be(anchorBefore.Notes);
     }
+
+    // ── Slice C12: trim-on-both-sides matching for char(N)-padded codes ──
+
+    /// <summary>
+    /// Replaces one named code-value's <see cref="SyncMappingCodeValue.SourceValue"/>
+    /// with the <paramref name="paddedValue"/> string. Lets the C12
+    /// tests stage the live PACS-style padded shape ("00   ") without
+    /// changing the rest of the fixture.
+    /// </summary>
+    private static async Task RepointCodeValueAsync(
+        TerraFusionDbContext db, Guid codeValueId, string paddedValue)
+    {
+        var v = await db.SyncMappingCodeValues.SingleAsync(x => x.Id == codeValueId);
+        v.SourceValue = paddedValue;
+        await db.SaveChangesAsync();
+    }
+
+    [Fact]
+    public async Task BatchEdit_MatchesPaddedSourceValueByTrimOnBothSides()
+    {
+        var dbName = $"batch-{Guid.NewGuid()}";
+        await using var db = CreateContext(dbName);
+        var fx = await SeedFixtureAsync(db);
+
+        // Stage a padded WAC code: "458-61A-203(1)   " (3 trailing spaces).
+        await RepointCodeValueAsync(db, fx.WacOther.Id, "458-61A-203(1)   ");
+
+        var rows = ParseRows(
+            "scope,source_schema,source_table,source_column,source_value,review_status,canonical_value,is_excluded\n" +
+            // Operator types the unpadded form.
+            "code_value,dbo,sale,wac_cd,458-61A-203(1),Mapped,ArmsLengthSale,false\n");
+
+        var sut = new SyncMappingWorkbookBatchEditService(db);
+        var result = await sut.ApplyAsync(fx.County.Id, fx.Workbook.Id, rows,
+            SyncMappingWorkbookBatchEditMode.Apply);
+
+        result.Outcome.Should().Be(SyncMappingWorkbookBatchEditOutcome.Applied);
+        result.RowsToMutate.Should().Be(1);
+
+        await using var verify = CreateContext(dbName);
+        var reloaded = await verify.SyncMappingCodeValues.AsNoTracking()
+            .SingleAsync(v => v.Id == fx.WacOther.Id);
+        reloaded.ReviewStatus.Should().Be("Mapped");
+        reloaded.CanonicalValue.Should().Be("ArmsLengthSale");
+    }
+
+    [Fact]
+    public async Task BatchEdit_PreservesStoredPaddedSourceValue()
+    {
+        var dbName = $"batch-{Guid.NewGuid()}";
+        await using var db = CreateContext(dbName);
+        var fx = await SeedFixtureAsync(db);
+
+        const string PaddedStored = "458-61A-203(1)   ";
+        await RepointCodeValueAsync(db, fx.WacOther.Id, PaddedStored);
+
+        var rows = ParseRows(
+            "scope,source_schema,source_table,source_column,source_value,review_status,canonical_value,is_excluded\n" +
+            "code_value,dbo,sale,wac_cd,458-61A-203(1),Excluded,REETExempt,true\n");
+
+        var sut = new SyncMappingWorkbookBatchEditService(db);
+        var result = await sut.ApplyAsync(fx.County.Id, fx.Workbook.Id, rows,
+            SyncMappingWorkbookBatchEditMode.Apply);
+        result.Outcome.Should().Be(SyncMappingWorkbookBatchEditOutcome.Applied);
+
+        await using var verify = CreateContext(dbName);
+        var reloaded = await verify.SyncMappingCodeValues.AsNoTracking()
+            .SingleAsync(v => v.Id == fx.WacOther.Id);
+        reloaded.SourceValue.Should().Be(PaddedStored, "stored SourceValue must remain padded after batch apply");
+        reloaded.ReviewStatus.Should().Be("Excluded");
+        reloaded.IsExcluded.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task BatchEdit_DoesNotCollapseInternalWhitespace()
+    {
+        var dbName = $"batch-{Guid.NewGuid()}";
+        await using var db = CreateContext(dbName);
+        var fx = await SeedFixtureAsync(db);
+
+        // Stage a value with internal whitespace.
+        await RepointCodeValueAsync(db, fx.WacOther.Id, "458 61A 203");
+
+        // CSV that targets the no-internal-space form must NOT match.
+        var rowsNegative = ParseRows(
+            "scope,source_schema,source_table,source_column,source_value,review_status\n" +
+            "code_value,dbo,sale,wac_cd,45861A203,Deferred\n");
+
+        var sut = new SyncMappingWorkbookBatchEditService(db);
+        var negative = await sut.ApplyAsync(fx.County.Id, fx.Workbook.Id, rowsNegative,
+            SyncMappingWorkbookBatchEditMode.Apply);
+        negative.Outcome.Should().Be(SyncMappingWorkbookBatchEditOutcome.ValidationFailed);
+        negative.Errors.Should().ContainSingle(e => e.Message.Contains("no matching code value"));
+
+        // CSV with the exact internal-whitespace form (with surrounding
+        // padding the matcher trims) MUST match.
+        var rowsPositive = ParseRows(
+            "scope,source_schema,source_table,source_column,source_value,review_status\n" +
+            "code_value,dbo,sale,wac_cd,  458 61A 203  ,Deferred\n");
+
+        var positive = await sut.ApplyAsync(fx.County.Id, fx.Workbook.Id, rowsPositive,
+            SyncMappingWorkbookBatchEditMode.Apply);
+        positive.Outcome.Should().Be(SyncMappingWorkbookBatchEditOutcome.Applied);
+        positive.RowsToMutate.Should().Be(1);
+
+        await using var verify = CreateContext(dbName);
+        var reloaded = await verify.SyncMappingCodeValues.AsNoTracking()
+            .SingleAsync(v => v.Id == fx.WacOther.Id);
+        reloaded.ReviewStatus.Should().Be("Deferred");
+        reloaded.SourceValue.Should().Be("458 61A 203", "internal whitespace must be preserved verbatim");
+    }
+
+    [Fact]
+    public async Task BatchEdit_RejectsAmbiguousTrimmedSourceValueMatches_AllOrNothing()
+    {
+        var dbName = $"batch-{Guid.NewGuid()}";
+        await using var db = CreateContext(dbName);
+        var fx = await SeedFixtureAsync(db);
+
+        // Stage two stored rows whose trimmed forms collide. The
+        // fixture already has wac_cd row "458-61A-200" (untouched
+        // anchor) and wac_cd row "458-61A-203(1)" (WacOther). Repoint
+        // them to "AMB" and "AMB " so they both trim-equal "AMB".
+        await RepointCodeValueAsync(db, fx.WacOther.Id, "AMB");
+        await RepointCodeValueAsync(db, fx.WacThird.Id, "AMB ");
+
+        // Batch with one ambiguous row + one valid use_cd row.
+        // All-or-nothing: even the valid row must NOT mutate.
+        var rows = ParseRows(
+            "scope,source_schema,source_table,source_column,source_value,review_status,canonical_value,is_excluded\n" +
+            "code_value,dbo,sale,wac_cd,AMB,Mapped,Phantom,false\n" +
+            "code_value,dbo,property_val,property_use_cd,11,Mapped,Residential,false\n");
+
+        var sut = new SyncMappingWorkbookBatchEditService(db);
+        var result = await sut.ApplyAsync(fx.County.Id, fx.Workbook.Id, rows,
+            SyncMappingWorkbookBatchEditMode.Apply);
+
+        result.Outcome.Should().Be(SyncMappingWorkbookBatchEditOutcome.ValidationFailed);
+        result.Errors.Should().HaveCount(1);
+        result.Errors[0].Message.Should().Contain("ambiguous");
+        result.Errors[0].Message.Should().Contain("'AMB'");
+        result.Errors[0].Message.Should().Contain("'AMB '");
+
+        // Verify the OTHER (originally valid) row stayed unchanged —
+        // all-or-nothing atomicity.
+        await using var verify = CreateContext(dbName);
+        var useRes = await verify.SyncMappingCodeValues.AsNoTracking()
+            .SingleAsync(v => v.Id == fx.UseRes.Id);
+        useRes.ReviewStatus.Should().Be("NeedsReview");
+        useRes.CanonicalValue.Should().BeNull();
+    }
 }

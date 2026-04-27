@@ -391,16 +391,32 @@ public sealed class SyncMappingWorkbookBatchEditService : ISyncMappingWorkbookBa
 
             if (isCodeValueScope)
             {
-                var trimmedValue = row.SourceValue!.Trim();
-                var matchedCodeValue = codeValues.FirstOrDefault(v =>
-                    v.MappingColumnId == matchedColumn.Id && v.SourceValue == trimmedValue);
-                if (matchedCodeValue is null)
+                // Slice C12: trim-on-both-sides match. PACS char(N)
+                // codes arrive padded ("00   "); the operator types
+                // "00". Both must match. See MappingSourceValueMatcher.
+                var operatorValue = row.SourceValue!;
+                var matchesForRow = codeValues
+                    .Where(v => v.MappingColumnId == matchedColumn.Id
+                             && MappingSourceValueMatcher.MatchesAfterTrim(v.SourceValue, operatorValue))
+                    .ToList();
+
+                if (matchesForRow.Count == 0)
                 {
                     errors.Add(new BatchEditValidationError(row.LineNumber, row.Scope, sourceLabel,
-                        $"no matching code value '{trimmedValue}' under " +
+                        $"no matching code value '{operatorValue.Trim()}' under " +
                         $"{row.SourceSchema}.{row.SourceTable}.{row.SourceColumn}."));
                     continue;
                 }
+                if (matchesForRow.Count > 1)
+                {
+                    errors.Add(new BatchEditValidationError(row.LineNumber, row.Scope, sourceLabel,
+                        MappingSourceValueMatcher.BuildAmbiguousMatchMessage(
+                            row.SourceSchema, row.SourceTable, row.SourceColumn,
+                            operatorValue, matchesForRow.Select(m => (string?)m.SourceValue))));
+                    continue;
+                }
+
+                var matchedCodeValue = matchesForRow[0];
 
                 // 9. Duplicate-target detection.
                 if (!seenCodeValueTargets.Add(matchedCodeValue.Id))
