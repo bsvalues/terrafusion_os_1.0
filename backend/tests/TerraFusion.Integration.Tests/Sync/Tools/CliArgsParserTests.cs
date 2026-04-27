@@ -1308,4 +1308,482 @@ public class CliArgsParserTests
         usage.Should().Contain("--source-connection-id");
         usage.Should().Contain("--max-sales");
     }
+
+    // ── Slice C9-B — Mapping Workbook edit ──────────────────────────────
+    //
+    // Five-way mode mutex now: profile / generate / export / qualify /
+    // edit. The edit mode requires --workbook-id + --source +
+    // at-least-one mutation; rejects scope-incorrect mutators
+    // (--canonical-target with --source-value, --canonical-value
+    // without it, etc.); rejects all other modes' flags.
+
+    [Fact]
+    public void Parse_EditMappingWorkbookSetsMode()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+            "--source-value", "458-61A-203(1)",
+            "--review-status", "Mapped",
+        });
+
+        err.Should().BeNull();
+        args!.EditMappingWorkbook.Should().BeTrue();
+        args.WorkbookId.Should().Be(Guid.Parse(ValidWorkbookId));
+        args.EditSourceSchema.Should().Be("dbo");
+        args.EditSourceTable.Should().Be("sale");
+        args.EditSourceColumn.Should().Be("wac_cd");
+        args.EditSourceValue.Should().Be("458-61A-203(1)");
+        args.EditReviewStatus.Should().Be("Mapped");
+        args.ConnectionId.Should().BeNull();
+    }
+
+    [Fact]
+    public void Parse_EditRequiresWorkbookId()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            // no --workbook-id
+            "--source", "dbo.sale.wac_cd",
+            "--review-status", "Mapped",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--workbook-id");
+        err.Should().Contain("--edit-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_EditRequiresSource()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            // no --source
+            "--review-status", "Mapped",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--source");
+        err.Should().Contain("--edit-mapping-workbook");
+    }
+
+    [Theory]
+    [InlineData("dbosale.waccd")]      // 1 dot
+    [InlineData("dbo.sale")]           // 2 parts
+    [InlineData("dbo.sale.wac_cd.x")]  // 4 parts
+    [InlineData("dbo..wac_cd")]        // empty middle
+    [InlineData(".sale.wac_cd")]       // empty schema
+    [InlineData("dbo.sale.")]          // empty column
+    public void Parse_EditRejectsInvalidSourceFormat(string badSource)
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", badSource,
+            "--review-status", "Mapped",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--source");
+        err.Should().Contain("schema.table.column");
+    }
+
+    [Fact]
+    public void Parse_EditRequiresAtLeastOneMutation()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+            // no mutation flags at all
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("at least one mutation field");
+    }
+
+    [Fact]
+    public void Parse_EditRejectsProfileFlags()
+    {
+        // --connection-id is profile-mode-only and must not appear in
+        // edit mode (parser tolerates it for backward-compat in workbook
+        // generate/export modes but in edit mode it's a profile leak).
+        // Also test --deep-profile rejection.
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+            "--review-status", "Mapped",
+            "--deep-profile",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--deep-profile");
+        err.Should().Contain("Mapping Workbook edit");
+    }
+
+    [Fact]
+    public void Parse_EditRejectsGenerateFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+            "--review-status", "Mapped",
+            "--workbook-name", "should-be-rejected",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--workbook-name");
+        err.Should().Contain("--generate-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_EditRejectsExportFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+            "--review-status", "Mapped",
+            "--output-dir", "/tmp/should-be-rejected",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--output-dir");
+        err.Should().Contain("--export-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_EditRejectsQualifyFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+            "--review-status", "Mapped",
+            "--source-connection-id", ValidConnection,
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--source-connection-id");
+        err.Should().Contain("--qualify-sales");
+    }
+
+    [Fact]
+    public void Parse_EditMutuallyExclusiveWithOtherModes()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+            "--review-status", "Mapped",
+            "--qualify-sales",
+            "--source-connection-id", ValidConnection,
+            "--max-sales", "10",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("mutually exclusive");
+    }
+
+    [Fact]
+    public void Parse_EditRejectsCanonicalTargetWithSourceValue()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+            "--source-value", "458-61A-203(1)",
+            "--canonical-target", "PropertyUse",  // column-only field
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--canonical-target");
+        err.Should().Contain("column-scope");
+    }
+
+    [Fact]
+    public void Parse_EditRejectsCanonicalValueWithoutSourceValue()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+            // no --source-value (column scope)
+            "--canonical-value", "TransferByDeed",  // code-value-only
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--canonical-value");
+        err.Should().Contain("code-value-scope");
+    }
+
+    [Fact]
+    public void Parse_EditRejectsCanonicalValueNullWithoutSourceValue()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+            "--canonical-value-null",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--canonical-value-null");
+        err.Should().Contain("code-value-scope");
+    }
+
+    [Fact]
+    public void Parse_EditRejectsIsExcludedWithoutSourceValue()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+            "--is-excluded", "true",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--is-excluded");
+        err.Should().Contain("code-value-scope");
+    }
+
+    [Fact]
+    public void Parse_EditRejectsCanonicalValueAndCanonicalValueNullTogether()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+            "--source-value", "458-61A-203(1)",
+            "--canonical-value", "X",
+            "--canonical-value-null",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--canonical-value");
+        err.Should().Contain("mutually exclusive");
+    }
+
+    [Theory]
+    [InlineData("Mapped",       true)]
+    [InlineData("Excluded",     true)]
+    [InlineData("Deferred",     true)]
+    [InlineData("NeedsReview",  true)]
+    [InlineData("InProgress",   true)]
+    [InlineData("mapped",       true)]   // case-insensitive
+    [InlineData("MAPPED",       true)]
+    [InlineData("BananaStatus", false)]
+    [InlineData("",             false)]
+    [InlineData("   ",          false)]
+    public void Parse_EditRejectsInvalidReviewStatus(string status, bool valid)
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+            "--source-value", "458-61A-203(1)",
+            "--review-status", status,
+        });
+
+        if (valid)
+        {
+            err.Should().BeNull();
+            args!.EditReviewStatus.Should().Be(status);
+        }
+        else
+        {
+            args.Should().BeNull();
+            err.Should().Contain("--review-status");
+        }
+    }
+
+    [Theory]
+    [InlineData("true",  true)]
+    [InlineData("false", true)]
+    [InlineData("True",  true)]   // case-insensitive
+    [InlineData("FALSE", true)]
+    [InlineData("yes",   false)]
+    [InlineData("0",     false)]
+    [InlineData("",      false)]
+    public void Parse_EditRejectsInvalidIsExcluded(string raw, bool valid)
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+            "--source-value", "458-61A-203(1)",
+            "--is-excluded", raw,
+        });
+
+        if (valid)
+        {
+            err.Should().BeNull();
+            args!.EditIsExcluded.Should().Be(raw.Equals("true", StringComparison.OrdinalIgnoreCase));
+        }
+        else
+        {
+            args.Should().BeNull();
+            err.Should().Contain("--is-excluded");
+        }
+    }
+
+    [Fact]
+    public void Parse_EditAllowsColumnNotes()
+    {
+        // Notes flag is allowed at column scope (no --source-value).
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+            "--notes", "Review by EOD Friday",
+            "--review-status", "InProgress",
+        });
+
+        err.Should().BeNull();
+        args!.EditSourceValue.Should().BeNull();   // column scope
+        args.EditNotes.Should().Be("Review by EOD Friday");
+    }
+
+    [Fact]
+    public void Parse_EditAllowsCodeValueNotes()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+            "--source-value", "458-61A-217(1)",
+            "--review-status", "Excluded",
+            "--is-excluded", "true",
+            "--notes", "REET exemption; not arms-length.",
+        });
+
+        err.Should().BeNull();
+        args!.EditSourceValue.Should().Be("458-61A-217(1)");
+        args.EditNotes.Should().Be("REET exemption; not arms-length.");
+    }
+
+    [Fact]
+    public void Parse_EditFlags_NotAllowedInProfileMode()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--source", "dbo.sale.wac_cd",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--source");
+        err.Should().Contain("--edit-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_FullEditFlagSet_RoundTripsAllFields()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+            "--source-value", "458-61A-217(1)",
+            "--canonical-value", "ExemptTransfer",
+            "--review-status", "Excluded",
+            "--is-excluded", "true",
+            "--notes", "Operator-marked exempt.",
+            "--operator", "bsval",
+        });
+
+        err.Should().BeNull();
+        args!.EditMappingWorkbook.Should().BeTrue();
+        args.WorkbookId.Should().Be(Guid.Parse(ValidWorkbookId));
+        args.EditSourceSchema.Should().Be("dbo");
+        args.EditSourceTable.Should().Be("sale");
+        args.EditSourceColumn.Should().Be("wac_cd");
+        args.EditSourceValue.Should().Be("458-61A-217(1)");
+        args.EditCanonicalValue.Should().Be("ExemptTransfer");
+        args.EditCanonicalValueNull.Should().BeFalse();
+        args.EditReviewStatus.Should().Be("Excluded");
+        args.EditIsExcluded.Should().BeTrue();
+        args.EditNotes.Should().Be("Operator-marked exempt.");
+        args.OperatorId.Should().Be("bsval");
+    }
+
+    [Fact]
+    public void UsageText_MentionsEditFlags()
+    {
+        var usage = CliArgsParser.UsageText;
+        usage.Should().Contain("--edit-mapping-workbook");
+        usage.Should().Contain("--source");
+        usage.Should().Contain("--source-value");
+        usage.Should().Contain("--canonical-target");
+        usage.Should().Contain("--canonical-value");
+        usage.Should().Contain("--canonical-value-null");
+        usage.Should().Contain("--review-status");
+        usage.Should().Contain("--is-excluded");
+        usage.Should().Contain("--notes");
+    }
 }

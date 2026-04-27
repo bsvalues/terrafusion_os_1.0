@@ -57,10 +57,14 @@ internal static class Program
 
         try
         {
-            // Slices C4 + C5 + C8-C: explicit four-way mode dispatch.
-            // Workbook generate / export / qualify-sales modes never
-            // hit the SQL Server profiler path, so a missing
+            // Slices C4 + C5 + C8-C + C9-B: explicit five-way mode dispatch.
+            // Workbook generate / export / qualify-sales / edit modes
+            // never hit the SQL Server profiler path, so a missing
             // --connection-id is fine in those branches.
+            if (args.EditMappingWorkbook)
+            {
+                return await RunEditMappingWorkbookAsync(args, cts.Token);
+            }
             if (args.QualifySales)
             {
                 return await RunQualifySalesAsync(args, cts.Token);
@@ -558,5 +562,116 @@ internal static class Program
         }
 
         return 0;
+    }
+
+    /// <summary>
+    /// Slice C9-B: Mapping Workbook edit. Edits one column or code-value
+    /// row per invocation while the workbook is Status='Draft'.
+    /// Read-modify-write only — no PACS / canonical / Forge /
+    /// TerraAtlas mutation.
+    /// </summary>
+    private static async Task<int> RunEditMappingWorkbookAsync(CliArgs args, CancellationToken ct)
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:DefaultConnection"] = args.TerraFusionDbConnectionString
+            })
+            .AddEnvironmentVariables()
+            .Build();
+
+        var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
+            .UseNpgsql(args.TerraFusionDbConnectionString, npg =>
+            {
+                npg.MigrationsAssembly("TerraFusion.Data");
+                npg.EnableRetryOnFailure(maxRetryCount: 3);
+            })
+            .Options;
+
+        await using var db = new TerraFusionDbContext(options, configuration);
+
+        // Parser invariants: EditMappingWorkbook=true ⇒ WorkbookId, the
+        // three EditSource* parts, AND at-least-one mutation are set.
+        var workbookId = args.WorkbookId
+            ?? throw new InvalidOperationException("Edit mode reached without --workbook-id; this is a parser invariant violation.");
+        var sourceSchema = args.EditSourceSchema
+            ?? throw new InvalidOperationException("Edit mode reached without --source schema; this is a parser invariant violation.");
+        var sourceTable = args.EditSourceTable
+            ?? throw new InvalidOperationException("Edit mode reached without --source table; this is a parser invariant violation.");
+        var sourceColumn = args.EditSourceColumn
+            ?? throw new InvalidOperationException("Edit mode reached without --source column; this is a parser invariant violation.");
+
+        var request = new SyncMappingWorkbookEditRequest(
+            SourceSchema:       sourceSchema,
+            SourceTable:        sourceTable,
+            SourceColumn:       sourceColumn,
+            SourceValue:        args.EditSourceValue,
+            CanonicalTarget:    args.EditCanonicalTarget,
+            CanonicalValue:     args.EditCanonicalValue,
+            CanonicalValueNull: args.EditCanonicalValueNull,
+            ReviewStatus:       args.EditReviewStatus,
+            IsExcluded:         args.EditIsExcluded,
+            Notes:              args.EditNotes);
+
+        var service = new SyncMappingWorkbookEditService(db);
+
+        var sourceLabel = args.EditSourceValue is null
+            ? $"{sourceSchema}.{sourceTable}.{sourceColumn}"
+            : $"{sourceSchema}.{sourceTable}.{sourceColumn} / {args.EditSourceValue}";
+
+        Console.WriteLine($"sync-atlas: editing mapping workbook {workbookId}...");
+        Console.WriteLine($"sync-atlas:   target:    {sourceLabel}");
+        Console.WriteLine($"sync-atlas:   operator:  {args.OperatorId}");
+
+        SyncMappingWorkbookEditResult result;
+        try
+        {
+            result = await service.EditAsync(args.CountyId, workbookId, request, ct);
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Status guard / cross-county / source-not-found — verbatim message.
+            await Console.Error.WriteLineAsync($"sync-atlas: {ex.Message}");
+            return 2;
+        }
+        catch (ArgumentException ex)
+        {
+            // Service-side defense-in-depth (parser usually catches first).
+            await Console.Error.WriteLineAsync($"sync-atlas: {ex.Message}");
+            return 1;
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine($"  Workbook Id:   {result.WorkbookId}");
+        Console.WriteLine($"  Edited:        {result.Scope}");
+        Console.WriteLine($"  Source:        {sourceSchema}.{sourceTable}.{sourceColumn}");
+        if (args.EditSourceValue is not null)
+        {
+            Console.WriteLine($"  Source Value:  {args.EditSourceValue}");
+        }
+        Console.WriteLine($"  Changed:       {(result.Changed ? "yes" : "no (audit stamp only)")}");
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine("  Pre-edit:");
+        foreach (var kvp in result.Before)
+        {
+            Console.WriteLine($"    {kvp.Key,-18}{Render(kvp.Value)}");
+        }
+        Console.WriteLine("  Post-edit:");
+        foreach (var kvp in result.After)
+        {
+            // Show "(unchanged)" suffix when post equals pre — saves the
+            // operator from eyeballing identical strings on both panels.
+            var pre = result.Before.TryGetValue(kvp.Key, out var p) ? p : null;
+            var unchangedNote = string.Equals(kvp.Value, pre, StringComparison.Ordinal)
+                ? "  (unchanged)"
+                : string.Empty;
+            Console.WriteLine($"    {kvp.Key,-18}{Render(kvp.Value)}{unchangedNote}");
+        }
+        Console.WriteLine("─────────────────────────────────────────────");
+
+        return 0;
+
+        static string Render(string? v) => v ?? "(null)";
     }
 }
