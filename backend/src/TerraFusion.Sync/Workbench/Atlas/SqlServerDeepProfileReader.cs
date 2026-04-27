@@ -198,6 +198,16 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
     /// the orchestrator can then re-cast for typed comparisons. Distinct count
     /// is clamped via <c>SELECT TOP (DistinctCountClamp + 1) DISTINCT col</c>
     /// inline so we know whether the value is exact (≤ clamp) or saturated.
+    ///
+    /// <para>BIT-column handling (FIX-B2.7A): SQL Server rejects
+    /// <c>MIN([bit_col])</c> / <c>MAX([bit_col])</c> with "Operand data type
+    /// bit is invalid for min operator." PACS routinely flags rows with BIT
+    /// columns, so a naive emission failed every PACS table that had one.
+    /// The fix promotes BIT to <c>tinyint</c> inside the aggregate
+    /// (<c>MIN(CAST([bit_col] AS tinyint))</c>) — preserves the 0/1 domain,
+    /// keeps min/max meaningful, and avoids data loss vs. silently skipping
+    /// the column. Discovered by B2.7-SMOKE against real PACS_Training; see
+    /// <c>BuildMinMaxOperand</c> for the type-aware helper.</para>
     /// </summary>
     public static string BuildColumnAggregationSql(IReadOnlyList<ColumnRef> columns)
     {
@@ -213,7 +223,8 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
             var col = columns[i];
             ValidateIdent(col.Name, nameof(col.Name));
 
-            var quoted = QuoteIdentifier(col.Name);
+            var quoted      = QuoteIdentifier(col.Name);
+            var minMaxOp    = BuildMinMaxOperand(quoted, col.DataType);
             var literalName = $"N'{Escape(col.Name)}'";
 
             if (i > 0)
@@ -242,12 +253,38 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
               .Append("COUNT_BIG(*) - COUNT_BIG(").Append(quoted).Append(") AS NullCount, ")
               .Append("(SELECT COUNT(*) FROM (SELECT DISTINCT TOP (").Append(DistinctCountClamp + 1).Append(") ")
               .Append(quoted).Append(" FROM #tf_deep_profile_sample) AS d) AS DistinctCount, ")
-              .Append("CONVERT(NVARCHAR(MAX), MIN(").Append(quoted).Append(")) AS MinValue, ")
-              .Append("CONVERT(NVARCHAR(MAX), MAX(").Append(quoted).Append(")) AS MaxValue ")
+              .Append("CONVERT(NVARCHAR(MAX), MIN(").Append(minMaxOp).Append(")) AS MinValue, ")
+              .Append("CONVERT(NVARCHAR(MAX), MAX(").Append(minMaxOp).Append(")) AS MaxValue ")
               .AppendLine("FROM #tf_deep_profile_sample");
         }
         sb.Append(';');
         return sb.ToString();
+    }
+
+    /// <summary>
+    /// Returns the operand to wrap in <c>MIN()</c> / <c>MAX()</c> for a column.
+    /// For SQL types that aggregate natively, returns the bracket-quoted
+    /// column reference unchanged. For BIT columns — which SQL Server rejects
+    /// with "Operand data type bit is invalid for min operator" — returns
+    /// <c>CAST([col] AS tinyint)</c>. The 0/1 domain is preserved end-to-end
+    /// because the outer <c>CONVERT(NVARCHAR(MAX), …)</c> serializes the
+    /// promoted tinyint as <c>"0"</c>/<c>"1"</c>, identical to what the BIT
+    /// would have produced if it had aggregated.
+    ///
+    /// Comparison vs. silently skipping BIT columns: the workbench needs
+    /// MinValue/MaxValue rows for every column the structural atlas saw —
+    /// downstream Slice C (Mapping Workbook) keys off the row existing.
+    /// Skipping would leave gaps that look like "this column wasn't profiled"
+    /// instead of "this column has values 0 and/or 1."
+    /// </summary>
+    public static string BuildMinMaxOperand(string quotedColumnName, string sqlType)
+    {
+        ArgumentNullException.ThrowIfNull(quotedColumnName);
+        ArgumentNullException.ThrowIfNull(sqlType);
+
+        return string.Equals(sqlType, "bit", StringComparison.OrdinalIgnoreCase)
+            ? $"CAST({quotedColumnName} AS tinyint)"
+            : quotedColumnName;
     }
 
     /// <summary>

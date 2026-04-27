@@ -228,6 +228,121 @@ public class SqlServerDeepProfileReaderTests
         act.Should().Throw<ArgumentException>();
     }
 
+    // ── BIT min/max regression (FIX-B2.7A) ───────────────────────────────
+    //
+    // SQL Server rejects MIN([bit_col]) / MAX([bit_col]) with
+    // "Operand data type bit is invalid for min operator." PACS tables
+    // routinely flag rows with BIT columns, so the original emission
+    // failed every PACS table that had one — discovered by B2.7-SMOKE.
+    // The fix promotes BIT to tinyint inside the aggregate.
+    //
+    // These tests pin the SQL shape so the regression cannot land again
+    // without a unit signal; the live engine path is verified by the
+    // Slice B2.6 Docker integration tests with a BIT fixture column.
+
+    [Fact]
+    public void BuildColumnAggregationSql_CastsBitColumnForMinMax()
+    {
+        var cols = new[] { new ColumnRef("is_active", "bit", IsNullable: false) };
+
+        var sql = SqlServerDeepProfileReader.BuildColumnAggregationSql(cols);
+
+        sql.Should().Contain("MIN(CAST([is_active] AS tinyint))");
+        sql.Should().Contain("MAX(CAST([is_active] AS tinyint))");
+        // The serialized result is still NVARCHAR(MAX) so the result-set
+        // shape stays uniform across types.
+        sql.Should().Contain("CONVERT(NVARCHAR(MAX), MIN(CAST([is_active] AS tinyint)))");
+        sql.Should().Contain("CONVERT(NVARCHAR(MAX), MAX(CAST([is_active] AS tinyint)))");
+    }
+
+    [Fact]
+    public void BuildColumnAggregationSql_DoesNotEmitMinOverRawBit()
+    {
+        var cols = new[] { new ColumnRef("is_active", "bit", IsNullable: false) };
+
+        var sql = SqlServerDeepProfileReader.BuildColumnAggregationSql(cols);
+
+        // The raw-BIT shape would crash the live engine. Pinned absent.
+        sql.Should().NotContain("MIN([is_active])");
+        sql.Should().NotContain("MAX([is_active])");
+    }
+
+    [Fact]
+    public void BuildColumnAggregationSql_BitTypeIsCaseInsensitive()
+    {
+        // sys.types returns "bit", but defensive: SQL-type strings vary in
+        // casing across schema sources. The fix uses OrdinalIgnoreCase.
+        var cols = new[] { new ColumnRef("is_active", "BIT", IsNullable: false) };
+
+        var sql = SqlServerDeepProfileReader.BuildColumnAggregationSql(cols);
+
+        sql.Should().Contain("MIN(CAST([is_active] AS tinyint))");
+        sql.Should().NotContain("MIN([is_active])");
+    }
+
+    [Fact]
+    public void BuildColumnAggregationSql_PreservesNormalMinMaxForNonBitColumns()
+    {
+        // Make sure the BIT-cast path is type-gated, not blanket — every
+        // other type still gets the bare column reference inside MIN/MAX.
+        var cols = new[]
+        {
+            new ColumnRef("prop_id",   "int",       IsNullable: false),
+            new ColumnRef("hood_cd",   "varchar",   IsNullable: true),
+            new ColumnRef("levy_amt",  "decimal",   IsNullable: true),
+            new ColumnRef("appraised", "datetime2", IsNullable: true),
+        };
+
+        var sql = SqlServerDeepProfileReader.BuildColumnAggregationSql(cols);
+
+        sql.Should().Contain("MIN([prop_id])");
+        sql.Should().Contain("MAX([prop_id])");
+        sql.Should().Contain("MIN([hood_cd])");
+        sql.Should().Contain("MAX([hood_cd])");
+        sql.Should().Contain("MIN([levy_amt])");
+        sql.Should().Contain("MAX([levy_amt])");
+        sql.Should().Contain("MIN([appraised])");
+        sql.Should().Contain("MAX([appraised])");
+        // No CAST(... AS tinyint) for non-BIT columns.
+        sql.Should().NotContain("CAST([prop_id] AS tinyint)");
+        sql.Should().NotContain("CAST([hood_cd] AS tinyint)");
+    }
+
+    [Fact]
+    public void BuildColumnAggregationSql_MixedBitAndNonBit_AppliesCastOnlyToBit()
+    {
+        var cols = new[]
+        {
+            new ColumnRef("prop_id",   "int",  IsNullable: false),
+            new ColumnRef("is_active", "bit",  IsNullable: false),
+            new ColumnRef("hood_cd",   "varchar", IsNullable: true),
+        };
+
+        var sql = SqlServerDeepProfileReader.BuildColumnAggregationSql(cols);
+
+        sql.Should().Contain("MIN([prop_id])");
+        sql.Should().Contain("MIN(CAST([is_active] AS tinyint))");
+        sql.Should().Contain("MIN([hood_cd])");
+        sql.Should().NotContain("CAST([prop_id] AS tinyint)");
+        sql.Should().NotContain("CAST([hood_cd] AS tinyint)");
+        sql.Should().NotContain("MIN([is_active])");
+    }
+
+    [Theory]
+    [InlineData("bit", "CAST([is_active] AS tinyint)")]
+    [InlineData("BIT", "CAST([is_active] AS tinyint)")]
+    [InlineData("Bit", "CAST([is_active] AS tinyint)")]
+    [InlineData("int", "[is_active]")]
+    [InlineData("varchar", "[is_active]")]
+    [InlineData("nvarchar", "[is_active]")]
+    [InlineData("datetime2", "[is_active]")]
+    [InlineData("decimal", "[is_active]")]
+    public void BuildMinMaxOperand_WrapsBitOnlyAndIsCaseInsensitive(string sqlType, string expected)
+    {
+        var operand = SqlServerDeepProfileReader.BuildMinMaxOperand("[is_active]", sqlType);
+        operand.Should().Be(expected);
+    }
+
     [Fact]
     public void BuildSampleValuesSql_IncludesNewIdOrderingAndTopGuard()
     {
