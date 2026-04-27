@@ -10,10 +10,18 @@ import React from 'react';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { act } from 'react';
-import { vi } from 'vitest';
+import { beforeEach, vi } from 'vitest';
 import { CountyStudyPage } from '../CountyStudyPage';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import type { CountySegmentDto, CountyStudySessionDto } from '../types/countyStudio.types';
+
+// Capture the store's pristine initial state at module-load time, before any
+// test has had a chance to mutate it. The `beforeEach` hook below uses this
+// snapshot to fully reset state — Zustand stores are module-singletons and
+// would otherwise carry mutations from one sibling test into the next, which
+// caused the "Needs Data filter" assertion to see a partially-stale drillLevel
+// during the convergence merge (TODO(convergence-followup) referenced this).
+const PRISTINE_STORE_STATE = useCountyStudioStore.getState();
 
 // Stub every data-loading hook so the page renders without kicking off real fetches.
 vi.mock('../hooks/useStudyData', () => ({
@@ -95,6 +103,13 @@ function setup() {
 }
 
 describe('CountyStudyPage severity-filter null-guard', () => {
+  beforeEach(() => {
+    // Replace (don't merge) the entire store with the pristine snapshot so each
+    // test starts from a known-good baseline. The `true` second arg to
+    // setState replaces the state object wholesale.
+    useCountyStudioStore.setState(PRISTINE_STORE_STATE, true);
+  });
+
   it('compliance-style filter does not throw when cod/prd/medianRatio are null', () => {
     // Historically this would crash with "Cannot read properties of null"
     // when the filter tried `seg.cod > 20`. Guard: the render + filter toggle
@@ -122,17 +137,7 @@ describe('CountyStudyPage severity-filter null-guard', () => {
     expect(rows.length).toBe(1); // header only
   });
 
-  // TODO(convergence-followup): test fails because the rendered DOM shows
-  // the right-rail empty state instead of the SegmentTable, even though the
-  // store has drillLevel='neighborhood' set. Likely a Zustand store-isolation
-  // issue between sibling tests in this file (no beforeEach reset). The
-  // sister tests "Critical filter does NOT mark sparse-sample segments as
-  // breaching" and "compliance-style filter does not throw" both pass with
-  // the same store interactions, so the data path is correct end-to-end —
-  // this test ordering is the surface that fails. File a follow-up to add a
-  // resetCountyStudioStore() hook + beforeEach in this suite, or migrate it
-  // to a per-test in-memory store instance.
-  it.skip('Needs Data filter surfaces sparse-sample segments explicitly', () => {
+  it('Needs Data filter surfaces sparse-sample segments explicitly', () => {
     act(() => {
       const s = useCountyStudioStore.getState();
       s.setStudy(MOCK_STUDY);
@@ -155,11 +160,14 @@ describe('CountyStudyPage severity-filter null-guard', () => {
       </MemoryRouter>,
     );
     fireEvent.click(screen.getByTestId('segment-filter-needsData'));
-    // sparse is present (name in the table), the others are not (different
-    // geographyRef, filtered out by the drill's neighborhood predicate).
-    // segmentIdentity.formatOperationalPrimary now prefixes neighborhood codes
-    // with "Neighborhood ", so use partial-text regex matchers.
-    expect(screen.getByText(/Tiny Neighborhood/)).toBeInTheDocument();
-    expect(screen.queryByText(/Healthy Neighborhood/)).not.toBeInTheDocument();
+    // SegmentTable renders `formatOperationalPrimary(identity)`, which derives
+    // its display text from the segment's geographyRef ("Neighborhood NBHD-TINY")
+    // — not from the raw `name` field. Scope assertions to the table itself
+    // so we don't false-match the breadcrumb / right-rail scope-label which
+    // also surface the active neighborhood.
+    const table = screen.getByRole('table');
+    expect(within(table).getByText(/NBHD-TINY/)).toBeInTheDocument();
+    expect(within(table).queryByText(/NBHD-OK/)).not.toBeInTheDocument();
+    expect(within(table).queryByText(/NBHD-BAD/)).not.toBeInTheDocument();
   });
 });

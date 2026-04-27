@@ -105,6 +105,12 @@ pids/
 # so it never shows up as a phantom diff in unrelated slices.
 backend/service-registry.json
 
+# Diagnostic outputs from local drive-inventory / cleanup-risk background
+# tasks. Point-in-time snapshots, not source-of-truth. The structured
+# inventories that DO belong in the repo live under `.governance/`.
+/cleanup_risks.md
+/drive_inventory_summary.md
+
 # Coverage directory used by tools like istanbul
 coverage/
 *.lcov
