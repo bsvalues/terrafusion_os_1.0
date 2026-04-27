@@ -4,6 +4,7 @@ using TerraFusion.Core.Entities.Sync.Profile;
 using TerraFusion.Data;
 using TerraFusion.Sync.Workbench.Atlas;
 using TerraFusion.Sync.Workbench.Mapping;
+using TerraFusion.Sync.Workbench.Transforms.Sales;
 
 namespace TerraFusion.Tools.SyncAtlas;
 
@@ -56,9 +57,14 @@ internal static class Program
 
         try
         {
-            // Slice C4 + C5: explicit three-way mode dispatch. Workbook
-            // generate / export modes never hit the SQL Server profiler
-            // path, so a missing --connection-id is fine in those branches.
+            // Slices C4 + C5 + C8-C: explicit four-way mode dispatch.
+            // Workbook generate / export / qualify-sales modes never
+            // hit the SQL Server profiler path, so a missing
+            // --connection-id is fine in those branches.
+            if (args.QualifySales)
+            {
+                return await RunQualifySalesAsync(args, cts.Token);
+            }
             if (args.ExportMappingWorkbook)
             {
                 return await RunExportMappingWorkbookAsync(args, cts.Token);
@@ -448,6 +454,108 @@ internal static class Program
             Console.WriteLine($"    {file}");
         }
         Console.WriteLine("─────────────────────────────────────────────");
+
+        return 0;
+    }
+
+    /// <summary>
+    /// Slice C8-C: read-only sales qualification sample runner.
+    /// Loads a Mapped workbook, reads up to <c>--max-sales</c> rows from
+    /// PACS, qualifies each via the C8-B transform, and prints aggregate
+    /// counts plus a per-row sample. NEVER mutates anything.
+    /// </summary>
+    private static async Task<int> RunQualifySalesAsync(CliArgs args, CancellationToken ct)
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:DefaultConnection"] = args.TerraFusionDbConnectionString
+            })
+            .AddEnvironmentVariables()
+            .Build();
+
+        var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
+            .UseNpgsql(args.TerraFusionDbConnectionString, npg =>
+            {
+                npg.MigrationsAssembly("TerraFusion.Data");
+                npg.EnableRetryOnFailure(maxRetryCount: 3);
+            })
+            .Options;
+
+        await using var db = new TerraFusionDbContext(options, configuration);
+
+        // Parser invariants: QualifySales=true ⇒ WorkbookId,
+        // SourceConnectionId, MaxSales all set. Defend so a future
+        // parser regression fails closed.
+        var workbookId = args.WorkbookId
+            ?? throw new InvalidOperationException("Qualify-sales mode reached without --workbook-id; this is a parser invariant violation.");
+        var sourceConnectionId = args.SourceConnectionId
+            ?? throw new InvalidOperationException("Qualify-sales mode reached without --source-connection-id; this is a parser invariant violation.");
+        var maxSales = args.MaxSales
+            ?? throw new InvalidOperationException("Qualify-sales mode reached without --max-sales; this is a parser invariant violation.");
+
+        // Same secret-resolver wiring as the structural / deep-profile
+        // / export readers (B1.6.5). SQL Auth passwords come from the
+        // operator's process environment; no plaintext on the entity.
+        var secretResolver = new EnvironmentSecretResolver();
+        var salesReader    = new SqlServerSalesRowReader(secretResolver);
+        var readModel      = new SyncMappingWorkbookReadModel(db);
+        var runner         = new SalesQualificationSampleRunner(db, readModel, salesReader);
+
+        Console.WriteLine($"sync-atlas: qualifying sales sample for county {args.CountyId}...");
+        Console.WriteLine($"sync-atlas:   workbook id:           {workbookId}");
+        Console.WriteLine($"sync-atlas:   source connection id:  {sourceConnectionId}");
+        Console.WriteLine($"sync-atlas:   max sales:             {maxSales}");
+
+        SalesQualificationSampleResult result;
+        try
+        {
+            result = await runner.RunAsync(args.CountyId, workbookId, sourceConnectionId, maxSales, ct);
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Workbook-status guard, missing connection, cross-county
+            // — all surface here. Verbatim message + exit 2.
+            await Console.Error.WriteLineAsync($"sync-atlas: {ex.Message}");
+            return 2;
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine($"  Sales Qualification Sample");
+        Console.WriteLine($"  Workbook Id:         {result.WorkbookId}");
+        Console.WriteLine($"  Source Connection:   {result.SourceConnectionId}");
+        Console.WriteLine($"  Rows Read:           {result.RowsRead,7:N0}");
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine($"  Qualified:           {result.QualifiedCount,7:N0}");
+        Console.WriteLine($"  Excluded:            {result.ExcludedCount,7:N0}");
+        Console.WriteLine($"  Deferred:            {result.DeferredCount,7:N0}");
+        Console.WriteLine($"  Unknown:             {result.UnknownCount,7:N0}");
+        Console.WriteLine($"  MissingCode:         {result.MissingCodeCount,7:N0}");
+        Console.WriteLine("─────────────────────────────────────────────");
+
+        if (result.Sample.Count > 0)
+        {
+            Console.WriteLine("  Sample Decisions (first 20):");
+            Console.WriteLine("    sale_id | wac_cd | sl_ratio_type_cd | status | excluded | canonical");
+            var shown = 0;
+            foreach (var entry in result.Sample)
+            {
+                if (shown++ >= 20) break;
+                Console.WriteLine(
+                    $"    {entry.SaleIdentifier ?? "—"} | " +
+                    $"{entry.WacCode ?? "—"} | " +
+                    $"{entry.SaleRatioTypeCode ?? "—"} | " +
+                    $"{entry.Status} | " +
+                    $"{(entry.IsExcludedFromComps ? "yes" : "no")} | " +
+                    $"{entry.CanonicalValue ?? "—"}");
+            }
+            if (result.Sample.Count > 20)
+            {
+                Console.WriteLine($"    ... and {result.Sample.Count - 20} more.");
+            }
+            Console.WriteLine("─────────────────────────────────────────────");
+        }
 
         return 0;
     }

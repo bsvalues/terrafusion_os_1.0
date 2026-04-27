@@ -42,7 +42,11 @@ public sealed record CliArgs(
     bool ExportMappingWorkbook,
     Guid? WorkbookId,
     string? OutputDirectory,
-    string ExportFormat);
+    string ExportFormat,
+    // Slice C8-C — Sales qualification sample runner mode
+    bool QualifySales,
+    Guid? SourceConnectionId,
+    int? MaxSales);
 
 /// <summary>
 /// Pure argument parser. No I/O, no environment access — easy to unit test.
@@ -147,6 +151,11 @@ public static class CliArgsParser
         // --format outside export mode without false-positive matches on
         // the default value.
         var exportFormatExplicit = false;
+
+        // Slice C8-C — Sales qualification sample runner mode
+        var qualifySales = false;
+        Guid? sourceConnectionId = null;
+        int? maxSales = null;
 
         for (var i = 0; i < argv.Length; i++)
         {
@@ -276,6 +285,27 @@ public static class CliArgsParser
                     exportFormatExplicit = true;
                     break;
 
+                // ── Slice C8-C — Sales qualification sample runner ─────
+                case "--qualify-sales":
+                    qualifySales = true;
+                    break;
+
+                case "--source-connection-id":
+                    if (++i >= argv.Length) return (null, "--source-connection-id requires a value");
+                    if (!Guid.TryParse(argv[i], out var sci))
+                        return (null, $"--source-connection-id is not a valid GUID: '{argv[i]}'");
+                    sourceConnectionId = sci;
+                    break;
+
+                case "--max-sales":
+                    if (++i >= argv.Length) return (null, "--max-sales requires a value");
+                    if (!int.TryParse(argv[i], out var ms) || ms <= 0)
+                    {
+                        return (null, $"--max-sales must be a positive integer: '{argv[i]}'");
+                    }
+                    maxSales = ms;
+                    break;
+
                 default:
                     return (null, $"unknown argument: '{arg}'");
             }
@@ -301,7 +331,10 @@ public static class CliArgsParser
                 ExportMappingWorkbook:                 exportMappingWorkbook,
                 WorkbookId:                            workbookId,
                 OutputDirectory:                       outputDirectory,
-                ExportFormat:                          exportFormat), null);
+                ExportFormat:                          exportFormat,
+                QualifySales:                          qualifySales,
+                SourceConnectionId:                    sourceConnectionId,
+                MaxSales:                              maxSales), null);
         }
 
         // ── Always-required, regardless of mode ─────────────────────────
@@ -309,18 +342,25 @@ public static class CliArgsParser
         if (!countyId.HasValue) return (null, "--county-id is required");
         if (string.IsNullOrWhiteSpace(operatorId)) return (null, "--operator must be non-empty when provided");
 
-        // ── Three-way mode mutex ────────────────────────────────────────
+        // ── Four-way mode mutex ─────────────────────────────────────────
         // Profile (default) | Generate Workbook (C4) | Export Workbook (C5)
-        // are mutually exclusive — at most one bool-toggle can be on.
-        if (generateMappingWorkbook && exportMappingWorkbook)
+        // | Qualify Sales (C8-C) — at most one bool-toggle can be on.
+        var modeToggleCount =
+            (generateMappingWorkbook ? 1 : 0) +
+            (exportMappingWorkbook   ? 1 : 0) +
+            (qualifySales            ? 1 : 0);
+        if (modeToggleCount > 1)
         {
-            return (null, "--generate-mapping-workbook and --export-mapping-workbook are mutually exclusive");
+            return (null, "--generate-mapping-workbook, --export-mapping-workbook, and --qualify-sales are mutually exclusive");
         }
 
         // ── Mode-mutual-exclusion: deep-profile flags only in profile mode ──
-        if (generateMappingWorkbook || exportMappingWorkbook)
+        if (generateMappingWorkbook || exportMappingWorkbook || qualifySales)
         {
-            var modeName = generateMappingWorkbook ? "Mapping Workbook" : "Mapping Workbook export";
+            var modeName =
+                generateMappingWorkbook ? "Mapping Workbook" :
+                exportMappingWorkbook   ? "Mapping Workbook export" :
+                                          "Sales qualification";
             if (deepProfile)
             {
                 return (null, $"--deep-profile is not allowed in {modeName} mode");
@@ -336,7 +376,7 @@ public static class CliArgsParser
         }
 
         // ── Profile-mode-specific validation ────────────────────────────
-        if (!generateMappingWorkbook && !exportMappingWorkbook)
+        if (!generateMappingWorkbook && !exportMappingWorkbook && !qualifySales)
         {
             if (!connectionId.HasValue) return (null, "--connection-id is required");
 
@@ -376,7 +416,7 @@ public static class CliArgsParser
             // Export-mode flags must not appear in profile mode.
             if (workbookId.HasValue)
             {
-                return (null, "--workbook-id requires --export-mapping-workbook");
+                return (null, "--workbook-id requires --export-mapping-workbook or --qualify-sales");
             }
             if (outputDirectory is not null)
             {
@@ -385,6 +425,16 @@ public static class CliArgsParser
             if (exportFormatExplicit)
             {
                 return (null, "--format requires --export-mapping-workbook");
+            }
+
+            // Qualify-sales-mode flags must not appear in profile mode.
+            if (sourceConnectionId.HasValue)
+            {
+                return (null, "--source-connection-id requires --qualify-sales");
+            }
+            if (maxSales.HasValue)
+            {
+                return (null, "--max-sales requires --qualify-sales");
             }
         }
         else if (generateMappingWorkbook)
@@ -406,7 +456,7 @@ public static class CliArgsParser
             // Export-mode flags must not appear in generate mode.
             if (workbookId.HasValue)
             {
-                return (null, "--workbook-id requires --export-mapping-workbook");
+                return (null, "--workbook-id requires --export-mapping-workbook or --qualify-sales");
             }
             if (outputDirectory is not null)
             {
@@ -416,12 +466,22 @@ public static class CliArgsParser
             {
                 return (null, "--format requires --export-mapping-workbook");
             }
+
+            // Qualify-sales flags must not appear in generate mode.
+            if (sourceConnectionId.HasValue)
+            {
+                return (null, "--source-connection-id requires --qualify-sales");
+            }
+            if (maxSales.HasValue)
+            {
+                return (null, "--max-sales requires --qualify-sales");
+            }
             // --connection-id is irrelevant in workbook mode (loader
             // resolves it from the profile batch). Tolerate its presence —
             // an operator with both flags set should not be punished — but
             // it is not required.
         }
-        else
+        else if (exportMappingWorkbook)
         {
             // ── Export-workbook-mode-specific validation (C5) ──────────
             if (!workbookId.HasValue)
@@ -454,6 +514,64 @@ public static class CliArgsParser
             {
                 return (null, "--mapping-max-candidates requires --generate-mapping-workbook");
             }
+
+            // Qualify-sales flags must not appear in export mode.
+            if (sourceConnectionId.HasValue)
+            {
+                return (null, "--source-connection-id requires --qualify-sales");
+            }
+            if (maxSales.HasValue)
+            {
+                return (null, "--max-sales requires --qualify-sales");
+            }
+        }
+        else
+        {
+            // ── Qualify-sales-mode-specific validation (C8-C) ──────────
+            if (!workbookId.HasValue)
+            {
+                return (null, "--workbook-id is required when --qualify-sales is set");
+            }
+            if (!sourceConnectionId.HasValue)
+            {
+                return (null, "--source-connection-id is required when --qualify-sales is set");
+            }
+            if (!maxSales.HasValue)
+            {
+                return (null, "--max-sales is required when --qualify-sales is set");
+            }
+
+            // Generate-mode flags must not appear in qualify mode.
+            if (profileBatchId.HasValue)
+            {
+                return (null, "--profile-batch-id requires --generate-mapping-workbook");
+            }
+            if (latestProfileBatch)
+            {
+                return (null, "--latest-profile-batch requires --generate-mapping-workbook");
+            }
+            if (workbookName is not null)
+            {
+                return (null, "--workbook-name requires --generate-mapping-workbook");
+            }
+            if (replaceExistingDraft)
+            {
+                return (null, "--replace-existing-draft requires --generate-mapping-workbook");
+            }
+            if (mappingMaxCandidates.HasValue)
+            {
+                return (null, "--mapping-max-candidates requires --generate-mapping-workbook");
+            }
+
+            // Export-mode flags must not appear in qualify mode.
+            if (outputDirectory is not null)
+            {
+                return (null, "--output-dir requires --export-mapping-workbook");
+            }
+            if (exportFormatExplicit)
+            {
+                return (null, "--format requires --export-mapping-workbook");
+            }
         }
 
         return (new CliArgs(
@@ -474,7 +592,10 @@ public static class CliArgsParser
             ExportMappingWorkbook:                 exportMappingWorkbook,
             WorkbookId:                            workbookId,
             OutputDirectory:                       outputDirectory,
-            ExportFormat:                          exportFormat), null);
+            ExportFormat:                          exportFormat,
+            QualifySales:                          qualifySales,
+            SourceConnectionId:                    sourceConnectionId,
+            MaxSales:                              maxSales), null);
     }
 
     public static string UsageText => @"
@@ -506,6 +627,15 @@ Usage (Mapping Workbook export mode — Slice C5):
             [--format csv|md|both] \
             [--operator <name>]
 
+Usage (Sales qualification sample runner — Slice C8-C, read-only):
+  SyncAtlas --db <terrafusion-connection-string> \
+            --county-id <guid> \
+            --qualify-sales \
+            --workbook-id <guid> \
+            --source-connection-id <guid> \
+            --max-sales <n> \
+            [--operator <name>]
+
 Required (always):
   --db              Postgres connection string for the TerraFusion DB.
   --county-id       CountyId scoping the run.
@@ -526,6 +656,17 @@ Required (Mapping Workbook export mode):
   --output-dir                  Directory to write export files into
                                 (created if missing; existing files
                                 overwritten).
+
+Required (Sales qualification sample runner — read-only):
+  --qualify-sales               Switch into the read-only sales sample mode.
+  --workbook-id                 Mapped (Status='Mapped') workbook to consult.
+                                Draft / InProgress / Approved / Archived
+                                workbooks fail closed at the read model.
+  --source-connection-id        SyncSourceConnection.Id pointing at the
+                                PACS server to read sales rows from.
+                                Must belong to --county-id.
+  --max-sales                   Bounded TOP-N for the PACS sale read.
+                                Positive integer.
 
 Optional:
   --operator                  Operator id stamped on audit fields. Default: 'cli-operator'.
