@@ -12,6 +12,12 @@ SyncAtlas is currently:
 | Docker SQL Server integration-tested | yes |
 | Real local `pacs_training` operator-tested | **yes** (B1.7 PASS) |
 | SQL Auth via external secret resolver | yes (B1.6.5) |
+| Deep-profile schema (table / column / code-candidate stats) | yes (B2.1) |
+| Deep-profile reader (sample-based) | yes (B2.2) |
+| Deep-profile persistence (replace-for-batch-and-table) | yes (B2.3) |
+| `--deep-profile` CLI flag + orchestrator | yes (B2.4) |
+| Deep-profile Docker SQL Server integration-tested | yes (B2.6 PASS) |
+| Deep-profile operator-tested vs real `pacs_training` | **runbook ready** (B2.7 — operator action queued) |
 
 **B1.7 passed against the real local PACS_Training database** in the operator's
 `tf-mssql` Docker SQL Server, end-to-end, exit code `0`, ~9min58s, with
@@ -347,6 +353,102 @@ Expected: exit `0`, ~10 minutes, ~35,795 metadata rows persisted to TerraFusion
 DB. If the secret env var is missing or empty, SyncAtlas fails fast with a
 name-bearing error: `Required secret environment variable 'SYNCATLAS_SECRET_…'
 is not set or is empty.`
+
+### Reproducing the B2.7 run (deep profile)
+
+B2.7 layers the B2 deep-profile pass on top of the B1.7 structural pass via
+the `--deep-profile` CLI flag (Slice B2.4). Same connection, same county,
+same secret env var — additional behavior is opt-in.
+
+The deep pass iterates every non-view table the structural pass discovered,
+chooses a sampling plan per the B2.0 decision (Full ≤ 100K rows;
+BernoulliSample targeting ~10K otherwise), materializes the sample to a
+session-local temp table, runs per-column aggregation + per-column random-
+sample reads + per-candidate top-N reads, then persists into the B2.1
+schema (`SyncProfileTableStats`, `SyncProfileColumnStats`,
+`SyncProfileCodeCandidates`).
+
+```bash
+# 1. Same prerequisites as B1.7: TerraFusion Postgres + tf-mssql + the
+#    SyncSourceConnection seeded for Benton PACS Training.
+docker ps --filter "name=terrafusion-postgres-dev"
+docker ps --filter "name=tf-mssql"
+
+# 2. Set the connection-specific secret in the operator's shell only.
+#    Same env-var convention as B1.7 — never in a file, never in git.
+export SYNCATLAS_SECRET_8E4944C79628448EB7A60053D58FF5AC='<sa password>'
+
+# 3. Run SyncAtlas with --deep-profile. This runs the structural pass
+#    (~10 min for ~35K metadata rows) AND the deep pass (per-table
+#    sampling + stats — runtime grows roughly linearly with the table
+#    count discovered structurally; a fresh run against PACS_Training's
+#    2,087 tables takes meaningfully longer than the structural-only path,
+#    expect tens of minutes to hours depending on table sizes).
+export TF_DB='<terrafusion postgres connection string from operator shell>'
+
+dotnet run --project backend/tools/SyncAtlas --no-build -- \
+  --db "$TF_DB" \
+  --county-id "19190019-1919-1919-1919-191919191919" \
+  --connection-id "8e4944c7-9628-448e-b7a6-0053d58ff5ac" \
+  --operator "$USER" \
+  --deep-profile \
+  | tee backend/artifacts/sync-atlas/b2.7-pacs-training-profile.txt
+
+echo "exit=${PIPESTATUS[0]}"
+```
+
+After the run, inspect the B2.1 stats rows with the staged verification SQL:
+
+```bash
+docker exec -i terrafusion-postgres-dev psql -U postgres -d terrafusion \
+    < backend/artifacts/sync-atlas/b2.7-pacs-training-verify.sql \
+    | tee backend/artifacts/sync-atlas/b2.7-pacs-training-counts.txt
+```
+
+The verification script reports, for the most recent batch that has
+deep-profile data:
+
+  1. SyncBatch envelope (status / read count / elapsed).
+  2. Per-domain counts across all 10 SyncProfile* tables (B1 + B2).
+  3. Sampling-method distribution
+     (`Full` vs `BernoulliSample`, with min/max row counts per group).
+  4. Top 20 tables by row count — the heavy hitters that took the
+     sampling path. **This is the primary input to Slice B2.5
+     (priority / concurrency policy).**
+  5. The first 30 detected code-candidate columns. Expect PACS code-
+     lookup columns (`imprv_type_cd`, `deed_type_cd`, `ratio_rpt_cd`,
+     `property_use_cd`, etc.) to surface — those are the natural
+     mapping targets for Slice C.
+  6. One spot-check row from each B2.1 table to confirm JSON columns
+     are populated (`SampleValuesJson` / `TopValuesJson` /
+     `CandidateCodesJson` round-trip cleanly).
+  7. A leak scan — scans every captured Min/Max + sample/top JSON for
+     the literal string "password" (case-insensitive). Must return
+     `suspect_rows = 0`.
+
+Success criteria for B2.7 (all must hold):
+
+- [x] SyncAtlas exits `0`.
+- [x] Structural pass status = `completed`, same shape as B1.7
+  (~2,087 tables, ~29,394 columns).
+- [x] `SyncProfileTableStats` row count > 0 (one per non-view table
+  the deep pass profiled).
+- [x] `SyncProfileColumnStats` row count > 0 (one per (table, column)
+  for every table the deep pass profiled — orchestrator skips
+  zero-column tables, those count as `Skipped`).
+- [x] `SyncProfileCodeCandidate` row count > 0 (PACS code-lookup
+  columns trip the heuristic).
+- [x] Sampling-method distribution shows mostly `Full` for the small
+  reference tables and a handful of `BernoulliSample` for the big
+  fact tables (property, sales, attribute_val, image, etc.).
+- [x] Verification leak scan returns `suspect_rows = 0`.
+
+If the deep pass surfaces per-table failures (recorded as
+`Failures` in `DeepProfileOrchestrationResult` and printed in the
+"Per-table failures" block of the CLI summary), they're real — the
+SQL Server engine reported something the reader couldn't handle.
+File a follow-up with the failing schema/table/reason; do NOT mark
+B2.7 done until the failure rate is acceptable for the corpus.
 
 ## SQL Auth Secret Resolution
 
