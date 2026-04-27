@@ -394,4 +394,282 @@ public class CliArgsParserTests
         usage.Should().Contain("--deep-profile-include");
         usage.Should().Contain("--deep-profile-max-tables");
     }
+
+    // ── Slice C4 — Mapping Workbook draft mode flags ────────────────────
+    //
+    // The parser's job in workbook mode is to switch the validation
+    // matrix: --connection-id is no longer required (loader resolves it
+    // from the batch), --workbook-name becomes required, exactly one of
+    // --profile-batch-id / --latest-profile-batch is required, and
+    // profile-mode-only flags are rejected. These tests pin every cell
+    // of that matrix.
+
+    private const string ValidProfileBatch = "6342a924-c235-43d5-b68c-0c0a70ead1e2";
+
+    [Fact]
+    public void Parse_GenerateMappingWorkbookFlag_LatestBatch_SetsTrue()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--generate-mapping-workbook",
+            "--latest-profile-batch",
+            "--workbook-name", "Benton OLTP wb",
+        });
+
+        err.Should().BeNull();
+        args!.GenerateMappingWorkbook.Should().BeTrue();
+        args.LatestProfileBatch.Should().BeTrue();
+        args.ProfileBatchId.Should().BeNull();
+        args.WorkbookName.Should().Be("Benton OLTP wb");
+        args.ConnectionId.Should().BeNull();      // not required in workbook mode
+        args.ReplaceExistingDraft.Should().BeFalse();
+        args.MappingMaxCandidates.Should().BeNull();
+    }
+
+    [Fact]
+    public void Parse_GenerateMappingWorkbookFlag_ExplicitBatch_SetsTrue()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--generate-mapping-workbook",
+            "--profile-batch-id", ValidProfileBatch,
+            "--workbook-name", "explicit-batch wb",
+        });
+
+        err.Should().BeNull();
+        args!.GenerateMappingWorkbook.Should().BeTrue();
+        args.ProfileBatchId.Should().Be(Guid.Parse(ValidProfileBatch));
+        args.LatestProfileBatch.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Parse_WorkbookNameRequiredWhenGenerateMappingWorkbook()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--generate-mapping-workbook",
+            "--latest-profile-batch",
+            // no --workbook-name
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--workbook-name");
+    }
+
+    [Fact]
+    public void Parse_ProfileBatchIdOrLatestRequiredWhenGenerateMappingWorkbook()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--generate-mapping-workbook",
+            "--workbook-name", "missing-batch wb",
+            // no --profile-batch-id and no --latest-profile-batch
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--profile-batch-id");
+        err.Should().Contain("--latest-profile-batch");
+    }
+
+    [Fact]
+    public void Parse_ProfileBatchIdAndLatestAreMutuallyExclusive()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--generate-mapping-workbook",
+            "--workbook-name", "two-modes wb",
+            "--profile-batch-id", ValidProfileBatch,
+            "--latest-profile-batch",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("mutually exclusive");
+    }
+
+    [Fact]
+    public void Parse_ReplaceExistingDraftAllowedOnlyWithGenerateMappingWorkbook()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            // No --generate-mapping-workbook here.
+            "--replace-existing-draft",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--replace-existing-draft");
+        err.Should().Contain("--generate-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_MappingMaxCandidatesAllowedOnlyWithGenerateMappingWorkbook()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--mapping-max-candidates", "25",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--mapping-max-candidates");
+        err.Should().Contain("--generate-mapping-workbook");
+    }
+
+    [Theory]
+    [InlineData("0")]
+    [InlineData("-1")]
+    [InlineData("not-a-number")]
+    public void Parse_MappingMaxCandidatesMustBePositive(string raw)
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--generate-mapping-workbook",
+            "--workbook-name", "cap wb",
+            "--latest-profile-batch",
+            "--mapping-max-candidates", raw,
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--mapping-max-candidates");
+        err.Should().Contain("positive integer");
+    }
+
+    [Fact]
+    public void Parse_ProfileBatchIdInvalidGuid_ReturnsError()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--generate-mapping-workbook",
+            "--workbook-name", "wb",
+            "--profile-batch-id", "not-a-guid",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--profile-batch-id");
+        err.Should().Contain("not a valid GUID");
+    }
+
+    [Fact]
+    public void Parse_DeepProfileNotAllowedInWorkbookMode()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--generate-mapping-workbook",
+            "--workbook-name", "wb",
+            "--latest-profile-batch",
+            "--deep-profile",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--deep-profile");
+        err.Should().Contain("Mapping Workbook");
+    }
+
+    [Fact]
+    public void Parse_ConnectionIdNotRequiredInWorkbookMode()
+    {
+        // Sanity: omitting --connection-id is FINE in workbook mode (the
+        // loader resolves it from the batch). The pre-C4 parser would
+        // have rejected this with "--connection-id is required."
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--generate-mapping-workbook",
+            "--workbook-name", "no-connection wb",
+            "--latest-profile-batch",
+        });
+
+        err.Should().BeNull();
+        args!.ConnectionId.Should().BeNull();
+    }
+
+    [Fact]
+    public void Parse_ExistingProfileFlagsRemainCompatible()
+    {
+        // Backward-compat regression: profile mode (no
+        // --generate-mapping-workbook) still parses with the same shape
+        // it had pre-C4, including the deep-profile family of flags.
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--operator", "bsval",
+            "--deep-profile",
+            "--deep-profile-include", "dbo.property,dbo.sale",
+            "--deep-profile-max-tables", "5",
+        });
+
+        err.Should().BeNull();
+        args!.GenerateMappingWorkbook.Should().BeFalse();
+        args.WorkbookName.Should().BeNull();
+        args.ProfileBatchId.Should().BeNull();
+        args.LatestProfileBatch.Should().BeFalse();
+        args.ReplaceExistingDraft.Should().BeFalse();
+        args.MappingMaxCandidates.Should().BeNull();
+        args.DeepProfile.Should().BeTrue();
+        args.DeepProfileIncludeQualifiedNames.Should().HaveCount(2);
+        args.DeepProfileMaxTables.Should().Be(5);
+    }
+
+    [Fact]
+    public void Parse_FullWorkbookFlagSet_RoundTripsAllFields()
+    {
+        // Every workbook-mode flag in one call — pins the shape of a
+        // complete workbook invocation.
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--generate-mapping-workbook",
+            "--profile-batch-id", ValidProfileBatch,
+            "--workbook-name", "Benton PACS OLTP Mapping Workbook",
+            "--replace-existing-draft",
+            "--mapping-max-candidates", "50",
+            "--operator", "bsval",
+        });
+
+        err.Should().BeNull();
+        args!.GenerateMappingWorkbook.Should().BeTrue();
+        args.ProfileBatchId.Should().Be(Guid.Parse(ValidProfileBatch));
+        args.LatestProfileBatch.Should().BeFalse();
+        args.WorkbookName.Should().Be("Benton PACS OLTP Mapping Workbook");
+        args.ReplaceExistingDraft.Should().BeTrue();
+        args.MappingMaxCandidates.Should().Be(50);
+        args.OperatorId.Should().Be("bsval");
+        args.CountyId.Should().Be(Guid.Parse(ValidCounty));
+    }
+
+    [Fact]
+    public void UsageText_MentionsMappingWorkbookFlags()
+    {
+        var usage = CliArgsParser.UsageText;
+        usage.Should().Contain("--generate-mapping-workbook");
+        usage.Should().Contain("--profile-batch-id");
+        usage.Should().Contain("--latest-profile-batch");
+        usage.Should().Contain("--workbook-name");
+        usage.Should().Contain("--replace-existing-draft");
+        usage.Should().Contain("--mapping-max-candidates");
+    }
 }
