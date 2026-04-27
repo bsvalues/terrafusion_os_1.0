@@ -260,23 +260,43 @@ public sealed class SyncMappingWorkbookEditService : ISyncMappingWorkbookEditSer
         SyncMappingWorkbookEditRequest request,
         CancellationToken cancellationToken)
     {
-        // SourceValue match: exact-after-trim, mirrors the C7 read
-        // model's TryResolveCode policy. PACS code semantics are
-        // case-significant; trailing-padding noise is not.
-        var trimmed = request.SourceValue!.Trim();
+        // SourceValue match (Slice C12): exact-after-trim on BOTH
+        // sides. PACS char(N) sources arrive padded ("00   "); the
+        // operator's natural input ("00") must match without forcing
+        // them to type invisible spaces. The stored value is never
+        // rewritten — see MappingSourceValueMatcher for the contract.
+        //
+        // We pull all of the column's code-values into memory and
+        // filter client-side. Per-column code-value counts are
+        // bounded (typically <= a few hundred), and the matcher's
+        // semantics (case-significant, no internal-whitespace
+        // collapse, ambiguity detection) are easier to verify in
+        // memory than across EF providers.
+        var operatorValue = request.SourceValue!;
+        var allValues = await _db.SyncMappingCodeValues
+            .Where(v => v.MappingColumnId == column.Id)
+            .ToListAsync(cancellationToken);
 
-        var codeValue = await _db.SyncMappingCodeValues
-            .FirstOrDefaultAsync(
-                v => v.MappingColumnId == column.Id
-                  && v.SourceValue == trimmed,
-                cancellationToken);
-        if (codeValue is null)
+        var matches = allValues
+            .Where(v => MappingSourceValueMatcher.MatchesAfterTrim(v.SourceValue, operatorValue))
+            .ToList();
+
+        if (matches.Count == 0)
         {
             throw new InvalidOperationException(
-                $"Source value '{trimmed}' not found in column " +
+                $"Source value '{operatorValue.Trim()}' not found in column " +
                 $"{request.SourceSchema}.{request.SourceTable}.{request.SourceColumn} " +
                 $"of workbook {workbook.Id}.");
         }
+        if (matches.Count > 1)
+        {
+            throw new InvalidOperationException(
+                MappingSourceValueMatcher.BuildAmbiguousMatchMessage(
+                    request.SourceSchema, request.SourceTable, request.SourceColumn,
+                    operatorValue, matches.Select(m => (string?)m.SourceValue)));
+        }
+
+        var codeValue = matches[0];
 
         var before = CodeValueFields(codeValue);
 

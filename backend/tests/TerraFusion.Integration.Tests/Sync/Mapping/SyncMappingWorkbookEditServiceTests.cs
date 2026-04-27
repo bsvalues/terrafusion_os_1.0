@@ -721,4 +721,185 @@ public class SyncMappingWorkbookEditServiceTests
         result.Scope.Should().Be("code value");
         result.Changed.Should().BeTrue();
     }
+
+    // ── Slice C12: trim-on-both-sides matching for char(N)-padded codes ──
+    //
+    // PACS char(N) source columns store space-padded values (e.g.
+    // sl_ratio_type_cd = "00   "). Operators type the natural form
+    // ("00"). The match must succeed without rewriting the stored value.
+
+    private static SyncMappingWorkbookEditRequest RatioRequest(
+        string? sourceValue = null,
+        string? reviewStatus = null,
+        string? notes = null)
+        => new(
+            SourceSchema:       "dbo",
+            SourceTable:        "sale",
+            SourceColumn:       "sl_ratio_type_cd",
+            SourceValue:        sourceValue,
+            CanonicalTarget:    null,
+            CanonicalValue:     null,
+            CanonicalValueNull: false,
+            ReviewStatus:       reviewStatus,
+            IsExcluded:         null,
+            Notes:              notes);
+
+    [Fact]
+    public async Task Edit_MatchesPaddedSourceValueByTrimOnBothSides()
+    {
+        await using var db = CreateContext($"edit-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+        var (wb, _, ratio) = await SeedDraftWorkbookAsync(db, county.Id, conn.Id, batch.Id);
+
+        // Replace the seeded "00" row with a stored value that has
+        // 3 trailing spaces — mirrors the live PACS char(5) shape.
+        db.SyncMappingCodeValues.RemoveRange(
+            db.SyncMappingCodeValues.Where(v => v.MappingColumnId == ratio.Id));
+        db.SyncMappingCodeValues.Add(new SyncMappingCodeValue
+        {
+            CountyId = county.Id, MappingColumnId = ratio.Id,
+            SourceValue = "00   ",  // 3 trailing spaces, byte_len=5
+            ReviewStatus = "NeedsReview",
+            CanonicalValue = null, IsExcluded = false, ObservedCount = 2464,
+            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+        });
+        await db.SaveChangesAsync();
+
+        var sut = new SyncMappingWorkbookEditService(db);
+        // Operator types the natural unpadded form.
+        var result = await sut.EditAsync(county.Id, wb.Id,
+            RatioRequest(sourceValue: "00", reviewStatus: "Deferred"));
+
+        result.Scope.Should().Be("code value");
+        result.Changed.Should().BeTrue();
+        result.After["review_status"].Should().Be("Deferred");
+
+        var reloaded = await db.SyncMappingCodeValues.AsNoTracking()
+            .SingleAsync(v => v.MappingColumnId == ratio.Id);
+        reloaded.ReviewStatus.Should().Be("Deferred");
+    }
+
+    [Fact]
+    public async Task Edit_PreservesStoredPaddedSourceValue()
+    {
+        // Same setup as the trim-match test, but the assertion is on
+        // the stored SourceValue: it must remain byte-for-byte
+        // identical after the edit. The C12 helper is read-only.
+        await using var db = CreateContext($"edit-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+        var (wb, _, ratio) = await SeedDraftWorkbookAsync(db, county.Id, conn.Id, batch.Id);
+
+        const string PaddedStored = "00   ";
+        db.SyncMappingCodeValues.RemoveRange(
+            db.SyncMappingCodeValues.Where(v => v.MappingColumnId == ratio.Id));
+        db.SyncMappingCodeValues.Add(new SyncMappingCodeValue
+        {
+            CountyId = county.Id, MappingColumnId = ratio.Id,
+            SourceValue = PaddedStored,
+            ReviewStatus = "NeedsReview",
+            CanonicalValue = null, IsExcluded = false, ObservedCount = 2464,
+            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+        });
+        await db.SaveChangesAsync();
+
+        var sut = new SyncMappingWorkbookEditService(db);
+        await sut.EditAsync(county.Id, wb.Id,
+            RatioRequest(sourceValue: "00", reviewStatus: "Deferred",
+                notes: "Needs assessor review before ratio-study use"));
+
+        var reloaded = await db.SyncMappingCodeValues.AsNoTracking()
+            .SingleAsync(v => v.MappingColumnId == ratio.Id);
+        reloaded.SourceValue.Should().Be(PaddedStored, "stored SourceValue must remain padded after edit");
+        reloaded.SourceValue.Length.Should().Be(5);
+    }
+
+    [Fact]
+    public async Task Edit_DoesNotCollapseInternalWhitespace()
+    {
+        // Stored "A B" must not match operator "AB" — only leading/
+        // trailing whitespace is normalized; internal whitespace is
+        // semantically meaningful.
+        await using var db = CreateContext($"edit-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+        var (wb, _, ratio) = await SeedDraftWorkbookAsync(db, county.Id, conn.Id, batch.Id);
+
+        db.SyncMappingCodeValues.RemoveRange(
+            db.SyncMappingCodeValues.Where(v => v.MappingColumnId == ratio.Id));
+        db.SyncMappingCodeValues.Add(new SyncMappingCodeValue
+        {
+            CountyId = county.Id, MappingColumnId = ratio.Id,
+            SourceValue = "A B",   // internal space preserved
+            ReviewStatus = "NeedsReview",
+            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+        });
+        await db.SaveChangesAsync();
+
+        var sut = new SyncMappingWorkbookEditService(db);
+
+        // "AB" must NOT match "A B".
+        Func<Task> negativeCase = () => sut.EditAsync(county.Id, wb.Id,
+            RatioRequest(sourceValue: "AB", reviewStatus: "Deferred"));
+        await negativeCase.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*'AB' not found*");
+
+        // "A B" matches itself, "  A B  " also matches (leading/trailing trimmed).
+        var hit1 = await sut.EditAsync(county.Id, wb.Id,
+            RatioRequest(sourceValue: "A B", reviewStatus: "Deferred"));
+        hit1.Scope.Should().Be("code value");
+        hit1.After["review_status"].Should().Be("Deferred");
+
+        var hit2 = await sut.EditAsync(county.Id, wb.Id,
+            RatioRequest(sourceValue: "  A B  ", reviewStatus: "Mapped"));
+        hit2.After["review_status"].Should().Be("Mapped");
+    }
+
+    [Fact]
+    public async Task Edit_RejectsAmbiguousTrimmedSourceValueMatches()
+    {
+        // Two stored rows that trim-equal: "00" and "00 ". The matcher
+        // must refuse rather than silently pick one. The natural-key
+        // uniqueness on (MappingColumnId, SourceValue) is per-stored-
+        // string, so this state is achievable when source data has
+        // bug-shaped duplicates and the operator must clean it up.
+        await using var db = CreateContext($"edit-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+        var (wb, _, ratio) = await SeedDraftWorkbookAsync(db, county.Id, conn.Id, batch.Id);
+
+        db.SyncMappingCodeValues.RemoveRange(
+            db.SyncMappingCodeValues.Where(v => v.MappingColumnId == ratio.Id));
+        db.SyncMappingCodeValues.Add(new SyncMappingCodeValue
+        {
+            CountyId = county.Id, MappingColumnId = ratio.Id,
+            SourceValue = "00",
+            ReviewStatus = "NeedsReview",
+            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+        });
+        db.SyncMappingCodeValues.Add(new SyncMappingCodeValue
+        {
+            CountyId = county.Id, MappingColumnId = ratio.Id,
+            SourceValue = "00 ",
+            ReviewStatus = "NeedsReview",
+            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+        });
+        await db.SaveChangesAsync();
+
+        var sut = new SyncMappingWorkbookEditService(db);
+
+        var thrown = await Record.ExceptionAsync(() => sut.EditAsync(county.Id, wb.Id,
+            RatioRequest(sourceValue: "00", reviewStatus: "Deferred")));
+
+        thrown.Should().BeOfType<InvalidOperationException>();
+        // Substring assertions are unordered — the matcher's stored-value
+        // list ordering is provider-dependent.
+        thrown!.Message.Should().Contain("ambiguous");
+        thrown.Message.Should().Contain("'00'");
+        thrown.Message.Should().Contain("'00 '");
+        thrown.Message.Should().Contain("Resolve the duplicate");
+
+        // Neither row mutated — both still NeedsReview.
+        var rows = await db.SyncMappingCodeValues.AsNoTracking()
+            .Where(v => v.MappingColumnId == ratio.Id).ToListAsync();
+        rows.Should().HaveCount(2);
+        rows.Should().AllSatisfy(r => r.ReviewStatus.Should().Be("NeedsReview"));
+    }
 }
