@@ -135,7 +135,7 @@ public class DeepProfileOrchestratorTests
             new FakeReaderFactory(fakeReader),
             new DeepProfilePersistenceService(db));
 
-        var result = await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", CancellationToken.None);
+        var result = await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", ct: CancellationToken.None);
 
         // 3 tables in batch, 1 is a view → 2 attempted, 2 profiled, 0 failed,
         // 0 skipped (every non-view table had columns).
@@ -177,7 +177,7 @@ public class DeepProfileOrchestratorTests
             new FakeReaderFactory(fakeReader),
             new DeepProfilePersistenceService(db));
 
-        await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", CancellationToken.None);
+        await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", ct: CancellationToken.None);
 
         var passed = fakeReader.LastColumns;
         passed.Should().NotBeNull();
@@ -205,7 +205,7 @@ public class DeepProfileOrchestratorTests
             new FakeReaderFactory(fakeReader),
             new DeepProfilePersistenceService(db));
 
-        var result = await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", CancellationToken.None);
+        var result = await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", ct: CancellationToken.None);
 
         result.TablesAttempted.Should().Be(2);
         result.TablesProfiled.Should().Be(1);
@@ -237,7 +237,7 @@ public class DeepProfileOrchestratorTests
             new FakeReaderFactory(fakeReader),
             new DeepProfilePersistenceService(db));
 
-        var result = await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", CancellationToken.None);
+        var result = await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", ct: CancellationToken.None);
 
         result.TablesAttempted.Should().Be(3);
         result.TablesProfiled.Should().Be(2);
@@ -268,7 +268,7 @@ public class DeepProfileOrchestratorTests
             new DeepProfilePersistenceService(db));
 
         await FluentActions.Invoking(() =>
-                sut.RunAsync(batch.Id, countyA.Id, connB.Id, "test", CancellationToken.None))
+                sut.RunAsync(batch.Id, countyA.Id, connB.Id, "test", ct: CancellationToken.None))
             .Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("*not found*");
     }
@@ -287,7 +287,7 @@ public class DeepProfileOrchestratorTests
             new DeepProfilePersistenceService(db));
 
         await FluentActions.Invoking(() =>
-                sut.RunAsync(batch.Id, county.Id, conn.Id, "test", CancellationToken.None))
+                sut.RunAsync(batch.Id, county.Id, conn.Id, "test", ct: CancellationToken.None))
             .Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("*not active*");
     }
@@ -304,7 +304,7 @@ public class DeepProfileOrchestratorTests
             new FakeReaderFactory(new RecordingFakeReader()),
             new DeepProfilePersistenceService(db));
 
-        var result = await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", CancellationToken.None);
+        var result = await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", ct: CancellationToken.None);
 
         result.TablesAttempted.Should().Be(0);
         result.TablesProfiled.Should().Be(0);
@@ -330,8 +330,242 @@ public class DeepProfileOrchestratorTests
         var connId   = emptyParam == "sourceConnectionId" ? Guid.Empty : Guid.NewGuid();
 
         await FluentActions.Invoking(() =>
-                sut.RunAsync(batchId, countyId, connId, "test", CancellationToken.None))
+                sut.RunAsync(batchId, countyId, connId, "test", ct: CancellationToken.None))
             .Should().ThrowAsync<ArgumentException>();
+    }
+
+    // ── B2.5A safety controls ─────────────────────────────────────────────
+
+    [Fact]
+    public async System.Threading.Tasks.Task RunAsync_IncludeFilter_LimitsToAllowlist()
+    {
+        await using var db = CreateContext($"deep-orch-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+
+        // Three real tables; allowlist names just two of them.
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "Alpha", isView: false, columnCount: 1));
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "Beta",  isView: false, columnCount: 1));
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "Gamma", isView: false, columnCount: 1));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "Alpha", "a", 1, "varchar"));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "Beta",  "b", 1, "varchar"));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "Gamma", "g", 1, "varchar"));
+        await db.SaveChangesAsync();
+
+        var fakeReader = new RecordingFakeReader();
+        var sut = new DeepProfileOrchestrator(
+            db,
+            new FakeReaderFactory(fakeReader),
+            new DeepProfilePersistenceService(db));
+
+        var options = new DeepProfileOptions(
+            IncludeQualifiedNames: new[] { "dbo.Alpha", "dbo.Gamma" });
+
+        var result = await sut.RunAsync(
+            batch.Id, county.Id, conn.Id, "test", options: options, ct: CancellationToken.None);
+
+        // Beta is filtered out before iteration even starts. TablesAttempted
+        // reflects the include-filtered set (2), not the corpus (3).
+        result.TablesAttempted.Should().Be(2);
+        result.TablesProfiled.Should().Be(2);
+        result.TablesFailed.Should().Be(0);
+        result.TablesSkipped.Should().Be(0);
+        fakeReader.Calls.Should().BeEquivalentTo(new[]
+        {
+            ("dbo", "Alpha"),
+            ("dbo", "Gamma"),
+        }, opt => opt.WithStrictOrdering());
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task RunAsync_IncludeFilter_IsCaseInsensitive()
+    {
+        await using var db = CreateContext($"deep-orch-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "ParcelAccount", isView: false, columnCount: 1));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "ParcelAccount", "x", 1, "varchar"));
+        await db.SaveChangesAsync();
+
+        var fakeReader = new RecordingFakeReader();
+        var sut = new DeepProfileOrchestrator(
+            db,
+            new FakeReaderFactory(fakeReader),
+            new DeepProfilePersistenceService(db));
+
+        var result = await sut.RunAsync(
+            batch.Id, county.Id, conn.Id, "test",
+            options: new DeepProfileOptions(IncludeQualifiedNames: new[] { "DBO.parcelaccount" }),
+            ct: CancellationToken.None);
+
+        result.TablesProfiled.Should().Be(1);
+        fakeReader.Calls.Should().ContainSingle().Which.Table.Should().Be("ParcelAccount");
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task RunAsync_IncludeFilter_TypoEntriesSilentlyDropped()
+    {
+        await using var db = CreateContext($"deep-orch-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "ParcelAccount", isView: false, columnCount: 1));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "ParcelAccount", "x", 1, "varchar"));
+        await db.SaveChangesAsync();
+
+        var fakeReader = new RecordingFakeReader();
+        var sut = new DeepProfileOrchestrator(
+            db,
+            new FakeReaderFactory(fakeReader),
+            new DeepProfilePersistenceService(db));
+
+        // Only the second entry actually matches.
+        var result = await sut.RunAsync(
+            batch.Id, county.Id, conn.Id, "test",
+            options: new DeepProfileOptions(IncludeQualifiedNames: new[]
+            {
+                "dbo.TypoTable",      // typo
+                "dbo.ParcelAccount",  // real
+                "wrongschema.ParcelAccount",  // wrong schema
+            }),
+            ct: CancellationToken.None);
+
+        result.TablesAttempted.Should().Be(1);
+        result.TablesProfiled.Should().Be(1);
+        fakeReader.Calls.Should().ContainSingle().Which.Should().Be(("dbo", "ParcelAccount"));
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task RunAsync_MaxTables_TruncatesAfterSorting()
+    {
+        await using var db = CreateContext($"deep-orch-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+
+        // Insert 5 tables in non-alphabetical insert order; orchestrator
+        // sorts by (schema, table). With max=2 we expect the first two by
+        // alphabetic name: Alpha, Bravo.
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "Echo",   isView: false, columnCount: 1));
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "Alpha",  isView: false, columnCount: 1));
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "Charlie", isView: false, columnCount: 1));
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "Delta",  isView: false, columnCount: 1));
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "Bravo",  isView: false, columnCount: 1));
+        foreach (var name in new[] { "Echo", "Alpha", "Charlie", "Delta", "Bravo" })
+        {
+            db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", name, "x", 1, "varchar"));
+        }
+        await db.SaveChangesAsync();
+
+        var fakeReader = new RecordingFakeReader();
+        var sut = new DeepProfileOrchestrator(
+            db,
+            new FakeReaderFactory(fakeReader),
+            new DeepProfilePersistenceService(db));
+
+        var result = await sut.RunAsync(
+            batch.Id, county.Id, conn.Id, "test",
+            options: new DeepProfileOptions(MaxTables: 2),
+            ct: CancellationToken.None);
+
+        // 5 in include-filtered set, 2 profiled, 3 truncated → Skipped.
+        result.TablesAttempted.Should().Be(5);
+        result.TablesProfiled.Should().Be(2);
+        result.TablesSkipped.Should().Be(3);
+        fakeReader.Calls.Should().BeEquivalentTo(new[]
+        {
+            ("dbo", "Alpha"),
+            ("dbo", "Bravo"),
+        }, opt => opt.WithStrictOrdering());
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task RunAsync_IncludeAndMaxTablesTogether_FilterFirstThenCap()
+    {
+        await using var db = CreateContext($"deep-orch-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "Alpha",  isView: false, columnCount: 1));
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "Bravo",  isView: false, columnCount: 1));
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "Charlie", isView: false, columnCount: 1));
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "Delta",  isView: false, columnCount: 1));
+        foreach (var name in new[] { "Alpha", "Bravo", "Charlie", "Delta" })
+        {
+            db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", name, "x", 1, "varchar"));
+        }
+        await db.SaveChangesAsync();
+
+        var fakeReader = new RecordingFakeReader();
+        var sut = new DeepProfileOrchestrator(
+            db,
+            new FakeReaderFactory(fakeReader),
+            new DeepProfilePersistenceService(db));
+
+        // Include: Alpha, Charlie, Delta (3 of 4); Cap: 2.
+        // Expected: Alpha + Charlie profiled, Delta skipped (cap), Bravo
+        // not even in attempted because the include filter dropped it.
+        var result = await sut.RunAsync(
+            batch.Id, county.Id, conn.Id, "test",
+            options: new DeepProfileOptions(
+                IncludeQualifiedNames: new[] { "dbo.Alpha", "dbo.Charlie", "dbo.Delta" },
+                MaxTables: 2),
+            ct: CancellationToken.None);
+
+        result.TablesAttempted.Should().Be(3);  // include-filtered set
+        result.TablesProfiled.Should().Be(2);
+        result.TablesSkipped.Should().Be(1);    // Delta truncated
+        fakeReader.Calls.Should().BeEquivalentTo(new[]
+        {
+            ("dbo", "Alpha"),
+            ("dbo", "Charlie"),
+        }, opt => opt.WithStrictOrdering());
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task RunAsync_MaxTablesNonPositive_Throws()
+    {
+        await using var db = CreateContext($"deep-orch-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+        var sut = new DeepProfileOrchestrator(
+            db,
+            new FakeReaderFactory(new RecordingFakeReader()),
+            new DeepProfilePersistenceService(db));
+
+        await FluentActions.Invoking(() =>
+                sut.RunAsync(batch.Id, county.Id, conn.Id, "test",
+                    options: new DeepProfileOptions(MaxTables: 0),
+                    ct: CancellationToken.None))
+            .Should().ThrowAsync<ArgumentException>().WithMessage("*MaxTables*");
+
+        await FluentActions.Invoking(() =>
+                sut.RunAsync(batch.Id, county.Id, conn.Id, "test",
+                    options: new DeepProfileOptions(MaxTables: -5),
+                    ct: CancellationToken.None))
+            .Should().ThrowAsync<ArgumentException>().WithMessage("*MaxTables*");
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task RunAsync_NullOptions_PreservesPreB25ABehavior()
+    {
+        // Backward-compat: existing callers passed only a CancellationToken
+        // for the trailing param. Verify that null options reproduces the
+        // pre-B2.5A "profile every non-view table" behavior.
+        await using var db = CreateContext($"deep-orch-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "T1", isView: false, columnCount: 1));
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "T2", isView: false, columnCount: 1));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "T1", "a", 1, "varchar"));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "T2", "b", 1, "varchar"));
+        await db.SaveChangesAsync();
+
+        var fakeReader = new RecordingFakeReader();
+        var sut = new DeepProfileOrchestrator(
+            db,
+            new FakeReaderFactory(fakeReader),
+            new DeepProfilePersistenceService(db));
+
+        var result = await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", options: null, ct: CancellationToken.None);
+
+        result.TablesAttempted.Should().Be(2);
+        result.TablesProfiled.Should().Be(2);
+        result.TablesSkipped.Should().Be(0);
     }
 
     // ── Test doubles ─────────────────────────────────────────────────────

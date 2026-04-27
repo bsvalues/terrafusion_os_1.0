@@ -125,13 +125,33 @@ internal static class Program
                     new SqlServerDeepProfileReaderFactory(secretResolver),
                     new DeepProfilePersistenceService(db));
 
+                // B2.5A safety controls — wire the operator's --deep-profile-include
+                // and --deep-profile-max-tables choices through to the orchestrator.
+                // Both default to "no limit" (current behavior).
+                var deepOptions = new DeepProfileOptions(
+                    IncludeQualifiedNames: args.DeepProfileIncludeQualifiedNames.Count == 0
+                        ? null
+                        : args.DeepProfileIncludeQualifiedNames,
+                    MaxTables: args.DeepProfileMaxTables);
+
                 Console.WriteLine();
                 Console.WriteLine("sync-atlas: starting deep profile pass...");
+                if (deepOptions.IncludeQualifiedNames is { Count: > 0 } incl)
+                {
+                    Console.WriteLine(
+                        $"sync-atlas:   include-filter ({incl.Count}): {string.Join(", ", incl)}");
+                }
+                if (deepOptions.MaxTables is int cap)
+                {
+                    Console.WriteLine($"sync-atlas:   max-tables cap: {cap}");
+                }
+
                 deepResult = await orchestrator.RunAsync(
                     result.BatchId,
                     args.CountyId,
                     args.ConnectionId,
                     args.OperatorId,
+                    deepOptions,
                     ct);
             }
             catch (InvalidOperationException ex)

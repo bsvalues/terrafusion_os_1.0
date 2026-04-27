@@ -184,7 +184,7 @@ public class DeepProfileOrchestratorIntegrationTests
                 new DeepProfilePersistenceService(db));
 
             var result = await orchestrator.RunAsync(
-                batch.Id, county.Id, conn.Id, "integration-test", CancellationToken.None);
+                batch.Id, county.Id, conn.Id, "integration-test", ct: CancellationToken.None);
 
             // The orchestrator hits the one fixture table; views are skipped
             // by design.
@@ -244,7 +244,7 @@ public class DeepProfileOrchestratorIntegrationTests
                 new DeepProfilePersistenceService(db));
 
             await orchestrator.RunAsync(
-                batch.Id, county.Id, conn.Id, "integration-test", CancellationToken.None);
+                batch.Id, county.Id, conn.Id, "integration-test", ct: CancellationToken.None);
 
             // PropertyClass: 4 distinct / 100 rows = 4% < 5% threshold + nvarchar
             // → qualifies as code candidate. ParcelNumber: 100 / 100 → does NOT.
