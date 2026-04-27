@@ -1,5 +1,6 @@
 using System.Text.Json;
 using FluentAssertions;
+using Microsoft.Data.SqlClient;
 using TerraFusion.Integration.Tests.Sync.Fixtures;
 using TerraFusion.Sync.Workbench.Atlas;
 using Xunit;
@@ -207,5 +208,136 @@ public class SqlServerDeepProfileReaderIntegrationTests
         // Sample-values JSON is populated for every column (10 random rows).
         result.Columns.Should().AllSatisfy(c =>
             c.SampleValuesJson.Should().NotBeNullOrEmpty());
+    }
+
+    // ── BIT min/max regression (FIX-B2.7A) ───────────────────────────────
+    //
+    // B2.7-SMOKE against real PACS_Training surfaced that
+    // ProfileTableAsync failed every table with a BIT column with
+    // "Operand data type bit is invalid for min operator." This test
+    // pins the live-engine fix: BIT must aggregate as tinyint inside
+    // MIN/MAX, with the 0/1 domain preserved end-to-end.
+    //
+    // Self-contained fixture: creates a temp-name dbo.TFB2BitFixture
+    // table on the live SQL Server, profiles it, and drops it. Avoids
+    // touching the shared `ParcelDeepProfileFixture` schema (the
+    // integration-fixture seeder is out of this slice's scope).
+
+    [Fact]
+    public async System.Threading.Tasks.Task ProfileTableAsync_ProfilesBitColumnWithoutFailure()
+    {
+        await using var conn = await _fixture.OpenConnectionAsync();
+        await CreateBitFixtureAsync(conn);
+
+        try
+        {
+            var sut = new SqlServerDeepProfileReader(conn);
+
+            var result = await sut.ProfileTableAsync(
+                "dbo",
+                "TFB2BitFixture",
+                new[]
+                {
+                    new ColumnRef("ParcelId",  "int",  IsNullable: false),
+                    new ColumnRef("IsActive",  "bit",  IsNullable: true),
+                    new ColumnRef("HasLien",   "bit",  IsNullable: false),
+                });
+
+            // Table-level: 5 rows, Full sampling.
+            result.Table.RowCount.Should().Be(5L);
+            result.Table.SampleRowCount.Should().Be(5);
+            result.Table.SamplingMethod.Should().Be("Full");
+
+            // Per-column: BIT columns no longer crash. NullCount/DistinctCount
+            // come back as expected for the seeded data.
+            //
+            // Note: the reader's distinct-count uses
+            //   SELECT COUNT(*) FROM (SELECT DISTINCT TOP (n) col FROM ...)
+            // which counts NULL as a distinct value (unlike COUNT(DISTINCT)).
+            // For IsActive that means {0, 1, NULL} → DistinctCount = 3.
+            // For HasLien (NOT NULL) the value set is just {0, 1} → 2.
+            var isActive = result.Columns.Single(c => c.ColumnName == "IsActive");
+            isActive.NullCount.Should().Be(1);          // (3, NULL, …) row
+            isActive.DistinctCount.Should().Be(3);      // {0, 1, NULL}
+            isActive.DistinctCountIsExact.Should().BeTrue();
+
+            var hasLien = result.Columns.Single(c => c.ColumnName == "HasLien");
+            hasLien.NullCount.Should().Be(0);
+            hasLien.DistinctCount.Should().Be(2);       // {0, 1}
+        }
+        finally
+        {
+            await DropBitFixtureAsync(conn);
+        }
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task ProfileTableAsync_StoresBitMinMaxAsZeroOneValues()
+    {
+        await using var conn = await _fixture.OpenConnectionAsync();
+        await CreateBitFixtureAsync(conn);
+
+        try
+        {
+            var sut = new SqlServerDeepProfileReader(conn);
+
+            var result = await sut.ProfileTableAsync(
+                "dbo",
+                "TFB2BitFixture",
+                new[]
+                {
+                    new ColumnRef("ParcelId",  "int",  IsNullable: false),
+                    new ColumnRef("IsActive",  "bit",  IsNullable: true),
+                    new ColumnRef("HasLien",   "bit",  IsNullable: false),
+                });
+
+            // The 0/1 BIT domain serializes through the tinyint promotion
+            // and the outer NVARCHAR(MAX) convert as the strings "0"/"1" —
+            // exactly what a downstream consumer would see if BIT had been
+            // a directly-aggregable type. Confirms no data loss vs. the
+            // skipped-column alternative.
+            var isActive = result.Columns.Single(c => c.ColumnName == "IsActive");
+            isActive.MinValue.Should().Be("0");
+            isActive.MaxValue.Should().Be("1");
+
+            var hasLien = result.Columns.Single(c => c.ColumnName == "HasLien");
+            hasLien.MinValue.Should().Be("0");
+            hasLien.MaxValue.Should().Be("1");
+        }
+        finally
+        {
+            await DropBitFixtureAsync(conn);
+        }
+    }
+
+    private static async System.Threading.Tasks.Task CreateBitFixtureAsync(SqlConnection conn)
+    {
+        const string ddl = @"
+            IF OBJECT_ID('dbo.TFB2BitFixture', 'U') IS NOT NULL
+                DROP TABLE dbo.TFB2BitFixture;
+
+            CREATE TABLE dbo.TFB2BitFixture (
+                ParcelId  INT     NOT NULL PRIMARY KEY,
+                IsActive  BIT     NULL,
+                HasLien   BIT     NOT NULL
+            );
+
+            INSERT INTO dbo.TFB2BitFixture (ParcelId, IsActive, HasLien) VALUES
+                (1, 1, 0),
+                (2, 0, 1),
+                (3, NULL, 0),
+                (4, 1, 1),
+                (5, 0, 0);
+        ";
+        await using var cmd = new SqlCommand(ddl, conn);
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    private static async System.Threading.Tasks.Task DropBitFixtureAsync(SqlConnection conn)
+    {
+        await using var cmd = new SqlCommand(
+            "IF OBJECT_ID('dbo.TFB2BitFixture', 'U') IS NOT NULL DROP TABLE dbo.TFB2BitFixture;",
+            conn);
+        await cmd.ExecuteNonQueryAsync();
     }
 }
