@@ -322,11 +322,68 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
     }
 
     /// <summary>
+    /// True when <paramref name="sqlType"/> is a SQL Server optimistic-
+    /// concurrency rowversion type (<c>rowversion</c> or its legacy
+    /// synonym <c>timestamp</c>, case-insensitive).
+    ///
+    /// <para><b>FIX-B2.7C architectural decision (rowversion-skip policy).</b>
+    /// PACS routinely carries a <c>tsRowVersion</c> / <c>timestamp</c> column
+    /// on every business table — it is an opaque 8-byte binary token used by
+    /// SQL Server for optimistic-concurrency checks, NOT business data. The
+    /// engine actively rejects converting it to text:</para>
+    /// <code>
+    ///     Explicit conversion from data type timestamp to nvarchar(max)
+    ///     is not allowed.
+    /// </code>
+    /// <para>The deep profiler's MIN/MAX/CONVERT path therefore breaks every
+    /// business table (property_val, imprv, imprv_detail, land_detail, …)
+    /// — exactly the tables Slice C (Mapping Workbook) keys off. Two paths
+    /// were considered:
+    /// <list type="bullet">
+    /// <item><b>Hex-coerce</b> via <c>CONVERT(VARBINARY(MAX), col)</c> →
+    ///   would yield meaningless 0xfeed-style strings the workbench would
+    ///   never use.</item>
+    /// <item><b>Skip</b> at the deep-profile level. The structural atlas
+    ///   (Slice B1) already records the column with its declared type;
+    ///   downstream observability still sees "this table has a rowversion
+    ///   token" without needing distinct/min/max stats over it.</item>
+    /// </list>
+    /// Skip wins on the same "kind of data is this?" axis as the spatial
+    /// policy: a concurrency token is not data the workbench will ever map,
+    /// rank, or present to the assessor.</para>
+    ///
+    /// <para>Out-of-band signal: same as spatial — structural saw the column,
+    /// deep stats absent, classify as policy skip rather than profile
+    /// failure.</para>
+    /// </summary>
+    public static bool IsConcurrencyType(string sqlType)
+    {
+        ArgumentNullException.ThrowIfNull(sqlType);
+
+        // SQL Server treats `timestamp` and `rowversion` as the same type;
+        // sys.types reports both names against the same system_type_id (189),
+        // and which one shows up depends on how the column was declared
+        // historically. Both PACS-era schemas use `timestamp`, but new code
+        // emits `rowversion` — accept either.
+        return string.Equals(sqlType, "rowversion", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(sqlType, "timestamp",  StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
     /// Returns the subset of <paramref name="columns"/> that are eligible for
-    /// deep profiling — currently the spatial-skip policy (FIX-B2.7B) is the
-    /// only filter, but the helper is named for the policy intent rather than
-    /// the type so future skip rules (e.g. encrypted columns, computed
-    /// columns of unsupported provenance) extend in one place.
+    /// deep profiling. Currently the filter combines two skip policies, both
+    /// "this column is not the kind of data the workbench cares about, and
+    /// the engine rejects our coercion path over it":
+    /// <list type="bullet">
+    /// <item>Spatial types (<see cref="IsSpatialType"/>) — FIX-B2.7B,
+    ///   GIS truth lives in TerraAtlas, not PACS.</item>
+    /// <item>Concurrency tokens (<see cref="IsConcurrencyType"/>) —
+    ///   FIX-B2.7C, rowversion / timestamp is an opaque 8-byte binary
+    ///   token, not business data.</item>
+    /// </list>
+    /// The helper is named for the policy intent rather than the type so
+    /// future skip rules (e.g. encrypted columns, computed columns of
+    /// unsupported provenance) extend in one place.
     ///
     /// Returns a <see cref="List{ColumnRef}"/> rather than an
     /// <c>IEnumerable</c> because the caller indexes the result alongside
@@ -341,6 +398,11 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
         foreach (var col in columns)
         {
             if (IsSpatialType(col.DataType))
+            {
+                continue;
+            }
+
+            if (IsConcurrencyType(col.DataType))
             {
                 continue;
             }
@@ -509,14 +571,20 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
     {
         ArgumentNullException.ThrowIfNull(columns);
 
-        // FIX-B2.7B: PACS spatial-skip policy.
-        // Benton County GIS truth is external to PACS (SHP / geodatabase /
-        // ArcGIS API → TerraAtlas). PACS-side geometry/geography columns
-        // are not authoritative cartographic data, and SQL Server rejects
-        // DISTINCT/MIN/MAX over those CLR types ("the geometry data type
-        // cannot be selected as DISTINCT because it is not comparable").
-        // Filter spatial columns out at the top so the reader never asks
-        // the engine to aggregate them. The structural atlas (B1) already
+        // Skip policies — see FilterProfilableColumns. Two filters today:
+        //   FIX-B2.7B (spatial)     — geometry / geography. Benton GIS
+        //                             truth lives in TerraAtlas, not PACS.
+        //   FIX-B2.7C (concurrency) — rowversion / timestamp. Opaque
+        //                             8-byte binary token, not business
+        //                             data. Engine also rejects
+        //                             CONVERT(NVARCHAR(MAX), MIN(rowversion))
+        //                             with "Explicit conversion from data
+        //                             type timestamp to nvarchar(max) is
+        //                             not allowed." Discovered in
+        //                             B2.7-TARGETED against property_val,
+        //                             imprv, imprv_detail, land_detail.
+        // Filtering at the top means the reader never asks the engine to
+        // aggregate over these columns. The structural atlas (B1) already
         // records that they exist with their declared type — downstream
         // observability can detect "structural saw it, deep stats absent"
         // as a policy skip rather than a profile failure.
@@ -524,12 +592,14 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
 
         if (profilableColumns.Count == 0)
         {
-            // Empty-column or all-spatial table: persist a stats row and
+            // Empty-column or all-skipped table: persist a stats row and
             // return. Matches the structural atlas behavior when a table
             // has no columns visible (rare, possible with permission-
-            // restricted accounts) — and the all-spatial case where every
-            // column is policy-skipped (common for PACS heritage tables
-            // like __AAPARCEL_ that hold only a parcel-id + geometry).
+            // restricted accounts) — and the all-policy-skipped case where
+            // every column is filtered (e.g. a PACS heritage table that
+            // holds only a parcel-id + geometry, or a join table that's
+            // just a rowversion + a couple of FKs all of which the caller
+            // chose to omit).
             var emptyTable = await ReadRowCountAsync(schemaName, tableName, ct);
             return new DeepProfileResult(
                 Table:          new TableStatsRecord(schemaName, tableName, emptyTable.Count, emptyTable.IsExact, 0, "Full"),

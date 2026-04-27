@@ -456,4 +456,122 @@ public class SqlServerDeepProfileReaderIntegrationTests
         result.Columns.Should().BeEmpty();
         result.CodeCandidates.Should().BeEmpty();
     }
+
+    // ── Concurrency-token skip policy (FIX-B2.7C) ────────────────────────
+    //
+    // PACS business tables (property_val, imprv, imprv_detail, land_detail,
+    // …) carry a real `timestamp` rowversion column. The reader's
+    // CONVERT(NVARCHAR(MAX), MIN(...)) path crashes against it. The fix
+    // skips concurrency tokens at the deep-profile level. Unlike the
+    // spatial CLR types, azure-sql-edge DOES support `rowversion` /
+    // `timestamp` end-to-end — so this fixture creates a real rowversion
+    // column instead of needing the spoofed-type pattern, giving the
+    // strongest possible live-engine signal.
+
+    [Fact]
+    public async System.Threading.Tasks.Task ProfileTableAsync_RowversionColumn_IsSkippedFromColumnStats()
+    {
+        await using var conn = await _fixture.OpenConnectionAsync();
+        await CreateRowversionFixtureAsync(conn);
+
+        try
+        {
+            var sut = new SqlServerDeepProfileReader(conn);
+
+            var result = await sut.ProfileTableAsync(
+                "dbo",
+                "TFB2RowversionFixture",
+                new[]
+                {
+                    new ColumnRef("ParcelId",     "int",       IsNullable: false),
+                    new ColumnRef("tsRowVersion", "timestamp", IsNullable: false), // policy-skip
+                    new ColumnRef("HoodCd",       "varchar",   IsNullable: true),
+                });
+
+            // Live engine accepted the table. Skipped column does not appear.
+            result.Table.RowCount.Should().Be(3L);
+            result.Columns.Select(c => c.ColumnName).Should().BeEquivalentTo(new[]
+            {
+                "ParcelId", "HoodCd",
+            });
+            result.Columns.Should().NotContain(c => c.ColumnName == "tsRowVersion");
+            result.CodeCandidates.Should().NotContain(c => c.ColumnName == "tsRowVersion");
+        }
+        finally
+        {
+            await DropRowversionFixtureAsync(conn);
+        }
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task ProfileTableAsync_RowversionColumnPresent_NonRowversionColumnsStillProfile()
+    {
+        // Co-test: with the rowversion correctly skipped, the surviving
+        // columns produce stats with the same shape they would have
+        // produced if the table had no rowversion at all. Pins that the
+        // skip is purely subtractive.
+        await using var conn = await _fixture.OpenConnectionAsync();
+        await CreateRowversionFixtureAsync(conn);
+
+        try
+        {
+            var sut = new SqlServerDeepProfileReader(conn);
+
+            var result = await sut.ProfileTableAsync(
+                "dbo",
+                "TFB2RowversionFixture",
+                new[]
+                {
+                    new ColumnRef("ParcelId",     "int",       IsNullable: false),
+                    new ColumnRef("tsRowVersion", "timestamp", IsNullable: false),
+                    new ColumnRef("HoodCd",       "varchar",   IsNullable: true),
+                });
+
+            // ParcelId: 3 distinct, no NULLs, deterministic min/max.
+            var parcelId = result.Columns.Single(c => c.ColumnName == "ParcelId");
+            parcelId.NullCount.Should().Be(0);
+            parcelId.DistinctCount.Should().Be(3);
+            parcelId.MinValue.Should().Be("1");
+            parcelId.MaxValue.Should().Be("3");
+
+            // HoodCd: 1 NULL + {RES, COM} → 3 distinct (NULL counts in
+            // SELECT DISTINCT, same as in the BIT test).
+            var hoodCd = result.Columns.Single(c => c.ColumnName == "HoodCd");
+            hoodCd.NullCount.Should().Be(1);
+            hoodCd.DistinctCount.Should().Be(3);
+        }
+        finally
+        {
+            await DropRowversionFixtureAsync(conn);
+        }
+    }
+
+    private static async System.Threading.Tasks.Task CreateRowversionFixtureAsync(SqlConnection conn)
+    {
+        const string ddl = @"
+            IF OBJECT_ID('dbo.TFB2RowversionFixture', 'U') IS NOT NULL
+                DROP TABLE dbo.TFB2RowversionFixture;
+
+            CREATE TABLE dbo.TFB2RowversionFixture (
+                ParcelId      INT          NOT NULL PRIMARY KEY,
+                tsRowVersion  rowversion   NOT NULL,
+                HoodCd        NVARCHAR(8)  NULL
+            );
+
+            INSERT INTO dbo.TFB2RowversionFixture (ParcelId, HoodCd) VALUES
+                (1, 'RES'),
+                (2, 'COM'),
+                (3, NULL);
+        ";
+        await using var cmd = new SqlCommand(ddl, conn);
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    private static async System.Threading.Tasks.Task DropRowversionFixtureAsync(SqlConnection conn)
+    {
+        await using var cmd = new SqlCommand(
+            "IF OBJECT_ID('dbo.TFB2RowversionFixture', 'U') IS NOT NULL DROP TABLE dbo.TFB2RowversionFixture;",
+            conn);
+        await cmd.ExecuteNonQueryAsync();
+    }
 }

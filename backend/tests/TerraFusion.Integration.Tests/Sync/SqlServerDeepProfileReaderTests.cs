@@ -479,6 +479,140 @@ public class SqlServerDeepProfileReaderTests
         SqlServerDeepProfileReader.DetectCodeCandidate(stats, "geography", 10_000).Should().BeNull();
     }
 
+    // ── Concurrency-token skip policy (FIX-B2.7C) ────────────────────────
+    //
+    // PACS business tables routinely carry a `tsRowVersion` column of type
+    // `timestamp` (legacy synonym of `rowversion`). The deep profiler's
+    // CONVERT(NVARCHAR(MAX), MIN(...)) path crashes against it with:
+    //
+    //   Explicit conversion from data type timestamp to nvarchar(max) is
+    //   not allowed.
+    //
+    // — discovered when B2.7-TARGETED hit property_val / imprv /
+    // imprv_detail / land_detail. rowversion is an opaque concurrency
+    // token, not business data the workbench will ever map, so the policy
+    // is to SKIP at the deep-profile level rather than coerce to hex.
+
+    [Theory]
+    [InlineData("rowversion", true)]
+    [InlineData("ROWVERSION", true)]
+    [InlineData("RowVersion", true)]
+    [InlineData("timestamp",  true)]
+    [InlineData("TIMESTAMP",  true)]
+    [InlineData("Timestamp",  true)]
+    [InlineData("int",        false)]
+    [InlineData("varchar",    false)]
+    [InlineData("nvarchar",   false)]
+    [InlineData("bit",        false)]
+    [InlineData("decimal",    false)]
+    [InlineData("datetime",   false)]   // datetime is NOT a concurrency type
+    [InlineData("datetime2",  false)]   // datetime2 is NOT a concurrency type
+    [InlineData("geometry",   false)]   // covered by IsSpatialType, not this
+    [InlineData("geography",  false)]
+    public void IsConcurrencyType_RecognizesRowversionAndTimestampCaseInsensitively(string sqlType, bool expected)
+    {
+        SqlServerDeepProfileReader.IsConcurrencyType(sqlType).Should().Be(expected);
+    }
+
+    [Fact]
+    public void IsConcurrencyType_ThrowsOnNullType()
+    {
+        Action act = () => SqlServerDeepProfileReader.IsConcurrencyType(null!);
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void FilterProfilableColumns_DropsRowversionAndTimestamp()
+    {
+        var input = new[]
+        {
+            new ColumnRef("ParcelId",     "int",        IsNullable: false),
+            new ColumnRef("tsRowVersion", "timestamp",  IsNullable: false), // skipped
+            new ColumnRef("HoodCd",       "varchar",    IsNullable: true),
+            new ColumnRef("ConcurrencyV", "ROWVERSION", IsNullable: false), // skipped (case-insensitive)
+            new ColumnRef("LandValue",    "decimal",    IsNullable: false),
+        };
+
+        var filtered = SqlServerDeepProfileReader.FilterProfilableColumns(input);
+
+        filtered.Select(c => c.Name).Should().ContainInOrder("ParcelId", "HoodCd", "LandValue");
+        filtered.Should().NotContain(c => c.Name == "tsRowVersion");
+        filtered.Should().NotContain(c => c.Name == "ConcurrencyV");
+    }
+
+    [Fact]
+    public void FilterProfilableColumns_DropsBothSpatialAndConcurrencyTogether()
+    {
+        // The two skip policies stack — a typical PACS valuation table
+        // has neither a geometry column AND a tsRowVersion. Whatever the
+        // mix, the survivor list contains only the columns that both
+        // pass.
+        var input = new[]
+        {
+            new ColumnRef("ParcelId",     "int",        IsNullable: false),
+            new ColumnRef("Boundary",     "geometry",   IsNullable: true),  // spatial-skip
+            new ColumnRef("tsRowVersion", "timestamp",  IsNullable: false), // concurrency-skip
+            new ColumnRef("HoodCd",       "varchar",    IsNullable: true),
+        };
+
+        var filtered = SqlServerDeepProfileReader.FilterProfilableColumns(input);
+
+        filtered.Should().HaveCount(2);
+        filtered.Select(c => c.Name).Should().ContainInOrder("ParcelId", "HoodCd");
+    }
+
+    [Fact]
+    public void FilterProfilableColumns_AllConcurrency_ReturnsEmpty()
+    {
+        // Pathological but defensible: a join table that's just a
+        // rowversion + nothing else collapses to "structural-only" once
+        // the filter runs.
+        var input = new[]
+        {
+            new ColumnRef("tsA", "timestamp",  IsNullable: false),
+            new ColumnRef("tsB", "rowversion", IsNullable: false),
+        };
+
+        var filtered = SqlServerDeepProfileReader.FilterProfilableColumns(input);
+
+        filtered.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void BuildColumnAggregationSql_GivenFilteredList_DoesNotReferenceConcurrencyColumn()
+    {
+        // Same shape as the spatial absence test — once
+        // FilterProfilableColumns has stripped rowversion entries, the
+        // SQL builder's MIN/MAX/CONVERT path never points at them, so
+        // the engine's "explicit conversion from timestamp to nvarchar"
+        // failure mode is unreachable.
+        var input = new[]
+        {
+            new ColumnRef("ParcelId",     "int",       IsNullable: false),
+            new ColumnRef("tsRowVersion", "timestamp", IsNullable: false),
+            new ColumnRef("HoodCd",       "varchar",   IsNullable: true),
+        };
+
+        var profilable = SqlServerDeepProfileReader.FilterProfilableColumns(input);
+        var sql = SqlServerDeepProfileReader.BuildColumnAggregationSql(profilable);
+
+        sql.Should().Contain("[ParcelId]");
+        sql.Should().Contain("[HoodCd]");
+        sql.Should().NotContain("[tsRowVersion]");
+        sql.Should().NotContain("tsRowVersion");
+    }
+
+    [Fact]
+    public void DetectCodeCandidate_NeverFiresOnConcurrencyType()
+    {
+        // Defensive: same as the spatial DetectCodeCandidate guard. A
+        // concurrency token can never be a code-table candidate by type.
+        var stats = StatsWith(distinctCount: 3, exact: true);
+
+        SqlServerDeepProfileReader.DetectCodeCandidate(stats, "rowversion", 10_000).Should().BeNull();
+        SqlServerDeepProfileReader.DetectCodeCandidate(stats, "timestamp",  10_000).Should().BeNull();
+    }
+
     [Fact]
     public void BuildSampleValuesSql_IncludesNewIdOrderingAndTopGuard()
     {
