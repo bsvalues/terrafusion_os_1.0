@@ -75,6 +75,27 @@ SyncAtlas does **not**:
     (`fix/syncatlas-skip-pacs-spatial-columns`) for the implementation
     landing — `SqlServerDeepProfileReader.IsSpatialType` and
     `FilterProfilableColumns` are the policy entry points.
+- **Profile rowversion / timestamp columns as business data.** PACS business
+  tables (`property_val`, `imprv`, `imprv_detail`, `land_detail`, …)
+  routinely carry a `tsRowVersion` column of type `timestamp` (legacy
+  synonym of `rowversion`). It is an opaque 8-byte binary token used by SQL
+  Server for optimistic-concurrency checks — not data the workbench will
+  ever map, rank, or present to the assessor. Concurrency tokens are
+  policy-skipped from the deep-profile pass on the same axis as spatial
+  columns:
+  - Structural atlas still records the column and declared type; deep
+    stats are intentionally absent.
+  - The reader does not run `DISTINCT` / `MIN` / `MAX` / sample / top-N
+    against rowversion. SQL Server actively rejects the CONVERT path
+    (`"Explicit conversion from data type timestamp to nvarchar(max) is
+    not allowed."`) — but again the architectural reason predates the
+    engine error: hex-coercing a concurrency token into the workbench
+    would produce 0xfeed-style strings the assessor never wants to see.
+  - Discovered in B2.7-TARGETED against the four valuation tables above.
+    See FIX-B2.7C (`fix/syncatlas-skip-rowversion-deep-profile`) for the
+    implementation — `SqlServerDeepProfileReader.IsConcurrencyType` is
+    the policy entry point and stacks alongside `IsSpatialType` inside
+    `FilterProfilableColumns`.
 
 ## Architecture
 
