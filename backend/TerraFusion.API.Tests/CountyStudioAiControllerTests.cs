@@ -8,7 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using TerraFusion.API.Controllers;
+using TerraFusion.API.Tests.TestHelpers;
 using TerraFusion.Core.DTOs;
+using TerraFusion.Core.Entities;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Services;
 using Xunit;
@@ -18,25 +20,55 @@ namespace TerraFusion.API.Tests;
 
 public sealed class CountyStudioAiControllerTests
 {
-    private static CountyStudyController BuildController(ICountyStudioAiService aiSvc)
+    private static CountyStudyController BuildController(
+        ICountyStudioAiService aiSvc,
+        Guid? countyClaim = null,
+        Action<TerraFusion.Data.TerraFusionDbContext>? seed = null)
     {
-        var svc = new Mock<ICountyStudyService>();
-        var resolver = new Mock<ICountyResolver>();
-        resolver
-            .Setup(r => r.ResolveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns<string, CancellationToken>((s, _) => Task.FromResult(Guid.Parse(s)));
+        var claimId   = countyClaim ?? ControllerTestSetup.DefaultCountyClaimId;
+        var svc       = new Mock<ICountyStudyService>();
+        var resolver  = ControllerTestSetup.EchoCountyResolver();
         var derive    = new Mock<ICountyStudySegmentDerivationService>();
         var health    = new Mock<ICountyStudyHealthService>();
         var inspector = new Mock<ICountyStudyInspectorService>();
-        return new(
+        var db        = TestDbContextFactory.CreateInMemoryContext();
+        if (seed is not null)
+        {
+            seed(db);
+            db.SaveChanges();
+        }
+        var controller = new CountyStudyController(
             svc.Object,
-            resolver.Object,
+            db,
+            resolver,
             derive.Object,
             health.Object,
             inspector.Object,
             aiSvc,
             NullLogger<CountyStudyController>.Instance);
+        controller.ControllerContext = ControllerTestSetup.WithCountyClaim(claimId);
+        return controller;
     }
+
+    /// <summary>Seed action for a CountySegment scoped to the given countyId.</summary>
+    private static Action<TerraFusion.Data.TerraFusionDbContext> SeedSegment(Guid segmentId, Guid countyId) =>
+        db => db.CountySegments.Add(new CountySegment
+        {
+            SegmentId    = segmentId,
+            SegmentSetId = Guid.NewGuid(),
+            CountyId     = countyId,
+            Name         = "Test Segment",
+        });
+
+    /// <summary>Seed action for a CountyStudySession scoped to the given countyId.</summary>
+    private static Action<TerraFusion.Data.TerraFusionDbContext> SeedStudy(Guid studyId, Guid countyId) =>
+        db => db.CountyStudySessions.Add(new CountyStudySession
+        {
+            StudyId    = studyId,
+            CountyId   = countyId,
+            CountyName = "Test County",
+            TaxYear    = 2026,
+        });
 
     private static SegmentDiagnosisDto BuildSegmentDiagnosis() => new(
         SegmentId:          Guid.NewGuid(),
@@ -74,12 +106,13 @@ public sealed class CountyStudioAiControllerTests
     public async Task GetSegmentDiagnosis_Returns200_WithDto()
     {
         var expected = BuildSegmentDiagnosis();
+        var countyId = ControllerTestSetup.DefaultCountyClaimId;
         var aiMock = new Mock<ICountyStudioAiService>();
         aiMock
             .Setup(a => a.DiagnoseSegmentAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expected);
 
-        var controller = BuildController(aiMock.Object);
+        var controller = BuildController(aiMock.Object, countyId, SeedSegment(expected.SegmentId, countyId));
         var result = await controller.GetSegmentDiagnosis(expected.SegmentId, CancellationToken.None);
 
         var ok = Assert.IsType<OkObjectResult>(result);
@@ -107,13 +140,15 @@ public sealed class CountyStudioAiControllerTests
     [Fact]
     public async Task GetSegmentDiagnosis_Returns409_WhenNoDerivedMetrics()
     {
+        var segmentId = Guid.NewGuid();
+        var countyId  = ControllerTestSetup.DefaultCountyClaimId;
         var aiMock = new Mock<ICountyStudioAiService>();
         aiMock
             .Setup(a => a.DiagnoseSegmentAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Segment x has no derived metrics — derive segment metrics first."));
 
-        var controller = BuildController(aiMock.Object);
-        var result = await controller.GetSegmentDiagnosis(Guid.NewGuid(), CancellationToken.None);
+        var controller = BuildController(aiMock.Object, countyId, SeedSegment(segmentId, countyId));
+        var result = await controller.GetSegmentDiagnosis(segmentId, CancellationToken.None);
 
         var cf = Assert.IsType<ConflictObjectResult>(result);
         Assert.Equal(409, cf.StatusCode);
@@ -148,7 +183,8 @@ public sealed class CountyStudioAiControllerTests
             .Setup(a => a.DiagnoseCountyAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expected);
 
-        var controller = BuildController(aiMock.Object);
+        var countyId = ControllerTestSetup.DefaultCountyClaimId;
+        var controller = BuildController(aiMock.Object, countyId, SeedStudy(expected.StudyId, countyId));
         var result = await controller.GetCountyDiagnosis(expected.StudyId, CancellationToken.None);
 
         var ok = Assert.IsType<OkObjectResult>(result);
@@ -161,13 +197,15 @@ public sealed class CountyStudioAiControllerTests
     [Fact]
     public async Task GetCountyDiagnosis_Returns409_WhenNoActiveSegmentSet()
     {
+        var studyId  = Guid.NewGuid();
+        var countyId = ControllerTestSetup.DefaultCountyClaimId;
         var aiMock = new Mock<ICountyStudioAiService>();
         aiMock
             .Setup(a => a.DiagnoseCountyAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Study x has no active segment set. Derive segments first."));
 
-        var controller = BuildController(aiMock.Object);
-        var result = await controller.GetCountyDiagnosis(Guid.NewGuid(), CancellationToken.None);
+        var controller = BuildController(aiMock.Object, countyId, SeedStudy(studyId, countyId));
+        var result = await controller.GetCountyDiagnosis(studyId, CancellationToken.None);
 
         var cf = Assert.IsType<ConflictObjectResult>(result);
         Assert.Equal(409, cf.StatusCode);

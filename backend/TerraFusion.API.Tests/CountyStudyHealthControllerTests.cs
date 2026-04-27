@@ -8,7 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using TerraFusion.API.Controllers;
+using TerraFusion.API.Tests.TestHelpers;
 using TerraFusion.Core.DTOs;
+using TerraFusion.Core.Entities;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Services;
 using Xunit;
@@ -18,20 +20,39 @@ namespace TerraFusion.API.Tests;
 
 public sealed class CountyStudyHealthControllerTests
 {
-    private static CountyStudyController BuildController(ICountyStudyHealthService healthSvc)
+    private static CountyStudyController BuildController(
+        ICountyStudyHealthService healthSvc,
+        Guid? countyClaim = null,
+        Action<TerraFusion.Data.TerraFusionDbContext>? seed = null)
     {
-        var svc      = new Mock<ICountyStudyService>();
-        var resolver = new Mock<ICountyResolver>();
-        resolver
-            .Setup(r => r.ResolveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Returns<string, CancellationToken>((s, _) => Task.FromResult(Guid.Parse(s)));
+        var claimId   = countyClaim ?? ControllerTestSetup.DefaultCountyClaimId;
+        var svc       = new Mock<ICountyStudyService>();
+        var resolver  = ControllerTestSetup.EchoCountyResolver();
         var derive    = new Mock<ICountyStudySegmentDerivationService>();
         var inspector = new Mock<ICountyStudyInspectorService>();
         var ai        = new Mock<ICountyStudioAiService>();
+        var db        = TestDbContextFactory.CreateInMemoryContext();
+        if (seed is not null)
+        {
+            seed(db);
+            db.SaveChanges();
+        }
 
-        return new(svc.Object, resolver.Object, derive.Object, healthSvc,
+        var controller = new CountyStudyController(svc.Object, db, resolver, derive.Object, healthSvc,
             inspector.Object, ai.Object, NullLogger<CountyStudyController>.Instance);
+        controller.ControllerContext = ControllerTestSetup.WithCountyClaim(claimId);
+        return controller;
     }
+
+    /// <summary>Seed action for a minimal CountyStudySession matching studyId/countyId.</summary>
+    private static Action<TerraFusion.Data.TerraFusionDbContext> SeedStudy(Guid studyId, Guid countyId) =>
+        db => db.CountyStudySessions.Add(new CountyStudySession
+        {
+            StudyId   = studyId,
+            CountyId  = countyId,
+            CountyName = "Test County",
+            TaxYear   = 2026,
+        });
 
     private static CountyHealthSummaryDto BuildSampleDto() => new(
         StudyId: Guid.NewGuid(),
@@ -76,7 +97,8 @@ public sealed class CountyStudyHealthControllerTests
             .Setup(h => h.GetHealthSummaryAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expected);
 
-        var controller = BuildController(healthMock.Object);
+        var countyId = ControllerTestSetup.DefaultCountyClaimId;
+        var controller = BuildController(healthMock.Object, countyId, SeedStudy(expected.StudyId, countyId));
         var result = await controller.GetHealthSummary(expected.StudyId, CancellationToken.None);
 
         var ok = Assert.IsType<OkObjectResult>(result);
@@ -90,13 +112,15 @@ public sealed class CountyStudyHealthControllerTests
     [Fact]
     public async Task HealthSummaryController_Returns409_WhenNoActiveSegmentSet()
     {
+        var studyId  = Guid.NewGuid();
+        var countyId = ControllerTestSetup.DefaultCountyClaimId;
         var healthMock = new Mock<ICountyStudyHealthService>();
         healthMock
             .Setup(h => h.GetHealthSummaryAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Study x has no active segment set. Derive first."));
 
-        var controller = BuildController(healthMock.Object);
-        var result = await controller.GetHealthSummary(Guid.NewGuid(), CancellationToken.None);
+        var controller = BuildController(healthMock.Object, countyId, SeedStudy(studyId, countyId));
+        var result = await controller.GetHealthSummary(studyId, CancellationToken.None);
 
         var conflict = Assert.IsType<ConflictObjectResult>(result);
         Assert.Equal(409, conflict.StatusCode);
@@ -105,13 +129,15 @@ public sealed class CountyStudyHealthControllerTests
     [Fact]
     public async Task HealthSummaryController_Returns400_ForOtherInvalidOperations()
     {
+        var studyId  = Guid.NewGuid();
+        var countyId = ControllerTestSetup.DefaultCountyClaimId;
         var healthMock = new Mock<ICountyStudyHealthService>();
         healthMock
             .Setup(h => h.GetHealthSummaryAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Study Guid.NewGuid not found"));
 
-        var controller = BuildController(healthMock.Object);
-        var result = await controller.GetHealthSummary(Guid.NewGuid(), CancellationToken.None);
+        var controller = BuildController(healthMock.Object, countyId, SeedStudy(studyId, countyId));
+        var result = await controller.GetHealthSummary(studyId, CancellationToken.None);
 
         var bad = Assert.IsType<BadRequestObjectResult>(result);
         Assert.Equal(400, bad.StatusCode);
@@ -120,13 +146,15 @@ public sealed class CountyStudyHealthControllerTests
     [Fact]
     public async Task HealthSummaryController_Returns500_OnUnhandledException()
     {
+        var studyId  = Guid.NewGuid();
+        var countyId = ControllerTestSetup.DefaultCountyClaimId;
         var healthMock = new Mock<ICountyStudyHealthService>();
         healthMock
             .Setup(h => h.GetHealthSummaryAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new Exception("boom"));
 
-        var controller = BuildController(healthMock.Object);
-        var result = await controller.GetHealthSummary(Guid.NewGuid(), CancellationToken.None);
+        var controller = BuildController(healthMock.Object, countyId, SeedStudy(studyId, countyId));
+        var result = await controller.GetHealthSummary(studyId, CancellationToken.None);
 
         var status = Assert.IsType<ObjectResult>(result);
         Assert.Equal(500, status.StatusCode);
