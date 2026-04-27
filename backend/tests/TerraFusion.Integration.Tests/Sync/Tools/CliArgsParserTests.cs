@@ -672,4 +672,302 @@ public class CliArgsParserTests
         usage.Should().Contain("--replace-existing-draft");
         usage.Should().Contain("--mapping-max-candidates");
     }
+
+    // ── Slice C5 — Mapping Workbook export mode ─────────────────────────
+    //
+    // Three-way mode mutex now: profile / generate-workbook / export-workbook.
+    // The parser must (a) accept a complete export invocation, (b) reject
+    // export-only flags in other modes, (c) reject other-mode flags in
+    // export mode, (d) reject the two workbook bool-toggles together.
+
+    private const string ValidWorkbookId = "a767c8a2-5b8a-4846-af8b-c3496601e924";
+
+    [Fact]
+    public void Parse_ExportMappingWorkbook_MinimalFlags_Accepted()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--export-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--output-dir", "/tmp/wb-export",
+        });
+
+        err.Should().BeNull();
+        args!.ExportMappingWorkbook.Should().BeTrue();
+        args.WorkbookId.Should().Be(Guid.Parse(ValidWorkbookId));
+        args.OutputDirectory.Should().Be("/tmp/wb-export");
+        args.ExportFormat.Should().Be("both");          // default
+        args.ConnectionId.Should().BeNull();            // not required
+        args.GenerateMappingWorkbook.Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData("csv")]
+    [InlineData("md")]
+    [InlineData("both")]
+    [InlineData("CSV")]
+    [InlineData("Md")]
+    [InlineData("BOTH")]
+    public void Parse_ExportMappingWorkbook_FormatAcceptsValidValues(string format)
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--export-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--output-dir", "/tmp/wb",
+            "--format", format,
+        });
+
+        err.Should().BeNull();
+        args!.ExportFormat.Should().Be(format.ToLowerInvariant());
+    }
+
+    [Fact]
+    public void Parse_ExportMappingWorkbook_FormatRejectsUnknownValue()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--export-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--output-dir", "/tmp/wb",
+            "--format", "xlsx",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--format");
+        err.Should().Contain("csv");
+        err.Should().Contain("xlsx");
+    }
+
+    [Fact]
+    public void Parse_ExportMappingWorkbook_WorkbookIdRequired()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--export-mapping-workbook",
+            // no --workbook-id
+            "--output-dir", "/tmp/wb",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--workbook-id");
+    }
+
+    [Fact]
+    public void Parse_ExportMappingWorkbook_OutputDirRequired()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--export-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            // no --output-dir
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--output-dir");
+    }
+
+    [Fact]
+    public void Parse_ExportMappingWorkbook_WorkbookIdInvalidGuid_ReturnsError()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--export-mapping-workbook",
+            "--workbook-id", "not-a-guid",
+            "--output-dir", "/tmp/wb",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--workbook-id");
+        err.Should().Contain("not a valid GUID");
+    }
+
+    [Fact]
+    public void Parse_ExportAndGenerateWorkbookFlags_AreMutuallyExclusive()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--generate-mapping-workbook",
+            "--workbook-name", "wb",
+            "--latest-profile-batch",
+            "--export-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--output-dir", "/tmp/wb",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--generate-mapping-workbook");
+        err.Should().Contain("--export-mapping-workbook");
+        err.Should().Contain("mutually exclusive");
+    }
+
+    [Fact]
+    public void Parse_ExportFlags_NotAllowedInProfileMode()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            // No mode toggles → profile mode
+            "--workbook-id", ValidWorkbookId,
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--workbook-id");
+        err.Should().Contain("--export-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_OutputDirFlag_NotAllowedInProfileMode()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--output-dir", "/tmp/wb",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--output-dir");
+        err.Should().Contain("--export-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_FormatFlag_NotAllowedInProfileMode()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--format", "csv",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--format");
+        err.Should().Contain("--export-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_ExportFlags_NotAllowedInGenerateMode()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--generate-mapping-workbook",
+            "--workbook-name", "wb",
+            "--latest-profile-batch",
+            "--workbook-id", ValidWorkbookId,
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--workbook-id");
+        err.Should().Contain("--export-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_GenerateFlags_NotAllowedInExportMode()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--export-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--output-dir", "/tmp/wb",
+            "--workbook-name", "should-be-rejected",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--workbook-name");
+        err.Should().Contain("--generate-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_DeepProfileFlag_NotAllowedInExportMode()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--export-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--output-dir", "/tmp/wb",
+            "--deep-profile",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--deep-profile");
+        err.Should().Contain("export");
+    }
+
+    [Fact]
+    public void Parse_ExportMode_ConnectionIdNotRequired()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--export-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--output-dir", "/tmp/wb",
+        });
+
+        err.Should().BeNull();
+        args!.ConnectionId.Should().BeNull();
+    }
+
+    [Fact]
+    public void Parse_FullExportFlagSet_RoundTripsAllFields()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--export-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--output-dir", "/abs/path/to/export",
+            "--format", "md",
+            "--operator", "bsval",
+        });
+
+        err.Should().BeNull();
+        args!.ExportMappingWorkbook.Should().BeTrue();
+        args.WorkbookId.Should().Be(Guid.Parse(ValidWorkbookId));
+        args.OutputDirectory.Should().Be("/abs/path/to/export");
+        args.ExportFormat.Should().Be("md");
+        args.OperatorId.Should().Be("bsval");
+        args.GenerateMappingWorkbook.Should().BeFalse();
+        args.DeepProfile.Should().BeFalse();
+    }
+
+    [Fact]
+    public void UsageText_MentionsMappingWorkbookExportFlags()
+    {
+        var usage = CliArgsParser.UsageText;
+        usage.Should().Contain("--export-mapping-workbook");
+        usage.Should().Contain("--workbook-id");
+        usage.Should().Contain("--output-dir");
+        usage.Should().Contain("--format");
+        usage.Should().Contain("csv");
+        usage.Should().Contain("md");
+        usage.Should().Contain("both");
+    }
 }

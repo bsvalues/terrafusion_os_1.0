@@ -37,7 +37,12 @@ public sealed record CliArgs(
     bool LatestProfileBatch,
     string? WorkbookName,
     bool ReplaceExistingDraft,
-    int? MappingMaxCandidates);
+    int? MappingMaxCandidates,
+    // Slice C5 — Mapping Workbook export mode
+    bool ExportMappingWorkbook,
+    Guid? WorkbookId,
+    string? OutputDirectory,
+    string ExportFormat);
 
 /// <summary>
 /// Pure argument parser. No I/O, no environment access — easy to unit test.
@@ -99,6 +104,13 @@ public static class CliArgsParser
 {
     public const string DefaultOperatorId = "cli-operator";
 
+    /// <summary>Valid <c>--format</c> values for the export mode.</summary>
+    public static readonly HashSet<string> ValidExportFormats =
+        new(StringComparer.OrdinalIgnoreCase) { "csv", "md", "both" };
+
+    private static bool IsValidExportFormat(string raw)
+        => !string.IsNullOrWhiteSpace(raw) && ValidExportFormats.Contains(raw);
+
     public static (CliArgs? Args, string? Error) Parse(string[] argv)
     {
         ArgumentNullException.ThrowIfNull(argv);
@@ -124,6 +136,17 @@ public static class CliArgsParser
         string? workbookName = null;
         var replaceExistingDraft = false;
         int? mappingMaxCandidates = null;
+
+        // Slice C5 — Mapping Workbook export mode
+        var exportMappingWorkbook = false;
+        Guid? workbookId = null;
+        string? outputDirectory = null;
+        string exportFormat = "both";
+
+        // Whether the user EXPLICITLY supplied --format. Lets us refuse
+        // --format outside export mode without false-positive matches on
+        // the default value.
+        var exportFormatExplicit = false;
 
         for (var i = 0; i < argv.Length; i++)
         {
@@ -226,6 +249,33 @@ public static class CliArgsParser
                     mappingMaxCandidates = mmc;
                     break;
 
+                // ── Slice C5 — Mapping Workbook export mode ─────────────
+                case "--export-mapping-workbook":
+                    exportMappingWorkbook = true;
+                    break;
+
+                case "--workbook-id":
+                    if (++i >= argv.Length) return (null, "--workbook-id requires a value");
+                    if (!Guid.TryParse(argv[i], out var wid)) return (null, $"--workbook-id is not a valid GUID: '{argv[i]}'");
+                    workbookId = wid;
+                    break;
+
+                case "--output-dir":
+                    if (++i >= argv.Length) return (null, "--output-dir requires a value");
+                    outputDirectory = argv[i];
+                    break;
+
+                case "--format":
+                    if (++i >= argv.Length) return (null, "--format requires a value");
+                    var fmt = argv[i];
+                    if (!IsValidExportFormat(fmt))
+                    {
+                        return (null, $"--format must be one of: csv, md, both. Got '{fmt}'.");
+                    }
+                    exportFormat = fmt.ToLowerInvariant();
+                    exportFormatExplicit = true;
+                    break;
+
                 default:
                     return (null, $"unknown argument: '{arg}'");
             }
@@ -247,7 +297,11 @@ public static class CliArgsParser
                 LatestProfileBatch:                    latestProfileBatch,
                 WorkbookName:                          workbookName,
                 ReplaceExistingDraft:                  replaceExistingDraft,
-                MappingMaxCandidates:                  mappingMaxCandidates), null);
+                MappingMaxCandidates:                  mappingMaxCandidates,
+                ExportMappingWorkbook:                 exportMappingWorkbook,
+                WorkbookId:                            workbookId,
+                OutputDirectory:                       outputDirectory,
+                ExportFormat:                          exportFormat), null);
         }
 
         // ── Always-required, regardless of mode ─────────────────────────
@@ -255,25 +309,34 @@ public static class CliArgsParser
         if (!countyId.HasValue) return (null, "--county-id is required");
         if (string.IsNullOrWhiteSpace(operatorId)) return (null, "--operator must be non-empty when provided");
 
-        // ── Mode-mutual-exclusion: deep-profile flags only in profile mode ──
-        if (generateMappingWorkbook)
+        // ── Three-way mode mutex ────────────────────────────────────────
+        // Profile (default) | Generate Workbook (C4) | Export Workbook (C5)
+        // are mutually exclusive — at most one bool-toggle can be on.
+        if (generateMappingWorkbook && exportMappingWorkbook)
         {
+            return (null, "--generate-mapping-workbook and --export-mapping-workbook are mutually exclusive");
+        }
+
+        // ── Mode-mutual-exclusion: deep-profile flags only in profile mode ──
+        if (generateMappingWorkbook || exportMappingWorkbook)
+        {
+            var modeName = generateMappingWorkbook ? "Mapping Workbook" : "Mapping Workbook export";
             if (deepProfile)
             {
-                return (null, "--deep-profile is not allowed in Mapping Workbook mode");
+                return (null, $"--deep-profile is not allowed in {modeName} mode");
             }
             if (deepProfileInclude.Count > 0)
             {
-                return (null, "--deep-profile-include is not allowed in Mapping Workbook mode");
+                return (null, $"--deep-profile-include is not allowed in {modeName} mode");
             }
             if (deepProfileMaxTables.HasValue)
             {
-                return (null, "--deep-profile-max-tables is not allowed in Mapping Workbook mode");
+                return (null, $"--deep-profile-max-tables is not allowed in {modeName} mode");
             }
         }
 
         // ── Profile-mode-specific validation ────────────────────────────
-        if (!generateMappingWorkbook)
+        if (!generateMappingWorkbook && !exportMappingWorkbook)
         {
             if (!connectionId.HasValue) return (null, "--connection-id is required");
 
@@ -288,7 +351,89 @@ public static class CliArgsParser
                 return (null, "--deep-profile-max-tables requires --deep-profile");
             }
 
-            // Workbook flags must not appear in profile mode.
+            // Workbook-generation flags must not appear in profile mode.
+            if (profileBatchId.HasValue)
+            {
+                return (null, "--profile-batch-id requires --generate-mapping-workbook");
+            }
+            if (latestProfileBatch)
+            {
+                return (null, "--latest-profile-batch requires --generate-mapping-workbook");
+            }
+            if (workbookName is not null)
+            {
+                return (null, "--workbook-name requires --generate-mapping-workbook");
+            }
+            if (replaceExistingDraft)
+            {
+                return (null, "--replace-existing-draft requires --generate-mapping-workbook");
+            }
+            if (mappingMaxCandidates.HasValue)
+            {
+                return (null, "--mapping-max-candidates requires --generate-mapping-workbook");
+            }
+
+            // Export-mode flags must not appear in profile mode.
+            if (workbookId.HasValue)
+            {
+                return (null, "--workbook-id requires --export-mapping-workbook");
+            }
+            if (outputDirectory is not null)
+            {
+                return (null, "--output-dir requires --export-mapping-workbook");
+            }
+            if (exportFormatExplicit)
+            {
+                return (null, "--format requires --export-mapping-workbook");
+            }
+        }
+        else if (generateMappingWorkbook)
+        {
+            // ── Generate-workbook-mode-specific validation ─────────────
+            if (string.IsNullOrWhiteSpace(workbookName))
+            {
+                return (null, "--workbook-name is required when --generate-mapping-workbook is set");
+            }
+            if (!profileBatchId.HasValue && !latestProfileBatch)
+            {
+                return (null, "--generate-mapping-workbook requires either --profile-batch-id or --latest-profile-batch");
+            }
+            if (profileBatchId.HasValue && latestProfileBatch)
+            {
+                return (null, "--profile-batch-id and --latest-profile-batch are mutually exclusive");
+            }
+
+            // Export-mode flags must not appear in generate mode.
+            if (workbookId.HasValue)
+            {
+                return (null, "--workbook-id requires --export-mapping-workbook");
+            }
+            if (outputDirectory is not null)
+            {
+                return (null, "--output-dir requires --export-mapping-workbook");
+            }
+            if (exportFormatExplicit)
+            {
+                return (null, "--format requires --export-mapping-workbook");
+            }
+            // --connection-id is irrelevant in workbook mode (loader
+            // resolves it from the profile batch). Tolerate its presence —
+            // an operator with both flags set should not be punished — but
+            // it is not required.
+        }
+        else
+        {
+            // ── Export-workbook-mode-specific validation (C5) ──────────
+            if (!workbookId.HasValue)
+            {
+                return (null, "--workbook-id is required when --export-mapping-workbook is set");
+            }
+            if (string.IsNullOrWhiteSpace(outputDirectory))
+            {
+                return (null, "--output-dir is required when --export-mapping-workbook is set");
+            }
+
+            // Generate-mode flags must not appear in export mode.
             if (profileBatchId.HasValue)
             {
                 return (null, "--profile-batch-id requires --generate-mapping-workbook");
@@ -310,26 +455,6 @@ public static class CliArgsParser
                 return (null, "--mapping-max-candidates requires --generate-mapping-workbook");
             }
         }
-        else
-        {
-            // ── Workbook-mode-specific validation ──────────────────────
-            if (string.IsNullOrWhiteSpace(workbookName))
-            {
-                return (null, "--workbook-name is required when --generate-mapping-workbook is set");
-            }
-            if (!profileBatchId.HasValue && !latestProfileBatch)
-            {
-                return (null, "--generate-mapping-workbook requires either --profile-batch-id or --latest-profile-batch");
-            }
-            if (profileBatchId.HasValue && latestProfileBatch)
-            {
-                return (null, "--profile-batch-id and --latest-profile-batch are mutually exclusive");
-            }
-            // --connection-id is irrelevant in workbook mode (loader
-            // resolves it from the profile batch). Tolerate its presence —
-            // an operator with both flags set should not be punished — but
-            // it is not required.
-        }
 
         return (new CliArgs(
             TerraFusionDbConnectionString:        db!,
@@ -345,7 +470,11 @@ public static class CliArgsParser
             LatestProfileBatch:                    latestProfileBatch,
             WorkbookName:                          workbookName,
             ReplaceExistingDraft:                  replaceExistingDraft,
-            MappingMaxCandidates:                  mappingMaxCandidates), null);
+            MappingMaxCandidates:                  mappingMaxCandidates,
+            ExportMappingWorkbook:                 exportMappingWorkbook,
+            WorkbookId:                            workbookId,
+            OutputDirectory:                       outputDirectory,
+            ExportFormat:                          exportFormat), null);
     }
 
     public static string UsageText => @"
@@ -368,6 +497,15 @@ Usage (Mapping Workbook draft mode — Slice C4):
             [--mapping-max-candidates <n>] \
             [--operator <name>]
 
+Usage (Mapping Workbook export mode — Slice C5):
+  SyncAtlas --db <terrafusion-connection-string> \
+            --county-id <guid> \
+            --export-mapping-workbook \
+            --workbook-id <guid> \
+            --output-dir <path> \
+            [--format csv|md|both] \
+            [--operator <name>]
+
 Required (always):
   --db              Postgres connection string for the TerraFusion DB.
   --county-id       CountyId scoping the run.
@@ -381,6 +519,13 @@ Required (Mapping Workbook mode):
   --profile-batch-id  | --latest-profile-batch
                                 Pick the seeding batch explicitly OR resolve
                                 to the latest successful profile batch.
+
+Required (Mapping Workbook export mode):
+  --export-mapping-workbook     Switch into export mode.
+  --workbook-id                 Mapping workbook to export.
+  --output-dir                  Directory to write export files into
+                                (created if missing; existing files
+                                overwritten).
 
 Optional:
   --operator                  Operator id stamped on audit fields. Default: 'cli-operator'.
@@ -400,6 +545,13 @@ Mapping-workbook-mode optional:
                               touched, with or without this flag.
   --mapping-max-candidates    Cap the candidate iteration at the first N candidates after
                               deterministic (schema, table, column) sort. Positive integer.
+
+Mapping-workbook-export-mode optional:
+  --format <csv|md|both>      What to write. Default: 'both'.
+                              csv  — mapping-workbook-columns.csv +
+                                     mapping-workbook-code-values.csv
+                              md   — mapping-workbook-review.md
+                              both — all three.
 
   --help, -h, /?              Show this message and exit.
 
