@@ -193,6 +193,86 @@ public class SqlServerMetadataReaderFactoryAuthTests
         properties.Should().NotContain("Secret");
     }
 
+    [Fact]
+    public void BuildConnectionString_AdditionalOptions_DoNotClobberSqlAuthCredentials()
+    {
+        // Regression: SqlConnectionStringBuilder.Keys enumerates ALL supported keywords
+        // (including unset ones), so a naive overlay loop would reset UserID/Password
+        // to defaults. Verify the manual parser preserves credentials.
+        var connectionId = Guid.NewGuid();
+        var secretName = SyncAtlasSecretNames.ForSqlAuthPassword(connectionId);
+        Environment.SetEnvironmentVariable(secretName, "preserved-password");
+        try
+        {
+            var connection = new SyncSourceConnection
+            {
+                Id = connectionId,
+                CountyId = Guid.NewGuid(),
+                Name = "With AdditionalOptions",
+                SourceSystem = "PACS",
+                ConnectionType = "SqlServer",
+                Server = "localhost,1433",
+                Database = "PACS_Training",
+                AuthMode = "SqlAuth",
+                Username = "sa",
+                AdditionalOptions = "TrustServerCertificate=True;Encrypt=False"
+            };
+
+            var connectionString = SqlServerMetadataReaderFactory.BuildConnectionString(
+                connection,
+                new EnvironmentSecretResolver());
+
+            connectionString.Should().Contain("User ID=sa");
+            connectionString.Should().Contain("Password=preserved-password");
+            connectionString.Should().Contain("Trust Server Certificate=True");
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable(secretName, null);
+        }
+    }
+
+    [Fact]
+    public void BuildConnectionString_AdditionalOptions_StripsForbiddenCredentialKeys()
+    {
+        // Defense in depth: even if AdditionalOptions accidentally contains "Password=..."
+        // or "User ID=...", they must be silently dropped — credentials are doctrine-bound
+        // to the ISecretResolver path.
+        var connectionId = Guid.NewGuid();
+        var secretName = SyncAtlasSecretNames.ForSqlAuthPassword(connectionId);
+        Environment.SetEnvironmentVariable(secretName, "real-password");
+        try
+        {
+            var connection = new SyncSourceConnection
+            {
+                Id = connectionId,
+                CountyId = Guid.NewGuid(),
+                Name = "AdditionalOptions with sneaky creds",
+                SourceSystem = "PACS",
+                ConnectionType = "SqlServer",
+                Server = "localhost,1433",
+                Database = "PACS_Training",
+                AuthMode = "SqlAuth",
+                Username = "sa",
+                AdditionalOptions = "Password=leaked-via-options;User ID=evil-user;TrustServerCertificate=True"
+            };
+
+            var connectionString = SqlServerMetadataReaderFactory.BuildConnectionString(
+                connection,
+                new EnvironmentSecretResolver());
+
+            connectionString.Should().Contain("User ID=sa");
+            connectionString.Should().Contain("Password=real-password");
+            connectionString.Should().NotContain("evil-user");
+            connectionString.Should().NotContain("leaked-via-options");
+            connectionString.Should().Contain("Trust Server Certificate=True");
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable(secretName, null);
+        }
+    }
+
     /// <summary>Test double: throws if invoked. Used to verify Win-auth path skips resolver.</summary>
     private sealed class ThrowingSecretResolver : ISecretResolver
     {

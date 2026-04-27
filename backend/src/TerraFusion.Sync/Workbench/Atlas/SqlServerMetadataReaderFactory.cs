@@ -97,21 +97,54 @@ public sealed class SqlServerMetadataReaderFactory : IMetadataReaderFactory
         }
 
         // Apply additional connection-string options (e.g., TrustServerCertificate=True).
-        // AdditionalOptions must NOT include Password / User ID — those are doctrine-bound
-        // to the resolver path. We intentionally allow operator-defined overrides for
-        // benign settings; password leakage here would still surface in tests because
-        // the no-password-column structural test catches it on the entity, and the
-        // factory tests verify the resolver path.
+        // We parse manually: SqlConnectionStringBuilder.Keys enumerates ALL known
+        // keywords, not just keys present in the input string, so naively iterating
+        // it would overwrite UserID / Password / IntegratedSecurity with their
+        // default values and break the SqlAuth path. We split on ';' and only apply
+        // keys that the operator explicitly set in AdditionalOptions.
+        //
+        // Defense in depth: even if AdditionalOptions accidentally contains a
+        // credential keyword, we silently drop it. Credentials are doctrine-bound
+        // to the resolver path; AdditionalOptions is for benign tuning only.
         if (!string.IsNullOrWhiteSpace(connection.AdditionalOptions))
         {
-            var supplemental = new SqlConnectionStringBuilder(connection.AdditionalOptions);
-            foreach (string key in supplemental.Keys)
-            {
-                builder[key] = supplemental[key];
-            }
+            ApplyAdditionalOptions(builder, connection.AdditionalOptions);
         }
 
         return builder.ConnectionString;
+    }
+
+    private static readonly HashSet<string> ForbiddenAdditionalOptionKeys = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "User ID", "UserID", "User Id", "uid",
+        "Password", "pwd",
+        "Integrated Security", "IntegratedSecurity",
+        "Trusted_Connection"
+    };
+
+    private static void ApplyAdditionalOptions(SqlConnectionStringBuilder builder, string additionalOptions)
+    {
+        foreach (var raw in additionalOptions.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            var sep = raw.IndexOf('=');
+            if (sep <= 0) continue;
+
+            var key = raw[..sep].Trim();
+            var value = raw[(sep + 1)..].Trim();
+
+            if (string.IsNullOrEmpty(key)) continue;
+            if (ForbiddenAdditionalOptionKeys.Contains(key)) continue;
+
+            try
+            {
+                builder[key] = value;
+            }
+            catch (ArgumentException)
+            {
+                // Unknown / malformed keyword — silently skip; the operator will see
+                // the resulting connection string and can fix the AdditionalOptions value.
+            }
+        }
     }
 
     private sealed class SqlServerSession : IMetadataReaderSession
