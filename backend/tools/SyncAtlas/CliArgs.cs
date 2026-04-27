@@ -46,7 +46,19 @@ public sealed record CliArgs(
     // Slice C8-C — Sales qualification sample runner mode
     bool QualifySales,
     Guid? SourceConnectionId,
-    int? MaxSales);
+    int? MaxSales,
+    // Slice C9-B — Mapping Workbook edit mode
+    bool EditMappingWorkbook,
+    string? EditSourceSchema,
+    string? EditSourceTable,
+    string? EditSourceColumn,
+    string? EditSourceValue,
+    string? EditCanonicalTarget,
+    string? EditCanonicalValue,
+    bool EditCanonicalValueNull,
+    string? EditReviewStatus,
+    bool? EditIsExcluded,
+    string? EditNotes);
 
 /// <summary>
 /// Pure argument parser. No I/O, no environment access — easy to unit test.
@@ -115,6 +127,44 @@ public static class CliArgsParser
     private static bool IsValidExportFormat(string raw)
         => !string.IsNullOrWhiteSpace(raw) && ValidExportFormats.Contains(raw);
 
+    /// <summary>
+    /// Valid <c>--review-status</c> values for the edit mode (Slice C9-B).
+    /// Matches the C2 schema vocabulary; the closed set is enforced at
+    /// the parser AND defended again at the service layer.
+    /// </summary>
+    public static readonly HashSet<string> ValidEditReviewStatuses =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            "NeedsReview", "InProgress", "Mapped", "Excluded", "Deferred",
+        };
+
+    /// <summary>
+    /// Rejection helper used by every non-edit mode to refuse edit-mode
+    /// flags. Returns null when no edit-mode flag is present, or the
+    /// error message string when one is. Keeps the per-mode validation
+    /// blocks readable.
+    /// </summary>
+    private static string? RejectEditModeFlags(
+        string? editSourceSchema,
+        string? editSourceValue,
+        string? editCanonicalTarget,
+        string? editCanonicalValue,
+        bool   editCanonicalValueNull,
+        string? editReviewStatusRaw,
+        bool?   editIsExcludedRaw,
+        string? editNotes)
+    {
+        if (editSourceSchema    is not null) return "--source requires --edit-mapping-workbook";
+        if (editSourceValue     is not null) return "--source-value requires --edit-mapping-workbook";
+        if (editCanonicalTarget is not null) return "--canonical-target requires --edit-mapping-workbook";
+        if (editCanonicalValue  is not null) return "--canonical-value requires --edit-mapping-workbook";
+        if (editCanonicalValueNull)          return "--canonical-value-null requires --edit-mapping-workbook";
+        if (editReviewStatusRaw is not null) return "--review-status requires --edit-mapping-workbook";
+        if (editIsExcludedRaw.HasValue)      return "--is-excluded requires --edit-mapping-workbook";
+        if (editNotes           is not null) return "--notes requires --edit-mapping-workbook";
+        return null;
+    }
+
     public static (CliArgs? Args, string? Error) Parse(string[] argv)
     {
         ArgumentNullException.ThrowIfNull(argv);
@@ -156,6 +206,19 @@ public static class CliArgsParser
         var qualifySales = false;
         Guid? sourceConnectionId = null;
         int? maxSales = null;
+
+        // Slice C9-B — Mapping Workbook edit mode
+        var editMappingWorkbook = false;
+        string? editSourceSchema = null;
+        string? editSourceTable = null;
+        string? editSourceColumn = null;
+        string? editSourceValue = null;
+        string? editCanonicalTarget = null;
+        string? editCanonicalValue = null;
+        var editCanonicalValueNull = false;
+        string? editReviewStatus = null;
+        bool? editIsExcluded = null;
+        string? editNotes = null;
 
         for (var i = 0; i < argv.Length; i++)
         {
@@ -306,6 +369,73 @@ public static class CliArgsParser
                     maxSales = ms;
                     break;
 
+                // ── Slice C9-B — Mapping Workbook edit mode ─────────────
+                case "--edit-mapping-workbook":
+                    editMappingWorkbook = true;
+                    break;
+
+                case "--source":
+                    if (++i >= argv.Length) return (null, "--source requires a value");
+                    var rawSource = argv[i];
+                    var parts = rawSource.Split('.');
+                    if (parts.Length != 3 ||
+                        string.IsNullOrWhiteSpace(parts[0]) ||
+                        string.IsNullOrWhiteSpace(parts[1]) ||
+                        string.IsNullOrWhiteSpace(parts[2]))
+                    {
+                        return (null, $"--source must be 'schema.table.column': '{rawSource}'");
+                    }
+                    editSourceSchema = parts[0];
+                    editSourceTable  = parts[1];
+                    editSourceColumn = parts[2];
+                    break;
+
+                case "--source-value":
+                    if (++i >= argv.Length) return (null, "--source-value requires a value");
+                    editSourceValue = argv[i];
+                    break;
+
+                case "--canonical-target":
+                    if (++i >= argv.Length) return (null, "--canonical-target requires a value");
+                    editCanonicalTarget = argv[i];
+                    break;
+
+                case "--canonical-value":
+                    if (++i >= argv.Length) return (null, "--canonical-value requires a value");
+                    editCanonicalValue = argv[i];
+                    break;
+
+                case "--canonical-value-null":
+                    editCanonicalValueNull = true;
+                    break;
+
+                case "--review-status":
+                    if (++i >= argv.Length) return (null, "--review-status requires a value");
+                    var rs = argv[i];
+                    if (!ValidEditReviewStatuses.Contains(rs))
+                    {
+                        return (null,
+                            $"--review-status must be one of: {string.Join(", ", ValidEditReviewStatuses)}. Got '{rs}'.");
+                    }
+                    editReviewStatus = rs;
+                    break;
+
+                case "--is-excluded":
+                    if (++i >= argv.Length) return (null, "--is-excluded requires a value");
+                    var rawExcluded = argv[i];
+                    if (string.Equals(rawExcluded, "true",  StringComparison.OrdinalIgnoreCase))
+                        editIsExcluded = true;
+                    else if (string.Equals(rawExcluded, "false", StringComparison.OrdinalIgnoreCase))
+                        editIsExcluded = false;
+                    else
+                        return (null, $"--is-excluded must be 'true' or 'false'. Got '{rawExcluded}'.");
+                    break;
+
+                case "--notes":
+                    if (++i >= argv.Length) return (null, "--notes requires a value");
+                    editNotes = argv[i];
+                    break;
+
                 default:
                     return (null, $"unknown argument: '{arg}'");
             }
@@ -334,7 +464,18 @@ public static class CliArgsParser
                 ExportFormat:                          exportFormat,
                 QualifySales:                          qualifySales,
                 SourceConnectionId:                    sourceConnectionId,
-                MaxSales:                              maxSales), null);
+                MaxSales:                              maxSales,
+                EditMappingWorkbook:                   editMappingWorkbook,
+                EditSourceSchema:                      editSourceSchema,
+                EditSourceTable:                       editSourceTable,
+                EditSourceColumn:                      editSourceColumn,
+                EditSourceValue:                       editSourceValue,
+                EditCanonicalTarget:                   editCanonicalTarget,
+                EditCanonicalValue:                    editCanonicalValue,
+                EditCanonicalValueNull:                editCanonicalValueNull,
+                EditReviewStatus:                      editReviewStatus,
+                EditIsExcluded:                        editIsExcluded,
+                EditNotes:                             editNotes), null);
         }
 
         // ── Always-required, regardless of mode ─────────────────────────
@@ -342,25 +483,30 @@ public static class CliArgsParser
         if (!countyId.HasValue) return (null, "--county-id is required");
         if (string.IsNullOrWhiteSpace(operatorId)) return (null, "--operator must be non-empty when provided");
 
-        // ── Four-way mode mutex ─────────────────────────────────────────
+        // ── Five-way mode mutex ─────────────────────────────────────────
         // Profile (default) | Generate Workbook (C4) | Export Workbook (C5)
-        // | Qualify Sales (C8-C) — at most one bool-toggle can be on.
+        // | Qualify Sales (C8-C) | Edit Workbook (C9-B) — at most one
+        // bool-toggle can be on.
         var modeToggleCount =
             (generateMappingWorkbook ? 1 : 0) +
             (exportMappingWorkbook   ? 1 : 0) +
-            (qualifySales            ? 1 : 0);
+            (qualifySales            ? 1 : 0) +
+            (editMappingWorkbook     ? 1 : 0);
         if (modeToggleCount > 1)
         {
-            return (null, "--generate-mapping-workbook, --export-mapping-workbook, and --qualify-sales are mutually exclusive");
+            return (null,
+                "--generate-mapping-workbook, --export-mapping-workbook, --qualify-sales, " +
+                "and --edit-mapping-workbook are mutually exclusive");
         }
 
         // ── Mode-mutual-exclusion: deep-profile flags only in profile mode ──
-        if (generateMappingWorkbook || exportMappingWorkbook || qualifySales)
+        if (generateMappingWorkbook || exportMappingWorkbook || qualifySales || editMappingWorkbook)
         {
             var modeName =
                 generateMappingWorkbook ? "Mapping Workbook" :
                 exportMappingWorkbook   ? "Mapping Workbook export" :
-                                          "Sales qualification";
+                qualifySales            ? "Sales qualification" :
+                                          "Mapping Workbook edit";
             if (deepProfile)
             {
                 return (null, $"--deep-profile is not allowed in {modeName} mode");
@@ -376,7 +522,7 @@ public static class CliArgsParser
         }
 
         // ── Profile-mode-specific validation ────────────────────────────
-        if (!generateMappingWorkbook && !exportMappingWorkbook && !qualifySales)
+        if (!generateMappingWorkbook && !exportMappingWorkbook && !qualifySales && !editMappingWorkbook)
         {
             if (!connectionId.HasValue) return (null, "--connection-id is required");
 
@@ -436,6 +582,13 @@ public static class CliArgsParser
             {
                 return (null, "--max-sales requires --qualify-sales");
             }
+
+            // Edit-mode flags must not appear in profile mode.
+            var editError = RejectEditModeFlags(
+                editSourceSchema, editSourceValue, editCanonicalTarget,
+                editCanonicalValue, editCanonicalValueNull, editReviewStatus,
+                editIsExcluded, editNotes);
+            if (editError is not null) return (null, editError);
         }
         else if (generateMappingWorkbook)
         {
@@ -480,6 +633,13 @@ public static class CliArgsParser
             // resolves it from the profile batch). Tolerate its presence —
             // an operator with both flags set should not be punished — but
             // it is not required.
+
+            // Edit-mode flags must not appear in generate mode.
+            var editError = RejectEditModeFlags(
+                editSourceSchema, editSourceValue, editCanonicalTarget,
+                editCanonicalValue, editCanonicalValueNull, editReviewStatus,
+                editIsExcluded, editNotes);
+            if (editError is not null) return (null, editError);
         }
         else if (exportMappingWorkbook)
         {
@@ -524,8 +684,15 @@ public static class CliArgsParser
             {
                 return (null, "--max-sales requires --qualify-sales");
             }
+
+            // Edit-mode flags must not appear in export mode.
+            var editError = RejectEditModeFlags(
+                editSourceSchema, editSourceValue, editCanonicalTarget,
+                editCanonicalValue, editCanonicalValueNull, editReviewStatus,
+                editIsExcluded, editNotes);
+            if (editError is not null) return (null, editError);
         }
-        else
+        else if (qualifySales)
         {
             // ── Qualify-sales-mode-specific validation (C8-C) ──────────
             if (!workbookId.HasValue)
@@ -572,6 +739,113 @@ public static class CliArgsParser
             {
                 return (null, "--format requires --export-mapping-workbook");
             }
+
+            // Edit-mode flags must not appear in qualify mode.
+            var editError = RejectEditModeFlags(
+                editSourceSchema, editSourceValue, editCanonicalTarget,
+                editCanonicalValue, editCanonicalValueNull, editReviewStatus,
+                editIsExcluded, editNotes);
+            if (editError is not null) return (null, editError);
+        }
+        else
+        {
+            // ── Edit-mode-specific validation (C9-B) ───────────────────
+            if (!workbookId.HasValue)
+            {
+                return (null, "--workbook-id is required when --edit-mapping-workbook is set");
+            }
+            if (editSourceSchema is null)
+            {
+                return (null, "--source is required when --edit-mapping-workbook is set");
+            }
+            // At-least-one mutation field — Hard Guard #4 from C9-A.
+            var anyMutation =
+                editCanonicalTarget    is not null ||
+                editCanonicalValue     is not null ||
+                editCanonicalValueNull                ||
+                editReviewStatus       is not null ||
+                editIsExcluded.HasValue               ||
+                editNotes              is not null;
+            if (!anyMutation)
+            {
+                return (null,
+                    "--edit-mapping-workbook requires at least one mutation field " +
+                    "(--canonical-target / --canonical-value / --canonical-value-null / " +
+                    "--review-status / --is-excluded / --notes)");
+            }
+
+            // Mutex: --canonical-value and --canonical-value-null.
+            if (editCanonicalValue is not null && editCanonicalValueNull)
+            {
+                return (null, "--canonical-value and --canonical-value-null are mutually exclusive");
+            }
+
+            // Scope-correct fields — Hard Guard #5 from C9-A.
+            var isCodeValueScope = editSourceValue is not null;
+            if (isCodeValueScope)
+            {
+                if (editCanonicalTarget is not null)
+                {
+                    return (null,
+                        "--canonical-target is column-scope only and cannot be combined with --source-value");
+                }
+            }
+            else
+            {
+                if (editCanonicalValue is not null)
+                {
+                    return (null,
+                        "--canonical-value is code-value-scope only — supply --source-value alongside it");
+                }
+                if (editCanonicalValueNull)
+                {
+                    return (null,
+                        "--canonical-value-null is code-value-scope only — supply --source-value alongside it");
+                }
+                if (editIsExcluded.HasValue)
+                {
+                    return (null,
+                        "--is-excluded is code-value-scope only — supply --source-value alongside it");
+                }
+            }
+
+            // Other modes' flags must not appear in edit mode.
+            if (profileBatchId.HasValue)
+            {
+                return (null, "--profile-batch-id requires --generate-mapping-workbook");
+            }
+            if (latestProfileBatch)
+            {
+                return (null, "--latest-profile-batch requires --generate-mapping-workbook");
+            }
+            if (workbookName is not null)
+            {
+                return (null, "--workbook-name requires --generate-mapping-workbook");
+            }
+            if (replaceExistingDraft)
+            {
+                return (null, "--replace-existing-draft requires --generate-mapping-workbook");
+            }
+            if (mappingMaxCandidates.HasValue)
+            {
+                return (null, "--mapping-max-candidates requires --generate-mapping-workbook");
+            }
+            if (outputDirectory is not null)
+            {
+                return (null, "--output-dir requires --export-mapping-workbook");
+            }
+            if (exportFormatExplicit)
+            {
+                return (null, "--format requires --export-mapping-workbook");
+            }
+            if (sourceConnectionId.HasValue)
+            {
+                return (null, "--source-connection-id requires --qualify-sales");
+            }
+            if (maxSales.HasValue)
+            {
+                return (null, "--max-sales requires --qualify-sales");
+            }
         }
 
         return (new CliArgs(
@@ -595,7 +869,18 @@ public static class CliArgsParser
             ExportFormat:                          exportFormat,
             QualifySales:                          qualifySales,
             SourceConnectionId:                    sourceConnectionId,
-            MaxSales:                              maxSales), null);
+            MaxSales:                              maxSales,
+            EditMappingWorkbook:                   editMappingWorkbook,
+            EditSourceSchema:                      editSourceSchema,
+            EditSourceTable:                       editSourceTable,
+            EditSourceColumn:                      editSourceColumn,
+            EditSourceValue:                       editSourceValue,
+            EditCanonicalTarget:                   editCanonicalTarget,
+            EditCanonicalValue:                    editCanonicalValue,
+            EditCanonicalValueNull:                editCanonicalValueNull,
+            EditReviewStatus:                      editReviewStatus,
+            EditIsExcluded:                        editIsExcluded,
+            EditNotes:                             editNotes), null);
     }
 
     public static string UsageText => @"
@@ -634,6 +919,20 @@ Usage (Sales qualification sample runner — Slice C8-C, read-only):
             --workbook-id <guid> \
             --source-connection-id <guid> \
             --max-sales <n> \
+            [--operator <name>]
+
+Usage (Mapping Workbook edit — Slice C9-B, Draft-only mutation):
+  SyncAtlas --db <terrafusion-connection-string> \
+            --county-id <guid> \
+            --edit-mapping-workbook \
+            --workbook-id <guid> \
+            --source <schema.table.column> \
+            [--source-value <text>] \
+            [--canonical-target <text>] \
+            [--canonical-value <text> | --canonical-value-null] \
+            [--review-status <NeedsReview|InProgress|Mapped|Excluded|Deferred>] \
+            [--is-excluded true|false] \
+            [--notes <text>] \
             [--operator <name>]
 
 Required (always):
