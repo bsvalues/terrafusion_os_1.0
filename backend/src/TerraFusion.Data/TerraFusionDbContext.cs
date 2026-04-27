@@ -98,6 +98,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<SyncWatermark> SyncWatermarks { get; set; }
   public DbSet<SyncQuarantine> SyncQuarantine { get; set; }
 
+  // R3 Sync Canonical Landing Schema — TerraFusion-canonical entities populated by Sync ingest
+  public DbSet<Owner> Owners { get; set; }
+  public DbSet<OwnershipEvent> OwnershipEvents { get; set; }
+  public DbSet<LandSegment> LandSegments { get; set; }
+  public DbSet<ImprovementDetail> ImprovementDetails { get; set; }
+
   // Codex 3-6-9 Framework Entities
   public DbSet<CodexMetric> CodexMetrics { get; set; }
   public DbSet<CodexScore> CodexScores { get; set; }
@@ -630,6 +636,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     modelBuilder.ApplyConfiguration(new SyncRecordConfiguration());
     modelBuilder.ApplyConfiguration(new SyncWatermarkConfiguration());
     modelBuilder.ApplyConfiguration(new SyncQuarantineConfiguration());
+
+    // R3 Sync Canonical Landing Schema
+    modelBuilder.ApplyConfiguration(new OwnerConfiguration());
+    modelBuilder.ApplyConfiguration(new OwnershipEventConfiguration());
+    modelBuilder.ApplyConfiguration(new LandSegmentConfiguration());
+    modelBuilder.ApplyConfiguration(new ImprovementDetailConfiguration());
 
     // NOTE: TerraFusionGPT Suite configurations temporarily disabled due to circular dependency
     // These configurations are defined in TerraFusion.Data\Configurations\GPTConfiguration.cs.disabled
