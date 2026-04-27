@@ -58,7 +58,9 @@ public sealed record CliArgs(
     bool EditCanonicalValueNull,
     string? EditReviewStatus,
     bool? EditIsExcluded,
-    string? EditNotes);
+    string? EditNotes,
+    // Slice C10-B — Mapping Workbook lock mode (sixth in the SyncAtlas mutex)
+    bool LockMappingWorkbook);
 
 /// <summary>
 /// Pure argument parser. No I/O, no environment access — easy to unit test.
@@ -219,6 +221,9 @@ public static class CliArgsParser
         string? editReviewStatus = null;
         bool? editIsExcluded = null;
         string? editNotes = null;
+
+        // Slice C10-B — Mapping Workbook lock mode
+        var lockMappingWorkbook = false;
 
         for (var i = 0; i < argv.Length; i++)
         {
@@ -436,6 +441,11 @@ public static class CliArgsParser
                     editNotes = argv[i];
                     break;
 
+                // ── Slice C10-B — Mapping Workbook lock mode ────────────
+                case "--lock-mapping-workbook":
+                    lockMappingWorkbook = true;
+                    break;
+
                 default:
                     return (null, $"unknown argument: '{arg}'");
             }
@@ -475,7 +485,8 @@ public static class CliArgsParser
                 EditCanonicalValueNull:                editCanonicalValueNull,
                 EditReviewStatus:                      editReviewStatus,
                 EditIsExcluded:                        editIsExcluded,
-                EditNotes:                             editNotes), null);
+                EditNotes:                             editNotes,
+                LockMappingWorkbook:                   lockMappingWorkbook), null);
         }
 
         // ── Always-required, regardless of mode ─────────────────────────
@@ -483,30 +494,32 @@ public static class CliArgsParser
         if (!countyId.HasValue) return (null, "--county-id is required");
         if (string.IsNullOrWhiteSpace(operatorId)) return (null, "--operator must be non-empty when provided");
 
-        // ── Five-way mode mutex ─────────────────────────────────────────
+        // ── Six-way mode mutex ──────────────────────────────────────────
         // Profile (default) | Generate Workbook (C4) | Export Workbook (C5)
-        // | Qualify Sales (C8-C) | Edit Workbook (C9-B) — at most one
-        // bool-toggle can be on.
+        // | Qualify Sales (C8-C) | Edit Workbook (C9-B) | Lock Workbook
+        // (C10-B) — at most one bool-toggle can be on.
         var modeToggleCount =
             (generateMappingWorkbook ? 1 : 0) +
             (exportMappingWorkbook   ? 1 : 0) +
             (qualifySales            ? 1 : 0) +
-            (editMappingWorkbook     ? 1 : 0);
+            (editMappingWorkbook     ? 1 : 0) +
+            (lockMappingWorkbook     ? 1 : 0);
         if (modeToggleCount > 1)
         {
             return (null,
                 "--generate-mapping-workbook, --export-mapping-workbook, --qualify-sales, " +
-                "and --edit-mapping-workbook are mutually exclusive");
+                "--edit-mapping-workbook, and --lock-mapping-workbook are mutually exclusive");
         }
 
         // ── Mode-mutual-exclusion: deep-profile flags only in profile mode ──
-        if (generateMappingWorkbook || exportMappingWorkbook || qualifySales || editMappingWorkbook)
+        if (generateMappingWorkbook || exportMappingWorkbook || qualifySales || editMappingWorkbook || lockMappingWorkbook)
         {
             var modeName =
                 generateMappingWorkbook ? "Mapping Workbook" :
                 exportMappingWorkbook   ? "Mapping Workbook export" :
                 qualifySales            ? "Sales qualification" :
-                                          "Mapping Workbook edit";
+                editMappingWorkbook     ? "Mapping Workbook edit" :
+                                          "Mapping Workbook lock";
             if (deepProfile)
             {
                 return (null, $"--deep-profile is not allowed in {modeName} mode");
@@ -522,7 +535,7 @@ public static class CliArgsParser
         }
 
         // ── Profile-mode-specific validation ────────────────────────────
-        if (!generateMappingWorkbook && !exportMappingWorkbook && !qualifySales && !editMappingWorkbook)
+        if (!generateMappingWorkbook && !exportMappingWorkbook && !qualifySales && !editMappingWorkbook && !lockMappingWorkbook)
         {
             if (!connectionId.HasValue) return (null, "--connection-id is required");
 
@@ -747,7 +760,7 @@ public static class CliArgsParser
                 editIsExcluded, editNotes);
             if (editError is not null) return (null, editError);
         }
-        else
+        else if (editMappingWorkbook)
         {
             // ── Edit-mode-specific validation (C9-B) ───────────────────
             if (!workbookId.HasValue)
@@ -847,6 +860,75 @@ public static class CliArgsParser
                 return (null, "--max-sales requires --qualify-sales");
             }
         }
+        else
+        {
+            // ── Lock-mode-specific validation (C10-B) ──────────────────
+            // Hard Guards from the C10-A policy doc:
+            //   1. Status='Draft' only          — enforced by C6 service.
+            //   2. County scope                 — enforced by C6 service.
+            //   3. Workbook completeness        — enforced by C6 service.
+            //   4. One-shot, no --unlock        — there is no unlock flag.
+            // The parser's job is the surface contract: --workbook-id is
+            // mandatory; no other mode's flags may appear.
+            if (!workbookId.HasValue)
+            {
+                return (null, "--workbook-id is required when --lock-mapping-workbook is set");
+            }
+
+            // Generate-mode flags must not appear in lock mode.
+            if (profileBatchId.HasValue)
+            {
+                return (null, "--profile-batch-id requires --generate-mapping-workbook");
+            }
+            if (latestProfileBatch)
+            {
+                return (null, "--latest-profile-batch requires --generate-mapping-workbook");
+            }
+            if (workbookName is not null)
+            {
+                return (null, "--workbook-name requires --generate-mapping-workbook");
+            }
+            if (replaceExistingDraft)
+            {
+                return (null, "--replace-existing-draft requires --generate-mapping-workbook");
+            }
+            if (mappingMaxCandidates.HasValue)
+            {
+                return (null, "--mapping-max-candidates requires --generate-mapping-workbook");
+            }
+
+            // Export-mode flags must not appear in lock mode.
+            if (outputDirectory is not null)
+            {
+                return (null, "--output-dir requires --export-mapping-workbook");
+            }
+            if (exportFormatExplicit)
+            {
+                return (null, "--format requires --export-mapping-workbook");
+            }
+
+            // Qualify-sales flags must not appear in lock mode.
+            if (sourceConnectionId.HasValue)
+            {
+                return (null, "--source-connection-id requires --qualify-sales");
+            }
+            if (maxSales.HasValue)
+            {
+                return (null, "--max-sales requires --qualify-sales");
+            }
+
+            // Edit-mode flags must not appear in lock mode.
+            var editError = RejectEditModeFlags(
+                editSourceSchema, editSourceValue, editCanonicalTarget,
+                editCanonicalValue, editCanonicalValueNull, editReviewStatus,
+                editIsExcluded, editNotes);
+            if (editError is not null) return (null, editError);
+            // --connection-id is irrelevant in lock mode (lock service
+            // never queries PACS). Tolerate its presence the same way
+            // generate/export modes tolerate it — surface contract is
+            // about preventing operator confusion, not punishing extra
+            // bytes that the lock path ignores anyway.
+        }
 
         return (new CliArgs(
             TerraFusionDbConnectionString:        db!,
@@ -880,7 +962,8 @@ public static class CliArgsParser
             EditCanonicalValueNull:                editCanonicalValueNull,
             EditReviewStatus:                      editReviewStatus,
             EditIsExcluded:                        editIsExcluded,
-            EditNotes:                             editNotes), null);
+            EditNotes:                             editNotes,
+            LockMappingWorkbook:                   lockMappingWorkbook), null);
     }
 
     public static string UsageText => @"
@@ -934,6 +1017,16 @@ Usage (Mapping Workbook edit — Slice C9-B, Draft-only mutation):
             [--is-excluded true|false] \
             [--notes <text>] \
             [--operator <name>]
+
+Usage (Mapping Workbook lock — Slice C10-B, one-shot Draft→Mapped):
+  SyncAtlas --db <terrafusion-connection-string> \
+            --county-id <guid> \
+            --lock-mapping-workbook \
+            --workbook-id <guid> \
+            [--operator <name>]
+  Lock refuses to flip Status unless every column AND every code-value
+  is in a terminal review status (Mapped / Excluded / Deferred). There
+  is no --unlock flag; lock is one-shot.
 
 Required (always):
   --db              Postgres connection string for the TerraFusion DB.

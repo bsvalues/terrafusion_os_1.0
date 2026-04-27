@@ -1786,4 +1786,254 @@ public class CliArgsParserTests
         usage.Should().Contain("--is-excluded");
         usage.Should().Contain("--notes");
     }
+
+    // ── Slice C10-B — Mapping Workbook lock ─────────────────────────────
+    //
+    // Six-way mode mutex now: profile / generate / export / qualify /
+    // edit / lock. Lock mode requires --workbook-id only; rejects all
+    // other modes' flags; tolerates --connection-id (the lock service
+    // never queries PACS).
+
+    [Fact]
+    public void Parse_LockMappingWorkbookSetsMode()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--lock-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+        });
+
+        err.Should().BeNull();
+        args!.LockMappingWorkbook.Should().BeTrue();
+        args.WorkbookId.Should().Be(Guid.Parse(ValidWorkbookId));
+        args.ConnectionId.Should().BeNull();
+        args.GenerateMappingWorkbook.Should().BeFalse();
+        args.ExportMappingWorkbook.Should().BeFalse();
+        args.QualifySales.Should().BeFalse();
+        args.EditMappingWorkbook.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Parse_LockRequiresWorkbookId()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--lock-mapping-workbook",
+            // no --workbook-id
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--workbook-id");
+        err.Should().Contain("--lock-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_LockRejectsProfileFlags()
+    {
+        // --deep-profile is profile-mode-only; lock mode must reject it.
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--lock-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--deep-profile",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--deep-profile");
+        err.Should().Contain("Mapping Workbook lock");
+    }
+
+    [Fact]
+    public void Parse_LockRejectsGenerateFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--lock-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--workbook-name", "should-be-rejected",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--workbook-name");
+        err.Should().Contain("--generate-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_LockRejectsExportFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--lock-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--output-dir", "/tmp/should-be-rejected",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--output-dir");
+        err.Should().Contain("--export-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_LockRejectsQualifyFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--lock-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source-connection-id", ValidConnection,
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--source-connection-id");
+        err.Should().Contain("--qualify-sales");
+    }
+
+    [Fact]
+    public void Parse_LockRejectsEditFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--lock-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--source");
+        err.Should().Contain("--edit-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_LockMutuallyExclusiveWithOtherModes()
+    {
+        // Six-way mutex sanity: lock + edit fails with a mutex error,
+        // not a per-flag error.
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--lock-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--edit-mapping-workbook",
+            "--source", "dbo.sale.wac_cd",
+            "--review-status", "Mapped",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("mutually exclusive");
+        err.Should().Contain("--lock-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_LockAllowsDbAndCountyOnly()
+    {
+        // Happy path: lock with the bare-minimum required flags plus
+        // an optional --operator override. --connection-id is tolerated
+        // (parser-side; lock service never reads it).
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--lock-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--operator", "bsval",
+        });
+
+        err.Should().BeNull();
+        args!.LockMappingWorkbook.Should().BeTrue();
+        args.TerraFusionDbConnectionString.Should().Be(ValidDb);
+        args.CountyId.Should().Be(Guid.Parse(ValidCounty));
+        args.WorkbookId.Should().Be(Guid.Parse(ValidWorkbookId));
+        args.OperatorId.Should().Be("bsval");
+    }
+
+    [Fact]
+    public void Parse_LockMode_ExistingModesRemainCompatible()
+    {
+        // Sanity: adding the lock mode must not regress the other five.
+        // Parse one happy-path invocation per mode and confirm the
+        // expected toggle is set without an error.
+        var profile = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+        });
+        profile.Error.Should().BeNull();
+        profile.Args!.LockMappingWorkbook.Should().BeFalse();
+        profile.Args.GenerateMappingWorkbook.Should().BeFalse();
+
+        var generate = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--generate-mapping-workbook",
+            "--latest-profile-batch",
+            "--workbook-name", "bench",
+        });
+        generate.Error.Should().BeNull();
+        generate.Args!.GenerateMappingWorkbook.Should().BeTrue();
+        generate.Args.LockMappingWorkbook.Should().BeFalse();
+
+        var export = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--export-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--output-dir", "/tmp/x",
+        });
+        export.Error.Should().BeNull();
+        export.Args!.ExportMappingWorkbook.Should().BeTrue();
+        export.Args.LockMappingWorkbook.Should().BeFalse();
+
+        var qualify = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--qualify-sales",
+            "--workbook-id", ValidWorkbookId,
+            "--source-connection-id", ValidConnection,
+            "--max-sales", "10",
+        });
+        qualify.Error.Should().BeNull();
+        qualify.Args!.QualifySales.Should().BeTrue();
+        qualify.Args.LockMappingWorkbook.Should().BeFalse();
+
+        var edit = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--edit-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.sale.wac_cd",
+            "--review-status", "Mapped",
+        });
+        edit.Error.Should().BeNull();
+        edit.Args!.EditMappingWorkbook.Should().BeTrue();
+        edit.Args.LockMappingWorkbook.Should().BeFalse();
+    }
+
+    [Fact]
+    public void UsageText_IncludesLockMode()
+    {
+        var usage = CliArgsParser.UsageText;
+        usage.Should().Contain("--lock-mapping-workbook");
+        usage.Should().Contain("Slice C10-B");
+        usage.Should().Contain("Draft→Mapped");
+    }
 }

@@ -57,10 +57,14 @@ internal static class Program
 
         try
         {
-            // Slices C4 + C5 + C8-C + C9-B: explicit five-way mode dispatch.
-            // Workbook generate / export / qualify-sales / edit modes
+            // Slices C4 + C5 + C8-C + C9-B + C10-B: explicit six-way mode dispatch.
+            // Workbook generate / export / qualify-sales / edit / lock modes
             // never hit the SQL Server profiler path, so a missing
             // --connection-id is fine in those branches.
+            if (args.LockMappingWorkbook)
+            {
+                return await RunLockMappingWorkbookAsync(args, cts.Token);
+            }
             if (args.EditMappingWorkbook)
             {
                 return await RunEditMappingWorkbookAsync(args, cts.Token);
@@ -673,5 +677,79 @@ internal static class Program
         return 0;
 
         static string Render(string? v) => v ?? "(null)";
+    }
+
+    /// <summary>
+    /// Slice C10-B: Mapping Workbook lock. One-shot Draft→Mapped
+    /// transition via <see cref="SyncMappingWorkbookLockService"/>.
+    /// All four C10-A Hard Guards live in the C6 service:
+    ///   1. Workbook must be Status='Draft'.
+    ///   2. Workbook must belong to the supplied countyId.
+    ///   3. Every column AND every code-value must be at a terminal
+    ///      review status (Mapped / Excluded / Deferred).
+    ///   4. There is no --unlock — lock is one-shot.
+    /// CLI's job is to invoke, print a one-page summary, and translate
+    /// service exceptions to exit 2.
+    /// </summary>
+    private static async Task<int> RunLockMappingWorkbookAsync(CliArgs args, CancellationToken ct)
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:DefaultConnection"] = args.TerraFusionDbConnectionString
+            })
+            .AddEnvironmentVariables()
+            .Build();
+
+        var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
+            .UseNpgsql(args.TerraFusionDbConnectionString, npg =>
+            {
+                npg.MigrationsAssembly("TerraFusion.Data");
+                npg.EnableRetryOnFailure(maxRetryCount: 3);
+            })
+            .Options;
+
+        await using var db = new TerraFusionDbContext(options, configuration);
+
+        // Parser invariant: LockMappingWorkbook=true ⇒ WorkbookId set.
+        var workbookId = args.WorkbookId
+            ?? throw new InvalidOperationException("Lock mode reached without --workbook-id; this is a parser invariant violation.");
+
+        var service = new SyncMappingWorkbookLockService(db);
+
+        Console.WriteLine($"sync-atlas: locking mapping workbook {workbookId}...");
+        Console.WriteLine($"sync-atlas:   operator:  {args.OperatorId}");
+
+        SyncMappingWorkbookLockResult result;
+        try
+        {
+            result = await service.LockAsync(args.CountyId, workbookId, ct);
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Cross-county / not-found / non-Draft / non-terminal-rows —
+            // verbatim message + exit 2. The C6 service's exception text
+            // already names example non-terminal rows, which is the
+            // operator-actionable receipt the C10-A policy promised.
+            await Console.Error.WriteLineAsync($"sync-atlas: {ex.Message}");
+            return 2;
+        }
+        catch (ArgumentException ex)
+        {
+            // Service-side defense-in-depth (parser usually catches first).
+            await Console.Error.WriteLineAsync($"sync-atlas: {ex.Message}");
+            return 1;
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine($"  Mapping Workbook:        locked");
+        Console.WriteLine($"  Workbook Id:             {result.WorkbookId}");
+        Console.WriteLine($"  Status:                  {result.Status}");
+        Console.WriteLine($"  Columns Validated:     {result.ColumnsValidated,7:N0}");
+        Console.WriteLine($"  Code Values Validated: {result.CodeValuesValidated,7:N0}");
+        Console.WriteLine("─────────────────────────────────────────────");
+
+        return 0;
     }
 }
