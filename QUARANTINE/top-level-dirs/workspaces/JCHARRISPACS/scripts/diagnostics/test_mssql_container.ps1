@@ -1,5 +1,5 @@
 Param(
-    [string]$Password = $(if ($env:SA_PASSWORD) { $env:SA_PASSWORD } else { 'TF_Pacs2026!' }),
+    [string]$Password = $(if ($env:SA_PASSWORD) { $env:SA_PASSWORD } else { ($env:SA_PASSWORD ?? $env:MSSQL_SA_PASSWORD ?? (throw "SA password not set")) }),
     [string]$Image = "mcr.microsoft.com/mssql/server:2019-latest",
     [string]$Name = "mssql-diag-2019",
     [int]$HostPort = 14333,

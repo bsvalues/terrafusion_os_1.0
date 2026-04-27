@@ -90,12 +90,12 @@ in a system designed from day one for FISMA-HIGH security.
 
 ```powershell
 # 1. Restore PACS from archived backups
-pwsh ops/dev/restore-pacs-from-archives.ps1 -SaPassword "TF_Pacs2026!"
+pwsh ops/dev/restore-pacs-from-archives.ps1 -SaPassword "<redacted-local-dev-sql-password>"
 
 # 2. Deploy contract views
 docker cp ops/dev/pacs-contract-views.sql tf-mssql:/tmp/
 docker exec tf-mssql /opt/mssql-tools18/bin/sqlcmd \
-  -S localhost -U sa -P "TF_Pacs2026!" -C -i /tmp/pacs-contract-views.sql
+  -S localhost -U sa -P "<redacted-local-dev-sql-password>" -C -i /tmp/pacs-contract-views.sql
 
 # 3. Validate contract
 pwsh ops/dev/test-pacs-contract.ps1

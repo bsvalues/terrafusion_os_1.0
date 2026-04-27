@@ -6,7 +6,7 @@
     Creates 3 views, 1 stored procedure, 3 indexes on pacs_oltp.
 #>
 param(
-    [string]$SaPassword = "TF_Pacs2026!",
+    [string]$SaPassword = ($env:SA_PASSWORD ?? $env:MSSQL_SA_PASSWORD ?? (throw "SA password not set; export SA_PASSWORD or MSSQL_SA_PASSWORD before running")),
     [string]$ContainerName = "tf-mssql"
 )
 $ErrorActionPreference = "Stop"

@@ -150,7 +150,7 @@ ORDER BY COUNT(t.object_id) DESC;
 
 try {
     # Execute SQL query via docker exec (sqlcmd not required on host)
-    $sqlPw = if ($Password) { $Password } else { "TF_Pacs2026!" }
+    $sqlPw = if ($Password) { $Password } else { ($env:SA_PASSWORD ?? $env:MSSQL_SA_PASSWORD ?? (throw "SA password not set")) }
     # stdin-only args: no -Q so the piped query drives execution
     $sqlcmdStdinArgs = @("-S", "localhost", "-U", $Username, "-P", $sqlPw, "-d", $Database, "-C", "-W", "-h-1")
 

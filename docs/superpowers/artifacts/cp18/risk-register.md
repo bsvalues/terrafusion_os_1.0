@@ -24,7 +24,7 @@ Status: COMPLETE
 | SEC-013 | `backend/tests/appsettings.Testing.json` — test DB password + test JWT secret | HIGH | Security | **REMEDIATED** — env vars — commit `273d3834c` | ✅ CLOSED |
 | SEC-014 | `compose.dev.yaml` + `docker-compose.dev.enhanced.yml` — hardcoded dev passwords | HIGH | Security | **REMEDIATED** — env vars — commit `273d3834c` | ✅ CLOSED |
 | SEC-015 | `TerraFusion.Consciousness/appsettings.json` — `terrafusion_consciousness_secure_2025` | CRITICAL | Security | **REMEDIATED** — env var — commit `bdb82ad31` | ✅ CLOSED |
-| SEC-016 | `TerraFusion.API/appsettings.Development.json` — `TF_Pacs2026!` (×2) + dev JWT | HIGH | Security | **REMEDIATED** — env vars — commit `bdb82ad31` | ✅ CLOSED |
+| SEC-016 | `TerraFusion.API/appsettings.Development.json` — `<redacted-local-dev-sql-password>` (×2) + dev JWT | HIGH | Security | **REMEDIATED** — env vars — commit `bdb82ad31` | ✅ CLOSED |
 | SEC-017 | `TerraFusion.API/appsettings.BentonCounty.json` — `Password=postgres` | HIGH | Security | **REMEDIATED** — env var — commit `bdb82ad31` | ✅ CLOSED |
 | SEC-018 | `backend/publish/appsettings.json` — JWT secret in build artifact | CRITICAL | Security | **REMEDIATED** — commit `bdb82ad31`; `backend/publish/` added to `.gitignore` | ✅ CLOSED |
 | SEC-019 | `.env.vim` tracked in git — contained live compromised prod secrets (`tf_prod_p@ssw0rd_2025!` + JWT key `c8a9f7b1...`) | CRITICAL | Security | **REMEDIATED** — values wiped to placeholders; `.env.vim` added to `.gitignore` — commit `b57932e3e` | ✅ CLOSED |

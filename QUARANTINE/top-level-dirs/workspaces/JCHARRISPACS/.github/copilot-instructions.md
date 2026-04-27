@@ -67,13 +67,13 @@ When modifying schemas, **always check**:
 docker compose -f compose.mssql.yml up -d
 
 # 2. Wait for health check, then publish databases
-pwsh ../../scripts/publish.ps1 -SqlServer "localhost,1433" -SaPassword "TF_Pacs2026!"
+pwsh ../../scripts/publish.ps1 -SqlServer "localhost,1433" -SaPassword "<redacted-local-dev-sql-password>"
 ```
 
 **Connection details**:
 
 - Server: `localhost,1433`
-- SA Password: `TF_Pacs2026!` (default, override with `$env:SA_PASSWORD`)
+- SA Password: `<redacted-local-dev-sql-password>` (default, override with `$env:SA_PASSWORD`)
 - Authentication: SQL Server authentication (sa user)
 
 ### Building & Publishing Databases

@@ -93,7 +93,7 @@ through the `IPacsAdapter` interface.
 Server=localhost,1433;
 Database=pacs_oltp;
 User Id=sa;
-Password=TF_Pacs2026!;
+Password=<redacted-local-dev-sql-password>;
 TrustServerCertificate=True;
 Encrypt=True;
 Application Name=TerraFusion-OS;

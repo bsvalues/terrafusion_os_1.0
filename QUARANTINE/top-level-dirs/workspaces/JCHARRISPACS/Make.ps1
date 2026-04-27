@@ -15,7 +15,7 @@ $ErrorActionPreference = "Stop"
 $env:PACS_SERVER = if ($env:PACS_SERVER) { $env:PACS_SERVER } else { "localhost,1433" }
 $env:PACS_DB = if ($env:PACS_DB) { $env:PACS_DB } else { "pacs_oltp" }
 $env:PACS_USER = if ($env:PACS_USER) { $env:PACS_USER } else { "sa" }
-$env:PACS_PW = if ($env:PACS_PW) { $env:PACS_PW } else { "TF_Pacs2026!" }
+$env:PACS_PW = if ($env:PACS_PW) { $env:PACS_PW } else { ($env:SA_PASSWORD ?? $env:MSSQL_SA_PASSWORD ?? (throw "SA password not set")) }
 
 $OUT = "./_artifacts"
 $DOCS = "./docs/diagrams"
@@ -162,7 +162,7 @@ function Invoke-SqlTests {
     Write-Host "  Test file : $testFile" -ForegroundColor Gray
     Write-Host ""
 
-    $sqlPw = if ($env:PACS_PW) { $env:PACS_PW } else { "TF_Pacs2026!" }
+    $sqlPw = if ($env:PACS_PW) { $env:PACS_PW } else { ($env:SA_PASSWORD ?? $env:MSSQL_SA_PASSWORD ?? (throw "SA password not set")) }
 
     # Stream test SQL into the container — '-b' makes sqlcmd exit non-zero on RAISERROR
     Get-Content $testFile | docker exec -i tf-mssql `
@@ -424,7 +424,7 @@ function Invoke-DockerLogs {
 function Invoke-PublishSql {
     Write-Host "Building DACPACs and deploying to SQL Server..." -ForegroundColor Cyan
     $publish = Join-Path $PSScriptRoot 'pacs-server-benton\scripts\publish.ps1'
-    $sqlPw   = if ($env:SA_PASSWORD) { $env:SA_PASSWORD } elseif ($env:PACS_PW) { $env:PACS_PW } else { 'TF_Pacs2026!' }
+    $sqlPw   = if ($env:SA_PASSWORD) { $env:SA_PASSWORD } elseif ($env:PACS_PW) { $env:PACS_PW } else { ($env:SA_PASSWORD ?? $env:MSSQL_SA_PASSWORD ?? (throw "SA password not set")) }
     pwsh -NonInteractive -File $publish -SqlServer "$env:PACS_SERVER" -SaPassword $sqlPw
     if ($LASTEXITCODE -ne 0) { Write-Host "publish.ps1 FAILED" -ForegroundColor Red; exit 1 }
 

@@ -6,7 +6,7 @@
     with pacs_oltp database (112,057 Benton County properties).
 #>
 param(
-    [string]$SaPassword = "TF_Pacs2026!"
+    [string]$SaPassword = ($env:SA_PASSWORD ?? $env:MSSQL_SA_PASSWORD ?? (throw "SA password not set; export SA_PASSWORD or MSSQL_SA_PASSWORD before running"))
 )
 $ErrorActionPreference = "Stop"
 $repoRoot = (Resolve-Path "$PSScriptRoot/../..").Path

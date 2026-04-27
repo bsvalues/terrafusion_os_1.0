@@ -11,12 +11,12 @@
       6. Ownership + Assessment History queries
     Exit 0 = all checks pass. Exit 1 = failure.
 .PARAMETER SaPassword
-    SQL Server SA password. Default: TF_Pacs2026!
+    SQL Server SA password. Resolves from $env:SA_PASSWORD, then $env:MSSQL_SA_PASSWORD; required.
 .PARAMETER ContainerName
     Docker container name. Default: tf-mssql
 #>
 param(
-    [string]$SaPassword = "TF_Pacs2026!",
+    [string]$SaPassword = ($env:SA_PASSWORD ?? $env:MSSQL_SA_PASSWORD ?? (throw "SA password not set; export SA_PASSWORD or MSSQL_SA_PASSWORD before running")),
     [string]$ContainerName = "tf-mssql"
 )
 

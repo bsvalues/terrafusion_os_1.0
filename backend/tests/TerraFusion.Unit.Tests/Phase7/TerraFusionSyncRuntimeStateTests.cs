@@ -10,6 +10,15 @@ namespace TerraFusion.Unit.Tests.Phase7;
 
 public class TerraFusionSyncRuntimeStateTests
 {
+    /// <summary>
+    /// Non-secret placeholder used to fill the Password field of the test
+    /// connection-string fixtures. These tests verify runtime-state
+    /// registration shape (county name, system type, active flag); they do
+    /// NOT connect to a real SQL Server and do NOT exercise password
+    /// resolution. The literal value is intentionally not a credential.
+    /// </summary>
+    private const string PlaceholderSqlPassword = "local-dev-placeholder-not-a-secret";
+
     [Fact]
     public void Constructor_WithoutCanonicalPacsConfig_LeavesRuntimeUnconfigured()
     {
@@ -29,8 +38,8 @@ public class TerraFusionSyncRuntimeStateTests
     {
         var configuration = BuildConfiguration(new Dictionary<string, string?>
         {
-            ["ConnectionStrings:PacsConnection"] = "Server=localhost,1433;Database=pacs_oltp;User Id=sa;Password=TF_Pacs2026!;TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;",
-            ["ConnectionStrings:PacsSalesConnection"] = "Server=localhost,1433;Database=pacs_golive;User Id=sa;Password=TF_Pacs2026!;TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;",
+            ["ConnectionStrings:PacsConnection"] = $"Server=localhost,1433;Database=pacs_oltp;User Id=sa;Password={PlaceholderSqlPassword};TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;",
+            ["ConnectionStrings:PacsSalesConnection"] = $"Server=localhost,1433;Database=pacs_golive;User Id=sa;Password={PlaceholderSqlPassword};TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;",
             ["HarrisPACS:Enabled"] = "true",
             ["County:Name"] = "Benton County",
             ["County:State"] = "WA",
@@ -60,8 +69,8 @@ public class TerraFusionSyncRuntimeStateTests
     {
         var configuration = BuildConfiguration(new Dictionary<string, string?>
         {
-            ["ConnectionStrings:PacsConnection"] = "Server=localhost,1433;Database=pacs_oltp;User Id=sa;Password=TF_Pacs2026!;TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;",
-            ["ConnectionStrings:PacsSalesConnection"] = "Server=localhost,1433;Database=pacs_golive;User Id=sa;Password=TF_Pacs2026!;TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;",
+            ["ConnectionStrings:PacsConnection"] = $"Server=localhost,1433;Database=pacs_oltp;User Id=sa;Password={PlaceholderSqlPassword};TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;",
+            ["ConnectionStrings:PacsSalesConnection"] = $"Server=localhost,1433;Database=pacs_golive;User Id=sa;Password={PlaceholderSqlPassword};TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;",
             ["County:Name"] = "Benton County",
             ["County:State"] = "WA"
         });
