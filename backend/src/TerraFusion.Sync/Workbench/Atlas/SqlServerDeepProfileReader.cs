@@ -146,11 +146,33 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
     /// <summary>
     /// Materializes the profile sample into a session-local temp table named
     /// <c>#tf_deep_profile_sample</c>. For Full plans, copies every row;
-    /// for BernoulliSample, applies <c>TABLESAMPLE BERNOULLI(N)</c>.
+    /// for BernoulliSample, applies <c>TABLESAMPLE SYSTEM (n PERCENT)</c>.
     ///
     /// The temp table strategy is intentional: per-column aggregations run
     /// against a single materialized sample, so the random sample is
     /// consistent across columns rather than being re-rolled per query.
+    ///
+    /// <para><b>FIX-B2.7D — TABLESAMPLE dialect.</b> SQL Server's
+    /// <c>TABLESAMPLE</c> only supports the <c>SYSTEM</c> method (page-based
+    /// sampling); it does NOT accept the SQL:2003 <c>BERNOULLI</c> keyword,
+    /// even though the strategy is conceptually a Bernoulli per-row coin
+    /// flip. PostgreSQL supports both methods and the original B2.0 builder
+    /// emitted <c>TABLESAMPLE BERNOULLI</c>, which crashed every business
+    /// table > <see cref="FullThresholdRowCount"/> rows on T-SQL with
+    /// <i>"Incorrect syntax near 'BERNOULLI'"</i>. Discovered in B2.7-OLTP
+    /// against the 8 large pacs_oltp tables.</para>
+    ///
+    /// <para>The C# strategy name <c>"BernoulliSample"</c> is preserved on
+    /// <see cref="DeepProfileSamplingPlan.Method"/> — it documents the
+    /// intent (independent-coin-flip per row, target sample size) and
+    /// matches what the persistence layer wrote in prior batches. Only the
+    /// emitted T-SQL keyword swaps. The statistical compromise — SQL
+    /// Server's SYSTEM is page-clustered, so adjacent rows in the same
+    /// page are correlated rather than independently selected — is
+    /// acceptable for the workbench: the alternative (a full-scan
+    /// <c>ORDER BY NEWID() OFFSET n ROWS FETCH NEXT m</c>) would scan and
+    /// sort the whole table just to draw a sample, which is the opposite
+    /// of what we want for tables with millions of rows.</para>
     /// </summary>
     public static string BuildSampleMaterializationSql(
         string schemaName,
@@ -177,11 +199,14 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
             }
 
             var pct = plan.BernoulliPct.Value.ToString(CultureInfo.InvariantCulture);
+            // FIX-B2.7D: SYSTEM (page-based), NOT BERNOULLI. SQL Server
+            // rejects the BERNOULLI keyword; the strategy name on the C#
+            // side stays "BernoulliSample" because that's the intent.
             return
                 $"""
                 SELECT * INTO #tf_deep_profile_sample
                 FROM {fullName}
-                TABLESAMPLE BERNOULLI ({pct} PERCENT) REPEATABLE (42);
+                TABLESAMPLE SYSTEM ({pct} PERCENT) REPEATABLE (42);
                 """;
         }
 

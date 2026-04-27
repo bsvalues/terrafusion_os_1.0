@@ -574,4 +574,104 @@ public class SqlServerDeepProfileReaderIntegrationTests
             conn);
         await cmd.ExecuteNonQueryAsync();
     }
+
+    // ── BernoulliSample path (FIX-B2.7D) ─────────────────────────────────
+    //
+    // Closes the integration-test gap that let the B2.0 BERNOULLI dialect
+    // bug live until B2.7-OLTP. The default ParcelDeepProfileFixture has
+    // 100 rows — well below FullThresholdRowCount (100,000) — so every
+    // earlier integration test took the Full path and never executed the
+    // BernoulliSample materialization SQL against a live engine. This
+    // test seeds a >100K-row table on purpose so the BernoulliSample path
+    // runs end-to-end with TABLESAMPLE SYSTEM.
+
+    [Fact]
+    public async System.Threading.Tasks.Task ProfileTableAsync_AboveFullThreshold_TakesBernoulliSamplePathSuccessfully()
+    {
+        await using var conn = await _fixture.OpenConnectionAsync();
+        await CreateBernoulliFixtureAsync(conn, rowCount: 100_050);
+
+        try
+        {
+            var sut = new SqlServerDeepProfileReader(conn);
+
+            var result = await sut.ProfileTableAsync(
+                "dbo",
+                "TFB2BernoulliFixture",
+                new[]
+                {
+                    new ColumnRef("Id",     "int",     IsNullable: false),
+                    new ColumnRef("Code",   "varchar", IsNullable: false),
+                    new ColumnRef("Bucket", "int",     IsNullable: false),
+                });
+
+            // Plan-level: 100,050 > FullThresholdRowCount → BernoulliSample.
+            result.Table.SamplingMethod.Should().Be("BernoulliSample");
+            result.Table.RowCount.Should().BeGreaterThan(100_000);
+
+            // The plan targets ~10K rows from the sample. SYSTEM sampling
+            // is page-clustered so the actual sample size is noisier than
+            // a true Bernoulli per-row coin flip; allow a wide window
+            // [3K, 25K] that still fails closed if the plan or the engine
+            // does something genuinely wrong (e.g. returns 0 rows or the
+            // entire table). This is a smoke test, not a sampling-quality
+            // test.
+            result.Table.SampleRowCount.Should().BeInRange(3_000, 25_000);
+
+            // Aggregate result still shapes up: every column produces a
+            // ColumnStats row, no exception bubbles, and the
+            // distinct-clamp behaves (Code has 5 distinct, Bucket has 100).
+            result.Columns.Should().HaveCount(3);
+            var code = result.Columns.Single(c => c.ColumnName == "Code");
+            code.DistinctCount.Should().Be(5);  // 'A'..'E' → 5 distinct
+            code.NullCount.Should().Be(0);
+
+            var bucket = result.Columns.Single(c => c.ColumnName == "Bucket");
+            bucket.DistinctCount.Should().BeGreaterOrEqualTo(50);  // up to 100, sample-dependent
+        }
+        finally
+        {
+            await DropBernoulliFixtureAsync(conn);
+        }
+    }
+
+    private static async System.Threading.Tasks.Task CreateBernoulliFixtureAsync(
+        SqlConnection conn, int rowCount)
+    {
+        // sys.all_objects is always present and has enough rows to seed
+        // 100K+ via a CROSS JOIN — no recursion-limit ceremony needed.
+        // Use deterministic content so the assertions are stable.
+        var ddl = @$"
+            IF OBJECT_ID('dbo.TFB2BernoulliFixture', 'U') IS NOT NULL
+                DROP TABLE dbo.TFB2BernoulliFixture;
+
+            CREATE TABLE dbo.TFB2BernoulliFixture (
+                Id      INT          NOT NULL PRIMARY KEY,
+                Code    VARCHAR(8)   NOT NULL,
+                Bucket  INT          NOT NULL
+            );
+
+            ;WITH Tally AS (
+                SELECT TOP ({rowCount})
+                       ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS n
+                FROM sys.all_objects a
+                CROSS JOIN sys.all_objects b
+            )
+            INSERT INTO dbo.TFB2BernoulliFixture (Id, Code, Bucket)
+            SELECT n,
+                   CASE n % 5 WHEN 0 THEN 'A' WHEN 1 THEN 'B' WHEN 2 THEN 'C' WHEN 3 THEN 'D' ELSE 'E' END,
+                   n % 100
+            FROM Tally;
+        ";
+        await using var cmd = new SqlCommand(ddl, conn) { CommandTimeout = 120 };
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    private static async System.Threading.Tasks.Task DropBernoulliFixtureAsync(SqlConnection conn)
+    {
+        await using var cmd = new SqlCommand(
+            "IF OBJECT_ID('dbo.TFB2BernoulliFixture', 'U') IS NOT NULL DROP TABLE dbo.TFB2BernoulliFixture;",
+            conn);
+        await cmd.ExecuteNonQueryAsync();
+    }
 }

@@ -161,9 +161,29 @@ public class SqlServerDeepProfileReaderTests
 
         var sql = SqlServerDeepProfileReader.BuildSampleMaterializationSql("dbo", "huge_table", plan);
 
-        sql.Should().Contain("TABLESAMPLE BERNOULLI (0.05 PERCENT)");
+        // FIX-B2.7D: SQL Server's TABLESAMPLE only supports SYSTEM, not
+        // the SQL:2003 BERNOULLI keyword. The C# Method stays
+        // "BernoulliSample" (intent), but the emitted T-SQL switches.
+        sql.Should().Contain("TABLESAMPLE SYSTEM (0.05 PERCENT)");
         sql.Should().Contain("REPEATABLE (42)");
         sql.Should().Contain("[dbo].[huge_table]");
+    }
+
+    [Fact]
+    public void BuildSampleMaterializationSql_BernoulliPlan_NeverEmitsBernoulliKeyword()
+    {
+        // Regression pin: SQL Server rejects "TABLESAMPLE BERNOULLI" with
+        //   Incorrect syntax near 'BERNOULLI'.
+        // PostgreSQL accepts both BERNOULLI and SYSTEM; SQL Server only
+        // SYSTEM. This reader is SQL-Server-only — pin the absence so a
+        // future "let's match the SQL:2003 keyword for clarity" tweak
+        // doesn't reintroduce the latent bug that lived from B2.0
+        // through B2.7-OLTP.
+        var plan = new DeepProfileSamplingPlan("BernoulliSample", 10_000, BernoulliPct: 0.05m, RowCountIsExact: false);
+
+        var sql = SqlServerDeepProfileReader.BuildSampleMaterializationSql("dbo", "huge_table", plan);
+
+        sql.Should().NotContain("BERNOULLI");
     }
 
     [Fact]
