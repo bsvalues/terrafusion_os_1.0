@@ -5,10 +5,12 @@ using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Entities.Pacs;
 using TerraFusion.Core.Entities.Sync;
+using TerraFusion.Core.Entities.Sync.Profile;
 using TerraFusion.Core.Models;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Data.Configurations;
 using TerraFusion.Data.Configurations.Sync;
+using TerraFusion.Data.Configurations.Sync.Profile;
 // NOTE: TerraFusion.AI.Entities cannot be referenced here due to circular dependency
 // AI-specific DbSets are added via partial class or extension in TerraFusion.AI project
 
@@ -103,6 +105,16 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<OwnershipEvent> OwnershipEvents { get; set; }
   public DbSet<LandSegment> LandSegments { get; set; }
   public DbSet<ImprovementDetail> ImprovementDetails { get; set; }
+
+  // R3 Sync Database Atlas — read-only metadata profile output (Slice B1)
+  public DbSet<SyncProfileTable> SyncProfileTables { get; set; }
+  public DbSet<SyncProfileColumn> SyncProfileColumns { get; set; }
+  public DbSet<SyncProfileView> SyncProfileViews { get; set; }
+  public DbSet<SyncProfileProcedure> SyncProfileProcedures { get; set; }
+  public DbSet<SyncProfileFunction> SyncProfileFunctions { get; set; }
+  public DbSet<SyncProfileTrigger> SyncProfileTriggers { get; set; }
+  public DbSet<SyncProfileConstraint> SyncProfileConstraints { get; set; }
+  public DbSet<SyncProfileCode> SyncProfileCodes { get; set; }
 
   // Codex 3-6-9 Framework Entities
   public DbSet<CodexMetric> CodexMetrics { get; set; }
@@ -642,6 +654,16 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     modelBuilder.ApplyConfiguration(new OwnershipEventConfiguration());
     modelBuilder.ApplyConfiguration(new LandSegmentConfiguration());
     modelBuilder.ApplyConfiguration(new ImprovementDetailConfiguration());
+
+    // R3 Sync Database Atlas (Slice B1)
+    modelBuilder.ApplyConfiguration(new SyncProfileTableConfiguration());
+    modelBuilder.ApplyConfiguration(new SyncProfileColumnConfiguration());
+    modelBuilder.ApplyConfiguration(new SyncProfileViewConfiguration());
+    modelBuilder.ApplyConfiguration(new SyncProfileProcedureConfiguration());
+    modelBuilder.ApplyConfiguration(new SyncProfileFunctionConfiguration());
+    modelBuilder.ApplyConfiguration(new SyncProfileTriggerConfiguration());
+    modelBuilder.ApplyConfiguration(new SyncProfileConstraintConfiguration());
+    modelBuilder.ApplyConfiguration(new SyncProfileCodeConfiguration());
 
     // NOTE: TerraFusionGPT Suite configurations temporarily disabled due to circular dependency
     // These configurations are defined in TerraFusion.Data\Configurations\GPTConfiguration.cs.disabled
