@@ -55,7 +55,16 @@ namespace TerraFusion.API.Tests.Integration
 
                 if (TryGetNumber(root, "moduleCountFilteredOut", out var filteredOut))
                 {
-                    Assert.Equal(total - active, filteredOut);
+                    // total = active + filtered + invalid. The DTO surfaces
+                    // active and filtered explicitly; invalid (ValidationFailed)
+                    // modules are reported via FailedModules / Warnings rather
+                    // than as their own DTO field. So the only invariant we can
+                    // safely assert from this contract is that filtered cannot
+                    // exceed the residual of (total - active).
+                    Assert.True(
+                        filteredOut <= total - active,
+                        $"moduleCountFilteredOut ({filteredOut}) cannot exceed total - active ({total - active}).");
+                    Assert.True(filteredOut >= 0, "moduleCountFilteredOut cannot be negative.");
                 }
             }
         }

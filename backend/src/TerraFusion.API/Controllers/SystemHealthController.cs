@@ -50,7 +50,13 @@ public class SystemHealthController : ControllerBase
                 IntentFilter = intentFilter,
                 ModuleCountTotal = totalDiscovered,
                 ModuleCountActive = activeLoaded,
-                ModuleCountFilteredOut = 0,
+                // Real intent-filter-out count from the most recent module
+                // refresh (was previously hardcoded to 0, which broke the
+                // SystemHealth contract test as soon as ANY module was
+                // filtered or invalid). Note: validation-failed modules
+                // are NOT counted here — they're surfaced via FailedModules
+                // on the underlying health probe and contribute to Warnings.
+                ModuleCountFilteredOut = _moduleLoader.LastFilteredOutCount,
                 ModuleCount = health.ModuleCount,
                 HealthyModules = health.HealthyModules,
                 SystemComponents = health.SystemComponents,
