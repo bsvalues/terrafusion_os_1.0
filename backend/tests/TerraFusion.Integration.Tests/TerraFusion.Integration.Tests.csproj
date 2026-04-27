@@ -25,5 +25,6 @@
     <ProjectReference Include="../../src/TerraFusion.AI/TerraFusion.AI.csproj" />
     <ProjectReference Include="../../src/TerraFusion.Operations/TerraFusion.Operations.csproj" />
     <ProjectReference Include="../../src/TerraFusion.Sync/TerraFusion.Sync.csproj" />
+    <ProjectReference Include="../../tools/SyncAtlas/SyncAtlas.csproj" />
   </ItemGroup>
 </Project>
