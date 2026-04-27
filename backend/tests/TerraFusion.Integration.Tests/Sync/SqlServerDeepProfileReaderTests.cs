@@ -183,9 +183,18 @@ public class SqlServerDeepProfileReaderTests
         var sql = SqlServerDeepProfileReader.BuildColumnAggregationSql(cols);
 
         sql.Should().Contain("N'prop_id' AS ColumnName");
-        sql.Should().Contain("COUNT(*) - COUNT([prop_id]) AS NullCount");
-        // Distinct count is clamped via TOP (clamp + 1) DISTINCT
-        sql.Should().Contain("TOP (1001)");
+        // NullCount uses COUNT_BIG (BIGINT result) so SqlDataReader.GetInt64
+        // binds correctly. Plain COUNT() returns INT and would raise
+        // InvalidCastException at runtime — caught by Slice B2.6 Docker
+        // integration test, pinned here against regression.
+        sql.Should().Contain("COUNT_BIG(*) - COUNT_BIG([prop_id]) AS NullCount");
+        // Distinct count is clamped via DISTINCT TOP (clamp + 1). The
+        // DISTINCT-before-TOP order is the only valid T-SQL form (the
+        // reverse raises "Incorrect syntax near 'DISTINCT'") — the Slice
+        // B2.6 Docker integration test caught the original
+        // "TOP (n) DISTINCT" bug; this assertion pins the fix.
+        sql.Should().Contain("DISTINCT TOP (1001)");
+        sql.Should().NotContain("TOP (1001) DISTINCT");
         sql.Should().Contain("CONVERT(NVARCHAR(MAX), MIN([prop_id]))");
         sql.Should().Contain("CONVERT(NVARCHAR(MAX), MAX([prop_id]))");
         sql.Should().Contain("FROM #tf_deep_profile_sample");

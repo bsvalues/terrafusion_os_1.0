@@ -224,10 +224,23 @@ public sealed class SqlServerDeepProfileReader : IDeepProfileReader
             // The clamped distinct: SELECT COUNT(DISTINCT x) FROM the same
             // temp table inside a derived table, with a TOP guard so that
             // saturated columns short-circuit at the clamp.
+            //
+            // T-SQL syntax requires DISTINCT to come BEFORE TOP, not after
+            // (SELECT [ALL | DISTINCT] [TOP (n) ...] ...). The reverse order
+            // raises "Incorrect syntax near the keyword 'DISTINCT'" against
+            // a live engine — caught by the Slice B2.6 Docker integration
+            // tests (the unit tests' "contains TOP (1001)" assertion passes
+            // regardless of order, which is why this didn't surface earlier).
+            // NullCount is BIGINT — COUNT()/COUNT_BIG() differ on return type
+            // (INT vs BIGINT). The reader binds to .GetInt64() so the SQL
+            // must emit BIGINT, otherwise the live engine throws
+            // InvalidCastException ("Unable to cast Int32 to Int64") even
+            // when the value would fit in an int. Caught by the Slice B2.6
+            // Docker integration test.
             sb.Append("SELECT ")
               .Append(literalName).Append(" AS ColumnName, ")
-              .Append("COUNT(*) - COUNT(").Append(quoted).Append(") AS NullCount, ")
-              .Append("(SELECT COUNT(*) FROM (SELECT TOP (").Append(DistinctCountClamp + 1).Append(") DISTINCT ")
+              .Append("COUNT_BIG(*) - COUNT_BIG(").Append(quoted).Append(") AS NullCount, ")
+              .Append("(SELECT COUNT(*) FROM (SELECT DISTINCT TOP (").Append(DistinctCountClamp + 1).Append(") ")
               .Append(quoted).Append(" FROM #tf_deep_profile_sample) AS d) AS DistinctCount, ")
               .Append("CONVERT(NVARCHAR(MAX), MIN(").Append(quoted).Append(")) AS MinValue, ")
               .Append("CONVERT(NVARCHAR(MAX), MAX(").Append(quoted).Append(")) AS MaxValue ")
