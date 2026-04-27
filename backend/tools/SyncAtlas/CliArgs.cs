@@ -60,7 +60,12 @@ public sealed record CliArgs(
     bool? EditIsExcluded,
     string? EditNotes,
     // Slice C10-B — Mapping Workbook lock mode (sixth in the SyncAtlas mutex)
-    bool LockMappingWorkbook);
+    bool LockMappingWorkbook,
+    // Slice C11-B — Mapping Workbook batch edit mode (seventh in the SyncAtlas mutex)
+    bool BatchEditMappingWorkbook,
+    string? InputCsvPath,
+    bool BatchEditDryRun,
+    bool BatchEditApply);
 
 /// <summary>
 /// Pure argument parser. No I/O, no environment access — easy to unit test.
@@ -139,6 +144,23 @@ public static class CliArgsParser
         {
             "NeedsReview", "InProgress", "Mapped", "Excluded", "Deferred",
         };
+
+    /// <summary>
+    /// Rejection helper used by every non-batch mode to refuse the
+    /// batch-edit-specific input flags (--input-csv, --dry-run,
+    /// --apply). Returns null when none are present, or the error
+    /// message when one is.
+    /// </summary>
+    private static string? RejectBatchEditModeFlags(
+        string? inputCsvPath,
+        bool   batchEditDryRun,
+        bool   batchEditApply)
+    {
+        if (inputCsvPath is not null) return "--input-csv requires --batch-edit-mapping-workbook";
+        if (batchEditDryRun)          return "--dry-run requires --batch-edit-mapping-workbook";
+        if (batchEditApply)           return "--apply requires --batch-edit-mapping-workbook";
+        return null;
+    }
 
     /// <summary>
     /// Rejection helper used by every non-edit mode to refuse edit-mode
@@ -224,6 +246,12 @@ public static class CliArgsParser
 
         // Slice C10-B — Mapping Workbook lock mode
         var lockMappingWorkbook = false;
+
+        // Slice C11-B — Mapping Workbook batch edit mode
+        var batchEditMappingWorkbook = false;
+        string? inputCsvPath = null;
+        var batchEditDryRun = false;
+        var batchEditApply  = false;
 
         for (var i = 0; i < argv.Length; i++)
         {
@@ -446,6 +474,24 @@ public static class CliArgsParser
                     lockMappingWorkbook = true;
                     break;
 
+                // ── Slice C11-B — Mapping Workbook batch edit mode ──────
+                case "--batch-edit-mapping-workbook":
+                    batchEditMappingWorkbook = true;
+                    break;
+
+                case "--input-csv":
+                    if (++i >= argv.Length) return (null, "--input-csv requires a value");
+                    inputCsvPath = argv[i];
+                    break;
+
+                case "--dry-run":
+                    batchEditDryRun = true;
+                    break;
+
+                case "--apply":
+                    batchEditApply = true;
+                    break;
+
                 default:
                     return (null, $"unknown argument: '{arg}'");
             }
@@ -486,7 +532,11 @@ public static class CliArgsParser
                 EditReviewStatus:                      editReviewStatus,
                 EditIsExcluded:                        editIsExcluded,
                 EditNotes:                             editNotes,
-                LockMappingWorkbook:                   lockMappingWorkbook), null);
+                LockMappingWorkbook:                   lockMappingWorkbook,
+                BatchEditMappingWorkbook:              batchEditMappingWorkbook,
+                InputCsvPath:                          inputCsvPath,
+                BatchEditDryRun:                       batchEditDryRun,
+                BatchEditApply:                        batchEditApply), null);
         }
 
         // ── Always-required, regardless of mode ─────────────────────────
@@ -494,32 +544,37 @@ public static class CliArgsParser
         if (!countyId.HasValue) return (null, "--county-id is required");
         if (string.IsNullOrWhiteSpace(operatorId)) return (null, "--operator must be non-empty when provided");
 
-        // ── Six-way mode mutex ──────────────────────────────────────────
+        // ── Seven-way mode mutex ────────────────────────────────────────
         // Profile (default) | Generate Workbook (C4) | Export Workbook (C5)
         // | Qualify Sales (C8-C) | Edit Workbook (C9-B) | Lock Workbook
-        // (C10-B) — at most one bool-toggle can be on.
+        // (C10-B) | Batch Edit Workbook (C11-B) — at most one bool-toggle
+        // can be on.
         var modeToggleCount =
-            (generateMappingWorkbook ? 1 : 0) +
-            (exportMappingWorkbook   ? 1 : 0) +
-            (qualifySales            ? 1 : 0) +
-            (editMappingWorkbook     ? 1 : 0) +
-            (lockMappingWorkbook     ? 1 : 0);
+            (generateMappingWorkbook   ? 1 : 0) +
+            (exportMappingWorkbook     ? 1 : 0) +
+            (qualifySales              ? 1 : 0) +
+            (editMappingWorkbook       ? 1 : 0) +
+            (lockMappingWorkbook       ? 1 : 0) +
+            (batchEditMappingWorkbook  ? 1 : 0);
         if (modeToggleCount > 1)
         {
             return (null,
                 "--generate-mapping-workbook, --export-mapping-workbook, --qualify-sales, " +
-                "--edit-mapping-workbook, and --lock-mapping-workbook are mutually exclusive");
+                "--edit-mapping-workbook, --lock-mapping-workbook, " +
+                "and --batch-edit-mapping-workbook are mutually exclusive");
         }
 
         // ── Mode-mutual-exclusion: deep-profile flags only in profile mode ──
-        if (generateMappingWorkbook || exportMappingWorkbook || qualifySales || editMappingWorkbook || lockMappingWorkbook)
+        if (generateMappingWorkbook || exportMappingWorkbook || qualifySales ||
+            editMappingWorkbook || lockMappingWorkbook || batchEditMappingWorkbook)
         {
             var modeName =
-                generateMappingWorkbook ? "Mapping Workbook" :
-                exportMappingWorkbook   ? "Mapping Workbook export" :
-                qualifySales            ? "Sales qualification" :
-                editMappingWorkbook     ? "Mapping Workbook edit" :
-                                          "Mapping Workbook lock";
+                generateMappingWorkbook   ? "Mapping Workbook" :
+                exportMappingWorkbook     ? "Mapping Workbook export" :
+                qualifySales              ? "Sales qualification" :
+                editMappingWorkbook       ? "Mapping Workbook edit" :
+                lockMappingWorkbook       ? "Mapping Workbook lock" :
+                                            "Mapping Workbook batch edit";
             if (deepProfile)
             {
                 return (null, $"--deep-profile is not allowed in {modeName} mode");
@@ -535,7 +590,8 @@ public static class CliArgsParser
         }
 
         // ── Profile-mode-specific validation ────────────────────────────
-        if (!generateMappingWorkbook && !exportMappingWorkbook && !qualifySales && !editMappingWorkbook && !lockMappingWorkbook)
+        if (!generateMappingWorkbook && !exportMappingWorkbook && !qualifySales &&
+            !editMappingWorkbook && !lockMappingWorkbook && !batchEditMappingWorkbook)
         {
             if (!connectionId.HasValue) return (null, "--connection-id is required");
 
@@ -602,6 +658,10 @@ public static class CliArgsParser
                 editCanonicalValue, editCanonicalValueNull, editReviewStatus,
                 editIsExcluded, editNotes);
             if (editError is not null) return (null, editError);
+
+            // Batch-edit-mode flags must not appear in profile mode.
+            var batchError = RejectBatchEditModeFlags(inputCsvPath, batchEditDryRun, batchEditApply);
+            if (batchError is not null) return (null, batchError);
         }
         else if (generateMappingWorkbook)
         {
@@ -653,6 +713,10 @@ public static class CliArgsParser
                 editCanonicalValue, editCanonicalValueNull, editReviewStatus,
                 editIsExcluded, editNotes);
             if (editError is not null) return (null, editError);
+
+            // Batch-edit-mode flags must not appear in generate mode.
+            var batchError = RejectBatchEditModeFlags(inputCsvPath, batchEditDryRun, batchEditApply);
+            if (batchError is not null) return (null, batchError);
         }
         else if (exportMappingWorkbook)
         {
@@ -704,6 +768,10 @@ public static class CliArgsParser
                 editCanonicalValue, editCanonicalValueNull, editReviewStatus,
                 editIsExcluded, editNotes);
             if (editError is not null) return (null, editError);
+
+            // Batch-edit-mode flags must not appear in export mode.
+            var batchError = RejectBatchEditModeFlags(inputCsvPath, batchEditDryRun, batchEditApply);
+            if (batchError is not null) return (null, batchError);
         }
         else if (qualifySales)
         {
@@ -759,6 +827,10 @@ public static class CliArgsParser
                 editCanonicalValue, editCanonicalValueNull, editReviewStatus,
                 editIsExcluded, editNotes);
             if (editError is not null) return (null, editError);
+
+            // Batch-edit-mode flags must not appear in qualify mode.
+            var batchError = RejectBatchEditModeFlags(inputCsvPath, batchEditDryRun, batchEditApply);
+            if (batchError is not null) return (null, batchError);
         }
         else if (editMappingWorkbook)
         {
@@ -859,8 +931,12 @@ public static class CliArgsParser
             {
                 return (null, "--max-sales requires --qualify-sales");
             }
+
+            // Batch-edit-mode flags must not appear in edit mode.
+            var batchError = RejectBatchEditModeFlags(inputCsvPath, batchEditDryRun, batchEditApply);
+            if (batchError is not null) return (null, batchError);
         }
-        else
+        else if (lockMappingWorkbook)
         {
             // ── Lock-mode-specific validation (C10-B) ──────────────────
             // Hard Guards from the C10-A policy doc:
@@ -923,11 +999,94 @@ public static class CliArgsParser
                 editCanonicalValue, editCanonicalValueNull, editReviewStatus,
                 editIsExcluded, editNotes);
             if (editError is not null) return (null, editError);
+
+            // Batch-edit-mode flags must not appear in lock mode.
+            var batchError = RejectBatchEditModeFlags(inputCsvPath, batchEditDryRun, batchEditApply);
+            if (batchError is not null) return (null, batchError);
             // --connection-id is irrelevant in lock mode (lock service
             // never queries PACS). Tolerate its presence the same way
             // generate/export modes tolerate it — surface contract is
             // about preventing operator confusion, not punishing extra
             // bytes that the lock path ignores anyway.
+        }
+        else
+        {
+            // ── Batch-edit-mode-specific validation (C11-B) ────────────
+            // Hard Guards from the C11-A policy doc:
+            //   1. Status='Draft' only           — enforced by C11-B service.
+            //   2. County scope                  — enforced by C11-B service.
+            //   3. All-or-nothing atomicity      — enforced by C11-B service.
+            //   4. No auto-exclusion (WacCd)     — enforced by C11-B service.
+            // The parser's job is the surface contract: --workbook-id,
+            // --input-csv, and exactly one of --dry-run / --apply.
+            if (!workbookId.HasValue)
+            {
+                return (null, "--workbook-id is required when --batch-edit-mapping-workbook is set");
+            }
+            if (string.IsNullOrWhiteSpace(inputCsvPath))
+            {
+                return (null, "--input-csv is required when --batch-edit-mapping-workbook is set");
+            }
+            if (batchEditDryRun && batchEditApply)
+            {
+                return (null, "--dry-run and --apply are mutually exclusive");
+            }
+            if (!batchEditDryRun && !batchEditApply)
+            {
+                return (null,
+                    "--batch-edit-mapping-workbook requires exactly one of --dry-run or --apply");
+            }
+
+            // Generate-mode flags must not appear in batch-edit mode.
+            if (profileBatchId.HasValue)
+            {
+                return (null, "--profile-batch-id requires --generate-mapping-workbook");
+            }
+            if (latestProfileBatch)
+            {
+                return (null, "--latest-profile-batch requires --generate-mapping-workbook");
+            }
+            if (workbookName is not null)
+            {
+                return (null, "--workbook-name requires --generate-mapping-workbook");
+            }
+            if (replaceExistingDraft)
+            {
+                return (null, "--replace-existing-draft requires --generate-mapping-workbook");
+            }
+            if (mappingMaxCandidates.HasValue)
+            {
+                return (null, "--mapping-max-candidates requires --generate-mapping-workbook");
+            }
+
+            // Export-mode flags must not appear in batch-edit mode.
+            if (outputDirectory is not null)
+            {
+                return (null, "--output-dir requires --export-mapping-workbook");
+            }
+            if (exportFormatExplicit)
+            {
+                return (null, "--format requires --export-mapping-workbook");
+            }
+
+            // Qualify-sales flags must not appear in batch-edit mode.
+            if (sourceConnectionId.HasValue)
+            {
+                return (null, "--source-connection-id requires --qualify-sales");
+            }
+            if (maxSales.HasValue)
+            {
+                return (null, "--max-sales requires --qualify-sales");
+            }
+
+            // Single-row edit-mode flags must not appear in batch-edit
+            // mode — the per-row mutations come from the CSV, not the
+            // command line.
+            var editError = RejectEditModeFlags(
+                editSourceSchema, editSourceValue, editCanonicalTarget,
+                editCanonicalValue, editCanonicalValueNull, editReviewStatus,
+                editIsExcluded, editNotes);
+            if (editError is not null) return (null, editError);
         }
 
         return (new CliArgs(
@@ -963,7 +1122,11 @@ public static class CliArgsParser
             EditReviewStatus:                      editReviewStatus,
             EditIsExcluded:                        editIsExcluded,
             EditNotes:                             editNotes,
-            LockMappingWorkbook:                   lockMappingWorkbook), null);
+            LockMappingWorkbook:                   lockMappingWorkbook,
+            BatchEditMappingWorkbook:              batchEditMappingWorkbook,
+            InputCsvPath:                          inputCsvPath,
+            BatchEditDryRun:                       batchEditDryRun,
+            BatchEditApply:                        batchEditApply), null);
     }
 
     public static string UsageText => @"
@@ -1027,6 +1190,21 @@ Usage (Mapping Workbook lock — Slice C10-B, one-shot Draft→Mapped):
   Lock refuses to flip Status unless every column AND every code-value
   is in a terminal review status (Mapped / Excluded / Deferred). There
   is no --unlock flag; lock is one-shot.
+
+Usage (Mapping Workbook batch edit — Slice C11-B, all-or-nothing CSV):
+  SyncAtlas --db <terrafusion-connection-string> \
+            --county-id <guid> \
+            --batch-edit-mapping-workbook \
+            --workbook-id <guid> \
+            --input-csv <path> \
+            (--dry-run | --apply) \
+            [--operator <name>]
+  Apply mode runs every CSV row through the same validation pipeline
+  as --edit-mapping-workbook, in a single transaction. If any row
+  fails validation, zero rows mutate. Dry-run validates without
+  mutating. Required CSV columns: scope, source_schema, source_table,
+  source_column, source_value, review_status. Optional: canonical_target,
+  canonical_value, canonical_value_null, is_excluded, notes.
 
 Required (always):
   --db              Postgres connection string for the TerraFusion DB.
