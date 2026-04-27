@@ -1,0 +1,406 @@
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using TerraFusion.Core.Entities;
+using TerraFusion.Core.Entities.Sync;
+using TerraFusion.Core.Entities.Sync.Profile;
+using TerraFusion.Data;
+using TerraFusion.Sync.Workbench.Atlas;
+using Xunit;
+using Task = System.Threading.Tasks.Task;
+
+namespace TerraFusion.Integration.Tests.Sync.Atlas;
+
+/// <summary>
+/// Tests for <see cref="DeepProfileOrchestrator"/> using a fake
+/// <see cref="IDeepProfileReaderFactory"/> + the real
+/// <see cref="DeepProfilePersistenceService"/>. The orchestrator's
+/// per-batch loop is the unit under test; the SQL Server reader's
+/// SQL-execution path is exercised by the (future) Slice B2.6 Docker
+/// integration tests.
+/// </summary>
+public class DeepProfileOrchestratorTests
+{
+    private static TerraFusionDbContext CreateContext(string databaseName)
+    {
+        var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
+            .UseInMemoryDatabase(databaseName: databaseName)
+            .Options;
+
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:DefaultConnection"] = "InMemory",
+                ["Logging:EnableSensitiveDataLogging"] = "false",
+            })
+            .Build();
+
+        return new TerraFusionDbContext(options, configuration);
+    }
+
+    /// <summary>
+    /// Seeds a county, an active SyncSourceConnection, and a profile
+    /// SyncBatch. Returns the trio so tests can attach SyncProfileTable +
+    /// SyncProfileColumn rows under the same batch scope.
+    /// </summary>
+    private static async System.Threading.Tasks.Task<(County county, SyncSourceConnection conn, SyncBatch batch)>
+        SeedScopeAsync(TerraFusionDbContext db, string countyName = "Benton")
+    {
+        var county = new County
+        {
+            Id       = Guid.NewGuid(),
+            Name     = countyName,
+            State    = "WA",
+            FipsCode = countyName == "Benton" ? "53005" : "53011",
+        };
+        db.Counties.Add(county);
+
+        var conn = new SyncSourceConnection
+        {
+            Id              = Guid.NewGuid(),
+            CountyId        = county.Id,
+            Name            = $"{countyName} PACS",
+            SourceSystem    = "PACS",
+            ConnectionType  = "SqlServer",
+            Server          = "localhost,1433",
+            Database        = "PACS_Training",
+            AuthMode        = "WindowsIntegrated",
+            IsActive        = true,
+        };
+        db.SyncSourceConnections.Add(conn);
+
+        var batch = new SyncBatch
+        {
+            CountyId       = county.Id,
+            SourceSystem   = "PACS",
+            Mode           = "profile",
+            Status         = "completed",
+            StartedAtUtc   = DateTimeOffset.UtcNow.AddMinutes(-1),
+            CompletedAtUtc = DateTimeOffset.UtcNow,
+            ReadCount      = 0,
+        };
+        db.SyncBatches.Add(batch);
+
+        await db.SaveChangesAsync();
+        return (county, conn, batch);
+    }
+
+    private static SyncProfileTable Table(Guid countyId, Guid batchId, string schema, string name, bool isView, int columnCount)
+        => new()
+        {
+            CountyId         = countyId,
+            SyncBatchId      = batchId,
+            SourceSystem     = "PACS",
+            SchemaName       = schema,
+            TableName        = name,
+            IsView           = isView,
+            RowCountEstimate = 1,
+            ColumnCount      = columnCount,
+        };
+
+    private static SyncProfileColumn Column(Guid countyId, Guid batchId, string schema, string table, string column, int ordinal, string dataType, bool nullable = true)
+        => new()
+        {
+            CountyId        = countyId,
+            SyncBatchId     = batchId,
+            SourceSystem    = "PACS",
+            SchemaName      = schema,
+            TableName       = table,
+            ColumnName      = column,
+            OrdinalPosition = ordinal,
+            DataType        = dataType,
+            IsNullable      = nullable,
+        };
+
+    [Fact]
+    public async System.Threading.Tasks.Task RunAsync_LoopsOverBatchTables_AndPersistsResults()
+    {
+        await using var db = CreateContext($"deep-orch-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+
+        // Two real tables + one view (view should be skipped).
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "ParcelAccount", isView: false, columnCount: 2));
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "PropertyVal",   isView: false, columnCount: 1));
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "v_PropertyView", isView: true,  columnCount: 1));
+
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "ParcelAccount", "ParcelNumber", 1, "varchar", nullable: false));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "ParcelAccount", "PropertyClass", 2, "varchar"));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "PropertyVal",   "AssessedValue", 1, "decimal"));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "v_PropertyView", "any_col",      1, "int"));
+        await db.SaveChangesAsync();
+
+        var fakeReader = new RecordingFakeReader();
+        var sut = new DeepProfileOrchestrator(
+            db,
+            new FakeReaderFactory(fakeReader),
+            new DeepProfilePersistenceService(db));
+
+        var result = await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", CancellationToken.None);
+
+        // 3 tables in batch, 1 is a view → 2 attempted, 2 profiled, 0 failed,
+        // 0 skipped (every non-view table had columns).
+        result.TablesAttempted.Should().Be(2);
+        result.TablesProfiled.Should().Be(2);
+        result.TablesFailed.Should().Be(0);
+        result.TablesSkipped.Should().Be(0);
+        result.Failures.Should().BeEmpty();
+
+        // Reader was asked for both real tables, IN schema-then-name order
+        // (orchestrator orders deterministically), and was NOT asked for the view.
+        fakeReader.Calls.Should().BeEquivalentTo(new[]
+        {
+            ("dbo", "ParcelAccount"),
+            ("dbo", "PropertyVal"),
+        }, opt => opt.WithStrictOrdering());
+
+        // Persistence wrote one TableStats row per profiled table.
+        (await db.SyncProfileTableStats.CountAsync()).Should().Be(2);
+        (await db.SyncProfileColumnStats.CountAsync()).Should().Be(3); // 2 + 1 across the two tables
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task RunAsync_PassesColumnRefsInOrdinalOrder()
+    {
+        await using var db = CreateContext($"deep-orch-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "ParcelAccount", isView: false, columnCount: 3));
+        // Insert columns OUT OF ORDER — orchestrator must sort by OrdinalPosition.
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "ParcelAccount", "C", ordinal: 3, "varchar"));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "ParcelAccount", "A", ordinal: 1, "int", nullable: false));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "ParcelAccount", "B", ordinal: 2, "tinyint"));
+        await db.SaveChangesAsync();
+
+        var fakeReader = new RecordingFakeReader();
+        var sut = new DeepProfileOrchestrator(
+            db,
+            new FakeReaderFactory(fakeReader),
+            new DeepProfilePersistenceService(db));
+
+        await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", CancellationToken.None);
+
+        var passed = fakeReader.LastColumns;
+        passed.Should().NotBeNull();
+        var nonNull = passed!;
+        nonNull.Select(c => c.Name).Should().ContainInOrder("A", "B", "C");
+        nonNull.Select(c => c.IsNullable).Should().ContainInOrder(false, true, true);
+        nonNull.Select(c => c.DataType).Should().ContainInOrder("int", "tinyint", "varchar");
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task RunAsync_TableWithoutColumns_IsSkippedNotProfiled()
+    {
+        await using var db = CreateContext($"deep-orch-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+
+        // Two tables — only one has columns recorded in the structural atlas.
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "WithCols",    isView: false, columnCount: 1));
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "EmptyShell",  isView: false, columnCount: 0));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "WithCols", "col1", 1, "varchar"));
+        await db.SaveChangesAsync();
+
+        var fakeReader = new RecordingFakeReader();
+        var sut = new DeepProfileOrchestrator(
+            db,
+            new FakeReaderFactory(fakeReader),
+            new DeepProfilePersistenceService(db));
+
+        var result = await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", CancellationToken.None);
+
+        result.TablesAttempted.Should().Be(2);
+        result.TablesProfiled.Should().Be(1);
+        result.TablesSkipped.Should().Be(1);
+        fakeReader.Calls.Should().BeEquivalentTo(new[] { ("dbo", "WithCols") });
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task RunAsync_PerTableFailure_DoesNotStopBatch()
+    {
+        await using var db = CreateContext($"deep-orch-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "Healthy",       isView: false, columnCount: 1));
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "TablePoisoned", isView: false, columnCount: 1));
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "Recovers",      isView: false, columnCount: 1));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "Healthy",       "h", 1, "varchar"));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "TablePoisoned", "p", 1, "varchar"));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "Recovers",      "r", 1, "varchar"));
+        await db.SaveChangesAsync();
+
+        var fakeReader = new RecordingFakeReader
+        {
+            FailOnTable = "TablePoisoned",
+            FailureMessage = "simulated reader explosion",
+        };
+        var sut = new DeepProfileOrchestrator(
+            db,
+            new FakeReaderFactory(fakeReader),
+            new DeepProfilePersistenceService(db));
+
+        var result = await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", CancellationToken.None);
+
+        result.TablesAttempted.Should().Be(3);
+        result.TablesProfiled.Should().Be(2);
+        result.TablesFailed.Should().Be(1);
+        result.TablesSkipped.Should().Be(0);
+        result.Failures.Should().HaveCount(1);
+        result.Failures[0].TableName.Should().Be("TablePoisoned");
+        result.Failures[0].Reason.Should().Contain("simulated reader explosion");
+
+        // The two healthy tables persisted; the failing one did NOT leave a
+        // partial TableStats row behind.
+        var statsTables = await db.SyncProfileTableStats
+            .Select(s => s.TableName)
+            .ToListAsync();
+        statsTables.Should().BeEquivalentTo(new[] { "Healthy", "Recovers" });
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task RunAsync_RejectsCrossCountyConnection()
+    {
+        await using var db = CreateContext($"deep-orch-{Guid.NewGuid()}");
+        var (countyA, _, batch) = await SeedScopeAsync(db, "Benton");
+        var (_, connB, _)       = await SeedScopeAsync(db, "Yakima");
+
+        var sut = new DeepProfileOrchestrator(
+            db,
+            new FakeReaderFactory(new RecordingFakeReader()),
+            new DeepProfilePersistenceService(db));
+
+        await FluentActions.Invoking(() =>
+                sut.RunAsync(batch.Id, countyA.Id, connB.Id, "test", CancellationToken.None))
+            .Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*not found*");
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task RunAsync_RejectsInactiveConnection()
+    {
+        await using var db = CreateContext($"deep-orch-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+        conn.IsActive = false;
+        await db.SaveChangesAsync();
+
+        var sut = new DeepProfileOrchestrator(
+            db,
+            new FakeReaderFactory(new RecordingFakeReader()),
+            new DeepProfilePersistenceService(db));
+
+        await FluentActions.Invoking(() =>
+                sut.RunAsync(batch.Id, county.Id, conn.Id, "test", CancellationToken.None))
+            .Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*not active*");
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task RunAsync_EmptyBatchProducesZeroCounts()
+    {
+        await using var db = CreateContext($"deep-orch-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+        // No SyncProfileTable rows seeded — batch is empty.
+
+        var sut = new DeepProfileOrchestrator(
+            db,
+            new FakeReaderFactory(new RecordingFakeReader()),
+            new DeepProfilePersistenceService(db));
+
+        var result = await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", CancellationToken.None);
+
+        result.TablesAttempted.Should().Be(0);
+        result.TablesProfiled.Should().Be(0);
+        result.TablesFailed.Should().Be(0);
+        result.TablesSkipped.Should().Be(0);
+        result.Failures.Should().BeEmpty();
+    }
+
+    [Theory]
+    [InlineData("batchId")]
+    [InlineData("countyId")]
+    [InlineData("sourceConnectionId")]
+    public async System.Threading.Tasks.Task RunAsync_RequiresEveryGuidId(string emptyParam)
+    {
+        await using var db = CreateContext($"deep-orch-{Guid.NewGuid()}");
+        var sut = new DeepProfileOrchestrator(
+            db,
+            new FakeReaderFactory(new RecordingFakeReader()),
+            new DeepProfilePersistenceService(db));
+
+        var batchId  = emptyParam == "batchId"            ? Guid.Empty : Guid.NewGuid();
+        var countyId = emptyParam == "countyId"           ? Guid.Empty : Guid.NewGuid();
+        var connId   = emptyParam == "sourceConnectionId" ? Guid.Empty : Guid.NewGuid();
+
+        await FluentActions.Invoking(() =>
+                sut.RunAsync(batchId, countyId, connId, "test", CancellationToken.None))
+            .Should().ThrowAsync<ArgumentException>();
+    }
+
+    // ── Test doubles ─────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Fake <see cref="IDeepProfileReader"/> that records every ProfileTableAsync
+    /// call and can be configured to fail on a specific table name.
+    /// </summary>
+    private sealed class RecordingFakeReader : IDeepProfileReader
+    {
+        public List<(string Schema, string Table)> Calls { get; } = new();
+        public IReadOnlyList<ColumnRef>? LastColumns { get; private set; }
+        public string? FailOnTable { get; set; }
+        public string? FailureMessage { get; set; }
+
+        public Task<DeepProfileResult> ProfileTableAsync(
+            string schemaName, string tableName, IReadOnlyList<ColumnRef> columns, CancellationToken ct = default)
+        {
+            Calls.Add((schemaName, tableName));
+            LastColumns = columns;
+
+            if (FailOnTable == tableName)
+            {
+                throw new InvalidOperationException(FailureMessage ?? "Fake reader failure.");
+            }
+
+            // Build a minimal-but-valid result so the persistence service is happy.
+            var table = new TableStatsRecord(
+                SchemaName: schemaName, TableName: tableName,
+                RowCount: 1, RowCountIsExact: true, SampleRowCount: 1, SamplingMethod: "Full");
+
+            var columnStats = columns.Select(c => new ColumnStatsRecord(
+                SchemaName:           schemaName,
+                TableName:            tableName,
+                ColumnName:           c.Name,
+                ParentRowCount:       1,
+                NullCount:            0,
+                NullPct:              0m,
+                DistinctCount:        1,
+                DistinctCountIsExact: true,
+                MinValue:             null,
+                MaxValue:             null,
+                SampleValuesJson:     null,
+                TopValuesJson:        null)).ToList();
+
+            return Task.FromResult(new DeepProfileResult(
+                Table:          table,
+                Columns:        columnStats,
+                CodeCandidates: Array.Empty<CodeCandidateRecord>()));
+        }
+    }
+
+    /// <summary>
+    /// Fake factory that hands out the same reader on every Open call. The
+    /// session disposal is a no-op — the fake reader doesn't own a connection.
+    /// </summary>
+    private sealed class FakeReaderFactory : IDeepProfileReaderFactory
+    {
+        private readonly IDeepProfileReader _reader;
+        public FakeReaderFactory(IDeepProfileReader reader) => _reader = reader;
+
+        public Task<IDeepProfileReaderSession> OpenAsync(SyncSourceConnection connection, CancellationToken ct = default)
+            => Task.FromResult<IDeepProfileReaderSession>(new FakeSession(_reader));
+
+        private sealed class FakeSession : IDeepProfileReaderSession
+        {
+            public FakeSession(IDeepProfileReader reader) => Reader = reader;
+            public IDeepProfileReader Reader { get; }
+            public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+        }
+    }
+}

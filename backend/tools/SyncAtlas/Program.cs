@@ -92,6 +92,10 @@ internal static class Program
         var profiler = new AtlasProfiler(db, new SqlServerMetadataReaderFactory(secretResolver));
 
         Console.WriteLine($"sync-atlas: profiling connection {args.ConnectionId} for county {args.CountyId}...");
+        if (args.DeepProfile)
+        {
+            Console.WriteLine("sync-atlas: deep profile enabled — sample-based stats will run after the structural pass.");
+        }
         var startedAt = DateTimeOffset.UtcNow;
 
         AtlasProfileResult result;
@@ -104,6 +108,46 @@ internal static class Program
             // Pre-flight rejection (cross-county, inactive connection, missing).
             await Console.Error.WriteLineAsync($"sync-atlas: {ex.Message}");
             return 2;
+        }
+
+        // B2 deep-profile pass — opt-in via --deep-profile. Only runs when the
+        // structural pass succeeded (otherwise there are no SyncProfileTable
+        // rows to drive it). On failure here we DO NOT flip the SyncBatch
+        // status — the structural batch is independently complete; the
+        // orchestrator's per-table failures are surfaced in stdout.
+        DeepProfileOrchestrationResult? deepResult = null;
+        if (args.DeepProfile && result.Status == "completed")
+        {
+            try
+            {
+                var orchestrator = new DeepProfileOrchestrator(
+                    db,
+                    new SqlServerDeepProfileReaderFactory(secretResolver),
+                    new DeepProfilePersistenceService(db));
+
+                Console.WriteLine();
+                Console.WriteLine("sync-atlas: starting deep profile pass...");
+                deepResult = await orchestrator.RunAsync(
+                    result.BatchId,
+                    args.CountyId,
+                    args.ConnectionId,
+                    args.OperatorId,
+                    ct);
+            }
+            catch (InvalidOperationException ex)
+            {
+                await Console.Error.WriteLineAsync($"sync-atlas: deep profile pre-flight failed: {ex.Message}");
+                return 2;
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                await Console.Error.WriteLineAsync($"sync-atlas: deep profile failed unexpectedly: {ex.Message}");
+                return 2;
+            }
+        }
+        else if (args.DeepProfile)
+        {
+            Console.WriteLine($"sync-atlas: deep profile skipped because structural pass status was '{result.Status}'.");
         }
 
         var elapsed = DateTimeOffset.UtcNow - startedAt;
@@ -129,6 +173,37 @@ internal static class Program
         {
             Console.WriteLine($"  Failure:      {result.FailureMessage}");
             Console.WriteLine("─────────────────────────────────────────────");
+        }
+
+        if (deepResult is not null)
+        {
+            Console.WriteLine();
+            Console.WriteLine("─────────────────────────────────────────────");
+            Console.WriteLine("  Deep profile (B2)");
+            Console.WriteLine("─────────────────────────────────────────────");
+            Console.WriteLine($"  Tables attempted: {deepResult.TablesAttempted,5:N0}");
+            Console.WriteLine($"  Tables profiled:  {deepResult.TablesProfiled,5:N0}");
+            Console.WriteLine($"  Tables failed:    {deepResult.TablesFailed,5:N0}");
+            Console.WriteLine($"  Tables skipped:   {deepResult.TablesSkipped,5:N0}");
+            Console.WriteLine($"  Started:          {deepResult.StartedAtUtc:O}");
+            Console.WriteLine($"  Completed:        {deepResult.CompletedAtUtc:O}");
+            Console.WriteLine("─────────────────────────────────────────────");
+
+            if (deepResult.Failures.Count > 0)
+            {
+                Console.WriteLine("  Per-table failures (first 10):");
+                var shown = 0;
+                foreach (var f in deepResult.Failures)
+                {
+                    Console.WriteLine($"    [{f.SchemaName}].[{f.TableName}] — {f.Reason}");
+                    if (++shown >= 10) break;
+                }
+                if (deepResult.Failures.Count > 10)
+                {
+                    Console.WriteLine($"    ... and {deepResult.Failures.Count - 10} more.");
+                }
+                Console.WriteLine("─────────────────────────────────────────────");
+            }
         }
 
         return result.Status switch

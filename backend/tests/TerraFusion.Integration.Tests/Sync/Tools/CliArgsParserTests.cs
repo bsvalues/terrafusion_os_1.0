@@ -162,4 +162,61 @@ public class CliArgsParserTests
         usage.Should().Contain("--connection-id");
         usage.Should().Contain("--operator");
     }
+
+    // ── --deep-profile (Slice B2.4) ──────────────────────────────────────
+
+    [Fact]
+    public void Parse_DefaultsDeepProfileToFalse()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection
+        });
+
+        err.Should().BeNull();
+        args!.DeepProfile.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Parse_DeepProfileFlag_SetsDeepProfileTrue()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--deep-profile"
+        });
+
+        err.Should().BeNull();
+        args!.DeepProfile.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Parse_DeepProfileFlag_TakesNoValue()
+    {
+        // The flag is a boolean — passing what looks like a value should NOT
+        // be consumed as the flag's value. Here "--operator" follows
+        // --deep-profile and must still be recognized as its own flag.
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--deep-profile",
+            "--operator", "bsval"
+        });
+
+        err.Should().BeNull();
+        args!.DeepProfile.Should().BeTrue();
+        args.OperatorId.Should().Be("bsval");
+    }
+
+    [Fact]
+    public void UsageText_MentionsDeepProfileFlag()
+    {
+        CliArgsParser.UsageText.Should().Contain("--deep-profile");
+    }
 }
