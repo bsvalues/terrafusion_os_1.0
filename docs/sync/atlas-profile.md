@@ -411,6 +411,20 @@ sample reads + per-candidate top-N reads, then persists into the B2.1
 schema (`SyncProfileTableStats`, `SyncProfileColumnStats`,
 `SyncProfileCodeCandidates`).
 
+> **TABLESAMPLE dialect note (FIX-B2.7D).** The C# strategy named
+> `BernoulliSample` describes the *intent* — independent-coin-flip per row,
+> targeting ~10K samples. The emitted T-SQL uses `TABLESAMPLE SYSTEM
+> (n PERCENT) REPEATABLE (42)` because **SQL Server's `TABLESAMPLE` only
+> supports the `SYSTEM` method** (page-based sampling); the SQL:2003
+> `BERNOULLI` keyword that PostgreSQL accepts is rejected by T-SQL with
+> `Incorrect syntax near 'BERNOULLI'`. Discovered in B2.7-OLTP against the
+> 8 large `pacs_oltp` business tables. The statistical compromise — SYSTEM
+> samples are page-clustered, so adjacent rows are correlated rather than
+> independently selected — is acceptable for the workbench: the alternative
+> (`ORDER BY NEWID() OFFSET ... FETCH NEXT ...`) would scan and sort the
+> entire table just to draw a sample, which defeats the purpose of
+> sampling on multi-million-row PACS tables.
+
 ```bash
 # 1. Same prerequisites as B1.7: TerraFusion Postgres + tf-mssql + the
 #    SyncSourceConnection seeded for Benton PACS Training.
