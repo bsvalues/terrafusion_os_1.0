@@ -85,7 +85,11 @@ internal static class Program
 
         await using var db = new TerraFusionDbContext(options, configuration);
 
-        var profiler = new AtlasProfiler(db, new SqlServerMetadataReaderFactory());
+        // SQL Auth passwords resolve from the operator's process environment
+        // (per Slice B1.6.5). Convention: SYNCATLAS_SECRET_<connection-id-no-dashes-upper>.
+        // Windows Integrated connections never consult the resolver.
+        var secretResolver = new EnvironmentSecretResolver();
+        var profiler = new AtlasProfiler(db, new SqlServerMetadataReaderFactory(secretResolver));
 
         Console.WriteLine($"sync-atlas: profiling connection {args.ConnectionId} for county {args.CountyId}...");
         var startedAt = DateTimeOffset.UtcNow;
