@@ -65,7 +65,9 @@ public sealed record CliArgs(
     bool BatchEditMappingWorkbook,
     string? InputCsvPath,
     bool BatchEditDryRun,
-    bool BatchEditApply);
+    bool BatchEditApply,
+    // Slice C14-B — Mapping Workbook review progress mode (eighth in the SyncAtlas mutex)
+    bool MappingReviewProgress);
 
 /// <summary>
 /// Pure argument parser. No I/O, no environment access — easy to unit test.
@@ -144,6 +146,13 @@ public static class CliArgsParser
         {
             "NeedsReview", "InProgress", "Mapped", "Excluded", "Deferred",
         };
+
+    // The progress mode (C14-B) has no flags of its own besides the
+    // `--mapping-review-progress` toggle and the shared `--workbook-id`,
+    // so it does not need a Reject* helper symmetric to the edit and
+    // batch-edit modes — every non-progress branch simply relies on
+    // the eight-way mode mutex to refuse `--mapping-review-progress`
+    // when paired with another mode toggle.
 
     /// <summary>
     /// Rejection helper used by every non-batch mode to refuse the
@@ -252,6 +261,9 @@ public static class CliArgsParser
         string? inputCsvPath = null;
         var batchEditDryRun = false;
         var batchEditApply  = false;
+
+        // Slice C14-B — Mapping Workbook review progress mode
+        var mappingReviewProgress = false;
 
         for (var i = 0; i < argv.Length; i++)
         {
@@ -492,6 +504,11 @@ public static class CliArgsParser
                     batchEditApply = true;
                     break;
 
+                // ── Slice C14-B — Mapping Workbook review progress mode ─
+                case "--mapping-review-progress":
+                    mappingReviewProgress = true;
+                    break;
+
                 default:
                     return (null, $"unknown argument: '{arg}'");
             }
@@ -536,7 +553,8 @@ public static class CliArgsParser
                 BatchEditMappingWorkbook:              batchEditMappingWorkbook,
                 InputCsvPath:                          inputCsvPath,
                 BatchEditDryRun:                       batchEditDryRun,
-                BatchEditApply:                        batchEditApply), null);
+                BatchEditApply:                        batchEditApply,
+                MappingReviewProgress:                 mappingReviewProgress), null);
         }
 
         // ── Always-required, regardless of mode ─────────────────────────
@@ -544,29 +562,31 @@ public static class CliArgsParser
         if (!countyId.HasValue) return (null, "--county-id is required");
         if (string.IsNullOrWhiteSpace(operatorId)) return (null, "--operator must be non-empty when provided");
 
-        // ── Seven-way mode mutex ────────────────────────────────────────
+        // ── Eight-way mode mutex ────────────────────────────────────────
         // Profile (default) | Generate Workbook (C4) | Export Workbook (C5)
         // | Qualify Sales (C8-C) | Edit Workbook (C9-B) | Lock Workbook
-        // (C10-B) | Batch Edit Workbook (C11-B) — at most one bool-toggle
-        // can be on.
+        // (C10-B) | Batch Edit Workbook (C11-B) | Review Progress (C14-B)
+        // — at most one bool-toggle can be on.
         var modeToggleCount =
             (generateMappingWorkbook   ? 1 : 0) +
             (exportMappingWorkbook     ? 1 : 0) +
             (qualifySales              ? 1 : 0) +
             (editMappingWorkbook       ? 1 : 0) +
             (lockMappingWorkbook       ? 1 : 0) +
-            (batchEditMappingWorkbook  ? 1 : 0);
+            (batchEditMappingWorkbook  ? 1 : 0) +
+            (mappingReviewProgress     ? 1 : 0);
         if (modeToggleCount > 1)
         {
             return (null,
                 "--generate-mapping-workbook, --export-mapping-workbook, --qualify-sales, " +
                 "--edit-mapping-workbook, --lock-mapping-workbook, " +
-                "and --batch-edit-mapping-workbook are mutually exclusive");
+                "--batch-edit-mapping-workbook, and --mapping-review-progress are mutually exclusive");
         }
 
         // ── Mode-mutual-exclusion: deep-profile flags only in profile mode ──
         if (generateMappingWorkbook || exportMappingWorkbook || qualifySales ||
-            editMappingWorkbook || lockMappingWorkbook || batchEditMappingWorkbook)
+            editMappingWorkbook || lockMappingWorkbook || batchEditMappingWorkbook ||
+            mappingReviewProgress)
         {
             var modeName =
                 generateMappingWorkbook   ? "Mapping Workbook" :
@@ -574,7 +594,8 @@ public static class CliArgsParser
                 qualifySales              ? "Sales qualification" :
                 editMappingWorkbook       ? "Mapping Workbook edit" :
                 lockMappingWorkbook       ? "Mapping Workbook lock" :
-                                            "Mapping Workbook batch edit";
+                batchEditMappingWorkbook  ? "Mapping Workbook batch edit" :
+                                            "Mapping Workbook review progress";
             if (deepProfile)
             {
                 return (null, $"--deep-profile is not allowed in {modeName} mode");
@@ -591,7 +612,8 @@ public static class CliArgsParser
 
         // ── Profile-mode-specific validation ────────────────────────────
         if (!generateMappingWorkbook && !exportMappingWorkbook && !qualifySales &&
-            !editMappingWorkbook && !lockMappingWorkbook && !batchEditMappingWorkbook)
+            !editMappingWorkbook && !lockMappingWorkbook && !batchEditMappingWorkbook &&
+            !mappingReviewProgress)
         {
             if (!connectionId.HasValue) return (null, "--connection-id is required");
 
@@ -1009,7 +1031,7 @@ public static class CliArgsParser
             // about preventing operator confusion, not punishing extra
             // bytes that the lock path ignores anyway.
         }
-        else
+        else if (batchEditMappingWorkbook)
         {
             // ── Batch-edit-mode-specific validation (C11-B) ────────────
             // Hard Guards from the C11-A policy doc:
@@ -1088,6 +1110,78 @@ public static class CliArgsParser
                 editIsExcluded, editNotes);
             if (editError is not null) return (null, editError);
         }
+        else
+        {
+            // ── Review-progress-mode-specific validation (C14-B) ────────
+            // Hard Guards from the C14-A policy doc:
+            //   1. Read-only                — enforced by C14-B service.
+            //   2. County scope             — enforced by C14-B service.
+            //   3. No status guard          — service accepts any Status.
+            //   4. No autodetection         — service counts only.
+            // The parser's job is the surface contract: --workbook-id is
+            // mandatory; no other mode's flags may appear.
+            if (!workbookId.HasValue)
+            {
+                return (null, "--workbook-id is required when --mapping-review-progress is set");
+            }
+
+            // Generate-mode flags must not appear in progress mode.
+            if (profileBatchId.HasValue)
+            {
+                return (null, "--profile-batch-id requires --generate-mapping-workbook");
+            }
+            if (latestProfileBatch)
+            {
+                return (null, "--latest-profile-batch requires --generate-mapping-workbook");
+            }
+            if (workbookName is not null)
+            {
+                return (null, "--workbook-name requires --generate-mapping-workbook");
+            }
+            if (replaceExistingDraft)
+            {
+                return (null, "--replace-existing-draft requires --generate-mapping-workbook");
+            }
+            if (mappingMaxCandidates.HasValue)
+            {
+                return (null, "--mapping-max-candidates requires --generate-mapping-workbook");
+            }
+
+            // Export-mode flags must not appear in progress mode.
+            if (outputDirectory is not null)
+            {
+                return (null, "--output-dir requires --export-mapping-workbook");
+            }
+            if (exportFormatExplicit)
+            {
+                return (null, "--format requires --export-mapping-workbook");
+            }
+
+            // Qualify-sales flags must not appear in progress mode.
+            if (sourceConnectionId.HasValue)
+            {
+                return (null, "--source-connection-id requires --qualify-sales");
+            }
+            if (maxSales.HasValue)
+            {
+                return (null, "--max-sales requires --qualify-sales");
+            }
+
+            // Edit-mode flags must not appear in progress mode.
+            var editError = RejectEditModeFlags(
+                editSourceSchema, editSourceValue, editCanonicalTarget,
+                editCanonicalValue, editCanonicalValueNull, editReviewStatus,
+                editIsExcluded, editNotes);
+            if (editError is not null) return (null, editError);
+
+            // Batch-edit-mode flags must not appear in progress mode.
+            var batchError = RejectBatchEditModeFlags(inputCsvPath, batchEditDryRun, batchEditApply);
+            if (batchError is not null) return (null, batchError);
+            // --connection-id is irrelevant in progress mode (the
+            // service never queries PACS). Tolerate it the same way
+            // lock mode does — surface contract is preventing
+            // operator confusion, not punishing extra bytes.
+        }
 
         return (new CliArgs(
             TerraFusionDbConnectionString:        db!,
@@ -1126,7 +1220,8 @@ public static class CliArgsParser
             BatchEditMappingWorkbook:              batchEditMappingWorkbook,
             InputCsvPath:                          inputCsvPath,
             BatchEditDryRun:                       batchEditDryRun,
-            BatchEditApply:                        batchEditApply), null);
+            BatchEditApply:                        batchEditApply,
+            MappingReviewProgress:                 mappingReviewProgress), null);
     }
 
     public static string UsageText => @"
@@ -1205,6 +1300,19 @@ Usage (Mapping Workbook batch edit — Slice C11-B, all-or-nothing CSV):
   mutating. Required CSV columns: scope, source_schema, source_table,
   source_column, source_value, review_status. Optional: canonical_target,
   canonical_value, canonical_value_null, is_excluded, notes.
+
+Usage (Mapping Workbook review progress — Slice C14-B, read-only):
+  SyncAtlas --db <terrafusion-connection-string> \
+            --county-id <guid> \
+            --mapping-review-progress \
+            --workbook-id <guid> \
+            [--operator <name>]
+  Read-only progress dashboard. Prints workbook summary, review
+  status counts, lane breakdown, top blocking columns, sales review
+  focus, and lock readiness. Never mutates the workbook; never
+  queries PACS. Accepts workbooks in any Status — including locked
+  workbooks, where the report shows ""already <status>"" and zero
+  blockers.
 
 Required (always):
   --db              Postgres connection string for the TerraFusion DB.
