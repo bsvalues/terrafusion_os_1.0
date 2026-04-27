@@ -28,6 +28,26 @@ const MOCK_COHORT = {
   selectionType: 'Visual' as const, parcelCount: 80, isHybrid: false, createdAt: '',
 };
 
+const MOCK_HEALTH = {
+  studyId: 'study-1',
+  countyId: 'benton',
+  taxYear: 2026,
+  parcelCount: 128784,
+  ratioCount: 6014,
+  medianRatio: 0.921,
+  cod: 39.5,
+  prd: 1.369,
+  stabilityScore: 41,
+  riskScore: 86,
+  exceptionCount: 867,
+  complianceStatus: 'NonCompliant' as const,
+  topAlerts: [],
+  criticalCount: 114,
+  warningCount: 93,
+  healthyCount: 1198,
+  derivedAt: '2026-04-26T00:00:00Z',
+};
+
 const MOCK_DRAFT = {
   scenarioId: 'sc-draft', studyId: 'study-1', cohortId: 'c1',
   adjustmentType: 'PercentageIncrease' as const, parameters: {}, rationale: '',
@@ -37,7 +57,17 @@ const MOCK_DRAFT = {
 const MOCK_PREVIEW = {
   scenarioId: 'sc-draft', totalParcelsAffected: 412,
   estimatedMedianRatioDelta: 0.038, estimatedCodDelta: -1.2, estimatedPrdDelta: 0.02,
-  deltas: [],
+  deltas: [
+    {
+      segmentId: 'seg-1',
+      segmentName: 'NBHD-K1 · R1 · STANDARD',
+      beforeRatio: 0.94,
+      afterRatio: 0.979,
+      beforeCod: 17.2,
+      afterCod: 15.8,
+      deltaPercent: 4.1,
+    },
+  ],
 };
 
 function setup() {
@@ -45,7 +75,11 @@ function setup() {
     useCountyStudioStore.getState().setStudy(MOCK_STUDY);
     useCountyStudioStore.getState().setCohorts([MOCK_COHORT]);
     useCountyStudioStore.getState().setScenarios([]);
+    useCountyStudioStore.getState().setHealthSummary(MOCK_HEALTH);
+    useCountyStudioStore.getState().setActiveCohort(null);
+    useCountyStudioStore.getState().setActiveScenario(null);
     useCountyStudioStore.getState().setScenarioPreview(null);
+    useCountyStudioStore.getState().drillToCounty();
   });
   vi.mocked(scenarioApi.create).mockResolvedValue(MOCK_DRAFT);
   vi.mocked(scenarioApi.preview).mockResolvedValue(MOCK_PREVIEW);
@@ -72,6 +106,14 @@ describe('ScenarioWorksheet', () => {
     expect(screen.getByText(/new scenario/i)).toBeInTheDocument();
   });
 
+  it('renders live study context above the form', () => {
+    render(<ScenarioWorksheet />);
+    expect(screen.getByTestId('scenario-worksheet-context')).toHaveTextContent(/2026/);
+    expect(screen.getByTestId('scenario-worksheet-context')).toHaveTextContent(/RatioStudy/);
+    expect(screen.getByTestId('scenario-worksheet-scope')).toHaveTextContent(/benton/i);
+    expect(screen.getByTestId('scenario-worksheet-context')).toHaveTextContent(/no active preview yet/i);
+  });
+
   it('shows Preview Impact button when form is complete', () => {
     render(<ScenarioWorksheet />);
     fillForm();
@@ -93,15 +135,19 @@ describe('ScenarioWorksheet', () => {
     fillForm();
     fireEvent.click(screen.getByRole('button', { name: /preview impact/i }));
     await waitFor(() => {
-      expect(screen.getByText(/412 parcels/i)).toBeInTheDocument();
+      expect(screen.getByTestId('scenario-preview-county-impact')).toHaveTextContent(/412 parcels/i);
     });
+    expect(screen.getByTestId('scenario-preview-county-impact')).toHaveTextContent('0.921 → 0.959');
+    expect(screen.getByTestId('scenario-preview-county-impact')).toHaveTextContent('39.5 → 38.3');
+    expect(screen.getByTestId('scenario-preview-county-impact')).toHaveTextContent('1.369 → 1.389');
+    expect(screen.getByTestId('scenario-preview-county-impact')).toHaveTextContent(/Neighborhood NBHD-K1 · R1 · STANDARD/i);
   });
 
   it('Save Scenario calls scenarioApi.save with the draft id', async () => {
     render(<ScenarioWorksheet />);
     fillForm();
     fireEvent.click(screen.getByRole('button', { name: /preview impact/i }));
-    await waitFor(() => screen.getByText(/412 parcels/i));
+    await waitFor(() => screen.getByTestId('scenario-preview-county-impact'));
     fireEvent.click(screen.getByRole('button', { name: /save scenario/i }));
     await waitFor(() => {
       expect(vi.mocked(scenarioApi.save)).toHaveBeenCalledWith('sc-draft');
@@ -118,6 +164,27 @@ describe('ScenarioWorksheet', () => {
   it('does not render Saved Scenarios section when store has no scenarios', () => {
     render(<ScenarioWorksheet />);
     expect(screen.queryByText(/saved scenarios/i)).toBeNull();
+  });
+
+  it('clears shared scenario preview when the draft is discarded', async () => {
+    render(<ScenarioWorksheet />);
+    fillForm();
+    fireEvent.click(screen.getByRole('button', { name: /preview impact/i }));
+    await waitFor(() => screen.getByTestId('scenario-preview-county-impact'));
+    expect(useCountyStudioStore.getState().scenarioPreview).toEqual(MOCK_PREVIEW);
+    fireEvent.click(screen.getByText('Discard'));
+    expect(useCountyStudioStore.getState().scenarioPreview).toBeNull();
+    expect(screen.getByTestId('scenario-worksheet-context')).toHaveTextContent(/no active preview yet/i);
+  });
+
+  it('uses the store active cohort as the default selection', () => {
+    act(() => {
+      useCountyStudioStore.getState().setActiveCohort('c1');
+      useCountyStudioStore.getState().drillToNeighborhood('Kennewick', 'NBHD-K1', 2);
+    });
+    render(<ScenarioWorksheet />);
+    expect(screen.getByLabelText(/cohort/i)).toHaveValue('c1');
+    expect(screen.getByTestId('scenario-worksheet-scope')).toHaveTextContent(/Neighborhood NBHD-K1 · Reval 2/i);
   });
 
   it('renders Saved Scenarios section with promote button when store has Saved scenarios', () => {

@@ -331,7 +331,15 @@ describe('ObjectInspector — Action tab', () => {
     render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
     await switchToTab('inspector-tab-action');
     fireEvent.click(screen.getByTestId('inspector-handoff-atlas'));
-    expect(mockNavigate).toHaveBeenCalledWith('/forge/atlas-live?studyId=study-1&segmentId=s1&countyId=benton');
+    expect(mockNavigate).toHaveBeenCalledWith(
+      expect.stringContaining('/forge/atlas-live?'),
+    );
+    const atlasHref = mockNavigate.mock.calls.at(-1)?.[0] as string;
+    const params = new URLSearchParams(atlasHref.split('?')[1]);
+    expect(params.get('studyId')).toBe('study-1');
+    expect(params.get('segmentId')).toBe('s1');
+    expect(params.get('countyId')).toBe('benton');
+    expect(params.get('taxYear')).toBe('2026');
   });
 
   it('Find Parcels in Workbench still activates the workbench module (regression)', async () => {

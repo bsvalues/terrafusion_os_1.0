@@ -1,50 +1,136 @@
-// Atlas Live View — full-surface spatial workspace.
+// Atlas Live View — official spatial surface for County Studio handoff.
 // SESSION SUBSCRIBER: joins the CountyStudyHub but NEVER writes valuation state.
 // Receives projection overlays from County Studio. Sends selection intent back.
 
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useAtlasLiveStore } from '@/stores/atlasLiveStore';
 import { AtlasSyncBadge } from './components/AtlasSyncBadge';
 import { AtlasToolbar } from './components/AtlasToolbar';
 import { AtlasOverlayManager } from './components/AtlasOverlayManager';
 import { useAtlasLiveHub } from './hooks/useAtlasLiveHub';
 import { useAtlasMapData } from './hooks/useAtlasMapData';
+import type { AtlasRouteScope } from './atlasLiveApi';
 import type {
   NbhdOutlineCollection,
   ParcelTileCollection,
   ParcelTileProps,
 } from '../geo/v2/v2Api';
 
-function useStudyIdFromUrl(): string | null {
-  return useMemo(() => {
-    if (typeof window === 'undefined') return null;
-    return new URLSearchParams(window.location.search).get('studyId');
-  }, []);
-}
+const WASHINGTON_DEFAULT_CENTER: [number, number] = [-120.9, 47.35];
+const WASHINGTON_DEFAULT_ZOOM = 6.6;
+const BENTON_COMPATIBILITY_CENTER: [number, number] = [-119.3, 46.25];
+const BENTON_COMPATIBILITY_ZOOM = 10;
 
-function useTaxYearFromUrl(): number {
+function useRouteScopeFromUrl(): AtlasRouteScope {
   return useMemo(() => {
-    if (typeof window === 'undefined') return 2026;
-    const q = new URLSearchParams(window.location.search).get('taxYear');
-    const parsed = q ? Number(q) : NaN;
-    return Number.isFinite(parsed) && parsed > 2000 ? parsed : 2026;
+    if (typeof window === 'undefined') {
+      return {
+        studyId: null,
+        countyId: null,
+        countyName: null,
+        countyCode: null,
+        segmentId: null,
+        neighborhoodCode: null,
+        taxYear: 2026,
+      };
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const rawTaxYear = params.get('taxYear');
+    const parsedTaxYear = rawTaxYear ? Number(rawTaxYear) : NaN;
+
+    return {
+      studyId: params.get('studyId'),
+      countyId: params.get('countyId'),
+      countyName: params.get('countyName'),
+      countyCode: params.get('countyCode'),
+      segmentId: params.get('segmentId'),
+      neighborhoodCode: params.get('neighborhoodCode'),
+      taxYear: Number.isFinite(parsedTaxYear) && parsedTaxYear > 2000 ? parsedTaxYear : 2026,
+    };
   }, []);
 }
 
 export function AtlasLivePage() {
-  const studyId = useStudyIdFromUrl();
-  const taxYear = useTaxYearFromUrl();
-  const { studyId: storeStudyId, setStudyId, activeTool } = useAtlasLiveStore();
+  const routeScope = useRouteScopeFromUrl();
+  const storeStudyId = useAtlasLiveStore((state) => state.studyId);
+  const activeTool = useAtlasLiveStore((state) => state.activeTool);
+  const storeCountyId = useAtlasLiveStore((state) => state.countyId);
+  const storeCountyName = useAtlasLiveStore((state) => state.countyName);
+  const storeCountyCode = useAtlasLiveStore((state) => state.countyCode);
+  const storeSegmentId = useAtlasLiveStore((state) => state.segmentId);
+  const storeNeighborhoodCode = useAtlasLiveStore((state) => state.neighborhoodCode);
+  const setStudyId = useAtlasLiveStore((state) => state.setStudyId);
+  const setCountyScope = useAtlasLiveStore((state) => state.setCountyScope);
   const mapRef = useRef<unknown>(null);
+  const [liveMap, setLiveMap] = useState<unknown | null>(null);
 
   useEffect(() => {
-    if (studyId && studyId !== storeStudyId) {
-      setStudyId(studyId);
+    if (routeScope.studyId && routeScope.studyId !== storeStudyId) {
+      setStudyId(routeScope.studyId);
     }
-  }, [studyId, storeStudyId, setStudyId]);
+    if (!routeScope.studyId && storeStudyId !== null) {
+      setStudyId(null);
+    }
+  }, [routeScope.studyId, setStudyId, storeStudyId]);
 
-  const { sendSelection } = useAtlasLiveHub(storeStudyId ?? studyId);
-  const { outlines, parcels, loading: mapDataLoading, error: mapDataError } = useAtlasMapData(taxYear);
+  const {
+    countyContext,
+    outlines,
+    parcels,
+    loading: mapDataLoading,
+    error: mapDataError,
+    scopeMessage,
+  } = useAtlasMapData(routeScope);
+
+  useEffect(() => {
+    const nextCountyId = countyContext?.countyId ?? routeScope.countyId ?? null;
+    const nextCountyName = countyContext?.countyName ?? routeScope.countyName ?? null;
+    const nextCountyCode = countyContext?.countyCode ?? routeScope.countyCode ?? null;
+    const nextSegmentId = routeScope.segmentId ?? null;
+    const nextNeighborhoodCode = routeScope.neighborhoodCode ?? null;
+
+    if (
+      storeCountyId === nextCountyId
+      && storeCountyName === nextCountyName
+      && storeCountyCode === nextCountyCode
+      && storeSegmentId === nextSegmentId
+      && storeNeighborhoodCode === nextNeighborhoodCode
+    ) {
+      return;
+    }
+
+    setCountyScope({
+      countyId: nextCountyId,
+      countyName: nextCountyName,
+      countyCode: nextCountyCode,
+      segmentId: nextSegmentId,
+      neighborhoodCode: nextNeighborhoodCode,
+    });
+  }, [
+    countyContext,
+    routeScope.countyCode,
+    routeScope.countyId,
+    routeScope.countyName,
+    routeScope.neighborhoodCode,
+    routeScope.segmentId,
+    setCountyScope,
+    storeCountyCode,
+    storeCountyId,
+    storeCountyName,
+    storeNeighborhoodCode,
+    storeSegmentId,
+  ]);
+
+  const { sendSelection } = useAtlasLiveHub(storeStudyId ?? routeScope.studyId);
+
+  const initialViewport = useMemo(() => {
+    if (countyContext?.countyCode === '005') {
+      return { center: BENTON_COMPATIBILITY_CENTER, zoom: BENTON_COMPATIBILITY_ZOOM };
+    }
+
+    return { center: WASHINGTON_DEFAULT_CENTER, zoom: WASHINGTON_DEFAULT_ZOOM };
+  }, [countyContext?.countyCode]);
 
   const handleParcelClick = async (parcelId: string) => {
     if (!storeStudyId) return;
@@ -56,6 +142,12 @@ export function AtlasLivePage() {
     });
   };
 
+  const countyLabel = countyContext?.countyName
+    ?? routeScope.countyName
+    ?? routeScope.countyCode
+    ?? routeScope.countyId
+    ?? 'Unscoped';
+
   return (
     <div
       style={{
@@ -66,7 +158,6 @@ export function AtlasLivePage() {
         overflow: 'hidden',
       }}
     >
-      {/* Top Bar */}
       <div
         style={{
           position: 'absolute',
@@ -83,18 +174,29 @@ export function AtlasLivePage() {
           zIndex: 10,
         }}
       >
-        <span style={{ fontWeight: 700, fontSize: 13, color: 'rgba(255,255,255,0.9)' }}>
+          <span
+            data-testid="atlas-live-title"
+            style={{ fontWeight: 700, fontSize: 13, color: 'rgba(255,255,255,0.9)' }}
+          >
           Atlas Live View
         </span>
-        {storeStudyId && (
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
-            Study: {storeStudyId.slice(0, 8)}…
-          </span>
-        )}
+        <div
+          data-testid="atlas-route-scope"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            fontSize: 11,
+            color: 'rgba(255,255,255,0.5)',
+          }}
+        >
+          <span>County: {countyLabel}</span>
+          {routeScope.segmentId && <span>Segment: {routeScope.segmentId.slice(0, 12)}…</span>}
+          {storeStudyId && <span>Study: {storeStudyId.slice(0, 8)}…</span>}
+        </div>
         <AtlasSyncBadge />
       </div>
 
-      {/* Map Surface */}
       <div
         data-testid="atlas-map-surface"
         style={{ position: 'absolute', inset: 0, paddingTop: 44 }}
@@ -104,11 +206,73 @@ export function AtlasLivePage() {
           activeTool={activeTool}
           outlines={outlines}
           parcels={parcels}
+          selectedNeighborhoodCode={routeScope.neighborhoodCode}
+          initialViewport={initialViewport}
+          onMapReady={setLiveMap}
           onParcelClick={handleParcelClick}
         />
       </div>
 
-      {/* Map data status — subtle inline loading/error indicator in the top bar area */}
+      {countyContext && (
+        <div
+          data-testid="atlas-county-context"
+          style={{
+            position: 'absolute',
+            top: 52,
+            left: 16,
+            padding: '10px 12px',
+            borderRadius: 8,
+            background: 'rgba(10,14,26,0.84)',
+            backdropFilter: 'blur(8px)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            color: 'rgba(255,255,255,0.82)',
+            zIndex: 9,
+            maxWidth: 360,
+          }}
+        >
+          <div style={{ fontSize: 12, fontWeight: 700 }}>
+            {countyContext.countyName} County · {countyContext.countyCode}
+          </div>
+          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', marginTop: 4 }}>
+            Source mode: {countyContext.primarySourceMode ?? 'unknown'} · Status: {countyContext.prometheusStatus.replace(/_/g, ' ')}
+          </div>
+          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>
+            Staged sales: {countyContext.stagedSales.toLocaleString()} · Review queue: {countyContext.needsReview.toLocaleString()}
+          </div>
+          {countyContext.latestSaleDate && (
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>
+              Latest sale: {countyContext.latestSaleDate}
+            </div>
+          )}
+        </div>
+      )}
+
+      {scopeMessage && (
+        <div
+          data-testid="atlas-scope-message"
+          role="status"
+          style={{
+            position: 'absolute',
+            bottom: 88,
+            left: 16,
+            padding: '8px 12px',
+            borderRadius: 6,
+            background: countyContext?.geometryAvailability === 'compatibility'
+              ? 'rgba(245,158,11,0.16)'
+              : 'rgba(59,130,246,0.16)',
+            color: countyContext?.geometryAvailability === 'compatibility'
+              ? '#fbbf24'
+              : '#93c5fd',
+            fontSize: 11,
+            fontWeight: 600,
+            zIndex: 9,
+            maxWidth: 440,
+          }}
+        >
+          {scopeMessage}
+        </div>
+      )}
+
       {mapDataLoading && (
         <div
           data-testid="atlas-map-loading"
@@ -153,10 +317,8 @@ export function AtlasLivePage() {
         </div>
       )}
 
-      {/* Overlay Manager */}
-      <AtlasOverlayManager map={mapRef.current} />
+      <AtlasOverlayManager map={liveMap} />
 
-      {/* Bottom Toolbar */}
       <div
         style={{
           position: 'absolute',
@@ -172,23 +334,28 @@ export function AtlasLivePage() {
   );
 }
 
-// Internal Map Surface — lazy-loads GeoForgeV2Map to isolate Mapbox GL JS from tests.
-// When outlines/parcels are null, the map still renders its basemap; the shared
-// loading/error indicators on AtlasLivePage communicate data status to the user.
 function AtlasMapSurface({
   mapRef,
   activeTool,
   outlines,
   parcels,
+  selectedNeighborhoodCode,
+  initialViewport,
+  onMapReady,
   onParcelClick,
 }: {
   mapRef: React.RefObject<unknown>;
   activeTool: string;
   outlines: NbhdOutlineCollection | null;
   parcels: ParcelTileCollection | null;
+  selectedNeighborhoodCode: string | null;
+  initialViewport: { center: [number, number]; zoom: number };
+  onMapReady: (map: unknown | null) => void;
   onParcelClick: (id: string) => void;
 }) {
   let GeoForgeV2Map: React.ComponentType<{
+    mapRef?: React.RefObject<unknown>;
+    onMapReady?: (map: unknown | null) => void;
     outlines: NbhdOutlineCollection | null;
     parcels: ParcelTileCollection | null;
     selectedNeighborhoodCode: string | null;
@@ -197,6 +364,7 @@ function AtlasMapSurface({
     onViewportChange: () => void;
     visibleLayers: Set<string>;
     mapCtx: Record<string, unknown>;
+    initialViewport?: { center: [number, number]; zoom: number };
   }>;
 
   try {
@@ -208,14 +376,17 @@ function AtlasMapSurface({
 
   return (
     <GeoForgeV2Map
+      mapRef={mapRef}
+      onMapReady={onMapReady}
       outlines={outlines}
       parcels={parcels}
-      selectedNeighborhoodCode={null}
+      selectedNeighborhoodCode={selectedNeighborhoodCode}
       onNeighborhoodClick={() => {}}
       onParcelClick={(parcel) => onParcelClick(parcel.parcelId)}
       onViewportChange={() => {}}
-      visibleLayers={new Set(['satellite', 'choropleth'])}
+      visibleLayers={new Set(activeTool === 'none' ? ['nbhd', 'parcels', 'outliers'] : ['nbhd', 'parcels', 'outliers'])}
       mapCtx={{}}
+      initialViewport={initialViewport}
     />
   );
 }

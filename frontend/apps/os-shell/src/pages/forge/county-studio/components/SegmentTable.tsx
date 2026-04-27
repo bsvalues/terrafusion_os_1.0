@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import type { CountySegmentDto } from '../types/countyStudio.types';
+import {
+  formatOperationalDescriptor,
+  formatOperationalPrimary,
+  parseSegmentIdentity,
+} from '../utils/segmentIdentity';
 
 type SortKey = keyof Pick<
   CountySegmentDto,
@@ -70,7 +75,14 @@ const Th = ({
 );
 
 export function SegmentTable({ filter }: { filter?: (seg: CountySegmentDto) => boolean } = {}) {
-  const { segments, selectedSegmentId, selectSegment, loadStatus, loadErrors } = useCountyStudioStore();
+  const {
+    activeStudy,
+    segments,
+    selectedSegmentId,
+    selectSegment,
+    loadStatus,
+    loadErrors,
+  } = useCountyStudioStore();
   const [sortKey, setSortKey] = useState<SortKey>('name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
 
@@ -124,8 +136,15 @@ export function SegmentTable({ filter }: { filter?: (seg: CountySegmentDto) => b
   }
 
   if (segments.length === 0) {
+    const needsDerive = !!activeStudy && !activeStudy.activeSegmentSetId;
+    const emptyMessage = !activeStudy
+      ? 'No segments loaded — open a study to begin.'
+      : needsDerive
+        ? 'No active segment set yet — use Derive Segment Metrics in the left rail.'
+        : 'The active segment set returned no rows for this scope.';
     return (
       <div
+        data-testid={needsDerive ? 'segment-table-empty-derive' : 'segment-table-empty'}
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -133,9 +152,11 @@ export function SegmentTable({ filter }: { filter?: (seg: CountySegmentDto) => b
           height: '100%',
           color: 'hsl(var(--tf-muted))',
           fontSize: 13,
+          padding: 16,
+          textAlign: 'center',
         }}
       >
-        No segments loaded — open a study to begin.
+        {emptyMessage}
       </div>
     );
   }
@@ -164,7 +185,7 @@ export function SegmentTable({ filter }: { filter?: (seg: CountySegmentDto) => b
     });
 
   const cols: { label: string; key: SortKey }[] = [
-    { label: 'Segment', key: 'name' },
+    { label: 'Segment (Reval / Neighborhood)', key: 'name' },
     { label: 'Parcels', key: 'parcelCount' },
     { label: 'Median Ratio', key: 'medianRatio' },
     { label: 'COD', key: 'cod' },
@@ -195,6 +216,14 @@ export function SegmentTable({ filter }: { filter?: (seg: CountySegmentDto) => b
           {sorted.map((seg) => {
             const isSelected = seg.segmentId === selectedSegmentId;
             const { bg: stabBg, severity } = stabilityColor(seg.stabilityScore);
+            const identity = parseSegmentIdentity(seg.name, {
+              neighborhoodCode: seg.geographyRef,
+              revalArea: seg.revalArea,
+              buildingType: seg.buildingType,
+              qualityGrade: seg.qualityGrade,
+            });
+            const scopeLabel = formatOperationalPrimary(identity);
+            const descriptor = formatOperationalDescriptor(identity);
 
             return (
               <tr
@@ -207,7 +236,15 @@ export function SegmentTable({ filter }: { filter?: (seg: CountySegmentDto) => b
                 }}
               >
                 <td style={{ padding: '7px 8px', fontWeight: isSelected ? 600 : 400 }}>
-                  {seg.name}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <span style={{ color: 'hsl(var(--tf-fg))' }}>
+                      {scopeLabel}
+                    </span>
+                    <span style={{ fontSize: 11, color: 'hsl(var(--tf-muted))' }}>
+                      {seg.segmentType}
+                      {descriptor ? ` · ${descriptor}` : ''}
+                    </span>
+                  </div>
                 </td>
                 <td style={{ padding: '7px 8px', color: 'hsl(var(--tf-muted))' }}>
                   {seg.parcelCount.toLocaleString()}

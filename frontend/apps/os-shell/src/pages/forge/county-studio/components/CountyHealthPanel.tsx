@@ -16,6 +16,10 @@ import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { useStudyData } from '../hooks/useStudyData';
 import { CountyDiagnosisModal } from './CountyDiagnosisModal';
 import { ExportPacketModal } from './ExportPacketModal';
+import {
+  formatOperationalPrimary,
+  parseSegmentIdentity,
+} from '../utils/segmentIdentity';
 import type {
   CountyHealthComplianceStatus,
   CountyHealthSummaryDto,
@@ -157,6 +161,13 @@ const AlertRow = ({
 }) => {
   const bucket = riskBucket(alert.compositeRisk);
   const extraReasons = alert.reasons.length > 1 ? ` (+${alert.reasons.length - 1} more)` : '';
+  const identity = parseSegmentIdentity(alert.segmentName, {
+    neighborhoodCode: alert.neighborhoodCode,
+    revalArea: alert.revalArea,
+    buildingType: alert.buildingType,
+    qualityGrade: alert.qualityGrade,
+  });
+  const scopeLabel = formatOperationalPrimary(identity);
   return (
     <button
       type="button"
@@ -185,10 +196,10 @@ const AlertRow = ({
       </span>
       <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1 }}>
         <span style={{ fontSize: 12, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {alert.segmentName}
+          {scopeLabel}
         </span>
         <span style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {alert.city ?? 'Unincorporated'} · {alert.neighborhoodCode ?? '—'} · {alert.parcelCount.toLocaleString()} parcels
+          {alert.city ?? 'Unincorporated'} · {alert.parcelCount.toLocaleString()} parcels
         </span>
         <span style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {alert.reasons[0] ?? 'no triggers'}{extraReasons}
@@ -373,6 +384,7 @@ export function CountyHealthPanel() {
           a.city ?? 'Unincorporated',
           a.neighborhoodCode ?? 'UNKNOWN',
           a.segmentId,
+          a.revalArea,
         );
       }}
       onCriticalClick={() => {

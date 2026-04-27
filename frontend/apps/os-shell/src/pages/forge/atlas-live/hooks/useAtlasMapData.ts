@@ -1,41 +1,35 @@
-// useAtlasMapData — loads canonical neighborhood outlines + parcel tiles from
-// the GeoForge v2 endpoints so AtlasLivePage can render real Benton County
-// geometry instead of an empty basemap.
-//
-// Inputs:
-//   taxYear (default 2026)
-//   neighborhoodCode (optional filter; null = county-wide)
-//
-// Output:
-//   { outlines, parcels, loading, error }
-//
-// Cancellation: abort controllers tied to effect lifecycle — if the component
-// unmounts or taxYear/neighborhoodCode changes mid-flight, in-flight requests
-// are aborted so stale responses don't overwrite fresher ones.
-
 import { useEffect, useState } from 'react';
+import type {
+  AtlasCountyContext,
+  AtlasRouteScope,
+} from '../atlasLiveApi';
 import {
-  fetchNbhdOutlines,
-  fetchParcelTiles,
-  type NbhdOutlineCollection,
-  type ParcelTileCollection,
+  fetchAtlasCompatibilityMapData,
+  fetchAtlasCountyContext,
+} from '../atlasLiveApi';
+import type {
+  NbhdOutlineCollection,
+  ParcelTileCollection,
 } from '../../geo/v2/v2Api';
 
 export interface AtlasMapData {
+  countyContext: AtlasCountyContext | null;
   outlines: NbhdOutlineCollection | null;
   parcels: ParcelTileCollection | null;
   loading: boolean;
   error: string | null;
+  scopeMessage: string | null;
 }
 
-export function useAtlasMapData(
-  taxYear: number = 2026,
-  neighborhoodCode: string | null = null,
-): AtlasMapData {
+const UNSCOPED_MESSAGE = 'Open Atlas Live View from County Studio to load county-scoped map context.';
+
+export function useAtlasMapData(scope: AtlasRouteScope): AtlasMapData {
+  const [countyContext, setCountyContext] = useState<AtlasCountyContext | null>(null);
   const [outlines, setOutlines] = useState<NbhdOutlineCollection | null>(null);
-  const [parcels,  setParcels]  = useState<ParcelTileCollection | null>(null);
-  const [loading,  setLoading]  = useState<boolean>(true);
-  const [error,    setError]    = useState<string | null>(null);
+  const [parcels, setParcels] = useState<ParcelTileCollection | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [scopeMessage, setScopeMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -43,51 +37,90 @@ export function useAtlasMapData(
 
     setLoading(true);
     setError(null);
+    setScopeMessage(null);
+    setCountyContext(null);
+    setOutlines(null);
+    setParcels(null);
 
-    // Fire both fetches in parallel; settle independently so a failure on one
-    // doesn't orphan the other.
-    Promise.allSettled([
-      fetchNbhdOutlines(taxYear, controller.signal),
-      fetchParcelTiles({
-        taxYear,
-        neighborhoodCode,
-        limit: 5000,   // Benton ≈ 89K parcels; cap the first-load tile set for
-                       // performance. Viewport-bound pagination is a future enhancement.
-        signal: controller.signal,
-      }),
-    ])
-      .then(([outlinesResult, parcelsResult]) => {
+    const resolvedCountyName = scope.countyName?.trim() || null;
+    const resolvedCountyCode = scope.countyCode?.trim() || null;
+    const canResolveScope = Boolean(
+      resolvedCountyName
+      || resolvedCountyCode
+      || scope.countyId,
+    );
+
+    if (!canResolveScope) {
+      setScopeMessage(UNSCOPED_MESSAGE);
+      setLoading(false);
+      return () => {
+        controller.abort();
+      };
+    }
+
+    const load = async () => {
+      try {
+        const context = await fetchAtlasCountyContext(scope, controller.signal);
         if (cancelled) return;
 
-        if (outlinesResult.status === 'fulfilled') {
-          setOutlines(outlinesResult.value);
-        } else {
-          // Don't clobber parcels with the outlines error; capture it and move on.
-          console.warn('[useAtlasMapData] outline fetch failed:', outlinesResult.reason);
+        if (!context) {
+          setError('County context unavailable for this Atlas session.');
+          return;
         }
 
-        if (parcelsResult.status === 'fulfilled') {
-          setParcels(parcelsResult.value);
-        } else {
-          console.warn('[useAtlasMapData] parcel fetch failed:', parcelsResult.reason);
+        setCountyContext(context);
+        setScopeMessage(context.geometryMessage);
+
+        if (context.geometryAvailability !== 'compatibility') {
+          return;
         }
 
-        // Only flag the combined call as failed if BOTH endpoints errored —
-        // a partial result still renders a useful map (outlines alone is fine).
-        if (outlinesResult.status === 'rejected' && parcelsResult.status === 'rejected') {
-          const msg = String(outlinesResult.reason?.message ?? outlinesResult.reason ?? 'unknown error');
-          setError(`Map data unavailable: ${msg}`);
+        const mapData = await fetchAtlasCompatibilityMapData(
+          context.countyCode,
+          context.taxYear,
+          context.neighborhoodCode,
+          controller.signal,
+        );
+
+        if (cancelled) return;
+
+        setOutlines(mapData.outlines);
+        setParcels(mapData.parcels);
+      } catch (loadError) {
+        if (cancelled) return;
+        const message = loadError instanceof Error
+          ? loadError.message
+          : 'Atlas map data unavailable.';
+        setError(message);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
         }
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+      }
+    };
+
+    void load();
 
     return () => {
       cancelled = true;
       controller.abort();
     };
-  }, [taxYear, neighborhoodCode]);
+  }, [
+    scope.countyCode,
+    scope.countyId,
+    scope.countyName,
+    scope.neighborhoodCode,
+    scope.segmentId,
+    scope.studyId,
+    scope.taxYear,
+  ]);
 
-  return { outlines, parcels, loading, error };
+  return {
+    countyContext,
+    outlines,
+    parcels,
+    loading,
+    error,
+    scopeMessage,
+  };
 }

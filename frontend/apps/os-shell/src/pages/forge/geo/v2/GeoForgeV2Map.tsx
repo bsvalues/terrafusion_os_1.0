@@ -18,11 +18,13 @@ import type { MapContextPayload } from './mapContext';
 const MAPBOX_TOKEN = (import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string | undefined) ?? '';
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
-const BENTON_CENTER: [number, number] = [-119.3, 46.25];
-const BENTON_ZOOM = 10;
+const DEFAULT_CENTER: [number, number] = [-120.9, 47.35];
+const DEFAULT_ZOOM = 6.6;
 const PARCEL_ZOOM_MIN = 13;
 
 interface Props {
+  mapRef?: React.RefObject<unknown>;
+  onMapReady?: (map: unknown | null) => void;
   outlines: NbhdOutlineCollection | null;
   parcels: ParcelTileCollection | null;
   selectedNeighborhoodCode: string | null;
@@ -31,9 +33,15 @@ interface Props {
   onViewportChange: (bbox: [number, number, number, number], zoom: number) => void;
   visibleLayers: Set<V2LayerId>;
   mapCtx: MapContextPayload;
+  initialViewport?: {
+    center: [number, number];
+    zoom: number;
+  };
 }
 
 export function GeoForgeV2Map({
+  mapRef: externalMapRef,
+  onMapReady,
   outlines,
   parcels,
   selectedNeighborhoodCode,
@@ -42,6 +50,7 @@ export function GeoForgeV2Map({
   onViewportChange,
   visibleLayers,
   mapCtx,
+  initialViewport,
 }: Props) {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -54,9 +63,9 @@ export function GeoForgeV2Map({
     const map = new mapboxgl.Map({
       container: containerRef.current,
       style: 'mapbox://styles/mapbox/light-v11',
-      center: BENTON_CENTER,
-      zoom: BENTON_ZOOM,
-      minZoom: 8,
+      center: initialViewport?.center ?? DEFAULT_CENTER,
+      zoom: initialViewport?.zoom ?? DEFAULT_ZOOM,
+      minZoom: 6,
       maxZoom: 18,
     });
 
@@ -79,6 +88,7 @@ export function GeoForgeV2Map({
       map.addSource('parcels', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] },
+        promoteId: 'parcelId',
       });
 
       // Layer: neighborhood fill (under parcels)
@@ -154,16 +164,25 @@ export function GeoForgeV2Map({
         paint: {
           // Color by ratioDeviation: sage if under, terracotta if over, parchment if no sale
           'fill-color': [
-            'case',
-            ['==', ['get', 'ratio'], null],
-            'hsl(42, 18%, 88%)',
-            ['<=', ['get', 'ratioDeviation'], -0.10], 'hsl(140, 22%, 42%)',
-            ['<=', ['get', 'ratioDeviation'], -0.05], 'hsl(140, 28%, 58%)',
-            ['<=', ['get', 'ratioDeviation'],  0.05], 'hsl(44, 16%, 92%)',
-            ['<=', ['get', 'ratioDeviation'],  0.10], 'hsl(16, 55%, 66%)',
-            'hsl(16, 62%, 48%)',
+            'coalesce',
+            ['feature-state', 'atlasColor'],
+            [
+              'case',
+              ['==', ['get', 'ratio'], null],
+              'hsl(42, 18%, 88%)',
+              ['<=', ['get', 'ratioDeviation'], -0.10], 'hsl(140, 22%, 42%)',
+              ['<=', ['get', 'ratioDeviation'], -0.05], 'hsl(140, 28%, 58%)',
+              ['<=', ['get', 'ratioDeviation'],  0.05], 'hsl(44, 16%, 92%)',
+              ['<=', ['get', 'ratioDeviation'],  0.10], 'hsl(16, 55%, 66%)',
+              'hsl(16, 62%, 48%)',
+            ],
           ],
-          'fill-opacity': 0.55,
+          'fill-opacity': [
+            'case',
+            ['boolean', ['feature-state', 'atlasOverlayActive'], false],
+            0.82,
+            0.55,
+          ],
           'fill-outline-color': 'hsla(30, 20%, 25%, 0.25)',
         },
       });
@@ -240,13 +259,21 @@ export function GeoForgeV2Map({
     });
 
     mapRef.current = map;
+    if (externalMapRef) {
+      (externalMapRef as { current: unknown }).current = map;
+    }
+    onMapReady?.(map);
 
     return () => {
+      if (externalMapRef) {
+        (externalMapRef as { current: unknown }).current = null;
+      }
+      onMapReady?.(null);
       map.remove();
       mapRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [externalMapRef, initialViewport, onMapReady]);
 
   // ── Push outlines to source ───────────────────────────────
   useEffect(() => {
@@ -300,6 +327,17 @@ export function GeoForgeV2Map({
       }
     }
   }, [selectedNeighborhoodCode, outlines]);
+
+  // ── Recenter when the caller upgrades route scope after mount ─────────
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !initialViewport || selectedNeighborhoodCode) return;
+
+    map.jumpTo({
+      center: initialViewport.center,
+      zoom: initialViewport.zoom,
+    });
+  }, [initialViewport, selectedNeighborhoodCode]);
 
   // ── Sync layer visibility ─────────────────────────────────
   useEffect(() => {

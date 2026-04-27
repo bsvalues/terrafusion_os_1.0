@@ -81,13 +81,16 @@ export interface CountyStudioState {
    * Current drill level — governs which table the center panel renders.
    *   'county'       — CityRollupTable visible, selectedCity/selectedNeighborhood null.
    *   'city'         — NeighborhoodRollupTable filtered to selectedCity.
-   *   'neighborhood' — SegmentTable filtered to segments with GeographyRef === selectedNeighborhood.
+   *   'neighborhood' — SegmentTable filtered to segments with GeographyRef ===
+   *     selectedNeighborhood and, when present, segment.RevalArea ===
+   *     selectedNeighborhoodRevalArea.
    * Transitions are enforced by drillTo* actions so callers cannot leave the
    * store in an inconsistent state (e.g. level=city with no selectedCity).
    */
   drillLevel: DrillLevel;
   selectedCity: string | null;
   selectedNeighborhood: string | null;
+  selectedNeighborhoodRevalArea: number | null;
 
   cityRollup: CityRollupRowDto[];
   neighborhoodRollup: NeighborhoodRollupRowDto[];
@@ -148,7 +151,7 @@ export interface CountyStudioState {
    * neighborhood are required so the state machine can never land at
    * drillLevel='neighborhood' without a parent city.
    */
-  drillToNeighborhood: (city: string, neighborhoodCode: string) => void;
+  drillToNeighborhood: (city: string, neighborhoodCode: string, revalArea?: number | null) => void;
   /**
    * Jump straight to a specific segment — parent city + neighborhood are both
    * required so the drill state stays consistent. Used by CountyHealthPanel
@@ -157,7 +160,7 @@ export interface CountyStudioState {
    * Sets drillLevel='neighborhood' (so the SegmentTable renders) and pre-selects
    * the segment via selectedSegmentId (so RightRail shows its detail).
    */
-  drillToSegment: (city: string, neighborhoodCode: string, segmentId: string) => void;
+  drillToSegment: (city: string, neighborhoodCode: string, segmentId: string, revalArea?: number | null) => void;
 
   /**
    * Epoch ms timestamp of the last successful scenario promote, or null if none
@@ -216,6 +219,7 @@ export const useCountyStudioStore = create<CountyStudioState>()(
       drillLevel: 'county',
       selectedCity: null,
       selectedNeighborhood: null,
+      selectedNeighborhoodRevalArea: null,
       cityRollup: [],
       neighborhoodRollup: [],
       healthSummary: null,
@@ -293,6 +297,7 @@ export const useCountyStudioStore = create<CountyStudioState>()(
             drillLevel: 'county',
             selectedCity: null,
             selectedNeighborhood: null,
+            selectedNeighborhoodRevalArea: null,
             selectedSegmentId: null,
           },
           false,
@@ -304,32 +309,35 @@ export const useCountyStudioStore = create<CountyStudioState>()(
             drillLevel: 'city',
             selectedCity: city,
             selectedNeighborhood: null,
+            selectedNeighborhoodRevalArea: null,
             selectedSegmentId: null,
           },
           false,
           `drillToCity/${city}`
         ),
-      drillToNeighborhood: (city, neighborhoodCode) =>
+      drillToNeighborhood: (city, neighborhoodCode, revalArea = null) =>
         set(
           {
             drillLevel: 'neighborhood',
             selectedCity: city,
             selectedNeighborhood: neighborhoodCode,
+            selectedNeighborhoodRevalArea: revalArea,
             selectedSegmentId: null,
           },
           false,
-          `drillToNeighborhood/${city}/${neighborhoodCode}`
+          `drillToNeighborhood/${city}/${neighborhoodCode}/${revalArea ?? 'na'}`
         ),
-      drillToSegment: (city, neighborhoodCode, segmentId) =>
+      drillToSegment: (city, neighborhoodCode, segmentId, revalArea = null) =>
         set(
           {
             drillLevel: 'neighborhood',
             selectedCity: city,
             selectedNeighborhood: neighborhoodCode,
+            selectedNeighborhoodRevalArea: revalArea,
             selectedSegmentId: segmentId,
           },
           false,
-          `drillToSegment/${city}/${neighborhoodCode}/${segmentId}`
+          `drillToSegment/${city}/${neighborhoodCode}/${revalArea ?? 'na'}/${segmentId}`
         ),
     }),
     { name: 'CountyStudioStore' }

@@ -311,6 +311,7 @@ export function GeoForgeV2Page() {
           onNeighborhoodClick={handleNbhdSelect}
           onParcelClick={(p) => setSelectedParcel(p)}
           onViewportChange={handleViewport}
+          initialViewport={{ center: [-119.3, 46.25], zoom: 10 }}
         />
         {selectedParcel && (
           <ParcelCard parcel={selectedParcel} onClose={() => setSelectedParcel(null)} />

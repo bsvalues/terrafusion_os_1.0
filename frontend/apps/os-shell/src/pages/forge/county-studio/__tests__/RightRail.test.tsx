@@ -44,6 +44,40 @@ function setDrillState({
 }
 
 beforeEach(() => {
+  act(() => {
+    useCountyStudioStore.getState().setStudy({
+      studyId: 'study-1',
+      countyId: 'benton',
+      countyName: 'Benton County',
+      taxYear: 2026,
+      studyType: 'RatioStudy',
+      status: 'Active',
+      baselineVersion: null,
+      activeSegmentSetId: 'set-1',
+      createdAt: '',
+      updatedAt: '',
+      createdBy: 'test',
+      updatedBy: 'test',
+    });
+    useCountyStudioStore.getState().setCohorts([]);
+    useCountyStudioStore.getState().setScenarios([]);
+    useCountyStudioStore.getState().setSegments([
+      {
+        segmentId: 'seg-42',
+        segmentSetId: 'set-1',
+        name: 'NBHD-K1 · R1 · STANDARD',
+        segmentType: 'Residential',
+        parcelCount: 412,
+        medianRatio: 0.97,
+        cod: 14.2,
+        prd: 1.01,
+        stabilityScore: 72,
+        riskScore: 35,
+        exceptionCount: 8,
+        geographyRef: 'NBHD-K1',
+      },
+    ]);
+  });
   setDrillState();
 });
 
@@ -71,7 +105,7 @@ describe('RightRail — tab switching', () => {
 
   it('clicking Govnc tab shows AdjustmentSetPanel', () => {
     render(<RightRail />);
-    fireEvent.click(screen.getByText('Govnc'));
+    fireEvent.click(screen.getByText('Governance'));
     expect(screen.getByTestId('mock-adjustment-set-panel')).toBeInTheDocument();
   });
 
@@ -88,7 +122,15 @@ describe('RightRail — tab switching', () => {
     expect(screen.getByText('Inspector')).toBeInTheDocument();
     expect(screen.getByText('Scenario')).toBeInTheDocument();
     expect(screen.getByText('Compare')).toBeInTheDocument();
-    expect(screen.getByText('Govnc')).toBeInTheDocument();
+    expect(screen.getByText('Governance')).toBeInTheDocument();
+  });
+
+  it('renders scope and active panel summary above the tabs', () => {
+    render(<RightRail />);
+    expect(screen.getByTestId('right-rail-scope-label')).toHaveTextContent('Benton County');
+    expect(screen.getByTestId('right-rail-panel-summary')).toHaveTextContent(/route corrective action/i);
+    fireEvent.click(screen.getByText('Scenario'));
+    expect(screen.getByTestId('right-rail-panel-summary')).toHaveTextContent(/preview impact before saving/i);
   });
 });
 
@@ -120,6 +162,7 @@ describe('RightRail — InspectorForScope routing', () => {
     render(<RightRail />);
     expect(screen.getByTestId('mock-object-inspector')).toBeInTheDocument();
     expect(screen.queryByTestId('mock-neighborhood-inspector')).not.toBeInTheDocument();
+    expect(screen.getByTestId('right-rail-scope-label')).toHaveTextContent('Neighborhood NBHD-K1 · R1 · STANDARD');
   });
 
   it('renders ObjectInspector when segment selected at city drillLevel', () => {

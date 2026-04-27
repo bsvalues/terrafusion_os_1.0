@@ -23,6 +23,7 @@ import { CohortCreationDialog } from './components/CohortCreationDialog';
 import { OpenStudyDialog } from './components/OpenStudyDialog';
 import { LoadErrorBanner } from './components/LoadErrorBanner';
 import { CountyHealthPanel } from './components/CountyHealthPanel';
+import { CountyCommandStrip } from './components/CountyCommandStrip';
 import { useCountyStudyHub } from './hooks/useCountyStudyHub';
 import { useStudyData } from './hooks/useStudyData';
 import type { CountySegmentDto } from './types/countyStudio.types';
@@ -69,7 +70,7 @@ const syncColor: Record<string, string> = {
 
 export function CountyStudyPage() {
   const {
-    activeStudy, syncState, drillLevel, selectedNeighborhood,
+    activeStudy, syncState, drillLevel, selectedNeighborhood, selectedNeighborhoodRevalArea,
   } = useCountyStudioStore();
   const [showOpenStudy, setShowOpenStudy] = useState(false);
   const [segmentFilter, setSegmentFilter] = useState<SegmentSeverityFilter>('all');
@@ -82,7 +83,15 @@ export function CountyStudyPage() {
 
   const handleOpenAtlas = () => {
     if (!activeStudy) return;
-    navigate(`/forge/atlas-live?studyId=${activeStudy.studyId}&countyId=${activeStudy.countyId}`);
+    const params = new URLSearchParams({
+      studyId: activeStudy.studyId,
+      countyId: activeStudy.countyId,
+      taxYear: String(activeStudy.taxYear),
+    });
+    if (activeStudy.countyName) {
+      params.set('countyName', activeStudy.countyName);
+    }
+    navigate(`/forge/atlas-live?${params.toString()}`);
   };
 
   // Compose segment filter: severity pill AND selectedNeighborhood (when at the
@@ -91,12 +100,14 @@ export function CountyStudyPage() {
   const segmentFilterFn = useMemo(() => {
     const severity = SEGMENT_FILTERS[segmentFilter];
     const hood = drillLevel === 'neighborhood' ? selectedNeighborhood : null;
+    const revalArea = drillLevel === 'neighborhood' ? selectedNeighborhoodRevalArea : null;
     return (seg: CountySegmentDto) => {
       if (severity && !severity(seg)) return false;
       if (hood && seg.geographyRef !== hood) return false;
+      if (revalArea !== null && seg.revalArea !== revalArea) return false;
       return true;
     };
-  }, [segmentFilter, drillLevel, selectedNeighborhood]);
+  }, [segmentFilter, drillLevel, selectedNeighborhood, selectedNeighborhoodRevalArea]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -148,6 +159,8 @@ export function CountyStudyPage() {
       {/* Load Error Banner — surfaces failed segments/cohorts/scenarios fetches with a retry */}
       <LoadErrorBanner onRetry={retryAll} />
 
+      <CountyCommandStrip />
+
       {/* Body Grid — 3 columns */}
       <div style={{ display: 'grid', gridTemplateColumns: '210px 1fr 360px', flex: 1, minHeight: 0 }}>
         <div data-testid="cs-left-rail" style={{ borderRight: '1px solid hsl(var(--tf-border, 220 13% 20%))', overflowY: 'auto' }}>
@@ -167,6 +180,18 @@ export function CountyStudyPage() {
             {drillLevel === 'county' && (
               <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto' }}>
                 <CountyHealthPanel />
+                <div
+                  data-testid="county-operational-scope-note"
+                  style={{
+                    padding: '8px 12px',
+                    borderBottom: '1px solid hsl(var(--tf-border))',
+                    background: 'hsl(var(--tf-bg))',
+                    fontSize: 11,
+                    color: 'hsl(var(--tf-muted))',
+                  }}
+                >
+                  Cities stay overview-only here. Counties actually defend values and route action by neighborhood and reval-area segment.
+                </div>
                 <div style={{ flex: 1, minHeight: 0 }}>
                   <CityRollupTable />
                 </div>

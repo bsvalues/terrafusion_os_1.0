@@ -77,6 +77,7 @@ public class CountyStudyInspectorService : ICountyStudyInspectorService
                 $"Study {segmentSet.StudyId} missing for segment {segmentId}");
 
         var rule = ParseRule(segment.RuleDefinition);
+        var metadata = CountySegmentMetadataSupport.Parse(segment.RuleDefinition, segment.GeographyRef);
 
         // Build the parcel-level ratio set this segment represents. Mirrors
         // derivation's grouping key exactly so PRB/VEI see the same population.
@@ -134,7 +135,10 @@ public class CountyStudyInspectorService : ICountyStudyInspectorService
             Name:                 segment.Name,
             SegmentType:          segment.SegmentType.ToString(),
             City:                 city,
-            NeighborhoodCode:     segment.GeographyRef,
+            NeighborhoodCode:     metadata.NeighborhoodCode,
+            RevalArea:            metadata.RevalArea,
+            BuildingType:         metadata.BuildingType,
+            QualityGrade:         metadata.QualityGrade,
             ParcelCount:          segment.ParcelCount,
             MedianRatio:          segment.MedianRatio,
             Cod:                  segment.CoefficientOfDispersion,
@@ -177,6 +181,7 @@ public class CountyStudyInspectorService : ICountyStudyInspectorService
                 $"Study {segmentSet.StudyId} missing for segment {segmentId}");
 
         var rule = ParseRule(segment.RuleDefinition);
+        var metadata = CountySegmentMetadataSupport.Parse(segment.RuleDefinition, segment.GeographyRef);
         var city = await ResolveCityAsync(study, rule, ct);
 
         // Load the parcels this segment represents (derivation's grouping key)
@@ -230,7 +235,8 @@ public class CountyStudyInspectorService : ICountyStudyInspectorService
             TaxYear:          study.TaxYear,
             SegmentType:      segment.SegmentType.ToString(),
             City:             city,
-            NeighborhoodCode: segment.GeographyRef,
+            NeighborhoodCode: metadata.NeighborhoodCode,
+            RevalArea:        metadata.RevalArea,
             ParcelIds:        cappedIds,
             TotalParcels:     totalParcels,
             Truncated:        truncated,

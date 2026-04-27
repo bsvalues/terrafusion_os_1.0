@@ -237,19 +237,26 @@ export function NeighborhoodRollupTable() {
               const { bg: stabBg, severity } = stabilityColor(row.stabilityScore);
               return (
                 <tr
-                  key={row.neighborhoodCode}
+                  key={`${row.neighborhoodCode}:${row.revalArea ?? 'na'}`}
                   data-testid="nbhd-rollup-row"
-                  onClick={() => drillToNeighborhood(row.city, row.neighborhoodCode)}
+                  onClick={() => drillToNeighborhood(row.city, row.neighborhoodCode, row.revalArea)}
                   style={{
                     cursor: 'pointer',
                     borderBottom: '1px solid hsl(var(--tf-border))',
                   }}
                 >
                   <td style={{ padding: '7px 8px', fontWeight: 600 }}>
-                    {row.neighborhoodName}
-                    <span style={{ marginLeft: 8, fontWeight: 400, fontSize: 11, color: 'hsl(var(--tf-muted))' }}>
-                      {row.city}
-                    </span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <span style={{ color: 'hsl(var(--tf-fg))' }}>
+                        {row.neighborhoodName === row.neighborhoodCode
+                          ? `Neighborhood ${row.neighborhoodCode}`
+                          : row.neighborhoodName}
+                      </span>
+                      <span style={{ fontWeight: 400, fontSize: 11, color: 'hsl(var(--tf-muted))' }}>
+                        {row.city}
+                        {row.revalArea !== null ? ` · Reval ${row.revalArea}` : ''}
+                      </span>
+                    </div>
                   </td>
                   <td style={{ padding: '7px 8px', color: 'hsl(var(--tf-muted))' }}>{row.segmentCount}</td>
                   <td style={{ padding: '7px 8px', color: 'hsl(var(--tf-muted))' }}>{row.parcelCount.toLocaleString()}</td>

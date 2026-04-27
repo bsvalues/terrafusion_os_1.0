@@ -128,7 +128,9 @@ describe('CountyDiagnosisModal', () => {
     });
     const user = userEvent.setup();
     await user.click(screen.getByTestId('diagnosis-top-problem-sg-kenn-1'));
-    expect(drillToSegmentMock).toHaveBeenCalledWith('Kennewick', 'NBHD-K1', 'sg-kenn-1');
+    // 4th arg (revalArea) added when convergence WIP introduced segment-aware
+    // drilldown context. Mock data has no reval area so the value is null.
+    expect(drillToSegmentMock).toHaveBeenCalledWith('Kennewick', 'NBHD-K1', 'sg-kenn-1', null);
     expect(onClose).toHaveBeenCalled();
   });
 

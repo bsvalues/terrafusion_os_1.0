@@ -332,8 +332,8 @@ public sealed class CountyStudyRollupTests : IDisposable
         var svcMock = new Mock<ICountyStudyService>();
         var expected = new List<CityRollupRowDto>
         {
-            new("Kennewick", 6, 30, 0.95m, 3.0m, 1.0m, 0, 0m, "NBHD-K1 · R1 · STANDARD", 0.95m, nameof(RollupComplianceStatus.IaaoCompliant)),
-            new("Richland",  6, 30, 0.95m, 3.0m, 1.0m, 0, 0m, "NBHD-R1 · R1 · STANDARD", 0.95m, nameof(RollupComplianceStatus.IaaoCompliant)),
+            new("Kennewick", 6, 30, 0.95m, 3.0m, 1.0m, 0, 0m, "NBHD-K1 · R1 · STANDARD", 0.95m, "NBHD-K1", 1, "R1", "STANDARD", nameof(RollupComplianceStatus.IaaoCompliant)),
+            new("Richland",  6, 30, 0.95m, 3.0m, 1.0m, 0, 0m, "NBHD-R1 · R1 · STANDARD", 0.95m, "NBHD-R1", 1, "R1", "STANDARD", nameof(RollupComplianceStatus.IaaoCompliant)),
         };
         svcMock.Setup(s => s.GetCityRollupAsync(It.IsAny<Guid>())).ReturnsAsync(expected);
 
@@ -371,7 +371,7 @@ public sealed class CountyStudyRollupTests : IDisposable
         svcMock.Setup(s => s.GetNeighborhoodRollupAsync(It.IsAny<Guid>(), "Kennewick"))
                .ReturnsAsync(new List<NeighborhoodRollupRowDto>
                {
-                   new("NBHD-K1", "NBHD-K1", "Kennewick", 2, 10, 0.95m, 3.0m, 1.0m, 85m, 22m, 0, 0m, nameof(RollupComplianceStatus.IaaoCompliant)),
+                   new("NBHD-K1", "NBHD-K1", "Kennewick", 1, 2, 10, 0.95m, 3.0m, 1.0m, 85m, 22m, 0, 0m, nameof(RollupComplianceStatus.IaaoCompliant)),
                });
 
         var controller = BuildController(svcMock.Object, countyId, SeedStudy(studyId, countyId));

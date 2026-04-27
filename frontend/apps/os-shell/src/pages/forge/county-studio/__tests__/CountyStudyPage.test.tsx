@@ -21,6 +21,9 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => (
 
 const MOCK_SEG: CountySegmentDto = {
   segmentId: 's1', segmentSetId: 'ss1', name: 'NBHD-K1 · R1 · STANDARD',
+  revalArea: 2,
+  buildingType: 'R1',
+  qualityGrade: 'STANDARD',
   segmentType: 'Residential', parcelCount: 412, medianRatio: 0.97,
   cod: 14.2, prd: 1.01, stabilityScore: 72, riskScore: 35,
   exceptionCount: 5, geographyRef: 'NBHD-K1',
@@ -28,6 +31,9 @@ const MOCK_SEG: CountySegmentDto = {
 
 const FAILING_SEG: CountySegmentDto = {
   segmentId: 's2', segmentSetId: 'ss1', name: 'NBHD-K1 · R1 · GOOD',
+  revalArea: 2,
+  buildingType: 'R1',
+  qualityGrade: 'GOOD',
   segmentType: 'Commercial', parcelCount: 89, medianRatio: 0.84,
   cod: 22.8, prd: 1.06, stabilityScore: 48, riskScore: 78,
   exceptionCount: 22, geographyRef: 'NBHD-K1',
@@ -38,11 +44,16 @@ const MOCK_CITY_ROW: CityRollupRowDto = {
   medianRatio: 0.95, cod: 15.0, prd: 1.02,
   exceptionCount: 27, exceptionRate: 0.054,
   worstSegmentName: 'NBHD-K1 · R1 · GOOD', worstSegmentMedianRatio: 0.84,
+  worstSegmentNeighborhoodCode: 'NBHD-K1',
+  worstSegmentRevalArea: 2,
+  worstSegmentBuildingType: 'R1',
+  worstSegmentQualityGrade: 'GOOD',
   complianceStatus: 'MarginalCompliance',
 };
 
 const MOCK_NBHD_ROW: NeighborhoodRollupRowDto = {
   neighborhoodCode: 'NBHD-K1', neighborhoodName: 'NBHD-K1', city: 'Kennewick',
+  revalArea: 2,
   segmentCount: 2, parcelCount: 501, medianRatio: 0.95, cod: 15.0, prd: 1.02,
   stabilityScore: 60, riskScore: 55, exceptionCount: 27, exceptionRate: 0.054,
   complianceStatus: 'MarginalCompliance',
@@ -104,6 +115,7 @@ describe('CountyStudyPage', () => {
     const panel = screen.getByTestId('cs-drill-panel');
     expect(panel.dataset.drillLevel).toBe('county');
     expect(screen.getByText('Kennewick')).toBeInTheDocument();
+    expect(screen.getByTestId('county-operational-scope-note')).toHaveTextContent(/neighborhood and reval-area segment/i);
   });
 
   it('city level renders the NeighborhoodRollupTable for selectedCity', () => {
@@ -114,32 +126,36 @@ describe('CountyStudyPage', () => {
     render(<CountyStudyPage />, { wrapper: Wrapper });
     const panel = screen.getByTestId('cs-drill-panel');
     expect(panel.dataset.drillLevel).toBe('city');
-    expect(screen.getByText('NBHD-K1')).toBeInTheDocument();
+    expect(screen.getByText(/Neighborhood NBHD-K1/i)).toBeInTheDocument();
   });
 
   it('neighborhood level renders SegmentTable filtered to selectedNeighborhood', () => {
     const otherHood: CountySegmentDto = {
-      ...MOCK_SEG, segmentId: 's9', name: 'Other Hood Segment', geographyRef: 'NBHD-K2',
+      ...MOCK_SEG, segmentId: 's9', name: 'Other Hood Segment', geographyRef: 'NBHD-K2', revalArea: 5,
+    };
+    const wrongReval: CountySegmentDto = {
+      ...MOCK_SEG, segmentId: 's10', name: 'NBHD-K1 · R5 · STANDARD', revalArea: 5,
     };
     act(() => {
-      useCountyStudioStore.getState().setSegments([MOCK_SEG, otherHood]);
-      useCountyStudioStore.getState().drillToNeighborhood('Kennewick', 'NBHD-K1');
+      useCountyStudioStore.getState().setSegments([MOCK_SEG, otherHood, wrongReval]);
+      useCountyStudioStore.getState().drillToNeighborhood('Kennewick', 'NBHD-K1', 2);
     });
     render(<CountyStudyPage />, { wrapper: Wrapper });
-    // Only the segment whose geographyRef matches NBHD-K1 should render.
-    expect(screen.getByText('NBHD-K1 · R1 · STANDARD')).toBeInTheDocument();
+    // Only the segment whose geographyRef and reval match the drill should render.
+    expect(screen.getByText('Residential · R1 · STANDARD')).toBeInTheDocument();
     expect(screen.queryByText('Other Hood Segment')).not.toBeInTheDocument();
+    expect(screen.queryByText('NBHD-K1 · R5 · STANDARD')).not.toBeInTheDocument();
   });
 
   it('severity filter pill (Critical) hides healthy segments at neighborhood level', () => {
     act(() => {
       useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG]);
-      useCountyStudioStore.getState().drillToNeighborhood('Kennewick', 'NBHD-K1');
+      useCountyStudioStore.getState().drillToNeighborhood('Kennewick', 'NBHD-K1', 2);
     });
     render(<CountyStudyPage />, { wrapper: Wrapper });
     fireEvent.click(screen.getByTestId('segment-filter-critical'));
     // FAILING_SEG: cod=22.8 AND stability=48 → critical. MOCK_SEG: cod=14.2, stability=72 → not critical.
-    expect(screen.getByText('NBHD-K1 · R1 · GOOD')).toBeInTheDocument();
-    expect(screen.queryByText('NBHD-K1 · R1 · STANDARD')).not.toBeInTheDocument();
+    expect(screen.getByText('Commercial · R1 · GOOD')).toBeInTheDocument();
+    expect(screen.queryByText('Residential · R1 · STANDARD')).not.toBeInTheDocument();
   });
 });
