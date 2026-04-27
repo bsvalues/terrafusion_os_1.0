@@ -56,9 +56,13 @@ internal static class Program
 
         try
         {
-            // Slice C4: explicit mode dispatch. Workbook mode never hits
-            // the SQL Server profiler path, so a missing --connection-id
-            // is fine in that branch.
+            // Slice C4 + C5: explicit three-way mode dispatch. Workbook
+            // generate / export modes never hit the SQL Server profiler
+            // path, so a missing --connection-id is fine in those branches.
+            if (args.ExportMappingWorkbook)
+            {
+                return await RunExportMappingWorkbookAsync(args, cts.Token);
+            }
             return args.GenerateMappingWorkbook
                 ? await RunGenerateMappingWorkbookAsync(args, cts.Token)
                 : await RunProfileAsync(args, cts.Token);
@@ -367,6 +371,82 @@ internal static class Program
         Console.WriteLine($"  Code Values Created: {result.CodeValuesCreated,7:N0}");
         Console.WriteLine($"  Candidates Skipped:  {result.CandidatesSkipped,7:N0}");
         Console.WriteLine($"  Status:              Draft");
+        Console.WriteLine("─────────────────────────────────────────────");
+
+        return 0;
+    }
+
+    /// <summary>
+    /// Slice C5: Mapping Workbook export. Reads the named workbook +
+    /// its columns + code values and writes review-safe CSV/Markdown
+    /// to the operator-supplied output directory. Read-only —
+    /// workbook rows are never modified.
+    /// </summary>
+    private static async Task<int> RunExportMappingWorkbookAsync(CliArgs args, CancellationToken ct)
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:DefaultConnection"] = args.TerraFusionDbConnectionString
+            })
+            .AddEnvironmentVariables()
+            .Build();
+
+        var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
+            .UseNpgsql(args.TerraFusionDbConnectionString, npg =>
+            {
+                npg.MigrationsAssembly("TerraFusion.Data");
+                npg.EnableRetryOnFailure(maxRetryCount: 3);
+            })
+            .Options;
+
+        await using var db = new TerraFusionDbContext(options, configuration);
+
+        // Parser invariant: ExportMappingWorkbook=true ⇒ both WorkbookId
+        // and OutputDirectory are set. Defend with InvalidOperationException
+        // so a future parser regression fails closed.
+        var workbookId = args.WorkbookId
+            ?? throw new InvalidOperationException("Export mode reached without --workbook-id; this is a parser invariant violation.");
+        var outputDir = args.OutputDirectory
+            ?? throw new InvalidOperationException("Export mode reached without --output-dir; this is a parser invariant violation.");
+
+        var exporterOptions = new SyncMappingWorkbookExportOptions(
+            OutputDirectory: outputDir,
+            Format:          args.ExportFormat);
+
+        var exporter = new SyncMappingWorkbookExporter(db);
+
+        Console.WriteLine($"sync-atlas: exporting Mapping Workbook for county {args.CountyId}...");
+        Console.WriteLine($"sync-atlas:   workbook id:  {workbookId}");
+        Console.WriteLine($"sync-atlas:   output dir:   {outputDir}");
+        Console.WriteLine($"sync-atlas:   format:       {args.ExportFormat}");
+
+        SyncMappingWorkbookExportResult result;
+        try
+        {
+            result = await exporter.ExportAsync(args.CountyId, workbookId, exporterOptions, ct);
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Cross-county / not-found rejection.
+            await Console.Error.WriteLineAsync($"sync-atlas: {ex.Message}");
+            return 2;
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine($"  Mapping Workbook:    exported");
+        Console.WriteLine($"  Workbook Id:         {result.WorkbookId}");
+        Console.WriteLine($"  Workbook Name:       {result.WorkbookName}");
+        Console.WriteLine($"  Workbook Status:     {result.WorkbookStatus}");
+        Console.WriteLine($"  Columns:             {result.Columns,7:N0}");
+        Console.WriteLine($"  Code Values:         {result.CodeValues,7:N0}");
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine("  Files written:");
+        foreach (var file in result.FilesWritten)
+        {
+            Console.WriteLine($"    {file}");
+        }
         Console.WriteLine("─────────────────────────────────────────────");
 
         return 0;
