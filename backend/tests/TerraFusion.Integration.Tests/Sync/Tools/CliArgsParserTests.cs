@@ -970,4 +970,342 @@ public class CliArgsParserTests
         usage.Should().Contain("md");
         usage.Should().Contain("both");
     }
+
+    // ── Slice C8-C — Sales qualification sample runner ──────────────────
+    //
+    // Four-way mode mutex now: profile / generate-workbook /
+    // export-workbook / qualify-sales. The parser must (a) accept a
+    // complete qualify-sales invocation, (b) require its three flags,
+    // (c) reject the new flags in other modes, (d) reject other-mode
+    // flags here, (e) refuse to mix any two of the three workbook bool
+    // toggles.
+
+    [Fact]
+    public void Parse_QualifySales_MinimalFlags_Accepted()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--qualify-sales",
+            "--workbook-id", ValidWorkbookId,
+            "--source-connection-id", ValidConnection,
+            "--max-sales", "100",
+        });
+
+        err.Should().BeNull();
+        args!.QualifySales.Should().BeTrue();
+        args.WorkbookId.Should().Be(Guid.Parse(ValidWorkbookId));
+        args.SourceConnectionId.Should().Be(Guid.Parse(ValidConnection));
+        args.MaxSales.Should().Be(100);
+        args.ConnectionId.Should().BeNull();      // not required in qualify mode
+        args.GenerateMappingWorkbook.Should().BeFalse();
+        args.ExportMappingWorkbook.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Parse_QualifySalesRequiresWorkbookId()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--qualify-sales",
+            // no --workbook-id
+            "--source-connection-id", ValidConnection,
+            "--max-sales", "100",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--workbook-id");
+        err.Should().Contain("--qualify-sales");
+    }
+
+    [Fact]
+    public void Parse_QualifySalesRequiresSourceConnectionId()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--qualify-sales",
+            "--workbook-id", ValidWorkbookId,
+            // no --source-connection-id
+            "--max-sales", "100",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--source-connection-id");
+        err.Should().Contain("--qualify-sales");
+    }
+
+    [Fact]
+    public void Parse_QualifySalesRequiresMaxSales()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--qualify-sales",
+            "--workbook-id", ValidWorkbookId,
+            "--source-connection-id", ValidConnection,
+            // no --max-sales
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--max-sales");
+        err.Should().Contain("--qualify-sales");
+    }
+
+    [Theory]
+    [InlineData("0")]
+    [InlineData("-1")]
+    [InlineData("not-a-number")]
+    public void Parse_QualifySalesRejectsNonPositiveMaxSales(string raw)
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--qualify-sales",
+            "--workbook-id", ValidWorkbookId,
+            "--source-connection-id", ValidConnection,
+            "--max-sales", raw,
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--max-sales");
+        err.Should().Contain("positive integer");
+    }
+
+    [Fact]
+    public void Parse_QualifySalesMutuallyExclusiveWithProfileGenerateExport()
+    {
+        // qualify-sales + generate-mapping-workbook → mutex error.
+        var (args1, err1) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--qualify-sales",
+            "--workbook-id", ValidWorkbookId,
+            "--source-connection-id", ValidConnection,
+            "--max-sales", "10",
+            "--generate-mapping-workbook",
+            "--workbook-name", "wb",
+            "--latest-profile-batch",
+        });
+        args1.Should().BeNull();
+        err1.Should().Contain("mutually exclusive");
+
+        // qualify-sales + export-mapping-workbook → mutex error.
+        var (args2, err2) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--qualify-sales",
+            "--workbook-id", ValidWorkbookId,
+            "--source-connection-id", ValidConnection,
+            "--max-sales", "10",
+            "--export-mapping-workbook",
+            "--output-dir", "/tmp/wb",
+        });
+        args2.Should().BeNull();
+        err2.Should().Contain("mutually exclusive");
+    }
+
+    [Fact]
+    public void Parse_QualifySalesFlags_NotAllowedInProfileMode()
+    {
+        // --source-connection-id outside qualify-sales is rejected.
+        var (args1, err1) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--source-connection-id", ValidConnection,
+        });
+        args1.Should().BeNull();
+        err1.Should().Contain("--source-connection-id");
+        err1.Should().Contain("--qualify-sales");
+
+        // --max-sales outside qualify-sales is rejected.
+        var (args2, err2) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--max-sales", "10",
+        });
+        args2.Should().BeNull();
+        err2.Should().Contain("--max-sales");
+        err2.Should().Contain("--qualify-sales");
+    }
+
+    [Fact]
+    public void Parse_QualifySalesFlags_NotAllowedInGenerateOrExportMode()
+    {
+        // --source-connection-id in generate mode → rejected.
+        var (args1, err1) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--generate-mapping-workbook",
+            "--workbook-name", "wb",
+            "--latest-profile-batch",
+            "--source-connection-id", ValidConnection,
+        });
+        args1.Should().BeNull();
+        err1.Should().Contain("--source-connection-id");
+        err1.Should().Contain("--qualify-sales");
+
+        // --max-sales in export mode → rejected.
+        var (args2, err2) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--export-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--output-dir", "/tmp/wb",
+            "--max-sales", "10",
+        });
+        args2.Should().BeNull();
+        err2.Should().Contain("--max-sales");
+        err2.Should().Contain("--qualify-sales");
+    }
+
+    [Fact]
+    public void Parse_DeepProfileFlag_NotAllowedInQualifySalesMode()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--qualify-sales",
+            "--workbook-id", ValidWorkbookId,
+            "--source-connection-id", ValidConnection,
+            "--max-sales", "10",
+            "--deep-profile",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--deep-profile");
+        err.Should().Contain("Sales qualification");
+    }
+
+    [Fact]
+    public void Parse_QualifySales_RejectsConflictingWorkbookGenerationFlags()
+    {
+        // --workbook-name is a generate-mode-only flag and must not
+        // appear in qualify-sales.
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--qualify-sales",
+            "--workbook-id", ValidWorkbookId,
+            "--source-connection-id", ValidConnection,
+            "--max-sales", "10",
+            "--workbook-name", "should-be-rejected",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--workbook-name");
+        err.Should().Contain("--generate-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_QualifySales_RejectsConflictingExportFlags()
+    {
+        // --output-dir is an export-mode-only flag and must not appear
+        // in qualify-sales.
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--qualify-sales",
+            "--workbook-id", ValidWorkbookId,
+            "--source-connection-id", ValidConnection,
+            "--max-sales", "10",
+            "--output-dir", "/tmp/should-be-rejected",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--output-dir");
+        err.Should().Contain("--export-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_ExistingModesRemainCompatible()
+    {
+        // Profile mode (no mode toggles) — still parses cleanly with
+        // the existing required flags.
+        var (profileArgs, profileErr) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+        });
+        profileErr.Should().BeNull();
+        profileArgs!.QualifySales.Should().BeFalse();
+        profileArgs.SourceConnectionId.Should().BeNull();
+        profileArgs.MaxSales.Should().BeNull();
+
+        // Generate mode — round-trips cleanly.
+        var (genArgs, genErr) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--generate-mapping-workbook",
+            "--workbook-name", "wb",
+            "--latest-profile-batch",
+        });
+        genErr.Should().BeNull();
+        genArgs!.QualifySales.Should().BeFalse();
+
+        // Export mode — round-trips cleanly.
+        var (expArgs, expErr) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--export-mapping-workbook",
+            "--workbook-id", ValidWorkbookId,
+            "--output-dir", "/tmp/wb",
+        });
+        expErr.Should().BeNull();
+        expArgs!.QualifySales.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Parse_FullQualifySalesFlagSet_RoundTripsAllFields()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--qualify-sales",
+            "--workbook-id", ValidWorkbookId,
+            "--source-connection-id", ValidConnection,
+            "--max-sales", "250",
+            "--operator", "bsval",
+        });
+
+        err.Should().BeNull();
+        args!.QualifySales.Should().BeTrue();
+        args.WorkbookId.Should().Be(Guid.Parse(ValidWorkbookId));
+        args.SourceConnectionId.Should().Be(Guid.Parse(ValidConnection));
+        args.MaxSales.Should().Be(250);
+        args.OperatorId.Should().Be("bsval");
+        args.ExportMappingWorkbook.Should().BeFalse();
+        args.GenerateMappingWorkbook.Should().BeFalse();
+        args.DeepProfile.Should().BeFalse();
+    }
+
+    [Fact]
+    public void UsageText_MentionsQualifySalesFlags()
+    {
+        var usage = CliArgsParser.UsageText;
+        usage.Should().Contain("--qualify-sales");
+        usage.Should().Contain("--source-connection-id");
+        usage.Should().Contain("--max-sales");
+    }
 }
