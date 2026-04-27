@@ -255,6 +255,123 @@ public class DeepProfileOrchestratorTests
         statsTables.Should().BeEquivalentTo(new[] { "Healthy", "Recovers" });
     }
 
+    // ── Per-table session isolation + timeout-budget plumbing (FIX-B2.7E) ──
+    //
+    // Before FIX-B2.7E the orchestrator opened ONE session and reused it
+    // for every table. When the first table tripped ADO.NET's default 30 s
+    // CommandTimeout (B2.7-OLTP / dbo.imprv), the SqlConnection went into
+    // a broken state and cascaded "BeginExecuteReader requires an open and
+    // available Connection" across every subsequent table on the same
+    // connection. The fix opens a fresh session per table — these tests
+    // pin both the per-table OpenAsync count AND the timeout-budget plumb-
+    // through so a future regression on either lever has a unit signal.
+
+    [Fact]
+    public async System.Threading.Tasks.Task RunAsync_OpensIndependentSessionPerProfilableTable()
+    {
+        await using var db = CreateContext($"deep-orch-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "TableA", isView: false, columnCount: 1));
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "TableB", isView: false, columnCount: 1));
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "TableC", isView: false, columnCount: 1));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "TableA", "a", 1, "varchar"));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "TableB", "b", 1, "varchar"));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "TableC", "c", 1, "varchar"));
+        await db.SaveChangesAsync();
+
+        var factory = new FakeReaderFactory(new RecordingFakeReader());
+        var sut = new DeepProfileOrchestrator(db, factory, new DeepProfilePersistenceService(db));
+
+        var result = await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", ct: CancellationToken.None);
+
+        result.TablesProfiled.Should().Be(3);
+        // Pre-fix: factory.OpenCallCount == 1 (one session shared across all
+        // tables). Post-fix: one OpenAsync per profiled table.
+        factory.OpenCallCount.Should().Be(3);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task RunAsync_FailedTable_NextTableStillGetsFreshSession()
+    {
+        // The cascade case: even when one table's profile blows up, the
+        // next table's profile must run against a brand-new session so a
+        // poisoned connection from the prior table can't haunt it.
+        await using var db = CreateContext($"deep-orch-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "Boom",     isView: false, columnCount: 1));
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "Survivor", isView: false, columnCount: 1));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "Boom",     "x", 1, "varchar"));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "Survivor", "y", 1, "varchar"));
+        await db.SaveChangesAsync();
+
+        var factory = new FakeReaderFactory(new RecordingFakeReader
+        {
+            FailOnTable    = "Boom",
+            FailureMessage = "simulated timeout cascade trigger",
+        });
+        var sut = new DeepProfileOrchestrator(db, factory, new DeepProfilePersistenceService(db));
+
+        var result = await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", ct: CancellationToken.None);
+
+        result.TablesAttempted.Should().Be(2);
+        result.TablesFailed.Should().Be(1);
+        result.TablesProfiled.Should().Be(1);
+        // Critical: the orchestrator opened a NEW session for "Survivor"
+        // even though "Boom" had just blown up. Pre-fix this number was 1.
+        factory.OpenCallCount.Should().Be(2);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task RunAsync_NoBudgetSupplied_PlumbsDefaultBudgetToFactory()
+    {
+        await using var db = CreateContext($"deep-orch-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "OnlyTable", isView: false, columnCount: 1));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "OnlyTable", "c", 1, "varchar"));
+        await db.SaveChangesAsync();
+
+        var factory = new FakeReaderFactory(new RecordingFakeReader());
+        // 3-arg ctor → orchestrator uses DeepProfileTimeoutBudget.Default.
+        var sut = new DeepProfileOrchestrator(db, factory, new DeepProfilePersistenceService(db));
+
+        await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", ct: CancellationToken.None);
+
+        factory.ReceivedBudgets.Should().HaveCount(1);
+        factory.ReceivedBudgets[0].Should().NotBeNull();
+        factory.ReceivedBudgets[0].Should().BeEquivalentTo(DeepProfileTimeoutBudget.Default);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task RunAsync_CustomBudget_PlumbsToEveryFactoryOpen()
+    {
+        await using var db = CreateContext($"deep-orch-{Guid.NewGuid()}");
+        var (county, conn, batch) = await SeedScopeAsync(db);
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "TableA", isView: false, columnCount: 1));
+        db.SyncProfileTables.Add(Table(county.Id, batch.Id, "dbo", "TableB", isView: false, columnCount: 1));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "TableA", "a", 1, "varchar"));
+        db.SyncProfileColumns.Add(Column(county.Id, batch.Id, "dbo", "TableB", "b", 1, "varchar"));
+        await db.SaveChangesAsync();
+
+        var factory = new FakeReaderFactory(new RecordingFakeReader());
+        var customBudget = new DeepProfileTimeoutBudget(
+            MetadataSeconds:        15,
+            MaterializationSeconds: 600,
+            AggregationSeconds:     450);
+
+        // 4-arg ctor with explicit budget — orchestrator must forward it
+        // verbatim on every per-table OpenAsync call.
+        var sut = new DeepProfileOrchestrator(
+            db, factory, new DeepProfilePersistenceService(db), customBudget);
+
+        await sut.RunAsync(batch.Id, county.Id, conn.Id, "test", ct: CancellationToken.None);
+
+        factory.ReceivedBudgets.Should().HaveCount(2);
+        factory.ReceivedBudgets.Should().AllSatisfy(b =>
+            b.Should().BeEquivalentTo(customBudget));
+    }
+
     [Fact]
     public async System.Threading.Tasks.Task RunAsync_RejectsCrossCountyConnection()
     {
@@ -621,14 +738,27 @@ public class DeepProfileOrchestratorTests
     /// <summary>
     /// Fake factory that hands out the same reader on every Open call. The
     /// session disposal is a no-op — the fake reader doesn't own a connection.
+    ///
+    /// FIX-B2.7E: records every <see cref="OpenAsync"/> invocation so tests
+    /// can assert per-table session lifecycle. Also captures the per-call
+    /// <see cref="DeepProfileTimeoutBudget"/> so tests can assert plumb-through.
     /// </summary>
     private sealed class FakeReaderFactory : IDeepProfileReaderFactory
     {
         private readonly IDeepProfileReader _reader;
         public FakeReaderFactory(IDeepProfileReader reader) => _reader = reader;
 
-        public Task<IDeepProfileReaderSession> OpenAsync(SyncSourceConnection connection, CancellationToken ct = default)
-            => Task.FromResult<IDeepProfileReaderSession>(new FakeSession(_reader));
+        public List<DeepProfileTimeoutBudget?> ReceivedBudgets { get; } = new();
+        public int OpenCallCount => ReceivedBudgets.Count;
+
+        public Task<IDeepProfileReaderSession> OpenAsync(
+            SyncSourceConnection connection,
+            DeepProfileTimeoutBudget? timeoutBudget = null,
+            CancellationToken ct = default)
+        {
+            ReceivedBudgets.Add(timeoutBudget);
+            return Task.FromResult<IDeepProfileReaderSession>(new FakeSession(_reader));
+        }
 
         private sealed class FakeSession : IDeepProfileReaderSession
         {

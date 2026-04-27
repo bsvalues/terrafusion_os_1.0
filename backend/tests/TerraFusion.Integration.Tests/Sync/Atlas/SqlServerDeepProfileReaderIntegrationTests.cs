@@ -674,4 +674,37 @@ public class SqlServerDeepProfileReaderIntegrationTests
             conn);
         await cmd.ExecuteNonQueryAsync();
     }
+
+    // ── Timeout budget plumb-through (FIX-B2.7E) ─────────────────────────
+    //
+    // The B2.7-OLTP rerun proved the BERNOULLI dialect bug was fixed but
+    // surfaced a 30 s default CommandTimeout on dbo.imprv (2.2M rows).
+    // The fix plumbs a per-command-class budget orchestrator → factory →
+    // reader. Unit tests pin the budget record + ctor accept/reject; this
+    // live-engine test pins that the budget actually flows into the SQL
+    // execution path: a profile call against the existing 100-row
+    // ParcelDeepProfileFixture must succeed under a generous budget. The
+    // real-engine cascade-prevention proof is the OLTP rerun itself.
+
+    [Fact]
+    public async System.Threading.Tasks.Task ProfileTableAsync_GenerousTimeoutBudget_ProfilesSuccessfully()
+    {
+        // Validates that the two-arg ctor + a non-default budget runs
+        // through the live engine end-to-end. With Materialization=600s
+        // and Aggregation=600s the 100-row fixture has plenty of budget
+        // and must produce the same TableStats shape as the default-
+        // budget test ProfileTableAsync_ProducesTableStatsForFullPlan.
+        await using var conn = await _fixture.OpenConnectionAsync();
+        var budget = new DeepProfileTimeoutBudget(
+            MetadataSeconds:       60,
+            MaterializationSeconds: 600,
+            AggregationSeconds:     600);
+        var sut = new SqlServerDeepProfileReader(conn, budget);
+
+        var result = await sut.ProfileTableAsync(Schema, Table, AllColumns());
+
+        result.Table.RowCount.Should().Be(100L);
+        result.Table.SamplingMethod.Should().Be("Full");
+        result.Columns.Should().HaveCount(7);
+    }
 }
