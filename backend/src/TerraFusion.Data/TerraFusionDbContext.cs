@@ -100,6 +100,9 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<SyncWatermark> SyncWatermarks { get; set; }
   public DbSet<SyncQuarantine> SyncQuarantine { get; set; }
 
+  // R3 Sync Source Connections — operator-defined connection profiles (no plaintext passwords)
+  public DbSet<SyncSourceConnection> SyncSourceConnections { get; set; }
+
   // R3 Sync Canonical Landing Schema — TerraFusion-canonical entities populated by Sync ingest
   public DbSet<Owner> Owners { get; set; }
   public DbSet<OwnershipEvent> OwnershipEvents { get; set; }
@@ -648,6 +651,9 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     modelBuilder.ApplyConfiguration(new SyncRecordConfiguration());
     modelBuilder.ApplyConfiguration(new SyncWatermarkConfiguration());
     modelBuilder.ApplyConfiguration(new SyncQuarantineConfiguration());
+
+    // R3 Sync Source Connections (Slice B1.2)
+    modelBuilder.ApplyConfiguration(new SyncSourceConnectionConfiguration());
 
     // R3 Sync Canonical Landing Schema
     modelBuilder.ApplyConfiguration(new OwnerConfiguration());
