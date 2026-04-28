@@ -457,3 +457,164 @@ Subsequent slices follow the same shape (C17-C, C17-D, C17-E).
   lane policy (free-text, identifier, override fields) or a
   lane-reclassification slice (numeric codes that should arguably
   move from Other → Improvement) before any of them gets touched.
+
+---
+
+## Amendment — 2026-04-28: Tier 3 values are human-readable labels (post-C17-D observation)
+
+This amendment is added retroactively after C17-D ran the
+improvement-lane closeout (138 rows: 78 imprv_state_cd + 60
+i_attr_val_cd). The C17-A policy as originally written assumed
+all three tiers used numeric / operator-judgment-dependent code
+vocabularies. Observation during C17-D's apply phase corrected
+that assumption for **Tier 3 only**.
+
+### Observation
+
+`dbo.imprv_attr.i_attr_val_cd` does **not** store numeric codes.
+The `SourceValue` strings are **human-readable category labels**
+in plain English. Top observed values from the live workbook
+(per `ObservedCount` desc, post-C17-D state):
+
+| SourceValue | ObservedCount |
+|---|---:|
+| `Count` | 2,911 |
+| `Crawl/Concrete Perimeter Piers` | 1,122 |
+| `Comp Shingle` | 1,080 |
+| `Hardboard` | 1,070 |
+| `FIREPLACE` | 715 |
+| `Central heat/cooling` | 424 |
+| `T 111 plywood` | 389 |
+| `Central Warm Air` | 386 |
+| `Heat pump` | 326 |
+| `Stucco` | 239 |
+| `Wood` | 238 |
+| `Vinyl` | 236 |
+| `Metal` | 235 |
+| `Slab` | 106 |
+| `Baseboard` | 103 |
+
+The values include material names (`Wood`, `Vinyl`, `Metal`,
+`Stucco`, `Comp Shingle`, `Hardboard`, `T 111 plywood`),
+foundation types (`Slab`, `Crawl/Concrete Perimeter Piers`),
+heating systems (`Heat pump`, `Central Warm Air`, `Baseboard`,
+`Central heat/cooling`), feature labels (`FIREPLACE`), and one
+value containing a comma: **`Electric, Cable or Baseboard`**.
+
+### CSV format consequence: RFC 4180 quoting required
+
+PACS attribute-value labels can contain commas (and in principle
+quotes, though none observed in this workbook). The C11-B
+`BatchEditCsvParser` already handles RFC 4180 quoting per the
+C11-A grammar — this is not a new code requirement. The
+authoring-side requirement is that batch-edit CSV generators MUST
+quote any `source_value` whose stored value contains a comma:
+
+```text
+code_value,dbo,imprv_attr,i_attr_val_cd,"Electric, Cable or Baseboard",Deferred,...
+```
+
+Naive comma-joined SQL output without quote-handling will split
+the value mid-field and cause the row to fail validation (the
+parser will see `Electric` as the SourceValue and `Cable or
+Baseboard` as the ReviewStatus, which fails the closed-vocabulary
+check). The C17-D run hit and recovered from this exact failure
+mode; the doubled-quote SQL pattern that fixed it:
+
+```sql
+CASE WHEN v."SourceValue" LIKE '%,%' OR v."SourceValue" LIKE '%"%'
+     THEN '"' || REPLACE(v."SourceValue", '"', '""') || '"'
+     ELSE v."SourceValue" END
+```
+
+For future improvement / land / other-lane batches whose stored
+values may contain commas or quotes, generators must apply the
+same quoting pattern.
+
+### Why Defer-by-default still binds
+
+It is tempting to read `Wood` and assume it canonically maps to
+something like a `Wood` exterior-wall material — and `Vinyl` to
+`Vinyl` siding, etc. The C17-A "no autodetection" Hard Guard
+forbids that shortcut, and the underlying reason is structural:
+
+- A row in `imprv_attr` represents one (improvement_id,
+  attribute_id, value) triple. The `i_attr_id` column (NOT in
+  this slice's scope) tells you **which feature** the value
+  describes: exterior wall material, foundation type, heating
+  system, roof type, fireplace count, etc.
+- The same `i_attr_val_cd` string carries different semantics
+  depending on which `i_attr_id` it's paired with. `Count` (2,911
+  obs) is presumably a count-typed attribute (number of fixtures,
+  number of bedrooms, etc.) but reading the value alone, you
+  can't tell what's being counted. `Wood` could be wall material
+  in one row and floor material in another. `FIREPLACE` is itself
+  a feature label, not a value — suggesting some attribute IDs
+  encode the feature name into the value column itself in this
+  PACS deployment.
+- Without joining `i_attr_id` context, mapping a single
+  `i_attr_val_cd` row to a canonical attribute is at best
+  partial-information; at worst it's wrong by virtue of being
+  applied to multiple incompatible features simultaneously.
+
+### Updated Tier 3 decision rule
+
+Slot this rule into the per-tier decision rules section above
+(no change to the canonical vocabulary candidates list — it's
+already correct in saying "context-dependent on which attribute
+is being valued"):
+
+> **Tier 3 (`i_attr_val_cd`) values are human-readable labels,
+> not numeric codes.** This does not change the Defer-by-default
+> policy. A row whose `SourceValue` is `Wood` still requires
+> assessor confirmation that, **in this county's PACS instance,
+> for the specific attribute IDs that pair with this value**,
+> `Wood` is the canonical-vocabulary label for that feature
+> material. Until then, `Wood` is `Deferred` with notes
+> documenting the attribute-id ambiguity.
+
+### Updated Tier 3 future-work hint
+
+A future slice could extend Tier 3 review to include the
+`i_attr_id` context (joining the attribute-id table into the
+SyncMapping reads, or adding a parallel mapping for
+`imprv_attr.i_attr_id` itself, or both). With `i_attr_id`
+context, `i_attr_val_cd` rows become per-feature value lists
+(this exterior-wall-material attribute has values `{Wood, Vinyl,
+Stucco, Hardboard, T 111 plywood, Comp Shingle, Metal}`; this
+heating-system attribute has values `{Heat pump, Central Warm
+Air, Baseboard, Central heat/cooling, Electric Cable or Baseboard}`)
+which are dramatically easier to operator-confirm to canonical
+vocabulary.
+
+That extension is **not part of this amendment**. It's a future
+slice (let's call it C17-F or similar) that needs both schema
+inspection (does `imprv_attr.i_attr_id` already exist as a
+distinct mapping column?) and a separate policy contract.
+
+### What this amendment changes
+
+- Adds the Tier 3 observation table to the policy memory.
+- Records the RFC 4180 quoting requirement for SourceValue
+  strings that contain commas.
+- States that `i_attr_id` context is required before promoting
+  any Tier 3 row to Mapped.
+- Preserves every prior Hard Guard verbatim.
+
+### What this amendment does not change
+
+- The Defer-by-default decision rule for all three tiers.
+- The pre-2017 conversion caveat — still applies to all three
+  tiers.
+- The "no autodetection" Hard Guard — still binds.
+- The 60 Tier 3 rows from C17-D — they remain Deferred with
+  notes; this amendment retroactively justifies the per-row
+  notes that already say `"values are human-readable category
+  labels not numeric codes"`.
+- The lane-completion math — Improvement lane is still 175/175
+  terminal at the code-value level.
+
+### What this amendment is
+
+A docs-only domain memory record of post-execution observation.
+No code changes. No CSV re-runs. No row mutations.
