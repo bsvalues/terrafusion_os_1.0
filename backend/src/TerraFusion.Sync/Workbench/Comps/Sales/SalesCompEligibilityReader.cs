@@ -47,28 +47,10 @@ public sealed class SalesCompEligibilityReader : ISalesCompEligibilityReader
             throw new ArgumentException("CountyId is required.", nameof(countyId));
         }
 
-        // The base predicate. Keep this in sync with the C37-A
-        // selection rule and the SQL view definition. Both must
-        // resolve to the same row set for a given county.
-        var query = _db.CanonicalSaleQualifications
-            .AsNoTracking()
-            .Where(r => r.CountyId == countyId
-                     && r.ComputedDecision == CanonicalSaleQualificationDecision.Qualified);
-
-        if (sourceWorkbookId.HasValue && sourceWorkbookId.Value != Guid.Empty)
-        {
-            // Workbook-pin is opt-in per Hard Guard 7. We do NOT
-            // default to a workbook here — when null, all Qualified
-            // rows are returned regardless of provenance. Filtering on
-            // a non-empty Guid only.
-            var pin = sourceWorkbookId.Value;
-            query = query.Where(r => r.SourceWorkbookId == pin);
-        }
-
         // EF expression trees don't permit named arguments in
         // constructor calls, so positional construction here. Order is
         // anchored by the CompEligibleSale record's parameter list.
-        var rows = await query
+        var rows = await BaseQuery(countyId, sourceWorkbookId)
             .OrderBy(r => r.ChgOfOwnerId)
             .Select(r => new CompEligibleSale(
                 r.ChgOfOwnerId,
@@ -83,5 +65,88 @@ public sealed class SalesCompEligibilityReader : ISalesCompEligibilityReader
             .ToListAsync(cancellationToken);
 
         return rows;
+    }
+
+    public async Task<IReadOnlyList<CompEligibleSale>> ReadPageAsync(
+        Guid countyId,
+        Guid? sourceWorkbookId,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        if (countyId == Guid.Empty)
+        {
+            throw new ArgumentException("CountyId is required.", nameof(countyId));
+        }
+        if (page < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(page), "page must be >= 1.");
+        }
+        if (pageSize < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(pageSize), "pageSize must be >= 1.");
+        }
+
+        var query = BaseQuery(countyId, sourceWorkbookId);
+
+        // Skip/Take pushes into the SQL layer (or InMemory provider)
+        // so the unpaginated row set never materializes server-side.
+        var skip = (page - 1) * pageSize;
+
+        var rows = await query
+            .OrderBy(r => r.ChgOfOwnerId)
+            .Skip(skip)
+            .Take(pageSize)
+            .Select(r => new CompEligibleSale(
+                r.ChgOfOwnerId,
+                r.WacCdSourceValue,
+                r.WacCdCanonicalValue,
+                r.SlRatioTypeCdSourceValue,
+                r.SlRatioTypeCdCanonicalValue,
+                r.SaleDate,
+                r.SalePrice,
+                r.SourceWorkbookId,
+                r.SourceWorkbookLockedAt))
+            .ToListAsync(cancellationToken);
+
+        return rows;
+    }
+
+    public Task<int> CountAsync(
+        Guid countyId,
+        Guid? sourceWorkbookId,
+        CancellationToken cancellationToken = default)
+    {
+        if (countyId == Guid.Empty)
+        {
+            throw new ArgumentException("CountyId is required.", nameof(countyId));
+        }
+
+        return BaseQuery(countyId, sourceWorkbookId).CountAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Build the shared base query used by every public surface.
+    /// Anchors the C37-A selection rule
+    /// (<c>ComputedDecision = Qualified</c>) and the optional
+    /// workbook-pin in one place so the unpaginated, paginated, and
+    /// count overloads can never drift.
+    /// </summary>
+    private IQueryable<CanonicalSaleQualification> BaseQuery(
+        Guid countyId,
+        Guid? sourceWorkbookId)
+    {
+        var query = _db.CanonicalSaleQualifications
+            .AsNoTracking()
+            .Where(r => r.CountyId == countyId
+                     && r.ComputedDecision == CanonicalSaleQualificationDecision.Qualified);
+
+        if (sourceWorkbookId.HasValue && sourceWorkbookId.Value != Guid.Empty)
+        {
+            var pin = sourceWorkbookId.Value;
+            query = query.Where(r => r.SourceWorkbookId == pin);
+        }
+
+        return query;
     }
 }
