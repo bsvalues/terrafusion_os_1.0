@@ -2,6 +2,9 @@ import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
 const { OllamaAdapter } = await import('../pilot/local-agent/index.js');
+const TEST_LOCAL_MODEL_PORT = process.env.TF_LOCAL_MODEL_PORT?.trim() || '11434';
+const TEST_LOOPBACK_BASE_URL = `http://127.0.0.1:${TEST_LOCAL_MODEL_PORT}`;
+const TEST_LOCALHOST_BASE_URL = `http://localhost:${TEST_LOCAL_MODEL_PORT}/`;
 
 function scriptedTransport(lines, opts = {}) {
   const captured = { url: null, init: null };
@@ -32,18 +35,36 @@ function userReq(content) {
 describe('OllamaAdapter', () => {
   it('rejects non-loopback base URLs', () => {
     assert.throws(
-      () => new OllamaAdapter({ model: 'llama3', baseUrl: 'http://example.com:11434' }),
+      () => new OllamaAdapter({ model: 'llama3', baseUrl: `http://example.com:${TEST_LOCAL_MODEL_PORT}` }),
       /loopback/,
     );
     assert.throws(
-      () => new OllamaAdapter({ model: 'llama3', baseUrl: 'https://127.0.0.1:11434' }),
+      () => new OllamaAdapter({ model: 'llama3', baseUrl: `https://127.0.0.1:${TEST_LOCAL_MODEL_PORT}` }),
       /loopback/,
     );
   });
 
   it('accepts 127.0.0.1 and localhost loopback URLs', () => {
-    new OllamaAdapter({ model: 'llama3', baseUrl: 'http://127.0.0.1:11434', transport: async () => ({ ok: true, status: 200, body: null }) });
-    new OllamaAdapter({ model: 'llama3', baseUrl: 'http://localhost:11434/', transport: async () => ({ ok: true, status: 200, body: null }) });
+    new OllamaAdapter({ model: 'llama3', baseUrl: TEST_LOOPBACK_BASE_URL, transport: async () => ({ ok: true, status: 200, body: null }) });
+    new OllamaAdapter({ model: 'llama3', baseUrl: TEST_LOCALHOST_BASE_URL, transport: async () => ({ ok: true, status: 200, body: null }) });
+  });
+
+  it('uses TF_LOCAL_MODEL_PORT for the default loopback URL', async () => {
+    const previous = process.env.TF_LOCAL_MODEL_PORT;
+    process.env.TF_LOCAL_MODEL_PORT = '18080';
+
+    try {
+      const { transport, captured } = scriptedTransport(['{"message":{"content":"ok"}}\n']);
+      const adapter = new OllamaAdapter({ model: 'llama3', transport });
+      await adapter.complete(userReq('hi'));
+      assert.equal(captured.url, 'http://127.0.0.1:18080/api/chat');
+    } finally {
+      if (previous === undefined) {
+        delete process.env.TF_LOCAL_MODEL_PORT;
+      } else {
+        process.env.TF_LOCAL_MODEL_PORT = previous;
+      }
+    }
   });
 
   it('streams content from NDJSON lines and emits done', async () => {
@@ -59,7 +80,7 @@ describe('OllamaAdapter', () => {
     const text = out.filter(c => c.kind === 'text').map(c => c.text).join('');
     assert.equal(text, 'Hello world');
     assert.equal(out[out.length - 1].kind, 'done');
-    assert.equal(captured.url, 'http://127.0.0.1:11434/api/chat');
+    assert.equal(captured.url, `${TEST_LOOPBACK_BASE_URL}/api/chat`);
     const payload = JSON.parse(captured.init.body);
     assert.equal(payload.model, 'llama3');
     assert.equal(payload.stream, true);

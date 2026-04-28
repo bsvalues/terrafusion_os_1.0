@@ -6,6 +6,10 @@ exports.listLocalAgentCommands = listLocalAgentCommands;
 exports.renderLocalAgentCommandRegistry = renderLocalAgentCommandRegistry;
 const node_fs_1 = require("node:fs");
 const eventLog_js_1 = require("./eventLog.js");
+function getDefaultModelEndpointExample() {
+    const port = process.env.TF_LOCAL_MODEL_PORT?.trim() || '11434';
+    return `http://127.0.0.1:${port}/v1`;
+}
 const LOCAL_AGENT_GLOBAL_OPTIONS = [
     {
         name: '--repo-root',
@@ -116,7 +120,7 @@ const LOCAL_AGENT_COMMANDS = [
     {
         name: 'doctor',
         summary: 'Write doctor-report and model-runtime-status artifacts from current local state and local model health.',
-        example: 'pnpm run tf:local-agent -- doctor --model-endpoint http://127.0.0.1:11434/v1 --model-name local-coder',
+        example: `pnpm run tf:local-agent -- doctor --model-endpoint ${getDefaultModelEndpointExample()} --model-name local-coder`,
         group: 'Guidance',
         beginnerSafe: true,
         mutatesState: true,
@@ -125,7 +129,7 @@ const LOCAL_AGENT_COMMANDS = [
     {
         name: 'model-health',
         summary: 'Check whether the configured local model gateway is reachable without granting tool authority.',
-        example: 'pnpm run tf:local-agent -- model-health --model-endpoint http://127.0.0.1:11434/v1 --model-name local-coder',
+        example: `pnpm run tf:local-agent -- model-health --model-endpoint ${getDefaultModelEndpointExample()} --model-name local-coder`,
         group: 'Guidance',
         beginnerSafe: true,
         mutatesState: false,
@@ -134,7 +138,7 @@ const LOCAL_AGENT_COMMANDS = [
     {
         name: 'list-models',
         summary: 'List models exposed by the configured local loopback gateway.',
-        example: 'pnpm run tf:local-agent -- list-models --model-endpoint http://127.0.0.1:11434/v1',
+        example: `pnpm run tf:local-agent -- list-models --model-endpoint ${getDefaultModelEndpointExample()}`,
         group: 'Guidance',
         beginnerSafe: true,
         mutatesState: false,
@@ -143,7 +147,7 @@ const LOCAL_AGENT_COMMANDS = [
     {
         name: 'model-chat',
         summary: 'Send a zero-authority advisory chat prompt to the configured local loopback model gateway.',
-        example: 'pnpm run tf:local-agent -- model-chat --model-endpoint http://127.0.0.1:11434/v1 --message "Summarize the locked card risks"',
+        example: `pnpm run tf:local-agent -- model-chat --model-endpoint ${getDefaultModelEndpointExample()} --message "Summarize the locked card risks"`,
         group: 'Guidance',
         beginnerSafe: false,
         mutatesState: false,
