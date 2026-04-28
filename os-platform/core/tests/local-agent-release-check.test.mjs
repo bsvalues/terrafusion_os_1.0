@@ -5,6 +5,9 @@ import { resolve } from 'node:path';
 import { describe, it } from 'node:test';
 import { spawnSync } from 'node:child_process';
 
+const TEST_LOCAL_MODEL_PORT = process.env.TF_LOCAL_MODEL_PORT?.trim() || '11434';
+const TEST_LOCAL_MODEL_ENDPOINT = `http://127.0.0.1:${TEST_LOCAL_MODEL_PORT}/v1`;
+
 function runCli(repoRoot, ...args) {
   const cliPath = resolve(process.cwd(), 'os-platform/core/pilot/local-agent/cli.js');
   return spawnSync('node', [cliPath, '--repo-root', repoRoot, ...args], {
@@ -94,7 +97,7 @@ describe('Local agent release check', () => {
     writeArtifact(root, '.terrafusion/doctor-report.json', { overallStatus: 'warn', criticalFailures: 0, warnings: 1 });
     writeArtifact(root, '.terrafusion/model-runtime-status.json', {
       healthy: false,
-      endpoint: 'http://127.0.0.1:11434/v1',
+      endpoint: TEST_LOCAL_MODEL_ENDPOINT,
       model: 'local-coder',
       startupMode: 'manual',
       warnings: ['offline'],
@@ -125,7 +128,7 @@ describe('Local agent release check', () => {
     writeArtifact(root, '.terrafusion/doctor-report.json', { overallStatus: 'pass', criticalFailures: 0, warnings: 0 });
     writeArtifact(root, '.terrafusion/model-runtime-status.json', {
       healthy: true,
-      endpoint: 'http://127.0.0.1:11434/v1',
+      endpoint: TEST_LOCAL_MODEL_ENDPOINT,
       model: 'local-coder',
       startupMode: 'manual',
       warnings: [],

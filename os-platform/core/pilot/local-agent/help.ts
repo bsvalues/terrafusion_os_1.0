@@ -7,6 +7,11 @@ export interface LocalAgentNextRecommendation {
   detectedState: Record<string, boolean>;
 }
 
+function getDefaultModelEndpointExample(): string {
+  const port = process.env.TF_LOCAL_MODEL_PORT?.trim() || '11434';
+  return `http://127.0.0.1:${port}/v1`;
+}
+
 export class LocalAgentHelpSystem {
   constructor(private readonly repoRoot: string) {}
 
@@ -35,9 +40,9 @@ export class LocalAgentHelpSystem {
       '  pnpm run tf:local-agent -- finalize',
       '',
       'State for future UI consumers:',
-      '  pnpm run tf:local-agent -- doctor --model-endpoint http://127.0.0.1:11434/v1 --model-name local-coder',
-      '  pnpm run tf:local-agent -- model-health --model-endpoint http://127.0.0.1:11434/v1 --model-name local-coder',
-      '  pnpm run tf:local-agent -- list-models --model-endpoint http://127.0.0.1:11434/v1',
+      `  pnpm run tf:local-agent -- doctor --model-endpoint ${getDefaultModelEndpointExample()} --model-name local-coder`,
+      `  pnpm run tf:local-agent -- model-health --model-endpoint ${getDefaultModelEndpointExample()} --model-name local-coder`,
+      `  pnpm run tf:local-agent -- list-models --model-endpoint ${getDefaultModelEndpointExample()}`,
       '  pnpm run tf:local-agent -- command-registry',
       '  pnpm run tf:local-agent -- control-center-state',
       '  pnpm run tf:local-agent -- control-center-preview',
@@ -45,7 +50,7 @@ export class LocalAgentHelpSystem {
       'Read-only advisory review:',
       '  pnpm run tf:local-agent -- explain --include-proof --include-save-state',
       '  pnpm run tf:local-agent -- review --include-events --include-pending-patches',
-      '  pnpm run tf:local-agent -- model-chat --model-endpoint http://127.0.0.1:11434/v1 --message "Summarize current blockers"',
+      `  pnpm run tf:local-agent -- model-chat --model-endpoint ${getDefaultModelEndpointExample()} --message "Summarize current blockers"`,
       '',
       'Release evidence flow:',
       '  pnpm run tf:local-agent -- release-notes',

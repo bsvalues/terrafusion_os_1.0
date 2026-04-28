@@ -35,7 +35,11 @@ export interface OllamaAdapterOptions {
 }
 
 const LOOPBACK_PREFIXES = ['http://127.0.0.1:', 'http://localhost:'];
-const DEFAULT_BASE_URL = 'http://127.0.0.1:11434';
+
+function getDefaultBaseUrl(): string {
+  const port = process.env.TF_LOCAL_MODEL_PORT?.trim() || '11434';
+  return `http://127.0.0.1:${port}`;
+}
 
 function assertLoopback(baseUrl: string): void {
   const trimmed = baseUrl.replace(/\/+$/, '');
@@ -85,7 +89,7 @@ export class OllamaAdapter implements ModelAdapter {
 
   constructor(options: OllamaAdapterOptions) {
     if (!options.model) throw new Error('OllamaAdapter requires a model name');
-    const baseUrl = (options.baseUrl ?? DEFAULT_BASE_URL).replace(/\/+$/, '');
+    const baseUrl = (options.baseUrl ?? getDefaultBaseUrl()).replace(/\/+$/, '');
     assertLoopback(baseUrl);
     this.baseUrl = baseUrl;
     this.model = options.model;
