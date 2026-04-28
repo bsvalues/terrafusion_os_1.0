@@ -1237,6 +1237,31 @@ internal static class Program
                     ActiveFlagPredicate:  null,
                     YearColumn:           null), // universe-wide, not year-keyed
                 "c23-b"),
+            "imprv_det_meth" => (
+                new DictionaryLoaderTargetConfig(
+                    WorkbookSourceSchema: "dbo",
+                    WorkbookSourceTable:  "imprv_detail",
+                    WorkbookSourceColumn: "imprv_det_meth_cd",
+                    PacsDictionarySchema: "dbo",
+                    PacsDictionaryTable:  "imprv_det_meth",
+                    CanonicalTargetName:  "ImprvDetailMethod"),
+                // Defaults captured at C25-B-live inspection of pacs_oltp:
+                //   imprv_det_meth_cd        char(5)     NOT NULL  (code)
+                //   imprv_det_meth_dsc       varchar(50) NULL      (description — note: '_dsc' not '_desc')
+                //   sys_flag                 char(1)     NULL      (always 'F' in Benton — same as imprv_det_class)
+                //   is_permanent_crop_detail bit         NOT NULL
+                //   rc_type                  char(1)     NULL
+                // Findings: 12 rows; ALL sys_flag='F'; no usable A/I active flag.
+                // Therefore active-flag predicate is null (M4 cannot fire) and
+                // year filter is null. Fourth wrong-assumption catch by the
+                // live-inspection gate: column is '_dsc' not '_desc'.
+                new DictionaryColumnConfig(
+                    CodeColumn:           "imprv_det_meth_cd",
+                    DescriptionColumn:    "imprv_det_meth_dsc",
+                    ActiveFlagColumn:     null,
+                    ActiveFlagPredicate:  null,
+                    YearColumn:           null), // universe-wide, not year-keyed
+                "c25-b"),
             "land_soil" => (
                 new DictionaryLoaderTargetConfig(
                     WorkbookSourceSchema: "dbo",
@@ -1267,7 +1292,7 @@ internal static class Program
                 "c24-b"),
             _ => throw new InvalidOperationException(
                 $"No default column config for table '{tableName}'. " +
-                "Loader currently allowlists 'property_use', 'imprv_det_class', and 'land_soil'."),
+                "Loader currently allowlists 'property_use', 'imprv_det_class', 'land_soil', and 'imprv_det_meth'."),
         };
 
         var loader = new DictionaryLoaderService(db, pacsReader);
