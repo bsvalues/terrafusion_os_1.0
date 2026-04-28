@@ -1247,6 +1247,30 @@ internal static class Program
                     ActiveFlagPredicate:  null,
                     YearColumn:           null),
                 "c27-b"),
+            // C28-A — second dictionary-reuse binding. Same dbo.property_use
+            // dictionary, but joined against property_val.secondary_use_cd
+            // (5 NeedsReview → swept to Deferred at P2). What's NEW vs C27-B:
+            // canonical_target = "PropertySecondaryUse" — distinct from
+            // C22-C's / C27-C's "PropertyUse". Two workbook columns can
+            // share one PACS dictionary while having different
+            // canonical_target vocabularies. The DictionaryColumnConfig
+            // remains identical to C22 / C27 (same dictionary, same column
+            // names, same inspection findings).
+            "property_use:property_val.secondary_use_cd" => (
+                new DictionaryLoaderTargetConfig(
+                    WorkbookSourceSchema: "dbo",
+                    WorkbookSourceTable:  "property_val",
+                    WorkbookSourceColumn: "secondary_use_cd",
+                    PacsDictionarySchema: "dbo",
+                    PacsDictionaryTable:  "property_use",
+                    CanonicalTargetName:  "PropertySecondaryUse"),
+                new DictionaryColumnConfig(
+                    CodeColumn:           "property_use_cd",
+                    DescriptionColumn:    "property_use_desc",
+                    ActiveFlagColumn:     null,
+                    ActiveFlagPredicate:  null,
+                    YearColumn:           null),
+                "c28-b"),
             "imprv_det_class" => (
                 new DictionaryLoaderTargetConfig(
                     WorkbookSourceSchema: "dbo",
