@@ -98,6 +98,32 @@ struct AdjustmentFactors {
     location: Option<f64>,
 }
 
+fn calculate_valuation(payload: &ValuationPayload) -> ValuationResult {
+    let land_value = payload.model.land_value;
+    let building_value = payload.cost_breakdown.rcnld;
+
+    let neighborhood_factor = payload.model.adjustment_factors
+        .as_ref()
+        .and_then(|f| f.neighborhood)
+        .unwrap_or(1.0);
+
+    let location_factor = payload.model.adjustment_factors
+        .as_ref()
+        .and_then(|f| f.location)
+        .unwrap_or(1.0);
+
+    let adjusted_building = building_value * neighborhood_factor * location_factor;
+    let total_value = land_value + adjusted_building;
+
+    ValuationResult {
+        total_value,
+        components: Components {
+            land: land_value,
+            building: adjusted_building,
+        },
+    }
+}
+
 fn main() -> io::Result<()> {
     // 1. Read Stdin
     let mut buffer = String::new();
@@ -145,36 +171,7 @@ fn main() -> io::Result<()> {
     };
 
     // 4. Calculate
-    // Land value from model
-    let land_value = payload.model.land_value;
-
-    // Building value = RCNLD from cost breakdown
-    let building_value = payload.cost_breakdown.rcnld;
-
-    // Apply adjustment factors if present
-    let neighborhood_factor = payload.model.adjustment_factors
-        .as_ref()
-        .and_then(|f| f.neighborhood)
-        .unwrap_or(1.0);
-
-    let location_factor = payload.model.adjustment_factors
-        .as_ref()
-        .and_then(|f| f.location)
-        .unwrap_or(1.0);
-
-    let adjusted_building = building_value * neighborhood_factor * location_factor;
-
-    // Total value = land + adjusted building
-    let total_value = land_value + adjusted_building;
-
-    // 5. Build Response
-    let result = ValuationResult {
-        total_value,
-        components: Components {
-            land: land_value,
-            building: adjusted_building,
-        },
-    };
+    let result = calculate_valuation(&payload);
 
     let audit = AuditEvent {
         event_id: Uuid::new_v4().to_string(),
@@ -197,4 +194,55 @@ fn main() -> io::Result<()> {
     println!("{}", serde_json::to_string(&response)?);
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn payload(adjustment_factors: Option<AdjustmentFactors>) -> ValuationPayload {
+        ValuationPayload {
+            subject: Parcel {
+                parcel_id: "PARCEL-TEST".to_string(),
+                attributes: serde_json::json!({}),
+            },
+            cost_breakdown: CostBreakdown {
+                replacement_cost: 309_551.25,
+                depreciation: 30_955.125,
+                rcnld: 278_596.125,
+            },
+            model: Model {
+                land_value: 65_000.0,
+                adjustment_factors,
+            },
+        }
+    }
+
+    #[test]
+    fn calculate_valuation_defaults_adjustments_to_one() {
+        let result = calculate_valuation(&payload(None));
+
+        assert_close(result.components.land, 65_000.0);
+        assert_close(result.components.building, 278_596.125);
+        assert_close(result.total_value, 343_596.125);
+    }
+
+    #[test]
+    fn calculate_valuation_applies_adjustment_product() {
+        let result = calculate_valuation(&payload(Some(AdjustmentFactors {
+            neighborhood: Some(1.05),
+            location: Some(0.98),
+        })));
+
+        assert_close(result.components.land, 65_000.0);
+        assert_close(result.components.building, 286_675.412625);
+        assert_close(result.total_value, 351_675.412625);
+    }
+
+    fn assert_close(actual: f64, expected: f64) {
+        assert!(
+            (actual - expected).abs() < 0.000_001,
+            "actual {actual} expected {expected}"
+        );
+    }
 }

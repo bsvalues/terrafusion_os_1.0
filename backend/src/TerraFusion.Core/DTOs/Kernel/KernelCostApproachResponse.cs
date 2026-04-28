@@ -18,4 +18,6 @@ public record KernelProvenance(
     int CostDurationMs,
     int ValuationDurationMs,
     string CostAuditEventId,
-    string ValuationAuditEventId);
+    string ValuationAuditEventId,
+    string? CostKernelBinarySha256 = null,
+    string? ValuationKernelBinarySha256 = null);

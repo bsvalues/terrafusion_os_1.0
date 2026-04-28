@@ -82,6 +82,28 @@ struct CostFactors {
     modifiers: HashMap<String, f64>,
 }
 
+fn calculate_cost(payload: &CostPayload) -> CostResult {
+    let sqft = payload.subject.attributes.sqft;
+    let base_rate = payload.tables.base_rate;
+
+    let quality = payload.subject.attributes.quality.as_deref().unwrap_or("Average");
+    let condition = payload.subject.attributes.condition.as_deref().unwrap_or("Average");
+
+    let mod_q = payload.tables.modifiers.get(quality).copied().unwrap_or(1.0);
+    let mod_c = payload.tables.modifiers.get(condition).copied().unwrap_or(1.0);
+
+    let replacement_cost = sqft * base_rate * mod_q * mod_c;
+    let depr_rate = payload.tables.modifiers.get("DepreciationRate").copied().unwrap_or(0.10);
+    let depreciation = depr_rate * replacement_cost;
+    let rcnld = replacement_cost - depreciation;
+
+    CostResult {
+        replacement_cost,
+        depreciation,
+        rcnld,
+    }
+}
+
 fn main() -> io::Result<()> {
     // 1. Read Stdin
     let mut buffer = String::new();
@@ -129,31 +151,11 @@ fn main() -> io::Result<()> {
     };
 
     // 4. Calculate
-    // replacementCost = sqft * baseRate * qualityModifier * conditionModifier
-    let sqft = payload.subject.attributes.sqft;
-    let base_rate = payload.tables.base_rate;
-
-    let quality = payload.subject.attributes.quality.as_deref().unwrap_or("Average");
-    let condition = payload.subject.attributes.condition.as_deref().unwrap_or("Average");
-
-    let mod_q = payload.tables.modifiers.get(quality).copied().unwrap_or(1.0);
-    let mod_c = payload.tables.modifiers.get(condition).copied().unwrap_or(1.0);
-
-    let replacement_cost = sqft * base_rate * mod_q * mod_c;
-    // NOTE: Depreciation is a stub (10% flat). The .NET CostForgeController owns the real
+    // NOTE: Depreciation defaults to 10%. The .NET CostForgeController owns the real
     // depreciation schedule (age-based, condition-adjusted) via POST /api/costforge/depreciation-calculate.
     // This kernel is used for batch/offline/audited scenarios where the depreciation rate
     // is passed in via modifiers (e.g. "DepreciationRate": 0.15 in the modifiers map).
-    let depr_rate = payload.tables.modifiers.get("DepreciationRate").copied().unwrap_or(0.10);
-    let depreciation = depr_rate * replacement_cost;
-    let rcnld = replacement_cost - depreciation;
-
-    // 5. Build Response
-    let result = CostResult {
-        replacement_cost,
-        depreciation,
-        rcnld,
-    };
+    let result = calculate_cost(&payload);
 
     let audit = AuditEvent {
         event_id: Uuid::new_v4().to_string(),
@@ -179,4 +181,60 @@ fn main() -> io::Result<()> {
     println!("{}", serde_json::to_string(&response)?);
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn payload_with_modifiers(modifiers: HashMap<String, f64>) -> CostPayload {
+        CostPayload {
+            subject: Parcel {
+                parcel_id: "PARCEL-TEST".to_string(),
+                attributes: Attributes {
+                    sqft: 1_850.0,
+                    quality: Some("GOOD".to_string()),
+                    condition: Some("AVERAGE".to_string()),
+                },
+            },
+            tables: CostFactors {
+                base_rate: 145.50,
+                modifiers,
+            },
+        }
+    }
+
+    #[test]
+    fn calculate_cost_uses_default_depreciation_rate() {
+        let modifiers = HashMap::from([
+            ("GOOD".to_string(), 1.15),
+            ("AVERAGE".to_string(), 1.0),
+        ]);
+        let result = calculate_cost(&payload_with_modifiers(modifiers));
+
+        assert_close(result.replacement_cost, 309_551.25);
+        assert_close(result.depreciation, 30_955.125);
+        assert_close(result.rcnld, 278_596.125);
+    }
+
+    #[test]
+    fn calculate_cost_honors_depreciation_override() {
+        let modifiers = HashMap::from([
+            ("GOOD".to_string(), 1.15),
+            ("AVERAGE".to_string(), 1.0),
+            ("DepreciationRate".to_string(), 0.20),
+        ]);
+        let result = calculate_cost(&payload_with_modifiers(modifiers));
+
+        assert_close(result.replacement_cost, 309_551.25);
+        assert_close(result.depreciation, 61_910.25);
+        assert_close(result.rcnld, 247_641.0);
+    }
+
+    fn assert_close(actual: f64, expected: f64) {
+        assert!(
+            (actual - expected).abs() < 0.000_001,
+            "actual {actual} expected {expected}"
+        );
+    }
 }
