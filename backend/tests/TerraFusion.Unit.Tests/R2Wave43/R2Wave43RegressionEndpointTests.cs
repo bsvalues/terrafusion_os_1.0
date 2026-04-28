@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using TerraFusion.API.Controllers;
 using TerraFusion.API.Services;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Services;
 using ComparableSale = TerraFusion.Core.Entities.ComparableSale;
 using Xunit;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
@@ -50,7 +51,22 @@ public sealed class R2Wave43RegressionEndpointTests
 
     // Real OlsRegressionService — pure math, no dependencies.
     private static TerraForgeController CreateController(DataDbContext db)
-        => new(db, NullLogger<TerraForgeController>.Instance, new OlsRegressionService(), Mock.Of<ISaleQualificationService>());
+    {
+        var countyResolver = new Mock<ICountyResolver>();
+        countyResolver
+            .Setup(x => x.ResolveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(BentonCountyId);
+        countyResolver
+            .Setup(x => x.TryResolveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(BentonCountyId);
+
+        return new TerraForgeController(
+            db,
+            NullLogger<TerraForgeController>.Instance,
+            new OlsRegressionService(),
+            Mock.Of<ISaleQualificationService>(),
+            countyResolver.Object);
+    }
 
     private static async Task SeedCountyAsync(DataDbContext db)
     {

@@ -47,6 +47,24 @@ public sealed class DevPropertySeeder
             return;
         }
 
+        if (!ShouldRunBulkProjection())
+        {
+            var propertiesPresent = await _db.Properties
+                .AsNoTracking()
+                .AnyAsync(ct);
+            var camaPresent = await _db.CamaCharacteristics
+                .AsNoTracking()
+                .AnyAsync(ct);
+
+            _logger.LogInformation(
+                "[DevPropertySeeder] Bulk PACS projection disabled for normal startup. " +
+                "PropertiesPresent={PropertiesPresent}, CamaPresent={CamaPresent}. " +
+                "Set TF_RUN_DEV_PROPERTY_PROJECTION=true or pass --run-dev-property-projection to rebuild from PACS mirror tables.",
+                propertiesPresent,
+                camaPresent);
+            return;
+        }
+
         var propertiesPopulated = await _db.Properties.AnyAsync(ct);
 
         // Ensure Benton County row exists. Look up by FipsCode (stable key);
@@ -305,7 +323,7 @@ public sealed class DevPropertySeeder
                     Id           = Guid.NewGuid(),
                     ParcelId     = parcelNumber,
                     TaxYear      = prof.PropValYear,
-                    BuildingType = "R",
+                    BuildingType = "R1",
                     SquareFeet   = gla,
                     YearBuilt    = prof.YearBuilt.HasValue ? (int?)((int)prof.YearBuilt.Value) : null,
                     BasementSqft = basementSqft > 0 ? basementSqft : null,
@@ -364,6 +382,19 @@ public sealed class DevPropertySeeder
             .Any(arg => string.Equals(arg, "--skip-dev-seeders", StringComparison.OrdinalIgnoreCase));
     }
 
+    private static bool ShouldRunBulkProjection()
+    {
+        var envValue = Environment.GetEnvironmentVariable("TF_RUN_DEV_PROPERTY_PROJECTION")?.Trim();
+        if (string.Equals(envValue, "true", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(envValue, "1", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return Environment.GetCommandLineArgs()
+            .Any(arg => string.Equals(arg, "--run-dev-property-projection", StringComparison.OrdinalIgnoreCase));
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // Dev fixtures: specific canonical sample parcels that must always exist.
     // Idempotent — skips if the parcel already exists.
@@ -377,7 +408,10 @@ public sealed class DevPropertySeeder
         }
 
         var bentonCounty = await _db.Counties
-            .FirstOrDefaultAsync(c => c.Name == "Benton" && c.State == "WA", ct);
+            .FirstOrDefaultAsync(c =>
+                c.FipsCode == BentonCountyFips ||
+                ((c.Name == "Benton" || c.Name == "Benton County") && c.State == "WA"),
+                ct);
         if (bentonCounty is null)
         {
             _logger.LogWarning("[DevPropertySeeder] Benton County not found — skipping fixtures.");

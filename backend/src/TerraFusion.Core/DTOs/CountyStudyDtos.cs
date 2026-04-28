@@ -61,7 +61,12 @@ public record CountySegmentDto(
     decimal? PriceRelatedDifferential,
     decimal StabilityScore,
     decimal RiskScore,
-    int ExceptionCount
+    int ExceptionCount,
+    int? RatioCount = null,
+    int? SalesCount = null,
+    decimal? Prb = null,
+    decimal? WeightedMeanRatio = null,
+    decimal? YoyMedianRatioDelta = null
 );
 
 // ── Cohort ──────────────────────────────────────────────────────────────
@@ -404,7 +409,8 @@ public record CountySegmentDetailDto(
     // Sorted by |ratio − median| descending (greatest dispersion first).
     // Empty when fewer than 2 qualified sales exist.
     // Populated by CountyStudyInspectorService; used by AiDiagnosisPanel hints.
-    List<string> OutlierParcelIds
+    List<string> OutlierParcelIds,
+    decimal? WeightedMeanRatio = null
 );
 
 /// <summary>
@@ -506,6 +512,24 @@ public record EvidenceAiSection(
     List<EvidenceAiFindingSummary> TopFindings
 );
 
+public record EvidenceSegmentSignal(
+    Guid SegmentId,
+    string SegmentName,
+    string? NeighborhoodCode,
+    int? RevalArea,
+    int ParcelCount,
+    decimal? MedianRatio,
+    decimal? Cod,
+    decimal? Prd,
+    decimal RiskScore,
+    int ExceptionCount,
+    int? RatioCount,
+    int? SalesCount,
+    decimal? Prb,
+    decimal? WeightedMeanRatio,
+    decimal? YoyMedianRatioDelta
+);
+
 public record EvidencePacketDto(
     // ── Header ────────────────────────────────────────────────────────────
     Guid StudyId,
@@ -529,6 +553,8 @@ public record EvidencePacketDto(
     EvidenceScenarioSection? PrimaryScenario,
     // ── AI Diagnosis ──────────────────────────────────────────────────────
     EvidenceAiSection? AiDiagnosis,
+    // ── Benton-depth top-risk signals ─────────────────────────────────────
+    List<EvidenceSegmentSignal> TopRiskSegments,
     // ── Exception Log ─────────────────────────────────────────────────────
     List<EvidenceExceptionItem> Exceptions
 );

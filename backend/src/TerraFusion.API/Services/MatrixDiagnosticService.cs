@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TerraFusion.API.Controllers;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
@@ -58,16 +59,16 @@ public class MatrixDiagnosticService : IMatrixDiagnosticService
             .Select(p => new { p.ParcelNumber, p.AssessedValue })
             .ToDictionaryAsync(p => p.ParcelNumber!, p => p.AssessedValue, ct);
 
-        // 3. Neighborhood + building type from CamaCharacteristics
+        // 3. Neighborhood + explicit Reval/Cycle + building type from CamaCharacteristics
         var camaMap = await _db.CamaCharacteristics
             .AsNoTracking()
             .Where(c => parcelIds.Contains(c.ParcelId) && c.NeighborhoodCode != null)
-            .Select(c => new { c.ParcelId, c.NeighborhoodCode, c.BuildingType })
+            .Select(c => new { c.ParcelId, c.NeighborhoodCode, c.Region, c.BuildingType })
             .ToDictionaryAsync(c => c.ParcelId, c => c, ct);
 
-        // 4. Build ratio records grouped by (NeighborhoodCode × BuildingType)
+        // 4. Build ratio records grouped by (NeighborhoodCode × explicit Reval/Cycle × BuildingType)
         // Carry AV and SP for proper PRD computation
-        var groups = new Dictionary<(string Hood, string BType), List<(decimal AV, decimal SP)>>();
+        var groups = new Dictionary<(string Hood, string? RevalArea, string BType), List<(decimal AV, decimal SP)>>();
 
         foreach (var s in sales)
         {
@@ -78,7 +79,10 @@ public class MatrixDiagnosticService : IMatrixDiagnosticService
             var ratio = av / s.SalePrice;
             if (ratio < 0.5m || ratio > 2.0m) continue;   // IAAO extraordinary-outlier clamp
 
-            var key = (cama.NeighborhoodCode!, cama.BuildingType ?? "R1");
+            var key = (
+                Hood: cama.NeighborhoodCode!,
+                RevalArea: CostForgeController.NormalizeExplicitRevalArea(cama.Region),
+                BType: cama.BuildingType ?? "R1");
             if (!groups.ContainsKey(key)) groups[key] = new();
             groups[key].Add((av, s.SalePrice));
         }
@@ -98,10 +102,6 @@ public class MatrixDiagnosticService : IMatrixDiagnosticService
             var classification = Classify(prd, prb, cod);
             if (classification == "NO_ACTION") continue;
 
-            var revalDigit = kv.Key.Hood.Length >= 1 ? kv.Key.Hood[0].ToString() : "1";
-            var revalArea  = int.TryParse(revalDigit, out var d) && d >= 1 && d <= 6
-                             ? $"Reval {d}" : "Reval 1";
-
             decimal medianRatio = Median(ratios);
             decimal proposedAdj = medianRatio > 0
                 ? Math.Round((1.0m / medianRatio) - 1.0m, 4)
@@ -116,6 +116,7 @@ public class MatrixDiagnosticService : IMatrixDiagnosticService
                          && avMap.TryGetValue(s.ParcelId!, out var av2)
                          && camaMap.TryGetValue(s.ParcelId!, out var c2)
                          && c2.NeighborhoodCode == kv.Key.Hood
+                         && CostForgeController.NormalizeExplicitRevalArea(c2.Region) == kv.Key.RevalArea
                          && (c2.BuildingType ?? "R1") == kv.Key.BType)
                 .Where(s => {
                     var r = avMap[s.ParcelId!] / s.SalePrice;
@@ -130,7 +131,7 @@ public class MatrixDiagnosticService : IMatrixDiagnosticService
                 MatrixVersionId     = matrixVersionId,
                 Classification      = classification,
                 BuildingType        = kv.Key.BType,
-                RevalArea           = revalArea,
+                RevalArea           = kv.Key.RevalArea,
                 PrdValue            = Math.Round(prd, 4),
                 PrbValue            = Math.Round(prb, 4),
                 CodValue            = Math.Round(cod, 2),

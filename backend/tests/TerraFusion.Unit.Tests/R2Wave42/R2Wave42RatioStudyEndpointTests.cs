@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Moq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using TerraFusion.API.Controllers;
 using TerraFusion.API.Services;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Services;
 using ComparableSale = TerraFusion.Core.Entities.ComparableSale;
 using Xunit;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
@@ -50,7 +52,28 @@ public sealed class R2Wave42RatioStudyEndpointTests
     }
 
     private static TerraForgeController CreateController(DataDbContext db)
-        => new(db, NullLogger<TerraForgeController>.Instance, new OlsRegressionService(), Mock.Of<ISaleQualificationService>());
+    {
+        var countyResolver = new Mock<ICountyResolver>();
+        countyResolver
+            .Setup(x => x.ResolveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(BentonCountyId);
+        countyResolver
+            .Setup(x => x.TryResolveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(BentonCountyId);
+
+        var controller = new TerraForgeController(
+            db,
+            NullLogger<TerraForgeController>.Instance,
+            new OlsRegressionService(),
+            Mock.Of<ISaleQualificationService>(),
+            countyResolver.Object);
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext()
+        };
+        controller.Request.Headers["x-county-id"] = BentonCountyId.ToString();
+        return controller;
+    }
 
     private static async Task SeedCountyAsync(DataDbContext db)
     {
@@ -97,6 +120,27 @@ public sealed class R2Wave42RatioStudyEndpointTests
             CountyId                    = BentonCountyId
         };
         db.ComparableSales.Add(sale);
+        if (pacsRatio.HasValue)
+        {
+            db.Properties.Add(new Property
+            {
+                Id = Guid.NewGuid(),
+                PropertyId = sale.ParcelId!,
+                ParcelId = sale.ParcelId!,
+                ParcelNumber = sale.ParcelId!,
+                Address = "100 Test Lane",
+                PropertyType = propertyType,
+                Neighborhood = neighborhood,
+                AssessedValue = salePrice * (pacsRatio.Value / 100m),
+                LandValue = 0m,
+                ImprovementValue = salePrice * (pacsRatio.Value / 100m),
+                MarketValue = salePrice,
+                AssessmentDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                LastUpdated = DateTime.UtcNow,
+                TaxYear = 2026,
+                CountyId = BentonCountyId
+            });
+        }
         await db.SaveChangesAsync();
         return sale;
     }

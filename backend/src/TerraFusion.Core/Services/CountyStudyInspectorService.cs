@@ -86,6 +86,9 @@ public class CountyStudyInspectorService : ICountyStudyInspectorService
         // Equity additions — all from the single ratio set above, so any caller
         // re-computing downstream sees identical numbers.
         decimal? prb = BentonEquityMath.ComputePrb(ratios, segment.MedianRatio ?? 0m);
+        decimal? weightedMeanRatio = ratios.Count > 0 && ratios.Sum(r => r.AdjustedSalePrice) > 0
+            ? ratios.Sum(r => r.AssessedValue) / ratios.Sum(r => r.AdjustedSalePrice)
+            : null;
         decimal? vei = BentonEquityMath.ComputeVei(ratios, segment.PriceRelatedDifferential, prb);
         var classification = BentonEquityMath.ClassifyEquity(
             segment.PriceRelatedDifferential, prb, ratios.Count);
@@ -155,7 +158,8 @@ public class CountyStudyInspectorService : ICountyStudyInspectorService
             ComplianceStatus:     compliance.ToString(),
             Warnings:             warnings,
             DerivedAt:            segmentSet.UpdatedAt,
-            OutlierParcelIds:     outlierParcelIds);
+            OutlierParcelIds:     outlierParcelIds,
+            WeightedMeanRatio:     weightedMeanRatio.HasValue ? Math.Round(weightedMeanRatio.Value, 4) : null);
     }
 
     // ── Endpoint 2: action context ────────────────────────────────────────
