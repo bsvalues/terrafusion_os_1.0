@@ -1,0 +1,8 @@
+{
+  "capturedAt": "2026-04-27T00:00:00.000Z",
+  "modelAvailable": false,
+  "modelEndpoint": null,
+  "modelName": null,
+  "latencyMs": null,
+  "error": "No model endpoint configured"
+}

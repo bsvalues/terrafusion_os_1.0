@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/policy/contracts/agent-events.v1.schema.json",
+  "title": "TerraFusion Agent Events",
+  "description": "Shape of a single event line in .terrafusion/agent-events.jsonl",
+  "type": "object",
+  "required": ["ts", "type"],
+  "additionalProperties": true,
+  "properties": {
+    "ts": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "correlationId": {
+      "type": ["string", "null"]
+    },
+    "agentId": {
+      "type": ["string", "null"]
+    },
+    "detail": {
+      "type": ["object", "string", "null"],
+      "additionalProperties": true
+    }
+  }
+}

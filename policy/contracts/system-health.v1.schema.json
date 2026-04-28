@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/policy/contracts/system-health.v1.schema.json",
+  "title": "TerraFusion System Health",
+  "description": "Shape of the system-health doctor report written by LocalAgentDoctorMode to .terrafusion/doctor-report.json",
+  "type": "object",
+  "required": ["generatedAt", "overall", "checks"],
+  "additionalProperties": true,
+  "properties": {
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "overall": {
+      "type": "string",
+      "enum": ["PASS", "WARN", "FAIL"]
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "status"],
+        "additionalProperties": true,
+        "properties": {
+          "name": { "type": "string" },
+          "status": { "type": "string", "enum": ["PASS", "WARN", "FAIL"] },
+          "detail": { "type": "string" }
+        }
+      }
+    },
+    "lockedCard": {
+      "type": ["object", "null"],
+      "additionalProperties": true
+    },
+    "proofResults": {
+      "type": ["object", "null"],
+      "additionalProperties": true
+    },
+    "saveState": {
+      "type": ["object", "null"],
+      "additionalProperties": true
+    }
+  }
+}

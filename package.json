@@ -136,6 +136,7 @@
     "test:canon-doctor": "node --test os-platform/core/tests/canon-doctor.test.mjs",
     "trace:query": "node scripts/trace-query.mjs",
     "tf:local-agent": "node os-platform/core/pilot/local-agent/cli.js",
+    "tf:la": "node os-platform/core/pilot/local-agent/cli.js",
     "proof:local-agent:release": "node os-platform/core/pilot/local-agent-release-proof.mjs",
     "proof:local-agent:release:ps1": "pwsh -File os-platform/core/pilot/run-local-agent-release-proof.ps1",
     "proof:local-agent:doc-truth": "pnpm run build:core-js && node os-platform/core/pilot/local-agent/cli.js doc-truth",
