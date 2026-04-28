@@ -63,6 +63,47 @@ public interface ISalesCompEligibilityReader
         Guid countyId,
         Guid? sourceWorkbookId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Slice C39-B: paginated read. Returns one page of comp-eligible
+    /// sales per the C39-A pagination policy.
+    ///
+    /// <para>Selection rule and ordering are identical to
+    /// <see cref="ReadAsync(Guid, Guid?, CancellationToken)"/>:
+    /// <c>ComputedDecision = Qualified</c>, ordered by
+    /// <c>ChgOfOwnerId</c> ascending. Pagination is purely additive —
+    /// the union of every page's rows equals the unpaginated reader's
+    /// result for the same <paramref name="countyId"/> /
+    /// <paramref name="sourceWorkbookId"/>.</para>
+    ///
+    /// <para>Past-the-end pages return an empty list, NOT an
+    /// exception. The caller distinguishes "past end" from "empty
+    /// pool" by reading the count from
+    /// <see cref="CountAsync"/>.</para>
+    /// </summary>
+    /// <param name="countyId">Sovereign-county scope (required).</param>
+    /// <param name="sourceWorkbookId">Optional workbook-pin (Hard Guard 7).</param>
+    /// <param name="page">1-based page index. Caller validates ≥ 1.</param>
+    /// <param name="pageSize">Rows per page. Caller validates 1 ≤ pageSize ≤ max.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task<IReadOnlyList<CompEligibleSale>> ReadPageAsync(
+        Guid countyId,
+        Guid? sourceWorkbookId,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Slice C39-B: exact count of rows matching the filter
+    /// (<paramref name="countyId"/> + optional
+    /// <paramref name="sourceWorkbookId"/> + <c>Qualified</c>). Per
+    /// C39-A Hard Guard 7, this MUST be exact — no approximation.
+    /// Used by the controller to populate envelope metadata.
+    /// </summary>
+    Task<int> CountAsync(
+        Guid countyId,
+        Guid? sourceWorkbookId,
+        CancellationToken cancellationToken = default);
 }
 
 /// <summary>

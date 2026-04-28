@@ -390,11 +390,31 @@ public class SyncController : ControllerBase
     /// <see cref="CompEligibleSaleDto"/>. The array is ordered by
     /// <c>ChgOfOwnerId</c> ascending for deterministic consumption.
     /// </returns>
+    /// <summary>
+    /// Default page index when the client omits <c>page</c>
+    /// (per C39-A Hard Guard 2).
+    /// </summary>
+    private const int DefaultPage = 1;
+
+    /// <summary>
+    /// Default page size when the client omits <c>pageSize</c>
+    /// (per C39-A Hard Guard 2).
+    /// </summary>
+    private const int DefaultPageSize = 100;
+
+    /// <summary>
+    /// Maximum page size accepted (per C39-A Hard Guard 1 / 2).
+    /// Server refuses — never silently truncates — when exceeded.
+    /// </summary>
+    private const int MaxPageSize = 500;
+
     [HttpGet("comps/eligible")]
     [Authorize]
     public async Task<IActionResult> GetEligibleComps(
         [FromQuery] Guid countyId,
         [FromQuery] Guid? workbookId,
+        [FromQuery] int? page,
+        [FromQuery] int? pageSize,
         CancellationToken ct = default)
     {
         // ── 400: required input missing / malformed ──
@@ -404,6 +424,38 @@ public class SyncController : ControllerBase
             {
                 error = "countyId is required.",
                 hint  = "Pass a non-empty Guid as the countyId query parameter.",
+            });
+        }
+
+        // ── 400: pagination validation (per C39-A Hard Guard 3).
+        //        No silent normalization — client bug surfaces at
+        //        request time. ──
+        if (page is < 1)
+        {
+            return BadRequest(new
+            {
+                error = "page must be >= 1.",
+                hint  = "Omit the page query parameter to default to page 1.",
+                page  = page,
+            });
+        }
+        if (pageSize is < 1)
+        {
+            return BadRequest(new
+            {
+                error    = "pageSize must be >= 1.",
+                hint     = $"Omit the pageSize query parameter to default to {DefaultPageSize}.",
+                pageSize = pageSize,
+            });
+        }
+        if (pageSize is > MaxPageSize)
+        {
+            return BadRequest(new
+            {
+                error    = $"pageSize must be <= {MaxPageSize}.",
+                hint     = "Server-bounded per C39-A Hard Guard 1 / 2.",
+                pageSize = pageSize,
+                maxPageSize = MaxPageSize,
             });
         }
 
@@ -421,13 +473,18 @@ public class SyncController : ControllerBase
             return Forbid();
         }
 
-        // ── Delegate to the C37-B reader. The reader normalizes
-        //    Guid.Empty workbookId to "no pin," so we forward the
-        //    raw query value verbatim. ──
-        var pool = await _compReader.ReadAsync(countyId, workbookId, ct);
+        // ── Apply server-side defaults (after validation). ──
+        var effectivePage     = page     ?? DefaultPage;
+        var effectivePageSize = pageSize ?? DefaultPageSize;
+
+        // ── Delegate to the C37-B reader's paginated overload +
+        //    exact count. ──
+        var totalCount = await _compReader.CountAsync(countyId, workbookId, ct);
+        var pageRows   = await _compReader.ReadPageAsync(
+            countyId, workbookId, effectivePage, effectivePageSize, ct);
 
         // ── Project to DTO. Field-for-field, no enrichment. ──
-        var dto = pool
+        var items = pageRows
             .Select(s => new CompEligibleSaleDto(
                 s.ChgOfOwnerId,
                 s.WacCdSourceValue,
@@ -440,13 +497,33 @@ public class SyncController : ControllerBase
                 s.SourceWorkbookLockedAt))
             .ToList();
 
+        // ── Compute envelope metadata.
+        //    totalPages = ceil(totalCount / pageSize); zero when
+        //    totalCount is zero. hasPreviousPage is true when the
+        //    requested page is past the end (so the client can
+        //    detect overshoot). ──
+        var totalPages = totalCount == 0
+            ? 0
+            : (int)Math.Ceiling((double)totalCount / effectivePageSize);
+        var hasNextPage     = effectivePage < totalPages;
+        var hasPreviousPage = effectivePage > 1;
+
+        var envelope = new PagedCompEligibleSalesDto(
+            Items:           items,
+            Page:            effectivePage,
+            PageSize:        effectivePageSize,
+            TotalCount:      totalCount,
+            TotalPages:      totalPages,
+            HasNextPage:     hasNextPage,
+            HasPreviousPage: hasPreviousPage);
+
         // Operational telemetry (NOT FISMA AuditLogs — this is a
         // read, not a state mutation, per C38-A Hard Guard 9).
         _logger.LogInformation(
-            "[Sync] GetEligibleComps: county={CountyId} workbookId={WorkbookId} rows={Rows}",
-            countyId, workbookId, dto.Count);
+            "[Sync] GetEligibleComps: county={CountyId} workbookId={WorkbookId} page={Page} pageSize={PageSize} rows={Rows} total={Total}",
+            countyId, workbookId, effectivePage, effectivePageSize, items.Count, totalCount);
 
-        return Ok(dto);
+        return Ok(envelope);
     }
 
     /// <summary>
