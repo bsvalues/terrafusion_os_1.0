@@ -1247,6 +1247,32 @@ internal static class Program
                     ActiveFlagPredicate:  null,
                     YearColumn:           null),
                 "c27-b"),
+            // C30-A — fourth dictionary-reuse binding. Same dbo.property_use
+            // dictionary, joined against sale.primary_use_cd (43 NeedsReview
+            // → swept to Deferred at P2; largest remaining dictionary-reuse
+            // target in the workbook). canonical_target=PropertyUse REUSED
+            // from C22-C and C27-C — sale.primary_use_cd is the THIRD
+            // workbook column on this vocabulary, proving canonical_target
+            // REUSE scales from N=2 to N=3. Per C30-A's sales-specific
+            // amendment: the loader proposes the dictionary description
+            // verbatim; sale-context interpretation (sl_dt, sl_price,
+            // pre-2017 conversion) is the operator's authority at C30-C,
+            // NOT the loader's.
+            "property_use:sale.primary_use_cd" => (
+                new DictionaryLoaderTargetConfig(
+                    WorkbookSourceSchema: "dbo",
+                    WorkbookSourceTable:  "sale",
+                    WorkbookSourceColumn: "primary_use_cd",
+                    PacsDictionarySchema: "dbo",
+                    PacsDictionaryTable:  "property_use",
+                    CanonicalTargetName:  "PropertyUse"),  // REUSED from C22-C and C27-C
+                new DictionaryColumnConfig(
+                    CodeColumn:           "property_use_cd",
+                    DescriptionColumn:    "property_use_desc",
+                    ActiveFlagColumn:     null,
+                    ActiveFlagPredicate:  null,
+                    YearColumn:           null),
+                "c30-b"),
             // C29-A — third dictionary-reuse binding. Same dbo.property_use
             // dictionary, joined against imprv.secondary_use_cd (1 NeedsReview
             // → swept to Deferred at P2; smallest C-series target). What's
