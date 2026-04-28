@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using TerraFusion.AI.Entities;
 using TerraFusion.Core.Entities;
@@ -30,16 +31,65 @@ namespace TerraFusion.AI.Seeds
 
         public GPTConfigurationSeeder(
             TerraFusionDbContext context,
-            ILogger<GPTConfigurationSeeder> logger)
+            ILogger<GPTConfigurationSeeder> logger,
+            string? contentRootPath = null)
         {
             _context = context;
             _logger = logger;
 
             // Base paths for configuration files
-            var projectRoot = Path.Combine(AppContext.BaseDirectory, "../../../");
+            var projectRoot = ResolveProjectRoot(contentRootPath);
             _configBasePath = Path.Combine(projectRoot, "Configs/GPTs");
             _promptBasePath = Path.Combine(projectRoot, "Prompts");
             _functionBasePath = Path.Combine(projectRoot, "Functions");
+
+            _logger.LogDebug(
+                "GPT asset root resolved to {ProjectRoot} (contentRoot={ContentRoot}, baseDir={BaseDirectory})",
+                projectRoot,
+                contentRootPath ?? "<null>",
+                AppContext.BaseDirectory);
+        }
+
+        private static string ResolveProjectRoot(string? contentRootPath)
+        {
+            if (!string.IsNullOrWhiteSpace(contentRootPath))
+            {
+                var contentRoot = new DirectoryInfo(contentRootPath);
+                while (contentRoot != null)
+                {
+                    foreach (var candidate in GetCandidateRoots(contentRoot.FullName))
+                    {
+                        if (Directory.Exists(Path.Combine(candidate, "Configs", "GPTs")))
+                        {
+                            return candidate;
+                        }
+                    }
+
+                    contentRoot = contentRoot.Parent;
+                }
+            }
+
+            var current = new DirectoryInfo(AppContext.BaseDirectory);
+            while (current != null)
+            {
+                foreach (var candidate in GetCandidateRoots(current.FullName))
+                {
+                    if (Directory.Exists(Path.Combine(candidate, "Configs", "GPTs")))
+                    {
+                        return candidate;
+                    }
+                }
+
+                current = current.Parent;
+            }
+
+            return Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../"));
+        }
+
+        private static IEnumerable<string> GetCandidateRoots(string rootPath)
+        {
+            yield return rootPath;
+            yield return Path.GetFullPath(Path.Combine(rootPath, "..", "TerraFusion.AI"));
         }
 
         /// <summary>
@@ -386,9 +436,10 @@ namespace TerraFusion.AI.Seeds
         {
             using var scope = serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<TerraFusionDbContext>();
+            var hostEnvironment = scope.ServiceProvider.GetRequiredService<IHostEnvironment>();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<GPTConfigurationSeeder>>();
 
-            var seeder = new GPTConfigurationSeeder(context, logger);
+            var seeder = new GPTConfigurationSeeder(context, logger, hostEnvironment.ContentRootPath);
             await seeder.SeedAllGPTsAsync();
         }
     }

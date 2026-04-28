@@ -272,32 +272,32 @@ public class CostForgeController : ControllerBase
         return Forbid();
       }
 
-      CostAnalysisDto result;
+      var property = request.PropertyId != Guid.Empty
+          ? await _db.Properties
+              .AsNoTracking()
+              .Where(p => p.Id == request.PropertyId && p.CountyId == countyContext.CountyId)
+              .Select(p => new { p.Id, p.LandValue })
+              .FirstOrDefaultAsync()
+          : await _db.Properties
+              .AsNoTracking()
+              .Where(p => p.ParcelNumber == request.ParcelNumber && p.CountyId == countyContext.CountyId)
+              .Select(p => new { p.Id, p.LandValue })
+              .FirstOrDefaultAsync();
 
-      if (request.PropertyId != Guid.Empty)
+      if (property == null)
       {
-        var propertyExistsInCounty = await _db.Properties
-            .AsNoTracking()
-            .AnyAsync(p => p.Id == request.PropertyId && p.CountyId == countyContext.CountyId);
+        return request.PropertyId != Guid.Empty
+            ? NotFound($"Property not found for id: {request.PropertyId}")
+            : NotFound($"Property not found for parcel: {request.ParcelNumber}");
+      }
 
-        if (!propertyExistsInCounty)
-        {
-          return NotFound($"Property not found for id: {request.PropertyId}");
-        }
-
-        result = await _costForgeService.AnalyzeCostAsync(request.PropertyId);
+      CostAnalysisDto result;
+      if (TryBuildRequestDrivenCostAnalysis(request, property.Id, property.LandValue, out var requestDrivenResult))
+      {
+        result = requestDrivenResult;
       }
       else
       {
-        var property = await _db.Properties
-            .AsNoTracking()
-            .Where(p => p.ParcelNumber == request.ParcelNumber && p.CountyId == countyContext.CountyId)
-            .Select(p => new { p.Id })
-            .FirstOrDefaultAsync();
-        if (property == null)
-        {
-          return NotFound($"Property not found for parcel: {request.ParcelNumber}");
-        }
         result = await _costForgeService.AnalyzeCostAsync(property.Id);
       }
 
@@ -316,6 +316,31 @@ public class CostForgeController : ControllerBase
 
       return Ok(result);
     }
+    catch (InvalidOperationException ex)
+    {
+      var duration = (DateTime.UtcNow - startTime).TotalMilliseconds;
+      await _auditLogger.LogErrorAsync("CostForge:Calculate", ex, User.FindFirst("sub")?.Value);
+      await _auditLogger.LogApiCallAsync("POST", "/api/costforge/calculate", 422, duration,
+          User.FindFirst("sub")?.Value);
+
+      _logger.LogWarning(ex, "Cost calculation input unavailable for PropertyId: {PropertyId}", request.PropertyId);
+      return UnprocessableEntity(new ProblemDetails
+      {
+        Title = "Cost calculation input unavailable",
+        Detail = ex.Message,
+        Status = StatusCodes.Status422UnprocessableEntity,
+      });
+    }
+    catch (KeyNotFoundException ex)
+    {
+      var duration = (DateTime.UtcNow - startTime).TotalMilliseconds;
+      await _auditLogger.LogErrorAsync("CostForge:Calculate", ex, User.FindFirst("sub")?.Value);
+      await _auditLogger.LogApiCallAsync("POST", "/api/costforge/calculate", 404, duration,
+          User.FindFirst("sub")?.Value);
+
+      _logger.LogWarning(ex, "Cost calculation target not found for PropertyId: {PropertyId}", request.PropertyId);
+      return NotFound(ex.Message);
+    }
     catch (Exception ex)
     {
       var duration = (DateTime.UtcNow - startTime).TotalMilliseconds;
@@ -324,6 +349,326 @@ public class CostForgeController : ControllerBase
       _logger.LogError(ex, "Error calculating property cost for PropertyId: {PropertyId}", request.PropertyId);
       return StatusCode(500, "Internal server error in cost calculation");
     }
+  }
+
+  private static bool TryBuildRequestDrivenCostAnalysis(
+    PropertyCostCalculationRequest request,
+    Guid propertyId,
+    decimal landValue,
+    out CostAnalysisDto result)
+  {
+    result = new CostAnalysisDto();
+
+    if (!TryGetRequestedDecimal(request, out var squareFeet, "squareFeet", "sqft", "buildingSqFt", "buildingSquareFeet", "area_sqft")
+        || squareFeet <= 0)
+    {
+      return false;
+    }
+
+    var rawBuildingType = GetRequestedString(request.BuildingType, request.AdditionalParameters, "buildingType", "propertyType");
+    if (string.IsNullOrWhiteSpace(rawBuildingType))
+      return false;
+
+    var buildingType = NormalizeRequestedBuildingType(rawBuildingType);
+    var revalArea = NormalizeExplicitRevalArea(request.Region)
+      ?? throw new InvalidOperationException(
+        "Explicit Reval Area/Cycle is required for request-driven CostForge calculation.");
+    var yearBuilt = TryGetRequestedInt(request, out var requestedYearBuilt, "yearBuilt") && requestedYearBuilt > 0
+      ? requestedYearBuilt
+      : DateTime.UtcNow.Year - 25;
+    var qualityGrade = NormalizeRequestedQualityGrade(GetRequestedString(request.Quality, request.AdditionalParameters, "quality", "qualityGrade"));
+    var conditionGrade = NormalizeRequestedConditionGrade(GetRequestedString(request.Condition, request.AdditionalParameters, "condition", "conditionGrade"));
+    var complexityGrade = NormalizeRequestedComplexityGrade(GetRequestedString(request.Complexity, request.AdditionalParameters, "complexity", "complexityGrade"));
+
+    var estimate = ComputeCostEstimate(
+      buildingType,
+      revalArea,
+      squareFeet,
+      yearBuilt,
+      qualityGrade,
+      conditionGrade,
+      complexityGrade);
+
+    if (estimate is null)
+    {
+      throw new InvalidOperationException(
+        $"Building type '{rawBuildingType}' (normalized '{buildingType}') or Reval Area '{revalArea}' not found in Benton 2025 cost matrix.");
+    }
+
+    var totalValue = BankersRound(estimate.AssessedValue + landValue);
+    var rcn = BankersRound(estimate.RcnPerSqft * estimate.SquareFeet);
+    var rcnd = BankersRound(estimate.RcndPerSqft * estimate.SquareFeet);
+    var physicalDepreciation = rcn - rcnd;
+    var conditionAdjustment = estimate.AssessedValue - rcnd;
+
+    result = new CostAnalysisDto
+    {
+      PropertyId = propertyId,
+      TotalCost = totalValue,
+      LandValue = landValue,
+      ImprovementValue = estimate.AssessedValue,
+      MarketAdjustment = 0m,
+      ConfidenceScore = 0.9,
+      AnalysisDate = DateTime.UtcNow,
+      AnalysisMethod = $"CostForge Benton Cost Approach FY{estimate.MatrixYear} — {estimate.Source} (request-driven)",
+      Components = new List<CostComponentDto>
+      {
+        new() { Name = $"RCN — {estimate.BuildingTypeLabel} ({estimate.RevalArea})", Amount = rcn, Unit = "sqft", Quantity = (double)estimate.SquareFeet, UnitCost = estimate.BaseCostPerSqft },
+        new() { Name = $"Physical Depreciation (age {estimate.Age} yrs, factor {estimate.DepreciationFactor:P0})", Amount = physicalDepreciation, Unit = "factor", Quantity = (double)estimate.DepreciationFactor, UnitCost = 0m },
+        new() { Name = $"Condition Adjustment ({estimate.ConditionGrade}, ×{estimate.ConditionFactor})", Amount = conditionAdjustment, Unit = "factor", Quantity = (double)estimate.ConditionFactor, UnitCost = 0m },
+        new() { Name = "RCNLD (Depreciated Improvement)", Amount = estimate.AssessedValue, Unit = "$", Quantity = 1.0, UnitCost = estimate.AssessedValue },
+        new() { Name = "Land Value", Amount = landValue, Unit = "$", Quantity = 1.0, UnitCost = landValue },
+      },
+    };
+
+    return true;
+  }
+
+  private static string NormalizeRequestedBuildingType(string buildingType)
+  {
+    var normalized = buildingType.Trim().ToUpperInvariant().Replace('-', ' ').Replace('_', ' ');
+
+    return normalized switch
+    {
+      "R" or "RES" or "RESIDENTIAL" or "SFR" or "SINGLE FAMILY" or "SINGLE FAMILY RESIDENTIAL" => "R1",
+      "R1" => "R1",
+      "R2" or "MULTI FAMILY" or "MULTIFAMILY" or "MFR" => "R2",
+      "C" or "COMM" or "COMMERCIAL" => "C1",
+      "C1" => "C1",
+      "C2" => "C2",
+      "C3" => "C3",
+      "C4" => "C4",
+      "I" or "IND" or "INDUSTRIAL" => "I1",
+      "I1" => "I1",
+      "A" or "AG" or "AGR" or "AGRICULTURAL" or "FARM" => "A1",
+      "A1" => "A1",
+      "A2" or "RANCH" => "A2",
+      "S" or "INST" or "INSTITUTIONAL" or "HOSPITAL" => "S1",
+      "S1" => "S1",
+      "S2" or "SCHOOL" => "S2",
+      _ => normalized.Replace(" ", string.Empty),
+    };
+  }
+
+  internal static string? NormalizeExplicitRevalArea(string? region)
+  {
+    if (string.IsNullOrWhiteSpace(region))
+      return null;
+
+    var trimmed = region.Trim();
+    var exactMatch = BentonCostData.RegionFactors.Keys
+      .FirstOrDefault(key => key.Equals(trimmed, StringComparison.OrdinalIgnoreCase));
+    if (exactMatch is not null)
+      return exactMatch;
+
+    if (int.TryParse(trimmed, out var numericReval)
+        && BentonCostData.RegionFactors.ContainsKey($"Reval {numericReval}"))
+    {
+      return $"Reval {numericReval}";
+    }
+
+    if (trimmed.StartsWith("REVAL", StringComparison.OrdinalIgnoreCase))
+    {
+      var digits = new string(trimmed.Where(char.IsDigit).ToArray());
+      if (int.TryParse(digits, out numericReval)
+          && BentonCostData.RegionFactors.ContainsKey($"Reval {numericReval}"))
+      {
+        return $"Reval {numericReval}";
+      }
+    }
+
+    return null;
+  }
+
+  private static string NormalizeRequestedQualityGrade(string? quality)
+  {
+    var normalized = quality?.Trim().ToUpperInvariant();
+    return normalized switch
+    {
+      null or "" => "STANDARD",
+      "LOW" => "ECONOMY",
+      "FAIR" or "AVERAGE" or "STANDARD" => "STANDARD",
+      "GOOD" or "CUSTOM" => "CUSTOM",
+      "EXCELLENT" or "PREMIUM" => "PREMIUM",
+      "LUXURY" => "LUXURY",
+      _ when BentonCostData.QualityFactors.ContainsKey(normalized) => normalized,
+      _ => "STANDARD",
+    };
+  }
+
+  private static string NormalizeRequestedConditionGrade(string? condition)
+  {
+    var normalized = condition?.Trim().ToUpperInvariant();
+    return normalized switch
+    {
+      null or "" => "GOOD",
+      "AVERAGE" => "GOOD",
+      _ when BentonCostData.ConditionFactors.ContainsKey(normalized) => normalized,
+      _ => "GOOD",
+    };
+  }
+
+  private static string NormalizeRequestedComplexityGrade(string? complexity)
+  {
+    var normalized = complexity?.Trim().ToUpperInvariant().Replace(' ', '_').Replace('-', '_');
+    return normalized switch
+    {
+      null or "" => "STANDARD",
+      _ when BentonCostData.ComplexityFactors.ContainsKey(normalized) => normalized,
+      _ => "STANDARD",
+    };
+  }
+
+  private static string? GetRequestedString(
+    string? directValue,
+    Dictionary<string, object>? additionalParameters,
+    params string[] keys)
+  {
+    if (!string.IsNullOrWhiteSpace(directValue))
+      return directValue;
+
+    if (additionalParameters == null)
+      return null;
+
+    foreach (var key in keys)
+    {
+      if (!additionalParameters.TryGetValue(key, out var raw) || raw == null)
+        continue;
+
+      if (raw is string stringValue && !string.IsNullOrWhiteSpace(stringValue))
+        return stringValue;
+
+      if (raw is System.Text.Json.JsonElement element)
+      {
+        if (element.ValueKind == System.Text.Json.JsonValueKind.String)
+        {
+          var value = element.GetString();
+          if (!string.IsNullOrWhiteSpace(value))
+            return value;
+        }
+
+        if (element.ValueKind != System.Text.Json.JsonValueKind.Null && element.ValueKind != System.Text.Json.JsonValueKind.Undefined)
+          return element.ToString();
+      }
+
+      return raw.ToString();
+    }
+
+    return null;
+  }
+
+  private static bool TryGetRequestedDecimal(
+    PropertyCostCalculationRequest request,
+    out decimal value,
+    params string[] keys)
+  {
+    if (request.SquareFeet.HasValue)
+    {
+      value = request.SquareFeet.Value;
+      return true;
+    }
+
+    if (request.AdditionalParameters != null)
+    {
+      foreach (var key in keys)
+      {
+        if (!request.AdditionalParameters.TryGetValue(key, out var raw) || raw == null)
+          continue;
+
+        if (raw is decimal decimalValue)
+        {
+          value = decimalValue;
+          return true;
+        }
+
+        if (raw is double doubleValue)
+        {
+          value = Convert.ToDecimal(doubleValue);
+          return true;
+        }
+
+        if (raw is int intValue)
+        {
+          value = intValue;
+          return true;
+        }
+
+        if (raw is long longValue)
+        {
+          value = longValue;
+          return true;
+        }
+
+        if (raw is string stringValue && decimal.TryParse(stringValue, out value))
+          return true;
+
+        if (raw is System.Text.Json.JsonElement element)
+        {
+          if (element.ValueKind == System.Text.Json.JsonValueKind.Number && element.TryGetDecimal(out value))
+            return true;
+
+          if (element.ValueKind == System.Text.Json.JsonValueKind.String && decimal.TryParse(element.GetString(), out value))
+            return true;
+        }
+      }
+    }
+
+    value = 0m;
+    return false;
+  }
+
+  private static bool TryGetRequestedInt(
+    PropertyCostCalculationRequest request,
+    out int value,
+    params string[] keys)
+  {
+    if (request.YearBuilt.HasValue)
+    {
+      value = request.YearBuilt.Value;
+      return true;
+    }
+
+    if (request.AdditionalParameters != null)
+    {
+      foreach (var key in keys)
+      {
+        if (!request.AdditionalParameters.TryGetValue(key, out var raw) || raw == null)
+          continue;
+
+        if (raw is int intValue)
+        {
+          value = intValue;
+          return true;
+        }
+
+        if (raw is long longValue && longValue is >= int.MinValue and <= int.MaxValue)
+        {
+          value = (int)longValue;
+          return true;
+        }
+
+        if (raw is decimal decimalValue && decimalValue is >= int.MinValue and <= int.MaxValue)
+        {
+          value = (int)decimalValue;
+          return true;
+        }
+
+        if (raw is string stringValue && int.TryParse(stringValue, out value))
+          return true;
+
+        if (raw is System.Text.Json.JsonElement element)
+        {
+          if (element.ValueKind == System.Text.Json.JsonValueKind.Number && element.TryGetInt32(out value))
+            return true;
+
+          if (element.ValueKind == System.Text.Json.JsonValueKind.String && int.TryParse(element.GetString(), out value))
+            return true;
+        }
+      }
+    }
+
+    value = 0;
+    return false;
   }
 
   /// <summary>
@@ -739,9 +1084,18 @@ public class CostForgeController : ControllerBase
     if (request.SquareFeet <= 0)
       return BadRequest(new ProblemDetails { Title = "SquareFeet must be positive", Status = 400 });
 
+    var revalArea = NormalizeExplicitRevalArea(request.Region);
+    if (revalArea is null)
+      return BadRequest(new ProblemDetails
+      {
+        Title = "Region/Reval Area is required",
+        Detail = "CostForge requires an explicit Reval Area/Cycle. It will not infer cycle from neighborhood code or default missing cycle data to Reval 1.",
+        Status = 400,
+      });
+
     var result = ComputeCostEstimate(
       request.BuildingType,
-      request.Region ?? "Reval 1",
+      revalArea,
       request.SquareFeet,
       request.YearBuilt ?? DateTime.UtcNow.Year,
       request.QualityGrade ?? "STANDARD",
@@ -758,7 +1112,7 @@ public class CostForgeController : ControllerBase
 
     await _auditLogger.LogUserActionAsync("CostForge:RealEstimate",
       User.FindFirst("sub")?.Value ?? "anonymous",
-      $"BuildingType={request.BuildingType}, Region={request.Region}, SqFt={request.SquareFeet}");
+      $"BuildingType={request.BuildingType}, Region={revalArea}, SqFt={request.SquareFeet}");
 
     Response.Headers["X-CostForge-Source"] = "benton-real-calculator-fy2025";
     return Ok(result);
@@ -1786,16 +2140,20 @@ public class CostForgeController : ControllerBase
   [HttpPost("valuation-lineage/compute-full")]
   public ActionResult ComputeFullValuationLineage([FromBody] FullLineageRequest request)
   {
+    var revalArea = NormalizeExplicitRevalArea(request.Region);
+    if (revalArea is null)
+      return BadRequest(new { error = "Explicit Reval Area/Cycle is required; CostForge will not infer it from neighborhood or default to Reval 1." });
+
     // Step 1: Resolve base cost from cost matrix
     var entry = BentonCostData.CostMatrix.FirstOrDefault(e =>
       e.BuildingType.Equals(request.BuildingType, StringComparison.OrdinalIgnoreCase) &&
-      e.Region.Equals(request.Region ?? "Reval 1", StringComparison.OrdinalIgnoreCase));
+      e.Region.Equals(revalArea, StringComparison.OrdinalIgnoreCase));
 
     if (entry is null)
-      return BadRequest(new { error = $"No cost matrix entry for buildingType={request.BuildingType}, revalArea={request.Region ?? "Reval 1"}" });
+      return BadRequest(new { error = $"No cost matrix entry for buildingType={request.BuildingType}, revalArea={revalArea}" });
 
     var regionFactor = BentonCostData.RegionFactors
-      .GetValueOrDefault(request.Region ?? "Reval 1", 1.0m);
+      .GetValueOrDefault(revalArea, 1.0m);
     var qualityFactor = BentonCostData.QualityFactors
       .GetValueOrDefault((request.QualityGrade ?? "STANDARD").ToUpperInvariant(), 1.0m);
     var conditionFactor = BentonCostData.ConditionFactors
@@ -3277,7 +3635,7 @@ public class CostForgeController : ControllerBase
 
   /// <summary>
   /// GET /api/costforge/neighborhoods — Distinct hood_cd values from pacs_valuations with parcel counts.
-  /// hood_cd is the PACS neighborhood code. Reval area derived from the leading digit (1→Reval 1, etc.).
+  /// hood_cd is the PACS neighborhood code. Reval area is loaded only from explicit Region/Cycle-derived fields.
   /// Falls back to BentonSalesData if PACS table is empty or unreachable.
   /// </summary>
   [HttpGet("neighborhoods")]
@@ -3287,8 +3645,8 @@ public class CostForgeController : ControllerBase
     var rows = await _db.CamaCharacteristics
       .AsNoTracking()
       .Where(c => c.NeighborhoodCode != null && c.NeighborhoodCode != "")
-      .GroupBy(c => c.NeighborhoodCode!)
-      .Select(g => new { hoodCd = g.Key, parcelCount = g.Count() })
+      .GroupBy(c => new { c.NeighborhoodCode, c.Region })
+      .Select(g => new { hoodCd = g.Key.NeighborhoodCode!, revalArea = g.Key.Region, parcelCount = g.Count() })
       .OrderBy(r => r.hoodCd)
       .ToListAsync();
 
@@ -3296,9 +3654,7 @@ public class CostForgeController : ControllerBase
     {
       var neighborhoods = rows.Select(r =>
       {
-        var revalDigit = r.hoodCd.Length >= 1 ? r.hoodCd[0].ToString() : "1";
-        var revalArea = int.TryParse(revalDigit, out var d) && d >= 1 && d <= 6
-                         ? $"Reval {d}" : "Reval 1";
+        var revalArea = NormalizeExplicitRevalArea(r.revalArea);
         return new { hoodCd = r.hoodCd, name = r.hoodCd, revalArea, parcelCount = r.parcelCount };
       });
       return Ok(new { neighborhoods, count = rows.Count, source = "cama" });
@@ -3360,28 +3716,35 @@ public class CostForgeController : ControllerBase
       .Select(p => new { p.ParcelNumber, p.AssessedValue })
       .ToDictionaryAsync(p => p.ParcelNumber!, p => p.AssessedValue);
 
-    // Neighborhood code from CamaCharacteristics (now populated)
+    // Neighborhood code and explicit Reval/Cycle from CamaCharacteristics.
     var hoodMap = await _db.CamaCharacteristics
       .AsNoTracking()
       .Where(c => c.CountyId == countyContext.CountyId
                && parcelIds.Contains(c.ParcelId)
                && c.NeighborhoodCode != null)
-      .Select(c => new { c.ParcelId, c.NeighborhoodCode })
-      .ToDictionaryAsync(c => c.ParcelId, c => c.NeighborhoodCode!);
+      .Select(c => new { c.ParcelId, c.NeighborhoodCode, c.Region })
+      .ToDictionaryAsync(
+        c => c.ParcelId,
+        c => new
+        {
+          Hood = c.NeighborhoodCode!,
+          RevalArea = NormalizeExplicitRevalArea(c.Region),
+        });
 
-    // Build ratio records grouped by neighborhood — carry AV+SP for proper PRD
-    var pairsByHood = new Dictionary<string, List<(double AV, double SP)>>();
+    // Build ratio records grouped by neighborhood + explicit Reval/Cycle — carry AV+SP for proper PRD.
+    var pairsByHood = new Dictionary<(string Hood, string? RevalArea), List<(double AV, double SP)>>();
     int matchedSales = 0;
 
     foreach (var s in sales)
     {
       if (s.ParcelId == null) continue;
       if (!avMap.TryGetValue(s.ParcelId, out var av)) continue;
-      if (!hoodMap.TryGetValue(s.ParcelId, out var hood)) continue;
+      if (!hoodMap.TryGetValue(s.ParcelId, out var scope)) continue;
       var ratio = (double)(av / s.SalePrice);
       if (ratio < 0.5 || ratio > 2.0) continue;  // IAAO extraordinary-outlier clamp
-      if (!pairsByHood.ContainsKey(hood)) pairsByHood[hood] = new();
-      pairsByHood[hood].Add(((double)av, (double)s.SalePrice));
+      var key = (scope.Hood, scope.RevalArea);
+      if (!pairsByHood.ContainsKey(key)) pairsByHood[key] = new();
+      pairsByHood[key].Add(((double)av, (double)s.SalePrice));
       matchedSales++;
     }
 
@@ -3426,10 +3789,6 @@ public class CostForgeController : ControllerBase
           prb = varX > 1e-10 ? cov / varX : 0.0;
         }
 
-        var revalDigit = kv.Key.Length >= 1 ? kv.Key[0].ToString() : "1";
-        var revalArea  = int.TryParse(revalDigit, out var d) && d >= 1 && d <= 6
-                          ? $"Reval {d}" : "Reval 1";
-
         // Compliance thresholds (IAAO residential)
         var ratioOk = med >= 0.90 && med <= 1.10;
         var codOk   = cod <= 15.0;
@@ -3438,9 +3797,9 @@ public class CostForgeController : ControllerBase
 
         return new
         {
-          hoodCd       = kv.Key,
+          hoodCd       = kv.Key.Hood,
           name         = (string?)null,    // Benton uses codes only; populated by future hood-name lookup
-          revalArea,
+          revalArea    = kv.Key.RevalArea,
           saleCount    = trimN,
           rawSaleCount = kv.Value.Count,
           medianRatio  = Math.Round(med,  4),
@@ -7494,10 +7853,11 @@ public class CostForgeController : ControllerBase
         {
           try
           {
-            // Must match both BuildingType AND Region (Reval Area) — 11 types × 6 areas.
-            // Without the Region filter, FirstOrDefault always returns the first row (Reval 1),
-            // applying Kennewick urban-core rates to every parcel regardless of reval area.
-            var revalArea = string.IsNullOrWhiteSpace(c.Region) ? "Reval 1" : c.Region;
+            // Must match both BuildingType AND explicit Region/Cycle (Reval Area).
+            // Never infer Reval Area from neighborhood code and never silently default
+            // missing cycle data to Reval 1.
+            var revalArea = NormalizeExplicitRevalArea(c.Region);
+            if (revalArea is null) { errors++; continue; }
             var entry = BentonCostData.CostMatrix.FirstOrDefault(e =>
                 e.Region.Equals(revalArea, StringComparison.OrdinalIgnoreCase) &&
                 e.BuildingType.Equals(c.BuildingType, StringComparison.OrdinalIgnoreCase));
@@ -7651,6 +8011,11 @@ public class PropertyCostCalculationRequest
   public string? CountyCode { get; set; }
   public string Region { get; set; } = string.Empty;
   public string BuildingType { get; set; } = string.Empty;
+  public decimal? SquareFeet { get; set; }
+  public int? YearBuilt { get; set; }
+  public string? Quality { get; set; }
+  public string? Condition { get; set; }
+  public string? Complexity { get; set; }
   public Dictionary<string, object>? AdditionalParameters { get; set; }
 }
 

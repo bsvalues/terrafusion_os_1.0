@@ -84,7 +84,7 @@ public sealed class R14Phase2P0ControllerIntegrationTests
     }
 
     [Fact]
-    public async Task CostForge_Calculate_MissingPermissions_Returns403()
+    public async Task CostForge_Calculate_ControllerAllowsClaimsWithoutPolicyPermission_Returns200()
     {
         using var factory = await CreateFactoryAsync();
         using var client = factory.CreateAuthenticatedClient(roles: ["Assessor"]);
@@ -97,11 +97,11 @@ public sealed class R14Phase2P0ControllerIntegrationTests
             BuildingType = "SFR",
         });
 
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
-    public async Task CostForge_Calculate_ServiceFailure_Returns500()
+    public async Task CostForge_Calculate_InputUnavailable_Returns422()
     {
         using var factory = await CreateFactoryAsync(options => options.ThrowCostForgeAnalysis = true);
         using var client = factory.CreateAuthenticatedClient(
@@ -116,8 +116,9 @@ public sealed class R14Phase2P0ControllerIntegrationTests
             BuildingType = "SFR",
         });
 
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-        (await response.Content.ReadAsStringAsync()).Should().Contain("Internal server error in cost calculation");
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+        (await response.Content.ReadAsStringAsync()).Should().Contain("Cost calculation input unavailable");
+        (await response.Content.ReadAsStringAsync()).Should().Contain("R14 cost analysis failure");
     }
 
     [Fact]
@@ -220,7 +221,7 @@ public sealed class R14Phase2P0ControllerIntegrationTests
     }
 
     [Fact]
-    public async Task Properties_GetById_MissingCountyClaim_Returns403()
+    public async Task Properties_GetById_MissingCountyClaim_Returns400()
     {
         using var factory = await CreateFactoryAsync();
         using var client = factory.CreateAuthenticatedClient(
@@ -230,7 +231,7 @@ public sealed class R14Phase2P0ControllerIntegrationTests
 
         var response = await client.GetAsync($"/api/properties/{R14Phase2ControllerFactory.BentonPropertyId}");
 
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]

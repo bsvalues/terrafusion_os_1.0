@@ -21,6 +21,32 @@ public class CostForgeService : ICostForgeService
     private readonly ICostForgeAIService _aiService;
     private readonly ITerraFusionDbContext _context;
 
+    private static string NormalizeMatrixBuildingType(string buildingType)
+    {
+        var normalized = buildingType.Trim().ToUpperInvariant();
+
+        return normalized switch
+        {
+            "R" or "RES" or "RESIDENTIAL" or "SFR" => "R1",
+            "R1" => "R1",
+            "R2" => "R2",
+            "C" or "COMM" or "COMMERCIAL" => "C1",
+            "C1" => "C1",
+            "C2" => "C2",
+            "C3" => "C3",
+            "C4" => "C4",
+            "I" or "IND" or "INDUSTRIAL" => "I1",
+            "I1" => "I1",
+            "A" or "AG" or "AGR" or "FARM" => "A1",
+            "A1" => "A1",
+            "A2" or "RANCH" => "A2",
+            "S" or "INST" or "INSTITUTIONAL" or "HOSPITAL" => "S1",
+            "S1" => "S1",
+            "S2" or "SCHOOL" => "S2",
+            _ => normalized,
+        };
+    }
+
     public CostForgeService(
         ILogger<CostForgeService> logger,
         ICostForgeAIService aiService,
@@ -51,13 +77,25 @@ public class CostForgeService : ICostForgeService
             throw new InvalidOperationException(
                 $"No CAMA characteristics found for parcel {property.ParcelNumber}. Run a sync to populate CAMA data.");
 
-        var buildingType    = cama.BuildingType;
-        if (string.IsNullOrWhiteSpace(buildingType))
+        var rawBuildingType = cama.BuildingType;
+        if (string.IsNullOrWhiteSpace(rawBuildingType))
             throw new InvalidOperationException(
                 $"CAMA record for parcel {property.ParcelNumber} (TaxYear {cama.TaxYear}) " +
                 $"has no BuildingType classification. Re-run PACS sync to populate.");
 
-        var revalArea       = string.IsNullOrWhiteSpace(cama.Region) ? "Reval 1" : cama.Region;
+        var buildingType = NormalizeMatrixBuildingType(rawBuildingType);
+        if (!string.Equals(rawBuildingType, buildingType, StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.LogInformation(
+                "Normalized CAMA building type {RawBuildingType} to matrix code {MatrixBuildingType} for parcel {ParcelNumber}",
+                rawBuildingType,
+                buildingType,
+                property.ParcelNumber);
+        }
+
+        var revalArea = CostForgeController.NormalizeExplicitRevalArea(cama.Region)
+            ?? throw new InvalidOperationException(
+                $"CAMA record for parcel {property.ParcelNumber} (TaxYear {cama.TaxYear}) has no explicit Reval Area/Cycle.");
         var squareFeet      = cama.SquareFeet > 0 ? cama.SquareFeet : 1m;
 
         int yearBuilt;
@@ -83,7 +121,7 @@ public class CostForgeService : ICostForgeService
 
         if (result is null)
             throw new InvalidOperationException(
-                $"Building type '{buildingType}' or Reval Area '{revalArea}' not found in Benton 2025 cost matrix.");
+                $"Building type '{rawBuildingType}' (normalized '{buildingType}') or Reval Area '{revalArea}' not found in Benton 2025 cost matrix.");
 
         var landValue  = property.LandValue;
         var totalValue = CostForgeController.BankersRound(result.AssessedValue + landValue);
