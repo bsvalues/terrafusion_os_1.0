@@ -4,6 +4,7 @@ using TerraFusion.Core.Entities.Sync.Profile;
 using TerraFusion.Data;
 using TerraFusion.Sync.Workbench.Atlas;
 using TerraFusion.Sync.Workbench.Mapping;
+using TerraFusion.Sync.Workbench.Pacs;
 using TerraFusion.Sync.Workbench.Transforms.Sales;
 
 namespace TerraFusion.Tools.SyncAtlas;
@@ -57,12 +58,16 @@ internal static class Program
 
         try
         {
-            // Slices C4 + C5 + C8-C + C9-B + C10-B + C11-B + C14-B:
-            // explicit eight-way mode dispatch. Workbook generate /
+            // Slices C4 + C5 + C8-C + C9-B + C10-B + C11-B + C14-B + C22-B:
+            // explicit nine-way mode dispatch. Workbook generate /
             // export / qualify-sales / edit / lock / batch-edit /
             // review-progress modes never hit the SQL Server profiler
-            // path, so a missing --connection-id is fine in those
-            // branches.
+            // path; load-pacs-dictionary mode (C22-B) DOES hit PACS
+            // and requires --connection-id.
+            if (args.LoadPacsDictionary)
+            {
+                return await RunLoadPacsDictionaryAsync(args, cts.Token);
+            }
             if (args.MappingReviewProgress)
             {
                 return await RunMappingReviewProgressAsync(args, cts.Token);
@@ -1104,5 +1109,146 @@ internal static class Program
             $"{c.NeedsReview,11:N0} {c.InProgress,10:N0} " +
             $"{c.Mapped,6:N0} {c.Excluded,8:N0} {c.Deferred,8:N0} " +
             $"{c.Terminal,8:N0} {c.NonTerminal,11:N0}");
+    }
+
+    /// <summary>
+    /// Slice C22-B: read-only PACS dictionary loader. Connects to PACS
+    /// via the SyncSourceConnection identified by --connection-id,
+    /// reads the named dictionary table (allowlist enforced parser-
+    /// side), joins it against the workbook's Deferred property_use_cd
+    /// code-values, and writes a proposed review CSV to the artifacts
+    /// directory.
+    ///
+    /// <para>Per C22-A: never mutates PACS, never mutates the workbook.
+    /// The proposed CSV is fed into --batch-edit-mapping-workbook by
+    /// the operator in a separate slice (C22-C).</para>
+    /// </summary>
+    private static async Task<int> RunLoadPacsDictionaryAsync(CliArgs args, CancellationToken ct)
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:DefaultConnection"] = args.TerraFusionDbConnectionString
+            })
+            .AddEnvironmentVariables()
+            .Build();
+
+        var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
+            .UseNpgsql(args.TerraFusionDbConnectionString, npg =>
+            {
+                npg.MigrationsAssembly("TerraFusion.Data");
+                npg.EnableRetryOnFailure(maxRetryCount: 3);
+            })
+            .Options;
+
+        await using var db = new TerraFusionDbContext(options, configuration);
+
+        // Parser invariants per CliArgs C22-B branch.
+        var workbookId = args.WorkbookId
+            ?? throw new InvalidOperationException(
+                "Load-pacs-dictionary mode reached without --workbook-id; parser invariant violation.");
+        var connectionId = args.ConnectionId
+            ?? throw new InvalidOperationException(
+                "Load-pacs-dictionary mode reached without --connection-id; parser invariant violation.");
+        var tableName = args.PacsDictionaryTable
+            ?? throw new InvalidOperationException(
+                "Load-pacs-dictionary mode reached without --table; parser invariant violation.");
+
+        // Look up the SyncSourceConnection (county-scoped). The PACS
+        // connection string is built via the canonical secret-resolver
+        // pipeline used by every other PACS-touching mode in SyncAtlas.
+        var sourceConnection = await db.SyncSourceConnections
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                c => c.Id == connectionId && c.CountyId == args.CountyId,
+                ct);
+        if (sourceConnection is null)
+        {
+            await Console.Error.WriteLineAsync(
+                $"sync-atlas: SyncSourceConnection {connectionId} not found for county {args.CountyId}.");
+            return 2;
+        }
+        if (!string.Equals(sourceConnection.ConnectionType, "SqlServer", StringComparison.OrdinalIgnoreCase))
+        {
+            await Console.Error.WriteLineAsync(
+                $"sync-atlas: SyncSourceConnection {connectionId} has ConnectionType " +
+                $"'{sourceConnection.ConnectionType}', expected 'SqlServer'.");
+            return 2;
+        }
+
+        var secretResolver = new EnvironmentSecretResolver();
+        var pacsConnectionString = SqlServerMetadataReaderFactory.BuildConnectionString(
+            sourceConnection, secretResolver);
+        var pacsReader = new SqlPacsDictionaryReader(pacsConnectionString);
+
+        // Default column config for `dbo.property_use` per the C21-A
+        // canonical-dictionaries reference + the operator's codes-queries
+        // catalog. C22-A's "live inspection required" gate expects the
+        // operator to verify these defaults match their PACS instance
+        // before promoting the proposed CSV at C22-C; future slices
+        // (C22-D etc.) may make these configurable per-county.
+        var columnConfig = tableName.ToLowerInvariant() switch
+        {
+            "property_use" => new PropertyUseDictionaryColumnConfig(
+                CodeColumn:           "property_use_cd",
+                DescriptionColumn:    "property_use_desc",
+                ActiveFlagColumn:     "sys_flag",
+                ActiveFlagPredicate:  "sys_flag <> 'I'",
+                YearColumn:           null),
+            _ => throw new InvalidOperationException(
+                $"No default column config for table '{tableName}'. " +
+                "C22-B currently allowlists only 'property_use'."),
+        };
+
+        var loader = new PropertyUseDictionaryLoaderService(db, pacsReader);
+
+        Console.WriteLine($"sync-atlas: load-pacs-dictionary for county {args.CountyId}...");
+        Console.WriteLine($"sync-atlas:   workbook id:        {workbookId}");
+        Console.WriteLine($"sync-atlas:   pacs connection:    {connectionId} ({sourceConnection.Server}/{sourceConnection.Database})");
+        Console.WriteLine($"sync-atlas:   dictionary table:   dbo.{tableName}");
+        Console.WriteLine($"sync-atlas:   column config:      code={columnConfig.CodeColumn}, " +
+                          $"desc={columnConfig.DescriptionColumn ?? "(none)"}, " +
+                          $"active=({columnConfig.ActiveFlagPredicate ?? "(no active flag)"})");
+
+        PropertyUseDictionaryLoaderResult result;
+        try
+        {
+            result = await loader.ProposeReviewCsvAsync(
+                args.CountyId, workbookId, columnConfig, ct);
+        }
+        catch (InvalidOperationException ex)
+        {
+            await Console.Error.WriteLineAsync($"sync-atlas: {ex.Message}");
+            return 2;
+        }
+        catch (Exception ex)
+        {
+            await Console.Error.WriteLineAsync($"sync-atlas: PACS read failed: {ex.Message}");
+            return 3;
+        }
+
+        // Print the classification summary.
+        Console.WriteLine();
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine("  PACS Dictionary Loader (C22-B) — read-only");
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine($"  Workbook Id:                    {result.WorkbookId}");
+        Console.WriteLine($"  Workbook Deferred rows scanned: {result.WorkbookDeferredRows,5:N0}");
+        Console.WriteLine($"  Dictionary rows read:           {result.DictionaryRowsRead,5:N0}");
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine($"  M1 workbook code missing:       {result.M1WorkbookCodeMissingFromDictionary,5:N0} → Deferred");
+        Console.WriteLine($"  M2 dictionary code unobserved:  {result.M2DictionaryCodeUnobservedInWorkbook,5:N0} (NOT in CSV)");
+        Console.WriteLine($"  M3 duplicate dictionary code:   {result.M3DuplicateDictionaryCode,5:N0} → Deferred");
+        Console.WriteLine($"  M4 inactive dictionary row:     {result.M4InactiveDictionaryRow,5:N0} → Deferred");
+        Console.WriteLine($"  M5 clean match (proposed):      {result.M5CleanMatch,5:N0} → Mapped");
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine($"  CSV row count:                  {result.ProposedRows.Count,5:N0}");
+        Console.WriteLine();
+        Console.WriteLine("  Note: this run did NOT mutate the workbook or PACS.");
+        Console.WriteLine("  Operator reviews the proposed CSV and applies via");
+        Console.WriteLine("  --batch-edit-mapping-workbook --apply (C22-C).");
+        Console.WriteLine("─────────────────────────────────────────────");
+
+        return 0;
     }
 }
