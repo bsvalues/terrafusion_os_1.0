@@ -135,6 +135,14 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<SyncMappingColumn> SyncMappingColumns { get; set; }
   public DbSet<SyncMappingCodeValue> SyncMappingCodeValues { get; set; }
 
+  // Slice C35-B: first canonical landing table (sales-qualification
+  // decisions written by the C36 SalesQualificationTransform from a
+  // locked Mapping Workbook). See
+  // docs/sync/canonical-sales-qualification-landing-schema-policy.md
+  // for the full contract.
+  public DbSet<TerraFusion.Core.Entities.Canonical.CanonicalSaleQualification>
+    CanonicalSaleQualifications { get; set; } = null!;
+
   // Codex 3-6-9 Framework Entities
   public DbSet<CodexMetric> CodexMetrics { get; set; }
   public DbSet<CodexScore> CodexScores { get; set; }
@@ -696,6 +704,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     modelBuilder.ApplyConfiguration(new SyncMappingWorkbookConfiguration());
     modelBuilder.ApplyConfiguration(new SyncMappingColumnConfiguration());
     modelBuilder.ApplyConfiguration(new SyncMappingCodeValueConfiguration());
+
+    // Slice C35-B — first canonical landing table
+    // (sales-qualification decisions; see C35-A policy doc)
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.Canonical.CanonicalSaleQualificationConfiguration());
 
     // NOTE: TerraFusionGPT Suite configurations temporarily disabled due to circular dependency
     // These configurations are defined in TerraFusion.Data\Configurations\GPTConfiguration.cs.disabled
