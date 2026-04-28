@@ -10,16 +10,21 @@ using TerraFusion.Data;
 namespace TerraFusion.Sync.Workbench.Pacs;
 
 /// <summary>
-/// Slice C22-B implementation of
-/// <see cref="IPropertyUseDictionaryLoaderService"/>. See the policy
-/// doc (<c>docs/sync/property-use-dictionary-loader-policy.md</c>)
-/// for the full contract.
+/// Slice C22-B / C23-B implementation of
+/// <see cref="IDictionaryLoaderService"/>. See the policy docs
+/// (<c>docs/sync/property-use-dictionary-loader-policy.md</c> for
+/// C22-A and <c>docs/sync/imprv-det-class-dictionary-loader-policy.md</c>
+/// for C23-A) for the full contract. The service is target-agnostic;
+/// the workbook column tuple, the PACS dictionary table, and the
+/// canonical-target vocabulary all arrive as a
+/// <see cref="DictionaryLoaderTargetConfig"/> parameter so each
+/// future dictionary lane is a Program.cs config branch, not a new
+/// service class.
 ///
 /// <para>This service is read-only end-to-end:
 /// <list type="number">
-/// <item>Reads workbook code-value rows for
-///   <c>dbo.property_val.property_use_cd</c> using
-///   <see cref="DbContext.AsNoTracking"/>.</item>
+/// <item>Reads workbook code-value rows for the configured workbook
+///   source triple using <see cref="DbContext.AsNoTracking"/>.</item>
 /// <item>Reads PACS via <see cref="IPacsDictionaryReader"/> (the
 ///   abstraction that lets tests stub the SQL Server side).</item>
 /// <item>Applies the M1-M5 classification rules in memory.</item>
@@ -28,19 +33,12 @@ namespace TerraFusion.Sync.Workbench.Pacs;
 /// </list>
 /// </para>
 /// </summary>
-public sealed class PropertyUseDictionaryLoaderService : IPropertyUseDictionaryLoaderService
+public sealed class DictionaryLoaderService : IDictionaryLoaderService
 {
-    private const string PropertySchema = "dbo";
-    private const string PropertyValTable = "property_val";
-    private const string PropertyUseCdColumn = "property_use_cd";
-    private const string PacsDictionarySchema = "dbo";
-    private const string PacsDictionaryTable = "property_use";
-    private const string CanonicalTarget = "PropertyUse";
-
     private readonly TerraFusionDbContext _db;
     private readonly IPacsDictionaryReader _pacs;
 
-    public PropertyUseDictionaryLoaderService(
+    public DictionaryLoaderService(
         TerraFusionDbContext db,
         IPacsDictionaryReader pacs)
     {
@@ -50,20 +48,34 @@ public sealed class PropertyUseDictionaryLoaderService : IPropertyUseDictionaryL
         _pacs = pacs;
     }
 
-    public async Task<PropertyUseDictionaryLoaderResult> ProposeReviewCsvAsync(
+    public async Task<DictionaryLoaderResult> ProposeReviewCsvAsync(
         Guid countyId,
         Guid workbookId,
-        PropertyUseDictionaryColumnConfig dictionaryColumns,
+        DictionaryLoaderTargetConfig target,
+        DictionaryColumnConfig dictionaryColumns,
         CancellationToken cancellationToken = default)
     {
         if (countyId == Guid.Empty)
             throw new ArgumentException("CountyId is required.", nameof(countyId));
         if (workbookId == Guid.Empty)
             throw new ArgumentException("WorkbookId is required.", nameof(workbookId));
+        ArgumentNullException.ThrowIfNull(target);
         ArgumentNullException.ThrowIfNull(dictionaryColumns);
+        if (string.IsNullOrWhiteSpace(target.WorkbookSourceSchema))
+            throw new ArgumentException("Target.WorkbookSourceSchema is required.", nameof(target));
+        if (string.IsNullOrWhiteSpace(target.WorkbookSourceTable))
+            throw new ArgumentException("Target.WorkbookSourceTable is required.", nameof(target));
+        if (string.IsNullOrWhiteSpace(target.WorkbookSourceColumn))
+            throw new ArgumentException("Target.WorkbookSourceColumn is required.", nameof(target));
+        if (string.IsNullOrWhiteSpace(target.PacsDictionarySchema))
+            throw new ArgumentException("Target.PacsDictionarySchema is required.", nameof(target));
+        if (string.IsNullOrWhiteSpace(target.PacsDictionaryTable))
+            throw new ArgumentException("Target.PacsDictionaryTable is required.", nameof(target));
+        if (string.IsNullOrWhiteSpace(target.CanonicalTargetName))
+            throw new ArgumentException("Target.CanonicalTargetName is required.", nameof(target));
         if (string.IsNullOrWhiteSpace(dictionaryColumns.CodeColumn))
             throw new ArgumentException(
-                "DictionaryColumns.CodeColumn is required (per C22-A live-inspection gate).",
+                "DictionaryColumns.CodeColumn is required (per C22-A / C23-A live-inspection gate).",
                 nameof(dictionaryColumns));
 
         // ── Step 1: workbook county-scoped lookup (read-only) ─────────────
@@ -78,26 +90,26 @@ public sealed class PropertyUseDictionaryLoaderService : IPropertyUseDictionaryL
                 $"Mapping workbook {workbookId} not found for county {countyId}.");
         }
 
-        // ── Step 2: locate the property_val.property_use_cd column row ────
+        // ── Step 2: locate the configured workbook source-column row ─────
         var column = await _db.SyncMappingColumns
             .AsNoTracking()
             .FirstOrDefaultAsync(
                 c => c.WorkbookId == workbookId
-                  && c.SourceSchema == PropertySchema
-                  && c.SourceTable == PropertyValTable
-                  && c.SourceColumn == PropertyUseCdColumn,
+                  && c.SourceSchema == target.WorkbookSourceSchema
+                  && c.SourceTable == target.WorkbookSourceTable
+                  && c.SourceColumn == target.WorkbookSourceColumn,
                 cancellationToken);
         if (column is null)
         {
             throw new InvalidOperationException(
                 $"Workbook {workbookId} does not contain a column for " +
-                $"{PropertySchema}.{PropertyValTable}.{PropertyUseCdColumn}; " +
-                "C22-B cannot run.");
+                $"{target.WorkbookSourceSchema}.{target.WorkbookSourceTable}.{target.WorkbookSourceColumn}; " +
+                "dictionary loader cannot run.");
         }
 
-        // ── Step 3: load all Deferred code-values for the column (the
-        //   C16-D scope: 62 rows in Benton, but the service does not
-        //   hardcode the count). ───────────────────────────────────────────
+        // ── Step 3: load all Deferred code-values for the column. The
+        //   service does not hardcode a count; whatever is Deferred at
+        //   the moment of the run is what gets proposed. ─────────────────
         var deferredRows = await _db.SyncMappingCodeValues
             .AsNoTracking()
             .Where(v => v.MappingColumnId == column.Id
@@ -106,7 +118,9 @@ public sealed class PropertyUseDictionaryLoaderService : IPropertyUseDictionaryL
 
         // ── Step 4: read the PACS dictionary table (read-only) ────────────
         var dict = await _pacs.ReadDictionaryAsync(
-            PacsDictionarySchema, PacsDictionaryTable, cancellationToken);
+            target.PacsDictionarySchema,
+            target.PacsDictionaryTable,
+            cancellationToken);
 
         // ── Step 5: bucket dictionary rows by trimmed code (for M3
         //   ambiguity detection) ─────────────────────────────────────────
@@ -137,12 +151,13 @@ public sealed class PropertyUseDictionaryLoaderService : IPropertyUseDictionaryL
                 // M1 — workbook code missing from dictionary
                 m1++;
                 proposed.Add(BuildDeferredRow(
+                    target,
                     sourceValueRaw,
                     notes: $"Code '{sourceValueTrimmed}' observed in workbook " +
-                           "but missing from PACS property_use dictionary; " +
+                           $"but missing from PACS {target.PacsDictionaryTable} dictionary; " +
                            "data-integrity issue or pre-2017 conversion artifact. " +
                            "Operator review required.",
-                    classification: PropertyUseClassification.WorkbookCodeMissingFromDictionary));
+                    classification: DictionaryRowClassification.WorkbookCodeMissingFromDictionary));
                 continue;
             }
 
@@ -154,11 +169,12 @@ public sealed class PropertyUseDictionaryLoaderService : IPropertyUseDictionaryL
                     .Select(r => SummarizeRow(r, dictionaryColumns))
                     .ToList();
                 proposed.Add(BuildDeferredRow(
+                    target,
                     sourceValueRaw,
                     notes: $"Code '{sourceValueTrimmed}' has multiple dictionary rows: " +
                            $"[{string.Join("; ", summaries)}]. " +
                            "Cannot unambiguously map. Operator review required.",
-                    classification: PropertyUseClassification.DuplicateDictionaryCode));
+                    classification: DictionaryRowClassification.DuplicateDictionaryCode));
                 continue;
             }
 
@@ -168,28 +184,31 @@ public sealed class PropertyUseDictionaryLoaderService : IPropertyUseDictionaryL
                 // M4 — inactive dictionary row
                 m4++;
                 proposed.Add(BuildDeferredRow(
+                    target,
                     sourceValueRaw,
                     notes: $"Code '{sourceValueTrimmed}' matches an INACTIVE PACS " +
-                           "property_use dictionary row " +
+                           $"{target.PacsDictionaryTable} dictionary row " +
                            $"[{SummarizeRow(only, dictionaryColumns)}]. May represent legacy " +
                            "or pre-conversion data. Operator review required.",
-                    classification: PropertyUseClassification.InactiveDictionaryRow));
+                    classification: DictionaryRowClassification.InactiveDictionaryRow));
                 continue;
             }
 
             // M5 — clean active unambiguous match → proposed Mapped
             m5++;
-            var canonical = ResolveProposedCanonicalValue(only, dictionaryColumns, sourceValueTrimmed);
+            var canonical = ResolveProposedCanonicalValue(
+                only, dictionaryColumns, target, sourceValueTrimmed);
             proposed.Add(BuildMappedRow(
+                target,
                 sourceValueRaw,
                 canonicalValue: canonical,
                 notes: $"Dictionary-matched: [{SummarizeRow(only, dictionaryColumns)}]; " +
-                       "reviewed via C22-A policy. " +
+                       "reviewed via dictionary loader policy. " +
                        "Mapping reflects current dictionary semantics; pre-2017 records " +
                        "may carry different intent — operator confirms."));
         }
 
-        return new PropertyUseDictionaryLoaderResult(
+        return new DictionaryLoaderResult(
             WorkbookId:                              workbookId,
             WorkbookDeferredRows:                    deferredRows.Count,
             DictionaryRowsRead:                      dict.Rows.Count,
@@ -208,8 +227,8 @@ public sealed class PropertyUseDictionaryLoaderService : IPropertyUseDictionaryL
         IReadOnlyList<Core.Entities.Sync.Mapping.SyncMappingCodeValue> workbookDeferred)
     {
         // M2 — dictionary code present, workbook code absent. Per C22-A
-        // policy these rows are NOT included in the CSV; the count is
-        // returned for the classification-summary.txt output.
+        // / C23-A policies these rows are NOT included in the CSV; the
+        // count is returned for the classification-summary output.
         var workbookCodes = new HashSet<string>(
             workbookDeferred.Select(v => (v.SourceValue ?? string.Empty).Trim()),
             StringComparer.OrdinalIgnoreCase);
@@ -222,14 +241,15 @@ public sealed class PropertyUseDictionaryLoaderService : IPropertyUseDictionaryL
     }
 
     private static ProposedReviewCsvRow BuildDeferredRow(
+        DictionaryLoaderTargetConfig target,
         string sourceValue,
         string notes,
-        PropertyUseClassification classification)
+        DictionaryRowClassification classification)
         => new(
             Scope:              "code_value",
-            SourceSchema:       PropertySchema,
-            SourceTable:        PropertyValTable,
-            SourceColumn:       PropertyUseCdColumn,
+            SourceSchema:       target.WorkbookSourceSchema,
+            SourceTable:        target.WorkbookSourceTable,
+            SourceColumn:       target.WorkbookSourceColumn,
             SourceValue:        sourceValue,
             ReviewStatus:       "Deferred",
             CanonicalTarget:    null,
@@ -240,33 +260,35 @@ public sealed class PropertyUseDictionaryLoaderService : IPropertyUseDictionaryL
             Classification:     classification);
 
     private static ProposedReviewCsvRow BuildMappedRow(
+        DictionaryLoaderTargetConfig target,
         string sourceValue,
         string canonicalValue,
         string notes)
         => new(
             Scope:              "code_value",
-            SourceSchema:       PropertySchema,
-            SourceTable:        PropertyValTable,
-            SourceColumn:       PropertyUseCdColumn,
+            SourceSchema:       target.WorkbookSourceSchema,
+            SourceTable:        target.WorkbookSourceTable,
+            SourceColumn:       target.WorkbookSourceColumn,
             SourceValue:        sourceValue,
             ReviewStatus:       "Mapped",
-            CanonicalTarget:    null,                  // column-row already has canonical_target=PropertyUse
+            CanonicalTarget:    null,                  // column-row already carries canonical_target
             CanonicalValue:     canonicalValue,
             CanonicalValueNull: null,
             IsExcluded:         false,
             Notes:              notes,
-            Classification:     PropertyUseClassification.CleanMatch);
+            Classification:     DictionaryRowClassification.CleanMatch);
 
     /// <summary>
     /// Picks the canonical_value to propose for an M5 row. Prefers the
     /// dictionary's description column when available; falls back to
-    /// the canonical-target string when no description column was
-    /// configured. The operator can always rephrase during the C22-C
-    /// review pass.
+    /// <c>"{CanonicalTargetName}:{code}"</c> when no description column
+    /// was configured. The operator can always rephrase during the
+    /// C22-C / C23-C apply pass.
     /// </summary>
     private static string ResolveProposedCanonicalValue(
         PacsDictionaryRow row,
-        PropertyUseDictionaryColumnConfig cols,
+        DictionaryColumnConfig cols,
+        DictionaryLoaderTargetConfig target,
         string trimmedCode)
     {
         if (cols.DescriptionColumn is { } descCol)
@@ -274,10 +296,7 @@ public sealed class PropertyUseDictionaryLoaderService : IPropertyUseDictionaryL
             var desc = row.GetTrimmedString(descCol);
             if (!string.IsNullOrEmpty(desc)) return desc;
         }
-        // Fallback: the operator-defined CanonicalTarget vocabulary,
-        // suffixed with the code so each row has a unique canonical
-        // label even without descriptions. Operator rephrases at C22-C.
-        return $"{CanonicalTarget}:{trimmedCode}";
+        return $"{target.CanonicalTargetName}:{trimmedCode}";
     }
 
     /// <summary>
@@ -289,7 +308,7 @@ public sealed class PropertyUseDictionaryLoaderService : IPropertyUseDictionaryL
     /// </summary>
     private static string SummarizeRow(
         PacsDictionaryRow row,
-        PropertyUseDictionaryColumnConfig cols)
+        DictionaryColumnConfig cols)
     {
         var parts = new List<string>();
         var code = row.GetTrimmedString(cols.CodeColumn);
@@ -323,7 +342,7 @@ public sealed class PropertyUseDictionaryLoaderService : IPropertyUseDictionaryL
     /// </summary>
     private static bool IsRowActive(
         PacsDictionaryRow row,
-        PropertyUseDictionaryColumnConfig cols)
+        DictionaryColumnConfig cols)
     {
         if (string.IsNullOrWhiteSpace(cols.ActiveFlagPredicate)) return true;
 

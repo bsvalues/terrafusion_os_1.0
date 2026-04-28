@@ -2705,8 +2705,10 @@ public class CliArgsParserTests
 
         args.Should().BeNull();
         err.Should().Contain("imprv_attr_val");
-        err.Should().Contain("not in the C22-B allowlist");
+        err.Should().Contain("not in the dictionary loader allowlist");
         err.Should().Contain("property_use");
+        err.Should().Contain("imprv_det_class",
+            "C23-A added imprv_det_class to the allowlist alongside property_use");
     }
 
     [Fact]
