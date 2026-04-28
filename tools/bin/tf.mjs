@@ -124,6 +124,10 @@ const COMMANDS = {
     desc: "Show workspace metrics",
     load: () => import("./commands/metrics.mjs"),
   },
+  agent: {
+    desc: "TerraFusion Local Agent (founder loop: card · proof · patch · finalize)",
+    load: () => import("./commands/agent.mjs"),
+  },
 };
 
 // ── Help ─────────────────────────────────────────────────────

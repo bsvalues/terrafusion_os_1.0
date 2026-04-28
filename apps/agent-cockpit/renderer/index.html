@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'" />
+    <title>TerraFusion Local Agent Cockpit</title>
+    <link rel="stylesheet" href="./index.css" />
+  </head>
+  <body>
+    <main class="cockpit">
+      <header class="cockpit-header">
+        <h1>TerraFusion Local Agent Cockpit</h1>
+        <p class="cockpit-subtitle">Local-first. Path-based IPC. No remote network calls.</p>
+      </header>
+
+      <section class="cockpit-panel" aria-labelledby="panel-environment">
+        <h2 id="panel-environment">Environment</h2>
+        <dl class="cockpit-kv">
+          <dt>Cockpit version</dt>
+          <dd id="kv-version">—</dd>
+          <dt>Platform</dt>
+          <dd id="kv-platform">—</dd>
+          <dt>Daemon</dt>
+          <dd id="kv-daemon-status">unknown</dd>
+        </dl>
+        <div class="cockpit-controls">
+          <button id="btn-daemon-start" type="button">Start daemon</button>
+          <button id="btn-daemon-stop" type="button">Stop daemon</button>
+          <button id="btn-refresh-adapters" type="button">Refresh adapters</button>
+        </div>
+      </section>
+
+      <section class="cockpit-panel cockpit-chat" aria-labelledby="panel-chat">
+        <h2 id="panel-chat">Chat</h2>
+        <div class="cockpit-chat-toolbar">
+          <label for="adapter-select" class="cockpit-label">Adapter</label>
+          <select id="adapter-select" aria-label="Select adapter"></select>
+          <span class="cockpit-stream-state" id="stream-state" aria-live="polite">idle</span>
+        </div>
+        <ol id="chat-messages" class="cockpit-chat-list" aria-live="polite"></ol>
+        <form id="chat-form" class="cockpit-chat-form" autocomplete="off">
+          <label for="chat-input" class="cockpit-sr-only">Message</label>
+          <textarea id="chat-input" rows="2" placeholder="Send a message…" required></textarea>
+          <div class="cockpit-chat-actions">
+            <button id="btn-chat-send" type="submit">Send</button>
+            <button id="btn-chat-cancel" type="button" disabled>Cancel</button>
+          </div>
+        </form>
+        <p id="chat-error" class="cockpit-error" role="alert"></p>
+      </section>
+
+      <footer class="cockpit-footer">
+        <span>Path-based IPC only. No remote network calls.</span>
+      </footer>
+    </main>
+
+    <script src="./index.js"></script>
+  </body>
+</html>

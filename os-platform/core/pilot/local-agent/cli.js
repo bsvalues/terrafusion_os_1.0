@@ -7,10 +7,14 @@ const cardLock_js_1 = require("./cardLock.js");
 const commandRegistry_js_1 = require("./commandRegistry.js");
 const controlCenter_js_1 = require("./controlCenter.js");
 const controlCenterPreview_js_1 = require("./controlCenterPreview.js");
+const daemonControl_js_1 = require("./daemonControl.js");
 const doctorMode_js_1 = require("./doctorMode.js");
+const docTruth_js_1 = require("./docTruth.js");
 const docsIndex_js_1 = require("./docsIndex.js");
+const events_js_1 = require("./events.js");
 const explainMode_js_1 = require("./explainMode.js");
 const finalize_js_1 = require("./finalize.js");
+const firstRun_js_1 = require("./firstRun.js");
 const help_js_1 = require("./help.js");
 const modelGateway_js_1 = require("./modelGateway.js");
 const patchPreview_js_1 = require("./patchPreview.js");
@@ -22,9 +26,11 @@ const reviewMode_js_1 = require("./reviewMode.js");
 const releaseApproval_js_1 = require("./releaseApproval.js");
 const releaseCheck_js_1 = require("./releaseCheck.js");
 const releaseNotes_js_1 = require("./releaseNotes.js");
+const releasePlan_js_1 = require("./releasePlan.js");
 const releaseRunbook_js_1 = require("./releaseRunbook.js");
 const saveState_js_1 = require("./saveState.js");
 const shipMvp_js_1 = require("./shipMvp.js");
+const status_js_1 = require("./status.js");
 const tagCommand_js_1 = require("./tagCommand.js");
 const tagGate_js_1 = require("./tagGate.js");
 const toolRunner_js_1 = require("./toolRunner.js");
@@ -67,6 +73,16 @@ async function main(argv) {
                 return handleFinalize(repoRoot);
             case 'start':
                 return handleStart(repoRoot);
+            case 'init':
+                return handleInit(repoRoot);
+            case 'status':
+                return handleStatus(repoRoot);
+            case 'events':
+                return handleEvents(repoRoot, rest);
+            case 'release':
+                return handleReleasePlan(repoRoot);
+            case 'doc-truth':
+                return handleDocTruth(repoRoot, rest);
             case 'help-me':
                 return handleHelpMe(repoRoot);
             case 'next':
@@ -103,6 +119,8 @@ async function main(argv) {
                 return handleReleaseRunbook(repoRoot, rest);
             case 'tool':
                 return handleTool(repoRoot, rest);
+            case 'daemon':
+                return handleDaemon(repoRoot, rest);
             default:
                 printUsage();
                 return command ? 1 : 0;
@@ -138,6 +156,30 @@ function parseGlobalOptions(argv) {
 }
 async function handleStart(repoRoot) {
     return new wizard_js_1.LocalAgentFounderWizard(repoRoot).run();
+}
+function handleInit(repoRoot) {
+    const report = new firstRun_js_1.LocalAgentFirstRun(repoRoot).run();
+    console.log((0, firstRun_js_1.renderLocalAgentInitReport)(report));
+    return report.blockers.length === 0 ? 0 : 1;
+}
+function handleStatus(repoRoot) {
+    console.log((0, status_js_1.renderLocalAgentStatus)(new status_js_1.LocalAgentStatus(repoRoot).capture()));
+    return 0;
+}
+function handleEvents(repoRoot, args) {
+    const query = (0, events_js_1.parseEventsArgs)(args);
+    console.log((0, events_js_1.renderLocalAgentEvents)(new events_js_1.LocalAgentEvents(repoRoot).read(query)));
+    return 0;
+}
+function handleReleasePlan(repoRoot) {
+    console.log((0, releasePlan_js_1.renderLocalAgentReleasePlan)(new releasePlan_js_1.LocalAgentReleasePlan(repoRoot).inspect()));
+    return 0;
+}
+function handleDocTruth(repoRoot, args) {
+    const files = args.length > 0 ? args : [...docTruth_js_1.DEFAULT_DOC_TRUTH_FILES];
+    const report = new docTruth_js_1.LocalAgentDocTruth(repoRoot).scan(files);
+    console.log((0, docTruth_js_1.renderLocalAgentDocTruth)(report));
+    return report.violations.length === 0 ? 0 : 1;
 }
 function handleHelpMe(repoRoot) {
     console.log(new help_js_1.LocalAgentHelpSystem(repoRoot).helpMe());
@@ -875,6 +917,48 @@ function collectRepeatedFlagValues(args, flag) {
     }
     return values;
 }
+async function handleDaemon(repoRoot, args) {
+    const sub = args[0];
+    if (!sub) {
+        console.log('TerraFusion Local Agent Daemon');
+        console.log('');
+        console.log('Subcommands:');
+        console.log('  start    Start the local-agent daemon (path-based IPC, no TCP).');
+        console.log('  stop     Stop the local-agent daemon.');
+        console.log('  status   Read-only daemon status.');
+        return 1;
+    }
+    switch (sub) {
+        case 'start': {
+            const { result, daemon } = await (0, daemonControl_js_1.daemonStart)({ repoRoot });
+            console.log((0, daemonControl_js_1.renderDaemonStartResult)(result));
+            if (daemon) {
+                const shutdown = async () => {
+                    await daemon.stop().catch(() => undefined);
+                    await (0, daemonControl_js_1.daemonStop)({ repoRoot }).catch(() => undefined);
+                    process.exit(0);
+                };
+                process.once('SIGINT', () => void shutdown());
+                process.once('SIGTERM', () => void shutdown());
+            }
+            return 0;
+        }
+        case 'stop': {
+            const result = await (0, daemonControl_js_1.daemonStop)({ repoRoot });
+            console.log((0, daemonControl_js_1.renderDaemonStopResult)(result));
+            return 0;
+        }
+        case 'status': {
+            const result = await (0, daemonControl_js_1.daemonStatus)({ repoRoot });
+            console.log((0, daemonControl_js_1.renderDaemonStatusResult)(result));
+            return result.running ? 0 : 1;
+        }
+        default:
+            console.log(`TerraFusion: unknown daemon subcommand: ${sub}`);
+            console.log('Use one of: start | stop | status');
+            return 1;
+    }
+}
 function printUsage() {
     console.log('TerraFusion Local Agent');
     console.log('');
@@ -915,6 +999,12 @@ function printUsage() {
     console.log('  save-state <summary> --next-step <step> [--note <note>]');
     console.log('  finalize');
     console.log('  start');
+    console.log('  init');
+    console.log('  status');
+    console.log('  events [--tail N] [--type T]');
+    console.log('  release');
+    console.log('  doc-truth [file ...]');
+    console.log('  daemon <start|stop|status>');
     console.log('  tool <read-file|list-files|search-text|run-command> ...');
 }
 main(process.argv.slice(2))

@@ -1,5 +1,6 @@
 import { appendFileSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { redactPayload, type RedactValue } from './redact.js';
 
 export interface LocalAgentEvent {
   ts: number;
@@ -23,10 +24,12 @@ export function appendLocalAgentEvent(
   const directory = terrafusionDir(repoRoot);
   mkdirSync(directory, { recursive: true });
 
+  const redacted = redactPayload(payload as Record<string, RedactValue>);
+
   const event: LocalAgentEvent = {
     ts: Math.floor(Date.now() / 1000),
     type,
-    payload,
+    payload: redacted.value,
   };
 
   appendFileSync(

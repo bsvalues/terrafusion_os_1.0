@@ -5,10 +5,21 @@ import { LocalAgentCardLockStore } from './cardLock.js';
 import { LocalAgentCommandRegistryBuilder } from './commandRegistry.js';
 import { LocalAgentControlCenterStateBuilder } from './controlCenter.js';
 import { LocalAgentControlCenterPreview } from './controlCenterPreview.js';
+import {
+  daemonStart,
+  daemonStatus,
+  daemonStop,
+  renderDaemonStartResult,
+  renderDaemonStatusResult,
+  renderDaemonStopResult,
+} from './daemonControl.js';
 import { LocalAgentDoctorMode, renderLocalAgentDoctorResult } from './doctorMode.js';
+import { LocalAgentDocTruth, renderLocalAgentDocTruth, DEFAULT_DOC_TRUTH_FILES } from './docTruth.js';
 import { LocalAgentDocsIndexBuilder } from './docsIndex.js';
+import { LocalAgentEvents, parseEventsArgs, renderLocalAgentEvents } from './events.js';
 import { LocalAgentExplainMode, renderLocalAgentExplainReport } from './explainMode.js';
 import { LocalAgentFinalizeRunner } from './finalize.js';
+import { LocalAgentFirstRun, renderLocalAgentInitReport } from './firstRun.js';
 import { LocalAgentHelpSystem, renderLocalAgentNextRecommendation } from './help.js';
 import { LocalAgentModelGateway, type LocalAgentModelChatMessage } from './modelGateway.js';
 import { LocalAgentPatchPreview } from './patchPreview.js';
@@ -20,9 +31,11 @@ import { LocalAgentReviewMode, renderLocalAgentReviewReport } from './reviewMode
 import { LocalAgentReleaseApprovalRunner } from './releaseApproval.js';
 import { LocalAgentReleaseCheckRunner } from './releaseCheck.js';
 import { LocalAgentReleaseNotesBuilder } from './releaseNotes.js';
+import { LocalAgentReleasePlan, renderLocalAgentReleasePlan } from './releasePlan.js';
 import { LocalAgentReleaseRunbookBuilder } from './releaseRunbook.js';
 import { LocalAgentSaveStateWriter } from './saveState.js';
 import { LocalAgentShipMvpRunner } from './shipMvp.js';
+import { LocalAgentStatus, renderLocalAgentStatus } from './status.js';
 import { LocalAgentTagCommandRunner } from './tagCommand.js';
 import { LocalAgentTagGateRunner } from './tagGate.js';
 import { LocalAgentToolRunner } from './toolRunner.js';
@@ -67,6 +80,16 @@ async function main(argv: string[]): Promise<number> {
         return handleFinalize(repoRoot);
       case 'start':
         return handleStart(repoRoot);
+      case 'init':
+        return handleInit(repoRoot);
+      case 'status':
+        return handleStatus(repoRoot);
+      case 'events':
+        return handleEvents(repoRoot, rest);
+      case 'release':
+        return handleReleasePlan(repoRoot);
+      case 'doc-truth':
+        return handleDocTruth(repoRoot, rest);
       case 'help-me':
         return handleHelpMe(repoRoot);
       case 'next':
@@ -103,6 +126,8 @@ async function main(argv: string[]): Promise<number> {
         return handleReleaseRunbook(repoRoot, rest);
       case 'tool':
         return handleTool(repoRoot, rest);
+      case 'daemon':
+        return handleDaemon(repoRoot, rest);
       default:
         printUsage();
         return command ? 1 : 0;
@@ -144,6 +169,35 @@ function parseGlobalOptions(argv: string[]): { repoRoot: string; args: string[] 
 
 async function handleStart(repoRoot: string): Promise<number> {
   return new LocalAgentFounderWizard(repoRoot).run();
+}
+
+function handleInit(repoRoot: string): number {
+  const report = new LocalAgentFirstRun(repoRoot).run();
+  console.log(renderLocalAgentInitReport(report));
+  return report.blockers.length === 0 ? 0 : 1;
+}
+
+function handleStatus(repoRoot: string): number {
+  console.log(renderLocalAgentStatus(new LocalAgentStatus(repoRoot).capture()));
+  return 0;
+}
+
+function handleEvents(repoRoot: string, args: string[]): number {
+  const query = parseEventsArgs(args);
+  console.log(renderLocalAgentEvents(new LocalAgentEvents(repoRoot).read(query)));
+  return 0;
+}
+
+function handleReleasePlan(repoRoot: string): number {
+  console.log(renderLocalAgentReleasePlan(new LocalAgentReleasePlan(repoRoot).inspect()));
+  return 0;
+}
+
+function handleDocTruth(repoRoot: string, args: string[]): number {
+  const files = args.length > 0 ? args : [...DEFAULT_DOC_TRUTH_FILES];
+  const report = new LocalAgentDocTruth(repoRoot).scan(files);
+  console.log(renderLocalAgentDocTruth(report));
+  return report.violations.length === 0 ? 0 : 1;
 }
 
 function handleHelpMe(repoRoot: string): number {
@@ -997,6 +1051,49 @@ function collectRepeatedFlagValues(args: string[], flag: string): string[] {
   return values;
 }
 
+async function handleDaemon(repoRoot: string, args: string[]): Promise<number> {
+  const sub = args[0];
+  if (!sub) {
+    console.log('TerraFusion Local Agent Daemon');
+    console.log('');
+    console.log('Subcommands:');
+    console.log('  start    Start the local-agent daemon (path-based IPC, no TCP).');
+    console.log('  stop     Stop the local-agent daemon.');
+    console.log('  status   Read-only daemon status.');
+    return 1;
+  }
+  switch (sub) {
+    case 'start': {
+      const { result, daemon } = await daemonStart({ repoRoot });
+      console.log(renderDaemonStartResult(result));
+      if (daemon) {
+        const shutdown = async (): Promise<void> => {
+          await daemon.stop().catch(() => undefined);
+          await daemonStop({ repoRoot }).catch(() => undefined);
+          process.exit(0);
+        };
+        process.once('SIGINT', () => void shutdown());
+        process.once('SIGTERM', () => void shutdown());
+      }
+      return 0;
+    }
+    case 'stop': {
+      const result = await daemonStop({ repoRoot });
+      console.log(renderDaemonStopResult(result));
+      return 0;
+    }
+    case 'status': {
+      const result = await daemonStatus({ repoRoot });
+      console.log(renderDaemonStatusResult(result));
+      return result.running ? 0 : 1;
+    }
+    default:
+      console.log(`TerraFusion: unknown daemon subcommand: ${sub}`);
+      console.log('Use one of: start | stop | status');
+      return 1;
+  }
+}
+
 function printUsage(): void {
   console.log('TerraFusion Local Agent');
   console.log('');
@@ -1037,6 +1134,12 @@ function printUsage(): void {
   console.log('  save-state <summary> --next-step <step> [--note <note>]');
   console.log('  finalize');
   console.log('  start');
+  console.log('  init');
+  console.log('  status');
+  console.log('  events [--tail N] [--type T]');
+  console.log('  release');
+  console.log('  doc-truth [file ...]');
+  console.log('  daemon <start|stop|status>');
   console.log('  tool <read-file|list-files|search-text|run-command> ...');
 }
 

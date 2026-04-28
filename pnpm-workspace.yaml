@@ -45,3 +45,6 @@ packages:
 
   # Tools with package.json
   - 'tools/*'
+
+  # Apps (Slice M+ — Electron cockpit and future GUI apps)
+  - 'apps/*'
