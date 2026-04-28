@@ -417,3 +417,163 @@ marker commit lands only after all gates are green.
   limitation.** That's a future slice, not this one.
 - **Not coverage of the 10 neighborhood-table Other-lane
   columns.** Those are explicitly future work.
+
+---
+
+## Amendment — 2026-04-28: hood_cd is the canonical neighborhood identifier (workbook-gap-discovered)
+
+This amendment is added retroactively after an operator domain
+note received between the C20-A merge and the planned C20-B run.
+The C20-A policy (above) treated `dbo.neighborhood.nbhd_descr` as
+the primary neighborhood-review target. That treatment is
+**incomplete**: it covers the dictionary side of the relation
+(neighborhood definitions) but not the membership side
+(per-parcel neighborhood assignment).
+
+### Domain truth (operator-supplied)
+
+> Neighborhood is represented by `hood_cd`.
+
+In Benton County's PACS deployment:
+
+- **`dbo.property_val.hood_cd`** is the canonical per-parcel
+  neighborhood-membership code. Each parcel-record carries a
+  `hood_cd` value that names which neighborhood it belongs to.
+  This is the column the calculator (`CostForgeController`,
+  `PacsValuation.NeighborhoodCode`), the forge sales-comp
+  filter, and the `PacsCanonicalizer` already use as the source
+  of truth — see prior commits `27bb5f7eb`, `67e873600`,
+  `6f76ae629`, `1553f2239` from April 3, 2026.
+- **`dbo.neighborhood.nbhd_descr`** is the description text
+  for each neighborhood definition. It is dictionary-side
+  metadata: which `hood_cd` value gets which human-readable
+  description. Useful for display, auxiliary for classification.
+- **A historical typo `nbhd_cd` is documented** in
+  `SyncController.cs` line 298 (`"reads property_val.hood_cd
+  (not the earlier typo 'nbhd_cd')"`); the canonical column is
+  `hood_cd`, not `nbhd_cd`, on the `property_val` table.
+
+### Workbook gap (post-C20-A discovery)
+
+Querying the live Mapping Workbook (`a767c8a2-…`) at C20-A
+post-merge state:
+
+- `dbo.property_val.hood_cd`: **not present** in any
+  `SyncMappingColumn` row.
+- `dbo.property.hood_cd`: **not present** in any
+  `SyncMappingColumn` row.
+- The C3 profile loader picked up 46 columns from `property_val`
+  and zero columns from `property` matching `hood_cd` / `hood`.
+  The actual canonical neighborhood column was excluded entirely.
+
+The cause is most likely the C3 loader's column-selection
+heuristic (the loader includes columns where review value is
+inferable from observed-count distributions or column-name
+patterns; `hood_cd` is always populated, so it may have been
+filtered as "no review needed" or excluded by some other rule).
+The cause itself is out of scope for this amendment.
+
+### What this gap means for C20-B
+
+The C20-A policy as written would close 93 of 94 `nbhd_descr`
+rows (per the empty-string grammar limitation). That work is
+**still meaningful** — it terminalizes the dictionary side of
+the neighborhood relation — but it does **not** unblock the
+sales-comp / forge / calculator consumers. Those consumers read
+`hood_cd`, not `nbhd_descr`. Until `hood_cd` is added to the
+workbook AND reviewed, the workbook's "Neighborhood lane = 100%
+terminal" milestone would be a misnomer at the sales-comp-
+consumption layer.
+
+### Re-scoped C20 slice plan
+
+The following replaces the recommended pacing in the C20-A doc
+above:
+
+1. **C20-A2 (this amendment)** — record domain truth and
+   workbook gap. Docs only.
+2. **C20-B (deferred / re-scoped)** — choose ONE of:
+   - **Option B-1 (dictionary-only review)**: run the planned
+     93-row `nbhd_descr` batch, with each row's `notes` cell
+     amended to read *"description-side review only; canonical
+     neighborhood membership lives on `property_val.hood_cd`
+     which is not in this workbook (pending C20-D)"*. Lane shows
+     93/94 terminal afterward. Acceptable as long as future
+     consumers don't mistake this for membership review.
+   - **Option B-2 (block until hood_cd is added)**: defer
+     C20-B entirely until `hood_cd` is added to the workbook
+     (C20-D below). Workbook stays at 0/94 terminal on
+     Neighborhood lane.
+   - **Option B-3 (skip nbhd_descr permanently)**: if the
+     operator decides nbhd_descr is purely operator-authored
+     descriptive text with no canonical-vocabulary value, mark
+     the entire column as "review-not-applicable" via a future
+     mechanism (no current grammar exists for this).
+   This amendment does **not** pick. The choice is operator-
+   driven and depends on whether dictionary-side review has
+   downstream value for any consumer.
+3. **C20-C — add `hood_cd` to the workbook** (new). Either:
+   - Extend the C3 loader to include `hood_cd` (requires loader
+     code change, lane-classification rule, and a migration to
+     re-profile + insert the column row + its code-values), OR
+   - One-shot SQL insert of the `SyncMappingColumn` row for
+     `(dbo, property_val, hood_cd, lane='Neighborhood',
+     canonical_target='Neighborhood')` plus its
+     `SyncMappingCodeValue` rows pulled from a fresh PACS
+     `SELECT DISTINCT hood_cd, COUNT(*) FROM property_val …`.
+     Smaller blast radius but bypasses C3's normal flow.
+   This is a separate slice; needs its own contract.
+4. **C20-D — review `hood_cd` codes** once they're in the
+   workbook. This is the actual neighborhood-membership review
+   that unblocks downstream consumers.
+
+### Hard updates to the C20-A policy text above
+
+The policy text remains authoritative for `nbhd_descr` review
+shape (free-text, RFC 4180, Defer-by-default), but every
+reference to "neighborhood-classification readiness" or
+"unblocks the C7+ valuation transforms" should be read in light
+of this amendment: until `hood_cd` is added and reviewed,
+**`nbhd_descr` review alone is dictionary metadata, not
+classification readiness.**
+
+### Already-applied retroactive readings
+
+- **C20-A's "Purpose" section** (above) overstates the value of
+  `nbhd_descr` review for sales-comp consumers. The amendment
+  re-frames it: dictionary-side only.
+- **C20-A's success-gate "Lane preserved" math** was correct in
+  isolation. After this amendment, `Neighborhood lane = 100%
+  terminal` means *the dictionary column is fully decided*, not
+  *neighborhood-membership review is complete*.
+- **No prior workbook rows are wrong.** `nbhd_descr`'s 94 rows
+  are still legitimate dictionary-side review targets. If C20-B
+  Option B-1 runs, those rows still get Defer-by-default
+  treatment — correctly.
+
+### What this amendment changes
+
+- Adds the `hood_cd` domain truth to the policy memory.
+- Documents the workbook gap (no `hood_cd` column present).
+- Re-scopes C20-B as conditional / re-numbers the C20 slice
+  series to include C20-C (loader extension) and C20-D
+  (membership review).
+- Re-frames `nbhd_descr` review as dictionary-side, not
+  classification-side.
+
+### What this amendment does not change
+
+- The `nbhd_descr` Hard Guards (Status='Draft', county scope,
+  snapshot/dry-run, no autodetection from text content, no
+  prior-lane mutation).
+- The pre-2017 conversion caveat.
+- The empty-string-SourceValue grammar limitation.
+- Sales / Valuation / Improvement / Land lane preservation.
+- The 403 prior terminal rows in the workbook (1 Excluded
+  anchor + 402 Deferred rows from C9-C through C19-B). All
+  unchanged.
+
+### What this amendment is
+
+A docs-only domain memory record. No code changes. No CSV
+authoring. No row mutations. No C3-loader changes.
