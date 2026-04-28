@@ -70,7 +70,18 @@ public sealed record CliArgs(
     bool MappingReviewProgress,
     // Slice C22-B — PACS dictionary loader mode (ninth in the SyncAtlas mutex)
     bool LoadPacsDictionary,
-    string? PacsDictionaryTable);
+    string? PacsDictionaryTable,
+    // Slice C27-A — workbook-target disambiguator for dictionary-reuse.
+    // Optional. When omitted, the loader uses the legacy single binding
+    // for the given --table (e.g. property_use → property_val.property_use_cd).
+    // When supplied, it disambiguates among multiple workbook columns
+    // sharing one PACS dictionary (e.g. property_use →
+    // imprv.primary_use_cd for C27 vs property_val.property_use_cd for
+    // C22). Format is the same 'schema.table.column' as the edit-mode
+    // --source flag, but distinct field/flag because the semantics differ.
+    string? WorkbookSourceSchema,
+    string? WorkbookSourceTable,
+    string? WorkbookSourceColumn);
 
 /// <summary>
 /// Pure argument parser. No I/O, no environment access — easy to unit test.
@@ -291,6 +302,10 @@ public static class CliArgsParser
         // Slice C22-B — PACS dictionary loader mode
         var loadPacsDictionary = false;
         string? pacsDictionaryTable = null;
+        // Slice C27-A — workbook-target disambiguator (optional)
+        string? workbookSourceSchema = null;
+        string? workbookSourceTable  = null;
+        string? workbookSourceColumn = null;
 
         for (var i = 0; i < argv.Length; i++)
         {
@@ -546,6 +561,26 @@ public static class CliArgsParser
                     pacsDictionaryTable = argv[++i];
                     break;
 
+                // Slice C27-A — workbook-target disambiguator. Optional.
+                // Used only by --load-pacs-dictionary mode to pick among
+                // multiple workbook columns sharing one PACS dictionary
+                // (the C27 dictionary-reuse pattern).
+                case "--workbook-source-column":
+                    if (++i >= argv.Length) return (null, "--workbook-source-column requires a value");
+                    var rawWbSource = argv[i];
+                    var wbParts = rawWbSource.Split('.');
+                    if (wbParts.Length != 3 ||
+                        string.IsNullOrWhiteSpace(wbParts[0]) ||
+                        string.IsNullOrWhiteSpace(wbParts[1]) ||
+                        string.IsNullOrWhiteSpace(wbParts[2]))
+                    {
+                        return (null, $"--workbook-source-column must be 'schema.table.column': '{rawWbSource}'");
+                    }
+                    workbookSourceSchema = wbParts[0];
+                    workbookSourceTable  = wbParts[1];
+                    workbookSourceColumn = wbParts[2];
+                    break;
+
                 default:
                     return (null, $"unknown argument: '{arg}'");
             }
@@ -593,7 +628,10 @@ public static class CliArgsParser
                 BatchEditApply:                        batchEditApply,
                 MappingReviewProgress:                 mappingReviewProgress,
                 LoadPacsDictionary:                    loadPacsDictionary,
-                PacsDictionaryTable:                   pacsDictionaryTable), null);
+                PacsDictionaryTable:                   pacsDictionaryTable,
+                WorkbookSourceSchema:                  workbookSourceSchema,
+                WorkbookSourceTable:                   workbookSourceTable,
+                WorkbookSourceColumn:                  workbookSourceColumn), null);
         }
 
         // ── Always-required, regardless of mode ─────────────────────────
@@ -651,6 +689,15 @@ public static class CliArgsParser
             {
                 return (null, $"--deep-profile-max-tables is not allowed in {modeName} mode");
             }
+        }
+
+        // ── Cross-mode flag rejection ───────────────────────────────────
+        // C27-A: --workbook-source-column is a load-pacs-dictionary-only
+        // disambiguator; reject it everywhere else for parity with
+        // RejectEditModeFlags' treatment of --source.
+        if (!loadPacsDictionary && workbookSourceSchema is not null)
+        {
+            return (null, "--workbook-source-column requires --load-pacs-dictionary");
         }
 
         // ── Profile-mode-specific validation ────────────────────────────
@@ -1359,7 +1406,10 @@ public static class CliArgsParser
             BatchEditApply:                        batchEditApply,
             MappingReviewProgress:                 mappingReviewProgress,
             LoadPacsDictionary:                    loadPacsDictionary,
-            PacsDictionaryTable:                   pacsDictionaryTable), null);
+            PacsDictionaryTable:                   pacsDictionaryTable,
+            WorkbookSourceSchema:                  workbookSourceSchema,
+            WorkbookSourceTable:                   workbookSourceTable,
+            WorkbookSourceColumn:                  workbookSourceColumn), null);
     }
 
     public static string UsageText => @"
@@ -1452,23 +1502,31 @@ Usage (Mapping Workbook review progress — Slice C14-B, read-only):
   workbooks, where the report shows ""already <status>"" and zero
   blockers.
 
-Usage (PACS dictionary loader — Slice C22-B / C23-B / C24-B / C25-B / C26-B, read-only):
+Usage (PACS dictionary loader — Slice C22-B / C23-B / C24-B / C25-B / C26-B / C27-B, read-only):
   SyncAtlas --db <terrafusion-connection-string> \
             --county-id <guid> \
             --connection-id <guid> \
             --load-pacs-dictionary \
             --table property_use | imprv_det_class | land_soil | imprv_det_meth | imprv_det_sub_class \
             --workbook-id <guid> \
+            [--workbook-source-column schema.table.column] \
             [--operator <name>]
   Read-only loader. Reads the PACS dictionary table named by
   --table (allowlist: property_use, imprv_det_class, land_soil,
   imprv_det_meth, imprv_det_sub_class), joins it against the
   workbook's matching Deferred code-values, and produces a
   proposed review CSV per the C22-A / C23-A / C24-A / C25-A /
-  C26-A M1-M5 mismatch rules. Never mutates PACS; never mutates
-  the workbook. The proposed CSV is fed into
+  C26-A / C27-A M1-M5 mismatch rules. Never mutates PACS; never
+  mutates the workbook. The proposed CSV is fed into
   --batch-edit-mapping-workbook by the operator in a separate
-  step (C22-C / C23-C / C24-C / C25-C / C26-C).
+  step (C22-C / C23-C / C24-C / C25-C / C26-C / C27-C).
+
+  --workbook-source-column is OPTIONAL. When omitted, the loader
+  uses the legacy single binding for the given --table (e.g.
+  property_use → property_val.property_use_cd from C22). When
+  supplied, it disambiguates among multiple workbook columns
+  sharing one PACS dictionary (the C27-A dictionary-reuse
+  pattern; e.g. property_use → imprv.primary_use_cd).
 
 Required (always):
   --db              Postgres connection string for the TerraFusion DB.
