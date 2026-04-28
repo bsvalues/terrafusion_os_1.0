@@ -2605,4 +2605,194 @@ public class CliArgsParserTests
         usage.Should().Contain("Slice C14-B");
         usage.Should().Contain("read-only");
     }
+
+    // ── Slice C22-B — PACS dictionary loader mode ──────────────────────
+    //
+    // Nine-way mode mutex now: profile / generate / export / qualify /
+    // edit / lock / batch-edit / review-progress / load-pacs-dictionary.
+    // Load-pacs-dictionary requires --workbook-id, --table, AND
+    // --connection-id (it reads PACS); rejects all other modes' input
+    // flags; allowlist enforced for --table.
+
+    [Fact]
+    public void Parse_LoadPacsDictionarySetsMode()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--load-pacs-dictionary",
+            "--table", "property_use",
+            "--workbook-id", ValidWorkbookId,
+        });
+
+        err.Should().BeNull();
+        args!.LoadPacsDictionary.Should().BeTrue();
+        args.PacsDictionaryTable.Should().Be("property_use");
+        args.WorkbookId.Should().Be(Guid.Parse(ValidWorkbookId));
+        args.ConnectionId.Should().Be(Guid.Parse(ValidConnection));
+        args.MappingReviewProgress.Should().BeFalse();
+        args.BatchEditMappingWorkbook.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Parse_LoadPacsDictionaryRequiresWorkbookId()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--load-pacs-dictionary",
+            "--table", "property_use",
+            // no --workbook-id
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--workbook-id");
+        err.Should().Contain("--load-pacs-dictionary");
+    }
+
+    [Fact]
+    public void Parse_LoadPacsDictionaryRequiresTable()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--load-pacs-dictionary",
+            "--workbook-id", ValidWorkbookId,
+            // no --table
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--table");
+        err.Should().Contain("--load-pacs-dictionary");
+    }
+
+    [Fact]
+    public void Parse_LoadPacsDictionaryRequiresConnectionId()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--load-pacs-dictionary",
+            "--table", "property_use",
+            "--workbook-id", ValidWorkbookId,
+            // no --connection-id
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--connection-id");
+        err.Should().Contain("--load-pacs-dictionary");
+    }
+
+    [Fact]
+    public void Parse_LoadPacsDictionaryRejectsTableNotInAllowlist()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--load-pacs-dictionary",
+            "--table", "imprv_attr_val",  // not in allowlist for C22-B
+            "--workbook-id", ValidWorkbookId,
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("imprv_attr_val");
+        err.Should().Contain("not in the C22-B allowlist");
+        err.Should().Contain("property_use");
+    }
+
+    [Fact]
+    public void Parse_LoadPacsDictionaryRejectsEditFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--load-pacs-dictionary",
+            "--table", "property_use",
+            "--workbook-id", ValidWorkbookId,
+            "--source", "dbo.property_val.property_use_cd",  // edit-mode flag
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--source");
+        err.Should().Contain("--edit-mapping-workbook");
+    }
+
+    [Fact]
+    public void Parse_LoadPacsDictionaryRejectsBatchEditFlags()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--load-pacs-dictionary",
+            "--table", "property_use",
+            "--workbook-id", ValidWorkbookId,
+            "--input-csv", "/tmp/x.csv",
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--input-csv");
+        err.Should().Contain("--batch-edit-mapping-workbook");
+    }
+
+    [Theory]
+    [InlineData("--generate-mapping-workbook")]
+    [InlineData("--export-mapping-workbook")]
+    [InlineData("--qualify-sales")]
+    [InlineData("--edit-mapping-workbook")]
+    [InlineData("--lock-mapping-workbook")]
+    [InlineData("--batch-edit-mapping-workbook")]
+    [InlineData("--mapping-review-progress")]
+    public void Parse_LoadPacsDictionaryMutuallyExclusiveWithOtherModes(string otherModeFlag)
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--load-pacs-dictionary",
+            "--table", "property_use",
+            "--workbook-id", ValidWorkbookId,
+            otherModeFlag,
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("mutually exclusive");
+        err.Should().Contain("--load-pacs-dictionary");
+    }
+
+    [Fact]
+    public void UsageText_IncludesLoadPacsDictionaryMode()
+    {
+        var usage = CliArgsParser.UsageText;
+        usage.Should().Contain("--load-pacs-dictionary");
+        usage.Should().Contain("Slice C22-B");
+        usage.Should().Contain("property_use");
+        usage.Should().Contain("read-only");
+    }
+
+    [Fact]
+    public void IsAllowedPacsDictionaryTable_AllowsPropertyUse_RejectsOthers()
+    {
+        CliArgsParser.IsAllowedPacsDictionaryTable("property_use").Should().BeTrue();
+        CliArgsParser.IsAllowedPacsDictionaryTable("PROPERTY_USE").Should().BeTrue(
+            "case-insensitive matching");
+
+        CliArgsParser.IsAllowedPacsDictionaryTable("imprv_attr_val").Should().BeFalse();
+        CliArgsParser.IsAllowedPacsDictionaryTable("nbhd_codes").Should().BeFalse();
+        CliArgsParser.IsAllowedPacsDictionaryTable("land_soil").Should().BeFalse();
+        CliArgsParser.IsAllowedPacsDictionaryTable("").Should().BeFalse();
+    }
 }

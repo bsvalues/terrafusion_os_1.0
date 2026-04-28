@@ -67,7 +67,10 @@ public sealed record CliArgs(
     bool BatchEditDryRun,
     bool BatchEditApply,
     // Slice C14-B — Mapping Workbook review progress mode (eighth in the SyncAtlas mutex)
-    bool MappingReviewProgress);
+    bool MappingReviewProgress,
+    // Slice C22-B — PACS dictionary loader mode (ninth in the SyncAtlas mutex)
+    bool LoadPacsDictionary,
+    string? PacsDictionaryTable);
 
 /// <summary>
 /// Pure argument parser. No I/O, no environment access — easy to unit test.
@@ -153,6 +156,15 @@ public static class CliArgsParser
     // batch-edit modes — every non-progress branch simply relies on
     // the eight-way mode mutex to refuse `--mapping-review-progress`
     // when paired with another mode toggle.
+
+    /// <summary>
+    /// Slice C22-A Hard Guard #5: allowlisted PACS dictionary tables
+    /// for the C22-B loader. Initial allowlist includes only
+    /// <c>property_use</c>; future slices (C22-D etc.) extend this
+    /// list by explicit policy amendment + parser update.
+    /// </summary>
+    public static bool IsAllowedPacsDictionaryTable(string tableName)
+        => string.Equals(tableName, "property_use", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     /// Rejection helper used by every non-batch mode to refuse the
@@ -264,6 +276,10 @@ public static class CliArgsParser
 
         // Slice C14-B — Mapping Workbook review progress mode
         var mappingReviewProgress = false;
+
+        // Slice C22-B — PACS dictionary loader mode
+        var loadPacsDictionary = false;
+        string? pacsDictionaryTable = null;
 
         for (var i = 0; i < argv.Length; i++)
         {
@@ -509,6 +525,16 @@ public static class CliArgsParser
                     mappingReviewProgress = true;
                     break;
 
+                // ── Slice C22-B — PACS dictionary loader mode ───────────
+                case "--load-pacs-dictionary":
+                    loadPacsDictionary = true;
+                    break;
+                case "--table":
+                    if (i + 1 >= argv.Length)
+                        return (null, "--table requires a value");
+                    pacsDictionaryTable = argv[++i];
+                    break;
+
                 default:
                     return (null, $"unknown argument: '{arg}'");
             }
@@ -554,7 +580,9 @@ public static class CliArgsParser
                 InputCsvPath:                          inputCsvPath,
                 BatchEditDryRun:                       batchEditDryRun,
                 BatchEditApply:                        batchEditApply,
-                MappingReviewProgress:                 mappingReviewProgress), null);
+                MappingReviewProgress:                 mappingReviewProgress,
+                LoadPacsDictionary:                    loadPacsDictionary,
+                PacsDictionaryTable:                   pacsDictionaryTable), null);
         }
 
         // ── Always-required, regardless of mode ─────────────────────────
@@ -562,11 +590,12 @@ public static class CliArgsParser
         if (!countyId.HasValue) return (null, "--county-id is required");
         if (string.IsNullOrWhiteSpace(operatorId)) return (null, "--operator must be non-empty when provided");
 
-        // ── Eight-way mode mutex ────────────────────────────────────────
+        // ── Nine-way mode mutex ─────────────────────────────────────────
         // Profile (default) | Generate Workbook (C4) | Export Workbook (C5)
         // | Qualify Sales (C8-C) | Edit Workbook (C9-B) | Lock Workbook
         // (C10-B) | Batch Edit Workbook (C11-B) | Review Progress (C14-B)
-        // — at most one bool-toggle can be on.
+        // | Load PACS Dictionary (C22-B) — at most one bool-toggle can
+        // be on.
         var modeToggleCount =
             (generateMappingWorkbook   ? 1 : 0) +
             (exportMappingWorkbook     ? 1 : 0) +
@@ -574,19 +603,21 @@ public static class CliArgsParser
             (editMappingWorkbook       ? 1 : 0) +
             (lockMappingWorkbook       ? 1 : 0) +
             (batchEditMappingWorkbook  ? 1 : 0) +
-            (mappingReviewProgress     ? 1 : 0);
+            (mappingReviewProgress     ? 1 : 0) +
+            (loadPacsDictionary        ? 1 : 0);
         if (modeToggleCount > 1)
         {
             return (null,
                 "--generate-mapping-workbook, --export-mapping-workbook, --qualify-sales, " +
                 "--edit-mapping-workbook, --lock-mapping-workbook, " +
-                "--batch-edit-mapping-workbook, and --mapping-review-progress are mutually exclusive");
+                "--batch-edit-mapping-workbook, --mapping-review-progress, " +
+                "and --load-pacs-dictionary are mutually exclusive");
         }
 
         // ── Mode-mutual-exclusion: deep-profile flags only in profile mode ──
         if (generateMappingWorkbook || exportMappingWorkbook || qualifySales ||
             editMappingWorkbook || lockMappingWorkbook || batchEditMappingWorkbook ||
-            mappingReviewProgress)
+            mappingReviewProgress || loadPacsDictionary)
         {
             var modeName =
                 generateMappingWorkbook   ? "Mapping Workbook" :
@@ -595,7 +626,8 @@ public static class CliArgsParser
                 editMappingWorkbook       ? "Mapping Workbook edit" :
                 lockMappingWorkbook       ? "Mapping Workbook lock" :
                 batchEditMappingWorkbook  ? "Mapping Workbook batch edit" :
-                                            "Mapping Workbook review progress";
+                mappingReviewProgress     ? "Mapping Workbook review progress" :
+                                            "PACS dictionary loader";
             if (deepProfile)
             {
                 return (null, $"--deep-profile is not allowed in {modeName} mode");
@@ -613,7 +645,7 @@ public static class CliArgsParser
         // ── Profile-mode-specific validation ────────────────────────────
         if (!generateMappingWorkbook && !exportMappingWorkbook && !qualifySales &&
             !editMappingWorkbook && !lockMappingWorkbook && !batchEditMappingWorkbook &&
-            !mappingReviewProgress)
+            !mappingReviewProgress && !loadPacsDictionary)
         {
             if (!connectionId.HasValue) return (null, "--connection-id is required");
 
@@ -1110,7 +1142,7 @@ public static class CliArgsParser
                 editIsExcluded, editNotes);
             if (editError is not null) return (null, editError);
         }
-        else
+        else if (mappingReviewProgress)
         {
             // ── Review-progress-mode-specific validation (C14-B) ────────
             // Hard Guards from the C14-A policy doc:
@@ -1182,6 +1214,100 @@ public static class CliArgsParser
             // lock mode does — surface contract is preventing
             // operator confusion, not punishing extra bytes.
         }
+        else
+        {
+            // ── Load-PACS-dictionary mode validation (C22-B) ────────────
+            // Hard Guards from the C22-A policy doc:
+            //   1. Read PACS, never write          — service-side enforced.
+            //   2. Read-only workbook              — service-side enforced.
+            //   3. No autodetection                — only proposes CSV;
+            //                                        operator confirms at C22-C.
+            //   4. Year-aware reads                — service config.
+            //   5. Allowlisted dictionary table    — parser-side enforced
+            //                                        below.
+            // The parser's job is the surface contract: --workbook-id and
+            // --table are mandatory; --connection-id is mandatory (we're
+            // reading PACS); table name must be in the allowlist; no
+            // other mode's flags may appear.
+            if (!workbookId.HasValue)
+            {
+                return (null, "--workbook-id is required when --load-pacs-dictionary is set");
+            }
+            if (string.IsNullOrWhiteSpace(pacsDictionaryTable))
+            {
+                return (null, "--table is required when --load-pacs-dictionary is set");
+            }
+            if (!connectionId.HasValue)
+            {
+                return (null,
+                    "--connection-id is required when --load-pacs-dictionary is set " +
+                    "(C22-B reads from PACS via SyncSourceConnection)");
+            }
+            // C22-A Hard Guard #5: allowlisted dictionary tables only.
+            // Initial allowlist: property_use only. Future slices extend
+            // the list by explicit policy amendment.
+            if (!IsAllowedPacsDictionaryTable(pacsDictionaryTable!))
+            {
+                return (null,
+                    $"--table '{pacsDictionaryTable}' is not in the C22-B allowlist. " +
+                    "Allowed tables: property_use.");
+            }
+
+            // Generate-mode flags must not appear in load-pacs-dictionary mode.
+            if (profileBatchId.HasValue)
+            {
+                return (null, "--profile-batch-id requires --generate-mapping-workbook");
+            }
+            if (latestProfileBatch)
+            {
+                return (null, "--latest-profile-batch requires --generate-mapping-workbook");
+            }
+            if (workbookName is not null)
+            {
+                return (null, "--workbook-name requires --generate-mapping-workbook");
+            }
+            if (replaceExistingDraft)
+            {
+                return (null, "--replace-existing-draft requires --generate-mapping-workbook");
+            }
+            if (mappingMaxCandidates.HasValue)
+            {
+                return (null, "--mapping-max-candidates requires --generate-mapping-workbook");
+            }
+
+            // Export-mode flags must not appear.
+            if (outputDirectory is not null)
+            {
+                return (null, "--output-dir requires --export-mapping-workbook");
+            }
+            if (exportFormatExplicit)
+            {
+                return (null, "--format requires --export-mapping-workbook");
+            }
+
+            // Qualify-sales flags must not appear (--source-connection-id
+            // is qualify-sales-specific; --connection-id is the canonical
+            // PACS connection for everything else, including this mode).
+            if (sourceConnectionId.HasValue)
+            {
+                return (null, "--source-connection-id requires --qualify-sales");
+            }
+            if (maxSales.HasValue)
+            {
+                return (null, "--max-sales requires --qualify-sales");
+            }
+
+            // Edit-mode flags must not appear.
+            var editError = RejectEditModeFlags(
+                editSourceSchema, editSourceValue, editCanonicalTarget,
+                editCanonicalValue, editCanonicalValueNull, editReviewStatus,
+                editIsExcluded, editNotes);
+            if (editError is not null) return (null, editError);
+
+            // Batch-edit-mode flags must not appear.
+            var batchError = RejectBatchEditModeFlags(inputCsvPath, batchEditDryRun, batchEditApply);
+            if (batchError is not null) return (null, batchError);
+        }
 
         return (new CliArgs(
             TerraFusionDbConnectionString:        db!,
@@ -1221,7 +1347,9 @@ public static class CliArgsParser
             InputCsvPath:                          inputCsvPath,
             BatchEditDryRun:                       batchEditDryRun,
             BatchEditApply:                        batchEditApply,
-            MappingReviewProgress:                 mappingReviewProgress), null);
+            MappingReviewProgress:                 mappingReviewProgress,
+            LoadPacsDictionary:                    loadPacsDictionary,
+            PacsDictionaryTable:                   pacsDictionaryTable), null);
     }
 
     public static string UsageText => @"
@@ -1313,6 +1441,22 @@ Usage (Mapping Workbook review progress — Slice C14-B, read-only):
   queries PACS. Accepts workbooks in any Status — including locked
   workbooks, where the report shows ""already <status>"" and zero
   blockers.
+
+Usage (PACS dictionary loader — Slice C22-B, read-only):
+  SyncAtlas --db <terrafusion-connection-string> \
+            --county-id <guid> \
+            --connection-id <guid> \
+            --load-pacs-dictionary \
+            --table property_use \
+            --workbook-id <guid> \
+            [--operator <name>]
+  Read-only loader. Reads the PACS dictionary table named by
+  --table (allowlist: property_use), joins it against the
+  workbook's Deferred property_use_cd code-values, and produces
+  a proposed review CSV per the C22-A M1-M5 mismatch rules.
+  Never mutates PACS; never mutates the workbook. The proposed
+  CSV is fed into --batch-edit-mapping-workbook by the operator
+  in a separate step (C22-C).
 
 Required (always):
   --db              Postgres connection string for the TerraFusion DB.
