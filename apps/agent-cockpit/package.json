@@ -1,0 +1,76 @@
+{
+  "name": "@terrafusion/agent-cockpit",
+  "private": true,
+  "version": "0.0.1",
+  "description": "TerraFusion Local Agent Cockpit (Electron shell). Founder-safe single-window UI for the local-agent daemon.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "preflight": "node scripts/preflight.mjs",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "electron": "33.2.1",
+    "electron-builder": "25.1.8"
+  },
+  "build": {
+    "appId": "com.terrafusion.agent-cockpit",
+    "productName": "TerraFusion Local Agent Cockpit",
+    "copyright": "Copyright © TerraFusion",
+    "asar": true,
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "chatBus.js",
+      "renderer/**/*",
+      "package.json",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!**/node_modules/*.d.ts",
+      "!**/node_modules/.bin"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "${productName}-${version}-portable.${ext}"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "publish": null,
+    "forceCodeSigning": false,
+    "nodeGypRebuild": false,
+    "buildDependenciesFromSource": false
+  }
+}
