@@ -12,6 +12,7 @@ const {
   daemonStatus,
   defaultDaemonRecordPath,
   DAEMON_RECORD_VERSION,
+  LocalAgentDaemonClient,
 } = mod;
 
 function makeSocketPath() {
@@ -57,6 +58,26 @@ test('start writes a versioned record with pid + socketPath, status reports runn
 
     await daemon.stop();
   } finally {
+    await daemonStop({ repoRoot: repo.repoRoot }).catch(() => {});
+    repo.cleanup();
+  }
+});
+
+test('fresh daemon start exposes no adapters until one is explicitly registered', async () => {
+  const repo = makeRepo();
+  const socketPath = makeSocketPath();
+  const client = new LocalAgentDaemonClient();
+  try {
+    const { daemon } = await daemonStart({ repoRoot: repo.repoRoot, socketPath });
+    await client.connect(socketPath);
+
+    const result = await client.listAdapters();
+    assert.deepEqual(result.adapters, []);
+
+    await client.close();
+    await daemon?.stop();
+  } finally {
+    await client.close().catch(() => {});
     await daemonStop({ repoRoot: repo.repoRoot }).catch(() => {});
     repo.cleanup();
   }

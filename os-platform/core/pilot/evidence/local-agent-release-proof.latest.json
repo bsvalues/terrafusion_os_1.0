@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-04-28T07:13:16.136Z",
+  "generatedAt": "2026-04-28T07:40:47.031Z",
   "workspaceRoot": "C:\\Users\\bsval\\terrafusion_os_1.0_local-agent-ship",
-  "tempRepoRoot": "C:\\Users\\bsval\\AppData\\Local\\Temp\\tf-local-agent-release-proof-ZI8Y5H",
+  "tempRepoRoot": "C:\\Users\\bsval\\AppData\\Local\\Temp\\tf-local-agent-release-proof-hvwOa7",
   "commands": [
     {
       "label": "command-registry",
@@ -15,7 +15,7 @@
       "label": "control-center-state",
       "ok": true,
       "result": {
-        "createdAt": 1777360396,
+        "createdAt": 1777362047,
         "version": "0.1.0",
         "identity": {
           "productName": "TerraFusion Local Agent Runtime",
@@ -348,7 +348,7 @@
       "label": "release-notes",
       "ok": true,
       "result": {
-        "createdAt": 1777360396,
+        "createdAt": 1777362047,
         "version": "0.1.0",
         "productName": "TerraFusion Local Agent Runtime",
         "internalCodename": "Prometheus",
@@ -586,7 +586,7 @@
       "label": "product-manifest",
       "ok": true,
       "result": {
-        "createdAt": 1777360396,
+        "createdAt": 1777362047,
         "version": "0.1.0-mvp",
         "productId": "terrafusion-local-agent",
         "productName": "TerraFusion Local Agent Runtime",
@@ -631,7 +631,7 @@
       "label": "release-check",
       "ok": true,
       "result": {
-        "createdAt": 1777360396,
+        "createdAt": 1777362047,
         "ok": true,
         "releaseStatus": "release-ready-mvp",
         "criticalFailures": 0,
@@ -687,7 +687,7 @@
       "label": "docs-index",
       "ok": true,
       "result": {
-        "createdAt": 1777360396,
+        "createdAt": 1777362047,
         "version": "0.1.0",
         "entries": [
           {
@@ -695,10 +695,7 @@
             "title": "Command Registry",
             "path": ".terrafusion/command-registry.md",
             "category": "Operations",
-            "audience": [
-              "founder",
-              "county-it"
-            ],
+            "audience": ["founder", "county-it"],
             "required": true,
             "summary": "Machine-readable command registry for future UI consumers.",
             "exists": true
@@ -708,10 +705,7 @@
             "title": "Control Center State",
             "path": ".terrafusion/control-center-state.md",
             "category": "Operations",
-            "audience": [
-              "founder",
-              "county-it"
-            ],
+            "audience": ["founder", "county-it"],
             "required": true,
             "summary": "Read-only state contract for terminal and future desktop control centers.",
             "exists": true
@@ -721,10 +715,7 @@
             "title": "Doctor Report",
             "path": ".terrafusion/doctor-report.json",
             "category": "Operations",
-            "audience": [
-              "founder",
-              "county-it"
-            ],
+            "audience": ["founder", "county-it"],
             "required": false,
             "summary": "Founder-safe runtime diagnostics summarizing local readiness, patch count, and evidence posture.",
             "exists": false
@@ -734,10 +725,7 @@
             "title": "Model Runtime Status",
             "path": ".terrafusion/model-runtime-status.json",
             "category": "Operations",
-            "audience": [
-              "founder",
-              "county-it"
-            ],
+            "audience": ["founder", "county-it"],
             "required": false,
             "summary": "Loopback-only model gateway health and model inventory status for local operational review.",
             "exists": false
@@ -747,10 +735,7 @@
             "title": "Product Manifest",
             "path": ".terrafusion/product-manifest.md",
             "category": "Release",
-            "audience": [
-              "founder",
-              "county-it"
-            ],
+            "audience": ["founder", "county-it"],
             "required": true,
             "summary": "Runtime shipping contract, county-safe posture, and Prometheus naming decision.",
             "exists": true
@@ -760,9 +745,7 @@
             "title": "Release Check Report",
             "path": ".terrafusion/release-check-report.md",
             "category": "Release",
-            "audience": [
-              "founder"
-            ],
+            "audience": ["founder"],
             "required": true,
             "summary": "Release evidence gate before ship and tag steps.",
             "exists": true
@@ -772,10 +755,7 @@
             "title": "0.1.0 Release Notes",
             "path": ".terrafusion/release-notes-0.1.0.md",
             "category": "Release",
-            "audience": [
-              "founder",
-              "county-it"
-            ],
+            "audience": ["founder", "county-it"],
             "required": true,
             "summary": "Release notes documenting the Prometheus codename, capabilities, county-safe posture, known limitations, and manual tag posture.",
             "exists": true
@@ -785,9 +765,7 @@
             "title": "Release Freeze Card",
             "path": ".terrafusion/release-freeze-card.md",
             "category": "Release",
-            "audience": [
-              "founder"
-            ],
+            "audience": ["founder"],
             "required": false,
             "summary": "Founder launch freeze snapshot with guarded artifact fingerprints, canonical closeout, and rerun gates.",
             "exists": false
@@ -797,9 +775,7 @@
             "title": "Tag Gate Report",
             "path": ".terrafusion/tag-gate-report.md",
             "category": "Release",
-            "audience": [
-              "founder"
-            ],
+            "audience": ["founder"],
             "required": false,
             "summary": "Validates release-tag readiness without creating the git tag.",
             "exists": false
@@ -809,9 +785,7 @@
             "title": "Release Approval",
             "path": ".terrafusion/release-approval.md",
             "category": "Release",
-            "audience": [
-              "founder"
-            ],
+            "audience": ["founder"],
             "required": false,
             "summary": "Records human release owner approval after Tag Gate passes.",
             "exists": false
@@ -821,9 +795,7 @@
             "title": "Tag Command Report",
             "path": ".terrafusion/tag-command-report.md",
             "category": "Release",
-            "audience": [
-              "founder"
-            ],
+            "audience": ["founder"],
             "required": false,
             "summary": "Prints the final manual git tag command and verification commands without executing them.",
             "exists": false
@@ -833,10 +805,7 @@
             "title": "Final Release Runbook",
             "path": ".terrafusion/release-runbook-0.1.0.md",
             "category": "Release",
-            "audience": [
-              "founder",
-              "county-it"
-            ],
+            "audience": ["founder", "county-it"],
             "required": false,
             "summary": "Human-readable final release runbook with manual tag, verification, and rollback instructions.",
             "exists": false
@@ -846,9 +815,7 @@
             "title": "Ship Report",
             "path": ".terrafusion/ship-report.md",
             "category": "Release",
-            "audience": [
-              "founder"
-            ],
+            "audience": ["founder"],
             "required": false,
             "summary": "Release evidence bundle report without tag execution.",
             "exists": false
@@ -884,7 +851,7 @@
       "label": "release-freeze",
       "ok": true,
       "result": {
-        "createdAt": 1777360396,
+        "createdAt": 1777362047,
         "version": "0.1.0",
         "productName": "TerraFusion Local Agent Runtime",
         "internalCodename": "Prometheus",
@@ -899,7 +866,7 @@
             "required": true,
             "exists": true,
             "ok": true,
-            "sha256": "6d8e3169e43bf1364eef5de91d6338e34027ae1468b4f70a32f2e3b5fa728992",
+            "sha256": "bcc87cc039bb8cbdc9b87a4a36bf5086639ab24df448f9f1e172f58af3e5d40d",
             "summary": "Artifact is readable and fingerprinted."
           },
           {
@@ -908,7 +875,7 @@
             "required": true,
             "exists": true,
             "ok": true,
-            "sha256": "e4528239c897e6118c1148d0b5a3028c0408d96bef631d534c48a4286642159f",
+            "sha256": "497baaa97ddbed79b944cc8300d2a65838dbf0d20cdbc1d8b881710271577dec",
             "summary": "Artifact is readable and fingerprinted."
           },
           {
@@ -917,7 +884,7 @@
             "required": true,
             "exists": true,
             "ok": true,
-            "sha256": "ff05029b72ce01701c0435e817c39702bf18c75e522ff60a8c85e6b76e74a1e2",
+            "sha256": "4d123353bd19e03b6d4480dfc7124471730c09e099cacd0b3ae13c2b0e9a9e03",
             "summary": "Artifact is readable and fingerprinted."
           },
           {
@@ -926,7 +893,7 @@
             "required": true,
             "exists": true,
             "ok": true,
-            "sha256": "796ddf4e8b2b9ecc345ec1370b9e29239ecd1df1ee6b5c1cf188d5f775ffcf07",
+            "sha256": "41b3e184d6cceaacc010af9b2d46d9cbec9f8fe2e0a14f95baf1af986168c912",
             "summary": "Docs index has no missing required artifacts."
           },
           {
@@ -935,7 +902,7 @@
             "required": true,
             "exists": true,
             "ok": true,
-            "sha256": "867db1d31cc0185631e830f8e120d55e50024d803be6cb63c9cad53956e67eee",
+            "sha256": "dd3b7bc25c89bdf1730e312e9b1ff53dd368886466ed67b0c998c614ccc6ed2f",
             "summary": "Artifact is readable and fingerprinted."
           },
           {
@@ -944,7 +911,7 @@
             "required": true,
             "exists": true,
             "ok": true,
-            "sha256": "14be55529aec55c527eb48a69e4b0195cee4392ee0c10eddf691aac20089869a",
+            "sha256": "91b893b05a9d0fad81ae33a65fc6adf9d5f1500f6bb0cb4aadf998f702199096",
             "summary": "Release check passed and was fingerprinted."
           },
           {
@@ -1005,7 +972,7 @@
       "label": "ship-mvp",
       "ok": true,
       "result": {
-        "createdAt": 1777360396,
+        "createdAt": 1777362047,
         "ok": true,
         "outputDir": "release",
         "steps": [
@@ -1088,7 +1055,7 @@
       "label": "tag-gate",
       "ok": true,
       "result": {
-        "createdAt": 1777360396,
+        "createdAt": 1777362047,
         "version": "0.1.0",
         "productName": "TerraFusion Local Agent Runtime",
         "internalCodename": "Prometheus",
@@ -1190,7 +1157,7 @@
       "label": "release-approve",
       "ok": true,
       "result": {
-        "approvedAt": 1777360396,
+        "approvedAt": 1777362047,
         "version": "0.1.0",
         "productName": "TerraFusion Local Agent Runtime",
         "internalCodename": "Prometheus",
@@ -1210,7 +1177,7 @@
       "label": "tag-command",
       "ok": true,
       "result": {
-        "createdAt": 1777360396,
+        "createdAt": 1777362047,
         "version": "0.1.0",
         "productName": "TerraFusion Local Agent Runtime",
         "internalCodename": "Prometheus",
@@ -1241,7 +1208,7 @@
       "label": "release-runbook",
       "ok": true,
       "result": {
-        "createdAt": 1777360396,
+        "createdAt": 1777362047,
         "version": "0.1.0",
         "productName": "TerraFusion Local Agent Runtime",
         "internalCodename": "Prometheus",

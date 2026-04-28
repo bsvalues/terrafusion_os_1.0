@@ -3,7 +3,6 @@ import * as net from 'node:net';
 import { dirname, resolve } from 'node:path';
 
 import { AdapterRegistry } from './adapterRegistry.js';
-import { FakeModelAdapter } from './fakeAdapter.js';
 import {
   LocalAgentDaemon,
   defaultDaemonSocketPath,
@@ -17,9 +16,6 @@ import { appendLocalAgentEvent, terrafusionPath } from './eventLog.js';
  * Persists a single record under `.terrafusion/local-agent/daemon.json`
  * with `{ pid, socketPath, startedAt, version }`. The record is the only
  * way `tf agent daemon stop|status` find a running daemon.
- *
- * For Slice L only the `FakeModelAdapter` is auto-registered. Other
- * adapters get wired in later slices.
  */
 
 export interface DaemonRecord {
@@ -190,7 +186,6 @@ export async function daemonStart(
   }
 
   const registry = new AdapterRegistry();
-  registry.register(new FakeModelAdapter());
 
   const daemon = new LocalAgentDaemon({ registry });
   const socketPath = paths.socketPath ?? defaultDaemonSocketPath(process.pid);

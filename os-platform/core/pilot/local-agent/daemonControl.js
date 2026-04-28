@@ -46,7 +46,6 @@ const node_fs_1 = require("node:fs");
 const net = __importStar(require("node:net"));
 const node_path_1 = require("node:path");
 const adapterRegistry_js_1 = require("./adapterRegistry.js");
-const fakeAdapter_js_1 = require("./fakeAdapter.js");
 const daemon_js_1 = require("./daemon.js");
 const daemonClient_js_1 = require("./daemonClient.js");
 const eventLog_js_1 = require("./eventLog.js");
@@ -176,7 +175,6 @@ async function daemonStart(paths) {
         removeRecord(recordPath);
     }
     const registry = new adapterRegistry_js_1.AdapterRegistry();
-    registry.register(new fakeAdapter_js_1.FakeModelAdapter());
     const daemon = new daemon_js_1.LocalAgentDaemon({ registry });
     const socketPath = paths.socketPath ?? (0, daemon_js_1.defaultDaemonSocketPath)(process.pid);
     await daemon.start(socketPath);
