@@ -27,10 +27,13 @@ namespace TerraFusion.Integration.Tests.Sync.Pacs;
 ///   not <c>dbo.property_use</c>.</item>
 /// <item>The canonical-target vocabulary is <c>"ImprvDetailClass"</c>,
 ///   not <c>"PropertyUse"</c>.</item>
-/// <item>Real Benton ImprvDetTypeCd / ImprvDetClassCd codes seeded
-///   from <c>project_pacs_imprv_type_codes.md</c> memory:
-///   <c>"R1"</c>, <c>"M1"</c>, <c>"C1"</c>, <c>"H1"</c>, <c>"S1"</c>,
-///   <c>"L1"</c>.</item>
+/// <item>Real Benton imprv_det_class_cd codes seeded from C23-B-live
+///   inspection of <c>dbo.imprv_det_class</c>: numeric quality grades
+///   <c>"10"</c> (Low), <c>"30"</c> (Avg), <c>"40"</c> (Good),
+///   <c>"60"</c> (Exc), and word-form <c>"AbvAvg"</c>. The dictionary
+///   has 27 rows total with <c>sys_flag='F'</c> universally — so M4
+///   cannot fire in Benton against the live PACS instance, but the
+///   M4 path is still pinned via stub.</item>
 /// </list>
 /// </para>
 /// </summary>
@@ -73,7 +76,7 @@ public class ImprvDetClassDictionaryLoaderTests
     private static DictionaryColumnConfig DefaultClassConfig() =>
         new(
             CodeColumn:           "imprv_det_class_cd",
-            DescriptionColumn:    "imprv_det_class_desc",
+            DescriptionColumn:    "imprv_det_cls_desc",
             ActiveFlagColumn:     null,           // confirmed at C23-B-live
             ActiveFlagPredicate:  null,
             YearColumn:           null);
@@ -131,7 +134,7 @@ public class ImprvDetClassDictionaryLoaderTests
         };
         db.SyncMappingColumns.Add(col);
 
-        var codes = (deferredCodes ?? new[] { "R1", "M1", "C1" }).ToList();
+        var codes = (deferredCodes ?? new[] { "10", "30", "40" }).ToList();
         var deferredRows = new List<SyncMappingCodeValue>();
         foreach (var c in codes)
         {
@@ -155,7 +158,7 @@ public class ImprvDetClassDictionaryLoaderTests
         {
             ["imprv_det_class_cd"] = code,
         };
-        if (desc is not null) dict["imprv_det_class_desc"] = desc;
+        if (desc is not null) dict["imprv_det_cls_desc"] = desc;
         return new PacsDictionaryRow(dict);
     }
 
@@ -168,7 +171,7 @@ public class ImprvDetClassDictionaryLoaderTests
             string schemaName, string tableName, CancellationToken cancellationToken = default)
             => Task.FromResult(new PacsDictionaryReadResult(
                 schemaName, tableName,
-                new List<string> { "imprv_det_class_cd", "imprv_det_class_desc" },
+                new List<string> { "imprv_det_class_cd", "imprv_det_cls_desc" },
                 _rows));
     }
 
@@ -178,14 +181,15 @@ public class ImprvDetClassDictionaryLoaderTests
     public async Task Loader_ProposesMappedForCleanImprvDetClassMatch_M5()
     {
         await using var db = CreateContext($"c23b-{Guid.NewGuid()}");
-        var fx = await SeedFixtureAsync(db, deferredCodes: new[] { "R1", "M1", "C1" });
+        var fx = await SeedFixtureAsync(db, deferredCodes: new[] { "10", "30", "40" });
 
-        // Real Benton-shaped imprv_det_class dictionary entries
+        // Real Benton-shaped imprv_det_class dictionary entries from
+        // C23-B-live inspection.
         var pacs = new StubReader(new[]
         {
-            Row("R1", "Residential — Class 1"),
-            Row("M1", "Manufactured Home — Class 1"),
-            Row("C1", "Commercial — Class 1"),
+            Row("10", "Low"),
+            Row("30", "Avg"),
+            Row("40", "Good"),
         });
 
         var sut = new DictionaryLoaderService(db, pacs);
@@ -206,8 +210,8 @@ public class ImprvDetClassDictionaryLoaderTests
             r.Classification.Should().Be(DictionaryRowClassification.CleanMatch);
         });
 
-        var r1 = result.ProposedRows.Single(r => r.SourceValue == "R1");
-        r1.CanonicalValue.Should().Be("Residential — Class 1");
+        var avg = result.ProposedRows.Single(r => r.SourceValue == "30");
+        avg.CanonicalValue.Should().Be("Avg");
     }
 
     // ── M1: workbook code missing from imprv_det_class dictionary ───────
@@ -218,7 +222,7 @@ public class ImprvDetClassDictionaryLoaderTests
         await using var db = CreateContext($"c23b-{Guid.NewGuid()}");
         var fx = await SeedFixtureAsync(db, deferredCodes: new[] { "ZZZ" });
 
-        var pacs = new StubReader(new[] { Row("R1", "Residential") });
+        var pacs = new StubReader(new[] { Row("10", "Low") });
         var sut = new DictionaryLoaderService(db, pacs);
 
         var result = await sut.ProposeReviewCsvAsync(
@@ -237,10 +241,10 @@ public class ImprvDetClassDictionaryLoaderTests
     public async Task Loader_UsesImprvDetailClassVocabulary_ForCanonicalFallback()
     {
         await using var db = CreateContext($"c23b-{Guid.NewGuid()}");
-        var fx = await SeedFixtureAsync(db, deferredCodes: new[] { "R1" });
+        var fx = await SeedFixtureAsync(db, deferredCodes: new[] { "10" });
 
         // Dictionary row with no description (forces M5 fallback path)
-        var pacs = new StubReader(new[] { Row("R1", desc: null) });
+        var pacs = new StubReader(new[] { Row("10", desc: null) });
         var configNoDesc = DefaultClassConfig() with { DescriptionColumn = null };
         var sut = new DictionaryLoaderService(db, pacs);
 
@@ -249,7 +253,7 @@ public class ImprvDetClassDictionaryLoaderTests
 
         result.M5CleanMatch.Should().Be(1);
         var row = result.ProposedRows.Single();
-        row.CanonicalValue.Should().Be("ImprvDetailClass:R1",
+        row.CanonicalValue.Should().Be("ImprvDetailClass:10",
             "C23-B canonical-target vocabulary is ImprvDetailClass, " +
             "distinct from C22-B's PropertyUse vocabulary");
     }
@@ -268,9 +272,9 @@ public class ImprvDetClassDictionaryLoaderTests
 
         var pacs = new StubReader(new[]
         {
-            Row("R1", "Residential — Class 1"),
-            Row("M1", "Manufactured Home — Class 1"),
-            Row("C1", "Commercial — Class 1"),
+            Row("10", "Low"),
+            Row("30", "Avg"),
+            Row("40", "Good"),
         });
         var sut = new DictionaryLoaderService(db, pacs);
 
@@ -304,7 +308,7 @@ public class ImprvDetClassDictionaryLoaderTests
         db.SyncMappingColumns.Remove(col);
         await db.SaveChangesAsync();
 
-        var pacs = new StubReader(new[] { Row("R1", "Residential") });
+        var pacs = new StubReader(new[] { Row("10", "Low") });
         var sut = new DictionaryLoaderService(db, pacs);
 
         Func<Task> act = () => sut.ProposeReviewCsvAsync(
@@ -320,13 +324,13 @@ public class ImprvDetClassDictionaryLoaderTests
     public async Task Loader_DefersOnDuplicateImprvDetClassCode_M3()
     {
         await using var db = CreateContext($"c23b-{Guid.NewGuid()}");
-        var fx = await SeedFixtureAsync(db, deferredCodes: new[] { "R1" });
+        var fx = await SeedFixtureAsync(db, deferredCodes: new[] { "30" });
 
-        // Imagine a 2017-conversion artifact where R1 has two dictionary rows
+        // Imagine a 2017-conversion artifact where '30' has two dictionary rows
         var pacs = new StubReader(new[]
         {
-            Row("R1", "Residential — Class 1"),
-            Row("R1", "Residential — Class 1 (legacy)"),
+            Row("30", "Avg"),
+            Row("30", "Avg (legacy variant)"),
         });
         var sut = new DictionaryLoaderService(db, pacs);
 
@@ -338,7 +342,7 @@ public class ImprvDetClassDictionaryLoaderTests
         row.ReviewStatus.Should().Be("Deferred");
         row.Classification.Should().Be(DictionaryRowClassification.DuplicateDictionaryCode);
         row.Notes.Should().Contain("Cannot unambiguously map");
-        row.Notes.Should().Contain("Residential — Class 1");
+        row.Notes.Should().Contain("Avg");
         row.Notes.Should().Contain("legacy");
     }
 }

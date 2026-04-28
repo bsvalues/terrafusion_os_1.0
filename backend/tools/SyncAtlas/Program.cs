@@ -1218,12 +1218,24 @@ internal static class Program
                     PacsDictionarySchema: "dbo",
                     PacsDictionaryTable:  "imprv_det_class",
                     CanonicalTargetName:  "ImprvDetailClass"),
+                // Defaults captured at C23-B-live inspection of pacs_oltp:
+                //   imprv_det_class_cd       char(10)    NOT NULL  (code)
+                //   imprv_det_cls_desc       varchar(50) NULL      (description — note: NOT imprv_det_class_desc)
+                //   sys_flag                 varchar(1)  NULL      (always 'F' in Benton — not a usable A/I active flag)
+                //   is_permanent_crop_detail bit         NOT NULL
+                //   rc_type                  char(1)     NULL
+                // Findings: 27 rows; ALL sys_flag='F'; no usable active/
+                // inactive distinction. Therefore the active-flag predicate
+                // is intentionally NOT configured here (M4 cannot fire
+                // against this PACS instance). Future PACS deployments
+                // exposing genuine 'A'/'I' values must override per
+                // C23-A's per-deployment column-config requirement.
                 new DictionaryColumnConfig(
                     CodeColumn:           "imprv_det_class_cd",
-                    DescriptionColumn:    "imprv_det_class_desc",
-                    ActiveFlagColumn:     null,  // confirmed via C23-B-live inspection if present
+                    DescriptionColumn:    "imprv_det_cls_desc",
+                    ActiveFlagColumn:     null,
                     ActiveFlagPredicate:  null,
-                    YearColumn:           null), // universe-wide unless live inspection shows otherwise
+                    YearColumn:           null), // universe-wide, not year-keyed
                 "c23-b"),
             _ => throw new InvalidOperationException(
                 $"No default column config for table '{tableName}'. " +
