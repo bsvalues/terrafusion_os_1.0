@@ -1,6 +1,7 @@
 name: Cockpit Drift Guard
 
 on:
+  # pull_request: covered by constitutional PR gates; kept push-only here to satisfy platform-lint.
   push:
     paths:
       - 'apps/agent-cockpit/**'
