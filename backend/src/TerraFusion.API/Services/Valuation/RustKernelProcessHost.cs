@@ -47,11 +47,12 @@ public class RustKernelProcessHost : IRustKernelProcessHost
             sw.Stop();
             return Fail<TResp>(KernelFailureMode.ExecutableNotFound,
                 $"Kernel executable not found: {executablePath}",
-                startedAt, sw, kernelName, inputHash);
+                startedAt, sw, kernelName, inputHash, kernelBinarySha256: null);
         }
 
         try
         {
+            var kernelBinarySha256 = ComputeFileSha256(executablePath);
             var psi = new ProcessStartInfo
             {
                 FileName = executablePath,
@@ -68,7 +69,7 @@ public class RustKernelProcessHost : IRustKernelProcessHost
                 sw.Stop();
                 return Fail<TResp>(KernelFailureMode.ExecutableNotFound,
                     "Process.Start returned false",
-                    startedAt, sw, kernelName, inputHash);
+                    startedAt, sw, kernelName, inputHash, kernelBinarySha256);
             }
 
             // Write stdin and close it so the kernel sees EOF and proceeds.
@@ -95,7 +96,7 @@ public class RustKernelProcessHost : IRustKernelProcessHost
                 sw.Stop();
                 return Fail<TResp>(KernelFailureMode.Timeout,
                     $"Kernel exceeded timeout of {timeoutMs}ms",
-                    startedAt, sw, kernelName, inputHash);
+                    startedAt, sw, kernelName, inputHash, kernelBinarySha256);
             }
 
             var stdout = await stdoutTask;
@@ -108,7 +109,7 @@ public class RustKernelProcessHost : IRustKernelProcessHost
                     kernelName, process.ExitCode, stderr);
                 return Fail<TResp>(KernelFailureMode.NonZeroExit,
                     $"Exit code {process.ExitCode}. stderr: {stderr}",
-                    startedAt, sw, kernelName, inputHash);
+                    startedAt, sw, kernelName, inputHash, kernelBinarySha256);
             }
 
             KernelResponse<TResp>? parsed;
@@ -121,21 +122,21 @@ public class RustKernelProcessHost : IRustKernelProcessHost
                 _logger.LogWarning(ex, "Kernel {KernelName} returned non-JSON stdout: {Stdout}", kernelName, stdout);
                 return Fail<TResp>(KernelFailureMode.InvalidJsonResponse,
                     $"JSON parse failed: {ex.Message}. stdout: {stdout}",
-                    startedAt, sw, kernelName, inputHash);
+                    startedAt, sw, kernelName, inputHash, kernelBinarySha256);
             }
 
             if (parsed == null)
             {
                 return Fail<TResp>(KernelFailureMode.InvalidJsonResponse,
                     "Null response after deserialization",
-                    startedAt, sw, kernelName, inputHash);
+                    startedAt, sw, kernelName, inputHash, kernelBinarySha256);
             }
 
             if (!parsed.Success)
             {
                 return Fail<TResp>(KernelFailureMode.KernelReportedError,
                     parsed.Error ?? "Kernel reported failure with no error message",
-                    startedAt, sw, kernelName, inputHash);
+                    startedAt, sw, kernelName, inputHash, kernelBinarySha256);
             }
 
             var warnings = string.IsNullOrWhiteSpace(stderr)
@@ -154,7 +155,8 @@ public class RustKernelProcessHost : IRustKernelProcessHost
                 AuditEvent: parsed.AuditEvent,
                 Warnings: warnings,
                 FailureMode: null,
-                ErrorMessage: null);
+                ErrorMessage: null,
+                KernelBinarySha256: kernelBinarySha256);
         }
         catch (Exception ex)
         {
@@ -162,13 +164,14 @@ public class RustKernelProcessHost : IRustKernelProcessHost
             _logger.LogError(ex, "Unexpected error invoking kernel {KernelName}", kernelName);
             return Fail<TResp>(KernelFailureMode.NonZeroExit,
                 $"Unexpected: {ex.Message}",
-                startedAt, sw, kernelName, inputHash);
+                startedAt, sw, kernelName, inputHash, kernelBinarySha256: null);
         }
     }
 
     private static KernelInvocationResult<TResp> Fail<TResp>(
         KernelFailureMode mode, string msg,
-        DateTimeOffset startedAt, Stopwatch sw, string kernelName, string inputHash)
+        DateTimeOffset startedAt, Stopwatch sw, string kernelName, string inputHash,
+        string? kernelBinarySha256)
     {
         return new KernelInvocationResult<TResp>(
             Success: false,
@@ -182,13 +185,23 @@ public class RustKernelProcessHost : IRustKernelProcessHost
             AuditEvent: null,
             Warnings: Array.Empty<string>(),
             FailureMode: mode,
-            ErrorMessage: msg);
+            ErrorMessage: msg,
+            KernelBinarySha256: kernelBinarySha256);
     }
 
     private static string ComputeSha256(string input)
     {
         var bytes = Encoding.UTF8.GetBytes(input);
         var hash = SHA256.HashData(bytes);
+        var sb = new StringBuilder(64);
+        foreach (var b in hash) sb.Append(b.ToString("x2"));
+        return sb.ToString();
+    }
+
+    private static string ComputeFileSha256(string path)
+    {
+        using var stream = File.OpenRead(path);
+        var hash = SHA256.HashData(stream);
         var sb = new StringBuilder(64);
         foreach (var b in hash) sb.Append(b.ToString("x2"));
         return sb.ToString();

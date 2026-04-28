@@ -104,6 +104,8 @@ public class KernelValuationService : IKernelValuationService
                 CostDurationMs: costResult.DurationMs,
                 ValuationDurationMs: valResult.DurationMs,
                 CostAuditEventId: costResult.AuditEvent?.EventId ?? "",
-                ValuationAuditEventId: valResult.AuditEvent?.EventId ?? ""));
+                ValuationAuditEventId: valResult.AuditEvent?.EventId ?? "",
+                CostKernelBinarySha256: costResult.KernelBinarySha256,
+                ValuationKernelBinarySha256: valResult.KernelBinarySha256));
     }
 }

@@ -16,4 +16,5 @@ public record KernelInvocationResult<TData>(
     KernelAuditEvent? AuditEvent,
     IReadOnlyList<string> Warnings,
     KernelFailureMode? FailureMode,
-    string? ErrorMessage);
+    string? ErrorMessage,
+    string? KernelBinarySha256 = null);

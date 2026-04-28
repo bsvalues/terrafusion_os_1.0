@@ -113,6 +113,7 @@ public class RustKernelProcessHostTests
         Assert.Equal(30955.125, result.Data.Depreciation, 2);
         Assert.NotNull(result.AuditEvent);
         Assert.StartsWith("git:", result.AuditEvent!.Hash);
+        Assert.Matches("^[a-f0-9]{64}$", result.KernelBinarySha256 ?? string.Empty);
     }
 
     [Fact]
@@ -134,6 +135,8 @@ public class RustKernelProcessHostTests
         Assert.Equal(r1.InputHash, r2.InputHash);
         // Same kernel binary hash (from audit event)
         Assert.Equal(r1.AuditEvent!.Hash, r2.AuditEvent!.Hash);
+        Assert.Equal(r1.KernelBinarySha256, r2.KernelBinarySha256);
+        Assert.Matches("^[a-f0-9]{64}$", r1.KernelBinarySha256 ?? string.Empty);
         // Different audit event IDs (uuid per call) — this confirms kernel ran twice
         Assert.NotEqual(r1.AuditEvent.EventId, r2.AuditEvent.EventId);
     }

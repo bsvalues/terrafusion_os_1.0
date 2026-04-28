@@ -165,12 +165,16 @@ by `build.rs`. This closes the audit loop:
 
 1. Appraiser runs calculation → result stored with `hash: "git:bd1b539f210c"`
 2. Auditor questions the math → check out commit `bd1b539f210c`
-3. `cargo build --release` → rebuild is byte-for-byte identical (Rust + LTO + `strip=true`)
+3. `cargo build --release` under the pinned toolchain/environment
 4. Run the same input through the rebuilt binary → same output proves the calculation
 
-**This is stronger than binary hash** — a binary SHA256 proves the file wasn't tampered with,
-but `git:<sha>` proves the *source code* that produced the number, which is what FISMA
-actually cares about (reproducible, auditable calculation engine).
+`git:<sha>` and binary SHA256 are complementary. The source revision proves the intended
+source code used for review; the binary SHA256 proves the exact artifact invoked at runtime.
+Store both in the .NET provenance envelope when a governed batch calculation is run.
+
+```bash
+node ../../../scripts/terraforge-kernel-smoke.mjs
+```
 
 ## Wiring Into .NET (v1.2)
 

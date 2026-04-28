@@ -74,6 +74,8 @@ public class KernelValuationServiceIntegrationTests
         Assert.NotEmpty(result.Provenance.ValuationAuditEventId);
         Assert.NotEmpty(result.Provenance.CostInputHash);
         Assert.NotEmpty(result.Provenance.ValuationInputHash);
+        Assert.Matches("^[a-f0-9]{64}$", result.Provenance.CostKernelBinarySha256 ?? string.Empty);
+        Assert.Matches("^[a-f0-9]{64}$", result.Provenance.ValuationKernelBinarySha256 ?? string.Empty);
         Assert.True(result.Provenance.CostDurationMs >= 0);
         Assert.True(result.Provenance.ValuationDurationMs >= 0);
     }
@@ -104,6 +106,8 @@ public class KernelValuationServiceIntegrationTests
         // binary, and the numeric equality above proves identical output.
         Assert.Equal(r1.Provenance.CostKernelHash, r2.Provenance.CostKernelHash);
         Assert.Equal(r1.Provenance.ValuationKernelHash, r2.Provenance.ValuationKernelHash);
+        Assert.Equal(r1.Provenance.CostKernelBinarySha256, r2.Provenance.CostKernelBinarySha256);
+        Assert.Equal(r1.Provenance.ValuationKernelBinarySha256, r2.Provenance.ValuationKernelBinarySha256);
         Assert.NotEmpty(r1.Provenance.CostKernelHash);
         // Input hashes MUST differ between calls: CostKernelClient mints a fresh
         // RequestId (Guid) per invocation, and the hash is computed over the

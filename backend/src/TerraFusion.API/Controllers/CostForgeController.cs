@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using TerraFusion.Core.Services;
 using TerraFusion.Core.DTOs;
 using TerraFusion.API.Security;
@@ -8,6 +9,8 @@ using TerraFusion.API.Models;
 using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.Abstractions.DTOs.Responses;
 using TerraFusion.Core.Entities;
+using TerraFusion.API.Services.Valuation;
+using TerraFusion.Core.DTOs.Kernel;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 using System.ComponentModel.DataAnnotations;
 
@@ -671,6 +674,172 @@ public class CostForgeController : ControllerBase
     return false;
   }
 
+  private static bool TryGetBatchDouble(
+    BatchValuationRequestDto request,
+    out double value,
+    params string[] keys)
+  {
+    foreach (var key in keys)
+    {
+      if (!request.Parameters.TryGetValue(key, out var raw) || raw == null)
+        continue;
+
+      if (TryConvertDouble(raw, out value))
+        return true;
+    }
+
+    value = 0d;
+    return false;
+  }
+
+  private static bool TryGetBatchInt(
+    BatchValuationRequestDto request,
+    out int value,
+    params string[] keys)
+  {
+    foreach (var key in keys)
+    {
+      if (!request.Parameters.TryGetValue(key, out var raw) || raw == null)
+        continue;
+
+      if (raw is int intValue)
+      {
+        value = intValue;
+        return true;
+      }
+
+      if (raw is long longValue && longValue is >= int.MinValue and <= int.MaxValue)
+      {
+        value = (int)longValue;
+        return true;
+      }
+
+      if (raw is string stringValue && int.TryParse(stringValue, out value))
+        return true;
+
+      if (raw is System.Text.Json.JsonElement element)
+      {
+        if (element.ValueKind == System.Text.Json.JsonValueKind.Number && element.TryGetInt32(out value))
+          return true;
+
+        if (element.ValueKind == System.Text.Json.JsonValueKind.String && int.TryParse(element.GetString(), out value))
+          return true;
+      }
+    }
+
+    value = 0;
+    return false;
+  }
+
+  private static string? GetBatchString(BatchValuationRequestDto request, params string[] keys)
+  {
+    foreach (var key in keys)
+    {
+      if (!request.Parameters.TryGetValue(key, out var raw) || raw == null)
+        continue;
+
+      if (raw is string stringValue && !string.IsNullOrWhiteSpace(stringValue))
+        return stringValue;
+
+      if (raw is System.Text.Json.JsonElement element)
+      {
+        if (element.ValueKind == System.Text.Json.JsonValueKind.String)
+          return element.GetString();
+
+        if (element.ValueKind != System.Text.Json.JsonValueKind.Null &&
+            element.ValueKind != System.Text.Json.JsonValueKind.Undefined)
+          return element.ToString();
+      }
+
+      var value = raw.ToString();
+      if (!string.IsNullOrWhiteSpace(value))
+        return value;
+    }
+
+    return null;
+  }
+
+  private static Dictionary<string, double> BuildKernelModifiers(
+    BatchValuationRequestDto request,
+    string? quality,
+    string? condition,
+    decimal? camaDepreciationPct)
+  {
+    var modifiers = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
+
+    if (request.Parameters.TryGetValue("modifiers", out var rawModifiers) && rawModifiers != null)
+    {
+      foreach (var kvp in ReadModifierObject(rawModifiers))
+        modifiers[kvp.Key] = kvp.Value;
+    }
+
+    if (!string.IsNullOrWhiteSpace(quality) &&
+        TryGetBatchDouble(request, out var qualityModifier, "qualityModifier", "qualityFactor"))
+      modifiers[quality] = qualityModifier;
+
+    if (!string.IsNullOrWhiteSpace(condition) &&
+        TryGetBatchDouble(request, out var conditionModifier, "conditionModifier", "conditionFactor"))
+      modifiers[condition] = conditionModifier;
+
+    if (TryGetBatchDouble(request, out var depreciationRate, "depreciationRate", "depreciationPct"))
+      modifiers["DepreciationRate"] = depreciationRate > 1d ? depreciationRate / 100d : depreciationRate;
+    else if (camaDepreciationPct is > 0m)
+      modifiers["DepreciationRate"] = (double)(camaDepreciationPct.Value / 100m);
+
+    return modifiers;
+  }
+
+  private static IEnumerable<KeyValuePair<string, double>> ReadModifierObject(object raw)
+  {
+    if (raw is IDictionary<string, object> dict)
+    {
+      foreach (var kvp in dict)
+        if (TryConvertDouble(kvp.Value, out var value))
+          yield return new KeyValuePair<string, double>(kvp.Key, value);
+      yield break;
+    }
+
+    if (raw is System.Text.Json.JsonElement element && element.ValueKind == System.Text.Json.JsonValueKind.Object)
+    {
+      foreach (var prop in element.EnumerateObject())
+        if (TryConvertDouble(prop.Value, out var value))
+          yield return new KeyValuePair<string, double>(prop.Name, value);
+    }
+  }
+
+  private static bool TryConvertDouble(object raw, out double value)
+  {
+    switch (raw)
+    {
+      case double d:
+        value = d;
+        return true;
+      case float f:
+        value = f;
+        return true;
+      case decimal dec:
+        value = (double)dec;
+        return true;
+      case int i:
+        value = i;
+        return true;
+      case long l:
+        value = l;
+        return true;
+      case string s when double.TryParse(s, out value):
+        return true;
+      case System.Text.Json.JsonElement element:
+        if (element.ValueKind == System.Text.Json.JsonValueKind.Number && element.TryGetDouble(out value))
+          return true;
+        if (element.ValueKind == System.Text.Json.JsonValueKind.String && double.TryParse(element.GetString(), out value))
+          return true;
+        break;
+    }
+
+    value = 0d;
+    return false;
+  }
+
   /// <summary>
   /// Batch property valuation for county-wide assessments
   /// Supports Washington State compliance and Harris PACS integration
@@ -690,46 +859,165 @@ public class CostForgeController : ControllerBase
         Status = StatusCodes.Status400BadRequest,
       });
 
+    var kernelValuation = HttpContext.RequestServices.GetService<IKernelValuationService>();
+    if (kernelValuation is null)
+      return StatusCode(StatusCodes.Status503ServiceUnavailable, new ProblemDetails
+      {
+        Title = "Rust kernel valuation service unavailable",
+        Detail = "POST /api/costforge/batch-calculate requires the TerraForge Rust kernel batch lane.",
+        Status = StatusCodes.Status503ServiceUnavailable,
+      });
+
     var startTime = DateTime.UtcNow;
     var results = new List<PropertyValuationDto>();
     var errors = new List<string>();
 
-    var validPropertyIds = await _db.Properties
+    var properties = await _db.Properties
         .AsNoTracking()
         .Where(p => p.CountyId == countyContext.CountyId &&
                      request.PropertyIds.Contains(p.Id))
-        .Select(p => p.Id)
+        .Select(p => new
+        {
+          p.Id,
+          p.ParcelId,
+          p.ParcelNumber,
+          p.LandValue,
+          p.TaxYear,
+        })
         .ToListAsync();
 
-    foreach (var propertyId in validPropertyIds)
+    var validPropertyIds = properties.Select(p => p.Id).ToHashSet();
+    var parcelIds = properties
+      .Select(p => string.IsNullOrWhiteSpace(p.ParcelId) ? p.ParcelNumber : p.ParcelId)
+      .Where(p => !string.IsNullOrWhiteSpace(p))
+      .Distinct(StringComparer.OrdinalIgnoreCase)
+      .ToArray();
+
+    int? requestedTaxYear = TryGetBatchInt(request, out var taxYear, "taxYear") ? taxYear : null;
+    var camaRows = new List<CamaCharacteristic>();
+    if (parcelIds.Length > 0)
+    {
+      camaRows = await _db.CamaCharacteristics
+          .AsNoTracking()
+          .Where(c => c.CountyId == countyContext.CountyId &&
+                      parcelIds.Contains(c.ParcelId) &&
+                      (!requestedTaxYear.HasValue || c.TaxYear == requestedTaxYear.Value))
+          .OrderByDescending(c => c.TaxYear)
+          .ToListAsync();
+    }
+    var camaByParcel = camaRows
+      .GroupBy(c => c.ParcelId, StringComparer.OrdinalIgnoreCase)
+      .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
+
+    foreach (var property in properties)
     {
       try
       {
-        var analysis = await _costForgeService.AnalyzeCostAsync(propertyId);
+        var parcelId = string.IsNullOrWhiteSpace(property.ParcelId)
+          ? property.ParcelNumber
+          : property.ParcelId;
+
+        camaByParcel.TryGetValue(parcelId, out var cama);
+
+        double sqft;
+        if (!TryGetBatchDouble(request, out sqft, "sqft", "squareFeet", "buildingSqFt", "buildingSquareFeet"))
+        {
+          if (cama is { SquareFeet: > 0m })
+            sqft = (double)cama.SquareFeet;
+          else
+            throw new InvalidOperationException("Missing square footage. Provide Parameters.sqft or sync CAMA SquareFeet.");
+        }
+
+        double baseRate;
+        if (!TryGetBatchDouble(request, out baseRate, "baseRate", "baseCostPerSqft"))
+        {
+          var matrixEntry = SupportsCertifiedCostScheduleLane(countyContext) && cama is not null
+            ? BentonCostData.CostMatrix.FirstOrDefault(e =>
+                string.Equals(e.BuildingType, cama.BuildingType, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(e.Region, cama.Region, StringComparison.OrdinalIgnoreCase))
+            : null;
+
+          if (matrixEntry is null)
+            throw new InvalidOperationException("Missing base rate. Provide Parameters.baseRate for the Rust kernel batch lane.");
+
+          baseRate = (double)matrixEntry.BaseCostPerSqft;
+        }
+
+        var quality = GetBatchString(request, "quality", "qualityGrade") ?? cama?.QualityGrade;
+        var condition = GetBatchString(request, "condition", "conditionGrade") ?? cama?.ConditionGrade;
+        var landValue = TryGetBatchDouble(request, out var requestedLandValue, "landValue")
+          ? requestedLandValue
+          : (double)property.LandValue;
+        var neighborhoodFactor = TryGetBatchDouble(request, out var requestedNeighborhoodFactor, "neighborhoodFactor")
+          ? requestedNeighborhoodFactor
+          : (double?)null;
+        var locationFactor = TryGetBatchDouble(request, out var requestedLocationFactor, "locationFactor")
+          ? requestedLocationFactor
+          : (double?)null;
+
+        var kernelRequest = new KernelCostApproachRequest(
+          ParcelId: parcelId,
+          Sqft: sqft,
+          Quality: quality,
+          Condition: condition,
+          BaseRate: baseRate,
+          Modifiers: BuildKernelModifiers(request, quality, condition, cama?.DepreciationPct),
+          LandValue: landValue,
+          NeighborhoodFactor: neighborhoodFactor,
+          LocationFactor: locationFactor);
+
+        var analysis = await kernelValuation.ComputeCostWithKernelAsync(kernelRequest);
         results.Add(new PropertyValuationDto
         {
-          PropertyId = analysis.PropertyId,
-          EstimatedValue = analysis.TotalCost,
-          ConfidenceScore = analysis.ConfidenceScore,
-          CalculationDate = analysis.AnalysisDate,
-          CalculationFactors = analysis.Components.Select(c => c.ToString() ?? string.Empty).ToList(),
+          PropertyId = property.Id,
+          EstimatedValue = Convert.ToDecimal(analysis.TotalValue),
+          ConfidenceScore = 1.0,
+          CalculationDate = DateTime.UtcNow,
+          CalculationFactors =
+          [
+            "engine=terraforge-rust-kernel-v1.2",
+            $"parcelId={analysis.ParcelId}",
+            $"sourceRevisionCost={analysis.Provenance.CostKernelHash}",
+            $"sourceRevisionValuation={analysis.Provenance.ValuationKernelHash}",
+            $"binarySha256Cost={analysis.Provenance.CostKernelBinarySha256 ?? "unknown"}",
+            $"binarySha256Valuation={analysis.Provenance.ValuationKernelBinarySha256 ?? "unknown"}",
+            $"costInputSha256={analysis.Provenance.CostInputHash}",
+            $"valuationInputSha256={analysis.Provenance.ValuationInputHash}",
+          ],
+          Provenance = new Dictionary<string, string?>
+          {
+            ["engine"] = "terraforge-rust-kernel-v1.2",
+            ["costSourceRevision"] = analysis.Provenance.CostKernelHash,
+            ["valuationSourceRevision"] = analysis.Provenance.ValuationKernelHash,
+            ["costBinarySha256"] = analysis.Provenance.CostKernelBinarySha256,
+            ["valuationBinarySha256"] = analysis.Provenance.ValuationKernelBinarySha256,
+            ["costInputSha256"] = analysis.Provenance.CostInputHash,
+            ["valuationInputSha256"] = analysis.Provenance.ValuationInputHash,
+            ["costAuditEventId"] = analysis.Provenance.CostAuditEventId,
+            ["valuationAuditEventId"] = analysis.Provenance.ValuationAuditEventId,
+          },
         });
+      }
+      catch (KernelValuationException ex)
+      {
+        _logger.LogWarning(ex, "Rust kernel batch valuation failed for PropertyId {PropertyId}", property.Id);
+        errors.Add($"PropertyId {property.Id}: kernel {ex.FailureMode} - {ex.Message}");
       }
       catch (Exception ex)
       {
-        _logger.LogWarning(ex, "Batch valuation failed for PropertyId {PropertyId}", propertyId);
-        errors.Add($"PropertyId {propertyId}: {ex.Message}");
+        _logger.LogWarning(ex, "Rust kernel batch valuation failed for PropertyId {PropertyId}", property.Id);
+        errors.Add($"PropertyId {property.Id}: {ex.Message}");
       }
     }
 
-    var skippedCount = request.PropertyIds.Count - validPropertyIds.Count;
-    if (skippedCount > 0)
-      errors.Add($"{skippedCount} property ID(s) not found in county {countyContext.CountyName ?? countyContext.CountyId.ToString()}");
+    var missingPropertyIds = request.PropertyIds.Where(id => !validPropertyIds.Contains(id)).ToArray();
+    if (missingPropertyIds.Length > 0)
+      errors.Add($"{missingPropertyIds.Length} property ID(s) not found in county {countyContext.CountyName ?? countyContext.CountyId.ToString()}");
 
     var duration = DateTime.UtcNow - startTime;
     await _auditLogger.LogUserActionAsync("CostForge:BatchCalculate",
         User.FindFirst("sub")?.Value ?? "anonymous",
-        $"Batch valuation for {validPropertyIds.Count} properties in county {countyContext.CountyName}");
+        $"Rust kernel batch valuation for {properties.Count} properties in county {countyContext.CountyName}");
 
     return Ok(new BatchValuationResultDto
     {
@@ -8052,6 +8340,7 @@ public class PropertyValuationDto
   public double ConfidenceScore { get; set; }
   public DateTime CalculationDate { get; set; }
   public List<string> CalculationFactors { get; set; } = new();
+  public Dictionary<string, string?> Provenance { get; set; } = new();
 }
 
 public class BatchValuationRequestDto

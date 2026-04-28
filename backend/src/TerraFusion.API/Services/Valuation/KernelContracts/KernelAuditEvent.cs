@@ -1,8 +1,8 @@
 namespace TerraFusion.API.Services.Valuation.KernelContracts;
 
 /// <summary>
-/// FISMA calculation-provenance audit event emitted by every kernel invocation.
-/// Hash field is "git:&lt;12-char SHA&gt;" — reproducible by checking out that commit and rebuilding.
+/// Kernel-emitted source provenance. Hash is "git:&lt;sha&gt;".
+/// Backend provenance pairs this with KernelBinarySha256 on KernelInvocationResult.
 /// </summary>
 public record KernelAuditEvent(
     string EventId,
