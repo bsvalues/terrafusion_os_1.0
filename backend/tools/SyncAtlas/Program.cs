@@ -1237,6 +1237,37 @@ internal static class Program
                     ActiveFlagPredicate:  null,
                     YearColumn:           null), // universe-wide, not year-keyed
                 "c23-b"),
+            "imprv_det_sub_class" => (
+                new DictionaryLoaderTargetConfig(
+                    WorkbookSourceSchema: "dbo",
+                    WorkbookSourceTable:  "imprv_detail",
+                    WorkbookSourceColumn: "imprv_det_sub_class_cd",
+                    PacsDictionarySchema: "dbo",
+                    PacsDictionaryTable:  "imprv_det_sub_class",
+                    CanonicalTargetName:  "ImprvDetailSubClass"),
+                // Defaults captured at C26-B-live inspection of pacs_oltp:
+                //   imprv_det_sub_cls_cd     varchar(10) NOT NULL  (code — note 'sub_cls' not 'sub_class')
+                //   imprv_det_sub_cls_desc   varchar(50) NULL      (description — same '_cls_' abbreviation)
+                //   sys_flag                 varchar(1)  NULL      (lowercase 'f' in Benton — not usable A/I)
+                //   is_permanent_crop_detail bit         NOT NULL
+                //   rc_type                  char(1)     NULL
+                // Findings: 2 rows ('*' → '*' self-ref, '+' → 'Plus Grade');
+                // sys_flag all 'f' (lowercase!); no usable A/I distinction.
+                // FIFTH wrong-assumption catch by the live-inspection gate:
+                // PACS abbreviated 'class' to 'cls' on BOTH the code column
+                // and the description column (unlike C23 which only
+                // abbreviated the description). Note: workbook column
+                // remains 'imprv_det_sub_class_cd' (not abbreviated)
+                // because workbook columns mirror the PACS *table* column
+                // they originate from (imprv_detail.imprv_det_sub_class_cd),
+                // NOT the dictionary table's column.
+                new DictionaryColumnConfig(
+                    CodeColumn:           "imprv_det_sub_cls_cd",
+                    DescriptionColumn:    "imprv_det_sub_cls_desc",
+                    ActiveFlagColumn:     null,
+                    ActiveFlagPredicate:  null,
+                    YearColumn:           null), // universe-wide, not year-keyed
+                "c26-b"),
             "imprv_det_meth" => (
                 new DictionaryLoaderTargetConfig(
                     WorkbookSourceSchema: "dbo",
@@ -1292,7 +1323,8 @@ internal static class Program
                 "c24-b"),
             _ => throw new InvalidOperationException(
                 $"No default column config for table '{tableName}'. " +
-                "Loader currently allowlists 'property_use', 'imprv_det_class', 'land_soil', and 'imprv_det_meth'."),
+                "Loader currently allowlists 'property_use', 'imprv_det_class', 'land_soil', " +
+                "'imprv_det_meth', and 'imprv_det_sub_class'."),
         };
 
         var loader = new DictionaryLoaderService(db, pacsReader);
