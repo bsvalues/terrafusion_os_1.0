@@ -1247,6 +1247,29 @@ internal static class Program
                     ActiveFlagPredicate:  null,
                     YearColumn:           null),
                 "c27-b"),
+            // C29-A — third dictionary-reuse binding. Same dbo.property_use
+            // dictionary, joined against imprv.secondary_use_cd (1 NeedsReview
+            // → swept to Deferred at P2; smallest C-series target). What's
+            // NEW vs C28-B: canonical_target REUSED from C28-C
+            // (PropertySecondaryUse), proving canonical_target REUSE across
+            // workbook columns is supported (mirrors C22+C27's PropertyUse
+            // REUSE). The DictionaryColumnConfig remains identical to C22 /
+            // C27 / C28 (same dictionary, same inspection).
+            "property_use:imprv.secondary_use_cd" => (
+                new DictionaryLoaderTargetConfig(
+                    WorkbookSourceSchema: "dbo",
+                    WorkbookSourceTable:  "imprv",
+                    WorkbookSourceColumn: "secondary_use_cd",
+                    PacsDictionarySchema: "dbo",
+                    PacsDictionaryTable:  "property_use",
+                    CanonicalTargetName:  "PropertySecondaryUse"),  // REUSED from C28-C
+                new DictionaryColumnConfig(
+                    CodeColumn:           "property_use_cd",
+                    DescriptionColumn:    "property_use_desc",
+                    ActiveFlagColumn:     null,
+                    ActiveFlagPredicate:  null,
+                    YearColumn:           null),
+                "c29-b"),
             // C28-A — second dictionary-reuse binding. Same dbo.property_use
             // dictionary, but joined against property_val.secondary_use_cd
             // (5 NeedsReview → swept to Deferred at P2). What's NEW vs C27-B:
