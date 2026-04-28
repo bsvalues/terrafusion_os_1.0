@@ -103,11 +103,34 @@ public class CountyStudyService : ICountyStudyService
 
     public async Task<List<CountySegmentDto>> GetSegmentsAsync(Guid segmentSetId)
     {
-        return await _db.CountySegments
+        var segmentSet = await _db.CountySegmentSets
+            .AsNoTracking()
+            .FirstOrDefaultAsync(ss => ss.SegmentSetId == segmentSetId);
+        if (segmentSet is null)
+            return new List<CountySegmentDto>();
+
+        var study = await _db.CountyStudySessions
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.StudyId == segmentSet.StudyId);
+
+        var segments = await _db.CountySegments
+            .AsNoTracking()
             .Where(s => s.SegmentSetId == segmentSetId)
             .OrderBy(s => s.Name)
-            .Select(s => MapSegment(s))
             .ToListAsync();
+
+        var depthMetrics = study is null
+            ? new Dictionary<SegmentMetricKey, SegmentListDepthMetrics>()
+            : await BuildSegmentListDepthMetricsAsync(study, segments);
+
+        return segments
+            .Select(s =>
+            {
+                var key = SegmentMetricKey.FromSegment(s);
+                depthMetrics.TryGetValue(key, out var metrics);
+                return MapSegment(s, metrics);
+            })
+            .ToList();
     }
 
     // ── Cohorts ──────────────────────────────────────────────────────────
@@ -1196,7 +1219,7 @@ public class CountyStudyService : ICountyStudyService
         new(ss.SegmentSetId, ss.StudyId, ss.Name, ss.SourceType.ToString(),
             ss.Version, ss.IsBaseline, segmentCount);
 
-    private static CountySegmentDto MapSegment(CountySegment s)
+    private static CountySegmentDto MapSegment(CountySegment s, SegmentListDepthMetrics? metrics = null)
     {
         var metadata = CountySegmentMetadataSupport.Parse(s.RuleDefinition, s.GeographyRef);
         return new CountySegmentDto(
@@ -1214,7 +1237,222 @@ public class CountyStudyService : ICountyStudyService
             s.PriceRelatedDifferential,
             s.StabilityScore,
             s.RiskScore,
-            s.ExceptionCount);
+            s.ExceptionCount,
+            metrics?.RatioCount,
+            metrics?.RatioCount,
+            metrics?.Prb.HasValue == true ? Math.Round(metrics.Prb.Value, 4) : null,
+            metrics?.WeightedMeanRatio.HasValue == true ? Math.Round(metrics.WeightedMeanRatio.Value, 4) : null,
+            metrics?.YoyMedianRatioDelta.HasValue == true ? Math.Round(metrics.YoyMedianRatioDelta.Value, 4) : null);
+    }
+
+    private async Task<Dictionary<SegmentMetricKey, SegmentListDepthMetrics>> BuildSegmentListDepthMetricsAsync(
+        CountyStudySession study,
+        IReadOnlyList<CountySegment> segments)
+    {
+        if (segments.Count == 0)
+            return new Dictionary<SegmentMetricKey, SegmentListDepthMetrics>();
+
+        var currentMetrics = await BuildCurrentYearMetricMapAsync(study);
+        var priorMedianByKey = await BuildPriorYearMedianMapAsync(study);
+
+        return segments
+            .Select(segment =>
+            {
+                var key = SegmentMetricKey.FromSegment(segment);
+                currentMetrics.TryGetValue(key, out var metrics);
+                priorMedianByKey.TryGetValue(key, out var priorMedian);
+                var yoy = segment.MedianRatio.HasValue && priorMedian.HasValue
+                    ? segment.MedianRatio.Value - priorMedian.Value
+                    : (decimal?)null;
+                return (key, value: new SegmentListDepthMetrics(
+                    RatioCount: metrics?.RatioCount,
+                    Prb: metrics?.Prb,
+                    WeightedMeanRatio: metrics?.WeightedMeanRatio,
+                    YoyMedianRatioDelta: yoy));
+            })
+            .ToDictionary(x => x.key, x => x.value);
+    }
+
+    private async Task<Dictionary<SegmentMetricKey, CurrentSegmentMetric>> BuildCurrentYearMetricMapAsync(
+        CountyStudySession study)
+    {
+        var taxYear = study.TaxYear;
+        var countyId = study.CountyId;
+
+        var canonicalParcels = await (
+            from p in _db.Properties.AsNoTracking()
+            where p.CountyId == countyId && p.TaxYear == taxYear
+            join c in _db.CamaCharacteristics.AsNoTracking()
+                on new { p.ParcelId, p.TaxYear } equals new { c.ParcelId, c.TaxYear } into cj
+            from c in cj.DefaultIfEmpty()
+            select new
+            {
+                p.PropertyId,
+                p.ParcelId,
+                p.AssessedValue,
+                Neighborhood = p.Neighborhood,
+                BuildingType = c != null ? c.BuildingType : null,
+                QualityGrade = c != null ? c.QualityGrade : null,
+            }).ToListAsync();
+
+        var pacsPropIds = canonicalParcels
+            .Select(p => int.TryParse(p.PropertyId, out var pacsPropId) ? pacsPropId : (int?)null)
+            .Where(pacsPropId => pacsPropId.HasValue)
+            .Select(pacsPropId => pacsPropId!.Value)
+            .Distinct()
+            .ToList();
+
+        var pacsMetadataByPropId = pacsPropIds.Count == 0
+            ? new Dictionary<int, (string? NeighborhoodCode, int? Cycle)>()
+            : await _db.Set<PacsValuation>()
+                .AsNoTracking()
+                .Where(v => v.SupNum == 0 && v.PropValYear == taxYear && pacsPropIds.Contains(v.PacsPropId))
+                .Select(v => new
+                {
+                    v.PacsPropId,
+                    v.NeighborhoodCode,
+                    v.Cycle,
+                })
+                .ToDictionaryAsync(
+                    v => v.PacsPropId,
+                    v => (v.NeighborhoodCode, v.Cycle));
+
+        var parcelRows = canonicalParcels
+            .Select(p =>
+            {
+                var pacsPropId = int.TryParse(p.PropertyId, out var parsed) ? parsed : (int?)null;
+                var pacsMetadata = pacsPropId.HasValue && pacsMetadataByPropId.TryGetValue(pacsPropId.Value, out var metadata)
+                    ? metadata
+                    : default;
+                return new
+                {
+                    p.ParcelId,
+                    p.AssessedValue,
+                    Key = new SegmentMetricKey(
+                        CountySegmentMetadataSupport.NormalizeToken(!string.IsNullOrWhiteSpace(pacsMetadata.NeighborhoodCode)
+                            ? pacsMetadata.NeighborhoodCode
+                            : p.Neighborhood),
+                        CountySegmentMetadataSupport.NormalizeRevalArea(pacsMetadata.Cycle),
+                        CountySegmentMetadataSupport.NormalizeToken(p.BuildingType),
+                        CountySegmentMetadataSupport.NormalizeToken(p.QualityGrade)),
+                };
+            })
+            .ToList();
+
+        var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var lookbackEnd = new DateTime(taxYear, 12, 31, 23, 59, 59, DateTimeKind.Utc);
+
+        var salesByParcel = await _db.ComparableSales.AsNoTracking()
+            .Where(s => s.CountyId == countyId)
+            .Where(s => s.SaleDate >= lookbackStart && s.SaleDate <= lookbackEnd)
+            .Where(s => s.SalePrice > 0)
+            .Where(s => (s.QualificationDecision ?? s.QualificationRecommendation ?? s.SaleQualification) == "qualified")
+            .Select(s => new { s.ParcelId, Price = s.AdjustedSalePrice ?? s.SalePrice, s.SaleDate })
+            .ToListAsync();
+
+        var latestPriceByParcel = salesByParcel
+            .GroupBy(s => s.ParcelId)
+            .ToDictionary(g => g.Key, g => g.OrderByDescending(x => x.SaleDate).First());
+
+        var metrics = new Dictionary<SegmentMetricKey, CurrentSegmentMetric>();
+        foreach (var group in parcelRows.GroupBy(p => p.Key))
+        {
+            var ratios = group
+                .Where(p => p.AssessedValue > 0
+                    && latestPriceByParcel.TryGetValue(p.ParcelId, out var sale)
+                    && sale.Price > 0)
+                .Select(p =>
+                {
+                    var sale = latestPriceByParcel[p.ParcelId];
+                    return new SaleRatio(
+                        ParcelId: p.ParcelId,
+                        AssessedValue: p.AssessedValue,
+                        AdjustedSalePrice: sale.Price,
+                        Ratio: p.AssessedValue / sale.Price,
+                        SaleDate: sale.SaleDate,
+                        YearBuilt: null,
+                        NeighborhoodCode: group.Key.Neighborhood,
+                        City: null,
+                        PropertyUseStratum: group.Key.BuildingType,
+                        ConditionGrade: null,
+                        QualityGrade: group.Key.QualityGrade);
+                })
+                .ToList();
+
+            if (ratios.Count == 0)
+            {
+                metrics[group.Key] = new CurrentSegmentMetric(0, null, null);
+                continue;
+            }
+
+            var median = BentonEquityMath.Median(ratios.Select(r => r.Ratio).ToList());
+            var sumSale = ratios.Sum(r => r.AdjustedSalePrice);
+            var weightedMeanRatio = sumSale > 0
+                ? ratios.Sum(r => r.AssessedValue) / sumSale
+                : (decimal?)null;
+            var prb = BentonEquityMath.ComputePrb(ratios, median);
+
+            metrics[group.Key] = new CurrentSegmentMetric(
+                RatioCount: ratios.Count,
+                Prb: prb,
+                WeightedMeanRatio: weightedMeanRatio);
+        }
+
+        return metrics;
+    }
+
+    private async Task<Dictionary<SegmentMetricKey, decimal?>> BuildPriorYearMedianMapAsync(CountyStudySession study)
+    {
+        var priorStudy = await _db.CountyStudySessions
+            .AsNoTracking()
+            .Where(s => s.CountyId == study.CountyId)
+            .Where(s => s.TaxYear < study.TaxYear)
+            .Where(s => s.ActiveSegmentSetId != null)
+            .OrderByDescending(s => s.TaxYear)
+            .Select(s => new { s.TaxYear, s.ActiveSegmentSetId })
+            .FirstOrDefaultAsync();
+
+        if (priorStudy?.ActiveSegmentSetId is null)
+            return new Dictionary<SegmentMetricKey, decimal?>();
+
+        var priorSegments = await _db.CountySegments
+            .AsNoTracking()
+            .Where(s => s.SegmentSetId == priorStudy.ActiveSegmentSetId.Value)
+            .ToListAsync();
+
+        return priorSegments
+            .GroupBy(SegmentMetricKey.FromSegment)
+            .ToDictionary(
+                g => g.Key,
+                g => g.OrderByDescending(s => s.ParcelCount).First().MedianRatio);
+    }
+
+    private sealed record CurrentSegmentMetric(
+        int RatioCount,
+        decimal? Prb,
+        decimal? WeightedMeanRatio);
+
+    private sealed record SegmentListDepthMetrics(
+        int? RatioCount,
+        decimal? Prb,
+        decimal? WeightedMeanRatio,
+        decimal? YoyMedianRatioDelta);
+
+    private sealed record SegmentMetricKey(
+        string Neighborhood,
+        int? RevalArea,
+        string BuildingType,
+        string QualityGrade)
+    {
+        public static SegmentMetricKey FromSegment(CountySegment segment)
+        {
+            var metadata = CountySegmentMetadataSupport.Parse(segment.RuleDefinition, segment.GeographyRef);
+            return new SegmentMetricKey(
+                CountySegmentMetadataSupport.NormalizeToken(metadata.NeighborhoodCode ?? segment.GeographyRef),
+                metadata.RevalArea,
+                CountySegmentMetadataSupport.NormalizeToken(metadata.BuildingType),
+                CountySegmentMetadataSupport.NormalizeToken(metadata.QualityGrade));
+        }
     }
 
     private static CountyCohortDto MapCohort(CountyCohort c) =>
