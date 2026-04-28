@@ -428,3 +428,112 @@ If any gate fails:
 - **Not a license to relax the WacCd directive.** It is the layer
   where the directive is most heavily exercised, not the layer
   where it gets "this one time" exceptions.
+
+---
+
+## Amendment — 2026-04-28: Benton pre-2017 sales-code conversion caveat
+
+This amendment is added retroactively to record an operator-noted
+domain truth that affects every sales-related slice (C9-C, C11-C,
+C13-A through C13-F, and any future C8-C qualify-sales / sales-comp
+transform consumer).
+
+### Fact
+
+Benton County's PACS instance had a **data conversion event before
+2017**. Sales codes captured on PACS rows for sales prior to that
+conversion may be **absent, incomplete, or semantically shifted**
+from their post-conversion meanings.
+
+### Affected fields
+
+- `dbo.sale.wac_cd`
+- `dbo.sale.sl_ratio_type_cd`
+- any downstream sales-qualification / comp-pool transform that
+  reads those fields as primary qualification signals
+
+### Engineering consequences
+
+1. **Sales qualification transforms must be conversion-aware.** A
+   sale-row's `SaleDate` (or `RecordingDate` / `TransferDate`) is
+   the disambiguator: pre-conversion-cutoff records cannot be
+   auto-qualified solely from WAC / ratio-type codes the same way
+   post-conversion records can.
+2. **Pre-conversion sales should not be auto-qualified solely
+   from WAC / ratio-type codes.** Even if the codes match a
+   workbook `Mapped` decision, the pre-conversion record's
+   semantic meaning may differ from what the operator decided
+   for post-conversion data.
+3. **Mapping Workbook review treats pre-2017 behavior as a
+   separate policy concern.** The C13-series review work that
+   landed `Deferred` decisions on 74 of 77 sales codes already
+   defers to assessor judgment; this amendment formalizes that
+   the deferral is explicitly correct — many of those Deferred
+   codes apply differently to pre- vs. post-conversion records.
+4. **Sales code distributions from B2.7-OLTP carry a temporal
+   caveat.** The `ObservedCount` figures in
+   `SyncMappingCodeValue` reflect the full undated population. A
+   high-`ObservedCount` code may include thousands of
+   pre-conversion records whose semantics differ from the current
+   PACS code-table meaning.
+5. **Future transform output should carry a reason / provenance
+   message when the sale date is pre-conversion-cutoff.** The
+   downstream consumer needs to know the qualification decision
+   was made under conversion-era data.
+
+### Default future policy (applies to C7+ sales-transform consumers)
+
+For sale records dated **before** the conversion cutoff:
+
+- Do **not** auto-qualify based on WAC / ratio-type codes alone.
+- Do **not** treat missing WAC / ratio codes as valid arms-length
+  signals.
+- **Emit a "PreConversionData" reason** on the qualification
+  decision (or whatever the consumer's reason vocabulary is).
+- **Require explicit assessor / review policy** before treating
+  the sale as comp-pool-eligible.
+
+### Already-applied retroactive readings
+
+The 74 `Deferred` sales codes from C13-A through C13-F already
+implicitly satisfy this caveat — `Deferred` means "not yet usable
+for comps without further review." The 3 `Excluded` codes
+(`458-61A-217(1)`, `458-61A-203(1)`, `458-61A-203(2)`) are REET
+exemptions that are non-arms-length regardless of date, so the
+conversion caveat doesn't change their semantic outcome.
+
+### Recommended downstream transform contract update (later)
+
+When a conversion-aware sales transform slice promotes, the
+qualification consumer's input record likely needs:
+
+```csharp
+public sealed record SalesQualificationSource(
+    string? WacCode,
+    string? SaleRatioTypeCode,
+    DateOnly? SaleDate);  // ← new
+```
+
+…and a new decision-status case:
+
+```csharp
+SalesQualificationDecisionStatus.PreConversionData
+```
+
+These are forward references; this amendment does not add them.
+The C8-C qualify-sales transform may need a follow-up slice
+("C8-D-conversion-aware" or similar) once that change is
+explicitly promoted.
+
+### What this amendment is
+
+A docs-only domain memory record. No code changes.
+
+### What this amendment is not
+
+- Not a transform code change.
+- Not a data backfill.
+- Not a license to retroactively re-edit C9-C / C11-C / C13-B/C/D/E/F
+  rows. Those decisions stand. The caveat affects how downstream
+  consumers should interpret them, not whether the workbook
+  decisions were correct.
