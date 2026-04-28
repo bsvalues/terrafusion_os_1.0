@@ -1191,35 +1191,44 @@ public class CountyStudyController : ControllerBase
                 scenario = allScenarios.FirstOrDefault(s => s.ScenarioId == scenarioId.Value);
             }
 
-            // ── AI diagnosis (best-effort; omit if no segment set) ────────────
-            EvidenceAiSection? aiSection = null;
-            try
-            {
-                var diagnosis = await _aiSvc.DiagnoseCountyAsync(studyId, ct);
-                if (diagnosis is not null)
-                {
-                    var topFindings = diagnosis.TopProblems
-                        .SelectMany(seg => seg.Findings)
-                        .OrderByDescending(f => f.EvidenceStrength)
-                        .Take(5)
-                        .Select(f => new EvidenceAiFindingSummary(f.Code, f.Category, f.Summary, f.EvidenceStrength))
-                        .ToList();
-                    aiSection = new EvidenceAiSection(
-                        diagnosis.OverallClass.ToString(),
-                        diagnosis.OverallConfidence,
-                        diagnosis.HealthySegmentCount,
-                        diagnosis.ProblemSegmentCount,
-                        diagnosis.Narrative,
-                        topFindings);
-                }
-            }
-            catch { /* no segments or other error — diagnosis omitted */ }
-
             // ── Exceptions ────────────────────────────────────────────────────
             var exceptions = await _svc.GetExceptionSetsAsync(studyId);
             var excItems = exceptions.Select(e => new EvidenceExceptionItem(
                 e.ExceptionSetId, e.ReasonCode, e.ParcelCount,
                 e.Destination, e.Status, e.AssignedTo, e.Notes, e.CreatedAt)).ToList();
+
+            // ── Benton-depth segment signals ─────────────────────────────────
+            var topRiskSegments = new List<EvidenceSegmentSignal>();
+            if (study.ActiveSegmentSetId.HasValue)
+            {
+                var segments = await _svc.GetSegmentsAsync(study.ActiveSegmentSetId.Value);
+                topRiskSegments = segments
+                    .OrderByDescending(s => s.RiskScore)
+                    .ThenByDescending(s => s.ExceptionCount)
+                    .Take(10)
+                    .Select(s => new EvidenceSegmentSignal(
+                        SegmentId: s.SegmentId,
+                        SegmentName: s.Name,
+                        NeighborhoodCode: s.GeographyRef,
+                        RevalArea: s.RevalArea,
+                        ParcelCount: s.ParcelCount,
+                        MedianRatio: s.MedianRatio,
+                        Cod: s.CoefficientOfDispersion,
+                        Prd: s.PriceRelatedDifferential,
+                        RiskScore: s.RiskScore,
+                        ExceptionCount: s.ExceptionCount,
+                        RatioCount: s.RatioCount,
+                        SalesCount: s.SalesCount,
+                        Prb: s.Prb,
+                        WeightedMeanRatio: s.WeightedMeanRatio,
+                        YoyMedianRatioDelta: s.YoyMedianRatioDelta))
+                    .ToList();
+            }
+
+            // ── AI diagnosis ──────────────────────────────────────────────────
+            // Full county diagnosis walks every segment and is too expensive for
+            // export. Diagnose the already-ranked top-risk segments instead.
+            var aiSection = await BuildTopRiskEvidenceAiSectionAsync(topRiskSegments, ct);
 
             // ── Assemble ──────────────────────────────────────────────────────
             EvidenceScenarioSection? scenSection = scenario is null ? null :
@@ -1247,6 +1256,7 @@ public class CountyStudyController : ControllerBase
                 HealthySegments: health?.HealthyCount ?? 0,
                 PrimaryScenario: scenSection,
                 AiDiagnosis: aiSection,
+                TopRiskSegments: topRiskSegments,
                 Exceptions: excItems);
 
             return Ok(packet);
@@ -1256,5 +1266,65 @@ public class CountyStudyController : ControllerBase
             _logger.LogError(ex, "[CountyStudy] GetEvidencePacket failed for study {StudyId}", studyId);
             return StatusCode(500, new { error = "Failed to generate evidence packet." });
         }
+    }
+
+    private async Task<EvidenceAiSection?> BuildTopRiskEvidenceAiSectionAsync(
+        IReadOnlyList<EvidenceSegmentSignal> topRiskSegments,
+        CancellationToken ct)
+    {
+        if (topRiskSegments.Count == 0)
+            return null;
+
+        var diagnoses = new List<SegmentDiagnosisDto>();
+        using var aiCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        aiCts.CancelAfter(TimeSpan.FromSeconds(6));
+
+        foreach (var segment in topRiskSegments.Take(5))
+        {
+            try
+            {
+                var diagnosis = await _aiSvc.DiagnoseSegmentAsync(segment.SegmentId, aiCts.Token);
+                if (diagnosis is not null)
+                    diagnoses.Add(diagnosis);
+            }
+            catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+            {
+                break;
+            }
+            catch (InvalidOperationException)
+            {
+                // Segment diagnosis is best-effort for export; health and top-risk rows remain authoritative.
+            }
+        }
+
+        if (diagnoses.Count == 0)
+            return null;
+
+        var problemDiagnoses = diagnoses
+            .Where(d => d.PrimaryClass != ProblemClass.Healthy)
+            .ToList();
+        var topDiagnosis = diagnoses
+            .OrderByDescending(d => d.PrimaryConfidence)
+            .ThenByDescending(d => d.ParcelCount)
+            .First();
+        var topFindings = diagnoses
+            .SelectMany(d => d.Findings)
+            .OrderByDescending(f => f.EvidenceStrength)
+            .Take(5)
+            .Select(f => new EvidenceAiFindingSummary(f.Code, f.Category, f.Summary, f.EvidenceStrength))
+            .ToList();
+        var narrative = string.Join(" ",
+            diagnoses
+                .Where(d => !string.IsNullOrWhiteSpace(d.Narrative))
+                .Take(2)
+                .Select(d => d.Narrative));
+
+        return new EvidenceAiSection(
+            topDiagnosis.PrimaryClass.ToString(),
+            topDiagnosis.PrimaryConfidence,
+            diagnoses.Count - problemDiagnoses.Count,
+            problemDiagnoses.Count,
+            narrative,
+            topFindings);
     }
 }
