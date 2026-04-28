@@ -618,3 +618,162 @@ distinct mapping column?) and a separate policy contract.
 
 A docs-only domain memory record of post-execution observation.
 No code changes. No CSV re-runs. No row mutations.
+
+---
+
+## Amendment — 2026-04-28: Operator-supplied i_attr_id mapping table (resolves C17-A2 forward reference)
+
+This amendment is added retroactively after the operator shared
+their working sales-dashboard SQL on 2026-04-28. The SQL contains
+explicit `i_attr_id`-to-attribute-name mappings that resolve the
+C17-A2 "ambiguous without attribute context" caveat for Tier 3
+(`imprv_attr.i_attr_val_cd`) rows.
+
+### Operator-supplied i_attr_id table (Benton County PACS)
+
+The operator's dashboard SQL aggregates `imprv_attr` rows using
+`i_attr_val_id` as the disambiguator. The mappings observed in
+that SQL:
+
+| `i_attr_val_id` | Attribute name | Reading semantics |
+|---:|---|---|
+| 2 | **Foundation** | `i_attr_val_cd` is the foundation type (e.g. `Slab`, `Crawl/Concrete Perimeter Piers`) |
+| 3 | **ExtWall** | exterior wall material (`Wood`, `Vinyl`, `Stucco`, `Hardboard`, `Comp Shingle`, `T 111 plywood`, `Metal`) |
+| 6 | **RoofCovering** | roof covering material (`Comp Shingle`, etc.) |
+| 9 | **HVAC** | residential HVAC type (`Heat pump`, `Central Warm Air`, `Baseboard`, `Central heat/cooling`) |
+| 10 | **Fireplace** | fireplace count (`i_attr_unit` is the count; `imprv_attr_val` is the cost) |
+| 12 | **Comm__Sprinkler** | commercial sprinkler indicator |
+| 15 | **Bedrooms** | bedroom count (`i_attr_val_cd` cast to int) |
+| 31 | **COMM_HVAC** | commercial HVAC type |
+| 39 | **Comm_frame** | commercial frame / class description |
+| 45 | **Bathrooms** | bathroom count (`i_attr_unit` cast to int) |
+| 46 | **HalfBaths** | half-bath count |
+| 47 | **Fixture_Count** | plumbing fixture count |
+| 51 | **Comm_Shape** | commercial building shape + units |
+| 56 | **COMM_Elevators** | commercial elevator count + units |
+| 58 | **COMM_Units** | commercial unit count |
+| 61 | **COMM_Tank_Type** | commercial tank type + units |
+| 62 | **COMM_Tank_Capacity** | commercial tank capacity + units |
+| 63 | **COMM_Service_Pit** | commercial service pit + units |
+| 67 | **Solar_Panels** | solar panel cost (`imprv_attr_val`) |
+
+**Source:** operator's working `_clientdb_property_sales_*` SQL
+that populates the Excel sales dashboard (shared 2026-04-28).
+The SQL is operationally proven — it's the data shape the
+sales-dashboard pulls from PACS daily — so this table is treated
+as authoritative for Benton County PACS.
+
+### What this resolves
+
+The C17-A2 amendment said:
+
+> A future slice could extend Tier 3 review to include the
+> `i_attr_id` context. ... With `i_attr_id` context,
+> `i_attr_val_cd` rows become per-feature value lists ...
+> which are dramatically easier to operator-confirm to canonical
+> vocabulary.
+
+That future slice now has a concrete starting point. The
+operator-supplied table above is the first half of the work; the
+second half is querying `pacs_oltp.dbo.imprv_attr` for the actual
+`(i_attr_id, i_attr_val_cd)` pairs and joining them into the
+workbook's review surface.
+
+### Concrete consequence for the 60 Tier 3 Deferred rows
+
+The 60 `i_attr_val_cd` rows that landed `Deferred` in C17-D can
+now be **conditionally promoted** by an operator who knows the
+attribute-id context:
+
+- A `Wood` row paired with `i_attr_id=3` → can be `Mapped` to
+  canonical `ExtWall:Wood` with notes referencing the
+  operator-supplied table.
+- A `Heat pump` row paired with `i_attr_id=9` → `Mapped` to
+  canonical `HVAC:HeatPump`.
+- A `Slab` row paired with `i_attr_id=2` → `Mapped` to
+  canonical `Foundation:Slab`.
+- An ambiguous label (e.g. `Comp Shingle` could be `i_attr_id=6`
+  RoofCovering or `i_attr_id=3` ExtWall depending on the row)
+  remains `Deferred` until per-row attribute-id context is
+  joined.
+
+Important: **promoting these requires reading the live PACS
+`imprv_attr` table to know which `i_attr_id` each value pairs
+with**. That join isn't possible against the workbook alone (the
+workbook only carries the distinct `i_attr_val_cd` SourceValues,
+not the per-`imprv_attr` rows). A future slice would either:
+
+1. Extend the workbook schema to include `(i_attr_id, i_attr_val_cd)`
+   tuples as a composite key (workbook schema change), OR
+2. Add a new `SyncMappingColumn` for `imprv_attr.i_attr_id`
+   alongside `imprv_attr.i_attr_val_cd`, and let the operator
+   correlate them out-of-band, OR
+3. Add a separate "Tier 3 attribute-context mapping" file
+   that lists the operator's per-`(i_attr_id, value)` decisions
+   independent of the workbook code-value rows.
+
+This amendment does not promote either path. The choice depends
+on how downstream consumers read the workbook.
+
+### Cross-reference: imprv_det_type_cd canonical values
+
+The same operator SQL also documents canonical `imprv_det_type_cd`
+values used by the dashboard's component-area aggregations:
+
+| `imprv_det_type_cd` | Canonical component |
+|---|---|
+| `MA` | Main Area (living area) |
+| `BSMT` | Finished Basement |
+| `U-BSMT` | Unfinished Basement |
+| `ATTGAR` | Attached Garage |
+| `DETGAR` | Detached Garage |
+| `carport` | Carport |
+| `polebldg` | Pole Building |
+
+The C17-A policy did not include `imprv_detail.imprv_det_type_cd`
+as a reviewed column (the C3 loader put it in Other lane with
+6 codes). When that column is reviewed in a future slice
+(C18-style Other-lane policy or a lane-reclassification slice),
+this table becomes the canonical-value reference for Mapped
+promotions.
+
+The user's project memory (`MEMORY.md`
+→ `project_pacs_imprv_type_codes.md`) already captures
+related observed counts:
+
+- `CovPatio` ~71k obs
+- `ATTGAR` ~44k obs
+- `MA` ~40k obs
+- `BSMT` ~10k obs
+- `POLEBLDG` ~9k obs
+- `DETGAR` ~8k obs
+- `POOL` ~3.8k obs
+
+Combining the C17-A3 canonical table with those observed counts
+gives a future Other-lane review the actionable inputs needed for
+operator-confirmed Mapped promotions.
+
+### What this amendment changes
+
+- Adds the operator-supplied `i_attr_id` mapping table to
+  policy memory (resolves C17-A2's forward reference).
+- Adds the `imprv_det_type_cd` canonical-value table for
+  reference when that column is reviewed in a future slice.
+- Re-frames C17-D's 60 Deferred Tier 3 rows as conditionally
+  promotable once attribute-id context is joined.
+
+### What this amendment does not change
+
+- The 60 Tier 3 rows from C17-D remain `Deferred` until a
+  future slice promotes them — the conditional path exists but
+  has not been executed.
+- All prior C17-A / C17-A2 Hard Guards.
+- The pre-2017 conversion caveat.
+- Sales / Valuation / Improvement / Land lane preservation.
+- The 403 prior terminal rows in the workbook. All unchanged.
+
+### What this amendment is
+
+A docs-only domain memory record. No code changes. No row
+mutations. No workbook schema extension. The `i_attr_id` table
+is recorded as canonical reference for future slices to use.
