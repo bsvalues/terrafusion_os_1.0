@@ -6,6 +6,7 @@
     "missingDirs": "warn (exit 0) during quarantine phase; flip to exit 1 post-quarantine via --strict"
   },
   "dirs": [
+    "apps",
     "backend",
     "compose",
     "config",
@@ -23,6 +24,7 @@
     "ops",
     "os-platform",
     "packages",
+    "policy",
     "scripts",
     "tests",
     "tools"
@@ -30,9 +32,11 @@
   "files": [
     "AGENTS.md",
     "AGENT_OPERATING_MODEL.md",
+    "CHANGELOG.md",
     "CLAUDE.md",
     "CODEOWNERS",
     "CONTRIBUTING.md",
+    "FOUNDER_QUICKSTART.md",
     "LICENSE",
     "Makefile",
     "README.md",
