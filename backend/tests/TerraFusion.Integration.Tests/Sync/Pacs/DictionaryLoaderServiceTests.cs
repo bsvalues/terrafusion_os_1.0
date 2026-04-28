@@ -12,13 +12,21 @@ using Task = System.Threading.Tasks.Task;
 namespace TerraFusion.Integration.Tests.Sync.Pacs;
 
 /// <summary>
-/// Slice C22-B service tests. Mirror the C14-B / C16-D / C17 / C19 /
-/// C20 test scaffolding patterns (InMemory provider, fresh database
-/// per test, no live PACS access). Every M1-M5 mismatch path from
-/// the C22-A policy is pinned here; the read-only no-mutation
-/// contract is pinned by an explicit UpdatedAt-unchanged test.
+/// Slice C22-B / C23-B service tests. Mirror the C14-B / C16-D / C17 /
+/// C19 / C20 test scaffolding patterns (InMemory provider, fresh
+/// database per test, no live PACS access). Every M1-M5 mismatch path
+/// from the C22-A / C23-A policies is pinned here; the read-only
+/// no-mutation contract is pinned by an explicit UpdatedAt-unchanged
+/// test.
+///
+/// <para>The fixture targets the <c>property_val.property_use_cd</c>
+/// ↔ <c>dbo.property_use</c> lane (the C22-B canonical scenario). The
+/// service itself is target-agnostic; <c>ImprvDetClassLoaderTargetTests</c>
+/// pins the C23-B <c>imprv_detail.imprv_det_class_cd</c> ↔
+/// <c>dbo.imprv_det_class</c> lane to prove the same machinery works
+/// against a different target.</para>
 /// </summary>
-public class PropertyUseDictionaryLoaderServiceTests
+public class DictionaryLoaderServiceTests
 {
     private static TerraFusionDbContext CreateContext(string databaseName)
     {
@@ -40,6 +48,19 @@ public class PropertyUseDictionaryLoaderServiceTests
         SyncMappingWorkbook Workbook,
         SyncMappingColumn UseColumn,
         IReadOnlyList<SyncMappingCodeValue> DeferredRows);
+
+    /// <summary>
+    /// Property-use lane target config — what C22-B's CLI dispatcher
+    /// passes for `property_use`. Mirrors the Program.cs switch entry.
+    /// </summary>
+    private static DictionaryLoaderTargetConfig PropertyUseTarget() =>
+        new(
+            WorkbookSourceSchema: "dbo",
+            WorkbookSourceTable:  "property_val",
+            WorkbookSourceColumn: "property_use_cd",
+            PacsDictionarySchema: "dbo",
+            PacsDictionaryTable:  "property_use",
+            CanonicalTargetName:  "PropertyUse");
 
     /// <summary>
     /// Standard fixture: a Draft workbook with one column
@@ -113,10 +134,10 @@ public class PropertyUseDictionaryLoaderServiceTests
     }
 
     /// <summary>
-    /// Standard column config matching the C22-B Program.cs default
-    /// for `dbo.property_use`. Tests can override per scenario.
+    /// Standard column config matching the C22-B test scenarios.
+    /// Tests can override per scenario.
     /// </summary>
-    private static PropertyUseDictionaryColumnConfig DefaultConfig() =>
+    private static DictionaryColumnConfig DefaultConfig() =>
         new(
             CodeColumn:           "property_use_cd",
             DescriptionColumn:    "property_use_desc",
@@ -161,10 +182,10 @@ public class PropertyUseDictionaryLoaderServiceTests
         var otherCountyId = Guid.NewGuid();
 
         var pacs = new StubReader(new[] { Row("11", "Single Family") });
-        var sut = new PropertyUseDictionaryLoaderService(db, pacs);
+        var sut = new DictionaryLoaderService(db, pacs);
 
         Func<Task> act = () => sut.ProposeReviewCsvAsync(
-            otherCountyId, fx.Workbook.Id, DefaultConfig());
+            otherCountyId, fx.Workbook.Id, PropertyUseTarget(), DefaultConfig());
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage($"*not found for county {otherCountyId}*");
@@ -188,9 +209,10 @@ public class PropertyUseDictionaryLoaderServiceTests
             Row("21", "Commercial"),
             Row("83", "Industrial"),
         });
-        var sut = new PropertyUseDictionaryLoaderService(db, pacs);
+        var sut = new DictionaryLoaderService(db, pacs);
 
-        await sut.ProposeReviewCsvAsync(fx.County.Id, fx.Workbook.Id, DefaultConfig());
+        await sut.ProposeReviewCsvAsync(
+            fx.County.Id, fx.Workbook.Id, PropertyUseTarget(), DefaultConfig());
 
         var wbReloaded = await db.SyncMappingWorkbooks.AsNoTracking().SingleAsync();
         var colReloaded = await db.SyncMappingColumns.AsNoTracking().SingleAsync();
@@ -214,10 +236,10 @@ public class PropertyUseDictionaryLoaderServiceTests
         var fx = await SeedFixtureAsync(db, deferredCodes: new[] { "11" });
 
         var pacs = new StubReader(new[] { Row("11", "Single Family Residential", "A") });
-        var sut = new PropertyUseDictionaryLoaderService(db, pacs);
+        var sut = new DictionaryLoaderService(db, pacs);
 
         var result = await sut.ProposeReviewCsvAsync(
-            fx.County.Id, fx.Workbook.Id, DefaultConfig());
+            fx.County.Id, fx.Workbook.Id, PropertyUseTarget(), DefaultConfig());
 
         result.M5CleanMatch.Should().Be(1);
         result.M1WorkbookCodeMissingFromDictionary.Should().Be(0);
@@ -230,7 +252,7 @@ public class PropertyUseDictionaryLoaderServiceTests
         row.SourceValue.Should().Be("11");
         row.CanonicalValue.Should().Be("Single Family Residential");
         row.IsExcluded.Should().Be(false);
-        row.Classification.Should().Be(PropertyUseClassification.CleanMatch);
+        row.Classification.Should().Be(DictionaryRowClassification.CleanMatch);
         row.Notes.Should().Contain("Dictionary-matched");
         row.Notes.Should().Contain("pre-2017 records");
     }
@@ -244,10 +266,10 @@ public class PropertyUseDictionaryLoaderServiceTests
         var fx = await SeedFixtureAsync(db, deferredCodes: new[] { "X1" });
 
         var pacs = new StubReader(new[] { Row("11", "Single Family") });  // no X1
-        var sut = new PropertyUseDictionaryLoaderService(db, pacs);
+        var sut = new DictionaryLoaderService(db, pacs);
 
         var result = await sut.ProposeReviewCsvAsync(
-            fx.County.Id, fx.Workbook.Id, DefaultConfig());
+            fx.County.Id, fx.Workbook.Id, PropertyUseTarget(), DefaultConfig());
 
         result.M1WorkbookCodeMissingFromDictionary.Should().Be(1);
         result.M5CleanMatch.Should().Be(0);
@@ -257,7 +279,7 @@ public class PropertyUseDictionaryLoaderServiceTests
         row.SourceValue.Should().Be("X1");
         row.CanonicalValue.Should().BeNull();
         row.CanonicalValueNull.Should().Be(true);
-        row.Classification.Should().Be(PropertyUseClassification.WorkbookCodeMissingFromDictionary);
+        row.Classification.Should().Be(DictionaryRowClassification.WorkbookCodeMissingFromDictionary);
         row.Notes.Should().Contain("missing from PACS property_use dictionary");
         row.Notes.Should().Contain("data-integrity issue");
     }
@@ -276,10 +298,10 @@ public class PropertyUseDictionaryLoaderServiceTests
             Row("21", "Commercial"),  // unobserved
             Row("83", "Industrial"),  // unobserved
         });
-        var sut = new PropertyUseDictionaryLoaderService(db, pacs);
+        var sut = new DictionaryLoaderService(db, pacs);
 
         var result = await sut.ProposeReviewCsvAsync(
-            fx.County.Id, fx.Workbook.Id, DefaultConfig());
+            fx.County.Id, fx.Workbook.Id, PropertyUseTarget(), DefaultConfig());
 
         result.DictionaryRowsRead.Should().Be(3);
         result.M5CleanMatch.Should().Be(1);
@@ -303,17 +325,17 @@ public class PropertyUseDictionaryLoaderServiceTests
             Row("11", "Single Family"),
             Row("11", "Mobile Home"),  // collision
         });
-        var sut = new PropertyUseDictionaryLoaderService(db, pacs);
+        var sut = new DictionaryLoaderService(db, pacs);
 
         var result = await sut.ProposeReviewCsvAsync(
-            fx.County.Id, fx.Workbook.Id, DefaultConfig());
+            fx.County.Id, fx.Workbook.Id, PropertyUseTarget(), DefaultConfig());
 
         result.M3DuplicateDictionaryCode.Should().Be(1);
         result.M5CleanMatch.Should().Be(0);
 
         var row = result.ProposedRows.Single();
         row.ReviewStatus.Should().Be("Deferred");
-        row.Classification.Should().Be(PropertyUseClassification.DuplicateDictionaryCode);
+        row.Classification.Should().Be(DictionaryRowClassification.DuplicateDictionaryCode);
         row.Notes.Should().Contain("multiple dictionary rows");
         row.Notes.Should().Contain("Cannot unambiguously map");
         row.Notes.Should().Contain("Single Family");
@@ -332,17 +354,17 @@ public class PropertyUseDictionaryLoaderServiceTests
         {
             Row("99", "Legacy Use", sysFlag: "I"),  // inactive
         });
-        var sut = new PropertyUseDictionaryLoaderService(db, pacs);
+        var sut = new DictionaryLoaderService(db, pacs);
 
         var result = await sut.ProposeReviewCsvAsync(
-            fx.County.Id, fx.Workbook.Id, DefaultConfig());
+            fx.County.Id, fx.Workbook.Id, PropertyUseTarget(), DefaultConfig());
 
         result.M4InactiveDictionaryRow.Should().Be(1);
         result.M5CleanMatch.Should().Be(0);
 
         var row = result.ProposedRows.Single();
         row.ReviewStatus.Should().Be("Deferred");
-        row.Classification.Should().Be(PropertyUseClassification.InactiveDictionaryRow);
+        row.Classification.Should().Be(DictionaryRowClassification.InactiveDictionaryRow);
         row.Notes.Should().Contain("INACTIVE");
         row.Notes.Should().Contain("legacy or pre-conversion");
     }
@@ -360,9 +382,9 @@ public class PropertyUseDictionaryLoaderServiceTests
             ActiveFlagPredicate = null,
         };
 
-        var sut = new PropertyUseDictionaryLoaderService(db, pacs);
+        var sut = new DictionaryLoaderService(db, pacs);
         var result = await sut.ProposeReviewCsvAsync(
-            fx.County.Id, fx.Workbook.Id, configWithoutActiveFlag);
+            fx.County.Id, fx.Workbook.Id, PropertyUseTarget(), configWithoutActiveFlag);
 
         result.M4InactiveDictionaryRow.Should().Be(0,
             "without an active-flag predicate, M4 cannot fire");
@@ -392,10 +414,10 @@ public class PropertyUseDictionaryLoaderServiceTests
             Row("INA", "Legacy Use",     "I"),
             Row("Z1",  "Unobserved",     "A"),  // M2
         });
-        var sut = new PropertyUseDictionaryLoaderService(db, pacs);
+        var sut = new DictionaryLoaderService(db, pacs);
 
         var result = await sut.ProposeReviewCsvAsync(
-            fx.County.Id, fx.Workbook.Id, DefaultConfig());
+            fx.County.Id, fx.Workbook.Id, PropertyUseTarget(), DefaultConfig());
 
         result.WorkbookDeferredRows.Should().Be(4);
         result.M1WorkbookCodeMissingFromDictionary.Should().Be(1);
@@ -423,10 +445,10 @@ public class PropertyUseDictionaryLoaderServiceTests
         {
             Row("11", "Residential, Single Family, Detached", "A"),
         });
-        var sut = new PropertyUseDictionaryLoaderService(db, pacs);
+        var sut = new DictionaryLoaderService(db, pacs);
 
         var result = await sut.ProposeReviewCsvAsync(
-            fx.County.Id, fx.Workbook.Id, DefaultConfig());
+            fx.County.Id, fx.Workbook.Id, PropertyUseTarget(), DefaultConfig());
 
         var row = result.ProposedRows.Single();
         row.CanonicalValue.Should().Be("Residential, Single Family, Detached",
@@ -442,10 +464,10 @@ public class PropertyUseDictionaryLoaderServiceTests
         // Dictionary row with no description column (or null description)
         var pacs = new StubReader(new[] { Row("11", desc: null, sysFlag: "A") });
         var configNoDesc = DefaultConfig() with { DescriptionColumn = null };
-        var sut = new PropertyUseDictionaryLoaderService(db, pacs);
+        var sut = new DictionaryLoaderService(db, pacs);
 
         var result = await sut.ProposeReviewCsvAsync(
-            fx.County.Id, fx.Workbook.Id, configNoDesc);
+            fx.County.Id, fx.Workbook.Id, PropertyUseTarget(), configNoDesc);
 
         result.M5CleanMatch.Should().Be(1);
         var row = result.ProposedRows.Single();
@@ -469,10 +491,10 @@ public class PropertyUseDictionaryLoaderServiceTests
         await db.SaveChangesAsync();
 
         var pacs = new StubReader(new[] { Row("11", "Single Family") });
-        var sut = new PropertyUseDictionaryLoaderService(db, pacs);
+        var sut = new DictionaryLoaderService(db, pacs);
 
         Func<Task> act = () => sut.ProposeReviewCsvAsync(
-            fx.County.Id, fx.Workbook.Id, DefaultConfig());
+            fx.County.Id, fx.Workbook.Id, PropertyUseTarget(), DefaultConfig());
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("*does not contain a column for dbo.property_val.property_use_cd*");
@@ -492,10 +514,10 @@ public class PropertyUseDictionaryLoaderServiceTests
         var fx = await SeedFixtureAsync(db, deferredCodes: new[] { "11   " });
 
         var pacs = new StubReader(new[] { Row("11", "Single Family") });
-        var sut = new PropertyUseDictionaryLoaderService(db, pacs);
+        var sut = new DictionaryLoaderService(db, pacs);
 
         var result = await sut.ProposeReviewCsvAsync(
-            fx.County.Id, fx.Workbook.Id, DefaultConfig());
+            fx.County.Id, fx.Workbook.Id, PropertyUseTarget(), DefaultConfig());
 
         result.M5CleanMatch.Should().Be(1,
             "trimmed workbook value '11' matches dictionary code '11'");

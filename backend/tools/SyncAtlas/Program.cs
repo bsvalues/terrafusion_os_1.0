@@ -1182,46 +1182,83 @@ internal static class Program
             sourceConnection, secretResolver);
         var pacsReader = new SqlPacsDictionaryReader(pacsConnectionString);
 
-        // Default column config for `dbo.property_use` per the C22-B-live
-        // inspection of pacs_oltp captured at
-        // backend/artifacts/sync-atlas/c22-b/<run-id>/dictionary-inspection.txt:
+        // C22-B / C23-B: per-table target + column config. Each entry is
+        // gated by a policy doc whose live-inspection step pinned the
+        // workbook source triple, the dictionary column shape, and the
+        // canonical-target vocabulary. Columns are NOT inferred — they
+        // arrive from the policy gate and are reviewable in the diff.
         //
-        //   property_use_cd    varchar(10)  NOT NULL  (code)
-        //   property_use_desc  varchar(50)  NOT NULL  (description)
-        //   dor_use_code       varchar(10)  NULL      (DOR PUC group, bonus mapping col)
-        //
-        // Findings: NO active-flag column, NO year-keying column. M4
-        // (inactive dictionary row) cannot fire against this PACS
-        // instance. Future deployments with a different schema must
-        // re-run the C22-A inspection gate and override these defaults.
-        var columnConfig = tableName.ToLowerInvariant() switch
+        // property_use defaults captured at C22-B-live inspection of
+        // pacs_oltp (3 columns: property_use_cd / property_use_desc /
+        // dor_use_code; no sys_flag, not year-keyed). imprv_det_class
+        // defaults captured at C23-B-live inspection (TBD; if shape
+        // differs, this branch is the canonical place to revise).
+        var (target, columnConfig, sliceArtifactDir) = tableName.ToLowerInvariant() switch
         {
-            "property_use" => new PropertyUseDictionaryColumnConfig(
-                CodeColumn:           "property_use_cd",
-                DescriptionColumn:    "property_use_desc",
-                ActiveFlagColumn:     null,  // no sys_flag in this PACS instance
-                ActiveFlagPredicate:  null,
-                YearColumn:           null), // universe-wide, not year-keyed
+            "property_use" => (
+                new DictionaryLoaderTargetConfig(
+                    WorkbookSourceSchema: "dbo",
+                    WorkbookSourceTable:  "property_val",
+                    WorkbookSourceColumn: "property_use_cd",
+                    PacsDictionarySchema: "dbo",
+                    PacsDictionaryTable:  "property_use",
+                    CanonicalTargetName:  "PropertyUse"),
+                new DictionaryColumnConfig(
+                    CodeColumn:           "property_use_cd",
+                    DescriptionColumn:    "property_use_desc",
+                    ActiveFlagColumn:     null,  // no sys_flag in this PACS instance
+                    ActiveFlagPredicate:  null,
+                    YearColumn:           null), // universe-wide, not year-keyed
+                "c22-b"),
+            "imprv_det_class" => (
+                new DictionaryLoaderTargetConfig(
+                    WorkbookSourceSchema: "dbo",
+                    WorkbookSourceTable:  "imprv_detail",
+                    WorkbookSourceColumn: "imprv_det_class_cd",
+                    PacsDictionarySchema: "dbo",
+                    PacsDictionaryTable:  "imprv_det_class",
+                    CanonicalTargetName:  "ImprvDetailClass"),
+                // Defaults captured at C23-B-live inspection of pacs_oltp:
+                //   imprv_det_class_cd       char(10)    NOT NULL  (code)
+                //   imprv_det_cls_desc       varchar(50) NULL      (description — note: NOT imprv_det_class_desc)
+                //   sys_flag                 varchar(1)  NULL      (always 'F' in Benton — not a usable A/I active flag)
+                //   is_permanent_crop_detail bit         NOT NULL
+                //   rc_type                  char(1)     NULL
+                // Findings: 27 rows; ALL sys_flag='F'; no usable active/
+                // inactive distinction. Therefore the active-flag predicate
+                // is intentionally NOT configured here (M4 cannot fire
+                // against this PACS instance). Future PACS deployments
+                // exposing genuine 'A'/'I' values must override per
+                // C23-A's per-deployment column-config requirement.
+                new DictionaryColumnConfig(
+                    CodeColumn:           "imprv_det_class_cd",
+                    DescriptionColumn:    "imprv_det_cls_desc",
+                    ActiveFlagColumn:     null,
+                    ActiveFlagPredicate:  null,
+                    YearColumn:           null), // universe-wide, not year-keyed
+                "c23-b"),
             _ => throw new InvalidOperationException(
                 $"No default column config for table '{tableName}'. " +
-                "C22-B currently allowlists only 'property_use'."),
+                "Loader currently allowlists 'property_use' and 'imprv_det_class'."),
         };
 
-        var loader = new PropertyUseDictionaryLoaderService(db, pacsReader);
+        var loader = new DictionaryLoaderService(db, pacsReader);
 
         Console.WriteLine($"sync-atlas: load-pacs-dictionary for county {args.CountyId}...");
         Console.WriteLine($"sync-atlas:   workbook id:        {workbookId}");
         Console.WriteLine($"sync-atlas:   pacs connection:    {connectionId} ({sourceConnection.Server}/{sourceConnection.Database})");
-        Console.WriteLine($"sync-atlas:   dictionary table:   dbo.{tableName}");
+        Console.WriteLine($"sync-atlas:   workbook source:    {target.WorkbookSourceSchema}.{target.WorkbookSourceTable}.{target.WorkbookSourceColumn}");
+        Console.WriteLine($"sync-atlas:   dictionary table:   {target.PacsDictionarySchema}.{target.PacsDictionaryTable}");
+        Console.WriteLine($"sync-atlas:   canonical target:   {target.CanonicalTargetName}");
         Console.WriteLine($"sync-atlas:   column config:      code={columnConfig.CodeColumn}, " +
                           $"desc={columnConfig.DescriptionColumn ?? "(none)"}, " +
                           $"active=({columnConfig.ActiveFlagPredicate ?? "(no active flag)"})");
 
-        PropertyUseDictionaryLoaderResult result;
+        DictionaryLoaderResult result;
         try
         {
             result = await loader.ProposeReviewCsvAsync(
-                args.CountyId, workbookId, columnConfig, ct);
+                args.CountyId, workbookId, target, columnConfig, ct);
         }
         catch (InvalidOperationException ex)
         {
@@ -1234,10 +1271,11 @@ internal static class Program
             return 3;
         }
 
-        // Write artifacts to backend/artifacts/sync-atlas/c22-b/<run-id>/
+        // Write artifacts to backend/artifacts/sync-atlas/<slice>/<run-id>/
+        // where <slice> is c22-b for property_use, c23-b for imprv_det_class.
         var runId = DateTime.UtcNow.ToString("yyyyMMddTHHmmssZ");
         var artifactDir = Path.Combine(
-            "backend", "artifacts", "sync-atlas", "c22-b", runId);
+            "backend", "artifacts", "sync-atlas", sliceArtifactDir, runId);
         Directory.CreateDirectory(artifactDir);
         var csvPath = Path.Combine(artifactDir, $"{tableName}-proposed-review.csv");
         var reportPath = Path.Combine(artifactDir, $"{tableName}-mismatch-report.md");
@@ -1279,7 +1317,7 @@ internal static class Program
     /// into <c>--batch-edit-mapping-workbook --apply</c> at C22-C.
     /// </summary>
     private static void WriteProposedReviewCsv(
-        string path, PropertyUseDictionaryLoaderResult result)
+        string path, DictionaryLoaderResult result)
     {
         using var w = new StreamWriter(path);
         w.WriteLine(
@@ -1327,7 +1365,7 @@ internal static class Program
     /// </summary>
     private static void WriteMismatchReport(
         string path,
-        PropertyUseDictionaryLoaderResult result,
+        DictionaryLoaderResult result,
         string tableName,
         SyncSourceConnection conn)
     {
@@ -1354,16 +1392,16 @@ internal static class Program
 
         WriteCategorySection(w, "M1 — Workbook code missing from dictionary",
             result.ProposedRows.Where(r => r.Classification ==
-                PropertyUseClassification.WorkbookCodeMissingFromDictionary));
+                DictionaryRowClassification.WorkbookCodeMissingFromDictionary));
         WriteCategorySection(w, "M3 — Duplicate dictionary code (ambiguous)",
             result.ProposedRows.Where(r => r.Classification ==
-                PropertyUseClassification.DuplicateDictionaryCode));
+                DictionaryRowClassification.DuplicateDictionaryCode));
         WriteCategorySection(w, "M4 — Inactive dictionary row",
             result.ProposedRows.Where(r => r.Classification ==
-                PropertyUseClassification.InactiveDictionaryRow));
+                DictionaryRowClassification.InactiveDictionaryRow));
         WriteCategorySection(w, "M5 — Clean match (proposed Mapped)",
             result.ProposedRows.Where(r => r.Classification ==
-                PropertyUseClassification.CleanMatch));
+                DictionaryRowClassification.CleanMatch));
     }
 
     private static void WriteCategorySection(

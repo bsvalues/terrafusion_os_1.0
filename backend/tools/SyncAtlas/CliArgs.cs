@@ -158,13 +158,18 @@ public static class CliArgsParser
     // when paired with another mode toggle.
 
     /// <summary>
-    /// Slice C22-A Hard Guard #5: allowlisted PACS dictionary tables
-    /// for the C22-B loader. Initial allowlist includes only
-    /// <c>property_use</c>; future slices (C22-D etc.) extend this
-    /// list by explicit policy amendment + parser update.
+    /// Slice C22-A / C23-A Hard Guard #5: allowlisted PACS dictionary
+    /// tables for the C22-B / C23-B loader. The allowlist grows by
+    /// explicit policy amendment + parser update — no inference, no
+    /// "any table that ends in _cd". Currently:
+    /// <list type="bullet">
+    /// <item><c>property_use</c> (C22-A policy)</item>
+    /// <item><c>imprv_det_class</c> (C23-A policy)</item>
+    /// </list>
     /// </summary>
     public static bool IsAllowedPacsDictionaryTable(string tableName)
-        => string.Equals(tableName, "property_use", StringComparison.OrdinalIgnoreCase);
+        => string.Equals(tableName, "property_use",    StringComparison.OrdinalIgnoreCase)
+        || string.Equals(tableName, "imprv_det_class", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     /// Rejection helper used by every non-batch mode to refuse the
@@ -1243,14 +1248,13 @@ public static class CliArgsParser
                     "--connection-id is required when --load-pacs-dictionary is set " +
                     "(C22-B reads from PACS via SyncSourceConnection)");
             }
-            // C22-A Hard Guard #5: allowlisted dictionary tables only.
-            // Initial allowlist: property_use only. Future slices extend
-            // the list by explicit policy amendment.
+            // C22-A / C23-A Hard Guard #5: allowlisted dictionary tables
+            // only. The allowlist grows by explicit policy amendment.
             if (!IsAllowedPacsDictionaryTable(pacsDictionaryTable!))
             {
                 return (null,
-                    $"--table '{pacsDictionaryTable}' is not in the C22-B allowlist. " +
-                    "Allowed tables: property_use.");
+                    $"--table '{pacsDictionaryTable}' is not in the dictionary loader allowlist. " +
+                    "Allowed tables: property_use, imprv_det_class.");
             }
 
             // Generate-mode flags must not appear in load-pacs-dictionary mode.
@@ -1442,21 +1446,21 @@ Usage (Mapping Workbook review progress — Slice C14-B, read-only):
   workbooks, where the report shows ""already <status>"" and zero
   blockers.
 
-Usage (PACS dictionary loader — Slice C22-B, read-only):
+Usage (PACS dictionary loader — Slice C22-B / C23-B, read-only):
   SyncAtlas --db <terrafusion-connection-string> \
             --county-id <guid> \
             --connection-id <guid> \
             --load-pacs-dictionary \
-            --table property_use \
+            --table property_use | imprv_det_class \
             --workbook-id <guid> \
             [--operator <name>]
   Read-only loader. Reads the PACS dictionary table named by
-  --table (allowlist: property_use), joins it against the
-  workbook's Deferred property_use_cd code-values, and produces
-  a proposed review CSV per the C22-A M1-M5 mismatch rules.
-  Never mutates PACS; never mutates the workbook. The proposed
-  CSV is fed into --batch-edit-mapping-workbook by the operator
-  in a separate step (C22-C).
+  --table (allowlist: property_use, imprv_det_class), joins it
+  against the workbook's matching Deferred code-values, and
+  produces a proposed review CSV per the C22-A / C23-A M1-M5
+  mismatch rules. Never mutates PACS; never mutates the workbook.
+  The proposed CSV is fed into --batch-edit-mapping-workbook by
+  the operator in a separate step (C22-C / C23-C).
 
 Required (always):
   --db              Postgres connection string for the TerraFusion DB.
