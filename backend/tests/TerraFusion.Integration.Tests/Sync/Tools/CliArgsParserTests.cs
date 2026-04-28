@@ -2713,6 +2713,8 @@ public class CliArgsParserTests
             "C24-A added land_soil to the allowlist (RCW 84.34-sensitive)");
         err.Should().Contain("imprv_det_meth",
             "C25-A added imprv_det_meth to the allowlist (Improvement-method axis)");
+        err.Should().Contain("imprv_det_sub_class",
+            "C26-A added imprv_det_sub_class to the allowlist (sub-class refinement axis)");
     }
 
     [Fact]
@@ -2809,11 +2811,13 @@ public class CliArgsParserTests
         CliArgsParser.IsAllowedPacsDictionaryTable("imprv_det_meth").Should().BeTrue();
         CliArgsParser.IsAllowedPacsDictionaryTable("IMPRV_DET_METH").Should().BeTrue();
 
+        // C26-A: imprv_det_sub_class (sub-class refinement axis)
+        CliArgsParser.IsAllowedPacsDictionaryTable("imprv_det_sub_class").Should().BeTrue();
+        CliArgsParser.IsAllowedPacsDictionaryTable("IMPRV_DET_SUB_CLASS").Should().BeTrue();
+
         // Still rejected (no policy amendment yet)
         CliArgsParser.IsAllowedPacsDictionaryTable("imprv_attr_val").Should().BeFalse();
         CliArgsParser.IsAllowedPacsDictionaryTable("nbhd_codes").Should().BeFalse();
-        CliArgsParser.IsAllowedPacsDictionaryTable("imprv_det_sub_class").Should().BeFalse(
-            "no policy amendment has promoted imprv_det_sub_class into the allowlist yet");
         CliArgsParser.IsAllowedPacsDictionaryTable("imprv_det_type").Should().BeFalse(
             "imprv_det_type is lane-mismatched in Other and needs its own slice");
         CliArgsParser.IsAllowedPacsDictionaryTable("").Should().BeFalse();
