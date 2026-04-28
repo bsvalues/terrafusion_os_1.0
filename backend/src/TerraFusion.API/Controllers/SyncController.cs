@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TerraFusion.API.Services;
+using TerraFusion.Core.DTOs.Sync;
 using TerraFusion.Data;
+using TerraFusion.Sync.Workbench.Comps.Sales;
 
 namespace TerraFusion.API.Controllers;
 
@@ -22,15 +25,18 @@ public class SyncController : ControllerBase
     private readonly ISaleQualificationService _qualification;
     private readonly TerraFusionDbContext _db;
     private readonly ILogger<SyncController> _logger;
+    private readonly ISalesCompEligibilityReader _compReader;
 
     public SyncController(
         ISaleQualificationService qualification,
         TerraFusionDbContext db,
-        ILogger<SyncController> logger)
+        ILogger<SyncController> logger,
+        ISalesCompEligibilityReader compReader)
     {
         _qualification = qualification;
         _db            = db;
         _logger        = logger;
+        _compReader    = compReader;
     }
 
     // ── Requalification trigger ────────────────────────────────────────────
@@ -345,5 +351,117 @@ public class SyncController : ControllerBase
                 ? "pacs_valuations.hood_cd is empty — re-seed after the seeder fix (nbhd_cd→hood_cd) to populate neighborhoods"
                 : $"{updated} ComparableSales rows now have Neighborhood set"
         });
+    }
+
+    // ── Comp-eligibility read (Slice C38-B) ─────────────────────────────────
+
+    /// <summary>
+    /// Slice C38-B: read-side HTTP exposure of the C37-B
+    /// <c>ISalesCompEligibilityReader</c> per the C38-A policy.
+    ///
+    /// <para>Returns the comp pool for a county. Single selection rule
+    /// (inherited from C37-A): <c>ComputedDecision = Qualified</c>.
+    /// <c>Excluded</c> and <c>Inconclusive</c> rows are NOT returned.
+    /// This is the WacCd-bug containment surface exposed over HTTP —
+    /// pre-conversion / unmapped / problematic <c>wac_cd</c> codes
+    /// never reach the comp pool by construction.</para>
+    ///
+    /// <para>Authentication required (per C38-A Hard Guard 2).
+    /// County-isolation guard fires server-side (Hard Guard 3): the
+    /// authenticated principal's <c>countyId</c> claim must match the
+    /// requested <paramref name="countyId"/>; cross-county callers
+    /// receive 403 with no row data.</para>
+    ///
+    /// <para>Workbook-pin is opt-in (Hard Guard 7). When
+    /// <paramref name="workbookId"/> is omitted or empty, all
+    /// Qualified rows for the county are returned regardless of
+    /// which workbook produced them. There is no implicit "most
+    /// recent workbook" default — that would silently mask
+    /// workbook drift.</para>
+    /// </summary>
+    /// <param name="countyId">Sovereign-county scope (required).</param>
+    /// <param name="workbookId">
+    /// Optional workbook-pin. Empty / omitted means "all qualified
+    /// rows for this county."
+    /// </param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>
+    /// 200 OK with a (possibly empty) JSON array of
+    /// <see cref="CompEligibleSaleDto"/>. The array is ordered by
+    /// <c>ChgOfOwnerId</c> ascending for deterministic consumption.
+    /// </returns>
+    [HttpGet("comps/eligible")]
+    [Authorize]
+    public async Task<IActionResult> GetEligibleComps(
+        [FromQuery] Guid countyId,
+        [FromQuery] Guid? workbookId,
+        CancellationToken ct = default)
+    {
+        // ── 400: required input missing / malformed ──
+        if (countyId == Guid.Empty)
+        {
+            return BadRequest(new
+            {
+                error = "countyId is required.",
+                hint  = "Pass a non-empty Guid as the countyId query parameter.",
+            });
+        }
+
+        // ── 403: county isolation (per CLAUDE.md sovereign-county
+        //        invariant + C38-A Hard Guard 3). The principal's
+        //        countyId claim must match the requested countyId.
+        //        Mismatch returns Forbid without leaking whether the
+        //        county exists or has rows. ──
+        var principalCountyId = ResolveCountyClaim();
+        if (principalCountyId is null || principalCountyId.Value != countyId)
+        {
+            _logger.LogWarning(
+                "[Sync] GetEligibleComps refused cross-county access: principal={PrincipalCounty} requested={RequestedCounty}",
+                principalCountyId, countyId);
+            return Forbid();
+        }
+
+        // ── Delegate to the C37-B reader. The reader normalizes
+        //    Guid.Empty workbookId to "no pin," so we forward the
+        //    raw query value verbatim. ──
+        var pool = await _compReader.ReadAsync(countyId, workbookId, ct);
+
+        // ── Project to DTO. Field-for-field, no enrichment. ──
+        var dto = pool
+            .Select(s => new CompEligibleSaleDto(
+                s.ChgOfOwnerId,
+                s.WacCdSourceValue,
+                s.WacCdCanonicalValue,
+                s.SlRatioTypeCdSourceValue,
+                s.SlRatioTypeCdCanonicalValue,
+                s.SaleDate,
+                s.SalePrice,
+                s.SourceWorkbookId,
+                s.SourceWorkbookLockedAt))
+            .ToList();
+
+        // Operational telemetry (NOT FISMA AuditLogs — this is a
+        // read, not a state mutation, per C38-A Hard Guard 9).
+        _logger.LogInformation(
+            "[Sync] GetEligibleComps: county={CountyId} workbookId={WorkbookId} rows={Rows}",
+            countyId, workbookId, dto.Count);
+
+        return Ok(dto);
+    }
+
+    /// <summary>
+    /// Resolve the authenticated principal's countyId claim. Returns
+    /// <c>null</c> when the claim is missing or malformed; the caller
+    /// converts that to 403. Mirrors the resolver pattern in
+    /// AtlasController but kept narrow — the comps endpoint requires
+    /// an explicit Guid claim and does not fall back to county-name
+    /// or FIPS lookups (those would broaden the trust surface for a
+    /// read endpoint that doesn't need it).
+    /// </summary>
+    private Guid? ResolveCountyClaim()
+    {
+        var raw = User.FindFirst("countyId")?.Value?.Trim();
+        if (string.IsNullOrWhiteSpace(raw)) return null;
+        return Guid.TryParse(raw, out var parsed) ? parsed : null;
     }
 }
