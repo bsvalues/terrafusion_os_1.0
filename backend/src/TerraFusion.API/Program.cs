@@ -1165,6 +1165,12 @@ builder.Services.AddSingleton<ScenarioRunRegistry>();
 // 🏛️ Sale Qualification — TerraFusion owns the IAAO ratio-study qualification decision
 builder.Services.AddScoped<TerraFusion.API.Services.ISaleQualificationService, TerraFusion.API.Services.SaleQualificationService>();
 
+// Slice C38-B — Sync comps read endpoint backed by the C37-B canonical landing reader.
+// Read-only EF projection per C37-A's selection rule (ComputedDecision = Qualified).
+builder.Services.AddScoped<
+    TerraFusion.Sync.Workbench.Comps.Sales.ISalesCompEligibilityReader,
+    TerraFusion.Sync.Workbench.Comps.Sales.SalesCompEligibilityReader>();
+
 // Calibration Workbench services
 builder.Services.AddScoped<TerraFusion.Core.Services.IMatrixDiagnosticService, TerraFusion.API.Services.MatrixDiagnosticService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.ICalibrationMemoService, TerraFusion.Data.Services.CalibrationMemoService>();
