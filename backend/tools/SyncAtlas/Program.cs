@@ -1237,9 +1237,37 @@ internal static class Program
                     ActiveFlagPredicate:  null,
                     YearColumn:           null), // universe-wide, not year-keyed
                 "c23-b"),
+            "land_soil" => (
+                new DictionaryLoaderTargetConfig(
+                    WorkbookSourceSchema: "dbo",
+                    WorkbookSourceTable:  "land_detail",
+                    WorkbookSourceColumn: "land_soil_code",
+                    PacsDictionarySchema: "dbo",
+                    PacsDictionaryTable:  "land_soil",
+                    CanonicalTargetName:  "LandSoil"),
+                // Defaults captured at C24-B-live inspection of pacs_oltp:
+                //   szLandSoilCode  char(10)    NOT NULL  (code — Hungarian 'sz' prefix)
+                //   szLandSoilDesc  varchar(64) NULL      (description)
+                // Findings: 58 rows; only 2 columns; no sys_flag, no year
+                // column, no per-acre value column (per C24-A: per-acre
+                // valuation is the operator's authority via WSDOR / DOR
+                // table, NOT the loader's). Therefore active-flag predicate
+                // is null (M4 cannot fire) and year filter is null.
+                // Several rows in Benton have NULL szLandSoilDesc (e.g.
+                // BMDRP, RMDRP) — those will fall through M5 to the
+                // "LandSoil:<code>" canonical fallback per the policy;
+                // operator rephrases at C24-C against the WSDOR per-acre
+                // table.
+                new DictionaryColumnConfig(
+                    CodeColumn:           "szLandSoilCode",
+                    DescriptionColumn:    "szLandSoilDesc",
+                    ActiveFlagColumn:     null,
+                    ActiveFlagPredicate:  null,
+                    YearColumn:           null), // universe-wide; WSDOR vintages live in per-acre table, not here
+                "c24-b"),
             _ => throw new InvalidOperationException(
                 $"No default column config for table '{tableName}'. " +
-                "Loader currently allowlists 'property_use' and 'imprv_det_class'."),
+                "Loader currently allowlists 'property_use', 'imprv_det_class', and 'land_soil'."),
         };
 
         var loader = new DictionaryLoaderService(db, pacsReader);

@@ -158,18 +158,20 @@ public static class CliArgsParser
     // when paired with another mode toggle.
 
     /// <summary>
-    /// Slice C22-A / C23-A Hard Guard #5: allowlisted PACS dictionary
-    /// tables for the C22-B / C23-B loader. The allowlist grows by
-    /// explicit policy amendment + parser update — no inference, no
+    /// Slice C22-A / C23-A / C24-A Hard Guard #5: allowlisted PACS
+    /// dictionary tables for the dictionary loader. The allowlist grows
+    /// by explicit policy amendment + parser update — no inference, no
     /// "any table that ends in _cd". Currently:
     /// <list type="bullet">
     /// <item><c>property_use</c> (C22-A policy)</item>
     /// <item><c>imprv_det_class</c> (C23-A policy)</item>
+    /// <item><c>land_soil</c> (C24-A policy; RCW 84.34-sensitive)</item>
     /// </list>
     /// </summary>
     public static bool IsAllowedPacsDictionaryTable(string tableName)
         => string.Equals(tableName, "property_use",    StringComparison.OrdinalIgnoreCase)
-        || string.Equals(tableName, "imprv_det_class", StringComparison.OrdinalIgnoreCase);
+        || string.Equals(tableName, "imprv_det_class", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(tableName, "land_soil",       StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     /// Rejection helper used by every non-batch mode to refuse the
@@ -1254,7 +1256,7 @@ public static class CliArgsParser
             {
                 return (null,
                     $"--table '{pacsDictionaryTable}' is not in the dictionary loader allowlist. " +
-                    "Allowed tables: property_use, imprv_det_class.");
+                    "Allowed tables: property_use, imprv_det_class, land_soil.");
             }
 
             // Generate-mode flags must not appear in load-pacs-dictionary mode.
@@ -1446,21 +1448,22 @@ Usage (Mapping Workbook review progress — Slice C14-B, read-only):
   workbooks, where the report shows ""already <status>"" and zero
   blockers.
 
-Usage (PACS dictionary loader — Slice C22-B / C23-B, read-only):
+Usage (PACS dictionary loader — Slice C22-B / C23-B / C24-B, read-only):
   SyncAtlas --db <terrafusion-connection-string> \
             --county-id <guid> \
             --connection-id <guid> \
             --load-pacs-dictionary \
-            --table property_use | imprv_det_class \
+            --table property_use | imprv_det_class | land_soil \
             --workbook-id <guid> \
             [--operator <name>]
   Read-only loader. Reads the PACS dictionary table named by
-  --table (allowlist: property_use, imprv_det_class), joins it
-  against the workbook's matching Deferred code-values, and
-  produces a proposed review CSV per the C22-A / C23-A M1-M5
-  mismatch rules. Never mutates PACS; never mutates the workbook.
-  The proposed CSV is fed into --batch-edit-mapping-workbook by
-  the operator in a separate step (C22-C / C23-C).
+  --table (allowlist: property_use, imprv_det_class, land_soil),
+  joins it against the workbook's matching Deferred code-values,
+  and produces a proposed review CSV per the C22-A / C23-A /
+  C24-A M1-M5 mismatch rules. Never mutates PACS; never mutates
+  the workbook. The proposed CSV is fed into
+  --batch-edit-mapping-workbook by the operator in a separate
+  step (C22-C / C23-C / C24-C).
 
 Required (always):
   --db              Postgres connection string for the TerraFusion DB.
