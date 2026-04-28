@@ -1,0 +1,7 @@
+{
+  "ts": "2026-04-27T00:00:00.000Z",
+  "type": "doctor_report_written",
+  "correlationId": "corr-example-001",
+  "agentId": "local-agent",
+  "detail": { "overall": "PASS" }
+}

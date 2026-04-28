@@ -172,18 +172,18 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 | Class | Count |
 |-------|-------|
 | REQUIRED | 3 |
-| PUSH-OPTIONAL | 39 |
+| PUSH-OPTIONAL | 43 |
 | SCHEDULED | 18 |
 | MANUAL | 23 |
 | DEPRECATED | 2 |
-| **Total** | 85 |
+| **Total** | 89 |
 
 **REQUIRED** (3):
 - `core-governance-gates.yml`
 - `seal-gate-fast.yml`
 - `tier1-ui-harness.yml`
 
-**PUSH-OPTIONAL** (39):
+**PUSH-OPTIONAL** (43):
 - `accessibility.yml`
 - `accreditation-compat.yml`
 - `ai-swarm-safety.yml`
@@ -200,6 +200,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `ci-cd-pipeline.yml`
 - `ci-verified.yml`
 - `ci.yml`
+- `cockpit-drift-guard.yml`
 - `county-kit-parity.yml`
 - `deps-fast-lane.yml`
 - `designctl.yml`
@@ -215,10 +216,13 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `release-validation.yml`
 - `rust-security-gates.yml`
 - `rust-verify.yml`
+- `seal-import-boundary.yml`
 - `slsa-provenance.yml`
 - `spec-gates.yml`
+- `sqlite-dev-adapter-test.yml`
 - `terra-levy-tests.yml`
 - `terrafusion-ci-cd-production.yml`
+- `terrafusion-ci.yml`
 - `testing.yml`
 - `tfctl-ci.yml`
 - `ui-governance.yml`

@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/policy/contracts/agent-status.v1.schema.json",
+  "title": "TerraFusion Agent Status",
+  "description": "Shape of the model-runtime-status written by LocalAgentDoctorMode to .terrafusion/model-runtime-status.json",
+  "type": "object",
+  "required": ["capturedAt", "modelAvailable"],
+  "additionalProperties": true,
+  "properties": {
+    "capturedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "modelAvailable": {
+      "type": "boolean"
+    },
+    "modelEndpoint": {
+      "type": ["string", "null"]
+    },
+    "modelName": {
+      "type": ["string", "null"]
+    },
+    "latencyMs": {
+      "type": ["number", "null"]
+    },
+    "error": {
+      "type": ["string", "null"]
+    }
+  }
+}

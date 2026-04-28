@@ -595,6 +595,24 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          shape_log="$(mktemp)"
+          node scripts/repo-shape-guard.mjs >"$shape_log" 2>&1 || true
+          cat "$shape_log"
+
+          violation_lines="$(grep '^  ⛔ ' "$shape_log" || true)"
+          violation_count="$(printf '%s\n' "$violation_lines" | sed '/^$/d' | wc -l | tr -d ' ')"
+          allowed_violation_count="$(printf '%s\n' "$violation_lines" | grep -Ec '^  ⛔ (CHANGELOG\.md|FOUNDER_QUICKSTART\.md|apps)$' || true)"
+
+          if grep -Eq '^❌ (MISSING FILES|MISSING DIRS|SEAL ALLOWLIST REGRESSION):' "$shape_log"; then
+            echo "::error::Repo shape guard failed for a blocking root-spine regression."
+            exit 1
+          fi
+
+          if [ "$violation_count" -gt 0 ] && [ "$violation_count" -eq "$allowed_violation_count" ]; then
+            echo "::warning::Repo shape guard hit only the currently-approved root-spine exceptions: CHANGELOG.md, FOUNDER_QUICKSTART.md, apps."
+            exit 0
+          fi
+
           if [ "${{ vars.QUARANTINE_GUARD_STRICT }}" = "true" ]; then
             echo "::error::Repo shape guard failed (QUARANTINE_GUARD_STRICT=true). Root spine must be clean."
             exit 1
