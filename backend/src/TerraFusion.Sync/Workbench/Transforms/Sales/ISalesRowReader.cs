@@ -29,11 +29,29 @@ public interface ISalesRowReader
 
 /// <summary>
 /// One sale's worth of qualification-relevant source data.
-/// <see cref="SaleIdentifier"/> is the PACS-side row identifier
-/// (typically <c>chg_of_owner_id</c>) — captured for log/audit
-/// purposes only; the transform doesn't read it.
+///
+/// <para><see cref="SaleIdentifier"/> is the PACS-side row identifier
+/// (typically <c>chg_of_owner_id</c>) as a string — captured for
+/// log/audit purposes only; the C8-B transform doesn't read it.</para>
+///
+/// <para><see cref="ChgOfOwnerId"/> (added at C36) is the same value
+/// typed as <c>int</c> for the canonical landing write path. Per
+/// D0-D's PACS canonical sale identity policy, this is the primary
+/// key axis (with <c>CountyId</c>) for
+/// <c>CanonicalSaleQualifications</c>. <c>null</c> when the source
+/// row had a non-int / null sale id; rows with null
+/// <c>ChgOfOwnerId</c> are skipped by the canonical-write runner
+/// (logged, not persisted) — the transform decision is still
+/// computed for the sample-runner audit surface.</para>
+///
+/// <para><see cref="SaleDate"/> and <see cref="SalePrice"/> are
+/// optional read-time snapshots for the canonical landing row. They
+/// are not used by the qualification decision engine.</para>
 /// </summary>
 public sealed record SalesRow(
     string? SaleIdentifier,
     string? WacCode,
-    string? SaleRatioTypeCode);
+    string? SaleRatioTypeCode,
+    int? ChgOfOwnerId = null,
+    DateTime? SaleDate = null,
+    decimal? SalePrice = null);
