@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using TerraFusion.Core.Entities.Sync;
 using TerraFusion.Core.Entities.Sync.Profile;
 using TerraFusion.Data;
 using TerraFusion.Sync.Workbench.Atlas;
@@ -1181,20 +1182,26 @@ internal static class Program
             sourceConnection, secretResolver);
         var pacsReader = new SqlPacsDictionaryReader(pacsConnectionString);
 
-        // Default column config for `dbo.property_use` per the C21-A
-        // canonical-dictionaries reference + the operator's codes-queries
-        // catalog. C22-A's "live inspection required" gate expects the
-        // operator to verify these defaults match their PACS instance
-        // before promoting the proposed CSV at C22-C; future slices
-        // (C22-D etc.) may make these configurable per-county.
+        // Default column config for `dbo.property_use` per the C22-B-live
+        // inspection of pacs_oltp captured at
+        // backend/artifacts/sync-atlas/c22-b/<run-id>/dictionary-inspection.txt:
+        //
+        //   property_use_cd    varchar(10)  NOT NULL  (code)
+        //   property_use_desc  varchar(50)  NOT NULL  (description)
+        //   dor_use_code       varchar(10)  NULL      (DOR PUC group, bonus mapping col)
+        //
+        // Findings: NO active-flag column, NO year-keying column. M4
+        // (inactive dictionary row) cannot fire against this PACS
+        // instance. Future deployments with a different schema must
+        // re-run the C22-A inspection gate and override these defaults.
         var columnConfig = tableName.ToLowerInvariant() switch
         {
             "property_use" => new PropertyUseDictionaryColumnConfig(
                 CodeColumn:           "property_use_cd",
                 DescriptionColumn:    "property_use_desc",
-                ActiveFlagColumn:     "sys_flag",
-                ActiveFlagPredicate:  "sys_flag <> 'I'",
-                YearColumn:           null),
+                ActiveFlagColumn:     null,  // no sys_flag in this PACS instance
+                ActiveFlagPredicate:  null,
+                YearColumn:           null), // universe-wide, not year-keyed
             _ => throw new InvalidOperationException(
                 $"No default column config for table '{tableName}'. " +
                 "C22-B currently allowlists only 'property_use'."),
@@ -1227,6 +1234,16 @@ internal static class Program
             return 3;
         }
 
+        // Write artifacts to backend/artifacts/sync-atlas/c22-b/<run-id>/
+        var runId = DateTime.UtcNow.ToString("yyyyMMddTHHmmssZ");
+        var artifactDir = Path.Combine(
+            "backend", "artifacts", "sync-atlas", "c22-b", runId);
+        Directory.CreateDirectory(artifactDir);
+        var csvPath = Path.Combine(artifactDir, $"{tableName}-proposed-review.csv");
+        var reportPath = Path.Combine(artifactDir, $"{tableName}-mismatch-report.md");
+        WriteProposedReviewCsv(csvPath, result);
+        WriteMismatchReport(reportPath, result, tableName, sourceConnection);
+
         // Print the classification summary.
         Console.WriteLine();
         Console.WriteLine("─────────────────────────────────────────────");
@@ -1244,11 +1261,124 @@ internal static class Program
         Console.WriteLine("─────────────────────────────────────────────");
         Console.WriteLine($"  CSV row count:                  {result.ProposedRows.Count,5:N0}");
         Console.WriteLine();
+        Console.WriteLine($"  Artifacts written:");
+        Console.WriteLine($"    {csvPath}");
+        Console.WriteLine($"    {reportPath}");
+        Console.WriteLine();
         Console.WriteLine("  Note: this run did NOT mutate the workbook or PACS.");
         Console.WriteLine("  Operator reviews the proposed CSV and applies via");
         Console.WriteLine("  --batch-edit-mapping-workbook --apply (C22-C).");
         Console.WriteLine("─────────────────────────────────────────────");
 
         return 0;
+    }
+
+    /// <summary>
+    /// Writes the proposed review CSV in the C11-A grammar with RFC 4180
+    /// quoting (per C17-A2 / C19-B / C20-A precedent). The CSV is fed
+    /// into <c>--batch-edit-mapping-workbook --apply</c> at C22-C.
+    /// </summary>
+    private static void WriteProposedReviewCsv(
+        string path, PropertyUseDictionaryLoaderResult result)
+    {
+        using var w = new StreamWriter(path);
+        w.WriteLine(
+            "scope,source_schema,source_table,source_column,source_value," +
+            "review_status,canonical_target,canonical_value,canonical_value_null," +
+            "is_excluded,notes");
+
+        foreach (var row in result.ProposedRows)
+        {
+            w.WriteLine(string.Join(",", new[]
+            {
+                CsvEscape(row.Scope),
+                CsvEscape(row.SourceSchema),
+                CsvEscape(row.SourceTable),
+                CsvEscape(row.SourceColumn),
+                CsvEscape(row.SourceValue),
+                CsvEscape(row.ReviewStatus),
+                CsvEscape(row.CanonicalTarget),
+                CsvEscape(row.CanonicalValue),
+                row.CanonicalValueNull?.ToString().ToLowerInvariant() ?? string.Empty,
+                row.IsExcluded?.ToString().ToLowerInvariant() ?? string.Empty,
+                CsvEscape(row.Notes),
+            }));
+        }
+    }
+
+    /// <summary>
+    /// RFC 4180 quoting: wrap field in double-quotes if it contains a
+    /// comma, double-quote, or newline; escape internal double-quotes
+    /// by doubling them.
+    /// </summary>
+    private static string CsvEscape(string? value)
+    {
+        if (string.IsNullOrEmpty(value)) return string.Empty;
+        var needsQuoting = value.Contains(',') || value.Contains('"') ||
+                           value.Contains('\n') || value.Contains('\r');
+        if (!needsQuoting) return value;
+        return "\"" + value.Replace("\"", "\"\"") + "\"";
+    }
+
+    /// <summary>
+    /// Writes a markdown-shaped mismatch report enumerating per-category
+    /// counts + the first ~10 examples per category. Operator-readable
+    /// pre-review of what the CSV proposes.
+    /// </summary>
+    private static void WriteMismatchReport(
+        string path,
+        PropertyUseDictionaryLoaderResult result,
+        string tableName,
+        SyncSourceConnection conn)
+    {
+        using var w = new StreamWriter(path);
+        w.WriteLine($"# {tableName} dictionary loader — mismatch report");
+        w.WriteLine();
+        w.WriteLine($"Generated by SyncAtlas C22-B against:");
+        w.WriteLine($"- workbook: `{result.WorkbookId}`");
+        w.WriteLine($"- PACS:     `{conn.Server}/{conn.Database}` ({conn.Name})");
+        w.WriteLine();
+        w.WriteLine("## Counts");
+        w.WriteLine();
+        w.WriteLine("| Category | Count | CSV outcome |");
+        w.WriteLine("|---|---:|---|");
+        w.WriteLine($"| Workbook Deferred rows scanned | {result.WorkbookDeferredRows} | (input) |");
+        w.WriteLine($"| Dictionary rows read | {result.DictionaryRowsRead} | (input) |");
+        w.WriteLine($"| M1 workbook code missing from dictionary | {result.M1WorkbookCodeMissingFromDictionary} | Deferred |");
+        w.WriteLine($"| M2 dictionary code unobserved in workbook | {result.M2DictionaryCodeUnobservedInWorkbook} | NOT in CSV |");
+        w.WriteLine($"| M3 duplicate dictionary code | {result.M3DuplicateDictionaryCode} | Deferred |");
+        w.WriteLine($"| M4 inactive dictionary row | {result.M4InactiveDictionaryRow} | Deferred |");
+        w.WriteLine($"| **M5 clean match (proposed Mapped)** | **{result.M5CleanMatch}** | **Mapped** |");
+        w.WriteLine($"| Total CSV rows | {result.ProposedRows.Count} | |");
+        w.WriteLine();
+
+        WriteCategorySection(w, "M1 — Workbook code missing from dictionary",
+            result.ProposedRows.Where(r => r.Classification ==
+                PropertyUseClassification.WorkbookCodeMissingFromDictionary));
+        WriteCategorySection(w, "M3 — Duplicate dictionary code (ambiguous)",
+            result.ProposedRows.Where(r => r.Classification ==
+                PropertyUseClassification.DuplicateDictionaryCode));
+        WriteCategorySection(w, "M4 — Inactive dictionary row",
+            result.ProposedRows.Where(r => r.Classification ==
+                PropertyUseClassification.InactiveDictionaryRow));
+        WriteCategorySection(w, "M5 — Clean match (proposed Mapped)",
+            result.ProposedRows.Where(r => r.Classification ==
+                PropertyUseClassification.CleanMatch));
+    }
+
+    private static void WriteCategorySection(
+        StreamWriter w, string heading, IEnumerable<ProposedReviewCsvRow> rows)
+    {
+        var list = rows.Take(50).ToList();
+        if (list.Count == 0) return;
+        w.WriteLine($"## {heading} (first {list.Count})");
+        w.WriteLine();
+        w.WriteLine("| SourceValue | Proposed canonical_value | Notes |");
+        w.WriteLine("|---|---|---|");
+        foreach (var r in list)
+        {
+            w.WriteLine($"| `{r.SourceValue.Trim()}` | {r.CanonicalValue ?? "(null)"} | {r.Notes.Replace("|", "\\|")} |");
+        }
+        w.WriteLine();
     }
 }
