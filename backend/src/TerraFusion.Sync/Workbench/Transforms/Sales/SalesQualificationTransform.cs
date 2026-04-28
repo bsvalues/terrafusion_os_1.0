@@ -87,13 +87,27 @@ public sealed class SalesQualificationTransform : ISalesQualificationTransform
         SyncMappingWorkbookSnapshot snapshot,
         SalesQualificationSource source)
     {
+        return Evaluate(snapshot, source).Decision;
+    }
+
+    /// <summary>
+    /// Pure decision engine with structured per-axis output for C36's
+    /// canonical landing writer.
+    /// </summary>
+    public static SalesQualificationEvaluation Evaluate(
+        SyncMappingWorkbookSnapshot snapshot,
+        SalesQualificationSource source)
+    {
         ArgumentNullException.ThrowIfNull(snapshot);
         ArgumentNullException.ThrowIfNull(source);
 
         var wacAxis   = ClassifyAxis(snapshot, WacColumn,   source.WacCode);
         var ratioAxis = ClassifyAxis(snapshot, RatioColumn, source.SaleRatioTypeCode);
 
-        return CombineAxes(wacAxis, ratioAxis);
+        return new SalesQualificationEvaluation(
+            Decision:  CombineAxes(wacAxis, ratioAxis),
+            WacAxis:   ToAxisEvaluation(wacAxis),
+            RatioAxis: ToAxisEvaluation(ratioAxis));
     }
 
     // ── Per-axis classification ──────────────────────────────────────────
@@ -227,6 +241,26 @@ public sealed class SalesQualificationTransform : ISalesQualificationTransform
             IsExcludedFromComps: true,
             DecisionStatus:      status,
             Reasons:             reasons);
+    }
+
+    private static SalesQualificationAxisEvaluation ToAxisEvaluation(AxisResult axis)
+    {
+        var decision = axis.Classification switch
+        {
+            AxisClassification.OperatorMapped   => SalesQualificationAxisDecision.Qualified,
+            AxisClassification.OperatorExcluded => SalesQualificationAxisDecision.Excluded,
+            AxisClassification.OperatorDeferred => SalesQualificationAxisDecision.Deferred,
+            AxisClassification.Unknown          => SalesQualificationAxisDecision.Unknown,
+            AxisClassification.MissingCode      => SalesQualificationAxisDecision.MissingCode,
+            _ => throw new InvalidOperationException(
+                $"Unknown sales qualification axis classification: {axis.Classification}"),
+        };
+
+        return new SalesQualificationAxisEvaluation(
+            ColumnName:      axis.ColumnName,
+            SourceValue:     axis.SourceValue,
+            CanonicalValue:  axis.CanonicalValue,
+            AxisDecision:    decision);
     }
 
     // ── Internal types ───────────────────────────────────────────────────

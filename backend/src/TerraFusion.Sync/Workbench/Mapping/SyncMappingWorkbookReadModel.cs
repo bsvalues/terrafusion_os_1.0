@@ -102,7 +102,7 @@ public sealed class SyncMappingWorkbookReadModel : ISyncMappingWorkbookReadModel
                     // shape rather than throwing.
                     map[trimmed] = new SyncMappingCodeDecision(
                         CodeValueId:    v.Id,
-                        SourceValue:    v.SourceValue,
+                        SourceValue:    v.SourceValue ?? string.Empty,
                         SourceLabel:    v.SourceLabel,
                         ObservedCount:  v.ObservedCount,
                         CanonicalValue: v.CanonicalValue,
@@ -127,6 +127,7 @@ public sealed class SyncMappingWorkbookReadModel : ISyncMappingWorkbookReadModel
             CountyId:       workbook.CountyId,
             ProfileBatchId: workbook.ProfileBatchId,
             Name:           workbook.Name,
-            Columns:        decisions);
+            Columns:        decisions,
+            UpdatedAt:      workbook.UpdatedAt);
     }
 }

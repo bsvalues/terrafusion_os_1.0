@@ -64,7 +64,9 @@ public sealed class SqlServerSalesRowReader : ISalesRowReader
             "SELECT TOP ({0}) " +
             "    s.chg_of_owner_id AS sale_id, " +
             "    s.wac_cd, " +
-            "    s.sl_ratio_type_cd " +
+            "    s.sl_ratio_type_cd, " +
+            "    s.sl_dt, " +
+            "    s.sl_price " +
             "FROM dbo.sale AS s " +
             "ORDER BY s.chg_of_owner_id;",
             maxRows);
@@ -78,10 +80,17 @@ public sealed class SqlServerSalesRowReader : ISalesRowReader
         var rows = new List<SalesRow>(maxRows);
         while (await reader.ReadAsync(cancellationToken))
         {
+            // chg_of_owner_id is int in PACS; capture as int? for the
+            // canonical-landing write path (C36) and the same value
+            // stringified for the legacy log/audit field.
+            int? chgOfOwnerId = reader.IsDBNull(0) ? null : Convert.ToInt32(reader.GetValue(0));
             rows.Add(new SalesRow(
-                SaleIdentifier:    reader.IsDBNull(0) ? null : reader.GetValue(0)?.ToString(),
+                SaleIdentifier:    chgOfOwnerId?.ToString(CultureInfo.InvariantCulture),
                 WacCode:           reader.IsDBNull(1) ? null : reader.GetValue(1)?.ToString(),
-                SaleRatioTypeCode: reader.IsDBNull(2) ? null : reader.GetValue(2)?.ToString()));
+                SaleRatioTypeCode: reader.IsDBNull(2) ? null : reader.GetValue(2)?.ToString(),
+                ChgOfOwnerId:      chgOfOwnerId,
+                SaleDate:          reader.IsDBNull(3) ? null : Convert.ToDateTime(reader.GetValue(3), CultureInfo.InvariantCulture),
+                SalePrice:         reader.IsDBNull(4) ? null : Convert.ToDecimal(reader.GetValue(4), CultureInfo.InvariantCulture)));
         }
         return rows;
     }

@@ -92,6 +92,38 @@ public sealed record SalesQualificationDecision(
     IReadOnlyList<string> Reasons);
 
 /// <summary>
+/// Structured output of one qualification evaluation. This preserves
+/// per-axis provenance for the canonical C36 write path without
+/// parsing human-readable reason strings.
+/// </summary>
+public sealed record SalesQualificationEvaluation(
+    SalesQualificationDecision Decision,
+    SalesQualificationAxisEvaluation WacAxis,
+    SalesQualificationAxisEvaluation RatioAxis);
+
+/// <summary>
+/// Per-axis evaluation detail for a workbook-backed source column.
+/// </summary>
+public sealed record SalesQualificationAxisEvaluation(
+    string ColumnName,
+    string? SourceValue,
+    string? CanonicalValue,
+    SalesQualificationAxisDecision AxisDecision);
+
+/// <summary>
+/// Transform-local per-axis status. C36 maps this to the canonical
+/// landing enum without losing which axis actually failed.
+/// </summary>
+public enum SalesQualificationAxisDecision
+{
+    Qualified,
+    Excluded,
+    Deferred,
+    Unknown,
+    MissingCode,
+}
+
+/// <summary>
 /// Closed set of decision-status values. Adding a new value is a
 /// breaking change for downstream consumers — write a slice card.
 /// </summary>

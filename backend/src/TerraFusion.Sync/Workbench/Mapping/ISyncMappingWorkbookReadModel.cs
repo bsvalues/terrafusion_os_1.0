@@ -70,7 +70,8 @@ public sealed record SyncMappingWorkbookSnapshot(
     Guid CountyId,
     Guid ProfileBatchId,
     string Name,
-    IReadOnlyList<SyncMappingColumnDecision> Columns)
+    IReadOnlyList<SyncMappingColumnDecision> Columns,
+    DateTime UpdatedAt = default)
 {
     /// <summary>
     /// Look up the operator's decision for a specific source value in
