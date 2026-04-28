@@ -1193,7 +1193,20 @@ internal static class Program
         // dor_use_code; no sys_flag, not year-keyed). imprv_det_class
         // defaults captured at C23-B-live inspection (TBD; if shape
         // differs, this branch is the canonical place to revise).
-        var (target, columnConfig, sliceArtifactDir) = tableName.ToLowerInvariant() switch
+        // Build the key for the config switch: when --workbook-source-column
+        // is supplied (C27 dictionary-reuse), key on
+        // "<table>:<workbook_table>.<workbook_column>" so that one PACS
+        // dictionary can serve multiple workbook columns. When omitted
+        // (C22-C26 default behavior), key on the table name alone.
+        var configKey = (args.WorkbookSourceSchema, args.WorkbookSourceTable, args.WorkbookSourceColumn) switch
+        {
+            (null, null, null) => tableName.ToLowerInvariant(),
+            ({ } _, { } wt, { } wc) => $"{tableName.ToLowerInvariant()}:{wt}.{wc}",
+            _                  => throw new InvalidOperationException(
+                "Internal: workbook-source-column must be all-null or all-set."),
+        };
+
+        var (target, columnConfig, sliceArtifactDir) = configKey switch
         {
             "property_use" => (
                 new DictionaryLoaderTargetConfig(
@@ -1210,6 +1223,30 @@ internal static class Program
                     ActiveFlagPredicate:  null,
                     YearColumn:           null), // universe-wide, not year-keyed
                 "c22-b"),
+            // C27-A — first dictionary-reuse binding. Same dbo.property_use
+            // dictionary as C22, but joined against imprv.primary_use_cd
+            // (44 NeedsReview → swept to Deferred at P2). DictionaryColumnConfig
+            // is identical to C22's (inherits the C22-B-live inspection
+            // findings: no sys_flag, no year column, property_use_cd /
+            // property_use_desc). What changes is only the workbook source
+            // triple. Canonical target REUSES "PropertyUse" — the operator
+            // decides at C27-C whether to align canonical_values with C22-C's
+            // mappings or keep distinct.
+            "property_use:imprv.primary_use_cd" => (
+                new DictionaryLoaderTargetConfig(
+                    WorkbookSourceSchema: "dbo",
+                    WorkbookSourceTable:  "imprv",
+                    WorkbookSourceColumn: "primary_use_cd",
+                    PacsDictionarySchema: "dbo",
+                    PacsDictionaryTable:  "property_use",
+                    CanonicalTargetName:  "PropertyUse"),
+                new DictionaryColumnConfig(
+                    CodeColumn:           "property_use_cd",
+                    DescriptionColumn:    "property_use_desc",
+                    ActiveFlagColumn:     null,
+                    ActiveFlagPredicate:  null,
+                    YearColumn:           null),
+                "c27-b"),
             "imprv_det_class" => (
                 new DictionaryLoaderTargetConfig(
                     WorkbookSourceSchema: "dbo",
