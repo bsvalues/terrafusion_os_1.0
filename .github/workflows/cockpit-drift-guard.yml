@@ -1,7 +1,7 @@
 name: Cockpit Drift Guard
 
 on:
-  pull_request:
+  push:
     paths:
       - 'apps/agent-cockpit/**'
       - 'os-platform/core/pilot/local-agent/**'
