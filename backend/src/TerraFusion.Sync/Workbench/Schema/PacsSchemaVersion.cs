@@ -17,11 +17,11 @@ namespace TerraFusion.Sync.Workbench.Schema;
 /// for full provenance — this is an open question deferred from
 /// C48-A.</para>
 /// </summary>
-/// <param name="TylerRelease">
-/// Tyler release identifier when discoverable from the schema source
-/// (e.g. <c>"PACS 9.0.4.2"</c>); <c>null</c> when not declared. The
-/// catalog does NOT infer Tyler release from filenames or partial
-/// content.
+/// <param name="PacsRelease">
+/// PACS vendor release identifier when discoverable from the schema
+/// source (e.g. <c>"Harris PACS 9.0.4.2"</c>); <c>null</c> when not
+/// declared. The catalog does NOT infer the release from filenames
+/// or partial content.
 /// </param>
 /// <param name="SourceFileHashes">
 /// Map of source-file path to SHA-256 digest. Two catalogs ingested
@@ -39,7 +39,7 @@ namespace TerraFusion.Sync.Workbench.Schema;
 /// well-known empty-manifest sentinel hash).
 /// </param>
 public sealed record PacsSchemaVersion(
-    string? TylerRelease,
+    string? PacsRelease,
     IReadOnlyDictionary<string, string> SourceFileHashes,
     DateTime IngestedAt,
     string ConversionManifestHash);

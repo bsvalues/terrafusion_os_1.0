@@ -27,7 +27,7 @@ public sealed class PacsSchemaCatalogHealthCheckTests
         result.Data["TableCount"].Should().Be(3);
         result.Data["ColumnCount"].Should().Be(9);
         result.Data["DictionaryCount"].Should().Be(1);
-        result.Data["TylerRelease"].Should().Be("PACS-9.0.4-fixture");
+        result.Data["PacsRelease"].Should().Be("PACS-9.0.4-fixture");
     }
 
     [Fact]

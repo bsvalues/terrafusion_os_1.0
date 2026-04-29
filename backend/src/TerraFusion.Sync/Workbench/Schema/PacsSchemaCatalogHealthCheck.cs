@@ -52,7 +52,7 @@ public sealed class PacsSchemaCatalogHealthCheck : IHealthCheck
             ["FloorTables"] = _floor.MinTables,
             ["FloorColumns"] = _floor.MinColumns,
             ["FloorDictionaries"] = _floor.MinDictionaries,
-            ["TylerRelease"] = _catalog.Version.TylerRelease ?? "(unknown)",
+            ["PacsRelease"] = _catalog.Version.PacsRelease ?? "(unknown)",
             ["IngestedAt"] = _catalog.Version.IngestedAt.ToString("O"),
         };
 
@@ -77,7 +77,7 @@ public sealed class PacsSchemaCatalogHealthCheck : IHealthCheck
 /// <summary>
 /// Slice C48-B: minimum coverage floor for the catalog health check.
 /// Operators set the floor to a value calibrated against the known
-/// Tyler PACS install footprint (e.g. "we expect at least 80 tables,
+/// PACS install footprint (e.g. "we expect at least 80 tables,
 /// 1500 columns, 30 dictionaries"). Below floor → Degraded.
 /// </summary>
 /// <param name="MinTables">Minimum number of tables expected.</param>

@@ -8,14 +8,15 @@ namespace TerraFusion.Unit.Tests.Sync.Schema;
 /// Slice C48-B: shared in-memory fixture for
 /// <see cref="PacsSchemaCatalog"/> tests. Provides representative
 /// PACS-shaped tables, columns, and dictionaries so HG1–HG7 and
-/// lookup behavior can be exercised without depending on Tyler
-/// files (which live outside the repo per C48-A's source-of-truth
-/// boundary).
+/// lookup behavior can be exercised without depending on operator
+/// filesystem access (the actual PACS schema files live on the
+/// operator's workstation per C48-A's source-of-truth boundary).
 ///
 /// <para>The fixture is intentionally small (3 tables, 1
 /// dictionary, ~10 columns) — it proves the parser machinery, not
-/// the Tyler ingest. C48-C will provide a real-Tyler-files fixture
-/// alongside the production source.</para>
+/// production ingestion. C48-C will provide a real-PACS-files
+/// fixture alongside the production source once the file format
+/// is confirmed.</para>
 /// </summary>
 internal static class PacsSchemaCatalogTestFixture
 {
@@ -167,7 +168,7 @@ internal static class PacsSchemaCatalogTestFixture
         };
 
         var version = new PacsSchemaVersion(
-            TylerRelease: "PACS-9.0.4-fixture",
+            PacsRelease: "PACS-9.0.4-fixture",
             SourceFileHashes: new Dictionary<string, string>
             {
                 [SchemaVersionFixturePath] = "deadbeef" + new string('0', 56),

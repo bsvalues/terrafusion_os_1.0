@@ -9,14 +9,16 @@ namespace TerraFusion.Sync.Workbench.Schema;
 /// <c>pacs_schema_catalog</c>. The catalog is constructed by
 /// <see cref="PacsSchemaCatalog.BuildAsync"/> from any
 /// implementation of this interface, separating "where the bytes
-/// come from" (filesystem / fixture / future Tyler-version-specific
+/// come from" (filesystem / fixture / future vendor-version-specific
 /// adapter) from "the parsed shape the catalog exposes".
 ///
 /// <para>This slice (C48-B) ships an in-memory fixture
 /// implementation (<see cref="InMemoryPacsSchemaSource"/>) suitable
 /// for tests and initial DI wiring. The production
-/// Tyler-file-parsing source is C48-C territory; that slice will
-/// declare actual file paths.</para>
+/// PACS-file-parsing source is C48-C territory; that slice will
+/// declare actual file paths and pick the concrete file format
+/// (JSON / SQL DDL / CSV) based on what the operator's environment
+/// provides.</para>
 /// </summary>
 public interface IPacsSchemaSource
 {

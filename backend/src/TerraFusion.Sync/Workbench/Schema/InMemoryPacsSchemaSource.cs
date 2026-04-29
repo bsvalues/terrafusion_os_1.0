@@ -12,17 +12,20 @@ namespace TerraFusion.Sync.Workbench.Schema;
 /// <para>Purposes:</para>
 /// <list type="bullet">
 /// <item>Test harnesses build their own representative catalogs and
-/// verify reader behavior without depending on Tyler files.</item>
+/// verify reader behavior without depending on operator filesystem
+/// access.</item>
 /// <item>Initial DI wiring while C48-C (the file-based parser) is
 /// still pending — services that need <c>IPacsSchemaCatalog</c> can
 /// be wired against an empty or fixture-shaped in-memory catalog
-/// without blocking on real Tyler file ingestion.</item>
+/// without blocking on real PACS schema file ingestion.</item>
 /// </list>
 ///
-/// <para>Production wiring against actual Tyler PACS schema files is
-/// out of scope for C48-B (declared by C48-A non-goals); a future
-/// <c>TylerFilePacsSchemaSource</c> implementation in C48-C will
-/// replace this for production registrations.</para>
+/// <para>Production wiring against actual PACS schema files (Harris
+/// PACS in the operator's Benton environment) is out of scope for
+/// C48-B (declared by C48-A non-goals); a future file-based
+/// <see cref="IPacsSchemaSource"/> implementation in C48-C will
+/// replace this for production registrations once the file format
+/// is confirmed with the operator.</para>
 /// </summary>
 public sealed class InMemoryPacsSchemaSource : IPacsSchemaSource
 {

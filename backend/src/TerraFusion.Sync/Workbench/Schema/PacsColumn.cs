@@ -23,7 +23,7 @@ namespace TerraFusion.Sync.Workbench.Schema;
 /// to form the catalog's column lookup key.
 /// </param>
 /// <param name="ColumnName">
-/// Verbatim column name from the Tyler schema declaration (e.g.
+/// Verbatim column name from the PACS schema declaration (e.g.
 /// <c>chg_of_owner_id</c>, <c>hood_cd</c>, <c>imprv_det_type_cd</c>).
 /// </param>
 /// <param name="DeclaredType">
@@ -51,8 +51,9 @@ namespace TerraFusion.Sync.Workbench.Schema;
 /// declared this column. Required by HG6.
 /// </param>
 /// <param name="Notes">
-/// Operator-readable note (verbatim from Tyler documentation if
-/// present). May be empty. The catalog does not synthesize notes.
+/// Operator-readable note (verbatim from PACS vendor documentation
+/// if present). May be empty. The catalog does not synthesize
+/// notes.
 /// </param>
 public sealed record PacsColumn(
     string TableName,
