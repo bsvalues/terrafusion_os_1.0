@@ -1178,6 +1178,13 @@ builder.Services.AddScoped<
     TerraFusion.Sync.Workbench.Mapping.ISyncCountyActiveWorkbookService,
     TerraFusion.Sync.Workbench.Mapping.SyncCountyActiveWorkbookService>();
 
+// Slice C43-B — stale canonical-row diagnostic reader. Pure read projection
+// (single predicate: SourceWorkbookId <> baseline); inherits all C37-A /
+// C43-A guards. No mutation, no joins, no PACS reads.
+builder.Services.AddScoped<
+    TerraFusion.Sync.Workbench.Comps.Sales.ISalesCompStaleReader,
+    TerraFusion.Sync.Workbench.Comps.Sales.SalesCompStaleReader>();
+
 // Calibration Workbench services
 builder.Services.AddScoped<TerraFusion.Core.Services.IMatrixDiagnosticService, TerraFusion.API.Services.MatrixDiagnosticService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.ICalibrationMemoService, TerraFusion.Data.Services.CalibrationMemoService>();

@@ -70,13 +70,15 @@ public class SyncControllerCompsEligibleTests
         var qualification  = new Mock<ISaleQualificationService>().Object;
         var compReader     = new SalesCompEligibilityReader(db);
         var activeWorkbook = new SyncCountyActiveWorkbookService(db);
+        var staleReader    = new SalesCompStaleReader(db);
 
         var controller = new SyncController(
             qualification,
             db,
             NullLogger<SyncController>.Instance,
             compReader,
-            activeWorkbook);
+            activeWorkbook,
+            staleReader);
 
         var identity = new ClaimsIdentity(
             authenticationType: principalCountyClaim is null ? null : "Test");
