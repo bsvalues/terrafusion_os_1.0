@@ -10,6 +10,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { apiFetch } from '@/lib/apiBase';
+import type { StatisticsCountyScope } from '../statisticsCountyScope';
 
 const TAX_YEAR = 2026;
 
@@ -51,16 +52,25 @@ interface CrossValResponse {
   note?: string;
 }
 
-export function CalibrationEngineTab() {
+interface CalibrationEngineTabProps {
+  countyScope: StatisticsCountyScope;
+  taxYear?: number;
+}
+
+export function CalibrationEngineTab({ countyScope, taxYear = TAX_YEAR }: CalibrationEngineTabProps) {
+  const countyQuery = countyScope.countyId ? `&countyId=${encodeURIComponent(countyScope.countyId)}` : '';
+
   const hedonicQuery = useQuery<HedonicResponse>({
-    queryKey: ['hedonic-regression', TAX_YEAR],
-    queryFn: () => apiFetch(`/terraforge/ratio-study/hedonic-regression?taxYear=${TAX_YEAR}`).then(r => r.json()),
+    queryKey: ['hedonic-regression', taxYear, countyScope.countyId],
+    queryFn: () => apiFetch(`/terraforge/ratio-study/hedonic-regression?taxYear=${taxYear}${countyQuery}`, { headers: countyScope.headers }).then(r => r.json()),
+    enabled: countyScope.isolated,
     staleTime: 60 * 60 * 1000,
   });
 
   const cvQuery = useQuery<CrossValResponse>({
-    queryKey: ['cross-validation', TAX_YEAR],
-    queryFn: () => apiFetch(`/terraforge/ratio-study/cross-validation?taxYear=${TAX_YEAR}`).then(r => r.json()),
+    queryKey: ['cross-validation', taxYear, countyScope.countyId],
+    queryFn: () => apiFetch(`/terraforge/ratio-study/cross-validation?taxYear=${taxYear}${countyQuery}`, { headers: countyScope.headers }).then(r => r.json()),
+    enabled: countyScope.isolated,
     staleTime: 60 * 60 * 1000,
   });
 

@@ -306,16 +306,26 @@ failIfPresent(
   'Rust kernels must remain deterministic stdin/stdout engines without Redis/runtime cache coupling.'
 );
 
+failIfPresent(
+  'Active TerraForge sales endpoints have no Benton county fallback',
+  String.raw`BentonCountyId|hardcoded sovereign|falls back to Benton|CountyId\s*==\s*Benton`,
+  [
+    'backend/src/TerraFusion.API/Controllers/TerraForgeController.cs',
+    'backend/src/TerraFusion.API/Controllers/SalesAuditController.cs',
+  ],
+  'Active TerraForge/SalesAudit endpoints must require explicit county scope and must not default to Benton.'
+);
+
 warnIfPresent(
-  'Benton-scoped TerraForge posture',
+  'Benton-certified reference posture remains',
   String.raw`BentonCountyId|Benton County|\bbenton\b|/benton`,
   [
     'backend/src/TerraFusion.API/Controllers/CostForgeController.cs',
-    'backend/src/TerraFusion.API/Controllers/TerraForgeController.cs',
     'backend/src/TerraFusion.API/Controllers/AIModulesController.cs',
-    'frontend/apps/os-shell/src/pages/forge',
+    'frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts',
+    'frontend/apps/os-shell/src/pages/forge/batch/BatchCostRun.tsx',
   ],
-  'Benton-specific paths may be valid for Benton proof, but they must not be claimed as statewide readiness.'
+  'Benton-certified CostForge/AI/map compatibility data may be valid for Benton proof, but it must not be claimed as statewide readiness.'
 );
 
 warnIfPresent(

@@ -5,7 +5,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { useSalesForgeStore } from '../salesForgeStore';
+import { getSalesForgeCountyScope, useSalesForgeStore } from '../salesForgeStore';
 import { QualDecisionButtons } from '../components/QualDecisionButtons';
 import { apiFetch } from '../../../../lib/apiBase';
 import type { SaleQueueItem } from '../salesForgeTypes';
@@ -69,8 +69,15 @@ export function RatioAuditPanel() {
   const [showOutliersOnly, setShowOutliersOnly] = useState(false);
 
   const fetchAuditSales = useCallback(async (signal?: AbortSignal) => {
+    const countyScope = getSalesForgeCountyScope();
     setAuditLoading(true);
     setAuditError(null);
+    if (!countyScope.isolated) {
+      setAuditError('County scope required for ratio audit.');
+      setAuditLoading(false);
+      return;
+    }
+
     const params = new URLSearchParams({
       taxYear: String(taxYear),
       status: 'all',
@@ -81,8 +88,9 @@ export function RatioAuditPanel() {
     if (committedFilters.propertyType) params.set('propertyType', committedFilters.propertyType);
     if (committedFilters.saleDateFrom) params.set('saleDateFrom', committedFilters.saleDateFrom);
     if (committedFilters.saleDateTo)   params.set('saleDateTo', committedFilters.saleDateTo);
+    if (countyScope.countyId) params.set('countyId', countyScope.countyId);
     try {
-      const res = await apiFetch(`/terraforge/sale-qualification?${params}`, { signal });
+      const res = await apiFetch(`/terraforge/sale-qualification?${params}`, { signal, headers: countyScope.headers });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       if (signal?.aborted) return;
       const page = await res.json() as { items: SaleQueueItem[] };

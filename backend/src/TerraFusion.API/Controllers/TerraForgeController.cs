@@ -20,7 +20,6 @@ public class TerraForgeController : ControllerBase
     private readonly IOlsRegressionService _ols;
     private readonly ISaleQualificationService _saleQual;
     private readonly ICountyResolver _countyResolver;
-    private static readonly Guid BentonCountyId = Guid.Parse("19190019-1919-1919-1919-191919191919");
 
     public TerraForgeController(
         TerraFusionDbContext db,
@@ -59,6 +58,22 @@ public class TerraForgeController : ControllerBase
         return await _countyResolver.ResolveAsync(countyToken, ct);
     }
 
+    private async Task<(Guid CountyId, IActionResult? Error)> TryResolveCountyScopeAsync(string? countyId, CancellationToken ct)
+    {
+        try
+        {
+            return (await ResolveCountyScopeAsync(countyId, ct), null);
+        }
+        catch (ArgumentException ex) when (ex.ParamName == "countyId")
+        {
+            return (Guid.Empty, BadRequest(new { error = ex.Message, field = "countyId" }));
+        }
+        catch (CountyNotFoundException ex)
+        {
+            return (Guid.Empty, BadRequest(new { error = ex.Message, field = "countyId" }));
+        }
+    }
+
     // ── Sale Qualification ────────────────────────────────────────────────
 
     /// <summary>
@@ -71,6 +86,7 @@ public class TerraForgeController : ControllerBase
     [HttpGet("sale-qualification")]
     public async Task<IActionResult> GetSaleQualification(
         [FromQuery] int taxYear = 2026,
+        [FromQuery] string? countyId = null,
         [FromQuery] string status = "all",
         [FromQuery] string? hood = null,
         [FromQuery] string? propertyType = null,
@@ -85,11 +101,15 @@ public class TerraForgeController : ControllerBase
         if (pageSize > 200) pageSize = 200;
         if (page < 1) page = 1;
 
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var lookbackEnd   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         var query = _db.ComparableSales
-            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.CountyId == scopedCountyId)
             .Where(s => s.SalesYear == taxYear
                      || (s.SalesYear == null
                          && s.SaleDate >= lookbackStart
@@ -162,7 +182,7 @@ public class TerraForgeController : ControllerBase
 
         // Join canonical assessed values from TerraFusion Properties.
         var pageParcelIds = rawItems.Select(i => i.parcelId).Where(id => id != null).ToHashSet();
-        var pageAssessed  = await GetAssessedValueMapAsync(pageParcelIds, taxYear, ct);
+        var pageAssessed  = await GetAssessedValueMapAsync(pageParcelIds, taxYear, ct, scopedCountyId);
 
         var items = rawItems.Select(i =>
         {
@@ -199,20 +219,25 @@ public class TerraForgeController : ControllerBase
     [HttpGet("sale-qualification/{saleId:guid}")]
     public async Task<IActionResult> GetSaleQualificationDetail(
         Guid saleId,
+        [FromQuery] string? countyId = null,
         CancellationToken ct = default)
     {
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         var s = await _db.ComparableSales
             .AsNoTracking()
-            .FirstOrDefaultAsync(s => s.Id == saleId && s.CountyId == BentonCountyId, ct);
+            .FirstOrDefaultAsync(s => s.Id == saleId && s.CountyId == scopedCountyId, ct);
 
         if (s is null)
-            return NotFound(new { error = $"Sale {saleId} not found for Benton County." });
+            return NotFound(new { error = $"Sale {saleId} not found for active county scope." });
 
         // Properties join for assessed value (canonical TF table — no PACS read).
         decimal? assessedValue = null;
         if (s.ParcelId != null)
         {
-            var avMap = await GetAssessedValueMapAsync(new[] { s.ParcelId }, s.SalesYear ?? DateTime.UtcNow.Year, ct);
+            var avMap = await GetAssessedValueMapAsync(new[] { s.ParcelId }, s.SalesYear ?? DateTime.UtcNow.Year, ct, scopedCountyId);
             if (avMap.TryGetValue(s.ParcelId, out var avFound))
                 assessedValue = avFound;
         }
@@ -298,16 +323,21 @@ public class TerraForgeController : ControllerBase
     [HttpGet("sale-qualification/running-stats")]
     public async Task<IActionResult> GetSaleQualificationRunningStats(
         [FromQuery] int taxYear = 2026,
+        [FromQuery] string? countyId = null,
         [FromQuery] string? hood = null,
         [FromQuery] string? propertyType = null,
         CancellationToken ct = default)
     {
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var lookbackEnd   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         // Total counts for all sales in the window (regardless of qualification status).
         var allQuery = _db.ComparableSales
-            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.CountyId == scopedCountyId)
             .Where(s => s.SalesYear == taxYear
                      || (s.SalesYear == null
                          && s.SaleDate >= lookbackStart
@@ -336,7 +366,7 @@ public class TerraForgeController : ControllerBase
 
         // IAAO stats from the effective qualified pool (same as ratio-study population rule).
         var qualQuery = _db.ComparableSales
-            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.CountyId == scopedCountyId)
             .Where(s => s.SalesYear == taxYear
                      || (s.SalesYear == null
                          && s.SaleDate >= lookbackStart
@@ -362,7 +392,7 @@ public class TerraForgeController : ControllerBase
         if (salesData.Count > 0)
         {
             var parcelIds   = salesData.Select(s => s.ParcelId).Where(id => id != null).Distinct().ToHashSet();
-            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct);
+            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct, scopedCountyId);
 
             var ratioRows = salesData
                 .Where(s => s.ParcelId != null && assessedMap.TryGetValue(s.ParcelId!, out _) && s.SalePrice > 0)
@@ -449,14 +479,19 @@ public class TerraForgeController : ControllerBase
     [HttpGet("sale-qualification/neighborhood-stats")]
     public async Task<IActionResult> GetSaleQualificationNeighborhoodStats(
         [FromQuery] int taxYear = 2026,
+        [FromQuery] string? countyId = null,
         [FromQuery] string? propertyType = null,
         CancellationToken ct = default)
     {
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var lookbackEnd   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         var query = _db.ComparableSales
-            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.CountyId == scopedCountyId)
             .Where(s => s.SalesYear == taxYear
                      || (s.SalesYear == null
                          && s.SaleDate >= lookbackStart
@@ -485,8 +520,8 @@ public class TerraForgeController : ControllerBase
 
         // Build assessed value + neighborhood maps from TerraFusion canonical tables.
         var allParcelIds = allSales.Select(s => s.ParcelId).Where(id => id != null).Distinct().ToHashSet();
-        var assessedMap  = await GetAssessedValueMapAsync(allParcelIds, taxYear, ct);
-        var hoodMap      = await GetNeighborhoodMapAsync(allParcelIds, taxYear, ct);
+        var assessedMap  = await GetAssessedValueMapAsync(allParcelIds, taxYear, ct, scopedCountyId);
+        var hoodMap      = await GetNeighborhoodMapAsync(allParcelIds, taxYear, ct, scopedCountyId);
 
         // Group by canonical TerraFusion neighborhood, falling back to sale-side neighborhood only
         // when a parcel has not yet been promoted into Properties.
@@ -556,13 +591,18 @@ public class TerraForgeController : ControllerBase
     [HttpGet("sale-qualification/code-audit")]
     public async Task<IActionResult> GetSaleQualificationCodeAudit(
         [FromQuery] int taxYear = 2026,
+        [FromQuery] string? countyId = null,
         CancellationToken ct = default)
     {
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var lookbackEnd   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         var sales = await _db.ComparableSales
-            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.CountyId == scopedCountyId)
             .Where(s => s.SalesYear == taxYear
                      || (s.SalesYear == null
                          && s.SaleDate >= lookbackStart
@@ -871,7 +911,7 @@ public class TerraForgeController : ControllerBase
 
         // Look up canonical assessed values for page items from TerraFusion Properties.
         var pageParcelIds = rawItems.Select(i => i.parcelId).Distinct().ToHashSet();
-        var pageAssessed  = await GetAssessedValueMapAsync(pageParcelIds, taxYear, ct);
+        var pageAssessed  = await GetAssessedValueMapAsync(pageParcelIds, taxYear, ct, scopedCountyId);
 
         var items = rawItems.Select(i =>
         {
@@ -937,6 +977,7 @@ public class TerraForgeController : ControllerBase
     [HttpGet("comps-pool")]
     public async Task<IActionResult> GetCompsPool(
         [FromQuery] int taxYear = 2026,
+        [FromQuery] string? countyId = null,
         [FromQuery] string? hood = null,
         [FromQuery] string? propertyType = null,
         [FromQuery] decimal? minPrice = null,
@@ -950,12 +991,16 @@ public class TerraForgeController : ControllerBase
         if (pageSize > 200) pageSize = 200;
         if (page < 1) page = 1;
 
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var lookbackEnd   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         // Effective qualified pool — same population rule as ratio-study.
         var query = _db.ComparableSales
-            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.CountyId == scopedCountyId)
             .Where(s => s.SalesYear == taxYear
                      || (s.SalesYear == null
                          && s.SaleDate >= lookbackStart
@@ -1012,7 +1057,7 @@ public class TerraForgeController : ControllerBase
         {
             pageAssessed = (await _db.Properties
                 .AsNoTracking()
-                .Where(p => pageParcelIds.Contains(p.ParcelNumber) && p.AssessedValue > 0)
+                .Where(p => p.CountyId == scopedCountyId && pageParcelIds.Contains(p.ParcelNumber) && p.AssessedValue > 0)
                 .Select(p => new { p.ParcelNumber, p.AssessedValue })
                 .ToListAsync(ct))
                 .ToDictionary(p => p.ParcelNumber!, p => p.AssessedValue);
@@ -1060,16 +1105,21 @@ public class TerraForgeController : ControllerBase
     [HttpGet("regression")]
     public async Task<IActionResult> GetRegression(
         [FromQuery] int taxYear = 2026,
+        [FromQuery] string? countyId = null,
         [FromQuery] string? hood = null,
         [FromQuery] string? propertyType = null,
         CancellationToken ct = default)
     {
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var lookbackEnd   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         // Effective qualified pool — same population as ratio-study.
         var baseQuery = _db.ComparableSales
-            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.CountyId == scopedCountyId)
             .Where(s => s.SalesYear == taxYear
                      || (s.SalesYear == null
                          && s.SaleDate >= lookbackStart
@@ -1224,11 +1274,16 @@ public class TerraForgeController : ControllerBase
     [HttpGet("county-stats")]
     public async Task<IActionResult> GetCountyStats(
         [FromQuery] int taxYear = 2026,
+        [FromQuery] string? countyId = null,
         CancellationToken ct = default)
     {
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         var rows = await _db.Properties
             .AsNoTracking()
-            .Where(p => p.CountyId == BentonCountyId && p.TaxYear == taxYear)
+            .Where(p => p.CountyId == scopedCountyId && p.TaxYear == taxYear)
             .Select(p => new { p.AssessedValue, p.MarketValue })
             .ToListAsync(ct);
 
@@ -1245,7 +1300,7 @@ public class TerraForgeController : ControllerBase
 
         var pendingAssessments = await _db.ValuationRecords
             .AsNoTracking()
-            .Where(v => v.CountyId == BentonCountyId && v.TaxYear == taxYear && v.Status == "draft")
+            .Where(v => v.CountyId == scopedCountyId && v.TaxYear == taxYear && v.Status == "draft")
             .Select(v => v.ParcelId)
             .Distinct()
             .CountAsync(ct);
@@ -1284,18 +1339,24 @@ public class TerraForgeController : ControllerBase
     /// Benton code 100 → "qualified", code 200 → "non-arms-length", etc.
     /// </summary>
     [HttpPost("compute-qualifications")]
-    public async Task<IActionResult> ComputeQualifications(CancellationToken ct = default)
+    public async Task<IActionResult> ComputeQualifications(
+        [FromQuery] string? countyId = null,
+        CancellationToken ct = default)
     {
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         int processed;
         try
         {
-            processed = await _saleQual.ComputeRecommendationsAsync(BentonCountyId, ct);
+            processed = await _saleQual.ComputeRecommendationsAsync(scopedCountyId, ct);
         }
         catch (Exception ex) when (ex.Message.Contains("no such table") || ex.Message.Contains("Invalid object name"))
         {
             _logger.LogWarning("[TerraForge] Lookup tables not seeded — using hardcoded county code map (dev fallback)");
             var allSales = await _db.ComparableSales
-                .Where(s => s.CountyId == BentonCountyId)
+                .Where(s => s.CountyId == scopedCountyId)
                 .ToListAsync(ct);
             _saleQual.ComputeRecommendations(allSales);
             await _db.SaveChangesAsync(ct);
@@ -1303,7 +1364,7 @@ public class TerraForgeController : ControllerBase
         }
 
         var summary = await _db.ComparableSales
-            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.CountyId == scopedCountyId)
             .GroupBy(s => s.QualificationRecommendation)
             .Select(g => new { recommendation = g.Key ?? "null", count = g.Count() })
             .ToListAsync(ct);
@@ -1326,10 +1387,15 @@ public class TerraForgeController : ControllerBase
     /// </summary>
     [HttpPost("apply-recommendations")]
     public async Task<IActionResult> ApplyQualificationRecommendations(
+        [FromQuery] string? countyId = null,
         CancellationToken ct = default)
     {
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         var missingCanonicalRawCodes = await _db.ComparableSales
-            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.CountyId == scopedCountyId)
             .Where(s => s.RawCountyRatioCd == null && s.RawWacCd == null
                      && s.RawRatioTypeCd == null && s.RawSaleQualifier == null)
             .CountAsync(ct);
@@ -1349,13 +1415,13 @@ public class TerraForgeController : ControllerBase
         int processed;
         try
         {
-            processed = await _saleQual.ComputeRecommendationsAsync(BentonCountyId, ct);
+            processed = await _saleQual.ComputeRecommendationsAsync(scopedCountyId, ct);
         }
         catch (Exception ex) when (ex.Message.Contains("no such table") || ex.Message.Contains("Invalid object name"))
         {
             _logger.LogWarning("[TerraForge] Lookup tables not seeded — using hardcoded county code map (dev fallback)");
             var allSales = await _db.ComparableSales
-                .Where(s => s.CountyId == BentonCountyId)
+                .Where(s => s.CountyId == scopedCountyId)
                 .ToListAsync(ct);
             _saleQual.ComputeRecommendations(allSales);
             await _db.SaveChangesAsync(ct);
@@ -1364,7 +1430,7 @@ public class TerraForgeController : ControllerBase
 
         // Tally results for the response.
         var summary = await _db.ComparableSales
-            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.CountyId == scopedCountyId)
             .GroupBy(s => s.QualificationRecommendation)
             .Select(g => new { recommendation = g.Key, count = g.Count() })
             .ToListAsync(ct);
@@ -1379,7 +1445,7 @@ public class TerraForgeController : ControllerBase
             canonicalOnly = true,
             missingCanonicalRawCodes,
             syncRepairEndpoint = missingCanonicalRawCodes > 0
-                ? $"/api/sync/backfill-qualification-fields/{BentonCountyId}"
+                ? $"/api/sync/backfill-qualification-fields/{scopedCountyId}"
                 : null,
             summary,
             message = missingCanonicalRawCodes > 0
@@ -1395,15 +1461,20 @@ public class TerraForgeController : ControllerBase
     [HttpPatch("sale-qualification/bulk")]
     public async Task<IActionResult> BulkPatchSaleQualification(
         [FromBody] BulkSaleQualificationPatchDto body,
+        [FromQuery] string? countyId = null,
         CancellationToken ct = default)
     {
         if (body.SaleIds == null || body.SaleIds.Length == 0)
             return BadRequest(new { error = "saleIds is required and must not be empty." });
 
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         var ids = body.SaleIds.Take(200).ToArray();
 
         var sales = await _db.ComparableSales
-            .Where(s => ids.Contains(s.Id) && s.CountyId == BentonCountyId)
+            .Where(s => ids.Contains(s.Id) && s.CountyId == scopedCountyId)
             .ToListAsync(ct);
 
         var now = DateTime.UtcNow;
@@ -1439,13 +1510,18 @@ public class TerraForgeController : ControllerBase
     public async Task<IActionResult> PatchSaleQualification(
         Guid saleId,
         [FromBody] SaleQualificationPatchDto body,
+        [FromQuery] string? countyId = null,
         CancellationToken ct = default)
     {
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         var sale = await _db.ComparableSales
-            .FirstOrDefaultAsync(s => s.Id == saleId && s.CountyId == BentonCountyId, ct);
+            .FirstOrDefaultAsync(s => s.Id == saleId && s.CountyId == scopedCountyId, ct);
 
         if (sale is null)
-            return NotFound(new { error = $"Sale {saleId} not found for Benton County." });
+            return NotFound(new { error = $"Sale {saleId} not found for active county scope." });
 
         sale.QualificationDecision = body.QualificationDecision;
         sale.DecisionReason        = body.ResearchNotes;
@@ -1744,15 +1820,22 @@ public class TerraForgeController : ControllerBase
     [HttpGet("ratio-study/confidence-intervals")]
     public async Task<IActionResult> GetConfidenceIntervals(
         [FromQuery] int taxYear = 2026,
+        [FromQuery] string? countyId = null,
         [FromQuery] string? propertyType = null,
-        [FromQuery] string? qualityClass = null)
+        [FromQuery] string? qualityClass = null,
+        CancellationToken ct = default)
     {
         _logger.LogInformation("GetConfidenceIntervals: taxYear={TaxYear}", taxYear);
+
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
 
         try
         {
             var salesQuery = _db.ComparableSales
-                .Where(cs => cs.SalesYear == taxYear
+                .Where(cs => cs.CountyId == scopedCountyId
+                    && cs.SalesYear == taxYear
                     && cs.SalePrice > 0
                     && (cs.QualificationDecision == "qualified"
                         || (cs.QualificationDecision == null && (cs.QualificationRecommendation == "qualified" || cs.QualificationRecommendation == null))));
@@ -1763,13 +1846,13 @@ public class TerraForgeController : ControllerBase
 
             var sales = await salesQuery
                 .Select(cs => new { cs.ParcelId, cs.SalePrice, cs.AdjustedSalePrice })
-                .ToListAsync();
+                .ToListAsync(ct);
 
             var parcelIds = sales.Select(s => s.ParcelId).ToList();
             var propMap = await _db.Properties
-                .Where(p => parcelIds.Contains(p.ParcelNumber) && p.AssessedValue > 0)
+                .Where(p => p.CountyId == scopedCountyId && parcelIds.Contains(p.ParcelNumber) && p.AssessedValue > 0)
                 .Select(p => new { p.ParcelNumber, p.AssessedValue })
-                .ToDictionaryAsync(p => p.ParcelNumber, p => p.AssessedValue);
+                .ToDictionaryAsync(p => p.ParcelNumber, p => p.AssessedValue, ct);
 
             var ratios = sales
                 .Where(s => propMap.ContainsKey(s.ParcelId))
@@ -1872,16 +1955,21 @@ public class TerraForgeController : ControllerBase
     [HttpGet("ratio-study/vertical-equity")]
     public async Task<IActionResult> GetVerticalEquity(
         [FromQuery] int taxYear = 2026,
+        [FromQuery] string? countyId = null,
         [FromQuery] string? propertyType = null,
         CancellationToken ct = default)
     {
         _logger.LogInformation("GetVerticalEquity: taxYear={TaxYear}", taxYear);
 
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         try
         {
             var salesQuery = _db.ComparableSales
                 .AsNoTracking()
-                .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear
+                .Where(s => s.CountyId == scopedCountyId && s.SalesYear == taxYear
                          && s.SalePrice > 0
                          && (s.QualificationDecision == "qualified"
                              || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))));
@@ -1894,7 +1982,7 @@ public class TerraForgeController : ControllerBase
                 .ToListAsync(ct);
 
             var parcelIds = salesData.Select(s => s.ParcelId).Distinct();
-            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct);
+            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct, scopedCountyId);
 
             var rows = salesData
                 .Where(s => s.ParcelId != null && assessedMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
@@ -1972,15 +2060,20 @@ public class TerraForgeController : ControllerBase
     [HttpGet("ratio-study/influence-diagnostics")]
     public async Task<IActionResult> GetInfluenceDiagnostics(
         [FromQuery] int taxYear = 2026,
+        [FromQuery] string? countyId = null,
         [FromQuery] string? propertyType = null,
         CancellationToken ct = default)
     {
         _logger.LogInformation("GetInfluenceDiagnostics: taxYear={TaxYear}", taxYear);
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         try
         {
             var salesQuery = _db.ComparableSales
                 .AsNoTracking()
-                .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear
+                .Where(s => s.CountyId == scopedCountyId && s.SalesYear == taxYear
                          && s.SalePrice > 0
                          && (s.QualificationDecision == "qualified"
                              || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))));
@@ -1993,7 +2086,7 @@ public class TerraForgeController : ControllerBase
                 .ToListAsync(ct);
 
             var parcelIds = salesData.Select(s => s.ParcelId).Distinct();
-            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct);
+            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct, scopedCountyId);
 
             var rows = salesData
                 .Where(s => s.ParcelId != null && assessedMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
@@ -2062,10 +2155,15 @@ public class TerraForgeController : ControllerBase
     [HttpGet("ratio-study/time-trend")]
     public async Task<IActionResult> GetTimeTrend(
         [FromQuery] int taxYear = 2026,
+        [FromQuery] string? countyId = null,
         [FromQuery] string? propertyType = null,
         CancellationToken ct = default)
     {
         _logger.LogInformation("GetTimeTrend: taxYear={TaxYear}", taxYear);
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         try
         {
             var periodStart = new DateTime(taxYear - 2, 1, 1);
@@ -2073,7 +2171,7 @@ public class TerraForgeController : ControllerBase
 
             var salesQuery = _db.ComparableSales
                 .AsNoTracking()
-                .Where(s => s.CountyId == BentonCountyId
+                .Where(s => s.CountyId == scopedCountyId
                          && s.SaleDate >= periodStart
                          && s.SaleDate < periodEnd
                          && s.SalePrice > 0
@@ -2088,7 +2186,7 @@ public class TerraForgeController : ControllerBase
                 .ToListAsync(ct);
 
             var parcelIds  = salesData.Select(s => s.ParcelId).Distinct();
-            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct);
+            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct, scopedCountyId);
 
             var rows = salesData
                 .Where(s => s.ParcelId != null && assessedMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
@@ -2147,15 +2245,20 @@ public class TerraForgeController : ControllerBase
     [ResponseCache(Duration = 600)]
     public async Task<IActionResult> GetSpatialAutocorrelation(
         [FromQuery] int taxYear = 2026,
+        [FromQuery] string? countyId = null,
         [FromQuery] string? propertyType = null,
         CancellationToken ct = default)
     {
         _logger.LogInformation("GetSpatialAutocorrelation: taxYear={TaxYear}", taxYear);
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         try
         {
             var salesQuery = _db.ComparableSales
                 .AsNoTracking()
-                .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear
+                .Where(s => s.CountyId == scopedCountyId && s.SalesYear == taxYear
                          && s.SalePrice > 0
                          && (s.QualificationDecision == "qualified"
                              || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))));
@@ -2168,7 +2271,7 @@ public class TerraForgeController : ControllerBase
                 .ToListAsync(ct);
 
             var parcelIds = salesData.Select(s => s.ParcelId).Distinct().ToList();
-            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct);
+            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct, scopedCountyId);
 
             var baseRows = salesData
                 .Where(s => s.ParcelId != null && assessedMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
@@ -2333,13 +2436,18 @@ public class TerraForgeController : ControllerBase
     [HttpGet("ratio-study/hedonic-regression")]
     public async Task<IActionResult> GetHedonicRegression(
         [FromQuery] int taxYear = 2026,
+        [FromQuery] string? countyId = null,
         [FromQuery] string? propertyType = null,
         CancellationToken ct = default)
     {
         _logger.LogInformation("GetHedonicRegression: taxYear={TaxYear}", taxYear);
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         try
         {
-            var data = await BuildHedonicDataset(taxYear, propertyType, ct);
+            var data = await BuildHedonicDataset(taxYear, propertyType, scopedCountyId, ct);
             if (data.Count < 20)
                 return Ok(new { error = "Insufficient data for hedonic regression.", sampleSize = data.Count });
 
@@ -2392,15 +2500,20 @@ public class TerraForgeController : ControllerBase
     [HttpGet("ratio-study/variance-decomposition")]
     public async Task<IActionResult> GetVarianceDecomposition(
         [FromQuery] int taxYear = 2026,
+        [FromQuery] string? countyId = null,
         [FromQuery] string? propertyType = null,
         CancellationToken ct = default)
     {
         _logger.LogInformation("GetVarianceDecomposition: taxYear={TaxYear}", taxYear);
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         try
         {
             var salesQuery = _db.ComparableSales
                 .AsNoTracking()
-                .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear
+                .Where(s => s.CountyId == scopedCountyId && s.SalesYear == taxYear
                          && s.SalePrice > 0
                          && (s.QualificationDecision == "qualified"
                              || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))));
@@ -2413,7 +2526,7 @@ public class TerraForgeController : ControllerBase
                 .ToListAsync(ct);
 
             var parcelIds = salesData.Select(s => s.ParcelId).Distinct();
-            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct);
+            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct, scopedCountyId);
 
             var rows = salesData
                 .Where(s => s.ParcelId != null && assessedMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
@@ -2502,15 +2615,20 @@ public class TerraForgeController : ControllerBase
     [HttpGet("ratio-study/sale-chasing")]
     public async Task<IActionResult> GetSaleChasing(
         [FromQuery] int taxYear = 2026,
+        [FromQuery] string? countyId = null,
         [FromQuery] string? propertyType = null,
         CancellationToken ct = default)
     {
         _logger.LogInformation("GetSaleChasing: taxYear={TaxYear}", taxYear);
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         try
         {
             var salesQuery = _db.ComparableSales
                 .AsNoTracking()
-                .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear && s.SalePrice > 0
+                .Where(s => s.CountyId == scopedCountyId && s.SalesYear == taxYear && s.SalePrice > 0
                     && (s.QualificationDecision == "qualified" || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))));
 
             if (!string.IsNullOrEmpty(propertyType))
@@ -2521,7 +2639,7 @@ public class TerraForgeController : ControllerBase
                 .ToListAsync(ct);
 
             var parcelIds = salesData.Select(s => s.ParcelId).Distinct();
-            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct);
+            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct, scopedCountyId);
 
             var assessmentDate = new DateTime(taxYear, 1, 1);
             var rows = salesData
@@ -2612,13 +2730,18 @@ public class TerraForgeController : ControllerBase
     [HttpGet("ratio-study/cross-validation")]
     public async Task<IActionResult> GetCrossValidation(
         [FromQuery] int taxYear = 2026,
+        [FromQuery] string? countyId = null,
         [FromQuery] string? propertyType = null,
         CancellationToken ct = default)
     {
         _logger.LogInformation("GetCrossValidation: taxYear={TaxYear}", taxYear);
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         try
         {
-            var data = await BuildHedonicDataset(taxYear, propertyType, ct);
+            var data = await BuildHedonicDataset(taxYear, propertyType, scopedCountyId, ct);
             if (data.Count < 50)
                 return Ok(new { error = "Insufficient data for 5-fold cross-validation.", sampleSize = data.Count });
 
@@ -2700,11 +2823,11 @@ public class TerraForgeController : ControllerBase
 
     private record OlsResult(double[] Beta, double[] StdErrors, double RSquared, double Mse);
 
-    private async Task<List<HedonicRow>> BuildHedonicDataset(int taxYear, string? propertyType, CancellationToken ct)
+    private async Task<List<HedonicRow>> BuildHedonicDataset(int taxYear, string? propertyType, Guid countyId, CancellationToken ct)
     {
         var salesQuery = _db.ComparableSales
             .AsNoTracking()
-            .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear
+            .Where(s => s.CountyId == countyId && s.SalesYear == taxYear
                      && s.SalePrice > 10000
                      && (s.QualificationDecision == "qualified"
                          || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))));
@@ -2921,10 +3044,15 @@ public class TerraForgeController : ControllerBase
     [HttpGet("ratio-study/ks-shift-test")]
     public async Task<IActionResult> GetKsShiftTest(
         [FromQuery] int taxYear = 2026,
+        [FromQuery] string? countyId = null,
         [FromQuery] string? propertyType = null,
         CancellationToken ct = default)
     {
         _logger.LogInformation("GetKsShiftTest: taxYear={TaxYear}", taxYear);
+        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
+
         try
         {
             var priorYear = taxYear - 1;
@@ -2933,7 +3061,7 @@ public class TerraForgeController : ControllerBase
             {
                 var q = _db.ComparableSales
                     .AsNoTracking()
-                    .Where(s => s.CountyId == BentonCountyId && s.SalesYear == year
+                    .Where(s => s.CountyId == scopedCountyId && s.SalesYear == year
                              && s.SalePrice > 0
                              && (s.QualificationDecision == "qualified"
                                  || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))));
@@ -2943,7 +3071,7 @@ public class TerraForgeController : ControllerBase
                     .Select(s => new { s.ParcelId, SalePrice = s.AdjustedSalePrice ?? s.SalePrice })
                     .ToListAsync(ct);
                 var pids = sd.Select(s => s.ParcelId).Distinct();
-                var amap = await GetAssessedValueMapAsync(pids, year, ct);
+                var amap = await GetAssessedValueMapAsync(pids, year, ct, scopedCountyId);
                 return sd
                     .Where(s => s.ParcelId != null && amap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
                     .Select(s => (double)amap[s.ParcelId!] / (double)s.SalePrice)

@@ -11,7 +11,9 @@
  * hammering the endpoint while the user is mid-typing.
  */
 
-import { useCallback, useEffect, useReducer, useState } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
+import { getSession } from '@/auth/session';
+import { buildCountyScopedSessionHeaders } from '@/services/countyIsolation';
 import { apiFetch } from '../../lib/apiBase';
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -160,6 +162,12 @@ interface Props {
 }
 
 export function CompsPoolBrowser({ taxYear = TAX_YEAR }: Props) {
+  const countyScope = useMemo(() => {
+    const session = getSession();
+    const { headers, isolated } = buildCountyScopedSessionHeaders(session);
+    return { countyId: session?.countyId ?? null, headers, isolated };
+  }, []);
+
   const [form,      setForm]      = useState<FilterForm>(EMPTY_FORM);
   const [committed, setCommitted] = useState<CommittedFilters>(EMPTY_COMMITTED);
 
@@ -182,15 +190,21 @@ export function CompsPoolBrowser({ taxYear = TAX_YEAR }: Props) {
       if (f.maxPrice)     params.set('maxPrice',     String(f.maxPrice));
       if (f.minGla)       params.set('minGla',       String(f.minGla));
       if (f.maxGla)       params.set('maxGla',       String(f.maxGla));
+      if (countyScope.countyId) params.set('countyId', countyScope.countyId);
       return `/terraforge/comps-pool?${params.toString()}`;
     },
-    [taxYear],
+    [countyScope.countyId, taxYear],
   );
 
   const fetchPage = useCallback(async () => {
     dispatch({ type: 'FETCH_START' });
+    if (!countyScope.isolated) {
+      dispatch({ type: 'FETCH_ERR', error: 'County scope required for comps pool.' });
+      return;
+    }
+
     try {
-      const res  = await apiFetch(buildUrl(state.page, committed));
+      const res  = await apiFetch(buildUrl(state.page, committed), { headers: countyScope.headers });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = (await res.json()) as CompsPoolPage;
 
@@ -208,7 +222,7 @@ export function CompsPoolBrowser({ taxYear = TAX_YEAR }: Props) {
         error: e instanceof Error ? e.message : 'Failed to load',
       });
     }
-  }, [buildUrl, state.page, committed]);
+  }, [buildUrl, countyScope.headers, countyScope.isolated, state.page, committed]);
 
   useEffect(() => {
     void fetchPage();

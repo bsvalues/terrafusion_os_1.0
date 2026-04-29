@@ -15,6 +15,8 @@
  */
 
 import { createStableId } from '../../utils/stableId';
+import { getSession } from '../../auth/session';
+import { buildCountyScopedSessionHeaders } from '../countyIsolation';
 
 // ============================================================================
 // Types
@@ -127,11 +129,21 @@ export interface ModelReceipt {
  */
 export async function computeRatioStudy(params: RatioStudyParams): Promise<RatioStudyResult> {
   // Real endpoint: GET /api/terraforge/ratio-study
+  const session = getSession();
+  const countyScope = buildCountyScopedSessionHeaders(session);
+  const scopedCountyId = params.countyId ?? session?.countyId ?? null;
+
+  if (!countyScope.isolated || !scopedCountyId) {
+    throw new Error('County context required to compute ratio study.');
+  }
+
   const query = new URLSearchParams({ taxYear: String(params.taxYear) });
-  if (params.countyId) query.set('countyId', params.countyId);
+  query.set('countyId', scopedCountyId);
   if (params.neighborhood) query.set('hood', params.neighborhood);
   if (params.propertyType) query.set('propertyType', params.propertyType);
-  const response = await fetch(`/api/terraforge/ratio-study?${query.toString()}`);
+  const response = await fetch(`/api/terraforge/ratio-study?${query.toString()}`, {
+    headers: countyScope.headers,
+  });
   if (!response.ok) {
     throw new Error(`Failed to compute ratio study: ${response.statusText}`);
   }

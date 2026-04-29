@@ -14,6 +14,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ReferenceLine,
 } from 'recharts';
+import type { StatisticsCountyScope } from '../statisticsCountyScope';
 
 const TAX_YEAR = 2026;
 
@@ -45,22 +46,32 @@ interface KsResponse {
   significantShift: boolean; interpretation: string;
 }
 
-export function SpatialTemporalTab() {
+interface SpatialTemporalTabProps {
+  countyScope: StatisticsCountyScope;
+  taxYear?: number;
+}
+
+export function SpatialTemporalTab({ countyScope, taxYear = TAX_YEAR }: SpatialTemporalTabProps) {
+  const countyQuery = countyScope.countyId ? `&countyId=${encodeURIComponent(countyScope.countyId)}` : '';
+
   const trendQuery = useQuery<TimeTrendResponse>({
-    queryKey: ['time-trend', TAX_YEAR],
-    queryFn: () => apiFetch(`/terraforge/ratio-study/time-trend?taxYear=${TAX_YEAR}`).then(r => r.json()),
+    queryKey: ['time-trend', taxYear, countyScope.countyId],
+    queryFn: () => apiFetch(`/terraforge/ratio-study/time-trend?taxYear=${taxYear}${countyQuery}`, { headers: countyScope.headers }).then(r => r.json()),
+    enabled: countyScope.isolated,
     staleTime: 10 * 60 * 1000,
   });
 
   const spatialQuery = useQuery<SpatialResponse>({
-    queryKey: ['spatial-autocorrelation', TAX_YEAR],
-    queryFn: () => apiFetch(`/terraforge/ratio-study/spatial-autocorrelation?taxYear=${TAX_YEAR}`).then(r => r.json()),
+    queryKey: ['spatial-autocorrelation', taxYear, countyScope.countyId],
+    queryFn: () => apiFetch(`/terraforge/ratio-study/spatial-autocorrelation?taxYear=${taxYear}${countyQuery}`, { headers: countyScope.headers }).then(r => r.json()),
+    enabled: countyScope.isolated,
     staleTime: 60 * 60 * 1000,
   });
 
   const ksQuery = useQuery<KsResponse>({
-    queryKey: ['ks-shift-test', TAX_YEAR],
-    queryFn: () => apiFetch(`/terraforge/ratio-study/ks-shift-test?taxYear=${TAX_YEAR}`).then(r => r.json()),
+    queryKey: ['ks-shift-test', taxYear, countyScope.countyId],
+    queryFn: () => apiFetch(`/terraforge/ratio-study/ks-shift-test?taxYear=${taxYear}${countyQuery}`, { headers: countyScope.headers }).then(r => r.json()),
+    enabled: countyScope.isolated,
     staleTime: 10 * 60 * 1000,
   });
 

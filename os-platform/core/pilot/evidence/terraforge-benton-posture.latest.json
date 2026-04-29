@@ -1,0 +1,41 @@
+{
+  "checkedAt": "2026-04-29T19:01:16.473Z",
+  "branch": "codex/june10-benton-posture",
+  "baseHead": "998a3e3e8a57",
+  "slice": "TerraForge Benton posture cleanup",
+  "status": "PASS_WITH_WARNINGS",
+  "failures": 0,
+  "warnings": [
+    {
+      "name": "Benton-certified reference posture remains",
+      "classification": "accepted-warning",
+      "meaning": "CostForge, AIModules, and Atlas compatibility still expose Benton-certified reference data. This is valid for Benton proof but must not be claimed as statewide readiness."
+    },
+    {
+      "name": "Statistics Studio remains separate from County Studio parity",
+      "classification": "accepted-warning",
+      "meaning": "Statistics Studio remains visible until County Studio metric parity is fully proven."
+    }
+  ],
+  "fixed": [
+    "Removed static Benton fallback from active TerraForge sales/ratio/comps endpoints.",
+    "Removed static Benton fallback from SalesAuditController.",
+    "Required explicit county scope from query, x-county-id header, or authenticated claim.",
+    "Propagated county scope through SalesForge, Statistics Studio, suite ratio/comps panels, LiveDataProvider county stats, and SalesAudit API client.",
+    "Updated readiness gate to fail active TerraForge/SalesAudit county fallback while preserving Benton-certified reference warnings."
+  ],
+  "proof": [
+    "dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj --no-restore --no-incremental",
+    "pnpm --dir frontend exec tsc --noEmit",
+    "dotnet test backend/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj --no-restore --filter \"FullyQualifiedName~SalesAudit|FullyQualifiedName~TerraForge\"",
+    "pnpm exec vitest --root frontend --config vitest.config.ts run apps/os-shell/src/pages/forge/statistics apps/os-shell/src/pages/forge/sales apps/os-shell/src/pages/suites",
+    "pnpm run readiness:june10",
+    "git diff --check"
+  ],
+  "readiness": {
+    "command": "pnpm run readiness:june10",
+    "status": "PASS_WITH_WARNINGS",
+    "failures": 0,
+    "warnings": 2
+  }
+}

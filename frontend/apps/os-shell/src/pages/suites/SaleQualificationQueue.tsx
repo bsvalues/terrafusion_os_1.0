@@ -9,7 +9,9 @@
  * Owner: Suite-Forge layer. Read normalized sale candidates; write appraiser decisions only.
  */
 
-import { useCallback, useEffect, useReducer, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
+import { getSession } from '@/auth/session';
+import { buildCountyScopedSessionHeaders } from '@/services/countyIsolation';
 import { apiFetch } from '../../lib/apiBase';
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -143,6 +145,12 @@ interface Props {
 }
 
 export function SaleQualificationQueue({ taxYear = TAX_YEAR }: Props) {
+  const countyScope = useMemo(() => {
+    const session = getSession();
+    const { headers, isolated } = buildCountyScopedSessionHeaders(session);
+    return { countyId: session?.countyId ?? null, headers, isolated };
+  }, []);
+
   const [state, dispatch] = useReducer(reducer, {
     status: 'pending',
     page: 1,
@@ -157,11 +165,20 @@ export function SaleQualificationQueue({ taxYear = TAX_YEAR }: Props) {
 
   const fetchPage = useCallback(async () => {
     dispatch({ type: 'FETCH_START' });
+    if (!countyScope.isolated) {
+      dispatch({ type: 'FETCH_ERR', error: 'County scope required for sale qualification queue.' });
+      return;
+    }
+
     try {
-      const url =
-        `/terraforge/sale-qualification` +
-        `?taxYear=${taxYear}&status=${state.status}&page=${state.page}&pageSize=${PAGE_SIZE}`;
-      const res = await apiFetch(url);
+      const params = new URLSearchParams({
+        taxYear: String(taxYear),
+        status: state.status,
+        page: String(state.page),
+        pageSize: String(PAGE_SIZE),
+      });
+      if (countyScope.countyId) params.set('countyId', countyScope.countyId);
+      const res = await apiFetch(`/terraforge/sale-qualification?${params}`, { headers: countyScope.headers });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = (await res.json()) as QueuePage;
 
@@ -179,7 +196,7 @@ export function SaleQualificationQueue({ taxYear = TAX_YEAR }: Props) {
     } catch (e) {
       dispatch({ type: 'FETCH_ERR', error: e instanceof Error ? e.message : 'Failed to load' });
     }
-  }, [taxYear, state.status, state.page]);
+  }, [countyScope, taxYear, state.status, state.page]);
 
   useEffect(() => {
     void fetchPage();
@@ -189,10 +206,18 @@ export function SaleQualificationQueue({ taxYear = TAX_YEAR }: Props) {
   const handleDecision = useCallback(
     async (saleId: string, decision: 'qualified' | 'non-arms-length') => {
       dispatch({ type: 'PATCH_START', saleId });
+      if (!countyScope.isolated) {
+        dispatch({ type: 'PATCH_ERR', saleId });
+        return;
+      }
+
       try {
-        const res = await apiFetch(`/terraforge/sale-qualification/${saleId}`, {
+        const params = new URLSearchParams();
+        if (countyScope.countyId) params.set('countyId', countyScope.countyId);
+        const query = params.toString();
+        const res = await apiFetch(`/terraforge/sale-qualification/${saleId}${query ? `?${query}` : ''}`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { ...countyScope.headers, 'Content-Type': 'application/json' },
           body: JSON.stringify({
             qualificationDecision: decision,
             decidedBy: 'staff',
@@ -207,7 +232,7 @@ export function SaleQualificationQueue({ taxYear = TAX_YEAR }: Props) {
         dispatch({ type: 'PATCH_ERR', saleId });
       }
     },
-    [fetchPage],
+    [countyScope, fetchPage],
   );
 
   const { status, page, data, loading, error, patchState } = state;

@@ -341,9 +341,15 @@ export function StatisticsStudio() {
 
       {/* Advanced Analysis Tabs */}
       {!showCountyScopeRequired && showAdvancedLaneGuard && advancedLaneGuard}
-      {!showCountyScopeRequired && !showAdvancedLaneGuard && activeTab === 'diagnostics' && <DiagnosticsTab />}
-      {!showCountyScopeRequired && !showAdvancedLaneGuard && activeTab === 'spatial-temporal' && <SpatialTemporalTab />}
-      {!showCountyScopeRequired && !showAdvancedLaneGuard && activeTab === 'calibration-engine' && <CalibrationEngineTab />}
+      {!showCountyScopeRequired && !showAdvancedLaneGuard && activeTab === 'diagnostics' && (
+        <DiagnosticsTab countyScope={countyScope} taxYear={taxYear} />
+      )}
+      {!showCountyScopeRequired && !showAdvancedLaneGuard && activeTab === 'spatial-temporal' && (
+        <SpatialTemporalTab countyScope={countyScope} taxYear={taxYear} />
+      )}
+      {!showCountyScopeRequired && !showAdvancedLaneGuard && activeTab === 'calibration-engine' && (
+        <CalibrationEngineTab countyScope={countyScope} taxYear={taxYear} />
+      )}
     </div>
   );
 }

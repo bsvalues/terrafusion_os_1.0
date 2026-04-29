@@ -13,8 +13,10 @@
  *   PRD:          0.98 – 1.03   (vertical equity)
  */
 
-import { useCallback, useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
+import { getSession } from '../../auth/session';
 import { apiFetch } from '../../lib/apiBase';
+import { buildCountyScopedSessionHeaders } from '../../services/countyIsolation';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -160,6 +162,12 @@ interface Props {
 }
 
 export function RatioStudyPanel({ taxYear = TAX_YEAR }: Props) {
+  const countyScope = useMemo(() => {
+    const session = getSession();
+    const { headers, isolated } = buildCountyScopedSessionHeaders(session);
+    return { countyId: session?.countyId ?? null, headers, isolated };
+  }, []);
+
   const [state, dispatch] = useReducer(reducer, {
     page:    1,
     data:    null,
@@ -170,10 +178,22 @@ export function RatioStudyPanel({ taxYear = TAX_YEAR }: Props) {
   const fetchPage = useCallback(async () => {
     dispatch({ type: 'FETCH_START' });
     try {
+      if (!countyScope.isolated) {
+        throw new Error('County context required to load ratio study.');
+      }
+
+      const params = new URLSearchParams({
+        taxYear: String(taxYear),
+        page: String(state.page),
+        pageSize: String(RS_PAGE_SIZE),
+      });
+      if (countyScope.countyId) {
+        params.set('countyId', countyScope.countyId);
+      }
+
       const url =
-        `/terraforge/ratio-study` +
-        `?taxYear=${taxYear}&page=${state.page}&pageSize=${RS_PAGE_SIZE}`;
-      const res = await apiFetch(url);
+        `/terraforge/ratio-study?${params.toString()}`;
+      const res = await apiFetch(url, { headers: countyScope.headers });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = (await res.json()) as RatioStudyPage;
 
@@ -191,7 +211,7 @@ export function RatioStudyPanel({ taxYear = TAX_YEAR }: Props) {
         error: e instanceof Error ? e.message : 'Failed to load',
       });
     }
-  }, [taxYear, state.page]);
+  }, [countyScope, taxYear, state.page]);
 
   useEffect(() => {
     void fetchPage();

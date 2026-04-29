@@ -15,6 +15,7 @@ import {
   ResponsiveContainer, ReferenceLine,
 } from 'recharts';
 import { ConfidenceIntervalBadge } from '../components/ConfidenceIntervalBadge';
+import type { StatisticsCountyScope } from '../statisticsCountyScope';
 
 const TAX_YEAR = 2026;
 
@@ -67,34 +68,46 @@ interface InfluenceResponse {
 
 // ── Main Component ───────────────────────────────────────────────────────────
 
-export function DiagnosticsTab() {
+interface DiagnosticsTabProps {
+  countyScope: StatisticsCountyScope;
+  taxYear?: number;
+}
+
+export function DiagnosticsTab({ countyScope, taxYear = TAX_YEAR }: DiagnosticsTabProps) {
+  const countyQuery = countyScope.countyId ? `&countyId=${encodeURIComponent(countyScope.countyId)}` : '';
+
   const ciQuery = useQuery<CIResponse>({
-    queryKey: ['ratio-ci', TAX_YEAR],
-    queryFn: () => apiFetch(`/terraforge/ratio-study/confidence-intervals?taxYear=${TAX_YEAR}`).then(r => r.json()),
+    queryKey: ['ratio-ci', taxYear, countyScope.countyId],
+    queryFn: () => apiFetch(`/terraforge/ratio-study/confidence-intervals?taxYear=${taxYear}${countyQuery}`, { headers: countyScope.headers }).then(r => r.json()),
+    enabled: countyScope.isolated,
     staleTime: 10 * 60 * 1000,
   });
 
   const veQuery = useQuery<VerticalEquityResponse>({
-    queryKey: ['vertical-equity', TAX_YEAR],
-    queryFn: () => apiFetch(`/terraforge/ratio-study/vertical-equity?taxYear=${TAX_YEAR}`).then(r => r.json()),
+    queryKey: ['vertical-equity', taxYear, countyScope.countyId],
+    queryFn: () => apiFetch(`/terraforge/ratio-study/vertical-equity?taxYear=${taxYear}${countyQuery}`, { headers: countyScope.headers }).then(r => r.json()),
+    enabled: countyScope.isolated,
     staleTime: 10 * 60 * 1000,
   });
 
   const infQuery = useQuery<InfluenceResponse>({
-    queryKey: ['influence-diagnostics', TAX_YEAR],
-    queryFn: () => apiFetch(`/terraforge/ratio-study/influence-diagnostics?taxYear=${TAX_YEAR}`).then(r => r.json()),
+    queryKey: ['influence-diagnostics', taxYear, countyScope.countyId],
+    queryFn: () => apiFetch(`/terraforge/ratio-study/influence-diagnostics?taxYear=${taxYear}${countyQuery}`, { headers: countyScope.headers }).then(r => r.json()),
+    enabled: countyScope.isolated,
     staleTime: 10 * 60 * 1000,
   });
 
   const vdQuery = useQuery<VarianceDecompResponse>({
-    queryKey: ['variance-decomp', TAX_YEAR],
-    queryFn: () => apiFetch(`/terraforge/ratio-study/variance-decomposition?taxYear=${TAX_YEAR}`).then(r => r.json()),
+    queryKey: ['variance-decomp', taxYear, countyScope.countyId],
+    queryFn: () => apiFetch(`/terraforge/ratio-study/variance-decomposition?taxYear=${taxYear}${countyQuery}`, { headers: countyScope.headers }).then(r => r.json()),
+    enabled: countyScope.isolated,
     staleTime: 10 * 60 * 1000,
   });
 
   const scQuery = useQuery<SaleChasingResponse>({
-    queryKey: ['sale-chasing', TAX_YEAR],
-    queryFn: () => apiFetch(`/terraforge/ratio-study/sale-chasing?taxYear=${TAX_YEAR}`).then(r => r.json()),
+    queryKey: ['sale-chasing', taxYear, countyScope.countyId],
+    queryFn: () => apiFetch(`/terraforge/ratio-study/sale-chasing?taxYear=${taxYear}${countyQuery}`, { headers: countyScope.headers }).then(r => r.json()),
+    enabled: countyScope.isolated,
     staleTime: 10 * 60 * 1000,
   });
 

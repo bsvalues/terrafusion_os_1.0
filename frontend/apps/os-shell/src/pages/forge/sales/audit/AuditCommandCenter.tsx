@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { salesAuditApi } from '../../../../services/forge/salesAuditApi';
-import { useSalesForgeStore } from '../salesForgeStore';
+import { getSalesForgeCountyScope, useSalesForgeStore } from '../salesForgeStore';
 import { CountyKpiBar } from './CountyKpiBar';
 import { StrataList } from './StrataList';
 import { SaleAuditTable } from './SaleAuditTable';
@@ -17,6 +17,7 @@ const STUDY_YEARS = [2023, 2024, 2025, 2026];
 export function AuditCommandCenter({ taxYear: propTaxYear }: Props) {
   const qc = useQueryClient();
   const { selectedStratumKey, setSelectedStratumKey } = useSalesForgeStore();
+  const countyScope = getSalesForgeCountyScope();
   const [localSales, setLocalSales] = useState<Record<string, string>>({}); // id → decision override
   const [filterOverride, setFilterOverride] = useState<'ai-flagged' | undefined>(undefined);
   // Local year override so the assessor can explore any study year without touching the global store
@@ -46,11 +47,15 @@ export function AuditCommandCenter({ taxYear: propTaxYear }: Props) {
   });
 
   const { data: runningStats } = useQuery({
-    queryKey: ['sales-forge-running-stats', taxYear],
+    queryKey: ['sales-forge-running-stats', taxYear, countyScope.countyId],
     queryFn: () =>
-      fetch(`/api/terraforge/sale-qualification/running-stats?taxYear=${taxYear}`)
+      fetch(
+        `/api/terraforge/sale-qualification/running-stats?taxYear=${taxYear}${countyScope.countyId ? `&countyId=${encodeURIComponent(countyScope.countyId)}` : ''}`,
+        { headers: countyScope.headers },
+      )
         .then(r => r.ok ? r.json() : null)
         .catch(() => null),
+    enabled: countyScope.isolated,
     staleTime: 60_000,
   });
 

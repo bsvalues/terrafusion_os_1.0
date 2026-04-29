@@ -2,6 +2,8 @@
  * SalesAudit API client
  * Handles AI-powered stratum diagnosis and simulation for sales ratio audit.
  */
+import { getSession } from '../../auth/session';
+import { buildCountyScopedSessionHeaders } from '../countyIsolation';
 
 export interface StratumDiagnosisSummary {
   stratumKey: string;
@@ -58,10 +60,29 @@ export interface SimulationResult {
 
 const BASE = '/api/SalesAudit';
 
+function getCountyScope() {
+  const session = getSession();
+  const { headers, isolated } = buildCountyScopedSessionHeaders(session);
+  if (!isolated) {
+    throw new Error('County context required for SalesAudit API.');
+  }
+
+  return { countyId: session?.countyId ?? null, headers };
+}
+
+function appendCountyScope(path: string, countyId: string | null): string {
+  if (!countyId || path.includes('countyId=')) {
+    return path;
+  }
+
+  return `${path}${path.includes('?') ? '&' : '?'}countyId=${encodeURIComponent(countyId)}`;
+}
+
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, {
+  const countyScope = getCountyScope();
+  const res = await fetch(appendCountyScope(path, countyScope.countyId), {
     ...init,
-    headers: { 'Content-Type': 'application/json', ...init?.headers },
+    headers: { 'Content-Type': 'application/json', ...countyScope.headers, ...init?.headers },
   });
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
   return res.json() as Promise<T>;

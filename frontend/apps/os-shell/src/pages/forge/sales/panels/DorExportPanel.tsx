@@ -5,7 +5,7 @@
  */
 
 import { useEffect, useState, useCallback } from 'react';
-import { useSalesForgeStore } from '../salesForgeStore';
+import { getSalesForgeCountyScope, useSalesForgeStore } from '../salesForgeStore';
 import { apiFetch } from '../../../../lib/apiBase';
 import type { SaleQueueItem } from '../salesForgeTypes';
 
@@ -84,8 +84,15 @@ export function DorExportPanel() {
   const [exporting, setExporting] = useState(false);
 
   const loadExportPreview = useCallback(async (signal?: AbortSignal) => {
+    const countyScope = getSalesForgeCountyScope();
     setLoading(true);
     setError(null);
+    if (!countyScope.isolated) {
+      setError('County scope required for DOR export preview.');
+      setLoading(false);
+      return;
+    }
+
     const params = new URLSearchParams({
       taxYear: String(taxYear),
       status: 'qualified',
@@ -96,9 +103,10 @@ export function DorExportPanel() {
     if (committedFilters.propertyType) params.set('propertyType', committedFilters.propertyType);
     if (committedFilters.saleDateFrom) params.set('saleDateFrom', committedFilters.saleDateFrom);
     if (committedFilters.saleDateTo)   params.set('saleDateTo',   committedFilters.saleDateTo);
+    if (countyScope.countyId) params.set('countyId', countyScope.countyId);
 
     try {
-      const res = await apiFetch(`/terraforge/sale-qualification?${params}`, { signal });
+      const res = await apiFetch(`/terraforge/sale-qualification?${params}`, { signal, headers: countyScope.headers });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const page = await res.json() as { total: number; items: SaleQueueItem[] };
       if (signal?.aborted) return;

@@ -9,6 +9,7 @@ using TerraFusion.Core.Entities;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.API.Tests.TestHelpers;
 using Xunit;
+using ICountyResolver = TerraFusion.Core.Services.ICountyResolver;
 using SystemTask = System.Threading.Tasks.Task;
 
 namespace TerraFusion.API.Tests.SalesAudit;
@@ -20,15 +21,21 @@ public sealed class SalesAuditControllerTests : IDisposable
 
     private readonly TerraFusion.Data.TerraFusionDbContext _db;
     private readonly Mock<ISalesAiDiagnosticService> _diagSvc;
+    private readonly Mock<ICountyResolver> _countyResolver;
     private readonly SalesAuditController _sut;
 
     public SalesAuditControllerTests()
     {
         _db = TestDbContextFactory.CreateInMemoryContext();
         _diagSvc = new Mock<ISalesAiDiagnosticService>();
+        _countyResolver = new Mock<ICountyResolver>();
+        _countyResolver
+            .Setup(r => r.ResolveAsync(BentonId.ToString(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(BentonId);
 
         _sut = new SalesAuditController(_db, _diagSvc.Object,
-            NullLogger<SalesAuditController>.Instance);
+            NullLogger<SalesAuditController>.Instance,
+            _countyResolver.Object);
 
         var claims = new[]
         {
@@ -63,6 +70,27 @@ public sealed class SalesAuditControllerTests : IDisposable
         var ok = Assert.IsType<OkObjectResult>(result);
         var summaries = Assert.IsAssignableFrom<IEnumerable<StratumDiagnosisSummaryDto>>(ok.Value);
         Assert.Single(summaries);
+    }
+
+    [Fact]
+    public async SystemTask GetStrata_ReturnsBadRequest_WhenCountyScopeMissing()
+    {
+        var sut = new SalesAuditController(_db, _diagSvc.Object,
+            NullLogger<SalesAuditController>.Instance,
+            _countyResolver.Object)
+        {
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        var result = await sut.GetStrata(2026);
+
+        Assert.IsType<BadRequestObjectResult>(result);
+        _diagSvc.Verify(
+            s => s.GetDiagnoseSummariesAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>()),
+            Times.Never);
     }
 
     [Fact]

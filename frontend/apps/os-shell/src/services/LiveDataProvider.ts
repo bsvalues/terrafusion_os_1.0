@@ -6,6 +6,8 @@
  */
 
 import type { DataProvider, DataMode } from './dataProvider';
+import { getSession } from '../auth/session';
+import { buildCountyScopedSessionHeaders } from './countyIsolation';
 import type {
   Property,
   Assessment,
@@ -120,12 +122,12 @@ const LEGACY_ASSESSMENT_PROPERTIES_ROUTE = `/api/${LEGACY_ASSESSMENT_SEGMENT}/pr
 const LEGACY_ASSESSMENT_PROPERTY_ROUTE = `/ops/${LEGACY_ASSESSMENT_SEGMENT}/property`;
 const LEGACY_ASSESSMENT_HEALTH_ROUTE = `/api/${LEGACY_ASSESSMENT_SEGMENT}/health`;
 
-async function apiFetch<T>(path: string): Promise<T> {
+async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const token = getToken();
-  const headers: Record<string, string> = {};
+  const headers: Record<string, string> = { ...(init?.headers as Record<string, string> | undefined) };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(path, { headers });
+  const res = await fetch(path, { ...init, headers });
   if (!res.ok) throw new Error(`API ${res.status}: ${path}`);
   return res.json();
 }
@@ -475,6 +477,17 @@ export class LiveDataProvider implements DataProvider {
     // Source: county valuation rows where PropValYear = taxYear and SupNum = 0
     const taxYear = new Date().getFullYear();
     try {
+      const session = getSession();
+      const countyScope = buildCountyScopedSessionHeaders(session);
+      if (!countyScope.isolated) {
+        throw new Error('County context required for TerraForge county stats.');
+      }
+
+      const params = new URLSearchParams({ taxYear: String(taxYear) });
+      if (session?.countyId) {
+        params.set('countyId', session.countyId);
+      }
+
       const data = await apiFetch<{
         taxYear: number;
         totalParcels: number;
@@ -482,7 +495,7 @@ export class LiveDataProvider implements DataProvider {
         assessedThisYear: number;
         pendingAssessments: number;
         assessmentCompletionPercent: number;
-      }>(`/api/terraforge/county-stats?taxYear=${taxYear}`);
+      }>(`/api/terraforge/county-stats?${params.toString()}`, { headers: countyScope.headers });
       return {
         ...defaults,
         totalParcels: data.totalParcels ?? 0,
