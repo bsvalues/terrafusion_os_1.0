@@ -104,6 +104,19 @@ public interface ISalesCompEligibilityReader
         Guid countyId,
         Guid? sourceWorkbookId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Slice C45-B: maximum <c>SourceWorkbookLockedAt</c> across
+    /// the rows matching the filter. Returns <c>null</c> when no
+    /// rows match. The caller (controller) seeds the C45-A ETag
+    /// with this value (or a deterministic sentinel like
+    /// <c>DateTimeOffset.UnixEpoch</c> on null) so any C36 write
+    /// that touches a row in scope advances the cache key.
+    /// </summary>
+    Task<DateTime?> MaxLockedAtAsync(
+        Guid countyId,
+        Guid? sourceWorkbookId,
+        CancellationToken cancellationToken = default);
 }
 
 /// <summary>

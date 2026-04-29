@@ -84,6 +84,18 @@ public interface ISalesCompStaleSummaryReader
         Guid countyId,
         Guid baselineWorkbookId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Slice C45-B: maximum <c>SourceWorkbookLockedAt</c> across
+    /// the stale predicate (mirrors the per-row reader). Returns
+    /// <c>null</c> when no stale rows match. Used by the
+    /// controller to seed the C45-A ETag for the summary
+    /// endpoint.
+    /// </summary>
+    Task<DateTime?> MaxLockedAtAsync(
+        Guid countyId,
+        Guid baselineWorkbookId,
+        CancellationToken cancellationToken = default);
 }
 
 /// <summary>

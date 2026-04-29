@@ -125,6 +125,23 @@ public sealed class SalesCompEligibilityReader : ISalesCompEligibilityReader
         return BaseQuery(countyId, sourceWorkbookId).CountAsync(cancellationToken);
     }
 
+    public async Task<DateTime?> MaxLockedAtAsync(
+        Guid countyId,
+        Guid? sourceWorkbookId,
+        CancellationToken cancellationToken = default)
+    {
+        if (countyId == Guid.Empty)
+        {
+            throw new ArgumentException("CountyId is required.", nameof(countyId));
+        }
+
+        // EF Core's MaxAsync on an empty source throws; project to
+        // nullable first so the empty-set case returns null cleanly.
+        return await BaseQuery(countyId, sourceWorkbookId)
+            .Select(r => (DateTime?)r.SourceWorkbookLockedAt)
+            .MaxAsync(cancellationToken);
+    }
+
     /// <summary>
     /// Build the shared base query used by every public surface.
     /// Anchors the C37-A selection rule

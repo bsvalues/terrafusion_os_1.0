@@ -87,6 +87,17 @@ public sealed class SalesCompStaleReader : ISalesCompStaleReader
         return BaseQuery(countyId, baselineWorkbookId).CountAsync(cancellationToken);
     }
 
+    public async Task<DateTime?> MaxLockedAtAsync(
+        Guid countyId,
+        Guid baselineWorkbookId,
+        CancellationToken cancellationToken = default)
+    {
+        ValidateInputs(countyId, baselineWorkbookId);
+        return await BaseQuery(countyId, baselineWorkbookId)
+            .Select(r => (DateTime?)r.SourceWorkbookLockedAt)
+            .MaxAsync(cancellationToken);
+    }
+
     /// <summary>
     /// Single-source-of-truth predicate per C43-A Hard Guard 1:
     /// <c>CountyId = @countyId AND SourceWorkbookId &lt;&gt;
