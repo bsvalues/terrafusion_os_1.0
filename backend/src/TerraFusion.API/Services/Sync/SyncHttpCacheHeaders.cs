@@ -157,6 +157,93 @@ public static class SyncHttpCacheHeaders
     }
 
     /// <summary>
+    /// Slice C45-C: returns <c>true</c> when the request's
+    /// <c>If-Match</c> header indicates the operation should
+    /// proceed against the supplied <paramref name="currentEtag"/>.
+    ///
+    /// <para>Three branches per RFC 9110 §13.1.1:
+    /// <list type="bullet">
+    /// <item>Header absent → <c>true</c> (no precondition).</item>
+    /// <item>Header is <c>*</c> → <c>true</c> iff
+    ///   <paramref name="currentEtag"/> is non-empty (i.e. a
+    ///   resource exists). The active-workbook PUT uses this to
+    ///   require "a pointer must already exist" — useful for
+    ///   replace-only flows.</item>
+    /// <item>Header is one or more quoted ETag values → <c>true</c>
+    ///   iff any of them matches <paramref name="currentEtag"/>
+    ///   exactly (strong comparison; <c>W/</c>-prefixed entries are
+    ///   ignored).</item>
+    /// </list>
+    /// When <see cref="HasIfMatchHeader"/> is <c>true</c> and this
+    /// returns <c>false</c>, the caller MUST surface
+    /// <c>412 Precondition Failed</c>.
+    /// </para>
+    /// </summary>
+    public static bool MatchesIfMatch(HttpRequest request, string? currentEtag)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        if (!request.Headers.TryGetValue("If-Match", out var values) || values.Count == 0)
+        {
+            // No precondition supplied — the caller proceeds as
+            // before. C45-C is opt-in.
+            return true;
+        }
+
+        var raw = values[0];
+        if (string.IsNullOrWhiteSpace(raw))
+        {
+            return true; // Treat empty header as absent.
+        }
+
+        var trimmedHeader = raw.Trim();
+        if (trimmedHeader == "*")
+        {
+            // RFC 9110: "*" matches iff the resource exists.
+            return !string.IsNullOrEmpty(currentEtag);
+        }
+
+        if (string.IsNullOrEmpty(currentEtag))
+        {
+            // Resource has no current ETag (e.g. no pointer) but
+            // the client sent an explicit ETag list — there is
+            // nothing for it to match.
+            return false;
+        }
+
+        foreach (var token in trimmedHeader.Split(','))
+        {
+            var t = token.Trim();
+            if (t.Length == 0) continue;
+            // Strong comparison only — weak ETags are out of
+            // scope for the comps API per the C45-A policy.
+            if (t.StartsWith("W/", StringComparison.Ordinal)) continue;
+            if (string.Equals(t, currentEtag, StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Slice C45-C: helper for the controller to detect whether
+    /// the client supplied an <c>If-Match</c> precondition at all.
+    /// Combined with <see cref="MatchesIfMatch"/>, the controller
+    /// surfaces 412 only when the header WAS supplied AND the
+    /// match check failed.
+    /// </summary>
+    public static bool HasIfMatchHeader(HttpRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        if (!request.Headers.TryGetValue("If-Match", out var values) || values.Count == 0)
+        {
+            return false;
+        }
+        return !string.IsNullOrWhiteSpace(values[0]);
+    }
+
+    /// <summary>
     /// Returns <c>true</c> when the request's
     /// <c>If-Modified-Since</c> header is a parseable HTTP-date
     /// AND that date is at or after <paramref name="lastModifiedUtc"/>
