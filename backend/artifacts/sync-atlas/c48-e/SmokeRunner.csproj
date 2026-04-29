@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Slice C48-E live-endpoint-proof smoke runner. Standalone .NET app that
+    exercises the same C48-C/C48-D code path the production endpoint does:
+    LivePacsSchemaSource over SqlInformationSchemaIntrospector against the
+    operator's local Harris PACS database, without booting the full API.
+
+    Lives under backend/artifacts/sync-atlas/c48-e/ per the C48-E Execution
+    Card's allowed-files list. NOT included in TerraFusion.sln; this csproj
+    does not affect the solution build. Standalone:
+        dotnet run -project backend/artifacts/sync-atlas/c48-e/SmokeRunner.csproj
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>TerraFusion.Smoke.C48E</RootNamespace>
+    <AssemblyName>c48e-smoke</AssemblyName>
+    <!-- Do NOT generate AssemblyInfo for this throwaway runner. -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <!-- Don't pollute artifacts/ with bin/obj that get committed. -->
+    <BaseOutputPath>$(MSBuildThisFileDirectory)build/</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)build/obj/</BaseIntermediateOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\TerraFusion.Sync\TerraFusion.Sync.csproj" />
+  </ItemGroup>
+
+</Project>
