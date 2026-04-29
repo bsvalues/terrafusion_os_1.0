@@ -1,0 +1,445 @@
+{
+  "slice": "June 10 Washington 39-County Coverage Proof",
+  "generatedAtUtc": "2026-04-29T17:16:08.237Z",
+  "status": "PASS_WITH_LIMITATIONS",
+  "source": {
+    "workbook": "docs/Washington Counties/WA_Sales_Acquisition_Registry_v0_5.xlsx",
+    "workbookSha256": "459a7d5d77ccfcd1be8c913da50afd9e3b3c496b1120a2a4003e6ce843355cc9",
+    "workbookLastModifiedUtc": "2026-04-23T18:10:37.915Z",
+    "worksheet": "WA Sales Acquisition Registry",
+    "worksheetPath": "xl/worksheets/sheet1.xml"
+  },
+  "assertions": {
+    "expectedCountyCount": 39,
+    "registryCountyCount": 39,
+    "allExpectedCountiesPresent": true,
+    "noUnexpectedCountyRows": true,
+    "noDuplicateCountyRows": true,
+    "allRowsHaveOfficialAssessorUrl": true,
+    "allRowsHavePrimarySalesSource": true,
+    "allRowsHaveStatewideParcelBackbone": true,
+    "allRowsHaveAcquisitionFamily": true
+  },
+  "counts": {
+    "byStatus": {
+      "researched": 4,
+      "adapter-ready": 33,
+      "not-started": 2
+    },
+    "byAcquisitionFamily": {
+      "Parcel transfer history": 6,
+      "Direct sales search": 24,
+      "Monthly sales report": 4,
+      "Monthly report / parcel history": 1,
+      "Unknown": 3,
+      "Parcel transfer history / open data export": 1
+    },
+    "byPriority": {
+      "P2": 8,
+      "P1": 29,
+      "P3": 2
+    },
+    "adapterReady": 33,
+    "researched": 4,
+    "notStarted": 2,
+    "unknownFamily": 3
+  },
+  "failures": [],
+  "limitations": [
+    "2 counties remain not-started in the registry control plane.",
+    "3 counties still have Unknown acquisition family posture.",
+    "This proves registry coverage and acquisition-path inventory only; it does not prove statewide ingestion, normalization, geometry, or endpoint runtime coverage."
+  ],
+  "counties": [
+    {
+      "county": "Adams",
+      "officialAssessorBaseUrl": "https://co.adams.wa.us",
+      "primarySalesSource": "Parcel/property search via TaxSifter; direct sales UI not yet verified in this pass",
+      "fallbackSource": "MapSifter/parcel detail history",
+      "acquisitionFamily": "Parcel transfer history",
+      "gisMapSurface": "MapSifter",
+      "priority": "P2",
+      "status": "researched"
+    },
+    {
+      "county": "Asotin",
+      "officialAssessorBaseUrl": "https://co.asotin.wa.us",
+      "primarySalesSource": "Sales Search + monthly sales pages",
+      "fallbackSource": "Monthly Sales reports",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "Parcel Map",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Benton",
+      "officialAssessorBaseUrl": "https://co.benton.wa.us",
+      "primarySalesSource": "Benton County Property Search - Sales Search",
+      "fallbackSource": "Benton County Auditor recorded document search",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "Property Search Map Search / Benton GIS Hub",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Chelan",
+      "officialAssessorBaseUrl": "https://co.chelan.wa.us",
+      "primarySalesSource": "Dedicated Sales Search + Monthly Sales Reports",
+      "fallbackSource": "Document Search + monthly reports",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "Interactive Map / GIS",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Clallam",
+      "officialAssessorBaseUrl": "https://clallamcountywa.gov",
+      "primarySalesSource": "Dedicated Sales Search",
+      "fallbackSource": "Property Search transfer history",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "Property/Map Search",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Clark",
+      "officialAssessorBaseUrl": "https://clark.wa.gov",
+      "primarySalesSource": "Property Information Center sales history + Residential Property Sales Information",
+      "fallbackSource": "MapsOnline / parcel fact sheet / recorded documents",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "Property Information Center + MapsOnline",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Columbia",
+      "officialAssessorBaseUrl": "https://columbiaco.com",
+      "primarySalesSource": "Sales Data page + category sales reports (bare land, city homes, rural residential, etc.)",
+      "fallbackSource": "Treasurer sale search / GIS map / assessor contact",
+      "acquisitionFamily": "Monthly sales report",
+      "gisMapSurface": "County GIS + ArcGIS map",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Cowlitz",
+      "officialAssessorBaseUrl": "https://www.co.cowlitz.wa.us",
+      "primarySalesSource": "Parcel detail conveyances + Request Sales Report",
+      "fallbackSource": "Auditor Public Record Search / recorded documents / assessor map",
+      "acquisitionFamily": "Parcel transfer history",
+      "gisMapSurface": "County GIS Maps + Assessor GIS Map",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Douglas",
+      "officialAssessorBaseUrl": "https://www.douglascountywa.gov",
+      "primarySalesSource": "Monthly Sales",
+      "fallbackSource": "Web Mapping / TaxSifter parcel history",
+      "acquisitionFamily": "Monthly report / parcel history",
+      "gisMapSurface": "Web Mapping / Map Search",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Ferry",
+      "officialAssessorBaseUrl": "https://www.ferry-county.com",
+      "primarySalesSource": "Parcel-first via TaxSifter; direct sales search not verified in this pass",
+      "fallbackSource": "Auditor recording request / Treasurer document center / GIS addressing",
+      "acquisitionFamily": "Unknown",
+      "gisMapSurface": "GIS and Addressing",
+      "priority": "P2",
+      "status": "researched"
+    },
+    {
+      "county": "Franklin",
+      "officialAssessorBaseUrl": "https://www.franklincountywa.gov",
+      "primarySalesSource": "Assessor / REETSifter sales search and assessor map sale information",
+      "fallbackSource": "Map Search (GIS) / auditor-recorded documents fallback",
+      "acquisitionFamily": "Parcel transfer history",
+      "gisMapSurface": "Assessor map / MapSifter-style GIS",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Garfield",
+      "officialAssessorBaseUrl": "https://www.co.garfield.wa.us",
+      "primarySalesSource": "Property Sales",
+      "fallbackSource": "Treasurer helpful links / REET affidavits",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "Parcel Map",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Grant",
+      "officialAssessorBaseUrl": "https://www.grantcountywa.gov",
+      "primarySalesSource": "Sales Search + Current Sales reports",
+      "fallbackSource": "Property Search / Map Search / assessor media portal",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "Property Search Map",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Grays Harbor",
+      "officialAssessorBaseUrl": "https://www.co.grays-harbor.wa.us",
+      "primarySalesSource": "Sale Search / Sales Search - Parcel Sales Search",
+      "fallbackSource": "Recorded Document Search - Auditor + MapGeo",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "MapGeo",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Island",
+      "officialAssessorBaseUrl": "https://www.islandcountywa.gov",
+      "primarySalesSource": "Island County Assessor & Treasurer Sales Search",
+      "fallbackSource": "Parcel Search / Map Search / Spatialest property details",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "Map Search",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Jefferson",
+      "officialAssessorBaseUrl": "https://www.co.jefferson.wa.us",
+      "primarySalesSource": "Jefferson County PropertyAccess Sales Search",
+      "fallbackSource": "Real estate / property records archive and treasurer property-tax search",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "Parcel Map Viewer with detail lookup",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "King",
+      "officialAssessorBaseUrl": "https://kingcounty.gov",
+      "primarySalesSource": "eSales Search",
+      "fallbackSource": "Parcel detail + recorded documents",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "Parcel Viewer / GIS Center",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Kitsap",
+      "officialAssessorBaseUrl": "https://www.kitsapgov.com",
+      "primarySalesSource": "Parcel Details sales history + Sales Data / prior-year residential sales",
+      "fallbackSource": "Auditor deed search + weekly downloadable assessor TXT data",
+      "acquisitionFamily": "Parcel transfer history / open data export",
+      "gisMapSurface": "Parcel Search Map",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Kittitas",
+      "officialAssessorBaseUrl": "https://www.co.kittitas.wa.us",
+      "primarySalesSource": "Kittitas County Assessor TaxSifter Sales Search",
+      "fallbackSource": "Official recorded document search / parcel TaxSifter sales history",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "TaxSifter / MapSifter",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Klickitat",
+      "officialAssessorBaseUrl": "https://www.klickitatcounty.org",
+      "primarySalesSource": "Klickitat County Assessor Sales Reports",
+      "fallbackSource": "Interactive Mapping Service / Auditor recording search",
+      "acquisitionFamily": "Monthly sales report",
+      "gisMapSurface": "Interactive Mapping Service / GIS and Maps",
+      "priority": "P2",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Lewis",
+      "officialAssessorBaseUrl": "https://lewiscountywa.gov",
+      "primarySalesSource": "Sales Data pages by year/market area",
+      "fallbackSource": "Historical parcel cards + Auditor record searches",
+      "acquisitionFamily": "Monthly sales report",
+      "gisMapSurface": "Lewis County Parcel Search / Full Parcel Map",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Lincoln",
+      "officialAssessorBaseUrl": "https://www.co.lincoln.wa.us",
+      "primarySalesSource": "Sales Search",
+      "fallbackSource": "ReetSifter affidavits",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "Map options",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Mason",
+      "officialAssessorBaseUrl": "https://masoncountywa.gov",
+      "primarySalesSource": "Mason County Assessor Sales Data by Area & Neighborhood",
+      "fallbackSource": "Assessor/Treasurer Parcel Search / Parcel Map Viewer",
+      "acquisitionFamily": "Monthly sales report",
+      "gisMapSurface": "Parcel Map Viewer / GIS",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Okanogan",
+      "officialAssessorBaseUrl": "https://okanogancounty.org",
+      "primarySalesSource": "Comparable Sales + TaxSifter parcel/property records",
+      "fallbackSource": "Auditor self-service recorded documents",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "MapGeo",
+      "priority": "P2",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Pacific",
+      "officialAssessorBaseUrl": "https://www.co.pacific.wa.us",
+      "primarySalesSource": "TaxSifter parcel-detail transfer history",
+      "fallbackSource": "Auditor document search",
+      "acquisitionFamily": "Parcel transfer history",
+      "gisMapSurface": "MapSifter",
+      "priority": "P2",
+      "status": "researched"
+    },
+    {
+      "county": "Pend Oreille",
+      "officialAssessorBaseUrl": "https://www.pendoreilleco.org",
+      "primarySalesSource": "Sales Search",
+      "fallbackSource": "Property Search / auditor recording / Search Official Public Records",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "Property Search / parcel map",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Pierce",
+      "officialAssessorBaseUrl": "https://www.co.pierce.wa.us",
+      "primarySalesSource": "ATIP comparable sales information",
+      "fallbackSource": "Auditor recorded documents + PublicGIS/Open Data",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "PublicGIS / Open Data",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "San Juan",
+      "officialAssessorBaseUrl": "https://www.sanjuanco.com",
+      "primarySalesSource": "Sales Search + Sales Data page",
+      "fallbackSource": "Parcel Search / GIS data / Assessor data via Digital Archives",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "Polaris parcel map + GIS data",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Skagit",
+      "officialAssessorBaseUrl": "https://skagitcounty.net",
+      "primarySalesSource": "Assessor Comparable Sales Search + sales data files / iMap",
+      "fallbackSource": "Recorded Documents Search",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "iMap / Property Search",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Skamania",
+      "officialAssessorBaseUrl": "https://www.skamaniacounty.org",
+      "primarySalesSource": "Research needed",
+      "fallbackSource": "Research needed",
+      "acquisitionFamily": "Unknown",
+      "gisMapSurface": "Research needed",
+      "priority": "P3",
+      "status": "not-started"
+    },
+    {
+      "county": "Snohomish",
+      "officialAssessorBaseUrl": "https://snohomishcountywa.gov",
+      "primarySalesSource": "Property Sales Search + County Sales report (Excel/PDF)",
+      "fallbackSource": "Recorded Documents Search + Assessor Open Data",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "SCOPI / GIS Open Data",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Spokane",
+      "officialAssessorBaseUrl": "https://www.spokanecounty.org",
+      "primarySalesSource": "SCOUT Sales Search",
+      "fallbackSource": "Map parcel detail history",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "SCOUT map",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Stevens",
+      "officialAssessorBaseUrl": "https://stevenscountywa.gov",
+      "primarySalesSource": "Sales Search",
+      "fallbackSource": "Search Official Public Records / parcel map",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "Stevens Parcel Web Map",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Thurston",
+      "officialAssessorBaseUrl": "https://www.co.thurston.wa.us",
+      "primarySalesSource": "A+ parcel lookup neighborhood sales / property history",
+      "fallbackSource": "Auditor online record index",
+      "acquisitionFamily": "Parcel transfer history",
+      "gisMapSurface": "GeoData parcel map",
+      "priority": "P2",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Wahkiakum",
+      "officialAssessorBaseUrl": "https://www.co.wahkiakum.wa.us",
+      "primarySalesSource": "PropertyAccess detail pages; no dedicated public sales-search endpoint verified in this pass",
+      "fallbackSource": "GIS Map Library / GIS Web Map / assessor parcel detail / recorder request",
+      "acquisitionFamily": "Parcel transfer history",
+      "gisMapSurface": "GIS Map Library + GIS Web Map",
+      "priority": "P2",
+      "status": "researched"
+    },
+    {
+      "county": "Walla Walla",
+      "officialAssessorBaseUrl": "https://www.co.walla-walla.wa.us",
+      "primarySalesSource": "Walla Walla County PropertyAccess Sales Search",
+      "fallbackSource": "Map Search / Auditor recorder document search",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "Map Search",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Whatcom",
+      "officialAssessorBaseUrl": "https://www.co.whatcom.wa.us",
+      "primarySalesSource": "Sales Search + Neighborhood Market Study & Valuation Sales Data",
+      "fallbackSource": "Interactive Tax Parcel Viewer + Property Data Downloads",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "Map Search / Interactive Tax Parcel Viewer",
+      "priority": "P1",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Whitman",
+      "officialAssessorBaseUrl": "https://www.whitmancounty.org",
+      "primarySalesSource": "Research needed",
+      "fallbackSource": "Research needed",
+      "acquisitionFamily": "Unknown",
+      "gisMapSurface": "Research needed",
+      "priority": "P3",
+      "status": "not-started"
+    },
+    {
+      "county": "Yakima",
+      "officialAssessorBaseUrl": "https://www.yakimacounty.us",
+      "primarySalesSource": "Sales Searches",
+      "fallbackSource": "Other Searches + BOE comparable-sales guidance",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "Parcel Search / mapping",
+      "priority": "P2",
+      "status": "adapter-ready"
+    }
+  ]
+}

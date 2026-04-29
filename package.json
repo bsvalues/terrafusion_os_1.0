@@ -85,6 +85,7 @@
     "dev:frontend": "cd frontend && npm run dev",
     "dev:setup": "node scripts/dev-setup.mjs",
     "readiness:june10": "node scripts/june10-readiness.mjs",
+    "proof:june10:coverage": "node os-platform/core/pilot/washington-39-county-coverage-proof.mjs",
     "dev:preview": "node os-platform/core/pilot/dev-preview.mjs",
     "preview:smoke": "node os-platform/core/pilot/preview-smoke.mjs",
     "proof:r1:local": "node os-platform/core/pilot/r1-local-proof.mjs",
