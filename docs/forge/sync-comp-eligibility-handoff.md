@@ -9,6 +9,14 @@ implement.).
 slice.
 **Authoritative cross-reference:** `docs/sync/sync-boundary-policy.md`.
 
+**Family of related docs:**
+- `docs/architecture/terrafusion-domain-boundaries.md` (SCOPE-2 —
+  full seven-domain architecture map).
+- `docs/sync/sync-surface-inventory.md` (SCOPE-3 — per-surface
+  classification of every existing Sync artifact, including which
+  surfaces are Forge handoffs and the binding "do not expand
+  inside Sync" rule for each).
+
 ## Why this slice
 
 `GET /api/sync/comps/eligible` was built during C37–C39 as a
