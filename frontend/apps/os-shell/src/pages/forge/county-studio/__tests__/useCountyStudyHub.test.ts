@@ -6,7 +6,7 @@ import { vi } from 'vitest';
 // has a resolve.alias) or the root vitest.config.ts (which can fail to
 // honour the alias when Vite's dep-optimizer pre-bundles the real
 // package). The mock mirrors frontend/__mocks__/@microsoft/signalr.ts.
-const { mockConnection } = vi.hoisted(() => {
+const { mockConnection, mockWithUrl } = vi.hoisted(() => {
   const conn = {
     start: vi.fn().mockResolvedValue(undefined),
     stop: vi.fn().mockResolvedValue(undefined),
@@ -19,12 +19,12 @@ const { mockConnection } = vi.hoisted(() => {
     state: 'Connected',
     connectionId: 'mock-connection-id',
   };
-  return { mockConnection: conn };
+  return { mockConnection: conn, mockWithUrl: vi.fn().mockReturnThis() };
 });
 
 vi.mock('@microsoft/signalr', () => {
   const HubConnectionBuilder = vi.fn().mockImplementation(() => ({
-    withUrl: vi.fn().mockReturnThis(),
+    withUrl: mockWithUrl,
     withAutomaticReconnect: vi.fn().mockReturnThis(),
     build: vi.fn().mockReturnValue(mockConnection),
   }));
@@ -38,6 +38,7 @@ vi.mock('@microsoft/signalr', () => {
       Reconnecting: 'Reconnecting',
     },
     getMockConnection: () => mockConnection,
+    getMockWithUrl: () => mockWithUrl,
   };
 });
 
@@ -51,7 +52,7 @@ vi.mock('../countyStudyScope', () => ({
 
 import { useCountyStudyHub } from '../hooks/useCountyStudyHub';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
-import { getMockConnection } from '@microsoft/signalr';
+import { getMockConnection, getMockWithUrl } from '@microsoft/signalr';
 
 describe('useCountyStudyHub', () => {
   beforeEach(() => {
@@ -68,6 +69,17 @@ describe('useCountyStudyHub', () => {
       await Promise.resolve();
     });
     expect(conn.invoke).toHaveBeenCalledWith('JoinStudy', 'study-abc');
+  });
+
+  it('connects to the backend county study hub route without the API prefix', async () => {
+    renderHook(() => useCountyStudyHub('study-abc'));
+    const withUrl = getMockWithUrl();
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(withUrl).toHaveBeenCalledWith(expect.stringMatching(/\/hubs\/county-study\?countyId=benton$/));
+    expect(withUrl.mock.calls[0][0]).not.toContain(['/api', '/hubs/county-study'].join(''));
   });
 
   it('sets syncState to LIVE after hub connects', async () => {

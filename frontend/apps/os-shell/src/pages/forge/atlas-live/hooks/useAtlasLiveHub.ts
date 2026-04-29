@@ -7,7 +7,12 @@ import type {
   ParcelIdsSelection,
 } from '../types/atlasLive.types';
 
-const HUB_URL = '/api/hubs/county-study';
+const HUB_PATH = '/hubs/county-study';
+
+function getCountyStudyHubUrl() {
+  const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+  return `${apiBase}${HUB_PATH}`;
+}
 
 /**
  * Atlas Live View ↔ CountyStudyHub SignalR subscriber.
@@ -24,7 +29,7 @@ export function useAtlasLiveHub(studyId: string | null) {
     if (!studyId) return;
 
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl(HUB_URL)
+      .withUrl(getCountyStudyHubUrl())
       .withAutomaticReconnect()
       .build();
 

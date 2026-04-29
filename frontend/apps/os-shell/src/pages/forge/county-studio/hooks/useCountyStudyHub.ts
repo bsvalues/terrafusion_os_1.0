@@ -3,7 +3,12 @@ import * as signalR from '@microsoft/signalr';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { getCountyStudyScope } from '../countyStudyScope';
 
-const HUB_URL = '/api/hubs/county-study';
+const HUB_PATH = '/hubs/county-study';
+
+function getCountyStudyHubUrl() {
+  const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+  return `${apiBase}${HUB_PATH}`;
+}
 
 export function useCountyStudyHub(studyId: string | null) {
   const { setSyncState, setPendingSelection, pushPeerPresence, pushIncomingProjection } =
@@ -19,7 +24,7 @@ export function useCountyStudyHub(studyId: string | null) {
     }
 
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl(`${HUB_URL}?countyId=${encodeURIComponent(countyScope.countyId)}`)
+      .withUrl(`${getCountyStudyHubUrl()}?countyId=${encodeURIComponent(countyScope.countyId)}`)
       .withAutomaticReconnect()
       .build();
 

@@ -7,7 +7,7 @@ import { vi } from 'vitest';
 // be bypassed by Vite's dep-optimizer pre-bundling). Mirrors
 // frontend/__mocks__/@microsoft/signalr.ts and the same pattern used
 // in pages/forge/county-studio/__tests__/useCountyStudyHub.test.ts.
-const { mockConnection } = vi.hoisted(() => {
+const { mockConnection, mockWithUrl } = vi.hoisted(() => {
   const conn = {
     start: vi.fn().mockResolvedValue(undefined),
     stop: vi.fn().mockResolvedValue(undefined),
@@ -20,12 +20,12 @@ const { mockConnection } = vi.hoisted(() => {
     state: 'Connected',
     connectionId: 'mock-connection-id',
   };
-  return { mockConnection: conn };
+  return { mockConnection: conn, mockWithUrl: vi.fn().mockReturnThis() };
 });
 
 vi.mock('@microsoft/signalr', () => {
   const HubConnectionBuilder = vi.fn().mockImplementation(() => ({
-    withUrl: vi.fn().mockReturnThis(),
+    withUrl: mockWithUrl,
     withAutomaticReconnect: vi.fn().mockReturnThis(),
     build: vi.fn().mockReturnValue(mockConnection),
   }));
@@ -39,12 +39,13 @@ vi.mock('@microsoft/signalr', () => {
       Reconnecting: 'Reconnecting',
     },
     getMockConnection: () => mockConnection,
+    getMockWithUrl: () => mockWithUrl,
   };
 });
 
 import { useAtlasLiveHub } from '../hooks/useAtlasLiveHub';
 import { useAtlasLiveStore } from '@/stores/atlasLiveStore';
-import { getMockConnection } from '@microsoft/signalr';
+import { getMockConnection, getMockWithUrl } from '@microsoft/signalr';
 
 describe('useAtlasLiveHub', () => {
   beforeEach(() => {
@@ -62,6 +63,17 @@ describe('useAtlasLiveHub', () => {
       await Promise.resolve();
     });
     expect(conn.invoke).toHaveBeenCalledWith('JoinStudy', 'study-abc');
+  });
+
+  it('connects to the backend county study hub route without the API prefix', async () => {
+    renderHook(() => useAtlasLiveHub('study-abc'));
+    const withUrl = getMockWithUrl();
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(withUrl).toHaveBeenCalledWith(expect.stringMatching(/\/hubs\/county-study$/));
+    expect(withUrl.mock.calls[0][0]).not.toContain(['/api', '/hubs/county-study'].join(''));
   });
 
   it('sets syncState to LIVE after hub connects', async () => {
