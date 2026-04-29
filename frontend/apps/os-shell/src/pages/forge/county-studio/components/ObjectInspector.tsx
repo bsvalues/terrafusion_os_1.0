@@ -529,13 +529,13 @@ const ActionPanel = ({
       <button
         type="button"
         data-testid="inspector-handoff-atlas"
-        aria-label="Open in Atlas Live View"
+        aria-label="Pop Out Map"
         onClick={onAtlas}
         style={handoffBtnBaseStyle}
       >
-        <div style={{ fontSize: 12, fontWeight: 700 }}>Open in Atlas Live View</div>
+        <div style={{ fontSize: 12, fontWeight: 700 }}>Pop Out Map</div>
         <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', marginTop: 2 }}>
-          Show segment geometry on the live map
+          Show segment geometry in the co-present map session
         </div>
       </button>
       <button

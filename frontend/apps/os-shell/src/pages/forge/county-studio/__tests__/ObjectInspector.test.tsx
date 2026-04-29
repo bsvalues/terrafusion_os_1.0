@@ -327,7 +327,7 @@ describe('ObjectInspector — Action tab', () => {
     expect(screen.getByTestId('inspector-action-error')).toBeInTheDocument();
   });
 
-  it('Open in Atlas still navigates to atlas-live (regression for existing handoff)', async () => {
+  it('Pop Out Map opens the atlas-live pop-out route for the same study session', async () => {
     render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
     await switchToTab('inspector-tab-action');
     fireEvent.click(screen.getByTestId('inspector-handoff-atlas'));

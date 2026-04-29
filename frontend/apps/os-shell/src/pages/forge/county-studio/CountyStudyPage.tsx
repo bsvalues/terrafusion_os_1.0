@@ -127,7 +127,7 @@ export function CountyStudyPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {activeStudy && (
             <button
-              aria-label="Open Atlas Live View"
+              aria-label="Pop Out Map"
               onClick={handleOpenAtlas}
               style={{
                 padding: '4px 10px', borderRadius: 4, border: '1px solid hsl(var(--tf-border))',
@@ -135,7 +135,7 @@ export function CountyStudyPage() {
                 cursor: 'pointer', fontWeight: 600,
               }}
             >
-              ↗ Atlas
+              ↗ Pop Out Map
             </button>
           )}
           <button
