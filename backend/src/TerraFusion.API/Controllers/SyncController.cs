@@ -602,6 +602,26 @@ public class SyncController : ControllerBase
     }
 
     /// <summary>
+    /// Slice C45-C: shared ETag computation for the active-workbook
+    /// pointer. Used by both <c>GetActiveWorkbook</c> (to emit the
+    /// 200 / 304 ETag) and <c>PutActiveWorkbook</c> (to evaluate
+    /// <c>If-Match</c> against the current pointer's ETag). Keeping
+    /// the seed in one place ensures the GET and the optimistic-
+    /// concurrency check on PUT can never drift.
+    /// </summary>
+    private (string Etag, DateTimeOffset SetAtUtc) ComputeActiveWorkbookEtag(
+        SyncCountyActiveWorkbookSnapshot snap)
+    {
+        var setAtUtc = ToLastModifiedUtc(snap.SetAt);
+        var etag = SyncHttpCacheHeaders.BuildStrongEtag(
+            EtagScopeActiveWorkbook,
+            snap.CountyId.ToString(),
+            snap.ActiveWorkbookId.ToString(),
+            setAtUtc.UtcDateTime.ToString("O", System.Globalization.CultureInfo.InvariantCulture));
+        return (etag, setAtUtc);
+    }
+
+    /// <summary>
     /// Resolve the authenticated principal's countyId claim. Returns
     /// <c>null</c> when the claim is missing or malformed; the caller
     /// converts that to 403. Mirrors the resolver pattern in
@@ -673,12 +693,7 @@ public class SyncController : ControllerBase
         // ── C45-B: ETag seed = (countyId, activeWorkbookId, setAtUtc).
         //    Pointer freshness rotates whenever the operator
         //    promotes a different workbook (SetAt advances). ──
-        var setAtUtc = ToLastModifiedUtc(snap.SetAt);
-        var etag = SyncHttpCacheHeaders.BuildStrongEtag(
-            EtagScopeActiveWorkbook,
-            snap.CountyId.ToString(),
-            snap.ActiveWorkbookId.ToString(),
-            setAtUtc.UtcDateTime.ToString("O", System.Globalization.CultureInfo.InvariantCulture));
+        var (etag, setAtUtc) = ComputeActiveWorkbookEtag(snap);
 
         if (SyncHttpCacheHeaders.MatchesIfNoneMatch(Request, etag) ||
             SyncHttpCacheHeaders.MatchesIfModifiedSince(Request, setAtUtc))
@@ -744,6 +759,38 @@ public class SyncController : ControllerBase
         var operatorId = User.Identity?.Name
             ?? User.FindFirst("sub")?.Value
             ?? "api-operator";
+
+        // ── C45-C: optimistic concurrency via If-Match. When the
+        //    client supplies the header, compute the current
+        //    pointer's ETag and reject with 412 Precondition
+        //    Failed unless it matches. Absent header preserves
+        //    backward-compatible behavior. The check happens
+        //    AFTER auth + county-isolation (Hard Guard 8) so
+        //    412 cannot leak resource existence to cross-county
+        //    callers — they hit 403 first. ──
+        if (SyncHttpCacheHeaders.HasIfMatchHeader(Request))
+        {
+            var existing = await _activeWorkbook.GetAsync(countyId, ct);
+            string? currentEtag = existing is null
+                ? null
+                : ComputeActiveWorkbookEtag(existing).Etag;
+            if (!SyncHttpCacheHeaders.MatchesIfMatch(Request, currentEtag))
+            {
+                _logger.LogWarning(
+                    "[Sync] PutActiveWorkbook precondition failed: county={CountyId} requestedWorkbookId={WorkbookId} hadCurrentPointer={HadPointer}",
+                    countyId, workbookId, existing is not null);
+                // no-store already applied at the top of the action
+                // (Hard Guard 2); the 412 inherits it.
+                return StatusCode(
+                    StatusCodes.Status412PreconditionFailed,
+                    new
+                    {
+                        error = "If-Match precondition failed.",
+                        hint  = "The active-workbook pointer changed since you fetched it. Re-GET /api/sync/active-workbook to pick up the current ETag and retry.",
+                        countyId,
+                    });
+            }
+        }
 
         try
         {
