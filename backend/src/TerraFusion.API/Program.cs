@@ -1171,6 +1171,13 @@ builder.Services.AddScoped<
     TerraFusion.Sync.Workbench.Comps.Sales.ISalesCompEligibilityReader,
     TerraFusion.Sync.Workbench.Comps.Sales.SalesCompEligibilityReader>();
 
+// Slice C41-B — per-county active-workbook pointer service. Pure metadata
+// surface over SyncCountyActiveWorkbooks; SET / GET / Clear do not trigger
+// C36 / canonical / PACS work (per C41-A Hard Guards).
+builder.Services.AddScoped<
+    TerraFusion.Sync.Workbench.Mapping.ISyncCountyActiveWorkbookService,
+    TerraFusion.Sync.Workbench.Mapping.SyncCountyActiveWorkbookService>();
+
 // Calibration Workbench services
 builder.Services.AddScoped<TerraFusion.Core.Services.IMatrixDiagnosticService, TerraFusion.API.Services.MatrixDiagnosticService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.ICalibrationMemoService, TerraFusion.Data.Services.CalibrationMemoService>();
