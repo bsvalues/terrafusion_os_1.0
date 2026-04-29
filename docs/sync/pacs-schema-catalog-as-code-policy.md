@@ -20,6 +20,43 @@ row added on C48-B implementation).
 - `docs/sync/pacs-canonical-dataflow-identity-policy.md` (canonical
   identity tuples that the catalog must preserve)
 
+## Source / target model (binding)
+
+This catalog and every slice that consumes it MUST observe the
+following corrected source/target model. Earlier C48 wording briefly
+inverted this and that error is forbidden going forward.
+
+```text
+Harris PACS 9.0  ──── TerraFusion Sync ────►  TerraFusion DB
+   (legacy source)        (bridge)              (target)
+```
+
+- **Harris PACS 9.0** is Benton's legacy CAMA/PACS database. It is
+  the **source** TerraFusion Sync converts FROM. The catalog
+  describes Harris PACS schema; nothing about the catalog implies
+  PACS is a destination.
+- **TerraFusion DB** is the modern destination TerraFusion Sync
+  writes INTO. Canonical landing tables
+  (`CanonicalSaleQualifications` and future lanes) live here.
+- **ProVal** and **Ascend** are part of Benton's historical
+  conversion provenance — the prior valuation and tax systems that
+  shaped the data semantics now visible in PACS. They are NOT the
+  active source of TerraFusion Sync. References to ProVal/Ascend in
+  Sync code or docs are limited to **historical-provenance
+  footnotes** (explaining why a PACS column has the shape it has),
+  never as runtime source connections.
+- **Tyler Vision** is NOT in Benton's stack and never was. Any
+  reference to Tyler in C48 surfaces is a vestigial error from
+  earlier slices that has been swept by C48-FIX and C48-FIX2.
+
+Future catalog work, downstream readers, and any new
+`IPacsSchemaSource` implementation MUST cite this section when
+describing where the catalog gets its bytes. The catalog reflects
+the live Harris PACS DB schema (read via reflection / introspection
+in production; via fixture in tests). It does not parse vendor
+documentation files except where the operator explicitly provides
+them as supplementary input.
+
 ## Why this slice
 
 The C-series proved the bridge works — but every reader, transform,

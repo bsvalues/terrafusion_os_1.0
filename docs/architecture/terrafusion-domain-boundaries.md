@@ -82,11 +82,19 @@ Two non-obvious things this picture asserts:
 ## 1. TerraFusion Sync
 
 **What it is.**
-The legacy-to-canonical bridge. Sync reads from PACS / CAMA / Excel /
-ProVal / Tyler / Aumentum / county-specific dialects, profiles them,
-maps them via a Mapping Workbook, runs source-to-canonical transforms,
-writes canonical landing rows with provenance, and exposes read-only
-proof and diagnostic surfaces. Sync is the bridge troll, not the mayor.
+The legacy-to-canonical bridge. Sync reads FROM the operator's
+legacy CAMA/PACS database (Harris PACS 9.0 in Benton; per-county
+dialects as additional counties onboard) and any supporting
+operator-side artifacts (Excel exports, dashboard SQL, dictionary
+tables). It profiles those sources, maps them via a Mapping
+Workbook, runs source-to-canonical transforms, writes canonical
+landing rows with provenance INTO TerraFusion DB, and exposes
+read-only proof and diagnostic surfaces. ProVal and Ascend appear
+only as historical conversion-provenance footnotes (prior systems
+that shaped today's PACS data semantics); they are not active
+runtime sources. Tyler Vision is NOT in scope and never was. The
+destination is always TerraFusion DB; PACS is never a destination.
+Sync is the bridge troll, not the mayor.
 
 **Owns.**
 - Source connection records (credentials, endpoints, scopes for

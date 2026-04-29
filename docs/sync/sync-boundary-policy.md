@@ -51,7 +51,13 @@ holds. New work inside Sync MUST fall into one of these
 categories or it does not belong here.
 
 1. **Source connection records** — credentials, endpoints, and
-   scopes for legacy systems (PACS, CAMA, ProVal, Tyler, etc.).
+   scopes for legacy CAMA/PACS systems Sync converts FROM
+   (Harris PACS 9.0 in Benton; future county-specific dialects as
+   onboarded). ProVal and Ascend appear only as historical
+   conversion-provenance footnotes that explain PACS data
+   semantics; they are not active runtime sources. Tyler Vision is
+   not in scope. The destination is always TerraFusion DB, never a
+   legacy system.
 2. **Source profiling** — schema discovery, row counts, sample
    harvesting, dictionary detection on legacy databases.
 3. **Source schema atlas** — durable record of legacy table /
