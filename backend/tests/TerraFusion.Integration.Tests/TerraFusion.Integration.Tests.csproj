@@ -19,6 +19,7 @@
     <PackageReference Include="Npgsql" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
     <PackageReference Include="YamlDotNet" />
+    <PackageReference Include="Moq" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/TerraFusion.Core/TerraFusion.Core.csproj" />
