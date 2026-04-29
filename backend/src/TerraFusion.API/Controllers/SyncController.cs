@@ -28,19 +28,22 @@ public class SyncController : ControllerBase
     private readonly ILogger<SyncController> _logger;
     private readonly ISalesCompEligibilityReader _compReader;
     private readonly ISyncCountyActiveWorkbookService _activeWorkbook;
+    private readonly ISalesCompStaleReader _staleReader;
 
     public SyncController(
         ISaleQualificationService qualification,
         TerraFusionDbContext db,
         ILogger<SyncController> logger,
         ISalesCompEligibilityReader compReader,
-        ISyncCountyActiveWorkbookService activeWorkbook)
+        ISyncCountyActiveWorkbookService activeWorkbook,
+        ISalesCompStaleReader staleReader)
     {
         _qualification  = qualification;
         _db             = db;
         _logger         = logger;
         _compReader     = compReader;
         _activeWorkbook = activeWorkbook;
+        _staleReader    = staleReader;
     }
 
     // ── Requalification trigger ────────────────────────────────────────────
@@ -736,5 +739,185 @@ public class SyncController : ControllerBase
             countyId, existing.ActiveWorkbookId, operatorId);
 
         return NoContent();
+    }
+
+    // ── Stale canonical-row diagnostic (Slice C43-B) ────────────────────────
+
+    private const string BaselineSourceExplicit  = "explicit-query-param";
+    private const string BaselineSourcePointer   = "active-workbook-pointer";
+
+    /// <summary>
+    /// Slice C43-B: HTTP exposure of the C43-A stale-row diagnostic.
+    /// Returns canonical sale-qualification rows whose
+    /// <c>SourceWorkbookId</c> differs from a baseline workbook id
+    /// (the operator's <c>workbookId</c> query param OR the C41-B
+    /// active-workbook pointer for the county).
+    ///
+    /// <para>Pure read; no canonical / PACS / workbook mutation,
+    /// no AuditLogs writes (operational logging only). Inherits
+    /// the C38-A endpoint contract pattern verbatim: auth required,
+    /// county-isolation server-side, no PII, GET-only, paginated
+    /// envelope mirroring C39-B.</para>
+    ///
+    /// <para>Baseline resolution per C43-A Hard Guard 4:
+    /// <list type="bullet">
+    /// <item>Explicit non-empty <c>workbookId</c> → use directly.</item>
+    /// <item>Otherwise → consult the C41-B active-workbook pointer.</item>
+    /// <item>Pointer absent + workbook id absent → 400 with the
+    ///   locked operator message.</item>
+    /// </list>
+    /// </para>
+    /// </summary>
+    [HttpGet("comps/stale")]
+    [Authorize]
+    public async Task<IActionResult> GetStaleComps(
+        [FromQuery] Guid countyId,
+        [FromQuery] Guid? workbookId,
+        [FromQuery] int? page,
+        [FromQuery] int? pageSize,
+        CancellationToken ct = default)
+    {
+        // ── 400: required input missing / malformed ──
+        if (countyId == Guid.Empty)
+        {
+            return BadRequest(new { error = "countyId is required." });
+        }
+
+        // ── 400: pagination validation (C43-A inherits C39-A
+        //        Hard Guard 3). No silent normalization. ──
+        if (page is < 1)
+        {
+            return BadRequest(new
+            {
+                error = "page must be >= 1.",
+                hint  = "Omit the page query parameter to default to page 1.",
+                page  = page,
+            });
+        }
+        if (pageSize is < 1)
+        {
+            return BadRequest(new
+            {
+                error    = "pageSize must be >= 1.",
+                hint     = $"Omit the pageSize query parameter to default to {DefaultPageSize}.",
+                pageSize = pageSize,
+            });
+        }
+        if (pageSize is > MaxPageSize)
+        {
+            return BadRequest(new
+            {
+                error    = $"pageSize must be <= {MaxPageSize}.",
+                hint     = "Server-bounded per C43-A inherited C39-A Hard Guard 1 / 2.",
+                pageSize = pageSize,
+                maxPageSize = MaxPageSize,
+            });
+        }
+
+        // ── 403: county isolation (mirrors GetEligibleComps). ──
+        var principalCountyId = ResolveCountyClaim();
+        if (principalCountyId is null || principalCountyId.Value != countyId)
+        {
+            _logger.LogWarning(
+                "[Sync] GetStaleComps refused cross-county access: principal={Principal} requested={Requested}",
+                principalCountyId, countyId);
+            return Forbid();
+        }
+
+        // ── Baseline resolution (Hard Guard 4). Explicit (non-empty)
+        //    workbookId wins; otherwise consult the active-workbook
+        //    pointer; otherwise 400 with the locked operator message. ──
+        Guid baselineWorkbookId;
+        string baselineSource;
+        if (workbookId.HasValue && workbookId.Value != Guid.Empty)
+        {
+            baselineWorkbookId = workbookId.Value;
+            baselineSource     = BaselineSourceExplicit;
+        }
+        else
+        {
+            var ptr = await _activeWorkbook.GetAsync(countyId, ct);
+            if (ptr is null)
+            {
+                return BadRequest(new
+                {
+                    error = $"Cannot compute staleness for county {countyId}: " +
+                            "no workbookId supplied and no active-workbook pointer is configured. " +
+                            "Provide ?workbookId= or set the county active workbook.",
+                });
+            }
+            baselineWorkbookId = ptr.ActiveWorkbookId;
+            baselineSource     = BaselineSourcePointer;
+        }
+
+        // ── Apply server-side defaults (after validation). ──
+        var effectivePage     = page     ?? DefaultPage;
+        var effectivePageSize = pageSize ?? DefaultPageSize;
+
+        // ── Delegate to the C43-B reader. Single predicate;
+        //    AsNoTracking; no joins. ──
+        var totalCount = await _staleReader.CountAsync(countyId, baselineWorkbookId, ct);
+        var pageRows   = await _staleReader.ReadPageAsync(
+            countyId, baselineWorkbookId, effectivePage, effectivePageSize, ct);
+
+        // ── Project to wire DTO. ComputedDecision is mapped from
+        //    int → string for wire stability per C43-A. ──
+        var items = pageRows
+            .Select(s => new StaleSaleQualificationDto(
+                s.ChgOfOwnerId,
+                ProjectDecisionName(s.ComputedDecisionRaw),
+                s.WacCdSourceValue,
+                s.WacCdCanonicalValue,
+                s.SlRatioTypeCdSourceValue,
+                s.SlRatioTypeCdCanonicalValue,
+                s.SaleDate,
+                s.SalePrice,
+                s.SourceWorkbookId,
+                s.SourceWorkbookLockedAt))
+            .ToList();
+
+        var totalPages = totalCount == 0
+            ? 0
+            : (int)Math.Ceiling((double)totalCount / effectivePageSize);
+        var hasNextPage     = effectivePage < totalPages;
+        var hasPreviousPage = effectivePage > 1;
+
+        var envelope = new PagedStaleSaleQualificationsDto(
+            Items:              items,
+            Page:               effectivePage,
+            PageSize:           effectivePageSize,
+            TotalCount:         totalCount,
+            TotalPages:         totalPages,
+            HasNextPage:        hasNextPage,
+            HasPreviousPage:    hasPreviousPage,
+            BaselineWorkbookId: baselineWorkbookId,
+            BaselineSource:     baselineSource);
+
+        _logger.LogInformation(
+            "[Sync] GetStaleComps: county={CountyId} baseline={BaselineWorkbookId} via={BaselineSource} page={Page} pageSize={PageSize} rows={Rows} total={Total}",
+            countyId, baselineWorkbookId, baselineSource, effectivePage, effectivePageSize, items.Count, totalCount);
+
+        return Ok(envelope);
+    }
+
+    /// <summary>
+    /// Map the int-stored
+    /// <c>CanonicalSaleQualificationDecision</c> enum to the wire
+    /// string per C43-A Hard Guard / DTO contract. Unknown values
+    /// fall through to the integer-stringified form so the wire
+    /// shape never silently misrepresents corrupted enum storage.
+    /// </summary>
+    private static string ProjectDecisionName(int rawDecision)
+    {
+        return rawDecision switch
+        {
+            (int)TerraFusion.Core.Entities.Canonical.CanonicalSaleQualificationDecision.Qualified
+                => "Qualified",
+            (int)TerraFusion.Core.Entities.Canonical.CanonicalSaleQualificationDecision.Excluded
+                => "Excluded",
+            (int)TerraFusion.Core.Entities.Canonical.CanonicalSaleQualificationDecision.Inconclusive
+                => "Inconclusive",
+            _ => rawDecision.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        };
     }
 }
