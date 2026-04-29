@@ -8,6 +8,15 @@ namespace TerraFusion.Core.DTOs.Sync;
 /// service-side <c>SyncCountyActiveWorkbookSnapshot</c> field-for-
 /// field; PII-free by construction (the pointer carries metadata
 /// only — no grantor, no grantee, no parcel data).
+///
+/// <para>Slice C47-A: adds <see cref="ActiveWorkbookName"/>
+/// (nullable) — the operator-typed <c>SyncMappingWorkbook.Name</c>
+/// of the pointed-to workbook. Symmetric to C46-B's enrichment on
+/// the stale-summary endpoint. Inherits the C46-A guards:
+/// county-scoped controller-side lookup; <c>null</c> on missing /
+/// cross-county / lookup failure; verbatim emission with no
+/// sanitization; cache-key invariance preserved (the C45-B ETag
+/// seed does NOT include the name).</para>
 /// </summary>
 /// <param name="CountyId">
 /// Sovereign-county scope. Echoes the requested county.
@@ -15,6 +24,13 @@ namespace TerraFusion.Core.DTOs.Sync;
 /// <param name="ActiveWorkbookId">
 /// The Mapped <c>SyncMappingWorkbook</c> the operator currently
 /// treats as authoritative for the county.
+/// </param>
+/// <param name="ActiveWorkbookName">
+/// Operator-typed name of the pointed-to workbook (slice C47-A).
+/// <c>null</c> when the workbook row was deleted, the id is
+/// cross-county (defense in depth), or the lookup failed
+/// transiently. Consumers MUST handle null gracefully (typically
+/// by falling back to the Guid display).
 /// </param>
 /// <param name="SetAt">
 /// Business timestamp of the most recent promotion. Distinct from
@@ -30,6 +46,7 @@ namespace TerraFusion.Core.DTOs.Sync;
 public sealed record ActiveWorkbookSnapshotDto(
     Guid     CountyId,
     Guid     ActiveWorkbookId,
+    string?  ActiveWorkbookName,
     DateTime SetAt,
     string   SetBy,
     string?  SetReason);
