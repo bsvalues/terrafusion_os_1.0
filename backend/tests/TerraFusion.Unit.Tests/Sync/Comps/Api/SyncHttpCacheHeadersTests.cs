@@ -202,7 +202,7 @@ public class SyncHttpCacheHeadersTests
 
         result.Should().BeOfType<OkObjectResult>();
         var headers = controller.Response.Headers;
-        headers.CacheControl.ToString().Should().Be("private, max-age=60");
+        headers.CacheControl.ToString().Should().Be("private, max-age=60, stale-while-revalidate=120");
         headers.Vary.ToString().Should().Be("Authorization");
         headers.ETag.ToString().Should().StartWith("\"comps:e:").And.EndWith("\"");
         headers.LastModified.ToString().Should().NotBeEmpty();
@@ -225,7 +225,7 @@ public class SyncHttpCacheHeadersTests
         var result = await controller.GetStaleComps(county.Id, newWb, null, null);
 
         result.Should().BeOfType<OkObjectResult>();
-        controller.Response.Headers.CacheControl.ToString().Should().Be("private, max-age=60");
+        controller.Response.Headers.CacheControl.ToString().Should().Be("private, max-age=60, stale-while-revalidate=120");
         controller.Response.Headers.Vary.ToString().Should().Be("Authorization");
         controller.Response.Headers.ETag.ToString().Should().StartWith("\"comps:s:");
     }
@@ -240,7 +240,7 @@ public class SyncHttpCacheHeadersTests
 
         var result = await controller.GetStaleCompsSummary(county.Id, newWb, null, null);
         result.Should().BeOfType<OkObjectResult>();
-        controller.Response.Headers.CacheControl.ToString().Should().Be("private, max-age=60");
+        controller.Response.Headers.CacheControl.ToString().Should().Be("private, max-age=60, stale-while-revalidate=120");
         controller.Response.Headers.ETag.ToString().Should().StartWith("\"comps:ss:");
     }
 
@@ -405,7 +405,7 @@ public class SyncHttpCacheHeadersTests
 
         var status = result.Should().BeOfType<StatusCodeResult>().Subject;
         status.StatusCode.Should().Be(StatusCodes.Status304NotModified);
-        second.Response.Headers.CacheControl.ToString().Should().Be("private, max-age=60");
+        second.Response.Headers.CacheControl.ToString().Should().Be("private, max-age=60, stale-while-revalidate=120");
         second.Response.Headers.ETag.ToString().Should().Be(serverEtag);
         second.Response.Headers.Vary.ToString().Should().Be("Authorization");
         second.Response.Headers.LastModified.ToString().Should().BeEmpty(
@@ -597,7 +597,7 @@ public class SyncHttpCacheHeadersTests
         etag1.Should().NotBeEmpty();
         etag1.Should().Be(etag2,
             "empty result must still produce a deterministic ETag (UnixEpoch fallback for the seed)");
-        c1.Response.Headers.CacheControl.ToString().Should().Be("private, max-age=60");
+        c1.Response.Headers.CacheControl.ToString().Should().Be("private, max-age=60, stale-while-revalidate=120");
     }
 
     // 17. If-Modified-Since short-circuit.
