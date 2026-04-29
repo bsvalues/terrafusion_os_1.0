@@ -66,6 +66,14 @@ interface InfluenceResponse {
   influentialCount: number; items: InfluenceItem[]; error?: string;
 }
 
+function fmt(value: number | null | undefined, digits: number): string {
+  return Number.isFinite(value) ? (value as number).toFixed(digits) : '—';
+}
+
+function fmtInt(value: number | null | undefined): string {
+  return Number.isFinite(value) ? (value as number).toLocaleString() : '—';
+}
+
 // ── Main Component ───────────────────────────────────────────────────────────
 
 interface DiagnosticsTabProps {
@@ -158,7 +166,7 @@ export function DiagnosticsTab({ countyScope, taxYear = TAX_YEAR }: DiagnosticsT
           <CardTitle className="text-sm font-semibold">
             Vertical Equity by Sale Price Decile
             <span className="ml-2 text-xs text-muted-foreground font-normal">
-              IAAO Standard 5 §6.3 — County median: {veQuery.data?.countyMedianRatio?.toFixed(4) ?? '…'}
+              IAAO Standard 5 §6.3 — County median: {fmt(veQuery.data?.countyMedianRatio, 4)}
             </span>
           </CardTitle>
         </CardHeader>
@@ -173,12 +181,12 @@ export function DiagnosticsTab({ countyScope, taxYear = TAX_YEAR }: DiagnosticsT
                 <BarChart data={veQuery.data.deciles} margin={{ top: 4, right: 8, left: 8, bottom: 4 }}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                   <XAxis dataKey="decile" label={{ value: 'Decile (low→high value)', position: 'insideBottom', offset: -2, fontSize: 11 }} tick={{ fontSize: 11 }} />
-                  <YAxis tickFormatter={(v: number) => v.toFixed(2)} tick={{ fontSize: 11 }} />
+                  <YAxis tickFormatter={(v: number) => fmt(v, 2)} tick={{ fontSize: 11 }} />
                   <Tooltip
-                    formatter={(v: number) => [v.toFixed(4), 'Median Ratio']}
+                    formatter={(v: number) => [fmt(v, 4), 'Median Ratio']}
                     labelFormatter={(label: number) => `Decile ${label}`}
                   />
-                  <ReferenceLine y={veQuery.data.countyMedianRatio} stroke="var(--forge-info)" strokeDasharray="4 4" label={{ value: 'County Median', fontSize: 10 }} />
+                  <ReferenceLine y={veQuery.data.countyMedianRatio ?? 0} stroke="var(--forge-info)" strokeDasharray="4 4" label={{ value: 'County Median', fontSize: 10 }} />
                   <Bar dataKey="medianRatio" fill="var(--forge-accent)" radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -197,7 +205,7 @@ export function DiagnosticsTab({ countyScope, taxYear = TAX_YEAR }: DiagnosticsT
             Influential Sales — Cook&apos;s Distance
             <span className="ml-2 text-xs text-muted-foreground font-normal">
               {infQuery.data
-                ? `${infQuery.data.influentialCount} influential of ${infQuery.data.sampleSize.toLocaleString()} (threshold 4/n = ${infQuery.data.threshold?.toFixed(4)})`
+                ? `${fmtInt(infQuery.data.influentialCount)} influential of ${fmtInt(infQuery.data.sampleSize)} (threshold 4/n = ${fmt(infQuery.data.threshold, 4)})`
                 : '…'}
             </span>
           </CardTitle>
@@ -221,13 +229,13 @@ export function DiagnosticsTab({ countyScope, taxYear = TAX_YEAR }: DiagnosticsT
                   </tr>
                 </thead>
                 <tbody>
-                  {infQuery.data?.items.slice(0, 20).map((item) => (
+                  {(infQuery.data?.items ?? []).slice(0, 20).map((item) => (
                     <tr key={item.saleId} className="border-b border-border/40 hover:bg-muted/30">
                       <td className="py-1 pr-3 font-mono">{item.parcelId}</td>
                       <td className="py-1 pr-3 text-muted-foreground">{item.address ?? '—'}</td>
-                      <td className="py-1 pr-3 text-right">${item.salePrice.toLocaleString()}</td>
-                      <td className="py-1 pr-3 text-right font-mono">{item.ratio.toFixed(4)}</td>
-                      <td className="py-1 pr-3 text-right font-mono">{item.cookD.toFixed(4)}</td>
+                      <td className="py-1 pr-3 text-right">${fmtInt(item.salePrice)}</td>
+                      <td className="py-1 pr-3 text-right font-mono">{fmt(item.ratio, 4)}</td>
+                      <td className="py-1 pr-3 text-right font-mono">{fmt(item.cookD, 4)}</td>
                       <td className="py-1 text-center">
                         {item.isInfluential ? (
                           <span className="text-amber-500 font-bold" title="Influential — review this sale">⚠</span>
@@ -255,7 +263,7 @@ export function DiagnosticsTab({ countyScope, taxYear = TAX_YEAR }: DiagnosticsT
           <CardTitle className="text-sm font-semibold">
             Variance Decomposition by Neighborhood
             <span className="ml-2 text-xs text-muted-foreground font-normal">
-              {vdQuery.data ? `ICC = ${(vdQuery.data.icc * 100).toFixed(1)}% · ${vdQuery.data.neighborhoodCount} neighborhoods` : '…'}
+              {vdQuery.data ? `ICC = ${fmt((vdQuery.data.icc ?? 0) * 100, 1)}% · ${fmtInt(vdQuery.data.neighborhoodCount)} neighborhoods` : '…'}
             </span>
           </CardTitle>
         </CardHeader>
@@ -267,9 +275,9 @@ export function DiagnosticsTab({ countyScope, taxYear = TAX_YEAR }: DiagnosticsT
           ) : vdQuery.data ? (
             <div className="space-y-3">
               <div className="grid grid-cols-3 gap-4 text-sm">
-                <div><div className="text-xs text-muted-foreground uppercase tracking-wide">ICC</div><div className="font-mono font-semibold">{(vdQuery.data.icc * 100).toFixed(1)}%</div></div>
-                <div><div className="text-xs text-muted-foreground uppercase tracking-wide">SS Between</div><div className="font-mono">{vdQuery.data.ssBetween.toFixed(3)}</div></div>
-                <div><div className="text-xs text-muted-foreground uppercase tracking-wide">SS Within</div><div className="font-mono">{vdQuery.data.ssWithin.toFixed(3)}</div></div>
+                <div><div className="text-xs text-muted-foreground uppercase tracking-wide">ICC</div><div className="font-mono font-semibold">{fmt((vdQuery.data.icc ?? 0) * 100, 1)}%</div></div>
+                <div><div className="text-xs text-muted-foreground uppercase tracking-wide">SS Between</div><div className="font-mono">{fmt(vdQuery.data.ssBetween, 3)}</div></div>
+                <div><div className="text-xs text-muted-foreground uppercase tracking-wide">SS Within</div><div className="font-mono">{fmt(vdQuery.data.ssWithin, 3)}</div></div>
               </div>
               <p className="text-xs text-muted-foreground italic">{vdQuery.data.interpretation}</p>
               <div className="overflow-x-auto max-h-48 overflow-y-auto">
@@ -284,14 +292,14 @@ export function DiagnosticsTab({ countyScope, taxYear = TAX_YEAR }: DiagnosticsT
                     </tr>
                   </thead>
                   <tbody>
-                    {vdQuery.data.neighborhoods.map((nb) => (
+                    {(vdQuery.data.neighborhoods ?? []).map((nb) => (
                       <tr key={nb.neighborhood} className="border-b border-border/40">
                         <td className="py-1 pr-3 font-mono">{nb.neighborhood}</td>
                         <td className="py-1 pr-3 text-right">{nb.count}</td>
-                        <td className="py-1 pr-3 text-right font-mono">{nb.medianRatio.toFixed(4)}</td>
-                        <td className="py-1 pr-3 text-right font-mono">{nb.stdDev.toFixed(4)}</td>
-                        <td className={`py-1 text-right font-mono ${Math.abs(nb.deviationFromGrandMean) > 0.04 ? 'text-amber-500' : 'text-green-500'}`}>
-                          {nb.deviationFromGrandMean >= 0 ? '+' : ''}{nb.deviationFromGrandMean.toFixed(4)}
+                        <td className="py-1 pr-3 text-right font-mono">{fmt(nb.medianRatio, 4)}</td>
+                        <td className="py-1 pr-3 text-right font-mono">{fmt(nb.stdDev, 4)}</td>
+                        <td className={`py-1 text-right font-mono ${Math.abs(nb.deviationFromGrandMean ?? 0) > 0.04 ? 'text-amber-500' : 'text-green-500'}`}>
+                          {(nb.deviationFromGrandMean ?? 0) >= 0 ? '+' : ''}{fmt(nb.deviationFromGrandMean, 4)}
                         </td>
                       </tr>
                     ))}
@@ -309,7 +317,7 @@ export function DiagnosticsTab({ countyScope, taxYear = TAX_YEAR }: DiagnosticsT
           <CardTitle className="text-sm font-semibold">
             Sale Chasing Detection
             <span className="ml-2 text-xs text-muted-foreground font-normal">
-              {scQuery.data ? `${scQuery.data.sampleSize.toLocaleString()} sales · temporal regressivity test` : '…'}
+              {scQuery.data ? `${fmtInt(scQuery.data.sampleSize)} sales · temporal regressivity test` : '…'}
             </span>
           </CardTitle>
         </CardHeader>
@@ -323,11 +331,11 @@ export function DiagnosticsTab({ countyScope, taxYear = TAX_YEAR }: DiagnosticsT
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 text-sm">
                 <div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">Corr (months vs ratio)</div>
-                  <div className="font-mono font-semibold">{scQuery.data.correlationMonthsVsRatio.toFixed(4)}</div>
+                  <div className="font-mono font-semibold">{fmt(scQuery.data.correlationMonthsVsRatio, 4)}</div>
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">p-value</div>
-                  <div className="font-mono">{scQuery.data.pValueMonthsVsRatio < 0.001 ? '<0.001' : scQuery.data.pValueMonthsVsRatio.toFixed(4)}</div>
+                  <div className="font-mono">{(scQuery.data.pValueMonthsVsRatio ?? 1) < 0.001 ? '<0.001' : fmt(scQuery.data.pValueMonthsVsRatio, 4)}</div>
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">Signal</div>
@@ -350,12 +358,12 @@ export function DiagnosticsTab({ countyScope, taxYear = TAX_YEAR }: DiagnosticsT
                     </tr>
                   </thead>
                   <tbody>
-                    {scQuery.data.quartiles.map((q) => (
+                    {(scQuery.data.quartiles ?? []).map((q) => (
                       <tr key={q.label} className="border-b border-border/40">
                         <td className="py-1 pr-3">{q.label}</td>
                         <td className="py-1 pr-3 text-right">{q.count}</td>
-                        <td className="py-1 pr-3 text-right font-mono">{q.medianRatio.toFixed(4)}</td>
-                        <td className="py-1 text-right font-mono">{q.medianAbsDeviation.toFixed(4)}</td>
+                        <td className="py-1 pr-3 text-right font-mono">{fmt(q.medianRatio, 4)}</td>
+                        <td className="py-1 text-right font-mono">{fmt(q.medianAbsDeviation, 4)}</td>
                       </tr>
                     ))}
                   </tbody>

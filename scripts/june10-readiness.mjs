@@ -150,6 +150,19 @@ function failIfPresent(name, pattern, targets, detail) {
   });
 }
 
+function failIfMissingPattern(name, pattern, targets, detail) {
+  const { files, matches } = scanPattern(name, pattern, targets);
+  pushCheck({
+    name,
+    status: matches.length === 0 ? 'FAIL' : 'PASS',
+    kind: 'grep_required',
+    command: `scan required /${pattern}/ in ${targets.join(' ')}`,
+    stdout:
+      matches.length === 0 ? `Pattern missing across ${files.length} file(s).` : matches.join('\n'),
+    stderr: matches.length === 0 ? detail : '',
+  });
+}
+
 function warnIfPresent(name, pattern, targets, detail) {
   const { files, matches } = scanPattern(name, pattern, targets);
   pushCheck({
@@ -329,11 +342,25 @@ failIfPresent(
   'Active TerraForge/SalesAudit endpoints must require explicit county scope and must not default to Benton.'
 );
 
-failIfPresent(
-  'Statistics Studio is not the primary Forge metrics workflow',
-  String.raw`id:\s*["']statistics-studio["']|moduleId:\s*["']statistics-studio["']|label:\s*["']Statistics Studio["']|Open Statistics Studio`,
-  ['frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx'],
-  'County Studio has the June 10 metrics workflow; Statistics Studio may remain routable internally, but not as primary launcher posture.'
+failIfMissingPattern(
+  'County Studio embeds the full Statistics Studio surface',
+  String.raw`CountyStatisticsWorkbenchPanel|embeddedInCountyStudio|Full Statistics Lab`,
+  [
+    'frontend/apps/os-shell/src/pages/forge/county-studio/CountyStudyPage.tsx',
+    'frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx',
+    'frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx',
+  ],
+  'County Studio must contain Statistics Studio functionality as a workbench mode, not merely claim a reduced IAAO subset.'
+);
+
+failIfMissingPattern(
+  'County Studio full statistics superset proof present',
+  String.raw`PASS_FULL_STATISTICS_SUPERSET|fullStatisticsSuperset["']?\s*:\s*true`,
+  [
+    'os-platform/core/pilot/evidence/county-studio-statistics-parity.latest.json',
+    'docs/proof/county-studio-statistics-parity.latest.md',
+  ],
+  'The old weak IAAO-only parity proof is not enough. County Studio must prove it embeds or implements every Statistics Studio tab/capability.'
 );
 
 warnIfMissingFile(
@@ -343,15 +370,6 @@ warnIfMissingFile(
     'docs/proof/costforge-certified-reference-posture.latest.md',
   ],
   'Benton-certified CostForge/AI/map compatibility data requires proof that non-Benton county scope fails honestly instead of receiving Benton reference data.'
-);
-
-warnIfMissingFile(
-  'County Studio statistics parity proof present',
-  [
-    'os-platform/core/pilot/evidence/county-studio-statistics-parity.latest.json',
-    'docs/proof/county-studio-statistics-parity.latest.md',
-  ],
-  'County Studio must carry the June 10 IAAO/statistics workflow before Statistics Studio is hidden from the primary launcher.'
 );
 
 warnIfMissingFile(

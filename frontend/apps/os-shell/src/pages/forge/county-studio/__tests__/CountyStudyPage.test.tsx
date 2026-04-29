@@ -11,6 +11,13 @@ import type { CountySegmentDto, CityRollupRowDto, NeighborhoodRollupRowDto } fro
 vi.mock('../hooks/useCountyStudyHub', () => ({ useCountyStudyHub: () => ({}) }));
 vi.mock('../hooks/useStudyData', () => ({ useStudyData: () => ({ retryAll: vi.fn() }) }));
 vi.mock('../components/CohortCreationDialog', () => ({ CohortCreationDialog: () => null }));
+vi.mock('../../statistics/StatisticsStudio', () => ({
+  StatisticsStudio: ({ embeddedInCountyStudio }: { embeddedInCountyStudio?: boolean }) => (
+    <div data-testid="mock-statistics-studio">
+      {embeddedInCountyStudio ? 'embedded full statistics lab' : 'standalone statistics studio'}
+    </div>
+  ),
+}));
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -97,6 +104,23 @@ describe('CountyStudyPage', () => {
     });
     render(<CountyStudyPage />, { wrapper: Wrapper });
     expect(screen.getByRole('button', { name: /pop out map/i })).toBeInTheDocument();
+  });
+
+  it('embeds the full Statistics Studio surface as a County Studio workspace mode', () => {
+    act(() => {
+      useCountyStudioStore.getState().setStudy({
+        studyId: 'study-1', countyId: 'benton', taxYear: 2026,
+        studyType: 'RatioStudy', status: 'Active', baselineVersion: null,
+        activeSegmentSetId: null, createdAt: '', updatedAt: '', createdBy: '', updatedBy: '',
+      });
+    });
+
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+    fireEvent.click(screen.getByTestId('county-studio-mode-statistics'));
+
+    expect(screen.getByTestId('cs-statistics-mode')).toBeInTheDocument();
+    expect(screen.getByTestId('county-studio-statistics-lab')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-statistics-studio')).toHaveTextContent('embedded full statistics lab');
   });
 
   // ── Drill lattice ────────────────────────────────────────────────────

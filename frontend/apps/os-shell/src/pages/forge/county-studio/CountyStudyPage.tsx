@@ -24,11 +24,13 @@ import { OpenStudyDialog } from './components/OpenStudyDialog';
 import { LoadErrorBanner } from './components/LoadErrorBanner';
 import { CountyHealthPanel } from './components/CountyHealthPanel';
 import { CountyCommandStrip } from './components/CountyCommandStrip';
+import { CountyStatisticsWorkbenchPanel } from './components/CountyStatisticsWorkbenchPanel';
 import { useCountyStudyHub } from './hooks/useCountyStudyHub';
 import { useStudyData } from './hooks/useStudyData';
 import type { CountySegmentDto } from './types/countyStudio.types';
 
 type SegmentSeverityFilter = 'all' | 'critical' | 'warnings' | 'healthy' | 'needsData';
+type WorkspaceMode = 'command' | 'statistics';
 
 /**
  * Severity filters over CountySegmentDto. All numeric-metric comparisons are
@@ -74,6 +76,7 @@ export function CountyStudyPage() {
   } = useCountyStudioStore();
   const [showOpenStudy, setShowOpenStudy] = useState(false);
   const [segmentFilter, setSegmentFilter] = useState<SegmentSeverityFilter>('all');
+  const [workspaceMode, setWorkspaceMode] = useState<WorkspaceMode>('command');
   const navigate = useNavigate();
 
   useCountyStudyHub(activeStudy?.studyId ?? null);
@@ -125,6 +128,54 @@ export function CountyStudyPage() {
           )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div
+            role="tablist"
+            aria-label="County Studio workspace mode"
+            style={{
+              display: 'flex',
+              border: '1px solid hsl(var(--tf-border))',
+              borderRadius: 4,
+              overflow: 'hidden',
+            }}
+          >
+            <button
+              type="button"
+              role="tab"
+              aria-selected={workspaceMode === 'command'}
+              data-testid="county-studio-mode-command"
+              onClick={() => setWorkspaceMode('command')}
+              style={{
+                padding: '4px 10px',
+                border: 0,
+                borderRight: '1px solid hsl(var(--tf-border))',
+                background: workspaceMode === 'command' ? 'hsl(var(--tf-surface))' : 'transparent',
+                color: workspaceMode === 'command' ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))',
+                fontSize: 11,
+                cursor: 'pointer',
+                fontWeight: 600,
+              }}
+            >
+              Command
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={workspaceMode === 'statistics'}
+              data-testid="county-studio-mode-statistics"
+              onClick={() => setWorkspaceMode('statistics')}
+              style={{
+                padding: '4px 10px',
+                border: 0,
+                background: workspaceMode === 'statistics' ? 'hsl(var(--tf-surface))' : 'transparent',
+                color: workspaceMode === 'statistics' ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))',
+                fontSize: 11,
+                cursor: 'pointer',
+                fontWeight: 600,
+              }}
+            >
+              Full Statistics Lab
+            </button>
+          </div>
           {activeStudy && (
             <button
               aria-label="Pop Out Map"
@@ -161,88 +212,97 @@ export function CountyStudyPage() {
 
       <CountyCommandStrip />
 
-      {/* Body Grid — 3 columns */}
-      <div style={{ display: 'grid', gridTemplateColumns: '210px 1fr 360px', flex: 1, minHeight: 0 }}>
-        <div data-testid="cs-left-rail" style={{ borderRight: '1px solid hsl(var(--tf-border, 220 13% 20%))', overflowY: 'auto' }}>
-          <LeftRail />
+      {workspaceMode === 'statistics' ? (
+        <div
+          data-testid="cs-statistics-mode"
+          style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}
+        >
+          <CountyStatisticsWorkbenchPanel />
         </div>
-
-        <div data-testid="cs-center" style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-          {/* Breadcrumb — collapses drill on click */}
-          <DrillBreadcrumb />
-
-          <div
-            id="cs-center-panel"
-            data-testid="cs-drill-panel"
-            data-drill-level={drillLevel}
-            style={{ flex: 1, overflow: 'hidden', minHeight: 0, display: 'flex', flexDirection: 'column' }}
-          >
-            {drillLevel === 'county' && (
-              <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto' }}>
-                <CountyHealthPanel />
-                <div
-                  data-testid="county-operational-scope-note"
-                  style={{
-                    padding: '8px 12px',
-                    borderBottom: '1px solid hsl(var(--tf-border))',
-                    background: 'hsl(var(--tf-bg))',
-                    fontSize: 11,
-                    color: 'hsl(var(--tf-muted))',
-                  }}
-                >
-                  Cities stay overview-only here. Counties actually defend values and route action by neighborhood and reval-area segment.
-                </div>
-                <div style={{ flex: 1, minHeight: 0 }}>
-                  <CityRollupTable />
-                </div>
-              </div>
-            )}
-            {drillLevel === 'city'   && <NeighborhoodRollupTable />}
-            {drillLevel === 'neighborhood' && (
-              <>
-                {/* Severity filter pills above the segment table at the neighborhood level */}
-                <div
-                  role="toolbar"
-                  aria-label="Segment severity filter"
-                  style={{
-                    display: 'flex', gap: 6, padding: '8px 12px', flexShrink: 0,
-                    borderBottom: '1px solid hsl(var(--tf-border))',
-                  }}
-                >
-                  {SEGMENT_FILTER_PILLS.map((p) => (
-                    <button
-                      key={p.key}
-                      onClick={() => setSegmentFilter(p.key)}
-                      data-testid={`segment-filter-${p.key}`}
-                      aria-pressed={segmentFilter === p.key}
-                      style={{
-                        fontSize: 11, padding: '3px 9px', borderRadius: 10,
-                        border: '1px solid hsl(var(--tf-border))',
-                        background: segmentFilter === p.key ? 'hsl(var(--tf-surface))' : 'transparent',
-                        color: segmentFilter === p.key ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))',
-                        fontWeight: segmentFilter === p.key ? 700 : 400,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {p.label}
-                    </button>
-                  ))}
-                </div>
-                <div style={{ flex: 1, minHeight: 0 }}>
-                  <SegmentTable filter={segmentFilterFn} />
-                </div>
-              </>
-            )}
+      ) : (
+        /* Body Grid — 3 columns */
+        <div style={{ display: 'grid', gridTemplateColumns: '210px 1fr 360px', flex: 1, minHeight: 0 }}>
+          <div data-testid="cs-left-rail" style={{ borderRight: '1px solid hsl(var(--tf-border, 220 13% 20%))', overflowY: 'auto' }}>
+            <LeftRail />
           </div>
-          <div style={{ height: 200, borderTop: '1px solid hsl(var(--tf-border, 220 13% 20%))', flexShrink: 0 }}>
-            <BottomDeck />
+
+          <div data-testid="cs-center" style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            {/* Breadcrumb — collapses drill on click */}
+            <DrillBreadcrumb />
+
+            <div
+              id="cs-center-panel"
+              data-testid="cs-drill-panel"
+              data-drill-level={drillLevel}
+              style={{ flex: 1, overflow: 'hidden', minHeight: 0, display: 'flex', flexDirection: 'column' }}
+            >
+              {drillLevel === 'county' && (
+                <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto' }}>
+                  <CountyHealthPanel />
+                  <div
+                    data-testid="county-operational-scope-note"
+                    style={{
+                      padding: '8px 12px',
+                      borderBottom: '1px solid hsl(var(--tf-border))',
+                      background: 'hsl(var(--tf-bg))',
+                      fontSize: 11,
+                      color: 'hsl(var(--tf-muted))',
+                    }}
+                  >
+                    Cities stay overview-only here. Counties actually defend values and route action by neighborhood and reval-area segment.
+                  </div>
+                  <div style={{ flex: 1, minHeight: 0 }}>
+                    <CityRollupTable />
+                  </div>
+                </div>
+              )}
+              {drillLevel === 'city'   && <NeighborhoodRollupTable />}
+              {drillLevel === 'neighborhood' && (
+                <>
+                  {/* Severity filter pills above the segment table at the neighborhood level */}
+                  <div
+                    role="toolbar"
+                    aria-label="Segment severity filter"
+                    style={{
+                      display: 'flex', gap: 6, padding: '8px 12px', flexShrink: 0,
+                      borderBottom: '1px solid hsl(var(--tf-border))',
+                    }}
+                  >
+                    {SEGMENT_FILTER_PILLS.map((p) => (
+                      <button
+                        key={p.key}
+                        onClick={() => setSegmentFilter(p.key)}
+                        data-testid={`segment-filter-${p.key}`}
+                        aria-pressed={segmentFilter === p.key}
+                        style={{
+                          fontSize: 11, padding: '3px 9px', borderRadius: 10,
+                          border: '1px solid hsl(var(--tf-border))',
+                          background: segmentFilter === p.key ? 'hsl(var(--tf-surface))' : 'transparent',
+                          color: segmentFilter === p.key ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))',
+                          fontWeight: segmentFilter === p.key ? 700 : 400,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div style={{ flex: 1, minHeight: 0 }}>
+                    <SegmentTable filter={segmentFilterFn} />
+                  </div>
+                </>
+              )}
+            </div>
+            <div style={{ height: 200, borderTop: '1px solid hsl(var(--tf-border, 220 13% 20%))', flexShrink: 0 }}>
+              <BottomDeck />
+            </div>
+          </div>
+
+          <div data-testid="cs-right-rail" style={{ borderLeft: '1px solid hsl(var(--tf-border, 220 13% 20%))', overflowY: 'auto' }}>
+            <RightRail />
           </div>
         </div>
-
-        <div data-testid="cs-right-rail" style={{ borderLeft: '1px solid hsl(var(--tf-border, 220 13% 20%))', overflowY: 'auto' }}>
-          <RightRail />
-        </div>
-      </div>
+      )}
 
       <CohortCreationDialog />
       <OpenStudyDialog open={showOpenStudy} onClose={() => setShowOpenStudy(false)} />

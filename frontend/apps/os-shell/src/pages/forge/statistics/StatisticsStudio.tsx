@@ -58,15 +58,32 @@ function useRatioData() {
 
 // --- Component ---
 
+interface StatisticsStudioProps {
+  /**
+   * County Studio embeds this full surface as its statistics lab. The prop only
+   * changes framing/copy; all tabs and endpoint calls remain the same.
+   */
+  embeddedInCountyStudio?: boolean;
+  countyScopeOverride?: ReturnType<typeof getStatisticsCountyScope>;
+  initialTaxYear?: number;
+}
+
 const ADVANCED_TABS: Tab[] = ['diagnostics', 'spatial-temporal', 'calibration-engine'];
 const WASHINGTON_SALES_START_YEAR = 2016;
 
-export function StatisticsStudio() {
+export function StatisticsStudio({
+  embeddedInCountyStudio = false,
+  countyScopeOverride,
+  initialTaxYear,
+}: StatisticsStudioProps = {}) {
   const currentTaxYear = new Date().getFullYear();
   const [activeTab, setActiveTab] = useState<Tab>('ratio-study');
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [taxYear, setTaxYear] = useState(currentTaxYear);
-  const countyScope = useMemo(() => getStatisticsCountyScope(), []);
+  const [taxYear, setTaxYear] = useState(initialTaxYear ?? currentTaxYear);
+  const countyScope = useMemo(
+    () => countyScopeOverride ?? getStatisticsCountyScope(),
+    [countyScopeOverride],
+  );
   const countyId = countyScope.countyId;
   const fetchStudy = useForgeStatisticsStore((s) => s.fetchStudy);
   const setStudyFilter = useForgeStatisticsStore((s) => s.setFilter);
@@ -92,6 +109,12 @@ export function StatisticsStudio() {
     fetchStudy();
     loadComparison();
   }, [countyId, countyScope.isolated, fetchStudy, loadComparison, setStudyFilter, taxYear]);
+
+  useEffect(() => {
+    if (initialTaxYear) {
+      setTaxYear(initialTaxYear);
+    }
+  }, [initialTaxYear]);
 
   // ── Trends data (live) ───────────────────────────────────────────────
   const {
@@ -192,8 +215,12 @@ export function StatisticsStudio() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold">Statistics Studio</h1>
-          <Badge variant="secondary">IAAO Metrics</Badge>
+          <h1 className="text-2xl font-bold">
+            {embeddedInCountyStudio ? 'County Studio · Full Statistics Lab' : 'Statistics Studio'}
+          </h1>
+          <Badge variant="secondary">
+            {embeddedInCountyStudio ? 'Full Statistics Superset' : 'Full Statistics Suite'}
+          </Badge>
         </div>
         <div className="flex gap-2 flex-wrap items-center">
           {tabs.map((tab) => (

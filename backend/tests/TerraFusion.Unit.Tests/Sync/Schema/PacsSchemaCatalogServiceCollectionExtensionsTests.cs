@@ -49,4 +49,43 @@ public sealed class PacsSchemaCatalogServiceCollectionExtensionsTests
 
         act.Should().Throw<ArgumentNullException>();
     }
+
+    // ============================================================================
+    // C48-C — AddLivePacsSchemaCatalog argument-validation tests.  The live
+    // overload's happy-path requires a real SQL Server connection, which is not
+    // available in this test environment; that integration test is deferred to
+    // C48-D.
+    // ============================================================================
+
+    [Fact]
+    public void AddLivePacsSchemaCatalog_NullServices_Throws()
+    {
+        IServiceCollection services = null!;
+        var options = LivePacsSchemaSourceOptions.ForBentonHarrisPacs("benton-pacs");
+
+        var act = () => services.AddLivePacsSchemaCatalog("Server=.;", options);
+
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void AddLivePacsSchemaCatalog_EmptyConnectionString_Throws()
+    {
+        var services = new ServiceCollection();
+        var options = LivePacsSchemaSourceOptions.ForBentonHarrisPacs("benton-pacs");
+
+        var act = () => services.AddLivePacsSchemaCatalog("", options);
+
+        act.Should().Throw<ArgumentException>();
+    }
+
+    [Fact]
+    public void AddLivePacsSchemaCatalog_NullOptions_Throws()
+    {
+        var services = new ServiceCollection();
+
+        var act = () => services.AddLivePacsSchemaCatalog("Server=.;", null!);
+
+        act.Should().Throw<ArgumentNullException>();
+    }
 }

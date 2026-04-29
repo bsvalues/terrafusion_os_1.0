@@ -57,6 +57,14 @@ interface CalibrationEngineTabProps {
   taxYear?: number;
 }
 
+function fmt(value: number | null | undefined, digits: number): string {
+  return Number.isFinite(value) ? (value as number).toFixed(digits) : '—';
+}
+
+function fmtInt(value: number | null | undefined): string {
+  return Number.isFinite(value) ? (value as number).toLocaleString() : '—';
+}
+
 export function CalibrationEngineTab({ countyScope, taxYear = TAX_YEAR }: CalibrationEngineTabProps) {
   const countyQuery = countyScope.countyId ? `&countyId=${encodeURIComponent(countyScope.countyId)}` : '';
 
@@ -98,6 +106,8 @@ export function CalibrationEngineTab({ countyScope, taxYear = TAX_YEAR }: Calibr
         <CardContent>
           {hedonicQuery.isLoading ? (
             <p className="text-muted-foreground text-sm">Loading…</p>
+          ) : hedonicQuery.isError ? (
+            <p className="text-amber-500 text-sm">Hedonic regression is unavailable for this county study.</p>
           ) : hedonicPlanned ? (
             <div className="space-y-3">
               <p className="text-xs text-muted-foreground italic">{hedonicQuery.data?.note}</p>
@@ -116,15 +126,15 @@ export function CalibrationEngineTab({ countyScope, taxYear = TAX_YEAR }: Calibr
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">R²</div>
-                  <div className="font-mono font-semibold">{hedonicQuery.data.rSquared.toFixed(4)}</div>
+                  <div className="font-mono font-semibold">{fmt(hedonicQuery.data.rSquared, 4)}</div>
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">Adj. R²</div>
-                  <div className="font-mono">{hedonicQuery.data.adjustedRSquared.toFixed(4)}</div>
+                  <div className="font-mono">{fmt(hedonicQuery.data.adjustedRSquared, 4)}</div>
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">N</div>
-                  <div className="font-mono">{hedonicQuery.data.sampleSize.toLocaleString()}</div>
+                  <div className="font-mono">{fmtInt(hedonicQuery.data.sampleSize)}</div>
                 </div>
               </div>
               <table className="w-full text-xs">
@@ -141,11 +151,11 @@ export function CalibrationEngineTab({ countyScope, taxYear = TAX_YEAR }: Calibr
                   {hedonicQuery.data.coefficients.map((c) => (
                     <tr key={c.feature} className="border-b border-border/40">
                       <td className="py-1 pr-4">{c.feature}</td>
-                      <td className="py-1 pr-4 text-right font-mono">{c.coefficient.toFixed(4)}</td>
-                      <td className="py-1 pr-4 text-right font-mono">{c.stdError.toFixed(4)}</td>
-                      <td className="py-1 pr-4 text-right font-mono">{c.tStat.toFixed(2)}</td>
+                      <td className="py-1 pr-4 text-right font-mono">{fmt(c.coefficient, 4)}</td>
+                      <td className="py-1 pr-4 text-right font-mono">{fmt(c.stdError, 4)}</td>
+                      <td className="py-1 pr-4 text-right font-mono">{fmt(c.tStat, 2)}</td>
                       <td className={`py-1 text-right font-mono ${c.pValue < 0.05 ? 'text-green-500' : 'text-amber-500'}`}>
-                        {c.pValue < 0.001 ? '<0.001' : c.pValue.toFixed(4)}
+                        {Number.isFinite(c.pValue) ? c.pValue < 0.001 ? '<0.001' : fmt(c.pValue, 4) : '—'}
                       </td>
                     </tr>
                   ))}
@@ -153,7 +163,11 @@ export function CalibrationEngineTab({ countyScope, taxYear = TAX_YEAR }: Calibr
               </table>
               <p className="text-xs text-muted-foreground italic">{hedonicQuery.data.interpretation}</p>
             </div>
-          ) : null}
+          ) : (
+            <p className="text-xs text-muted-foreground italic">
+              No hedonic model payload is available for this county study yet.
+            </p>
+          )}
         </CardContent>
       </Card>
 
@@ -172,6 +186,8 @@ export function CalibrationEngineTab({ countyScope, taxYear = TAX_YEAR }: Calibr
         <CardContent>
           {cvQuery.isLoading ? (
             <p className="text-muted-foreground text-sm">Loading…</p>
+          ) : cvQuery.isError ? (
+            <p className="text-amber-500 text-sm">Cross-validation is unavailable for this county study.</p>
           ) : cvPlanned ? (
             <p className="text-xs text-muted-foreground italic">
               {cvQuery.data?.note ?? '5-fold cross-validation on hedonic model. Depends on hedonic-regression endpoint. Planned P2.'}
@@ -181,15 +197,15 @@ export function CalibrationEngineTab({ countyScope, taxYear = TAX_YEAR }: Calibr
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">Mean RMSE</div>
-                  <div className="font-mono font-semibold">{cvQuery.data.meanRmse.toFixed(4)}</div>
+                  <div className="font-mono font-semibold">{fmt(cvQuery.data.meanRmse, 4)}</div>
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">Mean R²</div>
-                  <div className="font-mono">{cvQuery.data.meanRSquared.toFixed(4)}</div>
+                  <div className="font-mono">{fmt(cvQuery.data.meanRSquared, 4)}</div>
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">±SD RMSE</div>
-                  <div className="font-mono">{cvQuery.data.stdDevRmse.toFixed(4)}</div>
+                  <div className="font-mono">{fmt(cvQuery.data.stdDevRmse, 4)}</div>
                 </div>
               </div>
               <table className="w-full text-xs">
@@ -206,17 +222,21 @@ export function CalibrationEngineTab({ countyScope, taxYear = TAX_YEAR }: Calibr
                   {cvQuery.data.foldResults.map((f) => (
                     <tr key={f.fold} className="border-b border-border/40">
                       <td className="py-1 pr-3">Fold {f.fold}</td>
-                      <td className="py-1 pr-3 text-right">{f.trainSize.toLocaleString()}</td>
-                      <td className="py-1 pr-3 text-right">{f.testSize.toLocaleString()}</td>
-                      <td className="py-1 pr-3 text-right font-mono">{f.rmse.toFixed(4)}</td>
-                      <td className="py-1 text-right font-mono">{f.rSquared.toFixed(4)}</td>
+                      <td className="py-1 pr-3 text-right">{fmtInt(f.trainSize)}</td>
+                      <td className="py-1 pr-3 text-right">{fmtInt(f.testSize)}</td>
+                      <td className="py-1 pr-3 text-right font-mono">{fmt(f.rmse, 4)}</td>
+                      <td className="py-1 text-right font-mono">{fmt(f.rSquared, 4)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               <p className="text-xs text-muted-foreground italic">{cvQuery.data.interpretation}</p>
             </div>
-          ) : null}
+          ) : (
+            <p className="text-xs text-muted-foreground italic">
+              No cross-validation payload is available for this county study yet.
+            </p>
+          )}
         </CardContent>
       </Card>
 

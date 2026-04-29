@@ -1,25 +1,76 @@
-# County Studio Statistics Parity Proof
+# County Studio Full Statistics Superset Proof
 
-Checked: 2026-04-29T19:24:00Z
+Checked: 2026-04-29T20:18:00Z
 
-Verdict: PASS for June 10 primary IAAO/statistics workflow parity.
+Verdict: PASS_FULL_STATISTICS_SUPERSET by direct embedding, with native-decomposition work still open.
 
-County Studio now owns the primary metrics workflow in the Forge launcher. Statistics Studio remains in source as an internal/specialist implementation, but it is no longer presented as the primary TerraForge metrics workflow.
+The prior proof was too weak. It only proved a County Studio command-metric subset and incorrectly treated that as enough to hide Statistics Studio. The corrected product law is stricter:
 
-## Proven In County Studio
+- County Studio must contain every Statistics Studio capability.
+- Statistics Studio remains available as a temporary parity source until the embedded County Studio path is visually and operationally trusted.
+- Reduced IAAO summary metrics are not parity.
 
-- County health: median ratio, COD, PRD, compliance lamp, top-risk alerts, segment severity counts, exceptions, and evidence export.
-- Segment table: reval area, neighborhood code, qualified sale sample count, sample health, median ratio, COD, PRD, PRB, weighted mean ratio, YoY median-ratio delta, stability, exceptions, and risk.
-- Segment inspector: qualified sales, weighted mean ratio, PRB, VEI, equity classification, equity score, warnings, trend sparklines for median/COD/PRD/PRB/exception rate, deterministic diagnosis, outlier parcel hints, and correction handoffs.
-- Workflow: cohort creation, scenario preview before save, scenario comparison, evidence packet, and governed adjustment sets through Approved only.
+## Implemented Now
 
-## Not Claimed
+County Studio now has a `Full Statistics Lab` workspace mode. That mode renders the same Statistics Studio surface inside County Studio, with the active County Studio study county and tax year passed into the statistics county scope.
 
-- Statistics Studio source code is not deleted.
-- Research/exploratory Statistics Studio capability is not claimed retired.
-- Statewide map geometry parity is not claimed.
-- Statewide CostForge matrix parity is not claimed.
+This means County Studio now contains the complete current Statistics Studio tab set:
 
-## Launcher Decision
+- Ratio Study
+- Stratified Study
+- Calibration Matrix
+- Trends
+- Equity (VEI)
+- Outliers
+- Comparison
+- Cost Analytics
+- Diagnostics
+- Spatial & Temporal
+- Calibration Engine
 
-Statistics Studio is removed from the primary Forge launcher posture because County Studio now carries the June 10 command-workbench statistics path. If specialized research diagnostics need to stay available later, they should be restored as internal/specialist access, not as the primary county metrics workflow.
+## Statistics Studio Capability Inventory
+
+| Statistics capability | County Studio status |
+| --- | --- |
+| Median ratio, weighted mean, COD, PRD, PRB, tier slope, sample size | Embedded through Full Statistics Lab and partially native in command panels |
+| Stratified study by DOR/statistical strata | Embedded through Full Statistics Lab |
+| Quarterly COD/PRD trends | Embedded through Full Statistics Lab |
+| VEI/neighborhood equity dashboard | Embedded through Full Statistics Lab and partially native in segment inspector |
+| Outlier review | Embedded through Full Statistics Lab |
+| Model comparison | Embedded through Full Statistics Lab |
+| Cost ratio analysis and value-driver analysis | Embedded through Full Statistics Lab |
+| CostForge dashboard analytics | Embedded through Full Statistics Lab |
+| Bootstrap confidence intervals | Embedded through Full Statistics Lab |
+| Vertical equity by sale-price decile | Embedded through Full Statistics Lab |
+| Cook's D influence diagnostics | Embedded through Full Statistics Lab |
+| Variance decomposition by neighborhood | Embedded through Full Statistics Lab |
+| Sale-chasing detection | Embedded through Full Statistics Lab |
+| Monthly median-ratio trend | Embedded through Full Statistics Lab |
+| KS distributional shift test | Embedded through Full Statistics Lab |
+| Moran's I spatial autocorrelation | Embedded through Full Statistics Lab |
+| Hedonic regression vs cost schedule | Embedded through Full Statistics Lab |
+| 5-fold cross-validation | Embedded through Full Statistics Lab |
+
+## Launcher Posture
+
+Statistics Studio is restored to the Forge specialist launcher as a temporary parity source. That is intentional. It should not be removed again until County Studio's embedded Full Statistics Lab has browser proof and the native command panels have absorbed the workflows cleanly.
+
+## Remaining Native-Decomposition Work
+
+The functionality is now present inside County Studio, but some advanced functions are still rendered by the reused Statistics Studio surface rather than fully decomposed into native County Studio command panels. That is acceptable as an immediate functionality repair, but it is not the final UX.
+
+Next native slices should migrate these into County Studio panels without losing power:
+
+- Diagnostics: confidence intervals, vertical equity deciles, Cook's D, variance decomposition, sale chasing
+- Spatial/temporal: monthly trend, KS shift, Moran's I
+- Calibration: hedonic regression, cross-validation, value-driver analytics
+- Outlier and model-comparison workflow
+
+## Evidence Files
+
+- `frontend/apps/os-shell/src/pages/forge/county-studio/CountyStudyPage.tsx`
+- `frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx`
+- `frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx`
+- `frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx`
+- `frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStudyPage.test.tsx`
+- `frontend/apps/os-shell/src/pages/suites/__tests__/ForgeSuiteHome.moduleList.test.tsx`
