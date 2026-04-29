@@ -432,6 +432,7 @@ public class SyncController : ControllerBase
     private const int MaxPageSize = 500;
 
     [HttpGet("comps/eligible")]
+    [HttpHead("comps/eligible")]
     [Authorize]
     public async Task<IActionResult> GetEligibleComps(
         [FromQuery] Guid countyId,
@@ -529,6 +530,17 @@ public class SyncController : ControllerBase
         {
             SyncHttpCacheHeaders.ApplyNotModifiedHeaders(Response, CompMaxAge, etag);
             return StatusCode(StatusCodes.Status304NotModified);
+        }
+
+        // ── Slice C45-D: HEAD short-circuit. The client wants the
+        //    headers (ETag / Last-Modified / Cache-Control) without
+        //    the body. Skip the count + page-materialization reads
+        //    and emit a 200 with cache headers; the framework
+        //    elides the body on HEAD. ──
+        if (HttpMethods.IsHead(Request.Method))
+        {
+            SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, CompMaxAge, etag, lastModifiedUtc);
+            return StatusCode(StatusCodes.Status200OK);
         }
 
         // ── Delegate to the C37-B reader's paginated overload +
@@ -652,6 +664,7 @@ public class SyncController : ControllerBase
     /// <c>UpdatedAt</c> bump on the pointer row.</para>
     /// </summary>
     [HttpGet("active-workbook")]
+    [HttpHead("active-workbook")]
     [Authorize]
     public async Task<IActionResult> GetActiveWorkbook(
         [FromQuery] Guid countyId,
@@ -700,6 +713,14 @@ public class SyncController : ControllerBase
         {
             SyncHttpCacheHeaders.ApplyNotModifiedHeaders(Response, PointerMaxAge, etag);
             return StatusCode(StatusCodes.Status304NotModified);
+        }
+
+        // C45-D: HEAD short-circuit (skip DTO allocation; emit
+        // headers + 200 with empty body).
+        if (HttpMethods.IsHead(Request.Method))
+        {
+            SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, PointerMaxAge, etag, setAtUtc);
+            return StatusCode(StatusCodes.Status200OK);
         }
 
         var dto = new ActiveWorkbookSnapshotDto(
@@ -911,6 +932,7 @@ public class SyncController : ControllerBase
     /// </para>
     /// </summary>
     [HttpGet("comps/stale")]
+    [HttpHead("comps/stale")]
     [Authorize]
     public async Task<IActionResult> GetStaleComps(
         [FromQuery] Guid countyId,
@@ -1023,6 +1045,13 @@ public class SyncController : ControllerBase
             return StatusCode(StatusCodes.Status304NotModified);
         }
 
+        // C45-D: HEAD short-circuit (skip count + page reads).
+        if (HttpMethods.IsHead(Request.Method))
+        {
+            SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, CompMaxAge, etag, lastModifiedUtc);
+            return StatusCode(StatusCodes.Status200OK);
+        }
+
         // ── Delegate to the C43-B reader. Single predicate;
         //    AsNoTracking; no joins. ──
         var totalCount = await _staleReader.CountAsync(countyId, baselineWorkbookId, ct);
@@ -1127,6 +1156,7 @@ public class SyncController : ControllerBase
     /// expect a page.</para>
     /// </summary>
     [HttpGet("comps/stale/summary")]
+    [HttpHead("comps/stale/summary")]
     [Authorize]
     public async Task<IActionResult> GetStaleCompsSummary(
         [FromQuery] Guid countyId,
@@ -1231,6 +1261,16 @@ public class SyncController : ControllerBase
         {
             SyncHttpCacheHeaders.ApplyNotModifiedHeaders(Response, CompMaxAge, etag);
             return StatusCode(StatusCodes.Status304NotModified);
+        }
+
+        // C45-D: HEAD short-circuit. Skip the GroupAsync read (the
+        // expensive one of the three reads); the caller already
+        // has totalStaleRows + groupCount + the ETag they asked
+        // for, and the framework elides the body anyway.
+        if (HttpMethods.IsHead(Request.Method))
+        {
+            SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, CompMaxAge, etag, lastModifiedUtc);
+            return StatusCode(StatusCodes.Status200OK);
         }
 
         var groupRows = await _staleSummaryReader
