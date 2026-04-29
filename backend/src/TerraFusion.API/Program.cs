@@ -28,6 +28,7 @@ using TerraFusion.Levy.Services;
 using System.Data;
 using TerraFusion.Core.Services;
 using TerraFusion.Core.PACS;
+using TerraFusion.Sync.Workbench.Schema;
 using TerraFusion.API.Services.SpecLock;
 using TerraFusion.API.Services.Marketplace;
 using TerraFusion.API.Services.Telemetry;
@@ -1191,6 +1192,37 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     TerraFusion.Sync.Workbench.Comps.Sales.ISalesCompStaleSummaryReader,
     TerraFusion.Sync.Workbench.Comps.Sales.SalesCompStaleSummaryReader>();
+
+// Slice C48-D — opt-in PACS schema catalog wiring. When the operator has
+// configured ConnectionStrings:HarrisPacs (the legacy SOURCE database that
+// TerraFusion Sync converts FROM), register the live catalog populated via
+// INFORMATION_SCHEMA introspection at startup. When the connection string
+// is absent, the catalog stays unregistered and consumers fall back gracefully
+// (e.g. SyncController.GetSchemaCatalogSummary returns Configured=false).
+//
+// This is intentionally opt-in: production wiring requires explicit operator
+// configuration so the catalog never silently auto-attempts to read from a
+// non-existent or wrong database. Per the C48-A "Source/target model" binding,
+// the connection string MUST point at Harris PACS (the legacy source), never
+// at TerraFusion DB (the destination).
+{
+    var harrisPacsConnString = builder.Configuration.GetConnectionString("HarrisPacs");
+    if (!string.IsNullOrWhiteSpace(harrisPacsConnString))
+    {
+        var pacsRelease = builder.Configuration["Sync:Schema:Catalog:PacsRelease"];
+        var sourceLabel = builder.Configuration["Sync:Schema:Catalog:SourceLabel"]
+            ?? "harris-pacs-prod";
+        var schemaName = builder.Configuration["Sync:Schema:Catalog:SchemaName"]
+            ?? "dbo";
+
+        builder.Services.AddLivePacsSchemaCatalog(
+            connectionString: harrisPacsConnString,
+            options: new TerraFusion.Sync.Workbench.Schema.LivePacsSchemaSourceOptions(
+                SourceLabel: sourceLabel,
+                SchemaName: schemaName,
+                PacsReleaseLabel: pacsRelease));
+    }
+}
 
 // Calibration Workbench services
 builder.Services.AddScoped<TerraFusion.Core.Services.IMatrixDiagnosticService, TerraFusion.API.Services.MatrixDiagnosticService>();

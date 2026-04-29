@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using TerraFusion.API.Services;
 using TerraFusion.API.Services.Sync;
 using TerraFusion.Core.DTOs.Sync;
 using TerraFusion.Data;
 using TerraFusion.Sync.Workbench.Comps.Sales;
 using TerraFusion.Sync.Workbench.Mapping;
+using TerraFusion.Sync.Workbench.Schema;
 
 namespace TerraFusion.API.Controllers;
 
@@ -1407,5 +1409,58 @@ public class SyncController : ControllerBase
 
         SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, CompMaxAge, etag, lastModifiedUtc, CompStaleWhileRevalidate);
         return Ok(dto);
+    }
+
+    // ── Schema catalog admin / diagnostic ─────────────────────────────────
+
+    /// <summary>
+    /// Slice C48-D admin/diagnostic endpoint exposing the live PACS
+    /// schema catalog's coverage counts and version stamp. Returns
+    /// <see cref="SchemaCatalogSummaryDto"/> with
+    /// <c>Configured = false</c> when no <see cref="IPacsSchemaCatalog"/>
+    /// has been registered (operator has not opted in to the live
+    /// catalog wiring).
+    ///
+    /// <para>Per SCOPE-3 surface-inventory classification: <b>Proof /
+    /// Admin</b>. Not a consumer-facing product API; long-term
+    /// operator-facing schema browsing UX would belong to
+    /// Workbench/Studio per SCOPE-2.</para>
+    ///
+    /// <para>HG observance:</para>
+    /// <list type="bullet">
+    /// <item>HG1 PII-free: surfaces only count metadata + version
+    /// stamp; never per-row data.</item>
+    /// <item>HG3 read-only: pure projection over the catalog's
+    /// already-immutable state.</item>
+    /// <item>HG7 fail-closed: missing catalog returns explicit
+    /// <c>Configured = false</c> rather than 5xx.</item>
+    /// </list>
+    /// </summary>
+    [HttpGet("schema/catalog/summary")]
+    [Authorize]
+    public IActionResult GetSchemaCatalogSummary([FromServices] IServiceProvider services)
+    {
+        var catalog = services.GetService<IPacsSchemaCatalog>();
+        if (catalog is null)
+        {
+            return Ok(new SchemaCatalogSummaryDto(
+                Configured: false,
+                TableCount: null,
+                ColumnCount: null,
+                DictionaryCount: null,
+                PacsRelease: null,
+                IngestedAtUtc: null));
+        }
+
+        var coverage = catalog.Coverage;
+        var version = catalog.Version;
+
+        return Ok(new SchemaCatalogSummaryDto(
+            Configured: true,
+            TableCount: coverage.TableCount,
+            ColumnCount: coverage.ColumnCount,
+            DictionaryCount: coverage.DictionaryCount,
+            PacsRelease: version.PacsRelease,
+            IngestedAtUtc: version.IngestedAt));
     }
 }
