@@ -11,6 +11,7 @@ using TerraFusion.Abstractions.DTOs.Responses;
 using TerraFusion.Core.Entities;
 using TerraFusion.API.Services.Valuation;
 using TerraFusion.Core.DTOs.Kernel;
+using TerraFusion.Core.Services.Batch;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 using System.ComponentModel.DataAnnotations;
 
@@ -61,6 +62,83 @@ public class CostForgeController : ControllerBase
     ComparableSale Sale,
     decimal SimilarityScore,
     string[] ScoreReasons);
+
+  private static ITerraForgeBatchStateCache? ResolveBatchStateCache(IServiceProvider serviceProvider)
+  {
+    var registered = serviceProvider.GetService<ITerraForgeBatchStateCache>();
+    if (registered is not null)
+    {
+      return registered;
+    }
+
+    var redis = serviceProvider.GetService<IRedisCacheService>();
+    return redis is null ? null : new TerraForgeBatchStateCache(redis);
+  }
+
+  private static string? ResolveBatchRequestId(HttpRequest request)
+  {
+    foreach (var headerName in new[] { "Idempotency-Key", "X-Idempotency-Key", "X-Request-Id" })
+    {
+      var requestId = request.Headers[headerName].FirstOrDefault()?.Trim();
+      if (!string.IsNullOrWhiteSpace(requestId))
+      {
+        return requestId;
+      }
+    }
+
+    return null;
+  }
+
+  private static async System.Threading.Tasks.Task TryCacheBatchStateAsync(
+    IServiceProvider serviceProvider,
+    ValuationPipeline pipeline,
+    string? requestId,
+    ILogger logger,
+    string? error = null)
+  {
+    var cache = ResolveBatchStateCache(serviceProvider);
+    if (cache is null)
+    {
+      return;
+    }
+
+    try
+    {
+      var state = TerraForgeBatchJobState.FromPipeline(pipeline, requestId, error);
+      await cache.SaveAsync(state);
+
+      if (!string.IsNullOrWhiteSpace(requestId))
+      {
+        await cache.TrySetIdempotencyAsync(pipeline.CountyId, requestId, pipeline.Id.ToString());
+      }
+    }
+    catch (Exception ex)
+    {
+      logger.LogDebug(ex, "Skipped TerraForge batch state cache write for pipeline {PipelineId}", pipeline.Id);
+    }
+  }
+
+  private static object BatchStatusResponse(ValuationPipeline pipeline)
+  {
+    return new
+    {
+      jobId = pipeline.Id.ToString(),
+      status = pipeline.Status switch
+      {
+        "queued" => "pending",
+        "running" => "running",
+        "completed" => "completed",
+        "failed" => "failed",
+        "cancelled" => "failed",
+        _ => pipeline.Status,
+      },
+      totalParcels = pipeline.TotalParcels,
+      processedParcels = pipeline.CompletedParcels,
+      errorCount = pipeline.FailedParcels,
+      startedAt = pipeline.CreatedAt,
+      completedAt = pipeline.Status is "completed" or "failed" or "cancelled" ? pipeline.CreatedAt : (DateTime?)null,
+    };
+  }
 
   private async Task<CountyContext?> ResolveCountyContextAsync()
   {
@@ -8086,6 +8164,24 @@ public class CostForgeController : ControllerBase
   {
     var countyCtx = await ResolveCountyContextAsync();
     var countyId = countyCtx?.CountyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var requestId = ResolveBatchRequestId(Request);
+    var batchCache = ResolveBatchStateCache(HttpContext.RequestServices);
+
+    if (!string.IsNullOrWhiteSpace(requestId) && batchCache is not null)
+    {
+      var existingJobId = await batchCache.GetIdempotencyAsync(countyId, requestId);
+      if (!string.IsNullOrWhiteSpace(existingJobId) && int.TryParse(existingJobId, out var existingId))
+      {
+        var existing = await _db.Set<TerraFusion.Core.Entities.ValuationPipeline>()
+          .AsNoTracking()
+          .FirstOrDefaultAsync(p => p.Id == existingId && p.CountyId == countyId);
+
+        if (existing is not null)
+        {
+          return Ok(BatchStatusResponse(existing));
+        }
+      }
+    }
 
     var parcelCount = await _db.CamaCharacteristics
         .AsNoTracking()
@@ -8109,6 +8205,7 @@ public class CostForgeController : ControllerBase
 
     _db.Set<TerraFusion.Core.Entities.ValuationPipeline>().Add(pipeline);
     await _db.SaveChangesAsync();
+    await TryCacheBatchStateAsync(HttpContext.RequestServices, pipeline, requestId, _logger);
 
     // Capture IServiceScopeFactory (singleton) before the request scope is disposed
     var scopeFactory = HttpContext.RequestServices.GetRequiredService<IServiceScopeFactory>();
@@ -8116,6 +8213,7 @@ public class CostForgeController : ControllerBase
     var batchCountyId    = countyId;          // county isolation — captured from request context
     var neighborhoodFilter = req.NeighborhoodFilter;
     var propertyType = req.PropertyType;
+    var batchRequestId = requestId;
     var logger = _logger;
 
     // Background: update improvement values using Benton cost matrix
@@ -8168,6 +8266,7 @@ public class CostForgeController : ControllerBase
           pl2.Status = "completed";
           pl2.CurrentStage = "done";
           await db2.SaveChangesAsync();
+          await TryCacheBatchStateAsync(scope.ServiceProvider, pl2, batchRequestId, logger);
         }
       }
       catch (Exception ex)
@@ -8179,7 +8278,13 @@ public class CostForgeController : ControllerBase
           var db3 = scope2.ServiceProvider.GetRequiredService<DataDbContext>();
           var pl3 = await db3.Set<TerraFusion.Core.Entities.ValuationPipeline>()
               .FirstOrDefaultAsync(p => p.Id == pipelineId);
-          if (pl3 is not null) { pl3.Status = "failed"; await db3.SaveChangesAsync(); }
+          if (pl3 is not null)
+          {
+            pl3.Status = "failed";
+            pl3.Errors = ex.Message;
+            await db3.SaveChangesAsync();
+            await TryCacheBatchStateAsync(scope2.ServiceProvider, pl3, batchRequestId, logger, ex.Message);
+          }
         }
         catch { /* best effort */ }
       }
@@ -8211,25 +8316,9 @@ public class CostForgeController : ControllerBase
         .FirstOrDefaultAsync(p => p.Id == id);
 
     if (pl is null) return NotFound(new { error = "Job not found" });
+    await TryCacheBatchStateAsync(HttpContext.RequestServices, pl, null, _logger);
 
-    return Ok(new
-    {
-      jobId = pl.Id.ToString(),
-      status = pl.Status switch
-      {
-        "queued" => "pending",
-        "running" => "running",
-        "completed" => "completed",
-        "failed" => "failed",
-        "cancelled" => "failed",
-        _ => pl.Status,
-      },
-      totalParcels = pl.TotalParcels,
-      processedParcels = pl.CompletedParcels,
-      errorCount = pl.FailedParcels,
-      startedAt = pl.CreatedAt,
-      completedAt = pl.Status is "completed" or "failed" or "cancelled" ? pl.CreatedAt : (DateTime?)null,
-    });
+    return Ok(BatchStatusResponse(pl));
   }
 
   /// <summary>
@@ -8250,6 +8339,7 @@ public class CostForgeController : ControllerBase
 
     pl.Status = "cancelled";
     await _db.SaveChangesAsync();
+    await TryCacheBatchStateAsync(HttpContext.RequestServices, pl, null, _logger);
 
     return Ok(new { jobId, status = "cancelled" });
   }
