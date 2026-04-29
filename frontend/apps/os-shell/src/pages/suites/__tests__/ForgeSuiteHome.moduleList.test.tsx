@@ -8,8 +8,11 @@
  *   PRIMARY   : CostForge, CompsForge, IncomeForge (queued), SalesForge
  *   SECONDARY : Statistics Studio, Batch Cost Runs,
  *               Regression Studio (queued), TerraGAMA (queued), Coefficient Preview (queued)
- *   GIS       : GeoForge
  *   COUNTY    : County Studio
+ *
+ * GeoForge and Atlas Live View are not launcher products. Atlas is County
+ * Studio's embedded/pop-out spatial surface; GeoForge is internal compatibility
+ * infrastructure until retired.
  */
 
 import { render, screen } from '@testing-library/react';
@@ -75,11 +78,11 @@ describe('ForgeSuiteHome — frozen module list', () => {
     expect(screen.getByText('SalesForge')).toBeInTheDocument();
   });
 
-  it('renders GeoForge in the GIS section', () => {
+  it('does not expose GeoForge or standalone Atlas as launcher products', () => {
     renderForge();
-    expect(screen.getByText('GeoForge')).toBeInTheDocument();
-    const gisSection = screen.getByTestId('forge-gis-applications');
-    expect(gisSection).toBeInTheDocument();
+    expect(screen.queryByTestId('forge-gis-applications')).not.toBeInTheDocument();
+    expect(screen.queryByText('GeoForge')).not.toBeInTheDocument();
+    expect(screen.queryByText('Atlas Live View')).not.toBeInTheDocument();
   });
 
   it('renders queued specialist apps in the secondary section', () => {
@@ -138,17 +141,12 @@ describe('ForgeSuiteHome — frozen module list', () => {
     expect(cards).toHaveLength(4);
   });
 
-  it('GIS section has exactly 1 card (GeoForge)', () => {
-    renderForge();
-    const gisSection = screen.getByTestId('forge-gis-applications');
-    const cards = gisSection.querySelectorAll('button.forge-card');
-    expect(cards).toHaveLength(1);
-  });
-
   it('renders County Studio in the county-operations section', () => {
     renderForge();
     const countySection = screen.getByTestId('forge-county-applications');
     expect(countySection).toBeInTheDocument();
     expect(screen.getByText('County Studio')).toBeInTheDocument();
+    expect(screen.getByText(/embedded spatial review/i)).toBeInTheDocument();
+    expect(screen.getByText(/governed approval and publish remain downstream/i)).toBeInTheDocument();
   });
 });

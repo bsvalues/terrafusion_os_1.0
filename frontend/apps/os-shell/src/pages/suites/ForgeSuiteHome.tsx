@@ -1,7 +1,9 @@
 /**
  * TerraFusion OS — TerraForge Suite Home
  *
- * ⚠️  MODULE LIST IS FROZEN — DO NOT EDIT WITHOUT EXPLICIT INSTRUCTION ⚠️
+ * TerraForge launcher posture is governed by the current Suite layer contract:
+ * County Studio is the countywide workbench; Atlas is its embedded/pop-out
+ * spatial surface; GeoForge remains internal compatibility infrastructure.
  *
  * The PRIMARY_MODULES and SECONDARY_MODULES arrays below define the v1
  * TerraForge app list. This list was verified correct at commit 8da26658a.
@@ -16,7 +18,7 @@
  *   PRIMARY   : CostForge (cost approach, AppFrame → port 5002)
  *               CompsForge (sales comparison, standalone React module)
  *               IncomeForge (income approach, queued)
- *   SPECIALIST: Statistics Studio (IAAO diagnostics)
+ *   SPECIALIST: Statistics Studio (IAAO diagnostics; visible until County Studio parity is proven)
  *               Batch Cost Runs (batch execution)
  *               Regression Studio / TerraGAMA / Coefficient Preview (queued)
  */
@@ -574,39 +576,12 @@ export default function ForgeSuiteHome() {
             </div>
           </section>
 
-          {/* GeoForge — GIS-first mass appraisal analytics */}
-          <section className="forge-panel" data-testid="forge-gis-applications">
-            <div className="forge-panel__header">
-              <div>
-                <p className="forge-panel__eyebrow">Spatial Audit Surface</p>
-                <h2 className="forge-panel__title">GeoForge · GIS Drilldown</h2>
-              </div>
-            </div>
-            <button
-              type="button"
-              className="forge-card forge-card--primary"
-              style={{ width: '100%', textAlign: 'left' }}
-              onClick={() => handleModuleLaunch({ id: 'geo-forge', label: 'GeoForge', description: '', priority: 'primary', launchMode: 'standalone', moduleId: 'geo-forge' })}
-            >
-              <div className="forge-card__rail">
-                <span className="forge-chip forge-chip--neutral">GIS · Parcels · Neighborhoods</span>
-                <span className="forge-card__foot">Launches in window</span>
-              </div>
-              <div className="forge-card__title">GeoForge</div>
-              <p className="forge-card__description">
-                Map-first parcel and neighborhood drilldown for spatial audit, comp bloom, ratio drift,
-                certification overlays, and field-review context. Current operational backend remains Benton-heavy;
-                use Statistics Studio for countywide metrics and County Studio for rollups, scenarios, and publish flow.
-              </p>
-            </button>
-          </section>
-
           {/* County Studio — segment-first countywide valuation workspace */}
           <section className="forge-panel" data-testid="forge-county-applications">
             <div className="forge-panel__header">
               <div>
                 <p className="forge-panel__eyebrow">County Operations</p>
-                <h2 className="forge-panel__title">County Studio · Rollup, Scenario, Publish</h2>
+                <h2 className="forge-panel__title">County Studio · Analysis, Scenario, Defense</h2>
               </div>
             </div>
             <button
@@ -616,30 +591,15 @@ export default function ForgeSuiteHome() {
               onClick={() => handleModuleLaunch({ id: 'county-studio', label: 'County Studio', description: '', priority: 'primary', launchMode: 'standalone', moduleId: 'county-studio' })}
             >
               <div className="forge-card__rail">
-                <span className="forge-chip forge-chip--neutral">County → City → Neighborhood → Segment</span>
-                <span className="forge-card__foot">Launches in window</span>
+                <span className="forge-chip forge-chip--neutral">County → Reval Area → Neighborhood → Segment</span>
+                <span className="forge-card__foot">Opens county workbench</span>
               </div>
               <div className="forge-card__title">County Studio</div>
               <p className="forge-card__description">
-                The countywide operating workspace for drill-lattice rollups, cohort creation, segment scenarios,
-                compliance review, and publish handoff into Atlas Live View. Use GeoForge for map drilldown and
-                Statistics Studio for pure metrics and diagnostics.
-              </p>
-            </button>
-            <button
-              type="button"
-              className="forge-card forge-card--secondary"
-              style={{ width: '100%', textAlign: 'left' }}
-              onClick={() => handleModuleLaunch({ id: 'atlas-live-view', label: 'Atlas Live View', description: '', priority: 'primary', launchMode: 'standalone', moduleId: 'atlas-live-view' })}
-            >
-              <div className="forge-card__rail">
-                <span className="forge-chip forge-chip--neutral">Spatial · Parcels · Live Map</span>
-                <span className="forge-card__foot">Launches in window</span>
-              </div>
-              <div className="forge-card__title">Atlas Live View</div>
-              <p className="forge-card__description">
-                Study-aware spatial surface — real-time Benton County parcel map with neighborhood
-                outlines, choropleth overlays, and County Studio session sync.
+                The countywide operating workspace for valuation analysis, statistics, embedded spatial review,
+                cohort creation, scenario preview, correction routing, and evidence defense. Atlas map review opens
+                inside County Studio or as a pop-out for the same study session; governed approval and publish remain
+                downstream workflow steps.
               </p>
             </button>
           </section>
