@@ -14,11 +14,21 @@ namespace TerraFusion.Core.DTOs.Sync;
 /// string name (<c>"Qualified"</c> / <c>"Excluded"</c> /
 /// <c>"Inconclusive"</c>) for wire stability across enum-int
 /// reordering.</para>
+///
+/// <para>Slice C46-B: adds <see cref="SourceWorkbookName"/>
+/// (nullable). Populated controller-side via a single
+/// <c>WHERE Id IN (...) AND CountyId = @countyId</c> lookup
+/// after aggregation. Per C46-A Hard Guards 4 + 5: missing
+/// workbook rows / cross-county Guids / lookup failures all
+/// surface as <c>null</c>; names are emitted verbatim with no
+/// sanitization. Consumers MUST handle null gracefully (typically
+/// by falling back to the Guid display).</para>
 /// </summary>
 public sealed record StaleSummaryGroupDto(
-    Guid   SourceWorkbookId,
-    string ComputedDecision,
-    int    Count);
+    Guid    SourceWorkbookId,
+    string? SourceWorkbookName,
+    string  ComputedDecision,
+    int     Count);
 
 /// <summary>
 /// Slice C44-B aggregate envelope for the stale-row summary

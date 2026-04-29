@@ -1286,12 +1286,56 @@ public class SyncController : ControllerBase
         var groupRows = await _staleSummaryReader
             .GroupAsync(countyId, baselineWorkbookId, MaxStaleSummaryGroups, ct);
 
+        // ── Slice C46-B: workbook-name enrichment per the C46-A
+        //    policy. Single round-trip lookup over the distinct
+        //    SourceWorkbookId set; CountyId-scoped (Hard Guard 3
+        //    defense in depth); AsNoTracking. Failure is non-fatal
+        //    (Hard Guard 8): the summary still returns 200 with
+        //    null names if the lookup throws. The reader's stale
+        //    predicate is unaffected — name enrichment is a
+        //    presentation concern, not a freshness signal (Hard
+        //    Guard 6: cache-key invariance preserved). ──
+        IReadOnlyDictionary<Guid, string?> nameMap;
+        try
+        {
+            var distinctIds = groupRows
+                .Select(g => g.SourceWorkbookId)
+                .Distinct()
+                .ToList();
+            if (distinctIds.Count == 0)
+            {
+                nameMap = new Dictionary<Guid, string?>();
+            }
+            else
+            {
+                nameMap = await _db.SyncMappingWorkbooks
+                    .AsNoTracking()
+                    .Where(w => distinctIds.Contains(w.Id) && w.CountyId == countyId)
+                    .Select(w => new { w.Id, w.Name })
+                    .ToDictionaryAsync(
+                        w => w.Id,
+                        w => (string?)w.Name,
+                        ct);
+            }
+        }
+        catch (Exception ex)
+        {
+            // C46-A Hard Guard 8: lookup failure must NOT fail the
+            // summary response. Log + degrade gracefully to
+            // null-name rendering.
+            _logger.LogWarning(ex,
+                "[Sync] GetStaleCompsSummary workbook-name enrichment lookup failed for county {CountyId}; falling back to null names.",
+                countyId);
+            nameMap = new Dictionary<Guid, string?>();
+        }
+
         // ── Project to wire DTO. ComputedDecision maps int → string
         //    via the same helper GetStaleComps uses, so both
         //    endpoints' wire shapes stay in lockstep. ──
         var groups = groupRows
             .Select(g => new StaleSummaryGroupDto(
                 g.SourceWorkbookId,
+                nameMap.TryGetValue(g.SourceWorkbookId, out var name) ? name : null,
                 ProjectDecisionName(g.ComputedDecisionRaw),
                 g.Count))
             .ToList();
