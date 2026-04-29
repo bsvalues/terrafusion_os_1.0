@@ -29,7 +29,7 @@ public static class PacsSchemaCatalogServiceCollectionExtensions
     /// The schema source. Caller is responsible for choosing an
     /// appropriate implementation (an
     /// <see cref="InMemoryPacsSchemaSource"/> for tests, a future
-    /// Tyler-file source in C48-C).
+    /// PACS-file source in C48-C).
     /// </param>
     public static IServiceCollection AddPacsSchemaCatalog(
         this IServiceCollection services,
@@ -52,7 +52,7 @@ public static class PacsSchemaCatalogServiceCollectionExtensions
             // synchronous .Result is acceptable here because (a) the
             // build runs once at startup, (b) the source contract
             // does not require I/O latency for in-memory or
-            // file-shaped Tyler artifacts, and (c) DI singleton
+            // file-shaped PACS schema artifacts, and (c) DI singleton
             // factories are required to be synchronous.
             var catalog = PacsSchemaCatalog
                 .BuildAsync(sp.GetRequiredService<IPacsSchemaSource>(), CancellationToken.None)

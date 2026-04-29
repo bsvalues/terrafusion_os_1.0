@@ -1,7 +1,8 @@
 # PACS Schema Catalog as Code — Policy
 
-**Slice:** C48-A (docs-only — defines the policy for converting the
-Tyler-published PACS schema files into a versioned, queryable
+**Slice:** C48-A (docs-only — defines the policy for converting
+PACS-vendor-published schema files (Harris PACS in the operator's
+Benton environment) into a versioned, queryable
 **`pacs_schema_catalog`** that downstream Sync readers, transforms,
 and dictionary loaders compile against. This slice writes the
 contract; C48-B will land the parser + catalog data model + tests.).
@@ -39,7 +40,7 @@ Symptoms already observed:
   lane; canonical decoding (`hood_cd`, `i_attr_id`,
   `imprv_det_type_cd`) is implemented N times.
 
-The Tyler-published PACS schema files exist on disk (per the recent
+The PACS-vendor schema-describing artifacts exist on disk (per the recent
 discovery pass). They are the manufacturer's truth. C48-A defines
 how those files become a typed, versioned, conversion-aware catalog
 that every Sync reader compiles against.
@@ -78,7 +79,7 @@ review.
   values. A parser that pulls sample data into the catalog is
   rejected.
 - **HG2 — County-agnostic.** PACS ships the same schema across
-  Tyler installs. The catalog reflects that schema. County-specific
+  PACS installs. The catalog reflects that schema. County-specific
   dialect / mapping decisions are **Mapping Workbook** territory,
   not catalog territory. The catalog has no `CountyId` field.
 - **HG3 — Read-only at runtime.** The catalog is constructed once
@@ -86,7 +87,7 @@ review.
   the catalog at runtime" affordance. Schema corrections require a
   new catalog version + redeploy.
 - **HG4 — Versioned.** The catalog carries an explicit `SchemaVersion`
-  derived from the source schema files' provenance (Tyler release
+  derived from the source schema files' provenance (PACS vendor release
   identifier when available, file hash + ingest date as fallback).
   Two catalogs with different `SchemaVersion` MUST NOT be
   interchanged silently; readers that pin to a specific version
@@ -99,7 +100,7 @@ review.
 - **HG6 — Source-traceable.** Every catalog entry carries provenance
   back to the file path + line/section that declared it. A reader
   that gets a wrong answer from the catalog can always identify
-  which Tyler file authored that answer.
+  which PACS schema file authored that answer.
 - **HG7 — Failure surfaces explicitly.** A reader querying for an
   unknown column receives a typed `Result.NotFound` (or equivalent)
   — not a null, not an empty string, not a silent fallback. The
@@ -134,7 +135,7 @@ the hard guards hold).
 - DictionaryRef          : (DictionaryTable, DictionaryKeyColumn) | null
 - PiiClassification      : None | Indirect | Direct
 - ProvenanceLine         : string  (source schema file + line)
-- Notes                  : string  (operator-readable; verbatim from Tyler docs)
+- Notes                  : string  (operator-readable; verbatim from PACS vendor docs)
 ```
 
 ### `PacsDictionary`
@@ -143,7 +144,7 @@ the hard guards hold).
 - DictionaryName         : string  (e.g. "hood_cd_lookup", "i_attr_lookup")
 - KeyColumn              : string  (e.g. "hood_cd", "i_attr_id")
 - DescriptionColumn      : string  (e.g. "hood_descr", "i_attr_descr")
-- ValueDomainSize        : int | null  (declared cardinality if Tyler provides one)
+- ValueDomainSize        : int | null  (declared cardinality if the PACS vendor provides one)
 - ConversionEra          : Pre2017 | Post2017 | Both | Unknown
 - ProvenancePath         : string
 ```
@@ -151,7 +152,7 @@ the hard guards hold).
 ### `SchemaVersion`
 
 ```text
-- TylerRelease           : string | null  (e.g. "PACS 9.0.4.2" if discoverable)
+- PacsRelease            : string | null  (e.g. "Harris PACS 9.0.4.2" if discoverable)
 - SourceFileHashes       : map<file_path, sha256>
 - IngestedAt             : DateTime
 - ConversionManifestHash : sha256       (the 2017 shim bundle that pairs with this version)
@@ -185,20 +186,20 @@ typed result indicating ambiguity — never a silent default.
 
 ## Where the source files come from
 
-The catalog's source of truth is a fixed set of Tyler-published PACS
-schema artifacts. C48-A does not enumerate the exact paths (those
+The catalog's source of truth is a fixed set of PACS-vendor-published
+schema artifacts (Harris PACS in the operator's environment). C48-A does not enumerate the exact paths (those
 are install-specific and county-specific to the operator's working
 environment); C48-B records the actual paths used in its own policy
 addendum. The classes of file expected:
 
 - **Table-definition files** — PACS schema declaration documents
-  (CSV / XML / SQL DDL exports / Tyler reference PDFs converted to
+  (CSV / XML / SQL DDL exports / vendor reference PDFs converted to
   text).
 - **Dictionary files** — lookup-table declarations for PACS code
   domains (`hood_cd`, `i_attr_id`, `imprv_det_type_cd`,
   `property_use_cd`, `sale_*_use_cd`, etc.).
 - **Identity-tuple references** — declarations of primary-key
-  shapes per table (Tyler-published or extracted from PACS install
+  shapes per table (vendor-published or extracted from PACS install
   metadata).
 - **2017 conversion manifest** — the change log that documents
   which columns shifted population pattern across the cut.
@@ -250,7 +251,7 @@ its own policy doc.
 C48-B is the implementation slice that will follow C48-A. Its
 acceptance shape:
 
-1. **Parser.** Reads the Tyler PACS schema files declared by C48-B's
+1. **Parser.** Reads the PACS schema files declared by C48-B's
    own path manifest into typed `PacsTable` / `PacsColumn` /
    `PacsDictionary` records.
 2. **Versioning.** Computes `SchemaVersion` from source-file hashes
@@ -316,7 +317,7 @@ docs-only.
 - **Coverage floor.** What percentage of known PACS tables must be
   covered before C48-B's startup self-check stops failing
   loudly? Operator + product call.
-- **Schema upgrade story.** When Tyler ships a new PACS version,
+- **Schema upgrade story.** When the PACS vendor ships a new release,
   what's the workflow to re-ingest? Manual re-run + redeploy
   (simplest) vs. catalog hot-swap with version negotiation
   (complex). Defer to operational experience.

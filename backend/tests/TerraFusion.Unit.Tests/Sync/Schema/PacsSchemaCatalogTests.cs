@@ -28,7 +28,7 @@ public sealed class PacsSchemaCatalogTests
         catalog.Coverage.TableCount.Should().Be(3);
         catalog.Coverage.ColumnCount.Should().Be(9);
         catalog.Coverage.DictionaryCount.Should().Be(1);
-        catalog.Version.TylerRelease.Should().Be("PACS-9.0.4-fixture");
+        catalog.Version.PacsRelease.Should().Be("PACS-9.0.4-fixture");
     }
 
     [Fact]

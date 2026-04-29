@@ -6,8 +6,10 @@ namespace TerraFusion.Sync.Workbench.Schema;
 /// Slice C48-B: typed metadata record for one PACS table within the
 /// <c>pacs_schema_catalog</c>. Pure metadata; carries no parcel data
 /// (HG1 PII-free). County-agnostic (HG2 — no <c>CountyId</c> field).
-/// Constructed at catalog build time from the parsed Tyler PACS
-/// schema files; immutable thereafter (HG3 read-only at runtime).
+/// Constructed at catalog build time from the parsed PACS schema
+/// files (Harris PACS in the operator's environment; the catalog is
+/// vendor-agnostic by design). Immutable thereafter (HG3 read-only
+/// at runtime).
 ///
 /// <para>Per <c>docs/sync/pacs-schema-catalog-as-code-policy.md</c>
 /// the table record exposes its identity tuple, dictionary
@@ -16,7 +18,7 @@ namespace TerraFusion.Sync.Workbench.Schema;
 /// </summary>
 /// <param name="TableName">
 /// PACS table name (e.g. <c>imprv</c>, <c>sale</c>,
-/// <c>chg_of_owner</c>). Verbatim from the Tyler schema file.
+/// <c>chg_of_owner</c>). Verbatim from the PACS schema file.
 /// </param>
 /// <param name="IdentityTuple">
 /// Ordered list of column names that uniquely identify a row in this

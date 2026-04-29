@@ -13,7 +13,7 @@ namespace TerraFusion.Sync.Workbench.Schema;
 /// downstream of C48-B; the catalog only exposes the metadata.</para>
 /// </summary>
 /// <param name="DictionaryName">
-/// Verbatim dictionary table name from the Tyler schema (e.g.
+/// Verbatim dictionary table name from the PACS schema (e.g.
 /// <c>hood_cd_lookup</c>, <c>i_attr_lookup</c>,
 /// <c>imprv_det_type_cd_lookup</c>).
 /// </param>
@@ -26,7 +26,8 @@ namespace TerraFusion.Sync.Workbench.Schema;
 /// key (e.g. <c>hood_descr</c>, <c>i_attr_descr</c>).
 /// </param>
 /// <param name="ValueDomainSize">
-/// Declared cardinality of the dictionary if Tyler provides one;
+/// Declared cardinality of the dictionary if the PACS vendor
+/// provides one;
 /// <c>null</c> otherwise. Used by readers as a sanity check on
 /// loader output (catalog declares 200, loader produced 12 →
 /// suspect).
