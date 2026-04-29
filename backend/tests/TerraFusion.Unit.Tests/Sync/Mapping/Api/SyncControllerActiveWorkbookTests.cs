@@ -73,10 +73,11 @@ public class SyncControllerActiveWorkbookTests
         Guid? principalCountyClaim,
         string? principalName = null)
     {
-        var qualification  = new Mock<ISaleQualificationService>().Object;
-        var compReader     = new Mock<ISalesCompEligibilityReader>().Object;
-        var activeWorkbook = new SyncCountyActiveWorkbookService(db);
-        var staleReader    = new Mock<ISalesCompStaleReader>().Object;
+        var qualification      = new Mock<ISaleQualificationService>().Object;
+        var compReader         = new Mock<ISalesCompEligibilityReader>().Object;
+        var activeWorkbook     = new SyncCountyActiveWorkbookService(db);
+        var staleReader        = new Mock<ISalesCompStaleReader>().Object;
+        var staleSummaryReader = new Mock<ISalesCompStaleSummaryReader>().Object;
 
         var controller = new SyncController(
             qualification,
@@ -84,7 +85,8 @@ public class SyncControllerActiveWorkbookTests
             NullLogger<SyncController>.Instance,
             compReader,
             activeWorkbook,
-            staleReader);
+            staleReader,
+            staleSummaryReader);
 
         var identity = new ClaimsIdentity(
             authenticationType: principalCountyClaim is null && principalName is null ? null : "Test",

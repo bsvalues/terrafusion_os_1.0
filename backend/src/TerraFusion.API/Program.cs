@@ -1185,6 +1185,13 @@ builder.Services.AddScoped<
     TerraFusion.Sync.Workbench.Comps.Sales.ISalesCompStaleReader,
     TerraFusion.Sync.Workbench.Comps.Sales.SalesCompStaleReader>();
 
+// Slice C44-B — stale-row aggregate summary reader. Three single-predicate
+// aggregations (top-N groups, group count, total) sharing the C43-B stale
+// predicate. Bounded server-side (max 100 groups per C44-A Hard Guard 4).
+builder.Services.AddScoped<
+    TerraFusion.Sync.Workbench.Comps.Sales.ISalesCompStaleSummaryReader,
+    TerraFusion.Sync.Workbench.Comps.Sales.SalesCompStaleSummaryReader>();
+
 // Calibration Workbench services
 builder.Services.AddScoped<TerraFusion.Core.Services.IMatrixDiagnosticService, TerraFusion.API.Services.MatrixDiagnosticService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.ICalibrationMemoService, TerraFusion.Data.Services.CalibrationMemoService>();

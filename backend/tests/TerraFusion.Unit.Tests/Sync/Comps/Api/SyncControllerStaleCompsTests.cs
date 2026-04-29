@@ -66,14 +66,15 @@ public class SyncControllerStaleCompsTests
         TerraFusionDbContext db,
         Guid? principalCountyClaim)
     {
-        var qualification  = new Mock<ISaleQualificationService>().Object;
-        var compReader     = new Mock<ISalesCompEligibilityReader>().Object;
-        var activeWorkbook = new SyncCountyActiveWorkbookService(db);
-        var staleReader    = new SalesCompStaleReader(db);
+        var qualification      = new Mock<ISaleQualificationService>().Object;
+        var compReader         = new Mock<ISalesCompEligibilityReader>().Object;
+        var activeWorkbook     = new SyncCountyActiveWorkbookService(db);
+        var staleReader        = new SalesCompStaleReader(db);
+        var staleSummaryReader = new SalesCompStaleSummaryReader(db);
 
         var controller = new SyncController(
             qualification, db, NullLogger<SyncController>.Instance,
-            compReader, activeWorkbook, staleReader);
+            compReader, activeWorkbook, staleReader, staleSummaryReader);
 
         var identity = new ClaimsIdentity(
             authenticationType: principalCountyClaim is null ? null : "Test");
