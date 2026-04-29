@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TerraFusion.API.Services;
+using TerraFusion.API.Services.Sync;
 using TerraFusion.Core.DTOs.Sync;
 using TerraFusion.Data;
 using TerraFusion.Sync.Workbench.Comps.Sales;
@@ -400,6 +401,18 @@ public class SyncController : ControllerBase
     /// <see cref="CompEligibleSaleDto"/>. The array is ordered by
     /// <c>ChgOfOwnerId</c> ascending for deterministic consumption.
     /// </returns>
+    // ── C45-B caching constants per the C45-A policy ───────────────────────
+    // Comp endpoints: 60-second window (canonical only changes on C36 writes).
+    // Active-workbook: 5-second window (operator promote/clear should reflect fast).
+    private static readonly TimeSpan CompMaxAge   = TimeSpan.FromSeconds(60);
+    private static readonly TimeSpan PointerMaxAge = TimeSpan.FromSeconds(5);
+
+    // Endpoint scope-prefixes for ETags (C45-A Hard Guard 5 / glossary).
+    private const string EtagScopeEligible       = "comps:e";
+    private const string EtagScopeStale          = "comps:s";
+    private const string EtagScopeStaleSummary   = "comps:ss";
+    private const string EtagScopeActiveWorkbook = "awb";
+
     /// <summary>
     /// Default page index when the client omits <c>page</c>
     /// (per C39-A Hard Guard 2).
@@ -430,6 +443,7 @@ public class SyncController : ControllerBase
         // ── 400: required input missing / malformed ──
         if (countyId == Guid.Empty)
         {
+            SyncHttpCacheHeaders.ApplyNoStore(Response);
             return BadRequest(new
             {
                 error = "countyId is required.",
@@ -442,6 +456,7 @@ public class SyncController : ControllerBase
         //        request time. ──
         if (page is < 1)
         {
+            SyncHttpCacheHeaders.ApplyNoStore(Response);
             return BadRequest(new
             {
                 error = "page must be >= 1.",
@@ -451,6 +466,7 @@ public class SyncController : ControllerBase
         }
         if (pageSize is < 1)
         {
+            SyncHttpCacheHeaders.ApplyNoStore(Response);
             return BadRequest(new
             {
                 error    = "pageSize must be >= 1.",
@@ -460,6 +476,7 @@ public class SyncController : ControllerBase
         }
         if (pageSize is > MaxPageSize)
         {
+            SyncHttpCacheHeaders.ApplyNoStore(Response);
             return BadRequest(new
             {
                 error    = $"pageSize must be <= {MaxPageSize}.",
@@ -474,18 +491,45 @@ public class SyncController : ControllerBase
         //        countyId claim must match the requested countyId.
         //        Mismatch returns Forbid without leaking whether the
         //        county exists or has rows. ──
+        // ── Per C45-A Hard Guard 8, the 403 short-circuit MUST
+        //    happen BEFORE ETag computation so cross-county callers
+        //    cannot exploit ETag matching to detect existence. ──
         var principalCountyId = ResolveCountyClaim();
         if (principalCountyId is null || principalCountyId.Value != countyId)
         {
             _logger.LogWarning(
                 "[Sync] GetEligibleComps refused cross-county access: principal={PrincipalCounty} requested={RequestedCounty}",
                 principalCountyId, countyId);
+            SyncHttpCacheHeaders.ApplyNoStore(Response);
             return Forbid();
         }
 
         // ── Apply server-side defaults (after validation). ──
         var effectivePage     = page     ?? DefaultPage;
         var effectivePageSize = pageSize ?? DefaultPageSize;
+
+        // ── C45-B: compute the ETag seed BEFORE materializing the
+        //    page so a matching If-None-Match short-circuits to
+        //    304. The seed includes the maximum
+        //    SourceWorkbookLockedAt across rows in scope (or
+        //    UnixEpoch when the result set is empty) so any C36
+        //    write to a row in scope rotates the ETag.
+        var maxLockedAt = await _compReader.MaxLockedAtAsync(countyId, workbookId, ct);
+        var lastModifiedUtc = ToLastModifiedUtc(maxLockedAt);
+        var etag = SyncHttpCacheHeaders.BuildStrongEtag(
+            EtagScopeEligible,
+            countyId.ToString(),
+            (workbookId ?? Guid.Empty).ToString(),
+            effectivePage.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            effectivePageSize.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            lastModifiedUtc.UtcDateTime.ToString("O", System.Globalization.CultureInfo.InvariantCulture));
+
+        if (SyncHttpCacheHeaders.MatchesIfNoneMatch(Request, etag) ||
+            SyncHttpCacheHeaders.MatchesIfModifiedSince(Request, lastModifiedUtc))
+        {
+            SyncHttpCacheHeaders.ApplyNotModifiedHeaders(Response, CompMaxAge, etag);
+            return StatusCode(StatusCodes.Status304NotModified);
+        }
 
         // ── Delegate to the C37-B reader's paginated overload +
         //    exact count. ──
@@ -533,7 +577,28 @@ public class SyncController : ControllerBase
             "[Sync] GetEligibleComps: county={CountyId} workbookId={WorkbookId} page={Page} pageSize={PageSize} rows={Rows} total={Total}",
             countyId, workbookId, effectivePage, effectivePageSize, items.Count, totalCount);
 
+        SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, CompMaxAge, etag, lastModifiedUtc);
         return Ok(envelope);
+    }
+
+    /// <summary>
+    /// Project a nullable <see cref="DateTime"/> from the
+    /// reader's <c>MaxLockedAtAsync</c> to a stable
+    /// <see cref="DateTimeOffset"/> for ETag seeding and the
+    /// <c>Last-Modified</c> header. <c>null</c> (empty result
+    /// set) maps to <see cref="DateTimeOffset.UnixEpoch"/> so
+    /// empty responses are still cacheable with a deterministic
+    /// ETag (per C45-A Hard Guard / test 16).
+    /// </summary>
+    private static DateTimeOffset ToLastModifiedUtc(DateTime? maxLockedAt)
+    {
+        if (!maxLockedAt.HasValue) return DateTimeOffset.UnixEpoch;
+        var dt = maxLockedAt.Value;
+        if (dt.Kind == DateTimeKind.Unspecified)
+        {
+            dt = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+        }
+        return new DateTimeOffset(dt.ToUniversalTime(), TimeSpan.Zero);
     }
 
     /// <summary>
@@ -574,6 +639,7 @@ public class SyncController : ControllerBase
     {
         if (countyId == Guid.Empty)
         {
+            SyncHttpCacheHeaders.ApplyNoStore(Response);
             return BadRequest(new { error = "countyId is required." });
         }
 
@@ -583,6 +649,7 @@ public class SyncController : ControllerBase
             _logger.LogWarning(
                 "[Sync] GetActiveWorkbook refused cross-county access: principal={Principal} requested={Requested}",
                 principal, countyId);
+            SyncHttpCacheHeaders.ApplyNoStore(Response);
             return Forbid();
         }
 
@@ -595,11 +662,29 @@ public class SyncController : ControllerBase
             // says nothing about whether the county exists or has
             // workbooks — that's not the consumer's concern at this
             // surface.
+            SyncHttpCacheHeaders.ApplyNoStore(Response);
             return NotFound(new
             {
                 countyId,
                 error = "No active-workbook pointer is configured for this county.",
             });
+        }
+
+        // ── C45-B: ETag seed = (countyId, activeWorkbookId, setAtUtc).
+        //    Pointer freshness rotates whenever the operator
+        //    promotes a different workbook (SetAt advances). ──
+        var setAtUtc = ToLastModifiedUtc(snap.SetAt);
+        var etag = SyncHttpCacheHeaders.BuildStrongEtag(
+            EtagScopeActiveWorkbook,
+            snap.CountyId.ToString(),
+            snap.ActiveWorkbookId.ToString(),
+            setAtUtc.UtcDateTime.ToString("O", System.Globalization.CultureInfo.InvariantCulture));
+
+        if (SyncHttpCacheHeaders.MatchesIfNoneMatch(Request, etag) ||
+            SyncHttpCacheHeaders.MatchesIfModifiedSince(Request, setAtUtc))
+        {
+            SyncHttpCacheHeaders.ApplyNotModifiedHeaders(Response, PointerMaxAge, etag);
+            return StatusCode(StatusCodes.Status304NotModified);
         }
 
         var dto = new ActiveWorkbookSnapshotDto(
@@ -609,6 +694,7 @@ public class SyncController : ControllerBase
             "[Sync] GetActiveWorkbook: county={CountyId} workbookId={WorkbookId}",
             countyId, snap.ActiveWorkbookId);
 
+        SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, PointerMaxAge, etag, setAtUtc);
         return Ok(dto);
     }
 
@@ -629,6 +715,9 @@ public class SyncController : ControllerBase
         [FromBody]  ActiveWorkbookSetRequest? request,
         CancellationToken ct = default)
     {
+        // C45-A Hard Guard 2: mutations never cache.
+        SyncHttpCacheHeaders.ApplyNoStore(Response);
+
         if (countyId == Guid.Empty)
         {
             return BadRequest(new { error = "countyId is required." });
@@ -702,6 +791,9 @@ public class SyncController : ControllerBase
         [FromQuery] Guid countyId,
         CancellationToken ct = default)
     {
+        // C45-A Hard Guard 2: mutations never cache.
+        SyncHttpCacheHeaders.ApplyNoStore(Response);
+
         if (countyId == Guid.Empty)
         {
             return BadRequest(new { error = "countyId is required." });
@@ -783,6 +875,7 @@ public class SyncController : ControllerBase
         // ── 400: required input missing / malformed ──
         if (countyId == Guid.Empty)
         {
+            SyncHttpCacheHeaders.ApplyNoStore(Response);
             return BadRequest(new { error = "countyId is required." });
         }
 
@@ -790,6 +883,7 @@ public class SyncController : ControllerBase
         //        Hard Guard 3). No silent normalization. ──
         if (page is < 1)
         {
+            SyncHttpCacheHeaders.ApplyNoStore(Response);
             return BadRequest(new
             {
                 error = "page must be >= 1.",
@@ -799,6 +893,7 @@ public class SyncController : ControllerBase
         }
         if (pageSize is < 1)
         {
+            SyncHttpCacheHeaders.ApplyNoStore(Response);
             return BadRequest(new
             {
                 error    = "pageSize must be >= 1.",
@@ -808,6 +903,7 @@ public class SyncController : ControllerBase
         }
         if (pageSize is > MaxPageSize)
         {
+            SyncHttpCacheHeaders.ApplyNoStore(Response);
             return BadRequest(new
             {
                 error    = $"pageSize must be <= {MaxPageSize}.",
@@ -817,13 +913,15 @@ public class SyncController : ControllerBase
             });
         }
 
-        // ── 403: county isolation (mirrors GetEligibleComps). ──
+        // ── 403: county isolation (mirrors GetEligibleComps). C45-A
+        //        Hard Guard 8: 403 happens BEFORE ETag computation. ──
         var principalCountyId = ResolveCountyClaim();
         if (principalCountyId is null || principalCountyId.Value != countyId)
         {
             _logger.LogWarning(
                 "[Sync] GetStaleComps refused cross-county access: principal={Principal} requested={Requested}",
                 principalCountyId, countyId);
+            SyncHttpCacheHeaders.ApplyNoStore(Response);
             return Forbid();
         }
 
@@ -842,6 +940,7 @@ public class SyncController : ControllerBase
             var ptr = await _activeWorkbook.GetAsync(countyId, ct);
             if (ptr is null)
             {
+                SyncHttpCacheHeaders.ApplyNoStore(Response);
                 return BadRequest(new
                 {
                     error = $"Cannot compute staleness for county {countyId}: " +
@@ -856,6 +955,26 @@ public class SyncController : ControllerBase
         // ── Apply server-side defaults (after validation). ──
         var effectivePage     = page     ?? DefaultPage;
         var effectivePageSize = pageSize ?? DefaultPageSize;
+
+        // ── C45-B: ETag seed = (countyId, baselineWorkbookId, page,
+        //    pageSize, maxLockedAtUtc). Conditional short-circuit
+        //    BEFORE any page materialization. ──
+        var maxLockedAt = await _staleReader.MaxLockedAtAsync(countyId, baselineWorkbookId, ct);
+        var lastModifiedUtc = ToLastModifiedUtc(maxLockedAt);
+        var etag = SyncHttpCacheHeaders.BuildStrongEtag(
+            EtagScopeStale,
+            countyId.ToString(),
+            baselineWorkbookId.ToString(),
+            effectivePage.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            effectivePageSize.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            lastModifiedUtc.UtcDateTime.ToString("O", System.Globalization.CultureInfo.InvariantCulture));
+
+        if (SyncHttpCacheHeaders.MatchesIfNoneMatch(Request, etag) ||
+            SyncHttpCacheHeaders.MatchesIfModifiedSince(Request, lastModifiedUtc))
+        {
+            SyncHttpCacheHeaders.ApplyNotModifiedHeaders(Response, CompMaxAge, etag);
+            return StatusCode(StatusCodes.Status304NotModified);
+        }
 
         // ── Delegate to the C43-B reader. Single predicate;
         //    AsNoTracking; no joins. ──
@@ -900,6 +1019,7 @@ public class SyncController : ControllerBase
             "[Sync] GetStaleComps: county={CountyId} baseline={BaselineWorkbookId} via={BaselineSource} page={Page} pageSize={PageSize} rows={Rows} total={Total}",
             countyId, baselineWorkbookId, baselineSource, effectivePage, effectivePageSize, items.Count, totalCount);
 
+        SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, CompMaxAge, etag, lastModifiedUtc);
         return Ok(envelope);
     }
 
@@ -971,6 +1091,7 @@ public class SyncController : ControllerBase
         // ── 400: required input missing / malformed ──
         if (countyId == Guid.Empty)
         {
+            SyncHttpCacheHeaders.ApplyNoStore(Response);
             return BadRequest(new { error = "countyId is required." });
         }
 
@@ -980,6 +1101,7 @@ public class SyncController : ControllerBase
         //        slice. Surface bad usage at request time. ──
         if (rejectPage.HasValue)
         {
+            SyncHttpCacheHeaders.ApplyNoStore(Response);
             return BadRequest(new
             {
                 error = "page is not a valid query parameter on this endpoint.",
@@ -988,6 +1110,7 @@ public class SyncController : ControllerBase
         }
         if (rejectPageSize.HasValue)
         {
+            SyncHttpCacheHeaders.ApplyNoStore(Response);
             return BadRequest(new
             {
                 error = "pageSize is not a valid query parameter on this endpoint.",
@@ -995,13 +1118,15 @@ public class SyncController : ControllerBase
             });
         }
 
-        // ── 403: county isolation (mirrors GetStaleComps). ──
+        // ── 403: county isolation (mirrors GetStaleComps). C45-A
+        //        Hard Guard 8: 403 happens BEFORE ETag computation. ──
         var principalCountyId = ResolveCountyClaim();
         if (principalCountyId is null || principalCountyId.Value != countyId)
         {
             _logger.LogWarning(
                 "[Sync] GetStaleCompsSummary refused cross-county access: principal={Principal} requested={Requested}",
                 principalCountyId, countyId);
+            SyncHttpCacheHeaders.ApplyNoStore(Response);
             return Forbid();
         }
 
@@ -1021,6 +1146,7 @@ public class SyncController : ControllerBase
             var ptr = await _activeWorkbook.GetAsync(countyId, ct);
             if (ptr is null)
             {
+                SyncHttpCacheHeaders.ApplyNoStore(Response);
                 return BadRequest(new
                 {
                     error = $"Cannot summarize staleness for county {countyId}: " +
@@ -1038,7 +1164,29 @@ public class SyncController : ControllerBase
             .TotalStaleRowsAsync(countyId, baselineWorkbookId, ct);
         var groupCount     = await _staleSummaryReader
             .GroupCountAsync(countyId, baselineWorkbookId, ct);
-        var groupRows      = await _staleSummaryReader
+
+        // ── C45-B: ETag seed for the summary endpoint per C45-A
+        //    Hard Guard 5. Includes totalStaleRows + groupCount so
+        //    new stale rows or new group emergence rotates the
+        //    ETag even if the maxLockedAtUtc happens to coincide. ──
+        var maxLockedAt = await _staleSummaryReader.MaxLockedAtAsync(countyId, baselineWorkbookId, ct);
+        var lastModifiedUtc = ToLastModifiedUtc(maxLockedAt);
+        var etag = SyncHttpCacheHeaders.BuildStrongEtag(
+            EtagScopeStaleSummary,
+            countyId.ToString(),
+            baselineWorkbookId.ToString(),
+            totalStaleRows.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            groupCount.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            lastModifiedUtc.UtcDateTime.ToString("O", System.Globalization.CultureInfo.InvariantCulture));
+
+        if (SyncHttpCacheHeaders.MatchesIfNoneMatch(Request, etag) ||
+            SyncHttpCacheHeaders.MatchesIfModifiedSince(Request, lastModifiedUtc))
+        {
+            SyncHttpCacheHeaders.ApplyNotModifiedHeaders(Response, CompMaxAge, etag);
+            return StatusCode(StatusCodes.Status304NotModified);
+        }
+
+        var groupRows = await _staleSummaryReader
             .GroupAsync(countyId, baselineWorkbookId, MaxStaleSummaryGroups, ct);
 
         // ── Project to wire DTO. ComputedDecision maps int → string
@@ -1065,6 +1213,7 @@ public class SyncController : ControllerBase
             countyId, baselineWorkbookId, baselineSource,
             totalStaleRows, groupCount, dto.Truncated);
 
+        SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, CompMaxAge, etag, lastModifiedUtc);
         return Ok(dto);
     }
 }

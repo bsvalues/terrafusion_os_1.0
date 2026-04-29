@@ -1,0 +1,199 @@
+using System;
+using System.Globalization;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using Microsoft.AspNetCore.Http;
+
+namespace TerraFusion.API.Services.Sync;
+
+/// <summary>
+/// Slice C45-B helpers for emitting the C45-A comps-API caching
+/// headers and matching conditional-request headers.
+///
+/// <para>All methods are pure / static: no I/O, no DI, no
+/// allocation beyond the bytes the SHA-256 + header strings need.
+/// Each emission method writes directly to the supplied
+/// <see cref="HttpResponse"/>; each match method reads directly
+/// from the supplied <see cref="HttpRequest"/>.</para>
+///
+/// <para>Per C45-A:
+/// <list type="bullet">
+/// <item>ETags are <b>strong</b> (no <c>W/</c> prefix). The seed
+///   is exact, so strong is defensible.</item>
+/// <item>Cacheable responses always carry
+///   <c>Cache-Control: private, max-age=&lt;sec&gt;</c>,
+///   <c>ETag</c>, <c>Last-Modified</c>, and
+///   <c>Vary: Authorization</c>.</item>
+/// <item>304 responses carry the same Cache-Control + ETag +
+///   Vary, but NO Last-Modified (the body is empty; client
+///   already knows).</item>
+/// <item>Errors / mutations carry <c>Cache-Control: no-store</c>
+///   and NO ETag / Last-Modified.</item>
+/// </list>
+/// </para>
+/// </summary>
+public static class SyncHttpCacheHeaders
+{
+    /// <summary>
+    /// Build a strong ETag from a scope prefix and an ordered
+    /// list of seed parts. The seed is joined with <c>|</c> to
+    /// avoid ambiguity between adjacent parts; <c>null</c> parts
+    /// are coerced to empty strings.
+    ///
+    /// <para>Returned value is the full quoted ETag header value
+    /// (e.g. <c>"comps:e:abcdef…"</c>) including the surrounding
+    /// double quotes — ready to drop into
+    /// <see cref="HttpResponse.Headers"/> verbatim.</para>
+    /// </summary>
+    public static string BuildStrongEtag(string scopePrefix, params string[] parts)
+    {
+        if (string.IsNullOrEmpty(scopePrefix))
+        {
+            throw new ArgumentException("scopePrefix is required.", nameof(scopePrefix));
+        }
+        ArgumentNullException.ThrowIfNull(parts);
+
+        var seed = string.Join("|", parts.Select(p => p ?? string.Empty));
+        var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(seed)))
+            .ToLowerInvariant();
+
+        return "\"" + scopePrefix + ":" + hash + "\"";
+    }
+
+    /// <summary>
+    /// Apply the C45-A private cacheable headers to a 200
+    /// response: <c>Cache-Control: private, max-age=N</c>,
+    /// <c>ETag</c>, <c>Last-Modified</c> (RFC 1123), and
+    /// <c>Vary: Authorization</c>.
+    /// </summary>
+    public static void ApplyPrivateCacheHeaders(
+        HttpResponse response,
+        TimeSpan maxAge,
+        string etag,
+        DateTimeOffset lastModifiedUtc)
+    {
+        ArgumentNullException.ThrowIfNull(response);
+        if (string.IsNullOrEmpty(etag)) throw new ArgumentException("etag required", nameof(etag));
+        if (maxAge < TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(maxAge));
+
+        var seconds = (int)maxAge.TotalSeconds;
+        response.Headers.CacheControl = $"private, max-age={seconds.ToString(CultureInfo.InvariantCulture)}";
+        response.Headers.ETag         = etag;
+        response.Headers.LastModified = lastModifiedUtc.UtcDateTime
+            .ToString("R", CultureInfo.InvariantCulture);
+        response.Headers.Vary         = "Authorization";
+    }
+
+    /// <summary>
+    /// Apply C45-A 304 Not Modified headers: same Cache-Control
+    /// + ETag + Vary as the matching 200, but NO Last-Modified.
+    /// The caller is responsible for setting the response status
+    /// code to 304 and returning an empty body.
+    /// </summary>
+    public static void ApplyNotModifiedHeaders(
+        HttpResponse response,
+        TimeSpan maxAge,
+        string etag)
+    {
+        ArgumentNullException.ThrowIfNull(response);
+        if (string.IsNullOrEmpty(etag)) throw new ArgumentException("etag required", nameof(etag));
+
+        var seconds = (int)maxAge.TotalSeconds;
+        response.Headers.CacheControl = $"private, max-age={seconds.ToString(CultureInfo.InvariantCulture)}";
+        response.Headers.ETag         = etag;
+        response.Headers.Vary         = "Authorization";
+        response.Headers.Remove("Last-Modified");
+    }
+
+    /// <summary>
+    /// Apply <c>Cache-Control: no-store</c> per C45-A Hard Guard
+    /// 2 / 10. Removes any prior <c>ETag</c> and
+    /// <c>Last-Modified</c> headers so error / mutation responses
+    /// never leak resource freshness signals.
+    /// </summary>
+    public static void ApplyNoStore(HttpResponse response)
+    {
+        ArgumentNullException.ThrowIfNull(response);
+        response.Headers.CacheControl = "no-store";
+        response.Headers.Remove("ETag");
+        response.Headers.Remove("Last-Modified");
+    }
+
+    /// <summary>
+    /// Returns <c>true</c> when the request's
+    /// <c>If-None-Match</c> header matches the supplied ETag.
+    /// Matches the full quoted form verbatim and tolerates the
+    /// HTTP-spec-permitted comma-separated list of values
+    /// (taking any single match as a hit).
+    /// </summary>
+    public static bool MatchesIfNoneMatch(HttpRequest request, string etag)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        if (string.IsNullOrEmpty(etag)) return false;
+
+        if (!request.Headers.TryGetValue("If-None-Match", out var clientEtags))
+        {
+            return false;
+        }
+        // The client may send a comma-separated list of ETags; any
+        // exact match is sufficient for a 304. We do not honor the
+        // wildcard (*) form — the API does not implement
+        // optimistic-concurrency semantics on these endpoints.
+        foreach (var raw in clientEtags)
+        {
+            if (string.IsNullOrWhiteSpace(raw)) continue;
+            foreach (var token in raw.Split(','))
+            {
+                var trimmed = token.Trim();
+                if (trimmed.Length == 0) continue;
+                if (string.Equals(trimmed, etag, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Returns <c>true</c> when the request's
+    /// <c>If-Modified-Since</c> header is a parseable HTTP-date
+    /// AND that date is at or after <paramref name="lastModifiedUtc"/>
+    /// (truncated to one-second precision per RFC 1123).
+    /// </summary>
+    public static bool MatchesIfModifiedSince(HttpRequest request, DateTimeOffset lastModifiedUtc)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        if (!request.Headers.TryGetValue("If-Modified-Since", out var values) ||
+            values.Count == 0)
+        {
+            return false;
+        }
+
+        var raw = values[0];
+        if (string.IsNullOrWhiteSpace(raw)) return false;
+
+        if (!DateTimeOffset.TryParseExact(
+                raw,
+                "R",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
+                out var clientDate))
+        {
+            return false;
+        }
+
+        // Truncate to seconds; RFC 1123 has no sub-second precision
+        // so we compare the truncated values.
+        var serverSeconds = TruncateToSeconds(lastModifiedUtc);
+        var clientSeconds = TruncateToSeconds(clientDate);
+        return clientSeconds >= serverSeconds;
+    }
+
+    private static DateTimeOffset TruncateToSeconds(DateTimeOffset value)
+        => new(value.Year, value.Month, value.Day,
+               value.Hour, value.Minute, value.Second,
+               value.Offset);
+}
