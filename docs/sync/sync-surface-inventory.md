@@ -99,6 +99,10 @@ For any row classified as **Proof / Admin**, the binding rule is:
 | `ISalesCompEligibilityReader` | TerraFusion.Sync.Workbench/Comps/Sales | Forge handoff | Sync (today) → Forge (long-term) | Read-only canonical sale eligibility. Forge will eventually read directly from the canonical table. Sync reader stays as diagnostic. |
 | `ISalesCompStaleReader` | TerraFusion.Sync.Workbench/Comps/Sales | TerraFlow handoff | Sync (detect) + TerraFlow (remediate) | Sync detects stale rows; TerraFlow's workflow decides what happens next. |
 | `ISalesCompStaleSummaryReader` | TerraFusion.Sync.Workbench/Comps/Sales | TerraFlow handoff | Sync (detect) + TerraFlow (remediate) | Per-group summary; same handoff as the per-row stale reader. |
+| `IPacsSchemaCatalog` (C48-B) | TerraFusion.Sync.Workbench/Schema | Core Sync | Sync | In-process metadata catalog for PACS schema. Singleton, read-only at runtime (HG3). Constructed once from an `IPacsSchemaSource`. |
+| `IPacsSchemaSource` + `InMemoryPacsSchemaSource` (C48-B) | TerraFusion.Sync.Workbench/Schema | Core Sync | Sync | Source abstraction for the catalog. In-memory fixture variant for tests + initial wiring. |
+| `LivePacsSchemaSource` + `IPacsSchemaIntrospector` + `SqlInformationSchemaIntrospector` (C48-C) | TerraFusion.Sync.Workbench/Schema | Core Sync | Sync | Live-DB introspection variant. Reads `INFORMATION_SCHEMA` from Harris PACS (the legacy SOURCE database, never TerraFusion DB). PII-free by query design (HG1). |
+| `PacsSchemaCatalogHealthCheck` (C48-B) | TerraFusion.Sync.Workbench/Schema | Proof / Admin | Sync | Coverage-floor health check for the catalog. Reports Healthy when meets floor; Degraded when below. |
 
 ### Category 4 — HTTP endpoints
 
@@ -110,6 +114,7 @@ For any row classified as **Proof / Admin**, the binding rule is:
 | Active workbook GET | `GET /api/sync/active-workbook` | Core Sync | Sync | Read of pointer. Permanent. |
 | Active workbook PUT | `PUT /api/sync/active-workbook` | Core Sync | Sync | Pointer mutation (Mapped-only, county-scoped). TerraFlow MAY call after approval workflows; Sync enforces the rules. |
 | HEAD variants on cache-aware endpoints | `HEAD /api/sync/...` | Proof / Admin | Sync | Part of the C45 HTTP cache contract. Permanent. |
+| Schema catalog summary (C48-D) | `GET /api/sync/schema/catalog/summary` | Proof / Admin | Sync | Surfaces catalog coverage counts + version stamp. Returns `Configured = false` when the live catalog has not been opt-in-registered (no `ConnectionStrings:HarrisPacs`). PII-free by construction (HG1). NOT a consumer-facing product API; long-term operator-facing schema browsing UX would belong to Workbench/Studio. |
 
 ### Category 5 — CLI tools
 
