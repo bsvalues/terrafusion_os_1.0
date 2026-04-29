@@ -66,19 +66,29 @@ public static class SyncHttpCacheHeaders
     /// response: <c>Cache-Control: private, max-age=N</c>,
     /// <c>ETag</c>, <c>Last-Modified</c> (RFC 1123), and
     /// <c>Vary: Authorization</c>.
+    ///
+    /// <para>Slice C45-E: when
+    /// <paramref name="staleWhileRevalidate"/> is supplied (and
+    /// positive), the directive is appended as
+    /// <c>stale-while-revalidate=N</c> so clients can render
+    /// cached data immediately while refetching in the
+    /// background. <c>null</c> or zero/negative values omit the
+    /// directive entirely (the C45-A pointer-endpoint policy
+    /// wants no SWR — operators expect pointer changes to reflect
+    /// immediately).</para>
     /// </summary>
     public static void ApplyPrivateCacheHeaders(
         HttpResponse response,
         TimeSpan maxAge,
         string etag,
-        DateTimeOffset lastModifiedUtc)
+        DateTimeOffset lastModifiedUtc,
+        TimeSpan? staleWhileRevalidate = null)
     {
         ArgumentNullException.ThrowIfNull(response);
         if (string.IsNullOrEmpty(etag)) throw new ArgumentException("etag required", nameof(etag));
         if (maxAge < TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(maxAge));
 
-        var seconds = (int)maxAge.TotalSeconds;
-        response.Headers.CacheControl = $"private, max-age={seconds.ToString(CultureInfo.InvariantCulture)}";
+        response.Headers.CacheControl = BuildCacheControl(maxAge, staleWhileRevalidate);
         response.Headers.ETag         = etag;
         response.Headers.LastModified = lastModifiedUtc.UtcDateTime
             .ToString("R", CultureInfo.InvariantCulture);
@@ -90,20 +100,41 @@ public static class SyncHttpCacheHeaders
     /// + ETag + Vary as the matching 200, but NO Last-Modified.
     /// The caller is responsible for setting the response status
     /// code to 304 and returning an empty body.
+    ///
+    /// <para>Slice C45-E: <paramref name="staleWhileRevalidate"/>
+    /// mirrors the matching 200's directive so the SWR window
+    /// applies even when the conditional short-circuit fires.</para>
     /// </summary>
     public static void ApplyNotModifiedHeaders(
         HttpResponse response,
         TimeSpan maxAge,
-        string etag)
+        string etag,
+        TimeSpan? staleWhileRevalidate = null)
     {
         ArgumentNullException.ThrowIfNull(response);
         if (string.IsNullOrEmpty(etag)) throw new ArgumentException("etag required", nameof(etag));
 
-        var seconds = (int)maxAge.TotalSeconds;
-        response.Headers.CacheControl = $"private, max-age={seconds.ToString(CultureInfo.InvariantCulture)}";
+        response.Headers.CacheControl = BuildCacheControl(maxAge, staleWhileRevalidate);
         response.Headers.ETag         = etag;
         response.Headers.Vary         = "Authorization";
         response.Headers.Remove("Last-Modified");
+    }
+
+    /// <summary>
+    /// Build the <c>Cache-Control</c> value for a private
+    /// cacheable response. <c>private, max-age=N</c> is always
+    /// emitted; <c>stale-while-revalidate=M</c> is appended only
+    /// when supplied and positive (per Slice C45-E).
+    /// </summary>
+    private static string BuildCacheControl(TimeSpan maxAge, TimeSpan? staleWhileRevalidate)
+    {
+        var maxAgeSeconds = (int)maxAge.TotalSeconds;
+        if (staleWhileRevalidate is { } swr && swr > TimeSpan.Zero)
+        {
+            var swrSeconds = (int)swr.TotalSeconds;
+            return $"private, max-age={maxAgeSeconds.ToString(CultureInfo.InvariantCulture)}, stale-while-revalidate={swrSeconds.ToString(CultureInfo.InvariantCulture)}";
+        }
+        return $"private, max-age={maxAgeSeconds.ToString(CultureInfo.InvariantCulture)}";
     }
 
     /// <summary>

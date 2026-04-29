@@ -202,7 +202,7 @@ public class SyncControllerHeadMethodTests
         var result = await controller.GetEligibleComps(county.Id, null, null, null);
 
         AssertHeadOk(result);
-        controller.Response.Headers.CacheControl.ToString().Should().Be("private, max-age=60");
+        controller.Response.Headers.CacheControl.ToString().Should().Be("private, max-age=60, stale-while-revalidate=120");
         controller.Response.Headers.ETag.ToString().Should().StartWith("\"comps:e:").And.EndWith("\"");
         controller.Response.Headers.Vary.ToString().Should().Be("Authorization");
         controller.Response.Headers.LastModified.ToString().Should().NotBeEmpty();
@@ -224,7 +224,7 @@ public class SyncControllerHeadMethodTests
         var result = await controller.GetStaleComps(county.Id, newWb, null, null);
 
         AssertHeadOk(result);
-        controller.Response.Headers.CacheControl.ToString().Should().Be("private, max-age=60");
+        controller.Response.Headers.CacheControl.ToString().Should().Be("private, max-age=60, stale-while-revalidate=120");
         controller.Response.Headers.ETag.ToString().Should().StartWith("\"comps:s:");
         controller.Response.Headers.Vary.ToString().Should().Be("Authorization");
     }
@@ -241,7 +241,7 @@ public class SyncControllerHeadMethodTests
         var result = await controller.GetStaleCompsSummary(county.Id, newWb, null, null);
 
         AssertHeadOk(result);
-        controller.Response.Headers.CacheControl.ToString().Should().Be("private, max-age=60");
+        controller.Response.Headers.CacheControl.ToString().Should().Be("private, max-age=60, stale-while-revalidate=120");
         controller.Response.Headers.ETag.ToString().Should().StartWith("\"comps:ss:");
     }
 
@@ -303,7 +303,7 @@ public class SyncControllerHeadMethodTests
         var status = result.Should().BeOfType<StatusCodeResult>().Subject;
         status.StatusCode.Should().Be(StatusCodes.Status304NotModified,
             "the conditional 304 short-circuit fires BEFORE the HEAD short-circuit");
-        head.Response.Headers.CacheControl.ToString().Should().Be("private, max-age=60");
+        head.Response.Headers.CacheControl.ToString().Should().Be("private, max-age=60, stale-while-revalidate=120");
         head.Response.Headers.LastModified.ToString().Should().BeEmpty(
             "304 carries no Last-Modified regardless of method");
     }

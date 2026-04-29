@@ -407,6 +407,16 @@ public class SyncController : ControllerBase
     private static readonly TimeSpan CompMaxAge   = TimeSpan.FromSeconds(60);
     private static readonly TimeSpan PointerMaxAge = TimeSpan.FromSeconds(5);
 
+    // ── Slice C45-E: stale-while-revalidate window for the comp
+    //    endpoints. After the 60-second max-age expires, clients
+    //    may render the cached body for up to another 120 seconds
+    //    while asynchronously refetching — smooths the polling
+    //    cliff for dashboards. Active-workbook deliberately omits
+    //    SWR (operators expect pointer changes to reflect within
+    //    seconds; SWR would mean "show old pointer for up to N
+    //    seconds longer," which contradicts that mental model). ──
+    private static readonly TimeSpan CompStaleWhileRevalidate = TimeSpan.FromSeconds(120);
+
     // Endpoint scope-prefixes for ETags (C45-A Hard Guard 5 / glossary).
     private const string EtagScopeEligible       = "comps:e";
     private const string EtagScopeStale          = "comps:s";
@@ -528,7 +538,7 @@ public class SyncController : ControllerBase
         if (SyncHttpCacheHeaders.MatchesIfNoneMatch(Request, etag) ||
             SyncHttpCacheHeaders.MatchesIfModifiedSince(Request, lastModifiedUtc))
         {
-            SyncHttpCacheHeaders.ApplyNotModifiedHeaders(Response, CompMaxAge, etag);
+            SyncHttpCacheHeaders.ApplyNotModifiedHeaders(Response, CompMaxAge, etag, CompStaleWhileRevalidate);
             return StatusCode(StatusCodes.Status304NotModified);
         }
 
@@ -539,7 +549,7 @@ public class SyncController : ControllerBase
         //    elides the body on HEAD. ──
         if (HttpMethods.IsHead(Request.Method))
         {
-            SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, CompMaxAge, etag, lastModifiedUtc);
+            SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, CompMaxAge, etag, lastModifiedUtc, CompStaleWhileRevalidate);
             return StatusCode(StatusCodes.Status200OK);
         }
 
@@ -589,7 +599,7 @@ public class SyncController : ControllerBase
             "[Sync] GetEligibleComps: county={CountyId} workbookId={WorkbookId} page={Page} pageSize={PageSize} rows={Rows} total={Total}",
             countyId, workbookId, effectivePage, effectivePageSize, items.Count, totalCount);
 
-        SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, CompMaxAge, etag, lastModifiedUtc);
+        SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, CompMaxAge, etag, lastModifiedUtc, CompStaleWhileRevalidate);
         return Ok(envelope);
     }
 
@@ -1041,14 +1051,14 @@ public class SyncController : ControllerBase
         if (SyncHttpCacheHeaders.MatchesIfNoneMatch(Request, etag) ||
             SyncHttpCacheHeaders.MatchesIfModifiedSince(Request, lastModifiedUtc))
         {
-            SyncHttpCacheHeaders.ApplyNotModifiedHeaders(Response, CompMaxAge, etag);
+            SyncHttpCacheHeaders.ApplyNotModifiedHeaders(Response, CompMaxAge, etag, CompStaleWhileRevalidate);
             return StatusCode(StatusCodes.Status304NotModified);
         }
 
         // C45-D: HEAD short-circuit (skip count + page reads).
         if (HttpMethods.IsHead(Request.Method))
         {
-            SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, CompMaxAge, etag, lastModifiedUtc);
+            SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, CompMaxAge, etag, lastModifiedUtc, CompStaleWhileRevalidate);
             return StatusCode(StatusCodes.Status200OK);
         }
 
@@ -1095,7 +1105,7 @@ public class SyncController : ControllerBase
             "[Sync] GetStaleComps: county={CountyId} baseline={BaselineWorkbookId} via={BaselineSource} page={Page} pageSize={PageSize} rows={Rows} total={Total}",
             countyId, baselineWorkbookId, baselineSource, effectivePage, effectivePageSize, items.Count, totalCount);
 
-        SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, CompMaxAge, etag, lastModifiedUtc);
+        SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, CompMaxAge, etag, lastModifiedUtc, CompStaleWhileRevalidate);
         return Ok(envelope);
     }
 
@@ -1259,7 +1269,7 @@ public class SyncController : ControllerBase
         if (SyncHttpCacheHeaders.MatchesIfNoneMatch(Request, etag) ||
             SyncHttpCacheHeaders.MatchesIfModifiedSince(Request, lastModifiedUtc))
         {
-            SyncHttpCacheHeaders.ApplyNotModifiedHeaders(Response, CompMaxAge, etag);
+            SyncHttpCacheHeaders.ApplyNotModifiedHeaders(Response, CompMaxAge, etag, CompStaleWhileRevalidate);
             return StatusCode(StatusCodes.Status304NotModified);
         }
 
@@ -1269,7 +1279,7 @@ public class SyncController : ControllerBase
         // for, and the framework elides the body anyway.
         if (HttpMethods.IsHead(Request.Method))
         {
-            SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, CompMaxAge, etag, lastModifiedUtc);
+            SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, CompMaxAge, etag, lastModifiedUtc, CompStaleWhileRevalidate);
             return StatusCode(StatusCodes.Status200OK);
         }
 
@@ -1300,7 +1310,7 @@ public class SyncController : ControllerBase
             countyId, baselineWorkbookId, baselineSource,
             totalStaleRows, groupCount, dto.Truncated);
 
-        SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, CompMaxAge, etag, lastModifiedUtc);
+        SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, CompMaxAge, etag, lastModifiedUtc, CompStaleWhileRevalidate);
         return Ok(dto);
     }
 }
