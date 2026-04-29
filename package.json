@@ -84,6 +84,7 @@
     "dev:backend:with-seeders:api": "cross-env ASPNETCORE_ENVIRONMENT=Development pnpm run backend:launch -- dotnet watch --non-interactive run --project backend/src/TerraFusion.API/TerraFusion.API.csproj -p:DotNetWatchBuild=true",
     "dev:frontend": "cd frontend && npm run dev",
     "dev:setup": "node scripts/dev-setup.mjs",
+    "readiness:june10": "node scripts/june10-readiness.mjs",
     "dev:preview": "node os-platform/core/pilot/dev-preview.mjs",
     "preview:smoke": "node os-platform/core/pilot/preview-smoke.mjs",
     "proof:r1:local": "node os-platform/core/pilot/r1-local-proof.mjs",

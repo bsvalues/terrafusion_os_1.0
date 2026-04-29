@@ -82,12 +82,12 @@ describe('CountyStudyPage', () => {
     expect(screen.getByRole('button', { name: /open study/i })).toBeInTheDocument();
   });
 
-  it('does NOT show the Atlas button when no study is active', () => {
+  it('does NOT show the pop-out map button when no study is active', () => {
     render(<CountyStudyPage />, { wrapper: Wrapper });
-    expect(screen.queryByRole('button', { name: /atlas/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /pop out map/i })).not.toBeInTheDocument();
   });
 
-  it('shows the Atlas button when a study is active', () => {
+  it('shows the pop-out map button when a study is active', () => {
     act(() => {
       useCountyStudioStore.getState().setStudy({
         studyId: 'study-1', countyId: 'benton', taxYear: 2026,
@@ -96,7 +96,7 @@ describe('CountyStudyPage', () => {
       });
     });
     render(<CountyStudyPage />, { wrapper: Wrapper });
-    expect(screen.getByRole('button', { name: /atlas/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /pop out map/i })).toBeInTheDocument();
   });
 
   // ── Drill lattice ────────────────────────────────────────────────────
