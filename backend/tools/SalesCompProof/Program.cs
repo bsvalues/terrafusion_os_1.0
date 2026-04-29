@@ -124,10 +124,28 @@ internal static class Program
         var writer         = new CanonicalSalesQualificationWriter(db);
         var runner         = new SalesQualificationCanonicalRunner(db, readModel, salesReader, writer);
         var compReader     = new SalesCompEligibilityReader(db);
+        var pointerService = new SyncCountyActiveWorkbookService(db);
 
-        Console.WriteLine($"sales-comp-proof: live PACS proof against workbook {args.WorkbookId}");
+        // ── Slice C42-A: resolve the effective workbook id.
+        //    Explicit --workbook-id wins; otherwise consult the C41-B
+        //    county active-workbook pointer; otherwise fail closed.
+        var effectiveWorkbookId = await WorkbookIdResolver.ResolveAsync(
+            args.CountyId, args.WorkbookId, pointerService, ct);
+        if (effectiveWorkbookId is null)
+        {
+            await Console.Error.WriteLineAsync(
+                "sales-comp-proof: " + WorkbookIdResolver.NoActiveWorkbookMessage(args.CountyId));
+            return 2;
+        }
+
+        var resolvedWorkbookId = effectiveWorkbookId.Value;
+        var workbookSource = args.WorkbookId.HasValue && args.WorkbookId.Value != Guid.Empty
+            ? "explicit --workbook-id"
+            : "county active-workbook pointer";
+
+        Console.WriteLine($"sales-comp-proof: live PACS proof against workbook {resolvedWorkbookId}");
         Console.WriteLine($"sales-comp-proof:   county id:             {args.CountyId}");
-        Console.WriteLine($"sales-comp-proof:   workbook id:           {args.WorkbookId}");
+        Console.WriteLine($"sales-comp-proof:   workbook id:           {resolvedWorkbookId} ({workbookSource})");
         Console.WriteLine($"sales-comp-proof:   source connection id:  {args.SourceConnectionId}");
         Console.WriteLine($"sales-comp-proof:   max sales:             {args.MaxSales}");
         Console.WriteLine($"sales-comp-proof:   operator:              {args.OperatorId}");
@@ -137,14 +155,14 @@ internal static class Program
         //      before any PACS read or canonical write.
         Console.WriteLine("sales-comp-proof: running C36 canonical-write transform...");
         var runResult = await runner.RunAsync(
-            args.CountyId, args.WorkbookId, args.SourceConnectionId,
+            args.CountyId, resolvedWorkbookId, args.SourceConnectionId,
             args.MaxSales, args.OperatorId, ct);
 
-        // ── 2. C37 comp-eligibility filter, pinned to the workbook
-        //      under proof.
+        // ── 2. C37 comp-eligibility filter, pinned to the resolved
+        //      workbook (whether explicit or pointer-derived).
         Console.WriteLine("sales-comp-proof: querying C37 comp-eligibility filter...");
         var compPool = await compReader.ReadAsync(
-            args.CountyId, sourceWorkbookId: args.WorkbookId, ct);
+            args.CountyId, sourceWorkbookId: resolvedWorkbookId, ct);
 
         // ── 3. Reconciliation rule (C37-A).
         var bucketsSum = runResult.QualifiedCount + runResult.ExcludedCount +
@@ -210,7 +228,8 @@ internal static class Program
             kind = "live-pacs-proof",
             generatedAtUtc = stamp,
             countyId = args.CountyId,
-            sourceWorkbookId = args.WorkbookId,
+            sourceWorkbookId = resolvedWorkbookId,
+            sourceWorkbookSource = workbookSource,
             sourceConnectionId = args.SourceConnectionId,
             maxSales = args.MaxSales,
             operatorId = args.OperatorId,
@@ -257,7 +276,7 @@ internal static class Program
         md.AppendLine();
         md.AppendLine($"- **Generated (UTC):** {stamp}");
         md.AppendLine($"- **County:** `{args.CountyId}`");
-        md.AppendLine($"- **Source workbook:** `{args.WorkbookId}`");
+        md.AppendLine($"- **Source workbook:** `{resolvedWorkbookId}` (via {workbookSource})");
         md.AppendLine($"- **Source connection:** `{args.SourceConnectionId}`");
         md.AppendLine($"- **Max sales (TOP-N):** {args.MaxSales:N0}");
         md.AppendLine($"- **Operator stamp:** `{args.OperatorId}`");
@@ -327,7 +346,7 @@ internal static class Program
         Console.WriteLine();
         Console.WriteLine("─────────────────────────────────────────────");
         Console.WriteLine("  C37-C Live-PACS Comp-Eligibility Proof");
-        Console.WriteLine($"  Workbook:            {args.WorkbookId}");
+        Console.WriteLine($"  Workbook:            {resolvedWorkbookId} ({workbookSource})");
         Console.WriteLine($"  Rows read:           {runResult.RowsRead,7:N0}");
         Console.WriteLine($"  Qualified:           {runResult.QualifiedCount,7:N0}");
         Console.WriteLine($"  Excluded:            {runResult.ExcludedCount,7:N0}");

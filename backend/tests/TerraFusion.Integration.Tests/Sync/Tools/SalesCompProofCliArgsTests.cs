@@ -121,12 +121,19 @@ public class SalesCompProofCliArgsTests
     }
 
     [Fact]
-    public void Parse_MissingWorkbookId_ReturnsError()
+    public void Parse_OmittedWorkbookId_AcceptedAsNull()
     {
+        // Slice C42-A: --workbook-id is optional. When omitted the
+        // tool resolves the C41-B county active-workbook pointer.
+        // The parser MUST accept omission and set WorkbookId = null;
+        // resolution (and the fail-closed behavior when no pointer
+        // exists) lives in the runner.
         var argv = AllRequired().Where((_, i) => i != 4 && i != 5).ToArray();
         var (args, err) = CliArgs.Parse(argv);
-        args.Should().BeNull();
-        err.Should().Contain("--workbook-id");
+        err.Should().BeNull();
+        args.Should().NotBeNull();
+        args!.WorkbookId.Should().BeNull(
+            "C42-A: omitted --workbook-id parses as null; runner consults the active-workbook pointer");
     }
 
     [Fact]

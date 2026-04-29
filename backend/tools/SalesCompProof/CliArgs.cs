@@ -10,7 +10,7 @@ namespace TerraFusion.Tools.SalesCompProof;
 public sealed record CliArgs(
     string TerraFusionDbConnectionString,
     Guid CountyId,
-    Guid WorkbookId,
+    Guid? WorkbookId,
     Guid SourceConnectionId,
     int  MaxSales,
     string OperatorId,
@@ -78,16 +78,19 @@ public sealed record CliArgs(
 
         if (showHelp)
         {
-            return (new CliArgs("", Guid.Empty, Guid.Empty, Guid.Empty, 0, op, ShowHelp: true), null);
+            return (new CliArgs("", Guid.Empty, WorkbookId: null, Guid.Empty, 0, op, ShowHelp: true), null);
         }
 
         if (string.IsNullOrWhiteSpace(db))            return (null, "--db is required");
         if (countyId is null)                          return (null, "--county-id is required");
-        if (workbookId is null)                        return (null, "--workbook-id is required");
+        // --workbook-id is OPTIONAL per C42-A. When omitted, the
+        // runner resolves the active workbook via
+        // ISyncCountyActiveWorkbookService and fails closed if none
+        // is configured.
         if (connId is null)                            return (null, "--source-connection-id is required");
         if (maxSales is null)                          return (null, "--max-sales is required");
 
-        return (new CliArgs(db!, countyId.Value, workbookId.Value, connId.Value, maxSales.Value, op, ShowHelp: false), null);
+        return (new CliArgs(db!, countyId.Value, workbookId, connId.Value, maxSales.Value, op, ShowHelp: false), null);
     }
 
     public static string UsageText =>
@@ -110,12 +113,17 @@ and to disk for evidence. Workbook is never mutated.
 Required flags
   --db <connection-string>          TerraFusion Postgres connection string
   --county-id <guid>                Sovereign-county scope
-  --workbook-id <guid>              A Mapped workbook in that county
   --source-connection-id <guid>     An active SyncSourceConnection in that
                                     county pointing at PACS (SQL Server)
   --max-sales <n>                   TOP-N bound for the live PACS read
 
 Optional
+  --workbook-id <guid>              A Mapped workbook in that county. When
+                                    omitted, the tool resolves the county
+                                    active-workbook pointer (C41-B). Fails
+                                    closed if no pointer is configured.
+                                    Explicit --workbook-id takes precedence
+                                    and bypasses the pointer.
   --operator <name>                 Audit-stamp identifier
                                     (default: c37c-live-proof)
   --help, -h                        Print this usage and exit
@@ -124,7 +132,8 @@ Exit codes
   0  proof completed; reconciliation passed; evidence written
   1  argument parse failure
   2  runtime failure (workbook not Mapped, connection inactive,
-     PACS unreachable, EF error)
+     PACS unreachable, EF error, no active-workbook pointer when
+     --workbook-id was omitted)
   3  operator cancelled (Ctrl+C)
   4  reconciliation rule failed (evidence still written for audit)
 
@@ -133,7 +142,7 @@ process environment via EnvironmentSecretResolver, exactly the same wiring
 as B1.6.5 / C8-C / C36 in production. Never plaintext on the entity, never
 in command-line args.
 
-Example (Benton; the locked Path 1 destination):
+Example (Benton; explicit workbook id, the locked Path 1 destination):
   sales-comp-proof \
       --db                    "Host=localhost;Database=terrafusion;..." \
       --county-id             eb94de6d-973f-4997-b257-ae1eac352ac7 \
@@ -141,5 +150,15 @@ Example (Benton; the locked Path 1 destination):
       --source-connection-id  <benton-pacs-conn-guid> \
       --max-sales             1000 \
       --operator              c37c-benton-2026-04-28
+
+Example (Benton; using the C41-B active-workbook pointer):
+  sales-comp-proof \
+      --db                    "Host=localhost;Database=terrafusion;..." \
+      --county-id             eb94de6d-973f-4997-b257-ae1eac352ac7 \
+      --source-connection-id  <benton-pacs-conn-guid> \
+      --max-sales             1000 \
+      --operator              c42a-benton-2026-04-29
+  # Resolves the workbook via ISyncCountyActiveWorkbookService.GetAsync;
+  # fails closed if no pointer is configured for the county.
 """;
 }
