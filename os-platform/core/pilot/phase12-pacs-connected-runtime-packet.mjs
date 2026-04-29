@@ -6,7 +6,7 @@ import process from "node:process";
 import { spawn } from "node:child_process";
 
 const LOCAL_BASE_URL =
-  process.env.TF_API_BASE_URL || `http://localhost:${process.env.TF_API_PORT || "5000"}`;
+  process.env.TF_API_BASE_URL || `http://localhost:${process.env.TF_API_PORT || "5046"}`;
 const STAGING_BASE_URL = "https://staging.terrafusionmarket.com";
 const PRODUCTION_BASE_URL = "https://terrafusionmarket.com";
 const DEFAULT_OUT_PATH = path.resolve(

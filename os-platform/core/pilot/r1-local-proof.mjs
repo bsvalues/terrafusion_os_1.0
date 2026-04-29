@@ -6,7 +6,7 @@ import process from "node:process";
 import { setTimeout as sleep } from "node:timers/promises";
 
 const DEFAULT_KERNEL_URL = `http://localhost:${process.env.TF_API_PORT || "5046"}`;
-const DEFAULT_PILOT_URL = `http://localhost:${process.env.PILOT_PORT || "4317"}`;
+const DEFAULT_PILOT_URL = `http://localhost:${process.env.TF_PILOT_PORT || process.env.PILOT_PORT || "4317"}`;
 const DEFAULT_OUT_PATH = path.resolve(
   process.cwd(),
   "os-platform/core/pilot/evidence/r1-local-proof.latest.json"
@@ -31,7 +31,14 @@ function trimSlash(value) {
 }
 
 async function fetchJson(url, init) {
-  const response = await fetch(url, init);
+  let response;
+  try {
+    response = await fetch(url, init);
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+    const cause = error instanceof Error && error.cause ? String(error.cause) : null;
+    throw new Error(`Fetch ${url} failed${cause ? ` (${cause})` : ""}: ${detail}`);
+  }
   const text = await response.text();
   let body = null;
   try {
@@ -120,6 +127,17 @@ async function main() {
       valuationTool
     );
 
+    const redactionTool = Array.isArray(tools.body?.tools)
+      ? tools.body.tools.find((tool) => tool.toolId === "request_trace_redaction")
+      : null;
+    assert(redactionTool, "request_trace_redaction missing from Pilot tool list");
+    recordCheck(
+      "pilot.tools.request_trace_redaction",
+      true,
+      `toolCount=${tools.body?.count ?? "unknown"}`,
+      redactionTool
+    );
+
     const baseInvocation = {
       toolId: "run_valuation_model",
       params: {
@@ -168,19 +186,35 @@ async function main() {
 
     const success = await fetchJson(`${pilotUrl}/pilot/invoke`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-user-id": "admin-1",
+        "x-county-id": "benton",
+        "x-role": "administrator",
+      },
       body: JSON.stringify({
-        ...baseInvocation,
+        toolId: "request_trace_redaction",
+        mode: "pilot",
         confirmation: true,
-        reasonCode: "annual_certification",
+        reasonCode: "data_subject_request",
+        params: {
+          county: "benton",
+          traceEventIds: ["trace-event-1"],
+          reason: "Remove restricted payload reference",
+        },
+        supervisorApproval: {
+          approvedBy: "supervisor-chief",
+          approvedAt: "2026-03-18T12:00:00Z",
+          role: "supervisor",
+        },
       }),
     });
-    assert(success.body?.ok === true, "Expected successful run_valuation_model invocation");
+    assert(success.body?.ok === true, "Expected successful request_trace_redaction invocation");
     assert(typeof success.body?.correlationId === "string", "Missing correlationId on successful invocation");
     assert(typeof success.body?.traceEventId === "string", "Missing traceEventId on successful invocation");
-    assert(typeof success.body?.result?.estimatedValue === "number", "Missing numeric estimatedValue");
+    assert(success.body?.result?.status === "pending_review", "Expected pending_review redaction result");
     recordCheck(
-      "pilot.invoke.run_valuation_model",
+      "pilot.invoke.request_trace_redaction",
       true,
       `correlationId=${success.body.correlationId}`,
       success.body
@@ -193,7 +227,7 @@ async function main() {
     assert(eventTypes.includes("tool_invoked"), "Trace missing tool_invoked");
     assert(eventTypes.includes("tool_completed"), "Trace missing tool_completed");
     recordCheck(
-      "pilot.trace.run_valuation_model",
+      "pilot.trace.request_trace_redaction",
       true,
       eventTypes.join(","),
       trace.body

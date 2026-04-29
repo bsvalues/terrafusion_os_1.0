@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-03-12T14:56:03.258Z",
-  "kernelUrl": "http://localhost:5000",
+  "generatedAt": "2026-04-27T20:05:51.001Z",
+  "kernelUrl": "http://localhost:5046",
   "pilotUrl": "http://localhost:4317",
   "checks": [
     {
@@ -9,7 +9,7 @@
       "detail": "Healthy",
       "payload": {
         "status": "Healthy",
-        "timestamp": "2026-03-12T14:56:03.3072066Z",
+        "timestamp": "2026-04-27T20:05:51.0380593Z",
         "environment": "Development",
         "version": "1.0.0",
         "service": "TerraFusion OS API - Basic Mode"
@@ -23,15 +23,15 @@
         "status": "operational",
         "service": "terrafusion-pilot-runtime",
         "registryVersion": "R1",
-        "toolCount": 53,
-        "traceEventCount": 6,
-        "timestamp": "2026-03-12T14:56:03.316Z"
+        "toolCount": 106,
+        "traceEventCount": 0,
+        "timestamp": "2026-04-27T20:05:51.046Z"
       }
     },
     {
       "name": "pilot.tools.run_valuation_model",
       "ok": true,
-      "detail": "toolCount=53",
+      "detail": "toolCount=106",
       "payload": {
         "toolId": "run_valuation_model",
         "displayName": "Run Valuation Model",
@@ -51,13 +51,36 @@
       }
     },
     {
+      "name": "pilot.tools.request_trace_redaction",
+      "ok": true,
+      "detail": "toolCount=106",
+      "payload": {
+        "toolId": "request_trace_redaction",
+        "displayName": "Request Trace Redaction",
+        "suite": "os",
+        "mode": "pilot",
+        "risk": "irreversible",
+        "description": "Request redaction of PII from stored payloads - REQUIRES supervisor approval. Emits redaction_requested event (append-only) and marks payloads for secure deletion.",
+        "requiresConfirmation": true,
+        "reasonCodes": [
+          "court_order",
+          "data_subject_request",
+          "supervisor_override",
+          "legal_compliance"
+        ],
+        "requiresSupervisorApproval": true,
+        "supervisorRoles": ["supervisor", "administrator", "compliance_officer"]
+      }
+    },
+    {
       "name": "pilot.invoke.confirmation_gate",
       "ok": true,
       "detail": "CONFIRMATION_REQUIRED",
       "payload": {
         "ok": false,
-        "correlationId": "gate-1773327363323",
-        "error": "Tool run_valuation_model requires confirmation (risk: write_high)",
+        "correlationId": "err-1777320351054",
+        "result": null,
+        "error": "policy_violation: CONFIRMATION_REQUIRED",
         "errorCode": "CONFIRMATION_REQUIRED"
       }
     },
@@ -67,75 +90,80 @@
       "detail": "REASON_CODE_REQUIRED",
       "payload": {
         "ok": false,
-        "correlationId": "gate-1773327363325",
-        "error": "Tool run_valuation_model requires a reason code",
+        "correlationId": "err-1777320351056",
+        "result": null,
+        "error": "policy_violation: REASON_CODE_REQUIRED",
         "errorCode": "REASON_CODE_REQUIRED"
       }
     },
     {
-      "name": "pilot.invoke.run_valuation_model",
+      "name": "pilot.invoke.request_trace_redaction",
       "ok": true,
-      "detail": "correlationId=b960e32b-07d8-468c-8d92-08daa19ef036",
+      "detail": "correlationId=15170944-acd8-4dd8-aa4e-ecadc863ad41",
       "payload": {
         "ok": true,
-        "correlationId": "b960e32b-07d8-468c-8d92-08daa19ef036",
+        "correlationId": "15170944-acd8-4dd8-aa4e-ecadc863ad41",
         "result": {
-          "parcelId": "1-0531-100-0001-000",
-          "taxYear": 2025,
-          "modelType": "cost",
-          "estimatedValue": 291972.65625,
-          "confidence": 0.99,
-          "components": {
-            "Base Construction Cost": 262500,
-            "Quality Adjustment": 39375,
-            "Regional Adjustment": 45281.25,
-            "Age Depreciation": -130183.59375,
-            "Land Value": 75000
-          }
+          "redactionTicketId": "redact-1777320351059-z6xfhd",
+          "status": "pending_review",
+          "eventsMarked": 1,
+          "payloadRef": "secure-blob://benton/redaction/redact-1777320351059-z6xfhd"
         },
-        "traceEventId": "5e97a087-36f2-4aac-8437-b4638e80f354"
+        "traceEventId": "fc94e89d-8cb2-4411-a255-202cbb5317a4"
       }
     },
     {
-      "name": "pilot.trace.run_valuation_model",
+      "name": "pilot.trace.request_trace_redaction",
       "ok": true,
-      "detail": "tool_completed,tool_invoked",
+      "detail": "tool_invoked,tool_completed",
       "payload": {
         "events": [
           {
-            "type": "tool_completed",
-            "toolId": "run_valuation_model",
-            "correlationId": "b960e32b-07d8-468c-8d92-08daa19ef036",
+            "type": "tool_invoked",
+            "toolId": "request_trace_redaction",
+            "correlationId": "15170944-acd8-4dd8-aa4e-ecadc863ad41",
             "context": {
               "countyId": "benton",
-              "userId": "dev-user",
-              "roles": ["appraiser"],
+              "userId": "admin-1",
+              "roles": ["administrator"],
               "mode": "pilot",
-              "parcelId": "BENTON-001",
               "confirmation": true,
-              "reasonCode": "annual_certification"
+              "reasonCode": "data_subject_request",
+              "supervisorApproval": {
+                "approvedBy": "supervisor-chief",
+                "approvedAt": "2026-03-18T12:00:00Z",
+                "role": "supervisor"
+              }
             },
-            "summary": "Completed run_valuation_model",
-            "eventId": "5e97a087-36f2-4aac-8437-b4638e80f354",
-            "timestamp": "2026-03-12T14:56:03.462Z",
+            "summary": "Invoking request_trace_redaction (risk: irreversible)",
+            "payloadRef": "payload-46478694-d073-4cb6-a5c5-f4463662f741",
+            "payloadStore": "secure-blob",
+            "eventId": "feb3c82e-5cc7-450b-9411-afbc96d13116",
+            "timestamp": "2026-04-27T20:05:51.059Z",
             "schemaVersion": "1.0.0"
           },
           {
-            "type": "tool_invoked",
-            "toolId": "run_valuation_model",
-            "correlationId": "b960e32b-07d8-468c-8d92-08daa19ef036",
+            "type": "tool_completed",
+            "toolId": "request_trace_redaction",
+            "correlationId": "15170944-acd8-4dd8-aa4e-ecadc863ad41",
             "context": {
               "countyId": "benton",
-              "userId": "dev-user",
-              "roles": ["appraiser"],
+              "userId": "admin-1",
+              "roles": ["administrator"],
               "mode": "pilot",
-              "parcelId": "BENTON-001",
               "confirmation": true,
-              "reasonCode": "annual_certification"
+              "reasonCode": "data_subject_request",
+              "supervisorApproval": {
+                "approvedBy": "supervisor-chief",
+                "approvedAt": "2026-03-18T12:00:00Z",
+                "role": "supervisor"
+              }
             },
-            "summary": "Invoking run_valuation_model (risk: write_high)",
-            "eventId": "654f78c0-71a2-4463-9049-5d3bb93f2bee",
-            "timestamp": "2026-03-12T14:56:03.327Z",
+            "summary": "Completed request_trace_redaction",
+            "payloadRef": "payload-3a108fee-0ebb-410e-88d1-60193080b82b",
+            "payloadStore": "secure-blob",
+            "eventId": "fc94e89d-8cb2-4411-a255-202cbb5317a4",
+            "timestamp": "2026-04-27T20:05:51.059Z",
             "schemaVersion": "1.0.0"
           }
         ]

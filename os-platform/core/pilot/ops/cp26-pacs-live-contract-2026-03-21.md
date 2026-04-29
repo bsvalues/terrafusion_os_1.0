@@ -92,7 +92,7 @@ Per user feedback (2026-03-21): agent read repo first, asked second.
 
 ## Open Items (post-CP26)
 
-- [ ] Wire `pacsService.ts` live path — backend must be running on port 5000 for frontend to route to `/api/pacs/properties`
+- [ ] Wire `pacsService.ts` live path — backend must be running on `TF_API_PORT` (current dev default `5046`) for frontend to route to `/api/pacs/properties`
 - [ ] End-to-end smoke: frontend PropertySearch → backend PacsController → PacsSqlAdapter → pacs_oltp query
 - [ ] Set TF_DEV_PACS_PASSWORD in shell profile so .NET picks it up from env (currently defaults work via hardcoded dev config)
 

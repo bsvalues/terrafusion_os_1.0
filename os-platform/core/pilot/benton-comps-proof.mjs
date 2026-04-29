@@ -36,7 +36,7 @@ async function main() {
   const { parcelId, outPath } = parseArgs(process.argv);
   const evidence = {
     generatedAt: new Date().toISOString(),
-    apiBaseUrl: process.env.TF_API_BASE_URL || `http://localhost:${process.env.TF_API_PORT || "5000"}`,
+    apiBaseUrl: process.env.TF_API_BASE_URL || `http://localhost:${process.env.TF_API_PORT || "5046"}`,
     parcelId,
     checks: [],
     summary: { ok: false, failures: 0 },

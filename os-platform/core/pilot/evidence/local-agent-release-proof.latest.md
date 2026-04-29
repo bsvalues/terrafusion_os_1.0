@@ -1,9 +1,9 @@
 # Local Agent Release Proof
 
-- Generated At: 2026-04-27T23:15:13.525Z
+- Generated At: 2026-04-28T07:37:16.359Z
 - Overall: PASS
 - Temp Repo Cleaned Up: true
-- Temp Repo Root: C:\Users\bsval\AppData\Local\Temp\tf-local-agent-release-proof-kJinGb
+- Temp Repo Root: C:\Users\bsval\AppData\Local\Temp\tf-local-agent-release-proof-Kj0UDq
 
 ## Commands
 
@@ -25,7 +25,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777331713,
+  "createdAt": 1777361836,
   "version": "0.1.0",
   "identity": {
     "productName": "TerraFusion Local Agent Runtime",
@@ -93,15 +93,15 @@
   },
   "nextCommand": "pnpm run tf:local-agent -- start",
   "nextReason": "No locked work card exists. The founder cockpit is the safest way to pick up or start a bounded slice.",
-  "commandCount": 34,
+  "commandCount": 40,
   "commandGroups": [
     "Guidance",
+    "Advanced",
     "Release",
     "Planning",
     "Patch Control",
     "Validation",
-    "Handoff",
-    "Advanced"
+    "Handoff"
   ],
   "commandRegistryPath": ".terrafusion/command-registry.json",
   "actions": [
@@ -361,7 +361,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777331713,
+  "createdAt": 1777361836,
   "version": "0.1.0",
   "productName": "TerraFusion Local Agent Runtime",
   "internalCodename": "Prometheus",
@@ -602,7 +602,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777331713,
+  "createdAt": 1777361836,
   "version": "0.1.0-mvp",
   "productId": "terrafusion-local-agent",
   "productName": "TerraFusion Local Agent Runtime",
@@ -650,7 +650,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777331713,
+  "createdAt": 1777361836,
   "ok": true,
   "releaseStatus": "release-ready-mvp",
   "criticalFailures": 0,
@@ -709,7 +709,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777331713,
+  "createdAt": 1777361836,
   "version": "0.1.0",
   "entries": [
     {
@@ -909,7 +909,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777331713,
+  "createdAt": 1777361836,
   "version": "0.1.0",
   "productName": "TerraFusion Local Agent Runtime",
   "internalCodename": "Prometheus",
@@ -924,7 +924,7 @@
       "required": true,
       "exists": true,
       "ok": true,
-      "sha256": "e420c783b7b4d87efe84acba03eaf8ec4e9c49aa4fd70170cacbd2d87d9d3bfb",
+      "sha256": "779290dabdbdc7631d0a56589cf21b06a3c45e498ce1108d4a3d728b5679c205",
       "summary": "Artifact is readable and fingerprinted."
     },
     {
@@ -933,7 +933,7 @@
       "required": true,
       "exists": true,
       "ok": true,
-      "sha256": "cfbd382ad9ae83b46ec29bdb9ee79970a260c159d657ee80edcf89bf5af51104",
+      "sha256": "963d256164416e5f956bb4bde932d83d89ca426db8b029ae5ffb283e3167f343",
       "summary": "Artifact is readable and fingerprinted."
     },
     {
@@ -942,7 +942,7 @@
       "required": true,
       "exists": true,
       "ok": true,
-      "sha256": "219b85069596aefec3432232b5bd598cbc82482117e8b7a7d63965779310cae4",
+      "sha256": "05179cf8e500b9741a8a4a76088ece8d243903e30619ba13da2356a5d1177e2e",
       "summary": "Artifact is readable and fingerprinted."
     },
     {
@@ -951,7 +951,7 @@
       "required": true,
       "exists": true,
       "ok": true,
-      "sha256": "dea7bcad8805b58f32a9dcac0257a42a04b1aa3b0e1a5f04097766c1680ebc3d",
+      "sha256": "bf434cc273be90ad10381fb6f41eaebcca6f25aaa3a6f541b6aa5cac3eef43ee",
       "summary": "Docs index has no missing required artifacts."
     },
     {
@@ -960,7 +960,7 @@
       "required": true,
       "exists": true,
       "ok": true,
-      "sha256": "81f0e237ca56f4621fbcaf711a07a1baea6ceb8b49207489b30c3d34fc98d010",
+      "sha256": "643b563e857e8c88fe82ce54fc8fbf6745165d96c37980ac086be39e74b555f9",
       "summary": "Artifact is readable and fingerprinted."
     },
     {
@@ -969,7 +969,7 @@
       "required": true,
       "exists": true,
       "ok": true,
-      "sha256": "37d8c0b838d6c5639e738952fb31f01f7f5924b07200d3287818242852d38677",
+      "sha256": "49f2c658665d0d37b580c7ad7deb652af1912e950f65f385e257d66bf7b7acdf",
       "summary": "Release check passed and was fingerprinted."
     },
     {
@@ -1033,7 +1033,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777331713,
+  "createdAt": 1777361836,
   "ok": true,
   "outputDir": "release",
   "steps": [
@@ -1119,7 +1119,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777331713,
+  "createdAt": 1777361836,
   "version": "0.1.0",
   "productName": "TerraFusion Local Agent Runtime",
   "internalCodename": "Prometheus",
@@ -1224,7 +1224,7 @@
 - Result:
 ```json
 {
-  "approvedAt": 1777331713,
+  "approvedAt": 1777361836,
   "version": "0.1.0",
   "productName": "TerraFusion Local Agent Runtime",
   "internalCodename": "Prometheus",
@@ -1247,7 +1247,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777331713,
+  "createdAt": 1777361836,
   "version": "0.1.0",
   "productName": "TerraFusion Local Agent Runtime",
   "internalCodename": "Prometheus",
@@ -1281,7 +1281,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777331713,
+  "createdAt": 1777361836,
   "version": "0.1.0",
   "productName": "TerraFusion Local Agent Runtime",
   "internalCodename": "Prometheus",
@@ -1484,8 +1484,8 @@
 ## Artifacts
 
 - .terrafusion/agent-events.jsonl (3553 bytes)
-- .terrafusion/command-registry.json (11444 bytes)
-- .terrafusion/command-registry.md (8431 bytes)
+- .terrafusion/command-registry.json (13437 bytes)
+- .terrafusion/command-registry.md (9866 bytes)
 - .terrafusion/control-center-state.json (9985 bytes)
 - .terrafusion/control-center-state.md (7970 bytes)
 - .terrafusion/docs-index.json (5421 bytes)

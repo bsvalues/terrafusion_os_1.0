@@ -126,5 +126,5 @@ That was before Phase 33 proved the contract layer.
 ## Open Question (answer before coding Phase 34)
 
 Does `GET /api/swarm/status` or equivalent exist on the running API?
-Check: `http://localhost:5000/api/consciousness/status` or similar.
+Check: `http://localhost:${TF_API_PORT:-5046}/api/consciousness/status` or similar.
 If not, the rehearsal proof falls back to Consciousness container `/health` alone — which is sufficient.

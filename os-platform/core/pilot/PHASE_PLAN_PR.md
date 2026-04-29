@@ -18,7 +18,7 @@ Phase 1 — Core Engine (2–4 weeks)
 - Goals: hardened validation + enforcement, tool allowlist enforcement, trace mapping, audit integration.
 - Tasks (ticketized):
   - P1-1: Add TerraTrace mapping for `tracePolicy` values (implement in `trace/TraceService.js` and `traceExport.ts`).
-  - P1-2: Integrate `IAuditLogger` hooks for tool_invoked/tool_succeeded/tool_failed events.
+  - P1-2: Integrate `IAuditLogger` hooks for `tool_invoked` and terminal events (`tool_completed`/`tool_failed` for governed ToolRunner flows; some utility surfaces still emit `tool_succeeded`).
   - P1-3: Add unit & integration tests for county isolation + RBAC across validate/invoke endpoints.
   - P1-4: Add logging + observability for policy rejections (permission_denied, policy_blocked).
 - Acceptance: CI type-check + runtime tests + trace events recorded for a full invocation lifecycle.
@@ -47,7 +47,7 @@ Phase 4 — Pilot Verification & Rollout (2–3 weeks)
 - Acceptance: Metrics meet SLAs; product + security approval for broader rollout.
 
 Immediate next engineering steps (this PR)
-- Wire TerraTrace mappings and emit tool_invoked/succeeded/failed in `ToolRunner` and `dev-pilot-runtime.mjs`.
+- Wire TerraTrace mappings and emit `tool_invoked` plus the correct terminal events in `ToolRunner` and `dev-pilot-runtime.mjs`.
 - Implement minimal audit adapter that forwards to `IAuditLogger` (backend) or local sqlite for dev.
 - Create frontend confirm dialog stub and update `pilotApi` request contract.
 
