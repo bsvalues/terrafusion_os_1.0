@@ -143,6 +143,13 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.Canonical.CanonicalSaleQualification>
     CanonicalSaleQualifications { get; set; } = null!;
 
+  // Slice C41-B: per-county pointer naming the operator-active
+  // Mapped workbook. Singleton per county (PK = CountyId). See
+  // docs/sync/sync-county-active-workbook-pointer-policy.md for the
+  // full contract.
+  public DbSet<TerraFusion.Core.Entities.Sync.SyncCountyActiveWorkbook>
+    SyncCountyActiveWorkbooks { get; set; } = null!;
+
   // Codex 3-6-9 Framework Entities
   public DbSet<CodexMetric> CodexMetrics { get; set; }
   public DbSet<CodexScore> CodexScores { get; set; }
@@ -709,6 +716,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // (sales-qualification decisions; see C35-A policy doc)
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.Canonical.CanonicalSaleQualificationConfiguration());
+
+    // Slice C41-B — per-county pointer naming the operator-active
+    // Mapped workbook (see C41-A policy doc).
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.Sync.SyncCountyActiveWorkbookConfiguration());
 
     // NOTE: TerraFusionGPT Suite configurations temporarily disabled due to circular dependency
     // These configurations are defined in TerraFusion.Data\Configurations\GPTConfiguration.cs.disabled
