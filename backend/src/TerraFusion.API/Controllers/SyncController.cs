@@ -733,12 +733,41 @@ public class SyncController : ControllerBase
             return StatusCode(StatusCodes.Status200OK);
         }
 
+        // ── Slice C47-A: workbook-name enrichment per the C46-A
+        //    pattern. Single-row lookup against
+        //    SyncMappingWorkbooks for the pointed-to workbook id;
+        //    CountyId-scoped (defense in depth — even though the
+        //    pointer FK Restrict prevents cross-county pointers in
+        //    practice). Failure is non-fatal: the action falls back
+        //    to a null name and still returns 200. The C45-B ETag
+        //    seed does NOT include the name (cache-key invariance
+        //    preserved); workbook renames happen below the cache
+        //    line. ──
+        string? activeWorkbookName = null;
+        try
+        {
+            activeWorkbookName = await _db.SyncMappingWorkbooks
+                .AsNoTracking()
+                .Where(w => w.Id == snap.ActiveWorkbookId && w.CountyId == countyId)
+                .Select(w => (string?)w.Name)
+                .FirstOrDefaultAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            // C46-A Hard Guard 8 (inherited): lookup failure must
+            // NOT fail the response. Log + degrade to null name.
+            _logger.LogWarning(ex,
+                "[Sync] GetActiveWorkbook workbook-name enrichment lookup failed for county {CountyId}; falling back to null name.",
+                countyId);
+        }
+
         var dto = new ActiveWorkbookSnapshotDto(
-            snap.CountyId, snap.ActiveWorkbookId, snap.SetAt, snap.SetBy, snap.SetReason);
+            snap.CountyId, snap.ActiveWorkbookId, activeWorkbookName,
+            snap.SetAt, snap.SetBy, snap.SetReason);
 
         _logger.LogInformation(
-            "[Sync] GetActiveWorkbook: county={CountyId} workbookId={WorkbookId}",
-            countyId, snap.ActiveWorkbookId);
+            "[Sync] GetActiveWorkbook: county={CountyId} workbookId={WorkbookId} workbookName={WorkbookName}",
+            countyId, snap.ActiveWorkbookId, activeWorkbookName ?? "<null>");
 
         SyncHttpCacheHeaders.ApplyPrivateCacheHeaders(Response, PointerMaxAge, etag, setAtUtc);
         return Ok(dto);
@@ -828,8 +857,30 @@ public class SyncController : ControllerBase
             var snap = await _activeWorkbook.SetAsync(
                 countyId, workbookId, operatorId, request?.Reason, ct);
 
+            // C47-A: enrichment lookup mirroring GetActiveWorkbook.
+            // The PUT response is a no-store mutation surface
+            // (Hard Guard 2 of C45-A), so cache-key concerns don't
+            // apply — but operators get the same DTO shape from
+            // both verbs.
+            string? activeWorkbookName = null;
+            try
+            {
+                activeWorkbookName = await _db.SyncMappingWorkbooks
+                    .AsNoTracking()
+                    .Where(w => w.Id == snap.ActiveWorkbookId && w.CountyId == countyId)
+                    .Select(w => (string?)w.Name)
+                    .FirstOrDefaultAsync(ct);
+            }
+            catch (Exception lookupEx)
+            {
+                _logger.LogWarning(lookupEx,
+                    "[Sync] PutActiveWorkbook workbook-name enrichment lookup failed for county {CountyId}; falling back to null name.",
+                    countyId);
+            }
+
             var dto = new ActiveWorkbookSnapshotDto(
-                snap.CountyId, snap.ActiveWorkbookId, snap.SetAt, snap.SetBy, snap.SetReason);
+                snap.CountyId, snap.ActiveWorkbookId, activeWorkbookName,
+                snap.SetAt, snap.SetBy, snap.SetReason);
 
             _logger.LogInformation(
                 "[Sync] PutActiveWorkbook: county={CountyId} workbookId={WorkbookId} operator={Operator}",
