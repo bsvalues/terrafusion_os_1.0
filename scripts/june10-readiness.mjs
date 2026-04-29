@@ -258,6 +258,19 @@ run(
 );
 
 run(
+  'CostForge certified reference guard tests',
+  'dotnet',
+  [
+    'test',
+    'backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj',
+    '--no-restore',
+    '--filter',
+    'FullyQualifiedName~R1Week5Cx19D2CostForgeGetCountyIsolationIntegrationTests',
+  ],
+  { timeout: 180_000 }
+);
+
+run(
   'County Studio / Atlas / Forge launcher frontend tests',
   'pnpm',
   [
@@ -316,23 +329,20 @@ failIfPresent(
   'Active TerraForge/SalesAudit endpoints must require explicit county scope and must not default to Benton.'
 );
 
-warnIfPresent(
-  'Benton-certified reference posture remains',
-  String.raw`BentonCountyId|Benton County|\bbenton\b|/benton`,
-  [
-    'backend/src/TerraFusion.API/Controllers/CostForgeController.cs',
-    'backend/src/TerraFusion.API/Controllers/AIModulesController.cs',
-    'frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts',
-    'frontend/apps/os-shell/src/pages/forge/batch/BatchCostRun.tsx',
-  ],
-  'Benton-certified CostForge/AI/map compatibility data may be valid for Benton proof, but it must not be claimed as statewide readiness.'
-);
-
 failIfPresent(
   'Statistics Studio is not the primary Forge metrics workflow',
   String.raw`id:\s*["']statistics-studio["']|moduleId:\s*["']statistics-studio["']|label:\s*["']Statistics Studio["']|Open Statistics Studio`,
   ['frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx'],
   'County Studio has the June 10 metrics workflow; Statistics Studio may remain routable internally, but not as primary launcher posture.'
+);
+
+warnIfMissingFile(
+  'CostForge certified reference posture proof present',
+  [
+    'os-platform/core/pilot/evidence/costforge-certified-reference-posture.latest.json',
+    'docs/proof/costforge-certified-reference-posture.latest.md',
+  ],
+  'Benton-certified CostForge/AI/map compatibility data requires proof that non-Benton county scope fails honestly instead of receiving Benton reference data.'
 );
 
 warnIfMissingFile(

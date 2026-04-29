@@ -307,6 +307,20 @@ public class CostForgeController : ControllerBase
       || countyFips == "005";
   }
 
+  private ActionResult? CertifiedReferenceUnavailableIfNeeded(CountyContext context, string laneName)
+  {
+    if (SupportsCertifiedCostScheduleLane(context))
+      return null;
+
+    Response.Headers["X-CostForge-Reference-Posture"] = "certified-lane-unavailable";
+    return Conflict(new ProblemDetails
+    {
+      Title = "Certified CostForge reference lane unavailable",
+      Detail = $"{laneName} is currently certified for Benton County reference data only. The active county scope must not receive Benton-certified schedules as statewide truth.",
+      Status = StatusCodes.Status409Conflict,
+    });
+  }
+
   private async Task<bool> PropertyExistsInCountyAsync(Guid propertyId, Guid countyId)
   {
     return await _db.Properties
@@ -373,8 +387,17 @@ public class CostForgeController : ControllerBase
       }
 
       CostAnalysisDto result;
-      if (TryBuildRequestDrivenCostAnalysis(request, property.Id, property.LandValue, out var requestDrivenResult))
+      if (IsRequestDrivenCostAnalysisRequest(request))
       {
+        var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(
+          countyContext,
+          "Request-driven CostForge cost approach");
+        if (unsupportedReferenceLane is not null)
+          return unsupportedReferenceLane;
+
+        if (!TryBuildRequestDrivenCostAnalysis(request, property.Id, property.LandValue, out var requestDrivenResult))
+          throw new InvalidOperationException("Request-driven CostForge calculation requires square feet, building type, and explicit Reval Area/Cycle.");
+
         result = requestDrivenResult;
       }
       else
@@ -430,6 +453,13 @@ public class CostForgeController : ControllerBase
       _logger.LogError(ex, "Error calculating property cost for PropertyId: {PropertyId}", request.PropertyId);
       return StatusCode(500, "Internal server error in cost calculation");
     }
+  }
+
+  private static bool IsRequestDrivenCostAnalysisRequest(PropertyCostCalculationRequest request)
+  {
+    return TryGetRequestedDecimal(request, out var squareFeet, "squareFeet", "sqft", "buildingSqFt", "buildingSquareFeet", "area_sqft")
+        && squareFeet > 0
+        && !string.IsNullOrWhiteSpace(GetRequestedString(request.BuildingType, request.AdditionalParameters, "buildingType", "propertyType"));
   }
 
   private static bool TryBuildRequestDrivenCostAnalysis(
@@ -1444,6 +1474,12 @@ public class CostForgeController : ControllerBase
     if (countyContext is null)
       return Forbid();
 
+    var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(
+      countyContext,
+      "Cost estimate");
+    if (unsupportedReferenceLane is not null)
+      return unsupportedReferenceLane;
+
     if (string.IsNullOrWhiteSpace(request.BuildingType))
       return BadRequest(new ProblemDetails { Title = "BuildingType is required", Status = 400 });
 
@@ -1488,8 +1524,18 @@ public class CostForgeController : ControllerBase
   /// Retrieve the real Benton County 2025 cost matrix for a building type and region.
   /// </summary>
   [HttpGet("cost-matrix/benton")]
-  public ActionResult GetBentonCostMatrix([FromQuery] string? buildingType, [FromQuery] string? region)
+  public async System.Threading.Tasks.Task<ActionResult> GetBentonCostMatrix([FromQuery] string? buildingType, [FromQuery] string? region)
   {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
+    var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(
+      countyContext,
+      "Benton cost matrix");
+    if (unsupportedReferenceLane is not null)
+      return unsupportedReferenceLane;
+
     var entries = BentonCostData.CostMatrix.AsEnumerable();
 
     if (!string.IsNullOrWhiteSpace(buildingType))
@@ -1516,8 +1562,18 @@ public class CostForgeController : ControllerBase
   /// Retrieve depreciation schedules used by the real calculator.
   /// </summary>
   [HttpGet("depreciation-schedule")]
-  public ActionResult GetDepreciationSchedule()
+  public async System.Threading.Tasks.Task<ActionResult> GetDepreciationSchedule()
   {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
+    var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(
+      countyContext,
+      "Depreciation schedule");
+    if (unsupportedReferenceLane is not null)
+      return unsupportedReferenceLane;
+
     Response.Headers["X-CostForge-Source"] = "benton-real-calculator-fy2025";
     return Ok(new
     {
@@ -1550,6 +1606,12 @@ public class CostForgeController : ControllerBase
     var countyContext = await ResolveCountyContextAsync();
     if (countyContext is null)
       return Forbid();
+
+    var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(
+      countyContext,
+      "Depreciation calculation");
+    if (unsupportedReferenceLane is not null)
+      return unsupportedReferenceLane;
 
     var effectiveAge = Math.Max(0, request.EffectiveAge);
     var physicalFactor = GetDepreciationFactor(effectiveAge, isResidential: true);
@@ -1588,8 +1650,18 @@ public class CostForgeController : ControllerBase
   /// Source: Benton County Assessor market study + CoStar, IAAO standards.
   /// </summary>
   [HttpGet("income-approach/cap-rates")]
-  public ActionResult GetIncomeCapRates()
+  public async System.Threading.Tasks.Task<ActionResult> GetIncomeCapRates()
   {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
+    var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(
+      countyContext,
+      "Income approach cap rates");
+    if (unsupportedReferenceLane is not null)
+      return unsupportedReferenceLane;
+
     Response.Headers["X-CostForge-Source"] = "benton-real-income-approach-fy2025";
     return Ok(new
     {
@@ -1605,8 +1677,18 @@ public class CostForgeController : ControllerBase
   /// Source: Benton County Assessor economic data, US Census ACS, WA ESD.
   /// </summary>
   [HttpGet("income-approach/market-data/benton")]
-  public ActionResult GetIncomeMarketData()
+  public async System.Threading.Tasks.Task<ActionResult> GetIncomeMarketData()
   {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
+    var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(
+      countyContext,
+      "Income approach market data");
+    if (unsupportedReferenceLane is not null)
+      return unsupportedReferenceLane;
+
     Response.Headers["X-CostForge-Source"] = "benton-real-income-approach-fy2025";
     return Ok(new
     {
@@ -1629,8 +1711,18 @@ public class CostForgeController : ControllerBase
   /// Standard operating expense ratios by property type — IAAO / Benton County norms.
   /// </summary>
   [HttpGet("income-approach/expense-ratios")]
-  public ActionResult GetIncomeExpenseRatios()
+  public async System.Threading.Tasks.Task<ActionResult> GetIncomeExpenseRatios()
   {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
+    var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(
+      countyContext,
+      "Income approach expense ratios");
+    if (unsupportedReferenceLane is not null)
+      return unsupportedReferenceLane;
+
     Response.Headers["X-CostForge-Source"] = "benton-real-income-approach-fy2025";
     return Ok(new
     {
@@ -1645,8 +1737,18 @@ public class CostForgeController : ControllerBase
   /// Tri-Cities location premium multipliers for sub-market adjustment.
   /// </summary>
   [HttpGet("income-approach/location-premiums/benton")]
-  public ActionResult GetIncomeLocationPremiums()
+  public async System.Threading.Tasks.Task<ActionResult> GetIncomeLocationPremiums()
   {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
+    var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(
+      countyContext,
+      "Income approach location premiums");
+    if (unsupportedReferenceLane is not null)
+      return unsupportedReferenceLane;
+
     Response.Headers["X-CostForge-Source"] = "benton-real-income-approach-fy2025";
     return Ok(new
     {
@@ -1661,8 +1763,18 @@ public class CostForgeController : ControllerBase
   /// NOI = (Annual Rental Income × (1 − Vacancy Rate)) + Other Income − Total Expenses
   /// </summary>
   [HttpPost("income-approach/calculate-noi")]
-  public ActionResult CalculateNoi([FromBody] NoiCalculationRequest request)
+  public async System.Threading.Tasks.Task<ActionResult> CalculateNoi([FromBody] NoiCalculationRequest request)
   {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
+    var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(
+      countyContext,
+      "Income approach NOI calculation");
+    if (unsupportedReferenceLane is not null)
+      return unsupportedReferenceLane;
+
     if (request.AnnualRentalIncome <= 0)
       return BadRequest(new { error = "AnnualRentalIncome must be positive." });
     if (request.VacancyRate < 0 || request.VacancyRate > 100)
@@ -1700,8 +1812,18 @@ public class CostForgeController : ControllerBase
   /// Full income-approach valuation: NOI ÷ cap rate, with location premium and risk classification.
   /// </summary>
   [HttpPost("income-approach/calculate-valuation")]
-  public ActionResult CalculateIncomeValuation([FromBody] IncomeValuationRequest request)
+  public async System.Threading.Tasks.Task<ActionResult> CalculateIncomeValuation([FromBody] IncomeValuationRequest request)
   {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
+    var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(
+      countyContext,
+      "Income approach valuation");
+    if (unsupportedReferenceLane is not null)
+      return unsupportedReferenceLane;
+
     if (request.AnnualRentalIncome <= 0)
       return BadRequest(new { error = "AnnualRentalIncome must be positive." });
     if (request.VacancyRate < 0 || request.VacancyRate > 100)
@@ -1908,8 +2030,18 @@ public class CostForgeController : ControllerBase
   /// Source: Benton County Assessor paired-sales studies, USPAP-aligned methodology.
   /// </summary>
   [HttpGet("sales-comparison/adjustment-factors")]
-  public ActionResult GetSalesAdjustmentFactors()
+  public async System.Threading.Tasks.Task<ActionResult> GetSalesAdjustmentFactors()
   {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
+    var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(
+      countyContext,
+      "Sales comparison adjustment factors");
+    if (unsupportedReferenceLane is not null)
+      return unsupportedReferenceLane;
+
     Response.Headers["X-CostForge-Source"] = "benton-real-sales-comparison-fy2025";
     return Ok(new
     {
@@ -1925,8 +2057,18 @@ public class CostForgeController : ControllerBase
   /// Benton County / Tri-Cities neighborhood price statistics for market area context.
   /// </summary>
   [HttpGet("sales-comparison/market-areas/benton")]
-  public ActionResult GetSalesMarketAreas()
+  public async System.Threading.Tasks.Task<ActionResult> GetSalesMarketAreas()
   {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
+    var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(
+      countyContext,
+      "Sales comparison market areas");
+    if (unsupportedReferenceLane is not null)
+      return unsupportedReferenceLane;
+
     Response.Headers["X-CostForge-Source"] = "benton-real-sales-comparison-fy2025";
     return Ok(new
     {
@@ -1942,8 +2084,18 @@ public class CostForgeController : ControllerBase
   /// Confidence thresholds and quality flags for sales comparison analysis.
   /// </summary>
   [HttpGet("sales-comparison/confidence-thresholds")]
-  public ActionResult GetSalesConfidenceThresholds()
+  public async System.Threading.Tasks.Task<ActionResult> GetSalesConfidenceThresholds()
   {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
+    var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(
+      countyContext,
+      "Sales comparison confidence thresholds");
+    if (unsupportedReferenceLane is not null)
+      return unsupportedReferenceLane;
+
     Response.Headers["X-CostForge-Source"] = "benton-real-sales-comparison-fy2025";
     return Ok(new
     {
@@ -1958,8 +2110,18 @@ public class CostForgeController : ControllerBase
   /// Returns the adjusted price, total net adjustment, and gross adjustment percentage.
   /// </summary>
   [HttpPost("sales-comparison/adjust-comparable")]
-  public ActionResult AdjustComparable([FromBody] CompAdjustmentRequest request)
+  public async System.Threading.Tasks.Task<ActionResult> AdjustComparable([FromBody] CompAdjustmentRequest request)
   {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
+    var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(
+      countyContext,
+      "Sales comparison adjustment calculation");
+    if (unsupportedReferenceLane is not null)
+      return unsupportedReferenceLane;
+
     if (request.SalePrice <= 0)
       return BadRequest(new { error = "SalePrice must be positive." });
 
@@ -2016,8 +2178,18 @@ public class CostForgeController : ControllerBase
   /// Weights inversely by gross adjustment percentage (less-adjusted comps are more reliable).
   /// </summary>
   [HttpPost("sales-comparison/reconcile")]
-  public ActionResult ReconcileComparables([FromBody] SalesReconciliationRequest request)
+  public async System.Threading.Tasks.Task<ActionResult> ReconcileComparables([FromBody] SalesReconciliationRequest request)
   {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
+    var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(
+      countyContext,
+      "Sales comparison reconciliation");
+    if (unsupportedReferenceLane is not null)
+      return unsupportedReferenceLane;
+
     if (request.Comparables is null || request.Comparables.Count == 0)
       return BadRequest(new { error = "At least one comparable required." });
     if (request.Comparables.Count > 10)

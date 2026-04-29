@@ -95,7 +95,7 @@ export function BatchCostRun() {
         </CardHeader>
         <CardContent>
           <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-5">
-            <li>Use Cost Manual for governed Benton schedule review.</li>
+            <li>Use Cost Manual for certified county schedule review where available.</li>
             <li>Use Coefficient Preview for controlled coefficient what-if work until a real batch engine exists.</li>
             <li>Do not treat batch preview, apply, or history output from this lane as production evidence until the backend is replaced with governed endpoints.</li>
           </ul>

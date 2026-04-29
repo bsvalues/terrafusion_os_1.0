@@ -223,6 +223,17 @@ public class AIModulesController : ControllerBase
     {
         try
         {
+            if (!HasBentonCertifiedReferenceScope(req))
+            {
+                Response.Headers["X-AI-Cost-Reference-Posture"] = "certified-lane-unavailable";
+                return Conflict(new ProblemDetails
+                {
+                    Title = "Certified AI cost prediction lane unavailable",
+                    Detail = "AI cost prediction currently uses Benton County certified reference schedules. Provide an explicit Benton county scope before using this deterministic reference lane.",
+                    Status = StatusCodes.Status409Conflict,
+                });
+            }
+
             var matrix = CostForgeController.BentonCostData.CostMatrix.AsEnumerable();
 
             if (!string.IsNullOrWhiteSpace(req.BuildingType))
@@ -301,6 +312,34 @@ public class AIModulesController : ControllerBase
         }
     }
 
+    private bool HasBentonCertifiedReferenceScope(CostPredictionRequest req)
+    {
+        return IsBentonReferenceToken(req.CountyId)
+            || IsBentonReferenceToken(req.CountyCode)
+            || IsBentonReferenceToken(Request.Headers["x-county-id"].FirstOrDefault())
+            || IsBentonReferenceToken(Request.Headers["X-County-Id"].FirstOrDefault())
+            || IsBentonReferenceToken(Request.Headers["x-county-code"].FirstOrDefault())
+            || IsBentonReferenceToken(Request.Headers["X-County-Code"].FirstOrDefault())
+            || IsBentonReferenceToken(User.FindFirst("countyId")?.Value)
+            || IsBentonReferenceToken(User.FindFirst("countyCode")?.Value);
+    }
+
+    private static bool IsBentonReferenceToken(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return false;
+
+        var normalized = value
+            .Trim()
+            .ToUpperInvariant()
+            .Replace(" COUNTY", string.Empty)
+            .Replace(" ", string.Empty)
+            .Replace("-", string.Empty)
+            .Replace("_", string.Empty);
+
+        return normalized is "BENTON" or "005" or "53005" or "19190019191919191919191919191919";
+    }
+
     /// <summary>
     /// Get AI performance metrics from all modules
     /// </summary>
@@ -346,6 +385,8 @@ public class AIModulesController : ControllerBase
 // Request DTOs
 public class CostPredictionRequest
 {
+    public string? CountyId { get; set; }
+    public string? CountyCode { get; set; }
     public string? BuildingType { get; set; }
     public string? RevalArea { get; set; }
     public double SquareFootage { get; set; }

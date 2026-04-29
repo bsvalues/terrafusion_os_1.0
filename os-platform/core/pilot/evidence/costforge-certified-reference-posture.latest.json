@@ -1,0 +1,31 @@
+{
+  "slice": "costforge-certified-reference-posture",
+  "checkedAt": "2026-04-29T19:48:00Z",
+  "status": "PASS",
+  "scope": {
+    "certifiedCounty": "Benton County",
+    "certifiedCountyId": "19190019-1919-1919-1919-191919191919",
+    "certifiedCountyCode": "005",
+    "nonBentonBehavior": "HTTP 409 with certified-lane-unavailable posture",
+    "authoritativeResultStore": "CostForge/ValuationPipeline/database; Redis remains ephemeral only"
+  },
+  "guardedLanes": [
+    "CostForge request-driven cost approach",
+    "CostForge cost-estimate",
+    "CostForge cost-matrix/benton",
+    "CostForge depreciation schedule",
+    "CostForge depreciation-calculate",
+    "CostForge income approach reference endpoints",
+    "CostForge sales comparison reference endpoints",
+    "AIModules predict-cost deterministic Benton reference lane"
+  ],
+  "proof": {
+    "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --no-restore --filter FullyQualifiedName~R1Week5Cx19D2CostForgeGetCountyIsolationIntegrationTests",
+    "result": "Passed: 14, Failed: 0",
+    "bentonAllowed": true,
+    "kingBlocked": true,
+    "aiBentonAllowed": true,
+    "aiKingBlocked": true
+  },
+  "truthStatement": "Benton-certified reference data remains valid for Benton proof only. Non-Benton county scope must fail honestly and must not receive Benton cost, income, sales-comparison, or AI cost prediction reference data as statewide truth."
+}
