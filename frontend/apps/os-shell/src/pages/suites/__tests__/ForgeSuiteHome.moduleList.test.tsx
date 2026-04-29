@@ -6,7 +6,8 @@
  *
  * Verified correct layout (current HEAD):
  *   PRIMARY   : CostForge, CompsForge, IncomeForge (queued), SalesForge
- *   SECONDARY : Batch Cost Runs, Regression Studio (queued),
+ *   SECONDARY : Statistics Studio (temporary parity source),
+ *               Batch Cost Runs, Regression Studio (queued),
  *               TerraGAMA (queued), Coefficient Preview (queued)
  *   COUNTY    : County Studio
  *
@@ -85,10 +86,11 @@ describe('ForgeSuiteHome — frozen module list', () => {
     expect(screen.queryByText('Atlas Live View')).not.toBeInTheDocument();
   });
 
-  it('does not expose Statistics Studio as the primary metrics workflow after County Studio parity', () => {
+  it('keeps Statistics Studio visible as a temporary parity source until County Studio is a proven full superset', () => {
     renderForge();
-    expect(screen.queryByText('Statistics Studio')).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /open statistics studio/i })).not.toBeInTheDocument();
+    const secondarySection = screen.getByTestId('forge-secondary-applications');
+    expect(secondarySection).toHaveTextContent('Statistics Studio');
+    expect(secondarySection).toHaveTextContent(/temporary full-statistics parity source/i);
   });
 
   it('renders queued specialist apps in the secondary section', () => {

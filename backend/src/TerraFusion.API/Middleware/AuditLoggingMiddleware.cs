@@ -75,8 +75,12 @@ namespace TerraFusion.API.Middleware
                     responseBody.Seek(0, SeekOrigin.Begin);
                 }
 
-                // Optionally set Content-Length to the captured length
-                context.Response.ContentLength = responseBody.Length;
+                // Downstream streaming/SSE responses may already have started by this point.
+                // Do not mutate headers after that; it turns audit logging into a runtime fault.
+                if (!context.Response.HasStarted)
+                {
+                    context.Response.ContentLength = responseBody.Length;
+                }
 
                 await responseBody.CopyToAsync(originalBodyStream);
             }
@@ -101,7 +105,9 @@ namespace TerraFusion.API.Middleware
                 "/css/",
                 "/js/",
                 "/images/",
-                "/fonts/"
+                "/fonts/",
+                "/hubs/",
+                "/events"
             };
 
             foreach (var skipPath in skipPaths)

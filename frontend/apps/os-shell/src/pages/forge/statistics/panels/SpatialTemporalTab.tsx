@@ -51,6 +51,14 @@ interface SpatialTemporalTabProps {
   taxYear?: number;
 }
 
+function fmt(value: number | null | undefined, digits: number): string {
+  return Number.isFinite(value) ? (value as number).toFixed(digits) : '—';
+}
+
+function fmtInt(value: number | null | undefined): string {
+  return Number.isFinite(value) ? (value as number).toLocaleString() : '—';
+}
+
 export function SpatialTemporalTab({ countyScope, taxYear = TAX_YEAR }: SpatialTemporalTabProps) {
   const countyQuery = countyScope.countyId ? `&countyId=${encodeURIComponent(countyScope.countyId)}` : '';
 
@@ -99,9 +107,9 @@ export function SpatialTemporalTab({ countyScope, taxYear = TAX_YEAR }: SpatialT
                 <LineChart data={trendQuery.data.monthlyTrend} margin={{ top: 4, right: 8, left: 8, bottom: 4 }}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                   <XAxis dataKey="month" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
-                  <YAxis domain={['auto', 'auto']} tickFormatter={(v: number) => v.toFixed(3)} tick={{ fontSize: 11 }} />
+                  <YAxis domain={['auto', 'auto']} tickFormatter={(v: number) => fmt(v, 3)} tick={{ fontSize: 11 }} />
                   <Tooltip
-                    formatter={(v: number) => [v.toFixed(4), 'Median Ratio']}
+                    formatter={(v: number) => [fmt(v, 4), 'Median Ratio']}
                     labelFormatter={(label: string) => label}
                   />
                   <ReferenceLine y={1.0} stroke="var(--forge-info)" strokeDasharray="4 4" label={{ value: '1.000', fontSize: 10 }} />
@@ -138,19 +146,19 @@ export function SpatialTemporalTab({ countyScope, taxYear = TAX_YEAR }: SpatialT
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 text-sm">
                 <div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">KS Statistic</div>
-                  <div className="font-mono font-semibold">{ksQuery.data.ksStatistic.toFixed(4)}</div>
+                  <div className="font-mono font-semibold">{fmt(ksQuery.data.ksStatistic, 4)}</div>
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">p-value</div>
-                  <div className="font-mono font-semibold">{ksQuery.data.pValue.toFixed(4)}</div>
+                  <div className="font-mono font-semibold">{fmt(ksQuery.data.pValue, 4)}</div>
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">{ksQuery.data.currentYear} Sales</div>
-                  <div className="font-mono">{ksQuery.data.currentYearCount.toLocaleString()}</div>
+                  <div className="font-mono">{fmtInt(ksQuery.data.currentYearCount)}</div>
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">{ksQuery.data.priorYear} Sales</div>
-                  <div className="font-mono">{ksQuery.data.priorYearCount.toLocaleString()}</div>
+                  <div className="font-mono">{fmtInt(ksQuery.data.priorYearCount)}</div>
                 </div>
               </div>
               <div className={`text-sm rounded px-3 py-2 ${ksQuery.data.significantShift ? 'bg-amber-500/10 text-amber-600' : 'bg-green-500/10 text-green-600'}`}>
@@ -168,7 +176,7 @@ export function SpatialTemporalTab({ countyScope, taxYear = TAX_YEAR }: SpatialT
             Spatial Autocorrelation — Moran&apos;s I
             <span className="ml-2 text-xs text-muted-foreground font-normal">
               {spatialQuery.data?.sampleWithCoords != null
-                ? `${spatialQuery.data.sampleWithCoords.toLocaleString()} of ${spatialQuery.data.sampleSize.toLocaleString()} sales geocoded · k=${spatialQuery.data.kNeighbors} neighbors`
+                ? `${fmtInt(spatialQuery.data.sampleWithCoords)} of ${fmtInt(spatialQuery.data.sampleSize)} sales geocoded · k=${fmtInt(spatialQuery.data.kNeighbors)} neighbors`
                 : '…'}
             </span>
           </CardTitle>
@@ -183,19 +191,23 @@ export function SpatialTemporalTab({ countyScope, taxYear = TAX_YEAR }: SpatialT
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 text-sm">
                 <div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">Moran&apos;s I</div>
-                  <div className="font-mono font-semibold">{spatialQuery.data.moransI.toFixed(4)}</div>
+                  <div className="font-mono font-semibold">{fmt(spatialQuery.data.moransI, 4)}</div>
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">Expected I</div>
-                  <div className="font-mono">{spatialQuery.data.expectedI.toFixed(4)}</div>
+                  <div className="font-mono">{fmt(spatialQuery.data.expectedI, 4)}</div>
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">z-score</div>
-                  <div className="font-mono">{spatialQuery.data.zScore.toFixed(3)}</div>
+                  <div className="font-mono">{fmt(spatialQuery.data.zScore, 3)}</div>
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">p-value</div>
-                  <div className="font-mono">{spatialQuery.data.pValue < 0.001 ? '<0.001' : spatialQuery.data.pValue.toFixed(4)}</div>
+                  <div className="font-mono">
+                    {Number.isFinite(spatialQuery.data.pValue)
+                      ? spatialQuery.data.pValue < 0.001 ? '<0.001' : fmt(spatialQuery.data.pValue, 4)
+                      : '—'}
+                  </div>
                 </div>
               </div>
               <div className={`text-sm rounded px-3 py-2 ${spatialQuery.data.significantClustering ? 'bg-amber-500/10 text-amber-600' : 'bg-green-500/10 text-green-600'}`}>

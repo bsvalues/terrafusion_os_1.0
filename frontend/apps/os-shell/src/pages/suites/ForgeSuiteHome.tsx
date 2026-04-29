@@ -18,7 +18,8 @@
  *   PRIMARY   : CostForge (cost approach, AppFrame → port 5002)
  *               CompsForge (sales comparison, standalone React module)
  *               IncomeForge (income approach, queued)
- *   SPECIALIST: Batch Cost Runs (batch execution)
+ *   SPECIALIST: Statistics Studio (temporary parity source)
+ *               Batch Cost Runs (batch execution)
  *               Regression Studio / TerraGAMA / Coefficient Preview (queued)
  */
 import { useCallback, useState } from 'react';
@@ -131,6 +132,16 @@ const PRIMARY_MODULES: readonly ForgeModuleDef[] = [
 ] as const;
 
 const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
+  {
+    id: 'statistics-studio',
+    label: 'Statistics Studio',
+    description:
+      'Temporary full-statistics parity source while County Studio absorbs every diagnostics, VEI, trend, calibration, outlier, and model-comparison workflow',
+    priority: 'secondary',
+    launchMode: 'standalone',
+    moduleId: 'statistics-studio',
+    chipLabel: 'Parity source',
+  },
   {
     id: 'batch-cost-run',
     label: 'Batch Cost Runs',

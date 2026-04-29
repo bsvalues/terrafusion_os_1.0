@@ -1,11 +1,11 @@
 {
   "proof": "june10-browser-smoke",
-  "status": "PASS_WITH_RUNTIME_WARNING",
-  "checkedAt": "2026-04-29T18:04:30Z",
+  "status": "PASS_WITH_FULL_STATISTICS_SUPERSET",
+  "checkedAt": "2026-04-29T21:15:00Z",
   "runtime": {
-    "frontendUrl": "http://127.0.0.1:5175/forge/county-studio",
-    "backendUrl": "http://127.0.0.1:5046",
-    "sourceWorktree": "C:/Users/bsval/.codex-worktrees/june10-coverage-proof"
+    "frontendUrl": "http://127.0.0.1:5173/forge/county-studio",
+    "backendUrl": "http://127.0.0.1:5000",
+    "sourceWorktree": "C:/Users/bsval/terrafusion_os_1.0"
   },
   "workflow": {
     "surface": "County Studio",
@@ -16,41 +16,51 @@
     "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e"
   },
   "checks": {
-    "viteApiProxyReturnedCountyStudies": true,
-    "viteHubProxyNegotiatedCountyStudyHub": true,
-    "openStudyDialogListedBentonStudies": true,
+    "countyStudioOpened": true,
     "massAppraisalStudyOpened": true,
-    "atlasSyncStateLive": true,
-    "countyCommandStripRendered": true,
+    "fullStatisticsLabEmbeddedInCountyStudio": true,
+    "fullStatisticsSupersetBadgeVisible": true,
+    "countyCommandStripRemainsVisible": true,
     "countySalesVisible": 5559,
     "countyParcelsVisible": 128784,
-    "cohortCountVisible": 1,
-    "scenarioCountVisible": 2,
     "healthMetricsVisible": {
       "medianRatio": 0.927,
       "cod": 41.3,
       "prd": 1.399
     },
-    "topRiskActionItemsVisible": true,
-    "neighborhoodAndRevalRemainSeparate": true
+    "ratioStudyMetricsVisible": [
+      "medianRatio",
+      "weightedMean",
+      "cod",
+      "prd",
+      "prb"
+    ],
+    "advancedDiagnosticsTabsVisible": [
+      "Diagnostics",
+      "Spatial & Temporal",
+      "Calibration Engine"
+    ],
+    "diagnosticsTabNoCrash": true,
+    "spatialTemporalTabNoCrash": true,
+    "calibrationEngineTabNoCrash": true,
+    "calibrationEngineUnavailableStateHonest": true
   },
-  "observedEvidence": {
-    "atlasBadge": "ATLAS LIVE",
-    "commandStrip": "5,559 sales · 128,784 parcels",
-    "cohortScenarioSummary": "1 cohort · 2 scenarios",
-    "representativeRiskItem": "Neighborhood 16081 · Reval 6 Richland · 884 parcels"
-  },
-  "fixesProvenBySmoke": [
-    "Vite dev proxy resolves relative VITE_API_URL=/api to backend target http://localhost:5046.",
-    "Vite dev proxy forwards /hubs/* to the backend SignalR hub.",
-    "County Study SignalR hook resolves relative /api bases to /hubs/county-study, not /api/hubs/county-study."
+  "screenshots": [
+    "docs/proof/screenshots/county-studio-full-statistics-lab-ratio.20260429T211500Z.png",
+    "docs/proof/screenshots/county-studio-full-statistics-lab-diagnostics.20260429T211500Z.png",
+    "docs/proof/screenshots/county-studio-full-statistics-lab-spatial-temporal.20260429T211500Z.png",
+    "docs/proof/screenshots/county-studio-full-statistics-lab-calibration-engine.20260429T211500Z.png"
   ],
-  "runtimeWarnings": [
-    "A prior backend run exited after an unrelated AI Assistant dependency-resolution failure: IComplianceService could not be resolved for AIAssistantService. County Studio smoke passed after backend restart, but this should remain a separate backend readiness follow-up."
+  "defectsFoundAndFixed": [
+    "DiagnosticsTab crashed on partial numeric payloads because it called toFixed on undefined values.",
+    "SpatialTemporalTab had the same unsafe numeric formatting pattern.",
+    "CalibrationEngineTab rendered blank advanced cards when model payloads were missing.",
+    "AuditLoggingMiddleware attempted to set ContentLength after streaming/event response headers had started."
   ],
   "limitations": [
     "This is Benton County browser proof only.",
+    "This proves County Studio contains the full Statistics Studio surface as an embedded workbench mode.",
     "This does not prove statewide geometry coverage.",
-    "This does not prove Statistics Studio parity."
+    "This does not prove all 39 counties have equivalent live statistics payload depth."
   ]
 }

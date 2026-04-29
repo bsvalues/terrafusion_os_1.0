@@ -27,7 +27,9 @@ export function ConfidenceIntervalBadge({
   loading = false,
 }: ConfidenceIntervalBadgeProps) {
   if (loading) return <span className="text-muted-foreground">…</span>;
-  if (!value) return <span className="text-muted-foreground">—</span>;
+  if (!value || !Number.isFinite(value.point) || !Number.isFinite(value.lo) || !Number.isFinite(value.hi)) {
+    return <span className="text-muted-foreground">—</span>;
+  }
 
   return (
     <span className="font-mono text-sm">
