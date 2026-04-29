@@ -29,6 +29,7 @@ public class SyncController : ControllerBase
     private readonly ISalesCompEligibilityReader _compReader;
     private readonly ISyncCountyActiveWorkbookService _activeWorkbook;
     private readonly ISalesCompStaleReader _staleReader;
+    private readonly ISalesCompStaleSummaryReader _staleSummaryReader;
 
     public SyncController(
         ISaleQualificationService qualification,
@@ -36,14 +37,16 @@ public class SyncController : ControllerBase
         ILogger<SyncController> logger,
         ISalesCompEligibilityReader compReader,
         ISyncCountyActiveWorkbookService activeWorkbook,
-        ISalesCompStaleReader staleReader)
+        ISalesCompStaleReader staleReader,
+        ISalesCompStaleSummaryReader staleSummaryReader)
     {
-        _qualification  = qualification;
-        _db             = db;
-        _logger         = logger;
-        _compReader     = compReader;
-        _activeWorkbook = activeWorkbook;
-        _staleReader    = staleReader;
+        _qualification      = qualification;
+        _db                 = db;
+        _logger             = logger;
+        _compReader         = compReader;
+        _activeWorkbook     = activeWorkbook;
+        _staleReader        = staleReader;
+        _staleSummaryReader = staleSummaryReader;
     }
 
     // ── Requalification trigger ────────────────────────────────────────────
@@ -919,5 +922,149 @@ public class SyncController : ControllerBase
                 => "Inconclusive",
             _ => rawDecision.ToString(System.Globalization.CultureInfo.InvariantCulture),
         };
+    }
+
+    // ── Stale canonical-row summary (Slice C44-B) ───────────────────────────
+
+    /// <summary>
+    /// Server-side cap on the number of groups returned by the
+    /// summary endpoint per C44-A Hard Guard 4. Above this count
+    /// the response truncates rather than throws.
+    /// </summary>
+    private const int MaxStaleSummaryGroups = 100;
+
+    /// <summary>
+    /// Slice C44-B: HTTP exposure of the C44-A stale-row aggregate
+    /// summary. Returns counts of stale canonical sale-qualification
+    /// rows grouped by <c>(SourceWorkbookId, ComputedDecision)</c>
+    /// for a county, plus a single <c>totalStaleRows</c> top-line.
+    ///
+    /// <para>Sibling to <see cref="GetStaleComps"/> (C43-B) — the
+    /// per-row endpoint answers "which sales are stale?", this
+    /// endpoint answers "how many, broken down by prior workbook
+    /// and decision?". Both endpoints share the same baseline
+    /// resolution rule and the same locked stale predicate so the
+    /// counts reconcile mechanically (C44-B test 17 locks
+    /// <c>summary.totalStaleRows == perRow.totalCount</c> for
+    /// matching inputs).</para>
+    ///
+    /// <para>Server-bounded: at most
+    /// <see cref="MaxStaleSummaryGroups"/> groups per response.
+    /// When the actual group count exceeds the cap, the response
+    /// truncates (top-N by <c>count DESC</c>) and signals
+    /// <c>Truncated = true</c> + the actual <c>GroupCount</c>.</para>
+    ///
+    /// <para>Hard Guard 11: <c>?page=</c> / <c>?pageSize=</c>
+    /// parameters are explicitly rejected with 400 so future
+    /// callers don't silently get unpaginated data when they
+    /// expect a page.</para>
+    /// </summary>
+    [HttpGet("comps/stale/summary")]
+    [Authorize]
+    public async Task<IActionResult> GetStaleCompsSummary(
+        [FromQuery] Guid countyId,
+        [FromQuery] Guid? workbookId,
+        [FromQuery(Name = "page")]     int? rejectPage,
+        [FromQuery(Name = "pageSize")] int? rejectPageSize,
+        CancellationToken ct = default)
+    {
+        // ── 400: required input missing / malformed ──
+        if (countyId == Guid.Empty)
+        {
+            return BadRequest(new { error = "countyId is required." });
+        }
+
+        // ── 400: pagination params explicitly rejected (Hard Guard
+        //        11). The summary endpoint is server-bounded; adding
+        //        pagination is a breaking change requiring its own
+        //        slice. Surface bad usage at request time. ──
+        if (rejectPage.HasValue)
+        {
+            return BadRequest(new
+            {
+                error = "page is not a valid query parameter on this endpoint.",
+                hint  = "The summary endpoint is server-bounded (max 100 groups). Use /api/sync/comps/stale for paginated per-row detail.",
+            });
+        }
+        if (rejectPageSize.HasValue)
+        {
+            return BadRequest(new
+            {
+                error = "pageSize is not a valid query parameter on this endpoint.",
+                hint  = "The summary endpoint is server-bounded (max 100 groups). Use /api/sync/comps/stale for paginated per-row detail.",
+            });
+        }
+
+        // ── 403: county isolation (mirrors GetStaleComps). ──
+        var principalCountyId = ResolveCountyClaim();
+        if (principalCountyId is null || principalCountyId.Value != countyId)
+        {
+            _logger.LogWarning(
+                "[Sync] GetStaleCompsSummary refused cross-county access: principal={Principal} requested={Requested}",
+                principalCountyId, countyId);
+            return Forbid();
+        }
+
+        // ── Baseline resolution mirrors GetStaleComps verbatim
+        //    (Hard Guard 5). Explicit Guid wins; otherwise consult
+        //    the C41-B active-workbook pointer; otherwise 400 with
+        //    the locked operator message. ──
+        Guid baselineWorkbookId;
+        string baselineSource;
+        if (workbookId.HasValue && workbookId.Value != Guid.Empty)
+        {
+            baselineWorkbookId = workbookId.Value;
+            baselineSource     = BaselineSourceExplicit;
+        }
+        else
+        {
+            var ptr = await _activeWorkbook.GetAsync(countyId, ct);
+            if (ptr is null)
+            {
+                return BadRequest(new
+                {
+                    error = $"Cannot summarize staleness for county {countyId}: " +
+                            "no workbookId supplied and no active-workbook pointer is configured. " +
+                            "Provide ?workbookId= or set the county active workbook.",
+                });
+            }
+            baselineWorkbookId = ptr.ActiveWorkbookId;
+            baselineSource     = BaselineSourcePointer;
+        }
+
+        // ── Three reads: top-line total, group count (for
+        //    truncation detection), and the bounded group list. ──
+        var totalStaleRows = await _staleSummaryReader
+            .TotalStaleRowsAsync(countyId, baselineWorkbookId, ct);
+        var groupCount     = await _staleSummaryReader
+            .GroupCountAsync(countyId, baselineWorkbookId, ct);
+        var groupRows      = await _staleSummaryReader
+            .GroupAsync(countyId, baselineWorkbookId, MaxStaleSummaryGroups, ct);
+
+        // ── Project to wire DTO. ComputedDecision maps int → string
+        //    via the same helper GetStaleComps uses, so both
+        //    endpoints' wire shapes stay in lockstep. ──
+        var groups = groupRows
+            .Select(g => new StaleSummaryGroupDto(
+                g.SourceWorkbookId,
+                ProjectDecisionName(g.ComputedDecisionRaw),
+                g.Count))
+            .ToList();
+
+        var dto = new StaleSummaryDto(
+            CountyId:           countyId,
+            BaselineWorkbookId: baselineWorkbookId,
+            BaselineSource:     baselineSource,
+            TotalStaleRows:     totalStaleRows,
+            GroupCount:         groupCount,
+            Groups:             groups,
+            Truncated:          groupCount > MaxStaleSummaryGroups);
+
+        _logger.LogInformation(
+            "[Sync] GetStaleCompsSummary: county={CountyId} baseline={BaselineWorkbookId} via={BaselineSource} totalStaleRows={Total} groupCount={GroupCount} truncated={Truncated}",
+            countyId, baselineWorkbookId, baselineSource,
+            totalStaleRows, groupCount, dto.Truncated);
+
+        return Ok(dto);
     }
 }
