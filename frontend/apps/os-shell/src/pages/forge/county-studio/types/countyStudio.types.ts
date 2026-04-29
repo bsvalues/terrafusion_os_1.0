@@ -17,6 +17,8 @@ export type AdjustmentSetApprovalState =
   | 'Proposed'
   | 'ReadyForApproval'
   | 'Approved'
+  // Legacy read-only states. County Studio does not create or advance
+  // adjustment sets into these states.
   | 'Published'
   | 'RolledBack';
 

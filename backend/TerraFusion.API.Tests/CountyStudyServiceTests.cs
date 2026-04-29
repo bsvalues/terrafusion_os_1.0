@@ -706,19 +706,14 @@ public class CountyStudyServiceTests
     }
 
     [Fact]
-    public async Task UpdateApprovalState_Approved_To_Published_SetsPublishedAt()
+    public async Task UpdateApprovalState_Approved_To_Published_Throws()
     {
         var (svc, adjId) = await SeedProposedAdjSetAsync();
         await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.ReadyForApproval, "u1");
         await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Approved, "u1");
 
-        var before = DateTime.UtcNow.AddSeconds(-1);
-        var dto = await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Published, "u1");
-        var after = DateTime.UtcNow.AddSeconds(1);
-
-        Assert.Equal("Published", dto.ApprovalState);
-        Assert.NotNull(dto.PublishedAt);
-        Assert.True(dto.PublishedAt >= before && dto.PublishedAt <= after);
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Published, "u1"));
     }
 
     [Fact]
@@ -734,16 +729,14 @@ public class CountyStudyServiceTests
     }
 
     [Fact]
-    public async Task UpdateApprovalState_Published_To_RolledBack_Succeeds()
+    public async Task UpdateApprovalState_Approved_To_RolledBack_Throws()
     {
         var (svc, adjId) = await SeedProposedAdjSetAsync();
         await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.ReadyForApproval, "u1");
         await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Approved, "u1");
-        await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Published, "u1");
 
-        var dto = await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.RolledBack, "u1");
-
-        Assert.Equal("RolledBack", dto.ApprovalState);
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.RolledBack, "u1"));
     }
 
     [Fact]
@@ -757,16 +750,15 @@ public class CountyStudyServiceTests
     }
 
     [Fact]
-    public async Task UpdateApprovalState_Published_To_Approved_IllegalReversal_Throws()
+    public async Task UpdateApprovalState_Approved_To_Proposed_IllegalReversal_Throws()
     {
         var (svc, adjId) = await SeedProposedAdjSetAsync();
         await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.ReadyForApproval, "u1");
         await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Approved, "u1");
-        await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Published, "u1");
 
-        // Rolling back to Approved directly from Published is illegal.
+        // Approved is terminal in County Studio. Send-back is allowed only before approval.
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Approved, "u1"));
+            svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Proposed, "u1"));
     }
 
     [Fact]

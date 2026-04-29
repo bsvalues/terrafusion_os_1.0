@@ -7,6 +7,9 @@ namespace TerraFusion.Core.Entities;
 
 public enum AdjustmentSetApprovalState
 {
+    // County Studio's governed workflow stops at Approved. Published
+    // and RolledBack remain only for legacy read compatibility with
+    // older rows and are not legal transition targets in County Studio.
     Proposed, ReadyForApproval, Approved, Published, RolledBack
 }
 

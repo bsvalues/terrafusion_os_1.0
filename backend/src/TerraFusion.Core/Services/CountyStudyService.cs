@@ -675,8 +675,6 @@ public class CountyStudyService : ICountyStudyService
         {
             (AdjustmentSetApprovalState.Proposed,         AdjustmentSetApprovalState.ReadyForApproval) => true,
             (AdjustmentSetApprovalState.ReadyForApproval, AdjustmentSetApprovalState.Approved)         => true,
-            (AdjustmentSetApprovalState.Approved,         AdjustmentSetApprovalState.Published)        => true,
-            (AdjustmentSetApprovalState.Published,        AdjustmentSetApprovalState.RolledBack)       => true,
             (AdjustmentSetApprovalState.ReadyForApproval, AdjustmentSetApprovalState.Proposed)         => true, // send back
             _ => false,
         };
@@ -690,12 +688,6 @@ public class CountyStudyService : ICountyStudyService
 
         if (newState == AdjustmentSetApprovalState.Approved)
             adj.ApprovedBy = userId;
-
-        if (newState == AdjustmentSetApprovalState.Published)
-            adj.PublishedAt = DateTime.UtcNow;
-
-        if (newState == AdjustmentSetApprovalState.RolledBack && rollbackReason != null)
-            adj.RollbackReason = rollbackReason;
 
         await _db.SaveChangesAsync();
         return MapAdjustmentSet(adj);

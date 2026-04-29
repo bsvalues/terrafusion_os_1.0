@@ -174,7 +174,6 @@ export function CorrectionDefensePanel({
   const proposedCount = adjustmentSets.filter((set) => set.approvalState === 'Proposed').length;
   const readyForApprovalCount = adjustmentSets.filter((set) => set.approvalState === 'ReadyForApproval').length;
   const approvedCount = adjustmentSets.filter((set) => set.approvalState === 'Approved').length;
-  const publishedCount = adjustmentSets.filter((set) => set.approvalState === 'Published').length;
   const openExceptionCount = exceptions.filter((row) => row.status !== 'Resolved').length;
 
   const handlePromoteScenario = useCallback(async () => {
@@ -262,8 +261,8 @@ export function CorrectionDefensePanel({
         />
         <ReadinessRow
           label="Approval"
-          state={publishedCount > 0 ? 'ready' : promotedCount > 0 ? 'watch' : 'blocked'}
-          detail={publishedCount > 0 ? `${publishedCount} adjustment set${publishedCount === 1 ? '' : 's'} published.` : promotedCount > 0 ? `${promotedCount} promoted; ${proposedCount} proposed / ${readyForApprovalCount} ready / ${approvedCount} approved.` : 'Promote a saved scenario to create an approval record.'}
+          state={approvedCount > 0 ? 'ready' : promotedCount > 0 ? 'watch' : 'blocked'}
+          detail={promotedCount > 0 ? `${promotedCount} promoted; ${proposedCount} proposed / ${readyForApprovalCount} ready / ${approvedCount} approved.` : 'Promote a saved scenario to create an approval record.'}
         />
         <ReadinessRow
           label="Evidence"

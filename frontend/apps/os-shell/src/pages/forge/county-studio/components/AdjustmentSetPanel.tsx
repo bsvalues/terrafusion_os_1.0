@@ -2,8 +2,9 @@
 //
 // Governance workflow panel for CountyAdjustmentSets.
 // Lists all adjustment sets for the active study and exposes the approval
-// state-machine buttons: Submit → Approve → Publish → Rollback.
-// Read-only when no study is loaded or when a set is already RolledBack.
+// state-machine buttons: Submit -> Approve. County Studio stops at
+// Approved; publish/apply belongs to a separate governed lane.
+// Read-only when no study is loaded or when a set is terminal.
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
@@ -16,6 +17,8 @@ const STATE_COLOR: Record<AdjustmentSetApprovalState, string> = {
   Proposed:         '#6b7280',
   ReadyForApproval: '#f59e0b',
   Approved:         '#3b82f6',
+  // Legacy read-only terminal states; County Studio no longer advances
+  // adjustment sets into these states.
   Published:        '#22c55e',
   RolledBack:       '#ef4444',
 };
@@ -48,15 +51,12 @@ const NEXT_STATES: Partial<Record<AdjustmentSetApprovalState, { state: Adjustmen
     { state: 'Approved', label: 'Approve'   },
     { state: 'Proposed', label: 'Send Back' },
   ],
-  Approved:   [{ state: 'Published',  label: 'Publish'  }],
-  Published:  [{ state: 'RolledBack', label: 'Rollback' }],
+  Approved: [],
+  Published: [],
   RolledBack: [],
 };
 
 // ── Single row ────────────────────────────────────────────────────────────────
-
-const requiresConfirm = (state: AdjustmentSetApprovalState): boolean =>
-  state === 'Published' || state === 'RolledBack';
 
 function AdjSetRow({
   adj,
@@ -70,32 +70,8 @@ function AdjSetRow({
   const actions = NEXT_STATES[adj.approvalState] ?? [];
   const isBusy  = busy === adj.adjustmentSetId;
 
-  const [confirming,     setConfirming]     = useState<AdjustmentSetApprovalState | null>(null);
-  const [rollbackReason, setRollbackReason] = useState('');
-
   const handleClick = (state: AdjustmentSetApprovalState) => {
-    if (requiresConfirm(state)) {
-      setConfirming(state);
-    } else {
-      onAction(adj.adjustmentSetId, state);
-    }
-  };
-
-  const handleConfirmYes = () => {
-    if (confirming) {
-      onAction(
-        adj.adjustmentSetId,
-        confirming,
-        confirming === 'RolledBack' ? rollbackReason : undefined,
-      );
-      setConfirming(null);
-      setRollbackReason('');
-    }
-  };
-
-  const handleConfirmCancel = () => {
-    setConfirming(null);
-    setRollbackReason('');
+    onAction(adj.adjustmentSetId, state);
   };
 
   return (
@@ -130,74 +106,14 @@ function AdjSetRow({
         Scenario {adj.scenarioId.slice(0, 8)}…
       </span>
 
-      {confirming ? (
-        <div
-          data-testid={`confirm-${confirming}-${adj.adjustmentSetId}`}
-          style={{
-            marginTop: 4,
-            padding: '6px 8px',
-            borderRadius: 4,
-            border: '1px solid hsl(var(--tf-border))',
-            background: confirming === 'RolledBack'
-              ? 'hsl(var(--tf-error) / 0.07)'
-              : 'hsl(var(--tf-success) / 0.07)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 6,
-          }}
-        >
-          <div style={{ fontSize: 11, fontWeight: 600 }}>
-            Confirm {confirming === 'Published' ? 'Publish' : 'Rollback'}?
-            {confirming === 'Published' && (
-              <span style={{ fontSize: 10, fontWeight: 400, marginLeft: 6, color: 'hsl(var(--tf-muted))' }}>
-                This locks the DOR submission.
-              </span>
-            )}
-          </div>
-          {confirming === 'RolledBack' && (
-            <input
-              data-testid={`rollback-reason-${adj.adjustmentSetId}`}
-              type="text"
-              placeholder="Reason for rollback (required for audit trail)"
-              value={rollbackReason}
-              onChange={(e) => setRollbackReason(e.target.value)}
-              style={{
-                fontSize: 10,
-                padding: '3px 6px',
-                borderRadius: 3,
-                border: '1px solid hsl(var(--tf-border))',
-                background: 'hsl(var(--tf-surface))',
-                color: 'hsl(var(--tf-fg))',
-                width: '100%',
-                boxSizing: 'border-box',
-              }}
-            />
-          )}
-          <div style={{ display: 'flex', gap: 6 }}>
+      {actions.length > 0 && (
+        <div style={{ display: 'flex', gap: 6, marginTop: 2 }}>
+          {actions.map(({ state, label }) => (
             <button
-              data-testid={`confirm-yes-${adj.adjustmentSetId}`}
-              disabled={isBusy || (confirming === 'RolledBack' && rollbackReason.trim() === '')}
-              onClick={handleConfirmYes}
-              style={{
-                fontSize: 10,
-                padding: '3px 10px',
-                borderRadius: 4,
-                border: '1px solid hsl(var(--tf-border))',
-                background: confirming === 'RolledBack'
-                  ? 'hsl(var(--tf-error) / 0.13)'
-                  : 'hsl(var(--tf-success) / 0.13)',
-                color: confirming === 'RolledBack'
-                  ? 'hsl(var(--tf-error))'
-                  : 'hsl(var(--tf-success))',
-                cursor: (isBusy || (confirming === 'RolledBack' && rollbackReason.trim() === '')) ? 'not-allowed' : 'pointer',
-                opacity: (isBusy || (confirming === 'RolledBack' && rollbackReason.trim() === '')) ? 0.5 : 1,
-              }}
-            >
-              {isBusy ? '…' : 'Yes, confirm'}
-            </button>
-            <button
-              data-testid={`confirm-cancel-${adj.adjustmentSetId}`}
-              onClick={handleConfirmCancel}
+              key={state}
+              data-testid={`btn-${state}-${adj.adjustmentSetId}`}
+              disabled={isBusy}
+              onClick={() => handleClick(state)}
               style={{
                 fontSize: 10,
                 padding: '3px 10px',
@@ -205,44 +121,14 @@ function AdjSetRow({
                 border: '1px solid hsl(var(--tf-border))',
                 background: 'hsl(var(--tf-surface))',
                 color: 'hsl(var(--tf-fg))',
-                cursor: 'pointer',
+                cursor: isBusy ? 'not-allowed' : 'pointer',
+                opacity: isBusy ? 0.5 : 1,
               }}
             >
-              Cancel
+              {isBusy ? '…' : label}
             </button>
-          </div>
+          ))}
         </div>
-      ) : (
-        actions.length > 0 && (
-          <div style={{ display: 'flex', gap: 6, marginTop: 2 }}>
-            {actions.map(({ state, label }) => (
-              <button
-                key={state}
-                data-testid={`btn-${state}-${adj.adjustmentSetId}`}
-                disabled={isBusy}
-                onClick={() => handleClick(state)}
-                style={{
-                  fontSize: 10,
-                  padding: '3px 10px',
-                  borderRadius: 4,
-                  border: '1px solid hsl(var(--tf-border))',
-                  background:
-                    state === 'RolledBack' ? '#ef444422' :
-                    state === 'Published'  ? '#22c55e22' :
-                    'hsl(var(--tf-surface))',
-                  color:
-                    state === 'RolledBack' ? '#ef4444' :
-                    state === 'Published'  ? '#22c55e' :
-                    'hsl(var(--tf-fg))',
-                  cursor: isBusy ? 'not-allowed' : 'pointer',
-                  opacity: isBusy ? 0.5 : 1,
-                }}
-              >
-                {isBusy ? '…' : label}
-              </button>
-            ))}
-          </div>
-        )
       )}
     </div>
   );

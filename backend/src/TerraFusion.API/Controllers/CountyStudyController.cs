@@ -936,7 +936,7 @@ public class CountyStudyController : ControllerBase
     // ── Adjustment Sets ───────────────────────────────────────────────────────
 
     /// <summary>
-    /// Promotes a saved scenario into a published adjustment set.
+    /// Promotes a saved scenario into a proposed adjustment set.
     /// The request body must include ScenarioId and EffectiveScope.
     /// Returns 200 with the created adjustment set DTO.
     /// </summary>
@@ -964,7 +964,7 @@ public class CountyStudyController : ControllerBase
     }
 
     /// <summary>
-    /// Returns all published adjustment sets for a study.
+    /// Returns all governed adjustment sets for a study.
     /// </summary>
     [HttpGet("studies/{studyId:guid}/adjustment-sets")]
     public async Task<IActionResult> GetAdjustmentSets(Guid studyId)
@@ -990,8 +990,8 @@ public class CountyStudyController : ControllerBase
     }
 
     /// <summary>
-    /// Advances (or rolls back) the approval state of an adjustment set.
-    /// Valid transitions: Proposed → ReadyForApproval → Approved → Published → RolledBack
+    /// Advances the approval state of an adjustment set.
+    /// Valid transitions: Proposed → ReadyForApproval → Approved
     /// Also supports ReadyForApproval → Proposed (send-back).
     /// Returns 200 with the updated adjustment set DTO.
     /// </summary>

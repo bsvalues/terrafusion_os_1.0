@@ -14,7 +14,7 @@ const PANEL_SUMMARY: Record<RightPanel, string> = {
   inspector: 'Diagnose the active scope and route corrective action.',
   scenario: 'Draft adjustments and preview impact before saving.',
   compare: 'Compare saved scenarios side by side.',
-  governance: 'Approve, publish, or roll back promoted adjustment sets.',
+  governance: 'Submit and approve promoted adjustment sets.',
 };
 
 /**

@@ -180,7 +180,7 @@ public record PromoteScenarioRequest(
 
 public record UpdateAdjustmentApprovalStateRequest(
     string NewState,
-    string? RollbackReason = null   // Required for FISMA audit trail when transitioning to RolledBack
+    string? RollbackReason = null   // Legacy field; County Studio no longer transitions to RolledBack.
 );
 
 // ── ExceptionSet ──────────────────────────────────────────────────────────────
