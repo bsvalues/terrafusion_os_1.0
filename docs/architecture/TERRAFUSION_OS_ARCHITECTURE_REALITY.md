@@ -52,8 +52,9 @@
 │  │        • Performance (speed vs accuracy)            │  │
 │  │                                                       │  │
 │  │  ⚙️ TerraFusion Sync                                │  │
-│  │     └─ Multi-master replication engine             │  │
-│  │     └─ Connects to Harris PACS, Tyler, etc.        │  │
+│  │     └─ Bridge: legacy CAMA/PACS → TerraFusion DB    │  │
+│  │     └─ Benton today: Harris PACS 9.0 (legacy source)│  │
+│  │     └─ Future county dialects as onboarded         │  │
 │  │                                                       │  │
 │  │  🔄 TerraFlow                                        │  │
 │  │     └─ Visual workflow designer                     │  │
@@ -90,11 +91,15 @@
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
 │              APPLICATIONS (Run on TerraFusion OS)           │
+│  Illustrative — Tyler Munis / Esri GIS shown as examples   │
+│  of vendor apps that COULD run on TF; NOT in Benton's     │
+│  deployment. Benton's active legacy source is Harris PACS. │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  ┌────────────────┐  ┌────────────────┐  ┌──────────────┐ │
 │  │ Harris PACS    │  │ Tyler Munis    │  │ Esri GIS     │ │
-│  │ (Vendor App)   │  │ (Vendor App)   │  │ (Vendor App) │ │
+│  │ (Benton: legacy│  │ (illustrative; │  │ (illustrative│ │
+│  │  source DB)    │  │  not Benton)   │  │  not Benton) │ │
 │  └────────────────┘  └────────────────┘  └──────────────┘ │
 │                                                             │
 │  ┌────────────────┐  ┌────────────────┐  ┌──────────────┐ │
