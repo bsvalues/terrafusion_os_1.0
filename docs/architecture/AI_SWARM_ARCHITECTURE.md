@@ -166,8 +166,11 @@ class SwarmEntanglement:
 - **Protocol optimization** for government use
 
 ### **External System Integration**
-- **Harris PACS**: Complete enterprise integration
-- **County Systems**: Tyler, Aumentum, Vision
+- **Harris PACS**: Benton County's active legacy CAMA/PACS source DB
+  (TerraFusion Sync converts FROM Harris PACS INTO TerraFusion DB)
+- **County Systems (per-county where applicable)**: Aumentum and
+  other county-specific CAMA dialects as additional counties
+  onboard. Tyler Vision is NOT in Benton's stack.
 - **Government APIs**: FISMA, NIST, state systems
 - **Cloud Services**: Azure, AWS, Google Cloud
 

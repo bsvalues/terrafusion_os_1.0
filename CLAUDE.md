@@ -213,9 +213,17 @@ var agents = await _aiCommandService.GetActiveAgentsAsync();
 ### 3. Harris PACS Integration
 
 **NEVER modify** Harris PACS 9.0 integration without county approval:
+- Harris PACS 9.0 is Benton County's legacy CAMA/PACS database;
+  TerraFusion Sync converts FROM PACS INTO TerraFusion DB. PACS is
+  the source, not the destination.
 - Real property data (89,247 Benton County parcels)
-- Tyler Technologies Vision integration
-- Aumentum Systems connectivity
+- ProVal (historical valuation) and Ascend (historical tax) appear
+  only as conversion-provenance footnotes that explain PACS data
+  semantics; they are NOT active runtime sources.
+- Tyler Vision is NOT in Benton's stack and never was. Earlier
+  drafts of this doc listed it; that was stale lore swept by
+  C48-HYGIENE.
+- Aumentum Systems connectivity (where applicable per county)
 - Located in `terra-fusion-sync` module
 
 ### 4. Frontend Build Architecture
@@ -483,7 +491,7 @@ npm run ai-agent-briefing
 1. **Government compliance** (FISMA-HIGH, NIST 800-53)
 2. **Citizen data protection** (Sovereign County isolation)
 3. **AI swarm coordination** (1,008 agents in production)
-4. **Real-world integration** (Harris PACS, Tyler Technologies, Aumentum)
+4. **Real-world integration** (Harris PACS as the legacy source database; Aumentum and other county-specific systems where applicable; Tyler Vision is NOT in Benton's stack)
 5. **Production readiness** (716 tests, 91.9% pass rate, 99.9% uptime target)
 
 ---
