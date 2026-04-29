@@ -5,6 +5,7 @@ using TerraFusion.API.Services;
 using TerraFusion.Core.DTOs.Sync;
 using TerraFusion.Data;
 using TerraFusion.Sync.Workbench.Comps.Sales;
+using TerraFusion.Sync.Workbench.Mapping;
 
 namespace TerraFusion.API.Controllers;
 
@@ -26,17 +27,20 @@ public class SyncController : ControllerBase
     private readonly TerraFusionDbContext _db;
     private readonly ILogger<SyncController> _logger;
     private readonly ISalesCompEligibilityReader _compReader;
+    private readonly ISyncCountyActiveWorkbookService _activeWorkbook;
 
     public SyncController(
         ISaleQualificationService qualification,
         TerraFusionDbContext db,
         ILogger<SyncController> logger,
-        ISalesCompEligibilityReader compReader)
+        ISalesCompEligibilityReader compReader,
+        ISyncCountyActiveWorkbookService activeWorkbook)
     {
-        _qualification = qualification;
-        _db            = db;
-        _logger        = logger;
-        _compReader    = compReader;
+        _qualification  = qualification;
+        _db             = db;
+        _logger         = logger;
+        _compReader     = compReader;
+        _activeWorkbook = activeWorkbook;
     }
 
     // ── Requalification trigger ────────────────────────────────────────────
@@ -540,5 +544,197 @@ public class SyncController : ControllerBase
         var raw = User.FindFirst("countyId")?.Value?.Trim();
         if (string.IsNullOrWhiteSpace(raw)) return null;
         return Guid.TryParse(raw, out var parsed) ? parsed : null;
+    }
+
+    // ── Active-workbook pointer (Slice C41-C) ───────────────────────────────
+
+    /// <summary>
+    /// Slice C41-C: HTTP read for the per-county active-workbook
+    /// pointer. Inherits the C41-A endpoint contract: auth required,
+    /// county-isolation server-side, no PII, audit at consumer level
+    /// only, no collateral mutation.
+    ///
+    /// <para>Per C41-A Hard Guard 9 a county MAY have no pointer; in
+    /// that case this action returns 404 (the route is reachable
+    /// for the county but no row exists). Reading is read-only —
+    /// <c>AsNoTracking</c> at the service layer; no
+    /// <c>UpdatedAt</c> bump on the pointer row.</para>
+    /// </summary>
+    [HttpGet("active-workbook")]
+    [Authorize]
+    public async Task<IActionResult> GetActiveWorkbook(
+        [FromQuery] Guid countyId,
+        CancellationToken ct = default)
+    {
+        if (countyId == Guid.Empty)
+        {
+            return BadRequest(new { error = "countyId is required." });
+        }
+
+        var principal = ResolveCountyClaim();
+        if (principal is null || principal.Value != countyId)
+        {
+            _logger.LogWarning(
+                "[Sync] GetActiveWorkbook refused cross-county access: principal={Principal} requested={Requested}",
+                principal, countyId);
+            return Forbid();
+        }
+
+        var snap = await _activeWorkbook.GetAsync(countyId, ct);
+        if (snap is null)
+        {
+            // Hard Guard 9: no-pointer is a valid state; return 404
+            // so consumers can distinguish "no pointer set" from
+            // "pointer points at a known workbook id." The body
+            // says nothing about whether the county exists or has
+            // workbooks — that's not the consumer's concern at this
+            // surface.
+            return NotFound(new
+            {
+                countyId,
+                error = "No active-workbook pointer is configured for this county.",
+            });
+        }
+
+        var dto = new ActiveWorkbookSnapshotDto(
+            snap.CountyId, snap.ActiveWorkbookId, snap.SetAt, snap.SetBy, snap.SetReason);
+
+        _logger.LogInformation(
+            "[Sync] GetActiveWorkbook: county={CountyId} workbookId={WorkbookId}",
+            countyId, snap.ActiveWorkbookId);
+
+        return Ok(dto);
+    }
+
+    /// <summary>
+    /// Slice C41-C: HTTP promotion of a Mapped workbook to active
+    /// for a county. Per C41-A: target must be Mapped + same
+    /// county; SET is idempotent (re-setting the same workbook is
+    /// a no-op at the service layer); does NOT trigger C36 or any
+    /// canonical / PACS work. The principal id is the audit stamp
+    /// (operator id); the request body's <see cref="ActiveWorkbookSetRequest.Reason"/>
+    /// is recorded as <c>SetReason</c>.
+    /// </summary>
+    [HttpPut("active-workbook")]
+    [Authorize]
+    public async Task<IActionResult> PutActiveWorkbook(
+        [FromQuery] Guid countyId,
+        [FromQuery] Guid workbookId,
+        [FromBody]  ActiveWorkbookSetRequest? request,
+        CancellationToken ct = default)
+    {
+        if (countyId == Guid.Empty)
+        {
+            return BadRequest(new { error = "countyId is required." });
+        }
+        if (workbookId == Guid.Empty)
+        {
+            return BadRequest(new { error = "workbookId is required." });
+        }
+
+        var principal = ResolveCountyClaim();
+        if (principal is null || principal.Value != countyId)
+        {
+            _logger.LogWarning(
+                "[Sync] PutActiveWorkbook refused cross-county access: principal={Principal} requested={Requested}",
+                principal, countyId);
+            return Forbid();
+        }
+
+        // Operator id is sourced from the principal, NOT from the
+        // request body, so a malicious client cannot impersonate.
+        // Falls back to the user.identity.name; "anonymous" never
+        // reaches this code because [Authorize] blocks
+        // unauthenticated requests upstream.
+        var operatorId = User.Identity?.Name
+            ?? User.FindFirst("sub")?.Value
+            ?? "api-operator";
+
+        try
+        {
+            var snap = await _activeWorkbook.SetAsync(
+                countyId, workbookId, operatorId, request?.Reason, ct);
+
+            var dto = new ActiveWorkbookSnapshotDto(
+                snap.CountyId, snap.ActiveWorkbookId, snap.SetAt, snap.SetBy, snap.SetReason);
+
+            _logger.LogInformation(
+                "[Sync] PutActiveWorkbook: county={CountyId} workbookId={WorkbookId} operator={Operator}",
+                countyId, workbookId, operatorId);
+
+            return Ok(dto);
+        }
+        catch (InvalidOperationException ex)
+        {
+            // C41-A Hard Guard 2 surfaces here: target not Mapped,
+            // or workbook not in this county. Verbatim message;
+            // body shape mirrors the BadRequest pattern used by the
+            // comps endpoint so consumers parse one ProblemDetails
+            // shape across the controller.
+            _logger.LogWarning(
+                "[Sync] PutActiveWorkbook rejected: county={CountyId} workbookId={WorkbookId} reason={Reason}",
+                countyId, workbookId, ex.Message);
+            return BadRequest(new
+            {
+                countyId,
+                workbookId,
+                error = ex.Message,
+            });
+        }
+    }
+
+    /// <summary>
+    /// Slice C41-C: HTTP clear of the active-workbook pointer for a
+    /// county. Idempotent at the service layer (clearing a county
+    /// with no pointer is a no-op). This action distinguishes the
+    /// no-pointer case with 404 so consumers can detect "I asked to
+    /// clear but there was nothing there."
+    /// </summary>
+    [HttpDelete("active-workbook")]
+    [Authorize]
+    public async Task<IActionResult> DeleteActiveWorkbook(
+        [FromQuery] Guid countyId,
+        CancellationToken ct = default)
+    {
+        if (countyId == Guid.Empty)
+        {
+            return BadRequest(new { error = "countyId is required." });
+        }
+
+        var principal = ResolveCountyClaim();
+        if (principal is null || principal.Value != countyId)
+        {
+            _logger.LogWarning(
+                "[Sync] DeleteActiveWorkbook refused cross-county access: principal={Principal} requested={Requested}",
+                principal, countyId);
+            return Forbid();
+        }
+
+        // Pre-check so the action surfaces 404 vs 204 distinctly.
+        // The service's ClearAsync is idempotent at its own surface
+        // (no-op when there's no row), so we can't rely on it to
+        // tell us "did anything happen?". Hence the GET-then-Clear
+        // pattern.
+        var existing = await _activeWorkbook.GetAsync(countyId, ct);
+        if (existing is null)
+        {
+            return NotFound(new
+            {
+                countyId,
+                error = "No active-workbook pointer is configured for this county.",
+            });
+        }
+
+        var operatorId = User.Identity?.Name
+            ?? User.FindFirst("sub")?.Value
+            ?? "api-operator";
+
+        await _activeWorkbook.ClearAsync(countyId, operatorId, ct);
+
+        _logger.LogInformation(
+            "[Sync] DeleteActiveWorkbook: county={CountyId} clearedWorkbookId={WorkbookId} operator={Operator}",
+            countyId, existing.ActiveWorkbookId, operatorId);
+
+        return NoContent();
     }
 }

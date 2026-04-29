@@ -50,9 +50,10 @@ public sealed class R2Wave44SyncControllerTests
 
     private static SyncController CreateController(DataDbContext db, ISaleQualificationService? svc = null)
     {
-        var qualification = svc ?? new Mock<ISaleQualificationService>().Object;
-        var compReader    = new Mock<TerraFusion.Sync.Workbench.Comps.Sales.ISalesCompEligibilityReader>().Object;
-        return new SyncController(qualification, db, NullLogger<SyncController>.Instance, compReader);
+        var qualification  = svc ?? new Mock<ISaleQualificationService>().Object;
+        var compReader     = new Mock<TerraFusion.Sync.Workbench.Comps.Sales.ISalesCompEligibilityReader>().Object;
+        var activeWorkbook = new Mock<TerraFusion.Sync.Workbench.Mapping.ISyncCountyActiveWorkbookService>().Object;
+        return new SyncController(qualification, db, NullLogger<SyncController>.Instance, compReader, activeWorkbook);
     }
 
     private static async Task SeedCountyAsync(DataDbContext db)

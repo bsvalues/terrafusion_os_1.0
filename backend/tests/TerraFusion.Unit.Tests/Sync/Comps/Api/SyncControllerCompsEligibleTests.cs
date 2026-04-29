@@ -13,6 +13,7 @@ using TerraFusion.Core.Entities;
 using TerraFusion.Core.Entities.Canonical;
 using TerraFusion.Data;
 using TerraFusion.Sync.Workbench.Comps.Sales;
+using TerraFusion.Sync.Workbench.Mapping;
 using Xunit;
 using Task = System.Threading.Tasks.Task;
 
@@ -66,14 +67,16 @@ public class SyncControllerCompsEligibleTests
         TerraFusionDbContext db,
         Guid? principalCountyClaim)
     {
-        var qualification = new Mock<ISaleQualificationService>().Object;
-        var compReader    = new SalesCompEligibilityReader(db);
+        var qualification  = new Mock<ISaleQualificationService>().Object;
+        var compReader     = new SalesCompEligibilityReader(db);
+        var activeWorkbook = new SyncCountyActiveWorkbookService(db);
 
         var controller = new SyncController(
             qualification,
             db,
             NullLogger<SyncController>.Instance,
-            compReader);
+            compReader,
+            activeWorkbook);
 
         var identity = new ClaimsIdentity(
             authenticationType: principalCountyClaim is null ? null : "Test");
