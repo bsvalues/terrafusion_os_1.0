@@ -8,6 +8,15 @@ implement.).
 **Status:** policy locked; no TerraFlow engine code yet.
 **Authoritative cross-reference:** `docs/sync/sync-boundary-policy.md`.
 
+**Family of related docs:**
+- `docs/architecture/terrafusion-domain-boundaries.md` (SCOPE-2 —
+  full seven-domain architecture map; TerraFlow's identity
+  paragraph and the 25-row forbidden-leak table).
+- `docs/sync/sync-surface-inventory.md` (SCOPE-3 — per-surface
+  classification of every existing Sync artifact, including
+  which Sync surfaces are TerraFlow handoffs and the binding
+  "do not expand inside Sync" rule for each).
+
 ## Why this slice
 
 The C-series proved the bridge works. Several review/lock/rerun
