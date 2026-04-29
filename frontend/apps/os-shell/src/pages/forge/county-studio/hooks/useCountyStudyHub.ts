@@ -5,9 +5,14 @@ import { getCountyStudyScope } from '../countyStudyScope';
 
 const HUB_PATH = '/hubs/county-study';
 
-function getCountyStudyHubUrl() {
-  const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
-  return `${apiBase}${HUB_PATH}`;
+export function getCountyStudyHubUrl(apiBase = import.meta.env.VITE_API_URL || '') {
+  const normalizedBase = apiBase.replace(/\/$/, '');
+
+  if (!normalizedBase || normalizedBase === '/api') {
+    return HUB_PATH;
+  }
+
+  return `${normalizedBase.replace(/\/api$/i, '')}${HUB_PATH}`;
 }
 
 export function useCountyStudyHub(studyId: string | null) {

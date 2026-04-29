@@ -1,0 +1,56 @@
+{
+  "proof": "june10-browser-smoke",
+  "status": "PASS_WITH_RUNTIME_WARNING",
+  "checkedAt": "2026-04-29T18:04:30Z",
+  "runtime": {
+    "frontendUrl": "http://127.0.0.1:5175/forge/county-studio",
+    "backendUrl": "http://127.0.0.1:5046",
+    "sourceWorktree": "C:/Users/bsval/.codex-worktrees/june10-coverage-proof"
+  },
+  "workflow": {
+    "surface": "County Studio",
+    "county": "Benton County",
+    "taxYear": 2026,
+    "studyType": "MassAppraisal",
+    "studyStatus": "Draft",
+    "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e"
+  },
+  "checks": {
+    "viteApiProxyReturnedCountyStudies": true,
+    "viteHubProxyNegotiatedCountyStudyHub": true,
+    "openStudyDialogListedBentonStudies": true,
+    "massAppraisalStudyOpened": true,
+    "atlasSyncStateLive": true,
+    "countyCommandStripRendered": true,
+    "countySalesVisible": 5559,
+    "countyParcelsVisible": 128784,
+    "cohortCountVisible": 1,
+    "scenarioCountVisible": 2,
+    "healthMetricsVisible": {
+      "medianRatio": 0.927,
+      "cod": 41.3,
+      "prd": 1.399
+    },
+    "topRiskActionItemsVisible": true,
+    "neighborhoodAndRevalRemainSeparate": true
+  },
+  "observedEvidence": {
+    "atlasBadge": "ATLAS LIVE",
+    "commandStrip": "5,559 sales · 128,784 parcels",
+    "cohortScenarioSummary": "1 cohort · 2 scenarios",
+    "representativeRiskItem": "Neighborhood 16081 · Reval 6 Richland · 884 parcels"
+  },
+  "fixesProvenBySmoke": [
+    "Vite dev proxy resolves relative VITE_API_URL=/api to backend target http://localhost:5046.",
+    "Vite dev proxy forwards /hubs/* to the backend SignalR hub.",
+    "County Study SignalR hook resolves relative /api bases to /hubs/county-study, not /api/hubs/county-study."
+  ],
+  "runtimeWarnings": [
+    "A prior backend run exited after an unrelated AI Assistant dependency-resolution failure: IComplianceService could not be resolved for AIAssistantService. County Studio smoke passed after backend restart, but this should remain a separate backend readiness follow-up."
+  ],
+  "limitations": [
+    "This is Benton County browser proof only.",
+    "This does not prove statewide geometry coverage.",
+    "This does not prove Statistics Studio parity."
+  ]
+}

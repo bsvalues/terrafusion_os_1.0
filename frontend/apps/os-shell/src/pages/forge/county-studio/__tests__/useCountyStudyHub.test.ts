@@ -50,7 +50,7 @@ vi.mock('../countyStudyScope', () => ({
   }),
 }));
 
-import { useCountyStudyHub } from '../hooks/useCountyStudyHub';
+import { getCountyStudyHubUrl, useCountyStudyHub } from '../hooks/useCountyStudyHub';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { getMockConnection, getMockWithUrl } from '@microsoft/signalr';
 
@@ -80,6 +80,14 @@ describe('useCountyStudyHub', () => {
 
     expect(withUrl).toHaveBeenCalledWith(expect.stringMatching(/\/hubs\/county-study\?countyId=benton$/));
     expect(withUrl.mock.calls[0][0]).not.toContain(['/api', '/hubs/county-study'].join(''));
+  });
+
+  it('resolves relative API dev base to the real hub route', () => {
+    expect(getCountyStudyHubUrl('/api')).toBe('/hubs/county-study');
+  });
+
+  it('strips an API suffix from absolute API bases for hub routing', () => {
+    expect(getCountyStudyHubUrl('https://example.test/api')).toBe('https://example.test/hubs/county-study');
   });
 
   it('sets syncState to LIVE after hub connects', async () => {

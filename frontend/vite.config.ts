@@ -7,7 +7,11 @@ import { securityPlugin } from './apps/os-shell/src/middleware/security-plugin';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const appRoot = path.resolve(__dirname, 'apps/os-shell');
-  const backendUrl = process.env.VITE_API_URL || `http://localhost:${process.env.TF_API_PORT || 5000}`;
+  const configuredApiUrl = process.env.VITE_API_URL;
+  const backendUrl =
+    configuredApiUrl && /^https?:\/\//i.test(configuredApiUrl)
+      ? configuredApiUrl
+      : `http://localhost:${process.env.TF_API_PORT || process.env.VITE_API_PORT || 5000}`;
 
   // Dev-mode middleware: serves service-registry.json directly from disk.
   // The .NET ServiceRegistryController serves this in production. In dev, this
@@ -149,6 +153,12 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
           ws: true, // WebSocket support for SignalR
+        },
+        '/hubs': {
+          target: backendUrl,
+          changeOrigin: true,
+          secure: false,
+          ws: true,
         },
         // Minimal-API levy routes (TerraLevy Cycle Cockpit reaches these for
         // district AV / measure target amounts). Served by Program.cs at /levy/*.
