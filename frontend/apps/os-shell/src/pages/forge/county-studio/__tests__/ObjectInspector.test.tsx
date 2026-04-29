@@ -110,6 +110,7 @@ function baseDetail(overrides: Partial<CountySegmentDetailDto> = {}): CountySegm
     prb: 0.02, vei: 88, equityClassification: 'Fair',
     equityScore: 92,
     ratioCount: 42,
+    weightedMeanRatio: 0.962,
     yearHistory: [],
     complianceStatus: 'IaaoCompliant',
     warnings: [],
@@ -198,6 +199,15 @@ describe('ObjectInspector — Metrics tab', () => {
     expect(pill).toHaveAttribute('data-classification', 'Fair');
     const score = within(row).getByTestId('inspector-equity-score');
     expect(score.textContent).toBe('92');
+  });
+
+  it('renders qualified sales and weighted mean ratio in the metrics tab', () => {
+    state.detail =baseDetail({ ratioCount: 42, weightedMeanRatio: 0.962 });
+    render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
+    expect(screen.getByText('Qualified Sales')).toBeInTheDocument();
+    expect(screen.getByText('42')).toBeInTheDocument();
+    expect(screen.getByText('Weighted Mean Ratio')).toBeInTheDocument();
+    expect(screen.getByText('0.962')).toBeInTheDocument();
   });
 
   it('flags PRB band=breach when |PRB| > 0.10', () => {

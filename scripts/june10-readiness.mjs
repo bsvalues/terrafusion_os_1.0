@@ -328,14 +328,20 @@ warnIfPresent(
   'Benton-certified CostForge/AI/map compatibility data may be valid for Benton proof, but it must not be claimed as statewide readiness.'
 );
 
-warnIfPresent(
-  'Statistics Studio remains separate from County Studio parity',
-  String.raw`Statistics Studio|statistics-studio|StatisticsStudio`,
+failIfPresent(
+  'Statistics Studio is not the primary Forge metrics workflow',
+  String.raw`id:\s*["']statistics-studio["']|moduleId:\s*["']statistics-studio["']|label:\s*["']Statistics Studio["']|Open Statistics Studio`,
+  ['frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx'],
+  'County Studio has the June 10 metrics workflow; Statistics Studio may remain routable internally, but not as primary launcher posture.'
+);
+
+warnIfMissingFile(
+  'County Studio statistics parity proof present',
   [
-    'frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx',
-    'frontend/apps/os-shell/src/pages/forge',
+    'os-platform/core/pilot/evidence/county-studio-statistics-parity.latest.json',
+    'docs/proof/county-studio-statistics-parity.latest.md',
   ],
-  'Statistics Studio should remain visible until County Studio metric parity is fully proven.'
+  'County Studio must carry the June 10 IAAO/statistics workflow before Statistics Studio is hidden from the primary launcher.'
 );
 
 warnIfMissingFile(

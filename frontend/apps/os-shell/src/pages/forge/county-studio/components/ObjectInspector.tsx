@@ -378,6 +378,8 @@ const MetricsPanel = ({
       <MetricRow label="Median Ratio" value={detail.medianRatio === null ? '—' : detail.medianRatio.toFixed(3)} color={ratioColor(detail.medianRatio)} />
       <MetricRow label="COD" value={detail.cod === null ? '—' : detail.cod.toFixed(1)} color={codColor(detail.cod)} />
       <MetricRow label="PRD" value={detail.prd === null ? '—' : detail.prd.toFixed(3)} color={prdColor(detail.prd)} />
+      <MetricRow label="Qualified Sales" value={detail.ratioCount.toLocaleString()} />
+      <MetricRow label="Weighted Mean Ratio" value={detail.weightedMeanRatio == null ? '—' : detail.weightedMeanRatio.toFixed(3)} />
       <MetricRow label="Stability" value={detail.stabilityScore === null ? '—' : detail.stabilityScore.toFixed(0)} />
       <MetricRow label="Risk" value={detail.riskScore === null ? '—' : detail.riskScore.toFixed(0)} />
       <MetricRow label="Exceptions" value={String(detail.exceptionCount)} />
@@ -495,6 +497,20 @@ const TrendPanel = ({
         selector={(p) => p.cod}
         label="COD"
         format={(v) => v.toFixed(1)}
+        currentYear={currentYear}
+      />
+      <Sparkline
+        points={history}
+        selector={(p) => p.prd}
+        label="PRD"
+        format={(v) => v.toFixed(3)}
+        currentYear={currentYear}
+      />
+      <Sparkline
+        points={history}
+        selector={(p) => p.prb}
+        label="PRB"
+        format={(v) => v.toFixed(3)}
         currentYear={currentYear}
       />
       <Sparkline

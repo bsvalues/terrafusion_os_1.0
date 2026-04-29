@@ -6,8 +6,8 @@
  *
  * Verified correct layout (current HEAD):
  *   PRIMARY   : CostForge, CompsForge, IncomeForge (queued), SalesForge
- *   SECONDARY : Statistics Studio, Batch Cost Runs,
- *               Regression Studio (queued), TerraGAMA (queued), Coefficient Preview (queued)
+ *   SECONDARY : Batch Cost Runs, Regression Studio (queued),
+ *               TerraGAMA (queued), Coefficient Preview (queued)
  *   COUNTY    : County Studio
  *
  * GeoForge and Atlas Live View are not launcher products. Atlas is County
@@ -83,6 +83,12 @@ describe('ForgeSuiteHome — frozen module list', () => {
     expect(screen.queryByTestId('forge-gis-applications')).not.toBeInTheDocument();
     expect(screen.queryByText('GeoForge')).not.toBeInTheDocument();
     expect(screen.queryByText('Atlas Live View')).not.toBeInTheDocument();
+  });
+
+  it('does not expose Statistics Studio as the primary metrics workflow after County Studio parity', () => {
+    renderForge();
+    expect(screen.queryByText('Statistics Studio')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /open statistics studio/i })).not.toBeInTheDocument();
   });
 
   it('renders queued specialist apps in the secondary section', () => {

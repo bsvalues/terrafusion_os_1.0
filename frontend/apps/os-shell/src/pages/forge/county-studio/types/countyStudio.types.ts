@@ -78,6 +78,11 @@ export interface CountySegmentDto {
   stabilityScore: number;
   riskScore: number;
   exceptionCount: number;
+  ratioCount?: number | null;
+  salesCount?: number | null;
+  prb?: number | null;
+  weightedMeanRatio?: number | null;
+  yoyMedianRatioDelta?: number | null;
 }
 
 export interface CountyCohortDto {
@@ -282,6 +287,8 @@ export interface CountySegmentDetailDto {
   /** Count of qualified sale-ratio observations PRB/VEI were computed from.
    *  Differs from parcelCount; used by Task E diagnosis detectors. */
   ratioCount: number;
+  /** Weighted mean ratio: sum(assessed value) / sum(adjusted sale price). */
+  weightedMeanRatio?: number | null;
   /** Ascending by taxYear. Empty when no history yet. Never null. */
   yearHistory: SegmentYearPoint[];
   complianceStatus: CountyHealthComplianceStatus;

@@ -9,7 +9,18 @@ import {
 
 type SortKey = keyof Pick<
   CountySegmentDto,
-  'name' | 'parcelCount' | 'medianRatio' | 'cod' | 'prd' | 'stabilityScore' | 'riskScore' | 'exceptionCount'
+  | 'name'
+  | 'parcelCount'
+  | 'ratioCount'
+  | 'medianRatio'
+  | 'cod'
+  | 'prd'
+  | 'prb'
+  | 'weightedMeanRatio'
+  | 'yoyMedianRatioDelta'
+  | 'stabilityScore'
+  | 'riskScore'
+  | 'exceptionCount'
 >;
 
 type SortDir = 'asc' | 'desc';
@@ -33,6 +44,29 @@ function ratioColor(ratio: number | null): string {
   if (delta > 0.1) return '#ef4444';
   if (delta > 0.05) return '#f59e0b';
   return 'hsl(var(--tf-fg))';
+}
+
+function prbColor(prb: number | null | undefined): string {
+  if (prb === null || prb === undefined) return 'hsl(var(--tf-muted))';
+  const abs = Math.abs(prb);
+  if (abs > 0.1) return '#ef4444';
+  if (abs > 0.05) return '#f59e0b';
+  return '#22c55e';
+}
+
+function yoyColor(delta: number | null | undefined): string {
+  if (delta === null || delta === undefined) return 'hsl(var(--tf-muted))';
+  const abs = Math.abs(delta);
+  if (abs > 0.05) return '#ef4444';
+  if (abs > 0.03) return '#f59e0b';
+  return '#22c55e';
+}
+
+function sampleHealth(seg: CountySegmentDto): { label: string; severity: 'ok' | 'thin' | 'none' } {
+  const sample = seg.ratioCount ?? seg.salesCount ?? 0;
+  if (sample >= 30) return { label: 'Healthy', severity: 'ok' };
+  if (sample > 0) return { label: 'Thin', severity: 'thin' };
+  return { label: 'No sales', severity: 'none' };
 }
 
 /** Safe numeric formatter — renders em-dash for null/undefined. */
@@ -187,9 +221,13 @@ export function SegmentTable({ filter }: { filter?: (seg: CountySegmentDto) => b
   const cols: { label: string; key: SortKey }[] = [
     { label: 'Segment (Reval / Neighborhood)', key: 'name' },
     { label: 'Parcels', key: 'parcelCount' },
+    { label: 'Sales', key: 'ratioCount' },
     { label: 'Median Ratio', key: 'medianRatio' },
     { label: 'COD', key: 'cod' },
     { label: 'PRD', key: 'prd' },
+    { label: 'PRB', key: 'prb' },
+    { label: 'Wtd Mean', key: 'weightedMeanRatio' },
+    { label: 'YoY Δ', key: 'yoyMedianRatioDelta' },
     { label: 'Stability', key: 'stabilityScore' },
     { label: 'Exceptions', key: 'exceptionCount' },
     { label: 'Risk', key: 'riskScore' },
@@ -224,6 +262,11 @@ export function SegmentTable({ filter }: { filter?: (seg: CountySegmentDto) => b
             });
             const scopeLabel = formatOperationalPrimary(identity);
             const descriptor = formatOperationalDescriptor(identity);
+            const sample = sampleHealth(seg);
+            const sampleColor =
+              sample.severity === 'ok' ? '#22c55e' :
+              sample.severity === 'thin' ? '#f59e0b' :
+              '#ef4444';
 
             return (
               <tr
@@ -249,6 +292,25 @@ export function SegmentTable({ filter }: { filter?: (seg: CountySegmentDto) => b
                 <td style={{ padding: '7px 8px', color: 'hsl(var(--tf-muted))' }}>
                   {seg.parcelCount.toLocaleString()}
                 </td>
+                <td style={{ padding: '7px 8px' }}>
+                  <span
+                    data-testid="sample-health-chip"
+                    data-severity={sample.severity}
+                    title={`${seg.ratioCount ?? seg.salesCount ?? 0} qualified sale-ratio observations`}
+                    style={{
+                      display: 'inline-block',
+                      padding: '1px 6px',
+                      borderRadius: 10,
+                      background: sampleColor + '33',
+                      color: sampleColor,
+                      fontWeight: 600,
+                      fontSize: 11,
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {(seg.ratioCount ?? seg.salesCount ?? 0).toLocaleString()} · {sample.label}
+                  </span>
+                </td>
                 <td style={{ padding: '7px 8px', color: ratioColor(seg.medianRatio) }}>
                   {fmt(seg.medianRatio, 3)}
                 </td>
@@ -257,6 +319,17 @@ export function SegmentTable({ filter }: { filter?: (seg: CountySegmentDto) => b
                 </td>
                 <td style={{ padding: '7px 8px', color: 'hsl(var(--tf-muted))' }}>
                   {fmt(seg.prd, 3)}
+                </td>
+                <td style={{ padding: '7px 8px', color: prbColor(seg.prb) }}>
+                  {fmt(seg.prb, 3)}
+                </td>
+                <td style={{ padding: '7px 8px', color: 'hsl(var(--tf-muted))' }}>
+                  {fmt(seg.weightedMeanRatio, 3)}
+                </td>
+                <td style={{ padding: '7px 8px', color: yoyColor(seg.yoyMedianRatioDelta) }}>
+                  {seg.yoyMedianRatioDelta == null
+                    ? '—'
+                    : `${seg.yoyMedianRatioDelta >= 0 ? '+' : ''}${seg.yoyMedianRatioDelta.toFixed(3)}`}
                 </td>
                 <td style={{ padding: '7px 8px' }}>
                   <span

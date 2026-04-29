@@ -18,8 +18,7 @@
  *   PRIMARY   : CostForge (cost approach, AppFrame → port 5002)
  *               CompsForge (sales comparison, standalone React module)
  *               IncomeForge (income approach, queued)
- *   SPECIALIST: Statistics Studio (IAAO diagnostics; visible until County Studio parity is proven)
- *               Batch Cost Runs (batch execution)
+ *   SPECIALIST: Batch Cost Runs (batch execution)
  *               Regression Studio / TerraGAMA / Coefficient Preview (queued)
  */
 import { useCallback, useState } from 'react';
@@ -132,16 +131,6 @@ const PRIMARY_MODULES: readonly ForgeModuleDef[] = [
 ] as const;
 
 const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
-  {
-    id: 'statistics-studio',
-    label: 'Statistics Studio',
-    description:
-      'County-wide metrics and IAAO diagnostics — COD, PRD, PRB, equity, trend, and outlier analysis without map-first drilldown or scenario publishing',
-    priority: 'secondary',
-    launchMode: 'standalone',
-    moduleId: 'statistics-studio',
-    chipLabel: 'IAAO diagnostics',
-  },
   {
     id: 'batch-cost-run',
     label: 'Batch Cost Runs',
@@ -497,8 +486,19 @@ export default function ForgeSuiteHome() {
                     <button type="button" className="forge-ops-btn forge-ops-btn--ghost" onClick={() => handleModuleLaunch(PRIMARY_MODULES[0])}>
                       Open CostForge
                     </button>
-                    <button type="button" className="forge-ops-btn forge-ops-btn--ghost" onClick={() => handleModuleLaunch(SECONDARY_MODULES[0])}>
-                      Open Statistics Studio
+                    <button
+                      type="button"
+                      className="forge-ops-btn forge-ops-btn--ghost"
+                      onClick={() => handleModuleLaunch({
+                        id: 'county-studio',
+                        label: 'County Studio',
+                        description: '',
+                        priority: 'primary',
+                        launchMode: 'standalone',
+                        moduleId: 'county-studio',
+                      })}
+                    >
+                      Open County Studio
                     </button>
                   </div>
                 </div>

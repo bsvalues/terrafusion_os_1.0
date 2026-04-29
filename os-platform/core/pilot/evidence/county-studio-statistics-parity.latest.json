@@ -1,0 +1,74 @@
+{
+  "checkedAt": "2026-04-29T19:24:00Z",
+  "slice": "County Studio Statistics Parity Proof",
+  "status": "PASS",
+  "scope": "June 10 primary IAAO/statistics workflow parity",
+  "countyStudioOwnsPrimaryMetricsWorkflow": true,
+  "statisticsStudioPrimaryLauncherPosture": false,
+  "statisticsStudioImplementationRetained": true,
+  "verifiedSignals": {
+    "countyHealth": [
+      "medianRatio",
+      "coefficientOfDispersion",
+      "priceRelatedDifferential",
+      "failingSegmentCount",
+      "driftOrWarningCounts",
+      "exceptionCount",
+      "complianceLamp"
+    ],
+    "segmentTable": [
+      "revalArea",
+      "neighborhoodCode",
+      "parcelCount",
+      "qualifiedSaleRatioCount",
+      "medianRatio",
+      "coefficientOfDispersion",
+      "priceRelatedDifferential",
+      "priceRelatedBias",
+      "weightedMeanRatio",
+      "yearOverYearMedianRatioDelta",
+      "sampleHealth",
+      "stabilityScore",
+      "exceptionCount",
+      "riskScore"
+    ],
+    "segmentInspector": [
+      "qualifiedSales",
+      "weightedMeanRatio",
+      "priceRelatedBias",
+      "verticalEquityIndex",
+      "equityClassification",
+      "equityScore",
+      "medianTrend",
+      "codTrend",
+      "prdTrend",
+      "prbTrend",
+      "exceptionRateTrend",
+      "deterministicDiagnosis",
+      "outlierParcelHints",
+      "correctiveHandoffs"
+    ],
+    "workflow": [
+      "cohortCreation",
+      "scenarioPreviewBeforeSave",
+      "scenarioCompare",
+      "evidencePacket",
+      "governedAdjustmentSetsThroughApprovedOnly"
+    ]
+  },
+  "notClaimed": [
+    "Statistics Studio source code is deleted",
+    "research-lab or exploratory Statistics Studio capability is fully retired",
+    "statewide geometry parity outside published county geometry",
+    "statewide CostForge matrix parity"
+  ],
+  "evidenceFiles": [
+    "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyHealthPanel.tsx",
+    "frontend/apps/os-shell/src/pages/forge/county-studio/components/SegmentTable.tsx",
+    "frontend/apps/os-shell/src/pages/forge/county-studio/components/ObjectInspector.tsx",
+    "frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx",
+    "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/SegmentTable.test.tsx",
+    "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ObjectInspector.test.tsx",
+    "frontend/apps/os-shell/src/pages/suites/__tests__/ForgeSuiteHome.moduleList.test.tsx"
+  ]
+}

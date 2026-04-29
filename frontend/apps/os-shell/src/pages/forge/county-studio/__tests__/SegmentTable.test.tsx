@@ -15,6 +15,11 @@ const MOCK_SEGMENTS: CountySegmentDto[] = [
     medianRatio: 0.97,
     cod: 14.2,
     prd: 1.01,
+    ratioCount: 42,
+    salesCount: 42,
+    prb: 0.02,
+    weightedMeanRatio: 0.962,
+    yoyMedianRatioDelta: 0.018,
     stabilityScore: 72,
     riskScore: 35,
     exceptionCount: 8,
@@ -29,6 +34,11 @@ const MOCK_SEGMENTS: CountySegmentDto[] = [
     medianRatio: 0.84,
     cod: 22.8,
     prd: 1.06,
+    ratioCount: 8,
+    salesCount: 8,
+    prb: -0.14,
+    weightedMeanRatio: 0.792,
+    yoyMedianRatioDelta: -0.061,
     stabilityScore: 48,
     riskScore: 78,
     exceptionCount: 22,
@@ -59,7 +69,22 @@ describe('SegmentTable', () => {
     expect(screen.getByText(/^Parcels/)).toBeInTheDocument();
     expect(screen.getByText(/^Median Ratio/)).toBeInTheDocument();
     expect(screen.getByText(/^COD/)).toBeInTheDocument();
+    expect(screen.getByText(/^PRB/)).toBeInTheDocument();
+    expect(screen.getByText(/^Wtd Mean/)).toBeInTheDocument();
+    expect(screen.getByText(/^YoY/)).toBeInTheDocument();
     expect(screen.getByText(/^Stability/)).toBeInTheDocument();
+  });
+
+  it('renders Benton-depth statistics parity signals in the table', () => {
+    render(<SegmentTable />);
+    expect(screen.getByText('0.020')).toBeInTheDocument();
+    expect(screen.getByText('0.962')).toBeInTheDocument();
+    expect(screen.getByText('+0.018')).toBeInTheDocument();
+    const sampleChips = screen.getAllByTestId('sample-health-chip');
+    const healthyChip = sampleChips.find((chip) => chip.textContent === '42 · Healthy');
+    const thinChip = sampleChips.find((chip) => chip.textContent === '8 · Thin');
+    expect(healthyChip).toHaveAttribute('data-severity', 'ok');
+    expect(thinChip).toHaveAttribute('data-severity', 'thin');
   });
 
   it('selecting a row calls selectSegment in the store', () => {
