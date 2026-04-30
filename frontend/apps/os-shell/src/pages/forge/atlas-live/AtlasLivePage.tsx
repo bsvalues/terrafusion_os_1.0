@@ -239,6 +239,36 @@ export function AtlasLivePage() {
           <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>
             Staged sales: {countyContext.stagedSales.toLocaleString()} · Review queue: {countyContext.needsReview.toLocaleString()}
           </div>
+          <div
+            data-testid="atlas-county-trust-posture"
+            data-contract-id={countyContext.contractId}
+            data-trust-tier={countyContext.trustTier}
+            style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', marginTop: 6 }}
+          >
+            <span style={{ color: '#93c5fd', fontWeight: 700 }}>{countyContext.trustLabel}</span>
+            {' · '}
+            {countyContext.databasePosture}
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 5 }}>
+            {countyContext.dataTrustBadges.map((badge) => (
+              <span
+                key={badge}
+                style={{
+                  padding: '1px 5px',
+                  borderRadius: 999,
+                  border: '1px solid rgba(147,197,253,0.28)',
+                  color: 'rgba(191,219,254,0.92)',
+                  fontSize: 9,
+                  fontWeight: 700,
+                }}
+              >
+                {badge}
+              </span>
+            ))}
+          </div>
+          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', marginTop: 4 }}>
+            {countyContext.dataTrustMessage}
+          </div>
           {countyContext.latestSaleDate && (
             <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>
               Latest sale: {countyContext.latestSaleDate}

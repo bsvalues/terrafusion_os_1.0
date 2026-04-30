@@ -1,17 +1,17 @@
 # Contract Adoption Audit
 
-Checked: 2026-04-30T22:53:10.695Z
+Checked: 2026-04-30T23:07:07.411Z
 Status: PASS_WITH_ADOPTION_GAPS
 Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 
 ## Summary
 
 - Surfaces audited: 17
-- Pass: 14
+- Pass: 15
 - Partial: 0
 - Gap: 0
-- Out of scope for current four contracts: 3
-- Migration needed: 3
+- Out of scope for current four contracts: 2
+- Migration needed: 2
 
 ## Matrix
 
@@ -26,7 +26,7 @@ Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 | County Studio AI diagnosis panel | Displays deterministic findings, evidence values, and recommended actions. | yes | `terraforge_segment_derivation_v1`<br>`terraforge_correction_priority_v1` | ui | no | pass | The panel now labels diagnosis as deterministic action routing over segment derivation and correction priority, not an independent metric source. |
 | Evidence packet modal and markdown export | Exports DOR-defensible packet with correction-priority contract id and segment signals. | yes | `terraforge_correction_priority_v1` | partial | no | pass | Correction contract is visible. A future improvement can attach county trust tier directly. |
 | Atlas Live overlay manager | Colors parcels for ratio-like metric overlays, scenario deltas, cohort shading, and edge warnings. | yes | `terraforge_segment_derivation_v1`<br>`terraforge_statistics_compat_v1`<br>`terraforge_correction_priority_v1` | feature-state | no | pass | Overlay feature state now carries atlasContractId, atlasSourcePopulation, and atlasTrustPosture; default overlay mappings preserve contract lineage when projections omit explicit metadata. |
-| Atlas Live county context | Loads Washington launch county status, Benton compatibility geometry, staged sales, and review counts. | no | none | partial | yes | outOfScope | This is classified as launch/county-context posture, not one of the four current suite metric contracts. It needs a future county data-trust or launch-context contract before being treated as production truth. |
+| Atlas Live county context | Loads Washington launch county status, Benton compatibility geometry, staged sales, and review counts. | yes | `county_data_trust_launch_context_v1` | api+ui | no | pass | Atlas county context now emits county_data_trust_launch_context_v1 with trust tier, DB posture, launch posture, geometry availability, and production-claim posture. |
 | GeoForge county health panel | Displays contract-backed operational health metrics and keeps neighborhood spatial diagnostics clearly supplemental. | yes | `terraforge_operational_health_v1`<br>`terraforge_correction_priority_v1` | ui | no | pass | Countywide metrics now come from County Studio healthSummary and visibly show operational contract id, correction priority contract id, and trust posture; local neighborhood calculations are limited to supplemental spatial context. |
 | CostForge triage tab | Computes AI priority score from COD deviation, median-ratio deviation, PRB deviation, and sale count. | yes | `costforge_calibration_priority_v1` | ui | no | pass | The tab now emits the registered costforge_calibration_priority_v1 contract and keeps its population distinct from County Studio correction priority. |
 | SalesForge running stats | Displays qualification counts, median ratio, weighted mean, COD, PRD, PRB, and IAAO compliance. | yes | `terraforge_statistics_compat_v1`<br>`statistics_ratio_study_compat_v1` | ui | no | pass | The running-stats rail now visibly declares the registered Statistics Compat contract, implementation alias, qualified-sale population, and parity-compatible trust posture for sale-qualification stats. |
@@ -39,7 +39,6 @@ Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 
 | Surface | Status | Path | Notes |
 | --- | --- | --- | --- |
-| Atlas Live county context | outOfScope | frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts | This is classified as launch/county-context posture, not one of the four current suite metric contracts. It needs a future county data-trust or launch-context contract before being treated as production truth. |
 | CompsForge module | outOfScope | frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx | This does not fit the four current suite metric contracts cleanly. It needs a future comparable-sales candidate-selection/reconciliation contract. |
 | CostForge calculator module | outOfScope | frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx | This is governed in its own cost domain but not covered by the four TerraForge suite metric contracts. A CostForge cost-value contract should be registered later. |
 
@@ -49,7 +48,6 @@ Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 
 ## Next Closures
 
-- Register future county data-trust or launch-context contract before treating Atlas Live county context as production truth.
 - Register future CostForge cost-value contract before treating calculator outputs as suite truth.
 - Register future CompsForge comparable-sales candidate-selection/reconciliation contract before treating its scoring as suite truth.
 

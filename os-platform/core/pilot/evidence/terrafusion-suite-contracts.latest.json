@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-04-30T22:53:10.654Z",
+  "checkedAt": "2026-04-30T23:07:07.507Z",
   "slice": "terrafusion-suite-contract-layer",
   "status": "PASS",
   "decision": "SUITE_CONTRACTS_REGISTERED_AND_CODIFIED",
@@ -15,13 +15,14 @@
     "terraforge_statistics_compat_v1",
     "terraforge_segment_derivation_v1",
     "terraforge_correction_priority_v1",
-    "costforge_calibration_priority_v1"
+    "costforge_calibration_priority_v1",
+    "county_data_trust_launch_context_v1"
   ],
   "summary": {
-    "contracts": 5,
-    "codified": 5,
+    "contracts": 6,
+    "codified": 6,
     "registeredImplicit": 0,
-    "proofArtifacts": 10,
+    "proofArtifacts": 12,
     "missingProofArtifacts": 0
   },
   "checks": [
@@ -33,7 +34,8 @@
         "terraforge_statistics_compat_v1",
         "terraforge_segment_derivation_v1",
         "terraforge_correction_priority_v1",
-        "costforge_calibration_priority_v1"
+        "costforge_calibration_priority_v1",
+        "county_data_trust_launch_context_v1"
       ],
       "note": "The first four suite population contracts are registered."
     },
@@ -45,7 +47,8 @@
         "terraforge_statistics_compat_v1",
         "terraforge_segment_derivation_v1",
         "terraforge_correction_priority_v1",
-        "costforge_calibration_priority_v1"
+        "costforge_calibration_priority_v1",
+        "county_data_trust_launch_context_v1"
       ],
       "note": "Contract IDs must not fork."
     },
@@ -67,7 +70,8 @@
         "terraforge_statistics_compat_v1",
         "terraforge_segment_derivation_v1",
         "terraforge_correction_priority_v1",
-        "costforge_calibration_priority_v1"
+        "costforge_calibration_priority_v1",
+        "county_data_trust_launch_context_v1"
       ],
       "note": "Every contract must declare owner, population, read path, metrics, trust posture, proofs, and forbidden uses."
     },
@@ -126,7 +130,18 @@
         "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:64",
         "frontend/apps/os-shell/src/pages/forge/cost/__tests__/CostForge.contracts.test.tsx:54",
         "frontend/apps/os-shell/src/pages/forge/cost/__tests__/CostForge.contracts.test.tsx:60",
-        "frontend/apps/os-shell/src/pages/forge/cost/__tests__/CostForge.contracts.test.tsx:5"
+        "frontend/apps/os-shell/src/pages/forge/cost/__tests__/CostForge.contracts.test.tsx:5",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts:9",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts:9",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts:120",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts:13",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts:16",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts:94",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts:95",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx:243",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx:244",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx:245",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx:253"
       ],
       "note": "Registered contracts must point at real implementation anchors instead of prose-only intent."
     },
@@ -143,6 +158,8 @@
         "os-platform/core/pilot/evidence/county-studio-correction-and-defense.latest.json",
         "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json",
         "os-platform/core/pilot/evidence/costforge-calibration-priority-contract.latest.json",
+        "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json",
+        "os-platform/core/pilot/evidence/county-data-trust-launch-context-contract.latest.json",
         "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json"
       ],
       "note": "Every contract must cite at least one proof artifact already in the repo."
@@ -269,6 +286,29 @@
         "Do not substitute for County Studio correction priority.",
         "Do not rank production correction work from demo/reference counties.",
         "Do not change formula weights or thresholds without updating this contract and proof artifact."
+      ]
+    },
+    {
+      "id": "county_data_trust_launch_context_v1",
+      "status": "codified",
+      "state": "codified",
+      "implementationContractId": null,
+      "population": "Atlas Live county context resolved from County Studio route scope and Washington launch/county trust posture",
+      "owner": "frontend.apps.os-shell.pages.forge.atlas-live.atlasLiveApi.fetchAtlasCountyContext",
+      "readPath": "GET /launch-data/washington/counties/status.json plus county detail route",
+      "trustPosture": [
+        "Benton is production_provisional, sync_derived, and converted_legacy_sensitive until lineage and conversion-sensitive sales qualification proof closes.",
+        "Washington 39-county launch/reference corpus is reference_demo and not certified for operational valuation.",
+        "Geometry availability is launch context, not proof of production valuation data."
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/county-data-trust-launch-context-contract.latest.json",
+        "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not treat 39-county launch/reference data as official production data.",
+        "Do not infer production readiness from geometry availability alone.",
+        "Do not hide Benton converted-legacy sensitivity when presenting county context."
       ]
     }
   ],
@@ -412,6 +452,33 @@
         "frontend/apps/os-shell/src/pages/forge/cost/__tests__/CostForge.contracts.test.tsx:60",
         "frontend/apps/os-shell/src/pages/forge/cost/__tests__/CostForge.contracts.test.tsx:5"
       ]
+    },
+    {
+      "contractId": "county_data_trust_launch_context_v1",
+      "path": "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts",
+      "passed": true,
+      "missingPatterns": [],
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts:9",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts:9",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts:120",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts:13",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts:16",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts:94",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts:95"
+      ]
+    },
+    {
+      "contractId": "county_data_trust_launch_context_v1",
+      "path": "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx",
+      "passed": true,
+      "missingPatterns": [],
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx:243",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx:244",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx:245",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx:253"
+      ]
     }
   ],
   "proofArtifactChecks": [
@@ -462,6 +529,16 @@
     },
     {
       "contractId": "costforge_calibration_priority_v1",
+      "path": "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json",
+      "exists": true
+    },
+    {
+      "contractId": "county_data_trust_launch_context_v1",
+      "path": "os-platform/core/pilot/evidence/county-data-trust-launch-context-contract.latest.json",
+      "exists": true
+    },
+    {
+      "contractId": "county_data_trust_launch_context_v1",
       "path": "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json",
       "exists": true
     }

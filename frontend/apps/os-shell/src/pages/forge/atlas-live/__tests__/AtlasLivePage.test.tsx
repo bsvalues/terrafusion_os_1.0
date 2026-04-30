@@ -14,6 +14,7 @@ vi.mock('../hooks/useAtlasLiveHub', () => ({
 vi.mock('../hooks/useAtlasMapData', () => ({
   useAtlasMapData: () => ({
     countyContext: {
+      contractId: 'county_data_trust_launch_context_v1',
       countyId: '19190019-1919-1919-1919-191919191919',
       countyName: 'Benton',
       countyCode: '005',
@@ -30,6 +31,13 @@ vi.mock('../hooks/useAtlasMapData', () => ({
       salesRoute: '/launch-data/washington/sales/by-county/005.json',
       geometryAvailability: 'compatibility',
       geometryMessage: 'Compatibility geometry feed active.',
+      trustTier: 'production_provisional',
+      trustLabel: 'Production Provisional',
+      dataTrustBadges: ['Production Provisional', 'Sync-Derived', 'Converted Legacy Sensitive'],
+      databasePosture: 'TerraFusion.Benton.Operational + TerraFusion.Benton.LegacyBridge',
+      launchContextPosture: 'Benton operational/provisional lane.',
+      productionClaimAllowed: false,
+      dataTrustMessage: 'Benton is operational/provisional and sync-derived.',
     },
     outlines: null,
     parcels: null,
@@ -74,6 +82,15 @@ describe('AtlasLivePage', () => {
   it('renders the county context card', () => {
     render(<AtlasLivePage />);
     expect(screen.getByTestId('atlas-county-context')).toHaveTextContent('Benton County · 005');
+  });
+
+  it('renders county data trust contract posture', () => {
+    render(<AtlasLivePage />);
+    const posture = screen.getByTestId('atlas-county-trust-posture');
+    expect(posture).toHaveAttribute('data-contract-id', 'county_data_trust_launch_context_v1');
+    expect(posture).toHaveAttribute('data-trust-tier', 'production_provisional');
+    expect(posture).toHaveTextContent('Production Provisional');
+    expect(posture).toHaveTextContent('TerraFusion.Benton.Operational');
   });
 
   it('renders the sync badge', () => {
