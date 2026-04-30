@@ -1,8 +1,8 @@
 {
-  "checkedAt": "2026-04-30T19:03:27.144Z",
+  "checkedAt": "2026-04-30T19:19:02.465Z",
   "slice": "statistics-studio-retirement-gap-audit",
   "status": "PASS_WITH_PRODUCT_GAPS",
-  "decision": "DEMOTE_STATISTICS_STUDIO_KEEP_TEMPORARILY_FOR_STANDALONE_SHELL_AND_VEI_EXPLORATION",
+  "decision": "DEMOTE_STATISTICS_STUDIO_KEEP_TEMPORARILY_FOR_STANDALONE_SHELL_ONLY",
   "sourcePresence": {
     "statisticsStudioStandaloneModule": true,
     "statisticsStudioCoreTabs": true,
@@ -10,7 +10,8 @@
     "countyStatisticsCompat": true,
     "countyNativeIntelligence": true,
     "advancedTabsShared": true,
-    "countyVeiPinnedToStudy": true,
+    "countyVeiPinnedToStudy": false,
+    "countyVeiAdHocTaxYearExploration": true,
     "statisticsVeiCanChangeTaxYear": true
   },
   "prerequisiteProofs": {
@@ -28,8 +29,8 @@
   "summary": {
     "totalCapabilities": 12,
     "missing": 0,
-    "keepTemporarily": 2,
-    "retireOrDemote": 8,
+    "keepTemporarily": 1,
+    "retireOrDemote": 9,
     "countyStudioOnly": 2
   },
   "matrix": [
@@ -40,7 +41,7 @@
       "uiProof": [
         "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:290",
         "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:592",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:884"
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:889"
       ],
       "parityStatus": "proven",
       "recommendation": "retire-or-demote-standalone",
@@ -52,7 +53,7 @@
       "countyStudioEquivalent": "County Studio imports the same StratifiedStudyPanel with active study county scope.",
       "uiProof": [
         "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:301",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:897",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:902",
         "frontend/apps/os-shell/src/pages/forge/statistics/StratifiedStudyPanel.tsx:50"
       ],
       "parityStatus": "shared-component",
@@ -65,9 +66,9 @@
       "countyStudioEquivalent": "County Studio calls the same trends endpoint and renders the same COD/PRD charts.",
       "uiProof": [
         "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:127",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:755",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:906",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:918"
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:760",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:911",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:923"
       ],
       "parityStatus": "covered-same-endpoint",
       "recommendation": "retire-or-demote-standalone",
@@ -76,15 +77,15 @@
     {
       "capability": "Valuation Equity Index",
       "statisticsStudioSurface": "Equity tab renders VEIDashboard and lets the local Statistics Studio tax year change.",
-      "countyStudioEquivalent": "County Studio renders VEIDashboard with active study tax year and same neighborhood snapshots, but pins tax-year controls to the study scope.",
+      "countyStudioEquivalent": "County Studio renders VEIDashboard with ad hoc tax-year exploration while preserving the active study scope for non-VEI statistics.",
       "uiProof": [
         "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:346",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:934",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:936"
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:939",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:941"
       ],
-      "parityStatus": "covered-differently",
-      "recommendation": "migrate-if-ad-hoc-tax-year-exploration-is-required",
-      "notes": "This is the only meaningful behavioral difference found. It is acceptable for study-scoped County Studio, but standalone Statistics Studio still has ad hoc tax-year exploration value."
+      "parityStatus": "covered-in-county-studio",
+      "recommendation": "retire-or-demote-standalone",
+      "notes": "The prior ad hoc VEI tax-year exploration gap is now inside County Studio."
     },
     {
       "capability": "Outlier review",
@@ -92,7 +93,7 @@
       "countyStudioEquivalent": "County Studio renders the same OutlierReviewPanel in its analytics modes.",
       "uiProof": [
         "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:355",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1032"
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1037"
       ],
       "parityStatus": "shared-component",
       "recommendation": "retire-or-demote-standalone",
@@ -104,7 +105,7 @@
       "countyStudioEquivalent": "County Studio renders the same ModelComparisonPanel.",
       "uiProof": [
         "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:358",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1034"
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1039"
       ],
       "parityStatus": "shared-component",
       "recommendation": "retire-or-demote-standalone",
@@ -117,8 +118,8 @@
       "uiProof": [
         "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:363",
         "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:364",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1038",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1039"
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1043",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1044"
       ],
       "parityStatus": "shared-component",
       "recommendation": "retire-or-demote-standalone",
@@ -130,7 +131,7 @@
       "countyStudioEquivalent": "County Studio renders the same CostForgeDashboard.",
       "uiProof": [
         "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:369",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1043"
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1048"
       ],
       "parityStatus": "shared-component",
       "recommendation": "retire-or-demote-standalone",
@@ -142,8 +143,8 @@
       "countyStudioEquivalent": "County Studio renders the same advanced panels and applies the same advanced certification guard.",
       "uiProof": [
         "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:254",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1044",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:830"
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1049",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:835"
       ],
       "parityStatus": "shared-component",
       "recommendation": "retire-or-demote-standalone",
@@ -154,9 +155,9 @@
       "statisticsStudioSurface": "Statistics Studio does not expose a market-context tab.",
       "countyStudioEquivalent": "County Studio adds a reference-only certified market lane plus MarketAnalyticsDashboard, MarketDashboard, and EconomicIndicators.",
       "uiProof": [
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:967",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:984",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1005"
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:972",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:989",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1010"
       ],
       "parityStatus": "county-studio-only-reference-context",
       "recommendation": "keep-in-county-studio",
@@ -169,8 +170,8 @@
       "uiProof": [
         "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:441",
         "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:321",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:947",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:960"
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:952",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:965"
       ],
       "parityStatus": "county-studio-only",
       "recommendation": "keep-in-county-studio",
@@ -183,7 +184,7 @@
       "uiProof": [
         "frontend/apps/os-shell/src/config/moduleComponents.tsx:826",
         "frontend/apps/os-shell/src/config/generatedModules.ts:431",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:849"
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:854"
       ],
       "parityStatus": "unique-shell-not-unique-analytics",
       "recommendation": "demote-keep-temporarily",

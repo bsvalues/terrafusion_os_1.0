@@ -34,6 +34,29 @@ const forgeStatsState = {
   loading: false,
 };
 
+const apiFetchMock = vi.hoisted(() =>
+  vi.fn((url: string) => Promise.resolve({
+    json: () => Promise.resolve(
+      url.includes('income-approach/market-data/benton')
+        ? {
+            county: 'Benton',
+            state: 'WA',
+            medianHouseholdIncome: 87500,
+            unemploymentRate: 3.1,
+            populationGrowthRate: 1.8,
+            medianHomePrice: 485000,
+            medianPricePerSqft: 218,
+            medianDaysOnMarket: 18,
+            monthsOfInventory: 2.8,
+            employmentSectors: [],
+            effectiveDate: '2025-01-01',
+            source: 'US Census ACS 2024, WA ESD, Benton-Franklin Trends',
+          }
+        : [],
+    ),
+  })),
+);
+
 vi.mock('@/stores/forgeStatisticsStore', () => ({
   useForgeStatisticsStore: (selector: (state: typeof forgeStatsState) => unknown) =>
     selector(forgeStatsState),
@@ -92,26 +115,7 @@ vi.mock('@/lib/apiBase', () => ({
     },
     computedAt: '2026-04-30T00:00:00Z',
   })),
-  apiFetch: vi.fn((url: string) => Promise.resolve({
-    json: () => Promise.resolve(
-      url.includes('income-approach/market-data/benton')
-        ? {
-            county: 'Benton',
-            state: 'WA',
-            medianHouseholdIncome: 87500,
-            unemploymentRate: 3.1,
-            populationGrowthRate: 1.8,
-            medianHomePrice: 485000,
-            medianPricePerSqft: 218,
-            medianDaysOnMarket: 18,
-            monthsOfInventory: 2.8,
-            employmentSectors: [],
-            effectiveDate: '2025-01-01',
-            source: 'US Census ACS 2024, WA ESD, Benton-Franklin Trends',
-          }
-        : [],
-    ),
-  })),
+  apiFetch: apiFetchMock,
 }));
 
 vi.mock('../../statistics/RatioStudyPanel', () => ({
@@ -125,7 +129,21 @@ vi.mock('../../statistics/StratifiedStudyPanel', () => ({
 }));
 
 vi.mock('../../statistics/VEIDashboard', () => ({
-  default: () => <div data-testid="mock-vei-panel">equity capability</div>,
+  default: ({
+    selectedTaxYear,
+    onTaxYearChange,
+  }: {
+    selectedTaxYear: number;
+    onTaxYearChange: (year: number) => void;
+  }) => (
+    <div data-testid="mock-vei-panel">
+      equity capability
+      <span data-testid="mock-vei-tax-year">{selectedTaxYear}</span>
+      <button type="button" data-testid="mock-vei-tax-year-2025" onClick={() => onTaxYearChange(2025)}>
+        2025
+      </button>
+    </div>
+  ),
 }));
 
 vi.mock('../../statistics/charts/CODTrendChart', () => ({
@@ -299,6 +317,29 @@ describe('CountyStatisticsWorkbenchPanel', () => {
     );
     expect(forgeStatsState.setFilter).toHaveBeenCalledWith({
       taxYear: 2026,
+      countyId: '19190019-1919-1919-1919-191919191919',
+    });
+  });
+
+  it('lets County Studio VEI explore another tax year without changing the study-scoped statistics filter', async () => {
+    render(<CountyStatisticsWorkbenchPanel />, { wrapper });
+
+    fireEvent.click(screen.getByTestId('county-analytics-equity'));
+
+    expect(await screen.findByTestId('mock-vei-panel')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-vei-tax-year')).toHaveTextContent('2026');
+
+    fireEvent.click(screen.getByTestId('mock-vei-tax-year-2025'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-vei-tax-year')).toHaveTextContent('2025');
+      expect(apiFetchMock).toHaveBeenCalledWith(
+        expect.stringContaining('/terraforge/comparison-snapshots?taxYear=2025'),
+        expect.any(Object),
+      );
+    });
+    expect(forgeStatsState.setFilter).not.toHaveBeenCalledWith({
+      taxYear: 2025,
       countyId: '19190019-1919-1919-1919-191919191919',
     });
   });

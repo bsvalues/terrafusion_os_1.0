@@ -83,6 +83,10 @@ const sourcePresence = {
   countyVeiPinnedToStudy:
     has(countyWorkbenchPath, /selectedTaxYear=\{taxYear\}/)
     && has(countyWorkbenchPath, /onTaxYearChange=\{\(\) => \{\}\}/),
+  countyVeiAdHocTaxYearExploration:
+    has(countyWorkbenchPath, /selectedTaxYear=\{veiTaxYear\}/)
+    && has(countyWorkbenchPath, /onTaxYearChange=\{setVeiTaxYear\}/)
+    && has(countyWorkbenchPath, /comparison-snapshots\?taxYear=\$\{veiTaxYear\}/),
   statisticsVeiCanChangeTaxYear:
     has(statisticsStudioPath, /onTaxYearChange=\{setTaxYear\}/),
 };
@@ -136,16 +140,22 @@ const capabilities = [
     capability: 'Valuation Equity Index',
     statisticsStudioSurface: 'Equity tab renders VEIDashboard and lets the local Statistics Studio tax year change.',
     countyStudioEquivalent:
-      'County Studio renders VEIDashboard with active study tax year and same neighborhood snapshots, but pins tax-year controls to the study scope.',
+      sourcePresence.countyVeiAdHocTaxYearExploration
+        ? 'County Studio renders VEIDashboard with ad hoc tax-year exploration while preserving the active study scope for non-VEI statistics.'
+        : 'County Studio renders VEIDashboard with active study tax year and same neighborhood snapshots, but pins tax-year controls to the study scope.',
     uiProof: [
       ref(statisticsStudioPath, /onTaxYearChange=\{setTaxYear\}/),
-      ref(countyWorkbenchPath, /selectedTaxYear=\{taxYear\}/),
-      ref(countyWorkbenchPath, /onTaxYearChange=\{\(\) => \{\}\}/),
+      ref(countyWorkbenchPath, /selectedTaxYear=\{veiTaxYear\}|selectedTaxYear=\{taxYear\}/),
+      ref(countyWorkbenchPath, /onTaxYearChange=\{setVeiTaxYear\}|onTaxYearChange=\{\(\) => \{\}\}/),
     ],
-    parityStatus: 'covered-differently',
-    recommendation: 'migrate-if-ad-hoc-tax-year-exploration-is-required',
+    parityStatus: sourcePresence.countyVeiAdHocTaxYearExploration ? 'covered-in-county-studio' : 'covered-differently',
+    recommendation: sourcePresence.countyVeiAdHocTaxYearExploration
+      ? 'retire-or-demote-standalone'
+      : 'migrate-if-ad-hoc-tax-year-exploration-is-required',
     notes:
-      'This is the only meaningful behavioral difference found. It is acceptable for study-scoped County Studio, but standalone Statistics Studio still has ad hoc tax-year exploration value.',
+      sourcePresence.countyVeiAdHocTaxYearExploration
+        ? 'The prior ad hoc VEI tax-year exploration gap is now inside County Studio.'
+        : 'This is the only meaningful behavioral difference found. It is acceptable for study-scoped County Studio, but standalone Statistics Studio still has ad hoc tax-year exploration value.',
   },
   {
     capability: 'Outlier review',
@@ -266,7 +276,9 @@ const decision =
   missing.length > 0
     ? 'KEEP_STATISTICS_STUDIO_UNTIL_MISSING_CAPABILITIES_MIGRATE'
     : keepTemporarily.length > 0
-      ? 'DEMOTE_STATISTICS_STUDIO_KEEP_TEMPORARILY_FOR_STANDALONE_SHELL_AND_VEI_EXPLORATION'
+      ? sourcePresence.countyVeiAdHocTaxYearExploration
+        ? 'DEMOTE_STATISTICS_STUDIO_KEEP_TEMPORARILY_FOR_STANDALONE_SHELL_ONLY'
+        : 'DEMOTE_STATISTICS_STUDIO_KEEP_TEMPORARILY_FOR_STANDALONE_SHELL_AND_VEI_EXPLORATION'
       : 'RETIRE_STATISTICS_STUDIO';
 
 const report = {
