@@ -173,23 +173,29 @@
       "surface": "SalesForge running stats",
       "path": "frontend/apps/os-shell/src/pages/forge/sales/components/RunningStatsPanel.tsx",
       "metricBehavior": "Displays qualification counts, median ratio, weighted mean, COD, PRD, PRB, and IAAO compliance.",
-      "contractBacked": false,
-      "contractIds": [],
-      "trustPostureExposed": "no",
-      "status": "gap",
-      "migrationNeeded": true,
-      "notes": "This should either adopt statistics_ratio_study_compat_v1 semantics or declare a distinct sale-qualification running-stats contract."
+      "contractBacked": true,
+      "contractIds": [
+        "terraforge_statistics_compat_v1",
+        "statistics_ratio_study_compat_v1"
+      ],
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "The running-stats rail now visibly declares the registered Statistics Compat contract, implementation alias, qualified-sale population, and parity-compatible trust posture for sale-qualification stats."
     },
     {
       "surface": "SalesForge ratio audit",
       "path": "frontend/apps/os-shell/src/pages/forge/sales/panels/RatioAuditPanel.tsx",
       "metricBehavior": "Filters qualified sales, sorts by ratio, and flags outliers using local thresholds.",
-      "contractBacked": false,
-      "contractIds": [],
-      "trustPostureExposed": "no",
-      "status": "gap",
-      "migrationNeeded": true,
-      "notes": "Qualification and outlier behavior overlaps the Statistics Compat population contract but is not explicitly tied to it."
+      "contractBacked": true,
+      "contractIds": [
+        "terraforge_statistics_compat_v1",
+        "statistics_ratio_study_compat_v1"
+      ],
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "The audit panel now surfaces Statistics Compat lineage and keeps its local 0.85/1.15 outlier screen labeled as a SalesForge audit lens under the qualified-sale population."
     },
     {
       "surface": "CompsForge module",
@@ -217,17 +223,19 @@
       "surface": "Legacy Statistics API client",
       "path": "frontend/apps/os-shell/src/services/forge/statisticsAPI.ts",
       "metricBehavior": "Calls MassAppraisal ratio-study, strata, outlier, comparison, and segment endpoints.",
-      "contractBacked": false,
-      "contractIds": [],
-      "trustPostureExposed": "no",
-      "status": "gap",
-      "migrationNeeded": true,
-      "notes": "The standalone statistics shell is retired, but this client still exposes ratio-study-shaped behavior with no contract id."
+      "contractBacked": true,
+      "contractIds": [
+        "terraforge_statistics_compat_v1",
+        "statistics_ratio_study_compat_v1"
+      ],
+      "trustPostureExposed": "client-metadata",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "The client exports contract metadata and exposes it on the service instance while preserving existing MassAppraisal method return shapes."
     }
   ],
   "nextClosures": [
-      "Bring SalesForge running stats and ratio audit under statistics_ratio_study_compat_v1 or register a distinct sale-qualification stats contract.",
-      "Close Atlas Live county context, County Studio AI diagnosis, and legacy statistics API client contract posture gaps.",
-      "Register future CostForge and CompsForge domain contracts before treating their calculations as suite truth."
+    "Close Atlas Live county context and County Studio AI diagnosis contract posture gaps.",
+    "Register future CostForge and CompsForge domain contracts before treating their calculations as suite truth."
   ]
 }

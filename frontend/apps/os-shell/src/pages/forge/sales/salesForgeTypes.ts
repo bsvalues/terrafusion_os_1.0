@@ -195,3 +195,12 @@ export type SalesForgeTab = 'ai-audit' | 'queue' | 'ratio-audit' | 'neighborhood
 // where the bulk of qualified sales data lives. Current year sales accumulate slowly.
 export const SALESFORGE_TAX_YEAR = new Date().getFullYear() - 1;
 export const QUEUE_PAGE_SIZE = 50;
+
+export const SALESFORGE_STATISTICS_CONTRACT = {
+  contractId: 'terraforge_statistics_compat_v1',
+  implementationContractId: 'statistics_ratio_study_compat_v1',
+  population: 'qualified sale ratio-study population',
+  source: 'TerraFusion sale-qualification running stats',
+  trustPosture: 'Parity-compatible only when county, tax year, sale window, qualification, suppression, and outlier policy match the shared statistics contract.',
+  outlierPolicy: 'Ratio audit local screen: below 0.85 or above 1.15.',
+} as const;
