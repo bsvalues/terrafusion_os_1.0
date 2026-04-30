@@ -1,6 +1,6 @@
 # County Studio Data Truth Matrix
 
-Checked: 2026-04-30T18:07:24.257Z
+Checked: 2026-04-30T18:43:51.833Z
 
 Status: FAIL
 
@@ -92,14 +92,15 @@ Study: `52eb120f-99d3-4790-a69c-49b6de80cd5e`
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyDiagnosisModal.test.tsx:80 [test-fixture] narrative: 'Benton 2026 classifies as Model problem (confidence 65%). 4 of 12 segments carry a diagnosed problem.',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyHealthPanel.test.tsx:35 [test-fixture] studyId: 'study-1', countyId: 'benton', taxYear: 2026,
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyHealthPanel.test.tsx:61 [test-fixture] countyId: 'benton',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:45 [test-fixture] url.includes('income-approach/market-data/benton')
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:47 [test-fixture] county: 'Benton',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:58 [test-fixture] source: 'US Census ACS 2024, WA ESD, Benton-Franklin Trends',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:170 [test-fixture] countyId: '19190019-1919-1919-1919-191919191919',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:171 [test-fixture] countyName: 'Benton County',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:205 [test-fixture] countyId: '19190019-1919-1919-1919-191919191919',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:245 [test-fixture] '19190019-1919-1919-1919-191919191919',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:249 [test-fixture] countyId: '19190019-1919-1919-1919-191919191919',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:45 [test-fixture] countyId: '19190019-1919-1919-1919-191919191919',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:97 [test-fixture] url.includes('income-approach/market-data/benton')
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:99 [test-fixture] county: 'Benton',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:110 [test-fixture] source: 'US Census ACS 2024, WA ESD, Benton-Franklin Trends',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:222 [test-fixture] countyId: '19190019-1919-1919-1919-191919191919',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:223 [test-fixture] countyName: 'Benton County',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:257 [test-fixture] countyId: '19190019-1919-1919-1919-191919191919',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:298 [test-fixture] '19190019-1919-1919-1919-191919191919',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:302 [test-fixture] countyId: '19190019-1919-1919-1919-191919191919',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/countyStudioStore.test.ts:22 [test-fixture] countyId: 'benton-wa',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/countyStudioStore.test.ts:30 [test-fixture] createdBy: 'assessor@benton.wa.gov',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/countyStudioStore.test.ts:31 [test-fixture] updatedBy: 'assessor@benton.wa.gov',
@@ -129,4 +130,3 @@ Study: `52eb120f-99d3-4790-a69c-49b6de80cd5e`
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/RightRail.test.tsx:50 [test-fixture] countyId: 'benton',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/RightRail.test.tsx:51 [test-fixture] countyName: 'Benton County',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/RightRail.test.tsx:130 [test-fixture] expect(screen.getByTestId('right-rail-scope-label')).toHaveTextContent('Benton County');
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ScenarioWorksheet.test.tsx:20 [test-fixture] studyId: 'study-1', countyId: 'benton', taxYear: 2026,

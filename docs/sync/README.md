@@ -64,9 +64,18 @@ Vestigial drift was swept by C48-FIX, C48-FIX2, and C48-HYGIENE.
 - `sync-surface-inventory.md` — SCOPE-3 — per-surface classification
   + future-slice gate
 
-### Schema catalog (C48 family)
+### Schema catalog (C48 family — COMPLETE)
 
-- `pacs-schema-catalog-as-code-policy.md` — C48-A + binding source/target model
+The C48 implementation arc is complete. See
+`pacs-schema-catalog-completion-handoff.md` for the closure marker
+and the deferred-new-scope index. Reopen C48 only on hard-guard
+violation; new work uses new slice prefixes.
+
+- `pacs-schema-catalog-completion-handoff.md` — **C48-CLOSE
+  completion handoff** (closure marker, deferred-scope index, full
+  C48-A→C48-P arc table)
+- `pacs-schema-catalog-as-code-policy.md` — C48-A policy + binding
+  source/target model + the seven hard guards
 - `pacs-canonical-dictionaries-reference.md` — human-readable
   dictionary compendium
 - `pacs-canonical-dataflow-identity-policy.md` — canonical identity
