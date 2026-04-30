@@ -1207,13 +1207,17 @@ internal static class Program
                 "Internal: workbook-source-column must be all-null or all-set."),
         };
 
-        // Slice C48-H: build the live PACS schema catalog ONLY when the
-        // configKey routes to a case that's been migrated to consume it.
-        // Other cases still use the hand-typed switch arms (migration is
-        // incremental). The catalog build runs the C48-C INFORMATION_SCHEMA
-        // introspection (~1-2s on real Harris PACS); cheaper to skip when
-        // not used.
-        IPacsSchemaCatalog? pacsCatalog = configKey == "property_use"
+        // Slice C48-H / C48-I: build the live PACS schema catalog ONLY
+        // when the configKey routes to a case that's been migrated to
+        // consume it. Other cases still use the hand-typed switch arms
+        // (migration is incremental). The catalog build runs the C48-C
+        // INFORMATION_SCHEMA introspection (~1-2s on real Harris PACS);
+        // cheaper to skip when not used. Each subsequent migration slice
+        // adds one operand to the pattern below.
+        bool configKeyConsumesCatalog = configKey is
+            "property_use" or                          // C48-H (C22-B)
+            "property_use:imprv.primary_use_cd";       // C48-I (C27-B)
+        IPacsSchemaCatalog? pacsCatalog = configKeyConsumesCatalog
             ? await BuildPacsCatalogForSyncAtlasAsync(pacsConnectionString, ct)
             : null;
 
@@ -1247,21 +1251,21 @@ internal static class Program
             // triple. Canonical target REUSES "PropertyUse" — the operator
             // decides at C27-C whether to align canonical_values with C22-C's
             // mappings or keep distinct.
-            "property_use:imprv.primary_use_cd" => (
-                new DictionaryLoaderTargetConfig(
-                    WorkbookSourceSchema: "dbo",
-                    WorkbookSourceTable:  "imprv",
-                    WorkbookSourceColumn: "primary_use_cd",
-                    PacsDictionarySchema: "dbo",
-                    PacsDictionaryTable:  "property_use",
-                    CanonicalTargetName:  "PropertyUse"),
-                new DictionaryColumnConfig(
-                    CodeColumn:           "property_use_cd",
-                    DescriptionColumn:    "property_use_desc",
-                    ActiveFlagColumn:     null,
-                    ActiveFlagPredicate:  null,
-                    YearColumn:           null),
-                "c27-b"),
+            // Slice C48-I: migrated to consume the live PACS schema
+            // catalog. Same reasoning as C48-H's property_use case —
+            // the C48-G equivalence test's record value-equality plus
+            // the C48-F live-PACS heuristic confirmation prove the
+            // helper produces a config bit-for-bit identical to the
+            // original hardcoded values for the property_use
+            // dictionary. The only difference between this arm and
+            // C48-H's is the workbook source triple (imprv.primary_use_cd
+            // instead of property_val.property_use_cd).
+            "property_use:imprv.primary_use_cd" => BuildFromCatalog(
+                pacsCatalog!,
+                dictionaryName:    "property_use",
+                workbookSource:    new DictionaryWorkbookSource("dbo", "imprv", "primary_use_cd"),
+                canonicalTarget:   "PropertyUse",
+                sliceArtifactDir:  "c27-b"),
             // C30-A — fourth dictionary-reuse binding. Same dbo.property_use
             // dictionary, joined against sale.primary_use_cd (43 NeedsReview
             // → swept to Deferred at P2; largest remaining dictionary-reuse
