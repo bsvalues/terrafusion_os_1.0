@@ -63,10 +63,10 @@ describe('MODULE_ALIASES -> MODULE_REGISTRY', () => {
     }
   });
 
-  it('routes generic statistics aliases to County Studio while preserving the legacy shell id', () => {
+  it('routes all statistics launcher aliases to County Studio after shell retirement', () => {
     expect(normalizeModuleId('stats')).toBe('county-studio');
     expect(normalizeModuleId('statistics')).toBe('county-studio');
-    expect(normalizeModuleId('statistics-studio')).toBe('statistics-studio');
+    expect(normalizeModuleId('statistics-studio')).toBe('county-studio');
   });
 });
 
@@ -83,7 +83,6 @@ describe('MODULE_REGISTRY -> ModuleRenderer coverage', () => {
     'terra-levy',
     'gis-viewer',
     'document-manager',
-    'statistics-studio',
     'vei',
     'property-tax-ai',
     'pacs-bridge',
@@ -212,7 +211,6 @@ describe('moduleActivation displayNames/icons coverage', () => {
       'property-workbench': 'Property Workbench',
       // Application Constellation
       'regression-studio': 'Regression Studio',
-      'statistics-studio': 'Statistics Studio',
       'vei': 'Vertical Equality Index',
       'property-tax-ai': 'PropertyTax AI',
       'pacs-bridge': 'PACS DataBridge',

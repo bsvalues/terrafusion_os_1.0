@@ -6,10 +6,9 @@
  *
  * Verified correct layout (current HEAD):
  *   PRIMARY   : CostForge, CompsForge, IncomeForge (queued), SalesForge
- *   SECONDARY : Statistics Studio (legacy/ad hoc VEI exploration),
- *               Batch Cost Runs, Regression Studio (queued),
+ *   SECONDARY : Batch Cost Runs, Regression Studio (queued),
  *               TerraGAMA (queued), Coefficient Preview (queued)
- *   COUNTY    : County Studio (default analytics workbench)
+ *   COUNTY    : County Studio (default analytics workbench + VEI exploration)
  *
  * GeoForge and Atlas Live View are not launcher products. Atlas is County
  * Studio's embedded/pop-out spatial surface; GeoForge is internal compatibility
@@ -86,12 +85,11 @@ describe('ForgeSuiteHome — frozen module list', () => {
     expect(screen.queryByText('Atlas Live View')).not.toBeInTheDocument();
   });
 
-  it('keeps Statistics Studio visible as a legacy specialist shell outside the default analytics workflow', () => {
+  it('does not expose Statistics Studio after County Studio owns the analytics workflow', () => {
     renderForge();
     const secondarySection = screen.getByTestId('forge-secondary-applications');
-    expect(secondarySection).toHaveTextContent('Statistics Studio');
-    expect(secondarySection).toHaveTextContent(/legacy specialist/i);
-    expect(secondarySection).toHaveTextContent(/ad hoc VEI tax-year exploration/i);
+    expect(secondarySection).not.toHaveTextContent('Statistics Studio');
+    expect(secondarySection).not.toHaveTextContent(/legacy specialist/i);
   });
 
   it('renders queued specialist apps in the secondary section', () => {

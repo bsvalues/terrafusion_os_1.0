@@ -168,7 +168,7 @@ its own implementation arc.
 
 | Concern | Suggested prefix | Status | One-line scope |
 |---|---|---|---|
-| Foreign-key edge inference | `C49-FK-*` | **C49-FK-A policy locked** — `docs/sync/pacs-schema-foreign-key-inference-policy.md` | Walk every `*_cd` / `*_code` / `*Code` column and try to bind it to an inferred dictionary (currently `PacsTable.DictionaryReferences` is always empty). Requires either a name-matching pass or operator-supplied edges. |
+| Foreign-key edge inference | `C49-FK-*` | **C49-FK-A/B/C in flight** — policy + impl + consumer policy landed; C49-FK-D implementation pending. See `docs/sync/pacs-schema-foreign-key-inference-policy.md` (C49-FK-A) and `docs/sync/pacs-schema-fk-consumer-migration-policy.md` (C49-FK-C). | Walk every `*_cd` / `*_code` / `*Code` column and try to bind it to an inferred dictionary; expose declared+exported FKs separately from inferred-by-name; first consumer is dictionary-loader preflight validation. |
 | Conversion-era manifest | `C50-CONV-*` | _deferred_ | Per-column `Pre2017` / `Post2017` / `Both` overrides driven by an operator-supplied manifest file. Today every column defaults to `Both`. |
 | PII heuristic metadata | `C51-PII-*` | _deferred_ | Column-name-pattern rules that auto-classify `*_cv`, `*_addr`, `*_email`, etc. as `Direct` PII. Today every column defaults to `None`. |
 | Operator dictionary overrides | `C52-OVR-*` | _deferred_ | Allowlist / denylist for the dictionary inference heuristic. Lets operators force-include shape-borderline tables (e.g. `ptd_tvb_codes` whose first column is just `code` with no underscore) or exclude false-positives. |

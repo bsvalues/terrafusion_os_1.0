@@ -48,6 +48,10 @@ const sourcePresence = {
   statisticsStudioStandaloneModule:
     has(moduleComponentsPath, /case 'statistics-studio'/)
     && has(generatedModulesPath, /"id": "statistics-studio"/),
+  statisticsStudioRetiredFromLaunch:
+    has(moduleComponentsPath, /'statistics-studio': 'county-studio'/)
+    && !has(moduleComponentsPath, /case 'statistics-studio'/)
+    && has('frontend/apps/os-shell/src/config/modules.ts', /RETIRED_STANDALONE_MODULE_IDS = new Set\(\['statistics-studio'\]\)/),
   statisticsStudioCoreTabs:
     has(statisticsStudioPath, /ratio-study/)
     && has(statisticsStudioPath, /stratified/)
@@ -254,18 +258,26 @@ const capabilities = [
   {
     capability: 'Standalone module entrypoint',
     statisticsStudioSurface:
-      'Statistics Studio remains a standalone module id in moduleComponents/generatedModules and can launch without an active County Studio study.',
+      sourcePresence.statisticsStudioRetiredFromLaunch
+        ? 'Statistics Studio remains only as historical generated catalog metadata; launch aliases resolve to County Studio and the renderer shell is removed.'
+        : 'Statistics Studio remains a standalone module id in moduleComponents/generatedModules and can launch without an active County Studio study.',
     countyStudioEquivalent:
       'County Studio requires an active study for its workbench-native statistics surface.',
     uiProof: [
-      ref(moduleComponentsPath, /case 'statistics-studio'/),
+      ref(moduleComponentsPath, /'statistics-studio': 'county-studio'|case 'statistics-studio'/),
       ref(generatedModulesPath, /"id": "statistics-studio"/),
       ref(countyWorkbenchPath, /Open a County Studio study/),
     ],
-    parityStatus: 'unique-shell-not-unique-analytics',
-    recommendation: 'demote-keep-temporarily',
+    parityStatus: sourcePresence.statisticsStudioRetiredFromLaunch
+      ? 'standalone-shell-retired'
+      : 'unique-shell-not-unique-analytics',
+    recommendation: sourcePresence.statisticsStudioRetiredFromLaunch
+      ? 'retired'
+      : 'demote-keep-temporarily',
     notes:
-      'This is the remaining unique value: a standalone launcher/shell for ad hoc access. It is not unique analytical capability.',
+      sourcePresence.statisticsStudioRetiredFromLaunch
+        ? 'The final product gap is closed: direct Statistics Studio launch now resolves to County Studio.'
+        : 'This is the remaining unique value: a standalone launcher/shell for ad hoc access. It is not unique analytical capability.',
   },
 ];
 
@@ -284,7 +296,12 @@ const decision =
 const report = {
   checkedAt: new Date().toISOString(),
   slice: 'statistics-studio-retirement-gap-audit',
-  status: missing.length === 0 ? 'PASS_WITH_PRODUCT_GAPS' : 'FAIL_MISSING_CAPABILITY',
+  status:
+    missing.length > 0
+      ? 'FAIL_MISSING_CAPABILITY'
+      : keepTemporarily.length > 0
+        ? 'PASS_WITH_PRODUCT_GAPS'
+        : 'PASS',
   decision,
   sourcePresence,
   prerequisiteProofs: {
@@ -307,11 +324,16 @@ const report = {
     countyStudioOnly: capabilities.filter((row) => row.parityStatus.startsWith('county-studio-only')).length,
   },
   matrix: capabilities,
-  requiredClosureBeforeHiding: [
-    'Decide whether standalone Statistics Studio ad hoc tax-year exploration is still required.',
-    'If not required, demote the statistics-studio module entrypoint to legacy/specialist or redirect users to County Studio study selection.',
-    'Do not remove shared statistics panels; County Studio still imports them as native workbench capabilities.',
-  ],
+  requiredClosureBeforeHiding:
+    keepTemporarily.length > 0
+      ? [
+          'Decide whether standalone Statistics Studio ad hoc tax-year exploration is still required.',
+          'If not required, demote the statistics-studio module entrypoint to legacy/specialist or redirect users to County Studio study selection.',
+          'Do not remove shared statistics panels; County Studio still imports them as native workbench capabilities.',
+        ]
+      : [
+          'No remaining standalone Statistics Studio closure item. Keep shared statistics panels because County Studio imports them as native workbench capabilities.',
+        ],
 };
 
 function mdTable(rows) {

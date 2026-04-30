@@ -1,10 +1,11 @@
 {
-  "checkedAt": "2026-04-30T19:19:02.465Z",
+  "checkedAt": "2026-04-30T20:31:02.655Z",
   "slice": "statistics-studio-retirement-gap-audit",
-  "status": "PASS_WITH_PRODUCT_GAPS",
-  "decision": "DEMOTE_STATISTICS_STUDIO_KEEP_TEMPORARILY_FOR_STANDALONE_SHELL_ONLY",
+  "status": "PASS",
+  "decision": "RETIRE_STATISTICS_STUDIO",
   "sourcePresence": {
-    "statisticsStudioStandaloneModule": true,
+    "statisticsStudioStandaloneModule": false,
+    "statisticsStudioRetiredFromLaunch": true,
     "statisticsStudioCoreTabs": true,
     "countyStudioCoreModes": true,
     "countyStatisticsCompat": true,
@@ -29,7 +30,7 @@
   "summary": {
     "totalCapabilities": 12,
     "missing": 0,
-    "keepTemporarily": 1,
+    "keepTemporarily": 0,
     "retireOrDemote": 9,
     "countyStudioOnly": 2
   },
@@ -179,21 +180,19 @@
     },
     {
       "capability": "Standalone module entrypoint",
-      "statisticsStudioSurface": "Statistics Studio remains a standalone module id in moduleComponents/generatedModules and can launch without an active County Studio study.",
+      "statisticsStudioSurface": "Statistics Studio remains only as historical generated catalog metadata; launch aliases resolve to County Studio and the renderer shell is removed.",
       "countyStudioEquivalent": "County Studio requires an active study for its workbench-native statistics surface.",
       "uiProof": [
-        "frontend/apps/os-shell/src/config/moduleComponents.tsx:826",
+        "frontend/apps/os-shell/src/config/moduleComponents.tsx:63",
         "frontend/apps/os-shell/src/config/generatedModules.ts:431",
         "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:854"
       ],
-      "parityStatus": "unique-shell-not-unique-analytics",
-      "recommendation": "demote-keep-temporarily",
-      "notes": "This is the remaining unique value: a standalone launcher/shell for ad hoc access. It is not unique analytical capability."
+      "parityStatus": "standalone-shell-retired",
+      "recommendation": "retired",
+      "notes": "The final product gap is closed: direct Statistics Studio launch now resolves to County Studio."
     }
   ],
   "requiredClosureBeforeHiding": [
-    "Decide whether standalone Statistics Studio ad hoc tax-year exploration is still required.",
-    "If not required, demote the statistics-studio module entrypoint to legacy/specialist or redirect users to County Studio study selection.",
-    "Do not remove shared statistics panels; County Studio still imports them as native workbench capabilities."
+    "No remaining standalone Statistics Studio closure item. Keep shared statistics panels because County Studio imports them as native workbench capabilities."
   ]
 }

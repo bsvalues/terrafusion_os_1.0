@@ -18,11 +18,10 @@
  *   PRIMARY   : CostForge (cost approach, AppFrame → port 5002)
  *               CompsForge (sales comparison, standalone React module)
  *               IncomeForge (income approach, queued)
- *   SPECIALIST: Statistics Studio (legacy/ad hoc VEI exploration)
- *               Batch Cost Runs (batch execution)
+ *   SPECIALIST: Batch Cost Runs (batch execution)
  *               Regression Studio / TerraGAMA / Coefficient Preview (queued)
  *   DEFAULT ANALYTICS: County Studio (study-anchored Operational Health +
- *                      Statistics Compat)
+ *                      Statistics Compat + VEI exploration)
  */
 import { useCallback, useState } from 'react';
 import { invokeTool } from '../../api/pilotApi';
@@ -134,16 +133,6 @@ const PRIMARY_MODULES: readonly ForgeModuleDef[] = [
 ] as const;
 
 const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
-  {
-    id: 'statistics-studio',
-    label: 'Statistics Studio',
-    description:
-      'Specialist legacy shell for standalone statistics access and ad hoc VEI tax-year exploration; County Studio is the default analytics workflow',
-    priority: 'secondary',
-    launchMode: 'standalone',
-    moduleId: 'statistics-studio',
-    chipLabel: 'Legacy specialist',
-  },
   {
     id: 'batch-cost-run',
     label: 'Batch Cost Runs',

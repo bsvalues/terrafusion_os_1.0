@@ -60,9 +60,11 @@ export const ALL_MODULES: readonly ModuleDefinition[] = GENERATED_MODULES.map((m
 
 type ModuleWithIntent = ModuleDefinition & { intent: Intent };
 
+const RETIRED_STANDALONE_MODULE_IDS = new Set(['statistics-studio']);
+
 // Gen2 modules only (what appears in the default desktop)
 export const MODULES: readonly ModuleDefinition[] = ALL_MODULES.filter(
-  (m) => (m as ModuleWithIntent).intent === 'gen2'
+  (m) => (m as ModuleWithIntent).intent === 'gen2' && !RETIRED_STANDALONE_MODULE_IDS.has(m.id)
 );
 
 // Legacy modules (for Legacy Lab toggle)
