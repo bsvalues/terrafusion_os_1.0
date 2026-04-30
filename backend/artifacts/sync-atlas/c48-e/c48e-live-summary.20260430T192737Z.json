@@ -1,0 +1,24 @@
+{
+  "configured": true,
+  "tableCount": 2229,
+  "columnCount": 32750,
+  "dictionaryCount": 210,
+  "foreignKeyCount": {
+    "total": 1633,
+    "declared": 912,
+    "exported": 0,
+    "inferredByName": 721
+  },
+  "pacsRelease": "Harris PACS 9.0",
+  "ingestedAtUtc": "2026-04-30T19:28:16.6041885Z",
+  "proof": {
+    "slice": "C49-FK-B",
+    "sourceLabel": "benton-pacs-prod",
+    "schemaName": "dbo",
+    "elapsedMs": 39043,
+    "identityProof": "live-introspection-via-information-schema",
+    "piiFreeProof": "introspector-queries-information-schema-only",
+    "mutationProof": "no-writes-zero-side-effects",
+    "fkPolicyRef": "docs/sync/pacs-schema-foreign-key-inference-policy.md"
+  }
+}

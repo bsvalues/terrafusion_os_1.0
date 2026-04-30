@@ -58,8 +58,8 @@ export const MODULE_ALIASES: Record<string, string> = {
 
   // Application Constellation aliases (Gen2 catalog)
   regression: 'regression-studio',
-  stats: 'statistics-studio',
-  statistics: 'statistics-studio',
+  stats: 'county-studio',
+  statistics: 'county-studio',
   permit: 'terra-permit',
   pilt: 'terra-pilt',
   sync: 'terra-sync',

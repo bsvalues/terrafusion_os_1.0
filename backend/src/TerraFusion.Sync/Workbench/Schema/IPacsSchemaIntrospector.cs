@@ -52,10 +52,44 @@ public interface IPacsSchemaIntrospector
 /// <param name="Tables">All base tables in the introspected schema.</param>
 /// <param name="Columns">All columns across those tables.</param>
 /// <param name="PrimaryKeys">Primary-key column membership (one row per (table, pk-column) pair, in ordinal order).</param>
+/// <param name="ForeignKeys">
+/// Slice C49-FK-B: foreign-key column membership (one row per
+/// (constraint, source-column, target-column) tuple, in ordinal
+/// order). Implementations producing engine-declared FKs MUST
+/// populate this; implementations that don't introspect FKs
+/// (e.g. fixture-only or pre-C49 sources) leave it empty. The
+/// catalog's FK pass tolerates an empty list.
+/// </param>
 public sealed record PacsSchemaIntrospectionResult(
     IReadOnlyList<IntrospectedTable> Tables,
     IReadOnlyList<IntrospectedColumn> Columns,
-    IReadOnlyList<IntrospectedPrimaryKeyMember> PrimaryKeys);
+    IReadOnlyList<IntrospectedPrimaryKeyMember> PrimaryKeys,
+    IReadOnlyList<IntrospectedForeignKeyMember> ForeignKeys);
+
+/// <summary>
+/// Slice C49-FK-B: one (constraint, source-column → target-column)
+/// pair from a foreign-key introspection. Composite FKs produce
+/// multiple rows for the same constraint with distinct
+/// <see cref="OrdinalPosition"/> values, allowing the catalog to
+/// reconstruct the ordered column lists per
+/// <see cref="PacsForeignKey"/>.
+/// </summary>
+/// <param name="ConstraintName">
+/// FK constraint name from the source. Required (engine-declared
+/// FKs always carry a name).
+/// </param>
+/// <param name="SourceTable">Table holding the FK column.</param>
+/// <param name="SourceColumn">Column on the source table participating in the FK.</param>
+/// <param name="TargetTable">Referenced table.</param>
+/// <param name="TargetColumn">Referenced column on the target table.</param>
+/// <param name="OrdinalPosition">1-based position within a composite key; 1 for single-column FKs.</param>
+public sealed record IntrospectedForeignKeyMember(
+    string ConstraintName,
+    string SourceTable,
+    string SourceColumn,
+    string TargetTable,
+    string TargetColumn,
+    int OrdinalPosition);
 
 /// <summary>
 /// Slice C48-C: one base table observed by the introspector.

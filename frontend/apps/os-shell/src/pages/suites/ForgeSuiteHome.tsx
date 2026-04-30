@@ -18,9 +18,11 @@
  *   PRIMARY   : CostForge (cost approach, AppFrame → port 5002)
  *               CompsForge (sales comparison, standalone React module)
  *               IncomeForge (income approach, queued)
- *   SPECIALIST: Statistics Studio (temporary parity source)
+ *   SPECIALIST: Statistics Studio (legacy/ad hoc VEI exploration)
  *               Batch Cost Runs (batch execution)
  *               Regression Studio / TerraGAMA / Coefficient Preview (queued)
+ *   DEFAULT ANALYTICS: County Studio (study-anchored Operational Health +
+ *                      Statistics Compat)
  */
 import { useCallback, useState } from 'react';
 import { invokeTool } from '../../api/pilotApi';
@@ -136,11 +138,11 @@ const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
     id: 'statistics-studio',
     label: 'Statistics Studio',
     description:
-      'Temporary full-statistics parity source while County Studio absorbs every diagnostics, VEI, trend, calibration, outlier, and model-comparison workflow',
+      'Specialist legacy shell for standalone statistics access and ad hoc VEI tax-year exploration; County Studio is the default analytics workflow',
     priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'statistics-studio',
-    chipLabel: 'Parity source',
+    chipLabel: 'Legacy specialist',
   },
   {
     id: 'batch-cost-run',
@@ -563,8 +565,8 @@ export default function ForgeSuiteHome() {
           <section className="forge-panel" data-testid="forge-secondary-applications">
             <div className="forge-panel__header">
               <div>
-                <p className="forge-panel__eyebrow">Specialist Tools</p>
-                <h2 className="forge-panel__title">Analytics &amp; calibration</h2>
+                <p className="forge-panel__eyebrow">Specialist &amp; Legacy Tools</p>
+                <h2 className="forge-panel__title">Temporary shells outside County Studio</h2>
               </div>
             </div>
             <div className="forge-primary-grid">
@@ -602,15 +604,15 @@ export default function ForgeSuiteHome() {
               onClick={() => handleModuleLaunch({ id: 'county-studio', label: 'County Studio', description: '', priority: 'primary', launchMode: 'standalone', moduleId: 'county-studio' })}
             >
               <div className="forge-card__rail">
-                <span className="forge-chip forge-chip--neutral">County → Reval Area → Neighborhood → Segment</span>
-                <span className="forge-card__foot">Opens county workbench</span>
+                <span className="forge-chip forge-chip--neutral">Default analytics workbench</span>
+                <span className="forge-card__foot">County → Reval Area → Neighborhood → Segment</span>
               </div>
               <div className="forge-card__title">County Studio</div>
               <p className="forge-card__description">
-                The countywide operating workspace for valuation analysis, statistics, embedded spatial review,
-                cohort creation, scenario preview, correction routing, and evidence defense. Atlas map review opens
-                inside County Studio or as a pop-out for the same study session; governed approval and publish remain
-                downstream workflow steps.
+                The countywide operating workspace for valuation analysis, Operational Health, Statistics Compat,
+                embedded spatial review, cohort creation, scenario preview, correction routing, and evidence defense.
+                Atlas map review opens inside County Studio or as a pop-out for the same study session; governed
+                approval and publish remain downstream workflow steps.
               </p>
             </button>
           </section>

@@ -698,6 +698,7 @@ export function CountyStatisticsWorkbenchPanel() {
   const [mode, setMode] = useState<AnalyticsMode>('ratio-study');
   const currentTaxYear = new Date().getFullYear();
   const taxYear = activeStudy?.taxYear ?? currentTaxYear;
+  const [veiTaxYear, setVeiTaxYear] = useState(taxYear);
   const countyScope = useMemo(
     () => activeStudy?.countyId ? buildStudyCountyScope(activeStudy.countyId) : null,
     [activeStudy?.countyId],
@@ -728,6 +729,10 @@ export function CountyStatisticsWorkbenchPanel() {
     void fetchStudy();
     void loadComparison();
   }, [activeStudy?.countyId, countyScope?.isolated, fetchStudy, loadComparison, setStudyFilter, taxYear]);
+
+  useEffect(() => {
+    setVeiTaxYear(taxYear);
+  }, [activeStudy?.studyId, taxYear]);
 
   const {
     data: statisticsCompat,
@@ -769,10 +774,10 @@ export function CountyStatisticsWorkbenchPanel() {
       sale_count: number;
     }>
   >({
-    queryKey: ['county-studio-neighborhood-snapshots-equity', taxYear, activeStudy?.countyId],
+    queryKey: ['county-studio-neighborhood-snapshots-equity', veiTaxYear, activeStudy?.countyId],
     queryFn: () =>
       apiFetch(
-        `/terraforge/comparison-snapshots?taxYear=${taxYear}&countyId=${encodeURIComponent(activeStudy!.countyId)}`,
+        `/terraforge/comparison-snapshots?taxYear=${veiTaxYear}&countyId=${encodeURIComponent(activeStudy!.countyId)}`,
         { headers: countyScope!.headers },
       ).then((response) => response.json()),
     enabled: Boolean(activeStudy?.countyId && countyScope?.isolated),
@@ -931,9 +936,9 @@ export function CountyStatisticsWorkbenchPanel() {
                 metrics={liveVeiMetrics}
                 neighborhoods={neighborhoods}
                 availableTaxYears={availableTaxYears}
-                selectedTaxYear={taxYear}
+                selectedTaxYear={veiTaxYear}
                 loading={equityLoading}
-                onTaxYearChange={() => {}}
+                onTaxYearChange={setVeiTaxYear}
                 onSalesWindowChange={() => {}}
                 onOutlierMethodChange={() => {}}
               />

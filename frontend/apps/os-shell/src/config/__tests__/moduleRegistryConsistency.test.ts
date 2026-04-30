@@ -62,6 +62,12 @@ describe('MODULE_ALIASES -> MODULE_REGISTRY', () => {
       }
     }
   });
+
+  it('routes generic statistics aliases to County Studio while preserving the legacy shell id', () => {
+    expect(normalizeModuleId('stats')).toBe('county-studio');
+    expect(normalizeModuleId('statistics')).toBe('county-studio');
+    expect(normalizeModuleId('statistics-studio')).toBe('statistics-studio');
+  });
 });
 
 // ============================================================================

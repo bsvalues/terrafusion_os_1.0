@@ -45,21 +45,24 @@ internal static class PacsSchemaCatalogTestFixture
                 ConversionEra: PacsConversionEra.Both,
                 DictionaryReferences: Array.Empty<PacsDictionaryReference>(),
                 PiiClassification: PiiClassification.Indirect,
-                ProvenancePath: SchemaVersionFixturePath + "#chg_of_owner"),
+                ProvenancePath: SchemaVersionFixturePath + "#chg_of_owner",
+                ForeignKeys: Array.Empty<PacsForeignKey>()),
             new(
                 TableName: "sale",
                 IdentityTuple: new[] { "chg_of_owner_id" },
                 ConversionEra: PacsConversionEra.Both,
                 DictionaryReferences: new[] { sale_ratio_type_dict_ref },
                 PiiClassification: PiiClassification.None,
-                ProvenancePath: SchemaVersionFixturePath + "#sale"),
+                ProvenancePath: SchemaVersionFixturePath + "#sale",
+                ForeignKeys: Array.Empty<PacsForeignKey>()),
             new(
                 TableName: "imprv",
                 IdentityTuple: new[] { "prop_id", "imprv_id" },
                 ConversionEra: PacsConversionEra.Both,
                 DictionaryReferences: Array.Empty<PacsDictionaryReference>(),
                 PiiClassification: PiiClassification.None,
-                ProvenancePath: SchemaVersionFixturePath + "#imprv"),
+                ProvenancePath: SchemaVersionFixturePath + "#imprv",
+                ForeignKeys: Array.Empty<PacsForeignKey>()),
         };
 
         var columns = new List<PacsColumn>

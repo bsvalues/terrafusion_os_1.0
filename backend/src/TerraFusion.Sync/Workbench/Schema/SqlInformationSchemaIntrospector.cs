@@ -84,6 +84,33 @@ INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
 WHERE TC.CONSTRAINT_TYPE = 'PRIMARY KEY'
   AND TC.TABLE_SCHEMA = @schema
 ORDER BY KCU.TABLE_NAME, KCU.ORDINAL_POSITION";
+
+        // Slice C49-FK-B: declared foreign-key edges via
+        // INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS joined to
+        // KEY_COLUMN_USAGE on both ends. Cross-engine portable.
+        // Composite-aware via ORDINAL_POSITION pairing — the C48-E
+        // BASE TABLE filter does NOT apply here; FKs are on
+        // referential constraints, not table types, so the engine's
+        // own FK declarations transitively only exist on base tables.
+        public const string ForeignKeys = @"
+SELECT
+  rc.CONSTRAINT_NAME,
+  src.TABLE_NAME       AS SOURCE_TABLE,
+  src.COLUMN_NAME      AS SOURCE_COLUMN,
+  tgt.TABLE_NAME       AS TARGET_TABLE,
+  tgt.COLUMN_NAME      AS TARGET_COLUMN,
+  src.ORDINAL_POSITION AS ORDINAL_POSITION
+FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS rc
+INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE src
+  ON rc.CONSTRAINT_NAME      = src.CONSTRAINT_NAME
+ AND rc.CONSTRAINT_SCHEMA    = src.CONSTRAINT_SCHEMA
+INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE tgt
+  ON rc.UNIQUE_CONSTRAINT_NAME   = tgt.CONSTRAINT_NAME
+ AND rc.UNIQUE_CONSTRAINT_SCHEMA = tgt.CONSTRAINT_SCHEMA
+ AND src.ORDINAL_POSITION        = tgt.ORDINAL_POSITION
+WHERE src.TABLE_SCHEMA = @schema
+  AND tgt.TABLE_SCHEMA = @schema
+ORDER BY rc.CONSTRAINT_NAME, src.ORDINAL_POSITION";
     }
 
     /// <inheritdoc />
@@ -95,8 +122,9 @@ ORDER BY KCU.TABLE_NAME, KCU.ORDINAL_POSITION";
         var tables = await ReadTablesAsync(connection, ct).ConfigureAwait(false);
         var columns = await ReadColumnsAsync(connection, ct).ConfigureAwait(false);
         var primaryKeys = await ReadPrimaryKeysAsync(connection, ct).ConfigureAwait(false);
+        var foreignKeys = await ReadForeignKeysAsync(connection, ct).ConfigureAwait(false);
 
-        return new PacsSchemaIntrospectionResult(tables, columns, primaryKeys);
+        return new PacsSchemaIntrospectionResult(tables, columns, primaryKeys, foreignKeys);
     }
 
     /// <summary>
@@ -143,6 +171,28 @@ ORDER BY KCU.TABLE_NAME, KCU.ORDINAL_POSITION";
                 DataType: reader.GetString(2),
                 Nullable: string.Equals(nullableFlag, "YES", StringComparison.OrdinalIgnoreCase),
                 OrdinalPosition: reader.GetInt32(4)));
+        }
+        return result;
+    }
+
+    private async Task<IReadOnlyList<IntrospectedForeignKeyMember>> ReadForeignKeysAsync(SqlConnection connection, CancellationToken ct)
+    {
+        var result = new List<IntrospectedForeignKeyMember>();
+        await using var cmd = new SqlCommand(Queries.ForeignKeys, connection)
+        {
+            CommandTimeout = DefaultCommandTimeoutSeconds,
+        };
+        cmd.Parameters.Add(new SqlParameter("@schema", _schemaName));
+        await using var reader = await cmd.ExecuteReaderAsync(ct).ConfigureAwait(false);
+        while (await reader.ReadAsync(ct).ConfigureAwait(false))
+        {
+            result.Add(new IntrospectedForeignKeyMember(
+                ConstraintName:   reader.GetString(0),
+                SourceTable:      reader.GetString(1),
+                SourceColumn:     reader.GetString(2),
+                TargetTable:      reader.GetString(3),
+                TargetColumn:     reader.GetString(4),
+                OrdinalPosition:  reader.GetInt32(5)));
         }
         return result;
     }

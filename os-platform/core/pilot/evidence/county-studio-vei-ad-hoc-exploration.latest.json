@@ -1,0 +1,59 @@
+{
+  "checkedAt": "2026-04-30T19:18:49.321Z",
+  "slice": "county-studio-vei-ad-hoc-exploration",
+  "status": "PASS",
+  "decision": "VEI_AD_HOC_EXPLORATION_MIGRATED_TO_COUNTY_STUDIO",
+  "checks": [
+    {
+      "id": "county-studio-owns-vei-tax-year-state",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:701",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:734"
+      ],
+      "note": "VEI exploration state lives in County Studio and resets when the active study changes."
+    },
+    {
+      "id": "vei-query-uses-exploration-tax-year",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:777",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:780"
+      ],
+      "note": "Only the VEI neighborhood snapshot query moves with the exploration tax year."
+    },
+    {
+      "id": "vei-selector-is-not-noop",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:939",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:941"
+      ],
+      "note": "County Studio VEI tax-year selector is interactive rather than pinned/no-op."
+    },
+    {
+      "id": "study-statistics-remain-anchored",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:728",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:757"
+      ],
+      "note": "Non-VEI statistics stay anchored to the active study tax year."
+    },
+    {
+      "id": "ui-test-covers-vei-exploration-without-study-filter-mutation",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:324",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:342"
+      ],
+      "note": "The regression test proves VEI exploration does not rewrite the study-scoped statistics filter."
+    }
+  ],
+  "failures": [],
+  "retirementAuditPath": "os-platform/core/pilot/evidence/statistics-studio-retirement-gap-audit.latest.json",
+  "nextClosure": [
+    "Rerun the Statistics Studio retirement gap audit after migration.",
+    "If the audit reports standalone shell only, remove or hide the Statistics Studio entrypoint in a separate slice."
+  ]
+}

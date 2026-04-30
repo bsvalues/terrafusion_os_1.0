@@ -97,6 +97,30 @@ public interface IPacsSchemaCatalog
     /// </summary>
     /// <param name="dictionaryName">Dictionary table name.</param>
     PacsSchemaLookupResult<PacsDictionary> TryGetDictionary(string dictionaryName);
+
+    /// <summary>
+    /// Slice C49-FK-B: returns FK edges whose <c>SourceTable</c>
+    /// matches <paramref name="tableName"/>, filtered to edges
+    /// the engine declares or an operator has exported (i.e.
+    /// <see cref="PacsForeignKeyConfidence.Declared"/> or
+    /// <see cref="PacsForeignKeyConfidence.Exported"/>).
+    /// <see cref="PacsForeignKeyConfidence.InferredByName"/> edges
+    /// are explicitly excluded — consumers requiring referential
+    /// correctness MUST use this method per HG-FK-2.
+    /// </summary>
+    /// <param name="tableName">PACS table name.</param>
+    PacsSchemaLookupResult<IReadOnlyList<PacsForeignKey>> TryGetDeclaredForeignKeysFor(string tableName);
+
+    /// <summary>
+    /// Slice C49-FK-B: returns ALL FK edges whose <c>SourceTable</c>
+    /// matches <paramref name="tableName"/>, including
+    /// <see cref="PacsForeignKeyConfidence.InferredByName"/> edges.
+    /// For diagnostic / admin / browsing surfaces only — production
+    /// code paths needing referential correctness MUST use
+    /// <see cref="TryGetDeclaredForeignKeysFor"/>.
+    /// </summary>
+    /// <param name="tableName">PACS table name.</param>
+    PacsSchemaLookupResult<IReadOnlyList<PacsForeignKey>> TryGetAllForeignKeysFor(string tableName);
 }
 
 /// <summary>

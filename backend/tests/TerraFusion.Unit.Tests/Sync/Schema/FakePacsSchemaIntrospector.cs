@@ -17,6 +17,12 @@ internal sealed class FakePacsSchemaIntrospector : IPacsSchemaIntrospector
     public List<IntrospectedTable> Tables { get; } = new();
     public List<IntrospectedColumn> Columns { get; } = new();
     public List<IntrospectedPrimaryKeyMember> PrimaryKeys { get; } = new();
+
+    /// <summary>
+    /// Slice C49-FK-B: declared foreign-key membership rows.
+    /// </summary>
+    public List<IntrospectedForeignKeyMember> ForeignKeys { get; } = new();
+
     public bool ReturnNullResult { get; set; }
     public int ReadInvocationCount { get; private set; }
 
@@ -27,6 +33,6 @@ internal sealed class FakePacsSchemaIntrospector : IPacsSchemaIntrospector
         {
             return Task.FromResult<PacsSchemaIntrospectionResult>(null!);
         }
-        return Task.FromResult(new PacsSchemaIntrospectionResult(Tables, Columns, PrimaryKeys));
+        return Task.FromResult(new PacsSchemaIntrospectionResult(Tables, Columns, PrimaryKeys, ForeignKeys));
     }
 }

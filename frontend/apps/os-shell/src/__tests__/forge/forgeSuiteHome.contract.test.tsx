@@ -10,8 +10,9 @@
  *
  * Locked taxonomy (IAAO three-approaches-to-value + sale qualification):
  *   PRIMARY:   CostForge · CompsForge · IncomeForge · SalesForge
- *   SECONDARY: Statistics Studio · Batch Cost Runs · Regression Studio ·
+ *   SECONDARY: Statistics Studio legacy specialist · Batch Cost Runs · Regression Studio ·
  *              TerraGAMA · Coefficient Preview
+ *   DEFAULT ANALYTICS: County Studio
  *   QUEUE:     SaleQualificationQueue (the only panel surface)
  *
  * BANNED from suite home:
@@ -131,6 +132,8 @@ describe('TerraForge suite home — taxonomy contract', () => {
     await renderForgeSuiteHome();
     const secondary = screen.getByTestId('forge-secondary-applications');
     expect(within(secondary).getByText('Statistics Studio')).toBeDefined();
+    expect(within(secondary).getByText(/legacy specialist/i)).toBeDefined();
+    expect(within(secondary).getByText(/ad hoc VEI tax-year exploration/i)).toBeDefined();
   });
 
   it('renders Batch Cost Runs in the secondary tier', async () => {
