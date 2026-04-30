@@ -1221,7 +1221,15 @@ internal static class Program
             "property_use:imprv.secondary_use_cd" or     // C48-K (C29-B)
             "property_use:property_val.secondary_use_cd" or // C48-L (C28-B)
             "imprv_det_class" or                         // C48-M (C23-B)
-            "imprv_det_sub_class";                       // C48-N (C26-B)
+            "imprv_det_sub_class" or                     // C48-N (C26-B)
+            "imprv_det_meth";                            // C48-O (C25-B)
+            // 'land_soil' deliberately NOT migrated yet: PACS uses
+            // Hungarian-notation columns (szLandSoilCode / szLandSoilDesc)
+            // that DON'T match the C48-F heuristic (first ends in _cd,
+            // second ends in _desc/_dsc). Future slice C48-P/Q extends
+            // the heuristic to catch Hungarian-notation dictionaries
+            // OR adds an operator-supplied override list; until then
+            // land_soil keeps its hand-typed switch arm below.
         IPacsSchemaCatalog? pacsCatalog = configKeyConsumesCatalog
             ? await BuildPacsCatalogForSyncAtlasAsync(pacsConnectionString, ct)
             : null;
@@ -1381,31 +1389,20 @@ internal static class Program
                 workbookSource:    new DictionaryWorkbookSource("dbo", "imprv_detail", "imprv_det_sub_class_cd"),
                 canonicalTarget:   "ImprvDetailSubClass",
                 sliceArtifactDir:  "c26-b"),
-            "imprv_det_meth" => (
-                new DictionaryLoaderTargetConfig(
-                    WorkbookSourceSchema: "dbo",
-                    WorkbookSourceTable:  "imprv_detail",
-                    WorkbookSourceColumn: "imprv_det_meth_cd",
-                    PacsDictionarySchema: "dbo",
-                    PacsDictionaryTable:  "imprv_det_meth",
-                    CanonicalTargetName:  "ImprvDetailMethod"),
-                // Defaults captured at C25-B-live inspection of pacs_oltp:
-                //   imprv_det_meth_cd        char(5)     NOT NULL  (code)
-                //   imprv_det_meth_dsc       varchar(50) NULL      (description — note: '_dsc' not '_desc')
-                //   sys_flag                 char(1)     NULL      (always 'F' in Benton — same as imprv_det_class)
-                //   is_permanent_crop_detail bit         NOT NULL
-                //   rc_type                  char(1)     NULL
-                // Findings: 12 rows; ALL sys_flag='F'; no usable A/I active flag.
-                // Therefore active-flag predicate is null (M4 cannot fire) and
-                // year filter is null. Fourth wrong-assumption catch by the
-                // live-inspection gate: column is '_dsc' not '_desc'.
-                new DictionaryColumnConfig(
-                    CodeColumn:           "imprv_det_meth_cd",
-                    DescriptionColumn:    "imprv_det_meth_dsc",
-                    ActiveFlagColumn:     null,
-                    ActiveFlagPredicate:  null,
-                    YearColumn:           null), // universe-wide, not year-keyed
-                "c25-b"),
+            // Slice C48-O: imprv_det_meth migrated. Live PACS sanity
+            // check this slice: dbo.imprv_det_meth first column =
+            // imprv_det_meth_cd, second = imprv_det_meth_dsc (note
+            // '_dsc' not '_desc'; the C48-F heuristic accepts both
+            // suffixes precisely because Harris PACS uses both
+            // forms, originally surfaced by C25-B's live inspection).
+            // sys_flag is always 'F' on Benton — no A/I distinction;
+            // active-flag stays null.
+            "imprv_det_meth" => BuildFromCatalog(
+                pacsCatalog!,
+                dictionaryName:    "imprv_det_meth",
+                workbookSource:    new DictionaryWorkbookSource("dbo", "imprv_detail", "imprv_det_meth_cd"),
+                canonicalTarget:   "ImprvDetailMethod",
+                sliceArtifactDir:  "c25-b"),
             "land_soil" => (
                 new DictionaryLoaderTargetConfig(
                     WorkbookSourceSchema: "dbo",
