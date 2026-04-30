@@ -90,6 +90,7 @@
     "truth:statistics-parity-scope": "node os-platform/core/pilot/statistics-parity-scope-alignment.mjs",
     "truth:statistics-shared-contract": "node os-platform/core/pilot/statistics-shared-population-contract.mjs",
     "truth:suite-contracts": "node os-platform/core/pilot/terrafusion-suite-contracts.mjs",
+    "truth:contract-adoption-audit": "node os-platform/core/pilot/contract-adoption-audit.mjs",
     "proof:june10:coverage": "node os-platform/core/pilot/washington-39-county-coverage-proof.mjs",
     "dev:preview": "node os-platform/core/pilot/dev-preview.mjs",
     "preview:smoke": "node os-platform/core/pilot/preview-smoke.mjs",
