@@ -1215,11 +1215,12 @@ internal static class Program
         // cheaper to skip when not used. Each subsequent migration slice
         // adds one operand to the pattern below.
         bool configKeyConsumesCatalog = configKey is
-            "property_use" or                          // C48-H (C22-B)
-            "property_use:imprv.primary_use_cd" or     // C48-I (C27-B)
-            "property_use:sale.primary_use_cd" or      // C48-J (C30-B)
-            "property_use:imprv.secondary_use_cd" or   // C48-K (C29-B)
-            "property_use:property_val.secondary_use_cd"; // C48-L (C28-B)
+            "property_use" or                            // C48-H (C22-B)
+            "property_use:imprv.primary_use_cd" or       // C48-I (C27-B)
+            "property_use:sale.primary_use_cd" or        // C48-J (C30-B)
+            "property_use:imprv.secondary_use_cd" or     // C48-K (C29-B)
+            "property_use:property_val.secondary_use_cd" or // C48-L (C28-B)
+            "imprv_det_class";                           // C48-M (C23-B)
         IPacsSchemaCatalog? pacsCatalog = configKeyConsumesCatalog
             ? await BuildPacsCatalogForSyncAtlasAsync(pacsConnectionString, ct)
             : null;
@@ -1341,33 +1342,25 @@ internal static class Program
                 workbookSource:    new DictionaryWorkbookSource("dbo", "property_val", "secondary_use_cd"),
                 canonicalTarget:   "PropertySecondaryUse",
                 sliceArtifactDir:  "c28-b"),
-            "imprv_det_class" => (
-                new DictionaryLoaderTargetConfig(
-                    WorkbookSourceSchema: "dbo",
-                    WorkbookSourceTable:  "imprv_detail",
-                    WorkbookSourceColumn: "imprv_det_class_cd",
-                    PacsDictionarySchema: "dbo",
-                    PacsDictionaryTable:  "imprv_det_class",
-                    CanonicalTargetName:  "ImprvDetailClass"),
-                // Defaults captured at C23-B-live inspection of pacs_oltp:
-                //   imprv_det_class_cd       char(10)    NOT NULL  (code)
-                //   imprv_det_cls_desc       varchar(50) NULL      (description — note: NOT imprv_det_class_desc)
-                //   sys_flag                 varchar(1)  NULL      (always 'F' in Benton — not a usable A/I active flag)
-                //   is_permanent_crop_detail bit         NOT NULL
-                //   rc_type                  char(1)     NULL
-                // Findings: 27 rows; ALL sys_flag='F'; no usable active/
-                // inactive distinction. Therefore the active-flag predicate
-                // is intentionally NOT configured here (M4 cannot fire
-                // against this PACS instance). Future PACS deployments
-                // exposing genuine 'A'/'I' values must override per
-                // C23-A's per-deployment column-config requirement.
-                new DictionaryColumnConfig(
-                    CodeColumn:           "imprv_det_class_cd",
-                    DescriptionColumn:    "imprv_det_cls_desc",
-                    ActiveFlagColumn:     null,
-                    ActiveFlagPredicate:  null,
-                    YearColumn:           null), // universe-wide, not year-keyed
-                "c23-b"),
+            // Slice C48-M: first non-property_use dictionary migrated.
+            // Live PACS sanity check this slice: dbo.imprv_det_class
+            // first column = imprv_det_class_cd, second column =
+            // imprv_det_cls_desc — matches the C48-F heuristic
+            // (first ends in _cd, second ends in _desc). The catalog
+            // correctly captures the imprv_det_cls_desc shape (NOTE:
+            // not imprv_det_class_desc) which the operator's C23-B
+            // live inspection originally noticed.
+            // Active-flag is intentionally null: sys_flag is always
+            // 'F' on Benton's PACS, so M4 cannot fire here. This
+            // operator-judgement stays caller-supplied per C48-G's
+            // design (catalog provides table+code+desc; per-deployment
+            // active-flag conventions are outside the catalog).
+            "imprv_det_class" => BuildFromCatalog(
+                pacsCatalog!,
+                dictionaryName:    "imprv_det_class",
+                workbookSource:    new DictionaryWorkbookSource("dbo", "imprv_detail", "imprv_det_class_cd"),
+                canonicalTarget:   "ImprvDetailClass",
+                sliceArtifactDir:  "c23-b"),
             "imprv_det_sub_class" => (
                 new DictionaryLoaderTargetConfig(
                     WorkbookSourceSchema: "dbo",
