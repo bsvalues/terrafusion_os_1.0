@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "1.0.0",
+  "slice": "county-data-trust-tier-and-lineage-model",
+  "updatedAt": "2026-04-30T17:10:00Z",
+  "tiers": {
+    "production_verified": {
+      "label": "Production Verified",
+      "description": "Official county production data with row-level source lineage, sync proof, and direct metric recomputation.",
+      "allowsParityClaims": true
+    },
+    "production_provisional": {
+      "label": "Production Provisional",
+      "description": "Operational county data exists, but lineage, conversion, sync, or direct recomputation proof remains incomplete.",
+      "allowsParityClaims": false
+    },
+    "sync_derived": {
+      "label": "Sync-Derived",
+      "description": "TerraFusion operational projection derived from a legacy/source system through TerraFusion Sync.",
+      "allowsParityClaims": false
+    },
+    "converted_legacy_sensitive": {
+      "label": "Converted Legacy Sensitive",
+      "description": "Known or suspected legacy conversion period can affect interpreted fields such as qualified-sale flags.",
+      "allowsParityClaims": false
+    },
+    "reference_demo": {
+      "label": "Demo/Reference Only",
+      "description": "Reference corpus, acquisition registry, demo data, or non-production county coverage. Not certified for operational valuation.",
+      "allowsParityClaims": false
+    },
+    "unknown": {
+      "label": "Unavailable / Unknown",
+      "description": "County data posture has not been classified.",
+      "allowsParityClaims": false
+    }
+  },
+  "databasePosture": {
+    "TerraFusion.Benton.Operational": {
+      "implementation": "TerraFusion API DefaultConnection",
+      "currentDevelopmentTarget": "PostgreSQL database `terrafusion`",
+      "trustTier": "production_provisional",
+      "notes": "Benton is the only current operational/provisional production lane, but direct recomputation and conversion-sensitive qualification lineage are still required."
+    },
+    "TerraFusion.Benton.LegacyBridge": {
+      "implementation": "BentonCountyLegacy + TerraFusion Sync",
+      "trustTier": "sync_derived",
+      "notes": "Bridge layer from Benton legacy/PACS-shaped source data into TerraFusion canonical tables. The bridge is not itself source truth."
+    },
+    "TerraFusion.Reference39.Demo": {
+      "implementation": "Washington 39-county acquisition registry and reference/demo corpus",
+      "trustTier": "reference_demo",
+      "notes": "Proves coverage planning and acquisition paths only. It does not prove official statewide production data."
+    },
+    "TerraFusion.Platform.Metadata": {
+      "implementation": "Platform/county registry metadata",
+      "trustTier": "reference_demo",
+      "notes": "Useful for routing, labels, and acquisition posture. Not an assessor source of record."
+    }
+  },
+  "countyRules": [
+    {
+      "countyId": "19190019-1919-1919-1919-191919191919",
+      "countyName": "Benton County",
+      "state": "WA",
+      "primaryTier": "production_provisional",
+      "badges": [
+        "Production Provisional",
+        "Sync-Derived",
+        "Converted Legacy Sensitive"
+      ],
+      "dataLanes": [
+        "TerraFusion.Benton.Operational",
+        "TerraFusion.Benton.LegacyBridge"
+      ],
+      "conversionRisks": [
+        {
+          "period": "2017 conversion",
+          "affectedFields": [
+            "QualificationDecision",
+            "QualificationRecommendation",
+            "SaleQualification",
+            "RawCountyRatioCd",
+            "RawRatioTypeCd",
+            "RawRatioCd",
+            "SuppressOnRatioRptCd",
+            "IncludeNoCalc"
+          ],
+          "risk": "Qualified-sale flags may be incomplete, missing, or mapped under different legacy semantics."
+        }
+      ],
+      "validationFocus": "Benton-first direct source recomputation and sync lineage closure."
+    },
+    {
+      "scope": "WA_39_COUNTY_REGISTRY_DEFAULT",
+      "primaryTier": "reference_demo",
+      "badges": [
+        "Demo/Reference Only",
+        "Not Certified for Operational Valuation"
+      ],
+      "dataLanes": [
+        "TerraFusion.Reference39.Demo",
+        "TerraFusion.Platform.Metadata"
+      ],
+      "promotionRequirement": "County-specific official source ingestion, lineage proof, sync proof, and direct metric recomputation."
+    }
+  ],
+  "uiLabels": {
+    "production_verified": "Production Verified",
+    "production_provisional": "Production Provisional",
+    "sync_derived": "Sync-Derived",
+    "converted_legacy_sensitive": "Converted Legacy",
+    "reference_demo": "Demo/Reference Only",
+    "unknown": "Unavailable"
+  }
+}

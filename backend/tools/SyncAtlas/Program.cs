@@ -1218,7 +1218,8 @@ internal static class Program
             "property_use" or                          // C48-H (C22-B)
             "property_use:imprv.primary_use_cd" or     // C48-I (C27-B)
             "property_use:sale.primary_use_cd" or      // C48-J (C30-B)
-            "property_use:imprv.secondary_use_cd";     // C48-K (C29-B)
+            "property_use:imprv.secondary_use_cd" or   // C48-K (C29-B)
+            "property_use:property_val.secondary_use_cd"; // C48-L (C28-B)
         IPacsSchemaCatalog? pacsCatalog = configKeyConsumesCatalog
             ? await BuildPacsCatalogForSyncAtlasAsync(pacsConnectionString, ct)
             : null;
@@ -1329,21 +1330,17 @@ internal static class Program
             // canonical_target vocabularies. The DictionaryColumnConfig
             // remains identical to C22 / C27 (same dictionary, same column
             // names, same inspection findings).
-            "property_use:property_val.secondary_use_cd" => (
-                new DictionaryLoaderTargetConfig(
-                    WorkbookSourceSchema: "dbo",
-                    WorkbookSourceTable:  "property_val",
-                    WorkbookSourceColumn: "secondary_use_cd",
-                    PacsDictionarySchema: "dbo",
-                    PacsDictionaryTable:  "property_use",
-                    CanonicalTargetName:  "PropertySecondaryUse"),
-                new DictionaryColumnConfig(
-                    CodeColumn:           "property_use_cd",
-                    DescriptionColumn:    "property_use_desc",
-                    ActiveFlagColumn:     null,
-                    ActiveFlagPredicate:  null,
-                    YearColumn:           null),
-                "c28-b"),
+            // Slice C48-L: completes the property_use family migration.
+            // Same property_use dictionary, joined against
+            // property_val.secondary_use_cd, canonical_target =
+            // 'PropertySecondaryUse' (REUSED from C28-C / C29-C).
+            // Behavior preservation: same proof chain as C48-H/I/J/K.
+            "property_use:property_val.secondary_use_cd" => BuildFromCatalog(
+                pacsCatalog!,
+                dictionaryName:    "property_use",
+                workbookSource:    new DictionaryWorkbookSource("dbo", "property_val", "secondary_use_cd"),
+                canonicalTarget:   "PropertySecondaryUse",
+                sliceArtifactDir:  "c28-b"),
             "imprv_det_class" => (
                 new DictionaryLoaderTargetConfig(
                     WorkbookSourceSchema: "dbo",

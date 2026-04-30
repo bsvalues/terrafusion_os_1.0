@@ -1,15 +1,19 @@
 {
-  "checkedAt": "2026-04-29T20:18:00Z",
-  "slice": "County Studio Full Statistics Superset Proof",
-  "status": "PASS_FULL_STATISTICS_SUPERSET",
-  "fullStatisticsSuperset": true,
-  "method": "directly_embedded_statistics_surface",
+  "checkedAt": "2026-04-30T16:07:19Z",
+  "slice": "County Studio Native Statistics Workbench Posture",
+  "status": "PROVISIONAL_NATIVE_WORKBENCH_DATA_TRUTH_BLOCKED",
+  "fullStatisticsSuperset": false,
+  "fullStatisticsSupersetClaimProven": false,
+  "claimBlocker": "dev-data-truth-gate has not passed; Benton-certified reference lane remains in CountyStatisticsWorkbenchPanel.",
+  "nativeStatisticsWorkbench": true,
+  "method": "native_county_analytics_workbench",
   "countyStudioOwnsPrimaryWorkbench": true,
-  "statisticsStudioTemporaryParitySourceVisible": true,
+  "statisticsStudioTemporaryParitySourceVisible": false,
   "reducedIaaoSubsetIsNotParity": true,
   "implementedPath": {
-    "countyStudioMode": "Full Statistics Lab",
-    "embeddedComponent": "StatisticsStudio",
+    "countyStudioMode": "Analytics",
+    "embeddedComponent": null,
+    "nativeComponent": "CountyStatisticsWorkbenchPanel",
     "scopeSource": "active County Studio study",
     "taxYearSource": "active County Studio study",
     "advancedLaneGuard": "same certified-lane guard as Statistics Studio"
@@ -53,12 +57,16 @@
     "fiveFoldCrossValidation"
   ],
   "nativeCountyStudioCommandPanelsStillNeedingDecomposition": [
-    "advanced diagnostics",
-    "spatial temporal analytics",
-    "calibration engine analytics",
     "outlier workflow",
     "model comparison workflow"
   ],
+  "dataTruthDependency": {
+    "requiredGate": "pnpm run truth:dev-data",
+    "requiredStatus": "PASS",
+    "currentPosture": "blocked",
+    "directSourceRecomputeRequired": true,
+    "bentonReferenceLaneIsProofContamination": true
+  },
   "evidenceFiles": [
     "frontend/apps/os-shell/src/pages/forge/county-studio/CountyStudyPage.tsx",
     "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
