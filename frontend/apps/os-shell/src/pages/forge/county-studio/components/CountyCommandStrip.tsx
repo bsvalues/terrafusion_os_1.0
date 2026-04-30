@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
+import { ContractLineage } from './ContractLineage';
 
 // Traffic-light colors map to TerraFusion design tokens (red = error,
 // amber = warning, green = success) so the strip respects the global theme
@@ -188,21 +189,30 @@ export function CountyCommandStrip() {
       )}
 
       {healthSummary && (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(112px, 1fr))',
-            gap: 8,
-          }}
-        >
-          {metricCard('Median Ratio', formatMetric(healthSummary.medianRatio, 3), ratioColor(healthSummary.medianRatio), 'command-metric-ratio')}
-          {metricCard('COD', formatMetric(healthSummary.cod, 1), codColor(healthSummary.cod), 'command-metric-cod')}
-          {metricCard('PRD', formatMetric(healthSummary.prd, 3), prdColor(healthSummary.prd), 'command-metric-prd')}
-          {metricCard('Critical', healthSummary.criticalCount.toLocaleString(), STATUS_ERROR, 'command-metric-critical')}
-          {metricCard('Warnings', healthSummary.warningCount.toLocaleString(), STATUS_WARNING, 'command-metric-warning')}
-          {metricCard('Needs Data', needsDataCount.toLocaleString(), needsDataCount > 0 ? STATUS_WARNING : STATUS_SUCCESS, 'command-metric-needs-data')}
-          {metricCard('Exceptions', healthSummary.exceptionCount.toLocaleString(), healthSummary.exceptionCount > 0 ? STATUS_WARNING : STATUS_SUCCESS, 'command-metric-exceptions')}
-        </div>
+        <>
+          <ContractLineage
+            operationalContractId={healthSummary.contractId}
+            correctionContractId={healthSummary.correctionPriorityContractId}
+            countyName={activeStudy.countyName}
+            countyId={activeStudy.countyId}
+            compact
+          />
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(112px, 1fr))',
+              gap: 8,
+            }}
+          >
+            {metricCard('Median Ratio', formatMetric(healthSummary.medianRatio, 3), ratioColor(healthSummary.medianRatio), 'command-metric-ratio')}
+            {metricCard('COD', formatMetric(healthSummary.cod, 1), codColor(healthSummary.cod), 'command-metric-cod')}
+            {metricCard('PRD', formatMetric(healthSummary.prd, 3), prdColor(healthSummary.prd), 'command-metric-prd')}
+            {metricCard('Critical', healthSummary.criticalCount.toLocaleString(), STATUS_ERROR, 'command-metric-critical')}
+            {metricCard('Warnings', healthSummary.warningCount.toLocaleString(), STATUS_WARNING, 'command-metric-warning')}
+            {metricCard('Needs Data', needsDataCount.toLocaleString(), needsDataCount > 0 ? STATUS_WARNING : STATUS_SUCCESS, 'command-metric-needs-data')}
+            {metricCard('Exceptions', healthSummary.exceptionCount.toLocaleString(), healthSummary.exceptionCount > 0 ? STATUS_WARNING : STATUS_SUCCESS, 'command-metric-exceptions')}
+          </div>
+        </>
       )}
     </div>
   );

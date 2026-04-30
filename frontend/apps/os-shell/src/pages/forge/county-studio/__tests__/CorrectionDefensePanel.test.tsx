@@ -121,6 +121,8 @@ beforeEach(() => {
         },
       ],
       healthSummary: {
+        contractId: 'terraforge_operational_health_v1',
+        correctionPriorityContractId: 'terraforge_correction_priority_v1',
         studyId: 'study-1',
         countyId: 'county-1',
         taxYear: 2026,
@@ -183,6 +185,9 @@ describe('CorrectionDefensePanel', () => {
     await screen.findByTestId('defense-readiness-chain');
     await waitFor(() => expect(mockAdjustmentList).toHaveBeenCalledWith('study-1'));
     expect(screen.getByTestId('defense-current-anchors')).toHaveTextContent('Benton County');
+    expect(screen.getByTestId('operational-contract-id')).toHaveTextContent('terraforge_operational_health_v1');
+    expect(screen.getByTestId('correction-contract-id')).toHaveTextContent('terraforge_correction_priority_v1');
+    expect(screen.getByTestId('county-trust-posture')).toHaveTextContent(/Benton production provisional/i);
     await waitFor(() => {
       expect(screen.getByTestId('defense-current-anchors')).toHaveTextContent('1 adjustment set');
       expect(screen.getByTestId('defense-current-anchors')).toHaveTextContent('1 open exception');
