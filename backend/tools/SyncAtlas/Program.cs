@@ -1474,6 +1474,49 @@ internal static class Program
             }
         }
 
+        // Slice C50-CONV-PROMOTE-A: per-call-site era preflight stance
+        // per the C50-CONV-C policy. Mirrors the FK preflight switch
+        // above. Same explicit-or-skip pattern: configKeys not listed
+        // here do not invoke the era preflight (un-migrated cases keep
+        // running as before until their own PROMOTE slice lands).
+        //
+        // property_use (this slice): RequirePost2017OrBoth — the
+        // dictionary loader runs against current PACS workflow data
+        // and must refuse Pre2017-only or Unknown era. With no
+        // conversion manifest configured today (the C48-B legacy
+        // bridge), the catalog reports Both for every column and the
+        // preflight reports Pass via ManifestNotEngaged provenance —
+        // honest, not silently aliased to ColumnEntry/Both.
+        ConversionEraPreflightStance? eraStance = configKey switch
+        {
+            "property_use" => ConversionEraPreflightStance.RequirePost2017OrBoth, // C50-CONV-PROMOTE-A
+            _              => null,
+        };
+
+        if (eraStance is not null && pacsCatalog is not null)
+        {
+            var eraPreflight = new ConversionEraPreflight();
+            var eraResult = await eraPreflight.ValidateAsync(
+                pacsCatalog,
+                target.WorkbookSourceTable,
+                new[] { target.WorkbookSourceColumn },
+                eraStance.Value,
+                ct);
+
+            switch (eraResult.Outcome)
+            {
+                case ConversionEraPreflightOutcome.Pass:
+                    Console.WriteLine(
+                        $"sync-atlas:   Era preflight:      Pass (matched era={eraResult.MatchedEra}, provenance={eraResult.Provenance})");
+                    break;
+                case ConversionEraPreflightOutcome.Warn:
+                    await Console.Error.WriteLineAsync($"sync-atlas: {eraResult.Message}");
+                    break;
+                case ConversionEraPreflightOutcome.Fail:
+                    throw new InvalidOperationException(eraResult.Message);
+            }
+        }
+
         var loader = new DictionaryLoaderService(db, pacsReader);
 
         Console.WriteLine($"sync-atlas: load-pacs-dictionary for county {args.CountyId}...");
