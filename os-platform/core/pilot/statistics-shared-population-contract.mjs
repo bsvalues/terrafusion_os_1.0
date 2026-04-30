@@ -9,6 +9,9 @@ const mdOut = path.join(evidenceDir, 'statistics-shared-population-contract.late
 
 const scopeProofPath = process.env.TF_STATISTICS_PARITY_SCOPE_PROOF
   ?? 'os-platform/core/pilot/evidence/statistics-parity-scope-alignment.latest.json';
+const apiBase = (process.env.TF_DATA_TRUTH_API_BASE
+  ?? process.env.VITE_DEV_HEALTH_BASE
+  ?? 'http://localhost:5173/api').replace(/\/$/, '');
 
 function rel(file) {
   return path.relative(repoRoot, file).replaceAll('\\', '/');
@@ -23,6 +26,38 @@ function readText(target) {
     return readFileSync(path.join(repoRoot, target), 'utf8');
   } catch {
     return '';
+  }
+}
+
+function isNumber(value) {
+  return typeof value === 'number' && Number.isFinite(value);
+}
+
+function nearlyEqual(a, b, tolerance) {
+  return isNumber(a) && isNumber(b) && Math.abs(a - b) <= tolerance;
+}
+
+async function getJson(route, headers = {}) {
+  const url = `${apiBase}${route}`;
+  const startedAt = Date.now();
+  try {
+    const response = await fetch(url, { headers });
+    const text = await response.text();
+    let body = null;
+    try {
+      body = text ? JSON.parse(text) : null;
+    } catch {
+      body = text;
+    }
+    return { ok: response.ok, status: response.status, url, ms: Date.now() - startedAt, body };
+  } catch (error) {
+    return {
+      ok: false,
+      status: 0,
+      url,
+      ms: Date.now() - startedAt,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }
 
@@ -49,6 +84,84 @@ function sourcePresence() {
       && /ids\.Contains\(p\.ParcelNumber\)/.test(terraForge),
     countyWorkbenchStillHasBentonReferenceLane:
       /income-approach\/market-data\/benton/.test(countyWorkbench),
+    countyStudyStatisticsCompatEndpoint:
+      /statistics-compat/.test(readText('backend/src/TerraFusion.API/Controllers/CountyStudyController.cs'))
+      && /GetStatisticsCompatAsync/.test(readText('backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs')),
+    countyStudyStatisticsCompatDtoContract:
+      /CountyStatisticsCompatDto/.test(readText('backend/src/TerraFusion.Core/DTOs/CountyStudyDtos.cs'))
+      && /StatisticsCompatConversionSensitiveCountsDto/.test(readText('backend/src/TerraFusion.Core/DTOs/CountyStudyDtos.cs'))
+      && /StatisticsCompatParcelIdentityReconciliationDto/.test(readText('backend/src/TerraFusion.Core/DTOs/CountyStudyDtos.cs')),
+    countyWorkbenchStatisticsCompatMode:
+      /Statistics Compat/.test(countyWorkbench)
+      && /statisticsCompat/.test(countyWorkbench)
+      && /statistics_ratio_study_compat_v1/.test(countyWorkbench),
+  };
+}
+
+function ratioStats(body) {
+  return body?.stats && typeof body.stats === 'object' ? body.stats : {};
+}
+
+function parityRows(compat, ratio) {
+  const stats = ratioStats(ratio);
+  return [
+    { field: 'countWithRatio', countyStudio: compat?.countWithRatio, terraForge: ratio?.countWithRatio, tolerance: 0 },
+    { field: 'outliersExcluded', countyStudio: compat?.outliersExcluded, terraForge: ratio?.outliersExcluded, tolerance: 0 },
+    { field: 'medianRatio', countyStudio: compat?.medianRatio, terraForge: stats.medianRatio, tolerance: 0.0001 },
+    { field: 'cod', countyStudio: compat?.cod, terraForge: stats.cod, tolerance: 0.01 },
+    { field: 'prd', countyStudio: compat?.prd, terraForge: stats.prd, tolerance: 0.0001 },
+    { field: 'prb', countyStudio: compat?.prb, terraForge: stats.prb, tolerance: 0.0001 },
+    { field: 'weightedMeanRatio', countyStudio: compat?.weightedMeanRatio, terraForge: stats.weightedMeanRatio, tolerance: 0.0001 },
+  ].map((row) => ({
+    ...row,
+    delta: isNumber(row.countyStudio) && isNumber(row.terraForge)
+      ? Math.abs(row.countyStudio - row.terraForge)
+      : null,
+    pass: row.tolerance === 0
+      ? row.countyStudio === row.terraForge
+      : nearlyEqual(row.countyStudio, row.terraForge, row.tolerance),
+  }));
+}
+
+async function apiParityProof(study) {
+  const headers = { 'x-county-id': study.countyId };
+  const [compatResult, ratioResult] = await Promise.all([
+    getJson(`/county-study/studies/${study.studyId}/statistics-compat`, headers),
+    getJson(`/terraforge/ratio-study?taxYear=${study.taxYear}&countyId=${encodeURIComponent(study.countyId)}`, headers),
+  ]);
+
+  if (!compatResult.ok || !ratioResult.ok) {
+    return {
+      reachable: false,
+      status: 'API_UNREACHABLE_OR_ENDPOINT_FAILED',
+      compatResult: {
+        ok: compatResult.ok,
+        status: compatResult.status,
+        url: compatResult.url,
+        error: compatResult.error ?? null,
+      },
+      ratioResult: {
+        ok: ratioResult.ok,
+        status: ratioResult.status,
+        url: ratioResult.url,
+        error: ratioResult.error ?? null,
+      },
+      rows: [],
+      mismatches: [],
+    };
+  }
+
+  const rows = parityRows(compatResult.body, ratioResult.body);
+  const mismatches = rows.filter((row) => !row.pass);
+  const contractOk = compatResult.body?.contractId === 'statistics_ratio_study_compat_v1';
+  return {
+    reachable: true,
+    status: contractOk && mismatches.length === 0 ? 'PASS' : 'MISMATCH',
+    contractOk,
+    compat: compatResult.body,
+    terraForgeRatioStudy: ratioResult.body,
+    rows,
+    mismatches,
   };
 }
 
@@ -84,6 +197,9 @@ function buildMarkdown(report) {
   const implementationRows = report.implementationAssessment.map((item) =>
     `| ${item.surface} | ${item.implementsSharedContract} | ${item.notes} |`,
   );
+  const parityRows = report.apiParity.rows.map((row) =>
+    `| ${row.field} | ${row.countyStudio ?? 'null'} | ${row.terraForge ?? 'null'} | ${row.tolerance} | ${row.pass ? 'yes' : 'no'} |`,
+  );
   const blockerRows = report.blockers.map((blocker) => `- ${blocker}`);
   const nextRows = report.requiredClosure.map((item) => `- ${item}`);
 
@@ -118,6 +234,16 @@ function buildMarkdown(report) {
     `TerraForge ratio-study countWithRatio: ${report.currentMetrics.terraForgeRatioStudy.count}`,
     `Overlap: ${JSON.stringify(report.currentMetrics.overlap)}`,
     '',
+    '## API Same-Population Parity',
+    '',
+    `API base: \`${report.apiBase}\``,
+    `API status: ${report.apiParity.status}`,
+    `Contract echoed: ${report.apiParity.contractOk ?? false}`,
+    '',
+    '| Metric | County Studio Compat | TerraForge Ratio Study | Tolerance | Pass? |',
+    '| --- | --- | --- | --- | --- |',
+    ...(parityRows.length ? parityRows : ['| unavailable | unavailable | unavailable | unavailable | no |']),
+    '',
     '## Blockers',
     '',
     ...blockerRows,
@@ -137,6 +263,7 @@ if (!existsSync(absScopeProof)) {
 const scopeProof = readJson(scopeProofPath);
 const source = sourcePresence();
 const currentMetrics = metricSummary(scopeProof);
+const apiParity = await apiParityProof(scopeProof.study);
 
 const sharedParityContract = {
   id: 'statistics_ratio_study_compat_v1',
@@ -212,26 +339,69 @@ const implementationAssessment = [
   },
   {
     surface: 'County Studio statistics workbench',
-    implementsSharedContract: 'no',
+    implementsSharedContract: source.countyWorkbenchStatisticsCompatMode ? 'yes' : 'no',
     notes:
-      source.countyWorkbenchStillHasBentonReferenceLane
-        ? 'Still has a Benton-certified reference lane and no explicit shared-population parity mode.'
-        : 'No Benton reference lane detected, but no explicit shared-population parity mode was proven.',
+      source.countyWorkbenchStatisticsCompatMode
+        ? 'Declares an explicit Statistics Compat mode and renders the statistics_ratio_study_compat_v1 contract fields as first-class data.'
+        : 'No explicit shared-population parity mode was proven.',
+  },
+  {
+    surface: 'County Studio statistics-compat endpoint',
+    implementsSharedContract: source.countyStudyStatisticsCompatEndpoint && source.countyStudyStatisticsCompatDtoContract ? 'yes' : 'no',
+    notes:
+      source.countyStudyStatisticsCompatEndpoint && source.countyStudyStatisticsCompatDtoContract
+        ? 'Backend endpoint and DTO surface contract id, countWithRatio, outliersExcluded, conversion-sensitive counts, parcel identity reconciliation, and trust posture.'
+        : 'Backend endpoint/DTO contract fields are missing.',
   },
 ];
 
-const blockers = [
-  'No County Studio endpoint or workbench mode currently declares statistics_ratio_study_compat_v1.',
-  'No shared response currently echoes contract id, population count, pre/post-trim counts, parcel identity join mode, and conversion-sensitive qualification counts.',
-  'County Studio health summary remains a different analytical surface and must not be used as the Statistics parity comparator.',
-  'Benton qualification fields remain conversion-sensitive until row-level sync lineage closes the 2017 risk.',
-];
+const blockers = [];
+if (!source.countyStudyStatisticsCompatEndpoint || !source.countyStudyStatisticsCompatDtoContract) {
+  blockers.push('County Studio statistics-compat endpoint or DTO contract fields are missing.');
+}
+if (!source.countyWorkbenchStatisticsCompatMode) {
+  blockers.push('County Studio workbench does not declare the explicit Statistics Compat mode.');
+}
+if (!apiParity.reachable) {
+  blockers.push('Dev API same-population parity check could not reach both County Studio statistics-compat and TerraForge ratio-study endpoints.');
+}
+if (apiParity.reachable && apiParity.status !== 'PASS') {
+  blockers.push(`Same-population parity mismatch remains: ${apiParity.mismatches.map((row) => row.field).join(', ') || 'contract id missing'}.`);
+}
+blockers.push('County Studio health summary remains a different analytical surface and must not be used as the Statistics parity comparator.');
+blockers.push('Benton qualification fields remain conversion-sensitive until row-level sync lineage closes the 2017 risk.');
+
+const implementationReady =
+  source.countyStudyStatisticsCompatEndpoint
+  && source.countyStudyStatisticsCompatDtoContract
+  && source.countyWorkbenchStatisticsCompatMode;
+const hardBlockers = blockers.filter((blocker) =>
+  !blocker.startsWith('County Studio health summary remains')
+  && !blocker.startsWith('Benton qualification fields remain'),
+);
+const status =
+  apiParity.status === 'PASS'
+    ? 'PASS'
+    : implementationReady && !apiParity.reachable
+      ? 'IMPLEMENTED_STATIC_API_UNREACHABLE'
+      : implementationReady
+        ? 'BLOCKED_SHARED_CONTRACT_PARITY_MISMATCH'
+        : 'IMPLEMENTATION_GAP_SHARED_PARITY_MODE_MISSING';
+const decision =
+  status === 'PASS'
+    ? 'PATH_A_IMPLEMENTED_SHARED_PARITY_MODE_PROVEN'
+    : status === 'IMPLEMENTED_STATIC_API_UNREACHABLE'
+      ? 'PATH_A_IMPLEMENTED_STATIC_PROOF_PRESENT_LIVE_API_PROOF_PENDING'
+      : status === 'BLOCKED_SHARED_CONTRACT_PARITY_MISMATCH'
+        ? 'PATH_A_IMPLEMENTED_BUT_PARITY_MISMATCH_REMAINS'
+        : 'PATH_A_REQUIRED_SHARED_PARITY_CONTRACT_DEFINED_NOT_IMPLEMENTED';
 
 const report = {
   checkedAt: new Date().toISOString(),
   slice: 'statistics-shared-population-contract',
-  status: 'IMPLEMENTATION_GAP_SHARED_PARITY_MODE_MISSING',
-  decision: 'PATH_A_REQUIRED_SHARED_PARITY_CONTRACT_DEFINED_NOT_IMPLEMENTED',
+  status,
+  decision,
+  apiBase,
   scopeProof: {
     path: rel(absScopeProof),
     status: scopeProof.status,
@@ -242,12 +412,14 @@ const report = {
   currentMetrics,
   sourcePresence: source,
   sharedParityContract,
+  apiParity,
   implementationAssessment,
   blockers,
   requiredClosure: [
-    'Add a County Studio statistics parity mode or endpoint that computes statistics_ratio_study_compat_v1.',
-    'Make both County Studio and TerraForge responses echo contract id, population count, countWithRatio, outliersExcluded, identity join mode, sale window, qualification policy, suppression/no-calc policy, and conversion-sensitive row counts.',
-    'Run parity against the contract artifact; only upgrade the Statistics superset claim when both surfaces agree on the shared contract.',
+    ...(hardBlockers.length
+      ? ['Close the hard blockers listed above.']
+      : ['Keep the live same-population parity proof attached to this artifact.']),
+    'Only upgrade the Statistics superset claim when both surfaces agree on the shared contract and Benton reference lanes remain reference-only.',
     'Keep Statistics Studio visible until the shared-population parity mode passes against live Benton data.',
   ],
 };
@@ -260,8 +432,9 @@ console.log(JSON.stringify({
   status: report.status,
   decision: report.decision,
   contract: report.sharedParityContract.id,
+  apiParity: report.apiParity.status,
   blockers: report.blockers.length,
   evidence: [rel(jsonOut), rel(mdOut)],
 }, null, 2));
 
-process.exitCode = 1;
+process.exitCode = report.status === 'PASS' ? 0 : 1;

@@ -27,6 +27,8 @@ namespace TerraFusion.Core.Services;
 
 public class CountyStudyHealthService : ICountyStudyHealthService
 {
+    public const string StatisticsCompatContractId = "statistics_ratio_study_compat_v1";
+
     // ── IAAO + Benton thresholds — referenced by ClassifyCompliance + risk formula.
     private const decimal MedianFairLow  = 0.90m;
     private const decimal MedianFairHigh = 1.10m;
@@ -141,6 +143,189 @@ public class CountyStudyHealthService : ICountyStudyHealthService
             WarningCount: warningCount,
             HealthyCount: healthyCount,
             DerivedAt: derivedAt);
+    }
+
+    public async Task<CountyStatisticsCompatDto> GetStatisticsCompatAsync(
+        Guid studyId, CancellationToken ct = default)
+    {
+        var study = await _db.CountyStudySessions.AsNoTracking().FirstOrDefaultAsync(s => s.StudyId == studyId, ct)
+            ?? throw new InvalidOperationException($"Study {studyId} not found");
+
+        var taxYear = study.TaxYear;
+        var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var lookbackEnd = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        var windowRows = await _db.ComparableSales.AsNoTracking()
+            .Where(s => s.CountyId == study.CountyId)
+            .Where(s => s.SalesYear == taxYear
+                     || (s.SalesYear == null
+                         && s.SaleDate >= lookbackStart
+                         && s.SaleDate < lookbackEnd))
+            .Select(s => new CompatSaleRow(
+                s.Id,
+                s.ParcelId,
+                s.SaleDate,
+                s.SalesYear,
+                s.AdjustedSalePrice ?? s.SalePrice,
+                s.QualificationDecision,
+                s.QualificationRecommendation,
+                s.SaleQualification,
+                s.SuppressOnRatioRptCd,
+                s.IncludeNoCalc))
+            .ToListAsync(ct);
+
+        var qualifiedRows = windowRows
+            .Where(s => IsStatisticsCompatQualified(s.QualificationDecision, s.QualificationRecommendation))
+            .ToList();
+
+        var baseRows = qualifiedRows
+            .Where(s => s.SuppressOnRatioRptCd != "T")
+            .Where(s => s.IncludeNoCalc != true)
+            .ToList();
+
+        var parcelIds = baseRows
+            .Select(s => s.ParcelId)
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Distinct()
+            .ToHashSet();
+
+        var assessedByParcelNumber = await _db.Properties.AsNoTracking()
+            .Where(p => p.CountyId == study.CountyId)
+            .Where(p => p.TaxYear == taxYear)
+            .Where(p => p.AssessedValue > 0)
+            .Where(p => parcelIds.Contains(p.ParcelNumber))
+            .Select(p => new { p.ParcelNumber, p.AssessedValue })
+            .ToListAsync(ct);
+
+        var assessedMap = assessedByParcelNumber
+            .GroupBy(p => p.ParcelNumber)
+            .ToDictionary(g => g.Key, g => g.First().AssessedValue);
+
+        var ratioRows = baseRows
+            .Select(s =>
+            {
+                var matched = assessedMap.TryGetValue(s.ParcelId, out var assessed);
+                var ratio = matched && s.SalePrice > 0 ? assessed / s.SalePrice : (decimal?)null;
+                return new CompatRatioRow(s.Id, s.ParcelId, s.SalePrice, matched ? assessed : 0m, ratio);
+            })
+            .Where(r => r.Ratio.HasValue && r.Ratio.Value > 0)
+            .Select(r => r with { Ratio = r.Ratio!.Value })
+            .ToList();
+
+        var trimmedRows = TrimIqr(ratioRows, out var outliersExcluded);
+        var ratios = trimmedRows.Select(r => r.Ratio!.Value).OrderBy(r => r).ToList();
+
+        decimal? medianRatio = ratios.Count > 0 ? Median(ratios) : null;
+        decimal? meanRatio = ratios.Count > 0 ? ratios.Average() : null;
+        decimal? cod = ratios.Count >= 5 && medianRatio.HasValue && medianRatio.Value > 0
+            ? ComputeCod(ratios, medianRatio.Value)
+            : null;
+        decimal? weightedMean = null;
+        decimal? prd = null;
+        decimal? cov = null;
+        decimal? prb = null;
+        decimal? tierSlope = null;
+        StatisticsCompatTierMediansDto? tierMedians = null;
+
+        if (trimmedRows.Count > 0)
+        {
+            var sumAssessed = trimmedRows.Sum(r => r.AssessedValue);
+            var sumSalePrice = trimmedRows.Sum(r => r.SalePrice);
+            if (sumSalePrice > 0)
+                weightedMean = sumAssessed / sumSalePrice;
+
+            if (weightedMean.HasValue && meanRatio.HasValue && weightedMean.Value > 0)
+                prd = meanRatio.Value / weightedMean.Value;
+
+            if (meanRatio.HasValue && meanRatio.Value > 0 && trimmedRows.Count > 1)
+            {
+                var mean = (double)meanRatio.Value;
+                var variance = ratios.Sum(r => Math.Pow((double)r - mean, 2)) / (trimmedRows.Count - 1);
+                cov = (decimal)(Math.Sqrt(variance) / mean * 100.0);
+            }
+
+            if (trimmedRows.Count >= 5 && meanRatio.HasValue)
+            {
+                prb = ComputePrb(trimmedRows, meanRatio.Value);
+                tierSlope = prb;
+            }
+
+            if (trimmedRows.Count >= 8)
+            {
+                var priceSorted = trimmedRows
+                    .OrderBy(r => r.SalePrice)
+                    .Select(r => r.Ratio!.Value)
+                    .ToArray();
+                var n = priceSorted.Length;
+                tierMedians = new StatisticsCompatTierMediansDto(
+                    Q1: MedianOfSlice(priceSorted, 0, n / 4),
+                    Q2: MedianOfSlice(priceSorted, n / 4, n / 2),
+                    Q3: MedianOfSlice(priceSorted, n / 2, n * 3 / 4),
+                    Q4: MedianOfSlice(priceSorted, n * 3 / 4, n));
+            }
+        }
+
+        var conversionCounts = new StatisticsCompatConversionSensitiveCountsDto(
+            CandidateRows: windowRows.Count,
+            DecisionQualifiedRows: windowRows.Count(s => s.QualificationDecision == "qualified"),
+            RecommendationQualifiedRows: windowRows.Count(s => s.QualificationDecision == null && s.QualificationRecommendation == "qualified"),
+            RecommendationNullDefaultQualifiedRows: windowRows.Count(s => s.QualificationDecision == null && s.QualificationRecommendation == null),
+            SaleQualificationOnlyQualifiedRows: windowRows.Count(s =>
+                s.QualificationDecision == null
+                && s.QualificationRecommendation == null
+                && s.SaleQualification == "qualified"),
+            SuppressedExcludedRows: qualifiedRows.Count(s => s.SuppressOnRatioRptCd == "T"),
+            IncludeNoCalcExcludedRows: qualifiedRows.Count(s => s.IncludeNoCalc == true),
+            SalesYearAssignedRows: windowRows.Count(s => s.SalesYear == taxYear),
+            NullSalesYearWindowRows: windowRows.Count(s => s.SalesYear == null));
+
+        var identity = new StatisticsCompatParcelIdentityReconciliationDto(
+            JoinMode: "ComparableSales.ParcelId -> Properties.ParcelNumber",
+            SaleRows: baseRows.Count,
+            DistinctSaleParcelIds: parcelIds.Count,
+            MatchedPropertyRows: baseRows.Count(s => assessedMap.ContainsKey(s.ParcelId)),
+            CountWithRatio: ratioRows.Count,
+            UnmatchedSaleRows: baseRows.Count - ratioRows.Count);
+
+        return new CountyStatisticsCompatDto(
+            StudyId: study.StudyId,
+            CountyId: study.CountyId,
+            TaxYear: study.TaxYear,
+            Mode: "StatisticsCompat",
+            ContractId: StatisticsCompatContractId,
+            Population: "qualified sale ratio rows",
+            IdentityJoin: identity.JoinMode,
+            SaleWindow: new StatisticsCompatSaleWindowDto(
+                TaxYear: taxYear,
+                LookbackStart: lookbackStart,
+                LookbackEndExclusive: lookbackEnd,
+                Rule: $"SalesYear={taxYear}, or null SalesYear with SaleDate >= {lookbackStart:yyyy-MM-dd} and < {lookbackEnd:yyyy-MM-dd}"),
+            QualificationPolicy: "QualificationDecision == qualified, or null decision with QualificationRecommendation == qualified/null.",
+            SuppressionPolicy: "Exclude SuppressOnRatioRptCd=T and IncludeNoCalc=true.",
+            OutlierPolicy: "Report countWithRatio before trimming; compute stats on Tukey/IQR-trimmed rows.",
+            TrustPosture: new List<string> { "Production Provisional", "Sync-Derived", "Converted Legacy Sensitive" },
+            TotalSales: baseRows.Count,
+            CountWithRatio: ratioRows.Count,
+            OutliersExcluded: outliersExcluded,
+            TrimmedCount: trimmedRows.Count,
+            MedianRatio: Round(medianRatio, 4),
+            MeanRatio: Round(meanRatio, 4),
+            WeightedMeanRatio: Round(weightedMean, 4),
+            Cod: Round(cod, 2),
+            Prd: Round(prd, 4),
+            Prb: Round(prb, 4),
+            Cov: Round(cov, 2),
+            TierSlope: Round(tierSlope, 4),
+            TierMedians: tierMedians is null
+                ? null
+                : new StatisticsCompatTierMediansDto(
+                    Round(tierMedians.Q1, 4) ?? 0m,
+                    Round(tierMedians.Q2, 4) ?? 0m,
+                    Round(tierMedians.Q3, 4) ?? 0m,
+                    Round(tierMedians.Q4, 4) ?? 0m),
+            ConversionSensitiveCounts: conversionCounts,
+            ParcelIdentityReconciliation: identity,
+            ComputedAt: DateTime.UtcNow);
     }
 
     /// <summary>
@@ -453,6 +638,82 @@ public class CountyStudyHealthService : ICountyStudyHealthService
         }
         return map;
     }
+
+    private record CompatSaleRow(
+        Guid Id,
+        string ParcelId,
+        DateTime SaleDate,
+        int? SalesYear,
+        decimal SalePrice,
+        string? QualificationDecision,
+        string? QualificationRecommendation,
+        string? SaleQualification,
+        string? SuppressOnRatioRptCd,
+        bool? IncludeNoCalc);
+
+    private record CompatRatioRow(
+        Guid Id,
+        string ParcelId,
+        decimal SalePrice,
+        decimal AssessedValue,
+        decimal? Ratio);
+
+    private static bool IsStatisticsCompatQualified(string? decision, string? recommendation) =>
+        decision == "qualified"
+        || (decision == null && (recommendation == "qualified" || recommendation == null));
+
+    private static List<CompatRatioRow> TrimIqr(List<CompatRatioRow> ratioRows, out int outliersExcluded)
+    {
+        outliersExcluded = 0;
+        if (ratioRows.Count == 0) return new List<CompatRatioRow>();
+
+        var ordered = ratioRows
+            .Select(r => r.Ratio!.Value)
+            .OrderBy(r => r)
+            .ToArray();
+        var n = ordered.Length;
+        var q1 = ordered[(int)Math.Floor(n * 0.25m)];
+        var q3 = ordered[(int)Math.Floor(n * 0.75m)];
+        var iqr = q3 - q1;
+        var lo = q1 - 1.5m * iqr;
+        var hi = q3 + 1.5m * iqr;
+
+        var trimmed = ratioRows
+            .Where(r => r.Ratio!.Value >= lo && r.Ratio.Value <= hi)
+            .ToList();
+        outliersExcluded = ratioRows.Count - trimmed.Count;
+        return trimmed;
+    }
+
+    private static decimal? ComputePrb(List<CompatRatioRow> rows, decimal meanRatio)
+    {
+        if (rows.Count < 5) return null;
+
+        var logPrices = rows.Select(r => Math.Log((double)r.SalePrice)).ToArray();
+        var meanLogPrice = logPrices.Average();
+        var numerator = 0.0;
+        var denominator = 0.0;
+
+        for (var i = 0; i < rows.Count; i++)
+        {
+            var dLog = logPrices[i] - meanLogPrice;
+            var dRatio = (double)rows[i].Ratio!.Value - (double)meanRatio;
+            numerator += dRatio * dLog;
+            denominator += dLog * dLog;
+        }
+
+        return denominator > 0 ? (decimal)(numerator / denominator) : null;
+    }
+
+    private static decimal MedianOfSlice(decimal[] values, int start, int end)
+    {
+        if (end <= start) return 0m;
+        var slice = values[start..end].OrderBy(v => v).ToList();
+        return Median(slice);
+    }
+
+    private static decimal? Round(decimal? value, int digits) =>
+        value.HasValue ? Math.Round(value.Value, digits) : null;
 
     // ── Stat primitives (mirror EquityMetricService / CountyStudyService). ──
 

@@ -17,4 +17,11 @@ public interface ICountyStudyHealthService
     /// ActiveSegmentSetId (controller maps that to 409).
     /// </summary>
     Task<CountyHealthSummaryDto> GetHealthSummaryAsync(Guid studyId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Builds the explicit Statistics Compat lens for a study using the
+    /// statistics_ratio_study_compat_v1 same-population contract. This is not
+    /// the operational health rollup.
+    /// </summary>
+    Task<CountyStatisticsCompatDto> GetStatisticsCompatAsync(Guid studyId, CancellationToken ct = default);
 }

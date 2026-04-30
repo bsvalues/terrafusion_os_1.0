@@ -265,7 +265,7 @@ function trustTierPosture(activeCountyId) {
   };
 }
 
-function classifyCrossSurfaceMismatch(health, ratioStudy) {
+function classifyCrossSurfaceMismatch(health, ratioStudy, contractProof) {
   const stats = ratioStudyStats(ratioStudy);
   if (!health || !stats) {
     return {
@@ -292,6 +292,16 @@ function classifyCrossSurfaceMismatch(health, ratioStudy) {
   }
 
   if (populationDivergence) {
+    if (contractProof.present && contractProof.status !== 'IMPLEMENTATION_GAP_SHARED_PARITY_MODE_MISSING') {
+      return {
+        verified: 'partial',
+        classification: 'expected non-equivalent population lenses',
+        reason:
+          `Population mismatch is expected for default Operational Health: County Studio health uses ratioCount=${healthCount}, ` +
+          `while TerraForge ratio-study uses countWithRatio=${ratioStudyCount}. ` +
+          'Statistics parity is evaluated through statistics_ratio_study_compat_v1, not health-summary.',
+      };
+    }
     return {
       verified: 'no',
       classification: 'scope mismatch',
@@ -372,6 +382,8 @@ function sharedContractProof() {
       status: parsed.status,
       decision: parsed.decision ?? null,
       contract: parsed.sharedParityContract?.id ?? null,
+      apiParity: parsed.apiParity?.status ?? null,
+      mismatches: parsed.apiParity?.mismatches ?? [],
       blockers: parsed.blockers ?? [],
       reason: parsed.decision ?? 'Statistics shared population contract proof parsed.',
     };
@@ -581,13 +593,23 @@ async function main() {
     process.exit(1);
   }
 
-  const [studyGet, segmentSetsResult, healthResult, cohortsResult, scenariosResult, ratioStudyResult, snapshotsResult] =
+  const [
+    studyGet,
+    segmentSetsResult,
+    healthResult,
+    cohortsResult,
+    scenariosResult,
+    statisticsCompatResult,
+    ratioStudyResult,
+    snapshotsResult,
+  ] =
     await Promise.all([
       getJson('County Studio selected study', `/county-study/studies/${study.studyId}`),
       getJson('County Studio segment sets', `/county-study/studies/${study.studyId}/segment-sets`),
       getJson('County Studio health summary', `/county-study/studies/${study.studyId}/health-summary`),
       getJson('County Studio cohorts', `/county-study/studies/${study.studyId}/cohorts`),
       getJson('County Studio scenarios', `/county-study/studies/${study.studyId}/scenarios`),
+      getJson('County Studio statistics compat', `/county-study/studies/${study.studyId}/statistics-compat`),
       getJson('Statistics ratio study', `/terraforge/ratio-study?taxYear=${study.taxYear}&countyId=${encodeURIComponent(countyId)}`),
       getJson('Statistics comparison snapshots', `/terraforge/comparison-snapshots?taxYear=${study.taxYear}&countyId=${encodeURIComponent(countyId)}`),
     ]);
@@ -604,6 +626,9 @@ async function main() {
   const scenarios = Array.isArray(scenariosResult.body) ? scenariosResult.body : [];
   const health = healthResult.ok && healthResult.body && typeof healthResult.body === 'object'
     ? healthResult.body
+    : null;
+  const statisticsCompat = statisticsCompatResult.ok && statisticsCompatResult.body && typeof statisticsCompatResult.body === 'object'
+    ? statisticsCompatResult.body
     : null;
   const ratioStudy = ratioStudyResult.ok && ratioStudyResult.body && typeof ratioStudyResult.body === 'object'
     ? ratioStudyResult.body
@@ -631,6 +656,30 @@ async function main() {
       ? `median=${health.medianRatio}; cod=${health.cod}; prd=${health.prd}; ratioCount=${health.ratioCount}; derivedAt=${health.derivedAt ?? 'null'}.`
       : `Health summary unavailable: HTTP ${healthResult.status}.`,
     { status: healthResult.status },
+  );
+
+  const compatStats = ratioStudyStats(ratioStudy);
+  const compatParity =
+    statisticsCompat && compatStats
+      ? [
+          nearlyEqual(statisticsCompat.countWithRatio, ratioStudy?.countWithRatio, 0),
+          nearlyEqual(statisticsCompat.outliersExcluded, ratioStudy?.outliersExcluded, 0),
+          nearlyEqual(statisticsCompat.medianRatio, compatStats.medianRatio, 0.0001),
+          nearlyEqual(statisticsCompat.cod, compatStats.cod, 0.01),
+          nearlyEqual(statisticsCompat.prd, compatStats.prd, 0.0001),
+          nearlyEqual(statisticsCompat.prb, compatStats.prb, 0.0001),
+          nearlyEqual(statisticsCompat.weightedMeanRatio, compatStats.weightedMeanRatio, 0.0001),
+        ].every(Boolean)
+      : false;
+  pushMatrix(
+    'Statistics Studio parity',
+    'County Studio Statistics Compat endpoint',
+    'GET /county-study/studies/{studyId}/statistics-compat vs /terraforge/ratio-study',
+    compatParity ? 'yes' : statisticsCompat ? 'partial' : 'no',
+    statisticsCompat
+      ? `contractId=${statisticsCompat.contractId}; countWithRatio=${statisticsCompat.countWithRatio}; outliersExcluded=${statisticsCompat.outliersExcluded}; TerraForge countWithRatio=${ratioStudy?.countWithRatio ?? 'unavailable'}; parity=${compatParity}.`
+      : `Statistics Compat endpoint unavailable: HTTP ${statisticsCompatResult.status}.`,
+    { statisticsCompat, ratioStudy },
   );
 
   const sampleSegments = ratioBearing.slice(0, Math.max(1, maxSegments));
@@ -669,7 +718,7 @@ async function main() {
   );
 
   const stats = ratioStudyStats(ratioStudy);
-  const crossSurface = classifyCrossSurfaceMismatch(health, ratioStudy);
+  const crossSurface = classifyCrossSurfaceMismatch(health, ratioStudy, contractProof);
   pushMatrix(
     'Cross-surface',
     'County median/COD/PRD consistency and mismatch class',
@@ -696,9 +745,9 @@ async function main() {
     'Statistics Studio parity',
     'Shared population contract',
     'statistics-shared-population-contract.latest.json',
-    contractProof.present ? 'partial' : 'no',
+    contractProof.status === 'PASS' ? 'yes' : contractProof.present ? 'partial' : 'no',
     contractProof.present
-      ? `${contractProof.status}; decision=${contractProof.decision}; contract=${contractProof.contract}.`
+      ? `${contractProof.status}; decision=${contractProof.decision}; contract=${contractProof.contract}; apiParity=${contractProof.apiParity ?? 'unavailable'}.`
       : contractProof.reason,
     contractProof,
   );

@@ -239,6 +239,74 @@ export interface CountyHealthSummaryDto {
   derivedAt: string | null;
 }
 
+// ── Statistics Compat (statistics_ratio_study_compat_v1) ─────────────────
+
+export interface StatisticsCompatSaleWindowDto {
+  taxYear: number;
+  lookbackStart: string;
+  lookbackEndExclusive: string;
+  rule: string;
+}
+
+export interface StatisticsCompatTierMediansDto {
+  q1: number;
+  q2: number;
+  q3: number;
+  q4: number;
+}
+
+export interface StatisticsCompatConversionSensitiveCountsDto {
+  candidateRows: number;
+  decisionQualifiedRows: number;
+  recommendationQualifiedRows: number;
+  recommendationNullDefaultQualifiedRows: number;
+  saleQualificationOnlyQualifiedRows: number;
+  suppressedExcludedRows: number;
+  includeNoCalcExcludedRows: number;
+  salesYearAssignedRows: number;
+  nullSalesYearWindowRows: number;
+}
+
+export interface StatisticsCompatParcelIdentityReconciliationDto {
+  joinMode: string;
+  saleRows: number;
+  distinctSaleParcelIds: number;
+  matchedPropertyRows: number;
+  countWithRatio: number;
+  unmatchedSaleRows: number;
+}
+
+export interface CountyStatisticsCompatDto {
+  studyId: string;
+  countyId: string;
+  taxYear: number;
+  mode: 'StatisticsCompat';
+  contractId: 'statistics_ratio_study_compat_v1';
+  population: string;
+  identityJoin: string;
+  saleWindow: StatisticsCompatSaleWindowDto;
+  qualificationPolicy: string;
+  suppressionPolicy: string;
+  outlierPolicy: string;
+  trustPosture: string[];
+  totalSales: number;
+  countWithRatio: number;
+  outliersExcluded: number;
+  trimmedCount: number;
+  medianRatio: number | null;
+  meanRatio: number | null;
+  weightedMeanRatio: number | null;
+  cod: number | null;
+  prd: number | null;
+  prb: number | null;
+  cov: number | null;
+  tierSlope: number | null;
+  tierMedians: StatisticsCompatTierMediansDto | null;
+  conversionSensitiveCounts: StatisticsCompatConversionSensitiveCountsDto;
+  parcelIdentityReconciliation: StatisticsCompatParcelIdentityReconciliationDto;
+  computedAt: string;
+}
+
 // ── Inspector (Task D — Fix #4 #5 #8 — segment detail + action-context) ──
 
 /** Vertical-equity classification for a segment. */

@@ -456,6 +456,35 @@ public class CountyStudyController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Returns the County Studio Statistics Compat lens for a study using the
+    /// statistics_ratio_study_compat_v1 population contract. This is deliberately
+    /// separate from health-summary, which remains the operational segment-set
+    /// rollup.
+    /// </summary>
+    [HttpGet("studies/{studyId:guid}/statistics-compat")]
+    public async Task<IActionResult> GetStatisticsCompat(Guid studyId, CancellationToken ct)
+    {
+        try
+        {
+            var scopeResult = await EnsureStudyScopeAsync(studyId, ct);
+            if (scopeResult is not null)
+                return scopeResult;
+
+            var dto = await _healthSvc.GetStatisticsCompatAsync(studyId, ct);
+            return Ok(dto);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] GetStatisticsCompat failed for study {StudyId}", studyId);
+            return StatusCode(500, new { error = "Internal error" });
+        }
+    }
+
     // ── Inspector (Task D — ObjectInspector detail + action-context) ──
 
     /// <summary>
