@@ -1222,14 +1222,8 @@ internal static class Program
             "property_use:property_val.secondary_use_cd" or // C48-L (C28-B)
             "imprv_det_class" or                         // C48-M (C23-B)
             "imprv_det_sub_class" or                     // C48-N (C26-B)
-            "imprv_det_meth";                            // C48-O (C25-B)
-            // 'land_soil' deliberately NOT migrated yet: PACS uses
-            // Hungarian-notation columns (szLandSoilCode / szLandSoilDesc)
-            // that DON'T match the C48-F heuristic (first ends in _cd,
-            // second ends in _desc/_dsc). Future slice C48-P/Q extends
-            // the heuristic to catch Hungarian-notation dictionaries
-            // OR adds an operator-supplied override list; until then
-            // land_soil keeps its hand-typed switch arm below.
+            "imprv_det_meth" or                          // C48-O (C25-B)
+            "land_soil";                                 // C48-P (C24-B; needed C48-P heuristic extension)
         IPacsSchemaCatalog? pacsCatalog = configKeyConsumesCatalog
             ? await BuildPacsCatalogForSyncAtlasAsync(pacsConnectionString, ct)
             : null;
@@ -1403,34 +1397,28 @@ internal static class Program
                 workbookSource:    new DictionaryWorkbookSource("dbo", "imprv_detail", "imprv_det_meth_cd"),
                 canonicalTarget:   "ImprvDetailMethod",
                 sliceArtifactDir:  "c25-b"),
-            "land_soil" => (
-                new DictionaryLoaderTargetConfig(
-                    WorkbookSourceSchema: "dbo",
-                    WorkbookSourceTable:  "land_detail",
-                    WorkbookSourceColumn: "land_soil_code",
-                    PacsDictionarySchema: "dbo",
-                    PacsDictionaryTable:  "land_soil",
-                    CanonicalTargetName:  "LandSoil"),
-                // Defaults captured at C24-B-live inspection of pacs_oltp:
-                //   szLandSoilCode  char(10)    NOT NULL  (code — Hungarian 'sz' prefix)
-                //   szLandSoilDesc  varchar(64) NULL      (description)
-                // Findings: 58 rows; only 2 columns; no sys_flag, no year
-                // column, no per-acre value column (per C24-A: per-acre
-                // valuation is the operator's authority via WSDOR / DOR
-                // table, NOT the loader's). Therefore active-flag predicate
-                // is null (M4 cannot fire) and year filter is null.
-                // Several rows in Benton have NULL szLandSoilDesc (e.g.
-                // BMDRP, RMDRP) — those will fall through M5 to the
-                // "LandSoil:<code>" canonical fallback per the policy;
-                // operator rephrases at C24-C against the WSDOR per-acre
-                // table.
-                new DictionaryColumnConfig(
-                    CodeColumn:           "szLandSoilCode",
-                    DescriptionColumn:    "szLandSoilDesc",
-                    ActiveFlagColumn:     null,
-                    ActiveFlagPredicate:  null,
-                    YearColumn:           null), // universe-wide; WSDOR vintages live in per-acre table, not here
-                "c24-b"),
+            // Slice C48-P: land_soil migrated. Needed a C48-F heuristic
+            // extension this slice — PACS dictionary uses Hungarian-
+            // notation columns (szLandSoilCode / szLandSoilDesc) that
+            // the original C48-F rule (first ends in _cd, second ends
+            // in _desc/_dsc) didn't catch. C48-P broadened the rule to
+            // also accept '_code' (case-insensitive) and 'Code'/'Desc'
+            // (exact case, Hungarian-style) suffixes. Live PACS
+            // verification this slice: dictionaryCount went from 203
+            // to 210 — heuristic extension caught land_soil plus
+            // land_class, land_influence, cad, land_state_type,
+            // legal_build_rules_field_code, subset.
+            // Per C24-A: 58 rows; some descriptions NULL (BMDRP, RMDRP)
+            // fall through M5 to the 'LandSoil:<code>' canonical
+            // fallback. Per-acre valuation is operator's authority via
+            // WSDOR / DOR table, NOT the loader's. Active-flag null
+            // (no flag column on this dictionary).
+            "land_soil" => BuildFromCatalog(
+                pacsCatalog!,
+                dictionaryName:    "land_soil",
+                workbookSource:    new DictionaryWorkbookSource("dbo", "land_detail", "land_soil_code"),
+                canonicalTarget:   "LandSoil",
+                sliceArtifactDir:  "c24-b"),
             _ => throw new InvalidOperationException(
                 $"No default column config for table '{tableName}'. " +
                 "Loader currently allowlists 'property_use', 'imprv_det_class', 'land_soil', " +

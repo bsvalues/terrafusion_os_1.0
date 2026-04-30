@@ -253,12 +253,31 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
         return result;
     }
 
+    /// <summary>
+    /// Slice C48-P: extended to also accept the <c>_code</c> snake-case
+    /// variant (case-insensitive) and the <c>Code</c> Hungarian-style
+    /// suffix (exact case — distinguishes <c>szLandSoilCode</c> from
+    /// substrings like <c>decode</c>). Surfaced by C48-O's discovery
+    /// that <c>land_soil</c> uses <c>szLandSoilCode</c>/<c>szLandSoilDesc</c>
+    /// columns that the original C48-F heuristic missed; same shape
+    /// also catches <c>land_class</c>, <c>land_influence</c>, <c>cad</c>,
+    /// and a handful of other real Harris PACS dictionaries.
+    /// </summary>
     private static bool IsCodeColumnName(string columnName) =>
-        columnName.EndsWith("_cd", StringComparison.OrdinalIgnoreCase);
+        columnName.EndsWith("_cd",   StringComparison.OrdinalIgnoreCase) ||
+        columnName.EndsWith("_code", StringComparison.OrdinalIgnoreCase) ||
+        columnName.EndsWith("Code",  StringComparison.Ordinal);
 
+    /// <summary>
+    /// Slice C48-P: paired extension — accepts <c>Desc</c> Hungarian-style
+    /// suffix (exact case) alongside the original C48-F <c>_desc</c> /
+    /// <c>_dsc</c> patterns. Same rationale as
+    /// <see cref="IsCodeColumnName"/>.
+    /// </summary>
     private static bool IsDescriptionColumnName(string columnName) =>
         columnName.EndsWith("_desc", StringComparison.OrdinalIgnoreCase) ||
-        columnName.EndsWith("_dsc", StringComparison.OrdinalIgnoreCase);
+        columnName.EndsWith("_dsc",  StringComparison.OrdinalIgnoreCase) ||
+        columnName.EndsWith("Desc",  StringComparison.Ordinal);
 }
 
 /// <summary>

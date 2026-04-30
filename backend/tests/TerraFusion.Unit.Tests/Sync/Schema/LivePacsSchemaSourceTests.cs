@@ -309,6 +309,106 @@ public sealed class LivePacsSchemaSourceTests
         data.Dictionaries.Should().BeEmpty();
     }
 
+    // ────────────────────────────────────────────────────────────────────────
+    // Slice C48-P: extended heuristic accepts Hungarian-notation
+    // (szLandSoilCode/szLandSoilDesc) + snake_case (_code/_desc) variants
+    // alongside the original C48-F (_cd / _desc / _dsc) patterns.
+    // ────────────────────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task C48P_InferDictionaries_HungarianNotation_IsMatched()
+    {
+        // Mirrors real Harris PACS land_soil shape:
+        // szLandSoilCode (col 1) + szLandSoilDesc (col 2).
+        var fake = new FakePacsSchemaIntrospector();
+        fake.Tables.Add(new IntrospectedTable("land_soil"));
+        fake.Columns.AddRange(new[]
+        {
+            new IntrospectedColumn("land_soil", "szLandSoilCode", "varchar", false, 1),
+            new IntrospectedColumn("land_soil", "szLandSoilDesc", "varchar", true,  2),
+        });
+
+        var sut = new LivePacsSchemaSource(fake, DefaultOptions);
+        var data = await sut.ReadAsync(CancellationToken.None);
+
+        data.Dictionaries.Should().ContainSingle();
+        var d = data.Dictionaries[0];
+        d.DictionaryName.Should().Be("land_soil");
+        d.KeyColumn.Should().Be("szLandSoilCode");
+        d.DescriptionColumn.Should().Be("szLandSoilDesc");
+    }
+
+    [Fact]
+    public async Task C48P_InferDictionaries_SnakeCaseCodeDesc_IsMatched()
+    {
+        // Mirrors real Harris PACS land_state_type shape:
+        // land_state_type_code + land_state_type_desc.
+        var fake = new FakePacsSchemaIntrospector();
+        fake.Tables.Add(new IntrospectedTable("land_state_type"));
+        fake.Columns.AddRange(new[]
+        {
+            new IntrospectedColumn("land_state_type", "land_state_type_code", "varchar", false, 1),
+            new IntrospectedColumn("land_state_type", "land_state_type_desc", "varchar", true,  2),
+        });
+
+        var sut = new LivePacsSchemaSource(fake, DefaultOptions);
+        var data = await sut.ReadAsync(CancellationToken.None);
+
+        data.Dictionaries.Should().ContainSingle().Which.KeyColumn.Should().Be("land_state_type_code");
+    }
+
+    [Fact]
+    public async Task C48P_InferDictionaries_LowercaseCodeIsNotMatchedAsHungarianCode()
+    {
+        // Defensive: a column name ending in lowercase 'code' (e.g.
+        // 'decode', 'geocode') as a SUBSTRING must NOT match the
+        // Hungarian rule. The case-sensitive 'Code' check guards
+        // against this. The case-insensitive '_code' rule still
+        // matches snake_case but requires the underscore separator,
+        // so 'decode' stays unmatched.
+        var fake = new FakePacsSchemaIntrospector();
+        fake.Tables.Add(new IntrospectedTable("decode_log"));
+        fake.Columns.AddRange(new[]
+        {
+            new IntrospectedColumn("decode_log", "decode",     "varchar", false, 1),
+            new IntrospectedColumn("decode_log", "operator",   "varchar", true,  2),
+        });
+
+        var sut = new LivePacsSchemaSource(fake, DefaultOptions);
+        var data = await sut.ReadAsync(CancellationToken.None);
+
+        data.Dictionaries.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task C48P_InferDictionaries_OriginalC48FPatternsStillMatched()
+    {
+        // Regression guard: the C48-P extension is purely additive.
+        // Pre-existing _cd / _desc / _dsc columns must continue to
+        // match unchanged.
+        var fake = new FakePacsSchemaIntrospector();
+        fake.Tables.AddRange(new[]
+        {
+            new IntrospectedTable("imprv_det_class"),
+            new IntrospectedTable("imprv_det_meth"),
+        });
+        fake.Columns.AddRange(new[]
+        {
+            // _cd + _desc: classic
+            new IntrospectedColumn("imprv_det_class", "imprv_det_class_cd", "char",    false, 1),
+            new IntrospectedColumn("imprv_det_class", "imprv_det_cls_desc", "varchar", true,  2),
+            // _cd + _dsc: original C48-F variant
+            new IntrospectedColumn("imprv_det_meth",  "imprv_det_meth_cd",  "char",    false, 1),
+            new IntrospectedColumn("imprv_det_meth",  "imprv_det_meth_dsc", "varchar", true,  2),
+        });
+
+        var sut = new LivePacsSchemaSource(fake, DefaultOptions);
+        var data = await sut.ReadAsync(CancellationToken.None);
+
+        data.Dictionaries.Select(d => d.DictionaryName).Should().BeEquivalentTo(
+            new[] { "imprv_det_class", "imprv_det_meth" });
+    }
+
     [Fact]
     public async Task C48F_InferDictionaries_MultipleDictionariesAndNonDictionaries_OnlyDictsReturned()
     {
