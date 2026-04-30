@@ -1,0 +1,50 @@
+{
+  "catalog": {
+    "tableCount": 2229,
+    "columnCount": 32750,
+    "dictionaryCount": 210,
+    "ingestedAtUtc": "2026-04-30T21:00:43.4293770Z",
+    "elapsedMs": 50711
+  },
+  "preflight": {
+    "target": {
+      "sourceTable": "property_val",
+      "sourceColumn": "property_use_cd",
+      "targetTable": "property_use",
+      "codeColumn": "property_use_cd"
+    },
+    "requiredStance": {
+      "outcome": "Pass",
+      "message": "",
+      "matchedEdge": {
+        "constraintName": "CFK_property_val_property_use_cd",
+        "confidence": "Declared",
+        "provenanceSource": "InformationSchema",
+        "sourceColumns": [
+          "property_use_cd"
+        ],
+        "targetTable": "property_use",
+        "targetColumns": [
+          "property_use_cd"
+        ]
+      }
+    },
+    "advisoryStance": {
+      "outcome": "Pass",
+      "message": ""
+    },
+    "elapsedMs": 2
+  },
+  "proof": {
+    "slice": "C49-FK-D",
+    "sourceLabel": "benton-pacs-prod",
+    "schemaName": "dbo",
+    "identityProof": "live-introspection-via-information-schema",
+    "piiFreeProof": "introspector-queries-information-schema-only",
+    "mutationProof": "no-writes-zero-side-effects",
+    "policyRefs": [
+      "docs/sync/pacs-schema-foreign-key-inference-policy.md",
+      "docs/sync/pacs-schema-fk-consumer-migration-policy.md"
+    ]
+  }
+}
