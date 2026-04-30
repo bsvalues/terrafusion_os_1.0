@@ -43,6 +43,9 @@ export function ExportPacketModal({ studyId, scenarioId, onClose }: Props) {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const formatMetric = (value: number | null | undefined, decimals = 3) =>
+    value == null ? 'N/A' : value.toFixed(decimals);
+
   const overlay: React.CSSProperties = {
     position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -170,6 +173,48 @@ export function ExportPacketModal({ studyId, scenarioId, onClose }: Props) {
                   </>
                 ) : (
                   <div style={{ color: 'hsl(var(--tf-muted))', fontSize: 11 }}>Not available — derive segments first.</div>
+                )}
+              </section>
+
+              {/* Top-risk segment signals */}
+              <section>
+                <h3 style={sectionTitle}>Top Risk Segment Signals ({packet.topRiskSegments.length})</h3>
+                {packet.topRiskSegments.length === 0 ? (
+                  <div style={{ color: 'hsl(var(--tf-muted))', fontSize: 11 }}>
+                    No segment signals available — derive segment metrics before exporting defense evidence.
+                  </div>
+                ) : (
+                  <table style={tableStyle}>
+                    <thead>
+                      <tr>
+                        <th style={th}>Segment</th>
+                        <th style={th}>Scope</th>
+                        <th style={th}>Parcels</th>
+                        <th style={th}>Ratios</th>
+                        <th style={th}>Median / COD / PRD</th>
+                        <th style={th}>Risk</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {packet.topRiskSegments.map((segment) => (
+                        <tr key={segment.segmentId}>
+                          <td style={tdLabel}>{segment.segmentName}</td>
+                          <td style={tdValue}>
+                            {segment.neighborhoodCode ?? 'N/A'}
+                            {segment.revalArea != null ? ` / Reval ${segment.revalArea}` : ''}
+                          </td>
+                          <td style={tdValue}>{segment.parcelCount.toLocaleString()}</td>
+                          <td style={tdValue}>{segment.ratioCount?.toLocaleString() ?? 'N/A'}</td>
+                          <td style={tdValue}>
+                            {formatMetric(segment.medianRatio)} / {formatMetric(segment.cod, 1)} / {formatMetric(segment.prd)}
+                          </td>
+                          <td style={tdValue}>
+                            {segment.riskScore.toFixed(1)} · {segment.exceptionCount} exception{segment.exceptionCount === 1 ? '' : 's'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 )}
               </section>
 

@@ -9,7 +9,15 @@ function fmt(n: number | null | undefined, decimals = 3): string {
   return n.toFixed(decimals);
 }
 
+function cell(value: string | number | null | undefined): string {
+  if (value == null || value === '') return 'N/A';
+  return String(value).replace(/\|/g, '/');
+}
+
 function iaaoStatus(status: string): string {
+  if (status === 'IaaoCompliant') return '✅ COMPLIANT';
+  if (status === 'MarginalCompliance') return '⚠️  MARGINAL';
+  if (status === 'InsufficientData') return 'INSUFFICIENT DATA';
   if (status === 'Compliant') return '✅ COMPLIANT';
   if (status === 'Marginal') return '⚠️  MARGINAL';
   if (status === 'NonCompliant') return '❌ NON-COMPLIANT';
@@ -69,6 +77,25 @@ export function evidencePacketToMarkdown(p: EvidencePacketDto): string {
     }
   } else {
     lines.push('_AI diagnosis not available (no active segment set or derivation not yet run)._');
+  }
+  lines.push('');
+
+  // Top-risk segment signals
+  lines.push('## Top Risk Segment Signals');
+  if (p.topRiskSegments.length === 0) {
+    lines.push('_No top-risk segment signals were included in this packet._');
+  } else {
+    lines.push('| # | Segment | Scope | Parcels | Ratios | Median | COD | PRD | PRB | Weighted Mean | Risk | Exceptions |');
+    lines.push('|---|---------|-------|---------|--------|--------|-----|-----|-----|---------------|------|------------|');
+    p.topRiskSegments.forEach((segment, i) => {
+      const scope = [
+        segment.neighborhoodCode ? `Neighborhood ${segment.neighborhoodCode}` : null,
+        segment.revalArea != null ? `Reval ${segment.revalArea}` : null,
+      ].filter(Boolean).join(' / ') || 'N/A';
+      lines.push(
+        `| ${i + 1} | ${cell(segment.segmentName)} | ${cell(scope)} | ${segment.parcelCount.toLocaleString()} | ${segment.ratioCount?.toLocaleString() ?? 'N/A'} | ${fmt(segment.medianRatio)} | ${fmt(segment.cod, 1)} | ${fmt(segment.prd)} | ${fmt(segment.prb)} | ${fmt(segment.weightedMeanRatio)} | ${fmt(segment.riskScore, 1)} | ${segment.exceptionCount} |`,
+      );
+    });
   }
   lines.push('');
 
