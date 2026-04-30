@@ -550,6 +550,27 @@
   margin-bottom: 16px;
 }
 
+.sf-contract-lineage {
+  padding: 10px;
+  border: 1px solid color-mix(in srgb, var(--sf-info) 28%, transparent);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--sf-info) 8%, transparent);
+}
+
+.sf-contract-lineage__id {
+  margin-bottom: 4px;
+  color: var(--sf-text);
+  font-size: 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  overflow-wrap: anywhere;
+}
+
+.sf-contract-lineage__meta {
+  color: var(--sf-muted);
+  font-size: 0.6875rem;
+  line-height: 1.35;
+}
+
 .sf-stats-heading {
   font-size: 0.5625rem;
   font-weight: 700;
@@ -769,6 +790,34 @@
   background: var(--sf-surface);
   flex-shrink: 0;
   flex-wrap: wrap;
+}
+
+.sf-contract-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--sf-info) 28%, transparent);
+  background: color-mix(in srgb, var(--sf-info) 7%, transparent);
+  color: var(--sf-muted);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.sf-contract-banner__label {
+  color: var(--sf-text);
+  font-weight: 700;
+}
+
+.sf-contract-banner__id {
+  color: var(--sf-info);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  overflow-wrap: anywhere;
+}
+
+.sf-contract-banner__meta {
+  min-width: 240px;
 }
 
 /* ── Button active state ────────────────────────────────────────────────────── */

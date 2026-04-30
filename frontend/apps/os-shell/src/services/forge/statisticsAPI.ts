@@ -13,6 +13,17 @@ import type {
 
 const API_BASE_URL = getViteEnv().VITE_API_URL || '';
 
+export const statisticsApiContractMetadata = {
+  contractId: 'terraforge_statistics_compat_v1',
+  implementationContractId: 'statistics_ratio_study_compat_v1',
+  population: 'qualified sale ratio rows using the shared Statistics/TerraForge ratio-study population contract',
+  source: '/api/MassAppraisal ratio-study endpoints',
+  trustPosture: [
+    'Legacy client retained for shared statistics capability, not standalone shell posture.',
+    'Parity claims require statistics_ratio_study_compat_v1 population alignment.',
+  ],
+} as const;
+
 // ==================== Types (mirror backend DTOs) ====================
 
 export interface DiscoveredSegment {
@@ -37,6 +48,7 @@ export interface CompareModelsRequest {
 
 class StatisticsAPIService {
   private api: AxiosInstance;
+  readonly contractMetadata = statisticsApiContractMetadata;
 
   constructor() {
     this.api = axios.create({

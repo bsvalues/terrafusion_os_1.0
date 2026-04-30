@@ -1,17 +1,17 @@
 # Contract Adoption Audit
 
-Checked: 2026-04-30T22:27:08.561Z
+Checked: 2026-04-30T22:37:01.027Z
 Status: PASS_WITH_ADOPTION_GAPS
 Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 
 ## Summary
 
 - Surfaces audited: 17
-- Pass: 9
+- Pass: 12
 - Partial: 0
-- Gap: 6
+- Gap: 3
 - Out of scope for current four contracts: 2
-- Migration needed: 8
+- Migration needed: 5
 
 ## Matrix
 
@@ -29,11 +29,11 @@ Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 | Atlas Live county context | Loads Washington launch county status, Benton compatibility geometry, staged sales, and review counts. | no | none | partial | yes | gap | It labels geometry availability, but Washington 39-county launch status remains outside the registered suite metric contracts. |
 | GeoForge county health panel | Displays contract-backed operational health metrics and keeps neighborhood spatial diagnostics clearly supplemental. | yes | `terraforge_operational_health_v1`<br>`terraforge_correction_priority_v1` | ui | no | pass | Countywide metrics now come from County Studio healthSummary and visibly show operational contract id, correction priority contract id, and trust posture; local neighborhood calculations are limited to supplemental spatial context. |
 | CostForge triage tab | Computes AI priority score from COD deviation, median-ratio deviation, PRB deviation, and sale count. | no | none | no | yes | gap | The priority formula is local and not registered as correction priority or a separate CostForge calibration contract. |
-| SalesForge running stats | Displays qualification counts, median ratio, weighted mean, COD, PRD, PRB, and IAAO compliance. | no | none | no | yes | gap | This should either adopt statistics_ratio_study_compat_v1 semantics or declare a distinct sale-qualification running-stats contract. |
-| SalesForge ratio audit | Filters qualified sales, sorts by ratio, and flags outliers using local thresholds. | no | none | no | yes | gap | Qualification and outlier behavior overlaps the Statistics Compat population contract but is not explicitly tied to it. |
+| SalesForge running stats | Displays qualification counts, median ratio, weighted mean, COD, PRD, PRB, and IAAO compliance. | yes | `terraforge_statistics_compat_v1`<br>`statistics_ratio_study_compat_v1` | ui | no | pass | The running-stats rail now visibly declares the registered Statistics Compat contract, implementation alias, qualified-sale population, and parity-compatible trust posture for sale-qualification stats. |
+| SalesForge ratio audit | Filters qualified sales, sorts by ratio, and flags outliers using local thresholds. | yes | `terraforge_statistics_compat_v1`<br>`statistics_ratio_study_compat_v1` | ui | no | pass | The audit panel now surfaces Statistics Compat lineage and keeps its local 0.85/1.15 outlier screen labeled as a SalesForge audit lens under the qualified-sale population. |
 | CompsForge module | Loads comparable county sales, filters qualified sales, scores candidates, and runs governed adjustment/reconciliation. | no | none | partial | yes | outOfScope | This does not fit the four current suite metric contracts cleanly. It needs a future comparable-sales candidate-selection/reconciliation contract. |
 | CostForge calculator module | Computes RCNLD, cost factors, matrix provenance, API verification, and cost commit gate. | no | none | partial | yes | outOfScope | This is governed in its own cost domain but not covered by the four TerraForge suite metric contracts. A CostForge cost-value contract should be registered later. |
-| Legacy Statistics API client | Calls MassAppraisal ratio-study, strata, outlier, comparison, and segment endpoints. | no | none | no | yes | gap | The standalone statistics shell is retired, but this client still exposes ratio-study-shaped behavior with no contract id. |
+| Legacy Statistics API client | Calls MassAppraisal ratio-study, strata, outlier, comparison, and segment endpoints. | yes | `terraforge_statistics_compat_v1`<br>`statistics_ratio_study_compat_v1` | client-metadata | no | pass | The client exports contract metadata and exposes it on the service instance while preserving existing MassAppraisal method return shapes. |
 
 ## Migration Gaps
 
@@ -42,9 +42,6 @@ Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 | County Studio AI diagnosis panel | gap | frontend/apps/os-shell/src/pages/forge/county-studio/components/AiDiagnosisPanel.tsx | Diagnosis output is metric-shaped and action-shaping, but no contract id, population, or proof artifact is visible in the response or UI. |
 | Atlas Live county context | gap | frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts | It labels geometry availability, but Washington 39-county launch status remains outside the registered suite metric contracts. |
 | CostForge triage tab | gap | frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx | The priority formula is local and not registered as correction priority or a separate CostForge calibration contract. |
-| SalesForge running stats | gap | frontend/apps/os-shell/src/pages/forge/sales/components/RunningStatsPanel.tsx | This should either adopt statistics_ratio_study_compat_v1 semantics or declare a distinct sale-qualification running-stats contract. |
-| SalesForge ratio audit | gap | frontend/apps/os-shell/src/pages/forge/sales/panels/RatioAuditPanel.tsx | Qualification and outlier behavior overlaps the Statistics Compat population contract but is not explicitly tied to it. |
-| Legacy Statistics API client | gap | frontend/apps/os-shell/src/services/forge/statisticsAPI.ts | The standalone statistics shell is retired, but this client still exposes ratio-study-shaped behavior with no contract id. |
 | CompsForge module | outOfScope | frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx | This does not fit the four current suite metric contracts cleanly. It needs a future comparable-sales candidate-selection/reconciliation contract. |
 | CostForge calculator module | outOfScope | frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx | This is governed in its own cost domain but not covered by the four TerraForge suite metric contracts. A CostForge cost-value contract should be registered later. |
 
@@ -54,7 +51,6 @@ Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 
 ## Next Closures
 
-- Bring SalesForge running stats and ratio audit under statistics_ratio_study_compat_v1 or register a distinct sale-qualification stats contract.
-- Close Atlas Live county context, County Studio AI diagnosis, and legacy statistics API client contract posture gaps.
+- Close Atlas Live county context and County Studio AI diagnosis contract posture gaps.
 - Register future CostForge and CompsForge domain contracts before treating their calculations as suite truth.
 

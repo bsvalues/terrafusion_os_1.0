@@ -8,7 +8,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { getSalesForgeCountyScope, useSalesForgeStore } from '../salesForgeStore';
 import { QualDecisionButtons } from '../components/QualDecisionButtons';
 import { apiFetch } from '../../../../lib/apiBase';
-import type { SaleQueueItem } from '../salesForgeTypes';
+import { SALESFORGE_STATISTICS_CONTRACT, type SaleQueueItem } from '../salesForgeTypes';
 
 type SortDir = 'asc' | 'desc';
 
@@ -142,6 +142,19 @@ export function RatioAuditPanel() {
 
   return (
     <div className="sf-main">
+      <div
+        className="sf-contract-banner"
+        data-testid="salesforge-ratio-audit-contract"
+        data-contract-id={SALESFORGE_STATISTICS_CONTRACT.contractId}
+        data-implementation-contract-id={SALESFORGE_STATISTICS_CONTRACT.implementationContractId}
+      >
+        <span className="sf-contract-banner__label">Statistics contract</span>
+        <span className="sf-contract-banner__id">{SALESFORGE_STATISTICS_CONTRACT.contractId}</span>
+        <span className="sf-contract-banner__meta">
+          {SALESFORGE_STATISTICS_CONTRACT.population}; {SALESFORGE_STATISTICS_CONTRACT.outlierPolicy}
+        </span>
+      </div>
+
       <div className="sf-ratio-audit-toolbar">
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ fontSize: '0.8125rem', color: 'var(--sf-muted)' }}>

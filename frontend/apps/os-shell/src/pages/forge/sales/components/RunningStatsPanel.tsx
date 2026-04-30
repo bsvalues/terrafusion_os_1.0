@@ -5,6 +5,7 @@
 
 import { useEffect } from 'react';
 import { useSalesForgeStore } from '../salesForgeStore';
+import { SALESFORGE_STATISTICS_CONTRACT } from '../salesForgeTypes';
 
 function fmtCount(n: number): string {
   return n.toLocaleString();
@@ -37,6 +38,24 @@ export function RunningStatsPanel() {
 
   return (
     <div className="sf-stats-rail" style={{ minWidth: 0 }}>
+      <div
+        className="sf-stats-section sf-contract-lineage"
+        data-testid="salesforge-running-stats-contract"
+        data-contract-id={SALESFORGE_STATISTICS_CONTRACT.contractId}
+        data-implementation-contract-id={SALESFORGE_STATISTICS_CONTRACT.implementationContractId}
+      >
+        <div className="sf-stats-heading">Statistics contract</div>
+        <div className="sf-contract-lineage__id">
+          {SALESFORGE_STATISTICS_CONTRACT.contractId}
+        </div>
+        <div className="sf-contract-lineage__meta">
+          {SALESFORGE_STATISTICS_CONTRACT.population}
+        </div>
+        <div className="sf-contract-lineage__meta">
+          {SALESFORGE_STATISTICS_CONTRACT.trustPosture}
+        </div>
+      </div>
+
       {/* Counts */}
       <div className="sf-stats-section">
         <div className="sf-stats-heading">Qualification counts</div>
