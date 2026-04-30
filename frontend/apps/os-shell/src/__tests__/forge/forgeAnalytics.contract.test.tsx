@@ -288,7 +288,7 @@ vi.mock('recharts', () => ({
 // Import components under test
 // ---------------------------------------------------------------------------
 
-import { StatisticsStudio } from '../../pages/forge/statistics/StatisticsStudio';
+import { normalizeModuleId } from '../../config/moduleComponents';
 import { RatioStudyPanel } from '../../components/forge/RatioStudyPanel';
 import { RegressionStudio } from '../../pages/forge/regression/RegressionStudio';
 import { DataQualityPage } from '../../pages/forge/quality/DataQualityPage';
@@ -320,44 +320,13 @@ const mockRatioData = {
 
 describe('Phase 10: Forge Analytics Contract', () => {
   // =========================================================================
-  // StatisticsStudio
+  // Retired Statistics Studio shell
   // =========================================================================
-  describe('StatisticsStudio', () => {
-    // WILL FAIL — component does not yet emit data-testid="statistics-studio"
-    it('renders with data-testid="statistics-studio"', () => {
-      render(withQueryClient(<StatisticsStudio />));
-      expect(screen.getByTestId('statistics-studio')).toBeInTheDocument();
-    });
-
-    // WILL FAIL — tab buttons do not yet have data-testid attributes
-    it('tab buttons have data-testid attributes', () => {
-      render(withQueryClient(<StatisticsStudio />));
-      expect(screen.getByTestId('tab-ratio-study')).toBeInTheDocument();
-      expect(screen.getByTestId('tab-trends')).toBeInTheDocument();
-      expect(screen.getByTestId('tab-equity')).toBeInTheDocument();
-      // Phase 16 tabs
-      expect(screen.getByTestId('tab-outliers')).toBeInTheDocument();
-      expect(screen.getByTestId('tab-comparison')).toBeInTheDocument();
-    });
-
-    it('no light-mode classes in rendered output', () => {
-      const { container } = render(withQueryClient(<StatisticsStudio />));
-      const violations = findLightModeViolations(container.innerHTML);
-      expect(violations).toEqual([]);
-    });
-
-    // Phase 16: Outliers tab renders OutlierReviewPanel stub
-    it('Outliers tab renders OutlierReviewPanel stub', () => {
-      render(withQueryClient(<StatisticsStudio />));
-      fireEvent.click(screen.getByTestId('tab-outliers'));
-      expect(screen.getByTestId('outlier-review-stub')).toBeInTheDocument();
-    });
-
-    // Phase 16: Comparison tab renders stub
-    it('Comparison tab renders ModelComparisonPanel stub', () => {
-      render(withQueryClient(<StatisticsStudio />));
-      fireEvent.click(screen.getByTestId('tab-comparison'));
-      expect(screen.getByTestId('model-comparison-stub')).toBeInTheDocument();
+  describe('StatisticsStudio shell retirement', () => {
+    it('routes direct Statistics Studio launches to County Studio', () => {
+      expect(normalizeModuleId('statistics-studio')).toBe('county-studio');
+      expect(normalizeModuleId('statistics')).toBe('county-studio');
+      expect(normalizeModuleId('stats')).toBe('county-studio');
     });
   });
 
