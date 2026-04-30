@@ -1,0 +1,288 @@
+{
+  "schemaVersion": "1.0.0",
+  "slice": "terrafusion-suite-contract-layer",
+  "updatedAt": "2026-04-30T21:15:00Z",
+  "doctrine": {
+    "operationalRecord": "TerraFusion DB",
+    "legacyRole": "Legacy Benton/PACS data is upstream input, not operational truth.",
+    "syncRole": "TerraFusion Sync is a bridge/projection layer, not source truth.",
+    "demoRole": "Washington 39-county data remains demo/reference unless county-specific official source, lineage, sync, and recomputation proof promote it.",
+    "soloDevRule": "Every important metric gets one blessed definition, one blessed read path, one proof artifact, and one visible trust posture."
+  },
+  "requiredContracts": [
+    "terraforge_operational_health_v1",
+    "terraforge_statistics_compat_v1",
+    "terraforge_segment_derivation_v1",
+    "terraforge_correction_priority_v1"
+  ],
+  "contracts": [
+    {
+      "id": "terraforge_operational_health_v1",
+      "version": 1,
+      "status": "registered_implicit_source",
+      "population": "active County Studio segment-set parcel rollup",
+      "purpose": "County command/workbench health view for operational triage, not Statistics Studio parity.",
+      "owner": "TerraFusion.Core.Services.CountyStudyHealthService.GetHealthSummaryAsync",
+      "readPath": "GET /county-study/studies/{studyId}/health-summary",
+      "sourceOfTruth": [
+        "CountyStudySession.ActiveSegmentSetId",
+        "CountySegment rows in the active segment set",
+        "canonical Properties",
+        "canonical ComparableSales"
+      ],
+      "metrics": [
+        "parcelCount",
+        "ratioCount",
+        "medianRatio",
+        "cod",
+        "prd",
+        "stabilityScore",
+        "riskScore",
+        "exceptionCount",
+        "complianceStatus",
+        "topAlerts"
+      ],
+      "trustPosture": [
+        "county-data-trust-tier required",
+        "Benton production_provisional until row-level qualification lineage closes",
+        "39-county reference_demo cannot prove operational health"
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json",
+        "os-platform/core/pilot/evidence/direct-source-recompute.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not compare directly against qualified-sale ratio-study parity.",
+        "Do not treat as statewide production proof.",
+        "Do not recompute client-side."
+      ],
+      "implementationAnchors": [
+        {
+          "path": "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs",
+          "patterns": [
+            "GetHealthSummaryAsync",
+            "LoadParcelRatiosAsync",
+            "ClassifyCompliance",
+            "TopAlerts"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts",
+          "patterns": [
+            "health-summary",
+            "CountyHealthSummaryDto",
+            "must not be used interchangeably with health-summary"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "terraforge_statistics_compat_v1",
+      "version": 1,
+      "status": "codified",
+      "implementationContractId": "statistics_ratio_study_compat_v1",
+      "population": "qualified sale ratio rows using the shared Statistics/TerraForge ratio-study population contract",
+      "purpose": "Same-population parity lens between County Studio and TerraForge/Statistics ratio-study analytics.",
+      "owner": "TerraFusion.Core.Services.CountyStudyHealthService.GetStatisticsCompatAsync",
+      "readPath": "GET /county-study/studies/{studyId}/statistics-compat",
+      "sourceOfTruth": [
+        "canonical ComparableSales",
+        "canonical Properties assessed value join",
+        "statistics_ratio_study_compat_v1 sale window",
+        "statistics_ratio_study_compat_v1 qualification/suppression/outlier policy"
+      ],
+      "metrics": [
+        "contractId",
+        "countWithRatio",
+        "outliersExcluded",
+        "trimmedCount",
+        "medianRatio",
+        "meanRatio",
+        "weightedMeanRatio",
+        "cod",
+        "prd",
+        "prb",
+        "conversionSensitiveCounts",
+        "parcelIdentityReconciliation",
+        "trustPosture"
+      ],
+      "trustPosture": [
+        "statistics parity proven only for the exact shared population",
+        "Benton qualification fields remain converted_legacy_sensitive until sync lineage closes",
+        "Operational Health remains a different population"
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/statistics-shared-population-contract.latest.json",
+        "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not substitute for operational health.",
+        "Do not hide conversion-sensitive qualification counts.",
+        "Do not use Benton reference-only lanes as parity evidence."
+      ],
+      "implementationAnchors": [
+        {
+          "path": "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs",
+          "patterns": [
+            "StatisticsCompatContractId",
+            "statistics_ratio_study_compat_v1",
+            "GetStatisticsCompatAsync",
+            "ConversionSensitiveCounts",
+            "ParcelIdentityReconciliation"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts",
+          "patterns": [
+            "CountyStatisticsCompatDto",
+            "statistics_ratio_study_compat_v1",
+            "conversionSensitiveCounts",
+            "parcelIdentityReconciliation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "terraforge_segment_derivation_v1",
+      "version": 1,
+      "status": "registered_implicit_source",
+      "population": "canonical parcels grouped by neighborhood, reval area, building type, and quality grade for an active county study",
+      "purpose": "Derive governed CountySegmentSet and CountySegment rows from canonical TerraFusion DB tables.",
+      "owner": "TerraFusion.Core.Services.CountyStudySegmentDerivationService.DeriveAsync",
+      "readPath": "POST /county-study/studies/{studyId}/derive-segments",
+      "sourceOfTruth": [
+        "canonical Properties",
+        "canonical CamaCharacteristics",
+        "canonical ComparableSales",
+        "Benton PACS valuation metadata for neighborhood/cycle when available"
+      ],
+      "metrics": [
+        "segmentCount",
+        "totalParcels",
+        "segmentsWithRatios",
+        "segmentsWithIaaoExceptions",
+        "medianRatio",
+        "cod",
+        "prd",
+        "riskScore",
+        "exceptionCount"
+      ],
+      "trustPosture": [
+        "direct-source recomputation required for production confidence",
+        "Benton sync-derived and converted-legacy-sensitive fields must stay visible",
+        "39-county reference_demo cannot certify segment derivation"
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/direct-source-recompute.latest.json",
+        "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not derive from UI fixture data.",
+        "Do not silently substitute Benton defaults for another county.",
+        "Do not collapse segment derivation into Statistics Compat."
+      ],
+      "implementationAnchors": [
+        {
+          "path": "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs",
+          "patterns": [
+            "DeriveAsync",
+            "Properties.AsNoTracking",
+            "CamaCharacteristics.AsNoTracking",
+            "ComparableSales.AsNoTracking",
+            "SegmentDerivationResult"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts",
+          "patterns": [
+            "derive-segments",
+            "SegmentDerivationResult",
+            "segmentSetApi"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "terraforge_correction_priority_v1",
+      "version": 1,
+      "status": "registered_implicit_source",
+      "population": "County Studio active segment alerts ranked for correction and defense workflow",
+      "purpose": "Determine which segment/cohort problems route first into correction, approval, exception, and evidence workflows.",
+      "owner": "TerraFusion.Core.Services.CountyStudyHealthService.ComputeCompositeRisk",
+      "readPath": "GET /county-study/studies/{studyId}/health-summary plus GET /county-study/studies/{studyId}/evidence-packet",
+      "sourceOfTruth": [
+        "CountySegment metrics",
+        "CountyStudyHealthService composite risk formula",
+        "CountyExceptionSet lifecycle",
+        "Evidence packet topRiskSegments"
+      ],
+      "metrics": [
+        "compositeRisk",
+        "reasons",
+        "criticalCount",
+        "warningCount",
+        "healthyCount",
+        "topAlerts",
+        "topRiskSegments",
+        "exceptionCount"
+      ],
+      "trustPosture": [
+        "uses operational health population, not Statistics Compat population",
+        "defense packet must carry segment-level trace",
+        "exceptions remain workflow state, not metric truth"
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/county-studio-correction-and-defense.latest.json",
+        "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not let AI summaries invent priority outside the composite risk contract.",
+        "Do not rank demo/reference counties as production correction work.",
+        "Do not export defense packets without segment-level trace."
+      ],
+      "implementationAnchors": [
+        {
+          "path": "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs",
+          "patterns": [
+            "ComputeCompositeRisk",
+            "BuildSegmentAlert",
+            "OrderByDescending(a => a.CompositeRisk)",
+            "CriticalCount"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts",
+          "patterns": [
+            "EvidenceSegmentSignal",
+            "topRiskSegments",
+            "EvidencePacketDto"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx",
+          "patterns": [
+            "Correction & Defense Chain",
+            "Promote Saved Scenario",
+            "Export Evidence Packet"
+          ]
+        }
+      ]
+    }
+  ],
+  "agentEnforcement": {
+    "mustReport": [
+      "contract id",
+      "population",
+      "read path",
+      "trust posture",
+      "proof artifact"
+    ],
+    "rejectWhen": [
+      "metric logic has no registered contract",
+      "population is implicit",
+      "demo/reference data is used as production proof",
+      "AI summary lacks proof artifact",
+      "County Studio health is compared directly to Statistics Compat"
+    ]
+  }
+}

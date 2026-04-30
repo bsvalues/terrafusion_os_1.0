@@ -1,0 +1,404 @@
+{
+  "checkedAt": "2026-04-30T21:10:30.349Z",
+  "slice": "terrafusion-suite-contract-layer",
+  "status": "PASS_WITH_MIGRATION_GAPS",
+  "decision": "SUITE_CONTRACTS_REGISTERED_RUNTIME_IDS_STILL_MIGRATING",
+  "doctrine": {
+    "operationalRecord": "TerraFusion DB",
+    "legacyRole": "Legacy Benton/PACS data is upstream input, not operational truth.",
+    "syncRole": "TerraFusion Sync is a bridge/projection layer, not source truth.",
+    "demoRole": "Washington 39-county data remains demo/reference unless county-specific official source, lineage, sync, and recomputation proof promote it.",
+    "soloDevRule": "Every important metric gets one blessed definition, one blessed read path, one proof artifact, and one visible trust posture."
+  },
+  "requiredContracts": [
+    "terraforge_operational_health_v1",
+    "terraforge_statistics_compat_v1",
+    "terraforge_segment_derivation_v1",
+    "terraforge_correction_priority_v1"
+  ],
+  "summary": {
+    "contracts": 4,
+    "codified": 1,
+    "registeredImplicit": 3,
+    "proofArtifacts": 8,
+    "missingProofArtifacts": 0
+  },
+  "checks": [
+    {
+      "id": "registry-has-required-contracts",
+      "passed": true,
+      "proof": [
+        "terraforge_operational_health_v1",
+        "terraforge_statistics_compat_v1",
+        "terraforge_segment_derivation_v1",
+        "terraforge_correction_priority_v1"
+      ],
+      "note": "The first four suite population contracts are registered."
+    },
+    {
+      "id": "registry-contract-ids-are-unique",
+      "passed": true,
+      "proof": [
+        "terraforge_operational_health_v1",
+        "terraforge_statistics_compat_v1",
+        "terraforge_segment_derivation_v1",
+        "terraforge_correction_priority_v1"
+      ],
+      "note": "Contract IDs must not fork."
+    },
+    {
+      "id": "county-trust-tier-model-present",
+      "passed": {
+        "implementation": "Washington 39-county acquisition registry and reference/demo corpus",
+        "trustTier": "reference_demo",
+        "notes": "Proves coverage planning and acquisition paths only. It does not prove official statewide production data."
+      },
+      "proof": [
+        "os-platform/core/pilot/county-data-trust-tiers.json"
+      ],
+      "note": "Contract proof depends on explicit Benton operational/provisional and 39-county demo/reference posture."
+    },
+    {
+      "id": "all-contracts-have-required-fields",
+      "passed": true,
+      "proof": [
+        "terraforge_operational_health_v1",
+        "terraforge_statistics_compat_v1",
+        "terraforge_segment_derivation_v1",
+        "terraforge_correction_priority_v1"
+      ],
+      "note": "Every contract must declare owner, population, read path, metrics, trust posture, proofs, and forbidden uses."
+    },
+    {
+      "id": "implementation-anchors-resolve",
+      "passed": true,
+      "proof": [
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:54",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:77",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:32",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:141",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:375",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:15",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:388",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:30",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:30",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:148",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:268",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:282",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:279",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:242",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:305",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:306",
+        "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs:31",
+        "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs:45",
+        "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs:47",
+        "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs:113",
+        "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs:31",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:163",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:164",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:175",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:346",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:113",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:123",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:142",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:455",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:492",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:473",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:215",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:299",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:302"
+      ],
+      "note": "Registered contracts must point at real implementation anchors instead of prose-only intent."
+    },
+    {
+      "id": "proof-artifacts-are-attached",
+      "passed": true,
+      "proof": [
+        "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json",
+        "os-platform/core/pilot/evidence/direct-source-recompute.latest.json",
+        "os-platform/core/pilot/evidence/statistics-shared-population-contract.latest.json",
+        "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json",
+        "os-platform/core/pilot/evidence/direct-source-recompute.latest.json",
+        "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json",
+        "os-platform/core/pilot/evidence/county-studio-correction-and-defense.latest.json",
+        "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json"
+      ],
+      "note": "Every contract must cite at least one proof artifact already in the repo."
+    },
+    {
+      "id": "agent-enforcement-is-explicit",
+      "passed": true,
+      "proof": [
+        "os-platform/core/pilot/terrafusion-suite-contracts.json"
+      ],
+      "note": "The AI agent is required to report contract id, population, trust posture, and reject undocumented metric logic."
+    }
+  ],
+  "failures": [],
+  "contracts": [
+    {
+      "id": "terraforge_operational_health_v1",
+      "status": "registered_implicit_source",
+      "state": "registered-needs-runtime-contract-id",
+      "implementationContractId": null,
+      "population": "active County Studio segment-set parcel rollup",
+      "owner": "TerraFusion.Core.Services.CountyStudyHealthService.GetHealthSummaryAsync",
+      "readPath": "GET /county-study/studies/{studyId}/health-summary",
+      "trustPosture": [
+        "county-data-trust-tier required",
+        "Benton production_provisional until row-level qualification lineage closes",
+        "39-county reference_demo cannot prove operational health"
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json",
+        "os-platform/core/pilot/evidence/direct-source-recompute.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not compare directly against qualified-sale ratio-study parity.",
+        "Do not treat as statewide production proof.",
+        "Do not recompute client-side."
+      ]
+    },
+    {
+      "id": "terraforge_statistics_compat_v1",
+      "status": "codified",
+      "state": "codified",
+      "implementationContractId": "statistics_ratio_study_compat_v1",
+      "population": "qualified sale ratio rows using the shared Statistics/TerraForge ratio-study population contract",
+      "owner": "TerraFusion.Core.Services.CountyStudyHealthService.GetStatisticsCompatAsync",
+      "readPath": "GET /county-study/studies/{studyId}/statistics-compat",
+      "trustPosture": [
+        "statistics parity proven only for the exact shared population",
+        "Benton qualification fields remain converted_legacy_sensitive until sync lineage closes",
+        "Operational Health remains a different population"
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/statistics-shared-population-contract.latest.json",
+        "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not substitute for operational health.",
+        "Do not hide conversion-sensitive qualification counts.",
+        "Do not use Benton reference-only lanes as parity evidence."
+      ]
+    },
+    {
+      "id": "terraforge_segment_derivation_v1",
+      "status": "registered_implicit_source",
+      "state": "registered-needs-runtime-contract-id",
+      "implementationContractId": null,
+      "population": "canonical parcels grouped by neighborhood, reval area, building type, and quality grade for an active county study",
+      "owner": "TerraFusion.Core.Services.CountyStudySegmentDerivationService.DeriveAsync",
+      "readPath": "POST /county-study/studies/{studyId}/derive-segments",
+      "trustPosture": [
+        "direct-source recomputation required for production confidence",
+        "Benton sync-derived and converted-legacy-sensitive fields must stay visible",
+        "39-county reference_demo cannot certify segment derivation"
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/direct-source-recompute.latest.json",
+        "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not derive from UI fixture data.",
+        "Do not silently substitute Benton defaults for another county.",
+        "Do not collapse segment derivation into Statistics Compat."
+      ]
+    },
+    {
+      "id": "terraforge_correction_priority_v1",
+      "status": "registered_implicit_source",
+      "state": "registered-needs-runtime-contract-id",
+      "implementationContractId": null,
+      "population": "County Studio active segment alerts ranked for correction and defense workflow",
+      "owner": "TerraFusion.Core.Services.CountyStudyHealthService.ComputeCompositeRisk",
+      "readPath": "GET /county-study/studies/{studyId}/health-summary plus GET /county-study/studies/{studyId}/evidence-packet",
+      "trustPosture": [
+        "uses operational health population, not Statistics Compat population",
+        "defense packet must carry segment-level trace",
+        "exceptions remain workflow state, not metric truth"
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/county-studio-correction-and-defense.latest.json",
+        "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not let AI summaries invent priority outside the composite risk contract.",
+        "Do not rank demo/reference counties as production correction work.",
+        "Do not export defense packets without segment-level trace."
+      ]
+    }
+  ],
+  "anchorChecks": [
+    {
+      "contractId": "terraforge_operational_health_v1",
+      "path": "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs",
+      "passed": true,
+      "missingPatterns": [],
+      "proof": [
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:54",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:77",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:32",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:141"
+      ]
+    },
+    {
+      "contractId": "terraforge_operational_health_v1",
+      "path": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts",
+      "passed": true,
+      "missingPatterns": [],
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:375",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:15",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:388"
+      ]
+    },
+    {
+      "contractId": "terraforge_statistics_compat_v1",
+      "path": "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs",
+      "passed": true,
+      "missingPatterns": [],
+      "proof": [
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:30",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:30",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:148",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:268",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:282"
+      ]
+    },
+    {
+      "contractId": "terraforge_statistics_compat_v1",
+      "path": "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts",
+      "passed": true,
+      "missingPatterns": [],
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:279",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:242",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:305",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:306"
+      ]
+    },
+    {
+      "contractId": "terraforge_segment_derivation_v1",
+      "path": "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs",
+      "passed": true,
+      "missingPatterns": [],
+      "proof": [
+        "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs:31",
+        "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs:45",
+        "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs:47",
+        "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs:113",
+        "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs:31"
+      ]
+    },
+    {
+      "contractId": "terraforge_segment_derivation_v1",
+      "path": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts",
+      "passed": true,
+      "missingPatterns": [],
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:163",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:164",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:175"
+      ]
+    },
+    {
+      "contractId": "terraforge_correction_priority_v1",
+      "path": "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs",
+      "passed": true,
+      "missingPatterns": [],
+      "proof": [
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:346",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:113",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:123",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:142"
+      ]
+    },
+    {
+      "contractId": "terraforge_correction_priority_v1",
+      "path": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts",
+      "passed": true,
+      "missingPatterns": [],
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:455",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:492",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:473"
+      ]
+    },
+    {
+      "contractId": "terraforge_correction_priority_v1",
+      "path": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx",
+      "passed": true,
+      "missingPatterns": [],
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:215",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:299",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:302"
+      ]
+    }
+  ],
+  "proofArtifactChecks": [
+    {
+      "contractId": "terraforge_operational_health_v1",
+      "path": "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json",
+      "exists": true
+    },
+    {
+      "contractId": "terraforge_operational_health_v1",
+      "path": "os-platform/core/pilot/evidence/direct-source-recompute.latest.json",
+      "exists": true
+    },
+    {
+      "contractId": "terraforge_statistics_compat_v1",
+      "path": "os-platform/core/pilot/evidence/statistics-shared-population-contract.latest.json",
+      "exists": true
+    },
+    {
+      "contractId": "terraforge_statistics_compat_v1",
+      "path": "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json",
+      "exists": true
+    },
+    {
+      "contractId": "terraforge_segment_derivation_v1",
+      "path": "os-platform/core/pilot/evidence/direct-source-recompute.latest.json",
+      "exists": true
+    },
+    {
+      "contractId": "terraforge_segment_derivation_v1",
+      "path": "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json",
+      "exists": true
+    },
+    {
+      "contractId": "terraforge_correction_priority_v1",
+      "path": "os-platform/core/pilot/evidence/county-studio-correction-and-defense.latest.json",
+      "exists": true
+    },
+    {
+      "contractId": "terraforge_correction_priority_v1",
+      "path": "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json",
+      "exists": true
+    }
+  ],
+  "migrationGaps": [
+    {
+      "id": "terraforge_operational_health_v1",
+      "status": "registered_implicit_source",
+      "requiredClosure": "Echo contractId from runtime DTO/API and make consumers use the registry id directly."
+    },
+    {
+      "id": "terraforge_segment_derivation_v1",
+      "status": "registered_implicit_source",
+      "requiredClosure": "Echo contractId from runtime DTO/API and make consumers use the registry id directly."
+    },
+    {
+      "id": "terraforge_correction_priority_v1",
+      "status": "registered_implicit_source",
+      "requiredClosure": "Echo contractId from runtime DTO/API and make consumers use the registry id directly."
+    }
+  ],
+  "nextClosure": [
+    "Add runtime contractId echo fields for registered_implicit_source contracts.",
+    "Move remaining TerraForge ratio-study helper endpoints onto the statistics compat contract instead of copy/paste population filters.",
+    "Make future AI summaries cite the contract id, population, trust tier, and proof artifact before making metric claims."
+  ]
+}
