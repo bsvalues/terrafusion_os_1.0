@@ -23,6 +23,7 @@ public interface ICountyStudySegmentDerivationService
 }
 
 public sealed record SegmentDerivationResult(
+    string ContractId,
     Guid SegmentSetId,
     int SegmentCount,
     int TotalParcels,

@@ -29,6 +29,7 @@ export function evidencePacketToMarkdown(p: EvidencePacketDto): string {
 
   lines.push(`# IAAO Evidence Packet — ${p.countyName}`);
   lines.push(`**Tax Year:** ${p.taxYear}  |  **Study Type:** ${p.studyType}  |  **Study Status:** ${p.studyStatus}`);
+  lines.push(`**Correction Priority Contract:** \`${p.correctionPriorityContractId}\``);
   lines.push(`**Exported:** ${new Date(p.exportedAt).toLocaleString()} by ${p.exportedBy}`);
   lines.push('');
   lines.push('---');

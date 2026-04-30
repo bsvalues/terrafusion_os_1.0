@@ -93,6 +93,7 @@ export function ExportPacketModal({ studyId, scenarioId, onClose }: Props) {
                     <tr><td style={tdLabel}>Tax Year</td><td style={tdValue}>{packet.taxYear}</td></tr>
                     <tr><td style={tdLabel}>Study Type</td><td style={tdValue}>{packet.studyType}</td></tr>
                     <tr><td style={tdLabel}>Status</td><td style={tdValue}>{packet.studyStatus}</td></tr>
+                    <tr><td style={tdLabel}>Correction Contract</td><td style={tdValue}><code>{packet.correctionPriorityContractId}</code></td></tr>
                     <tr><td style={tdLabel}>Exported</td><td style={tdValue}>{new Date(packet.exportedAt).toLocaleString()} by {packet.exportedBy}</td></tr>
                   </tbody>
                 </table>

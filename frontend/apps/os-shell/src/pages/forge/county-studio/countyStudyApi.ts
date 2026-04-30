@@ -165,6 +165,7 @@ export const studyApi = {
  * TerraFusion.Core.Services.ICountyStudySegmentDerivationService.
  */
 export interface SegmentDerivationResult {
+  contractId: 'terraforge_segment_derivation_v1';
   segmentSetId: string;
   segmentCount: number;
   totalParcels: number;
@@ -471,6 +472,7 @@ export interface EvidenceSegmentSignal {
 }
 
 export interface EvidencePacketDto {
+  correctionPriorityContractId: 'terraforge_correction_priority_v1';
   studyId: string;
   countyName: string;
   taxYear: number;

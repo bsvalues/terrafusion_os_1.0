@@ -219,6 +219,8 @@ export interface HealthAlertDto {
 }
 
 export interface CountyHealthSummaryDto {
+  contractId: 'terraforge_operational_health_v1';
+  correctionPriorityContractId: 'terraforge_correction_priority_v1';
   studyId: string;
   countyId: string;
   taxYear: number;

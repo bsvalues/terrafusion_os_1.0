@@ -2,6 +2,7 @@ import { evidencePacketToMarkdown } from '../utils/evidencePacketMarkdown';
 import type { EvidencePacketDto } from '../countyStudyApi';
 
 const mockPacket: EvidencePacketDto = {
+  correctionPriorityContractId: 'terraforge_correction_priority_v1',
   studyId: 'study-1',
   countyName: 'Benton County',
   taxYear: 2025,
@@ -75,6 +76,7 @@ test('contains study header information', () => {
   expect(md).toContain('Benton County');
   expect(md).toContain('2025');
   expect(md).toContain('bsvalues');
+  expect(md).toContain('terraforge_correction_priority_v1');
 });
 
 test('formats IAAO compliance table with pass/fail', () => {

@@ -21,6 +21,7 @@ vi.mock('../utils/evidencePacketMarkdown', () => ({
 }));
 
 const MOCK_PACKET: EvidencePacketDto = {
+  correctionPriorityContractId: 'terraforge_correction_priority_v1',
   studyId: 'study-1',
   countyName: 'Benton County',
   taxYear: 2026,
@@ -98,6 +99,7 @@ describe('ExportPacketModal', () => {
     expect(screen.getByText('Benton County')).toBeInTheDocument();
     expect(screen.getByText('2026')).toBeInTheDocument();
     expect(screen.getByText('Market trend correction')).toBeInTheDocument();
+    expect(screen.getByText('terraforge_correction_priority_v1')).toBeInTheDocument();
     expect(screen.getByText('Top Risk Segment Signals (1)')).toBeInTheDocument();
     expect(screen.getByText('Neighborhood 101 · Reval 3 · Residential')).toBeInTheDocument();
     expect(screen.getByText(/70\.0 · 11 exceptions/i)).toBeInTheDocument();

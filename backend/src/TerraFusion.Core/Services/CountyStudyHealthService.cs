@@ -27,6 +27,8 @@ namespace TerraFusion.Core.Services;
 
 public class CountyStudyHealthService : ICountyStudyHealthService
 {
+    public const string OperationalHealthContractId = "terraforge_operational_health_v1";
+    public const string CorrectionPriorityContractId = "terraforge_correction_priority_v1";
     public const string StatisticsCompatContractId = "statistics_ratio_study_compat_v1";
 
     // ── IAAO + Benton thresholds — referenced by ClassifyCompliance + risk formula.
@@ -126,6 +128,8 @@ public class CountyStudyHealthService : ICountyStudyHealthService
             .ToList();
 
         return new CountyHealthSummaryDto(
+            ContractId: OperationalHealthContractId,
+            CorrectionPriorityContractId: CorrectionPriorityContractId,
             StudyId: study.StudyId,
             CountyId: study.CountyId,
             TaxYear: study.TaxYear,

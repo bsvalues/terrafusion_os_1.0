@@ -1267,6 +1267,7 @@ public class CountyStudyController : ControllerBase
                     scenario.Status, scenario.CreatedAt, scenario.CreatedBy);
 
             var packet = new EvidencePacketDto(
+                CorrectionPriorityContractId: CountyStudyHealthService.CorrectionPriorityContractId,
                 StudyId: studyId,
                 CountyName: study.CountyName,
                 TaxYear: study.TaxYear,
