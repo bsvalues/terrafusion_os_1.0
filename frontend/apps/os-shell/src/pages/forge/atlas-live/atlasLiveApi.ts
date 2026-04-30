@@ -6,6 +6,15 @@ import {
 } from '../geo/v2/v2Api';
 
 const BENTON_COUNTY_ID = '19190019-1919-1919-1919-191919191919';
+export const ATLAS_COUNTY_LAUNCH_CONTEXT_CONTRACT_ID = 'county_data_trust_launch_context_v1';
+
+export type CountyDataTrustTier =
+  | 'production_verified'
+  | 'production_provisional'
+  | 'sync_derived'
+  | 'converted_legacy_sensitive'
+  | 'reference_demo'
+  | 'unknown';
 
 export interface WashingtonCountyStatusEntry {
   county: string;
@@ -60,6 +69,7 @@ export interface AtlasRouteScope {
 export type AtlasGeometryAvailability = 'compatibility' | 'unpublished';
 
 export interface AtlasCountyContext {
+  contractId: typeof ATLAS_COUNTY_LAUNCH_CONTEXT_CONTRACT_ID;
   countyId: string | null;
   countyName: string;
   countyCode: string;
@@ -76,6 +86,13 @@ export interface AtlasCountyContext {
   salesRoute: string;
   geometryAvailability: AtlasGeometryAvailability;
   geometryMessage: string;
+  trustTier: CountyDataTrustTier;
+  trustLabel: string;
+  dataTrustBadges: string[];
+  databasePosture: string;
+  launchContextPosture: string;
+  productionClaimAllowed: boolean;
+  dataTrustMessage: string;
 }
 
 export interface AtlasCompatibilityMapData {
@@ -98,6 +115,37 @@ function resolveCountyName(countyId: string | null, countyName: string | null): 
     return 'Benton';
   }
   return null;
+}
+
+function buildCountyTrustContext(countyCode: string) {
+  if (countyCode === '005') {
+    return {
+      trustTier: 'production_provisional' as const,
+      trustLabel: 'Production Provisional',
+      dataTrustBadges: [
+        'Production Provisional',
+        'Sync-Derived',
+        'Converted Legacy Sensitive',
+      ],
+      databasePosture: 'TerraFusion.Benton.Operational + TerraFusion.Benton.LegacyBridge',
+      launchContextPosture: 'Benton operational/provisional lane with compatibility geometry during Atlas transfer.',
+      productionClaimAllowed: false,
+      dataTrustMessage: 'Benton is operational/provisional and sync-derived; 2017 conversion-sensitive sales qualification fields still require visible lineage caution.',
+    };
+  }
+
+  return {
+    trustTier: 'reference_demo' as const,
+    trustLabel: 'Demo/Reference Only',
+    dataTrustBadges: [
+      'Demo/Reference Only',
+      'Not Certified for Operational Valuation',
+    ],
+    databasePosture: 'TerraFusion.Reference39.Demo + TerraFusion.Platform.Metadata',
+    launchContextPosture: 'Washington 39-county launch/reference corpus; county-specific production source proof not promoted.',
+    productionClaimAllowed: false,
+    dataTrustMessage: 'This county context is launch/reference posture only and must not be treated as official production valuation truth.',
+  };
 }
 
 async function fetchLaunchJson<T>(path: string, signal?: AbortSignal): Promise<T> {
@@ -140,8 +188,10 @@ export async function fetchAtlasCountyContext(
   const detail = await fetchLaunchJson<WashingtonCountyDetailFile>(match.staticRoutes.detail, signal);
   const geometryAvailability: AtlasGeometryAvailability =
     match.countyCode === '005' ? 'compatibility' : 'unpublished';
+  const trustContext = buildCountyTrustContext(detail.countyCode || match.countyCode);
 
   return {
+    contractId: ATLAS_COUNTY_LAUNCH_CONTEXT_CONTRACT_ID,
     countyId: scope.countyId,
     countyName: detail.county || match.county,
     countyCode: detail.countyCode || match.countyCode,
@@ -161,6 +211,7 @@ export async function fetchAtlasCountyContext(
       geometryAvailability === 'compatibility'
         ? 'Parcel and neighborhood geometry are currently served through the Benton compatibility map feed while Atlas Live transfer completes.'
         : 'County geometry is not yet published in the statewide hosted Atlas lane. County scope is real; parcel map geometry is still unavailable for this county.',
+    ...trustContext,
   };
 }
 

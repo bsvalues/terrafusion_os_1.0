@@ -15,6 +15,7 @@ const MOCK_SCOPE = {
 } as const;
 
 const MOCK_CONTEXT = {
+  contractId: 'county_data_trust_launch_context_v1' as const,
   countyId: '19190019-1919-1919-1919-191919191919',
   countyName: 'Benton',
   countyCode: '005',
@@ -31,6 +32,13 @@ const MOCK_CONTEXT = {
   salesRoute: '/launch-data/washington/sales/by-county/005.json',
   geometryAvailability: 'compatibility' as const,
   geometryMessage: 'Compatibility geometry feed active.',
+  trustTier: 'production_provisional' as const,
+  trustLabel: 'Production Provisional',
+  dataTrustBadges: ['Production Provisional', 'Sync-Derived', 'Converted Legacy Sensitive'],
+  databasePosture: 'TerraFusion.Benton.Operational + TerraFusion.Benton.LegacyBridge',
+  launchContextPosture: 'Benton operational/provisional lane.',
+  productionClaimAllowed: false,
+  dataTrustMessage: 'Benton is operational/provisional and sync-derived.',
 };
 
 const MOCK_OUTLINES = {

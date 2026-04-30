@@ -7,7 +7,8 @@
     "terraforge_statistics_compat_v1",
     "terraforge_segment_derivation_v1",
     "terraforge_correction_priority_v1",
-    "costforge_calibration_priority_v1"
+    "costforge_calibration_priority_v1",
+    "county_data_trust_launch_context_v1"
   ],
   "statusDoctrine": {
     "pass": "Surface consumes a registered contract id and exposes enough posture for proof or user review.",
@@ -141,12 +142,12 @@
       "surface": "Atlas Live county context",
       "path": "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts",
       "metricBehavior": "Loads Washington launch county status, Benton compatibility geometry, staged sales, and review counts.",
-      "contractBacked": false,
-      "contractIds": [],
-      "trustPostureExposed": "partial",
-      "status": "outOfScope",
-      "migrationNeeded": true,
-      "notes": "This is classified as launch/county-context posture, not one of the four current suite metric contracts. It needs a future county data-trust or launch-context contract before being treated as production truth."
+      "contractBacked": true,
+      "contractIds": ["county_data_trust_launch_context_v1"],
+      "trustPostureExposed": "api+ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "Atlas county context now emits county_data_trust_launch_context_v1 with trust tier, DB posture, launch posture, geometry availability, and production-claim posture."
     },
     {
       "surface": "GeoForge county health panel",
@@ -239,7 +240,6 @@
     }
   ],
   "nextClosures": [
-    "Register future county data-trust or launch-context contract before treating Atlas Live county context as production truth.",
     "Register future CostForge cost-value contract before treating calculator outputs as suite truth.",
     "Register future CompsForge comparable-sales candidate-selection/reconciliation contract before treating its scoring as suite truth."
   ]

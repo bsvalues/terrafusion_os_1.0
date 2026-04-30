@@ -14,7 +14,8 @@
     "terraforge_statistics_compat_v1",
     "terraforge_segment_derivation_v1",
     "terraforge_correction_priority_v1",
-    "costforge_calibration_priority_v1"
+    "costforge_calibration_priority_v1",
+    "county_data_trust_launch_context_v1"
   ],
   "contracts": [
     {
@@ -345,6 +346,75 @@
             "costforge-triage-contract-classification",
             "data-contract-id",
             "COSTFORGE_TRIAGE_CONTRACT_CLASSIFICATION"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "county_data_trust_launch_context_v1",
+      "version": 1,
+      "status": "codified",
+      "population": "Atlas Live county context resolved from County Studio route scope and Washington launch/county trust posture",
+      "purpose": "Prevent Benton operational/provisional data, 39-county reference/demo data, geometry availability, and production-claim posture from being treated as the same trust class.",
+      "owner": "frontend.apps.os-shell.pages.forge.atlas-live.atlasLiveApi.fetchAtlasCountyContext",
+      "readPath": "GET /launch-data/washington/counties/status.json plus county detail route",
+      "sourceOfTruth": [
+        "county-data-trust-tiers.json",
+        "Washington launch county status file",
+        "Washington launch county detail file",
+        "Atlas route scope from County Studio handoff"
+      ],
+      "metrics": [
+        "contractId",
+        "countyId",
+        "countyCode",
+        "trustTier",
+        "trustLabel",
+        "dataTrustBadges",
+        "databasePosture",
+        "launchContextPosture",
+        "productionClaimAllowed",
+        "geometryAvailability",
+        "geometryMessage",
+        "primarySourceMode",
+        "prometheusStatus",
+        "stagedSales",
+        "needsReview"
+      ],
+      "trustPosture": [
+        "Benton is production_provisional, sync_derived, and converted_legacy_sensitive until lineage and conversion-sensitive sales qualification proof closes.",
+        "Washington 39-county launch/reference corpus is reference_demo and not certified for operational valuation.",
+        "Geometry availability is launch context, not proof of production valuation data."
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/county-data-trust-launch-context-contract.latest.json",
+        "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not treat 39-county launch/reference data as official production data.",
+        "Do not infer production readiness from geometry availability alone.",
+        "Do not hide Benton converted-legacy sensitivity when presenting county context."
+      ],
+      "implementationAnchors": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts",
+          "patterns": [
+            "ATLAS_COUNTY_LAUNCH_CONTEXT_CONTRACT_ID",
+            "county_data_trust_launch_context_v1",
+            "buildCountyTrustContext",
+            "production_provisional",
+            "reference_demo",
+            "productionClaimAllowed",
+            "dataTrustMessage"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx",
+          "patterns": [
+            "atlas-county-trust-posture",
+            "data-contract-id",
+            "data-trust-tier",
+            "dataTrustBadges"
           ]
         }
       ]
