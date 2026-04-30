@@ -92,6 +92,7 @@
     "truth:costforge-calibration-priority": "node os-platform/core/pilot/costforge-calibration-priority-contract.mjs",
     "truth:county-data-trust-launch-context": "node os-platform/core/pilot/county-data-trust-launch-context-contract.mjs",
     "truth:compsforge-candidate-reconciliation": "node os-platform/core/pilot/compsforge-candidate-reconciliation-contract.mjs",
+    "truth:costforge-cost-value": "node os-platform/core/pilot/costforge-cost-value-contract.mjs",
     "truth:suite-contracts": "node os-platform/core/pilot/terrafusion-suite-contracts.mjs",
     "truth:contract-adoption-audit": "node os-platform/core/pilot/contract-adoption-audit.mjs",
     "proof:june10:coverage": "node os-platform/core/pilot/washington-39-county-coverage-proof.mjs",

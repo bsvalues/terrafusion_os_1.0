@@ -1,0 +1,74 @@
+{
+  "checkedAt": "2026-04-30T23:35:48.490Z",
+  "slice": "costforge-cost-value-contract",
+  "status": "PASS",
+  "decision": "COSTFORGE_COST_VALUE_CONTRACT_REGISTERED_AND_ECHOED",
+  "contractId": "costforge_cost_value_v1",
+  "policy": {
+    "matrixYear": 2025,
+    "buildingTypeCount": 14,
+    "regionCount": 3,
+    "parcelBoundRequired": true,
+    "apiVerificationPath": "/costforge/calculate",
+    "commitToolId": "assemble_boe_packet"
+  },
+  "population": "Benton parcel-bound CostForge cost approach value preview, governed API verification, scenario comparison, and TerraPilot BOE packet commit gate",
+  "readPath": "Benton 2025 cost matrix in forgeService.calculateCost plus POST /costforge/calculate and Pilot tool assemble_boe_packet",
+  "trustPosture": [
+    "Cost value output is Benton cost-matrix scoped and parcel-bound.",
+    "Local RCNLD is preview evidence until governed API verification and TerraPilot BOE packet commit are completed.",
+    "Do not treat 39-county demo/reference cost calculator output as production value proof."
+  ],
+  "checks": [
+    {
+      "id": "contract-registered",
+      "passed": true,
+      "proof": ["os-platform/core/pilot/terrafusion-suite-contracts.json"],
+      "note": "CostForge cost-value contract is present in the suite registry."
+    },
+    {
+      "id": "contract-required",
+      "passed": true,
+      "proof": [
+        "terraforge_operational_health_v1",
+        "terraforge_statistics_compat_v1",
+        "terraforge_segment_derivation_v1",
+        "terraforge_correction_priority_v1",
+        "costforge_calibration_priority_v1",
+        "county_data_trust_launch_context_v1",
+        "compsforge_candidate_reconciliation_v1",
+        "costforge_cost_value_v1"
+      ],
+      "note": "Contract is part of the required suite contract list."
+    },
+    {
+      "id": "module-runtime-echo",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx"
+      ],
+      "note": "CostForge module declares contract id, matrix policy, API verification path, commit tool, and UI contract echo."
+    },
+    {
+      "id": "cost-engine-boundary",
+      "passed": true,
+      "proof": ["frontend/apps/os-shell/src/services/forgeService.ts"],
+      "note": "Forge service contains cost matrix, depreciation, RCN, RCNLD, and matrix-source calculation boundary."
+    },
+    {
+      "id": "ui-contract-test",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CostForgeModule.contracts.test.tsx"
+      ],
+      "note": "Focused CostForge module test proves the contract posture is visible in the module."
+    },
+    {
+      "id": "audit-adopted",
+      "passed": true,
+      "proof": ["os-platform/core/pilot/contract-adoption-audit.json"],
+      "note": "Contract adoption audit treats CostForge calculator output as contract-backed instead of future out-of-scope work."
+    }
+  ],
+  "failures": []
+}

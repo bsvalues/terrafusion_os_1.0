@@ -1,8 +1,8 @@
 {
-  "checkedAt": "2026-04-30T23:25:53.662Z",
+  "checkedAt": "2026-04-30T23:35:57.766Z",
   "slice": "contract-adoption-audit",
-  "status": "PASS_WITH_ADOPTION_GAPS",
-  "decision": "CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND",
+  "status": "PASS",
+  "decision": "ALL_AUDITED_SURFACES_CONTRACT_ADOPTED",
   "baselineContractRegistry": "os-platform/core/pilot/terrafusion-suite-contracts.json",
   "requiredContracts": [
     "terraforge_operational_health_v1",
@@ -11,7 +11,8 @@
     "terraforge_correction_priority_v1",
     "costforge_calibration_priority_v1",
     "county_data_trust_launch_context_v1",
-    "compsforge_candidate_reconciliation_v1"
+    "compsforge_candidate_reconciliation_v1",
+    "costforge_cost_value_v1"
   ],
   "statusDoctrine": {
     "pass": "Surface consumes a registered contract id and exposes enough posture for proof or user review.",
@@ -21,11 +22,11 @@
   },
   "summary": {
     "surfaces": 17,
-    "pass": 16,
+    "pass": 17,
     "partial": 0,
     "gap": 0,
-    "outOfScope": 1,
-    "migrationNeeded": 1,
+    "outOfScope": 0,
+    "migrationNeeded": 0,
     "failures": 0
   },
   "failures": [],
@@ -230,12 +231,12 @@
       "surface": "CostForge calculator module",
       "path": "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx",
       "metricBehavior": "Computes RCNLD, cost factors, matrix provenance, API verification, and cost commit gate.",
-      "contractBacked": false,
-      "contractIds": [],
-      "trustPostureExposed": "partial",
-      "status": "outOfScope",
-      "migrationNeeded": true,
-      "notes": "This is governed in its own cost domain but not covered by the four TerraForge suite metric contracts. A CostForge cost-value contract should be registered later."
+      "contractBacked": true,
+      "contractIds": ["costforge_cost_value_v1"],
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "CostForge calculator output now emits costforge_cost_value_v1 and distinguishes local RCNLD preview, Benton matrix provenance, governed API verification, and TerraPilot BOE packet commit posture."
     },
     {
       "surface": "Legacy Statistics API client",
@@ -252,20 +253,6 @@
       "notes": "The client exports contract metadata and exposes it on the service instance while preserving existing MassAppraisal method return shapes."
     }
   ],
-  "migrationGaps": [
-    {
-      "surface": "CostForge calculator module",
-      "path": "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx",
-      "metricBehavior": "Computes RCNLD, cost factors, matrix provenance, API verification, and cost commit gate.",
-      "contractBacked": false,
-      "contractIds": [],
-      "trustPostureExposed": "partial",
-      "status": "outOfScope",
-      "migrationNeeded": true,
-      "notes": "This is governed in its own cost domain but not covered by the four TerraForge suite metric contracts. A CostForge cost-value contract should be registered later."
-    }
-  ],
-  "nextClosures": [
-    "Register future CostForge cost-value contract before treating calculator outputs as suite truth."
-  ]
+  "migrationGaps": [],
+  "nextClosures": []
 }

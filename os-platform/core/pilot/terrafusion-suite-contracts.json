@@ -16,7 +16,8 @@
     "terraforge_correction_priority_v1",
     "costforge_calibration_priority_v1",
     "county_data_trust_launch_context_v1",
-    "compsforge_candidate_reconciliation_v1"
+    "compsforge_candidate_reconciliation_v1",
+    "costforge_cost_value_v1"
   ],
   "contracts": [
     {
@@ -487,6 +488,94 @@
             "compsforge-contract-classification",
             "compsforge_candidate_reconciliation_v1",
             "governed adjustment and reconciliation remain Benton-certified"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "costforge_cost_value_v1",
+      "version": 1,
+      "status": "codified",
+      "population": "Benton parcel-bound CostForge cost approach value preview, governed API verification, scenario comparison, and TerraPilot BOE packet commit gate",
+      "purpose": "Keep RCNLD, matrix provenance, depreciation, API verification, and cost-value commit semantics under a named contract instead of treating calculator output as unconstrained suite truth.",
+      "owner": "frontend.apps.os-shell.pages.suites.modules.CostForgeModule",
+      "readPath": "Benton 2025 cost matrix in forgeService.calculateCost plus POST /costforge/calculate and Pilot tool assemble_boe_packet",
+      "sourceOfTruth": [
+        "Benton County 2025 cost matrix in forgeService",
+        "CostCalculationInput from parcel-bound CostForge module state",
+        "forgeService.calculateCost RCNLD preview path",
+        "POST /costforge/calculate governed API verification",
+        "assemble_boe_packet TerraPilot commit gate"
+      ],
+      "metrics": [
+        "contractId",
+        "matrixYear",
+        "buildingTypeCount",
+        "regionCount",
+        "baseRate",
+        "adjustedRate",
+        "costPerSqFt",
+        "rcnNew",
+        "depreciation",
+        "rcnld",
+        "confidence",
+        "matrixSource",
+        "apiVerifiedValue",
+        "apiVariance",
+        "commitCorrelationId"
+      ],
+      "trustPosture": [
+        "Cost value output is Benton cost-matrix scoped and parcel-bound.",
+        "Local RCNLD is preview evidence until governed API verification and TerraPilot BOE packet commit are completed.",
+        "Do not treat 39-county demo/reference cost calculator output as production value proof."
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/costforge-cost-value-contract.latest.json",
+        "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not treat local calculator preview as committed BOE evidence without the commit gate.",
+        "Do not use CostForge cost value as County Studio correction priority or CostForge calibration priority.",
+        "Do not promote non-Benton cost values as production proof without county-specific cost matrix lineage."
+      ],
+      "implementationAnchors": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx",
+          "patterns": [
+            "COSTFORGE_COST_VALUE_CONTRACT",
+            "costforge_cost_value_v1",
+            "matrixYear: 2025",
+            "buildingTypeCount: 14",
+            "regionCount: 3",
+            "parcelBoundRequired: true",
+            "apiVerificationPath: '/costforge/calculate'",
+            "commitToolId: 'assemble_boe_packet'",
+            "calculateCost",
+            "verifyViaApi",
+            "handleCommitCostValue",
+            "costforge-cost-value-contract-classification",
+            "data-contract-id"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/services/forgeService.ts",
+          "patterns": [
+            "COST_MATRIX",
+            "Matrix Year 2025",
+            "DEPRECIATION_CONFIG",
+            "calculateCost",
+            "rcnNew",
+            "depreciation",
+            "rcnld",
+            "matrixSource"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CostForgeModule.contracts.test.tsx",
+          "patterns": [
+            "costforge-cost-value-contract-classification",
+            "costforge_cost_value_v1",
+            "local RCNLD is a preview until API verification"
           ]
         }
       ]

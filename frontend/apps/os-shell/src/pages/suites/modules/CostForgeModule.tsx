@@ -119,6 +119,23 @@ const COST_INPUT_TEMPLATE: CostCalculationInput = {
   garageSize: 0,
 };
 
+export const COSTFORGE_COST_VALUE_CONTRACT = {
+  status: 'contract-backed',
+  contractId: 'costforge_cost_value_v1',
+  population: 'Benton parcel-bound cost approach value preview and commit gate',
+  source: 'Benton County 2025 cost matrix plus TerraFusion CostForge API verification and TerraPilot BOE packet commit',
+  trustPosture:
+    'Cost value outputs are Benton cost-matrix scoped; local RCNLD is a preview until API verification and TerraPilot evidence commit are completed.',
+  valuePolicy: {
+    matrixYear: 2025,
+    buildingTypeCount: 14,
+    regionCount: 3,
+    parcelBoundRequired: true,
+    apiVerificationPath: '/costforge/calculate',
+    commitToolId: 'assemble_boe_packet',
+  },
+} as const;
+
 export default function CostForgeModule() {
   const [inputs, setInputs] = useState<CostCalculationInput>(COST_INPUT_TEMPLATE);
   const [showBreakdown, setShowBreakdown] = useState(true);
@@ -274,6 +291,20 @@ export default function CostForgeModule() {
           <p style={{ color: 'hsl(var(--tf-muted))' }} className='mt-1'>
             Benton County Cost Approach — 89,247 parcels • Matrix Year 2025 • 14 building types × 3 regions
           </p>
+          <div
+            data-testid='costforge-cost-value-contract-classification'
+            data-contract-status={COSTFORGE_COST_VALUE_CONTRACT.status}
+            data-contract-id={COSTFORGE_COST_VALUE_CONTRACT.contractId}
+            className='mt-3 flex items-center gap-2 flex-wrap text-xs'
+            style={{ color: 'hsl(var(--tf-muted))' }}
+          >
+            <Badge variant='outline'>
+              {COSTFORGE_COST_VALUE_CONTRACT.contractId}
+            </Badge>
+            <span>
+              {COSTFORGE_COST_VALUE_CONTRACT.trustPosture}
+            </span>
+          </div>
         </div>
         {result.matrixSource && (
           <Badge
