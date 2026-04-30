@@ -15,7 +15,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
-import { AiDiagnosisPanel } from '../components/AiDiagnosisPanel';
+import { AiDiagnosisPanel, AI_DIAGNOSIS_CONTRACT_POSTURE } from '../components/AiDiagnosisPanel';
 import type { SegmentDiagnosisDto } from '../types/countyStudio.types';
 
 const { activateModuleMock, state, retryMock } = vi.hoisted(() => ({
@@ -183,6 +183,21 @@ describe('AiDiagnosisPanel — Data-class populated', () => {
     const banner = screen.getByTestId('diagnosis-classification-banner');
     expect(banner).toHaveAttribute('data-class', 'Data');
     expect(banner.textContent).toMatch(/100% confidence/);
+  });
+
+  it('declares segment derivation and correction priority contract posture', () => {
+    state.diagnosis = dataClassDiagnosis();
+    render(<AiDiagnosisPanel segmentId="s1" />);
+    const posture = screen.getByTestId('diagnosis-contract-posture');
+    expect(posture).toHaveAttribute(
+      'data-segment-contract-id',
+      AI_DIAGNOSIS_CONTRACT_POSTURE.segmentDerivationContractId,
+    );
+    expect(posture).toHaveAttribute(
+      'data-correction-contract-id',
+      AI_DIAGNOSIS_CONTRACT_POSTURE.correctionPriorityContractId,
+    );
+    expect(posture).toHaveTextContent(AI_DIAGNOSIS_CONTRACT_POSTURE.trustPosture);
   });
 
   it('displays fingerprint hash (first 8 chars) and relative timestamp', () => {

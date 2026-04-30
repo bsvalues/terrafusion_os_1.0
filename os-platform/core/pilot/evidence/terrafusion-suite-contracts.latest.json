@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-04-30T21:52:45.422Z",
+  "checkedAt": "2026-04-30T22:53:10.654Z",
   "slice": "terrafusion-suite-contract-layer",
   "status": "PASS",
   "decision": "SUITE_CONTRACTS_REGISTERED_AND_CODIFIED",
@@ -14,13 +14,14 @@
     "terraforge_operational_health_v1",
     "terraforge_statistics_compat_v1",
     "terraforge_segment_derivation_v1",
-    "terraforge_correction_priority_v1"
+    "terraforge_correction_priority_v1",
+    "costforge_calibration_priority_v1"
   ],
   "summary": {
-    "contracts": 4,
-    "codified": 4,
+    "contracts": 5,
+    "codified": 5,
     "registeredImplicit": 0,
-    "proofArtifacts": 8,
+    "proofArtifacts": 10,
     "missingProofArtifacts": 0
   },
   "checks": [
@@ -31,7 +32,8 @@
         "terraforge_operational_health_v1",
         "terraforge_statistics_compat_v1",
         "terraforge_segment_derivation_v1",
-        "terraforge_correction_priority_v1"
+        "terraforge_correction_priority_v1",
+        "costforge_calibration_priority_v1"
       ],
       "note": "The first four suite population contracts are registered."
     },
@@ -42,7 +44,8 @@
         "terraforge_operational_health_v1",
         "terraforge_statistics_compat_v1",
         "terraforge_segment_derivation_v1",
-        "terraforge_correction_priority_v1"
+        "terraforge_correction_priority_v1",
+        "costforge_calibration_priority_v1"
       ],
       "note": "Contract IDs must not fork."
     },
@@ -63,7 +66,8 @@
         "terraforge_operational_health_v1",
         "terraforge_statistics_compat_v1",
         "terraforge_segment_derivation_v1",
-        "terraforge_correction_priority_v1"
+        "terraforge_correction_priority_v1",
+        "costforge_calibration_priority_v1"
       ],
       "note": "Every contract must declare owner, population, read path, metrics, trust posture, proofs, and forbidden uses."
     },
@@ -109,7 +113,20 @@
         "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:474",
         "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:216",
         "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:307",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:310"
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:310",
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:52",
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:50",
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:58",
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:67",
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:59",
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:60",
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:61",
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:62",
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:63",
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:64",
+        "frontend/apps/os-shell/src/pages/forge/cost/__tests__/CostForge.contracts.test.tsx:54",
+        "frontend/apps/os-shell/src/pages/forge/cost/__tests__/CostForge.contracts.test.tsx:60",
+        "frontend/apps/os-shell/src/pages/forge/cost/__tests__/CostForge.contracts.test.tsx:5"
       ],
       "note": "Registered contracts must point at real implementation anchors instead of prose-only intent."
     },
@@ -124,7 +141,9 @@
         "os-platform/core/pilot/evidence/direct-source-recompute.latest.json",
         "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json",
         "os-platform/core/pilot/evidence/county-studio-correction-and-defense.latest.json",
-        "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json"
+        "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json",
+        "os-platform/core/pilot/evidence/costforge-calibration-priority-contract.latest.json",
+        "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json"
       ],
       "note": "Every contract must cite at least one proof artifact already in the repo."
     },
@@ -227,6 +246,29 @@
         "Do not let AI summaries invent priority outside the composite risk contract.",
         "Do not rank demo/reference counties as production correction work.",
         "Do not export defense packets without segment-level trace."
+      ]
+    },
+    {
+      "id": "costforge_calibration_priority_v1",
+      "status": "codified",
+      "state": "codified",
+      "implementationContractId": null,
+      "population": "CostForge county-scoped neighborhood calibration matrix rows with minimum sale-count filtering",
+      "owner": "frontend.apps.os-shell.pages.forge.cost.tabs.TriageTab.computePriorityScore",
+      "readPath": "GET /costforge/calibration/neighborhood-matrix?taxYear={taxYear}&minSales=3 plus GET /equity/deciles",
+      "trustPosture": [
+        "CostForge calibration priority is a cost-calibration triage contract, not County Studio correction priority.",
+        "Requires county-scoped runtime and neighborhood matrix source data.",
+        "Do not treat 39-county demo/reference data as production calibration proof."
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/costforge-calibration-priority-contract.latest.json",
+        "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not substitute for County Studio correction priority.",
+        "Do not rank production correction work from demo/reference counties.",
+        "Do not change formula weights or thresholds without updating this contract and proof artifact."
       ]
     }
   ],
@@ -341,6 +383,35 @@
         "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:307",
         "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:310"
       ]
+    },
+    {
+      "contractId": "costforge_calibration_priority_v1",
+      "path": "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx",
+      "passed": true,
+      "missingPatterns": [],
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:52",
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:50",
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:58",
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:67",
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:59",
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:60",
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:61",
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:62",
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:63",
+        "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:64"
+      ]
+    },
+    {
+      "contractId": "costforge_calibration_priority_v1",
+      "path": "frontend/apps/os-shell/src/pages/forge/cost/__tests__/CostForge.contracts.test.tsx",
+      "passed": true,
+      "missingPatterns": [],
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/cost/__tests__/CostForge.contracts.test.tsx:54",
+        "frontend/apps/os-shell/src/pages/forge/cost/__tests__/CostForge.contracts.test.tsx:60",
+        "frontend/apps/os-shell/src/pages/forge/cost/__tests__/CostForge.contracts.test.tsx:5"
+      ]
     }
   ],
   "proofArtifactChecks": [
@@ -382,6 +453,16 @@
     {
       "contractId": "terraforge_correction_priority_v1",
       "path": "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json",
+      "exists": true
+    },
+    {
+      "contractId": "costforge_calibration_priority_v1",
+      "path": "os-platform/core/pilot/evidence/costforge-calibration-priority-contract.latest.json",
+      "exists": true
+    },
+    {
+      "contractId": "costforge_calibration_priority_v1",
+      "path": "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json",
       "exists": true
     }
   ],

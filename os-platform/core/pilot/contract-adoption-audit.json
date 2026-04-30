@@ -6,7 +6,8 @@
     "terraforge_operational_health_v1",
     "terraforge_statistics_compat_v1",
     "terraforge_segment_derivation_v1",
-    "terraforge_correction_priority_v1"
+    "terraforge_correction_priority_v1",
+    "costforge_calibration_priority_v1"
   ],
   "statusDoctrine": {
     "pass": "Surface consumes a registered contract id and exposes enough posture for proof or user review.",
@@ -100,12 +101,15 @@
       "surface": "County Studio AI diagnosis panel",
       "path": "frontend/apps/os-shell/src/pages/forge/county-studio/components/AiDiagnosisPanel.tsx",
       "metricBehavior": "Displays deterministic findings, evidence values, and recommended actions.",
-      "contractBacked": false,
-      "contractIds": [],
-      "trustPostureExposed": "no",
-      "status": "gap",
-      "migrationNeeded": true,
-      "notes": "Diagnosis output is metric-shaped and action-shaping, but no contract id, population, or proof artifact is visible in the response or UI."
+      "contractBacked": true,
+      "contractIds": [
+        "terraforge_segment_derivation_v1",
+        "terraforge_correction_priority_v1"
+      ],
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "The panel now labels diagnosis as deterministic action routing over segment derivation and correction priority, not an independent metric source."
     },
     {
       "surface": "Evidence packet modal and markdown export",
@@ -140,9 +144,9 @@
       "contractBacked": false,
       "contractIds": [],
       "trustPostureExposed": "partial",
-      "status": "gap",
+      "status": "outOfScope",
       "migrationNeeded": true,
-      "notes": "It labels geometry availability, but Washington 39-county launch status remains outside the registered suite metric contracts."
+      "notes": "This is classified as launch/county-context posture, not one of the four current suite metric contracts. It needs a future county data-trust or launch-context contract before being treated as production truth."
     },
     {
       "surface": "GeoForge county health panel",
@@ -162,12 +166,12 @@
       "surface": "CostForge triage tab",
       "path": "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx",
       "metricBehavior": "Computes AI priority score from COD deviation, median-ratio deviation, PRB deviation, and sale count.",
-      "contractBacked": false,
-      "contractIds": [],
-      "trustPostureExposed": "no",
-      "status": "gap",
-      "migrationNeeded": true,
-      "notes": "The priority formula is local and not registered as correction priority or a separate CostForge calibration contract."
+      "contractBacked": true,
+      "contractIds": ["costforge_calibration_priority_v1"],
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "The tab now emits the registered costforge_calibration_priority_v1 contract and keeps its population distinct from County Studio correction priority."
     },
     {
       "surface": "SalesForge running stats",
@@ -235,7 +239,8 @@
     }
   ],
   "nextClosures": [
-    "Close Atlas Live county context and County Studio AI diagnosis contract posture gaps.",
-    "Register future CostForge and CompsForge domain contracts before treating their calculations as suite truth."
+    "Register future county data-trust or launch-context contract before treating Atlas Live county context as production truth.",
+    "Register future CostForge cost-value contract before treating calculator outputs as suite truth.",
+    "Register future CompsForge comparable-sales candidate-selection/reconciliation contract before treating its scoring as suite truth."
   ]
 }

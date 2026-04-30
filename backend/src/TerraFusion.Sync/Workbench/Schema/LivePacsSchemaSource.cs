@@ -91,6 +91,44 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
                 "[LivePacsSchemaSource] Introspector returned null result; refusing to build catalog from missing introspection (HG7).");
         }
 
+        // Slice C50-CONV-B: load conversion manifest if engaged.
+        // HG-CONV-3: caller MUST decide explicitly via
+        // RequireConversionManifest. Backwards compatibility: when
+        // ConversionManifestPath is null, the manifest layer is not
+        // engaged and existing C48-B Both-default behavior is
+        // preserved. When the path is set, strict HG-CONV-2/3
+        // behavior applies.
+        PacsConversionManifest? manifest = null;
+        var manifestEngaged = !string.IsNullOrWhiteSpace(_options.ConversionManifestPath);
+        if (_options.RequireConversionManifest && !manifestEngaged)
+        {
+            throw new InvalidOperationException(
+                "[LivePacsSchemaSource] RequireConversionManifest=true but ConversionManifestPath is null/empty. " +
+                "HG-CONV-3: caller MUST set the path explicitly when requiring a manifest.");
+        }
+        if (manifestEngaged)
+        {
+            try
+            {
+                var manifestSource = new JsonFilePacsConversionManifestSource(_options.ConversionManifestPath);
+                manifest = await manifestSource.ReadAsync(ct).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (!_options.RequireConversionManifest)
+            {
+                // Non-required path: fall through to "manifest engaged but
+                // load failed". Per HG-CONV-3 this still produces
+                // Unknown-everywhere semantics (the manifestEngaged flag
+                // governs the default, not the load outcome). We do NOT
+                // silently swallow — wrap as InvalidOperationException
+                // for upstream visibility.
+                throw new InvalidOperationException(
+                    $"[LivePacsSchemaSource] Conversion manifest load failed at '{_options.ConversionManifestPath}': {ex.Message}. " +
+                    $"Set RequireConversionManifest=true to fail closed earlier, or fix the manifest.",
+                    ex);
+            }
+        }
+        var (tableEras, columnEras) = BuildEraLookups(manifest);
+
         // Build column lookup keyed by table name for downstream tuple assembly.
         var columnsByTable = introspection.Columns
             .GroupBy(c => c.TableName, StringComparer.Ordinal)
@@ -115,7 +153,7 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
                 ColumnName: c.ColumnName,
                 DeclaredType: c.DataType,
                 Nullable: c.Nullable,
-                ConversionEra: PacsConversionEra.Both,
+                ConversionEra: ResolveColumnEra(c.TableName, c.ColumnName, manifestEngaged, tableEras, columnEras),
                 DictionaryRef: null,
                 PiiClassification: PiiClassification.None,
                 ProvenanceLine: BuildColumnProvenance(c.TableName, c.ColumnName, c.OrdinalPosition),
@@ -177,7 +215,7 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
             tables.Add(new PacsTable(
                 TableName: t.TableName,
                 IdentityTuple: identityTuple,
-                ConversionEra: PacsConversionEra.Both,
+                ConversionEra: ResolveTableEra(t.TableName, manifestEngaged, tableEras),
                 DictionaryReferences: Array.Empty<PacsDictionaryReference>(),
                 PiiClassification: PiiClassification.None,
                 ProvenancePath: BuildTableProvenance(t.TableName),
@@ -195,7 +233,7 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
                 [BuildSourceLabel()] = "live-introspection-no-hash",
             },
             IngestedAt: DateTime.UtcNow,
-            ConversionManifestHash: "no-conversion-manifest-supplied");
+            ConversionManifestHash: BuildManifestStamp(manifest));
 
         return new PacsSchemaSourceData(tables, columns, dictionaries, version);
     }
@@ -443,6 +481,92 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
 
     private string BuildInferredFkProvenance(string sourceTable, string sourceColumn, string targetTable) =>
         $"live-introspection://{_options.SourceLabel}/{_options.SchemaName}/fk-inferred/{sourceTable}.{sourceColumn}->{targetTable}";
+
+    /// <summary>
+    /// Slice C50-CONV-B: build (table, era) and (table.column, era)
+    /// lookups from a manifest. Returns empty dictionaries when
+    /// manifest is null. Manifest entries are already validated by
+    /// the source (no Unknown, no duplicates), so the lookups are
+    /// directly usable.
+    /// </summary>
+    private static (Dictionary<string, PacsConversionEra> tables, Dictionary<string, PacsConversionEra> columns) BuildEraLookups(
+        PacsConversionManifest? manifest)
+    {
+        var tables = new Dictionary<string, PacsConversionEra>(StringComparer.Ordinal);
+        var columns = new Dictionary<string, PacsConversionEra>(StringComparer.Ordinal);
+        if (manifest is null)
+        {
+            return (tables, columns);
+        }
+        foreach (var t in manifest.TableEntries)
+        {
+            tables[t.TableName] = t.Era;
+        }
+        foreach (var c in manifest.ColumnEntries)
+        {
+            columns[$"{c.TableName}.{c.ColumnName}"] = c.Era;
+        }
+        return (tables, columns);
+    }
+
+    /// <summary>
+    /// Slice C50-CONV-B: era resolution for one column. Per
+    /// HG-CONV-2 + HG-CONV-3 (with backwards-compat bridge):
+    /// <list type="bullet">
+    /// <item>Manifest engaged + column annotated → manifest era.</item>
+    /// <item>Manifest engaged + table annotated only → inherit from table.</item>
+    /// <item>Manifest engaged + neither annotated → Unknown.</item>
+    /// <item>Manifest NOT engaged (path null) → Both (C48-B legacy).</item>
+    /// </list>
+    /// </summary>
+    private static PacsConversionEra ResolveColumnEra(
+        string tableName,
+        string columnName,
+        bool manifestEngaged,
+        Dictionary<string, PacsConversionEra> tableEras,
+        Dictionary<string, PacsConversionEra> columnEras)
+    {
+        if (!manifestEngaged)
+        {
+            return PacsConversionEra.Both;
+        }
+        if (columnEras.TryGetValue($"{tableName}.{columnName}", out var colEra))
+        {
+            return colEra;
+        }
+        if (tableEras.TryGetValue(tableName, out var tableEra))
+        {
+            return tableEra;
+        }
+        return PacsConversionEra.Unknown;
+    }
+
+    /// <summary>
+    /// Slice C50-CONV-B: era resolution for one table. Per
+    /// HG-CONV-2 + HG-CONV-3 (with backwards-compat bridge).
+    /// </summary>
+    private static PacsConversionEra ResolveTableEra(
+        string tableName,
+        bool manifestEngaged,
+        Dictionary<string, PacsConversionEra> tableEras)
+    {
+        if (!manifestEngaged)
+        {
+            return PacsConversionEra.Both;
+        }
+        return tableEras.TryGetValue(tableName, out var era) ? era : PacsConversionEra.Unknown;
+    }
+
+    /// <summary>
+    /// Slice C50-CONV-B: stamp for the <c>ConversionManifestHash</c>
+    /// field of <see cref="PacsSchemaVersion"/>. Honest about
+    /// engagement status; not a content hash (operator can compute
+    /// one externally if needed).
+    /// </summary>
+    private static string BuildManifestStamp(PacsConversionManifest? manifest) =>
+        manifest is null
+            ? "no-conversion-manifest-supplied"
+            : $"manifest@{manifest.ManifestPath}#{manifest.ManifestVersion}#{manifest.ConversionEvent}";
 }
 
 /// <summary>
@@ -478,12 +602,18 @@ public sealed record LivePacsSchemaSourceOptions(
     string SourceLabel,
     string SchemaName,
     string? PacsReleaseLabel,
-    bool InferDictionaries = true)
+    bool InferDictionaries = true,
+    string? ConversionManifestPath = null,
+    bool RequireConversionManifest = false)
 {
     /// <summary>
     /// Sensible default for SQL Server / Harris PACS:
     /// <c>SchemaName = "dbo"</c>, with caller-supplied label.
-    /// Dictionary inference enabled by default.
+    /// Dictionary inference enabled by default. Conversion manifest
+    /// path is null (manifest layer not engaged) and not required;
+    /// existing C48-B / C49-FK call sites continue to receive
+    /// <see cref="PacsConversionEra.Both"/> defaults until they
+    /// explicitly engage the manifest layer.
     /// </summary>
     public static LivePacsSchemaSourceOptions ForBentonHarrisPacs(string sourceLabel) =>
         new(sourceLabel, "dbo", PacsReleaseLabel: null, InferDictionaries: true);

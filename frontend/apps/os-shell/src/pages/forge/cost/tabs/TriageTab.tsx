@@ -47,17 +47,38 @@ interface MatrixResponse {
   source: string;
 }
 
+export const COSTFORGE_TRIAGE_CONTRACT_CLASSIFICATION = {
+  status: 'contract-backed',
+  contractId: 'costforge_calibration_priority_v1',
+  population: 'CostForge neighborhood calibration matrix',
+  trustPosture: 'CostForge calibration-priority ranking for county-scoped neighborhood calibration; not interchangeable with County Studio correction priority.',
+  source: '/costforge/calibration/neighborhood-matrix plus /equity/deciles',
+} as const;
+
+export const COSTFORGE_CALIBRATION_PRIORITY_FORMULA = {
+  codWeight: 2,
+  ratioWeight: 100,
+  prbWeight: 50,
+  criticalThreshold: 20,
+  watchThreshold: 5,
+  minSales: 3,
+} as const;
+
 function computePriorityScore(hood: NeighborhoodRow): number {
   const codDeviation   = Math.max(0, (hood.cod ?? 0) - 15);
   const ratioDeviation = Math.abs((hood.medianRatio ?? 1.0) - 1.0);
   const prbDeviation   = Math.abs(hood.prb ?? 0); // PRB ≈ 0 is neutral; deviation signals vertical inequity
   const impact = Math.sqrt(Math.max(1, hood.saleCount));
-  return (codDeviation * 2 + ratioDeviation * 100 + prbDeviation * 50) * impact;
+  return (
+    codDeviation * COSTFORGE_CALIBRATION_PRIORITY_FORMULA.codWeight
+    + ratioDeviation * COSTFORGE_CALIBRATION_PRIORITY_FORMULA.ratioWeight
+    + prbDeviation * COSTFORGE_CALIBRATION_PRIORITY_FORMULA.prbWeight
+  ) * impact;
 }
 
 /** Tier thresholds: Critical ≥ 20, Watch ≥ 5, OK < 5 (based on priority formula scale) */
 function PriorityBadge({ score }: { score: number }) {
-  if (score >= 20) {
+  if (score >= COSTFORGE_CALIBRATION_PRIORITY_FORMULA.criticalThreshold) {
     return (
       <span
         style={{
@@ -73,7 +94,7 @@ function PriorityBadge({ score }: { score: number }) {
       </span>
     );
   }
-  if (score >= 5) {
+  if (score >= COSTFORGE_CALIBRATION_PRIORITY_FORMULA.watchThreshold) {
     return (
       <span
         style={{
@@ -184,6 +205,21 @@ export function TriageTab() {
 
   return (
     <div>
+      <div
+        className="cf-contract-classification"
+        data-testid="costforge-triage-contract-classification"
+        data-contract-status={COSTFORGE_TRIAGE_CONTRACT_CLASSIFICATION.status}
+        data-contract-id={COSTFORGE_TRIAGE_CONTRACT_CLASSIFICATION.contractId}
+      >
+        <span className="cf-contract-classification__label">Calibration priority contract</span>
+        <span className="cf-contract-classification__id">
+          {COSTFORGE_TRIAGE_CONTRACT_CLASSIFICATION.contractId}
+        </span>
+        <span className="cf-contract-classification__meta">
+          {COSTFORGE_TRIAGE_CONTRACT_CLASSIFICATION.trustPosture}
+        </span>
+      </div>
+
       <div className="cf-ai-callout">
         <div className="cf-ai-callout__label" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           AI Triage
