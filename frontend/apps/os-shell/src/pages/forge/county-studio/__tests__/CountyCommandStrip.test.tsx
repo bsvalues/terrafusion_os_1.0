@@ -21,6 +21,8 @@ const MOCK_STUDY: CountyStudySessionDto = {
 };
 
 const summary = (overrides: Partial<CountyHealthSummaryDto> = {}): CountyHealthSummaryDto => ({
+  contractId: 'terraforge_operational_health_v1',
+  correctionPriorityContractId: 'terraforge_correction_priority_v1',
   studyId: 'study-1',
   countyId: 'benton',
   taxYear: 2026,
@@ -100,18 +102,26 @@ describe('CountyCommandStrip', () => {
     expect(screen.getByTestId('command-metric-warning')).toHaveTextContent('9');
     expect(screen.getByTestId('command-metric-needs-data')).toHaveTextContent('1');
     expect(screen.getByTestId('command-metric-exceptions')).toHaveTextContent('18');
+    expect(screen.getByTestId('operational-contract-id')).toHaveTextContent('terraforge_operational_health_v1');
+    expect(screen.getByTestId('correction-contract-id')).toHaveTextContent('terraforge_correction_priority_v1');
+    expect(screen.getByTestId('county-trust-posture')).toHaveTextContent(/Benton production provisional/i);
   });
 
   it('renders derive-first guidance when county health is unavailable because no segment set is derived', () => {
     act(() => {
       const store = useCountyStudioStore.getState();
       store.setStudy({ ...MOCK_STUDY, activeSegmentSetId: null });
-      store.setLoadStatus('healthSummary', 'error', 'HTTP 409: /county-study/studies/study-1/health-summary');
+      store.setLoadStatus(
+        'healthSummary',
+        'error',
+        '[apiFetchJson] 409 Conflict for /county-study/studies/study-1/health-summary — {"error":"Study study-1 has no active segment set. Derive segments first via LeftRail → Derive Segment Metrics."}',
+      );
     });
 
     render(<CountyCommandStrip />);
 
     expect(screen.getByTestId('county-command-strip-derive-cta')).toHaveTextContent(/derive segment metrics/i);
+    expect(screen.queryByTestId('county-command-strip-error')).not.toBeInTheDocument();
   });
 
   it('surfaces backend errors honestly when county health summary fails', () => {

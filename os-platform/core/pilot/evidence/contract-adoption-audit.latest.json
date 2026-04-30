@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-04-30T21:37:45.227Z",
+  "checkedAt": "2026-04-30T21:52:27.090Z",
   "slice": "contract-adoption-audit",
   "status": "PASS_WITH_ADOPTION_GAPS",
   "decision": "CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND",
@@ -18,11 +18,11 @@
   },
   "summary": {
     "surfaces": 17,
-    "pass": 4,
-    "partial": 3,
+    "pass": 7,
+    "partial": 0,
     "gap": 8,
     "outOfScope": 2,
-    "migrationNeeded": 13,
+    "migrationNeeded": 10,
     "failures": 0
   },
   "failures": [],
@@ -75,10 +75,10 @@
         "terraforge_operational_health_v1",
         "terraforge_correction_priority_v1"
       ],
-      "trustPostureExposed": "no",
-      "status": "partial",
-      "migrationNeeded": true,
-      "notes": "Uses healthSummary, whose DTO is contract-backed, but the UI does not expose contractId or trust posture."
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "Uses healthSummary and visibly exposes operational contract id, correction priority contract id, and county trust posture."
     },
     {
       "surface": "County Studio health panel",
@@ -89,10 +89,10 @@
         "terraforge_operational_health_v1",
         "terraforge_correction_priority_v1"
       ],
-      "trustPostureExposed": "no",
-      "status": "partial",
-      "migrationNeeded": true,
-      "notes": "Backend source is contract-backed, but the visible health surface still hides contractId and county trust posture."
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "Visible health surface now exposes operational contract id, correction priority contract id, and county trust posture."
     },
     {
       "surface": "County Studio correction and defense panel",
@@ -103,10 +103,10 @@
         "terraforge_correction_priority_v1",
         "terraforge_operational_health_v1"
       ],
-      "trustPostureExposed": "no",
-      "status": "partial",
-      "migrationNeeded": true,
-      "notes": "Evidence packets carry correctionPriorityContractId, but the panel itself does not display contract or trust posture."
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "Defense readiness now exposes operational contract id, correction priority contract id, and county trust posture alongside current anchors."
     },
     {
       "surface": "County Studio AI diagnosis panel",
@@ -231,48 +231,6 @@
     }
   ],
   "migrationGaps": [
-    {
-      "surface": "County Studio command strip",
-      "path": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyCommandStrip.tsx",
-      "metricBehavior": "Displays median ratio, COD, PRD, critical/warning counts, needs-data count, and exceptions.",
-      "contractBacked": true,
-      "contractIds": [
-        "terraforge_operational_health_v1",
-        "terraforge_correction_priority_v1"
-      ],
-      "trustPostureExposed": "no",
-      "status": "partial",
-      "migrationNeeded": true,
-      "notes": "Uses healthSummary, whose DTO is contract-backed, but the UI does not expose contractId or trust posture."
-    },
-    {
-      "surface": "County Studio health panel",
-      "path": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyHealthPanel.tsx",
-      "metricBehavior": "Displays operational health metrics, top action items, and composite-risk explanation.",
-      "contractBacked": true,
-      "contractIds": [
-        "terraforge_operational_health_v1",
-        "terraforge_correction_priority_v1"
-      ],
-      "trustPostureExposed": "no",
-      "status": "partial",
-      "migrationNeeded": true,
-      "notes": "Backend source is contract-backed, but the visible health surface still hides contractId and county trust posture."
-    },
-    {
-      "surface": "County Studio correction and defense panel",
-      "path": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx",
-      "metricBehavior": "Shows defense readiness, county posture, correction counts, and evidence readiness.",
-      "contractBacked": true,
-      "contractIds": [
-        "terraforge_correction_priority_v1",
-        "terraforge_operational_health_v1"
-      ],
-      "trustPostureExposed": "no",
-      "status": "partial",
-      "migrationNeeded": true,
-      "notes": "Evidence packets carry correctionPriorityContractId, but the panel itself does not display contract or trust posture."
-    },
     {
       "surface": "County Studio AI diagnosis panel",
       "path": "frontend/apps/os-shell/src/pages/forge/county-studio/components/AiDiagnosisPanel.tsx",

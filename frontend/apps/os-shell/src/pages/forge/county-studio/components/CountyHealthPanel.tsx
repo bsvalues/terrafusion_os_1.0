@@ -16,6 +16,7 @@ import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { useStudyData } from '../hooks/useStudyData';
 import { CountyDiagnosisModal } from './CountyDiagnosisModal';
 import { ExportPacketModal } from './ExportPacketModal';
+import { ContractLineage } from './ContractLineage';
 import {
   formatOperationalPrimary,
   parseSegmentIdentity,
@@ -496,6 +497,13 @@ const PopulatedPanel = ({
           </div>
         </SummaryCard>
       </div>
+
+      <ContractLineage
+        operationalContractId={summary.contractId}
+        correctionContractId={summary.correctionPriorityContractId}
+        countyName={activeStudy?.countyName}
+        countyId={activeStudy?.countyId ?? summary.countyId}
+      />
 
       {/* Row 2 — top-5 alerts (60%) and severity breakdown (40%) */}
       <div style={{ display: 'grid', gridTemplateColumns: '60% 40%', gap: 8, minHeight: 0 }}>

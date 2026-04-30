@@ -4,6 +4,7 @@ import { adjustmentSetApi, exceptionApi, scenarioApi, type CountyExceptionSetDto
 import type { CountyAdjustmentSetDto } from '../types/countyStudio.types';
 import { ExportPacketModal } from './ExportPacketModal';
 import { describeOperationalScope, parseSegmentIdentity } from '../utils/segmentIdentity';
+import { ContractLineage } from './ContractLineage';
 
 interface CorrectionDefensePanelProps {
   onOpenScenario: () => void;
@@ -292,6 +293,13 @@ export function CorrectionDefensePanel({
         <div><strong>Active scenario:</strong> {activeScenario ? `${activeScenario.adjustmentType} · ${activeScenario.status}` : 'None selected'}</div>
         <div><strong>Corrections:</strong> {promotedCount} adjustment set{promotedCount === 1 ? '' : 's'} · {openExceptionCount} open exception{openExceptionCount === 1 ? '' : 's'}</div>
         <div><strong>County posture:</strong> {healthSummary ? `${healthSummary.complianceStatus} · median ${healthSummary.medianRatio?.toFixed(3) ?? 'n/a'} · COD ${healthSummary.cod?.toFixed(1) ?? 'n/a'} · PRD ${healthSummary.prd?.toFixed(3) ?? 'n/a'}` : 'No health summary loaded'}</div>
+        <ContractLineage
+          operationalContractId={healthSummary?.contractId}
+          correctionContractId={healthSummary?.correctionPriorityContractId}
+          countyName={activeStudy.countyName}
+          countyId={activeStudy.countyId}
+          compact
+        />
       </section>
 
       <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>

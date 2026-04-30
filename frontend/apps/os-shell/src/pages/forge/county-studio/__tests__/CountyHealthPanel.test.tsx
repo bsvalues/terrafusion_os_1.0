@@ -57,6 +57,8 @@ const alert = (
 });
 
 const summary = (overrides: Partial<CountyHealthSummaryDto> = {}): CountyHealthSummaryDto => ({
+  contractId: 'terraforge_operational_health_v1',
+  correctionPriorityContractId: 'terraforge_correction_priority_v1',
   studyId: 'study-1',
   countyId: 'benton',
   taxYear: 2026,
@@ -102,12 +104,16 @@ describe('CountyHealthPanel', () => {
   it('renders empty-state CTA on 409 error', () => {
     act(() => {
       useCountyStudioStore.getState().setLoadStatus(
-        'healthSummary', 'error', 'HTTP 409: /county-study/studies/study-1/health-summary');
+        'healthSummary',
+        'error',
+        '[apiFetchJson] 409 Conflict for /county-study/studies/study-1/health-summary — {"error":"Study study-1 has no active segment set. Derive segments first via LeftRail → Derive Segment Metrics."}',
+      );
     });
     render(<CountyHealthPanel />);
     const empty = screen.getByTestId('health-panel-empty');
     expect(empty).toBeInTheDocument();
     expect(empty).toHaveTextContent(/Derive Segment Metrics/i);
+    expect(screen.queryByTestId('health-panel-error')).not.toBeInTheDocument();
   });
 
   it('renders error state with retry button for non-409 errors', () => {
@@ -133,6 +139,9 @@ describe('CountyHealthPanel', () => {
     expect(screen.getByTestId('health-card-median')).toHaveTextContent('0.960');
     expect(screen.getByTestId('health-card-cod')).toHaveTextContent('12.3');
     expect(screen.getByTestId('health-card-prd')).toHaveTextContent('1.010');
+    expect(screen.getByTestId('operational-contract-id')).toHaveTextContent('terraforge_operational_health_v1');
+    expect(screen.getByTestId('correction-contract-id')).toHaveTextContent('terraforge_correction_priority_v1');
+    expect(screen.getByTestId('county-trust-posture')).toHaveTextContent(/Benton production provisional/i);
   });
 
   it('IAAO lamp reflects compliance status', () => {

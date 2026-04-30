@@ -1,17 +1,17 @@
 # Contract Adoption Audit
 
-Checked: 2026-04-30T21:37:45.227Z
+Checked: 2026-04-30T21:52:27.090Z
 Status: PASS_WITH_ADOPTION_GAPS
 Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 
 ## Summary
 
 - Surfaces audited: 17
-- Pass: 4
-- Partial: 3
+- Pass: 7
+- Partial: 0
 - Gap: 8
 - Out of scope for current four contracts: 2
-- Migration needed: 13
+- Migration needed: 10
 
 ## Matrix
 
@@ -20,9 +20,9 @@ Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 | County Studio health summary API | Operational health summary and correction-priority alert ranking. | yes | `terraforge_operational_health_v1`<br>`terraforge_correction_priority_v1` | api | no | pass | Runtime DTOs echo both operational health and correction priority contract ids. |
 | County Studio segment derivation API | Derives segment set metrics from canonical TerraFusion DB tables. | yes | `terraforge_segment_derivation_v1` | api | no | pass | SegmentDerivationResult echoes the registered segment derivation contract id. |
 | County Studio Statistics Compat panel | Same-population ratio-study parity, population contract fields, and parity rows. | yes | `terraforge_statistics_compat_v1`<br>`statistics_ratio_study_compat_v1` | ui | no | pass | The panel displays contractId, population, trustPosture, sale window, qualification policy, suppression policy, outlier policy, conversion-sensitive counts, and parity rows. |
-| County Studio command strip | Displays median ratio, COD, PRD, critical/warning counts, needs-data count, and exceptions. | yes | `terraforge_operational_health_v1`<br>`terraforge_correction_priority_v1` | no | yes | partial | Uses healthSummary, whose DTO is contract-backed, but the UI does not expose contractId or trust posture. |
-| County Studio health panel | Displays operational health metrics, top action items, and composite-risk explanation. | yes | `terraforge_operational_health_v1`<br>`terraforge_correction_priority_v1` | no | yes | partial | Backend source is contract-backed, but the visible health surface still hides contractId and county trust posture. |
-| County Studio correction and defense panel | Shows defense readiness, county posture, correction counts, and evidence readiness. | yes | `terraforge_correction_priority_v1`<br>`terraforge_operational_health_v1` | no | yes | partial | Evidence packets carry correctionPriorityContractId, but the panel itself does not display contract or trust posture. |
+| County Studio command strip | Displays median ratio, COD, PRD, critical/warning counts, needs-data count, and exceptions. | yes | `terraforge_operational_health_v1`<br>`terraforge_correction_priority_v1` | ui | no | pass | Uses healthSummary and visibly exposes operational contract id, correction priority contract id, and county trust posture. |
+| County Studio health panel | Displays operational health metrics, top action items, and composite-risk explanation. | yes | `terraforge_operational_health_v1`<br>`terraforge_correction_priority_v1` | ui | no | pass | Visible health surface now exposes operational contract id, correction priority contract id, and county trust posture. |
+| County Studio correction and defense panel | Shows defense readiness, county posture, correction counts, and evidence readiness. | yes | `terraforge_correction_priority_v1`<br>`terraforge_operational_health_v1` | ui | no | pass | Defense readiness now exposes operational contract id, correction priority contract id, and county trust posture alongside current anchors. |
 | County Studio AI diagnosis panel | Displays deterministic findings, evidence values, and recommended actions. | no | none | no | yes | gap | Diagnosis output is metric-shaped and action-shaping, but no contract id, population, or proof artifact is visible in the response or UI. |
 | Evidence packet modal and markdown export | Exports DOR-defensible packet with correction-priority contract id and segment signals. | yes | `terraforge_correction_priority_v1` | partial | no | pass | Correction contract is visible. A future improvement can attach county trust tier directly. |
 | Atlas Live overlay manager | Colors parcels for ratio-like metric overlays, scenario deltas, cohort shading, and edge warnings. | no | none | no | yes | gap | Overlay values are styled by local threshold helpers without a contract id or source population. |
@@ -39,9 +39,6 @@ Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 
 | Surface | Status | Path | Notes |
 | --- | --- | --- | --- |
-| County Studio command strip | partial | frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyCommandStrip.tsx | Uses healthSummary, whose DTO is contract-backed, but the UI does not expose contractId or trust posture. |
-| County Studio health panel | partial | frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyHealthPanel.tsx | Backend source is contract-backed, but the visible health surface still hides contractId and county trust posture. |
-| County Studio correction and defense panel | partial | frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx | Evidence packets carry correctionPriorityContractId, but the panel itself does not display contract or trust posture. |
 | County Studio AI diagnosis panel | gap | frontend/apps/os-shell/src/pages/forge/county-studio/components/AiDiagnosisPanel.tsx | Diagnosis output is metric-shaped and action-shaping, but no contract id, population, or proof artifact is visible in the response or UI. |
 | Atlas Live overlay manager | gap | frontend/apps/os-shell/src/pages/forge/atlas-live/components/AtlasOverlayManager.tsx | Overlay values are styled by local threshold helpers without a contract id or source population. |
 | Atlas Live county context | gap | frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts | It labels geometry availability, but Washington 39-county launch status remains outside the registered suite metric contracts. |
