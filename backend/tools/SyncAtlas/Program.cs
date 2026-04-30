@@ -1449,6 +1449,7 @@ internal static class Program
             "imprv_det_class" => DictionaryLoaderPreflightStance.RequiredFk,             // C49-FK-I
             "imprv_det_sub_class" => DictionaryLoaderPreflightStance.RequiredFk,         // C49-FK-J
             "imprv_det_meth" => DictionaryLoaderPreflightStance.RequiredFk,              // C49-FK-K
+            "land_soil" => DictionaryLoaderPreflightStance.RequiredFk,                   // C49-FK-L
             _              => null,
         };
 
