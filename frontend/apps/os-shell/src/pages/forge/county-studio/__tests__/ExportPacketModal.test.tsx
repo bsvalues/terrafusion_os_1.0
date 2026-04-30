@@ -47,6 +47,25 @@ const MOCK_PACKET: EvidencePacketDto = {
     createdBy: 'bsvalues',
   },
   aiDiagnosis: null,
+  topRiskSegments: [
+    {
+      segmentId: 'seg-1',
+      segmentName: 'Neighborhood 101 · Reval 3 · Residential',
+      neighborhoodCode: '101',
+      revalArea: 3,
+      parcelCount: 884,
+      medianRatio: 0.798,
+      cod: 30.1,
+      prd: 1.22,
+      riskScore: 70,
+      exceptionCount: 11,
+      ratioCount: 48,
+      salesCount: 48,
+      prb: -2.236,
+      weightedMeanRatio: 0.822,
+      yoyMedianRatioDelta: null,
+    },
+  ],
   exceptions: [],
 };
 
@@ -79,6 +98,9 @@ describe('ExportPacketModal', () => {
     expect(screen.getByText('Benton County')).toBeInTheDocument();
     expect(screen.getByText('2026')).toBeInTheDocument();
     expect(screen.getByText('Market trend correction')).toBeInTheDocument();
+    expect(screen.getByText('Top Risk Segment Signals (1)')).toBeInTheDocument();
+    expect(screen.getByText('Neighborhood 101 · Reval 3 · Residential')).toBeInTheDocument();
+    expect(screen.getByText(/70\.0 · 11 exceptions/i)).toBeInTheDocument();
   });
 
   it('shows Download JSON and Copy Markdown buttons when packet is loaded', async () => {

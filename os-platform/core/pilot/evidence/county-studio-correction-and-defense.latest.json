@@ -1,0 +1,93 @@
+{
+  "checkedAt": "2026-04-30T20:57:47.612Z",
+  "slice": "county-studio-correction-and-defense",
+  "status": "PASS",
+  "decision": "DEFENSE_PACKET_CARRIES_SEGMENT_LEVEL_CORRECTION_TRACE",
+  "checks": [
+    {
+      "id": "defense-packet-contract-carries-top-risk-segments",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:455",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:492"
+      ],
+      "note": "Frontend evidence packet contract now matches the backend TopRiskSegments defense signal."
+    },
+    {
+      "id": "export-modal-renders-top-risk-segment-signals",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/ExportPacketModal.tsx:181",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/ExportPacketModal.tsx:199"
+      ],
+      "note": "Evidence export preview shows the segment-level correction evidence, not only headline county metrics."
+    },
+    {
+      "id": "markdown-packet-renders-defense-trace",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/utils/evidencePacketMarkdown.ts:84",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/utils/evidencePacketMarkdown.ts:96"
+      ],
+      "note": "Copied markdown contains segment signal rows with ratio, PRB, weighted mean, risk, and exception evidence."
+    },
+    {
+      "id": "correction-panel-still-anchors-governed-chain",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:215",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:299",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:302"
+      ],
+      "note": "County Studio still presents scenario, approval, governance, and evidence as one correction chain."
+    },
+    {
+      "id": "exception-queue-keeps-action-lifecycle",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/ExceptionQueuePanel.tsx:4",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/ExceptionQueuePanel.tsx:4",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/ExceptionQueuePanel.tsx:192"
+      ],
+      "note": "Exception rows keep the assign, dispatch, resolve, and note lifecycle."
+    },
+    {
+      "id": "scenario-path-still-promotes-into-approval",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/ScenarioWorksheet.tsx:447",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/ScenarioWorksheet.tsx:243",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/AdjustmentSetPanel.tsx:172"
+      ],
+      "note": "Scenario preview/save/promotion remains connected to the adjustment approval state machine."
+    }
+  ],
+  "failures": [],
+  "evidenceContract": {
+    "packetFields": [
+      "study metadata",
+      "IAAO compliance metrics",
+      "primary scenario",
+      "AI diagnosis",
+      "topRiskSegments",
+      "exception log"
+    ],
+    "topRiskSegmentFields": [
+      "segmentId",
+      "segmentName",
+      "neighborhoodCode",
+      "revalArea",
+      "parcelCount",
+      "medianRatio",
+      "cod",
+      "prd",
+      "riskScore",
+      "exceptionCount",
+      "ratioCount",
+      "salesCount",
+      "prb",
+      "weightedMeanRatio",
+      "yoyMedianRatioDelta"
+    ]
+  }
+}

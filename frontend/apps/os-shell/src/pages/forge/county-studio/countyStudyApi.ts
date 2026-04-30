@@ -452,6 +452,24 @@ export interface EvidenceAiSection {
   topFindings: EvidenceAiFindingSummary[];
 }
 
+export interface EvidenceSegmentSignal {
+  segmentId: string;
+  segmentName: string;
+  neighborhoodCode: string | null;
+  revalArea: number | null;
+  parcelCount: number;
+  medianRatio: number | null;
+  cod: number | null;
+  prd: number | null;
+  riskScore: number;
+  exceptionCount: number;
+  ratioCount: number | null;
+  salesCount: number | null;
+  prb: number | null;
+  weightedMeanRatio: number | null;
+  yoyMedianRatioDelta: number | null;
+}
+
 export interface EvidencePacketDto {
   studyId: string;
   countyName: string;
@@ -471,6 +489,7 @@ export interface EvidencePacketDto {
   healthySegments: number;
   primaryScenario: EvidenceScenarioSection | null;
   aiDiagnosis: EvidenceAiSection | null;
+  topRiskSegments: EvidenceSegmentSignal[];
   exceptions: EvidenceExceptionItem[];
 }
 

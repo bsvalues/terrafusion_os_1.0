@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Slice C49-FK-D live preflight smoke. Standalone .NET app that
+    exercises DictionaryLoaderPreflight against the operator's local
+    Harris PACS via the same LivePacsSchemaSource the C48-E smoke
+    uses. Verifies that the FK property_val.property_use_cd to
+    property_use.property_use_cd is engine-declared and the preflight
+    Pass result carries a Confidence = Declared edge.
+
+    Lives under backend/artifacts/sync-atlas/c49-fk-d/. NOT included
+    in TerraFusion.sln. Standalone:
+        dotnet run -project backend/artifacts/sync-atlas/c49-fk-d/PreflightSmoke.csproj
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>TerraFusion.Smoke.C49FKD</RootNamespace>
+    <AssemblyName>c49fkd-smoke</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <BaseOutputPath>$(MSBuildThisFileDirectory)build/</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)build/obj/</BaseIntermediateOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\TerraFusion.Sync\TerraFusion.Sync.csproj" />
+  </ItemGroup>
+
+</Project>

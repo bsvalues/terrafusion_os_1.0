@@ -37,6 +37,25 @@ const mockPacket: EvidencePacketDto = {
       { code: 'LOW_SAMPLE', category: 'Data', summary: 'Segment has fewer than 30 ratios.', evidenceStrength: 0.8 },
     ],
   },
+  topRiskSegments: [
+    {
+      segmentId: 'seg-1',
+      segmentName: 'Neighborhood 101 · Reval 3 · Residential',
+      neighborhoodCode: '101',
+      revalArea: 3,
+      parcelCount: 884,
+      medianRatio: 0.798,
+      cod: 30.1,
+      prd: 1.22,
+      riskScore: 70,
+      exceptionCount: 11,
+      ratioCount: 48,
+      salesCount: 48,
+      prb: -2.236,
+      weightedMeanRatio: 0.822,
+      yoyMedianRatioDelta: null,
+    },
+  ],
   exceptions: [
     {
       exceptionSetId: 'exc-1',
@@ -74,6 +93,14 @@ test('lists exceptions in table', () => {
   const md = evidencePacketToMarkdown(mockPacket);
   expect(md).toContain('LowSample');
   expect(md).toContain('Jane Assessor');
+});
+
+test('includes top-risk segment signals for defense traceability', () => {
+  const md = evidencePacketToMarkdown(mockPacket);
+  expect(md).toContain('Top Risk Segment Signals');
+  expect(md).toContain('Neighborhood 101 · Reval 3 · Residential');
+  expect(md).toContain('Neighborhood 101 / Reval 3');
+  expect(md).toContain('-2.236');
 });
 
 test('handles null AI diagnosis gracefully', () => {
