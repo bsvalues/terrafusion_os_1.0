@@ -1441,7 +1441,8 @@ internal static class Program
         // silently producing partial / wrong results.
         DictionaryLoaderPreflightStance? preflightStance = configKey switch
         {
-            "property_use" => DictionaryLoaderPreflightStance.RequiredFk,  // C49-FK-E
+            "property_use" => DictionaryLoaderPreflightStance.RequiredFk,                // C49-FK-E
+            "property_use:imprv.primary_use_cd" => DictionaryLoaderPreflightStance.AdvisoryFk, // C49-FK-F
             _              => null,
         };
 
