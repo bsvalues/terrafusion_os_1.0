@@ -37,11 +37,31 @@ namespace TerraFusion.Sync.Workbench.Schema;
 /// Operator-supplied PII rules in a future slice will reclassify
 /// known sensitive columns (e.g. <c>grantor_cv</c>,
 /// <c>owner_addr</c>).</item>
-/// <item>Empty <see cref="PacsTable.DictionaryReferences"/>; no
-/// dictionaries produced. Dictionary inference (which lookup
-/// tables back which FK columns) is a future slice that will
-/// consult naming conventions or operator config.</item>
+/// <item>Empty <see cref="PacsTable.DictionaryReferences"/> on
+/// every <see cref="PacsTable"/>. FK-edge inference (which dictionary
+/// table backs which arbitrary FK column) is a separate, harder
+/// problem deferred to a future slice — INFORMATION_SCHEMA does not
+/// declare these foreign keys explicitly in Harris PACS, so an
+/// inference pass needs to walk every <c>*_cd</c> column and try to
+/// match it to a same-named code in the inferred dictionary set.
+/// Catalog still lists the dictionaries themselves; consumers can
+/// resolve FK edges client-side or a future slice can centralize
+/// it here.</item>
 /// </list>
+///
+/// <para>Slice C48-F: <see cref="PacsDictionary"/> inference IS
+/// applied as of this slice. The heuristic is grounded in real
+/// Harris PACS table shapes and is intentionally conservative: a
+/// table is inferred as a dictionary if and only if its first
+/// column ends in <c>_cd</c> and its second column ends in
+/// <c>_desc</c> or <c>_dsc</c>. False-negatives (richer entities
+/// with code+desc plus extra columns, like <c>neighborhood</c>)
+/// stay un-classified rather than risk false-positives that would
+/// have downstream loaders consult bogus dictionaries. Operator
+/// overrides for borderline cases are deferred to a future slice.
+/// See the
+/// <see cref="LivePacsSchemaSourceOptions.InferDictionaries"/>
+/// flag.</para>
 ///
 /// <para>Per the C48-A "Source / target model (binding)" section,
 /// this source MUST read from the legacy source DB (Harris PACS),
@@ -126,8 +146,15 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
                 Notes: string.Empty));
         }
 
-        // Dictionaries: empty in this slice; inference deferred.
-        var dictionaries = (IReadOnlyList<PacsDictionary>)Array.Empty<PacsDictionary>();
+        // Slice C48-F: dictionary inference. Heuristic grounded in
+        // observed Harris PACS shape — see the class-level summary
+        // for the full rule. Operator can disable via the
+        // InferDictionaries flag if a deployment needs the catalog
+        // dictionary list to come exclusively from a future
+        // operator-supplied manifest.
+        IReadOnlyList<PacsDictionary> dictionaries = _options.InferDictionaries
+            ? InferDictionaries(introspection.Tables, columnsByTable)
+            : Array.Empty<PacsDictionary>();
 
         // Version: synthesized from the live snapshot. Source-file
         // hashes are not applicable for live introspection; we record
@@ -172,6 +199,66 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
 
     private string BuildSourceLabel() =>
         $"live-introspection://{_options.SourceLabel}/{_options.SchemaName}";
+
+    /// <summary>
+    /// Slice C48-F: dictionary-table inference. Walks the
+    /// introspected tables and produces a <see cref="PacsDictionary"/>
+    /// record for every table that matches the conservative
+    /// classic-dictionary shape: first column ends in <c>_cd</c>
+    /// AND second column ends in <c>_desc</c> or <c>_dsc</c>.
+    /// Heuristic grounded in observed Harris PACS shape (e.g.
+    /// <c>imprv_det_class</c> → <c>imprv_det_class_cd</c> +
+    /// <c>imprv_det_cls_desc</c>).
+    /// <para>Conservative on purpose: rich entities like
+    /// <c>neighborhood</c> (which carries a code column plus year /
+    /// name / percent columns) deliberately do NOT match. Better to
+    /// miss a borderline dictionary than to mis-classify a richer
+    /// table and have downstream loaders consult bogus
+    /// dictionaries. Operator overrides for borderline cases are
+    /// deferred to a future slice.</para>
+    /// </summary>
+    private IReadOnlyList<PacsDictionary> InferDictionaries(
+        IReadOnlyList<IntrospectedTable> tables,
+        IReadOnlyDictionary<string, List<IntrospectedColumn>> columnsByTable)
+    {
+        var result = new List<PacsDictionary>();
+        foreach (var t in tables)
+        {
+            if (!columnsByTable.TryGetValue(t.TableName, out var cols) || cols.Count < 2)
+            {
+                continue;
+            }
+
+            var first = cols[0];
+            var second = cols[1];
+
+            if (!IsCodeColumnName(first.ColumnName))
+            {
+                continue;
+            }
+
+            if (!IsDescriptionColumnName(second.ColumnName))
+            {
+                continue;
+            }
+
+            result.Add(new PacsDictionary(
+                DictionaryName: t.TableName,
+                KeyColumn: first.ColumnName,
+                DescriptionColumn: second.ColumnName,
+                ValueDomainSize: null,
+                ConversionEra: PacsConversionEra.Both,
+                ProvenancePath: BuildTableProvenance(t.TableName)));
+        }
+        return result;
+    }
+
+    private static bool IsCodeColumnName(string columnName) =>
+        columnName.EndsWith("_cd", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsDescriptionColumnName(string columnName) =>
+        columnName.EndsWith("_desc", StringComparison.OrdinalIgnoreCase) ||
+        columnName.EndsWith("_dsc", StringComparison.OrdinalIgnoreCase);
 }
 
 /// <summary>
@@ -195,15 +282,25 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
 /// when not declared by the operator. Surfaces in
 /// <see cref="PacsSchemaVersion.PacsRelease"/>.
 /// </param>
+/// <param name="InferDictionaries">
+/// Slice C48-F: when <c>true</c> (default), the live source applies
+/// the conservative dictionary-table inference heuristic (first
+/// column ends in <c>_cd</c> AND second column ends in <c>_desc</c>
+/// or <c>_dsc</c>) to populate <see cref="PacsSchemaSourceData.Dictionaries"/>.
+/// When <c>false</c>, the dictionary list is empty and dictionaries
+/// must be supplied by a future operator-config or manifest layer.
+/// </param>
 public sealed record LivePacsSchemaSourceOptions(
     string SourceLabel,
     string SchemaName,
-    string? PacsReleaseLabel)
+    string? PacsReleaseLabel,
+    bool InferDictionaries = true)
 {
     /// <summary>
     /// Sensible default for SQL Server / Harris PACS:
     /// <c>SchemaName = "dbo"</c>, with caller-supplied label.
+    /// Dictionary inference enabled by default.
     /// </summary>
     public static LivePacsSchemaSourceOptions ForBentonHarrisPacs(string sourceLabel) =>
-        new(sourceLabel, "dbo", PacsReleaseLabel: null);
+        new(sourceLabel, "dbo", PacsReleaseLabel: null, InferDictionaries: true);
 }
