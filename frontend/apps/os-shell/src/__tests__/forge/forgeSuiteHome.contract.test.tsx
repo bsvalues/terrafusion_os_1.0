@@ -10,7 +10,7 @@
  *
  * Locked taxonomy (IAAO three-approaches-to-value + sale qualification):
  *   PRIMARY:   CostForge · CompsForge · IncomeForge · SalesForge
- *   SECONDARY: Statistics Studio legacy specialist · Batch Cost Runs · Regression Studio ·
+ *   SECONDARY: Batch Cost Runs · Regression Studio ·
  *              TerraGAMA · Coefficient Preview
  *   DEFAULT ANALYTICS: County Studio
  *   QUEUE:     SaleQualificationQueue (the only panel surface)
@@ -121,19 +121,18 @@ describe('TerraForge suite home — taxonomy contract', () => {
 
   // ── Secondary tier ──────────────────────────────────────────────────────────
 
-  it('renders exactly five secondary/specialist scenes', async () => {
+  it('renders exactly four secondary/specialist scenes', async () => {
     await renderForgeSuiteHome();
     const secondary = screen.getByTestId('forge-secondary-applications');
     const cards = within(secondary).getAllByRole('button');
-    expect(cards).toHaveLength(5);
+    expect(cards).toHaveLength(4);
   });
 
-  it('renders Statistics Studio in the secondary tier', async () => {
+  it('does not render Statistics Studio in the secondary tier', async () => {
     await renderForgeSuiteHome();
     const secondary = screen.getByTestId('forge-secondary-applications');
-    expect(within(secondary).getByText('Statistics Studio')).toBeDefined();
-    expect(within(secondary).getByText(/legacy specialist/i)).toBeDefined();
-    expect(within(secondary).getByText(/ad hoc VEI tax-year exploration/i)).toBeDefined();
+    expect(within(secondary).queryByText('Statistics Studio')).toBeNull();
+    expect(within(secondary).queryByText(/legacy specialist/i)).toBeNull();
   });
 
   it('renders Batch Cost Runs in the secondary tier', async () => {

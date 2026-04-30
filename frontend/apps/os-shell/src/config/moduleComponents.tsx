@@ -60,6 +60,7 @@ export const MODULE_ALIASES: Record<string, string> = {
   regression: 'regression-studio',
   stats: 'county-studio',
   statistics: 'county-studio',
+  'statistics-studio': 'county-studio',
   permit: 'terra-permit',
   pilt: 'terra-pilt',
   sync: 'terra-sync',
@@ -178,7 +179,6 @@ export const MODULE_REGISTRY = new Set<string>([
   // NOTE: income-valuation and comparable-sales REMOVED (Phase 5G) — archived in Phase 3,
   // absorbed into Workbench → Forge → Income/Sales sub-tabs
   'regression-studio',
-  'statistics-studio',
   'batch-cost-run',
   'coefficient-preview',
   'vei',
@@ -338,9 +338,6 @@ const CompsForgeModule = lazy(
 // ============================================================================
 // Phase C: Rehosted Module Components
 // ============================================================================
-const StatisticsStudio = lazy(
-  () => import('../pages/forge/statistics/StatisticsStudio')
-);
 const RegressionStudio = lazy(
   () => import('../pages/forge/regression/RegressionStudio')
 );
@@ -820,13 +817,6 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
       return (
         <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Regression Studio...</span></div>}>
           <RegressionStudio />
-        </Suspense>
-      );
-
-    case 'statistics-studio':
-      return (
-        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Statistics Studio...</span></div>}>
-          <StatisticsStudio />
         </Suspense>
       );
 

@@ -1,0 +1,54 @@
+{
+  "checkedAt": "2026-04-30T20:32:36.342Z",
+  "slice": "statistics-studio-standalone-shell-closure",
+  "status": "PASS",
+  "decision": "STATISTICS_STUDIO_STANDALONE_SHELL_RETIRED_COUNTY_STUDIO_IS_DEFAULT_ANALYTICS",
+  "checks": [
+    {
+      "id": "direct-statistics-studio-launch-resolves-to-county-studio",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/config/moduleComponents.tsx:63"
+      ],
+      "note": "Direct legacy launch IDs now normalize into County Studio."
+    },
+    {
+      "id": "statistics-studio-renderer-shell-removed",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/config/moduleComponents.tsx"
+      ],
+      "note": "ModuleRenderer no longer has a standalone Statistics Studio shell path."
+    },
+    {
+      "id": "statistics-studio-hidden-from-default-gen2-modules",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/config/modules.ts:63",
+        "frontend/apps/os-shell/src/config/modules.ts:67"
+      ],
+      "note": "Generated catalog metadata remains, but the retired shell is filtered out of default Gen2 modules."
+    },
+    {
+      "id": "forge-suite-no-longer-lists-statistics-studio",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx"
+      ],
+      "note": "Forge suite no longer presents Statistics Studio as a user-selectable specialist card."
+    },
+    {
+      "id": "retirement-audit-is-green",
+      "passed": true,
+      "proof": [
+        "os-platform/core/pilot/evidence/statistics-studio-retirement-gap-audit.latest.json"
+      ],
+      "note": "Retirement matrix has no remaining analytical or product gap requiring the shell."
+    }
+  ],
+  "failures": [],
+  "nextClosure": [
+    "Do not remove shared statistics components; County Studio owns and imports them.",
+    "Keep StatisticsStudio.tsx source deletion as a separate cleanup only after import graph verification."
+  ]
+}

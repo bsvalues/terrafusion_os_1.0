@@ -1,8 +1,8 @@
 # Statistics Studio Retirement Gap Audit
 
-Checked: 2026-04-30T19:19:02.465Z
-Status: PASS_WITH_PRODUCT_GAPS
-Decision: DEMOTE_STATISTICS_STUDIO_KEEP_TEMPORARILY_FOR_STANDALONE_SHELL_ONLY
+Checked: 2026-04-30T20:31:02.655Z
+Status: PASS
+Decision: RETIRE_STATISTICS_STUDIO
 
 ## Prerequisite Proofs
 
@@ -24,11 +24,9 @@ Decision: DEMOTE_STATISTICS_STUDIO_KEEP_TEMPORARILY_FOR_STANDALONE_SHELL_ONLY
 | Advanced diagnostics, spatial/temporal, and calibration engine | County Studio renders the same advanced panels and applies the same advanced certification guard. | `frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:254`<br>`frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1049`<br>`frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:835` | shared-component | retire-or-demote-standalone |
 | Market context and economics | County Studio adds a reference-only certified market lane plus MarketAnalyticsDashboard, MarketDashboard, and EconomicIndicators. | `frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:972`<br>`frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:989`<br>`frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1010` | county-studio-only-reference-context | keep-in-county-studio |
 | Assessment intelligence and quality control | County Studio derives AssessmentIntelligence and QualityControlPanel from active study health and segment data. | `frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:441`<br>`frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:321`<br>`frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:952`<br>`frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:965` | county-studio-only | keep-in-county-studio |
-| Standalone module entrypoint | County Studio requires an active study for its workbench-native statistics surface. | `frontend/apps/os-shell/src/config/moduleComponents.tsx:826`<br>`frontend/apps/os-shell/src/config/generatedModules.ts:431`<br>`frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:854` | unique-shell-not-unique-analytics | demote-keep-temporarily |
+| Standalone module entrypoint | County Studio requires an active study for its workbench-native statistics surface. | `frontend/apps/os-shell/src/config/moduleComponents.tsx:63`<br>`frontend/apps/os-shell/src/config/generatedModules.ts:431`<br>`frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:854` | standalone-shell-retired | retired |
 
 ## Required Closure Before Hiding
 
-- Decide whether standalone Statistics Studio ad hoc tax-year exploration is still required.
-- If not required, demote the statistics-studio module entrypoint to legacy/specialist or redirect users to County Studio study selection.
-- Do not remove shared statistics panels; County Studio still imports them as native workbench capabilities.
+- No remaining standalone Statistics Studio closure item. Keep shared statistics panels because County Studio imports them as native workbench capabilities.
 
