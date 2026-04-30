@@ -104,33 +104,9 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
                 g => (IReadOnlyList<string>)g.OrderBy(pk => pk.OrdinalPosition).Select(pk => pk.ColumnName).ToList(),
                 StringComparer.Ordinal);
 
-        // Translate tables.
-        var tables = new List<PacsTable>(introspection.Tables.Count);
-        foreach (var t in introspection.Tables)
-        {
-            // Identity tuple: prefer declared PK; fallback to single-column heuristic
-            // (a column matching <table_name>_id, otherwise empty).
-            IReadOnlyList<string> identityTuple;
-            if (pkTuplesByTable.TryGetValue(t.TableName, out var pkTuple) && pkTuple.Count > 0)
-            {
-                identityTuple = pkTuple;
-            }
-            else
-            {
-                var fallback = ResolveFallbackIdentityColumn(t.TableName, columnsByTable);
-                identityTuple = fallback is null ? Array.Empty<string>() : new[] { fallback };
-            }
-
-            tables.Add(new PacsTable(
-                TableName: t.TableName,
-                IdentityTuple: identityTuple,
-                ConversionEra: PacsConversionEra.Both,
-                DictionaryReferences: Array.Empty<PacsDictionaryReference>(),
-                PiiClassification: PiiClassification.None,
-                ProvenancePath: BuildTableProvenance(t.TableName)));
-        }
-
-        // Translate columns.
+        // Translate columns first so the FK pass can validate column
+        // membership and the InferredByName heuristic can read column
+        // names per table.
         var columns = new List<PacsColumn>(introspection.Columns.Count);
         foreach (var c in introspection.Columns)
         {
@@ -155,6 +131,58 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
         IReadOnlyList<PacsDictionary> dictionaries = _options.InferDictionaries
             ? InferDictionaries(introspection.Tables, columnsByTable)
             : Array.Empty<PacsDictionary>();
+
+        // Slice C49-FK-B: foreign-key edges. Two passes:
+        //   1. Declared edges from introspection.ForeignKeys
+        //      (engine-enforced; ProvenanceSource = InformationSchema).
+        //   2. InferredByName edges from the dictionary list +
+        //      column-name heuristic, EXCLUDING any edge whose
+        //      (SourceTable, SourceColumn) pair already has a
+        //      Declared edge — declared takes precedence.
+        List<PacsForeignKey> declaredFks = TranslateDeclaredForeignKeys(introspection.ForeignKeys);
+        List<PacsForeignKey> inferredFks = _options.InferDictionaries
+            ? InferDictionaryForeignKeys(introspection.Columns, dictionaries, declaredFks)
+            : new List<PacsForeignKey>(0);
+        var allFks = new List<PacsForeignKey>(declaredFks.Count + inferredFks.Count);
+        allFks.AddRange(declaredFks);
+        allFks.AddRange(inferredFks);
+        var fksBySourceTable = allFks
+            .GroupBy(fk => fk.SourceTable, StringComparer.Ordinal)
+            .ToDictionary(
+                g => g.Key,
+                g => (IReadOnlyList<PacsForeignKey>)g.ToList(),
+                StringComparer.Ordinal);
+
+        // Translate tables, attaching FK edges.
+        var tables = new List<PacsTable>(introspection.Tables.Count);
+        foreach (var t in introspection.Tables)
+        {
+            // Identity tuple: prefer declared PK; fallback to single-column heuristic
+            // (a column matching <table_name>_id, otherwise empty).
+            IReadOnlyList<string> identityTuple;
+            if (pkTuplesByTable.TryGetValue(t.TableName, out var pkTuple) && pkTuple.Count > 0)
+            {
+                identityTuple = pkTuple;
+            }
+            else
+            {
+                var fallback = ResolveFallbackIdentityColumn(t.TableName, columnsByTable);
+                identityTuple = fallback is null ? Array.Empty<string>() : new[] { fallback };
+            }
+
+            var tableFks = fksBySourceTable.TryGetValue(t.TableName, out var fkList)
+                ? fkList
+                : (IReadOnlyList<PacsForeignKey>)Array.Empty<PacsForeignKey>();
+
+            tables.Add(new PacsTable(
+                TableName: t.TableName,
+                IdentityTuple: identityTuple,
+                ConversionEra: PacsConversionEra.Both,
+                DictionaryReferences: Array.Empty<PacsDictionaryReference>(),
+                PiiClassification: PiiClassification.None,
+                ProvenancePath: BuildTableProvenance(t.TableName),
+                ForeignKeys: tableFks));
+        }
 
         // Version: synthesized from the live snapshot. Source-file
         // hashes are not applicable for live introspection; we record
@@ -278,6 +306,143 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
         columnName.EndsWith("_desc", StringComparison.OrdinalIgnoreCase) ||
         columnName.EndsWith("_dsc",  StringComparison.OrdinalIgnoreCase) ||
         columnName.EndsWith("Desc",  StringComparison.Ordinal);
+
+    /// <summary>
+    /// Slice C49-FK-B: translate flat introspected FK rows into
+    /// composite-aware <see cref="PacsForeignKey"/> records. Groups
+    /// rows by <c>ConstraintName</c> and reconstructs ordinal-stable
+    /// column lists for both source and target. Confidence is
+    /// <see cref="PacsForeignKeyConfidence.Declared"/>; provenance
+    /// source is <see cref="PacsForeignKeySource.InformationSchema"/>.
+    /// </summary>
+    private List<PacsForeignKey> TranslateDeclaredForeignKeys(
+        IReadOnlyList<IntrospectedForeignKeyMember> introspectedFks)
+    {
+        if (introspectedFks.Count == 0)
+        {
+            return new List<PacsForeignKey>(0);
+        }
+
+        var result = new List<PacsForeignKey>();
+        var groups = introspectedFks.GroupBy(fk => fk.ConstraintName, StringComparer.Ordinal);
+        foreach (var g in groups)
+        {
+            var ordered = g.OrderBy(fk => fk.OrdinalPosition).ToList();
+            var first = ordered[0];
+
+            var sourceColumns = ordered.Select(fk => fk.SourceColumn).ToList();
+            var targetColumns = ordered.Select(fk => fk.TargetColumn).ToList();
+
+            result.Add(new PacsForeignKey(
+                ConstraintName:    g.Key,
+                SourceTable:       first.SourceTable,
+                SourceColumns:     sourceColumns,
+                TargetTable:       first.TargetTable,
+                TargetColumns:     targetColumns,
+                ProvenanceSource:  PacsForeignKeySource.InformationSchema,
+                ProvenancePath:    BuildForeignKeyProvenance(g.Key),
+                Confidence:        PacsForeignKeyConfidence.Declared,
+                ConversionEra:     PacsConversionEra.Both));
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Slice C49-FK-B: name-matching heuristic for <see cref="PacsForeignKeyConfidence.InferredByName"/>
+    /// edges. Conservative single-column rule:
+    /// <list type="number">
+    /// <item>Source column ends in <c>_cd</c>, <c>_code</c>, or
+    /// <c>Code</c> (matches the C48-F+P dictionary-key suffix
+    /// convention).</item>
+    /// <item>A <see cref="PacsDictionary"/> exists whose
+    /// <see cref="PacsDictionary.KeyColumn"/> matches the source
+    /// column verbatim.</item>
+    /// <item>The source column is on a non-dictionary table (i.e.
+    /// not the dictionary's own <see cref="PacsDictionary.DictionaryName"/>).</item>
+    /// <item>No declared edge already covers the same
+    /// (SourceTable, SourceColumn) pair (declared takes
+    /// precedence per HG-FK-1).</item>
+    /// </list>
+    /// </summary>
+    private List<PacsForeignKey> InferDictionaryForeignKeys(
+        IReadOnlyList<IntrospectedColumn> columns,
+        IReadOnlyList<PacsDictionary> dictionaries,
+        IReadOnlyList<PacsForeignKey> declaredFks)
+    {
+        if (dictionaries.Count == 0 || columns.Count == 0)
+        {
+            return new List<PacsForeignKey>(0);
+        }
+
+        // Index dictionaries by KeyColumn for O(1) lookup.
+        var dictByKeyColumn = new Dictionary<string, PacsDictionary>(StringComparer.Ordinal);
+        foreach (var d in dictionaries)
+        {
+            // Multiple dictionaries could share a KeyColumn name in
+            // theory; accept the first encountered and skip later
+            // ambiguous ones (conservative — refuse to invent edges
+            // for ambiguous keys).
+            dictByKeyColumn.TryAdd(d.KeyColumn, d);
+        }
+
+        // Track declared (SourceTable, SourceColumn) pairs to suppress
+        // duplicate inferred edges (declared takes precedence).
+        var declaredPairs = new HashSet<(string, string)>();
+        foreach (var fk in declaredFks)
+        {
+            // Composite declared FKs still suppress inference on every
+            // (Source, Col) participant — overconservative but safe.
+            for (int i = 0; i < fk.SourceColumns.Count; i++)
+            {
+                declaredPairs.Add((fk.SourceTable, fk.SourceColumns[i]));
+            }
+        }
+
+        // Track dictionary names so we don't infer FKs FROM a
+        // dictionary's own key column TO itself.
+        var dictionaryTableNames = new HashSet<string>(
+            dictionaries.Select(d => d.DictionaryName),
+            StringComparer.Ordinal);
+
+        var result = new List<PacsForeignKey>();
+        foreach (var c in columns)
+        {
+            if (dictionaryTableNames.Contains(c.TableName))
+            {
+                continue; // skip the dictionary's own key column
+            }
+            if (declaredPairs.Contains((c.TableName, c.ColumnName)))
+            {
+                continue; // declared edge already covers this pair
+            }
+            if (!IsCodeColumnName(c.ColumnName))
+            {
+                continue;
+            }
+            if (!dictByKeyColumn.TryGetValue(c.ColumnName, out var dict))
+            {
+                continue;
+            }
+
+            result.Add(new PacsForeignKey(
+                ConstraintName:    null,  // inferred edges have no engine constraint
+                SourceTable:       c.TableName,
+                SourceColumns:     new[] { c.ColumnName },
+                TargetTable:       dict.DictionaryName,
+                TargetColumns:     new[] { dict.KeyColumn },
+                ProvenanceSource:  PacsForeignKeySource.Heuristic,
+                ProvenancePath:    BuildInferredFkProvenance(c.TableName, c.ColumnName, dict.DictionaryName),
+                Confidence:        PacsForeignKeyConfidence.InferredByName,
+                ConversionEra:     PacsConversionEra.Both));
+        }
+        return result;
+    }
+
+    private string BuildForeignKeyProvenance(string constraintName) =>
+        $"live-introspection://{_options.SourceLabel}/{_options.SchemaName}/fk/{constraintName}";
+
+    private string BuildInferredFkProvenance(string sourceTable, string sourceColumn, string targetTable) =>
+        $"live-introspection://{_options.SourceLabel}/{_options.SchemaName}/fk-inferred/{sourceTable}.{sourceColumn}->{targetTable}";
 }
 
 /// <summary>

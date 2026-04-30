@@ -57,23 +57,51 @@ var elapsed = DateTime.UtcNow - startedUtc;
 // Fields are intentionally named to match the DTO (camelCase via
 // JsonNamingPolicy below) so artifact diffs against future endpoint runs
 // are mechanical.
+// Slice C49-FK-B: aggregate FK counts by confidence level for the
+// summary artifact. Walking every PacsTable.ForeignKeys is cheap
+// (already resident in memory).
+int declaredFkCount = 0;
+int exportedFkCount = 0;
+int inferredFkCount = 0;
+foreach (var t in catalog.Tables)
+{
+    foreach (var fk in t.ForeignKeys)
+    {
+        switch (fk.Confidence)
+        {
+            case PacsForeignKeyConfidence.Declared:       declaredFkCount++; break;
+            case PacsForeignKeyConfidence.Exported:       exportedFkCount++; break;
+            case PacsForeignKeyConfidence.InferredByName: inferredFkCount++; break;
+        }
+    }
+}
+int totalFkCount = declaredFkCount + exportedFkCount + inferredFkCount;
+
 var summary = new
 {
     configured       = true,
     tableCount       = catalog.Coverage.TableCount,
     columnCount      = catalog.Coverage.ColumnCount,
     dictionaryCount  = catalog.Coverage.DictionaryCount,
+    foreignKeyCount  = new
+    {
+        total          = totalFkCount,
+        declared       = declaredFkCount,
+        exported       = exportedFkCount,
+        inferredByName = inferredFkCount,
+    },
     pacsRelease      = catalog.Version.PacsRelease,
     ingestedAtUtc    = catalog.Version.IngestedAt.ToString("O"),
     proof = new
     {
-        slice          = "C48-E",
+        slice          = "C49-FK-B",
         sourceLabel,
         schemaName,
         elapsedMs      = (long)elapsed.TotalMilliseconds,
         identityProof  = "live-introspection-via-information-schema",
         piiFreeProof   = "introspector-queries-information-schema-only",
         mutationProof  = "no-writes-zero-side-effects",
+        fkPolicyRef    = "docs/sync/pacs-schema-foreign-key-inference-policy.md",
     }
 };
 

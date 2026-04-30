@@ -44,13 +44,22 @@ namespace TerraFusion.Sync.Workbench.Schema;
 /// Source schema file path (and optional section identifier) that
 /// declared this table. Required by HG6.
 /// </param>
+/// <param name="ForeignKeys">
+/// Slice C49-FK-B: foreign-key edges whose <c>SourceTable</c>
+/// matches this table's name. Empty when the table declares no FKs;
+/// never null. Each element carries an explicit
+/// <see cref="PacsForeignKey.Confidence"/> level so consumers can
+/// distinguish engine-declared edges from advisory-only inferred
+/// ones (HG-FK-1 / HG-FK-2 from the C49-FK-A policy).
+/// </param>
 public sealed record PacsTable(
     string TableName,
     IReadOnlyList<string> IdentityTuple,
     PacsConversionEra ConversionEra,
     IReadOnlyList<PacsDictionaryReference> DictionaryReferences,
     PiiClassification PiiClassification,
-    string ProvenancePath);
+    string ProvenancePath,
+    IReadOnlyList<PacsForeignKey> ForeignKeys);
 
 /// <summary>
 /// Slice C48-B: foreign-key relationship from a local PACS column

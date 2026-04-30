@@ -200,7 +200,8 @@ public sealed class DictionaryConfigFromCatalogTests
                 ConversionEra: PacsConversionEra.Both,
                 DictionaryReferences: Array.Empty<PacsDictionaryReference>(),
                 PiiClassification: PiiClassification.None,
-                ProvenancePath: $"fixture://{dictionaryName}"),
+                ProvenancePath: $"fixture://{dictionaryName}",
+                ForeignKeys: Array.Empty<PacsForeignKey>()),
         };
         var columns = new List<PacsColumn>
         {

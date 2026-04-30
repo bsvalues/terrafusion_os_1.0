@@ -145,6 +145,40 @@ public sealed class PacsSchemaCatalog : IPacsSchemaCatalog
             : PacsSchemaLookupResult<PacsDictionary>.Miss(PacsSchemaLookupResult<PacsDictionary>.ReasonNotFound);
     }
 
+    /// <inheritdoc />
+    public PacsSchemaLookupResult<IReadOnlyList<PacsForeignKey>> TryGetDeclaredForeignKeysFor(string tableName)
+    {
+        var all = TryGetAllForeignKeysFor(tableName);
+        if (!all.HasValue || all.Value is null)
+        {
+            return all;
+        }
+
+        // Filter to declared + exported only (HG-FK-1).
+        var declared = all.Value
+            .Where(fk => fk.Confidence != PacsForeignKeyConfidence.InferredByName)
+            .ToList();
+        return PacsSchemaLookupResult<IReadOnlyList<PacsForeignKey>>.Found(declared);
+    }
+
+    /// <inheritdoc />
+    public PacsSchemaLookupResult<IReadOnlyList<PacsForeignKey>> TryGetAllForeignKeysFor(string tableName)
+    {
+        if (string.IsNullOrEmpty(tableName))
+        {
+            return PacsSchemaLookupResult<IReadOnlyList<PacsForeignKey>>.Miss(
+                PacsSchemaLookupResult<IReadOnlyList<PacsForeignKey>>.ReasonNotFound);
+        }
+
+        if (!_tablesByName.TryGetValue(tableName, out var table))
+        {
+            return PacsSchemaLookupResult<IReadOnlyList<PacsForeignKey>>.Miss(
+                PacsSchemaLookupResult<IReadOnlyList<PacsForeignKey>>.ReasonNotFound);
+        }
+
+        return PacsSchemaLookupResult<IReadOnlyList<PacsForeignKey>>.Found(table.ForeignKeys);
+    }
+
     /// <summary>
     /// Constructs the catalog from a source. Performs construction-
     /// time validation per the class-level summary; throws
@@ -177,6 +211,69 @@ public sealed class PacsSchemaCatalog : IPacsSchemaCatalog
             throw new InvalidOperationException(
                 $"[PacsSchemaCatalog] Column '{dangling.TableName}.{dangling.ColumnName}' references a table not declared by the source. " +
                 "Catalog refuses to build with dangling column references.");
+        }
+
+        // Slice C49-FK-B integrity: every FK on every PacsTable
+        // references an existing source/target table AND every FK
+        // column references an existing column on the named table.
+        // Refuses dangling FK references at construction.
+        var columnsByTableSet = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
+        foreach (var c in data.Columns)
+        {
+            if (!columnsByTableSet.TryGetValue(c.TableName, out var set))
+            {
+                set = new HashSet<string>(StringComparer.Ordinal);
+                columnsByTableSet[c.TableName] = set;
+            }
+            set.Add(c.ColumnName);
+        }
+        foreach (var table in data.Tables)
+        {
+            foreach (var fk in table.ForeignKeys)
+            {
+                if (!tableNameSet.Contains(fk.SourceTable))
+                {
+                    throw new InvalidOperationException(
+                        $"[PacsSchemaCatalog] Foreign key '{fk.ConstraintName ?? "(inferred)"}' on table '{table.TableName}' references a source table '{fk.SourceTable}' not declared by the source. " +
+                        "Catalog refuses to build with dangling FK source-table references (C49-FK-A HG-FK).");
+                }
+                if (!tableNameSet.Contains(fk.TargetTable))
+                {
+                    throw new InvalidOperationException(
+                        $"[PacsSchemaCatalog] Foreign key '{fk.ConstraintName ?? "(inferred)"}' on table '{table.TableName}' references a target table '{fk.TargetTable}' not declared by the source. " +
+                        "Catalog refuses to build with dangling FK target-table references (C49-FK-A HG-FK).");
+                }
+                if (fk.SourceColumns.Count != fk.TargetColumns.Count)
+                {
+                    throw new InvalidOperationException(
+                        $"[PacsSchemaCatalog] Foreign key '{fk.ConstraintName ?? "(inferred)"}' on table '{table.TableName}' has mismatched column arity: " +
+                        $"{fk.SourceColumns.Count} source vs {fk.TargetColumns.Count} target. Composite FKs MUST have matching arity.");
+                }
+                if (columnsByTableSet.TryGetValue(fk.SourceTable, out var srcSet))
+                {
+                    foreach (var col in fk.SourceColumns)
+                    {
+                        if (!srcSet.Contains(col))
+                        {
+                            throw new InvalidOperationException(
+                                $"[PacsSchemaCatalog] Foreign key '{fk.ConstraintName ?? "(inferred)"}' references source column '{fk.SourceTable}.{col}' which is not declared. " +
+                                "Catalog refuses to build with dangling FK source-column references (C49-FK-A HG-FK).");
+                        }
+                    }
+                }
+                if (columnsByTableSet.TryGetValue(fk.TargetTable, out var tgtSet))
+                {
+                    foreach (var col in fk.TargetColumns)
+                    {
+                        if (!tgtSet.Contains(col))
+                        {
+                            throw new InvalidOperationException(
+                                $"[PacsSchemaCatalog] Foreign key '{fk.ConstraintName ?? "(inferred)"}' references target column '{fk.TargetTable}.{col}' which is not declared. " +
+                                "Catalog refuses to build with dangling FK target-column references (C49-FK-A HG-FK).");
+                        }
+                    }
+                }
+            }
         }
 
         // Build indexes. ToDictionary throws on duplicate keys, which we want — duplicates indicate source corruption.
