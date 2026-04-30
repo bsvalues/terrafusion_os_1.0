@@ -14,6 +14,13 @@ interface CorrectionDefensePanelProps {
 
 type ReadinessState = 'ready' | 'watch' | 'blocked';
 
+interface DefenseActionItem {
+  label: string;
+  state: ReadinessState;
+  detail: string;
+  action: string;
+}
+
 const tone: Record<ReadinessState, { color: string; bg: string; label: string }> = {
   ready: { color: 'hsl(var(--tf-success, 142 71% 45%))', bg: 'hsl(var(--tf-success, 142 71% 45%) / 0.14)', label: 'Ready' },
   watch: { color: 'hsl(var(--tf-warning, 38 92% 50%))', bg: 'hsl(var(--tf-warning, 38 92% 50%) / 0.14)', label: 'Watch' },
@@ -64,6 +71,32 @@ function ReadinessRow({
       <span style={{ fontSize: 11, fontWeight: 700 }}>{label}</span>
       <StatusPill state={state} />
       <span style={{ fontSize: 11, color: 'hsl(var(--tf-muted))' }}>{detail}</span>
+    </div>
+  );
+}
+
+function DefenseActionRow({ item, index }: { item: DefenseActionItem; index: number }) {
+  return (
+    <div
+      data-testid={`defense-action-${index + 1}`}
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '24px 72px 1fr',
+        gap: 8,
+        alignItems: 'start',
+        padding: '7px 0',
+        borderBottom: '1px solid hsl(var(--tf-border))',
+      }}
+    >
+      <span style={{ fontSize: 11, fontWeight: 800, color: 'hsl(var(--tf-muted))' }}>
+        {index + 1}
+      </span>
+      <StatusPill state={item.state} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <span style={{ fontSize: 11, fontWeight: 800 }}>{item.label}</span>
+        <span style={{ fontSize: 11, color: 'hsl(var(--tf-muted))' }}>{item.detail}</span>
+        <span style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>Next: {item.action}</span>
+      </div>
     </div>
   );
 }
@@ -177,6 +210,105 @@ export function CorrectionDefensePanel({
   const approvedCount = adjustmentSets.filter((set) => set.approvalState === 'Approved').length;
   const openExceptionCount = exceptions.filter((row) => row.status !== 'Resolved').length;
 
+  const defenseActionItems = useMemo<DefenseActionItem[]>(() => [
+    {
+      label: 'Metrics derived',
+      state: healthSummary ? 'ready' : 'blocked',
+      detail: healthSummary
+        ? `${healthSummary.ratioCount.toLocaleString()} ratio-bearing records are available.`
+        : 'No health summary is available for defense.',
+      action: healthSummary ? 'Keep metrics current' : 'Derive segment metrics',
+    },
+    {
+      label: 'Cohort anchored',
+      state: cohorts.length > 0 ? 'ready' : 'blocked',
+      detail: cohorts.length > 0
+        ? `${cohorts.length} cohort${cohorts.length === 1 ? '' : 's'} can anchor corrective scope.`
+        : 'No cohort exists for corrective scope.',
+      action: cohorts.length > 0 ? 'Use cohort scope' : 'Create cohort',
+    },
+    {
+      label: 'Scenario saved',
+      state: savedScenarioCount > 0 ? 'ready' : scenarioPreview ? 'watch' : 'blocked',
+      detail: savedScenarioCount > 0
+        ? `${savedScenarioCount} saved scenario${savedScenarioCount === 1 ? '' : 's'} can be promoted.`
+        : scenarioPreview
+          ? 'A preview exists but has not been saved.'
+          : 'No saved correction scenario exists.',
+      action: savedScenarioCount > 0 ? 'Compare or promote scenario' : 'Draft and save scenario',
+    },
+    {
+      label: 'Adjustment promoted',
+      state: promotedCount > 0 ? 'ready' : savedScenarioCount > 0 ? 'watch' : 'blocked',
+      detail: promotedCount > 0
+        ? `${promotedCount} adjustment set${promotedCount === 1 ? '' : 's'} entered governance.`
+        : 'No scenario has been promoted into approval.',
+      action: promotedCount > 0 ? 'Review approval state' : 'Promote saved scenario',
+    },
+    {
+      label: 'Approval posture',
+      state: approvedCount > 0 ? 'ready' : promotedCount > 0 ? 'watch' : 'blocked',
+      detail: promotedCount > 0
+        ? `${proposedCount} proposed, ${readyForApprovalCount} ready, ${approvedCount} approved.`
+        : 'No approval record exists.',
+      action: approvedCount > 0 ? 'Preserve approval evidence' : 'Advance approval workflow',
+    },
+    {
+      label: 'Exceptions resolved',
+      state: openExceptionCount === 0 ? 'ready' : 'watch',
+      detail: `${openExceptionCount} open exception${openExceptionCount === 1 ? '' : 's'} remain.`
+        + (openExceptionCount > 0 ? ' Packet export remains available but should disclose them.' : ''),
+      action: openExceptionCount === 0 ? 'Export defense packet' : 'Resolve or disclose exceptions',
+    },
+  ], [
+    approvedCount,
+    cohorts.length,
+    healthSummary,
+    openExceptionCount,
+    promotedCount,
+    proposedCount,
+    readyForApprovalCount,
+    savedScenarioCount,
+    scenarioPreview,
+  ]);
+
+  const nextDefenseAction = defenseActionItems.find((item) => item.state !== 'ready') ?? {
+    label: 'Defense packet ready',
+    state: 'ready' as ReadinessState,
+    detail: 'All current defense lifecycle gates are ready.',
+    action: 'Export defense packet',
+  };
+
+  const defenseMemoLines = useMemo(() => {
+    const countyLabel = activeStudy?.countyName ?? activeStudy?.countyId ?? 'Selected county';
+    const studyLabel = activeStudy ? `${countyLabel} ${activeStudy.taxYear}` : countyLabel;
+    const contractLabel = healthSummary?.correctionPriorityContractId ?? 'terraforge_correction_priority_v1 unavailable';
+    const scenarioLabel = activeScenario
+      ? `${activeScenario.adjustmentType} scenario is ${activeScenario.status}`
+      : 'No active scenario is selected';
+    const approvalLabel = approvedCount > 0
+      ? `${approvedCount} adjustment set${approvedCount === 1 ? '' : 's'} approved`
+      : promotedCount > 0
+        ? `${promotedCount} promoted adjustment set${promotedCount === 1 ? '' : 's'} pending approval closure`
+        : 'No promoted adjustment set exists';
+
+    return [
+      `${studyLabel} is ${healthSummary?.complianceStatus ?? 'not yet classified'} under ${contractLabel}.`,
+      `Scope: ${selectedScopeLabel}.`,
+      `Scenario posture: ${scenarioLabel}.`,
+      `Approval posture: ${approvalLabel}.`,
+      `Exception posture: ${openExceptionCount} open exception${openExceptionCount === 1 ? '' : 's'}.`,
+    ];
+  }, [
+    activeScenario,
+    activeStudy,
+    approvedCount,
+    healthSummary,
+    openExceptionCount,
+    promotedCount,
+    selectedScopeLabel,
+  ]);
+
   const handlePromoteScenario = useCallback(async () => {
     if (!promotableScenario)
       return;
@@ -270,6 +402,49 @@ export function CorrectionDefensePanel({
           state={healthSummary ? (openExceptionCount > 0 ? 'watch' : 'ready') : 'blocked'}
           detail={healthSummary ? `${openExceptionCount} open exception${openExceptionCount === 1 ? '' : 's'}; packet can be exported with current evidence.` : 'Health metrics are required for a defensible packet.'}
         />
+      </section>
+
+      <section
+        data-testid="defense-action-lifecycle"
+        style={{
+          border: '1px solid hsl(var(--tf-border))',
+          borderRadius: 4,
+          background: 'hsl(var(--tf-surface))',
+          padding: '2px 10px',
+        }}
+      >
+        <div style={{ padding: '8px 0 4px', display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <span style={{ fontSize: 10, fontWeight: 800, color: 'hsl(var(--tf-muted))', textTransform: 'uppercase', letterSpacing: 0 }}>
+            Defense action lifecycle
+          </span>
+          <span data-testid="defense-next-action" style={{ fontSize: 11, color: 'hsl(var(--tf-muted))' }}>
+            Current next action: <strong style={{ color: 'hsl(var(--tf-fg))' }}>{nextDefenseAction.action}</strong>
+          </span>
+        </div>
+        {defenseActionItems.map((item, index) => (
+          <DefenseActionRow key={item.label} item={item} index={index} />
+        ))}
+      </section>
+
+      <section
+        data-testid="defense-memo-draft"
+        style={{
+          border: '1px solid hsl(var(--tf-border))',
+          borderRadius: 4,
+          background: 'hsl(var(--tf-bg))',
+          padding: 10,
+          fontSize: 11,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 5,
+        }}
+      >
+        <div style={{ fontSize: 10, fontWeight: 800, color: 'hsl(var(--tf-muted))', textTransform: 'uppercase', letterSpacing: 0 }}>
+          Defense memo draft
+        </div>
+        {defenseMemoLines.map((line) => (
+          <div key={line}>{line}</div>
+        ))}
       </section>
 
       <section

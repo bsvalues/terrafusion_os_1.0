@@ -91,6 +91,16 @@ test('includes scenario rationale', () => {
   expect(md).toContain('Calibrated to market trend');
 });
 
+test('includes a defense memo with contract and disclosure posture', () => {
+  const md = evidencePacketToMarkdown(mockPacket);
+  expect(md).toContain('## Defense Memo');
+  expect(md).toContain('Benton County 2025');
+  expect(md).toContain('terraforge_correction_priority_v1');
+  expect(md).toContain('Primary scenario: PercentageIncrease is Approved');
+  expect(md).toContain('1 top-risk segment signal');
+  expect(md).toContain('1 exception set');
+});
+
 test('lists exceptions in table', () => {
   const md = evidencePacketToMarkdown(mockPacket);
   expect(md).toContain('LowSample');
