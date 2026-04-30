@@ -14,6 +14,8 @@ namespace TerraFusion.Core.Services;
 
 public class CountyStudySegmentDerivationService : ICountyStudySegmentDerivationService
 {
+    public const string SegmentDerivationContractId = "terraforge_segment_derivation_v1";
+
     // IAAO Standard on Ratio Studies thresholds (residential).
     private const decimal CodWarnThreshold = 15.0m;   // COD > 15 = non-uniform
     private const decimal PrdLowThreshold  = 0.98m;
@@ -269,6 +271,7 @@ public class CountyStudySegmentDerivationService : ICountyStudySegmentDerivation
         await _db.SaveChangesAsync();
 
         return new SegmentDerivationResult(
+            ContractId:                SegmentDerivationContractId,
             SegmentSetId:              segmentSet.SegmentSetId,
             SegmentCount:              segments.Count,
             TotalParcels:              totalParcels,

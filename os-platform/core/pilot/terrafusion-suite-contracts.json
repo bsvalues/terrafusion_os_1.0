@@ -19,7 +19,7 @@
     {
       "id": "terraforge_operational_health_v1",
       "version": 1,
-      "status": "registered_implicit_source",
+      "status": "codified",
       "population": "active County Studio segment-set parcel rollup",
       "purpose": "County command/workbench health view for operational triage, not Statistics Studio parity.",
       "owner": "TerraFusion.Core.Services.CountyStudyHealthService.GetHealthSummaryAsync",
@@ -31,6 +31,8 @@
         "canonical ComparableSales"
       ],
       "metrics": [
+        "contractId",
+        "correctionPriorityContractId",
         "parcelCount",
         "ratioCount",
         "medianRatio",
@@ -61,6 +63,8 @@
           "path": "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs",
           "patterns": [
             "GetHealthSummaryAsync",
+            "OperationalHealthContractId",
+            "CorrectionPriorityContractId",
             "LoadParcelRatiosAsync",
             "ClassifyCompliance",
             "TopAlerts"
@@ -145,7 +149,7 @@
     {
       "id": "terraforge_segment_derivation_v1",
       "version": 1,
-      "status": "registered_implicit_source",
+      "status": "codified",
       "population": "canonical parcels grouped by neighborhood, reval area, building type, and quality grade for an active county study",
       "purpose": "Derive governed CountySegmentSet and CountySegment rows from canonical TerraFusion DB tables.",
       "owner": "TerraFusion.Core.Services.CountyStudySegmentDerivationService.DeriveAsync",
@@ -157,6 +161,7 @@
         "Benton PACS valuation metadata for neighborhood/cycle when available"
       ],
       "metrics": [
+        "contractId",
         "segmentCount",
         "totalParcels",
         "segmentsWithRatios",
@@ -186,6 +191,7 @@
           "path": "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs",
           "patterns": [
             "DeriveAsync",
+            "SegmentDerivationContractId",
             "Properties.AsNoTracking",
             "CamaCharacteristics.AsNoTracking",
             "ComparableSales.AsNoTracking",
@@ -205,7 +211,7 @@
     {
       "id": "terraforge_correction_priority_v1",
       "version": 1,
-      "status": "registered_implicit_source",
+      "status": "codified",
       "population": "County Studio active segment alerts ranked for correction and defense workflow",
       "purpose": "Determine which segment/cohort problems route first into correction, approval, exception, and evidence workflows.",
       "owner": "TerraFusion.Core.Services.CountyStudyHealthService.ComputeCompositeRisk",
@@ -217,6 +223,7 @@
         "Evidence packet topRiskSegments"
       ],
       "metrics": [
+        "correctionPriorityContractId",
         "compositeRisk",
         "reasons",
         "criticalCount",
@@ -245,6 +252,7 @@
           "path": "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs",
           "patterns": [
             "ComputeCompositeRisk",
+            "CorrectionPriorityContractId",
             "BuildSegmentAlert",
             "OrderByDescending(a => a.CompositeRisk)",
             "CriticalCount"
@@ -253,6 +261,7 @@
         {
           "path": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts",
           "patterns": [
+            "correctionPriorityContractId",
             "EvidenceSegmentSignal",
             "topRiskSegments",
             "EvidencePacketDto"

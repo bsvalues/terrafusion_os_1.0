@@ -323,6 +323,8 @@ public record HealthAlertDto(
 /// set's UpdatedAt so the UI can say "derived N hours ago".
 /// </summary>
 public record CountyHealthSummaryDto(
+    string ContractId,
+    string CorrectionPriorityContractId,
     Guid StudyId,
     Guid CountyId,
     int TaxYear,
@@ -606,6 +608,7 @@ public record EvidenceSegmentSignal(
 
 public record EvidencePacketDto(
     // ── Header ────────────────────────────────────────────────────────────
+    string CorrectionPriorityContractId,
     Guid StudyId,
     string CountyName,
     int TaxYear,

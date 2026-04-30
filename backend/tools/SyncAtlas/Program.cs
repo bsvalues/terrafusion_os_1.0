@@ -1425,6 +1425,47 @@ internal static class Program
                 "'imprv_det_meth', and 'imprv_det_sub_class'."),
         };
 
+        // Slice C49-FK-E: per-call-site FK preflight stance per the
+        // C49-FK-C policy (HG-FK-3). Each migrated configKey picks
+        // RequiredFk or AdvisoryFk based on whether the FK is
+        // engine-declared on the operator's PACS install. Cases not
+        // listed here skip preflight entirely (un-migrated cases keep
+        // running as before until their own slice lands).
+        //
+        // property_use: C49-FK-D live smoke confirmed the FK
+        //   property_val.property_use_cd → property_use.property_use_cd
+        // is engine-declared as 'CFK_property_val_property_use_cd'.
+        // Therefore RequiredFk is the right stance — if the FK
+        // disappears (operator schema drift, wrong DB, etc.), the
+        // loader fails closed with a structured error rather than
+        // silently producing partial / wrong results.
+        DictionaryLoaderPreflightStance? preflightStance = configKey switch
+        {
+            "property_use" => DictionaryLoaderPreflightStance.RequiredFk,  // C49-FK-E
+            _              => null,
+        };
+
+        if (preflightStance is not null && pacsCatalog is not null)
+        {
+            var preflight = new DictionaryLoaderPreflight();
+            var preflightResult = await preflight.ValidateAsync(
+                pacsCatalog, target, columnConfig, preflightStance.Value, ct);
+
+            switch (preflightResult.Outcome)
+            {
+                case DictionaryLoaderPreflightOutcome.Pass:
+                    Console.WriteLine(
+                        $"sync-atlas:   FK preflight:       Pass (matched {preflightResult.MatchedEdge?.ConstraintName ?? "(unnamed)"}, " +
+                        $"confidence={preflightResult.MatchedEdge?.Confidence})");
+                    break;
+                case DictionaryLoaderPreflightOutcome.Warn:
+                    await Console.Error.WriteLineAsync($"sync-atlas: {preflightResult.Message}");
+                    break;
+                case DictionaryLoaderPreflightOutcome.Fail:
+                    throw new InvalidOperationException(preflightResult.Message);
+            }
+        }
+
         var loader = new DictionaryLoaderService(db, pacsReader);
 
         Console.WriteLine($"sync-atlas: load-pacs-dictionary for county {args.CountyId}...");
