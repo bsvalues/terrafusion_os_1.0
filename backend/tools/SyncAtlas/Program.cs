@@ -1448,6 +1448,7 @@ internal static class Program
             "property_use:property_val.secondary_use_cd" => DictionaryLoaderPreflightStance.AdvisoryFk, // C49-FK-H
             "imprv_det_class" => DictionaryLoaderPreflightStance.RequiredFk,             // C49-FK-I
             "imprv_det_sub_class" => DictionaryLoaderPreflightStance.RequiredFk,         // C49-FK-J
+            "imprv_det_meth" => DictionaryLoaderPreflightStance.RequiredFk,              // C49-FK-K
             _              => null,
         };
 
