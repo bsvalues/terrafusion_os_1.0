@@ -184,4 +184,161 @@ public sealed class LivePacsSchemaSourceTests
         sale.HasValue.Should().BeTrue();
         sale.Value!.ProvenancePath.Should().NotBeNullOrWhiteSpace();
     }
+
+    // ────────────────────────────────────────────────────────────────────────
+    // Slice C48-F: dictionary inference. Heuristic grounded in real Harris
+    // PACS shape — first column ends in _cd AND second column ends in _desc
+    // or _dsc. Conservative on purpose: rich entities like neighborhood
+    // (which has code + year + name + percent columns) deliberately do NOT
+    // match.
+    // ────────────────────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task C48F_InferDictionaries_ClassicCodeDescPair_IsMatched()
+    {
+        var fake = new FakePacsSchemaIntrospector();
+        // Mirrors real Harris PACS imprv_det_class shape.
+        fake.Tables.Add(new IntrospectedTable("imprv_det_class"));
+        fake.Columns.AddRange(new[]
+        {
+            new IntrospectedColumn("imprv_det_class", "imprv_det_class_cd", "char",    false, 1),
+            new IntrospectedColumn("imprv_det_class", "imprv_det_cls_desc", "varchar", true,  2),
+            new IntrospectedColumn("imprv_det_class", "sys_flag",           "varchar", true,  3),
+        });
+
+        var sut = new LivePacsSchemaSource(fake, DefaultOptions);
+        var data = await sut.ReadAsync(CancellationToken.None);
+
+        data.Dictionaries.Should().ContainSingle();
+        var d = data.Dictionaries[0];
+        d.DictionaryName.Should().Be("imprv_det_class");
+        d.KeyColumn.Should().Be("imprv_det_class_cd");
+        d.DescriptionColumn.Should().Be("imprv_det_cls_desc");
+        d.ConversionEra.Should().Be(PacsConversionEra.Both);
+        d.ProvenancePath.Should().NotBeNullOrWhiteSpace();
+    }
+
+    [Fact]
+    public async Task C48F_InferDictionaries_DscSuffix_IsAlsoMatched()
+    {
+        // Harris PACS uses both _desc and _dsc (e.g. imprv_det_meth_dsc).
+        var fake = new FakePacsSchemaIntrospector();
+        fake.Tables.Add(new IntrospectedTable("imprv_det_meth"));
+        fake.Columns.AddRange(new[]
+        {
+            new IntrospectedColumn("imprv_det_meth", "imprv_det_meth_cd",  "char",    false, 1),
+            new IntrospectedColumn("imprv_det_meth", "imprv_det_meth_dsc", "varchar", true,  2),
+        });
+
+        var sut = new LivePacsSchemaSource(fake, DefaultOptions);
+        var data = await sut.ReadAsync(CancellationToken.None);
+
+        data.Dictionaries.Should().ContainSingle().Which.DescriptionColumn.Should().Be("imprv_det_meth_dsc");
+    }
+
+    [Fact]
+    public async Task C48F_InferDictionaries_RichEntity_IsNotMatched()
+    {
+        // neighborhood has hood_cd as first column but second column is
+        // hood_yr (numeric), not a description. Should NOT match.
+        var fake = new FakePacsSchemaIntrospector();
+        fake.Tables.Add(new IntrospectedTable("neighborhood"));
+        fake.Columns.AddRange(new[]
+        {
+            new IntrospectedColumn("neighborhood", "hood_cd",       "varchar", false, 1),
+            new IntrospectedColumn("neighborhood", "hood_yr",       "numeric", false, 2),
+            new IntrospectedColumn("neighborhood", "hood_name",     "varchar", true,  3),
+            new IntrospectedColumn("neighborhood", "hood_land_pct", "numeric", true,  4),
+        });
+
+        var sut = new LivePacsSchemaSource(fake, DefaultOptions);
+        var data = await sut.ReadAsync(CancellationToken.None);
+
+        data.Dictionaries.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task C48F_InferDictionaries_NonCodeFirstColumn_IsNotMatched()
+    {
+        // chg_of_owner first column is chg_of_owner_id (ends in _id, not
+        // _cd). MUST NOT classify as a dictionary even though there's a
+        // description-like column further down.
+        var fake = new FakePacsSchemaIntrospector();
+        fake.Tables.Add(new IntrospectedTable("chg_of_owner"));
+        fake.Columns.AddRange(new[]
+        {
+            new IntrospectedColumn("chg_of_owner", "chg_of_owner_id", "int",      false, 1),
+            new IntrospectedColumn("chg_of_owner", "grantor_desc",    "varchar",  true,  2),
+        });
+
+        var sut = new LivePacsSchemaSource(fake, DefaultOptions);
+        var data = await sut.ReadAsync(CancellationToken.None);
+
+        data.Dictionaries.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task C48F_InferDictionaries_SingleColumnTable_IsNotMatched()
+    {
+        // A table with only one column can't be a code+desc dictionary.
+        var fake = new FakePacsSchemaIntrospector();
+        fake.Tables.Add(new IntrospectedTable("alone"));
+        fake.Columns.Add(new IntrospectedColumn("alone", "alone_cd", "char", false, 1));
+
+        var sut = new LivePacsSchemaSource(fake, DefaultOptions);
+        var data = await sut.ReadAsync(CancellationToken.None);
+
+        data.Dictionaries.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task C48F_InferDictionaries_DisabledViaOption_ReturnsEmpty()
+    {
+        var fake = new FakePacsSchemaIntrospector();
+        fake.Tables.Add(new IntrospectedTable("imprv_det_class"));
+        fake.Columns.AddRange(new[]
+        {
+            new IntrospectedColumn("imprv_det_class", "imprv_det_class_cd", "char",    false, 1),
+            new IntrospectedColumn("imprv_det_class", "imprv_det_cls_desc", "varchar", true,  2),
+        });
+
+        var optionsNoInfer = DefaultOptions with { InferDictionaries = false };
+        var sut = new LivePacsSchemaSource(fake, optionsNoInfer);
+        var data = await sut.ReadAsync(CancellationToken.None);
+
+        data.Dictionaries.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task C48F_InferDictionaries_MultipleDictionariesAndNonDictionaries_OnlyDictsReturned()
+    {
+        var fake = new FakePacsSchemaIntrospector();
+        fake.Tables.AddRange(new[]
+        {
+            new IntrospectedTable("imprv_det_class"),  // dict
+            new IntrospectedTable("property_use"),     // dict
+            new IntrospectedTable("neighborhood"),     // not dict (rich entity)
+            new IntrospectedTable("sale"),             // not dict
+        });
+        fake.Columns.AddRange(new[]
+        {
+            new IntrospectedColumn("imprv_det_class", "imprv_det_class_cd", "char",    false, 1),
+            new IntrospectedColumn("imprv_det_class", "imprv_det_cls_desc", "varchar", true,  2),
+
+            new IntrospectedColumn("property_use",    "property_use_cd",    "varchar", false, 1),
+            new IntrospectedColumn("property_use",    "property_use_desc",  "varchar", true,  2),
+
+            new IntrospectedColumn("neighborhood",    "hood_cd",            "varchar", false, 1),
+            new IntrospectedColumn("neighborhood",    "hood_yr",            "numeric", false, 2),
+
+            new IntrospectedColumn("sale",            "chg_of_owner_id",    "int",     false, 1),
+            new IntrospectedColumn("sale",            "sl_price",           "numeric", true,  2),
+        });
+
+        var sut = new LivePacsSchemaSource(fake, DefaultOptions);
+        var data = await sut.ReadAsync(CancellationToken.None);
+
+        data.Dictionaries.Select(d => d.DictionaryName).Should().BeEquivalentTo(
+            new[] { "imprv_det_class", "property_use" });
+    }
 }
