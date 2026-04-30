@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-04-30T22:46:53.253Z",
+  "checkedAt": "2026-04-30T22:53:10.695Z",
   "slice": "contract-adoption-audit",
   "status": "PASS_WITH_ADOPTION_GAPS",
   "decision": "CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND",
@@ -8,7 +8,8 @@
     "terraforge_operational_health_v1",
     "terraforge_statistics_compat_v1",
     "terraforge_segment_derivation_v1",
-    "terraforge_correction_priority_v1"
+    "terraforge_correction_priority_v1",
+    "costforge_calibration_priority_v1"
   ],
   "statusDoctrine": {
     "pass": "Surface consumes a registered contract id and exposes enough posture for proof or user review.",
@@ -18,11 +19,11 @@
   },
   "summary": {
     "surfaces": 17,
-    "pass": 13,
+    "pass": 14,
     "partial": 0,
     "gap": 0,
-    "outOfScope": 4,
-    "migrationNeeded": 4,
+    "outOfScope": 3,
+    "migrationNeeded": 3,
     "failures": 0
   },
   "failures": [],
@@ -177,12 +178,12 @@
       "surface": "CostForge triage tab",
       "path": "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx",
       "metricBehavior": "Computes AI priority score from COD deviation, median-ratio deviation, PRB deviation, and sale count.",
-      "contractBacked": false,
-      "contractIds": [],
+      "contractBacked": true,
+      "contractIds": ["costforge_calibration_priority_v1"],
       "trustPostureExposed": "ui",
-      "status": "outOfScope",
-      "migrationNeeded": true,
-      "notes": "The tab now visibly labels the local priority score as advisory only and names the future costforge_calibration_priority_v1 contract required before the ranking can be treated as suite truth."
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "The tab now emits the registered costforge_calibration_priority_v1 contract and keeps its population distinct from County Studio correction priority."
     },
     {
       "surface": "SalesForge running stats",
@@ -262,17 +263,6 @@
       "notes": "This is classified as launch/county-context posture, not one of the four current suite metric contracts. It needs a future county data-trust or launch-context contract before being treated as production truth."
     },
     {
-      "surface": "CostForge triage tab",
-      "path": "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx",
-      "metricBehavior": "Computes AI priority score from COD deviation, median-ratio deviation, PRB deviation, and sale count.",
-      "contractBacked": false,
-      "contractIds": [],
-      "trustPostureExposed": "ui",
-      "status": "outOfScope",
-      "migrationNeeded": true,
-      "notes": "The tab now visibly labels the local priority score as advisory only and names the future costforge_calibration_priority_v1 contract required before the ranking can be treated as suite truth."
-    },
-    {
       "surface": "CompsForge module",
       "path": "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx",
       "metricBehavior": "Loads comparable county sales, filters qualified sales, scores candidates, and runs governed adjustment/reconciliation.",
@@ -297,7 +287,7 @@
   ],
   "nextClosures": [
     "Register future county data-trust or launch-context contract before treating Atlas Live county context as production truth.",
-    "Register future CostForge calibration-priority and cost-value contracts before treating CostForge rankings or calculator outputs as suite truth.",
+    "Register future CostForge cost-value contract before treating calculator outputs as suite truth.",
     "Register future CompsForge comparable-sales candidate-selection/reconciliation contract before treating its scoring as suite truth."
   ]
 }

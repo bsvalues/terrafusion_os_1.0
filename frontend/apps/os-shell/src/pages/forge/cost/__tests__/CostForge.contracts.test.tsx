@@ -48,7 +48,7 @@ describe('CostForge contract classification', () => {
     });
   });
 
-  it('labels triage as advisory until a CostForge calibration contract exists', async () => {
+  it('labels triage with the CostForge calibration priority contract', async () => {
     render(<TriageTab />);
 
     const classification = screen.getByTestId('costforge-triage-contract-classification');
@@ -57,8 +57,8 @@ describe('CostForge contract classification', () => {
       COSTFORGE_TRIAGE_CONTRACT_CLASSIFICATION.status,
     );
     expect(classification).toHaveAttribute(
-      'data-proposed-contract-id',
-      COSTFORGE_TRIAGE_CONTRACT_CLASSIFICATION.proposedContractId,
+      'data-contract-id',
+      COSTFORGE_TRIAGE_CONTRACT_CLASSIFICATION.contractId,
     );
     expect(classification).toHaveTextContent(
       COSTFORGE_TRIAGE_CONTRACT_CLASSIFICATION.trustPosture,

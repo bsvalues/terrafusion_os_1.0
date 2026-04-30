@@ -13,7 +13,8 @@
     "terraforge_operational_health_v1",
     "terraforge_statistics_compat_v1",
     "terraforge_segment_derivation_v1",
-    "terraforge_correction_priority_v1"
+    "terraforge_correction_priority_v1",
+    "costforge_calibration_priority_v1"
   ],
   "contracts": [
     {
@@ -273,6 +274,77 @@
             "Correction & Defense Chain",
             "Promote Saved Scenario",
             "Export Evidence Packet"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "costforge_calibration_priority_v1",
+      "version": 1,
+      "status": "codified",
+      "population": "CostForge county-scoped neighborhood calibration matrix rows with minimum sale-count filtering",
+      "purpose": "Rank neighborhoods for CostForge calibration triage using COD deviation, median-ratio deviation, PRB deviation, and sale-count exposure.",
+      "owner": "frontend.apps.os-shell.pages.forge.cost.tabs.TriageTab.computePriorityScore",
+      "readPath": "GET /costforge/calibration/neighborhood-matrix?taxYear={taxYear}&minSales=3 plus GET /equity/deciles",
+      "sourceOfTruth": [
+        "CostForge neighborhood calibration matrix endpoint",
+        "Equity decile endpoint for county-wide vertical-equity context",
+        "county-scoped CostForge session headers",
+        "COSTFORGE_CALIBRATION_PRIORITY_FORMULA constants"
+      ],
+      "metrics": [
+        "contractId",
+        "codWeight",
+        "ratioWeight",
+        "prbWeight",
+        "criticalThreshold",
+        "watchThreshold",
+        "minSales",
+        "priorityScore",
+        "priorityTier",
+        "saleCount",
+        "medianRatio",
+        "cod",
+        "prd",
+        "prb",
+        "decilePattern"
+      ],
+      "trustPosture": [
+        "CostForge calibration priority is a cost-calibration triage contract, not County Studio correction priority.",
+        "Requires county-scoped runtime and neighborhood matrix source data.",
+        "Do not treat 39-county demo/reference data as production calibration proof."
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/costforge-calibration-priority-contract.latest.json",
+        "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not substitute for County Studio correction priority.",
+        "Do not rank production correction work from demo/reference counties.",
+        "Do not change formula weights or thresholds without updating this contract and proof artifact."
+      ],
+      "implementationAnchors": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx",
+          "patterns": [
+            "costforge_calibration_priority_v1",
+            "COSTFORGE_TRIAGE_CONTRACT_CLASSIFICATION",
+            "COSTFORGE_CALIBRATION_PRIORITY_FORMULA",
+            "computePriorityScore",
+            "codWeight: 2",
+            "ratioWeight: 100",
+            "prbWeight: 50",
+            "criticalThreshold: 20",
+            "watchThreshold: 5",
+            "minSales: 3"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/cost/__tests__/CostForge.contracts.test.tsx",
+          "patterns": [
+            "costforge-triage-contract-classification",
+            "data-contract-id",
+            "COSTFORGE_TRIAGE_CONTRACT_CLASSIFICATION"
           ]
         }
       ]

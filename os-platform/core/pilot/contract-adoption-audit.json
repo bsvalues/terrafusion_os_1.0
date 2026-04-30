@@ -6,7 +6,8 @@
     "terraforge_operational_health_v1",
     "terraforge_statistics_compat_v1",
     "terraforge_segment_derivation_v1",
-    "terraforge_correction_priority_v1"
+    "terraforge_correction_priority_v1",
+    "costforge_calibration_priority_v1"
   ],
   "statusDoctrine": {
     "pass": "Surface consumes a registered contract id and exposes enough posture for proof or user review.",
@@ -165,12 +166,12 @@
       "surface": "CostForge triage tab",
       "path": "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx",
       "metricBehavior": "Computes AI priority score from COD deviation, median-ratio deviation, PRB deviation, and sale count.",
-      "contractBacked": false,
-      "contractIds": [],
+      "contractBacked": true,
+      "contractIds": ["costforge_calibration_priority_v1"],
       "trustPostureExposed": "ui",
-      "status": "outOfScope",
-      "migrationNeeded": true,
-      "notes": "The tab now visibly labels the local priority score as advisory only and names the future costforge_calibration_priority_v1 contract required before the ranking can be treated as suite truth."
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "The tab now emits the registered costforge_calibration_priority_v1 contract and keeps its population distinct from County Studio correction priority."
     },
     {
       "surface": "SalesForge running stats",
@@ -239,7 +240,7 @@
   ],
   "nextClosures": [
     "Register future county data-trust or launch-context contract before treating Atlas Live county context as production truth.",
-    "Register future CostForge calibration-priority and cost-value contracts before treating CostForge rankings or calculator outputs as suite truth.",
+    "Register future CostForge cost-value contract before treating calculator outputs as suite truth.",
     "Register future CompsForge comparable-sales candidate-selection/reconciliation contract before treating its scoring as suite truth."
   ]
 }

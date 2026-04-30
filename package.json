@@ -89,6 +89,7 @@
     "truth:direct-source": "node os-platform/core/pilot/direct-source-recompute.mjs",
     "truth:statistics-parity-scope": "node os-platform/core/pilot/statistics-parity-scope-alignment.mjs",
     "truth:statistics-shared-contract": "node os-platform/core/pilot/statistics-shared-population-contract.mjs",
+    "truth:costforge-calibration-priority": "node os-platform/core/pilot/costforge-calibration-priority-contract.mjs",
     "truth:suite-contracts": "node os-platform/core/pilot/terrafusion-suite-contracts.mjs",
     "truth:contract-adoption-audit": "node os-platform/core/pilot/contract-adoption-audit.mjs",
     "proof:june10:coverage": "node os-platform/core/pilot/washington-39-county-coverage-proof.mjs",
