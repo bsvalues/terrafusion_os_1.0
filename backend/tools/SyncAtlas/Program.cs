@@ -1446,6 +1446,7 @@ internal static class Program
             "property_use:sale.primary_use_cd"  => DictionaryLoaderPreflightStance.AdvisoryFk, // C49-FK-G
             "property_use:imprv.secondary_use_cd"        => DictionaryLoaderPreflightStance.AdvisoryFk, // C49-FK-H
             "property_use:property_val.secondary_use_cd" => DictionaryLoaderPreflightStance.AdvisoryFk, // C49-FK-H
+            "imprv_det_class" => DictionaryLoaderPreflightStance.RequiredFk,             // C49-FK-I
             _              => null,
         };
 

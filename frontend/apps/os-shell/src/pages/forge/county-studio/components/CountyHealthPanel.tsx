@@ -85,6 +85,10 @@ function relativeTime(iso: string | null): string {
   return `${d} day${d === 1 ? '' : 's'} ago`;
 }
 
+function isMissingActiveSegmentSet(error: string | null): boolean {
+  return typeof error === 'string' && (error.startsWith('HTTP 409') || error.includes('409 Conflict'));
+}
+
 // ── Sub-components ────────────────────────────────────────────────────────
 
 const SummaryCard = ({
@@ -307,9 +311,10 @@ export function CountyHealthPanel() {
   }
 
   // ── Empty state — 409 (no active segment set yet) — CTA pointing at LeftRail.
-  //    apiFetchJson throws `HTTP 409: ...` on 409; detect that specifically so
+  //    apiFetchJson can surface 409s with either legacy or fetch-wrapper text; detect
+  //    that specifically so
   //    ambiguous errors don't get swallowed as "no data".
-  const is409 = typeof error === 'string' && error.startsWith('HTTP 409');
+  const is409 = isMissingActiveSegmentSet(error);
   if (status === 'error' && is409) {
     return (
       <div
