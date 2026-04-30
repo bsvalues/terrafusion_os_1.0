@@ -1,0 +1,2883 @@
+{
+  "checkedAt": "2026-04-30T17:32:03.818Z",
+  "slice": "dev-data-truth-gate",
+  "status": "FAIL",
+  "apiBase": "http://localhost:5173/api",
+  "countyId": "19190019-1919-1919-1919-191919191919",
+  "taxYear": 2026,
+  "study": {
+    "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+    "countyId": "19190019-1919-1919-1919-191919191919",
+    "countyName": "Benton County",
+    "taxYear": 2026,
+    "studyType": "MassAppraisal",
+    "status": "Draft",
+    "baselineVersion": null,
+    "activeSegmentSetId": "91587edb-c234-416d-8968-a32f47582352",
+    "createdAt": "2026-04-27T04:03:16.686884Z",
+    "createdBy": "system"
+  },
+  "counts": {
+    "studies": 5,
+    "segmentSets": 3,
+    "segments": 1393,
+    "cohorts": 1,
+    "scenarios": 2
+  },
+  "activeSegmentSetId": "91587edb-c234-416d-8968-a32f47582352",
+  "healthSummary": {
+    "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+    "countyId": "19190019-1919-1919-1919-191919191919",
+    "taxYear": 2026,
+    "parcelCount": 128784,
+    "ratioCount": 5559,
+    "medianRatio": 0.9268,
+    "cod": 41.28,
+    "prd": 1.3993,
+    "stabilityScore": 77.47,
+    "riskScore": 28.67,
+    "exceptionCount": 867,
+    "complianceStatus": "NonCompliant",
+    "topAlerts": [
+      {
+        "segmentId": "d080ba29-fc94-41e9-9054-9927c8f384b4",
+        "segmentName": "16081 · R · UNKNOWN",
+        "neighborhoodCode": "16081",
+        "revalArea": 6,
+        "buildingType": "R",
+        "qualityGrade": "UNKNOWN",
+        "city": "Richland",
+        "parcelCount": 884,
+        "medianRatio": 0.7987,
+        "cod": 666.68,
+        "prd": 7.3345,
+        "exceptionCount": 11,
+        "compositeRisk": 100,
+        "reasons": [
+          "COD 666.7 exceeds IAAO ceiling (20)",
+          "PRD 7.33 outside vertical-equity band (0.98–1.03)",
+          "median 0.80 outside fair range (0.90–1.10)"
+        ]
+      },
+      {
+        "segmentId": "2e6edd10-8603-4fb0-bd0a-206875145fdb",
+        "segmentName": "63000 · C · UNKNOWN",
+        "neighborhoodCode": "63000",
+        "revalArea": 3,
+        "buildingType": "C",
+        "qualityGrade": "UNKNOWN",
+        "city": "Kennewick",
+        "parcelCount": 655,
+        "medianRatio": 0.6257,
+        "cod": 40.74,
+        "prd": 1.1842,
+        "exceptionCount": 28,
+        "compositeRisk": 100,
+        "reasons": [
+          "COD 40.7 exceeds IAAO ceiling (20)",
+          "median 0.63 outside fair range (0.90–1.10)",
+          "PRD 1.18 outside vertical-equity band (0.98–1.03)"
+        ]
+      },
+      {
+        "segmentId": "05e4b166-1de3-4055-bbfe-b4a6802dfe9b",
+        "segmentName": "530300 · UNKNOWN · UNKNOWN",
+        "neighborhoodCode": "530300",
+        "revalArea": 3,
+        "buildingType": "UNKNOWN",
+        "qualityGrade": "UNKNOWN",
+        "city": "Unincorporated",
+        "parcelCount": 559,
+        "medianRatio": 0.1001,
+        "cod": 724.88,
+        "prd": 15.3891,
+        "exceptionCount": 10,
+        "compositeRisk": 100,
+        "reasons": [
+          "PRD 15.39 outside vertical-equity band (0.98–1.03)",
+          "COD 724.9 exceeds IAAO ceiling (20)",
+          "median 0.10 outside fair range (0.90–1.10)"
+        ]
+      },
+      {
+        "segmentId": "c1d506a9-5c78-4e51-b590-de428edfcdbb",
+        "segmentName": "999999 · UNKNOWN · UNKNOWN",
+        "neighborhoodCode": "999999",
+        "revalArea": 3,
+        "buildingType": "UNKNOWN",
+        "qualityGrade": "UNKNOWN",
+        "city": "Kennewick",
+        "parcelCount": 544,
+        "medianRatio": 0.6196,
+        "cod": 182.24,
+        "prd": 2.2335,
+        "exceptionCount": 5,
+        "compositeRisk": 100,
+        "reasons": [
+          "COD 182.2 exceeds IAAO ceiling (20)",
+          "PRD 2.23 outside vertical-equity band (0.98–1.03)",
+          "median 0.62 outside fair range (0.90–1.10)"
+        ]
+      },
+      {
+        "segmentId": "bb9637c4-de67-4157-872d-c4eb7e39cc66",
+        "segmentName": "13170 · UNKNOWN · UNKNOWN",
+        "neighborhoodCode": "13170",
+        "revalArea": 3,
+        "buildingType": "UNKNOWN",
+        "qualityGrade": "UNKNOWN",
+        "city": "Kennewick",
+        "parcelCount": 460,
+        "medianRatio": 0.1805,
+        "cod": 320.67,
+        "prd": 1.993,
+        "exceptionCount": 7,
+        "compositeRisk": 100,
+        "reasons": [
+          "COD 320.7 exceeds IAAO ceiling (20)",
+          "PRD 1.99 outside vertical-equity band (0.98–1.03)",
+          "median 0.18 outside fair range (0.90–1.10)"
+        ]
+      }
+    ],
+    "criticalCount": 122,
+    "warningCount": 83,
+    "healthyCount": 1188,
+    "derivedAt": "2026-04-28T05:59:41.419096Z"
+  },
+  "sourcePathAudit": {
+    "segmentDerivationUsesCanonicalTables": true,
+    "segmentDerivationQualifiedSales": true,
+    "scenarioPreviewRehydratesCohortFromSource": true,
+    "syncBridgeBackfillsRatioMetadata": true,
+    "ratioStudyUsesEffectiveQualifiedPool": true
+  },
+  "directSourceProof": {
+    "present": true,
+    "path": "os-platform/core/pilot/evidence/direct-source-recompute.latest.json",
+    "status": "PASS",
+    "reason": "Direct source recomputation proof accepted."
+  },
+  "statisticsScopeProof": {
+    "present": true,
+    "path": "os-platform/core/pilot/evidence/statistics-parity-scope-alignment.latest.json",
+    "status": "BLOCKED_SCOPE_MISMATCH",
+    "rootCause": "scope_mismatch_different_population_definitions",
+    "countDifference": {
+      "countyStudioHealthRatioCount": 5559,
+      "terraForgeCountWithRatio": 36,
+      "delta": 5523
+    },
+    "overlap": {
+      "sharedSaleRows": 36,
+      "healthSaleRowsNotInTerraForge": 5686,
+      "terraForgeSaleRowsNotInHealth": 0
+    },
+    "reason": "County Studio health and TerraForge ratio-study are both ratio surfaces, but they are not currently measuring the same population. The observed mismatch is therefore not proof that either metric is mathematically wrong; it blocks parity until a shared comparison contract is implemented."
+  },
+  "sharedContractProof": {
+    "present": true,
+    "path": "os-platform/core/pilot/evidence/statistics-shared-population-contract.latest.json",
+    "status": "IMPLEMENTATION_GAP_SHARED_PARITY_MODE_MISSING",
+    "decision": "PATH_A_REQUIRED_SHARED_PARITY_CONTRACT_DEFINED_NOT_IMPLEMENTED",
+    "contract": "statistics_ratio_study_compat_v1",
+    "blockers": [
+      "No County Studio endpoint or workbench mode currently declares statistics_ratio_study_compat_v1.",
+      "No shared response currently echoes contract id, population count, pre/post-trim counts, parcel identity join mode, and conversion-sensitive qualification counts.",
+      "County Studio health summary remains a different analytical surface and must not be used as the Statistics parity comparator.",
+      "Benton qualification fields remain conversion-sensitive until row-level sync lineage closes the 2017 risk."
+    ],
+    "reason": "PATH_A_REQUIRED_SHARED_PARITY_CONTRACT_DEFINED_NOT_IMPLEMENTED"
+  },
+  "trustTierPosture": {
+    "modelPresent": true,
+    "activeRule": {
+      "countyId": "19190019-1919-1919-1919-191919191919",
+      "countyName": "Benton County",
+      "state": "WA",
+      "primaryTier": "production_provisional",
+      "badges": [
+        "Production Provisional",
+        "Sync-Derived",
+        "Converted Legacy Sensitive"
+      ],
+      "dataLanes": [
+        "TerraFusion.Benton.Operational",
+        "TerraFusion.Benton.LegacyBridge"
+      ],
+      "conversionRisks": [
+        {
+          "period": "2017 conversion",
+          "affectedFields": [
+            "QualificationDecision",
+            "QualificationRecommendation",
+            "SaleQualification",
+            "RawCountyRatioCd",
+            "RawRatioTypeCd",
+            "RawRatioCd",
+            "SuppressOnRatioRptCd",
+            "IncludeNoCalc"
+          ],
+          "risk": "Qualified-sale flags may be incomplete, missing, or mapped under different legacy semantics."
+        }
+      ],
+      "validationFocus": "Benton-first direct source recomputation and sync lineage closure."
+    },
+    "activeTier": {
+      "label": "Production Provisional",
+      "description": "Operational county data exists, but lineage, conversion, sync, or direct recomputation proof remains incomplete.",
+      "allowsParityClaims": false
+    },
+    "uiLabel": "Production Provisional",
+    "allowsParityClaims": false
+  },
+  "posture": {
+    "bentonReferenceLanes": [
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
+        "line": 578,
+        "classification": "benton-certified-reference-lane",
+        "text": "'/costforge/income-approach/market-data/benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/incomeValuationService.ts",
+        "line": 14,
+        "classification": "benton-certified-reference-lane",
+        "text": "*   - Market data: CostForge GET /api/costforge/income-approach/market-data/benton"
+      }
+    ],
+    "devSessionNormalizations": [
+      {
+        "file": "frontend/apps/os-shell/src/auth/session.ts",
+        "line": 13,
+        "classification": "dev-session-normalization",
+        "text": "export const BENTON_DEV_COUNTY_ID = '19190019-1919-1919-1919-191919191919';"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/auth/session.ts",
+        "line": 17,
+        "classification": "dev-session-normalization",
+        "text": "countyId: BENTON_DEV_COUNTY_ID,"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/auth/session.ts",
+        "line": 23,
+        "classification": "dev-session-normalization",
+        "text": "const BENTON_COUNTY_ALIASES = new Set(["
+      },
+      {
+        "file": "frontend/apps/os-shell/src/auth/session.ts",
+        "line": 29,
+        "classification": "dev-session-normalization",
+        "text": "BENTON_DEV_COUNTY_ID,"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/auth/session.ts",
+        "line": 38,
+        "classification": "dev-session-normalization",
+        "text": "return BENTON_COUNTY_ALIASES.has(key) ? BENTON_DEV_COUNTY_ID : trimmed;"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/auth/useSession.ts",
+        "line": 9,
+        "classification": "dev-session-normalization",
+        "text": "import { BENTON_DEV_COUNTY_ID } from './session';"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/auth/useSession.ts",
+        "line": 22,
+        "classification": "dev-session-normalization",
+        "text": "countyId: BENTON_DEV_COUNTY_ID,"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/auth/useSession.ts",
+        "line": 27,
+        "classification": "dev-session-normalization",
+        "text": "const BENTON_ALIASES = new Set(['5', '005', '53005', 'benton', 'benton county', BENTON_DEV_COUNTY_ID]);"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/auth/useSession.ts",
+        "line": 33,
+        "classification": "dev-session-normalization",
+        "text": "return BENTON_ALIASES.has(trimmed.toLowerCase()) ? BENTON_DEV_COUNTY_ID : trimmed;"
+      }
+    ],
+    "possibleFallbacks": [
+      {
+        "file": "frontend/apps/os-shell/src/services/atlasService.ts",
+        "line": 668,
+        "classification": "possible-fallback-or-fixture",
+        "text": "source: 'Direct Benton ArcGIS parcel query fallback',"
+      }
+    ],
+    "blockers": [
+      "Benton-certified reference lanes are still present",
+      "possible Benton fallback/fixture references require review"
+    ],
+    "countySovereignStatisticsSupersetProven": false
+  },
+  "fixtureLeakage": {
+    "totalMatches": 170,
+    "matches": [
+      {
+        "file": "frontend/apps/os-shell/src/auth/session.ts",
+        "line": 13,
+        "classification": "dev-session-normalization",
+        "text": "export const BENTON_DEV_COUNTY_ID = '19190019-1919-1919-1919-191919191919';"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/auth/session.ts",
+        "line": 17,
+        "classification": "dev-session-normalization",
+        "text": "countyId: BENTON_DEV_COUNTY_ID,"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/auth/session.ts",
+        "line": 23,
+        "classification": "dev-session-normalization",
+        "text": "const BENTON_COUNTY_ALIASES = new Set(["
+      },
+      {
+        "file": "frontend/apps/os-shell/src/auth/session.ts",
+        "line": 26,
+        "classification": "reference",
+        "text": "'53005',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/auth/session.ts",
+        "line": 27,
+        "classification": "reference",
+        "text": "'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/auth/session.ts",
+        "line": 28,
+        "classification": "reference",
+        "text": "'benton county',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/auth/session.ts",
+        "line": 29,
+        "classification": "dev-session-normalization",
+        "text": "BENTON_DEV_COUNTY_ID,"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/auth/session.ts",
+        "line": 38,
+        "classification": "dev-session-normalization",
+        "text": "return BENTON_COUNTY_ALIASES.has(key) ? BENTON_DEV_COUNTY_ID : trimmed;"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/auth/useSession.ts",
+        "line": 9,
+        "classification": "dev-session-normalization",
+        "text": "import { BENTON_DEV_COUNTY_ID } from './session';"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/auth/useSession.ts",
+        "line": 22,
+        "classification": "dev-session-normalization",
+        "text": "countyId: BENTON_DEV_COUNTY_ID,"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/auth/useSession.ts",
+        "line": 27,
+        "classification": "dev-session-normalization",
+        "text": "const BENTON_ALIASES = new Set(['5', '005', '53005', 'benton', 'benton county', BENTON_DEV_COUNTY_ID]);"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/auth/useSession.ts",
+        "line": 33,
+        "classification": "dev-session-normalization",
+        "text": "return BENTON_ALIASES.has(trimmed.toLowerCase()) ? BENTON_DEV_COUNTY_ID : trimmed;"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
+        "line": 54,
+        "classification": "reference",
+        "text": "interface BentonMarketDataResponse {"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
+        "line": 138,
+        "classification": "reference",
+        "text": "function buildMarketCondition(data: BentonMarketDataResponse | undefined) {"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
+        "line": 186,
+        "classification": "reference",
+        "text": "function buildMarketAnalytics(data: BentonMarketDataResponse | undefined) {"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
+        "line": 214,
+        "classification": "reference",
+        "text": "function buildEconomicIndicators(data: BentonMarketDataResponse | undefined) {"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
+        "line": 574,
+        "classification": "reference",
+        "text": "} = useQuery<BentonMarketDataResponse>({"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
+        "line": 578,
+        "classification": "benton-certified-reference-lane",
+        "text": "'/costforge/income-approach/market-data/benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/hooks/useStudyData.ts",
+        "line": 174,
+        "classification": "reference",
+        "text": "* the actionable part (\"HTTP 400: countyId 'benton' is not a valid Guid.\")."
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CityInspector.test.tsx",
+        "line": 57,
+        "classification": "test-fixture",
+        "text": "studyId: 'study-benton-2026',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CityInspector.test.tsx",
+        "line": 58,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CityInspector.test.tsx",
+        "line": 59,
+        "classification": "test-fixture",
+        "text": "countyName: 'Benton County',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CityInspector.test.tsx",
+        "line": 183,
+        "classification": "test-fixture",
+        "text": "expect(navigateMock.mock.calls[0]?.[0]).toContain('countyId=benton');"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CityInspector.test.tsx",
+        "line": 201,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CityInspector.test.tsx",
+        "line": 208,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CityInspector.test.tsx",
+        "line": 215,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CohortCreationDialog.test.tsx",
+        "line": 28,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CorrectionDefensePanel.test.tsx",
+        "line": 81,
+        "classification": "test-fixture",
+        "text": "countyName: 'Benton County',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CorrectionDefensePanel.test.tsx",
+        "line": 185,
+        "classification": "test-fixture",
+        "text": "expect(screen.getByTestId('defense-current-anchors')).toHaveTextContent('Benton County');"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyCommandStrip.test.tsx",
+        "line": 10,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyCommandStrip.test.tsx",
+        "line": 11,
+        "classification": "test-fixture",
+        "text": "countyName: 'Benton County',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyCommandStrip.test.tsx",
+        "line": 25,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyDiagnosisModal.test.tsx",
+        "line": 36,
+        "classification": "test-fixture",
+        "text": "countyName: 'Benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyDiagnosisModal.test.tsx",
+        "line": 80,
+        "classification": "test-fixture",
+        "text": "narrative: 'Benton 2026 classifies as Model problem (confidence 65%). 4 of 12 segments carry a diagnosed problem.',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyHealthPanel.test.tsx",
+        "line": 35,
+        "classification": "test-fixture",
+        "text": "studyId: 'study-1', countyId: 'benton', taxYear: 2026,"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyHealthPanel.test.tsx",
+        "line": 61,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
+        "line": 45,
+        "classification": "test-fixture",
+        "text": "url.includes('income-approach/market-data/benton')"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
+        "line": 47,
+        "classification": "test-fixture",
+        "text": "county: 'Benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
+        "line": 58,
+        "classification": "test-fixture",
+        "text": "source: 'US Census ACS 2024, WA ESD, Benton-Franklin Trends',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
+        "line": 170,
+        "classification": "test-fixture",
+        "text": "countyId: '19190019-1919-1919-1919-191919191919',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
+        "line": 171,
+        "classification": "test-fixture",
+        "text": "countyName: 'Benton County',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
+        "line": 205,
+        "classification": "test-fixture",
+        "text": "countyId: '19190019-1919-1919-1919-191919191919',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
+        "line": 245,
+        "classification": "test-fixture",
+        "text": "'19190019-1919-1919-1919-191919191919',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
+        "line": 249,
+        "classification": "test-fixture",
+        "text": "countyId: '19190019-1919-1919-1919-191919191919',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/countyStudioStore.test.ts",
+        "line": 22,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton-wa',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/countyStudioStore.test.ts",
+        "line": 30,
+        "classification": "test-fixture",
+        "text": "createdBy: 'assessor@benton.wa.gov',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/countyStudioStore.test.ts",
+        "line": 31,
+        "classification": "test-fixture",
+        "text": "updatedBy: 'assessor@benton.wa.gov',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStudyPage.test.tsx",
+        "line": 98,
+        "classification": "test-fixture",
+        "text": "studyId: 'study-1', countyId: 'benton', taxYear: 2026,"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStudyPage.test.tsx",
+        "line": 110,
+        "classification": "test-fixture",
+        "text": "studyId: 'study-1', countyId: 'benton', taxYear: 2026,"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/evidencePacketMarkdown.test.ts",
+        "line": 6,
+        "classification": "test-fixture",
+        "text": "countyName: 'Benton County',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/evidencePacketMarkdown.test.ts",
+        "line": 56,
+        "classification": "test-fixture",
+        "text": "expect(md).toContain('Benton County');"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ExportPacketModal.test.tsx",
+        "line": 25,
+        "classification": "test-fixture",
+        "text": "countyName: 'Benton County',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ExportPacketModal.test.tsx",
+        "line": 79,
+        "classification": "test-fixture",
+        "text": "expect(screen.getByText('Benton County')).toBeInTheDocument();"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/LeftRail.test.tsx",
+        "line": 53,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/NeighborhoodInspector.test.tsx",
+        "line": 59,
+        "classification": "test-fixture",
+        "text": "studyId: 'study-benton-2026',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/NeighborhoodInspector.test.tsx",
+        "line": 60,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/NeighborhoodInspector.test.tsx",
+        "line": 61,
+        "classification": "test-fixture",
+        "text": "countyName: 'Benton County',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/NeighborhoodInspector.test.tsx",
+        "line": 164,
+        "classification": "test-fixture",
+        "text": "expect(navigateMock.mock.calls[0]?.[0]).toContain('countyId=benton');"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/NeighborhoodInspector.test.tsx",
+        "line": 180,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/NeighborhoodInspector.test.tsx",
+        "line": 188,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/NeighborhoodInspector.test.tsx",
+        "line": 196,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ObjectInspector.test.tsx",
+        "line": 88,
+        "classification": "test-fixture",
+        "text": "studyId: 'study-1', countyId: 'benton', taxYear: 2026,"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ObjectInspector.test.tsx",
+        "line": 104,
+        "classification": "test-fixture",
+        "text": "segmentId: 's1', segmentSetId: 'ss1', studyId: 'study-1', countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ObjectInspector.test.tsx",
+        "line": 124,
+        "classification": "test-fixture",
+        "text": "segmentId: 's1', studyId: 'study-1', countyId: 'benton', taxYear: 2026,"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ObjectInspector.test.tsx",
+        "line": 351,
+        "classification": "test-fixture",
+        "text": "expect(params.get('countyId')).toBe('benton');"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ObjectInspector.test.tsx",
+        "line": 361,
+        "classification": "test-fixture",
+        "text": "metadata: expect.objectContaining({ segmentId: 's1', countyId: 'benton' }),"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/OpenStudyDialog.test.tsx",
+        "line": 17,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/OpenStudyDialog.test.tsx",
+        "line": 18,
+        "classification": "test-fixture",
+        "text": "headers: { 'x-county-id': 'benton' },"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/OpenStudyDialog.test.tsx",
+        "line": 28,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/OpenStudyDialog.test.tsx",
+        "line": 29,
+        "classification": "test-fixture",
+        "text": "countyName: 'Benton County',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/RightRail.test.tsx",
+        "line": 50,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/RightRail.test.tsx",
+        "line": 51,
+        "classification": "test-fixture",
+        "text": "countyName: 'Benton County',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/RightRail.test.tsx",
+        "line": 130,
+        "classification": "test-fixture",
+        "text": "expect(screen.getByTestId('right-rail-scope-label')).toHaveTextContent('Benton County');"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ScenarioWorksheet.test.tsx",
+        "line": 20,
+        "classification": "test-fixture",
+        "text": "studyId: 'study-1', countyId: 'benton', taxYear: 2026,"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ScenarioWorksheet.test.tsx",
+        "line": 33,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ScenarioWorksheet.test.tsx",
+        "line": 113,
+        "classification": "test-fixture",
+        "text": "expect(screen.getByTestId('scenario-worksheet-scope')).toHaveTextContent(/benton/i);"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/SegmentFilters.nullGuard.test.tsx",
+        "line": 44,
+        "classification": "test-fixture",
+        "text": "studyId: 'study-1', countyId: 'benton', taxYear: 2026,"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/segmentIdentity.test.ts",
+        "line": 40,
+        "classification": "test-fixture",
+        "text": "it('extracts Benton neighborhood codes from compound labels without deriving reval from hood', () => {"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/segmentIdentity.test.ts",
+        "line": 72,
+        "classification": "test-fixture",
+        "text": "it('treats numeric Benton hood codes as neighborhoods without inventing reval from the first digit', () => {"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/SegmentTable.test.tsx",
+        "line": 78,
+        "classification": "test-fixture",
+        "text": "it('renders Benton-depth statistics parity signals in the table', () => {"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/SegmentTable.test.tsx",
+        "line": 116,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/useCountyStudyHub.test.ts",
+        "line": 47,
+        "classification": "test-fixture",
+        "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/useCountyStudyHub.test.ts",
+        "line": 48,
+        "classification": "test-fixture",
+        "text": "headers: { 'x-county-id': 'benton' },"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/useCountyStudyHub.test.ts",
+        "line": 81,
+        "classification": "test-fixture",
+        "text": "expect(withUrl).toHaveBeenCalledWith(expect.stringMatching(/\\/hubs\\/county-study\\?countyId=benton$/));"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/useStudyData.test.tsx",
+        "line": 19,
+        "classification": "test-fixture",
+        "text": "studyId: 'study-1', countyId: 'benton', taxYear: 2026,"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/atlasService.ts",
+        "line": 15,
+        "classification": "reference",
+        "text": "const BENTON_MASS_APPRAISAL_LAYER ="
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/atlasService.ts",
+        "line": 371,
+        "classification": "reference",
+        "text": "const response = await fetch(`${BENTON_MASS_APPRAISAL_LAYER}/query?${params.toString()}`);"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/atlasService.ts",
+        "line": 443,
+        "classification": "reference",
+        "text": "layers: ['benton-arcgis-mass-appraisal-fy2025'],"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/atlasService.ts",
+        "line": 487,
+        "classification": "reference",
+        "text": "source: 'Benton County ArcGIS FeatureServer',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/atlasService.ts",
+        "line": 547,
+        "classification": "reference",
+        "text": "'Unknown Benton parcel';"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/atlasService.ts",
+        "line": 631,
+        "classification": "reference",
+        "text": "throw new Error('At least one Benton query criterion is required.');"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/atlasService.ts",
+        "line": 658,
+        "classification": "reference",
+        "text": "serviceUrl: BENTON_MASS_APPRAISAL_LAYER,"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/atlasService.ts",
+        "line": 659,
+        "classification": "reference",
+        "text": "queryUrl: `${BENTON_MASS_APPRAISAL_LAYER}/query?${params.toString()}`,"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/atlasService.ts",
+        "line": 668,
+        "classification": "possible-fallback-or-fixture",
+        "text": "source: 'Direct Benton ArcGIS parcel query fallback',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/atlasService.ts",
+        "line": 941,
+        "classification": "reference",
+        "text": "source: 'Benton County ArcGIS AssessorPropVal grouped by neighborhood and property type',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/atlasService.ts",
+        "line": 1074,
+        "classification": "reference",
+        "text": "source: 'Benton County ArcGIS AssessorPropVal geometry coverage and recalculation flags grouped by neighborhood',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/atlasService.ts",
+        "line": 1137,
+        "classification": "reference",
+        "text": "* Fetch a live Benton County mass-appraisal parcel slice with ArcGIS geometry."
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/atlasService.ts",
+        "line": 1184,
+        "classification": "reference",
+        "text": "* and falling back to the live Benton ArcGIS layer when stats are unavailable."
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/atlasService.ts",
+        "line": 1196,
+        "classification": "reference",
+        "text": "* falling back to a direct Benton ArcGIS aggregation when needed."
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/atlasService.ts",
+        "line": 1208,
+        "classification": "reference",
+        "text": "* falling back to direct Benton ArcGIS aggregation when needed."
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/BentonCountyConfig.ts",
+        "line": 4,
+        "classification": "reference",
+        "text": "* Benton County Configuration Service"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/BentonCountyConfig.ts",
+        "line": 8,
+        "classification": "reference",
+        "text": "export interface BentonCountyConfig {"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/BentonCountyConfig.ts",
+        "line": 56,
+        "classification": "reference",
+        "text": "export class BentonCountyConfigService {"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/BentonCountyConfig.ts",
+        "line": 57,
+        "classification": "reference",
+        "text": "private static instance: BentonCountyConfigService;"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/BentonCountyConfig.ts",
+        "line": 58,
+        "classification": "reference",
+        "text": "private config: BentonCountyConfig;"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/BentonCountyConfig.ts",
+        "line": 67,
+        "classification": "reference",
+        "text": "name: env.VITE_COUNTY_NAME || 'Benton County',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/BentonCountyConfig.ts",
+        "line": 68,
+        "classification": "reference",
+        "text": "code: env.VITE_COUNTY_CODE || 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/BentonCountyConfig.ts",
+        "line": 69,
+        "classification": "reference",
+        "text": "fips: env.VITE_COUNTY_FIPS || '53005',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/BentonCountyConfig.ts",
+        "line": 78,
+        "classification": "reference",
+        "text": "jurisdiction: 'BENTON_WA',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/BentonCountyConfig.ts",
+        "line": 82,
+        "classification": "reference",
+        "text": "environment: env.VITE_DEPLOYMENT_MODE || 'benton_county',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/BentonCountyConfig.ts",
+        "line": 108,
+        "classification": "reference",
+        "text": "public static getInstance(): BentonCountyConfigService {"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/BentonCountyConfig.ts",
+        "line": 109,
+        "classification": "reference",
+        "text": "if (!BentonCountyConfigService.instance) {"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/BentonCountyConfig.ts",
+        "line": 110,
+        "classification": "reference",
+        "text": "BentonCountyConfigService.instance = new BentonCountyConfigService();"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/BentonCountyConfig.ts",
+        "line": 112,
+        "classification": "reference",
+        "text": "return BentonCountyConfigService.instance;"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/BentonCountyConfig.ts",
+        "line": 115,
+        "classification": "reference",
+        "text": "public getConfig(): BentonCountyConfig {"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/BentonCountyConfig.ts",
+        "line": 184,
+        "classification": "reference",
+        "text": "export const bentonCountyConfig = BentonCountyConfigService.getInstance();"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/BentonCountyConfig.ts",
+        "line": 185,
+        "classification": "reference",
+        "text": "export default bentonCountyConfig;"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/comparableSalesService.ts",
+        "line": 141,
+        "classification": "reference",
+        "text": "{ code: '005', name: 'Benton' },"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/coreServices.ts",
+        "line": 133,
+        "classification": "reference",
+        "text": "* @param county County name (e.g., \"benton\")"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/coreServices.ts",
+        "line": 202,
+        "classification": "reference",
+        "text": "* AI Property Valuation — Benton County locally calibrated cost schedules"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/forgeService.ts",
+        "line": 2,
+        "classification": "reference",
+        "text": "* TerraForge Service — Benton County Cost Approach Engine"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/forgeService.ts",
+        "line": 8,
+        "classification": "reference",
+        "text": "* ALL cost data is Benton County's OWN cost approach system."
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/forgeService.ts",
+        "line": 9,
+        "classification": "reference",
+        "text": "* Matrix data extracted from Benton County cost tables."
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/forgeService.ts",
+        "line": 118,
+        "classification": "reference",
+        "text": "// Benton County Cost Matrix — 42 entries (14 types × 3 regions)"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/forgeService.ts",
+        "line": 119,
+        "classification": "reference",
+        "text": "// Source: Benton County cost tables, Matrix Year 2025"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/forgeService.ts",
+        "line": 186,
+        "classification": "reference",
+        "text": "// Building Types — 14 Benton cost codes with categories"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/forgeService.ts",
+        "line": 234,
+        "classification": "reference",
+        "text": "{ id: 'BC-BENTON-CITY', label: 'Benton City', factor: 0.95, matrixRegion: 'Central' },"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/forgeService.ts",
+        "line": 236,
+        "classification": "reference",
+        "text": "{ id: 'BC-CENTRAL', label: 'Central Benton', factor: 1.00, matrixRegion: 'Central' },"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/forgeService.ts",
+        "line": 237,
+        "classification": "reference",
+        "text": "{ id: 'BC-EAST', label: 'East Benton', factor: 0.98, matrixRegion: 'Eastern' },"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/forgeService.ts",
+        "line": 238,
+        "classification": "reference",
+        "text": "{ id: 'BC-WEST', label: 'West Benton', factor: 1.02, matrixRegion: 'Western' },"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/forgeService.ts",
+        "line": 555,
+        "classification": "reference",
+        "text": "// Benton County market cap rates by property type (2025 survey)"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/forgeService.ts",
+        "line": 679,
+        "classification": "reference",
+        "text": "/** Reconciliation weight policy based on property type (Benton County standards) */"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/gptBackendTruth.ts",
+        "line": 222,
+        "classification": "reference",
+        "text": "route: '/api/gpt/rag/benton_cama_basics/export',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/incomeValuationService.ts",
+        "line": 13,
+        "classification": "reference",
+        "text": "*   - Location premiums: CostForge GET /api/costforge/income-approach/location-premiums/benton"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/incomeValuationService.ts",
+        "line": 14,
+        "classification": "benton-certified-reference-lane",
+        "text": "*   - Market data: CostForge GET /api/costforge/income-approach/market-data/benton"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/incomeValuationService.ts",
+        "line": 160,
+        "classification": "reference",
+        "text": "// Benton County Locations (from backend BentonIncomeData)"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/incomeValuationService.ts",
+        "line": 163,
+        "classification": "reference",
+        "text": "export const BENTON_LOCATIONS = ["
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/incomeValuationService.ts",
+        "line": 169,
+        "classification": "reference",
+        "text": "{ id: 'Benton City', label: 'Benton City' },"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/incomeValuationService.ts",
+        "line": 349,
+        "classification": "reference",
+        "text": "/** Fetch location premiums for Benton County */"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/incomeValuationService.ts",
+        "line": 351,
+        "classification": "reference",
+        "text": "const res = await fetch(`${COSTFORGE_BASE}/income-approach/location-premiums/benton`);"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/levyService.ts",
+        "line": 177,
+        "classification": "reference",
+        "text": "export interface BentonDistrictsEnvelope {"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/levyService.ts",
+        "line": 613,
+        "classification": "reference",
+        "text": "export async function getBentonTaxingDistricts(): Promise<BentonDistrictsEnvelope> {"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/levyService.ts",
+        "line": 614,
+        "classification": "reference",
+        "text": "const res = await api.get<BentonDistrictsEnvelope>("
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/levyService.ts",
+        "line": 615,
+        "classification": "reference",
+        "text": "'/levy-calculation/benton/taxing-districts',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/levyService.ts",
+        "line": 629,
+        "classification": "reference",
+        "text": "'/levy-calculation/benton/levy-certification-steps',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/LiveDataProvider.ts",
+        "line": 176,
+        "classification": "reference",
+        "text": "countyCode: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/LiveDataProvider.ts",
+        "line": 271,
+        "classification": "reference",
+        "text": "countyCode: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/RealDataService.ts",
+        "line": 4,
+        "classification": "reference",
+        "text": "// Connects to backend APIs that access the real Benton County databases"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/suites/daisService.ts",
+        "line": 199,
+        "classification": "reference",
+        "text": "area: (data.county as string) ?? 'Benton County',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/suites/forgeService.ts",
+        "line": 2,
+        "classification": "reference",
+        "text": "* TerraForge Service — Benton County Cost Approach Engine"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/suites/forgeService.ts",
+        "line": 8,
+        "classification": "reference",
+        "text": "* ALL cost data is Benton County's OWN cost approach system."
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/suites/forgeService.ts",
+        "line": 9,
+        "classification": "reference",
+        "text": "* Matrix data extracted from Benton County assessment production tables."
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/suites/forgeService.ts",
+        "line": 114,
+        "classification": "reference",
+        "text": "// Benton County Cost Matrix — 42 entries (14 types × 3 regions)"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/suites/forgeService.ts",
+        "line": 115,
+        "classification": "reference",
+        "text": "// Source: Benton County assessment production tables, Matrix Year 2025"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/suites/forgeService.ts",
+        "line": 182,
+        "classification": "reference",
+        "text": "// Building Types — 14 Benton assessment source codes with categories"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/suites/forgeService.ts",
+        "line": 230,
+        "classification": "reference",
+        "text": "{ id: 'BC-BENTON-CITY', label: 'Benton City', factor: 0.95, matrixRegion: 'Central' },"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/suites/forgeService.ts",
+        "line": 232,
+        "classification": "reference",
+        "text": "{ id: 'BC-CENTRAL', label: 'Central Benton', factor: 1.00, matrixRegion: 'Central' },"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/suites/forgeService.ts",
+        "line": 233,
+        "classification": "reference",
+        "text": "{ id: 'BC-EAST', label: 'East Benton', factor: 0.98, matrixRegion: 'Eastern' },"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/suites/forgeService.ts",
+        "line": 234,
+        "classification": "reference",
+        "text": "{ id: 'BC-WEST', label: 'West Benton', factor: 1.02, matrixRegion: 'Western' },"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/suites/forgeService.ts",
+        "line": 548,
+        "classification": "reference",
+        "text": "// Benton County market cap rates by property type (2025 survey)"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/services/suites/forgeService.ts",
+        "line": 668,
+        "classification": "reference",
+        "text": "/** Reconciliation weight policy based on property type (Benton County standards) */"
+      },
+      {
+        "file": "backend/src/TerraFusion.API/Controllers/TerraForgeController.cs",
+        "line": 1339,
+        "classification": "reference",
+        "text": "/// Benton code 100 → \"qualified\", code 200 → \"non-arms-length\", etc."
+      },
+      {
+        "file": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs",
+        "line": 220,
+        "classification": "reference",
+        "text": "/// CountyId accepts either a Guid or a county name (\"benton\", case-insensitive)."
+      },
+      {
+        "file": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs",
+        "line": 1200,
+        "classification": "reference",
+        "text": "// ── Benton-depth segment signals ─────────────────────────────────"
+      },
+      {
+        "file": "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs",
+        "line": 60,
+        "classification": "reference",
+        "text": "// Benton PACS reval/cycle is keyed by PacsPropId, not canonical ParcelId (GeoId string)."
+      },
+      {
+        "file": "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs",
+        "line": 61,
+        "classification": "reference",
+        "text": "// Resolve the optional Benton metadata separately so counties without PACS still"
+      },
+      {
+        "file": "backend/src/TerraFusion.Core/Services/CountyStudyService.cs",
+        "line": 835,
+        "classification": "reference",
+        "text": "// Group segments by neighborhood + reval area so Benton hood/cycle"
+      },
+      {
+        "file": "backend/src/TerraFusion.Core/Services/CountyStudyService.cs",
+        "line": 1193,
+        "classification": "reference",
+        "text": "\"BENTON CITY\"   => \"Benton City\","
+      },
+      {
+        "file": "backend/src/TerraFusion.Core/Services/CountyStudyService.cs",
+        "line": 1380,
+        "classification": "reference",
+        "text": "var median = BentonEquityMath.Median(ratios.Select(r => r.Ratio).ToList());"
+      },
+      {
+        "file": "backend/src/TerraFusion.Core/Services/CountyStudyService.cs",
+        "line": 1385,
+        "classification": "reference",
+        "text": "var prb = BentonEquityMath.ComputePrb(ratios, median);"
+      }
+    ]
+  },
+  "failures": [
+    "Statistics Studio parity: County-sovereign statistics superset claim - Claim remains provisional: Benton-certified reference lanes are still present; possible Benton fallback/fixture references require review.",
+    "Cross-surface: County median/COD/PRD consistency and mismatch class - scope mismatch: health median/COD/PRD=0.9268/41.28/1.3993; ratio-study=0.7224/40.24/2.1352. Population mismatch: County Studio health uses ratioCount=5559, while TerraForge ratio-study uses countWithRatio=36. This blocks parity until both surfaces compare the same cohort/window/qualification pool."
+  ],
+  "warnings": [
+    "County Studio: Derivation source path - Code path reads Properties, CamaCharacteristics, and ComparableSales. Independent row recomputation still required.",
+    "TerraFusion Sync: 2017 conversion / qualified-sale risk posture - Direct proof exists, but qualification conversion coverage still needs explicit row-level classification.",
+    "Database posture: Benton operational DB vs legacy sync bridge - Development API points at postgres DefaultConnection and keeps BentonCountyLegacy as a sync bridge. This proves configuration posture, not source truth.",
+    "Database posture: Washington 39-county data posture - 39-county proof is registry/acquisition-path inventory only; it does not prove official statewide ingestion, normalization, geometry, or runtime county data.",
+    "County Studio: County trust tier and UI label posture - Production Provisional; parity claims allowed=false. UI must surface badges: Production Provisional, Sync-Derived, Converted Legacy Sensitive.",
+    "County Studio: Segment derivation sample - Sampled 10; detail responses 10. API confirms shape, not independent source recomputation.",
+    "Statistics Studio parity: Population scope alignment proof - BLOCKED_SCOPE_MISMATCH; rootCause=scope_mismatch_different_population_definitions; countDifference={\"countyStudioHealthRatioCount\":5559,\"terraForgeCountWithRatio\":36,\"delta\":5523}.",
+    "Statistics Studio parity: Shared population contract - IMPLEMENTATION_GAP_SHARED_PARITY_MODE_MISSING; decision=PATH_A_REQUIRED_SHARED_PARITY_CONTRACT_DEFINED_NOT_IMPLEMENTED; contract=statistics_ratio_study_compat_v1.",
+    "Statistics Studio parity: Comparison snapshot availability - Loaded 238 neighborhood snapshots. Neighborhood-level parity still requires row matching to segment keys.",
+    "County Studio: Scenario preview - Preview returned for scenario 04f34e2a-6cfe-4adc-9d0c-f10710cc81ca; source recomputation still required.",
+    "Fixture leakage: Static Benton/fallback scan - Found 1 possible fallback/fixture Benton references requiring review."
+  ],
+  "checks": [
+    {
+      "name": "TerraForge county stats reachability",
+      "ok": true,
+      "status": 200,
+      "ms": 2002,
+      "url": "http://localhost:5173/api/terraforge/county-stats?taxYear=2026&countyId=19190019-1919-1919-1919-191919191919",
+      "bodyPreview": {
+        "taxYear": 2026,
+        "totalParcels": 128784,
+        "averageAssessedValue": 469564.7,
+        "assessedThisYear": 128784,
+        "pendingAssessments": 95758,
+        "assessmentCompletionPercent": 71.4
+      }
+    },
+    {
+      "name": "Dev data API reachable",
+      "ok": true,
+      "reason": "HTTP 200"
+    },
+    {
+      "name": "County Studio study list",
+      "ok": true,
+      "status": 200,
+      "ms": 36,
+      "url": "http://localhost:5173/api/county-study/studies?countyId=19190019-1919-1919-1919-191919191919",
+      "bodyPreview": {
+        "kind": "array",
+        "count": 5
+      }
+    },
+    {
+      "name": "County Studio selected study",
+      "ok": true,
+      "status": 200,
+      "ms": 73,
+      "url": "http://localhost:5173/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e",
+      "bodyPreview": {
+        "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+        "countyId": "19190019-1919-1919-1919-191919191919",
+        "countyName": "Benton County",
+        "taxYear": 2026,
+        "studyType": "MassAppraisal",
+        "status": "Draft",
+        "baselineVersion": null,
+        "activeSegmentSetId": "91587edb-c234-416d-8968-a32f47582352",
+        "createdAt": "2026-04-27T04:03:16.686884Z",
+        "createdBy": "system"
+      }
+    },
+    {
+      "name": "County Studio cohorts",
+      "ok": true,
+      "status": 200,
+      "ms": 71,
+      "url": "http://localhost:5173/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e/cohorts",
+      "bodyPreview": {
+        "kind": "array",
+        "count": 1
+      }
+    },
+    {
+      "name": "County Studio scenarios",
+      "ok": true,
+      "status": 200,
+      "ms": 208,
+      "url": "http://localhost:5173/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e/scenarios",
+      "bodyPreview": {
+        "kind": "array",
+        "count": 2
+      }
+    },
+    {
+      "name": "County Studio segment sets",
+      "ok": true,
+      "status": 200,
+      "ms": 224,
+      "url": "http://localhost:5173/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e/segment-sets",
+      "bodyPreview": {
+        "kind": "array",
+        "count": 3
+      }
+    },
+    {
+      "name": "Statistics ratio study",
+      "ok": true,
+      "status": 200,
+      "ms": 529,
+      "url": "http://localhost:5173/api/terraforge/ratio-study?taxYear=2026&countyId=19190019-1919-1919-1919-191919191919",
+      "bodyPreview": {
+        "taxYear": 2026,
+        "total": 36,
+        "countWithRatio": 36,
+        "outliersExcluded": 1,
+        "iaaoCompliant": false,
+        "complianceNotes": "array(4)",
+        "stats": {
+          "medianRatio": 0.7224,
+          "meanRatio": 0.6519,
+          "weightedMeanRatio": 0.3053,
+          "cod": 40.24,
+          "prd": 2.1352,
+          "prb": -0.1672,
+          "cov": 52.21,
+          "tierSlope": -0.1672,
+          "tierMedians": {
+            "q1": 0.7046,
+            "q2": 0.9319,
+            "q3": 0.9422,
+            "q4": 0.1866
+          }
+        },
+        "filters": {
+          "taxYear": 2026,
+          "hood": null,
+          "propertyType": null
+        },
+        "page": 1,
+        "pageSize": 50,
+        "items": "array(36)"
+      }
+    },
+    {
+      "name": "Statistics comparison snapshots",
+      "ok": true,
+      "status": 200,
+      "ms": 996,
+      "url": "http://localhost:5173/api/terraforge/comparison-snapshots?taxYear=2026&countyId=19190019-1919-1919-1919-191919191919",
+      "bodyPreview": {
+        "kind": "array",
+        "count": 238
+      }
+    },
+    {
+      "name": "County Studio health summary",
+      "ok": true,
+      "status": 200,
+      "ms": 4082,
+      "url": "http://localhost:5173/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e/health-summary",
+      "bodyPreview": {
+        "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+        "countyId": "19190019-1919-1919-1919-191919191919",
+        "taxYear": 2026,
+        "parcelCount": 128784,
+        "ratioCount": 5559,
+        "medianRatio": 0.9268,
+        "cod": 41.28,
+        "prd": 1.3993,
+        "stabilityScore": 77.47,
+        "riskScore": 28.67,
+        "exceptionCount": 867,
+        "complianceStatus": "NonCompliant"
+      }
+    },
+    {
+      "name": "County Studio active segments",
+      "ok": true,
+      "status": 200,
+      "ms": 2182,
+      "url": "http://localhost:5173/api/county-study/segment-sets/91587edb-c234-416d-8968-a32f47582352/segments",
+      "bodyPreview": {
+        "kind": "array",
+        "count": 1393
+      }
+    },
+    {
+      "name": "Segment detail e1eef76d-d3e8-4a45-9447-7a1cfddcf2e1",
+      "ok": true,
+      "status": 200,
+      "ms": 1682,
+      "url": "http://localhost:5173/api/county-study/segments/e1eef76d-d3e8-4a45-9447-7a1cfddcf2e1/detail",
+      "bodyPreview": {
+        "segmentId": "e1eef76d-d3e8-4a45-9447-7a1cfddcf2e1",
+        "segmentSetId": "91587edb-c234-416d-8968-a32f47582352",
+        "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+        "countyId": "19190019-1919-1919-1919-191919191919",
+        "taxYear": 2026,
+        "name": "11010 · MHOME · UNKNOWN",
+        "segmentType": "MixedUse",
+        "city": "Richland",
+        "neighborhoodCode": "11010",
+        "revalArea": 1,
+        "buildingType": "MHOME",
+        "qualityGrade": "UNKNOWN"
+      }
+    },
+    {
+      "name": "Segment detail 7944c936-c832-41f3-842d-b86880dc86a1",
+      "ok": true,
+      "status": 200,
+      "ms": 863,
+      "url": "http://localhost:5173/api/county-study/segments/7944c936-c832-41f3-842d-b86880dc86a1/detail",
+      "bodyPreview": {
+        "segmentId": "7944c936-c832-41f3-842d-b86880dc86a1",
+        "segmentSetId": "91587edb-c234-416d-8968-a32f47582352",
+        "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+        "countyId": "19190019-1919-1919-1919-191919191919",
+        "taxYear": 2026,
+        "name": "11010 · R · UNKNOWN",
+        "segmentType": "Residential",
+        "city": "Richland",
+        "neighborhoodCode": "11010",
+        "revalArea": 1,
+        "buildingType": "R",
+        "qualityGrade": "UNKNOWN"
+      }
+    },
+    {
+      "name": "Segment detail 98444a70-d115-491a-bccf-30f9cbc50730",
+      "ok": true,
+      "status": 200,
+      "ms": 868,
+      "url": "http://localhost:5173/api/county-study/segments/98444a70-d115-491a-bccf-30f9cbc50730/detail",
+      "bodyPreview": {
+        "segmentId": "98444a70-d115-491a-bccf-30f9cbc50730",
+        "segmentSetId": "91587edb-c234-416d-8968-a32f47582352",
+        "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+        "countyId": "19190019-1919-1919-1919-191919191919",
+        "taxYear": 2026,
+        "name": "11020 · MHOME · UNKNOWN",
+        "segmentType": "MixedUse",
+        "city": "Kennewick",
+        "neighborhoodCode": "11020",
+        "revalArea": 1,
+        "buildingType": "MHOME",
+        "qualityGrade": "UNKNOWN"
+      }
+    },
+    {
+      "name": "Segment detail f1a8865d-eb3c-4b78-be9e-29d6ed532dc3",
+      "ok": true,
+      "status": 200,
+      "ms": 851,
+      "url": "http://localhost:5173/api/county-study/segments/f1a8865d-eb3c-4b78-be9e-29d6ed532dc3/detail",
+      "bodyPreview": {
+        "segmentId": "f1a8865d-eb3c-4b78-be9e-29d6ed532dc3",
+        "segmentSetId": "91587edb-c234-416d-8968-a32f47582352",
+        "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+        "countyId": "19190019-1919-1919-1919-191919191919",
+        "taxYear": 2026,
+        "name": "11020 · R · UNKNOWN",
+        "segmentType": "Residential",
+        "city": "Kennewick",
+        "neighborhoodCode": "11020",
+        "revalArea": 1,
+        "buildingType": "R",
+        "qualityGrade": "UNKNOWN"
+      }
+    },
+    {
+      "name": "Segment detail 57d784b0-2801-4050-bebd-182244db2597",
+      "ok": true,
+      "status": 200,
+      "ms": 1130,
+      "url": "http://localhost:5173/api/county-study/segments/57d784b0-2801-4050-bebd-182244db2597/detail",
+      "bodyPreview": {
+        "segmentId": "57d784b0-2801-4050-bebd-182244db2597",
+        "segmentSetId": "91587edb-c234-416d-8968-a32f47582352",
+        "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+        "countyId": "19190019-1919-1919-1919-191919191919",
+        "taxYear": 2026,
+        "name": "11030 · R · UNKNOWN",
+        "segmentType": "Residential",
+        "city": "Kennewick",
+        "neighborhoodCode": "11030",
+        "revalArea": 1,
+        "buildingType": "R",
+        "qualityGrade": "UNKNOWN"
+      }
+    },
+    {
+      "name": "Segment detail 84fadd85-8b60-4903-9baf-c22056965ec0",
+      "ok": true,
+      "status": 200,
+      "ms": 1927,
+      "url": "http://localhost:5173/api/county-study/segments/84fadd85-8b60-4903-9baf-c22056965ec0/detail",
+      "bodyPreview": {
+        "segmentId": "84fadd85-8b60-4903-9baf-c22056965ec0",
+        "segmentSetId": "91587edb-c234-416d-8968-a32f47582352",
+        "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+        "countyId": "19190019-1919-1919-1919-191919191919",
+        "taxYear": 2026,
+        "name": "11040 · R · UNKNOWN",
+        "segmentType": "Residential",
+        "city": "Kennewick",
+        "neighborhoodCode": "11040",
+        "revalArea": 1,
+        "buildingType": "R",
+        "qualityGrade": "UNKNOWN"
+      }
+    },
+    {
+      "name": "Segment detail f3f323f6-6fa9-4f8c-8556-abe732163eee",
+      "ok": true,
+      "status": 200,
+      "ms": 905,
+      "url": "http://localhost:5173/api/county-study/segments/f3f323f6-6fa9-4f8c-8556-abe732163eee/detail",
+      "bodyPreview": {
+        "segmentId": "f3f323f6-6fa9-4f8c-8556-abe732163eee",
+        "segmentSetId": "91587edb-c234-416d-8968-a32f47582352",
+        "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+        "countyId": "19190019-1919-1919-1919-191919191919",
+        "taxYear": 2026,
+        "name": "11050 · R · UNKNOWN",
+        "segmentType": "Residential",
+        "city": "Kennewick",
+        "neighborhoodCode": "11050",
+        "revalArea": 1,
+        "buildingType": "R",
+        "qualityGrade": "UNKNOWN"
+      }
+    },
+    {
+      "name": "Segment detail 552539c5-6642-401d-97d8-d7d625ed14b4",
+      "ok": true,
+      "status": 200,
+      "ms": 972,
+      "url": "http://localhost:5173/api/county-study/segments/552539c5-6642-401d-97d8-d7d625ed14b4/detail",
+      "bodyPreview": {
+        "segmentId": "552539c5-6642-401d-97d8-d7d625ed14b4",
+        "segmentSetId": "91587edb-c234-416d-8968-a32f47582352",
+        "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+        "countyId": "19190019-1919-1919-1919-191919191919",
+        "taxYear": 2026,
+        "name": "11051 · R · UNKNOWN",
+        "segmentType": "Residential",
+        "city": "Kennewick",
+        "neighborhoodCode": "11051",
+        "revalArea": 1,
+        "buildingType": "R",
+        "qualityGrade": "UNKNOWN"
+      }
+    },
+    {
+      "name": "Segment detail 3fe1ef45-13ad-466e-9816-fa66afeaf113",
+      "ok": true,
+      "status": 200,
+      "ms": 864,
+      "url": "http://localhost:5173/api/county-study/segments/3fe1ef45-13ad-466e-9816-fa66afeaf113/detail",
+      "bodyPreview": {
+        "segmentId": "3fe1ef45-13ad-466e-9816-fa66afeaf113",
+        "segmentSetId": "91587edb-c234-416d-8968-a32f47582352",
+        "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+        "countyId": "19190019-1919-1919-1919-191919191919",
+        "taxYear": 2026,
+        "name": "11052 · R · UNKNOWN",
+        "segmentType": "Residential",
+        "city": "Kennewick",
+        "neighborhoodCode": "11052",
+        "revalArea": 1,
+        "buildingType": "R",
+        "qualityGrade": "UNKNOWN"
+      }
+    },
+    {
+      "name": "Segment detail 2c90cf1b-af7d-43f2-b2c3-e12d2fe4d4f1",
+      "ok": true,
+      "status": 200,
+      "ms": 910,
+      "url": "http://localhost:5173/api/county-study/segments/2c90cf1b-af7d-43f2-b2c3-e12d2fe4d4f1/detail",
+      "bodyPreview": {
+        "segmentId": "2c90cf1b-af7d-43f2-b2c3-e12d2fe4d4f1",
+        "segmentSetId": "91587edb-c234-416d-8968-a32f47582352",
+        "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+        "countyId": "19190019-1919-1919-1919-191919191919",
+        "taxYear": 2026,
+        "name": "11060 · R · UNKNOWN",
+        "segmentType": "Residential",
+        "city": "Kennewick",
+        "neighborhoodCode": "11060",
+        "revalArea": 1,
+        "buildingType": "R",
+        "qualityGrade": "UNKNOWN"
+      }
+    },
+    {
+      "name": "Scenario preview",
+      "ok": true,
+      "status": 200,
+      "ms": 14,
+      "url": "http://localhost:5173/api/county-study/scenarios/04f34e2a-6cfe-4adc-9d0c-f10710cc81ca/preview",
+      "bodyPreview": {
+        "scenarioId": "04f34e2a-6cfe-4adc-9d0c-f10710cc81ca",
+        "medianRatioBefore": 0.7987,
+        "medianRatioAfter": 0.830648,
+        "codBefore": 666.68,
+        "codAfter": 666.68,
+        "prdBefore": 7.3345,
+        "prdAfter": 7.3345,
+        "exceptionsBefore": 11,
+        "exceptionsAfter": 11,
+        "parcelsAffected": 884,
+        "deltas": "array(0)"
+      }
+    },
+    {
+      "name": "Fixture leakage fake county stats",
+      "ok": false,
+      "status": 400,
+      "ms": 5,
+      "url": "http://localhost:5173/api/terraforge/county-stats?taxYear=2026&countyId=00000000-0000-0000-0000-000000000999",
+      "bodyPreview": {
+        "error": "No county matches '00000000-0000-0000-0000-000000000999'. Accepted forms: Guid (e.g. '19190019-...') or county name ('benton').",
+        "field": "countyId"
+      }
+    }
+  ],
+  "matrix": [
+    {
+      "surface": "County Studio",
+      "metricBehavior": "Derivation source path",
+      "sourceOfTruth": "CountyStudySegmentDerivationService canonical tables",
+      "verified": "partial",
+      "notes": "Code path reads Properties, CamaCharacteristics, and ComparableSales. Independent row recomputation still required.",
+      "evidence": {
+        "segmentDerivationUsesCanonicalTables": true,
+        "segmentDerivationQualifiedSales": true,
+        "scenarioPreviewRehydratesCohortFromSource": true,
+        "syncBridgeBackfillsRatioMetadata": true,
+        "ratioStudyUsesEffectiveQualifiedPool": true
+      }
+    },
+    {
+      "surface": "County Studio",
+      "metricBehavior": "Direct source-data recomputation",
+      "sourceOfTruth": "Independent source ledger or DB recompute artifact",
+      "verified": "yes",
+      "notes": "Direct source recomputation proof accepted.",
+      "evidence": {
+        "present": true,
+        "path": "os-platform/core/pilot/evidence/direct-source-recompute.latest.json",
+        "status": "PASS",
+        "reason": "Direct source recomputation proof accepted."
+      }
+    },
+    {
+      "surface": "TerraFusion Sync",
+      "metricBehavior": "2017 conversion / qualified-sale risk posture",
+      "sourceOfTruth": "SyncController qualification-status/backfill-ratios + direct source proof dependency",
+      "verified": "partial",
+      "notes": "Direct proof exists, but qualification conversion coverage still needs explicit row-level classification.",
+      "evidence": {
+        "syncBridgeBackfillsRatioMetadata": true,
+        "ratioStudyUsesEffectiveQualifiedPool": true
+      }
+    },
+    {
+      "surface": "Database posture",
+      "metricBehavior": "Benton operational DB vs legacy sync bridge",
+      "sourceOfTruth": "backend/src/TerraFusion.API/appsettings.Development.json",
+      "verified": "partial",
+      "notes": "Development API points at postgres DefaultConnection and keeps BentonCountyLegacy as a sync bridge. This proves configuration posture, not source truth.",
+      "evidence": {
+        "defaultConnection": "Host=localhost;Database=terrafusion;Username=postgres;Password=devpassword123;Port=5432",
+        "defaultConnectionKind": "postgres",
+        "bentonLegacy": "Data Source=../../county-data/wa-benton/county.db",
+        "localOverrides": ["PacsConnection", "PacsSalesConnection"],
+        "defaultCounty": {
+          "Id": "19190019-1919-1919-1919-191919191919",
+          "Code": "benton"
+        },
+        "county39CoverageStatus": "PASS_WITH_LIMITATIONS",
+        "county39CoverageScope": "registry/acquisition inventory workbook",
+        "county39Limitations": [
+          "2 counties remain not-started in the registry control plane.",
+          "3 counties still have Unknown acquisition family posture.",
+          "This proves registry coverage and acquisition-path inventory only; it does not prove statewide ingestion, normalization, geometry, or endpoint runtime coverage."
+        ],
+        "county39Counts": {
+          "byStatus": {
+            "researched": 4,
+            "adapter-ready": 33,
+            "not-started": 2
+          },
+          "byAcquisitionFamily": {
+            "Parcel transfer history": 6,
+            "Direct sales search": 24,
+            "Monthly sales report": 4,
+            "Monthly report / parcel history": 1,
+            "Unknown": 3,
+            "Parcel transfer history / open data export": 1
+          },
+          "byPriority": {
+            "P2": 8,
+            "P1": 29,
+            "P3": 2
+          },
+          "adapterReady": 33,
+          "researched": 4,
+          "notStarted": 2,
+          "unknownFamily": 3
+        }
+      }
+    },
+    {
+      "surface": "Database posture",
+      "metricBehavior": "Washington 39-county data posture",
+      "sourceOfTruth": "washington-39-county-coverage proof",
+      "verified": "partial",
+      "notes": "39-county proof is registry/acquisition-path inventory only; it does not prove official statewide ingestion, normalization, geometry, or runtime county data.",
+      "evidence": {
+        "status": "PASS_WITH_LIMITATIONS",
+        "scope": "registry/acquisition inventory workbook",
+        "limitations": [
+          "2 counties remain not-started in the registry control plane.",
+          "3 counties still have Unknown acquisition family posture.",
+          "This proves registry coverage and acquisition-path inventory only; it does not prove statewide ingestion, normalization, geometry, or endpoint runtime coverage."
+        ],
+        "counts": {
+          "byStatus": {
+            "researched": 4,
+            "adapter-ready": 33,
+            "not-started": 2
+          },
+          "byAcquisitionFamily": {
+            "Parcel transfer history": 6,
+            "Direct sales search": 24,
+            "Monthly sales report": 4,
+            "Monthly report / parcel history": 1,
+            "Unknown": 3,
+            "Parcel transfer history / open data export": 1
+          },
+          "byPriority": {
+            "P2": 8,
+            "P1": 29,
+            "P3": 2
+          },
+          "adapterReady": 33,
+          "researched": 4,
+          "notStarted": 2,
+          "unknownFamily": 3
+        }
+      }
+    },
+    {
+      "surface": "County Studio",
+      "metricBehavior": "County trust tier and UI label posture",
+      "sourceOfTruth": "county-data-trust-tiers.json",
+      "verified": "partial",
+      "notes": "Production Provisional; parity claims allowed=false. UI must surface badges: Production Provisional, Sync-Derived, Converted Legacy Sensitive.",
+      "evidence": {
+        "modelPresent": true,
+        "activeRule": {
+          "countyId": "19190019-1919-1919-1919-191919191919",
+          "countyName": "Benton County",
+          "state": "WA",
+          "primaryTier": "production_provisional",
+          "badges": [
+            "Production Provisional",
+            "Sync-Derived",
+            "Converted Legacy Sensitive"
+          ],
+          "dataLanes": [
+            "TerraFusion.Benton.Operational",
+            "TerraFusion.Benton.LegacyBridge"
+          ],
+          "conversionRisks": [
+            {
+              "period": "2017 conversion",
+              "affectedFields": [
+                "QualificationDecision",
+                "QualificationRecommendation",
+                "SaleQualification",
+                "RawCountyRatioCd",
+                "RawRatioTypeCd",
+                "RawRatioCd",
+                "SuppressOnRatioRptCd",
+                "IncludeNoCalc"
+              ],
+              "risk": "Qualified-sale flags may be incomplete, missing, or mapped under different legacy semantics."
+            }
+          ],
+          "validationFocus": "Benton-first direct source recomputation and sync lineage closure."
+        },
+        "activeTier": {
+          "label": "Production Provisional",
+          "description": "Operational county data exists, but lineage, conversion, sync, or direct recomputation proof remains incomplete.",
+          "allowsParityClaims": false
+        },
+        "uiLabel": "Production Provisional",
+        "allowsParityClaims": false
+      }
+    },
+    {
+      "surface": "Statistics Studio parity",
+      "metricBehavior": "County-sovereign statistics superset claim",
+      "sourceOfTruth": "dev-data-truth-gate direct proof + Benton leakage scan",
+      "verified": "no",
+      "notes": "Claim remains provisional: Benton-certified reference lanes are still present; possible Benton fallback/fixture references require review.",
+      "evidence": {
+        "bentonReferenceLaneCount": 2,
+        "devSessionNormalizationCount": 9,
+        "possibleFallbackCount": 1,
+        "directSourceProofPresent": true
+      }
+    },
+    {
+      "surface": "County Studio",
+      "metricBehavior": "Study metadata",
+      "sourceOfTruth": "GET /county-study/studies + selected study",
+      "verified": "yes",
+      "notes": "Selected 52eb120f-99d3-4790-a69c-49b6de80cd5e; taxYear=2026; countyId=19190019-1919-1919-1919-191919191919; countyName=Benton County.",
+      "evidence": {
+        "studyCount": 5,
+        "requestedStudyId": null
+      }
+    },
+    {
+      "surface": "County Studio",
+      "metricBehavior": "Study counts",
+      "sourceOfTruth": "segment sets, active segments, cohorts, scenarios endpoints",
+      "verified": "yes",
+      "notes": "segmentSets=3; segments=1393; ratioBearingSegments=525; cohorts=1; scenarios=2.",
+      "evidence": {
+        "activeSegmentSetId": "91587edb-c234-416d-8968-a32f47582352"
+      }
+    },
+    {
+      "surface": "County Studio",
+      "metricBehavior": "Health summary backed by active segment set",
+      "sourceOfTruth": "GET /county-study/studies/{studyId}/health-summary",
+      "verified": "yes",
+      "notes": "median=0.9268; cod=41.28; prd=1.3993; ratioCount=5559; derivedAt=2026-04-28T05:59:41.419096Z.",
+      "evidence": {
+        "status": 200
+      }
+    },
+    {
+      "surface": "County Studio",
+      "metricBehavior": "Segment derivation sample",
+      "sourceOfTruth": "GET /county-study/segment-sets/{id}/segments + /segments/{id}/detail",
+      "verified": "partial",
+      "notes": "Sampled 10; detail responses 10. API confirms shape, not independent source recomputation.",
+      "evidence": {
+        "sampled": [
+          {
+            "segmentId": "e1eef76d-d3e8-4a45-9447-7a1cfddcf2e1",
+            "name": "11010 · MHOME · UNKNOWN",
+            "medianRatio": 0.9513,
+            "prb": null,
+            "weightedMeanRatio": 0.9475,
+            "yoyMedianRatioDelta": null,
+            "salesCount": 2,
+            "exceptionCount": 0
+          },
+          {
+            "segmentId": "7944c936-c832-41f3-842d-b86880dc86a1",
+            "name": "11010 · R · UNKNOWN",
+            "medianRatio": 0.867,
+            "prb": null,
+            "weightedMeanRatio": 0.8086,
+            "yoyMedianRatioDelta": null,
+            "salesCount": 6,
+            "exceptionCount": 2
+          },
+          {
+            "segmentId": "98444a70-d115-491a-bccf-30f9cbc50730",
+            "name": "11020 · MHOME · UNKNOWN",
+            "medianRatio": 0.9332,
+            "prb": null,
+            "weightedMeanRatio": 0.9757,
+            "yoyMedianRatioDelta": null,
+            "salesCount": 3,
+            "exceptionCount": 0
+          },
+          {
+            "segmentId": "f1a8865d-eb3c-4b78-be9e-29d6ed532dc3",
+            "name": "11020 · R · UNKNOWN",
+            "medianRatio": 0.9523,
+            "prb": null,
+            "weightedMeanRatio": 0.9596,
+            "yoyMedianRatioDelta": null,
+            "salesCount": 4,
+            "exceptionCount": 0
+          },
+          {
+            "segmentId": "57d784b0-2801-4050-bebd-182244db2597",
+            "name": "11030 · R · UNKNOWN",
+            "medianRatio": 0.8988,
+            "prb": null,
+            "weightedMeanRatio": 0.8781,
+            "yoyMedianRatioDelta": null,
+            "salesCount": 8,
+            "exceptionCount": 0
+          },
+          {
+            "segmentId": "84fadd85-8b60-4903-9baf-c22056965ec0",
+            "name": "11040 · R · UNKNOWN",
+            "medianRatio": 0.9503,
+            "prb": -0.1072,
+            "weightedMeanRatio": 0.943,
+            "yoyMedianRatioDelta": null,
+            "salesCount": 99,
+            "exceptionCount": 1
+          },
+          {
+            "segmentId": "f3f323f6-6fa9-4f8c-8556-abe732163eee",
+            "name": "11050 · R · UNKNOWN",
+            "medianRatio": 0.9415,
+            "prb": -0.7644,
+            "weightedMeanRatio": 0.9529,
+            "yoyMedianRatioDelta": null,
+            "salesCount": 11,
+            "exceptionCount": 2
+          },
+          {
+            "segmentId": "552539c5-6642-401d-97d8-d7d625ed14b4",
+            "name": "11051 · R · UNKNOWN",
+            "medianRatio": 0.9603,
+            "prb": 0.1185,
+            "weightedMeanRatio": 0.9489,
+            "yoyMedianRatioDelta": null,
+            "salesCount": 13,
+            "exceptionCount": 0
+          },
+          {
+            "segmentId": "3fe1ef45-13ad-466e-9816-fa66afeaf113",
+            "name": "11052 · R · UNKNOWN",
+            "medianRatio": 0.9536,
+            "prb": null,
+            "weightedMeanRatio": 0.9605,
+            "yoyMedianRatioDelta": null,
+            "salesCount": 3,
+            "exceptionCount": 0
+          },
+          {
+            "segmentId": "2c90cf1b-af7d-43f2-b2c3-e12d2fe4d4f1",
+            "name": "11060 · R · UNKNOWN",
+            "medianRatio": 0.9299,
+            "prb": 0.0244,
+            "weightedMeanRatio": 0.9358,
+            "yoyMedianRatioDelta": null,
+            "salesCount": 13,
+            "exceptionCount": 0
+          }
+        ]
+      }
+    },
+    {
+      "surface": "Cross-surface",
+      "metricBehavior": "County median/COD/PRD consistency and mismatch class",
+      "sourceOfTruth": "County health summary vs TerraForge ratio-study endpoint",
+      "verified": "no",
+      "notes": "scope mismatch: health median/COD/PRD=0.9268/41.28/1.3993; ratio-study=0.7224/40.24/2.1352. Population mismatch: County Studio health uses ratioCount=5559, while TerraForge ratio-study uses countWithRatio=36. This blocks parity until both surfaces compare the same cohort/window/qualification pool.",
+      "evidence": {
+        "classification": "scope mismatch",
+        "health": {
+          "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+          "countyId": "19190019-1919-1919-1919-191919191919",
+          "taxYear": 2026,
+          "parcelCount": 128784,
+          "ratioCount": 5559,
+          "medianRatio": 0.9268,
+          "cod": 41.28,
+          "prd": 1.3993,
+          "stabilityScore": 77.47,
+          "riskScore": 28.67,
+          "exceptionCount": 867,
+          "complianceStatus": "NonCompliant",
+          "topAlerts": [
+            {
+              "segmentId": "d080ba29-fc94-41e9-9054-9927c8f384b4",
+              "segmentName": "16081 · R · UNKNOWN",
+              "neighborhoodCode": "16081",
+              "revalArea": 6,
+              "buildingType": "R",
+              "qualityGrade": "UNKNOWN",
+              "city": "Richland",
+              "parcelCount": 884,
+              "medianRatio": 0.7987,
+              "cod": 666.68,
+              "prd": 7.3345,
+              "exceptionCount": 11,
+              "compositeRisk": 100,
+              "reasons": [
+                "COD 666.7 exceeds IAAO ceiling (20)",
+                "PRD 7.33 outside vertical-equity band (0.98–1.03)",
+                "median 0.80 outside fair range (0.90–1.10)"
+              ]
+            },
+            {
+              "segmentId": "2e6edd10-8603-4fb0-bd0a-206875145fdb",
+              "segmentName": "63000 · C · UNKNOWN",
+              "neighborhoodCode": "63000",
+              "revalArea": 3,
+              "buildingType": "C",
+              "qualityGrade": "UNKNOWN",
+              "city": "Kennewick",
+              "parcelCount": 655,
+              "medianRatio": 0.6257,
+              "cod": 40.74,
+              "prd": 1.1842,
+              "exceptionCount": 28,
+              "compositeRisk": 100,
+              "reasons": [
+                "COD 40.7 exceeds IAAO ceiling (20)",
+                "median 0.63 outside fair range (0.90–1.10)",
+                "PRD 1.18 outside vertical-equity band (0.98–1.03)"
+              ]
+            },
+            {
+              "segmentId": "05e4b166-1de3-4055-bbfe-b4a6802dfe9b",
+              "segmentName": "530300 · UNKNOWN · UNKNOWN",
+              "neighborhoodCode": "530300",
+              "revalArea": 3,
+              "buildingType": "UNKNOWN",
+              "qualityGrade": "UNKNOWN",
+              "city": "Unincorporated",
+              "parcelCount": 559,
+              "medianRatio": 0.1001,
+              "cod": 724.88,
+              "prd": 15.3891,
+              "exceptionCount": 10,
+              "compositeRisk": 100,
+              "reasons": [
+                "PRD 15.39 outside vertical-equity band (0.98–1.03)",
+                "COD 724.9 exceeds IAAO ceiling (20)",
+                "median 0.10 outside fair range (0.90–1.10)"
+              ]
+            },
+            {
+              "segmentId": "c1d506a9-5c78-4e51-b590-de428edfcdbb",
+              "segmentName": "999999 · UNKNOWN · UNKNOWN",
+              "neighborhoodCode": "999999",
+              "revalArea": 3,
+              "buildingType": "UNKNOWN",
+              "qualityGrade": "UNKNOWN",
+              "city": "Kennewick",
+              "parcelCount": 544,
+              "medianRatio": 0.6196,
+              "cod": 182.24,
+              "prd": 2.2335,
+              "exceptionCount": 5,
+              "compositeRisk": 100,
+              "reasons": [
+                "COD 182.2 exceeds IAAO ceiling (20)",
+                "PRD 2.23 outside vertical-equity band (0.98–1.03)",
+                "median 0.62 outside fair range (0.90–1.10)"
+              ]
+            },
+            {
+              "segmentId": "bb9637c4-de67-4157-872d-c4eb7e39cc66",
+              "segmentName": "13170 · UNKNOWN · UNKNOWN",
+              "neighborhoodCode": "13170",
+              "revalArea": 3,
+              "buildingType": "UNKNOWN",
+              "qualityGrade": "UNKNOWN",
+              "city": "Kennewick",
+              "parcelCount": 460,
+              "medianRatio": 0.1805,
+              "cod": 320.67,
+              "prd": 1.993,
+              "exceptionCount": 7,
+              "compositeRisk": 100,
+              "reasons": [
+                "COD 320.7 exceeds IAAO ceiling (20)",
+                "PRD 1.99 outside vertical-equity band (0.98–1.03)",
+                "median 0.18 outside fair range (0.90–1.10)"
+              ]
+            }
+          ],
+          "criticalCount": 122,
+          "warningCount": 83,
+          "healthyCount": 1188,
+          "derivedAt": "2026-04-28T05:59:41.419096Z"
+        },
+        "ratioStudy": {
+          "taxYear": 2026,
+          "total": 36,
+          "countWithRatio": 36,
+          "outliersExcluded": 1,
+          "iaaoCompliant": false,
+          "complianceNotes": [
+            "COD 40.2 ✗ (< 15.0)",
+            "PRD 2.135 ✗ (0.98–1.03)",
+            "PRB -0.167 ✗ (|PRB| < 0.05)",
+            "Median 0.722 ✗ (0.90–1.10)"
+          ],
+          "stats": {
+            "medianRatio": 0.7224,
+            "meanRatio": 0.6519,
+            "weightedMeanRatio": 0.3053,
+            "cod": 40.24,
+            "prd": 2.1352,
+            "prb": -0.1672,
+            "cov": 52.21,
+            "tierSlope": -0.1672,
+            "tierMedians": {
+              "q1": 0.7046,
+              "q2": 0.9319,
+              "q3": 0.9422,
+              "q4": 0.1866
+            }
+          },
+          "filters": {
+            "taxYear": 2026,
+            "hood": null,
+            "propertyType": null
+          },
+          "page": 1,
+          "pageSize": 50,
+          "items": [
+            {
+              "saleId": "be2a4161-cac7-405c-a26b-54fcc7e77889",
+              "parcelId": "40MW11900000000",
+              "saleDate": "2026-01-13T00:00:00Z",
+              "salePrice": 42000,
+              "rawSalePrice": 42000,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.335,
+              "gla": 938,
+              "yearBuilt": 1978,
+              "hood": "41030",
+              "propertyType": "MH",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "aa0f13be-ad53-4ae0-8e1a-1971b33c4d6e",
+              "parcelId": "101974030000025",
+              "saleDate": "2026-01-08T00:00:00Z",
+              "salePrice": 605000,
+              "rawSalePrice": 605000,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.9604793388429752,
+              "gla": 2411,
+              "yearBuilt": 2011,
+              "hood": "15041",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "c78657dd-4646-4a05-ad39-fca821010e45",
+              "parcelId": "118971040000013",
+              "saleDate": "2026-01-08T00:00:00Z",
+              "salePrice": 334900,
+              "rawSalePrice": 334900,
+              "adjustedSalePrice": null,
+              "salesRatio": 1.041266049567035,
+              "gla": 1573,
+              "yearBuilt": 2012,
+              "hood": "14011",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "e7d0dc19-04a8-436b-8d64-7f08a8b6cf3d",
+              "parcelId": "127982090000012",
+              "saleDate": "2026-01-08T00:00:00Z",
+              "salePrice": 505000,
+              "rawSalePrice": 505000,
+              "adjustedSalePrice": null,
+              "salesRatio": 1.0204950495049505,
+              "gla": 2160,
+              "yearBuilt": 2008,
+              "hood": "16171",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "ffedc4b6-8cba-4e6c-bec0-2f3ac8e63b98",
+              "parcelId": "106984030000011",
+              "saleDate": "2026-01-08T00:00:00Z",
+              "salePrice": 470700,
+              "rawSalePrice": 470700,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.8977905247503718,
+              "gla": 1768,
+              "yearBuilt": 2025,
+              "hood": "15053",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "15834798-00c1-442d-a43a-295980a42118",
+              "parcelId": "113894070000005",
+              "saleDate": "2026-01-08T00:00:00Z",
+              "salePrice": 365500,
+              "rawSalePrice": 365500,
+              "adjustedSalePrice": null,
+              "salesRatio": 1.0224623803009576,
+              "gla": 1664,
+              "yearBuilt": 1970,
+              "hood": "12091",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "7a770a1f-cee8-463a-8d39-e4b3637e3dfa",
+              "parcelId": "121972060005001",
+              "saleDate": "2026-01-08T00:00:00Z",
+              "salePrice": 498900,
+              "rawSalePrice": 498900,
+              "adjustedSalePrice": null,
+              "salesRatio": 1.0426137502505513,
+              "gla": 1864,
+              "yearBuilt": 2016,
+              "hood": "14031",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "99090091-a34f-42f1-af5f-bbdbdfc91e33",
+              "parcelId": "40MH16610000000",
+              "saleDate": "2026-01-08T00:00:00Z",
+              "salePrice": 138300,
+              "rawSalePrice": 138300,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.6877801879971077,
+              "gla": 1620,
+              "yearBuilt": 2018,
+              "hood": "424030DWN",
+              "propertyType": "MH",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "1cc36d9c-a4e3-4e60-91c2-aa40a387a006",
+              "parcelId": "110893030000079",
+              "saleDate": "2026-01-07T00:00:00Z",
+              "salePrice": 462000,
+              "rawSalePrice": 462000,
+              "adjustedSalePrice": null,
+              "salesRatio": 1.0277705627705627,
+              "gla": 1966,
+              "yearBuilt": 2006,
+              "hood": "11161",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "15dac3ec-c992-40b4-a4ba-e9fc9514c912",
+              "parcelId": "111982020617022",
+              "saleDate": "2026-01-07T00:00:00Z",
+              "salePrice": 2385000,
+              "rawSalePrice": 2385000,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.48085953878406706,
+              "gla": 7380,
+              "yearBuilt": 1991,
+              "hood": "66000",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "fc416efd-0f15-4027-ad50-8fcc106a13c9",
+              "parcelId": "126981020007001",
+              "saleDate": "2026-01-07T00:00:00Z",
+              "salePrice": 475000,
+              "rawSalePrice": 475000,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.742378947368421,
+              "gla": 1886,
+              "yearBuilt": 1977,
+              "hood": "16132",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "fe11a79a-a59c-4bc2-9a5e-a55c7032396d",
+              "parcelId": "111982020617024",
+              "saleDate": "2026-01-07T00:00:00Z",
+              "salePrice": 2385000,
+              "rawSalePrice": 2385000,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.5022893081761006,
+              "gla": 7380,
+              "yearBuilt": 1991,
+              "hood": "66000",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "6f08d055-4bf0-455c-befa-de99e64fbe8a",
+              "parcelId": "102891030003008",
+              "saleDate": "2026-01-07T00:00:00Z",
+              "salePrice": 350000,
+              "rawSalePrice": 350000,
+              "adjustedSalePrice": null,
+              "salesRatio": 1.0478571428571428,
+              "gla": 1323,
+              "yearBuilt": 2023,
+              "hood": "12010",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "74e9aace-4d50-4630-a5d6-e4d7baca482d",
+              "parcelId": "117892100000007",
+              "saleDate": "2026-01-07T00:00:00Z",
+              "salePrice": 409900,
+              "rawSalePrice": 409900,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.9318858258111734,
+              "gla": 1407,
+              "yearBuilt": 2025,
+              "hood": "13171",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "8d3d2e0c-3339-4093-8c5f-f1501019c3e9",
+              "parcelId": "40MW17000000000",
+              "saleDate": "2026-01-07T00:00:00Z",
+              "salePrice": 8000,
+              "rawSalePrice": 8000,
+              "adjustedSalePrice": null,
+              "salesRatio": 2.625,
+              "gla": 1050,
+              "yearBuilt": 1983,
+              "hood": "41030",
+              "propertyType": "MH",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "4e41ed4f-c2d4-44a8-9c5a-3a372fe1be7e",
+              "parcelId": "102983020729001",
+              "saleDate": "2026-01-06T00:00:00Z",
+              "salePrice": 420652,
+              "rawSalePrice": 420652,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.8528665024771069,
+              "gla": 1800,
+              "yearBuilt": 1944,
+              "hood": "16081",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "0c39c6a2-eced-42bc-99c0-12890481f0b1",
+              "parcelId": "108983030000003",
+              "saleDate": "2026-01-06T00:00:00Z",
+              "salePrice": 365000,
+              "rawSalePrice": 365000,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.9364383561643835,
+              "gla": 1316,
+              "yearBuilt": 1997,
+              "hood": "15061",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "68f34f26-b113-4f1f-bacc-b100a28f365a",
+              "parcelId": "134994070007002",
+              "saleDate": "2026-01-06T00:00:00Z",
+              "salePrice": 315000,
+              "rawSalePrice": 315000,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.7596190476190476,
+              "gla": 868,
+              "yearBuilt": 1958,
+              "hood": "11071",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "225a3b7c-8c12-4575-b975-25e8375c7a75",
+              "parcelId": "126083030001006",
+              "saleDate": "2026-01-05T00:00:00Z",
+              "salePrice": 6420150,
+              "rawSalePrice": 6420150,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.12112801102777973,
+              "gla": 8400,
+              "yearBuilt": 1978,
+              "hood": "66060",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "75a8aede-0fe3-4024-bc2d-adfb078360cd",
+              "parcelId": "126083030002008",
+              "saleDate": "2026-01-05T00:00:00Z",
+              "salePrice": 6420150,
+              "rawSalePrice": 6420150,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.0821600741415699,
+              "gla": 8400,
+              "yearBuilt": 1978,
+              "hood": "16040",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "bf9ed8de-f09e-460c-a14c-808793e5a423",
+              "parcelId": "122891020003005",
+              "saleDate": "2026-01-05T00:00:00Z",
+              "salePrice": 625000,
+              "rawSalePrice": 625000,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.946544,
+              "gla": 2482,
+              "yearBuilt": 1991,
+              "hood": "13182",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "97a9a15c-38fe-458c-9715-75bfc25e0801",
+              "parcelId": "102883050000014",
+              "saleDate": "2026-01-05T00:00:00Z",
+              "salePrice": 765000,
+              "rawSalePrice": 765000,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.7224052287581699,
+              "gla": 1398,
+              "yearBuilt": 1991,
+              "hood": "13101",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "dbac1e1f-98f0-47ea-affa-466707b72e03",
+              "parcelId": "102983020705019",
+              "saleDate": "2026-01-05T00:00:00Z",
+              "salePrice": 425000,
+              "rawSalePrice": 425000,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.8782823529411765,
+              "gla": 2350,
+              "yearBuilt": 1944,
+              "hood": "16082",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "e0c44c83-5c6a-4aa6-9ce2-27c6a3a7cafe",
+              "parcelId": "132981030000087",
+              "saleDate": "2026-01-05T00:00:00Z",
+              "salePrice": 765000,
+              "rawSalePrice": 765000,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.9421699346405229,
+              "gla": 3142,
+              "yearBuilt": 2022,
+              "hood": "13011",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "931f0560-850c-40c3-ab73-1fb57773f9d3",
+              "parcelId": "126083030002006",
+              "saleDate": "2026-01-05T00:00:00Z",
+              "salePrice": 6420150,
+              "rawSalePrice": 6420150,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.07956044640701541,
+              "gla": 8400,
+              "yearBuilt": 1978,
+              "hood": "66060",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "4919b93c-4aa7-4b4d-8ae7-9a65725c0cba",
+              "parcelId": "112893120002001",
+              "saleDate": "2026-01-05T00:00:00Z",
+              "salePrice": 380000,
+              "rawSalePrice": 380000,
+              "adjustedSalePrice": null,
+              "salesRatio": 1.0824736842105263,
+              "gla": 1894,
+              "yearBuilt": 1958,
+              "hood": "12060",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "12e45118-6c91-441b-a211-698364cedd06",
+              "parcelId": "126083030002007",
+              "saleDate": "2026-01-05T00:00:00Z",
+              "salePrice": 6420150,
+              "rawSalePrice": 6420150,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.09762544488835931,
+              "gla": 8400,
+              "yearBuilt": 1978,
+              "hood": "66060",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "51e318f8-52e4-44b9-abd8-3228c5ed8828",
+              "parcelId": "126083030001007",
+              "saleDate": "2026-01-05T00:00:00Z",
+              "salePrice": 6420150,
+              "rawSalePrice": 6420150,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.19483968443104913,
+              "gla": 8400,
+              "yearBuilt": 1978,
+              "hood": "66060",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "533acde1-134a-41a9-9392-649fe1732dd2",
+              "parcelId": "103983020323014",
+              "saleDate": "2026-01-05T00:00:00Z",
+              "salePrice": 229900,
+              "rawSalePrice": 229900,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.7213571117877338,
+              "gla": 528,
+              "yearBuilt": 1944,
+              "hood": "16081",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "f9851545-8083-4c6b-aa7a-28159ca13630",
+              "parcelId": "111983020626006",
+              "saleDate": "2026-01-05T00:00:00Z",
+              "salePrice": 3285000,
+              "rawSalePrice": 3285000,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.3181704718417047,
+              "gla": 2812,
+              "yearBuilt": 1955,
+              "hood": "66000",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "25b2fd46-590e-473a-acf0-c5023a3a52e0",
+              "parcelId": "115982030170003",
+              "saleDate": "2026-01-02T00:00:00Z",
+              "salePrice": 355000,
+              "rawSalePrice": 355000,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.5019718309859155,
+              "gla": 1034,
+              "yearBuilt": 1952,
+              "hood": "16101",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "40a759f7-c2d2-4b69-bc48-3bb5e6a755a6",
+              "parcelId": "115981020161001",
+              "saleDate": "2026-01-02T00:00:00Z",
+              "salePrice": 299900,
+              "rawSalePrice": 299900,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.6701233744581527,
+              "gla": 864,
+              "yearBuilt": 1948,
+              "hood": "16091",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "56ef4c59-6562-4566-85e2-5450fb625470",
+              "parcelId": "111881013482001",
+              "saleDate": "2026-01-02T00:00:00Z",
+              "salePrice": 5100000,
+              "rawSalePrice": 5100000,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.18655882352941178,
+              "gla": 20080,
+              "yearBuilt": 2017,
+              "hood": "61000",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "e3e13ae3-9ab5-4a3d-8f22-006bd79618ae",
+              "parcelId": "103892030000012",
+              "saleDate": "2026-01-02T00:00:00Z",
+              "salePrice": 390000,
+              "rawSalePrice": 390000,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.3290769230769231,
+              "gla": 1550,
+              "yearBuilt": 1954,
+              "hood": "63000",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "92cb7349-d2c5-4eee-8600-698be0dad263",
+              "parcelId": "111881013482002",
+              "saleDate": "2026-01-02T00:00:00Z",
+              "salePrice": 5100000,
+              "rawSalePrice": 5100000,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.32834117647058825,
+              "gla": 20080,
+              "yearBuilt": 2017,
+              "hood": "61000",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            },
+            {
+              "saleId": "abadee1c-dff3-4ef1-b1b9-da7272b91a0f",
+              "parcelId": "112891BP6030002",
+              "saleDate": "2026-01-02T00:00:00Z",
+              "salePrice": 285000,
+              "rawSalePrice": 285000,
+              "adjustedSalePrice": null,
+              "salesRatio": 0.3234035087719298,
+              "gla": null,
+              "yearBuilt": null,
+              "hood": "62000",
+              "propertyType": "R",
+              "qualificationSource": "recommendation"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": "Statistics Studio parity",
+      "metricBehavior": "Population scope alignment proof",
+      "sourceOfTruth": "statistics-parity-scope-alignment.latest.json",
+      "verified": "partial",
+      "notes": "BLOCKED_SCOPE_MISMATCH; rootCause=scope_mismatch_different_population_definitions; countDifference={\"countyStudioHealthRatioCount\":5559,\"terraForgeCountWithRatio\":36,\"delta\":5523}.",
+      "evidence": {
+        "present": true,
+        "path": "os-platform/core/pilot/evidence/statistics-parity-scope-alignment.latest.json",
+        "status": "BLOCKED_SCOPE_MISMATCH",
+        "rootCause": "scope_mismatch_different_population_definitions",
+        "countDifference": {
+          "countyStudioHealthRatioCount": 5559,
+          "terraForgeCountWithRatio": 36,
+          "delta": 5523
+        },
+        "overlap": {
+          "sharedSaleRows": 36,
+          "healthSaleRowsNotInTerraForge": 5686,
+          "terraForgeSaleRowsNotInHealth": 0
+        },
+        "reason": "County Studio health and TerraForge ratio-study are both ratio surfaces, but they are not currently measuring the same population. The observed mismatch is therefore not proof that either metric is mathematically wrong; it blocks parity until a shared comparison contract is implemented."
+      }
+    },
+    {
+      "surface": "Statistics Studio parity",
+      "metricBehavior": "Shared population contract",
+      "sourceOfTruth": "statistics-shared-population-contract.latest.json",
+      "verified": "partial",
+      "notes": "IMPLEMENTATION_GAP_SHARED_PARITY_MODE_MISSING; decision=PATH_A_REQUIRED_SHARED_PARITY_CONTRACT_DEFINED_NOT_IMPLEMENTED; contract=statistics_ratio_study_compat_v1.",
+      "evidence": {
+        "present": true,
+        "path": "os-platform/core/pilot/evidence/statistics-shared-population-contract.latest.json",
+        "status": "IMPLEMENTATION_GAP_SHARED_PARITY_MODE_MISSING",
+        "decision": "PATH_A_REQUIRED_SHARED_PARITY_CONTRACT_DEFINED_NOT_IMPLEMENTED",
+        "contract": "statistics_ratio_study_compat_v1",
+        "blockers": [
+          "No County Studio endpoint or workbench mode currently declares statistics_ratio_study_compat_v1.",
+          "No shared response currently echoes contract id, population count, pre/post-trim counts, parcel identity join mode, and conversion-sensitive qualification counts.",
+          "County Studio health summary remains a different analytical surface and must not be used as the Statistics parity comparator.",
+          "Benton qualification fields remain conversion-sensitive until row-level sync lineage closes the 2017 risk."
+        ],
+        "reason": "PATH_A_REQUIRED_SHARED_PARITY_CONTRACT_DEFINED_NOT_IMPLEMENTED"
+      }
+    },
+    {
+      "surface": "Statistics Studio parity",
+      "metricBehavior": "Comparison snapshot availability",
+      "sourceOfTruth": "GET /terraforge/comparison-snapshots",
+      "verified": "partial",
+      "notes": "Loaded 238 neighborhood snapshots. Neighborhood-level parity still requires row matching to segment keys.",
+      "evidence": {
+        "snapshotCount": 238
+      }
+    },
+    {
+      "surface": "County Studio",
+      "metricBehavior": "Scenario preview",
+      "sourceOfTruth": "GET /county-study/scenarios/{scenarioId}/preview",
+      "verified": "partial",
+      "notes": "Preview returned for scenario 04f34e2a-6cfe-4adc-9d0c-f10710cc81ca; source recomputation still required.",
+      "evidence": {
+        "scenarioId": "04f34e2a-6cfe-4adc-9d0c-f10710cc81ca",
+        "preview": {
+          "scenarioId": "04f34e2a-6cfe-4adc-9d0c-f10710cc81ca",
+          "medianRatioBefore": 0.7987,
+          "medianRatioAfter": 0.830648,
+          "codBefore": 666.68,
+          "codAfter": 666.68,
+          "prdBefore": 7.3345,
+          "prdAfter": 7.3345,
+          "exceptionsBefore": 11,
+          "exceptionsAfter": 11,
+          "parcelsAffected": 884,
+          "deltas": []
+        }
+      }
+    },
+    {
+      "surface": "Fixture leakage",
+      "metricBehavior": "Nonexistent county does not receive Benton data",
+      "sourceOfTruth": "TerraForge county-stats with fake county scope",
+      "verified": "yes",
+      "notes": "Fake county returned HTTP 400, not live Benton-looking data.",
+      "evidence": {
+        "status": 400,
+        "body": {
+          "error": "No county matches '00000000-0000-0000-0000-000000000999'. Accepted forms: Guid (e.g. '19190019-...') or county name ('benton').",
+          "field": "countyId"
+        }
+      }
+    },
+    {
+      "surface": "Fixture leakage",
+      "metricBehavior": "Static Benton/fallback scan",
+      "sourceOfTruth": "frontend/backend source scan",
+      "verified": "partial",
+      "notes": "Found 1 possible fallback/fixture Benton references requiring review.",
+      "evidence": {
+        "totalMatches": 170,
+        "possibleFallbacks": [
+          {
+            "file": "frontend/apps/os-shell/src/services/atlasService.ts",
+            "line": 668,
+            "classification": "possible-fallback-or-fixture",
+            "text": "source: 'Direct Benton ArcGIS parcel query fallback',"
+          }
+        ]
+      }
+    }
+  ]
+}

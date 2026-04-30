@@ -1,0 +1,172 @@
+{
+  "checkedAt": "2026-04-30T17:18:30.976Z",
+  "slice": "statistics-parity-scope-alignment",
+  "status": "BLOCKED_SCOPE_MISMATCH",
+  "study": {
+    "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+    "countyId": "19190019-1919-1919-1919-191919191919",
+    "taxYear": 2026,
+    "countyName": "Benton County",
+    "status": "Draft",
+    "activeSegmentSetId": "91587edb-c234-416d-8968-a32f47582352"
+  },
+  "apiBase": "http://localhost:5173/api",
+  "connection": {
+    "host": "localhost",
+    "port": "5432",
+    "database": "terrafusion",
+    "user": "postgres",
+    "password": "<redacted>"
+  },
+  "apiChecks": {
+    "countyStudioHealth": {
+      "ok": true,
+      "status": 200,
+      "ms": 1154,
+      "url": "http://localhost:5173/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e/health-summary",
+      "error": null
+    },
+    "terraForgeRatioStudy": {
+      "ok": true,
+      "status": 200,
+      "ms": 193,
+      "url": "http://localhost:5173/api/terraforge/ratio-study?taxYear=2026&countyId=19190019-1919-1919-1919-191919191919",
+      "error": null
+    }
+  },
+  "apiMetrics": {
+    "countyStudioHealth": {
+      "ratioCount": 5559,
+      "medianRatio": 0.9268,
+      "cod": 41.28,
+      "prd": 1.3993
+    },
+    "terraForgeRatioStudy": {
+      "countWithRatio": 36,
+      "outliersExcluded": 1,
+      "medianRatio": 0.7224,
+      "cod": 40.24,
+      "prd": 2.1352,
+      "weightedMeanRatio": 0.3053,
+      "prb": -0.1672
+    }
+  },
+  "dbCounts": {
+    "countyStudioHealthPopulation": {
+      "activeSegmentSetId": "91587edb-c234-416d-8968-a32f47582352",
+      "activeSegmentKeyCount": 1290,
+      "inScopeParcelCount": 120882,
+      "matchedSaleRows": 5722,
+      "ratioCount": 5559,
+      "sourceSaleRows": 5714,
+      "medianRatio": 0.9268,
+      "cod": 41.28,
+      "weightedMeanRatio": 0.8097,
+      "prd": 1.3993,
+      "prb": -1.7744
+    },
+    "terraForgeRatioPopulation": {
+      "baseSaleRows": 36,
+      "countWithRatio": 36,
+      "outliersExcluded": 1,
+      "trimmedCount": 35,
+      "medianRatio": 0.7224,
+      "cod": 40.24,
+      "weightedMeanRatio": 0.3053,
+      "prd": 2.1352,
+      "prb": -0.1672
+    },
+    "overlap": {
+      "sharedSaleRows": 36,
+      "healthSaleRowsNotInTerraForge": 5686,
+      "terraForgeSaleRowsNotInHealth": 0
+    }
+  },
+  "countDifference": {
+    "countyStudioHealthRatioCount": 5559,
+    "terraForgeCountWithRatio": 36,
+    "delta": 5523
+  },
+  "populationDefinitions": {
+    "countyStudioHealth": {
+      "populationConcept": "Active segment-set parcel-weighted health rollup",
+      "countLabel": "ratioCount",
+      "sourceTables": [
+        "CountyStudySessions",
+        "CountySegments",
+        "Properties",
+        "CamaCharacteristics",
+        "ComparableSales"
+      ],
+      "codePath": "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs"
+    },
+    "terraForgeRatioStudy": {
+      "populationConcept": "County-wide effective qualified sale ratio study",
+      "countLabel": "countWithRatio",
+      "sourceTables": ["ComparableSales", "Properties"],
+      "codePath": "backend/src/TerraFusion.API/Controllers/TerraForgeController.cs"
+    }
+  },
+  "scopeDifferences": [
+    {
+      "field": "Population concept",
+      "countyStudioHealth": "Active segment-set parcel rollup for the study.",
+      "terraForgeRatioStudy": "County-wide effective qualified sale pool."
+    },
+    {
+      "field": "Parcel/sale identifier join",
+      "countyStudioHealth": "ComparableSales.ParcelId joins Properties.ParcelId.",
+      "terraForgeRatioStudy": "ComparableSales.ParcelId maps to Properties.ParcelNumber for assessed value."
+    },
+    {
+      "field": "Study/segment scope",
+      "countyStudioHealth": "Requires parcels matching active CountySegments rule keys.",
+      "terraForgeRatioStudy": "No active segment set required; optional hood/propertyType filters only."
+    },
+    {
+      "field": "Sale date window",
+      "countyStudioHealth": "SaleDate from Jan 1 2024 through Dec 31 2026.",
+      "terraForgeRatioStudy": "SalesYear=2026, or null SalesYear with SaleDate from Jan 1 2024 through Dec 31 2025."
+    },
+    {
+      "field": "Qualification rule",
+      "countyStudioHealth": "coalesce(QualificationDecision, QualificationRecommendation, SaleQualification) == qualified.",
+      "terraForgeRatioStudy": "QualificationDecision == qualified, or null decision with qualified/null recommendation."
+    },
+    {
+      "field": "Suppression/no-calc handling",
+      "countyStudioHealth": "No SuppressOnRatioRptCd or IncludeNoCalc exclusion in health summary loader.",
+      "terraForgeRatioStudy": "Excludes SuppressOnRatioRptCd=T and IncludeNoCalc=true."
+    },
+    {
+      "field": "Outlier handling",
+      "countyStudioHealth": "No IQR trim in health summary rollup.",
+      "terraForgeRatioStudy": "Computes stats after Tukey/IQR trim; countWithRatio remains pre-trim."
+    }
+  ],
+  "conversionSensitiveFields": [
+    "QualificationDecision",
+    "QualificationRecommendation",
+    "SaleQualification",
+    "RawCountyRatioCd",
+    "RawRatioTypeCd",
+    "RawRatioCd",
+    "SuppressOnRatioRptCd",
+    "IncludeNoCalc"
+  ],
+  "overlap": {
+    "sharedSaleRows": 36,
+    "healthSaleRowsNotInTerraForge": 5686,
+    "terraForgeSaleRowsNotInHealth": 0
+  },
+  "rootCause": {
+    "label": "scope_mismatch_different_population_definitions",
+    "blockedParityClaim": true,
+    "notes": "County Studio health and TerraForge ratio-study are both ratio surfaces, but they are not currently measuring the same population. The observed mismatch is therefore not proof that either metric is mathematically wrong; it blocks parity until a shared comparison contract is implemented."
+  },
+  "requiredClosure": [
+    "Define a shared comparison contract: county, study/tax year, qualification pool, sale window, active segment/cohort scope, identifier join, suppression/no-calc policy, and outlier policy.",
+    "Run TerraForge ratio-study with a County Studio-compatible scoped population, or add a dedicated County Studio parity endpoint that exposes the exact same population definition.",
+    "Keep Statistics Studio visible and keep the County Studio statistics superset claim provisional until the shared-population parity check passes."
+  ]
+}

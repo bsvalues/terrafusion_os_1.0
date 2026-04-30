@@ -1,0 +1,141 @@
+{
+  "checkedAt": "2026-04-30T17:31:33.866Z",
+  "slice": "statistics-shared-population-contract",
+  "status": "IMPLEMENTATION_GAP_SHARED_PARITY_MODE_MISSING",
+  "decision": "PATH_A_REQUIRED_SHARED_PARITY_CONTRACT_DEFINED_NOT_IMPLEMENTED",
+  "scopeProof": {
+    "path": "os-platform/core/pilot/evidence/statistics-parity-scope-alignment.latest.json",
+    "status": "BLOCKED_SCOPE_MISMATCH",
+    "rootCause": "scope_mismatch_different_population_definitions",
+    "countDifference": {
+      "countyStudioHealthRatioCount": 5559,
+      "terraForgeCountWithRatio": 36,
+      "delta": 5523
+    }
+  },
+  "study": {
+    "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+    "countyId": "19190019-1919-1919-1919-191919191919",
+    "taxYear": 2026,
+    "countyName": "Benton County",
+    "status": "Draft",
+    "activeSegmentSetId": "91587edb-c234-416d-8968-a32f47582352"
+  },
+  "currentMetrics": {
+    "countyStudioHealth": {
+      "countLabel": "ratioCount",
+      "count": 5559,
+      "medianRatio": 0.9268,
+      "cod": 41.28,
+      "prd": 1.3993
+    },
+    "terraForgeRatioStudy": {
+      "countLabel": "countWithRatio",
+      "count": 36,
+      "outliersExcluded": 1,
+      "medianRatio": 0.7224,
+      "cod": 40.24,
+      "prd": 2.1352,
+      "weightedMeanRatio": 0.3053,
+      "prb": -0.1672
+    },
+    "overlap": {
+      "sharedSaleRows": 36,
+      "healthSaleRowsNotInTerraForge": 5686,
+      "terraForgeSaleRowsNotInHealth": 0
+    }
+  },
+  "sourcePresence": {
+    "countyHealthUsesParcelRollup": true,
+    "countyHealthUsesHealthQualificationRule": true,
+    "terraForgeUsesRatioStudyLens": true,
+    "terraForgeUsesParcelNumberAssessedJoin": true,
+    "countyWorkbenchStillHasBentonReferenceLane": true
+  },
+  "sharedParityContract": {
+    "id": "statistics_ratio_study_compat_v1",
+    "intent": "Give County Studio a same-population parity mode that can be compared honestly against the existing Statistics/TerraForge ratio-study lens.",
+    "parityTarget": "TerraForge ratio-study compatibility, not County Studio health summary equivalence.",
+    "rules": [
+      {
+        "field": "county",
+        "value": "Exact countyId 19190019-1919-1919-1919-191919191919",
+        "reason": "Avoid Benton/default/fallback contamination."
+      },
+      {
+        "field": "tax year",
+        "value": "Exact taxYear 2026",
+        "reason": "Both surfaces must use the same assessment year."
+      },
+      {
+        "field": "comparison unit",
+        "value": "qualified sale ratio row",
+        "reason": "Statistics Studio ratio-study is sale-row based; County Studio health is parcel-rollup based and must not be used as the parity comparator."
+      },
+      {
+        "field": "assessed value join",
+        "value": "ComparableSales.ParcelId resolved to the canonical parcel identity used for Properties assessed value; report ParcelId vs ParcelNumber mapping and unmatched counts.",
+        "reason": "Current surfaces disagree: County Studio health joins through Properties.ParcelId while TerraForge ratio-study joins through Properties.ParcelNumber."
+      },
+      {
+        "field": "sale window",
+        "value": "SalesYear=2026, or null SalesYear with SaleDate >= Jan 1 2024 and < Jan 1 2026",
+        "reason": "Matches the current Statistics/TerraForge ratio-study lens for immediate parity compatibility."
+      },
+      {
+        "field": "qualification rule",
+        "value": "QualificationDecision == qualified, or null decision with QualificationRecommendation == qualified/null; additionally report SaleQualification-only inclusions as conversion-sensitive, not silent truth.",
+        "reason": "Matches current ratio-study compatibility while making 2017 conversion-sensitive fallback risk visible."
+      },
+      {
+        "field": "suppression/no-calc",
+        "value": "Exclude SuppressOnRatioRptCd=T and IncludeNoCalc=true.",
+        "reason": "Matches current Statistics/TerraForge ratio-study and avoids known non-ratio-report rows."
+      },
+      {
+        "field": "outlier policy",
+        "value": "Report countWithRatio before trimming; compute stats on Tukey/IQR-trimmed rows; report outliersExcluded.",
+        "reason": "Matches current ratio-study statistics semantics."
+      },
+      {
+        "field": "segment/cohort scope",
+        "value": "County-wide by default; optional activeSegmentSetId/segmentId/cohortId filters may be added, but every response must echo the applied scope.",
+        "reason": "Keeps Statistics parity county-wide while allowing County Studio scoped drilldowns without changing metric meaning."
+      },
+      {
+        "field": "trust posture",
+        "value": "Benton Production Provisional / Sync-Derived / Converted Legacy Sensitive until qualification lineage is closed.",
+        "reason": "Prevents 2017 conversion-sensitive qualified-sale fields from being treated as production-verified proof."
+      }
+    ]
+  },
+  "implementationAssessment": [
+    {
+      "surface": "TerraForge ratio-study",
+      "implementsSharedContract": "partial",
+      "notes": "Implements the ratio-study lens and current countWithRatio population, but does not emit a contract id, parcel identity reconciliation counts, or conversion-sensitive qualification classifications."
+    },
+    {
+      "surface": "County Studio health summary",
+      "implementsSharedContract": "no",
+      "notes": "Uses segment-set parcel health rollup semantics. It is intentionally not the comparator for statistics parity."
+    },
+    {
+      "surface": "County Studio statistics workbench",
+      "implementsSharedContract": "no",
+      "notes": "Still has a Benton-certified reference lane and no explicit shared-population parity mode."
+    }
+  ],
+  "blockers": [
+    "No County Studio endpoint or workbench mode currently declares statistics_ratio_study_compat_v1.",
+    "No shared response currently echoes contract id, population count, pre/post-trim counts, parcel identity join mode, and conversion-sensitive qualification counts.",
+    "County Studio health summary remains a different analytical surface and must not be used as the Statistics parity comparator.",
+    "Benton qualification fields remain conversion-sensitive until row-level sync lineage closes the 2017 risk."
+  ],
+  "requiredClosure": [
+    "Add a County Studio statistics parity mode or endpoint that computes statistics_ratio_study_compat_v1.",
+    "Make both County Studio and TerraForge responses echo contract id, population count, countWithRatio, outliersExcluded, identity join mode, sale window, qualification policy, suppression/no-calc policy, and conversion-sensitive row counts.",
+    "Run parity against the contract artifact; only upgrade the Statistics superset claim when both surfaces agree on the shared contract.",
+    "Keep Statistics Studio visible until the shared-population parity mode passes against live Benton data."
+  ]
+}
