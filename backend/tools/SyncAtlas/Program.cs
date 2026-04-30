@@ -1492,6 +1492,8 @@ internal static class Program
             "property_use" => ConversionEraPreflightStance.RequirePost2017OrBoth, // C50-CONV-PROMOTE-A
             "property_use:imprv.primary_use_cd" => ConversionEraPreflightStance.RequirePost2017OrBoth, // C50-CONV-PROMOTE-B
             "property_use:sale.primary_use_cd"  => ConversionEraPreflightStance.RequirePost2017OrBoth, // C50-CONV-PROMOTE-C
+            "property_use:imprv.secondary_use_cd"        => ConversionEraPreflightStance.RequirePost2017OrBoth, // C50-CONV-PROMOTE-D
+            "property_use:property_val.secondary_use_cd" => ConversionEraPreflightStance.RequirePost2017OrBoth, // C50-CONV-PROMOTE-D
             _              => null,
         };
 
