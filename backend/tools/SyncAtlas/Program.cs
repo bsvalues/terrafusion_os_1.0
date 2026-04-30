@@ -1220,7 +1220,8 @@ internal static class Program
             "property_use:sale.primary_use_cd" or        // C48-J (C30-B)
             "property_use:imprv.secondary_use_cd" or     // C48-K (C29-B)
             "property_use:property_val.secondary_use_cd" or // C48-L (C28-B)
-            "imprv_det_class";                           // C48-M (C23-B)
+            "imprv_det_class" or                         // C48-M (C23-B)
+            "imprv_det_sub_class";                       // C48-N (C26-B)
         IPacsSchemaCatalog? pacsCatalog = configKeyConsumesCatalog
             ? await BuildPacsCatalogForSyncAtlasAsync(pacsConnectionString, ct)
             : null;
@@ -1361,37 +1362,25 @@ internal static class Program
                 workbookSource:    new DictionaryWorkbookSource("dbo", "imprv_detail", "imprv_det_class_cd"),
                 canonicalTarget:   "ImprvDetailClass",
                 sliceArtifactDir:  "c23-b"),
-            "imprv_det_sub_class" => (
-                new DictionaryLoaderTargetConfig(
-                    WorkbookSourceSchema: "dbo",
-                    WorkbookSourceTable:  "imprv_detail",
-                    WorkbookSourceColumn: "imprv_det_sub_class_cd",
-                    PacsDictionarySchema: "dbo",
-                    PacsDictionaryTable:  "imprv_det_sub_class",
-                    CanonicalTargetName:  "ImprvDetailSubClass"),
-                // Defaults captured at C26-B-live inspection of pacs_oltp:
-                //   imprv_det_sub_cls_cd     varchar(10) NOT NULL  (code — note 'sub_cls' not 'sub_class')
-                //   imprv_det_sub_cls_desc   varchar(50) NULL      (description — same '_cls_' abbreviation)
-                //   sys_flag                 varchar(1)  NULL      (lowercase 'f' in Benton — not usable A/I)
-                //   is_permanent_crop_detail bit         NOT NULL
-                //   rc_type                  char(1)     NULL
-                // Findings: 2 rows ('*' → '*' self-ref, '+' → 'Plus Grade');
-                // sys_flag all 'f' (lowercase!); no usable A/I distinction.
-                // FIFTH wrong-assumption catch by the live-inspection gate:
-                // PACS abbreviated 'class' to 'cls' on BOTH the code column
-                // and the description column (unlike C23 which only
-                // abbreviated the description). Note: workbook column
-                // remains 'imprv_det_sub_class_cd' (not abbreviated)
-                // because workbook columns mirror the PACS *table* column
-                // they originate from (imprv_detail.imprv_det_sub_class_cd),
-                // NOT the dictionary table's column.
-                new DictionaryColumnConfig(
-                    CodeColumn:           "imprv_det_sub_cls_cd",
-                    DescriptionColumn:    "imprv_det_sub_cls_desc",
-                    ActiveFlagColumn:     null,
-                    ActiveFlagPredicate:  null,
-                    YearColumn:           null), // universe-wide, not year-keyed
-                "c26-b"),
+            // Slice C48-N: imprv_det_sub_class migrated. Live PACS sanity
+            // check this slice: dbo.imprv_det_sub_class first column =
+            // imprv_det_sub_cls_cd, second = imprv_det_sub_cls_desc.
+            // PACS abbreviates 'class' → 'cls' on BOTH dictionary
+            // columns (catch from C26-B's live inspection). The catalog
+            // captures these verbatim from INFORMATION_SCHEMA, so the
+            // helper-driven config inherits the abbreviation without
+            // operator memory. Workbook column stays
+            // 'imprv_det_sub_class_cd' (not abbreviated) because
+            // workbook columns mirror the *workbook* PACS table
+            // (imprv_detail.imprv_det_sub_class_cd), not the dictionary
+            // table's column. sys_flag is lowercase 'f' on Benton — no
+            // A/I distinction; active-flag stays null.
+            "imprv_det_sub_class" => BuildFromCatalog(
+                pacsCatalog!,
+                dictionaryName:    "imprv_det_sub_class",
+                workbookSource:    new DictionaryWorkbookSource("dbo", "imprv_detail", "imprv_det_sub_class_cd"),
+                canonicalTarget:   "ImprvDetailSubClass",
+                sliceArtifactDir:  "c26-b"),
             "imprv_det_meth" => (
                 new DictionaryLoaderTargetConfig(
                     WorkbookSourceSchema: "dbo",
