@@ -76,6 +76,10 @@ function formatMetric(value: number | null, digits: number): string {
   return value === null ? '—' : value.toFixed(digits);
 }
 
+function isMissingActiveSegmentSet(error: string | null): boolean {
+  return typeof error === 'string' && (error.startsWith('HTTP 409') || error.includes('409 Conflict'));
+}
+
 export function CountyCommandStrip() {
   const {
     activeStudy,
@@ -99,8 +103,7 @@ export function CountyCommandStrip() {
 
   const isDeriveMissing =
     loadStatus.healthSummary === 'error'
-    && typeof loadErrors.healthSummary === 'string'
-    && loadErrors.healthSummary.startsWith('HTTP 409');
+    && isMissingActiveSegmentSet(loadErrors.healthSummary);
 
   return (
     <div
