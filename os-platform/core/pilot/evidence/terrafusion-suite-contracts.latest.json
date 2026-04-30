@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-04-30T23:07:07.507Z",
+  "checkedAt": "2026-04-30T23:25:53.760Z",
   "slice": "terrafusion-suite-contract-layer",
   "status": "PASS",
   "decision": "SUITE_CONTRACTS_REGISTERED_AND_CODIFIED",
@@ -16,13 +16,14 @@
     "terraforge_segment_derivation_v1",
     "terraforge_correction_priority_v1",
     "costforge_calibration_priority_v1",
-    "county_data_trust_launch_context_v1"
+    "county_data_trust_launch_context_v1",
+    "compsforge_candidate_reconciliation_v1"
   ],
   "summary": {
-    "contracts": 6,
-    "codified": 6,
+    "contracts": 7,
+    "codified": 7,
     "registeredImplicit": 0,
-    "proofArtifacts": 12,
+    "proofArtifacts": 14,
     "missingProofArtifacts": 0
   },
   "checks": [
@@ -35,7 +36,8 @@
         "terraforge_segment_derivation_v1",
         "terraforge_correction_priority_v1",
         "costforge_calibration_priority_v1",
-        "county_data_trust_launch_context_v1"
+        "county_data_trust_launch_context_v1",
+        "compsforge_candidate_reconciliation_v1"
       ],
       "note": "The first four suite population contracts are registered."
     },
@@ -48,7 +50,8 @@
         "terraforge_segment_derivation_v1",
         "terraforge_correction_priority_v1",
         "costforge_calibration_priority_v1",
-        "county_data_trust_launch_context_v1"
+        "county_data_trust_launch_context_v1",
+        "compsforge_candidate_reconciliation_v1"
       ],
       "note": "Contract IDs must not fork."
     },
@@ -71,7 +74,8 @@
         "terraforge_segment_derivation_v1",
         "terraforge_correction_priority_v1",
         "costforge_calibration_priority_v1",
-        "county_data_trust_launch_context_v1"
+        "county_data_trust_launch_context_v1",
+        "compsforge_candidate_reconciliation_v1"
       ],
       "note": "Every contract must declare owner, population, read path, metrics, trust posture, proofs, and forbidden uses."
     },
@@ -141,7 +145,22 @@
         "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx:243",
         "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx:244",
         "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx:245",
-        "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx:253"
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx:253",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:59",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:61",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:67",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:68",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:69",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:70",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:71",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:33",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:32",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:36",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:398",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:400",
+        "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CompsForgeModule.deeplink.test.tsx:57",
+        "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CompsForgeModule.deeplink.test.tsx:59",
+        "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CompsForgeModule.deeplink.test.tsx:61"
       ],
       "note": "Registered contracts must point at real implementation anchors instead of prose-only intent."
     },
@@ -160,6 +179,8 @@
         "os-platform/core/pilot/evidence/costforge-calibration-priority-contract.latest.json",
         "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json",
         "os-platform/core/pilot/evidence/county-data-trust-launch-context-contract.latest.json",
+        "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json",
+        "os-platform/core/pilot/evidence/compsforge-candidate-reconciliation-contract.latest.json",
         "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json"
       ],
       "note": "Every contract must cite at least one proof artifact already in the repo."
@@ -309,6 +330,29 @@
         "Do not treat 39-county launch/reference data as official production data.",
         "Do not infer production readiness from geometry availability alone.",
         "Do not hide Benton converted-legacy sensitivity when presenting county context."
+      ]
+    },
+    {
+      "id": "compsforge_candidate_reconciliation_v1",
+      "status": "codified",
+      "state": "codified",
+      "implementationContractId": null,
+      "population": "CompsForge county sales shard candidates for the active parcel or County Studio rollup handoff scope, followed by Benton-certified CostForge adjustment/reconciliation where supported",
+      "owner": "frontend.apps.os-shell.pages.suites.modules.CompsForgeModule",
+      "readPath": "GET /launch-data/washington/sales/by-county/{countyCode}.json plus POST /api/costforge/sales-comparison/adjust-comparable and POST /api/costforge/sales-comparison/reconcile",
+      "trustPosture": [
+        "Candidate selection is county-shard scoped and may run in rollup scouting mode, but scoring and reconciliation remain parcel-bound.",
+        "Qualified-only filtering defaults to true and the default sale window is 2016-01-01 through 2026-12-31.",
+        "Governed paired adjustment and reconciliation are Benton-certified only until additional county proof is promoted."
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/compsforge-candidate-reconciliation-contract.latest.json",
+        "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not treat rollup scouting sales as parcel-bound reconciled value evidence.",
+        "Do not treat non-Benton adjustment/reconciliation as certified without promoting county proof.",
+        "Do not change qualified-only defaults, sale window, candidate cap, or default selected count without updating this contract and proof artifact."
       ]
     }
   ],
@@ -479,6 +523,37 @@
         "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx:245",
         "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx:253"
       ]
+    },
+    {
+      "contractId": "compsforge_candidate_reconciliation_v1",
+      "path": "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx",
+      "passed": true,
+      "missingPatterns": [],
+      "proof": [
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:59",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:61",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:67",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:68",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:69",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:70",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:71",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:33",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:32",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:36",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:398",
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:400"
+      ]
+    },
+    {
+      "contractId": "compsforge_candidate_reconciliation_v1",
+      "path": "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CompsForgeModule.deeplink.test.tsx",
+      "passed": true,
+      "missingPatterns": [],
+      "proof": [
+        "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CompsForgeModule.deeplink.test.tsx:57",
+        "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CompsForgeModule.deeplink.test.tsx:59",
+        "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CompsForgeModule.deeplink.test.tsx:61"
+      ]
     }
   ],
   "proofArtifactChecks": [
@@ -539,6 +614,16 @@
     },
     {
       "contractId": "county_data_trust_launch_context_v1",
+      "path": "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json",
+      "exists": true
+    },
+    {
+      "contractId": "compsforge_candidate_reconciliation_v1",
+      "path": "os-platform/core/pilot/evidence/compsforge-candidate-reconciliation-contract.latest.json",
+      "exists": true
+    },
+    {
+      "contractId": "compsforge_candidate_reconciliation_v1",
       "path": "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json",
       "exists": true
     }

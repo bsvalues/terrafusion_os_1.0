@@ -15,7 +15,8 @@
     "terraforge_segment_derivation_v1",
     "terraforge_correction_priority_v1",
     "costforge_calibration_priority_v1",
-    "county_data_trust_launch_context_v1"
+    "county_data_trust_launch_context_v1",
+    "compsforge_candidate_reconciliation_v1"
   ],
   "contracts": [
     {
@@ -415,6 +416,77 @@
             "data-contract-id",
             "data-trust-tier",
             "dataTrustBadges"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "compsforge_candidate_reconciliation_v1",
+      "version": 1,
+      "status": "codified",
+      "population": "CompsForge county sales shard candidates for the active parcel or County Studio rollup handoff scope, followed by Benton-certified CostForge adjustment/reconciliation where supported",
+      "purpose": "Keep comparable-sales candidate selection, qualified-sale filtering, sale-window scope, top-candidate selection, and governed reconciliation from becoming unversioned UI logic.",
+      "owner": "frontend.apps.os-shell.pages.suites.modules.CompsForgeModule",
+      "readPath": "GET /launch-data/washington/sales/by-county/{countyCode}.json plus POST /api/costforge/sales-comparison/adjust-comparable and POST /api/costforge/sales-comparison/reconcile",
+      "sourceOfTruth": [
+        "Washington launch county sales shards",
+        "active parcel subject from propertyStore",
+        "County Studio rollup handoff metadata when no parcel subject is active",
+        "CostForge governed comparable adjustment endpoint",
+        "CostForge governed reconciliation endpoint"
+      ],
+      "metrics": [
+        "contractId",
+        "qualifiedOnlyDefault",
+        "saleWindowDefault",
+        "maxCandidates",
+        "defaultSelectedCandidates",
+        "similarityScore",
+        "pricePerSqft",
+        "adjustedPrice",
+        "grossAdjustmentPct",
+        "weightedAverage",
+        "reconciliationConfidence",
+        "governedAdjustmentCountyCode"
+      ],
+      "trustPosture": [
+        "Candidate selection is county-shard scoped and may run in rollup scouting mode, but scoring and reconciliation remain parcel-bound.",
+        "Qualified-only filtering defaults to true and the default sale window is 2016-01-01 through 2026-12-31.",
+        "Governed paired adjustment and reconciliation are Benton-certified only until additional county proof is promoted."
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/compsforge-candidate-reconciliation-contract.latest.json",
+        "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not treat rollup scouting sales as parcel-bound reconciled value evidence.",
+        "Do not treat non-Benton adjustment/reconciliation as certified without promoting county proof.",
+        "Do not change qualified-only defaults, sale window, candidate cap, or default selected count without updating this contract and proof artifact."
+      ],
+      "implementationAnchors": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx",
+          "patterns": [
+            "COMPSFORGE_CANDIDATE_RECONCILIATION_CONTRACT",
+            "compsforge_candidate_reconciliation_v1",
+            "qualifiedOnlyDefault: true",
+            "saleWindowDefault: INITIAL_SALE_WINDOW",
+            "maxCandidates: 30",
+            "defaultSelectedCandidates: 3",
+            "governedAdjustmentCountyCode: '005'",
+            "findCompsForSubject",
+            "adjustComp",
+            "reconcileComps",
+            "compsforge-contract-classification",
+            "data-contract-id"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CompsForgeModule.deeplink.test.tsx",
+          "patterns": [
+            "compsforge-contract-classification",
+            "compsforge_candidate_reconciliation_v1",
+            "governed adjustment and reconciliation remain Benton-certified"
           ]
         }
       ]

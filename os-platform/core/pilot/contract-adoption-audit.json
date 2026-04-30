@@ -8,7 +8,8 @@
     "terraforge_segment_derivation_v1",
     "terraforge_correction_priority_v1",
     "costforge_calibration_priority_v1",
-    "county_data_trust_launch_context_v1"
+    "county_data_trust_launch_context_v1",
+    "compsforge_candidate_reconciliation_v1"
   ],
   "statusDoctrine": {
     "pass": "Surface consumes a registered contract id and exposes enough posture for proof or user review.",
@@ -206,12 +207,12 @@
       "surface": "CompsForge module",
       "path": "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx",
       "metricBehavior": "Loads comparable county sales, filters qualified sales, scores candidates, and runs governed adjustment/reconciliation.",
-      "contractBacked": false,
-      "contractIds": [],
-      "trustPostureExposed": "partial",
-      "status": "outOfScope",
-      "migrationNeeded": true,
-      "notes": "This does not fit the four current suite metric contracts cleanly. It needs a future comparable-sales candidate-selection/reconciliation contract."
+      "contractBacked": true,
+      "contractIds": ["compsforge_candidate_reconciliation_v1"],
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "CompsForge now emits compsforge_candidate_reconciliation_v1 and exposes candidate/reconciliation posture, qualified-only default, sale-window scope, candidate cap, and Benton-only governed adjustment certification."
     },
     {
       "surface": "CostForge calculator module",
@@ -240,7 +241,6 @@
     }
   ],
   "nextClosures": [
-    "Register future CostForge cost-value contract before treating calculator outputs as suite truth.",
-    "Register future CompsForge comparable-sales candidate-selection/reconciliation contract before treating its scoring as suite truth."
+    "Register future CostForge cost-value contract before treating calculator outputs as suite truth."
   ]
 }

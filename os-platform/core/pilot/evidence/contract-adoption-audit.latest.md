@@ -1,17 +1,17 @@
 # Contract Adoption Audit
 
-Checked: 2026-04-30T23:07:07.411Z
+Checked: 2026-04-30T23:25:53.662Z
 Status: PASS_WITH_ADOPTION_GAPS
 Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 
 ## Summary
 
 - Surfaces audited: 17
-- Pass: 15
+- Pass: 16
 - Partial: 0
 - Gap: 0
-- Out of scope for current four contracts: 2
-- Migration needed: 2
+- Out of scope for current four contracts: 1
+- Migration needed: 1
 
 ## Matrix
 
@@ -31,7 +31,7 @@ Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 | CostForge triage tab | Computes AI priority score from COD deviation, median-ratio deviation, PRB deviation, and sale count. | yes | `costforge_calibration_priority_v1` | ui | no | pass | The tab now emits the registered costforge_calibration_priority_v1 contract and keeps its population distinct from County Studio correction priority. |
 | SalesForge running stats | Displays qualification counts, median ratio, weighted mean, COD, PRD, PRB, and IAAO compliance. | yes | `terraforge_statistics_compat_v1`<br>`statistics_ratio_study_compat_v1` | ui | no | pass | The running-stats rail now visibly declares the registered Statistics Compat contract, implementation alias, qualified-sale population, and parity-compatible trust posture for sale-qualification stats. |
 | SalesForge ratio audit | Filters qualified sales, sorts by ratio, and flags outliers using local thresholds. | yes | `terraforge_statistics_compat_v1`<br>`statistics_ratio_study_compat_v1` | ui | no | pass | The audit panel now surfaces Statistics Compat lineage and keeps its local 0.85/1.15 outlier screen labeled as a SalesForge audit lens under the qualified-sale population. |
-| CompsForge module | Loads comparable county sales, filters qualified sales, scores candidates, and runs governed adjustment/reconciliation. | no | none | partial | yes | outOfScope | This does not fit the four current suite metric contracts cleanly. It needs a future comparable-sales candidate-selection/reconciliation contract. |
+| CompsForge module | Loads comparable county sales, filters qualified sales, scores candidates, and runs governed adjustment/reconciliation. | yes | `compsforge_candidate_reconciliation_v1` | ui | no | pass | CompsForge now emits compsforge_candidate_reconciliation_v1 and exposes candidate/reconciliation posture, qualified-only default, sale-window scope, candidate cap, and Benton-only governed adjustment certification. |
 | CostForge calculator module | Computes RCNLD, cost factors, matrix provenance, API verification, and cost commit gate. | no | none | partial | yes | outOfScope | This is governed in its own cost domain but not covered by the four TerraForge suite metric contracts. A CostForge cost-value contract should be registered later. |
 | Legacy Statistics API client | Calls MassAppraisal ratio-study, strata, outlier, comparison, and segment endpoints. | yes | `terraforge_statistics_compat_v1`<br>`statistics_ratio_study_compat_v1` | client-metadata | no | pass | The client exports contract metadata and exposes it on the service instance while preserving existing MassAppraisal method return shapes. |
 
@@ -39,7 +39,6 @@ Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 
 | Surface | Status | Path | Notes |
 | --- | --- | --- | --- |
-| CompsForge module | outOfScope | frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx | This does not fit the four current suite metric contracts cleanly. It needs a future comparable-sales candidate-selection/reconciliation contract. |
 | CostForge calculator module | outOfScope | frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx | This is governed in its own cost domain but not covered by the four TerraForge suite metric contracts. A CostForge cost-value contract should be registered later. |
 
 ## Validation Failures
@@ -49,5 +48,4 @@ Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 ## Next Closures
 
 - Register future CostForge cost-value contract before treating calculator outputs as suite truth.
-- Register future CompsForge comparable-sales candidate-selection/reconciliation contract before treating its scoring as suite truth.
 
