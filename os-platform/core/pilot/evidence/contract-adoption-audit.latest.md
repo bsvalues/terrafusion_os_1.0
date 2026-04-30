@@ -1,17 +1,17 @@
 # Contract Adoption Audit
 
-Checked: 2026-04-30T23:25:53.662Z
-Status: PASS_WITH_ADOPTION_GAPS
-Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
+Checked: 2026-04-30T23:35:57.766Z
+Status: PASS
+Decision: ALL_AUDITED_SURFACES_CONTRACT_ADOPTED
 
 ## Summary
 
 - Surfaces audited: 17
-- Pass: 16
+- Pass: 17
 - Partial: 0
 - Gap: 0
-- Out of scope for current four contracts: 1
-- Migration needed: 1
+- Out of scope for current four contracts: 0
+- Migration needed: 0
 
 ## Matrix
 
@@ -32,20 +32,15 @@ Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 | SalesForge running stats | Displays qualification counts, median ratio, weighted mean, COD, PRD, PRB, and IAAO compliance. | yes | `terraforge_statistics_compat_v1`<br>`statistics_ratio_study_compat_v1` | ui | no | pass | The running-stats rail now visibly declares the registered Statistics Compat contract, implementation alias, qualified-sale population, and parity-compatible trust posture for sale-qualification stats. |
 | SalesForge ratio audit | Filters qualified sales, sorts by ratio, and flags outliers using local thresholds. | yes | `terraforge_statistics_compat_v1`<br>`statistics_ratio_study_compat_v1` | ui | no | pass | The audit panel now surfaces Statistics Compat lineage and keeps its local 0.85/1.15 outlier screen labeled as a SalesForge audit lens under the qualified-sale population. |
 | CompsForge module | Loads comparable county sales, filters qualified sales, scores candidates, and runs governed adjustment/reconciliation. | yes | `compsforge_candidate_reconciliation_v1` | ui | no | pass | CompsForge now emits compsforge_candidate_reconciliation_v1 and exposes candidate/reconciliation posture, qualified-only default, sale-window scope, candidate cap, and Benton-only governed adjustment certification. |
-| CostForge calculator module | Computes RCNLD, cost factors, matrix provenance, API verification, and cost commit gate. | no | none | partial | yes | outOfScope | This is governed in its own cost domain but not covered by the four TerraForge suite metric contracts. A CostForge cost-value contract should be registered later. |
+| CostForge calculator module | Computes RCNLD, cost factors, matrix provenance, API verification, and cost commit gate. | yes | `costforge_cost_value_v1` | ui | no | pass | CostForge calculator output now emits costforge_cost_value_v1 and distinguishes local RCNLD preview, Benton matrix provenance, governed API verification, and TerraPilot BOE packet commit posture. |
 | Legacy Statistics API client | Calls MassAppraisal ratio-study, strata, outlier, comparison, and segment endpoints. | yes | `terraforge_statistics_compat_v1`<br>`statistics_ratio_study_compat_v1` | client-metadata | no | pass | The client exports contract metadata and exposes it on the service instance while preserving existing MassAppraisal method return shapes. |
 
 ## Migration Gaps
 
-| Surface | Status | Path | Notes |
-| --- | --- | --- | --- |
-| CostForge calculator module | outOfScope | frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx | This is governed in its own cost domain but not covered by the four TerraForge suite metric contracts. A CostForge cost-value contract should be registered later. |
+- None.
 
 ## Validation Failures
 
 - None.
 
 ## Next Closures
-
-- Register future CostForge cost-value contract before treating calculator outputs as suite truth.
-

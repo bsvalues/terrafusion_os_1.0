@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-04-30T23:25:53.760Z",
+  "checkedAt": "2026-04-30T23:35:57.787Z",
   "slice": "terrafusion-suite-contract-layer",
   "status": "PASS",
   "decision": "SUITE_CONTRACTS_REGISTERED_AND_CODIFIED",
@@ -17,13 +17,14 @@
     "terraforge_correction_priority_v1",
     "costforge_calibration_priority_v1",
     "county_data_trust_launch_context_v1",
-    "compsforge_candidate_reconciliation_v1"
+    "compsforge_candidate_reconciliation_v1",
+    "costforge_cost_value_v1"
   ],
   "summary": {
-    "contracts": 7,
-    "codified": 7,
+    "contracts": 8,
+    "codified": 8,
     "registeredImplicit": 0,
-    "proofArtifacts": 14,
+    "proofArtifacts": 16,
     "missingProofArtifacts": 0
   },
   "checks": [
@@ -37,7 +38,8 @@
         "terraforge_correction_priority_v1",
         "costforge_calibration_priority_v1",
         "county_data_trust_launch_context_v1",
-        "compsforge_candidate_reconciliation_v1"
+        "compsforge_candidate_reconciliation_v1",
+        "costforge_cost_value_v1"
       ],
       "note": "The first four suite population contracts are registered."
     },
@@ -51,7 +53,8 @@
         "terraforge_correction_priority_v1",
         "costforge_calibration_priority_v1",
         "county_data_trust_launch_context_v1",
-        "compsforge_candidate_reconciliation_v1"
+        "compsforge_candidate_reconciliation_v1",
+        "costforge_cost_value_v1"
       ],
       "note": "Contract IDs must not fork."
     },
@@ -75,7 +78,8 @@
         "terraforge_correction_priority_v1",
         "costforge_calibration_priority_v1",
         "county_data_trust_launch_context_v1",
-        "compsforge_candidate_reconciliation_v1"
+        "compsforge_candidate_reconciliation_v1",
+        "costforge_cost_value_v1"
       ],
       "note": "Every contract must declare owner, population, read path, metrics, trust posture, proofs, and forbidden uses."
     },
@@ -160,7 +164,31 @@
         "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx:400",
         "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CompsForgeModule.deeplink.test.tsx:57",
         "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CompsForgeModule.deeplink.test.tsx:59",
-        "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CompsForgeModule.deeplink.test.tsx:61"
+        "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CompsForgeModule.deeplink.test.tsx:61",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:122",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:124",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:130",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:131",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:132",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:133",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:134",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:135",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:58",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:199",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:241",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:295",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:297",
+        "frontend/apps/os-shell/src/services/forgeService.ts:122",
+        "frontend/apps/os-shell/src/services/forgeService.ts:119",
+        "frontend/apps/os-shell/src/services/forgeService.ts:245",
+        "frontend/apps/os-shell/src/services/forgeService.ts:331",
+        "frontend/apps/os-shell/src/services/forgeService.ts:85",
+        "frontend/apps/os-shell/src/services/forgeService.ts:86",
+        "frontend/apps/os-shell/src/services/forgeService.ts:87",
+        "frontend/apps/os-shell/src/services/forgeService.ts:90",
+        "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CostForgeModule.contracts.test.tsx:28",
+        "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CostForgeModule.contracts.test.tsx:35",
+        "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CostForgeModule.contracts.test.tsx:38"
       ],
       "note": "Registered contracts must point at real implementation anchors instead of prose-only intent."
     },
@@ -181,6 +209,8 @@
         "os-platform/core/pilot/evidence/county-data-trust-launch-context-contract.latest.json",
         "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json",
         "os-platform/core/pilot/evidence/compsforge-candidate-reconciliation-contract.latest.json",
+        "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json",
+        "os-platform/core/pilot/evidence/costforge-cost-value-contract.latest.json",
         "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json"
       ],
       "note": "Every contract must cite at least one proof artifact already in the repo."
@@ -353,6 +383,29 @@
         "Do not treat rollup scouting sales as parcel-bound reconciled value evidence.",
         "Do not treat non-Benton adjustment/reconciliation as certified without promoting county proof.",
         "Do not change qualified-only defaults, sale window, candidate cap, or default selected count without updating this contract and proof artifact."
+      ]
+    },
+    {
+      "id": "costforge_cost_value_v1",
+      "status": "codified",
+      "state": "codified",
+      "implementationContractId": null,
+      "population": "Benton parcel-bound CostForge cost approach value preview, governed API verification, scenario comparison, and TerraPilot BOE packet commit gate",
+      "owner": "frontend.apps.os-shell.pages.suites.modules.CostForgeModule",
+      "readPath": "Benton 2025 cost matrix in forgeService.calculateCost plus POST /costforge/calculate and Pilot tool assemble_boe_packet",
+      "trustPosture": [
+        "Cost value output is Benton cost-matrix scoped and parcel-bound.",
+        "Local RCNLD is preview evidence until governed API verification and TerraPilot BOE packet commit are completed.",
+        "Do not treat 39-county demo/reference cost calculator output as production value proof."
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/costforge-cost-value-contract.latest.json",
+        "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not treat local calculator preview as committed BOE evidence without the commit gate.",
+        "Do not use CostForge cost value as County Studio correction priority or CostForge calibration priority.",
+        "Do not promote non-Benton cost values as production proof without county-specific cost matrix lineage."
       ]
     }
   ],
@@ -554,6 +607,54 @@
         "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CompsForgeModule.deeplink.test.tsx:59",
         "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CompsForgeModule.deeplink.test.tsx:61"
       ]
+    },
+    {
+      "contractId": "costforge_cost_value_v1",
+      "path": "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx",
+      "passed": true,
+      "missingPatterns": [],
+      "proof": [
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:122",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:124",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:130",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:131",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:132",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:133",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:134",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:135",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:58",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:199",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:241",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:295",
+        "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx:297"
+      ]
+    },
+    {
+      "contractId": "costforge_cost_value_v1",
+      "path": "frontend/apps/os-shell/src/services/forgeService.ts",
+      "passed": true,
+      "missingPatterns": [],
+      "proof": [
+        "frontend/apps/os-shell/src/services/forgeService.ts:122",
+        "frontend/apps/os-shell/src/services/forgeService.ts:119",
+        "frontend/apps/os-shell/src/services/forgeService.ts:245",
+        "frontend/apps/os-shell/src/services/forgeService.ts:331",
+        "frontend/apps/os-shell/src/services/forgeService.ts:85",
+        "frontend/apps/os-shell/src/services/forgeService.ts:86",
+        "frontend/apps/os-shell/src/services/forgeService.ts:87",
+        "frontend/apps/os-shell/src/services/forgeService.ts:90"
+      ]
+    },
+    {
+      "contractId": "costforge_cost_value_v1",
+      "path": "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CostForgeModule.contracts.test.tsx",
+      "passed": true,
+      "missingPatterns": [],
+      "proof": [
+        "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CostForgeModule.contracts.test.tsx:28",
+        "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CostForgeModule.contracts.test.tsx:35",
+        "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CostForgeModule.contracts.test.tsx:38"
+      ]
     }
   ],
   "proofArtifactChecks": [
@@ -624,6 +725,16 @@
     },
     {
       "contractId": "compsforge_candidate_reconciliation_v1",
+      "path": "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json",
+      "exists": true
+    },
+    {
+      "contractId": "costforge_cost_value_v1",
+      "path": "os-platform/core/pilot/evidence/costforge-cost-value-contract.latest.json",
+      "exists": true
+    },
+    {
+      "contractId": "costforge_cost_value_v1",
       "path": "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json",
       "exists": true
     }
