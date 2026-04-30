@@ -1217,7 +1217,8 @@ internal static class Program
         bool configKeyConsumesCatalog = configKey is
             "property_use" or                          // C48-H (C22-B)
             "property_use:imprv.primary_use_cd" or     // C48-I (C27-B)
-            "property_use:sale.primary_use_cd";        // C48-J (C30-B)
+            "property_use:sale.primary_use_cd" or      // C48-J (C30-B)
+            "property_use:imprv.secondary_use_cd";     // C48-K (C29-B)
         IPacsSchemaCatalog? pacsCatalog = configKeyConsumesCatalog
             ? await BuildPacsCatalogForSyncAtlasAsync(pacsConnectionString, ct)
             : null;
@@ -1304,21 +1305,21 @@ internal static class Program
             // workbook columns is supported (mirrors C22+C27's PropertyUse
             // REUSE). The DictionaryColumnConfig remains identical to C22 /
             // C27 / C28 (same dictionary, same inspection).
-            "property_use:imprv.secondary_use_cd" => (
-                new DictionaryLoaderTargetConfig(
-                    WorkbookSourceSchema: "dbo",
-                    WorkbookSourceTable:  "imprv",
-                    WorkbookSourceColumn: "secondary_use_cd",
-                    PacsDictionarySchema: "dbo",
-                    PacsDictionaryTable:  "property_use",
-                    CanonicalTargetName:  "PropertySecondaryUse"),  // REUSED from C28-C
-                new DictionaryColumnConfig(
-                    CodeColumn:           "property_use_cd",
-                    DescriptionColumn:    "property_use_desc",
-                    ActiveFlagColumn:     null,
-                    ActiveFlagPredicate:  null,
-                    YearColumn:           null),
-                "c29-b"),
+            // Slice C48-K: same property_use dictionary, joined against
+            // imprv.secondary_use_cd. Different canonical_target than
+            // C48-H/I/J ("PropertySecondaryUse" instead of "PropertyUse")
+            // — the same PACS dictionary is allowed to feed two distinct
+            // canonical-target vocabularies depending on the workbook
+            // semantic intent. The catalog-driven helper stays
+            // behavior-preserving because canonical_target is
+            // caller-supplied (the catalog has no opinion on canonical
+            // taxonomy per C48-G).
+            "property_use:imprv.secondary_use_cd" => BuildFromCatalog(
+                pacsCatalog!,
+                dictionaryName:    "property_use",
+                workbookSource:    new DictionaryWorkbookSource("dbo", "imprv", "secondary_use_cd"),
+                canonicalTarget:   "PropertySecondaryUse",
+                sliceArtifactDir:  "c29-b"),
             // C28-A — second dictionary-reuse binding. Same dbo.property_use
             // dictionary, but joined against property_val.secondary_use_cd
             // (5 NeedsReview → swept to Deferred at P2). What's NEW vs C27-B:
