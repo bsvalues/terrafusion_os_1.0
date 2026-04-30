@@ -56,6 +56,22 @@ const INITIAL_SALE_WINDOW: SaleWindow = {
   end: '2026-12-31',
 };
 
+export const COMPSFORGE_CANDIDATE_RECONCILIATION_CONTRACT = {
+  status: 'contract-backed',
+  contractId: 'compsforge_candidate_reconciliation_v1',
+  population: 'County sales shard candidates for the active parcel or rollup scope',
+  source: 'Washington launch sales shards plus CostForge governed adjustment/reconciliation endpoints',
+  trustPosture:
+    'Candidate selection is county-shard scoped; governed adjustment and reconciliation remain Benton-certified until additional county proof is promoted.',
+  candidatePolicy: {
+    qualifiedOnlyDefault: true,
+    saleWindowDefault: INITIAL_SALE_WINDOW,
+    maxCandidates: 30,
+    defaultSelectedCandidates: 3,
+    governedAdjustmentCountyCode: '005',
+  },
+} as const;
+
 function compKey(comp: ScoredComp): string {
   return `${comp.parcelId}|${comp.saleDate}`;
 }
@@ -378,6 +394,20 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
         <p style={{ color: 'hsl(var(--tf-muted))' }} className='mt-1'>
           Active-parcel comp selection using TerraFusion-normalized {countyName} County sales and CostForge governed adjustments.
         </p>
+        <div
+          data-testid='compsforge-contract-classification'
+          data-contract-status={COMPSFORGE_CANDIDATE_RECONCILIATION_CONTRACT.status}
+          data-contract-id={COMPSFORGE_CANDIDATE_RECONCILIATION_CONTRACT.contractId}
+          className='mt-3 flex items-center gap-2 flex-wrap text-xs'
+          style={{ color: 'hsl(var(--tf-muted))' }}
+        >
+          <Badge variant='outline'>
+            {COMPSFORGE_CANDIDATE_RECONCILIATION_CONTRACT.contractId}
+          </Badge>
+          <span>
+            {COMPSFORGE_CANDIDATE_RECONCILIATION_CONTRACT.trustPosture}
+          </span>
+        </div>
       </div>
 
       {!subject && !hasRollupHandoff && (
