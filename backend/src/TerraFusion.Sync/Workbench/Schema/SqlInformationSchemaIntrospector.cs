@@ -58,11 +58,22 @@ FROM INFORMATION_SCHEMA.TABLES
 WHERE TABLE_SCHEMA = @schema AND TABLE_TYPE = 'BASE TABLE'
 ORDER BY TABLE_NAME";
 
+        // Slice C48-E real-bug fix: the Tables query filters TABLE_TYPE =
+        // 'BASE TABLE', but INFORMATION_SCHEMA.COLUMNS includes columns
+        // for views as well (Harris PACS ships ~700 reporting views, e.g.
+        // ____aSalesRatio_shape).  Without aligning the filter, the
+        // catalog's dangling-column-reference guard refuses to build.
+        // Inner-join COLUMNS to TABLES with TABLE_TYPE='BASE TABLE' so
+        // both lists stay consistent.
         public const string Columns = @"
-SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, IS_NULLABLE, ORDINAL_POSITION
-FROM INFORMATION_SCHEMA.COLUMNS
-WHERE TABLE_SCHEMA = @schema
-ORDER BY TABLE_NAME, ORDINAL_POSITION";
+SELECT C.TABLE_NAME, C.COLUMN_NAME, C.DATA_TYPE, C.IS_NULLABLE, C.ORDINAL_POSITION
+FROM INFORMATION_SCHEMA.COLUMNS C
+INNER JOIN INFORMATION_SCHEMA.TABLES T
+  ON C.TABLE_SCHEMA = T.TABLE_SCHEMA
+ AND C.TABLE_NAME   = T.TABLE_NAME
+ AND T.TABLE_TYPE   = 'BASE TABLE'
+WHERE C.TABLE_SCHEMA = @schema
+ORDER BY C.TABLE_NAME, C.ORDINAL_POSITION";
 
         public const string PrimaryKeys = @"
 SELECT KCU.TABLE_NAME, KCU.COLUMN_NAME, KCU.ORDINAL_POSITION
@@ -88,10 +99,23 @@ ORDER BY KCU.TABLE_NAME, KCU.ORDINAL_POSITION";
         return new PacsSchemaIntrospectionResult(tables, columns, primaryKeys);
     }
 
+    /// <summary>
+    /// Slice C48-E real-bug fix: SqlCommand default CommandTimeout is 30
+    /// seconds, which is too short for INFORMATION_SCHEMA reads against a
+    /// real Harris PACS database (verified live: 2229 tables / 94k columns
+    /// in <c>pacs_oltp.dbo</c>). Bumped to 5 minutes so live introspection
+    /// completes on first-call load. Per-method override remains possible
+    /// if a specific query needs a different ceiling.
+    /// </summary>
+    private const int DefaultCommandTimeoutSeconds = 300;
+
     private async Task<IReadOnlyList<IntrospectedTable>> ReadTablesAsync(SqlConnection connection, CancellationToken ct)
     {
         var result = new List<IntrospectedTable>();
-        await using var cmd = new SqlCommand(Queries.Tables, connection);
+        await using var cmd = new SqlCommand(Queries.Tables, connection)
+        {
+            CommandTimeout = DefaultCommandTimeoutSeconds,
+        };
         cmd.Parameters.Add(new SqlParameter("@schema", _schemaName));
         await using var reader = await cmd.ExecuteReaderAsync(ct).ConfigureAwait(false);
         while (await reader.ReadAsync(ct).ConfigureAwait(false))
@@ -104,7 +128,10 @@ ORDER BY KCU.TABLE_NAME, KCU.ORDINAL_POSITION";
     private async Task<IReadOnlyList<IntrospectedColumn>> ReadColumnsAsync(SqlConnection connection, CancellationToken ct)
     {
         var result = new List<IntrospectedColumn>();
-        await using var cmd = new SqlCommand(Queries.Columns, connection);
+        await using var cmd = new SqlCommand(Queries.Columns, connection)
+        {
+            CommandTimeout = DefaultCommandTimeoutSeconds,
+        };
         cmd.Parameters.Add(new SqlParameter("@schema", _schemaName));
         await using var reader = await cmd.ExecuteReaderAsync(ct).ConfigureAwait(false);
         while (await reader.ReadAsync(ct).ConfigureAwait(false))
@@ -123,7 +150,10 @@ ORDER BY KCU.TABLE_NAME, KCU.ORDINAL_POSITION";
     private async Task<IReadOnlyList<IntrospectedPrimaryKeyMember>> ReadPrimaryKeysAsync(SqlConnection connection, CancellationToken ct)
     {
         var result = new List<IntrospectedPrimaryKeyMember>();
-        await using var cmd = new SqlCommand(Queries.PrimaryKeys, connection);
+        await using var cmd = new SqlCommand(Queries.PrimaryKeys, connection)
+        {
+            CommandTimeout = DefaultCommandTimeoutSeconds,
+        };
         cmd.Parameters.Add(new SqlParameter("@schema", _schemaName));
         await using var reader = await cmd.ExecuteReaderAsync(ct).ConfigureAwait(false);
         while (await reader.ReadAsync(ct).ConfigureAwait(false))
