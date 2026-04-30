@@ -30,7 +30,7 @@ import { useStudyData } from './hooks/useStudyData';
 import type { CountySegmentDto } from './types/countyStudio.types';
 
 type SegmentSeverityFilter = 'all' | 'critical' | 'warnings' | 'healthy' | 'needsData';
-type WorkspaceMode = 'command' | 'statistics';
+type WorkspaceMode = 'operational-health' | 'statistics-compat';
 
 /**
  * Severity filters over CountySegmentDto. All numeric-metric comparisons are
@@ -76,7 +76,7 @@ export function CountyStudyPage() {
   } = useCountyStudioStore();
   const [showOpenStudy, setShowOpenStudy] = useState(false);
   const [segmentFilter, setSegmentFilter] = useState<SegmentSeverityFilter>('all');
-  const [workspaceMode, setWorkspaceMode] = useState<WorkspaceMode>('command');
+  const [workspaceMode, setWorkspaceMode] = useState<WorkspaceMode>('operational-health');
   const navigate = useNavigate();
 
   useCountyStudyHub(activeStudy?.studyId ?? null);
@@ -141,39 +141,39 @@ export function CountyStudyPage() {
             <button
               type="button"
               role="tab"
-              aria-selected={workspaceMode === 'command'}
+              aria-selected={workspaceMode === 'operational-health'}
               data-testid="county-studio-mode-command"
-              onClick={() => setWorkspaceMode('command')}
+              onClick={() => setWorkspaceMode('operational-health')}
               style={{
                 padding: '4px 10px',
                 border: 0,
                 borderRight: '1px solid hsl(var(--tf-border))',
-                background: workspaceMode === 'command' ? 'hsl(var(--tf-surface))' : 'transparent',
-                color: workspaceMode === 'command' ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))',
+                background: workspaceMode === 'operational-health' ? 'hsl(var(--tf-surface))' : 'transparent',
+                color: workspaceMode === 'operational-health' ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))',
                 fontSize: 11,
                 cursor: 'pointer',
                 fontWeight: 600,
               }}
             >
-              Command
+              Operational Health
             </button>
             <button
               type="button"
               role="tab"
-              aria-selected={workspaceMode === 'statistics'}
+              aria-selected={workspaceMode === 'statistics-compat'}
               data-testid="county-studio-mode-statistics"
-              onClick={() => setWorkspaceMode('statistics')}
+              onClick={() => setWorkspaceMode('statistics-compat')}
               style={{
                 padding: '4px 10px',
                 border: 0,
-                background: workspaceMode === 'statistics' ? 'hsl(var(--tf-surface))' : 'transparent',
-                color: workspaceMode === 'statistics' ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))',
+                background: workspaceMode === 'statistics-compat' ? 'hsl(var(--tf-surface))' : 'transparent',
+                color: workspaceMode === 'statistics-compat' ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))',
                 fontSize: 11,
                 cursor: 'pointer',
                 fontWeight: 600,
               }}
             >
-              Full Statistics Lab
+              Statistics Compat
             </button>
           </div>
           {activeStudy && (
@@ -212,7 +212,7 @@ export function CountyStudyPage() {
 
       <CountyCommandStrip />
 
-      {workspaceMode === 'statistics' ? (
+      {workspaceMode === 'statistics-compat' ? (
         <div
           data-testid="cs-statistics-mode"
           style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}

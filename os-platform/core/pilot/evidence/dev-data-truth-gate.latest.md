@@ -1,10 +1,10 @@
 # County Studio Data Truth Matrix
 
-Checked: 2026-04-30T17:32:03.818Z
+Checked: 2026-04-30T18:07:24.257Z
 
 Status: FAIL
 
-API base: `http://localhost:5173/api`
+API base: `http://localhost:5046/api`
 County: `19190019-1919-1919-1919-191919191919`
 Study: `52eb120f-99d3-4790-a69c-49b6de80cd5e`
 
@@ -20,10 +20,11 @@ Study: `52eb120f-99d3-4790-a69c-49b6de80cd5e`
 | County Studio | Study metadata | GET /county-study/studies + selected study | yes | Selected 52eb120f-99d3-4790-a69c-49b6de80cd5e; taxYear=2026; countyId=19190019-1919-1919-1919-191919191919; countyName=Benton County. |
 | County Studio | Study counts | segment sets, active segments, cohorts, scenarios endpoints | yes | segmentSets=3; segments=1393; ratioBearingSegments=525; cohorts=1; scenarios=2. |
 | County Studio | Health summary backed by active segment set | GET /county-study/studies/{studyId}/health-summary | yes | median=0.9268; cod=41.28; prd=1.3993; ratioCount=5559; derivedAt=2026-04-28T05:59:41.419096Z. |
+| Statistics Studio parity | County Studio Statistics Compat endpoint | GET /county-study/studies/{studyId}/statistics-compat vs /terraforge/ratio-study | yes | contractId=statistics_ratio_study_compat_v1; countWithRatio=36; outliersExcluded=1; TerraForge countWithRatio=36; parity=true. |
 | County Studio | Segment derivation sample | GET /county-study/segment-sets/{id}/segments + /segments/{id}/detail | partial | Sampled 10; detail responses 10. API confirms shape, not independent source recomputation. |
-| Cross-surface | County median/COD/PRD consistency and mismatch class | County health summary vs TerraForge ratio-study endpoint | no | scope mismatch: health median/COD/PRD=0.9268/41.28/1.3993; ratio-study=0.7224/40.24/2.1352. Population mismatch: County Studio health uses ratioCount=5559, while TerraForge ratio-study uses countWithRatio=36. This blocks parity until both surfaces compare the same cohort/window/qualification pool. |
+| Cross-surface | County median/COD/PRD consistency and mismatch class | County health summary vs TerraForge ratio-study endpoint | partial | expected non-equivalent population lenses: health median/COD/PRD=0.9268/41.28/1.3993; ratio-study=0.7224/40.24/2.1352. Population mismatch is expected for default Operational Health: County Studio health uses ratioCount=5559, while TerraForge ratio-study uses countWithRatio=36. Statistics parity is evaluated through statistics_ratio_study_compat_v1, not health-summary. |
 | Statistics Studio parity | Population scope alignment proof | statistics-parity-scope-alignment.latest.json | partial | BLOCKED_SCOPE_MISMATCH; rootCause=scope_mismatch_different_population_definitions; countDifference={"countyStudioHealthRatioCount":5559,"terraForgeCountWithRatio":36,"delta":5523}. |
-| Statistics Studio parity | Shared population contract | statistics-shared-population-contract.latest.json | partial | IMPLEMENTATION_GAP_SHARED_PARITY_MODE_MISSING; decision=PATH_A_REQUIRED_SHARED_PARITY_CONTRACT_DEFINED_NOT_IMPLEMENTED; contract=statistics_ratio_study_compat_v1. |
+| Statistics Studio parity | Shared population contract | statistics-shared-population-contract.latest.json | yes | PASS; decision=PATH_A_IMPLEMENTED_SHARED_PARITY_MODE_PROVEN; contract=statistics_ratio_study_compat_v1; apiParity=PASS. |
 | Statistics Studio parity | Comparison snapshot availability | GET /terraforge/comparison-snapshots | partial | Loaded 238 neighborhood snapshots. Neighborhood-level parity still requires row matching to segment keys. |
 | County Studio | Scenario preview | GET /county-study/scenarios/{scenarioId}/preview | partial | Preview returned for scenario 04f34e2a-6cfe-4adc-9d0c-f10710cc81ca; source recomputation still required. |
 | Fixture leakage | Nonexistent county does not receive Benton data | TerraForge county-stats with fake county scope | yes | Fake county returned HTTP 400, not live Benton-looking data. |
@@ -32,7 +33,6 @@ Study: `52eb120f-99d3-4790-a69c-49b6de80cd5e`
 ## Failures
 
 - Statistics Studio parity: County-sovereign statistics superset claim - Claim remains provisional: Benton-certified reference lanes are still present; possible Benton fallback/fixture references require review.
-- Cross-surface: County median/COD/PRD consistency and mismatch class - scope mismatch: health median/COD/PRD=0.9268/41.28/1.3993; ratio-study=0.7224/40.24/2.1352. Population mismatch: County Studio health uses ratioCount=5559, while TerraForge ratio-study uses countWithRatio=36. This blocks parity until both surfaces compare the same cohort/window/qualification pool.
 
 ## Warnings
 
@@ -42,8 +42,8 @@ Study: `52eb120f-99d3-4790-a69c-49b6de80cd5e`
 - Database posture: Washington 39-county data posture - 39-county proof is registry/acquisition-path inventory only; it does not prove official statewide ingestion, normalization, geometry, or runtime county data.
 - County Studio: County trust tier and UI label posture - Production Provisional; parity claims allowed=false. UI must surface badges: Production Provisional, Sync-Derived, Converted Legacy Sensitive.
 - County Studio: Segment derivation sample - Sampled 10; detail responses 10. API confirms shape, not independent source recomputation.
+- Cross-surface: County median/COD/PRD consistency and mismatch class - expected non-equivalent population lenses: health median/COD/PRD=0.9268/41.28/1.3993; ratio-study=0.7224/40.24/2.1352. Population mismatch is expected for default Operational Health: County Studio health uses ratioCount=5559, while TerraForge ratio-study uses countWithRatio=36. Statistics parity is evaluated through statistics_ratio_study_compat_v1, not health-summary.
 - Statistics Studio parity: Population scope alignment proof - BLOCKED_SCOPE_MISMATCH; rootCause=scope_mismatch_different_population_definitions; countDifference={"countyStudioHealthRatioCount":5559,"terraForgeCountWithRatio":36,"delta":5523}.
-- Statistics Studio parity: Shared population contract - IMPLEMENTATION_GAP_SHARED_PARITY_MODE_MISSING; decision=PATH_A_REQUIRED_SHARED_PARITY_CONTRACT_DEFINED_NOT_IMPLEMENTED; contract=statistics_ratio_study_compat_v1.
 - Statistics Studio parity: Comparison snapshot availability - Loaded 238 neighborhood snapshots. Neighborhood-level parity still requires row matching to segment keys.
 - County Studio: Scenario preview - Preview returned for scenario 04f34e2a-6cfe-4adc-9d0c-f10710cc81ca; source recomputation still required.
 - Fixture leakage: Static Benton/fallback scan - Found 1 possible fallback/fixture Benton references requiring review.
@@ -62,12 +62,18 @@ Study: `52eb120f-99d3-4790-a69c-49b6de80cd5e`
 - frontend/apps/os-shell/src/auth/useSession.ts:22 [dev-session-normalization] countyId: BENTON_DEV_COUNTY_ID,
 - frontend/apps/os-shell/src/auth/useSession.ts:27 [dev-session-normalization] const BENTON_ALIASES = new Set(['5', '005', '53005', 'benton', 'benton county', BENTON_DEV_COUNTY_ID]);
 - frontend/apps/os-shell/src/auth/useSession.ts:33 [dev-session-normalization] return BENTON_ALIASES.has(trimmed.toLowerCase()) ? BENTON_DEV_COUNTY_ID : trimmed;
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:54 [reference] interface BentonMarketDataResponse {
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:138 [reference] function buildMarketCondition(data: BentonMarketDataResponse | undefined) {
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:186 [reference] function buildMarketAnalytics(data: BentonMarketDataResponse | undefined) {
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:214 [reference] function buildEconomicIndicators(data: BentonMarketDataResponse | undefined) {
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:574 [reference] } = useQuery<BentonMarketDataResponse>({
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:578 [benton-certified-reference-lane] '/costforge/income-approach/market-data/benton',
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:60 [reference] interface BentonMarketDataResponse {
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:207 [reference] function buildMarketCondition(data: BentonMarketDataResponse | undefined) {
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:255 [reference] function buildMarketAnalytics(data: BentonMarketDataResponse | undefined) {
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:283 [reference] function buildEconomicIndicators(data: BentonMarketDataResponse | undefined) {
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:705 [reference] const hasCertifiedBentonReferenceLane = supportsCertifiedCostScheduleLane(activeStudy?.countyId);
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:782 [reference] } = useQuery<BentonMarketDataResponse>({
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:786 [benton-certified-reference-lane] '/costforge/income-approach/market-data/benton',
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:789 [reference] enabled: Boolean(activeStudy?.countyId && countyScope?.isolated && hasCertifiedBentonReferenceLane),
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:966 [reference] {!hasCertifiedBentonReferenceLane ? (
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:972 [reference] The Benton-certified market reference lane is withheld for this county. Statistics
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:973 [reference] Compat will not substitute Benton market data for a non-certified county scope.
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:983 [reference] County Studio could not load the Benton-certified reference lane for this study.
 - frontend/apps/os-shell/src/pages/forge/county-studio/hooks/useStudyData.ts:174 [reference] * the actionable part ("HTTP 400: countyId 'benton' is not a valid Guid.").
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CityInspector.test.tsx:57 [test-fixture] studyId: 'study-benton-2026',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CityInspector.test.tsx:58 [test-fixture] countyId: 'benton',
@@ -124,9 +130,3 @@ Study: `52eb120f-99d3-4790-a69c-49b6de80cd5e`
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/RightRail.test.tsx:51 [test-fixture] countyName: 'Benton County',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/RightRail.test.tsx:130 [test-fixture] expect(screen.getByTestId('right-rail-scope-label')).toHaveTextContent('Benton County');
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ScenarioWorksheet.test.tsx:20 [test-fixture] studyId: 'study-1', countyId: 'benton', taxYear: 2026,
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ScenarioWorksheet.test.tsx:33 [test-fixture] countyId: 'benton',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ScenarioWorksheet.test.tsx:113 [test-fixture] expect(screen.getByTestId('scenario-worksheet-scope')).toHaveTextContent(/benton/i);
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/SegmentFilters.nullGuard.test.tsx:44 [test-fixture] studyId: 'study-1', countyId: 'benton', taxYear: 2026,
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/segmentIdentity.test.ts:40 [test-fixture] it('extracts Benton neighborhood codes from compound labels without deriving reval from hood', () => {
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/segmentIdentity.test.ts:72 [test-fixture] it('treats numeric Benton hood codes as neighborhoods without inventing reval from the first digit', () => {
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/SegmentTable.test.tsx:78 [test-fixture] it('renders Benton-depth statistics parity signals in the table', () => {

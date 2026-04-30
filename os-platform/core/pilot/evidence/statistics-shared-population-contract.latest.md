@@ -1,9 +1,9 @@
 # Statistics Shared Population Contract
 
-Checked: 2026-04-30T17:31:33.866Z
+Checked: 2026-04-30T18:06:49.107Z
 
-Status: IMPLEMENTATION_GAP_SHARED_PARITY_MODE_MISSING
-Decision: PATH_A_REQUIRED_SHARED_PARITY_CONTRACT_DEFINED_NOT_IMPLEMENTED
+Status: PASS
+Decision: PATH_A_IMPLEMENTED_SHARED_PARITY_MODE_PROVEN
 Study: `52eb120f-99d3-4790-a69c-49b6de80cd5e`
 County: `19190019-1919-1919-1919-191919191919` (Benton County)
 Tax year: `2026`
@@ -31,7 +31,8 @@ Contract: `statistics_ratio_study_compat_v1`
 | --- | --- | --- |
 | TerraForge ratio-study | partial | Implements the ratio-study lens and current countWithRatio population, but does not emit a contract id, parcel identity reconciliation counts, or conversion-sensitive qualification classifications. |
 | County Studio health summary | no | Uses segment-set parcel health rollup semantics. It is intentionally not the comparator for statistics parity. |
-| County Studio statistics workbench | no | Still has a Benton-certified reference lane and no explicit shared-population parity mode. |
+| County Studio statistics workbench | yes | Declares an explicit Statistics Compat mode and renders the statistics_ratio_study_compat_v1 contract fields as first-class data. |
+| County Studio statistics-compat endpoint | yes | Backend endpoint and DTO surface contract id, countWithRatio, outliersExcluded, conversion-sensitive counts, parcel identity reconciliation, and trust posture. |
 
 ## Current Counts
 
@@ -39,16 +40,29 @@ County Studio health ratioCount: 5559
 TerraForge ratio-study countWithRatio: 36
 Overlap: {"sharedSaleRows":36,"healthSaleRowsNotInTerraForge":5686,"terraForgeSaleRowsNotInHealth":0}
 
+## API Same-Population Parity
+
+API base: `http://localhost:5046/api`
+API status: PASS
+Contract echoed: true
+
+| Metric | County Studio Compat | TerraForge Ratio Study | Tolerance | Pass? |
+| --- | --- | --- | --- | --- |
+| countWithRatio | 36 | 36 | 0 | yes |
+| outliersExcluded | 1 | 1 | 0 | yes |
+| medianRatio | 0.7224 | 0.7224 | 0.0001 | yes |
+| cod | 40.24 | 40.24 | 0.01 | yes |
+| prd | 2.1352 | 2.1352 | 0.0001 | yes |
+| prb | -0.1672 | -0.1672 | 0.0001 | yes |
+| weightedMeanRatio | 0.3053 | 0.3053 | 0.0001 | yes |
+
 ## Blockers
 
-- No County Studio endpoint or workbench mode currently declares statistics_ratio_study_compat_v1.
-- No shared response currently echoes contract id, population count, pre/post-trim counts, parcel identity join mode, and conversion-sensitive qualification counts.
 - County Studio health summary remains a different analytical surface and must not be used as the Statistics parity comparator.
 - Benton qualification fields remain conversion-sensitive until row-level sync lineage closes the 2017 risk.
 
 ## Required Closure
 
-- Add a County Studio statistics parity mode or endpoint that computes statistics_ratio_study_compat_v1.
-- Make both County Studio and TerraForge responses echo contract id, population count, countWithRatio, outliersExcluded, identity join mode, sale window, qualification policy, suppression/no-calc policy, and conversion-sensitive row counts.
-- Run parity against the contract artifact; only upgrade the Statistics superset claim when both surfaces agree on the shared contract.
+- Keep the live same-population parity proof attached to this artifact.
+- Only upgrade the Statistics superset claim when both surfaces agree on the shared contract and Benton reference lanes remain reference-only.
 - Keep Statistics Studio visible until the shared-population parity mode passes against live Benton data.

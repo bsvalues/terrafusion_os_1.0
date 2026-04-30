@@ -342,6 +342,80 @@ public record CountyHealthSummaryDto(
     DateTime? DerivedAt
 );
 
+// ── Statistics Compat (statistics_ratio_study_compat_v1) ─────────────────
+
+/// <summary>
+/// County Studio same-population parity lens for the Statistics/TerraForge
+/// ratio-study contract. This is deliberately separate from CountyHealthSummaryDto:
+/// health is a segment-set parcel rollup, while compat is a qualified-sale
+/// ratio-study population.
+/// </summary>
+public record CountyStatisticsCompatDto(
+    Guid StudyId,
+    Guid CountyId,
+    int TaxYear,
+    string Mode,
+    string ContractId,
+    string Population,
+    string IdentityJoin,
+    StatisticsCompatSaleWindowDto SaleWindow,
+    string QualificationPolicy,
+    string SuppressionPolicy,
+    string OutlierPolicy,
+    List<string> TrustPosture,
+    int TotalSales,
+    int CountWithRatio,
+    int OutliersExcluded,
+    int TrimmedCount,
+    decimal? MedianRatio,
+    decimal? MeanRatio,
+    decimal? WeightedMeanRatio,
+    decimal? Cod,
+    decimal? Prd,
+    decimal? Prb,
+    decimal? Cov,
+    decimal? TierSlope,
+    StatisticsCompatTierMediansDto? TierMedians,
+    StatisticsCompatConversionSensitiveCountsDto ConversionSensitiveCounts,
+    StatisticsCompatParcelIdentityReconciliationDto ParcelIdentityReconciliation,
+    DateTime ComputedAt
+);
+
+public record StatisticsCompatSaleWindowDto(
+    int TaxYear,
+    DateTime LookbackStart,
+    DateTime LookbackEndExclusive,
+    string Rule
+);
+
+public record StatisticsCompatTierMediansDto(
+    decimal Q1,
+    decimal Q2,
+    decimal Q3,
+    decimal Q4
+);
+
+public record StatisticsCompatConversionSensitiveCountsDto(
+    int CandidateRows,
+    int DecisionQualifiedRows,
+    int RecommendationQualifiedRows,
+    int RecommendationNullDefaultQualifiedRows,
+    int SaleQualificationOnlyQualifiedRows,
+    int SuppressedExcludedRows,
+    int IncludeNoCalcExcludedRows,
+    int SalesYearAssignedRows,
+    int NullSalesYearWindowRows
+);
+
+public record StatisticsCompatParcelIdentityReconciliationDto(
+    string JoinMode,
+    int SaleRows,
+    int DistinctSaleParcelIds,
+    int MatchedPropertyRows,
+    int CountWithRatio,
+    int UnmatchedSaleRows
+);
+
 // ── Inspector (Task D — segment detail + action-context for ObjectInspector) ──
 
 /// <summary>

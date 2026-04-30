@@ -13,6 +13,7 @@ import type {
   CityRollupRowDto,
   NeighborhoodRollupRowDto,
   CountyHealthSummaryDto,
+  CountyStatisticsCompatDto,
   CountySegmentDetailDto,
   SegmentActionContextDto,
   SegmentDiagnosisDto,
@@ -379,6 +380,15 @@ export const healthApi = {
    */
   summary: (studyId: string): Promise<CountyHealthSummaryDto> =>
     apiFetchJson(`${BASE}/studies/${studyId}/health-summary`, withCountyStudyHeaders()),
+
+  /**
+   * GET /county-study/studies/:id/statistics-compat
+   * Returns the explicit County Studio Statistics Compat lens using
+   * statistics_ratio_study_compat_v1. This is not the Operational Health
+   * rollup and must not be used interchangeably with health-summary.
+   */
+  statisticsCompat: (studyId: string): Promise<CountyStatisticsCompatDto> =>
+    apiFetchJson(`${BASE}/studies/${studyId}/statistics-compat`, withCountyStudyHeaders()),
 };
 
 // ── Inspector (Task D — segment detail + action-context for ObjectInspector) ──
