@@ -49,6 +49,18 @@ describe('CompsForgeModule deeplink consumption', () => {
     vi.clearAllMocks();
   });
 
+  it('declares the candidate reconciliation contract posture', async () => {
+    loadCountyCompsMock.mockResolvedValue([]);
+
+    render(<CompsForgeModule metadata={{ countyName: 'Benton County' }} />);
+
+    const posture = screen.getByTestId('compsforge-contract-classification');
+    expect(posture).toHaveAttribute('data-contract-status', 'contract-backed');
+    expect(posture).toHaveAttribute('data-contract-id', 'compsforge_candidate_reconciliation_v1');
+    expect(screen.getByText('compsforge_candidate_reconciliation_v1')).toBeInTheDocument();
+    expect(screen.getByText(/governed adjustment and reconciliation remain Benton-certified/i)).toBeInTheDocument();
+  });
+
   it('opens neighborhood rollups in scouting mode instead of the parcel-only dead end', async () => {
     loadCountyCompsMock.mockResolvedValue([
       {
