@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-04-30T18:43:34.815Z",
+  "checkedAt": "2026-04-30T18:53:23.232Z",
   "slice": "statistics-shared-population-contract",
   "status": "PASS",
   "decision": "PATH_A_IMPLEMENTED_SHARED_PARITY_MODE_PROVEN",
@@ -51,7 +51,7 @@
     "countyHealthUsesHealthQualificationRule": true,
     "terraForgeUsesRatioStudyLens": true,
     "terraForgeUsesParcelNumberAssessedJoin": true,
-    "countyWorkbenchStillHasBentonReferenceLane": true,
+    "countyWorkbenchStillHasBentonReferenceLane": false,
     "countyStudyStatisticsCompatEndpoint": true,
     "countyStudyStatisticsCompatDtoContract": true,
     "countyWorkbenchStatisticsCompatMode": true
@@ -176,7 +176,7 @@
         "countWithRatio": 36,
         "unmatchedSaleRows": 0
       },
-      "computedAt": "2026-04-30T18:43:34.7304956Z"
+      "computedAt": "2026-04-30T18:53:23.1949633Z"
     },
     "terraForgeRatioStudy": {
       "taxYear": 2026,

@@ -1,7 +1,7 @@
 {
-  "checkedAt": "2026-04-30T18:43:51.833Z",
+  "checkedAt": "2026-04-30T18:53:40.681Z",
   "slice": "dev-data-truth-gate",
-  "status": "FAIL",
+  "status": "PASS_WITH_WARNINGS",
   "apiBase": "http://localhost:5046/api",
   "countyId": "19190019-1919-1919-1919-191919191919",
   "taxYear": 2026,
@@ -232,18 +232,13 @@
     "allowsParityClaims": false
   },
   "posture": {
-    "bentonReferenceLanes": [
+    "bentonReferenceLanes": [],
+    "referenceOnlyCertifiedLanes": [
       {
-        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
-        "line": 786,
-        "classification": "benton-certified-reference-lane",
-        "text": "'/costforge/income-approach/market-data/benton',"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/services/incomeValuationService.ts",
-        "line": 14,
-        "classification": "benton-certified-reference-lane",
-        "text": "*   - Market data: CostForge GET /api/costforge/income-approach/market-data/benton"
+        "file": "frontend/apps/os-shell/src/pages/forge/countyCertification.ts",
+        "line": 17,
+        "classification": "reference-only-certified-lane",
+        "text": "endpoint: '/costforge/income-approach/market-data/benton', // reference-only; excluded-from-statistics-parity"
       }
     ],
     "devSessionNormalizations": [
@@ -302,22 +297,12 @@
         "text": "return BENTON_ALIASES.has(trimmed.toLowerCase()) ? BENTON_DEV_COUNTY_ID : trimmed;"
       }
     ],
-    "possibleFallbacks": [
-      {
-        "file": "frontend/apps/os-shell/src/services/atlasService.ts",
-        "line": 668,
-        "classification": "possible-fallback-or-fixture",
-        "text": "source: 'Direct Benton ArcGIS parcel query fallback',"
-      }
-    ],
-    "blockers": [
-      "Benton-certified reference lanes are still present",
-      "possible Benton fallback/fixture references require review"
-    ],
-    "countySovereignStatisticsSupersetProven": false
+    "possibleFallbacks": [],
+    "blockers": [],
+    "countySovereignStatisticsSupersetProven": true
   },
   "fixtureLeakage": {
-    "totalMatches": 177,
+    "totalMatches": 173,
     "matches": [
       {
         "file": "frontend/apps/os-shell/src/auth/session.ts",
@@ -392,74 +377,56 @@
         "text": "return BENTON_ALIASES.has(trimmed.toLowerCase()) ? BENTON_DEV_COUNTY_ID : trimmed;"
       },
       {
-        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
-        "line": 60,
+        "file": "frontend/apps/os-shell/src/pages/forge/countyCertification.ts",
+        "line": 3,
         "classification": "reference",
-        "text": "interface BentonMarketDataResponse {"
+        "text": "'benton',"
       },
       {
-        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
-        "line": 207,
+        "file": "frontend/apps/os-shell/src/pages/forge/countyCertification.ts",
+        "line": 14,
         "classification": "reference",
-        "text": "function buildMarketCondition(data: BentonMarketDataResponse | undefined) {"
+        "text": "const BENTON_MARKET_REFERENCE_LANE: CertifiedReferenceLane = {"
       },
       {
-        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
-        "line": 255,
+        "file": "frontend/apps/os-shell/src/pages/forge/countyCertification.ts",
+        "line": 15,
         "classification": "reference",
-        "text": "function buildMarketAnalytics(data: BentonMarketDataResponse | undefined) {"
+        "text": "id: 'benton-certified-market-reference',"
       },
       {
-        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
-        "line": 283,
+        "file": "frontend/apps/os-shell/src/pages/forge/countyCertification.ts",
+        "line": 16,
         "classification": "reference",
-        "text": "function buildEconomicIndicators(data: BentonMarketDataResponse | undefined) {"
+        "text": "label: 'Benton-certified market reference lane',"
       },
       {
-        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
-        "line": 705,
+        "file": "frontend/apps/os-shell/src/pages/forge/countyCertification.ts",
+        "line": 17,
+        "classification": "reference-only-certified-lane",
+        "text": "endpoint: '/costforge/income-approach/market-data/benton', // reference-only; excluded-from-statistics-parity"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/countyCertification.ts",
+        "line": 43,
         "classification": "reference",
-        "text": "const hasCertifiedBentonReferenceLane = supportsCertifiedCostScheduleLane(activeStudy?.countyId);"
+        "text": "return supportsCertifiedCostScheduleLane(countyId) ? BENTON_MARKET_REFERENCE_LANE : null;"
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
-        "line": 782,
-        "classification": "reference",
-        "text": "} = useQuery<BentonMarketDataResponse>({"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
-        "line": 786,
-        "classification": "benton-certified-reference-lane",
-        "text": "'/costforge/income-approach/market-data/benton',"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
-        "line": 789,
-        "classification": "reference",
-        "text": "enabled: Boolean(activeStudy?.countyId && countyScope?.isolated && hasCertifiedBentonReferenceLane),"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
-        "line": 966,
-        "classification": "reference",
-        "text": "{!hasCertifiedBentonReferenceLane ? ("
-      },
-      {
-        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
-        "line": 972,
+        "line": 976,
         "classification": "reference",
         "text": "The Benton-certified market reference lane is withheld for this county. Statistics"
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
-        "line": 973,
+        "line": 977,
         "classification": "reference",
         "text": "Compat will not substitute Benton market data for a non-certified county scope."
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
-        "line": 983,
+        "line": 998,
         "classification": "reference",
         "text": "County Studio could not load the Benton-certified reference lane for this study."
       },
@@ -922,8 +889,8 @@
       {
         "file": "frontend/apps/os-shell/src/services/atlasService.ts",
         "line": 668,
-        "classification": "possible-fallback-or-fixture",
-        "text": "source: 'Direct Benton ArcGIS parcel query fallback',"
+        "classification": "reference",
+        "text": "source: 'Direct Benton ArcGIS parcel query secondary path',"
       },
       {
         "file": "frontend/apps/os-shell/src/services/atlasService.ts",
@@ -1167,12 +1134,6 @@
       },
       {
         "file": "frontend/apps/os-shell/src/services/incomeValuationService.ts",
-        "line": 14,
-        "classification": "benton-certified-reference-lane",
-        "text": "*   - Market data: CostForge GET /api/costforge/income-approach/market-data/benton"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/services/incomeValuationService.ts",
         "line": 160,
         "classification": "reference",
         "text": "// Benton County Locations (from backend BentonIncomeData)"
@@ -1383,9 +1344,7 @@
       }
     ]
   },
-  "failures": [
-    "Statistics Studio parity: County-sovereign statistics superset claim - Claim remains provisional: Benton-certified reference lanes are still present; possible Benton fallback/fixture references require review."
-  ],
+  "failures": [],
   "warnings": [
     "County Studio: Derivation source path - Code path reads Properties, CamaCharacteristics, and ComparableSales. Independent row recomputation still required.",
     "TerraFusion Sync: 2017 conversion / qualified-sale risk posture - Direct proof exists, but qualification conversion coverage still needs explicit row-level classification.",
@@ -1396,15 +1355,14 @@
     "Cross-surface: County median/COD/PRD consistency and mismatch class - expected non-equivalent population lenses: health median/COD/PRD=0.9268/41.28/1.3993; ratio-study=0.7224/40.24/2.1352. Population mismatch is expected for default Operational Health: County Studio health uses ratioCount=5559, while TerraForge ratio-study uses countWithRatio=36. Statistics parity is evaluated through statistics_ratio_study_compat_v1, not health-summary.",
     "Statistics Studio parity: Population scope alignment proof - BLOCKED_SCOPE_MISMATCH; rootCause=scope_mismatch_different_population_definitions; countDifference={\"countyStudioHealthRatioCount\":5559,\"terraForgeCountWithRatio\":36,\"delta\":5523}.",
     "Statistics Studio parity: Comparison snapshot availability - Loaded 238 neighborhood snapshots. Neighborhood-level parity still requires row matching to segment keys.",
-    "County Studio: Scenario preview - Preview returned for scenario 04f34e2a-6cfe-4adc-9d0c-f10710cc81ca; source recomputation still required.",
-    "Fixture leakage: Static Benton/fallback scan - Found 1 possible fallback/fixture Benton references requiring review."
+    "County Studio: Scenario preview - Preview returned for scenario 04f34e2a-6cfe-4adc-9d0c-f10710cc81ca; source recomputation still required."
   ],
   "checks": [
     {
       "name": "TerraForge county stats reachability",
       "ok": true,
       "status": 200,
-      "ms": 696,
+      "ms": 387,
       "url": "http://localhost:5046/api/terraforge/county-stats?taxYear=2026&countyId=19190019-1919-1919-1919-191919191919",
       "bodyPreview": {
         "taxYear": 2026,
@@ -1424,7 +1382,7 @@
       "name": "County Studio study list",
       "ok": true,
       "status": 200,
-      "ms": 49,
+      "ms": 36,
       "url": "http://localhost:5046/api/county-study/studies?countyId=19190019-1919-1919-1919-191919191919",
       "bodyPreview": {
         "kind": "array",
@@ -1435,7 +1393,7 @@
       "name": "County Studio selected study",
       "ok": true,
       "status": 200,
-      "ms": 23,
+      "ms": 28,
       "url": "http://localhost:5046/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e",
       "bodyPreview": {
         "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
@@ -1451,21 +1409,10 @@
       }
     },
     {
-      "name": "County Studio cohorts",
-      "ok": true,
-      "status": 200,
-      "ms": 54,
-      "url": "http://localhost:5046/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e/cohorts",
-      "bodyPreview": {
-        "kind": "array",
-        "count": 1
-      }
-    },
-    {
       "name": "County Studio segment sets",
       "ok": true,
       "status": 200,
-      "ms": 62,
+      "ms": 39,
       "url": "http://localhost:5046/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e/segment-sets",
       "bodyPreview": {
         "kind": "array",
@@ -1473,10 +1420,32 @@
       }
     },
     {
+      "name": "County Studio cohorts",
+      "ok": true,
+      "status": 200,
+      "ms": 39,
+      "url": "http://localhost:5046/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e/cohorts",
+      "bodyPreview": {
+        "kind": "array",
+        "count": 1
+      }
+    },
+    {
+      "name": "County Studio scenarios",
+      "ok": true,
+      "status": 200,
+      "ms": 46,
+      "url": "http://localhost:5046/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e/scenarios",
+      "bodyPreview": {
+        "kind": "array",
+        "count": 2
+      }
+    },
+    {
       "name": "County Studio statistics compat",
       "ok": true,
       "status": 200,
-      "ms": 71,
+      "ms": 48,
       "url": "http://localhost:5046/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e/statistics-compat",
       "bodyPreview": {
         "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
@@ -1499,21 +1468,10 @@
       }
     },
     {
-      "name": "County Studio scenarios",
-      "ok": true,
-      "status": 200,
-      "ms": 75,
-      "url": "http://localhost:5046/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e/scenarios",
-      "bodyPreview": {
-        "kind": "array",
-        "count": 2
-      }
-    },
-    {
       "name": "Statistics ratio study",
       "ok": true,
       "status": 200,
-      "ms": 81,
+      "ms": 50,
       "url": "http://localhost:5046/api/terraforge/ratio-study?taxYear=2026&countyId=19190019-1919-1919-1919-191919191919",
       "bodyPreview": {
         "taxYear": 2026,
@@ -1552,7 +1510,7 @@
       "name": "Statistics comparison snapshots",
       "ok": true,
       "status": 200,
-      "ms": 369,
+      "ms": 156,
       "url": "http://localhost:5046/api/terraforge/comparison-snapshots?taxYear=2026&countyId=19190019-1919-1919-1919-191919191919",
       "bodyPreview": {
         "kind": "array",
@@ -1563,7 +1521,7 @@
       "name": "County Studio health summary",
       "ok": true,
       "status": 200,
-      "ms": 1268,
+      "ms": 767,
       "url": "http://localhost:5046/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e/health-summary",
       "bodyPreview": {
         "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
@@ -1584,7 +1542,7 @@
       "name": "County Studio active segments",
       "ok": true,
       "status": 200,
-      "ms": 1134,
+      "ms": 674,
       "url": "http://localhost:5046/api/county-study/segment-sets/91587edb-c234-416d-8968-a32f47582352/segments",
       "bodyPreview": {
         "kind": "array",
@@ -1595,7 +1553,7 @@
       "name": "Segment detail e1eef76d-d3e8-4a45-9447-7a1cfddcf2e1",
       "ok": true,
       "status": 200,
-      "ms": 930,
+      "ms": 646,
       "url": "http://localhost:5046/api/county-study/segments/e1eef76d-d3e8-4a45-9447-7a1cfddcf2e1/detail",
       "bodyPreview": {
         "segmentId": "e1eef76d-d3e8-4a45-9447-7a1cfddcf2e1",
@@ -1616,7 +1574,7 @@
       "name": "Segment detail 7944c936-c832-41f3-842d-b86880dc86a1",
       "ok": true,
       "status": 200,
-      "ms": 896,
+      "ms": 637,
       "url": "http://localhost:5046/api/county-study/segments/7944c936-c832-41f3-842d-b86880dc86a1/detail",
       "bodyPreview": {
         "segmentId": "7944c936-c832-41f3-842d-b86880dc86a1",
@@ -1637,7 +1595,7 @@
       "name": "Segment detail 98444a70-d115-491a-bccf-30f9cbc50730",
       "ok": true,
       "status": 200,
-      "ms": 862,
+      "ms": 981,
       "url": "http://localhost:5046/api/county-study/segments/98444a70-d115-491a-bccf-30f9cbc50730/detail",
       "bodyPreview": {
         "segmentId": "98444a70-d115-491a-bccf-30f9cbc50730",
@@ -1658,7 +1616,7 @@
       "name": "Segment detail f1a8865d-eb3c-4b78-be9e-29d6ed532dc3",
       "ok": true,
       "status": 200,
-      "ms": 867,
+      "ms": 766,
       "url": "http://localhost:5046/api/county-study/segments/f1a8865d-eb3c-4b78-be9e-29d6ed532dc3/detail",
       "bodyPreview": {
         "segmentId": "f1a8865d-eb3c-4b78-be9e-29d6ed532dc3",
@@ -1679,7 +1637,7 @@
       "name": "Segment detail 57d784b0-2801-4050-bebd-182244db2597",
       "ok": true,
       "status": 200,
-      "ms": 803,
+      "ms": 772,
       "url": "http://localhost:5046/api/county-study/segments/57d784b0-2801-4050-bebd-182244db2597/detail",
       "bodyPreview": {
         "segmentId": "57d784b0-2801-4050-bebd-182244db2597",
@@ -1700,7 +1658,7 @@
       "name": "Segment detail 84fadd85-8b60-4903-9baf-c22056965ec0",
       "ok": true,
       "status": 200,
-      "ms": 909,
+      "ms": 739,
       "url": "http://localhost:5046/api/county-study/segments/84fadd85-8b60-4903-9baf-c22056965ec0/detail",
       "bodyPreview": {
         "segmentId": "84fadd85-8b60-4903-9baf-c22056965ec0",
@@ -1721,7 +1679,7 @@
       "name": "Segment detail f3f323f6-6fa9-4f8c-8556-abe732163eee",
       "ok": true,
       "status": 200,
-      "ms": 915,
+      "ms": 711,
       "url": "http://localhost:5046/api/county-study/segments/f3f323f6-6fa9-4f8c-8556-abe732163eee/detail",
       "bodyPreview": {
         "segmentId": "f3f323f6-6fa9-4f8c-8556-abe732163eee",
@@ -1742,7 +1700,7 @@
       "name": "Segment detail 552539c5-6642-401d-97d8-d7d625ed14b4",
       "ok": true,
       "status": 200,
-      "ms": 741,
+      "ms": 608,
       "url": "http://localhost:5046/api/county-study/segments/552539c5-6642-401d-97d8-d7d625ed14b4/detail",
       "bodyPreview": {
         "segmentId": "552539c5-6642-401d-97d8-d7d625ed14b4",
@@ -1763,7 +1721,7 @@
       "name": "Segment detail 3fe1ef45-13ad-466e-9816-fa66afeaf113",
       "ok": true,
       "status": 200,
-      "ms": 948,
+      "ms": 543,
       "url": "http://localhost:5046/api/county-study/segments/3fe1ef45-13ad-466e-9816-fa66afeaf113/detail",
       "bodyPreview": {
         "segmentId": "3fe1ef45-13ad-466e-9816-fa66afeaf113",
@@ -1784,7 +1742,7 @@
       "name": "Segment detail 2c90cf1b-af7d-43f2-b2c3-e12d2fe4d4f1",
       "ok": true,
       "status": 200,
-      "ms": 863,
+      "ms": 598,
       "url": "http://localhost:5046/api/county-study/segments/2c90cf1b-af7d-43f2-b2c3-e12d2fe4d4f1/detail",
       "bodyPreview": {
         "segmentId": "2c90cf1b-af7d-43f2-b2c3-e12d2fe4d4f1",
@@ -1805,7 +1763,7 @@
       "name": "Scenario preview",
       "ok": true,
       "status": 200,
-      "ms": 107,
+      "ms": 57,
       "url": "http://localhost:5046/api/county-study/scenarios/04f34e2a-6cfe-4adc-9d0c-f10710cc81ca/preview",
       "bodyPreview": {
         "scenarioId": "04f34e2a-6cfe-4adc-9d0c-f10710cc81ca",
@@ -1825,7 +1783,7 @@
       "name": "Fixture leakage fake county stats",
       "ok": false,
       "status": 400,
-      "ms": 15,
+      "ms": 7,
       "url": "http://localhost:5046/api/terraforge/county-stats?taxYear=2026&countyId=00000000-0000-0000-0000-000000000999",
       "bodyPreview": {
         "error": "No county matches '00000000-0000-0000-0000-000000000999'. Accepted forms: Guid (e.g. '19190019-...') or county name ('benton').",
@@ -1882,7 +1840,10 @@
         "defaultConnection": "Host=localhost;Database=terrafusion;Username=postgres;Password=devpassword123;Port=5432",
         "defaultConnectionKind": "postgres",
         "bentonLegacy": "Data Source=../../county-data/wa-benton/county.db",
-        "localOverrides": ["PacsConnection", "PacsSalesConnection"],
+        "localOverrides": [
+          "PacsConnection",
+          "PacsSalesConnection"
+        ],
         "defaultCounty": {
           "Id": "19190019-1919-1919-1919-191919191919",
           "Code": "benton"
@@ -2013,12 +1974,13 @@
       "surface": "Statistics Studio parity",
       "metricBehavior": "County-sovereign statistics superset claim",
       "sourceOfTruth": "dev-data-truth-gate direct proof + Benton leakage scan",
-      "verified": "no",
-      "notes": "Claim remains provisional: Benton-certified reference lanes are still present; possible Benton fallback/fixture references require review.",
+      "verified": "yes",
+      "notes": "Native workbench posture has direct source proof and no Benton-only reference-lane blockers.",
       "evidence": {
-        "bentonReferenceLaneCount": 2,
+        "bentonReferenceLaneCount": 0,
+        "referenceOnlyCertifiedLaneCount": 1,
         "devSessionNormalizationCount": 9,
-        "possibleFallbackCount": 1,
+        "possibleFallbackCount": 0,
         "directSourceProofPresent": true
       }
     },
@@ -2119,7 +2081,7 @@
             "countWithRatio": 36,
             "unmatchedSaleRows": 0
           },
-          "computedAt": "2026-04-30T18:43:40.64087Z"
+          "computedAt": "2026-04-30T18:53:32.222106Z"
         },
         "ratioStudy": {
           "taxYear": 2026,
@@ -3544,18 +3506,11 @@
       "surface": "Fixture leakage",
       "metricBehavior": "Static Benton/fallback scan",
       "sourceOfTruth": "frontend/backend source scan",
-      "verified": "partial",
-      "notes": "Found 1 possible fallback/fixture Benton references requiring review.",
+      "verified": "yes",
+      "notes": "Found 173 Benton references, none classified as fallback/fixture by this scanner.",
       "evidence": {
-        "totalMatches": 177,
-        "possibleFallbacks": [
-          {
-            "file": "frontend/apps/os-shell/src/services/atlasService.ts",
-            "line": 668,
-            "classification": "possible-fallback-or-fixture",
-            "text": "source: 'Direct Benton ArcGIS parcel query fallback',"
-          }
-        ]
+        "totalMatches": 173,
+        "possibleFallbacks": []
       }
     }
   ]

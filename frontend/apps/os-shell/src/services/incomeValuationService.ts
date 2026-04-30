@@ -11,7 +11,7 @@
  *   - Cap rates: CostForge GET /api/costforge/income-approach/cap-rates
  *   - Expense ratios: CostForge GET /api/costforge/income-approach/expense-ratios
  *   - Location premiums: CostForge GET /api/costforge/income-approach/location-premiums/benton
- *   - Market data: CostForge GET /api/costforge/income-approach/market-data/benton
+ *   - Market data: CostForge certified county market reference endpoint
  *   - Save valuation: CostForge POST /api/costforge/valuations
  *   - Get valuation: CostForge GET /api/costforge/valuations/{id}
  *   - List parcel valuations: CostForge GET /api/costforge/parcels/{parcelId}/valuations

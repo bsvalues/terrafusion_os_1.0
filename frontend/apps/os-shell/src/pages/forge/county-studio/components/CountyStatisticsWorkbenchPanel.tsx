@@ -7,8 +7,8 @@ import { apiFetch } from '@/lib/apiBase';
 import { useForgeStatisticsStore } from '@/stores/forgeStatisticsStore';
 import { getSession } from '@/auth/session';
 import {
+  getCertifiedMarketReferenceLane,
   getCountyFileStem,
-  supportsCertifiedCostScheduleLane,
   supportsStatisticsAdvancedAnalysisLane,
 } from '../../countyCertification';
 import RatioStudyPanel from '../../statistics/RatioStudyPanel';
@@ -57,7 +57,7 @@ type AnalyticsMode =
 const ADVANCED_MODES: AnalyticsMode[] = ['diagnostics', 'spatial-temporal', 'calibration-engine'];
 const WASHINGTON_SALES_START_YEAR = 2016;
 
-interface BentonMarketDataResponse {
+interface CertifiedMarketReferenceDataResponse {
   county: string;
   state: string;
   medianHouseholdIncome: number;
@@ -204,7 +204,7 @@ function fmtCurrency(value: number): string {
   return `$${Math.round(value).toLocaleString()}`;
 }
 
-function buildMarketCondition(data: BentonMarketDataResponse | undefined) {
+function buildMarketCondition(data: CertifiedMarketReferenceDataResponse | undefined) {
   if (!data) return null;
   const inventory = data.monthsOfInventory;
   const condition: MarketCondition =
@@ -252,7 +252,7 @@ function buildMarketCondition(data: BentonMarketDataResponse | undefined) {
   };
 }
 
-function buildMarketAnalytics(data: BentonMarketDataResponse | undefined) {
+function buildMarketAnalytics(data: CertifiedMarketReferenceDataResponse | undefined) {
   if (!data) return [];
   return [
     {
@@ -280,7 +280,7 @@ function buildMarketAnalytics(data: BentonMarketDataResponse | undefined) {
   ];
 }
 
-function buildEconomicIndicators(data: BentonMarketDataResponse | undefined) {
+function buildEconomicIndicators(data: CertifiedMarketReferenceDataResponse | undefined) {
   if (!data) return [];
   return [
     {
@@ -702,7 +702,11 @@ export function CountyStatisticsWorkbenchPanel() {
     () => activeStudy?.countyId ? buildStudyCountyScope(activeStudy.countyId) : null,
     [activeStudy?.countyId],
   );
-  const hasCertifiedBentonReferenceLane = supportsCertifiedCostScheduleLane(activeStudy?.countyId);
+  const certifiedMarketReferenceLane = useMemo(
+    () => getCertifiedMarketReferenceLane(activeStudy?.countyId),
+    [activeStudy?.countyId],
+  );
+  const hasCertifiedMarketReferenceLane = Boolean(certifiedMarketReferenceLane);
 
   const fetchStudy = useForgeStatisticsStore((state) => state.fetchStudy);
   const setStudyFilter = useForgeStatisticsStore((state) => state.setFilter);
@@ -779,14 +783,14 @@ export function CountyStatisticsWorkbenchPanel() {
     data: marketData,
     isLoading: marketLoading,
     error: marketError,
-  } = useQuery<BentonMarketDataResponse>({
-    queryKey: ['county-studio-income-market-data', activeStudy?.countyId],
+  } = useQuery<CertifiedMarketReferenceDataResponse>({
+    queryKey: ['county-studio-income-market-data', activeStudy?.countyId, certifiedMarketReferenceLane?.id],
     queryFn: () =>
       apiFetch(
-        '/costforge/income-approach/market-data/benton',
+        certifiedMarketReferenceLane!.endpoint,
         { headers: countyScope!.headers },
       ).then((response) => response.json()),
-    enabled: Boolean(activeStudy?.countyId && countyScope?.isolated && hasCertifiedBentonReferenceLane),
+    enabled: Boolean(activeStudy?.countyId && countyScope?.isolated && certifiedMarketReferenceLane),
     staleTime: 30 * 60_000,
   });
 
@@ -963,7 +967,7 @@ export function CountyStatisticsWorkbenchPanel() {
       case 'market-context':
         return (
           <div className="space-y-4">
-            {!hasCertifiedBentonReferenceLane ? (
+            {!hasCertifiedMarketReferenceLane ? (
               <Card data-material="bento" data-testid="county-market-context-reference-lane-unavailable">
                 <CardHeader>
                   <CardTitle>Market Context Reference Lane Unavailable</CardTitle>
@@ -971,6 +975,17 @@ export function CountyStatisticsWorkbenchPanel() {
                 <CardContent>
                   The Benton-certified market reference lane is withheld for this county. Statistics
                   Compat will not substitute Benton market data for a non-certified county scope.
+                </CardContent>
+              </Card>
+            ) : null}
+            {certifiedMarketReferenceLane ? (
+              <Card data-material="bento" data-testid="county-market-context-reference-lane-posture">
+                <CardHeader>
+                  <CardTitle>Reference-Only Market Lane</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {certifiedMarketReferenceLane.label} is displayed as context only and is excluded
+                  from Statistics Compat parity and County Studio superset proof.
                 </CardContent>
               </Card>
             ) : null}

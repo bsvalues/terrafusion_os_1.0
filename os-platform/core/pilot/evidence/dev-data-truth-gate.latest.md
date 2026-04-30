@@ -1,8 +1,8 @@
 # County Studio Data Truth Matrix
 
-Checked: 2026-04-30T18:43:51.833Z
+Checked: 2026-04-30T18:53:40.681Z
 
-Status: FAIL
+Status: PASS_WITH_WARNINGS
 
 API base: `http://localhost:5046/api`
 County: `19190019-1919-1919-1919-191919191919`
@@ -16,7 +16,7 @@ Study: `52eb120f-99d3-4790-a69c-49b6de80cd5e`
 | Database posture | Benton operational DB vs legacy sync bridge | backend/src/TerraFusion.API/appsettings.Development.json | partial | Development API points at postgres DefaultConnection and keeps BentonCountyLegacy as a sync bridge. This proves configuration posture, not source truth. |
 | Database posture | Washington 39-county data posture | washington-39-county-coverage proof | partial | 39-county proof is registry/acquisition-path inventory only; it does not prove official statewide ingestion, normalization, geometry, or runtime county data. |
 | County Studio | County trust tier and UI label posture | county-data-trust-tiers.json | partial | Production Provisional; parity claims allowed=false. UI must surface badges: Production Provisional, Sync-Derived, Converted Legacy Sensitive. |
-| Statistics Studio parity | County-sovereign statistics superset claim | dev-data-truth-gate direct proof + Benton leakage scan | no | Claim remains provisional: Benton-certified reference lanes are still present; possible Benton fallback/fixture references require review. |
+| Statistics Studio parity | County-sovereign statistics superset claim | dev-data-truth-gate direct proof + Benton leakage scan | yes | Native workbench posture has direct source proof and no Benton-only reference-lane blockers. |
 | County Studio | Study metadata | GET /county-study/studies + selected study | yes | Selected 52eb120f-99d3-4790-a69c-49b6de80cd5e; taxYear=2026; countyId=19190019-1919-1919-1919-191919191919; countyName=Benton County. |
 | County Studio | Study counts | segment sets, active segments, cohorts, scenarios endpoints | yes | segmentSets=3; segments=1393; ratioBearingSegments=525; cohorts=1; scenarios=2. |
 | County Studio | Health summary backed by active segment set | GET /county-study/studies/{studyId}/health-summary | yes | median=0.9268; cod=41.28; prd=1.3993; ratioCount=5559; derivedAt=2026-04-28T05:59:41.419096Z. |
@@ -28,11 +28,11 @@ Study: `52eb120f-99d3-4790-a69c-49b6de80cd5e`
 | Statistics Studio parity | Comparison snapshot availability | GET /terraforge/comparison-snapshots | partial | Loaded 238 neighborhood snapshots. Neighborhood-level parity still requires row matching to segment keys. |
 | County Studio | Scenario preview | GET /county-study/scenarios/{scenarioId}/preview | partial | Preview returned for scenario 04f34e2a-6cfe-4adc-9d0c-f10710cc81ca; source recomputation still required. |
 | Fixture leakage | Nonexistent county does not receive Benton data | TerraForge county-stats with fake county scope | yes | Fake county returned HTTP 400, not live Benton-looking data. |
-| Fixture leakage | Static Benton/fallback scan | frontend/backend source scan | partial | Found 1 possible fallback/fixture Benton references requiring review. |
+| Fixture leakage | Static Benton/fallback scan | frontend/backend source scan | yes | Found 173 Benton references, none classified as fallback/fixture by this scanner. |
 
 ## Failures
 
-- Statistics Studio parity: County-sovereign statistics superset claim - Claim remains provisional: Benton-certified reference lanes are still present; possible Benton fallback/fixture references require review.
+- None
 
 ## Warnings
 
@@ -46,7 +46,6 @@ Study: `52eb120f-99d3-4790-a69c-49b6de80cd5e`
 - Statistics Studio parity: Population scope alignment proof - BLOCKED_SCOPE_MISMATCH; rootCause=scope_mismatch_different_population_definitions; countDifference={"countyStudioHealthRatioCount":5559,"terraForgeCountWithRatio":36,"delta":5523}.
 - Statistics Studio parity: Comparison snapshot availability - Loaded 238 neighborhood snapshots. Neighborhood-level parity still requires row matching to segment keys.
 - County Studio: Scenario preview - Preview returned for scenario 04f34e2a-6cfe-4adc-9d0c-f10710cc81ca; source recomputation still required.
-- Fixture leakage: Static Benton/fallback scan - Found 1 possible fallback/fixture Benton references requiring review.
 
 ## Leakage Matches
 
@@ -62,18 +61,15 @@ Study: `52eb120f-99d3-4790-a69c-49b6de80cd5e`
 - frontend/apps/os-shell/src/auth/useSession.ts:22 [dev-session-normalization] countyId: BENTON_DEV_COUNTY_ID,
 - frontend/apps/os-shell/src/auth/useSession.ts:27 [dev-session-normalization] const BENTON_ALIASES = new Set(['5', '005', '53005', 'benton', 'benton county', BENTON_DEV_COUNTY_ID]);
 - frontend/apps/os-shell/src/auth/useSession.ts:33 [dev-session-normalization] return BENTON_ALIASES.has(trimmed.toLowerCase()) ? BENTON_DEV_COUNTY_ID : trimmed;
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:60 [reference] interface BentonMarketDataResponse {
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:207 [reference] function buildMarketCondition(data: BentonMarketDataResponse | undefined) {
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:255 [reference] function buildMarketAnalytics(data: BentonMarketDataResponse | undefined) {
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:283 [reference] function buildEconomicIndicators(data: BentonMarketDataResponse | undefined) {
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:705 [reference] const hasCertifiedBentonReferenceLane = supportsCertifiedCostScheduleLane(activeStudy?.countyId);
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:782 [reference] } = useQuery<BentonMarketDataResponse>({
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:786 [benton-certified-reference-lane] '/costforge/income-approach/market-data/benton',
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:789 [reference] enabled: Boolean(activeStudy?.countyId && countyScope?.isolated && hasCertifiedBentonReferenceLane),
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:966 [reference] {!hasCertifiedBentonReferenceLane ? (
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:972 [reference] The Benton-certified market reference lane is withheld for this county. Statistics
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:973 [reference] Compat will not substitute Benton market data for a non-certified county scope.
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:983 [reference] County Studio could not load the Benton-certified reference lane for this study.
+- frontend/apps/os-shell/src/pages/forge/countyCertification.ts:3 [reference] 'benton',
+- frontend/apps/os-shell/src/pages/forge/countyCertification.ts:14 [reference] const BENTON_MARKET_REFERENCE_LANE: CertifiedReferenceLane = {
+- frontend/apps/os-shell/src/pages/forge/countyCertification.ts:15 [reference] id: 'benton-certified-market-reference',
+- frontend/apps/os-shell/src/pages/forge/countyCertification.ts:16 [reference] label: 'Benton-certified market reference lane',
+- frontend/apps/os-shell/src/pages/forge/countyCertification.ts:17 [reference-only-certified-lane] endpoint: '/costforge/income-approach/market-data/benton', // reference-only; excluded-from-statistics-parity
+- frontend/apps/os-shell/src/pages/forge/countyCertification.ts:43 [reference] return supportsCertifiedCostScheduleLane(countyId) ? BENTON_MARKET_REFERENCE_LANE : null;
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:976 [reference] The Benton-certified market reference lane is withheld for this county. Statistics
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:977 [reference] Compat will not substitute Benton market data for a non-certified county scope.
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:998 [reference] County Studio could not load the Benton-certified reference lane for this study.
 - frontend/apps/os-shell/src/pages/forge/county-studio/hooks/useStudyData.ts:174 [reference] * the actionable part ("HTTP 400: countyId 'benton' is not a valid Guid.").
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CityInspector.test.tsx:57 [test-fixture] studyId: 'study-benton-2026',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CityInspector.test.tsx:58 [test-fixture] countyId: 'benton',
@@ -130,3 +126,6 @@ Study: `52eb120f-99d3-4790-a69c-49b6de80cd5e`
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/RightRail.test.tsx:50 [test-fixture] countyId: 'benton',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/RightRail.test.tsx:51 [test-fixture] countyName: 'Benton County',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/RightRail.test.tsx:130 [test-fixture] expect(screen.getByTestId('right-rail-scope-label')).toHaveTextContent('Benton County');
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ScenarioWorksheet.test.tsx:20 [test-fixture] studyId: 'study-1', countyId: 'benton', taxYear: 2026,
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ScenarioWorksheet.test.tsx:33 [test-fixture] countyId: 'benton',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ScenarioWorksheet.test.tsx:113 [test-fixture] expect(screen.getByTestId('scenario-worksheet-scope')).toHaveTextContent(/benton/i);

@@ -136,6 +136,12 @@ function classifyLeakageLine(line, file) {
   if (/BENTON_DEV_COUNTY_ID|DEFAULT_DEV_SESSION|benton.*alias|BENTON_ALIASES/i.test(line)) {
     return 'dev-session-normalization';
   }
+  if (
+    /income-approach\/market-data\/benton|market-data\/benton/i.test(line)
+    && /reference-only|excluded-from-statistics-parity/i.test(line)
+  ) {
+    return 'reference-only-certified-lane';
+  }
   if (/income-approach\/market-data\/benton|market-data\/benton/i.test(line)) {
     return 'benton-certified-reference-lane';
   }
@@ -152,6 +158,7 @@ function leakageScan() {
   const targets = [
     'frontend/apps/os-shell/src/auth/session.ts',
     'frontend/apps/os-shell/src/auth/useSession.ts',
+    'frontend/apps/os-shell/src/pages/forge/countyCertification.ts',
     'frontend/apps/os-shell/src/pages/forge/county-studio',
     'frontend/apps/os-shell/src/pages/forge/statistics',
     'frontend/apps/os-shell/src/services',
@@ -406,6 +413,9 @@ function postureFromLeakage(leakage, directProof) {
   const possibleFallbacks = leakage.filter(
     (match) => match.classification === 'possible-fallback-or-fixture',
   );
+  const referenceOnlyCertifiedLanes = leakage.filter(
+    (match) => match.classification === 'reference-only-certified-lane',
+  );
 
   const blockers = [];
   if (!directProof.present) blockers.push('direct source-data recomputation is missing');
@@ -414,6 +424,7 @@ function postureFromLeakage(leakage, directProof) {
 
   return {
     bentonReferenceLanes,
+    referenceOnlyCertifiedLanes,
     devSessionNormalizations,
     possibleFallbacks,
     blockers,
@@ -553,6 +564,7 @@ async function main() {
       : `Claim remains provisional: ${posture.blockers.join('; ')}.`,
     {
       bentonReferenceLaneCount: posture.bentonReferenceLanes.length,
+      referenceOnlyCertifiedLaneCount: posture.referenceOnlyCertifiedLanes.length,
       devSessionNormalizationCount: posture.devSessionNormalizations.length,
       possibleFallbackCount: posture.possibleFallbacks.length,
       directSourceProofPresent: directProof.present,

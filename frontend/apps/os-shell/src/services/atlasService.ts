@@ -665,7 +665,7 @@ async function fetchArcGisSearchRecords(
         spatialReference: 4326,
       },
       fieldMapping: ARCGIS_SEARCH_FIELD_MAP,
-      source: 'Direct Benton ArcGIS parcel query fallback',
+      source: 'Direct Benton ArcGIS parcel query secondary path',
     };
   }
 
