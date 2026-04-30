@@ -6,6 +6,7 @@ using TerraFusion.Data;
 using TerraFusion.Sync.Workbench.Atlas;
 using TerraFusion.Sync.Workbench.Mapping;
 using TerraFusion.Sync.Workbench.Pacs;
+using TerraFusion.Sync.Workbench.Schema;
 using TerraFusion.Sync.Workbench.Transforms.Sales;
 
 namespace TerraFusion.Tools.SyncAtlas;
@@ -1206,23 +1207,37 @@ internal static class Program
                 "Internal: workbook-source-column must be all-null or all-set."),
         };
 
+        // Slice C48-H: build the live PACS schema catalog ONLY when the
+        // configKey routes to a case that's been migrated to consume it.
+        // Other cases still use the hand-typed switch arms (migration is
+        // incremental). The catalog build runs the C48-C INFORMATION_SCHEMA
+        // introspection (~1-2s on real Harris PACS); cheaper to skip when
+        // not used.
+        IPacsSchemaCatalog? pacsCatalog = configKey == "property_use"
+            ? await BuildPacsCatalogForSyncAtlasAsync(pacsConnectionString, ct)
+            : null;
+
         var (target, columnConfig, sliceArtifactDir) = configKey switch
         {
-            "property_use" => (
-                new DictionaryLoaderTargetConfig(
-                    WorkbookSourceSchema: "dbo",
-                    WorkbookSourceTable:  "property_val",
-                    WorkbookSourceColumn: "property_use_cd",
-                    PacsDictionarySchema: "dbo",
-                    PacsDictionaryTable:  "property_use",
-                    CanonicalTargetName:  "PropertyUse"),
-                new DictionaryColumnConfig(
-                    CodeColumn:           "property_use_cd",
-                    DescriptionColumn:    "property_use_desc",
-                    ActiveFlagColumn:     null,  // no sys_flag in this PACS instance
-                    ActiveFlagPredicate:  null,
-                    YearColumn:           null), // universe-wide, not year-keyed
-                "c22-b"),
+            // Slice C48-H: property_use case migrated to consume the live
+            // PACS schema catalog. The C48-G equivalence test
+            // (DictionaryConfigFromCatalogTests.Build_PropertyUse_EquivalentToSyncAtlasHardcodedConfig)
+            // proves this produces a config bit-for-bit identical to the
+            // original hand-typed values:
+            //   PacsDictionaryTable = "property_use"
+            //   CodeColumn          = "property_use_cd"
+            //   DescriptionColumn   = "property_use_desc"
+            //   ActiveFlag          = null  (no sys_flag on this PACS instance)
+            //   YearColumn          = null  (universe-wide)
+            // Behavior unchanged; column knowledge now sourced from the
+            // catalog so future schema drift surfaces at startup rather
+            // than as a silent SQL error mid-load.
+            "property_use" => BuildFromCatalog(
+                pacsCatalog!,
+                dictionaryName:    "property_use",
+                workbookSource:    new DictionaryWorkbookSource("dbo", "property_val", "property_use_cd"),
+                canonicalTarget:   "PropertyUse",
+                sliceArtifactDir:  "c22-b"),
             // C27-A — first dictionary-reuse binding. Same dbo.property_use
             // dictionary as C22, but joined against imprv.primary_use_cd
             // (44 NeedsReview → swept to Deferred at P2). DictionaryColumnConfig
@@ -1613,5 +1628,62 @@ internal static class Program
             w.WriteLine($"| `{r.SourceValue.Trim()}` | {r.CanonicalValue ?? "(null)"} | {r.Notes.Replace("|", "\\|")} |");
         }
         w.WriteLine();
+    }
+
+    // ────────────────────────────────────────────────────────────────────────
+    // Slice C48-H — schema catalog wire-up for migrated dictionary loader cases
+    // ────────────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Slice C48-H: builds the live PACS schema catalog from the same
+    /// connection string the dictionary readers use. Called once per
+    /// SyncAtlas run, only when the configKey routes to a migrated case.
+    /// The catalog itself runs INFORMATION_SCHEMA introspection (~1-2s on
+    /// real Harris PACS per C48-E live smoke); skipping the build for
+    /// non-migrated cases keeps the un-changed paths free.
+    /// </summary>
+    private static async Task<IPacsSchemaCatalog> BuildPacsCatalogForSyncAtlasAsync(
+        string pacsConnectionString,
+        CancellationToken ct)
+    {
+        var introspector = new SqlInformationSchemaIntrospector(pacsConnectionString);
+        var liveSource = new LivePacsSchemaSource(
+            introspector,
+            new LivePacsSchemaSourceOptions(
+                SourceLabel:      "syncatlas-live",
+                SchemaName:       "dbo",
+                PacsReleaseLabel: null,
+                InferDictionaries: true));
+        return await PacsSchemaCatalog.BuildAsync(liveSource, ct).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Slice C48-H: switch-arm helper that calls
+    /// <see cref="DictionaryConfigFromCatalog.Build"/> and re-shapes the
+    /// result into the 3-tuple shape SyncAtlas's existing switch
+    /// expression expects (target, columnConfig, sliceArtifactDir). Lets
+    /// each migrated case stay a single readable arm without local-
+    /// variable ceremony inside the switch.
+    /// </summary>
+    private static (DictionaryLoaderTargetConfig target,
+                    DictionaryColumnConfig columnConfig,
+                    string sliceArtifactDir)
+        BuildFromCatalog(
+            IPacsSchemaCatalog catalog,
+            string dictionaryName,
+            DictionaryWorkbookSource workbookSource,
+            string canonicalTarget,
+            string sliceArtifactDir,
+            DictionaryActiveFlag? activeFlag = null,
+            string? yearColumn = null)
+    {
+        var built = DictionaryConfigFromCatalog.Build(
+            catalog: catalog,
+            dictionaryName: dictionaryName,
+            workbookSource: workbookSource,
+            canonicalTargetName: canonicalTarget,
+            activeFlag: activeFlag,
+            yearColumn: yearColumn);
+        return (built.Target, built.Columns, sliceArtifactDir);
     }
 }
