@@ -1490,6 +1490,7 @@ internal static class Program
         ConversionEraPreflightStance? eraStance = configKey switch
         {
             "property_use" => ConversionEraPreflightStance.RequirePost2017OrBoth, // C50-CONV-PROMOTE-A
+            "property_use:imprv.primary_use_cd" => ConversionEraPreflightStance.RequirePost2017OrBoth, // C50-CONV-PROMOTE-B
             _              => null,
         };
 
