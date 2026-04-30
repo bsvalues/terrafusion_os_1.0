@@ -67,6 +67,13 @@ const MODULE_ID_MAP: Record<string, string> = {
   PropertyWorkbench: 'property-workbench',
 };
 
+export const AI_DIAGNOSIS_CONTRACT_POSTURE = {
+  segmentDerivationContractId: 'terraforge_segment_derivation_v1',
+  correctionPriorityContractId: 'terraforge_correction_priority_v1',
+  population: 'County Studio active segment diagnosis over derived segment metrics',
+  trustPosture: 'Deterministic diagnosis routes action from contract-backed segment derivation and correction priority; it is not an independent metric source.',
+} as const;
+
 // ── Helpers ───────────────────────────────────────────────────────────────
 
 function relativeTime(iso: string): string {
@@ -480,6 +487,37 @@ export function AiDiagnosisPanel({
       style={{ display: 'flex', flexDirection: 'column', gap: 10 }}
     >
       <ClassificationBanner dto={diagnosis} />
+
+      <section
+        data-testid="diagnosis-contract-posture"
+        data-segment-contract-id={AI_DIAGNOSIS_CONTRACT_POSTURE.segmentDerivationContractId}
+        data-correction-contract-id={AI_DIAGNOSIS_CONTRACT_POSTURE.correctionPriorityContractId}
+        style={{
+          padding: '8px 10px',
+          border: '1px solid hsl(var(--tf-border))',
+          background: 'hsl(var(--tf-bg))',
+          borderRadius: 4,
+          fontSize: 10,
+          color: 'hsl(var(--tf-muted))',
+          lineHeight: 1.45,
+        }}
+      >
+        <div
+          style={{
+            color: 'hsl(var(--tf-fg))',
+            fontWeight: 700,
+            marginBottom: 2,
+          }}
+        >
+          Contract posture
+        </div>
+        <div style={{ fontFamily: 'ui-monospace, monospace', overflowWrap: 'anywhere' }}>
+          {AI_DIAGNOSIS_CONTRACT_POSTURE.segmentDerivationContractId} ·{' '}
+          {AI_DIAGNOSIS_CONTRACT_POSTURE.correctionPriorityContractId}
+        </div>
+        <div>{AI_DIAGNOSIS_CONTRACT_POSTURE.population}</div>
+        <div>{AI_DIAGNOSIS_CONTRACT_POSTURE.trustPosture}</div>
+      </section>
 
       {diagnosis.findings.length > 0 && (
         <section

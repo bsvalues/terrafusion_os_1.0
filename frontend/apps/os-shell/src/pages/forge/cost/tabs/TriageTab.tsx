@@ -47,6 +47,14 @@ interface MatrixResponse {
   source: string;
 }
 
+export const COSTFORGE_TRIAGE_CONTRACT_CLASSIFICATION = {
+  status: 'future-contract-required',
+  proposedContractId: 'costforge_calibration_priority_v1',
+  population: 'CostForge neighborhood calibration matrix',
+  trustPosture: 'Advisory priority ranking only; do not treat as suite truth until a CostForge calibration-priority contract is registered and proven.',
+  source: '/costforge/calibration/neighborhood-matrix plus /equity/deciles',
+} as const;
+
 function computePriorityScore(hood: NeighborhoodRow): number {
   const codDeviation   = Math.max(0, (hood.cod ?? 0) - 15);
   const ratioDeviation = Math.abs((hood.medianRatio ?? 1.0) - 1.0);
@@ -184,6 +192,21 @@ export function TriageTab() {
 
   return (
     <div>
+      <div
+        className="cf-contract-classification"
+        data-testid="costforge-triage-contract-classification"
+        data-contract-status={COSTFORGE_TRIAGE_CONTRACT_CLASSIFICATION.status}
+        data-proposed-contract-id={COSTFORGE_TRIAGE_CONTRACT_CLASSIFICATION.proposedContractId}
+      >
+        <span className="cf-contract-classification__label">Contract classification</span>
+        <span className="cf-contract-classification__id">
+          {COSTFORGE_TRIAGE_CONTRACT_CLASSIFICATION.proposedContractId}
+        </span>
+        <span className="cf-contract-classification__meta">
+          {COSTFORGE_TRIAGE_CONTRACT_CLASSIFICATION.trustPosture}
+        </span>
+      </div>
+
       <div className="cf-ai-callout">
         <div className="cf-ai-callout__label" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           AI Triage

@@ -138,6 +138,36 @@
 }
 .cf-stats-kpi:last-child { border-bottom: none; }
 .cf-stats-kpi__label { font-size: 0.75rem; color: var(--cf-muted); }
+
+.cf-contract-classification {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in srgb, var(--cf-warn) 32%, transparent);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--cf-warn) 8%, transparent);
+  color: var(--cf-muted);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.cf-contract-classification__label {
+  color: var(--cf-text);
+  font-weight: 700;
+}
+
+.cf-contract-classification__id {
+  color: var(--cf-warn);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  overflow-wrap: anywhere;
+}
+
+.cf-contract-classification__meta {
+  min-width: 260px;
+}
 .cf-stats-kpi__value {
   font-size: 0.8125rem;
   font-weight: 600;
