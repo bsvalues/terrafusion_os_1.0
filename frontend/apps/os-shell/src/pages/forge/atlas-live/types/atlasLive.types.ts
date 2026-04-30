@@ -18,6 +18,9 @@ export interface ActiveOverlay {
   metricKey: string | null;
   values: OverlayValue[];
   styleHints: Record<string, unknown>;
+  contractId?: TerraForgeOverlayContractId;
+  sourcePopulation?: string;
+  trustPosture?: string;
 }
 
 export interface OverlayValue {
@@ -26,6 +29,12 @@ export interface OverlayValue {
   value: number;
   color?: string;
 }
+
+export type TerraForgeOverlayContractId =
+  | 'terraforge_operational_health_v1'
+  | 'terraforge_statistics_compat_v1'
+  | 'terraforge_segment_derivation_v1'
+  | 'terraforge_correction_priority_v1';
 
 // ── Selection Events sent to Forge (Channel C) ────────────────────────────────
 export interface DrawnGeometrySelection {

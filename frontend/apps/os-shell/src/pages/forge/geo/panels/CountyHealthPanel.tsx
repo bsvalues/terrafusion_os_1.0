@@ -6,8 +6,9 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { apiFetchJson } from '@/lib/apiBase';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
+import { useCountyStudioStore } from '@/stores/countyStudioStore';
+import { getCountyTrustPosture } from '../../county-studio/components/ContractLineage';
 import { computeMoransI } from '../utils/spatialStats';
-import { computeEquityIndex } from '../utils/equityIndex';
 
 interface TrendYear {
   taxYear: number;
@@ -19,13 +20,13 @@ interface TrendYear {
   iaaoPass?: boolean;
 }
 
-function GaugeBar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
-  const pct = Math.min(100, (value / max) * 100);
+function GaugeBar({ label, value, max, color }: { label: string; value: number | null; max: number; color: string }) {
+  const pct = value === null ? 0 : Math.min(100, (value / max) * 100);
   return (
     <div>
       <div className="flex justify-between text-[9px] mb-0.5">
         <span className="text-slate-500">{label}</span>
-        <span className="font-mono" style={{ color }}>{value.toFixed(1)}</span>
+        <span className="font-mono" style={{ color }}>{value === null ? 'unavailable' : value.toFixed(1)}</span>
       </div>
       <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
         <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: color }} />
@@ -36,6 +37,10 @@ function GaugeBar({ label, value, max, color }: { label: string; value: number; 
 
 export function CountyHealthPanel() {
   const { neighborhoodStats, selectNeighborhood, openDrawer, filter, loadingStats } = useGeoForgeStore();
+  const { activeStudy, healthSummary } = useCountyStudioStore();
+  const operationalHealth = healthSummary?.contractId === 'terraforge_operational_health_v1'
+    ? healthSummary
+    : null;
 
   const { data: trendData } = useQuery<TrendYear[]>({
     queryKey: ['geoforge-county-trend', filter.taxYear],
@@ -53,23 +58,9 @@ export function CountyHealthPanel() {
 
   const moransI = useMemo(() => computeMoransI(neighborhoodStats), [neighborhoodStats]);
 
-  const county = useMemo(() => {
+  const spatialContext = useMemo(() => {
     if (neighborhoodStats.length === 0) return null;
     const withSales = neighborhoodStats.filter(ns => ns.saleCount >= 1);
-    const totalSales = withSales.reduce((s, ns) => s + ns.saleCount, 0);
-
-    const wAvg = (fn: (ns: typeof withSales[0]) => number) =>
-      withSales.reduce((s, ns) => s + fn(ns) * ns.saleCount, 0) / totalSales;
-
-    const medianRatio = wAvg(ns => ns.stats.medianRatio);
-    const cod = wAvg(ns => ns.stats.cod);
-    const prd = wAvg(ns => ns.stats.prd);
-    const prb = wAvg(ns => ns.stats.prb);
-
-    const compliant = withSales.filter(
-      ns => ns.stats.medianRatio >= 0.95 && ns.stats.medianRatio <= 1.05 && ns.stats.cod <= 20
-    );
-    const passRate = withSales.length > 0 ? (compliant.length / withSales.length) * 100 : 0;
 
     const worst5 = [...withSales]
       .sort((a, b) => Math.abs(b.stats.medianRatio - 1) - Math.abs(a.stats.medianRatio - 1))
@@ -83,164 +74,95 @@ export function CountyHealthPanel() {
       { band: '20+', count: withSales.filter(ns => ns.stats.cod >= 20).length },
     ];
 
-    const ratioDistrib = [
-      { band: '<0.85', count: withSales.filter(ns => ns.stats.medianRatio < 0.85).length },
-      { band: '0.85-0.90', count: withSales.filter(ns => ns.stats.medianRatio >= 0.85 && ns.stats.medianRatio < 0.90).length },
-      { band: '0.90-0.95', count: withSales.filter(ns => ns.stats.medianRatio >= 0.90 && ns.stats.medianRatio < 0.95).length },
-      { band: '0.95-1.05', count: withSales.filter(ns => ns.stats.medianRatio >= 0.95 && ns.stats.medianRatio <= 1.05).length },
-      { band: '1.05-1.10', count: withSales.filter(ns => ns.stats.medianRatio > 1.05 && ns.stats.medianRatio <= 1.10).length },
-      { band: '1.10-1.15', count: withSales.filter(ns => ns.stats.medianRatio > 1.10 && ns.stats.medianRatio <= 1.15).length },
-      { band: '>1.15', count: withSales.filter(ns => ns.stats.medianRatio > 1.15).length },
-    ];
-
-    return { medianRatio, cod, prd, prb, passRate, compliant: compliant.length, total: withSales.length, totalSales, worst5, codDistrib, ratioDistrib };
+    return { total: withSales.length, worst5, codDistrib };
   }, [neighborhoodStats]);
 
-  const eqi = useMemo(() => {
-    if (!county) return null;
-    return computeEquityIndex({
-      cwMed: county.medianRatio,
-      cwCod: county.cod,
-      cwPrd: county.prd,
-      passRate: county.passRate / 100,
-      moransI: moransI?.I ?? 0,
-      totalSales: county.totalSales,
-      totalNbhds: county.total,
-    });
-  }, [county, moransI]);
-
-  if (!county) {
+  if (!operationalHealth) {
     return (
-      <div className="flex items-center justify-center h-40 text-slate-500 text-sm gap-2">
+      <div className="flex flex-col items-center justify-center h-40 text-slate-500 text-sm gap-2 px-4 text-center">
         {loadingStats ? (
-          <><span className="animate-spin inline-block text-terra-cyan">⟳</span> Loading county stats…</>
+          <><span className="animate-spin inline-block text-terra-cyan">⟳</span> Loading contract-backed county health…</>
         ) : (
-          'No data loaded.'
+          <>
+            <span>Contract-backed county health is unavailable.</span>
+            <span className="text-[10px] text-slate-600">
+              Open or derive a County Studio study so GeoForge can consume terraforge_operational_health_v1 instead of recomputing county truth locally.
+            </span>
+          </>
         )}
       </div>
     );
   }
 
-  const passColor = county.passRate >= 90 ? '#4ade80' : county.passRate >= 75 ? '#fbbf24' : '#f87171';
-  const ratioColor = county.medianRatio >= 0.95 && county.medianRatio <= 1.05 ? '#4ade80'
-    : county.medianRatio >= 0.90 && county.medianRatio <= 1.10 ? '#fbbf24' : '#f87171';
-  const codColor = county.cod <= 15 ? '#4ade80' : county.cod <= 20 ? '#fbbf24' : '#f87171';
+  const totalSegments = operationalHealth.criticalCount + operationalHealth.warningCount + operationalHealth.healthyCount;
+  const passRate = totalSegments > 0 ? (operationalHealth.healthyCount / totalSegments) * 100 : 0;
+  const passColor = passRate >= 90 ? '#4ade80' : passRate >= 75 ? '#fbbf24' : '#f87171';
+  const ratioColor = operationalHealth.medianRatio === null ? '#64748b'
+    : operationalHealth.medianRatio >= 0.95 && operationalHealth.medianRatio <= 1.05 ? '#4ade80'
+      : operationalHealth.medianRatio >= 0.90 && operationalHealth.medianRatio <= 1.10 ? '#fbbf24' : '#f87171';
+  const codColor = operationalHealth.cod === null ? '#64748b'
+    : operationalHealth.cod <= 15 ? '#4ade80' : operationalHealth.cod <= 20 ? '#fbbf24' : '#f87171';
+  const prdColor = operationalHealth.prd !== null && operationalHealth.prd >= 0.98 && operationalHealth.prd <= 1.03 ? '#4ade80' : '#fbbf24';
+  const trustPosture = getCountyTrustPosture(activeStudy?.countyName, activeStudy?.countyId ?? operationalHealth.countyId);
 
   return (
     <div className="flex flex-col gap-4 p-4 overflow-y-auto h-full">
 
-      {/* County Equity Index headline */}
-      {eqi && (
-        <div className="bg-slate-900/60 border rounded-md px-4 py-3" style={{ borderColor: eqi.color + '66' }}>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[8px] text-slate-500 uppercase tracking-wider">County Equity Index</span>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] text-slate-500 font-mono">WAC 458-53A</span>
-              <span
-                className="text-xs font-bold px-1.5 py-0.5 rounded border"
-                style={{ color: eqi.color, borderColor: eqi.color + '60', background: eqi.color + '18' }}
-              >
-                {eqi.grade}
-              </span>
-            </div>
+      {/* Contract-backed county health headline */}
+      <div data-testid="geoforge-contract-lineage" className="bg-slate-900/60 border border-slate-700/60 rounded-md px-4 py-3">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[8px] text-slate-500 uppercase tracking-wider">Operational Health Contract</span>
+          <span className="text-[9px] text-terra-cyan font-mono">{operationalHealth.contractId}</span>
+        </div>
+        <div className="grid grid-cols-2 gap-2 text-[10px]">
+          <div className="bg-slate-950/60 rounded px-2 py-1">
+            <div className="text-slate-600 uppercase text-[7px]">Correction Contract</div>
+            <div className="font-mono text-slate-200">{operationalHealth.correctionPriorityContractId}</div>
           </div>
-          <div className="flex items-end gap-3 mb-2">
-            <span className="text-4xl font-mono font-bold leading-none" style={{ color: eqi.color }}>
-              {eqi.score}
-            </span>
-            <span className="text-slate-500 text-sm mb-1">/ 100</span>
-          </div>
-          <div className="h-2 bg-slate-800 rounded-full overflow-hidden mb-3">
-            <div
-              className="h-full rounded-full transition-all"
-              style={{ width: `${eqi.score}%`, backgroundColor: eqi.color }}
-            />
-          </div>
-          <div className="grid grid-cols-3 gap-1">
-            {([
-              { label: 'Ratio', score: eqi.components.ratio, weight: 25 },
-              { label: 'COD', score: eqi.components.cod, weight: 20 },
-              { label: 'PRD', score: eqi.components.prd, weight: 15 },
-              { label: 'Pass%', score: eqi.components.passRate, weight: 25 },
-              { label: 'Spatial', score: eqi.components.spatial, weight: 10 },
-              { label: 'Adequacy', score: eqi.components.adequacy, weight: 5 },
-            ] as { label: string; score: number; weight: number }[]).map(({ label, score: s, weight }) => {
-              const pts = Math.round(s * weight);
-              const cmpColor = pts >= weight * 0.85 ? '#4ade80' : pts >= weight * 0.60 ? '#fbbf24' : '#f87171';
-              return (
-                <div key={label} className="bg-slate-950/60 rounded px-1.5 py-1">
-                  <div className="flex justify-between items-baseline mb-0.5">
-                    <span className="text-[7px] text-slate-600">{label}</span>
-                    <span className="text-[8px] font-mono font-bold" style={{ color: cmpColor }}>
-                      {pts}/{weight}
-                    </span>
-                  </div>
-                  <div className="h-0.5 bg-slate-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full"
-                      style={{ width: `${Math.round(s * 100)}%`, backgroundColor: cmpColor }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+          <div className="bg-slate-950/60 rounded px-2 py-1">
+            <div className="text-slate-600 uppercase text-[7px]">Trust Posture</div>
+            <div className="text-slate-200">{trustPosture}</div>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Pass rate gauge */}
       <div className="bg-slate-900/60 border border-slate-700/60 rounded-md px-4 py-3">
         <div className="flex items-center justify-between mb-2">
           <span className="text-[8px] text-slate-500 uppercase tracking-wider">County Pass Rate</span>
-          <span className="text-xs text-slate-500">{county.compliant} / {county.total} nbhds</span>
+          <span className="text-xs text-slate-500">{operationalHealth.healthyCount} / {totalSegments} segments</span>
         </div>
         <div className="flex items-end gap-3">
           <span className="text-3xl font-mono font-bold" style={{ color: passColor }}>
-            {county.passRate.toFixed(0)}%
+            {passRate.toFixed(0)}%
           </span>
-          <span className="text-[9px] text-slate-500 mb-1">IAAO compliant<br />(MED 0.95–1.05 &amp; COD ≤20)</span>
+          <span className="text-[9px] text-slate-500 mb-1">Healthy segments<br />from operational health contract</span>
         </div>
         <div className="mt-2 h-2 bg-slate-800 rounded-full overflow-hidden">
-          <div className="h-full rounded-full" style={{ width: `${county.passRate}%`, backgroundColor: passColor }} />
+          <div className="h-full rounded-full" style={{ width: `${passRate}%`, backgroundColor: passColor }} />
         </div>
       </div>
 
       {/* Key metrics */}
       <div>
-        <h4 className="text-[8px] text-slate-500 uppercase tracking-wider mb-2">County-Wide Metrics (Sales-Weighted)</h4>
+        <h4 className="text-[8px] text-slate-500 uppercase tracking-wider mb-2">County-Wide Metrics (Operational Health)</h4>
         <div className="space-y-2">
-          <GaugeBar label="Median Ratio (target 0.95–1.05)" value={county.medianRatio} max={1.3} color={ratioColor} />
-          <GaugeBar label="COD (target ≤15, max 20)" value={county.cod} max={30} color={codColor} />
-          <GaugeBar label="PRD (target 0.98–1.03)" value={county.prd} max={1.10} color={county.prd >= 0.98 && county.prd <= 1.03 ? '#4ade80' : '#fbbf24'} />
+          <GaugeBar label="Median Ratio (target 0.95–1.05)" value={operationalHealth.medianRatio} max={1.3} color={ratioColor} />
+          <GaugeBar label="COD (target ≤15, max 20)" value={operationalHealth.cod} max={30} color={codColor} />
+          <GaugeBar label="PRD (target 0.98–1.03)" value={operationalHealth.prd} max={1.10} color={prdColor} />
         </div>
         <div className="mt-2 flex gap-4 text-[9px] text-slate-500">
-          <span>Total sales: <span className="text-white font-mono">{county.totalSales}</span></span>
-          <span>PRB: <span className="text-white font-mono">{(county.prb >= 0 ? '+' : '') + county.prb.toFixed(3)}</span></span>
+          <span>Ratio count: <span className="text-white font-mono">{operationalHealth.ratioCount.toLocaleString()}</span></span>
+          <span>Parcels: <span className="text-white font-mono">{operationalHealth.parcelCount.toLocaleString()}</span></span>
         </div>
-      </div>
-
-      {/* Ratio distribution */}
-      <div>
-        <h4 className="text-[8px] text-slate-500 uppercase tracking-wider mb-2">Ratio Distribution (Neighborhoods)</h4>
-        <ResponsiveContainer width="100%" height={90}>
-          <BarChart data={county.ratioDistrib} margin={{ top: 0, right: 4, bottom: 0, left: -20 }}>
-            <XAxis dataKey="band" tick={{ fontSize: 7, fill: '#64748b' }} interval={0} />
-            <YAxis tick={{ fontSize: 7, fill: '#64748b' }} />
-            <Tooltip
-              contentStyle={{ background: '#0f172a', border: '1px solid #334155', fontSize: 10 }}
-              formatter={(v: number) => [v, 'neighborhoods']}
-            />
-            <ReferenceLine x="0.95-1.05" stroke="#4ade80" strokeOpacity={0.4} />
-            <Bar dataKey="count" fill="#06b6d4" radius={[2, 2, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
       </div>
 
       {/* COD distribution */}
+      {spatialContext && (
       <div>
-        <h4 className="text-[8px] text-slate-500 uppercase tracking-wider mb-2">COD Distribution (Neighborhoods)</h4>
+        <h4 className="text-[8px] text-slate-500 uppercase tracking-wider mb-2">Spatial Context: COD Distribution (Reference)</h4>
         <ResponsiveContainer width="100%" height={75}>
-          <BarChart data={county.codDistrib} margin={{ top: 0, right: 4, bottom: 0, left: -20 }}>
+          <BarChart data={spatialContext.codDistrib} margin={{ top: 0, right: 4, bottom: 0, left: -20 }}>
             <XAxis dataKey="band" tick={{ fontSize: 7, fill: '#64748b' }} />
             <YAxis tick={{ fontSize: 7, fill: '#64748b' }} />
             <Tooltip
@@ -251,6 +173,7 @@ export function CountyHealthPanel() {
           </BarChart>
         </ResponsiveContainer>
       </div>
+      )}
 
       {/* 5-Year County Trend */}
       {trendRows.length >= 2 && (
@@ -269,11 +192,11 @@ export function CountyHealthPanel() {
               <Tooltip
                 contentStyle={{ background: '#0f172a', border: '1px solid #334155', fontSize: 9 }}
                 formatter={(v: number, name: string) => [
-                  name === 'medianRatio' ? v.toFixed(3) : name === 'cod' ? v.toFixed(1) : v.toFixed(3),
+              name === 'medianRatio' ? v.toFixed(3) : name === 'cod' ? v.toFixed(1) : v.toFixed(3),
                   name === 'medianRatio' ? 'Median Ratio' : name === 'cod' ? 'COD/20 (scaled)' : 'PRD',
                 ]}
               />
-              {/* IAAO parity band */}
+              {/* Reference IAAO parity band. Operational health metrics above are contract-backed. */}
               <Area
                 type="monotone"
                 dataKey={() => 1.05}
@@ -344,7 +267,7 @@ export function CountyHealthPanel() {
             </p>
           ) : (
             <p className="text-[8px] text-slate-600">
-              I &gt; 0.30 = geographic bias warranting DOR review. Scale: −1 (dispersed) → 0 (random) → +1 (clustered).
+              I &gt; 0.30 = geographic bias warranting DOR review. Spatial diagnostic is supplemental to the operational health contract.
             </p>
           )}
         </div>
@@ -362,7 +285,7 @@ export function CountyHealthPanel() {
           </button>
         </div>
         <div className="space-y-1">
-          {county.worst5.map(ns => {
+          {(spatialContext?.worst5 ?? []).map(ns => {
             const dev = Math.abs(ns.stats.medianRatio - 1);
             const color = dev < 0.05 ? '#4ade80' : dev < 0.10 ? '#fbbf24' : '#f87171';
             return (

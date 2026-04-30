@@ -1,17 +1,17 @@
 # Contract Adoption Audit
 
-Checked: 2026-04-30T21:52:27.090Z
+Checked: 2026-04-30T22:27:08.561Z
 Status: PASS_WITH_ADOPTION_GAPS
 Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 
 ## Summary
 
 - Surfaces audited: 17
-- Pass: 7
+- Pass: 9
 - Partial: 0
-- Gap: 8
+- Gap: 6
 - Out of scope for current four contracts: 2
-- Migration needed: 10
+- Migration needed: 8
 
 ## Matrix
 
@@ -25,9 +25,9 @@ Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 | County Studio correction and defense panel | Shows defense readiness, county posture, correction counts, and evidence readiness. | yes | `terraforge_correction_priority_v1`<br>`terraforge_operational_health_v1` | ui | no | pass | Defense readiness now exposes operational contract id, correction priority contract id, and county trust posture alongside current anchors. |
 | County Studio AI diagnosis panel | Displays deterministic findings, evidence values, and recommended actions. | no | none | no | yes | gap | Diagnosis output is metric-shaped and action-shaping, but no contract id, population, or proof artifact is visible in the response or UI. |
 | Evidence packet modal and markdown export | Exports DOR-defensible packet with correction-priority contract id and segment signals. | yes | `terraforge_correction_priority_v1` | partial | no | pass | Correction contract is visible. A future improvement can attach county trust tier directly. |
-| Atlas Live overlay manager | Colors parcels for ratio-like metric overlays, scenario deltas, cohort shading, and edge warnings. | no | none | no | yes | gap | Overlay values are styled by local threshold helpers without a contract id or source population. |
+| Atlas Live overlay manager | Colors parcels for ratio-like metric overlays, scenario deltas, cohort shading, and edge warnings. | yes | `terraforge_segment_derivation_v1`<br>`terraforge_statistics_compat_v1`<br>`terraforge_correction_priority_v1` | feature-state | no | pass | Overlay feature state now carries atlasContractId, atlasSourcePopulation, and atlasTrustPosture; default overlay mappings preserve contract lineage when projections omit explicit metadata. |
 | Atlas Live county context | Loads Washington launch county status, Benton compatibility geometry, staged sales, and review counts. | no | none | partial | yes | gap | It labels geometry availability, but Washington 39-county launch status remains outside the registered suite metric contracts. |
-| GeoForge county health panel | Computes sales-weighted median ratio, COD, PRD, PRB, pass rate, equity index, and worst neighborhoods client-side. | no | none | no | yes | gap | This is the largest adoption gap: it recomputes county health-like truth locally instead of consuming terraforge_operational_health_v1 or statistics compat output. |
+| GeoForge county health panel | Displays contract-backed operational health metrics and keeps neighborhood spatial diagnostics clearly supplemental. | yes | `terraforge_operational_health_v1`<br>`terraforge_correction_priority_v1` | ui | no | pass | Countywide metrics now come from County Studio healthSummary and visibly show operational contract id, correction priority contract id, and trust posture; local neighborhood calculations are limited to supplemental spatial context. |
 | CostForge triage tab | Computes AI priority score from COD deviation, median-ratio deviation, PRB deviation, and sale count. | no | none | no | yes | gap | The priority formula is local and not registered as correction priority or a separate CostForge calibration contract. |
 | SalesForge running stats | Displays qualification counts, median ratio, weighted mean, COD, PRD, PRB, and IAAO compliance. | no | none | no | yes | gap | This should either adopt statistics_ratio_study_compat_v1 semantics or declare a distinct sale-qualification running-stats contract. |
 | SalesForge ratio audit | Filters qualified sales, sorts by ratio, and flags outliers using local thresholds. | no | none | no | yes | gap | Qualification and outlier behavior overlaps the Statistics Compat population contract but is not explicitly tied to it. |
@@ -40,9 +40,7 @@ Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 | Surface | Status | Path | Notes |
 | --- | --- | --- | --- |
 | County Studio AI diagnosis panel | gap | frontend/apps/os-shell/src/pages/forge/county-studio/components/AiDiagnosisPanel.tsx | Diagnosis output is metric-shaped and action-shaping, but no contract id, population, or proof artifact is visible in the response or UI. |
-| Atlas Live overlay manager | gap | frontend/apps/os-shell/src/pages/forge/atlas-live/components/AtlasOverlayManager.tsx | Overlay values are styled by local threshold helpers without a contract id or source population. |
 | Atlas Live county context | gap | frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts | It labels geometry availability, but Washington 39-county launch status remains outside the registered suite metric contracts. |
-| GeoForge county health panel | gap | frontend/apps/os-shell/src/pages/forge/geo/panels/CountyHealthPanel.tsx | This is the largest adoption gap: it recomputes county health-like truth locally instead of consuming terraforge_operational_health_v1 or statistics compat output. |
 | CostForge triage tab | gap | frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx | The priority formula is local and not registered as correction priority or a separate CostForge calibration contract. |
 | SalesForge running stats | gap | frontend/apps/os-shell/src/pages/forge/sales/components/RunningStatsPanel.tsx | This should either adopt statistics_ratio_study_compat_v1 semantics or declare a distinct sale-qualification running-stats contract. |
 | SalesForge ratio audit | gap | frontend/apps/os-shell/src/pages/forge/sales/panels/RatioAuditPanel.tsx | Qualification and outlier behavior overlaps the Statistics Compat population contract but is not explicitly tied to it. |
@@ -56,8 +54,7 @@ Decision: CONTRACT_LAYER_LIVE_ADOPTION_GAPS_FOUND
 
 ## Next Closures
 
-- Add visible contract/trust posture badges to County Studio command, health, and correction-defense panels.
-- Move GeoForge county health and Atlas metric overlays to consume contract-backed County Studio/Statistics Compat outputs or label them as uncontracted diagnostics.
 - Bring SalesForge running stats and ratio audit under statistics_ratio_study_compat_v1 or register a distinct sale-qualification stats contract.
+- Close Atlas Live county context, County Studio AI diagnosis, and legacy statistics API client contract posture gaps.
 - Register future CostForge and CompsForge domain contracts before treating their calculations as suite truth.
 

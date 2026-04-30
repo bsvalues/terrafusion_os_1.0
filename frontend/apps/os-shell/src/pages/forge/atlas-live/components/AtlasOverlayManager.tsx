@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useAtlasLiveStore } from '@/stores/atlasLiveStore';
+import type { ActiveOverlay, TerraForgeOverlayContractId } from '../types/atlasLive.types';
 
 function ratioToColor(ratio: number): string {
   if (ratio < 0.85) return '#ef4444';
@@ -47,6 +48,39 @@ function applyColorForOverlayValue(overlayType: string, value: number, styleHint
   }
 }
 
+function defaultOverlayContractId(overlay: ActiveOverlay): TerraForgeOverlayContractId {
+  if (overlay.contractId) return overlay.contractId;
+  switch (overlay.type) {
+    case 'scenario-delta':
+      return 'terraforge_correction_priority_v1';
+    case 'cohort-shade':
+    case 'edge-warnings':
+      return 'terraforge_segment_derivation_v1';
+    case 'compare-overlay':
+      return 'terraforge_statistics_compat_v1';
+    case 'metric-overlay':
+    default:
+      return 'terraforge_segment_derivation_v1';
+  }
+}
+
+function defaultOverlayPopulation(overlay: ActiveOverlay): string {
+  if (overlay.sourcePopulation) return overlay.sourcePopulation;
+  switch (overlay.type) {
+    case 'scenario-delta':
+      return 'approved scenario preview parcels';
+    case 'cohort-shade':
+      return 'County Studio cohort parcel set';
+    case 'edge-warnings':
+      return 'segment derivation boundary warnings';
+    case 'compare-overlay':
+      return 'statistics_ratio_study_compat_v1 shared population';
+    case 'metric-overlay':
+    default:
+      return overlay.metricKey ? `segment_derivation.${overlay.metricKey}` : 'segment derivation metric population';
+  }
+}
+
 export function AtlasOverlayManager({ map }: Props) {
   const { activeOverlays } = useAtlasLiveStore();
   const previousParcelIdsRef = useRef<string[]>([]);
@@ -79,6 +113,9 @@ export function AtlasOverlayManager({ map }: Props) {
     }
 
     const nextParcelIds: string[] = [];
+    const contractId = defaultOverlayContractId(latestOverlay);
+    const sourcePopulation = defaultOverlayPopulation(latestOverlay);
+    const trustPosture = latestOverlay.trustPosture ?? 'contract-backed overlay projection';
 
     latestOverlay.values.forEach((value) => {
       if (!value.parcelId) return;
@@ -94,6 +131,9 @@ export function AtlasOverlayManager({ map }: Props) {
               latestOverlay.styleHints,
               value.color,
             ),
+            atlasContractId: contractId,
+            atlasSourcePopulation: sourcePopulation,
+            atlasTrustPosture: trustPosture,
           },
         );
       } catch {
