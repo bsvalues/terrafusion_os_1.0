@@ -1,13 +1,34 @@
 # PACS Schema Catalog — Conversion-Manifest Policy
 
-**Slice:** C50-CONV-A (docs-only — first slice of the C50 family.
-Defines the contract for adding conversion-provenance metadata to
-the PACS schema catalog before any implementation. C50-CONV-B will
-land the parser + catalog data model + tests against this contract.).
+**Slice:** C50-CONV-A + C50-CONV-A1 corrigendum (docs-only — first
+slice of the C50 family plus its narrow corrigendum. Defines the
+contract for adding conversion-provenance metadata to the PACS
+schema catalog before any implementation. C50-CONV-B will land the
+parser + catalog data model + tests against this contract.).
 **Lifecycle layer:** Core Sync — schema infrastructure (C48-CLOSE
 deferred-scope index, row `C50-CONV-*`). Extends the C48 catalog
 with conversion-era metadata; does NOT reopen C48.
-**Status:** policy locked; C50-CONV-B implementation deferred.
+**Status:** policy locked (C50-CONV-A merged at f653821c7;
+reconciled with shipped enum at C50-CONV-A1); C50-CONV-B
+implementation deferred.
+
+## C50-CONV-A1 corrigendum
+
+The original C50-CONV-A draft of this doc proposed a
+`PacsConversionEra` enum with values `Operational /
+ConversionOnly / Both / Unknown`. That conflicted with the enum
+that already ships from C48-B at
+`backend/src/TerraFusion.Sync/Workbench/Schema/PacsConversionEra.cs`,
+which uses time-of-population semantics: `Pre2017 / Post2017 /
+Both / Unknown`. C49-FK-A's data-model snippet also references
+that existing enum name.
+
+C50-CONV-A1 reconciles this doc with the shipped enum. The hard
+guards (CONV-1 operator-supplied, CONV-2 Unknown-is-sentinel,
+CONV-3 explicit-RequireConversionManifest) are unchanged — they
+govern manifest *sourcing*, not enum values. The data-model
+section below uses the shipped names. C50-CONV-B implements
+against the shipped enum verbatim.
 
 **Authoritative cross-references:**
 
@@ -59,8 +80,8 @@ operational columns. Three concrete failure modes follow:
 
 A conversion manifest fixes this by tagging tables and columns with
 their **ConversionEra**, so consumers that need operational truth
-can filter to `Operational` or `Both`, and consumers that need
-historical lookup (rare) can opt in to `ConversionOnly`.
+can filter to `Post2017` or `Both`, and consumers that need
+historical lookup (rare) can opt in to `Pre2017`.
 
 The manifest does NOT mutate PACS, drop catalog rows, or block the
 loader — it is a metadata layer the catalog carries and that
@@ -72,22 +93,36 @@ gets explicit" principle.
 C50-CONV-B materializes the concrete records. The shape below is the
 binding contract.
 
-### `PacsConversionEra`
+### `PacsConversionEra` (shipped from C48-B; not redefined here)
+
+The enum already exists in
+`backend/src/TerraFusion.Sync/Workbench/Schema/PacsConversionEra.cs`
+with these values:
 
 ```text
-- Operational     : column / table is part of current PACS workflow.
-                    Default for unannotated catalog items, IF the
-                    manifest is loaded; otherwise see HG-CONV-3.
-- ConversionOnly  : column / table holds only pre-2017 conversion
-                    data; not maintained by current workflows.
-- Both            : column / table was populated during conversion
-                    AND is still maintained operationally. Treated
-                    as Operational by default consumers.
-- Unknown         : reserved sentinel. Cannot be set by manifest;
-                    only appears when the manifest is absent
-                    (HG-CONV-3 fail-closed-or-fail-explicit). NEVER
-                    treated as a default.
+- Unknown   = 0  : sentinel. The catalog records this when the
+                   conversion manifest does not declare the column
+                   or table. NEVER treated as a default.
+- Pre2017   = 1  : column / table was populated only before the
+                   2017 conversion. Equivalent to "conversion-only"
+                   in plain language: not maintained by current
+                   PACS workflows. Readers running against post-
+                   2017 data MUST treat as effectively absent.
+- Post2017  = 2  : column / table was introduced or re-populated
+                   after the 2017 conversion. Equivalent to
+                   "operational" in plain language: maintained by
+                   current workflows. Readers running against
+                   pre-2017 data MUST treat as effectively absent.
+- Both      = 3  : column / table was populated continuously
+                   across the 2017 conversion cut. Safe for
+                   readers spanning the cut. The default era for
+                   stable identity columns (e.g., PK columns).
 ```
+
+C50-CONV-B does NOT add a new enum. It adds the manifest layer
+that lets the operator assign one of the four values above to
+each catalog item explicitly, and wires the catalog to apply those
+assignments at build time.
 
 ### `PacsTable.ConversionEra` (additive)
 
@@ -133,7 +168,7 @@ Defaults to `Unknown` when no manifest is loaded.
 
 The manifest is **operator-curated**, never inferred. There is no
 heuristic equivalent of C48-F or C49-FK's `InferredByName` for
-conversion-era. Inferring an item as `ConversionOnly` from naming
+conversion-era. Inferring an item as `Pre2017` from naming
 patterns alone (e.g., "any column starting with `proval_`") would
 miss real-world cases where conversion artifacts wear operational
 names, and would catch real-world cases where operational columns
@@ -176,17 +211,21 @@ The `PacsConversionEra.Unknown` value exists ONLY to represent the
 state where no manifest is loaded for the source. It MUST NOT be
 written into a manifest, MUST NOT be the result of merging two
 manifests with different opinions (that's a manifest-validation
-failure), and MUST NOT be promoted to `Operational` silently.
+failure), and MUST NOT be promoted to any other era silently.
 
 When a column is annotated in the manifest, its era is whatever the
-manifest says. When a column is NOT annotated and the manifest IS
-loaded, the column's era is `Operational` (per HG-CONV-3 below).
-When the manifest is NOT loaded, every catalog item's era is
+manifest says (`Pre2017`, `Post2017`, or `Both`). When a column is
+NOT annotated and the manifest IS loaded, the column's era stays
+`Unknown` for that column — the manifest only narrows what it
+explicitly covers; un-annotated columns are NOT auto-promoted to
+`Both` or `Post2017` (per HG-CONV-1 there is no inference step).
+When the manifest is NOT loaded at all, every catalog item's era is
 `Unknown`.
 
-This guard exists so that "no manifest loaded" produces an obviously
-broken read pattern (Unknown propagates), not a quietly incorrect
-read pattern (Unknown silently aliasing Operational).
+This guard exists so that "no manifest loaded" or "this column not
+in the manifest" both produce an obviously broken read pattern
+(Unknown propagates), not a quietly incorrect read pattern (Unknown
+silently aliasing `Both` or `Post2017`).
 
 ### Hard Guard CONV-3 — manifest absence is explicit, not implied
 
@@ -201,7 +240,7 @@ manifest:
   table receives `Era = Unknown`. Consumers that depend on era
   metadata (per the future C50-CONV-C consumer-migration policy)
   see `Unknown` and must surface that as a failure or a degraded
-  mode — they MUST NOT treat `Unknown` as `Operational`.
+  mode — they MUST NOT treat `Unknown` as `Both` or `Post2017`.
 
 There is no default. The flag must be set explicitly at the call
 site. (Same shape as C49-FK-C's `DictionaryLoaderPreflightStance`
@@ -228,7 +267,7 @@ the binding contract for the SHAPE, not the syntax):
   "tables": [
     {
       "name": "pp_seg_history",
-      "era": "ConversionOnly",
+      "era": "Pre2017",
       "reason": "Pre-2017 personal-property segment snapshots; never written to by current PACS workflow.",
       "lastWriteEvidence": "evidence/pp_seg_history-last-write-probe-2026-04-30.json"
     }
@@ -237,7 +276,7 @@ the binding contract for the SHAPE, not the syntax):
     {
       "table": "imprv_detail",
       "column": "ascend_orig_meth_cd",
-      "era": "ConversionOnly",
+      "era": "Pre2017",
       "reason": "Carried over from Ascend during 2017 conversion; PACS uses imprv_det_meth_cd now."
     }
   ]
@@ -272,8 +311,8 @@ Mirrors C49-FK-C. Defines how downstream readers (dictionary
 loaders, comp readers, mapping workbench) consult `ConversionEra`.
 Includes:
 
-- A per-call-site stance enum: `RequireOperational` /
-  `AllowConversionOnly` / `AllowAny`.
+- A per-call-site stance enum: `RequirePost2017OrBoth` /
+  `AllowPre2017` / `AllowAny`.
 - An explicit failure mode for `Unknown` (caller MUST surface).
 - A scoreboard of which consumers have migrated.
 
@@ -400,8 +439,10 @@ This slice is docs-only. Acceptance criteria:
 
 This is the first slice of the C50-CONV family. Anticipated arc:
 
-- C50-CONV-A : this doc (policy lock).
-- C50-CONV-B : parser + catalog data model + unit tests.
+- C50-CONV-A  : this doc (policy lock; merged f653821c7).
+- C50-CONV-A1 : corrigendum reconciling the doc's data model with
+                the shipped C48-B `PacsConversionEra` enum.
+- C50-CONV-B  : parser + catalog data model + unit tests.
 - C50-CONV-C : consumer migration policy (analog of C49-FK-C).
 - C50-CONV-D : manifest authoring tooling.
 - C50-CONV-E : multi-conversion-event support (deferred).
