@@ -6,10 +6,10 @@
  *
  * Verified correct layout (current HEAD):
  *   PRIMARY   : CostForge, CompsForge, IncomeForge (queued), SalesForge
- *   SECONDARY : Statistics Studio (temporary parity source),
+ *   SECONDARY : Statistics Studio (legacy/ad hoc VEI exploration),
  *               Batch Cost Runs, Regression Studio (queued),
  *               TerraGAMA (queued), Coefficient Preview (queued)
- *   COUNTY    : County Studio
+ *   COUNTY    : County Studio (default analytics workbench)
  *
  * GeoForge and Atlas Live View are not launcher products. Atlas is County
  * Studio's embedded/pop-out spatial surface; GeoForge is internal compatibility
@@ -86,11 +86,12 @@ describe('ForgeSuiteHome — frozen module list', () => {
     expect(screen.queryByText('Atlas Live View')).not.toBeInTheDocument();
   });
 
-  it('keeps Statistics Studio visible as a temporary parity source until County Studio is a proven full superset', () => {
+  it('keeps Statistics Studio visible as a legacy specialist shell outside the default analytics workflow', () => {
     renderForge();
     const secondarySection = screen.getByTestId('forge-secondary-applications');
     expect(secondarySection).toHaveTextContent('Statistics Studio');
-    expect(secondarySection).toHaveTextContent(/temporary full-statistics parity source/i);
+    expect(secondarySection).toHaveTextContent(/legacy specialist/i);
+    expect(secondarySection).toHaveTextContent(/ad hoc VEI tax-year exploration/i);
   });
 
   it('renders queued specialist apps in the secondary section', () => {
@@ -154,6 +155,8 @@ describe('ForgeSuiteHome — frozen module list', () => {
     const countySection = screen.getByTestId('forge-county-applications');
     expect(countySection).toBeInTheDocument();
     expect(screen.getByText('County Studio')).toBeInTheDocument();
+    expect(screen.getByText('Default analytics workbench')).toBeInTheDocument();
+    expect(screen.getByText(/Operational Health, Statistics Compat/i)).toBeInTheDocument();
     expect(screen.getByText(/embedded spatial review/i)).toBeInTheDocument();
     expect(screen.getByText(/governed approval and publish remain downstream/i)).toBeInTheDocument();
   });
