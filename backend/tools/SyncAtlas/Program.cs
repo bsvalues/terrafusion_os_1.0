@@ -1216,7 +1216,8 @@ internal static class Program
         // adds one operand to the pattern below.
         bool configKeyConsumesCatalog = configKey is
             "property_use" or                          // C48-H (C22-B)
-            "property_use:imprv.primary_use_cd";       // C48-I (C27-B)
+            "property_use:imprv.primary_use_cd" or     // C48-I (C27-B)
+            "property_use:sale.primary_use_cd";        // C48-J (C30-B)
         IPacsSchemaCatalog? pacsCatalog = configKeyConsumesCatalog
             ? await BuildPacsCatalogForSyncAtlasAsync(pacsConnectionString, ct)
             : null;
@@ -1277,21 +1278,24 @@ internal static class Program
             // verbatim; sale-context interpretation (sl_dt, sl_price,
             // pre-2017 conversion) is the operator's authority at C30-C,
             // NOT the loader's.
-            "property_use:sale.primary_use_cd" => (
-                new DictionaryLoaderTargetConfig(
-                    WorkbookSourceSchema: "dbo",
-                    WorkbookSourceTable:  "sale",
-                    WorkbookSourceColumn: "primary_use_cd",
-                    PacsDictionarySchema: "dbo",
-                    PacsDictionaryTable:  "property_use",
-                    CanonicalTargetName:  "PropertyUse"),  // REUSED from C22-C and C27-C
-                new DictionaryColumnConfig(
-                    CodeColumn:           "property_use_cd",
-                    DescriptionColumn:    "property_use_desc",
-                    ActiveFlagColumn:     null,
-                    ActiveFlagPredicate:  null,
-                    YearColumn:           null),
-                "c30-b"),
+            // Slice C48-J: third workbook column on the property_use
+            // vocabulary, migrated to consume the live PACS schema
+            // catalog. Same property_use dictionary, same column shape
+            // (no sys_flag, no year column) — only the workbook source
+            // triple differs from C48-H/C48-I. Behavior preservation
+            // chain identical to C48-H/I per C48-G's record-equality
+            // equivalence test plus C48-F's live PACS confirmation.
+            // Per C30-A's sales-specific amendment: the loader still
+            // proposes the dictionary description verbatim; sale-context
+            // interpretation (sl_dt, sl_price, pre-2017 conversion) is
+            // the operator's authority at C30-C and lives outside the
+            // catalog.
+            "property_use:sale.primary_use_cd" => BuildFromCatalog(
+                pacsCatalog!,
+                dictionaryName:    "property_use",
+                workbookSource:    new DictionaryWorkbookSource("dbo", "sale", "primary_use_cd"),
+                canonicalTarget:   "PropertyUse",
+                sliceArtifactDir:  "c30-b"),
             // C29-A — third dictionary-reuse binding. Same dbo.property_use
             // dictionary, joined against imprv.secondary_use_cd (1 NeedsReview
             // → swept to Deferred at P2; smallest C-series target). What's
