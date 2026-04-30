@@ -166,14 +166,14 @@ surfaces that consume or extend the catalog. Each gets its own
 slice prefix (suggested below); each lands its own policy doc and
 its own implementation arc.
 
-| Concern | Suggested prefix | One-line scope |
-|---|---|---|
-| Foreign-key edge inference | `C49-FK-*` | Walk every `*_cd` / `*_code` / `*Code` column and try to bind it to an inferred dictionary (currently `PacsTable.DictionaryReferences` is always empty). Requires either a name-matching pass or operator-supplied edges. |
-| Conversion-era manifest | `C50-CONV-*` | Per-column `Pre2017` / `Post2017` / `Both` overrides driven by an operator-supplied manifest file. Today every column defaults to `Both`. |
-| PII heuristic metadata | `C51-PII-*` | Column-name-pattern rules that auto-classify `*_cv`, `*_addr`, `*_email`, etc. as `Direct` PII. Today every column defaults to `None`. |
-| Operator dictionary overrides | `C52-OVR-*` | Allowlist / denylist for the dictionary inference heuristic. Lets operators force-include shape-borderline tables (e.g. `ptd_tvb_codes` whose first column is just `code` with no underscore) or exclude false-positives. |
-| Consumer migrations beyond SyncAtlas | `C53-CONS-*` | Other Sync code paths that hardcode column names and could consume the catalog: future Mapping Workbook seed paths, ratio-study readers, valuation transforms. Each is its own slice. |
-| Multi-county catalog set | `C54-MULTI-*` | Catalogs per county (so different counties' PACS schemas live side-by-side). Today the catalog is a singleton; multi-tenant work is genuinely new. |
+| Concern | Suggested prefix | Status | One-line scope |
+|---|---|---|---|
+| Foreign-key edge inference | `C49-FK-*` | **C49-FK-A policy locked** — `docs/sync/pacs-schema-foreign-key-inference-policy.md` | Walk every `*_cd` / `*_code` / `*Code` column and try to bind it to an inferred dictionary (currently `PacsTable.DictionaryReferences` is always empty). Requires either a name-matching pass or operator-supplied edges. |
+| Conversion-era manifest | `C50-CONV-*` | _deferred_ | Per-column `Pre2017` / `Post2017` / `Both` overrides driven by an operator-supplied manifest file. Today every column defaults to `Both`. |
+| PII heuristic metadata | `C51-PII-*` | _deferred_ | Column-name-pattern rules that auto-classify `*_cv`, `*_addr`, `*_email`, etc. as `Direct` PII. Today every column defaults to `None`. |
+| Operator dictionary overrides | `C52-OVR-*` | _deferred_ | Allowlist / denylist for the dictionary inference heuristic. Lets operators force-include shape-borderline tables (e.g. `ptd_tvb_codes` whose first column is just `code` with no underscore) or exclude false-positives. |
+| Consumer migrations beyond SyncAtlas | `C53-CONS-*` | _deferred_ | Other Sync code paths that hardcode column names and could consume the catalog: future Mapping Workbook seed paths, ratio-study readers, valuation transforms. Each is its own slice. |
+| Multi-county catalog set | `C54-MULTI-*` | _deferred_ | Catalogs per county (so different counties' PACS schemas live side-by-side). Today the catalog is a singleton; multi-tenant work is genuinely new. |
 
 If a future agent finds themselves about to "extend C48" — STOP.
 Either it's a hard-guard violation (in which case a `C48-FIXn` is
