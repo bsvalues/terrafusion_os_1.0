@@ -242,6 +242,25 @@ public sealed class PacsSchemaInvariantEngineTests
         report.Warnings.Should().Contain(r => r.Code == "DICT-005");
     }
 
+    [Fact]
+    public void DICT_007_EmptyProvenancePath_FiresError()
+    {
+        var sut = new PacsSchemaInvariantEngine();
+        var dict = new PacsDictionary(
+            DictionaryName: "d",
+            KeyColumn: "code",
+            DescriptionColumn: "desc",
+            ValueDomainSize: null,
+            ConversionEra: PacsConversionEra.Both,
+            ProvenancePath: "   "); // whitespace-only fails per IsNullOrWhiteSpace
+        var report = sut.Evaluate(
+            new[] { Tbl("d") },
+            new[] { Col("d", "code"), Col("d", "desc") },
+            new[] { dict },
+            null);
+        report.Errors.Should().Contain(r => r.Code == "DICT-007");
+    }
+
     // ------------------------------------------------------------------
     // FK-* invariants
     // ------------------------------------------------------------------
@@ -390,7 +409,7 @@ public sealed class PacsSchemaInvariantEngineTests
             null);
         report.IsClean.Should().BeTrue();
         report.Errors.Should().BeEmpty();
-        report.InvariantSetVersion.Should().Be("1.0.0");
+        report.InvariantSetVersion.Should().Be("1.1.0");
     }
 
     [Fact]

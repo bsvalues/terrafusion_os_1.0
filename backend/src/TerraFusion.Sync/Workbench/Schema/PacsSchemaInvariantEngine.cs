@@ -19,8 +19,13 @@ public sealed class PacsSchemaInvariantEngine : IPacsSchemaInvariantEngine
     /// <summary>
     /// Pinned per the C53-CONS-A policy. Bump on any future
     /// invariant-set addition / removal.
+    ///
+    /// <para>1.0.0 → 1.1.0 (C53-CONS-C): added DICT-007 (dictionary
+    /// missing ProvenancePath, HG6) when consolidating the per-slice
+    /// ValidateProvenance check that previously fired at catalog-
+    /// build time.</para>
     /// </summary>
-    public const string InvariantSetVersion = "1.0.0";
+    public const string InvariantSetVersion = "1.1.0";
 
     /// <inheritdoc />
     public PacsSchemaInvariantReport Evaluate(
@@ -130,8 +135,12 @@ public sealed class PacsSchemaInvariantEngine : IPacsSchemaInvariantEngine
                 duplicates.Add(t.TableName);
             }
 
-            // TBL-003: non-empty ProvenancePath (HG6)
-            if (string.IsNullOrEmpty(t.ProvenancePath))
+            // TBL-003: non-empty ProvenancePath (HG6).
+            // IsNullOrWhiteSpace matches the C53-CONS-C consolidated
+            // behavior — the former ValidateProvenance check used
+            // IsNullOrWhiteSpace, so whitespace-only paths still
+            // fail closed.
+            if (string.IsNullOrWhiteSpace(t.ProvenancePath))
             {
                 results.Add(new PacsSchemaInvariantResult(
                     PacsSchemaInvariantSeverity.Error,
@@ -209,8 +218,10 @@ public sealed class PacsSchemaInvariantEngine : IPacsSchemaInvariantEngine
                 duplicates.Add(key);
             }
 
-            // COL-004: non-empty ProvenanceLine (HG6)
-            if (string.IsNullOrEmpty(c.ProvenanceLine))
+            // COL-004: non-empty ProvenanceLine (HG6). C53-CONS-C
+            // honors the prior ValidateProvenance whitespace-strict
+            // semantics.
+            if (string.IsNullOrWhiteSpace(c.ProvenanceLine))
             {
                 results.Add(new PacsSchemaInvariantResult(
                     PacsSchemaInvariantSeverity.Error,
@@ -312,6 +323,21 @@ public sealed class PacsSchemaInvariantEngine : IPacsSchemaInvariantEngine
                     $"Dictionary '{d.DictionaryName}' has no DescriptionColumn; consumers may not be able to render lookup values.",
                     TableName: d.DictionaryName, ColumnName: null,
                     Provenance: d.ProvenancePath ?? $"dictionary:{d.DictionaryName}"));
+            }
+
+            // DICT-007 (C53-CONS-C consolidation): non-empty
+            // ProvenancePath (HG6 source-traceable). Subsumes the
+            // per-slice ValidateProvenance check that previously
+            // fired at catalog-build time for dictionaries. Whitespace-
+            // strict per the prior semantics.
+            if (string.IsNullOrWhiteSpace(d.ProvenancePath))
+            {
+                results.Add(new PacsSchemaInvariantResult(
+                    PacsSchemaInvariantSeverity.Error,
+                    "DICT-007",
+                    $"Catalog dictionary '{d.DictionaryName}' has empty ProvenancePath (HG6 source-traceable).",
+                    TableName: d.DictionaryName, ColumnName: null,
+                    Provenance: $"dictionary:{d.DictionaryName}"));
             }
         }
 

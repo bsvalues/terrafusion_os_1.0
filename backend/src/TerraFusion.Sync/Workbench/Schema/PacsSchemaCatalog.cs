@@ -229,83 +229,43 @@ public sealed class PacsSchemaCatalog : IPacsSchemaCatalog
                 "[PacsSchemaCatalog] Source returned null PacsSchemaSourceData; refusing to build a silently empty catalog (HG7).");
         }
 
-        // HG6: enforce non-empty provenance on every record.
-        ValidateProvenance(data);
+        // Slice C53-CONS-C consolidation: the per-slice integrity
+        // checks that previously lived here (C48-B dangling-column,
+        // C48-B/HG6 ValidateProvenance, C49-FK-B FK source/target/
+        // column / arity checks) have been absorbed into the
+        // PacsSchemaInvariantEngine. The engine produces a unified
+        // report with stable invariant codes (TBL-003, COL-002,
+        // COL-004, FK-002, FK-003, FK-004, DICT-007, etc.) and is
+        // the single authority for cross-record consistency.
+        //
+        // The engine runs FIRST so its unified Error message is the
+        // one consumers see when the source is corrupted. The
+        // ToDictionary calls below remain as defense-in-depth — they
+        // would only fire on duplicate keys the engine somehow missed,
+        // and producing a clear error in that path is still valuable.
 
-        // Internal integrity: every column references an existing table.
-        var tableNameSet = new HashSet<string>(data.Tables.Select(t => t.TableName), StringComparer.Ordinal);
-        var dangling = data.Columns.FirstOrDefault(c => !tableNameSet.Contains(c.TableName));
-        if (dangling is not null)
+        // Slice C51-PII-D: derive PII engagement state up-front so
+        // it's available for both the engine call and the catalog
+        // ctor.
+        var piiManifestEngaged = data.PiiManifest is not null;
+        var piiExhaustiveTables = data.PiiManifest?.TableExhaustiveFlags
+            ?? (IReadOnlySet<string>)new HashSet<string>(System.StringComparer.Ordinal);
+
+        var engine = new PacsSchemaInvariantEngine();
+        var report = engine.Evaluate(data.Tables, data.Columns, data.Dictionaries, data.SuppressInvariants);
+        if (!report.IsClean)
         {
+            var errorList = string.Join(
+                "\n  - ",
+                report.Errors.Select(e => $"[{e.Code}] {e.Message} (provenance: {e.Provenance})"));
             throw new InvalidOperationException(
-                $"[PacsSchemaCatalog] Column '{dangling.TableName}.{dangling.ColumnName}' references a table not declared by the source. " +
-                "Catalog refuses to build with dangling column references.");
+                $"[PacsSchemaCatalog] Invariant engine reported {report.Errors.Count()} Error row(s) " +
+                $"(invariant set version {report.InvariantSetVersion}). HG7: refusing to build catalog. Errors:\n  - {errorList}");
         }
 
-        // Slice C49-FK-B integrity: every FK on every PacsTable
-        // references an existing source/target table AND every FK
-        // column references an existing column on the named table.
-        // Refuses dangling FK references at construction.
-        var columnsByTableSet = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
-        foreach (var c in data.Columns)
-        {
-            if (!columnsByTableSet.TryGetValue(c.TableName, out var set))
-            {
-                set = new HashSet<string>(StringComparer.Ordinal);
-                columnsByTableSet[c.TableName] = set;
-            }
-            set.Add(c.ColumnName);
-        }
-        foreach (var table in data.Tables)
-        {
-            foreach (var fk in table.ForeignKeys)
-            {
-                if (!tableNameSet.Contains(fk.SourceTable))
-                {
-                    throw new InvalidOperationException(
-                        $"[PacsSchemaCatalog] Foreign key '{fk.ConstraintName ?? "(inferred)"}' on table '{table.TableName}' references a source table '{fk.SourceTable}' not declared by the source. " +
-                        "Catalog refuses to build with dangling FK source-table references (C49-FK-A HG-FK).");
-                }
-                if (!tableNameSet.Contains(fk.TargetTable))
-                {
-                    throw new InvalidOperationException(
-                        $"[PacsSchemaCatalog] Foreign key '{fk.ConstraintName ?? "(inferred)"}' on table '{table.TableName}' references a target table '{fk.TargetTable}' not declared by the source. " +
-                        "Catalog refuses to build with dangling FK target-table references (C49-FK-A HG-FK).");
-                }
-                if (fk.SourceColumns.Count != fk.TargetColumns.Count)
-                {
-                    throw new InvalidOperationException(
-                        $"[PacsSchemaCatalog] Foreign key '{fk.ConstraintName ?? "(inferred)"}' on table '{table.TableName}' has mismatched column arity: " +
-                        $"{fk.SourceColumns.Count} source vs {fk.TargetColumns.Count} target. Composite FKs MUST have matching arity.");
-                }
-                if (columnsByTableSet.TryGetValue(fk.SourceTable, out var srcSet))
-                {
-                    foreach (var col in fk.SourceColumns)
-                    {
-                        if (!srcSet.Contains(col))
-                        {
-                            throw new InvalidOperationException(
-                                $"[PacsSchemaCatalog] Foreign key '{fk.ConstraintName ?? "(inferred)"}' references source column '{fk.SourceTable}.{col}' which is not declared. " +
-                                "Catalog refuses to build with dangling FK source-column references (C49-FK-A HG-FK).");
-                        }
-                    }
-                }
-                if (columnsByTableSet.TryGetValue(fk.TargetTable, out var tgtSet))
-                {
-                    foreach (var col in fk.TargetColumns)
-                    {
-                        if (!tgtSet.Contains(col))
-                        {
-                            throw new InvalidOperationException(
-                                $"[PacsSchemaCatalog] Foreign key '{fk.ConstraintName ?? "(inferred)"}' references target column '{fk.TargetTable}.{col}' which is not declared. " +
-                                "Catalog refuses to build with dangling FK target-column references (C49-FK-A HG-FK).");
-                        }
-                    }
-                }
-            }
-        }
-
-        // Build indexes. ToDictionary throws on duplicate keys, which we want — duplicates indicate source corruption.
+        // Build indexes. ToDictionary throws on duplicate keys, which
+        // would only happen if the engine's TBL-002/COL-003/DICT-002
+        // invariants somehow missed them — defense-in-depth.
         IReadOnlyDictionary<string, PacsTable> tablesByName;
         try
         {
@@ -343,65 +303,20 @@ public sealed class PacsSchemaCatalog : IPacsSchemaCatalog
                 ex);
         }
 
-        // Slice C51-PII-D: derive PII engagement state from the
-        // PiiManifest reference passed through PacsSchemaSourceData.
-        // null manifest → engaged=false (C51-PII-B legacy bridge);
-        // non-null manifest → engaged=true and the exhaustive-flag
-        // set is carried verbatim for IsTableExhaustivelyClassified.
-        var piiManifestEngaged = data.PiiManifest is not null;
-        var piiExhaustiveTables = data.PiiManifest?.TableExhaustiveFlags
-            ?? (IReadOnlySet<string>)new HashSet<string>(System.StringComparer.Ordinal);
-
-        // Slice C53-CONS-B: run the invariant engine after the per-
-        // slice integrity checks above. The engine acts as both an
-        // authoritative report (catalog.InvariantReport) and a
-        // backstop. Per the C53-CONS-A policy and HG7 fail-closed,
-        // any Error row aborts the build with a structured exception
-        // that lists every Error in one shot.
-        var engine = new PacsSchemaInvariantEngine();
-        var report = engine.Evaluate(data.Tables, data.Columns, data.Dictionaries, data.SuppressInvariants);
-        if (!report.IsClean)
-        {
-            var errorList = string.Join(
-                "\n  - ",
-                report.Errors.Select(e => $"[{e.Code}] {e.Message} (provenance: {e.Provenance})"));
-            throw new InvalidOperationException(
-                $"[PacsSchemaCatalog] Invariant engine reported {report.Errors.Count()} Error row(s) " +
-                $"(invariant set version {report.InvariantSetVersion}). HG7: refusing to build catalog. Errors:\n  - {errorList}");
-        }
-
+        // C53-CONS-C: piiManifestEngaged / piiExhaustiveTables /
+        // engine call were lifted to the top of BuildAsync (see the
+        // consolidated block above). The catalog ctor receives the
+        // already-computed report.
         return new PacsSchemaCatalog(
             tablesByName, columnsByKey, dictionariesByName, data.Version,
             piiManifestEngaged, piiExhaustiveTables, report);
     }
 
-    private static void ValidateProvenance(PacsSchemaSourceData data)
-    {
-        foreach (var table in data.Tables)
-        {
-            if (string.IsNullOrWhiteSpace(table.ProvenancePath))
-            {
-                throw new InvalidOperationException(
-                    $"[PacsSchemaCatalog] Table '{table.TableName}' is missing ProvenancePath (HG6). Catalog refuses to build without source traceability.");
-            }
-        }
-
-        foreach (var column in data.Columns)
-        {
-            if (string.IsNullOrWhiteSpace(column.ProvenanceLine))
-            {
-                throw new InvalidOperationException(
-                    $"[PacsSchemaCatalog] Column '{column.TableName}.{column.ColumnName}' is missing ProvenanceLine (HG6). Catalog refuses to build without source traceability.");
-            }
-        }
-
-        foreach (var dict in data.Dictionaries)
-        {
-            if (string.IsNullOrWhiteSpace(dict.ProvenancePath))
-            {
-                throw new InvalidOperationException(
-                    $"[PacsSchemaCatalog] Dictionary '{dict.DictionaryName}' is missing ProvenancePath (HG6). Catalog refuses to build without source traceability.");
-            }
-        }
-    }
+    // C53-CONS-C: the former private static ValidateProvenance method
+    // and the per-slice dangling-column / FK validation blocks were
+    // removed in this slice. Their checks are centralized in
+    // PacsSchemaInvariantEngine (TBL-003, COL-002, COL-004, FK-002,
+    // FK-003, FK-004, DICT-007). The engine now runs at the top of
+    // BuildAsync and is the single authority for cross-record
+    // catalog consistency.
 }
