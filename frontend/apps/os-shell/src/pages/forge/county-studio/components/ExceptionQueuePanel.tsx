@@ -12,6 +12,31 @@ import { useSegmentEvidenceDraftStore } from '@/pages/suites/segmentEvidenceDraf
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
+type QueueTone = 'ready' | 'watch' | 'blocked' | 'neutral';
+
+const TONE: Record<QueueTone, { color: string; bg: string; label: string }> = {
+  ready: {
+    color: 'hsl(var(--tf-success, 142 71% 45%))',
+    bg: 'hsl(var(--tf-success, 142 71% 45%) / 0.14)',
+    label: 'Ready',
+  },
+  watch: {
+    color: 'hsl(var(--tf-warning, 38 92% 50%))',
+    bg: 'hsl(var(--tf-warning, 38 92% 50%) / 0.14)',
+    label: 'Watch',
+  },
+  blocked: {
+    color: 'hsl(var(--tf-danger, 0 84% 60%))',
+    bg: 'hsl(var(--tf-danger, 0 84% 60%) / 0.14)',
+    label: 'Blocked',
+  },
+  neutral: {
+    color: 'hsl(var(--tf-muted))',
+    bg: 'hsl(var(--tf-surface))',
+    label: 'Queued',
+  },
+};
+
 function reasonLabel(code: string): string {
   const labels: Record<string, string> = {
     LowSample: 'Low Sample', SegmentInstability: 'Instability',
@@ -46,10 +71,29 @@ function ageString(createdAt: string): string {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
-const pill = (label: string, color: string) => (
+function ageDays(createdAt: string): number {
+  return Math.max(0, Math.floor((Date.now() - new Date(createdAt).getTime()) / 86_400_000));
+}
+
+function queueToneForException(exc: CountyExceptionSetDto): QueueTone {
+  if (exc.status === 'Resolved') return 'ready';
+  if (!exc.assignedTo) return 'blocked';
+  if (ageDays(exc.createdAt) >= 3) return 'watch';
+  if (exc.status === 'Dispatched') return 'watch';
+  return 'neutral';
+}
+
+function nextActionForException(exc: CountyExceptionSetDto): string {
+  if (exc.status === 'Resolved') return 'Closed';
+  if (!exc.assignedTo) return 'Assign owner';
+  if (exc.status !== 'Dispatched') return `Dispatch to ${exc.destination}`;
+  return 'Resolve dispatched work';
+}
+
+const pill = (label: string, color: string, bg = `${color}22`) => (
   <span style={{
     padding: '1px 6px', borderRadius: 10,
-    background: `${color}22`, color, fontSize: 10, fontWeight: 700,
+    background: bg, color, fontSize: 10, fontWeight: 700,
     whiteSpace: 'nowrap',
   }}>{label}</span>
 );
@@ -121,6 +165,9 @@ function ExceptionRow({ exc, onUpdated }: RowProps) {
   }, [exc, noteText, act]);
 
   const resolved = exc.status === 'Resolved';
+  const tone = TONE[queueToneForException(exc)];
+  const nextAction = nextActionForException(exc);
+  const rowAgeDays = ageDays(exc.createdAt);
 
   return (
     <div style={{
@@ -142,6 +189,7 @@ function ExceptionRow({ exc, onUpdated }: RowProps) {
         {exc.assignedTo && (
           <span style={{ color: 'hsl(var(--tf-muted))' }}>→ {exc.assignedTo}</span>
         )}
+        {pill(nextAction, tone.color, tone.bg)}
         <span style={{ flex: 1 }} />
         <span style={{ color: 'hsl(var(--tf-muted))' }}>{ageString(exc.createdAt)}</span>
         <span style={{ color: 'hsl(var(--tf-muted))' }}>{expanded ? '▲' : '▼'}</span>
@@ -150,6 +198,47 @@ function ExceptionRow({ exc, onUpdated }: RowProps) {
       {/* Expanded actions */}
       {expanded && (
         <div style={{ padding: '6px 10px 8px', borderTop: '1px solid hsl(var(--tf-border))', display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div
+            data-testid={`exception-lifecycle-${exc.exceptionSetId}`}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+              gap: 4,
+              fontSize: 10,
+            }}
+          >
+            {[
+              { label: 'Created', done: true },
+              { label: 'Assigned', done: Boolean(exc.assignedTo) },
+              { label: 'Dispatched', done: exc.status === 'Dispatched' || exc.status === 'Resolved' },
+              { label: 'Resolved', done: resolved },
+            ].map((step) => (
+              <div
+                key={step.label}
+                style={{
+                  padding: '3px 5px',
+                  borderRadius: 4,
+                  border: '1px solid hsl(var(--tf-border))',
+                  background: step.done ? 'hsl(var(--tf-success, 142 71% 45%) / 0.10)' : 'hsl(var(--tf-bg))',
+                  color: step.done ? 'hsl(var(--tf-success, 142 71% 45%))' : 'hsl(var(--tf-muted))',
+                  fontWeight: step.done ? 700 : 500,
+                  textAlign: 'center',
+                }}
+              >
+                {step.label}
+              </div>
+            ))}
+          </div>
+
+          <div
+            data-testid={`exception-next-action-${exc.exceptionSetId}`}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: 'hsl(var(--tf-muted))' }}
+          >
+            {pill(tone.label, tone.color, tone.bg)}
+            <span>Next action: <strong style={{ color: 'hsl(var(--tf-fg))' }}>{nextAction}</strong></span>
+            <span>Age: {rowAgeDays}d</span>
+          </div>
+
           {/* Action buttons */}
           {!resolved && (
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -217,8 +306,8 @@ function ExceptionRow({ exc, onUpdated }: RowProps) {
 
 const actionBtn = (color: string, disabled: boolean): React.CSSProperties => ({
   padding: '3px 8px', borderRadius: 4, border: 'none', fontSize: 10, fontWeight: 600,
-  background: disabled ? '#2a2a2a' : `${color}33`,
-  color: disabled ? '#555' : color,
+  background: disabled ? 'hsl(var(--tf-surface))' : `${color}33`,
+  color: disabled ? 'hsl(var(--tf-muted))' : color,
   cursor: disabled ? 'not-allowed' : 'pointer',
 });
 
@@ -266,7 +355,18 @@ export function ExceptionQueuePanel() {
   const counts = {
     open: exceptions.filter(e => e.status !== 'Resolved').length,
     resolved: exceptions.filter(e => e.status === 'Resolved').length,
+    unassigned: exceptions.filter(e => e.status !== 'Resolved' && !e.assignedTo).length,
+    dispatched: exceptions.filter(e => e.status === 'Dispatched').length,
+    overdue: exceptions.filter(e => e.status !== 'Resolved' && ageDays(e.createdAt) >= 3).length,
   };
+
+  const nextQueueAction = counts.open === 0
+    ? 'Queue clear'
+    : counts.unassigned > 0
+      ? 'Assign unowned exceptions'
+      : counts.dispatched > 0
+        ? 'Resolve dispatched work'
+        : 'Dispatch owned exceptions';
 
   if (!activeStudyId) {
     return (
@@ -278,6 +378,34 @@ export function ExceptionQueuePanel() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <section
+        data-testid="exception-queue-command-strip"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(5, minmax(0, 1fr))',
+          gap: 6,
+          padding: '8px 10px',
+          borderBottom: '1px solid hsl(var(--tf-border))',
+          background: 'hsl(var(--tf-bg))',
+        }}
+      >
+        {[
+          ['Open', counts.open],
+          ['Unassigned', counts.unassigned],
+          ['Dispatched', counts.dispatched],
+          ['Overdue', counts.overdue],
+        ].map(([label, value]) => (
+          <div key={label} style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <span style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', fontWeight: 700 }}>{label}</span>
+            <span style={{ fontSize: 13, color: 'hsl(var(--tf-fg))', fontWeight: 800 }}>{value}</span>
+          </div>
+        ))}
+        <div data-testid="exception-queue-next-action" style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <span style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', fontWeight: 700 }}>Next</span>
+          <span style={{ fontSize: 11, color: 'hsl(var(--tf-fg))', fontWeight: 800 }}>{nextQueueAction}</span>
+        </div>
+      </section>
+
       {/* Filter bar */}
       <div style={{ display: 'flex', gap: 6, padding: '4px 10px', borderBottom: '1px solid hsl(var(--tf-border))', alignItems: 'center' }}>
         {(['all', 'open', 'resolved'] as const).map(f => (
