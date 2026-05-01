@@ -121,6 +121,27 @@ public interface IPacsSchemaCatalog
     /// </summary>
     /// <param name="tableName">PACS table name.</param>
     PacsSchemaLookupResult<IReadOnlyList<PacsForeignKey>> TryGetAllForeignKeysFor(string tableName);
+
+    /// <summary>
+    /// Slice C51-PII-D: <c>true</c> when the catalog was built from a
+    /// <see cref="PacsSchemaSourceData"/> that carried a non-null PII
+    /// manifest reference. Consumers consulting the C51-PII-D
+    /// preflight read this to distinguish a real None classification
+    /// from the C51-PII-B backwards-compat bridge None default.
+    /// </summary>
+    bool PiiManifestEngaged { get; }
+
+    /// <summary>
+    /// Slice C51-PII-D: returns <c>true</c> when the PII manifest is
+    /// engaged AND the named table is in the manifest's
+    /// <see cref="PacsPiiManifest.TableExhaustiveFlags"/> set, meaning
+    /// the operator has asserted "every column on this table not in
+    /// <see cref="PacsPiiManifest.ColumnEntries"/> is None." Consumers
+    /// using <c>RequirePiiFreeCanonicalLanding</c> stance MUST
+    /// require this before treating None as verified-safe per
+    /// HG-PII-2.
+    /// </summary>
+    bool IsTableExhaustivelyClassified(string tableName);
 }
 
 /// <summary>

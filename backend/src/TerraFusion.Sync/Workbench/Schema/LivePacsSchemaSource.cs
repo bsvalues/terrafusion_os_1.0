@@ -285,7 +285,7 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
             IngestedAt: DateTime.UtcNow,
             ConversionManifestHash: BuildManifestStamp(manifest));
 
-        return new PacsSchemaSourceData(tables, columns, dictionaries, version);
+        return new PacsSchemaSourceData(tables, columns, dictionaries, version, piiManifest);
     }
 
     private static string? ResolveFallbackIdentityColumn(

@@ -38,17 +38,23 @@ public sealed class PacsSchemaCatalog : IPacsSchemaCatalog
     private readonly IReadOnlyDictionary<string, PacsTable> _tablesByName;
     private readonly IReadOnlyDictionary<(string TableName, string ColumnName), PacsColumn> _columnsByKey;
     private readonly IReadOnlyDictionary<string, PacsDictionary> _dictionariesByName;
+    private readonly IReadOnlySet<string> _piiExhaustiveTables;
+    private readonly bool _piiManifestEngaged;
 
     private PacsSchemaCatalog(
         IReadOnlyDictionary<string, PacsTable> tablesByName,
         IReadOnlyDictionary<(string, string), PacsColumn> columnsByKey,
         IReadOnlyDictionary<string, PacsDictionary> dictionariesByName,
-        PacsSchemaVersion version)
+        PacsSchemaVersion version,
+        bool piiManifestEngaged,
+        IReadOnlySet<string> piiExhaustiveTables)
     {
         _tablesByName = tablesByName;
         _columnsByKey = columnsByKey;
         _dictionariesByName = dictionariesByName;
         Version = version;
+        _piiManifestEngaged = piiManifestEngaged;
+        _piiExhaustiveTables = piiExhaustiveTables;
     }
 
     /// <inheritdoc />
@@ -177,6 +183,17 @@ public sealed class PacsSchemaCatalog : IPacsSchemaCatalog
         }
 
         return PacsSchemaLookupResult<IReadOnlyList<PacsForeignKey>>.Found(table.ForeignKeys);
+    }
+
+    /// <inheritdoc />
+    public bool PiiManifestEngaged => _piiManifestEngaged;
+
+    /// <inheritdoc />
+    public bool IsTableExhaustivelyClassified(string tableName)
+    {
+        if (!_piiManifestEngaged) return false;
+        if (string.IsNullOrEmpty(tableName)) return false;
+        return _piiExhaustiveTables.Contains(tableName);
     }
 
     /// <summary>
@@ -314,7 +331,18 @@ public sealed class PacsSchemaCatalog : IPacsSchemaCatalog
                 ex);
         }
 
-        return new PacsSchemaCatalog(tablesByName, columnsByKey, dictionariesByName, data.Version);
+        // Slice C51-PII-D: derive PII engagement state from the
+        // PiiManifest reference passed through PacsSchemaSourceData.
+        // null manifest → engaged=false (C51-PII-B legacy bridge);
+        // non-null manifest → engaged=true and the exhaustive-flag
+        // set is carried verbatim for IsTableExhaustivelyClassified.
+        var piiManifestEngaged = data.PiiManifest is not null;
+        var piiExhaustiveTables = data.PiiManifest?.TableExhaustiveFlags
+            ?? (IReadOnlySet<string>)new HashSet<string>(System.StringComparer.Ordinal);
+
+        return new PacsSchemaCatalog(
+            tablesByName, columnsByKey, dictionariesByName, data.Version,
+            piiManifestEngaged, piiExhaustiveTables);
     }
 
     private static void ValidateProvenance(PacsSchemaSourceData data)
