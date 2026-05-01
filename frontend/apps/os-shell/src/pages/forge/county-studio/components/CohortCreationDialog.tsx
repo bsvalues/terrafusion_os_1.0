@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { cohortApi } from '../countyStudyApi';
 import { SUPPORTED_SELECTION_TYPES } from '../countyStudioCreationSupport';
@@ -8,12 +8,20 @@ export function CohortCreationDialog() {
   const { pendingSelection, activeStudy, cohorts, setCohorts, setPendingSelection } = useCountyStudioStore();
   const [name, setName] = useState('');
   const [selectionType, setSelectionType] = useState<SelectionType>('Visual');
+  const [manualParcelText, setManualParcelText] = useState('');
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const parsedManualParcelIds = useMemo(
+    () => parseManualParcelIds(manualParcelText),
+    [manualParcelText]
+  );
 
   if (!pendingSelection || !activeStudy) return null;
 
-  const canCreate = name.trim().length > 0;
+  const isManualSelection = selectionType === 'Manual' || pendingSelection.source === 'manual';
+  const effectiveSelectionType: SelectionType = isManualSelection ? 'Manual' : selectionType;
+  const effectiveParcelCount = isManualSelection ? parsedManualParcelIds.length : pendingSelection.parcelCount;
+  const canCreate = name.trim().length > 0 && (!isManualSelection || parsedManualParcelIds.length > 0);
   const selectionLabels: Record<SelectionType, string> = {
     Visual: 'Visual (lasso / polygon)',
     RuleBased: 'Rule-Based',
@@ -24,6 +32,8 @@ export function CohortCreationDialog() {
   const handleCancel = () => {
     setPendingSelection(null);
     setName('');
+    setSelectionType('Visual');
+    setManualParcelText('');
     setError(null);
   };
 
@@ -35,17 +45,24 @@ export function CohortCreationDialog() {
       const created = await cohortApi.create({
         studyId: activeStudy.studyId,
         name: name.trim(),
-        selectionType,
-        definition: JSON.stringify({
-          source: pendingSelection.source,
-          geometry: pendingSelection.geometry ?? null,
-        }),
-        parcelCount: pendingSelection.parcelCount,
-        isHybrid: false,
+        selectionType: effectiveSelectionType,
+        definition: isManualSelection
+          ? JSON.stringify({
+              source: 'manual-parcel-list',
+              parcelIds: parsedManualParcelIds,
+            })
+          : JSON.stringify({
+              source: pendingSelection.source,
+              geometry: pendingSelection.geometry ?? null,
+            }),
+        parcelCount: effectiveParcelCount,
+        isHybrid: effectiveSelectionType === 'Hybrid',
       });
       setCohorts([...cohorts, created]);
       setPendingSelection(null);
       setName('');
+      setSelectionType('Visual');
+      setManualParcelText('');
     } catch {
       setError('Failed to create cohort. Try again.');
     } finally {
@@ -85,8 +102,10 @@ export function CohortCreationDialog() {
       >
         <h2 style={{ margin: '0 0 8px', fontSize: 15, fontWeight: 700 }}>Create Cohort</h2>
         <p style={{ margin: '0 0 16px', fontSize: 12, color: 'hsl(var(--tf-muted))' }}>
-          {pendingSelection.parcelCount} parcels selected via {pendingSelection.source}.
-          {pendingSelection.areaEstimate
+          {isManualSelection
+            ? `${effectiveParcelCount} parsed manual parcel${effectiveParcelCount === 1 ? '' : 's'}.`
+            : `${pendingSelection.parcelCount} parcels selected via ${pendingSelection.source}.`}
+          {!isManualSelection && pendingSelection.areaEstimate
             ? ` Estimated area: ${pendingSelection.areaEstimate.toFixed(1)} sq mi.`
             : ''}
         </p>
@@ -127,8 +146,9 @@ export function CohortCreationDialog() {
           </label>
           <select
             id="cohort-type"
-            value={selectionType}
+            value={effectiveSelectionType}
             onChange={(e) => setSelectionType(e.target.value as SelectionType)}
+            disabled={pendingSelection.source === 'manual'}
             style={{
               width: '100%',
               padding: '7px 10px',
@@ -145,6 +165,36 @@ export function CohortCreationDialog() {
             ))}
           </select>
         </div>
+
+        {isManualSelection && (
+          <div style={{ marginBottom: 16 }}>
+            <label
+              htmlFor="manual-parcels"
+              style={{ display: 'block', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.8, color: 'hsl(var(--tf-muted))', marginBottom: 4 }}
+            >
+              Parcel IDs
+            </label>
+            <textarea
+              id="manual-parcels"
+              aria-label="Parcel IDs"
+              value={manualParcelText}
+              onChange={(e) => setManualParcelText(e.target.value)}
+              placeholder="One per line, comma-separated, or pasted from a spreadsheet"
+              rows={6}
+              style={{
+                width: '100%',
+                padding: '7px 10px',
+                background: 'hsl(var(--tf-surface))',
+                border: '1px solid hsl(var(--tf-border))',
+                borderRadius: 4,
+                color: 'hsl(var(--tf-fg))',
+                fontSize: 12,
+                boxSizing: 'border-box',
+                resize: 'vertical',
+              }}
+            />
+          </div>
+        )}
 
         {error && (
           <div style={{ color: '#ef4444', fontSize: 11, marginBottom: 12 }}>{error}</div>
@@ -187,4 +237,17 @@ export function CohortCreationDialog() {
       </div>
     </>
   );
+}
+
+function parseManualParcelIds(input: string): string[] {
+  const seen = new Set<string>();
+  const ids: string[] = [];
+  for (const raw of input.split(/[\s,;]+/)) {
+    const parcelId = raw.trim();
+    const key = parcelId.toLowerCase();
+    if (!parcelId || seen.has(key)) continue;
+    seen.add(key);
+    ids.push(parcelId);
+  }
+  return ids;
 }

@@ -71,6 +71,8 @@ function mapSelectionType(selectionType: string): string {
       return 'Rule';
     case 'Hybrid':
       return 'Hybrid';
+    case 'Manual':
+      return 'Manual';
   }
 }
 

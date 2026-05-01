@@ -736,6 +736,10 @@ public class CountyStudyController : ControllerBase
         {
             return BadRequest(new { error = ex.Message });
         }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "[CountyStudy] CreateCohort failed for study {StudyId}", req.StudyId);

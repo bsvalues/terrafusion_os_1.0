@@ -20,9 +20,9 @@ describe('County Studio creation support policy', () => {
     expect(() => assertSupportedStudyType('CustomStudy')).toThrow(/intentionally hidden/i);
   });
 
-  it('keeps manual parcel-list cohorts out of the creation allowlist', () => {
-    expect(SUPPORTED_SELECTION_TYPES).toEqual(['Visual', 'RuleBased', 'Hybrid']);
-    expect(() => assertSupportedSelectionType('Manual')).toThrow(/intentionally hidden/i);
+  it('allows governed manual parcel-list cohorts in the creation allowlist', () => {
+    expect(SUPPORTED_SELECTION_TYPES).toEqual(['Visual', 'RuleBased', 'Hybrid', 'Manual']);
+    expect(assertSupportedSelectionType('Manual')).toBe('Manual');
   });
 
   it('keeps custom formula scenarios out of the creation allowlist', () => {

@@ -125,7 +125,7 @@ export interface ScenarioImpactPreviewDto {
   deltas: ScenarioDeltaItem[];
 }
 
-export type SelectionSource = 'click' | 'lasso' | 'box';
+export type SelectionSource = 'click' | 'lasso' | 'box' | 'manual';
 
 export interface PendingSelection {
   parcelIds: string[];

@@ -87,6 +87,19 @@ describe('LeftRail', () => {
     expect(useCountyStudioStore.getState().activeCohortId).toBe('c1');
   });
 
+  it('starts a manual parcel-list cohort from the cohorts rail action', () => {
+    act(() => { useCountyStudioStore.getState().setStudy(MOCK_STUDY); });
+    render(<LeftRail />);
+
+    fireEvent.click(screen.getByRole('button', { name: /new manual cohort/i }));
+
+    expect(useCountyStudioStore.getState().pendingSelection).toEqual({
+      parcelIds: [],
+      source: 'manual',
+      parcelCount: 0,
+    });
+  });
+
   it('highlights the active cohort', () => {
     act(() => { useCountyStudioStore.getState().setActiveCohort('c1'); });
     render(<LeftRail />);

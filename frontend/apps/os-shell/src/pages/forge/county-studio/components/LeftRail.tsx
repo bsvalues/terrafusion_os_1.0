@@ -70,7 +70,7 @@ type DeriveState =
 export function LeftRail() {
   const {
     activeStudy, cohorts, scenarios, activeCohortId, activeScenario,
-    setActiveCohort, setActiveScenario, setStudy,
+    setActiveCohort, setActiveScenario, setStudy, setPendingSelection,
     loadStatus, loadErrors,
   } = useCountyStudioStore();
 
@@ -193,6 +193,30 @@ export function LeftRail() {
       )}
 
       <SectionHeader label="Cohorts" />
+      {activeStudy && (
+        <button
+          type="button"
+          onClick={() => setPendingSelection({
+            parcelIds: [],
+            source: 'manual',
+            parcelCount: 0,
+          })}
+          style={{
+            margin: '0 12px 6px',
+            width: 'calc(100% - 24px)',
+            padding: '6px 8px',
+            border: '1px solid hsl(var(--tf-border))',
+            borderRadius: 4,
+            background: 'transparent',
+            color: 'hsl(var(--tf-fg))',
+            fontSize: 11,
+            cursor: 'pointer',
+            textAlign: 'left',
+          }}
+        >
+          New manual cohort
+        </button>
+      )}
       {loadStatus.cohorts === 'loading' ? (
         <div
           data-testid="left-rail-cohorts-loading"

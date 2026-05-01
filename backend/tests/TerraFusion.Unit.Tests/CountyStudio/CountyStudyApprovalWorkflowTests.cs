@@ -136,6 +136,43 @@ public class CountyStudyApprovalWorkflowTests
         unchanged.RollbackReason.Should().BeNull();
     }
 
+    [Fact]
+    public async Task CreateCohort_NormalizesManualParcelListDefinition()
+    {
+        await using var db = CreateContext($"county-manual-cohort-{Guid.NewGuid()}");
+        var study = new CountyStudySession
+        {
+            StudyId = Guid.NewGuid(),
+            CountyId = Guid.NewGuid(),
+            CountyName = "Benton County",
+            TaxYear = 2026,
+            StudyType = StudyType.RatioStudy,
+            CreatedBy = "test",
+            UpdatedBy = "test",
+        };
+        db.CountyStudySessions.Add(study);
+        await db.SaveChangesAsync();
+
+        var svc = CreateService(db);
+        var cohort = await svc.CreateCohortAsync(
+            new TerraFusion.Core.DTOs.CreateCohortRequest(
+                study.StudyId,
+                "Manual List",
+                CohortSelectionType.Manual,
+                """{"parcelIds":["P-1001"," P-1002 ","p-1001"]}""",
+                99,
+                false),
+            "operator@county.gov");
+
+        cohort.SelectionType.Should().Be(nameof(CohortSelectionType.Manual));
+        cohort.ParcelCount.Should().Be(2);
+
+        var saved = await db.CountyCohorts.AsNoTracking().SingleAsync(c => c.CohortId == cohort.CohortId);
+        saved.Definition.Should().Contain("manual-parcel-list");
+        saved.Definition.Should().Contain("P-1001");
+        saved.Definition.Should().Contain("P-1002");
+    }
+
     private sealed class StaticCountyResolver : ICountyResolver
     {
         public Task<Guid> ResolveAsync(string countyIdOrCode, CancellationToken ct = default)

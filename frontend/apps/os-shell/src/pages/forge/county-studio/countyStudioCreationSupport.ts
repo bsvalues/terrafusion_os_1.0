@@ -16,11 +16,10 @@ export const SUPPORTED_SELECTION_TYPES = [
   'Visual',
   'RuleBased',
   'Hybrid',
-] as const satisfies readonly SelectionType[];
-
-export const UNSUPPORTED_SELECTION_TYPES = [
   'Manual',
 ] as const satisfies readonly SelectionType[];
+
+export const UNSUPPORTED_SELECTION_TYPES = [] as const satisfies readonly SelectionType[];
 
 export const SUPPORTED_ADJUSTMENT_TYPES = [
   'PercentageIncrease',
@@ -51,9 +50,6 @@ export function assertSupportedStudyType(studyType: string): SupportedStudyType 
 
 export function assertSupportedSelectionType(selectionType: string): SupportedSelectionType {
   if (includes(SUPPORTED_SELECTION_TYPES, selectionType)) return selectionType;
-  if (includes(UNSUPPORTED_SELECTION_TYPES, selectionType)) {
-    throw new Error('Manual parcel-list cohorts are intentionally hidden until a governed parcel-list contract exists.');
-  }
   throw new Error(`Unsupported County Studio selection type "${selectionType}".`);
 }
 
