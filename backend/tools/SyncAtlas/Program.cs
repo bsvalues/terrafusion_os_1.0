@@ -1544,6 +1544,7 @@ internal static class Program
         PiiClassificationPreflightStance? piiStance = configKey switch
         {
             "property_use" => PiiClassificationPreflightStance.AllowAny, // C51-PII-PROMOTE-A
+            "property_use:imprv.primary_use_cd" => PiiClassificationPreflightStance.AllowAny, // C51-PII-PROMOTE-B
             _              => null,
         };
 
