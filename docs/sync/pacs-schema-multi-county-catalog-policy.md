@@ -413,8 +413,14 @@ Updates the C54-MULTI arc:
                  (PacsSchemaIdentityCheckedReportDiff static class
                  + PacsSchemaIdentityCheckedDiff record;
                  enforces ISOL-4 at the API surface).
+- C54-MULTI-CLOSE : DONE — family closed for current Benton-only
+                 operating reality. See
+                 `docs/sync/pacs-schema-multi-county-catalog-completion-handoff.md`.
 - C54-MULTI-E   : deferred — cross-county aggregation surface.
+                 Gated on at least three operational counties.
 - C54-MULTI-PROMOTE-* : deferred — per-consumer migration arc.
+                 Gated on a real consumer needing
+                 `(CountyId, SourceConnectionId)` resolution.
 
 Promotion happens slice-by-slice; nothing in C54-MULTI-A should
 be read as authorizing later slices until each lands.
