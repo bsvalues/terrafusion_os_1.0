@@ -422,6 +422,22 @@ describe('ObjectInspector — Action tab', () => {
     ));
   });
 
+  it('shows a visible handoff error when direct receipt persistence fails', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    recordSegmentInspectorReceiptMock.mockRejectedValueOnce(new Error('receipt write failed'));
+    state.context =baseContext({
+      dais: { workflowTemplate: 'SegmentReview', deeplinkQuery: '?template=SegmentReview&segmentId=s1' },
+    });
+    render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
+    await switchToTab('inspector-tab-action');
+
+    fireEvent.click(screen.getByTestId('inspector-handoff-dais'));
+
+    await waitFor(() => expect(screen.getByTestId('inspector-handoff-error')).toHaveTextContent(/durable receipt was saved/i));
+    expect(activateModuleMock).not.toHaveBeenCalledWith('suite-dais', expect.anything());
+    consoleSpy.mockRestore();
+  });
+
   it('surfaces Truncated notice when parcel list is capped', async () => {
     state.context =baseContext({
       parcelIds: Array.from({ length: 1000 }, (_, i) => `P${i}`),
