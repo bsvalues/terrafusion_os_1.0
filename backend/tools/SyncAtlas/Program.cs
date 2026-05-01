@@ -1497,6 +1497,7 @@ internal static class Program
             "imprv_det_class" => ConversionEraPreflightStance.RequirePost2017OrBoth, // C50-CONV-PROMOTE-E
             "imprv_det_sub_class" => ConversionEraPreflightStance.RequirePost2017OrBoth, // C50-CONV-PROMOTE-F
             "imprv_det_meth" => ConversionEraPreflightStance.RequirePost2017OrBoth, // C50-CONV-PROMOTE-G
+            "land_soil" => ConversionEraPreflightStance.RequirePost2017OrBoth, // C50-CONV-PROMOTE-H
             _              => null,
         };
 
