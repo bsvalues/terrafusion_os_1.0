@@ -129,6 +129,34 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
         }
         var (tableEras, columnEras) = BuildEraLookups(manifest);
 
+        // Slice C51-PII-B: load PII manifest if engaged. Same
+        // explicit-or-error / backwards-compat-bridge pattern as the
+        // conversion manifest above (HG-PII-3).
+        PacsPiiManifest? piiManifest = null;
+        var piiManifestEngaged = !string.IsNullOrWhiteSpace(_options.PiiManifestPath);
+        if (_options.RequirePiiManifest && !piiManifestEngaged)
+        {
+            throw new InvalidOperationException(
+                "[LivePacsSchemaSource] RequirePiiManifest=true but PiiManifestPath is null/empty. " +
+                "HG-PII-3: caller MUST set the path explicitly when requiring a PII manifest.");
+        }
+        if (piiManifestEngaged)
+        {
+            try
+            {
+                var piiSource = new JsonFilePacsPiiManifestSource(_options.PiiManifestPath);
+                piiManifest = await piiSource.ReadAsync(ct).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (!_options.RequirePiiManifest)
+            {
+                throw new InvalidOperationException(
+                    $"[LivePacsSchemaSource] PII manifest load failed at '{_options.PiiManifestPath}': {ex.Message}. " +
+                    $"Set RequirePiiManifest=true to fail closed earlier, or fix the manifest.",
+                    ex);
+            }
+        }
+        var (tablePii, columnPii) = BuildPiiLookups(piiManifest);
+
         // Build column lookup keyed by table name for downstream tuple assembly.
         var columnsByTable = introspection.Columns
             .GroupBy(c => c.TableName, StringComparer.Ordinal)
@@ -155,7 +183,7 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
                 Nullable: c.Nullable,
                 ConversionEra: ResolveColumnEra(c.TableName, c.ColumnName, manifestEngaged, tableEras, columnEras),
                 DictionaryRef: null,
-                PiiClassification: PiiClassification.None,
+                PiiClassification: ResolveColumnPii(c.TableName, c.ColumnName, piiManifestEngaged, tablePii, columnPii),
                 ProvenanceLine: BuildColumnProvenance(c.TableName, c.ColumnName, c.OrdinalPosition),
                 Notes: string.Empty));
         }
@@ -217,9 +245,31 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
                 IdentityTuple: identityTuple,
                 ConversionEra: ResolveTableEra(t.TableName, manifestEngaged, tableEras),
                 DictionaryReferences: Array.Empty<PacsDictionaryReference>(),
-                PiiClassification: PiiClassification.None,
+                PiiClassification: ResolveTablePii(t.TableName, piiManifestEngaged, tablePii),
                 ProvenancePath: BuildTableProvenance(t.TableName),
                 ForeignKeys: tableFks));
+        }
+
+        // HG-PII-2: validate every name in TableExhaustiveFlags
+        // exists in the catalog. Any name that doesn't is a manifest
+        // authoring error and we fail closed (HG7) so the operator
+        // sees it at next catalog build, not as a silent miss later.
+        if (piiManifest is not null)
+        {
+            var knownTables = new HashSet<string>(introspection.Tables.Count, StringComparer.Ordinal);
+            foreach (var t in introspection.Tables)
+            {
+                knownTables.Add(t.TableName);
+            }
+            foreach (var flagged in piiManifest.TableExhaustiveFlags)
+            {
+                if (!knownTables.Contains(flagged))
+                {
+                    throw new InvalidOperationException(
+                        $"[LivePacsSchemaSource] PII manifest TableExhaustiveFlags lists '{flagged}' " +
+                        $"but no such table exists in the catalog. HG-PII-2: every flagged table must be a real catalog member.");
+                }
+            }
         }
 
         // Version: synthesized from the live snapshot. Source-file
@@ -567,6 +617,81 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
         manifest is null
             ? "no-conversion-manifest-supplied"
             : $"manifest@{manifest.ManifestPath}#{manifest.ManifestVersion}#{manifest.ConversionEvent}";
+
+    /// <summary>
+    /// Slice C51-PII-B: build (table, classification) and
+    /// (table.column, classification) lookups from a PII manifest.
+    /// Returns empty dictionaries when manifest is null.
+    /// </summary>
+    private static (Dictionary<string, PiiClassification> tables, Dictionary<string, PiiClassification> columns) BuildPiiLookups(
+        PacsPiiManifest? manifest)
+    {
+        var tables = new Dictionary<string, PiiClassification>(StringComparer.Ordinal);
+        var columns = new Dictionary<string, PiiClassification>(StringComparer.Ordinal);
+        if (manifest is null)
+        {
+            return (tables, columns);
+        }
+        foreach (var t in manifest.TableEntries)
+        {
+            tables[t.TableName] = t.Classification;
+        }
+        foreach (var c in manifest.ColumnEntries)
+        {
+            columns[$"{c.TableName}.{c.ColumnName}"] = c.Classification;
+        }
+        return (tables, columns);
+    }
+
+    /// <summary>
+    /// Slice C51-PII-B: PII resolution for one column. Per HG-PII-2
+    /// + HG-PII-3 (with backwards-compat bridge):
+    /// <list type="bullet">
+    /// <item>Manifest engaged + column annotated → manifest classification.</item>
+    /// <item>Manifest engaged + table annotated only → inherit from table.</item>
+    /// <item>Manifest engaged + neither annotated → None (the
+    /// non-engaged-default; exhaustiveness is asserted separately
+    /// via TableExhaustiveFlags, consumed by C51-PII-D preflight).</item>
+    /// <item>Manifest NOT engaged → None (C48-B legacy default).</item>
+    /// </list>
+    /// </summary>
+    private static PiiClassification ResolveColumnPii(
+        string tableName,
+        string columnName,
+        bool piiManifestEngaged,
+        Dictionary<string, PiiClassification> tablePii,
+        Dictionary<string, PiiClassification> columnPii)
+    {
+        if (!piiManifestEngaged)
+        {
+            return PiiClassification.None;
+        }
+        if (columnPii.TryGetValue($"{tableName}.{columnName}", out var col))
+        {
+            return col;
+        }
+        if (tablePii.TryGetValue(tableName, out var table))
+        {
+            return table;
+        }
+        return PiiClassification.None;
+    }
+
+    /// <summary>
+    /// Slice C51-PII-B: PII resolution for one table. Same precedence
+    /// model as ResolveColumnPii but at the table level.
+    /// </summary>
+    private static PiiClassification ResolveTablePii(
+        string tableName,
+        bool piiManifestEngaged,
+        Dictionary<string, PiiClassification> tablePii)
+    {
+        if (!piiManifestEngaged)
+        {
+            return PiiClassification.None;
+        }
+        return tablePii.TryGetValue(tableName, out var p) ? p : PiiClassification.None;
+    }
 }
 
 /// <summary>
@@ -604,7 +729,9 @@ public sealed record LivePacsSchemaSourceOptions(
     string? PacsReleaseLabel,
     bool InferDictionaries = true,
     string? ConversionManifestPath = null,
-    bool RequireConversionManifest = false)
+    bool RequireConversionManifest = false,
+    string? PiiManifestPath = null,
+    bool RequirePiiManifest = false)
 {
     /// <summary>
     /// Sensible default for SQL Server / Harris PACS:
