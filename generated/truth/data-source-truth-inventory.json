@@ -1,15 +1,25 @@
 {
-  "generatedAt": "2026-05-01T20:52:13.542Z",
+  "generatedAt": "2026-05-01T21:04:41.080Z",
   "repoRoot": "C:\\Users\\bsval\\terrafusion_os_1.0",
   "summary": {
     "countiesScanned": 39,
     "withScraper": 4,
-    "withDb": 13,
-    "withRows": 13,
-    "withApi": 2,
+    "withDb": 15,
+    "withRows": 14,
+    "withApi": 9,
     "withUi": 39,
     "withApparentFullChain": 2,
-    "withPacsMentions": 7
+    "withPacsMentions": 12,
+    "costForgeTierCounts": {
+      "CF0_no_runtime_data": 38,
+      "CF1_parcel_public_data": 1
+    },
+    "costForgeModeCounts": {
+      "not_available": 38,
+      "public_data_loaded": 1
+    },
+    "costForgePilotWorkflowAllowed": 1,
+    "costForgeOfficialClaimsAllowed": 0
   },
   "rows": [
     {
@@ -39,7 +49,45 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Adams",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Asotin",
@@ -68,28 +116,69 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Asotin",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Benton",
       "state": "WA",
-      "sourceUrlOrSystem": "backend/src/TerraFusion.API/Controllers/RealDataController.cs",
+      "sourceUrlOrSystem": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
       "scraperOrAdapterExists": true,
       "scraperOrAdapterPath": "backend/src/TerraFusion.DataMining/ETL/PacmlsEtlPlugin.cs",
       "dbTableTargetExists": true,
-      "dbTableTarget": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs",
-      "rowsLanded": 33,
+      "dbTableTarget": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
+      "rowsLanded": 276,
       "runtimeApiConsumesIt": true,
-      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs",
+      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx",
       "trustTier": "public_source_pilot_unproven",
       "classification": "possible_runtime_chain_unproven",
       "pacsMentionDetected": true,
-      "evidenceCount": 79,
+      "evidenceCount": 94,
       "evidencePaths": [
+        "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
+        "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
         "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs",
         "backend/src/TerraFusion.API/Controllers/RealDataController.cs",
         "backend/src/TerraFusion.API/Controllers/TerraForgeController.cs",
+        "backend/src/TerraFusion.CostForge/Services/QuantumFactorEnhancementService.cs",
         "backend/src/TerraFusion.DataMining/API/RealEstateRoutes.cs",
         "backend/src/TerraFusion.DataMining/Connectors/HudConnector.cs",
         "backend/src/TerraFusion.DataMining/Controllers/DataSourceController.cs",
@@ -105,6 +194,15 @@
         "backend/src/TerraFusion.DataMining/Seeds/DataSourceSeeder.cs",
         "backend/src/TerraFusion.DataMining/Services/PropertyService.cs",
         "data/benton/README.md",
+        "data/cost-matrices/benton_cost_matrix.json",
+        "data/cost-matrices/benton_cost_matrix_live.json",
+        "data/cost-matrices/benton_cost_matrix_proper.json",
+        "data/cost-matrices/benton_county_data.json",
+        "data/cost-matrices/benton_county_data_summary.json",
+        "data/cost-matrices/benton_matrix_exact_identifiers.json",
+        "data/cost-matrices/extracted_cost_matrix.json",
+        "data/cost-matrices/sample_cost_matrix.json",
+        "data/cost-matrices/test_output.json",
         "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
         "data/county-intelligence/benton_analysis.json",
         "data/county-intelligence/benton_extraction.json",
@@ -164,30 +262,94 @@
         "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
         "frontend/apps/os-shell/src/pages/forge/valuation/AvmRunPanel.tsx",
         "frontend/apps/os-shell/src/pages/forge/valuation/NeighborhoodRatioStudyDashboard.tsx",
+        "os-platform/core/pilot/evidence/costforge-certified-reference-posture.latest.json",
+        "os-platform/core/pilot/evidence/costforge-cost-value-contract.latest.json",
+        "os-platform/core/pilot/evidence/costforge-cost-value-contract.latest.md",
         "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json",
         "os-platform/core/pilot/washington-39-county-coverage-proof.mjs"
       ],
       "blockingReasons": [
         "Full-looking chain still needs source-to-UI runtime proof."
-      ]
+      ],
+      "costForge": {
+        "county": "Benton",
+        "state": "WA",
+        "parcelRowsObserved": 9,
+        "improvementCharacteristicRowsObserved": 243,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": true,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": true,
+        "hasCondition": true,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": true,
+        "hasCountySpecificDepreciationTable": true,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": true,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": true,
+        "costForgeInputEvidencePaths": [
+          "backend/src/TerraFusion.DataMining/Scrapers/County/BentonCountyScraper.cs",
+          "backend/src/TerraFusion.DataMining/Scrapers/CountyScraperFactory.cs",
+          "data/benton/README.md",
+          "data/cost-matrices/benton_cost_matrix.json",
+          "data/cost-matrices/benton_cost_matrix_live.json",
+          "data/cost-matrices/benton_cost_matrix_proper.json",
+          "data/cost-matrices/benton_county_data.json",
+          "data/cost-matrices/benton_county_data_summary.json",
+          "data/cost-matrices/benton_matrix_exact_identifiers.json",
+          "data/cost-matrices/extracted_cost_matrix.json",
+          "data/cost-matrices/sample_cost_matrix.json",
+          "data/cost-matrices/test_output.json",
+          "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "data/county-intelligence/benton_analysis.json",
+          "data/county-intelligence/benton_extraction.json",
+          "data/county-intelligence/benton_valuations.json",
+          "data/intelligence/benton_analysis.json",
+          "data/intelligence/benton_extraction.json",
+          "data/intelligence/benton_valuations.json",
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/costforge-certified-reference-posture.latest.json",
+          "os-platform/core/pilot/evidence/costforge-cost-value-contract.latest.json",
+          "os-platform/core/pilot/evidence/costforge-cost-value-contract.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF1_parcel_public_data",
+        "costForgeCountyMode": "public_data_loaded",
+        "allowedWorkflows": ["open_county", "inspect_public_parcel_data"],
+        "blockedWorkflows": [
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "Public-source county data loaded."
+      }
     },
     {
       "county": "Chelan",
       "state": "WA",
-      "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+      "sourceUrlOrSystem": "data/cost-matrices/extracted_cost_matrix.json",
       "scraperOrAdapterExists": false,
       "scraperOrAdapterPath": null,
-      "dbTableTargetExists": false,
-      "dbTableTarget": null,
-      "rowsLanded": 0,
+      "dbTableTargetExists": true,
+      "dbTableTarget": "data/cost-matrices/extracted_cost_matrix.json",
+      "rowsLanded": 35,
       "runtimeApiConsumesIt": false,
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
-      "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "trustTier": "demo_only",
+      "classification": "demo_artifact",
       "pacsMentionDetected": false,
-      "evidenceCount": 4,
+      "evidenceCount": 6,
       "evidencePaths": [
+        "data/cost-matrices/extracted_cost_matrix.json",
+        "data/cost-matrices/test_output.json",
         "docs/proof/washington-39-county-coverage.latest.md",
         "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
         "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json",
@@ -195,10 +357,49 @@
       ],
       "blockingReasons": [
         "No scraper/adapter evidence found.",
-        "No DB/table target evidence found.",
-        "No landed row evidence found.",
-        "No runtime API consumer evidence found."
-      ]
+        "No runtime API consumer evidence found.",
+        "Evidence appears demo/sample/synthetic."
+      ],
+      "costForge": {
+        "county": "Chelan",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 35,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": true,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": true,
+        "hasCondition": true,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": true,
+        "hasCountySpecificDepreciationTable": true,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "data/cost-matrices/extracted_cost_matrix.json",
+          "data/cost-matrices/test_output.json",
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Clallam",
@@ -227,7 +428,45 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Clallam",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Clark",
@@ -263,25 +502,72 @@
         "No scraper/adapter evidence found.",
         "No runtime API consumer evidence found.",
         "Evidence appears demo/sample/synthetic."
-      ]
+      ],
+      "costForge": {
+        "county": "Clark",
+        "state": "WA",
+        "parcelRowsObserved": 10,
+        "improvementCharacteristicRowsObserved": 12,
+        "landAttributeRowsObserved": 4,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": true,
+        "hasYearBuilt": true,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": true,
+        "hasCondition": false,
+        "hasLandSize": true,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "data/county-intelligence/clark_analysis.json",
+          "data/county-intelligence/clark_extraction.json",
+          "data/county-intelligence/clark_valuations.json",
+          "data/databases/county-databases/clark_data.sql",
+          "data/intelligence/clark_analysis.json",
+          "data/intelligence/clark_extraction.json",
+          "data/intelligence/clark_valuations.json",
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Columbia",
       "state": "WA",
-      "sourceUrlOrSystem": "backend/src/TerraFusion.DataMining/Regional/SeWaRegionalConfig.cs",
+      "sourceUrlOrSystem": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
       "scraperOrAdapterExists": false,
       "scraperOrAdapterPath": null,
       "dbTableTargetExists": true,
-      "dbTableTarget": "database/migrations/002_BentonCountyData.sql",
+      "dbTableTarget": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
       "rowsLanded": 11,
-      "runtimeApiConsumesIt": false,
-      "runtimeApiPath": null,
+      "runtimeApiConsumesIt": true,
+      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "demo_only",
       "classification": "demo_artifact",
       "pacsMentionDetected": true,
-      "evidenceCount": 6,
+      "evidenceCount": 7,
       "evidencePaths": [
+        "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
         "backend/src/TerraFusion.DataMining/Regional/SeWaRegionalConfig.cs",
         "database/migrations/002_BentonCountyData.sql",
         "docs/proof/washington-39-county-coverage.latest.md",
@@ -291,9 +577,46 @@
       ],
       "blockingReasons": [
         "No scraper/adapter evidence found.",
-        "No runtime API consumer evidence found.",
         "Evidence appears demo/sample/synthetic."
-      ]
+      ],
+      "costForge": {
+        "county": "Columbia",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Cowlitz",
@@ -329,7 +652,53 @@
         "No scraper/adapter evidence found.",
         "No runtime API consumer evidence found.",
         "Evidence appears demo/sample/synthetic."
-      ]
+      ],
+      "costForge": {
+        "county": "Cowlitz",
+        "state": "WA",
+        "parcelRowsObserved": 10,
+        "improvementCharacteristicRowsObserved": 12,
+        "landAttributeRowsObserved": 4,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": true,
+        "hasYearBuilt": true,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": true,
+        "hasCondition": false,
+        "hasLandSize": true,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "data/county-intelligence/cowlitz_analysis.json",
+          "data/county-intelligence/cowlitz_extraction.json",
+          "data/county-intelligence/cowlitz_valuations.json",
+          "data/databases/county-databases/cowlitz_data.sql",
+          "data/intelligence/cowlitz_analysis.json",
+          "data/intelligence/cowlitz_extraction.json",
+          "data/intelligence/cowlitz_valuations.json",
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Douglas",
@@ -358,7 +727,45 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Douglas",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Ferry",
@@ -387,25 +794,65 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Ferry",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Franklin",
       "state": "WA",
-      "sourceUrlOrSystem": "backend/src/TerraFusion.DataMining/Regional/SeWaRegionalConfig.cs",
+      "sourceUrlOrSystem": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
       "scraperOrAdapterExists": true,
       "scraperOrAdapterPath": "backend/src/TerraFusion.DataMining/Scrapers/County/FranklinCountyScraper.cs",
-      "dbTableTargetExists": false,
-      "dbTableTarget": null,
+      "dbTableTargetExists": true,
+      "dbTableTarget": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
       "rowsLanded": 0,
-      "runtimeApiConsumesIt": false,
-      "runtimeApiPath": null,
+      "runtimeApiConsumesIt": true,
+      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
-      "trustTier": "demo_only",
-      "classification": "demo_artifact",
+      "trustTier": "unknown_untrusted",
+      "classification": "possible_runtime_chain_unproven",
       "pacsMentionDetected": true,
-      "evidenceCount": 8,
+      "evidenceCount": 10,
       "evidencePaths": [
+        "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
+        "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
         "backend/src/TerraFusion.DataMining/Regional/SeWaRegionalConfig.cs",
         "backend/src/TerraFusion.DataMining/Scrapers/County/FranklinCountyScraper.cs",
         "backend/src/TerraFusion.DataMining/Scrapers/CountyScraperFactory.cs",
@@ -416,11 +863,49 @@
         "os-platform/core/pilot/washington-39-county-coverage-proof.mjs"
       ],
       "blockingReasons": [
-        "No DB/table target evidence found.",
         "No landed row evidence found.",
-        "No runtime API consumer evidence found.",
-        "Evidence appears demo/sample/synthetic."
-      ]
+        "Full-looking chain still needs source-to-UI runtime proof."
+      ],
+      "costForge": {
+        "county": "Franklin",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "backend/src/TerraFusion.DataMining/Scrapers/County/FranklinCountyScraper.cs",
+          "backend/src/TerraFusion.DataMining/Scrapers/CountyScraperFactory.cs",
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Garfield",
@@ -450,7 +935,45 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Garfield",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Grant",
@@ -488,7 +1011,53 @@
         "No scraper/adapter evidence found.",
         "No runtime API consumer evidence found.",
         "Evidence appears demo/sample/synthetic."
-      ]
+      ],
+      "costForge": {
+        "county": "Grant",
+        "state": "WA",
+        "parcelRowsObserved": 10,
+        "improvementCharacteristicRowsObserved": 12,
+        "landAttributeRowsObserved": 4,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": true,
+        "hasYearBuilt": true,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": true,
+        "hasCondition": false,
+        "hasLandSize": true,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "data/county-intelligence/grant_analysis.json",
+          "data/county-intelligence/grant_extraction.json",
+          "data/county-intelligence/grant_valuations.json",
+          "data/databases/county-databases/grant_data.sql",
+          "data/intelligence/grant_analysis.json",
+          "data/intelligence/grant_extraction.json",
+          "data/intelligence/grant_valuations.json",
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Grays Harbor",
@@ -517,7 +1086,45 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Grays Harbor",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Island",
@@ -554,7 +1161,53 @@
         "No scraper/adapter evidence found.",
         "No runtime API consumer evidence found.",
         "Evidence appears demo/sample/synthetic."
-      ]
+      ],
+      "costForge": {
+        "county": "Island",
+        "state": "WA",
+        "parcelRowsObserved": 10,
+        "improvementCharacteristicRowsObserved": 12,
+        "landAttributeRowsObserved": 18,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": true,
+        "hasYearBuilt": true,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": true,
+        "hasCondition": false,
+        "hasLandSize": true,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "data/county-intelligence/island_analysis.json",
+          "data/county-intelligence/island_extraction.json",
+          "data/county-intelligence/island_valuations.json",
+          "data/databases/county-databases/island_data.sql",
+          "data/intelligence/island_analysis.json",
+          "data/intelligence/island_extraction.json",
+          "data/intelligence/island_valuations.json",
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Jefferson",
@@ -583,7 +1236,45 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Jefferson",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "King",
@@ -594,14 +1285,17 @@
       "dbTableTargetExists": false,
       "dbTableTarget": null,
       "rowsLanded": 0,
-      "runtimeApiConsumesIt": false,
-      "runtimeApiPath": null,
+      "runtimeApiConsumesIt": true,
+      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
-      "pacsMentionDetected": false,
-      "evidenceCount": 4,
+      "classification": "stub_incomplete",
+      "pacsMentionDetected": true,
+      "evidenceCount": 7,
       "evidencePaths": [
+        "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
+        "backend/src/TerraFusion.CostForge/Services/QuantumFactorEnhancementService.cs",
+        "backend/src/TerraFusion.CostForge/Services/SwarmIntelligenceCoordinator.cs",
         "docs/proof/washington-39-county-coverage.latest.md",
         "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
         "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json",
@@ -611,8 +1305,46 @@
         "No scraper/adapter evidence found.",
         "No DB/table target evidence found.",
         "No landed row evidence found.",
-        "No runtime API consumer evidence found."
-      ]
+        "Evidence contains mock/stub/placeholder language."
+      ],
+      "costForge": {
+        "county": "King",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Kitsap",
@@ -641,7 +1373,45 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Kitsap",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Kittitas",
@@ -670,7 +1440,45 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Kittitas",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Klickitat",
@@ -699,7 +1507,45 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Klickitat",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Lewis",
@@ -728,7 +1574,45 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Lewis",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Lincoln",
@@ -757,7 +1641,45 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Lincoln",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Mason",
@@ -786,7 +1708,45 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Mason",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Okanogan",
@@ -815,7 +1775,45 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Okanogan",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Pacific",
@@ -846,7 +1844,45 @@
       ],
       "blockingReasons": [
         "Full-looking chain still needs source-to-UI runtime proof."
-      ]
+      ],
+      "costForge": {
+        "county": "Pacific",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Pend Oreille",
@@ -875,7 +1911,45 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Pend Oreille",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Pierce",
@@ -886,14 +1960,17 @@
       "dbTableTargetExists": false,
       "dbTableTarget": null,
       "rowsLanded": 0,
-      "runtimeApiConsumesIt": false,
-      "runtimeApiPath": null,
+      "runtimeApiConsumesIt": true,
+      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
-      "pacsMentionDetected": false,
-      "evidenceCount": 4,
+      "classification": "stub_incomplete",
+      "pacsMentionDetected": true,
+      "evidenceCount": 7,
       "evidencePaths": [
+        "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
+        "backend/src/TerraFusion.CostForge/Services/QuantumFactorEnhancementService.cs",
+        "backend/src/TerraFusion.CostForge/Services/SwarmIntelligenceCoordinator.cs",
         "docs/proof/washington-39-county-coverage.latest.md",
         "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
         "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json",
@@ -903,8 +1980,46 @@
         "No scraper/adapter evidence found.",
         "No DB/table target evidence found.",
         "No landed row evidence found.",
-        "No runtime API consumer evidence found."
-      ]
+        "Evidence contains mock/stub/placeholder language."
+      ],
+      "costForge": {
+        "county": "Pierce",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "San Juan",
@@ -940,7 +2055,53 @@
         "No scraper/adapter evidence found.",
         "No runtime API consumer evidence found.",
         "Evidence appears demo/sample/synthetic."
-      ]
+      ],
+      "costForge": {
+        "county": "San Juan",
+        "state": "WA",
+        "parcelRowsObserved": 10,
+        "improvementCharacteristicRowsObserved": 12,
+        "landAttributeRowsObserved": 4,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": true,
+        "hasYearBuilt": true,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": true,
+        "hasCondition": false,
+        "hasLandSize": true,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "data/county-intelligence/sanjuan_analysis.json",
+          "data/county-intelligence/sanjuan_extraction.json",
+          "data/county-intelligence/sanjuan_valuations.json",
+          "data/databases/county-databases/sanjuan_data.sql",
+          "data/intelligence/sanjuan_analysis.json",
+          "data/intelligence/sanjuan_extraction.json",
+          "data/intelligence/sanjuan_valuations.json",
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Skagit",
@@ -969,7 +2130,45 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Skagit",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Skamania",
@@ -998,7 +2197,45 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Skamania",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Snohomish",
@@ -1009,14 +2246,15 @@
       "dbTableTargetExists": true,
       "dbTableTarget": "data/county-intelligence/snohomish_analysis.json",
       "rowsLanded": 18,
-      "runtimeApiConsumesIt": false,
-      "runtimeApiPath": null,
+      "runtimeApiConsumesIt": true,
+      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "demo_only",
       "classification": "demo_artifact",
-      "pacsMentionDetected": false,
-      "evidenceCount": 12,
+      "pacsMentionDetected": true,
+      "evidenceCount": 13,
       "evidencePaths": [
+        "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
         "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
         "data/county-intelligence/snohomish_analysis.json",
         "data/county-intelligence/snohomish_extraction.json",
@@ -1032,9 +2270,54 @@
       ],
       "blockingReasons": [
         "No scraper/adapter evidence found.",
-        "No runtime API consumer evidence found.",
         "Evidence appears demo/sample/synthetic."
-      ]
+      ],
+      "costForge": {
+        "county": "Snohomish",
+        "state": "WA",
+        "parcelRowsObserved": 10,
+        "improvementCharacteristicRowsObserved": 12,
+        "landAttributeRowsObserved": 4,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": true,
+        "hasYearBuilt": true,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": true,
+        "hasCondition": false,
+        "hasLandSize": true,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "data/county-intelligence/snohomish_analysis.json",
+          "data/county-intelligence/snohomish_extraction.json",
+          "data/county-intelligence/snohomish_valuations.json",
+          "data/databases/county-databases/snohomish_data.sql",
+          "data/intelligence/snohomish_analysis.json",
+          "data/intelligence/snohomish_extraction.json",
+          "data/intelligence/snohomish_valuations.json",
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Spokane",
@@ -1045,14 +2328,17 @@
       "dbTableTargetExists": true,
       "dbTableTarget": "data/county-intelligence/spokane_extraction.json",
       "rowsLanded": 10,
-      "runtimeApiConsumesIt": false,
-      "runtimeApiPath": null,
+      "runtimeApiConsumesIt": true,
+      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/atlas-live/__tests__/atlasLiveApi.contracts.test.ts",
       "trustTier": "demo_only",
       "classification": "demo_artifact",
-      "pacsMentionDetected": false,
-      "evidenceCount": 11,
+      "pacsMentionDetected": true,
+      "evidenceCount": 14,
       "evidencePaths": [
+        "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
+        "backend/src/TerraFusion.CostForge/Services/QuantumFactorEnhancementService.cs",
+        "backend/src/TerraFusion.CostForge/Services/SwarmIntelligenceCoordinator.cs",
         "data/county-intelligence/spokane_extraction.json",
         "data/county-intelligence/spokane_valuations.json",
         "data/databases/county-databases/spokane_data.sql",
@@ -1067,9 +2353,51 @@
       ],
       "blockingReasons": [
         "No scraper/adapter evidence found.",
-        "No runtime API consumer evidence found.",
         "Evidence appears demo/sample/synthetic."
-      ]
+      ],
+      "costForge": {
+        "county": "Spokane",
+        "state": "WA",
+        "parcelRowsObserved": 10,
+        "improvementCharacteristicRowsObserved": 4,
+        "landAttributeRowsObserved": 4,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": true,
+        "hasYearBuilt": true,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": true,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "data/county-intelligence/spokane_extraction.json",
+          "data/county-intelligence/spokane_valuations.json",
+          "data/databases/county-databases/spokane_data.sql",
+          "data/intelligence/spokane_extraction.json",
+          "data/intelligence/spokane_valuations.json",
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Stevens",
@@ -1105,7 +2433,53 @@
         "No scraper/adapter evidence found.",
         "No runtime API consumer evidence found.",
         "Evidence appears demo/sample/synthetic."
-      ]
+      ],
+      "costForge": {
+        "county": "Stevens",
+        "state": "WA",
+        "parcelRowsObserved": 10,
+        "improvementCharacteristicRowsObserved": 12,
+        "landAttributeRowsObserved": 4,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": true,
+        "hasYearBuilt": true,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": true,
+        "hasCondition": false,
+        "hasLandSize": true,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "data/county-intelligence/stevens_analysis.json",
+          "data/county-intelligence/stevens_extraction.json",
+          "data/county-intelligence/stevens_valuations.json",
+          "data/databases/county-databases/stevens_data.sql",
+          "data/intelligence/stevens_analysis.json",
+          "data/intelligence/stevens_extraction.json",
+          "data/intelligence/stevens_valuations.json",
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Thurston",
@@ -1120,10 +2494,11 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "stub_incomplete",
       "pacsMentionDetected": false,
-      "evidenceCount": 4,
+      "evidenceCount": 5,
       "evidencePaths": [
+        "backend/src/TerraFusion.CostForge/Services/QuantumFactorEnhancementService.cs",
         "docs/proof/washington-39-county-coverage.latest.md",
         "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
         "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json",
@@ -1133,8 +2508,47 @@
         "No scraper/adapter evidence found.",
         "No DB/table target evidence found.",
         "No landed row evidence found.",
-        "No runtime API consumer evidence found."
-      ]
+        "No runtime API consumer evidence found.",
+        "Evidence contains mock/stub/placeholder language."
+      ],
+      "costForge": {
+        "county": "Thurston",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Wahkiakum",
@@ -1163,7 +2577,45 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Wahkiakum",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Walla Walla",
@@ -1194,7 +2646,46 @@
         "No landed row evidence found.",
         "No runtime API consumer evidence found.",
         "Evidence contains mock/stub/placeholder language."
-      ]
+      ],
+      "costForge": {
+        "county": "Walla Walla",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "backend/src/TerraFusion.DataMining/Scrapers/County/WallaWallaCountyScraper.cs",
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Whatcom",
@@ -1230,7 +2721,53 @@
         "No scraper/adapter evidence found.",
         "No runtime API consumer evidence found.",
         "Evidence appears demo/sample/synthetic."
-      ]
+      ],
+      "costForge": {
+        "county": "Whatcom",
+        "state": "WA",
+        "parcelRowsObserved": 10,
+        "improvementCharacteristicRowsObserved": 12,
+        "landAttributeRowsObserved": 4,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": true,
+        "hasYearBuilt": true,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": true,
+        "hasCondition": false,
+        "hasLandSize": true,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "data/county-intelligence/whatcom_analysis.json",
+          "data/county-intelligence/whatcom_extraction.json",
+          "data/county-intelligence/whatcom_valuations.json",
+          "data/databases/county-databases/whatcom_data.sql",
+          "data/intelligence/whatcom_analysis.json",
+          "data/intelligence/whatcom_extraction.json",
+          "data/intelligence/whatcom_valuations.json",
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Whitman",
@@ -1259,7 +2796,45 @@
         "No DB/table target evidence found.",
         "No landed row evidence found.",
         "No runtime API consumer evidence found."
-      ]
+      ],
+      "costForge": {
+        "county": "Whitman",
+        "state": "WA",
+        "parcelRowsObserved": 0,
+        "improvementCharacteristicRowsObserved": 0,
+        "landAttributeRowsObserved": 0,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": false,
+        "hasYearBuilt": false,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": false,
+        "hasCondition": false,
+        "hasLandSize": false,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     },
     {
       "county": "Yakima",
@@ -1270,14 +2845,15 @@
       "dbTableTargetExists": true,
       "dbTableTarget": "data/county-intelligence/yakima_analysis.json",
       "rowsLanded": 18,
-      "runtimeApiConsumesIt": false,
-      "runtimeApiPath": null,
+      "runtimeApiConsumesIt": true,
+      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "demo_only",
       "classification": "demo_artifact",
-      "pacsMentionDetected": false,
-      "evidenceCount": 12,
+      "pacsMentionDetected": true,
+      "evidenceCount": 13,
       "evidencePaths": [
+        "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
         "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
         "data/county-intelligence/yakima_analysis.json",
         "data/county-intelligence/yakima_extraction.json",
@@ -1293,9 +2869,54 @@
       ],
       "blockingReasons": [
         "No scraper/adapter evidence found.",
-        "No runtime API consumer evidence found.",
         "Evidence appears demo/sample/synthetic."
-      ]
+      ],
+      "costForge": {
+        "county": "Yakima",
+        "state": "WA",
+        "parcelRowsObserved": 10,
+        "improvementCharacteristicRowsObserved": 12,
+        "landAttributeRowsObserved": 4,
+        "salesRowsObserved": 0,
+        "qualifiedSalesRowsObserved": 0,
+        "hasBuildingCharacteristics": true,
+        "hasYearBuilt": true,
+        "hasLivingAreaOrBuildingArea": true,
+        "hasQualityOrGrade": true,
+        "hasCondition": false,
+        "hasLandSize": true,
+        "hasNeighborhoodOrMarketArea": true,
+        "hasSalePrice": false,
+        "hasSaleDate": false,
+        "hasCountySpecificCostSchedule": false,
+        "hasCountySpecificDepreciationTable": false,
+        "hasCountySpecificLandModel": false,
+        "hasCountyCalibrationProof": false,
+        "hasOfficialCountyCertification": false,
+        "hasDerivedCostEstimateOutput": false,
+        "costForgeInputEvidencePaths": [
+          "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "data/county-intelligence/yakima_analysis.json",
+          "data/county-intelligence/yakima_extraction.json",
+          "data/county-intelligence/yakima_valuations.json",
+          "data/databases/county-databases/yakima_data.sql",
+          "data/intelligence/yakima_analysis.json",
+          "data/intelligence/yakima_extraction.json",
+          "data/intelligence/yakima_valuations.json",
+          "docs/proof/washington-39-county-coverage.latest.md",
+          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
+        ],
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available",
+        "allowedWorkflows": [],
+        "blockedWorkflows": [
+          "run_costforge_workflow",
+          "claim_official_county_cost_schedule",
+          "claim_county_certified_value",
+          "finalize_official_valuation_without_review"
+        ],
+        "requiredUserFacingLabel": "No runtime county data available."
+      }
     }
   ]
 }

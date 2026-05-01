@@ -197,8 +197,11 @@ function isInventoryCandidate(filePath) {
     lower.startsWith('backend/src/terrafusion.api/controllers/salesaudit') ||
     lower.startsWith('backend/src/terrafusion.api/controllers/realdata') ||
     lower.startsWith('backend/src/terrafusion.api/controllers/dataimport') ||
+    lower.startsWith('backend/src/terrafusion.api/controllers/costforge') ||
     lower.startsWith('backend/src/terrafusion.api/services/countystudy') ||
+    lower.startsWith('backend/src/terrafusion.costforge/') ||
     lower.startsWith('data/benton/') ||
+    lower.startsWith('data/cost-matrices/') ||
     lower.startsWith('data/county-intelligence/') ||
     lower.startsWith('data/intelligence/') ||
     lower.startsWith('data/public/') ||
@@ -207,6 +210,8 @@ function isInventoryCandidate(filePath) {
     lower.startsWith('api/') ||
     lower.startsWith('scripts/public-data/') ||
     lower.startsWith('frontend/apps/os-shell/src/pages/forge/') ||
+    lower.startsWith('os-platform/core/pilot/costforge-') ||
+    lower.startsWith('os-platform/core/pilot/evidence/costforge-') ||
     lower.startsWith('os-platform/core/pilot/washington-39-county-coverage-proof.mjs') ||
     lower.startsWith('os-platform/core/pilot/evidence/washington-39-county-coverage')
   );
@@ -330,8 +335,16 @@ function classifyFile(filePath, content) {
   const isCountyDataAsset =
     lowerPath.startsWith('data/county-intelligence/') ||
     lowerPath.startsWith('data/intelligence/') ||
+    lowerPath.startsWith('data/cost-matrices/') ||
     lowerPath.startsWith('data/databases/county-databases/') ||
     isWashingtonImplementation;
+  const isCostForgeInputSource =
+    lowerPath.startsWith('data/') ||
+    lowerPath.startsWith('docs/washington counties/') ||
+    lowerPath.startsWith('docs/proof/washington-39-county-coverage') ||
+    lowerPath.startsWith('os-platform/core/pilot/evidence/costforge-') ||
+    lowerPath.startsWith('os-platform/core/pilot/evidence/washington-39-county-coverage') ||
+    lowerPath.startsWith('backend/src/terrafusion.datamining/scrapers/');
 
   const evidence = {
     path: relative,
@@ -346,6 +359,27 @@ function classifyFile(filePath, content) {
     obsolete: false,
     pacsMention: false,
     rowEstimate: null,
+    costForgeInputSource: isCostForgeInputSource,
+    parcelDataSignal: false,
+    improvementCharacteristicSignal: false,
+    landAttributeSignal: false,
+    salesSignal: false,
+    qualifiedSalesSignal: false,
+    hasBuildingCharacteristics: false,
+    hasYearBuilt: false,
+    hasLivingAreaOrBuildingArea: false,
+    hasQualityOrGrade: false,
+    hasCondition: false,
+    hasLandSize: false,
+    hasNeighborhoodOrMarketArea: false,
+    hasSalePrice: false,
+    hasSaleDate: false,
+    hasCountySpecificCostSchedule: false,
+    hasCountySpecificDepreciationTable: false,
+    hasCountySpecificLandModel: false,
+    hasCountyCalibrationProof: false,
+    hasOfficialCountyCertification: false,
+    hasDerivedCostEstimateOutput: false,
   };
 
   if (
@@ -431,7 +465,83 @@ function classifyFile(filePath, content) {
   }
 
   evidence.rowEstimate = estimateRows(filePath, content);
+  addCostForgeEvidence(evidence, lowerPath, lowerContent);
   return evidence;
+}
+
+function addCostForgeEvidence(evidence, lowerPath, lowerContent) {
+  const text = `${lowerPath}\n${lowerContent}`;
+
+  evidence.parcelDataSignal =
+    /\b(parcel|parcels|parcel_id|parcelid|property_id|propertyid|accountnumber|account number)\b/i.test(
+      text
+    );
+  evidence.improvementCharacteristicSignal =
+    /improvement|building|structure|yearbuilt|year_built|livingarea|living_area|buildingarea|building_area|gla|sqft|square feet|quality|grade|condition/i.test(
+      text
+    );
+  evidence.landAttributeSignal =
+    /land|acres|acreage|lotsize|lot size|landsize|land_size|site area|sitearea/i.test(text);
+  evidence.salesSignal =
+    /saleprice|sale price|sales price|sale_date|saledate|sale date|transaction|excise|deed/i.test(
+      text
+    );
+  evidence.qualifiedSalesSignal =
+    /qualified sale|qualifiedsales|qualified_sales|qualification|arms length|arms-length|valid sale|validsale/i.test(
+      text
+    );
+
+  evidence.hasBuildingCharacteristics =
+    /improvement|building|buildingarea|building_area|structure|dwelling|residential characteristic|property characteristic/i.test(
+      text
+    );
+  evidence.hasYearBuilt =
+    /yearbuilt|year_built|year built|yrbuilt|yr_built|construction year/i.test(text);
+  evidence.hasLivingAreaOrBuildingArea =
+    /livingarea|living_area|living area|buildingarea|building_area|building area|gla|sqft|square feet|heated area/i.test(
+      text
+    );
+  evidence.hasQualityOrGrade = /quality|grade|class code|construction class|building class/i.test(
+    text
+  );
+  evidence.hasCondition = /condition|physical condition|effective age/i.test(text);
+  evidence.hasLandSize =
+    /landsize|land_size|land size|lotsize|lot_size|lot size|acres|acreage|site area|sitearea/i.test(
+      text
+    );
+  evidence.hasNeighborhoodOrMarketArea =
+    /neighborhood|neighbourhood|market area|marketarea|reval area|revalarea|geo area|geoarea/i.test(
+      text
+    );
+  evidence.hasSalePrice =
+    /saleprice|sale_price|sale price|sales price|consideration|transaction price/i.test(text);
+  evidence.hasSaleDate =
+    /saledate|sale_date|sale date|recording date|recorded date|transaction date/i.test(text);
+
+  evidence.hasCountySpecificCostSchedule =
+    /cost schedule|cost_schedule|costschedule|cost matrix|cost_matrix|costmatrix|cost factor|costfactor|base cost|basecost|cost table|cost-table/i.test(
+      text
+    );
+  evidence.hasCountySpecificDepreciationTable =
+    /depreciation|depreciationtable|depreciation table|depreciation schedule|depr table|depr_table/i.test(
+      text
+    );
+  evidence.hasCountySpecificLandModel =
+    /land model|land_model|landmodel|land schedule|land_schedule|landschedule|land valuation|land table|land_table/i.test(
+      text
+    );
+  evidence.hasCountyCalibrationProof =
+    /calibration proof|calibrationproof|calibration|calibrated|costforge calibration|costforge_calibration|canonical calibrated|cost value contract/i.test(
+      text
+    );
+  evidence.hasOfficialCountyCertification =
+    /official county certified|county-certified|county certified|official cost schedule|county approved|appraiser-certified|appraiser certified/i.test(
+      text
+    );
+  evidence.hasDerivedCostEstimateOutput =
+    /costforge.*estimate|derived cost|model-derived|model derived|replacement cost|replacementcost|cost value|costvalue|rcn|depreciated cost|scenario delta/i.test(
+      text
+    );
 }
 
 function getCountyEvidence(files) {
@@ -483,6 +593,170 @@ function pick(evidence, predicate) {
   return evidence.find(predicate)?.path ?? null;
 }
 
+function sumRows(evidence, predicate) {
+  return evidence.reduce((sum, item) => {
+    if (!predicate(item)) return sum;
+    return sum + (Number.isFinite(item.rowEstimate) ? item.rowEstimate : 0);
+  }, 0);
+}
+
+function costForgeInputCoverage(county, evidence, classification) {
+  const costInputEvidence = evidence.filter(item => item.costForgeInputSource);
+  const coverage = {
+    county,
+    state: 'WA',
+    parcelRowsObserved: sumRows(costInputEvidence, item => item.parcelDataSignal),
+    improvementCharacteristicRowsObserved: sumRows(
+      costInputEvidence,
+      item => item.improvementCharacteristicSignal
+    ),
+    landAttributeRowsObserved: sumRows(costInputEvidence, item => item.landAttributeSignal),
+    salesRowsObserved: sumRows(costInputEvidence, item => item.salesSignal),
+    qualifiedSalesRowsObserved: sumRows(costInputEvidence, item => item.qualifiedSalesSignal),
+    hasBuildingCharacteristics: costInputEvidence.some(item => item.hasBuildingCharacteristics),
+    hasYearBuilt: costInputEvidence.some(item => item.hasYearBuilt),
+    hasLivingAreaOrBuildingArea: costInputEvidence.some(item => item.hasLivingAreaOrBuildingArea),
+    hasQualityOrGrade: costInputEvidence.some(item => item.hasQualityOrGrade),
+    hasCondition: costInputEvidence.some(item => item.hasCondition),
+    hasLandSize: costInputEvidence.some(item => item.hasLandSize),
+    hasNeighborhoodOrMarketArea: costInputEvidence.some(item => item.hasNeighborhoodOrMarketArea),
+    hasSalePrice: costInputEvidence.some(item => item.hasSalePrice),
+    hasSaleDate: costInputEvidence.some(item => item.hasSaleDate),
+    hasCountySpecificCostSchedule: costInputEvidence.some(
+      item => item.hasCountySpecificCostSchedule
+    ),
+    hasCountySpecificDepreciationTable: costInputEvidence.some(
+      item => item.hasCountySpecificDepreciationTable
+    ),
+    hasCountySpecificLandModel: costInputEvidence.some(item => item.hasCountySpecificLandModel),
+    hasCountyCalibrationProof: costInputEvidence.some(item => item.hasCountyCalibrationProof),
+    hasOfficialCountyCertification: costInputEvidence.some(
+      item => item.hasOfficialCountyCertification
+    ),
+    hasDerivedCostEstimateOutput: costInputEvidence.some(item => item.hasDerivedCostEstimateOutput),
+    costForgeInputEvidencePaths: costInputEvidence.map(item => item.path).sort(),
+  };
+
+  return evaluateCostForgeMode(coverage, classification);
+}
+
+function evaluateCostForgeMode(input, classification) {
+  const allowedWorkflows = [];
+  const blockedWorkflows = [];
+  let costForgeReadinessTier = 'CF0_no_runtime_data';
+  let costForgeCountyMode = 'not_available';
+  let requiredUserFacingLabel = 'No runtime county data available.';
+
+  if (classification === 'demo_artifact' || classification === 'stub_incomplete') {
+    blockedWorkflows.push(
+      'run_costforge_workflow',
+      'claim_official_county_cost_schedule',
+      'claim_county_certified_value',
+      'finalize_official_valuation_without_review'
+    );
+    return {
+      ...input,
+      costForgeReadinessTier,
+      costForgeCountyMode,
+      allowedWorkflows,
+      blockedWorkflows,
+      requiredUserFacingLabel,
+    };
+  }
+
+  if (input.parcelRowsObserved > 0) {
+    costForgeReadinessTier = 'CF1_parcel_public_data';
+    costForgeCountyMode = 'public_data_loaded';
+    requiredUserFacingLabel = 'Public-source county data loaded.';
+    allowedWorkflows.push('open_county', 'inspect_public_parcel_data');
+  }
+
+  if (
+    input.hasBuildingCharacteristics &&
+    input.hasYearBuilt &&
+    input.hasLivingAreaOrBuildingArea &&
+    input.hasLandSize
+  ) {
+    costForgeReadinessTier = 'CF2_property_characteristics_available';
+    costForgeCountyMode = 'derived_estimate_mode';
+    requiredUserFacingLabel =
+      'Model-derived CostForge estimate using public property characteristics.';
+    allowedWorkflows.push('run_draft_cost_estimate', 'preview_scenario');
+  }
+
+  if (input.hasSalePrice && input.hasSaleDate && input.salesRowsObserved > 0) {
+    costForgeReadinessTier = 'CF3_sales_or_market_signals_available';
+    costForgeCountyMode = 'sales_supported_estimate_mode';
+    requiredUserFacingLabel = 'Sales-supported pilot estimate. Not county-certified.';
+    allowedWorkflows.push('compare_sales', 'preview_market_adjustment');
+  }
+
+  if (
+    input.hasDerivedCostEstimateOutput &&
+    input.hasBuildingCharacteristics &&
+    input.hasLivingAreaOrBuildingArea &&
+    input.hasLandSize
+  ) {
+    costForgeReadinessTier = 'CF4_model_derived_cost_estimates_available';
+    if (costForgeCountyMode !== 'sales_supported_estimate_mode') {
+      costForgeCountyMode = 'derived_estimate_mode';
+    }
+    requiredUserFacingLabel =
+      costForgeCountyMode === 'sales_supported_estimate_mode'
+        ? 'Sales-supported model-derived CostForge estimate. Not county-certified.'
+        : 'Model-derived CostForge estimate. Not county-certified.';
+    allowedWorkflows.push('run_model_derived_cost_estimate');
+  }
+
+  if (
+    input.hasCountySpecificCostSchedule &&
+    input.hasCountySpecificDepreciationTable &&
+    input.hasCountySpecificLandModel &&
+    input.hasCountyCalibrationProof
+  ) {
+    costForgeReadinessTier = 'CF5_county_calibrated_cost_model';
+    costForgeCountyMode =
+      input.county === 'Benton' ? 'benton_canonical_calibrated' : 'official_county_calibrated';
+    requiredUserFacingLabel =
+      input.county === 'Benton'
+        ? 'Benton canonical calibrated CostForge model.'
+        : 'County-calibrated CostForge model; certification proof still required before official claims.';
+    allowedWorkflows.push('prepare_valuation_handoff');
+  }
+
+  if (
+    input.hasCountySpecificCostSchedule &&
+    input.hasCountySpecificDepreciationTable &&
+    input.hasCountySpecificLandModel &&
+    input.hasCountyCalibrationProof &&
+    input.hasOfficialCountyCertification
+  ) {
+    costForgeReadinessTier = 'CF6_official_county_certified';
+    costForgeCountyMode = 'official_county_calibrated';
+    requiredUserFacingLabel = 'Official county-certified CostForge model.';
+    allowedWorkflows.push('prepare_official_certified_workflow');
+  } else {
+    blockedWorkflows.push(
+      'claim_official_county_cost_schedule',
+      'claim_county_certified_value',
+      'finalize_official_valuation_without_review'
+    );
+  }
+
+  if (costForgeCountyMode === 'not_available') {
+    blockedWorkflows.unshift('run_costforge_workflow');
+  }
+
+  return {
+    ...input,
+    costForgeReadinessTier,
+    costForgeCountyMode,
+    allowedWorkflows: [...new Set(allowedWorkflows)],
+    blockedWorkflows: [...new Set(blockedWorkflows)],
+    requiredUserFacingLabel,
+  };
+}
+
 function buildRows(byCounty) {
   return counties.map(county => {
     const evidence = byCounty.get(county) ?? [];
@@ -513,6 +787,7 @@ function buildRows(byCounty) {
     if (classification === 'possible_runtime_chain_unproven') {
       blockingReasons.push('Full-looking chain still needs source-to-UI runtime proof.');
     }
+    const costForgeCoverage = costForgeInputCoverage(county, evidence, classification);
 
     return {
       county,
@@ -532,11 +807,15 @@ function buildRows(byCounty) {
       evidenceCount: evidence.length,
       evidencePaths: evidence.map(item => item.path).sort(),
       blockingReasons,
+      costForge: costForgeCoverage,
     };
   });
 }
 
 function summarize(rows) {
+  const costForgeTierCounts = countBy(rows, row => row.costForge.costForgeReadinessTier);
+  const costForgeModeCounts = countBy(rows, row => row.costForge.costForgeCountyMode);
+
   return {
     countiesScanned: rows.length,
     withScraper: rows.filter(row => row.scraperOrAdapterExists).length,
@@ -554,7 +833,23 @@ function summarize(rows) {
         row.uiSurfacePath
     ).length,
     withPacsMentions: rows.filter(row => row.pacsMentionDetected).length,
+    costForgeTierCounts,
+    costForgeModeCounts,
+    costForgePilotWorkflowAllowed: rows.filter(
+      row => row.costForge.costForgeCountyMode !== 'not_available'
+    ).length,
+    costForgeOfficialClaimsAllowed: rows.filter(
+      row => row.costForge.costForgeReadinessTier === 'CF6_official_county_certified'
+    ).length,
   };
+}
+
+function countBy(rows, selector) {
+  return rows.reduce((counts, row) => {
+    const key = selector(row);
+    counts[key] = (counts[key] ?? 0) + 1;
+    return counts;
+  }, {});
 }
 
 function renderMarkdown(rows, summary) {
@@ -569,6 +864,9 @@ function renderMarkdown(rows, summary) {
       row.uiSurfacePath ? `\`${row.uiSurfacePath}\`` : 'No',
       row.trustTier,
       row.classification,
+      row.costForge.costForgeReadinessTier,
+      row.costForge.costForgeCountyMode,
+      row.costForge.requiredUserFacingLabel,
       row.blockingReasons.length > 0 ? row.blockingReasons.join('<br>') : '-',
     ].join(' | ')
   );
@@ -578,8 +876,8 @@ function renderMarkdown(rows, summary) {
     '',
     `Generated: ${new Date().toISOString()}`,
     '',
-    '| County | Source/System | Scraper | DB Target | Rows | API | UI | Trust Tier | Classification | Blockers |',
-    '|---|---|---|---|---:|---|---|---|---|---|',
+    '| County | Source/System | Scraper | DB Target | Rows | API | UI | Trust Tier | Classification | CostForge Tier | CostForge Mode | CostForge Label | Blockers |',
+    '|---|---|---|---|---:|---|---|---|---|---|---|---|---|',
     ...table,
     '',
     '## Summary',
@@ -592,6 +890,14 @@ function renderMarkdown(rows, summary) {
     `- Counties with UI evidence: ${summary.withUi}`,
     `- Counties with apparent full chain: ${summary.withApparentFullChain}`,
     `- Counties with PACS/Harris/CAMA mentions: ${summary.withPacsMentions}`,
+    `- CostForge pilot workflow allowed: ${summary.costForgePilotWorkflowAllowed}`,
+    `- CostForge official claims allowed: ${summary.costForgeOfficialClaimsAllowed}`,
+    `- CostForge tier counts: \`${JSON.stringify(summary.costForgeTierCounts)}\``,
+    `- CostForge mode counts: \`${JSON.stringify(summary.costForgeModeCounts)}\``,
+    '',
+    '## CostForge Readiness Rule',
+    '',
+    'Non-Benton counties do not fail merely because they lack official county-specific cost data. They fail CostForge readiness only when runtime data is missing, trust posture is invisible, derived estimates are presented as official county truth, or final/official workflows are allowed without calibration proof.',
     '',
     '## Certification Note',
     '',
