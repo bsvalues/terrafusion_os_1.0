@@ -81,7 +81,12 @@ public sealed record CliArgs(
     // --source flag, but distinct field/flag because the semantics differ.
     string? WorkbookSourceSchema,
     string? WorkbookSourceTable,
-    string? WorkbookSourceColumn);
+    string? WorkbookSourceColumn,
+    // Slice BENTON-SYNC-2 — schema-catalog health diagnostic mode.
+    // Pure read-only diagnostic over an already-built catalog;
+    // requires --connection-id (the source connection identifier
+    // for the catalog to inspect) and --county-id.
+    bool SchemaCatalogHealth);
 
 /// <summary>
 /// Pure argument parser. No I/O, no environment access — easy to unit test.
@@ -306,6 +311,9 @@ public static class CliArgsParser
         string? workbookSourceSchema = null;
         string? workbookSourceTable  = null;
         string? workbookSourceColumn = null;
+
+        // Slice BENTON-SYNC-2 — schema-catalog health diagnostic mode
+        var schemaCatalogHealth = false;
 
         for (var i = 0; i < argv.Length; i++)
         {
@@ -555,6 +563,11 @@ public static class CliArgsParser
                 case "--load-pacs-dictionary":
                     loadPacsDictionary = true;
                     break;
+
+                // ── Slice BENTON-SYNC-2 — schema-catalog health diagnostic ─
+                case "--schema-catalog-health":
+                    schemaCatalogHealth = true;
+                    break;
                 case "--table":
                     if (i + 1 >= argv.Length)
                         return (null, "--table requires a value");
@@ -631,7 +644,8 @@ public static class CliArgsParser
                 PacsDictionaryTable:                   pacsDictionaryTable,
                 WorkbookSourceSchema:                  workbookSourceSchema,
                 WorkbookSourceTable:                   workbookSourceTable,
-                WorkbookSourceColumn:                  workbookSourceColumn), null);
+                WorkbookSourceColumn:                  workbookSourceColumn,
+                SchemaCatalogHealth:                   schemaCatalogHealth), null);
         }
 
         // ── Always-required, regardless of mode ─────────────────────────
@@ -653,20 +667,22 @@ public static class CliArgsParser
             (lockMappingWorkbook       ? 1 : 0) +
             (batchEditMappingWorkbook  ? 1 : 0) +
             (mappingReviewProgress     ? 1 : 0) +
-            (loadPacsDictionary        ? 1 : 0);
+            (loadPacsDictionary        ? 1 : 0) +
+            (schemaCatalogHealth       ? 1 : 0);
         if (modeToggleCount > 1)
         {
             return (null,
                 "--generate-mapping-workbook, --export-mapping-workbook, --qualify-sales, " +
                 "--edit-mapping-workbook, --lock-mapping-workbook, " +
                 "--batch-edit-mapping-workbook, --mapping-review-progress, " +
-                "and --load-pacs-dictionary are mutually exclusive");
+                "--load-pacs-dictionary, and --schema-catalog-health " +
+                "are mutually exclusive");
         }
 
         // ── Mode-mutual-exclusion: deep-profile flags only in profile mode ──
         if (generateMappingWorkbook || exportMappingWorkbook || qualifySales ||
             editMappingWorkbook || lockMappingWorkbook || batchEditMappingWorkbook ||
-            mappingReviewProgress || loadPacsDictionary)
+            mappingReviewProgress || loadPacsDictionary || schemaCatalogHealth)
         {
             var modeName =
                 generateMappingWorkbook   ? "Mapping Workbook" :
@@ -676,6 +692,7 @@ public static class CliArgsParser
                 lockMappingWorkbook       ? "Mapping Workbook lock" :
                 batchEditMappingWorkbook  ? "Mapping Workbook batch edit" :
                 mappingReviewProgress     ? "Mapping Workbook review progress" :
+                schemaCatalogHealth       ? "Schema catalog health" :
                                             "PACS dictionary loader";
             if (deepProfile)
             {
@@ -700,10 +717,25 @@ public static class CliArgsParser
             return (null, "--workbook-source-column requires --load-pacs-dictionary");
         }
 
+        // ── Schema-catalog-health validation (BENTON-SYNC-2) ────────────
+        // The health diagnostic reads the catalog only; it requires
+        // --connection-id (the source connection identifier for the
+        // catalog to inspect) and --county-id. No write-side flags
+        // make sense for it.
+        if (schemaCatalogHealth)
+        {
+            if (!connectionId.HasValue)
+            {
+                return (null,
+                    "--connection-id is required when --schema-catalog-health is set " +
+                    "(BENTON-SYNC-2 reads from the catalog built for SyncSourceConnection)");
+            }
+        }
+
         // ── Profile-mode-specific validation ────────────────────────────
         if (!generateMappingWorkbook && !exportMappingWorkbook && !qualifySales &&
             !editMappingWorkbook && !lockMappingWorkbook && !batchEditMappingWorkbook &&
-            !mappingReviewProgress && !loadPacsDictionary)
+            !mappingReviewProgress && !loadPacsDictionary && !schemaCatalogHealth)
         {
             if (!connectionId.HasValue) return (null, "--connection-id is required");
 
@@ -1409,7 +1441,8 @@ public static class CliArgsParser
             PacsDictionaryTable:                   pacsDictionaryTable,
             WorkbookSourceSchema:                  workbookSourceSchema,
             WorkbookSourceTable:                   workbookSourceTable,
-            WorkbookSourceColumn:                  workbookSourceColumn), null);
+            WorkbookSourceColumn:                  workbookSourceColumn,
+            SchemaCatalogHealth:                   schemaCatalogHealth), null);
     }
 
     public static string UsageText => @"

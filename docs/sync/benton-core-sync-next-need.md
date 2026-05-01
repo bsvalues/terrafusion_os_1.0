@@ -286,12 +286,13 @@ This inventory marks the start of a new BENTON-SYNC-* track
 focused on concrete bridge work for the current operational
 reality. Track entries:
 
-- BENTON-SYNC-1   : THIS DOC — inventory + default next.
-- BENTON-SYNC-2   : pending — SyncAtlas schema-catalog health
-                    command (default next per this inventory).
-- BENTON-SYNC-3+  : reselected from parked list when BENTON-SYNC-2
-                    lands; this inventory is refreshed at that
-                    point.
+- BENTON-SYNC-1   : DONE — inventory + default next.
+- BENTON-SYNC-2   : DONE — SyncAtlas `--schema-catalog-health`
+                    command landed. PacsSchemaCatalogHealthReporter
+                    + PacsSchemaCatalogHealthReport record + Run
+                    method in SyncAtlas Program.cs + 12 unit tests.
+- BENTON-SYNC-3+  : reselected from parked list. This inventory
+                    is refreshed when the next-need is picked.
 
 The track is operationally-driven. New entries land as concrete
 bridge needs surface, not as architectural completeness goals.
