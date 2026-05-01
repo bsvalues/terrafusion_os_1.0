@@ -142,6 +142,15 @@ public interface IPacsSchemaCatalog
     /// HG-PII-2.
     /// </summary>
     bool IsTableExhaustivelyClassified(string tableName);
+
+    /// <summary>
+    /// Slice C53-CONS-B: invariant evaluation report from the
+    /// catalog build. Per the C53-CONS-A policy, when the catalog
+    /// instance exists, the report has zero Error rows (BuildAsync
+    /// throws closed before returning otherwise). Callers may
+    /// inspect Warning and Advisory rows for operator surfacing.
+    /// </summary>
+    PacsSchemaInvariantReport InvariantReport { get; }
 }
 
 /// <summary>

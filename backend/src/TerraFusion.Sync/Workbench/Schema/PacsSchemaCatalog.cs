@@ -47,7 +47,8 @@ public sealed class PacsSchemaCatalog : IPacsSchemaCatalog
         IReadOnlyDictionary<string, PacsDictionary> dictionariesByName,
         PacsSchemaVersion version,
         bool piiManifestEngaged,
-        IReadOnlySet<string> piiExhaustiveTables)
+        IReadOnlySet<string> piiExhaustiveTables,
+        PacsSchemaInvariantReport invariantReport)
     {
         _tablesByName = tablesByName;
         _columnsByKey = columnsByKey;
@@ -55,7 +56,18 @@ public sealed class PacsSchemaCatalog : IPacsSchemaCatalog
         Version = version;
         _piiManifestEngaged = piiManifestEngaged;
         _piiExhaustiveTables = piiExhaustiveTables;
+        InvariantReport = invariantReport;
     }
+
+    /// <summary>
+    /// Slice C53-CONS-B: report of invariant evaluation results from
+    /// the catalog build. Per the C53-CONS-A policy, this property
+    /// is always populated; on a clean catalog the report has zero
+    /// Error rows. (When Errors fire, BuildAsync throws before this
+    /// instance is returned, so callers reading this property always
+    /// see a no-Error report.)
+    /// </summary>
+    public PacsSchemaInvariantReport InvariantReport { get; }
 
     /// <inheritdoc />
     public PacsSchemaVersion Version { get; }
@@ -340,9 +352,27 @@ public sealed class PacsSchemaCatalog : IPacsSchemaCatalog
         var piiExhaustiveTables = data.PiiManifest?.TableExhaustiveFlags
             ?? (IReadOnlySet<string>)new HashSet<string>(System.StringComparer.Ordinal);
 
+        // Slice C53-CONS-B: run the invariant engine after the per-
+        // slice integrity checks above. The engine acts as both an
+        // authoritative report (catalog.InvariantReport) and a
+        // backstop. Per the C53-CONS-A policy and HG7 fail-closed,
+        // any Error row aborts the build with a structured exception
+        // that lists every Error in one shot.
+        var engine = new PacsSchemaInvariantEngine();
+        var report = engine.Evaluate(data.Tables, data.Columns, data.Dictionaries, data.SuppressInvariants);
+        if (!report.IsClean)
+        {
+            var errorList = string.Join(
+                "\n  - ",
+                report.Errors.Select(e => $"[{e.Code}] {e.Message} (provenance: {e.Provenance})"));
+            throw new InvalidOperationException(
+                $"[PacsSchemaCatalog] Invariant engine reported {report.Errors.Count()} Error row(s) " +
+                $"(invariant set version {report.InvariantSetVersion}). HG7: refusing to build catalog. Errors:\n  - {errorList}");
+        }
+
         return new PacsSchemaCatalog(
             tablesByName, columnsByKey, dictionariesByName, data.Version,
-            piiManifestEngaged, piiExhaustiveTables);
+            piiManifestEngaged, piiExhaustiveTables, report);
     }
 
     private static void ValidateProvenance(PacsSchemaSourceData data)

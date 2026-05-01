@@ -25,8 +25,8 @@ public sealed class PacsSchemaCatalogTests
 
         var catalog = await PacsSchemaCatalog.BuildAsync(source, CancellationToken.None);
 
-        catalog.Coverage.TableCount.Should().Be(3);
-        catalog.Coverage.ColumnCount.Should().Be(9);
+        catalog.Coverage.TableCount.Should().Be(4);
+        catalog.Coverage.ColumnCount.Should().Be(11);
         catalog.Coverage.DictionaryCount.Should().Be(1);
         catalog.Version.PacsRelease.Should().Be("PACS-9.0.4-fixture");
     }

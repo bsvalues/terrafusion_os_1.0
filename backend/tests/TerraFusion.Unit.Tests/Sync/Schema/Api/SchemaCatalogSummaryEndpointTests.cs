@@ -60,8 +60,8 @@ public sealed class SchemaCatalogSummaryEndpointTests
         var dto = ok.Value.Should().BeOfType<SchemaCatalogSummaryDto>().Subject;
 
         dto.Configured.Should().BeTrue();
-        dto.TableCount.Should().Be(3);
-        dto.ColumnCount.Should().Be(9);
+        dto.TableCount.Should().Be(4);
+        dto.ColumnCount.Should().Be(11);
         dto.DictionaryCount.Should().Be(1);
         dto.PacsRelease.Should().Be("PACS-9.0.4-fixture");
         dto.IngestedAtUtc.Should().NotBeNull();

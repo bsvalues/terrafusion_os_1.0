@@ -62,4 +62,5 @@ public sealed record PacsSchemaSourceData(
     IReadOnlyList<PacsColumn> Columns,
     IReadOnlyList<PacsDictionary> Dictionaries,
     PacsSchemaVersion Version,
-    PacsPiiManifest? PiiManifest = null);
+    PacsPiiManifest? PiiManifest = null,
+    IReadOnlySet<string>? SuppressInvariants = null);
