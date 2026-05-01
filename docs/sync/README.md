@@ -63,6 +63,8 @@ Vestigial drift was swept by C48-FIX, C48-FIX2, and C48-HYGIENE.
 - `sync-boundary-policy.md` — SCOPE-1 — what Sync owns / does not own
 - `sync-surface-inventory.md` — SCOPE-3 — per-surface classification
   + future-slice gate
+- `benton-core-sync-next-need.md` — BENTON-SYNC-1 — current Benton
+  Core Sync next-need inventory + named default implementation slice
 
 ### Schema catalog (C48 family — COMPLETE)
 
