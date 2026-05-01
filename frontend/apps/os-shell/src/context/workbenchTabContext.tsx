@@ -36,6 +36,20 @@ export interface WorkbenchTabData {
   };
   /** Current work mode — tabs can adapt their UI per mode */
   workMode: WorkMode;
+  /** Optional segment-level handoff context when the workbench was opened from County Studio. */
+  segmentHandoff?: WorkbenchSegmentHandoffContext | null;
+}
+
+export interface WorkbenchSegmentHandoffContext {
+  segmentId: string;
+  segmentLabel?: string;
+  studyId?: string;
+  countyId?: string;
+  source?: string;
+  handoffTemplate?: string;
+  exceptionSetId?: string;
+  downstreamReceiptId?: string;
+  downstreamStatus?: string;
 }
 
 // ============================================================================

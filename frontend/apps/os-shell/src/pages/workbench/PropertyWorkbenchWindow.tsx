@@ -27,6 +27,7 @@ import { BADGE_PROVIDERS } from '../../services/badges';
 import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { useParcelActivity } from '../../services/activityFeed';
 import { WorkbenchTabCtx } from '../../context/workbenchTabContext';
+import type { WorkbenchSegmentHandoffContext } from '../../context/workbenchTabContext';
 import { emitTraceEvent } from '../../services/terraTrace';
 import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
 import { useWorkbenchRoles } from '../../hooks/useWorkbenchRoles';
@@ -40,6 +41,7 @@ import { useSession } from '../../auth/useSession';
 import { useAuthContext } from '../../auth/useAuthContext';
 import { cn } from '@/lib/utils';
 import { buildContextRibbonFacts } from '../../components/workbench/parcelContextFacts';
+import activateModule from '@/orchestration/moduleActivation';
 
 // ============================================================================
 // Lazy-loaded Tab Components (same as Router.tsx)
@@ -129,8 +131,16 @@ const TabLoader: React.FC = () => (
 // ============================================================================
 
 /** Plain panel wrapper (data surface — no glass per Liquid Glass spec) */
-const StartGlassCard: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
-  <div className={cn('p-4 flex flex-col rounded-lg', className)} style={{ border: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-surface))' }}>
+const StartGlassCard: React.FC<React.HTMLAttributes<HTMLDivElement> & { children: React.ReactNode }> = ({
+  children,
+  className = '',
+  ...props
+}) => (
+  <div
+    {...props}
+    className={cn('p-4 flex flex-col rounded-lg', className)}
+    style={{ border: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-surface))', ...props.style }}
+  >
     {children}
   </div>
 );
@@ -192,8 +202,109 @@ const StartActionRow: React.FC<{
   </button>
 );
 
+function readMetadataString(metadata: Record<string, unknown> | undefined, key: string): string | undefined {
+  const value = metadata?.[key];
+  return typeof value === 'string' && value.trim().length > 0 ? value : undefined;
+}
+
+function buildSegmentHandoffContext(
+  metadata: Record<string, unknown> | undefined,
+): WorkbenchSegmentHandoffContext | null {
+  const segmentId = readMetadataString(metadata, 'segmentId');
+  if (!segmentId) return null;
+
+  return {
+    segmentId,
+    segmentLabel: readMetadataString(metadata, 'segmentLabel'),
+    studyId: readMetadataString(metadata, 'studyId'),
+    countyId: readMetadataString(metadata, 'countyId'),
+    source: readMetadataString(metadata, 'sourceSuite') ?? 'CountyStudio',
+    handoffTemplate: readMetadataString(metadata, 'countyStudioHandoff'),
+    exceptionSetId: readMetadataString(metadata, 'exceptionSetId'),
+    downstreamReceiptId: readMetadataString(metadata, 'downstreamReceiptId'),
+    downstreamStatus: readMetadataString(metadata, 'downstreamStatus'),
+  };
+}
+
+const SegmentHandoffDetails: React.FC<{ context: WorkbenchSegmentHandoffContext }> = ({ context }) => {
+  const details = [
+    { label: 'Segment', value: context.segmentLabel ?? context.segmentId },
+    { label: 'Template', value: context.handoffTemplate },
+    { label: 'Receipt', value: context.downstreamReceiptId },
+    { label: 'Exception set', value: context.exceptionSetId },
+    { label: 'Status', value: context.downstreamStatus },
+  ].filter((item): item is { label: string; value: string } => Boolean(item.value));
+
+  return (
+    <dl className="mt-3 grid gap-2">
+      {details.map((item) => (
+        <div key={item.label} className="flex items-start justify-between gap-3">
+          <dt className="text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: 'hsl(var(--tf-text) / 0.45)' }}>
+            {item.label}
+          </dt>
+          <dd className="max-w-[150px] truncate text-right text-xs font-medium" style={{ color: 'hsl(var(--tf-text) / 0.78)' }}>
+            {item.value}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+};
+
+const SegmentHandoffBanner: React.FC<{ context: WorkbenchSegmentHandoffContext }> = ({ context }) => {
+  const handleBackToCountyStudio = useCallback(() => {
+    void activateModule('county-studio', {
+      source: 'system',
+      metadata: {
+        segmentId: context.segmentId,
+        studyId: context.studyId,
+        countyId: context.countyId,
+        exceptionSetId: context.exceptionSetId,
+        downstreamReceiptId: context.downstreamReceiptId,
+        downstreamStatus: context.downstreamStatus,
+      },
+    });
+  }, [context]);
+
+  return (
+    <div
+      data-testid="workbench-segment-handoff-banner"
+      className="flex flex-wrap items-center justify-between gap-3 border-b px-4 py-2"
+      style={{
+        borderColor: 'hsl(var(--tf-border) / 0.18)',
+        background: 'hsl(var(--tf-accent) / 0.08)',
+        color: 'hsl(var(--tf-text) / 0.8)',
+      }}
+    >
+      <div className="min-w-0">
+        <span className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: 'hsl(var(--tf-accent))' }}>
+          County Studio segment context
+        </span>
+        <p className="truncate text-xs">
+          Segment {context.segmentLabel ?? context.segmentId}
+          {context.downstreamReceiptId ? ` · Receipt ${context.downstreamReceiptId}` : ''}
+          {context.downstreamStatus ? ` · ${context.downstreamStatus}` : ''}
+        </p>
+      </div>
+      <button
+        type="button"
+        onClick={handleBackToCountyStudio}
+        className="rounded-md border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em]"
+        style={{
+          borderColor: 'hsl(var(--tf-accent) / 0.35)',
+          color: 'hsl(var(--tf-accent))',
+        }}
+      >
+        Back to County Studio
+      </button>
+    </div>
+  );
+};
+
 /** Workbench Start Scene — parcel intake when no parcel is active */
-const WorkbenchStartScene: React.FC = () => {
+const WorkbenchStartScene: React.FC<{ segmentHandoff?: WorkbenchSegmentHandoffContext | null }> = ({
+  segmentHandoff,
+}) => {
   const recentParcels = useRecentParcels();
   const recentMeta = useRecentParcelMeta();
   const openPalette = useCommandPaletteStore((s) => s.open);
@@ -227,6 +338,21 @@ const WorkbenchStartScene: React.FC = () => {
       openWorkbenchWindow(recentParcels[0]);
     }
   }, [recentParcels]);
+
+  const handleBackToCountyStudio = useCallback(() => {
+    if (!segmentHandoff) return;
+    void activateModule('county-studio', {
+      source: 'system',
+      metadata: {
+        segmentId: segmentHandoff.segmentId,
+        studyId: segmentHandoff.studyId,
+        countyId: segmentHandoff.countyId,
+        exceptionSetId: segmentHandoff.exceptionSetId,
+        downstreamReceiptId: segmentHandoff.downstreamReceiptId,
+        downstreamStatus: segmentHandoff.downstreamStatus,
+      },
+    });
+  }, [segmentHandoff]);
 
   const handleSearchKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
@@ -404,6 +530,31 @@ const WorkbenchStartScene: React.FC = () => {
 
       {/* ═══ Right Panel: Quick Actions ═══ */}
       <div className="w-[240px] shrink-0 flex flex-col gap-3">
+        {segmentHandoff && (
+          <StartGlassCard data-testid="workbench-segment-handoff-card">
+            <StartSectionHeader icon={<span className="text-sm">&#128203;</span>} title="County Studio Context" />
+            <p className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
+              Segment handoff retained
+            </p>
+            <p className="mt-1 text-xs" style={{ color: 'hsl(var(--tf-text) / 0.48)' }}>
+              Select or search a parcel to continue parcel-level review without losing the originating segment.
+            </p>
+            <SegmentHandoffDetails context={segmentHandoff} />
+            <button
+              type="button"
+              data-testid="workbench-segment-back-county-studio"
+              onClick={handleBackToCountyStudio}
+              className="mt-4 rounded-md border px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em]"
+              style={{
+                borderColor: 'hsl(var(--tf-accent) / 0.35)',
+                background: 'hsl(var(--tf-accent) / 0.1)',
+                color: 'hsl(var(--tf-accent))',
+              }}
+            >
+              Back to County Studio
+            </button>
+          </StartGlassCard>
+        )}
         <StartGlassCard className="flex-1">
           <StartSectionHeader icon={<span className="text-sm">&#9889;</span>} title="Quick Actions" />
           <div className="flex flex-col gap-0.5 -mx-2.5">
@@ -563,6 +714,10 @@ interface PropertyData {
 const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metadata }) => {
   const parcelId = (metadata?.parcelId as string) ?? null;
   const initialTab = (metadata?.tabId as WorkbenchTabSlug) ?? 'summary';
+  const segmentHandoff = useMemo(
+    () => buildSegmentHandoffContext(metadata),
+    [metadata],
+  );
   const session = useSession();
   const auth = useAuthContext();
 
@@ -639,8 +794,8 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
 
   // Context value for tab components (via WorkbenchTabCtx)
   const tabContextValue = useMemo(
-    () => ({ parcelId: parcelId || 'Unknown', propertyData }),
-    [parcelId, propertyData]
+    () => ({ parcelId: parcelId || 'Unknown', propertyData, workMode, segmentHandoff }),
+    [parcelId, propertyData, segmentHandoff, workMode]
   );
 
   // Badge state — collected from all providers
@@ -734,7 +889,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
 
   // No parcel selected — show parcel intake scene
   if (!parcelId) {
-    return <WorkbenchStartScene />;
+    return <WorkbenchStartScene segmentHandoff={segmentHandoff} />;
   }
 
   return (
@@ -752,6 +907,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
         onWorkModeChange={setWorkMode}
         onPopOut={handlePopOut}
       />
+      {segmentHandoff && <SegmentHandoffBanner context={segmentHandoff} />}
 
       {/* Workbench content — state-based tabs, no Router needed */}
       <WorkbenchTabCtx.Provider value={tabContextValue}>
