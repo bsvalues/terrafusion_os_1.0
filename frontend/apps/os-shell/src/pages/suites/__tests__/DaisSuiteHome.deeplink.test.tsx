@@ -6,9 +6,17 @@ import { useSegmentWorkflowDraftStore } from '../segmentWorkflowDraftStore';
 import { useDownstreamClosureReceiptStore } from '../downstreamClosureReceiptStore';
 
 const activateModuleMock = vi.hoisted(() => vi.fn());
+const recordDownstreamReceiptMock = vi.hoisted(() => vi.fn());
+const updateDownstreamReceiptStatusMock = vi.hoisted(() => vi.fn());
 vi.mock('@/orchestration/moduleActivation', () => ({
   default: activateModuleMock,
   activateModule: activateModuleMock,
+}));
+vi.mock('../../forge/county-studio/countyStudyApi', () => ({
+  exceptionApi: {
+    recordDownstreamReceipt: recordDownstreamReceiptMock,
+    updateDownstreamReceiptStatus: updateDownstreamReceiptStatusMock,
+  },
 }));
 
 vi.mock('../useDaisSuiteStats', () => ({
@@ -59,6 +67,8 @@ function resetStore() {
 describe('DaisSuiteHome - County Studio deeplink consumption', () => {
   beforeEach(() => {
     activateModuleMock.mockReset();
+    recordDownstreamReceiptMock.mockResolvedValue({});
+    updateDownstreamReceiptStatusMock.mockResolvedValue({});
     resetStore();
   });
 
@@ -112,9 +122,22 @@ describe('DaisSuiteHome - County Studio deeplink consumption', () => {
     const draft = useSegmentWorkflowDraftStore.getState().activeDraft;
     expect(draft?.handoff?.exceptionSetId).toBe('exc-dais');
     expect(screen.getByTestId('dais-draft-receipt-status')).toHaveTextContent('Drafted');
+    expect(recordDownstreamReceiptMock).toHaveBeenCalledWith(
+      'exc-dais',
+      expect.objectContaining({
+        destination: 'Dais',
+        template: 'SegmentReview',
+        segmentId: 'seg-raw',
+        status: 'Drafted',
+      }),
+    );
 
     fireEvent.click(screen.getByTestId('dais-draft-open-workbench'));
     expect(useDownstreamClosureReceiptStore.getState().receipts['exc-dais'].status).toBe('Opened');
+    expect(recordDownstreamReceiptMock).toHaveBeenCalledWith(
+      'exc-dais',
+      expect.objectContaining({ status: 'Opened' }),
+    );
     expect(activateModuleMock).toHaveBeenCalledWith(
       'property-workbench',
       expect.objectContaining({
@@ -129,6 +152,10 @@ describe('DaisSuiteHome - County Studio deeplink consumption', () => {
 
     fireEvent.click(screen.getByTestId('dais-draft-return-receipt'));
     expect(useDownstreamClosureReceiptStore.getState().receipts['exc-dais'].status).toBe('Returned');
+    expect(recordDownstreamReceiptMock).toHaveBeenCalledWith(
+      'exc-dais',
+      expect.objectContaining({ status: 'Returned' }),
+    );
     expect(activateModuleMock).toHaveBeenCalledWith(
       'county-studio',
       expect.objectContaining({

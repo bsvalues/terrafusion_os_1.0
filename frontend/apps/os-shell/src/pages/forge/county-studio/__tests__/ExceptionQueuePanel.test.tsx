@@ -16,9 +16,12 @@ const clearEvidenceDraftMock = vi.hoisted(() => vi.fn());
 vi.mock('../countyStudyApi', () => ({
   exceptionApi: {
     list: vi.fn(),
+    listDownstreamReceipts: vi.fn(),
     updateStatus: vi.fn(),
     assign: vi.fn(),
     addNote: vi.fn(),
+    recordDownstreamReceipt: vi.fn(),
+    updateDownstreamReceiptStatus: vi.fn(),
     dispatch: vi.fn(),
   },
 }));
@@ -91,9 +94,25 @@ beforeEach(() => {
     mockDispatchedException,
     mockResolvedException,
   ]);
+  (exceptionApi.listDownstreamReceipts as ReturnType<typeof vi.fn>).mockResolvedValue([]);
   (exceptionApi.updateStatus as ReturnType<typeof vi.fn>).mockResolvedValue({ ...mockException, status: 'Dispatched' });
   (exceptionApi.assign as ReturnType<typeof vi.fn>).mockResolvedValue({ ...mockException, assignedTo: 'Jane' });
   (exceptionApi.addNote as ReturnType<typeof vi.fn>).mockResolvedValue({ ...mockException, notes: '[2026-04-24 12:00 system] Test note' });
+  (exceptionApi.recordDownstreamReceipt as ReturnType<typeof vi.fn>).mockResolvedValue({
+    receiptId: 'receipt-1',
+    exceptionSetId: 'exc-1',
+    studyId: 'study-1',
+    countyId: 'county-1',
+    destination: 'Dais',
+    template: 'SegmentReview',
+    segmentId: 'sc-1',
+    segmentLabel: 'Exception: Low Sample',
+    status: 'Drafted',
+    draftedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    updatedBy: 'system',
+  });
+  (exceptionApi.updateDownstreamReceiptStatus as ReturnType<typeof vi.fn>).mockResolvedValue(null);
 });
 
 describe('ExceptionQueuePanel', () => {
@@ -166,6 +185,15 @@ describe('ExceptionQueuePanel', () => {
     await act(async () => { await user.click(screen.getByRole('button', { name: /Dispatch → Dais/i })); });
 
     expect(exceptionApi.updateStatus).toHaveBeenCalledWith('exc-1', 'Dispatched');
+    expect(exceptionApi.recordDownstreamReceipt).toHaveBeenCalledWith(
+      'exc-1',
+      expect.objectContaining({
+        destination: 'Dais',
+        template: 'SegmentReview',
+        segmentId: 'sc-1',
+        status: 'Drafted',
+      }),
+    );
     expect(createWorkflowDraftMock).toHaveBeenCalledWith(
       'SegmentReview',
       'sc-1',
@@ -189,6 +217,14 @@ describe('ExceptionQueuePanel', () => {
     await act(async () => { await user.click(screen.getByRole('button', { name: /Open Dais/i })); });
 
     expect(exceptionApi.updateStatus).not.toHaveBeenCalled();
+    expect(exceptionApi.recordDownstreamReceipt).toHaveBeenCalledWith(
+      'exc-2',
+      expect.objectContaining({
+        destination: 'Dais',
+        template: 'SegmentReview',
+        segmentId: 'sc-1',
+      }),
+    );
     expect(createWorkflowDraftMock).toHaveBeenCalledWith(
       'SegmentReview',
       'sc-1',

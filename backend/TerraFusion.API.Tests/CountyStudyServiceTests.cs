@@ -659,6 +659,70 @@ public class CountyStudyServiceTests
         Assert.Contains("admin", dto.Notes);
     }
 
+    [Fact]
+    public async Task UpsertDownstreamClosureReceipt_PersistsDraftReceipt()
+    {
+        var (svc, _, exc) = await SeedExceptionAsync(ExceptionReasonCode.LowSample, ExceptionDestination.Dais);
+
+        var receipt = await svc.UpsertDownstreamClosureReceiptAsync(
+            exc.ExceptionSetId,
+            new UpsertDownstreamClosureReceiptRequest(
+                Destination: "Dais",
+                Template: "SegmentReview",
+                SegmentId: exc.SourceScenarioId.ToString(),
+                SegmentLabel: "Exception: Low Sample",
+                Status: "Drafted"),
+            "router");
+
+        Assert.Equal(exc.ExceptionSetId, receipt.ExceptionSetId);
+        Assert.Equal("Dais", receipt.Destination);
+        Assert.Equal("Drafted", receipt.Status);
+        Assert.Equal("router", receipt.UpdatedBy);
+
+        var receipts = await svc.GetDownstreamClosureReceiptsAsync(exc.StudyId);
+        Assert.Single(receipts);
+    }
+
+    [Fact]
+    public async Task UpdateDownstreamClosureReceiptStatus_Returned_DoesNotResolveException()
+    {
+        var (svc, ctx, exc) = await SeedExceptionAsync(ExceptionReasonCode.Outlier, ExceptionDestination.Dossier);
+        await svc.UpsertDownstreamClosureReceiptAsync(
+            exc.ExceptionSetId,
+            new UpsertDownstreamClosureReceiptRequest(
+                Destination: "Dossier",
+                Template: "SegmentEvidence",
+                SegmentId: exc.SourceScenarioId.ToString(),
+                SegmentLabel: "Exception: Outlier"),
+            "router");
+
+        var receipt = await svc.UpdateDownstreamClosureReceiptStatusAsync(
+            exc.ExceptionSetId,
+            DownstreamClosureReceiptStatus.Returned,
+            "dossier");
+
+        Assert.Equal("Returned", receipt.Status);
+        var exception = await ctx.CountyExceptionSets.FindAsync(exc.ExceptionSetId);
+        Assert.Equal(ExceptionSetStatus.Created, exception!.Status);
+    }
+
+    [Fact]
+    public async Task UpsertDownstreamClosureReceipt_DraftedReopen_DoesNotDowngradeReturnedReceipt()
+    {
+        var (svc, _, exc) = await SeedExceptionAsync(ExceptionReasonCode.Outlier, ExceptionDestination.Dais);
+        await svc.UpsertDownstreamClosureReceiptAsync(
+            exc.ExceptionSetId,
+            new UpsertDownstreamClosureReceiptRequest("Dais", "SegmentReview", exc.SourceScenarioId.ToString(), "Exception: Outlier", "Returned"),
+            "dais");
+
+        var reopened = await svc.UpsertDownstreamClosureReceiptAsync(
+            exc.ExceptionSetId,
+            new UpsertDownstreamClosureReceiptRequest("Dais", "SegmentReview", exc.SourceScenarioId.ToString(), "Exception: Outlier", "Drafted"),
+            "router");
+
+        Assert.Equal("Returned", reopened.Status);
+    }
+
     // ── UpdateApprovalStateAsync — state machine unit tests ──────────────────
 
     /// <summary>

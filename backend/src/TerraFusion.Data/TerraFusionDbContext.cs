@@ -289,6 +289,7 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<CountyScenario> CountyScenarios { get; set; } = null!;
   public DbSet<CountyAdjustmentSet> CountyAdjustmentSets { get; set; } = null!;
   public DbSet<CountyExceptionSet> CountyExceptionSets { get; set; } = null!;
+  public DbSet<CountyDownstreamClosureReceipt> CountyDownstreamClosureReceipts { get; set; } = null!;
   public DbSet<CountySpatialArtifact> CountySpatialArtifacts { get; set; } = null!;
 
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -904,6 +905,7 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     modelBuilder.ApplyConfiguration(new CountyScenarioConfiguration());
     modelBuilder.ApplyConfiguration(new CountyAdjustmentSetConfiguration());
     modelBuilder.ApplyConfiguration(new CountyExceptionSetConfiguration());
+    modelBuilder.ApplyConfiguration(new CountyDownstreamClosureReceiptConfiguration());
     modelBuilder.ApplyConfiguration(new CountySpatialArtifactConfiguration());
 
     // GPT/RAG AI Entities (Wave 4 — entities in TerraFusion.AI, registered via hook)

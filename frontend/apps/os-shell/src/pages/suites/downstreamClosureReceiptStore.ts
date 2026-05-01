@@ -17,6 +17,8 @@ export interface DownstreamClosureReceipt {
 
 interface DownstreamClosureReceiptState {
   receipts: Record<string, DownstreamClosureReceipt>;
+  ingestReceipt: (receipt: DownstreamClosureReceipt) => void;
+  ingestReceipts: (receipts: DownstreamClosureReceipt[]) => void;
   recordDraft: (receipt: {
     exceptionSetId: string;
     destination: DownstreamDestination;
@@ -45,6 +47,22 @@ export const useDownstreamClosureReceiptStore = create<DownstreamClosureReceiptS
   persist(
     (set) => ({
       receipts: {},
+
+      ingestReceipt: (receipt) =>
+        set((state) => ({
+          receipts: {
+            ...state.receipts,
+            [receipt.exceptionSetId]: receipt,
+          },
+        })),
+
+      ingestReceipts: (receipts) =>
+        set((state) => ({
+          receipts: {
+            ...state.receipts,
+            ...Object.fromEntries(receipts.map((receipt) => [receipt.exceptionSetId, receipt])),
+          },
+        })),
 
       recordDraft: ({ exceptionSetId, destination, template, segmentId, segmentLabel }) =>
         set((state) => {

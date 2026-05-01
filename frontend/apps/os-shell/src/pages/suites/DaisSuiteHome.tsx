@@ -25,6 +25,7 @@ import SupervisorFlagQueue from '../../components/dais/SupervisorFlagQueue';
 import { useDaisSuiteStats } from './useDaisSuiteStats';
 import { useSegmentWorkflowDraftStore } from './segmentWorkflowDraftStore';
 import { useDownstreamClosureReceiptStore } from './downstreamClosureReceiptStore';
+import { exceptionApi } from '../forge/county-studio/countyStudyApi';
 import {
   Scale,
   Receipt,
@@ -161,6 +162,13 @@ export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
           segmentId,
           segmentLabel,
         });
+        void exceptionApi.recordDownstreamReceipt(exceptionSetId, {
+          destination: 'Dais',
+          template,
+          segmentId,
+          segmentLabel,
+          status: 'Drafted',
+        }).catch((receiptError) => console.error('Failed to persist Dais downstream receipt', receiptError));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

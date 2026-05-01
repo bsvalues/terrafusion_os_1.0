@@ -18,9 +18,17 @@ import { useDownstreamClosureReceiptStore } from '../downstreamClosureReceiptSto
 import { useAdjustmentApplyHandoffStore } from '../adjustmentApplyHandoffStore';
 
 const activateModuleMock = vi.hoisted(() => vi.fn());
+const recordDownstreamReceiptMock = vi.hoisted(() => vi.fn());
+const updateDownstreamReceiptStatusMock = vi.hoisted(() => vi.fn());
 vi.mock('@/orchestration/moduleActivation', () => ({
   default: activateModuleMock,
   activateModule: activateModuleMock,
+}));
+vi.mock('../../forge/county-studio/countyStudyApi', () => ({
+  exceptionApi: {
+    recordDownstreamReceipt: recordDownstreamReceiptMock,
+    updateDownstreamReceiptStatus: updateDownstreamReceiptStatusMock,
+  },
 }));
 
 // Stub the county stats hook + sub-panels.
@@ -56,6 +64,8 @@ function resetStore() {
 describe('DossierSuiteHome — County Studio deeplink consumption (Task D3)', () => {
   beforeEach(() => {
     activateModuleMock.mockReset();
+    recordDownstreamReceiptMock.mockResolvedValue({});
+    updateDownstreamReceiptStatusMock.mockResolvedValue({});
     resetStore();
   });
 
@@ -108,9 +118,22 @@ describe('DossierSuiteHome — County Studio deeplink consumption (Task D3)', ()
     const draft = useSegmentEvidenceDraftStore.getState().activeDraft;
     expect(draft?.handoff?.exceptionSetId).toBe('exc-dossier');
     expect(screen.getByTestId('dossier-draft-receipt-status')).toHaveTextContent('Drafted');
+    expect(recordDownstreamReceiptMock).toHaveBeenCalledWith(
+      'exc-dossier',
+      expect.objectContaining({
+        destination: 'Dossier',
+        template: 'SegmentEvidence',
+        segmentId: 'seg-raw',
+        status: 'Drafted',
+      }),
+    );
 
     fireEvent.click(screen.getByTestId('dossier-draft-open-builder'));
     expect(useDownstreamClosureReceiptStore.getState().receipts['exc-dossier'].status).toBe('Opened');
+    expect(recordDownstreamReceiptMock).toHaveBeenCalledWith(
+      'exc-dossier',
+      expect.objectContaining({ status: 'Opened' }),
+    );
     expect(activateModuleMock).toHaveBeenCalledWith(
       'property-workbench',
       expect.objectContaining({
@@ -125,6 +148,10 @@ describe('DossierSuiteHome — County Studio deeplink consumption (Task D3)', ()
 
     fireEvent.click(screen.getByTestId('dossier-draft-return-receipt'));
     expect(useDownstreamClosureReceiptStore.getState().receipts['exc-dossier'].status).toBe('Returned');
+    expect(recordDownstreamReceiptMock).toHaveBeenCalledWith(
+      'exc-dossier',
+      expect.objectContaining({ status: 'Returned' }),
+    );
     expect(activateModuleMock).toHaveBeenCalledWith(
       'county-studio',
       expect.objectContaining({

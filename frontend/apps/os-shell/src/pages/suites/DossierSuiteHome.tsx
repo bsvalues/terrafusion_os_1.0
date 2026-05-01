@@ -25,6 +25,7 @@ import DossierEvidenceDraftPanel from '../../components/dossier/DossierEvidenceD
 import { useSegmentEvidenceDraftStore } from './segmentEvidenceDraftStore';
 import { useDownstreamClosureReceiptStore } from './downstreamClosureReceiptStore';
 import { useAdjustmentApplyHandoffStore } from './adjustmentApplyHandoffStore';
+import { exceptionApi } from '../forge/county-studio/countyStudyApi';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import {
   FolderOpen,
@@ -186,6 +187,13 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
           segmentId,
           segmentLabel,
         });
+        void exceptionApi.recordDownstreamReceipt(exceptionSetId, {
+          destination: 'Dossier',
+          template,
+          segmentId,
+          segmentLabel,
+          status: 'Drafted',
+        }).catch((receiptError) => console.error('Failed to persist Dossier downstream receipt', receiptError));
       }
     }
 

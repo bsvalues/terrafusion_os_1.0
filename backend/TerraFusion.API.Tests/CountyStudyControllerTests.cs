@@ -262,6 +262,7 @@ public class CountyStudyControllerTests
     {
         var studyId = Guid.NewGuid();
         var expected = new SegmentDerivationResult(
+            ContractId:                "terraforge_segment_derivation_v1",
             SegmentSetId:              Guid.NewGuid(),
             SegmentCount:              4,
             TotalParcels:              100,

@@ -55,6 +55,8 @@ public sealed class CountyStudyHealthControllerTests
         });
 
     private static CountyHealthSummaryDto BuildSampleDto() => new(
+        ContractId: "terraforge_operational_health_v1",
+        CorrectionPriorityContractId: "terraforge_correction_priority_v1",
         StudyId: Guid.NewGuid(),
         CountyId: Guid.NewGuid(),
         TaxYear: 2026,

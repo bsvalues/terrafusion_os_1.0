@@ -17,6 +17,7 @@ import { useCallback } from 'react';
 import activateModule from '@/orchestration/moduleActivation';
 import { useSegmentWorkflowDraftStore } from '../../pages/suites/segmentWorkflowDraftStore';
 import { useDownstreamClosureReceiptStore } from '../../pages/suites/downstreamClosureReceiptStore';
+import { exceptionApi } from '../../pages/forge/county-studio/countyStudyApi';
 
 function formatTimestamp(iso: string): string {
   try {
@@ -53,6 +54,14 @@ export default function DaisWorkflowDraftPanel() {
     const exceptionSetId = activeDraft.handoff?.exceptionSetId;
     if (exceptionSetId) {
       markOpened(exceptionSetId);
+      void exceptionApi.recordDownstreamReceipt(exceptionSetId, {
+        destination: 'Dais',
+        template: activeDraft.template,
+        segmentId: activeDraft.segmentId,
+        segmentLabel: activeDraft.segmentLabel,
+        status: 'Opened',
+      })
+        .catch((receiptError) => console.error('Failed to persist Dais receipt opened status', receiptError));
     }
     void activateModule('property-workbench', {
       source: 'system',
@@ -69,6 +78,14 @@ export default function DaisWorkflowDraftPanel() {
   const handleReturnReceipt = useCallback(() => {
     if (!activeDraft?.handoff?.exceptionSetId) return;
     markReturned(activeDraft.handoff.exceptionSetId);
+    void exceptionApi.recordDownstreamReceipt(activeDraft.handoff.exceptionSetId, {
+      destination: 'Dais',
+      template: activeDraft.template,
+      segmentId: activeDraft.segmentId,
+      segmentLabel: activeDraft.segmentLabel,
+      status: 'Returned',
+    })
+      .catch((receiptError) => console.error('Failed to persist Dais receipt returned status', receiptError));
     void activateModule('county-studio', {
       source: 'system',
       metadata: {

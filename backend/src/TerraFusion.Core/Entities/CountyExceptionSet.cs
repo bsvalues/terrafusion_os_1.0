@@ -10,6 +10,7 @@ public enum ExceptionReasonCode
 
 public enum ExceptionDestination { Dais, Dossier, Internal }
 public enum ExceptionSetStatus { Created, Dispatched, Resolved }
+public enum DownstreamClosureReceiptStatus { Drafted, Opened, Returned }
 
 public class CountyExceptionSet
 {
@@ -39,4 +40,24 @@ public class CountyExceptionSet
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public string CreatedBy { get; set; } = "system";
     public string UpdatedBy { get; set; } = "system";
+}
+
+public class CountyDownstreamClosureReceipt
+{
+    public Guid ReceiptId { get; set; } = Guid.NewGuid();
+    public Guid ExceptionSetId { get; set; }
+    public Guid StudyId { get; set; }
+    public Guid CountyId { get; set; }
+
+    public ExceptionDestination Destination { get; set; }
+    public string Template { get; set; } = string.Empty;
+    public string SegmentId { get; set; } = string.Empty;
+    public string SegmentLabel { get; set; } = string.Empty;
+    public DownstreamClosureReceiptStatus Status { get; set; } = DownstreamClosureReceiptStatus.Drafted;
+
+    public DateTime DraftedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public string UpdatedBy { get; set; } = "system";
+
+    public CountyExceptionSet? ExceptionSet { get; set; }
 }

@@ -1498,8 +1498,96 @@ public class CountyStudyService : ICountyStudyService
         return MapExceptionSet(exc);
     }
 
+    public async Task<List<CountyDownstreamClosureReceiptDto>> GetDownstreamClosureReceiptsAsync(Guid studyId)
+    {
+        return await _db.CountyDownstreamClosureReceipts
+            .AsNoTracking()
+            .Where(r => r.StudyId == studyId)
+            .OrderByDescending(r => r.UpdatedAt)
+            .Select(r => MapDownstreamReceipt(r))
+            .ToListAsync();
+    }
+
+    public async Task<CountyDownstreamClosureReceiptDto> UpsertDownstreamClosureReceiptAsync(
+        Guid exceptionSetId,
+        UpsertDownstreamClosureReceiptRequest req,
+        string userId)
+    {
+        var exc = await _db.CountyExceptionSets.FindAsync(exceptionSetId)
+            ?? throw new InvalidOperationException($"ExceptionSet {exceptionSetId} not found");
+
+        if (exc.Destination == ExceptionDestination.Internal)
+            throw new InvalidOperationException("Internal exception sets do not have downstream closure receipts.");
+
+        if (!Enum.TryParse<ExceptionDestination>(req.Destination, ignoreCase: true, out var destination)
+            || destination == ExceptionDestination.Internal)
+            throw new InvalidOperationException($"Unsupported downstream destination '{req.Destination}'.");
+
+        if (destination != exc.Destination)
+            throw new InvalidOperationException(
+                $"Receipt destination '{destination}' does not match exception destination '{exc.Destination}'.");
+
+        var requestedStatus = DownstreamClosureReceiptStatus.Drafted;
+        if (!string.IsNullOrWhiteSpace(req.Status)
+            && !Enum.TryParse<DownstreamClosureReceiptStatus>(req.Status, ignoreCase: true, out requestedStatus))
+            throw new InvalidOperationException($"Unsupported downstream receipt status '{req.Status}'.");
+
+        var now = DateTime.UtcNow;
+        var receipt = await _db.CountyDownstreamClosureReceipts
+            .FirstOrDefaultAsync(r => r.ExceptionSetId == exceptionSetId);
+
+        if (receipt is null)
+        {
+            receipt = new CountyDownstreamClosureReceipt
+            {
+                ExceptionSetId = exceptionSetId,
+                StudyId = exc.StudyId,
+                CountyId = exc.CountyId,
+                DraftedAt = now,
+            };
+            _db.CountyDownstreamClosureReceipts.Add(receipt);
+        }
+
+        var trackedReceipt = receipt!;
+        var status = requestedStatus == DownstreamClosureReceiptStatus.Drafted
+            ? trackedReceipt.Status
+            : requestedStatus;
+
+        trackedReceipt.Destination = destination;
+        trackedReceipt.Template = req.Template;
+        trackedReceipt.SegmentId = req.SegmentId;
+        trackedReceipt.SegmentLabel = string.IsNullOrWhiteSpace(req.SegmentLabel) ? req.SegmentId : req.SegmentLabel;
+        trackedReceipt.Status = status;
+        trackedReceipt.UpdatedAt = now;
+        trackedReceipt.UpdatedBy = userId;
+
+        await _db.SaveChangesAsync();
+        return MapDownstreamReceipt(trackedReceipt);
+    }
+
+    public async Task<CountyDownstreamClosureReceiptDto> UpdateDownstreamClosureReceiptStatusAsync(
+        Guid exceptionSetId,
+        DownstreamClosureReceiptStatus status,
+        string userId)
+    {
+        var receipt = await _db.CountyDownstreamClosureReceipts
+            .FirstOrDefaultAsync(r => r.ExceptionSetId == exceptionSetId)
+            ?? throw new InvalidOperationException($"Downstream receipt for ExceptionSet {exceptionSetId} not found");
+
+        receipt.Status = status;
+        receipt.UpdatedAt = DateTime.UtcNow;
+        receipt.UpdatedBy = userId;
+        await _db.SaveChangesAsync();
+        return MapDownstreamReceipt(receipt);
+    }
+
     private static CountyExceptionSetDto MapExceptionSet(CountyExceptionSet e) =>
         new(e.ExceptionSetId, e.StudyId, e.SourceScenarioId, e.ReasonCode.ToString(),
             e.ParcelCount, e.Destination.ToString(), e.Status.ToString(),
             e.AssignedTo, e.Notes, e.CreatedAt, e.CreatedBy);
+
+    private static CountyDownstreamClosureReceiptDto MapDownstreamReceipt(CountyDownstreamClosureReceipt r) =>
+        new(r.ReceiptId, r.ExceptionSetId, r.StudyId, r.CountyId, r.Destination.ToString(),
+            r.Template, r.SegmentId, r.SegmentLabel, r.Status.ToString(),
+            r.DraftedAt, r.UpdatedAt, r.UpdatedBy);
 }

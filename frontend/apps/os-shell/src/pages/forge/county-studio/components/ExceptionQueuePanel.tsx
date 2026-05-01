@@ -6,7 +6,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { exceptionApi } from '../countyStudyApi';
-import type { CountyExceptionSetDto } from '../countyStudyApi';
+import type { CountyDownstreamClosureReceiptDto, CountyExceptionSetDto } from '../countyStudyApi';
 import { useSegmentWorkflowDraftStore } from '@/pages/suites/segmentWorkflowDraftStore';
 import { useSegmentEvidenceDraftStore } from '@/pages/suites/segmentEvidenceDraftStore';
 import {
@@ -14,6 +14,19 @@ import {
   type DownstreamClosureReceipt,
   type DownstreamDestination,
 } from '@/pages/suites/downstreamClosureReceiptStore';
+
+function toLocalReceipt(dto: CountyDownstreamClosureReceiptDto): DownstreamClosureReceipt {
+  return {
+    exceptionSetId: dto.exceptionSetId,
+    destination: dto.destination,
+    template: dto.template,
+    segmentId: dto.segmentId,
+    segmentLabel: dto.segmentLabel,
+    status: dto.status,
+    draftedAt: dto.draftedAt,
+    updatedAt: dto.updatedAt,
+  };
+}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -156,6 +169,7 @@ function ExceptionRow({ exc, onUpdated, receipt }: RowProps) {
   const createWorkflowDraft = useSegmentWorkflowDraftStore((s) => s.createDraft);
   const createEvidenceDraft = useSegmentEvidenceDraftStore((s) => s.createDraft);
   const recordDraft = useDownstreamClosureReceiptStore((s) => s.recordDraft);
+  const ingestReceipt = useDownstreamClosureReceiptStore((s) => s.ingestReceipt);
 
   const act = useCallback(async (fn: () => Promise<CountyExceptionSetDto>) => {
     setBusy(true);
@@ -168,13 +182,26 @@ function ExceptionRow({ exc, onUpdated, receipt }: RowProps) {
     act(async () => {
       const updated = await exceptionApi.updateStatus(exc.exceptionSetId, 'Dispatched');
       if (isDownstreamDestination(exc.destination)) {
-        recordDraft({
+        const draftReceipt = {
           exceptionSetId: exc.exceptionSetId,
           destination: exc.destination,
           template: exc.destination === 'Dais' ? 'SegmentReview' : 'SegmentEvidence',
           segmentId: exc.sourceScenarioId,
           segmentLabel: `Exception: ${reasonLabel(exc.reasonCode)}`,
-        });
+        };
+        recordDraft(draftReceipt);
+        try {
+          const receipt = await exceptionApi.recordDownstreamReceipt(exc.exceptionSetId, {
+            destination: draftReceipt.destination,
+            template: draftReceipt.template,
+            segmentId: draftReceipt.segmentId,
+            segmentLabel: draftReceipt.segmentLabel,
+            status: 'Drafted',
+          });
+          ingestReceipt(toLocalReceipt(receipt));
+        } catch (receiptError) {
+          console.error('Failed to persist downstream receipt', receiptError);
+        }
       }
       if (exc.destination === 'Dais') {
         createWorkflowDraft(
@@ -203,17 +230,27 @@ function ExceptionRow({ exc, onUpdated, receipt }: RowProps) {
       }
       return updated;
     });
-  }, [exc, act, navigate, createWorkflowDraft, createEvidenceDraft, recordDraft]);
+  }, [exc, act, navigate, createWorkflowDraft, createEvidenceDraft, recordDraft, ingestReceipt]);
 
   const reopenDestination = useCallback(() => {
     if (isDownstreamDestination(exc.destination)) {
-      recordDraft({
+      const draftReceipt = {
         exceptionSetId: exc.exceptionSetId,
         destination: exc.destination,
         template: exc.destination === 'Dais' ? 'SegmentReview' : 'SegmentEvidence',
         segmentId: exc.sourceScenarioId,
         segmentLabel: `Exception: ${reasonLabel(exc.reasonCode)}`,
-      });
+      };
+      recordDraft(draftReceipt);
+      void exceptionApi.recordDownstreamReceipt(exc.exceptionSetId, {
+        destination: draftReceipt.destination,
+        template: draftReceipt.template,
+        segmentId: draftReceipt.segmentId,
+        segmentLabel: draftReceipt.segmentLabel,
+        status: receipt?.status ?? 'Drafted',
+      })
+        .then((saved) => ingestReceipt(toLocalReceipt(saved)))
+        .catch((receiptError) => console.error('Failed to persist reopened downstream receipt', receiptError));
     }
     if (exc.destination === 'Dais') {
       createWorkflowDraft(
@@ -240,7 +277,7 @@ function ExceptionRow({ exc, onUpdated, receipt }: RowProps) {
     }
     const routePath = routePathForDestination(exc.destination, exc.sourceScenarioId, exc.exceptionSetId);
     if (routePath) navigate(routePath);
-  }, [exc, navigate, createWorkflowDraft, createEvidenceDraft, recordDraft]);
+  }, [exc, navigate, createWorkflowDraft, createEvidenceDraft, recordDraft, ingestReceipt, receipt?.status]);
 
   const handleResolve = useCallback(() =>
     act(() => exceptionApi.updateStatus(exc.exceptionSetId, 'Resolved')), [exc, act]);
@@ -459,19 +496,24 @@ export function ExceptionQueuePanel() {
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<'all' | 'open' | 'resolved'>('open');
   const receipts = useDownstreamClosureReceiptStore((s) => s.receipts);
+  const ingestReceipts = useDownstreamClosureReceiptStore((s) => s.ingestReceipts);
 
   const load = useCallback(async () => {
     if (!activeStudyId) return;
     setLoading(true);
     try {
-      const data = await exceptionApi.list(activeStudyId);
+      const [data, receiptData] = await Promise.all([
+        exceptionApi.list(activeStudyId),
+        exceptionApi.listDownstreamReceipts(activeStudyId),
+      ]);
       setExceptions(data);
+      ingestReceipts(receiptData.map(toLocalReceipt));
     } catch (e) {
       console.error('ExceptionQueuePanel load failed', e);
     } finally {
       setLoading(false);
     }
-  }, [activeStudyId]);
+  }, [activeStudyId, ingestReceipts]);
 
   useEffect(() => { void load(); }, [load]);
 

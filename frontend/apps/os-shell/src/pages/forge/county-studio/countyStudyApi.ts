@@ -322,9 +322,30 @@ export interface CountyExceptionSetDto {
   createdBy: string;
 }
 
+export type DownstreamClosureReceiptStatus = 'Drafted' | 'Opened' | 'Returned';
+export type DownstreamClosureReceiptDestination = 'Dais' | 'Dossier';
+
+export interface CountyDownstreamClosureReceiptDto {
+  receiptId: string;
+  exceptionSetId: string;
+  studyId: string;
+  countyId: string;
+  destination: DownstreamClosureReceiptDestination;
+  template: string;
+  segmentId: string;
+  segmentLabel: string;
+  status: DownstreamClosureReceiptStatus;
+  draftedAt: string;
+  updatedAt: string;
+  updatedBy: string;
+}
+
 export const exceptionApi = {
   list: (studyId: string): Promise<CountyExceptionSetDto[]> =>
     apiFetchJson(`${BASE}/studies/${studyId}/exceptions`, withCountyStudyHeaders()),
+
+  listDownstreamReceipts: (studyId: string): Promise<CountyDownstreamClosureReceiptDto[]> =>
+    apiFetchJson(`${BASE}/studies/${studyId}/downstream-receipts`, withCountyStudyHeaders()),
 
   updateStatus: (id: string, newStatus: string): Promise<CountyExceptionSetDto> =>
     apiFetchJson(`${BASE}/exceptions/${id}/status`, withCountyStudyHeaders({
@@ -342,6 +363,30 @@ export const exceptionApi = {
     apiFetchJson(`${BASE}/exceptions/${id}/notes`, withCountyStudyHeaders({
       method: 'POST',
       body: JSON.stringify({ noteText }),
+    })),
+
+  recordDownstreamReceipt: (
+    id: string,
+    body: {
+      destination: DownstreamClosureReceiptDestination;
+      template: string;
+      segmentId: string;
+      segmentLabel: string;
+      status?: DownstreamClosureReceiptStatus;
+    },
+  ): Promise<CountyDownstreamClosureReceiptDto> =>
+    apiFetchJson(`${BASE}/exceptions/${id}/downstream-receipt`, withCountyStudyHeaders({
+      method: 'PUT',
+      body: JSON.stringify(body),
+    })),
+
+  updateDownstreamReceiptStatus: (
+    id: string,
+    status: DownstreamClosureReceiptStatus,
+  ): Promise<CountyDownstreamClosureReceiptDto> =>
+    apiFetchJson(`${BASE}/exceptions/${id}/downstream-receipt/status`, withCountyStudyHeaders({
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
     })),
 
   dispatch: (id: string, _dto: CountyExceptionSetDto): Promise<CountyExceptionSetDto> =>

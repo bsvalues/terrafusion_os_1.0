@@ -1178,6 +1178,78 @@ public class CountyStudyController : ControllerBase
         }
     }
 
+    [HttpGet("studies/{studyId:guid}/downstream-receipts")]
+    public async Task<IActionResult> GetDownstreamClosureReceipts(Guid studyId)
+    {
+        try
+        {
+            var scopeResult = await EnsureStudyScopeAsync(studyId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
+            var receipts = await _svc.GetDownstreamClosureReceiptsAsync(studyId);
+            return Ok(receipts);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] GetDownstreamClosureReceipts failed for study {StudyId}", studyId);
+            return StatusCode(500, new { error = "Failed to load downstream receipts." });
+        }
+    }
+
+    [HttpPut("exceptions/{id:guid}/downstream-receipt")]
+    public async Task<IActionResult> UpsertDownstreamClosureReceipt(
+        Guid id,
+        [FromBody] UpsertDownstreamClosureReceiptRequest req)
+    {
+        try
+        {
+            var scopeResult = await EnsureExceptionSetScopeAsync(id, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
+            var dto = await _svc.UpsertDownstreamClosureReceiptAsync(id, req, CurrentUserId);
+            return Ok(dto);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] UpsertDownstreamClosureReceipt failed for {Id}", id);
+            return StatusCode(500, new { error = "Failed to record downstream receipt." });
+        }
+    }
+
+    [HttpPatch("exceptions/{id:guid}/downstream-receipt/status")]
+    public async Task<IActionResult> UpdateDownstreamClosureReceiptStatus(
+        Guid id,
+        [FromBody] UpdateDownstreamClosureReceiptStatusRequest req)
+    {
+        if (!Enum.TryParse<DownstreamClosureReceiptStatus>(req.Status, ignoreCase: true, out var status))
+            return BadRequest(new { error = $"Unknown downstream receipt status '{req.Status}'." });
+
+        try
+        {
+            var scopeResult = await EnsureExceptionSetScopeAsync(id, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
+            var dto = await _svc.UpdateDownstreamClosureReceiptStatusAsync(id, status, CurrentUserId);
+            return Ok(dto);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] UpdateDownstreamClosureReceiptStatus failed for {Id}", id);
+            return StatusCode(500, new { error = "Failed to update downstream receipt." });
+        }
+    }
+
     // ── Evidence Packet (Task H — DOR-defensible export) ─────────────────────
 
     /// <summary>

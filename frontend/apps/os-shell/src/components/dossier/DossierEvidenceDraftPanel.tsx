@@ -17,6 +17,7 @@ import { useCallback } from 'react';
 import activateModule from '@/orchestration/moduleActivation';
 import { useSegmentEvidenceDraftStore } from '../../pages/suites/segmentEvidenceDraftStore';
 import { useDownstreamClosureReceiptStore } from '../../pages/suites/downstreamClosureReceiptStore';
+import { exceptionApi } from '../../pages/forge/county-studio/countyStudyApi';
 
 function formatTimestamp(iso: string): string {
   try {
@@ -53,6 +54,14 @@ export default function DossierEvidenceDraftPanel() {
     const exceptionSetId = activeDraft.handoff?.exceptionSetId;
     if (exceptionSetId) {
       markOpened(exceptionSetId);
+      void exceptionApi.recordDownstreamReceipt(exceptionSetId, {
+        destination: 'Dossier',
+        template: activeDraft.template,
+        segmentId: activeDraft.segmentId,
+        segmentLabel: activeDraft.segmentLabel,
+        status: 'Opened',
+      })
+        .catch((receiptError) => console.error('Failed to persist Dossier receipt opened status', receiptError));
     }
     void activateModule('property-workbench', {
       source: 'system',
@@ -69,6 +78,14 @@ export default function DossierEvidenceDraftPanel() {
   const handleReturnReceipt = useCallback(() => {
     if (!activeDraft?.handoff?.exceptionSetId) return;
     markReturned(activeDraft.handoff.exceptionSetId);
+    void exceptionApi.recordDownstreamReceipt(activeDraft.handoff.exceptionSetId, {
+      destination: 'Dossier',
+      template: activeDraft.template,
+      segmentId: activeDraft.segmentId,
+      segmentLabel: activeDraft.segmentLabel,
+      status: 'Returned',
+    })
+      .catch((receiptError) => console.error('Failed to persist Dossier receipt returned status', receiptError));
     void activateModule('county-studio', {
       source: 'system',
       metadata: {

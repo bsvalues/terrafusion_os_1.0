@@ -128,6 +128,30 @@ public sealed class CountyExceptionSetConfiguration : IEntityTypeConfiguration<C
     }
 }
 
+public sealed class CountyDownstreamClosureReceiptConfiguration : IEntityTypeConfiguration<CountyDownstreamClosureReceipt>
+{
+    public void Configure(EntityTypeBuilder<CountyDownstreamClosureReceipt> builder)
+    {
+        builder.HasKey(e => e.ReceiptId);
+        builder.ToTable("CountyDownstreamClosureReceipts");
+        builder.Property(e => e.Destination).IsRequired().HasConversion<string>().HasMaxLength(50);
+        builder.Property(e => e.Template).IsRequired().HasMaxLength(100);
+        builder.Property(e => e.SegmentId).IsRequired().HasMaxLength(100);
+        builder.Property(e => e.SegmentLabel).IsRequired().HasMaxLength(200);
+        builder.Property(e => e.Status).IsRequired().HasConversion<string>().HasMaxLength(50);
+        builder.Property(e => e.UpdatedBy).IsRequired().HasMaxLength(450);
+        builder.HasIndex(e => e.ExceptionSetId)
+               .IsUnique()
+               .HasDatabaseName("IX_CountyDownstreamClosureReceipts_ExceptionSet");
+        builder.HasIndex(e => new { e.StudyId, e.Status })
+               .HasDatabaseName("IX_CountyDownstreamClosureReceipts_StudyStatus");
+        builder.HasOne(e => e.ExceptionSet)
+               .WithOne()
+               .HasForeignKey<CountyDownstreamClosureReceipt>(e => e.ExceptionSetId)
+               .OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
 public sealed class CountySpatialArtifactConfiguration : IEntityTypeConfiguration<CountySpatialArtifact>
 {
     public void Configure(EntityTypeBuilder<CountySpatialArtifact> builder)
