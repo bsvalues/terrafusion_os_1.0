@@ -87,6 +87,7 @@
     "readiness:june10": "node scripts/june10-readiness.mjs",
     "truth:dev-data": "node os-platform/core/pilot/dev-data-truth-gate.mjs",
     "truth:data-source-inventory": "node scripts/truth/data-source-truth-inventory.mjs",
+    "truth:runtime-row-path-proof": "node scripts/truth/runtime-row-path-proof.mjs",
     "truth:direct-source": "node os-platform/core/pilot/direct-source-recompute.mjs",
     "truth:statistics-parity-scope": "node os-platform/core/pilot/statistics-parity-scope-alignment.mjs",
     "truth:statistics-shared-contract": "node os-platform/core/pilot/statistics-shared-population-contract.mjs",
