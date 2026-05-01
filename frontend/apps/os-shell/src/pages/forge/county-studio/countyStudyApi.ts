@@ -3,6 +3,11 @@
 // that is prepended by apiFetchJson per the apiBase INVARIANT B).
 import { apiFetchJson } from '@/lib/apiBase';
 import { getCountyStudyScope, requireCountyStudyScope } from './countyStudyScope';
+import {
+  assertSupportedAdjustmentType,
+  assertSupportedSelectionType,
+  assertSupportedStudyType,
+} from './countyStudioCreationSupport';
 import type {
   CountyStudySessionDto,
   CountySegmentSetDto,
@@ -47,40 +52,34 @@ function withCountyStudyHeaders(init?: RequestInit): RequestInit {
 }
 
 function mapStudyType(studyType: string): string {
-  switch (studyType) {
+  const supported = assertSupportedStudyType(studyType);
+  switch (supported) {
     case 'RatioStudy':
     case 'MassAppraisal':
     case 'IncomeApproach':
     case 'CostApproach':
-      return studyType;
-    case 'EquityStudy':
-    case 'CustomStudy':
-      throw new Error(`County Studio study type "${studyType}" is not wired to the live backend contract.`);
-    default:
-      throw new Error(`Unsupported County Studio study type "${studyType}".`);
+      return supported;
   }
 }
 
 function mapSelectionType(selectionType: string): string {
-  switch (selectionType) {
+  const supported = assertSupportedSelectionType(selectionType);
+  switch (supported) {
     case 'Visual':
       return 'Lasso';
     case 'RuleBased':
       return 'Rule';
     case 'Hybrid':
       return 'Hybrid';
-    case 'Manual':
-      throw new Error('Manual parcel-list cohorts are not yet wired on this surface.');
-    default:
-      throw new Error(`Unsupported County Studio selection type "${selectionType}".`);
   }
 }
 
 function mapScenarioAdjustment(adjustmentType: string, parametersJson: string): { adjustmentType: string; parameters: string } {
   const parsed = JSON.parse(parametersJson) as { magnitude?: number };
   const magnitude = Number(parsed?.magnitude ?? 0);
+  const supported = assertSupportedAdjustmentType(adjustmentType);
 
-  switch (adjustmentType) {
+  switch (supported) {
     case 'PercentageIncrease':
       return {
         adjustmentType: 'TotalValuePercent',
@@ -100,13 +99,6 @@ function mapScenarioAdjustment(adjustmentType: string, parametersJson: string): 
       return {
         adjustmentType: 'ImprovementValueFlat',
         parameters: JSON.stringify({ magnitude: -Math.abs(magnitude) }),
-      };
-    case 'CustomFormula':
-      throw new Error('Custom formula scenarios are not wired to the governed County Studio backend.');
-    default:
-      return {
-        adjustmentType,
-        parameters: parametersJson,
       };
   }
 }

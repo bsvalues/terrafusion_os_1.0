@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { scenarioApi } from '../countyStudyApi';
+import { SUPPORTED_ADJUSTMENT_TYPES } from '../countyStudioCreationSupport';
 import type { AdjustmentType, CountyScenarioDto, ScenarioImpactPreviewDto } from '../types/countyStudio.types';
 import { describeOperationalScope, parseSegmentIdentity } from '../utils/segmentIdentity';
 
@@ -55,10 +56,7 @@ function SavedScenarioRow({
   );
 }
 
-const ADJUSTMENT_TYPES: AdjustmentType[] = [
-  'PercentageIncrease', 'PercentageDecrease',
-  'FlatDollarIncrease', 'FlatDollarDecrease',
-];
+const ADJUSTMENT_TYPES: readonly AdjustmentType[] = SUPPORTED_ADJUSTMENT_TYPES;
 
 const labelStyle: React.CSSProperties = {
   display: 'block', fontSize: 10, fontWeight: 700,

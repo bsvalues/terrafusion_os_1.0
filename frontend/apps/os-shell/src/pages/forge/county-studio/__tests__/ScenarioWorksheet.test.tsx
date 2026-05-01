@@ -120,6 +120,14 @@ describe('ScenarioWorksheet', () => {
     expect(screen.getByRole('button', { name: /preview impact/i })).toBeInTheDocument();
   });
 
+  it('hides custom formula scenarios until governed formula support exists', () => {
+    render(<ScenarioWorksheet />);
+
+    expect(screen.getByRole('option', { name: 'PercentageIncrease' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'FlatDollarDecrease' })).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'CustomFormula' })).not.toBeInTheDocument();
+  });
+
   it('calls scenarioApi.create then scenarioApi.preview on Preview click', async () => {
     render(<ScenarioWorksheet />);
     fillForm();
