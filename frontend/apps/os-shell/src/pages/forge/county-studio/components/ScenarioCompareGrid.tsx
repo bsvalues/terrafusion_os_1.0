@@ -88,8 +88,8 @@ function statusApprovalPosture(status: ScenarioStatus | undefined, candidateLabe
     case 'Approved':
       return {
         approvalState: 'ready',
-        approvalDetail: `${candidateLabel} is approved; application remains a separate governed action.`,
-        nextAction: 'Prepare apply packet',
+        approvalDetail: `${candidateLabel} is approved; prepare an apply handoff without mutating values in County Studio.`,
+        nextAction: 'Prepare apply handoff',
       };
     case 'Draft':
       return {

@@ -24,6 +24,7 @@ import { OperationalQueue } from '../../components/suites/OperationalQueue';
 import DossierEvidenceDraftPanel from '../../components/dossier/DossierEvidenceDraftPanel';
 import { useSegmentEvidenceDraftStore } from './segmentEvidenceDraftStore';
 import { useDownstreamClosureReceiptStore } from './downstreamClosureReceiptStore';
+import { useAdjustmentApplyHandoffStore } from './adjustmentApplyHandoffStore';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import {
   FolderOpen,
@@ -109,11 +110,50 @@ export interface DossierSuiteHomeProps {
   metadata?: Record<string, unknown>;
 }
 
+function ApplyHandoffBanner({ adjustmentSetId }: { adjustmentSetId: string | null }) {
+  const handoff = useAdjustmentApplyHandoffStore((s) =>
+    adjustmentSetId ? s.handoffs[adjustmentSetId] : undefined,
+  );
+
+  if (!adjustmentSetId || !handoff) return null;
+
+  return (
+    <section data-testid="dossier-apply-handoff" className="px-6 pt-5">
+      <div
+        className="rounded-xl border p-5"
+        style={{
+          borderColor: 'hsl(var(--tf-suite-dossier) / 0.35)',
+          background: 'hsl(var(--tf-suite-dossier) / 0.08)',
+        }}
+      >
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: 'hsl(var(--tf-suite-dossier))' }}>
+          County Studio Handoff · Apply Packet
+        </p>
+        <h2 className="mt-2 text-lg font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>
+          Adjustment apply handoff opened
+        </h2>
+        <p className="mt-2 max-w-3xl text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>
+          Adjustment set <code>{handoff.adjustmentSetId.slice(0, 8)}</code> for scenario <code>{handoff.scenarioId.slice(0, 8)}</code> is ready for governed apply/publish handling.
+        </p>
+        <p className="mt-1 text-xs" style={{ color: 'hsl(var(--tf-muted) / 0.75)' }}>
+          County Studio approved the set and prepared this handoff. Dossier can assemble apply evidence, but value mutation still belongs to the governed apply lane.
+        </p>
+        <p data-testid="dossier-apply-handoff-status" className="mt-2 text-xs" style={{ color: 'hsl(var(--tf-suite-dossier))' }}>
+          Handoff receipt: {handoff.status} · updated {new Date(handoff.updatedAt).toLocaleString()}
+        </p>
+      </div>
+    </section>
+  );
+}
+
 export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {}) {
   const { stats, loading, error, source } = useCountyStats();
   const sourceDisclosure = getSourceDisclosure(source);
   const createDraft = useSegmentEvidenceDraftStore((s) => s.createDraft);
   const recordDraftReceipt = useDownstreamClosureReceiptStore((s) => s.recordDraft);
+  const prepareApplyHandoff = useAdjustmentApplyHandoffStore((s) => s.prepareHandoff);
+  const markApplyHandoffOpened = useAdjustmentApplyHandoffStore((s) => s.markOpened);
+  const [activeApplyHandoffId, setActiveApplyHandoffId] = useState<string | null>(null);
 
   // ── Consume County Studio handoff metadata on mount (Task D3) ───────────
   useEffect(() => {
@@ -147,6 +187,16 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
           segmentLabel,
         });
       }
+    }
+
+    const applyTemplate = typeof metadata.applyTemplate === 'string' ? metadata.applyTemplate : null;
+    const adjustmentSetId = typeof metadata.adjustmentSetId === 'string' ? metadata.adjustmentSetId : null;
+    const scenarioId = typeof metadata.scenarioId === 'string' ? metadata.scenarioId : null;
+    const studyId = typeof metadata.studyId === 'string' ? metadata.studyId : null;
+    if (applyTemplate === 'AdjustmentApplyPacket' && adjustmentSetId && scenarioId && studyId) {
+      prepareApplyHandoff({ adjustmentSetId, scenarioId, studyId });
+      markApplyHandoffOpened(adjustmentSetId);
+      setActiveApplyHandoffId(adjustmentSetId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -254,6 +304,7 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
 
       {/* Task D3 — County Studio handoff: segment evidence draft */}
       <DossierEvidenceDraftPanel />
+      <ApplyHandoffBanner adjustmentSetId={activeApplyHandoffId} />
 
       {/* Source disclosure — only when not live */}
       {stats && sourceDisclosure && (

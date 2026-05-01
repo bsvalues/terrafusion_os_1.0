@@ -15,6 +15,7 @@ import { vi } from 'vitest';
 import DossierSuiteHome from '../DossierSuiteHome';
 import { useSegmentEvidenceDraftStore } from '../segmentEvidenceDraftStore';
 import { useDownstreamClosureReceiptStore } from '../downstreamClosureReceiptStore';
+import { useAdjustmentApplyHandoffStore } from '../adjustmentApplyHandoffStore';
 
 const activateModuleMock = vi.hoisted(() => vi.fn());
 vi.mock('@/orchestration/moduleActivation', () => ({
@@ -48,6 +49,7 @@ function resetStore() {
   act(() => {
     useSegmentEvidenceDraftStore.getState().clearDraft();
     useDownstreamClosureReceiptStore.getState().clearReceipt('exc-dossier');
+    useAdjustmentApplyHandoffStore.getState().clearHandoff('adj-apply');
   });
 }
 
@@ -134,6 +136,29 @@ describe('DossierSuiteHome — County Studio deeplink consumption (Task D3)', ()
         }),
       }),
     );
+  });
+
+  it('opens a County Studio adjustment apply handoff without claiming publish ownership', () => {
+    render(
+      <DossierSuiteHome
+        metadata={{
+          applyTemplate: 'AdjustmentApplyPacket',
+          adjustmentSetId: 'adj-apply',
+          scenarioId: 'scenario-apply',
+          studyId: 'study-apply',
+        }}
+      />,
+    );
+
+    expect(useAdjustmentApplyHandoffStore.getState().handoffs['adj-apply']).toMatchObject({
+      adjustmentSetId: 'adj-apply',
+      scenarioId: 'scenario-apply',
+      studyId: 'study-apply',
+      status: 'Opened',
+    });
+    expect(screen.getByTestId('dossier-apply-handoff')).toHaveTextContent('County Studio Handoff · Apply Packet');
+    expect(screen.getByTestId('dossier-apply-handoff')).toHaveTextContent('value mutation still belongs to the governed apply lane');
+    expect(screen.getByTestId('dossier-apply-handoff-status')).toHaveTextContent('Opened');
   });
 
   it('does not create a draft for an unrecognized template', () => {

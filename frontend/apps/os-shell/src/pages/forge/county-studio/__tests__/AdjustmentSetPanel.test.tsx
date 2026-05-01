@@ -8,6 +8,14 @@ import { AdjustmentSetPanel } from '../components/AdjustmentSetPanel';
 import { adjustmentSetApi } from '../countyStudyApi';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import type { CountyAdjustmentSetDto } from '../types/countyStudio.types';
+import { useAdjustmentApplyHandoffStore } from '@/pages/suites/adjustmentApplyHandoffStore';
+
+const activateModuleMock = vi.hoisted(() => vi.fn());
+
+vi.mock('@/orchestration/moduleActivation', () => ({
+  default: activateModuleMock,
+  activateModule: activateModuleMock,
+}));
 
 vi.mock('../countyStudyApi', () => ({
   adjustmentSetApi: {
@@ -42,6 +50,10 @@ function makeAdj(overrides: Partial<CountyAdjustmentSetDto> = {}): CountyAdjustm
 
 beforeEach(() => {
   vi.clearAllMocks();
+  act(() => {
+    useAdjustmentApplyHandoffStore.getState().clearHandoff('adj-001');
+    useAdjustmentApplyHandoffStore.getState().clearHandoff('adj-002');
+  });
   mockStore.mockReturnValue({ activeStudy: { studyId: STUDY_ID } });
 });
 
@@ -113,6 +125,37 @@ describe('AdjustmentSetPanel', () => {
     expect(screen.getByTestId('state-badge-Approved')).toBeInTheDocument();
     expect(screen.queryByTestId('btn-Published-adj-001')).toBeNull();
     expect(screen.queryByTestId('btn-RolledBack-adj-001')).toBeNull();
+    expect(screen.getByTestId('apply-posture-adj-001')).toHaveTextContent('Ready for apply handoff');
+    expect(screen.getByTestId('btn-PrepareApply-adj-001')).toBeInTheDocument();
+  });
+
+  test('Approved set can prepare an explicit apply handoff without publishing values', async () => {
+    mockList.mockResolvedValueOnce([makeAdj({ approvalState: 'Approved' })]);
+    const user = userEvent.setup();
+    render(<AdjustmentSetPanel />);
+    await screen.findByTestId('btn-PrepareApply-adj-001');
+
+    await user.click(screen.getByTestId('btn-PrepareApply-adj-001'));
+
+    expect(useAdjustmentApplyHandoffStore.getState().handoffs['adj-001']).toMatchObject({
+      adjustmentSetId: 'adj-001',
+      scenarioId: 'scen-001',
+      studyId: STUDY_ID,
+      status: 'Prepared',
+    });
+    expect(activateModuleMock).toHaveBeenCalledWith(
+      'suite-dossier',
+      expect.objectContaining({
+        source: 'system',
+        metadata: expect.objectContaining({
+          applyTemplate: 'AdjustmentApplyPacket',
+          adjustmentSetId: 'adj-001',
+          scenarioId: 'scen-001',
+          studyId: STUDY_ID,
+        }),
+      }),
+    );
+    expect(screen.getByTestId('apply-posture-adj-001')).toHaveTextContent('Handed off for apply');
   });
 
   test('legacy Published set is read-only', async () => {
@@ -122,6 +165,7 @@ describe('AdjustmentSetPanel', () => {
     render(<AdjustmentSetPanel />);
     await screen.findByTestId('adj-panel');
     expect(screen.getByTestId('state-badge-Published')).toBeInTheDocument();
+    expect(screen.getByTestId('apply-posture-adj-001')).toHaveTextContent('Applied externally');
     expect(screen.queryByTestId('btn-RolledBack-adj-001')).toBeNull();
     expect(screen.queryByTestId('btn-Approved-adj-001')).toBeNull();
   });
@@ -131,6 +175,7 @@ describe('AdjustmentSetPanel', () => {
     render(<AdjustmentSetPanel />);
     await screen.findByTestId('adj-panel');
     expect(screen.getByTestId('state-badge-RolledBack')).toBeInTheDocument();
+    expect(screen.getByTestId('apply-posture-adj-001')).toHaveTextContent('Rolled back');
     // No action buttons
     expect(screen.queryByRole('button')).toBeNull();
   });
