@@ -405,10 +405,93 @@ Updates the C54-MULTI arc:
 
 - C54-MULTI-A   : THIS DOC — policy lock.
 - C54-MULTI-B   : pending — catalog-set + builder + tests.
-- C54-MULTI-C   : deferred — manifest-sharing helper.
+- C54-MULTI-C   : DONE — manifest-sharing helper landed
+                 (PacsCatalogManifestSharingHelper static class +
+                 PacsCatalogManifestShareReceipt audit record;
+                 see Manifest sharing section below).
 - C54-MULTI-D   : deferred — identity-checked diff helper.
 - C54-MULTI-E   : deferred — cross-county aggregation surface.
 - C54-MULTI-PROMOTE-* : deferred — per-consumer migration arc.
 
 Promotion happens slice-by-slice; nothing in C54-MULTI-A should
-be read as authorizing C54-MULTI-B until it lands.
+be read as authorizing later slices until each lands.
+
+## Manifest sharing (C54-MULTI-C)
+
+ISOL-1 forbids cross-county manifest reuse without explicit copy +
+revalidate. C54-MULTI-C lands the helper that automates the
+audit-friendly version of that workflow.
+
+### Helper API
+
+`PacsCatalogManifestSharingHelper` is a static class with three
+methods, one per manifest family:
+
+```csharp
+public static Task<PacsCatalogManifestShareReceipt> ShareConversionManifestAsync(
+    string sourcePath, string targetPath,
+    PacsCatalogIdentity sourceIdentity,
+    PacsCatalogIdentity targetIdentity,
+    CancellationToken ct);
+
+public static Task<PacsCatalogManifestShareReceipt> SharePiiManifestAsync(...);
+
+public static Task<PacsCatalogManifestShareReceipt> ShareExportedFkManifestAsync(...);
+```
+
+Each method:
+
+1. Reads source bytes, computes SHA-256.
+2. Creates target's parent directory if needed.
+3. Writes source bytes to target path.
+4. Reads target bytes, computes SHA-256.
+5. Validates target via the appropriate `JsonFile*ManifestSource`
+   (parses + format-checks; throws on malformed wire format).
+6. Returns a `PacsCatalogManifestShareReceipt` audit record.
+
+### Receipt shape
+
+```text
+PacsCatalogManifestShareReceipt:
+  ManifestKind            : "conversion" / "pii" / "exported-fk"
+  SourcePath              : absolute path of source manifest
+  TargetPath              : absolute path of target manifest
+  SourceSha256            : 64-char lowercase hex
+  TargetSha256            : 64-char lowercase hex (equals source for clean copy)
+  SharedAtUtc             : DateTime of copy completion
+  SourceCatalogIdentity   : the catalog the manifest was authored for
+  TargetCatalogIdentity   : the catalog the manifest is shared to
+```
+
+### Hard guards
+
+- **Distinct paths required.** Source and target paths MUST
+  differ. The helper throws `ArgumentException` otherwise — the
+  whole point of sharing is having two files the catalogs can
+  load independently.
+- **Source must exist.** `FileNotFoundException` if the source
+  path does not resolve to a file.
+- **Format validation runs after copy.** Any malformed manifest
+  throws BEFORE the receipt is returned. The operator sees the
+  failure as "the share did not complete."
+- **Helper does NOT enforce ISOL-1 by itself.** ISOL-1 is a
+  catalog-set build-time concern (the
+  `AllowSharedManifestPath` flag on `PacsCatalogSetEntry`). The
+  receipt is the audit signal the operator files alongside their
+  build-time opt-in. Sharing without setting the flag at next
+  build will still throw at the catalog set level.
+- **Cross-catalog content validation is the BUILD's job.** The
+  helper validates wire format. Whether the manifest's table /
+  column names exist in the target catalog is checked at the
+  target's next `BuildAsync` (C50-CONV-B / C51-PII-B / C52-OVR-B
+  catalog-membership checks).
+
+### Out of scope
+
+- Diffing two shared manifests (deferred indefinitely).
+- Auto-rewriting the target manifest to remove entries that don't
+  apply (e.g., dropping table entries that target catalog doesn't
+  have). Operator manually edits before next build.
+- Bidirectional sharing (sharing back from target to source). If
+  needed, operator invokes the helper twice with reversed
+  identities.
