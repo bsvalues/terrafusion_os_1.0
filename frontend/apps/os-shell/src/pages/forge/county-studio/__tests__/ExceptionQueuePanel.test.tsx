@@ -254,4 +254,37 @@ describe('ExceptionQueuePanel', () => {
       }),
     );
   });
+
+  test('returned downstream receipt exposes artifact and evidence closure detail', async () => {
+    const user = userEvent.setup();
+    (exceptionApi.listDownstreamReceipts as ReturnType<typeof vi.fn>).mockResolvedValue([
+      {
+        receiptId: 'receipt-returned',
+        exceptionSetId: 'exc-2',
+        studyId: 'study-1',
+        countyId: 'county-1',
+        sourceType: 'ExceptionQueue',
+        destination: 'Dais',
+        template: 'SegmentReview',
+        segmentId: 'sc-1',
+        segmentLabel: 'Exception: Outlier',
+        status: 'Returned',
+        downstreamEntityId: 'dais-return:sc-1',
+        evidenceRef: 'dais-return-receipt:sc-1',
+        notes: 'Returned from Dais segment workflow with downstream action receipt.',
+        draftedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        updatedBy: 'dais',
+      },
+    ]);
+
+    await act(async () => { renderPanel(); });
+    await act(async () => { await user.click(screen.getByText(/Outlier/i)); });
+
+    expect(screen.getByTestId('exception-next-action-exc-2')).toHaveTextContent('Close returned work');
+    expect(screen.getByTestId('exception-routing-closure-exc-2')).toHaveTextContent('Returned from Dais');
+    expect(screen.getByTestId('exception-routing-closure-exc-2')).toHaveTextContent('Requires County Studio closure');
+    expect(screen.getByTestId('exception-receipt-details-exc-2')).toHaveTextContent('dais-return:sc-1');
+    expect(screen.getByTestId('exception-receipt-details-exc-2')).toHaveTextContent('dais-return-receipt:sc-1');
+  });
 });

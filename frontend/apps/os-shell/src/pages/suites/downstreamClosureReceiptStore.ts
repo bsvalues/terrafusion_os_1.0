@@ -33,10 +33,12 @@ interface DownstreamClosureReceiptState {
     segmentId: string;
     segmentLabel: string;
   }) => void;
-  markOpened: (receiptKey: string) => void;
-  markReturned: (receiptKey: string) => void;
+  markOpened: (receiptKey: string, details?: ReceiptReturnDetails) => void;
+  markReturned: (receiptKey: string, details?: ReceiptReturnDetails) => void;
   clearReceipt: (receiptKey: string) => void;
 }
+
+type ReceiptReturnDetails = Partial<Pick<DownstreamClosureReceipt, 'downstreamEntityId' | 'evidenceRef' | 'notes'>>;
 
 export function downstreamReceiptKey(receipt: Pick<DownstreamClosureReceipt, 'receiptId' | 'exceptionSetId'>): string {
   return receipt.exceptionSetId ?? receipt.receiptId ?? '';
@@ -45,11 +47,15 @@ export function downstreamReceiptKey(receipt: Pick<DownstreamClosureReceipt, 're
 function transitionReceipt(
   receipt: DownstreamClosureReceipt | undefined,
   status: DownstreamReceiptStatus,
+  details: ReceiptReturnDetails = {},
 ): DownstreamClosureReceipt | undefined {
   if (!receipt) return undefined;
   return {
     ...receipt,
     status,
+    downstreamEntityId: details.downstreamEntityId ?? receipt.downstreamEntityId,
+    evidenceRef: details.evidenceRef ?? receipt.evidenceRef,
+    notes: details.notes ?? receipt.notes,
     updatedAt: new Date().toISOString(),
   };
 }
@@ -102,9 +108,9 @@ export const useDownstreamClosureReceiptStore = create<DownstreamClosureReceiptS
           };
         }),
 
-      markOpened: (receiptKey) =>
+      markOpened: (receiptKey, details) =>
         set((state) => {
-          const updated = transitionReceipt(state.receipts[receiptKey], 'Opened');
+          const updated = transitionReceipt(state.receipts[receiptKey], 'Opened', details);
           if (!updated) return state;
           return {
             receipts: {
@@ -114,9 +120,9 @@ export const useDownstreamClosureReceiptStore = create<DownstreamClosureReceiptS
           };
         }),
 
-      markReturned: (receiptKey) =>
+      markReturned: (receiptKey, details) =>
         set((state) => {
-          const updated = transitionReceipt(state.receipts[receiptKey], 'Returned');
+          const updated = transitionReceipt(state.receipts[receiptKey], 'Returned', details);
           if (!updated) return state;
           return {
             receipts: {

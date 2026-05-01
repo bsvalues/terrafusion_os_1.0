@@ -16,7 +16,10 @@
 import { useCallback } from 'react';
 import activateModule from '@/orchestration/moduleActivation';
 import { useSegmentEvidenceDraftStore } from '../../pages/suites/segmentEvidenceDraftStore';
-import { useDownstreamClosureReceiptStore } from '../../pages/suites/downstreamClosureReceiptStore';
+import {
+  useDownstreamClosureReceiptStore,
+  type DownstreamClosureReceipt,
+} from '../../pages/suites/downstreamClosureReceiptStore';
 import { exceptionApi } from '../../pages/forge/county-studio/countyStudyApi';
 
 function formatTimestamp(iso: string): string {
@@ -41,6 +44,7 @@ export default function DossierEvidenceDraftPanel() {
   );
   const markOpened = useDownstreamClosureReceiptStore((s) => s.markOpened);
   const markReturned = useDownstreamClosureReceiptStore((s) => s.markReturned);
+  const ingestReceipt = useDownstreamClosureReceiptStore((s) => s.ingestReceipt);
 
   const handleBackToCountyStudio = useCallback(() => {
     if (!activeDraft) return;
@@ -55,8 +59,10 @@ export default function DossierEvidenceDraftPanel() {
     const exceptionSetId = activeDraft.handoff?.exceptionSetId;
     const receiptId = activeDraft.handoff?.receiptId;
     const key = exceptionSetId ?? receiptId;
+    const downstreamEntityId = `dossier-builder:${activeDraft.segmentId}`;
+    const notes = 'Opened in Dossier evidence builder from County Studio handoff.';
     if (key) {
-      markOpened(key);
+      markOpened(key, { downstreamEntityId, notes });
     }
     if (exceptionSetId) {
       void exceptionApi.recordDownstreamReceipt(exceptionSetId, {
@@ -65,12 +71,17 @@ export default function DossierEvidenceDraftPanel() {
         segmentId: activeDraft.segmentId,
         segmentLabel: activeDraft.segmentLabel,
         status: 'Opened',
+        downstreamEntityId,
+        notes,
       })
+        .then((saved) => ingestReceipt(saved as DownstreamClosureReceipt))
         .catch((receiptError) => console.error('Failed to persist Dossier receipt opened status', receiptError));
     } else if (receiptId) {
       void exceptionApi.updateDownstreamReceiptStatusByReceiptId(receiptId, 'Opened', {
-        downstreamEntityId: `dossier-builder:${activeDraft.segmentId}`,
+        downstreamEntityId,
+        notes,
       })
+        .then((saved) => ingestReceipt(saved as DownstreamClosureReceipt))
         .catch((receiptError) => console.error('Failed to persist Dossier receipt opened status', receiptError));
     }
     void activateModule('property-workbench', {
@@ -84,7 +95,7 @@ export default function DossierEvidenceDraftPanel() {
         downstreamReceiptId: receiptId,
       },
     });
-  }, [activeDraft, markOpened]);
+  }, [activeDraft, markOpened, ingestReceipt]);
 
   const handleReturnReceipt = useCallback(() => {
     if (!activeDraft) return;
@@ -92,7 +103,10 @@ export default function DossierEvidenceDraftPanel() {
     const receiptId = activeDraft.handoff?.receiptId;
     const key = exceptionSetId ?? receiptId;
     if (!key) return;
-    markReturned(key);
+    const downstreamEntityId = `dossier-return:${activeDraft.segmentId}`;
+    const evidenceRef = `dossier-evidence-return:${activeDraft.segmentId}`;
+    const notes = 'Returned from Dossier segment evidence packet with downstream evidence receipt.';
+    markReturned(key, { downstreamEntityId, evidenceRef, notes });
     if (exceptionSetId) {
       void exceptionApi.recordDownstreamReceipt(exceptionSetId, {
         destination: 'Dossier',
@@ -100,13 +114,19 @@ export default function DossierEvidenceDraftPanel() {
         segmentId: activeDraft.segmentId,
         segmentLabel: activeDraft.segmentLabel,
         status: 'Returned',
+        downstreamEntityId,
+        evidenceRef,
+        notes,
       })
+        .then((saved) => ingestReceipt(saved as DownstreamClosureReceipt))
         .catch((receiptError) => console.error('Failed to persist Dossier receipt returned status', receiptError));
     } else if (receiptId) {
       void exceptionApi.updateDownstreamReceiptStatusByReceiptId(receiptId, 'Returned', {
-        downstreamEntityId: `dossier-return:${activeDraft.segmentId}`,
-        notes: 'Returned from Dossier segment inspector handoff.',
+        downstreamEntityId,
+        evidenceRef,
+        notes,
       })
+        .then((saved) => ingestReceipt(saved as DownstreamClosureReceipt))
         .catch((receiptError) => console.error('Failed to persist Dossier receipt returned status', receiptError));
     }
     void activateModule('county-studio', {
@@ -118,7 +138,7 @@ export default function DossierEvidenceDraftPanel() {
         downstreamStatus: 'Returned',
       },
     });
-  }, [activeDraft, markReturned]);
+  }, [activeDraft, markReturned, ingestReceipt]);
 
   if (!activeDraft) return null;
 
@@ -154,9 +174,19 @@ export default function DossierEvidenceDraftPanel() {
               Draft is persisted locally until dismissed. County Studio remains the queue owner.
             </p>
             {receipt && (
-              <p className="mt-1 text-xs" data-testid="dossier-draft-receipt-status" style={{ color: 'hsl(var(--tf-suite-dossier))' }}>
-                Downstream receipt: {receipt.status} · updated {formatTimestamp(receipt.updatedAt)}
-              </p>
+              <div className="mt-2 space-y-1 text-xs" data-testid="dossier-draft-receipt-status" style={{ color: 'hsl(var(--tf-suite-dossier))' }}>
+                <p>Downstream receipt: {receipt.status} · updated {formatTimestamp(receipt.updatedAt)}</p>
+                {receipt.downstreamEntityId && (
+                  <p data-testid="dossier-draft-downstream-entity" style={{ color: 'hsl(var(--tf-muted))' }}>
+                    Downstream artifact: {receipt.downstreamEntityId}
+                  </p>
+                )}
+                {receipt.evidenceRef && (
+                  <p data-testid="dossier-draft-evidence-ref" style={{ color: 'hsl(var(--tf-muted))' }}>
+                    Evidence: {receipt.evidenceRef}
+                  </p>
+                )}
+              </div>
             )}
           </div>
           <button

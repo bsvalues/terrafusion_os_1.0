@@ -143,7 +143,7 @@ function receiptRouteStatus(exc: CountyExceptionSetDto, receipt: DownstreamClosu
 
 function receiptClosureStatus(exc: CountyExceptionSetDto, receipt: DownstreamClosureReceipt | undefined): string {
   if (exc.status === 'Resolved') return 'Closed';
-  if (receipt?.status === 'Returned') return 'Ready for County Studio closure';
+  if (receipt?.status === 'Returned') return 'Requires County Studio closure';
   if (receipt?.status === 'Opened') return 'Downstream work opened';
   if (exc.status === 'Dispatched') return 'Awaiting return';
   return 'Not dispatched';
@@ -307,7 +307,9 @@ function ExceptionRow({ exc, onUpdated, receipt }: RowProps) {
 
   const resolved = exc.status === 'Resolved';
   const tone = TONE[queueToneForException(exc)];
-  const nextAction = nextActionForException(exc);
+  const nextAction = receipt?.status === 'Returned' && !resolved
+    ? 'Close returned work'
+    : nextActionForException(exc);
   const rowAgeDays = ageDays(exc.createdAt);
   const destinationRoute = routePathForDestination(exc.destination, exc.sourceScenarioId, exc.exceptionSetId);
   const hasRoute = Boolean(destinationRoute);
@@ -413,6 +415,38 @@ function ExceptionRow({ exc, onUpdated, receipt }: RowProps) {
               </div>
             ))}
           </div>
+
+          {receipt && (
+            <div
+              data-testid={`exception-receipt-details-${exc.exceptionSetId}`}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                gap: 4,
+                fontSize: 10,
+              }}
+            >
+              {[
+                ['Receipt', receipt.receiptId ?? 'Pending'],
+                ['Artifact', receipt.downstreamEntityId ?? 'Not returned'],
+                ['Evidence', receipt.evidenceRef ?? 'Not returned'],
+              ].map(([label, value]) => (
+                <div
+                  key={label}
+                  style={{
+                    padding: '4px 6px',
+                    borderRadius: 4,
+                    border: '1px solid hsl(var(--tf-border))',
+                    background: 'hsl(var(--tf-bg))',
+                    minWidth: 0,
+                  }}
+                >
+                  <div style={{ color: 'hsl(var(--tf-muted))', fontWeight: 700 }}>{label}</div>
+                  <div style={{ color: 'hsl(var(--tf-fg))', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{value}</div>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Action buttons */}
           {!resolved && (
