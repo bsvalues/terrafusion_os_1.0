@@ -35,8 +35,9 @@ function formatTimestamp(iso: string): string {
 export default function DaisWorkflowDraftPanel() {
   const activeDraft = useSegmentWorkflowDraftStore((s) => s.activeDraft);
   const clearDraft  = useSegmentWorkflowDraftStore((s) => s.clearDraft);
+  const receiptKey = activeDraft?.handoff?.exceptionSetId ?? activeDraft?.handoff?.receiptId;
   const receipt = useDownstreamClosureReceiptStore((s) =>
-    activeDraft?.handoff?.exceptionSetId ? s.receipts[activeDraft.handoff.exceptionSetId] : undefined,
+    receiptKey ? s.receipts[receiptKey] : undefined,
   );
   const markOpened = useDownstreamClosureReceiptStore((s) => s.markOpened);
   const markReturned = useDownstreamClosureReceiptStore((s) => s.markReturned);
@@ -52,14 +53,23 @@ export default function DaisWorkflowDraftPanel() {
   const handleOpenWorkbench = useCallback(() => {
     if (!activeDraft) return;
     const exceptionSetId = activeDraft.handoff?.exceptionSetId;
+    const receiptId = activeDraft.handoff?.receiptId;
+    const key = exceptionSetId ?? receiptId;
+    if (key) {
+      markOpened(key);
+    }
     if (exceptionSetId) {
-      markOpened(exceptionSetId);
       void exceptionApi.recordDownstreamReceipt(exceptionSetId, {
         destination: 'Dais',
         template: activeDraft.template,
         segmentId: activeDraft.segmentId,
         segmentLabel: activeDraft.segmentLabel,
         status: 'Opened',
+      })
+        .catch((receiptError) => console.error('Failed to persist Dais receipt opened status', receiptError));
+    } else if (receiptId) {
+      void exceptionApi.updateDownstreamReceiptStatusByReceiptId(receiptId, 'Opened', {
+        downstreamEntityId: `dais-workbench:${activeDraft.segmentId}`,
       })
         .catch((receiptError) => console.error('Failed to persist Dais receipt opened status', receiptError));
     }
@@ -71,26 +81,40 @@ export default function DaisWorkflowDraftPanel() {
         segmentLabel: activeDraft.segmentLabel,
         countyStudioHandoff: activeDraft.template,
         exceptionSetId,
+        downstreamReceiptId: receiptId,
       },
     });
   }, [activeDraft, markOpened]);
 
   const handleReturnReceipt = useCallback(() => {
-    if (!activeDraft?.handoff?.exceptionSetId) return;
-    markReturned(activeDraft.handoff.exceptionSetId);
-    void exceptionApi.recordDownstreamReceipt(activeDraft.handoff.exceptionSetId, {
-      destination: 'Dais',
-      template: activeDraft.template,
-      segmentId: activeDraft.segmentId,
-      segmentLabel: activeDraft.segmentLabel,
-      status: 'Returned',
-    })
-      .catch((receiptError) => console.error('Failed to persist Dais receipt returned status', receiptError));
+    if (!activeDraft) return;
+    const exceptionSetId = activeDraft.handoff?.exceptionSetId;
+    const receiptId = activeDraft.handoff?.receiptId;
+    const key = exceptionSetId ?? receiptId;
+    if (!key) return;
+    markReturned(key);
+    if (exceptionSetId) {
+      void exceptionApi.recordDownstreamReceipt(exceptionSetId, {
+        destination: 'Dais',
+        template: activeDraft.template,
+        segmentId: activeDraft.segmentId,
+        segmentLabel: activeDraft.segmentLabel,
+        status: 'Returned',
+      })
+        .catch((receiptError) => console.error('Failed to persist Dais receipt returned status', receiptError));
+    } else if (receiptId) {
+      void exceptionApi.updateDownstreamReceiptStatusByReceiptId(receiptId, 'Returned', {
+        downstreamEntityId: `dais-return:${activeDraft.segmentId}`,
+        notes: 'Returned from Dais segment inspector handoff.',
+      })
+        .catch((receiptError) => console.error('Failed to persist Dais receipt returned status', receiptError));
+    }
     void activateModule('county-studio', {
       source: 'system',
       metadata: {
         segmentId: activeDraft.segmentId,
-        exceptionSetId: activeDraft.handoff.exceptionSetId,
+        exceptionSetId,
+        downstreamReceiptId: receiptId,
         downstreamStatus: 'Returned',
       },
     });
@@ -172,7 +196,7 @@ export default function DaisWorkflowDraftPanel() {
           >
             Open in Dais Workbench
           </button>
-          {activeDraft.handoff?.exceptionSetId && (
+          {receiptKey && (
             <button
               type="button"
               data-testid="dais-draft-return-receipt"

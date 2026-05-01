@@ -11,6 +11,7 @@ public enum ExceptionReasonCode
 public enum ExceptionDestination { Dais, Dossier, Internal }
 public enum ExceptionSetStatus { Created, Dispatched, Resolved }
 public enum DownstreamClosureReceiptStatus { Drafted, Opened, Returned }
+public enum DownstreamClosureReceiptSource { ExceptionQueue, SegmentInspector }
 
 public class CountyExceptionSet
 {
@@ -45,15 +46,19 @@ public class CountyExceptionSet
 public class CountyDownstreamClosureReceipt
 {
     public Guid ReceiptId { get; set; } = Guid.NewGuid();
-    public Guid ExceptionSetId { get; set; }
+    public Guid? ExceptionSetId { get; set; }
     public Guid StudyId { get; set; }
     public Guid CountyId { get; set; }
 
+    public DownstreamClosureReceiptSource SourceType { get; set; } = DownstreamClosureReceiptSource.ExceptionQueue;
     public ExceptionDestination Destination { get; set; }
     public string Template { get; set; } = string.Empty;
     public string SegmentId { get; set; } = string.Empty;
     public string SegmentLabel { get; set; } = string.Empty;
     public DownstreamClosureReceiptStatus Status { get; set; } = DownstreamClosureReceiptStatus.Drafted;
+    public string? DownstreamEntityId { get; set; }
+    public string? EvidenceRef { get; set; }
+    public string? Notes { get; set; }
 
     public DateTime DraftedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

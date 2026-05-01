@@ -98,18 +98,20 @@ const DAIS_MODULES: SuiteModuleDef[] = [
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
 const fmtCurrency = (n: number | undefined | null) => (n != null ? `$${n.toLocaleString()}` : '—');
 
-function parseDaisDeeplinkQuery(raw: unknown): { template?: string; segmentId?: string; exceptionSetId?: string } {
+function parseDaisDeeplinkQuery(raw: unknown): { template?: string; segmentId?: string; exceptionSetId?: string; receiptId?: string } {
   if (typeof raw !== 'string' || raw.length === 0) return {};
   try {
     const trimmed = raw.startsWith('?') ? raw.slice(1) : raw;
     const params = new URLSearchParams(trimmed);
-    const out: { template?: string; segmentId?: string; exceptionSetId?: string } = {};
+    const out: { template?: string; segmentId?: string; exceptionSetId?: string; receiptId?: string } = {};
     const template = params.get('template');
     if (template) out.template = template;
     const segmentId = params.get('segmentId');
     if (segmentId) out.segmentId = segmentId;
     const exceptionSetId = params.get('exceptionSetId');
     if (exceptionSetId) out.exceptionSetId = exceptionSetId;
+    const receiptId = params.get('receiptId');
+    if (receiptId) out.receiptId = receiptId;
     return out;
   } catch {
     return {};
@@ -145,10 +147,13 @@ export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
     const labelFromMeta = typeof metadata.segmentLabel === 'string' ? metadata.segmentLabel : null;
     const exceptionFromMeta = typeof metadata.exceptionSetId === 'string' ? metadata.exceptionSetId : null;
     const exceptionSetId = exceptionFromMeta ?? parsed.exceptionSetId ?? undefined;
+    const receiptFromMeta = typeof metadata.downstreamReceiptId === 'string' ? metadata.downstreamReceiptId : null;
+    const receiptId = receiptFromMeta ?? parsed.receiptId ?? undefined;
 
     if (template === 'SegmentReview' && segmentId) {
       const segmentLabel = labelFromMeta ?? segmentId;
       createDraft(template, segmentId, segmentLabel, {
+        receiptId,
         exceptionSetId,
         destination: 'Dais',
         studyId: typeof metadata.studyId === 'string' ? metadata.studyId : undefined,
@@ -169,6 +174,15 @@ export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
           segmentLabel,
           status: 'Drafted',
         }).catch((receiptError) => console.error('Failed to persist Dais downstream receipt', receiptError));
+      } else if (receiptId) {
+        recordDraftReceipt({
+          receiptId,
+          sourceType: 'SegmentInspector',
+          destination: 'Dais',
+          template,
+          segmentId,
+          segmentLabel,
+        });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

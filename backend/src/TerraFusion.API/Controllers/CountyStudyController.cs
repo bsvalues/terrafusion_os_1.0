@@ -1311,6 +1311,35 @@ public class CountyStudyController : ControllerBase
         }
     }
 
+    [HttpPut("segments/{segmentId:guid}/downstream-receipt")]
+    public async Task<IActionResult> UpsertSegmentInspectorHandoffReceipt(
+        Guid segmentId,
+        [FromBody] UpsertSegmentInspectorHandoffReceiptRequest req)
+    {
+        try
+        {
+            var segmentScope = await EnsureSegmentScopeAsync(segmentId, HttpContext.RequestAborted);
+            if (segmentScope is not null)
+                return segmentScope;
+
+            var studyScope = await EnsureStudyScopeAsync(req.StudyId, HttpContext.RequestAborted);
+            if (studyScope is not null)
+                return studyScope;
+
+            var dto = await _svc.UpsertSegmentInspectorHandoffReceiptAsync(segmentId, req, CurrentUserId);
+            return Ok(dto);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] UpsertSegmentInspectorHandoffReceipt failed for segment {SegmentId}", segmentId);
+            return StatusCode(500, new { error = "Failed to record segment inspector handoff receipt." });
+        }
+    }
+
     [HttpPatch("exceptions/{id:guid}/downstream-receipt/status")]
     public async Task<IActionResult> UpdateDownstreamClosureReceiptStatus(
         Guid id,
@@ -1335,6 +1364,45 @@ public class CountyStudyController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "[CountyStudy] UpdateDownstreamClosureReceiptStatus failed for {Id}", id);
+            return StatusCode(500, new { error = "Failed to update downstream receipt." });
+        }
+    }
+
+    [HttpPatch("downstream-receipts/{receiptId:guid}/status")]
+    public async Task<IActionResult> UpdateDownstreamClosureReceiptByReceiptId(
+        Guid receiptId,
+        [FromBody] UpdateDownstreamClosureReceiptStatusRequest req)
+    {
+        if (!Enum.TryParse<DownstreamClosureReceiptStatus>(req.Status, ignoreCase: true, out var status))
+            return BadRequest(new { error = $"Unknown downstream receipt status '{req.Status}'." });
+
+        try
+        {
+            var countyId = await ResolveCountyScopeAsync(HttpContext.RequestAborted);
+            if (!countyId.HasValue)
+                return CountyScopeRequired();
+
+            var inScope = await _db.CountyDownstreamClosureReceipts.AsNoTracking()
+                .AnyAsync(r => r.ReceiptId == receiptId && r.CountyId == countyId.Value, HttpContext.RequestAborted);
+            if (!inScope)
+                return ResourceOutOfScope("Downstream receipt", receiptId);
+
+            var dto = await _svc.UpdateDownstreamClosureReceiptByReceiptIdAsync(
+                receiptId,
+                status,
+                CurrentUserId,
+                req.DownstreamEntityId,
+                req.EvidenceRef,
+                req.Notes);
+            return Ok(dto);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] UpdateDownstreamClosureReceiptByReceiptId failed for {ReceiptId}", receiptId);
             return StatusCode(500, new { error = "Failed to update downstream receipt." });
         }
     }

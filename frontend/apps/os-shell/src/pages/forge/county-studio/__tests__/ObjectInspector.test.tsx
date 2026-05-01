@@ -12,7 +12,7 @@
 //     activates the workbench module.
 
 import React from 'react';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react';
 import { MemoryRouter } from 'react-router-dom';
@@ -33,12 +33,16 @@ const {
   activateModuleMock,
   retryDetailMock,
   retryContextMock,
+  listDownstreamReceiptsMock,
+  recordSegmentInspectorReceiptMock,
   state,
 } = vi.hoisted(() => ({
   mockNavigate:        vi.fn(),
   activateModuleMock:  vi.fn(),
   retryDetailMock:     vi.fn(),
   retryContextMock:    vi.fn(),
+  listDownstreamReceiptsMock: vi.fn(),
+  recordSegmentInspectorReceiptMock: vi.fn(),
   state: {
     detail:         null as CountySegmentDetailDto | null,
     detailLoading:  false,
@@ -70,6 +74,13 @@ vi.mock('../hooks/useInspectorData', () => ({
     contextError:   state.contextError,
     retryContext:   retryContextMock,
   }),
+}));
+
+vi.mock('../countyStudyApi', () => ({
+  exceptionApi: {
+    listDownstreamReceipts: listDownstreamReceiptsMock,
+    recordSegmentInspectorReceipt: recordSegmentInspectorReceiptMock,
+  },
 }));
 
 // Diagnosis tab uses its own hook — stub it with an inert response so
@@ -162,6 +173,25 @@ beforeEach(() => {
   retryContextMock.mockClear();
   mockNavigate.mockClear();
   activateModuleMock.mockClear();
+  listDownstreamReceiptsMock.mockResolvedValue([]);
+  recordSegmentInspectorReceiptMock.mockResolvedValue({
+    receiptId: 'receipt-direct-dais',
+    exceptionSetId: null,
+    studyId: 'study-1',
+    countyId: 'benton',
+    sourceType: 'SegmentInspector',
+    destination: 'Dais',
+    template: 'SegmentReview',
+    segmentId: 's1',
+    segmentLabel: 'NBHD-WR',
+    status: 'Drafted',
+    downstreamEntityId: null,
+    evidenceRef: null,
+    notes: null,
+    draftedAt: '2026-05-01T00:00:00.000Z',
+    updatedAt: '2026-05-01T00:00:00.000Z',
+    updatedBy: 'router',
+  });
   setup();
 });
 
@@ -360,6 +390,36 @@ describe('ObjectInspector — Action tab', () => {
       source: 'system',
       metadata: expect.objectContaining({ segmentId: 's1', countyId: 'benton' }),
     }));
+  });
+
+  it('persists direct Dais handoff receipt before activating the downstream suite', async () => {
+    state.context =baseContext({
+      dais: { workflowTemplate: 'SegmentReview', deeplinkQuery: '?template=SegmentReview&segmentId=s1' },
+    });
+    render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
+    await switchToTab('inspector-tab-action');
+
+    fireEvent.click(screen.getByTestId('inspector-handoff-dais'));
+
+    await waitFor(() => expect(recordSegmentInspectorReceiptMock).toHaveBeenCalledWith(
+      's1',
+      expect.objectContaining({
+        studyId: 'study-1',
+        destination: 'Dais',
+        template: 'SegmentReview',
+        status: 'Drafted',
+      }),
+    ));
+    await waitFor(() => expect(activateModuleMock).toHaveBeenCalledWith(
+      'suite-dais',
+      expect.objectContaining({
+        source: 'system',
+        metadata: expect.objectContaining({
+          segmentId: 's1',
+          downstreamReceiptId: 'receipt-direct-dais',
+        }),
+      }),
+    ));
   });
 
   it('surfaces Truncated notice when parcel list is capped', async () => {

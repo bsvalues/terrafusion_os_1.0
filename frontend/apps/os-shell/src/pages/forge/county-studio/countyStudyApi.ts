@@ -368,17 +368,22 @@ export interface CountyExceptionSetDto {
 
 export type DownstreamClosureReceiptStatus = 'Drafted' | 'Opened' | 'Returned';
 export type DownstreamClosureReceiptDestination = 'Dais' | 'Dossier';
+export type DownstreamClosureReceiptSource = 'ExceptionQueue' | 'SegmentInspector';
 
 export interface CountyDownstreamClosureReceiptDto {
   receiptId: string;
-  exceptionSetId: string;
+  exceptionSetId: string | null;
   studyId: string;
   countyId: string;
+  sourceType: DownstreamClosureReceiptSource;
   destination: DownstreamClosureReceiptDestination;
   template: string;
   segmentId: string;
   segmentLabel: string;
   status: DownstreamClosureReceiptStatus;
+  downstreamEntityId: string | null;
+  evidenceRef: string | null;
+  notes: string | null;
   draftedAt: string;
   updatedAt: string;
   updatedBy: string;
@@ -417,9 +422,30 @@ export const exceptionApi = {
       segmentId: string;
       segmentLabel: string;
       status?: DownstreamClosureReceiptStatus;
+      downstreamEntityId?: string;
+      evidenceRef?: string;
+      notes?: string;
     },
   ): Promise<CountyDownstreamClosureReceiptDto> =>
     apiFetchJson(`${BASE}/exceptions/${id}/downstream-receipt`, withCountyStudyHeaders({
+      method: 'PUT',
+      body: JSON.stringify(body),
+    })),
+
+  recordSegmentInspectorReceipt: (
+    segmentId: string,
+    body: {
+      studyId: string;
+      destination: DownstreamClosureReceiptDestination;
+      template: string;
+      segmentLabel: string;
+      status?: DownstreamClosureReceiptStatus;
+      downstreamEntityId?: string;
+      evidenceRef?: string;
+      notes?: string;
+    },
+  ): Promise<CountyDownstreamClosureReceiptDto> =>
+    apiFetchJson(`${BASE}/segments/${segmentId}/downstream-receipt`, withCountyStudyHeaders({
       method: 'PUT',
       body: JSON.stringify(body),
     })),
@@ -431,6 +457,16 @@ export const exceptionApi = {
     apiFetchJson(`${BASE}/exceptions/${id}/downstream-receipt/status`, withCountyStudyHeaders({
       method: 'PATCH',
       body: JSON.stringify({ status }),
+    })),
+
+  updateDownstreamReceiptStatusByReceiptId: (
+    receiptId: string,
+    status: DownstreamClosureReceiptStatus,
+    body: { downstreamEntityId?: string; evidenceRef?: string; notes?: string } = {},
+  ): Promise<CountyDownstreamClosureReceiptDto> =>
+    apiFetchJson(`${BASE}/downstream-receipts/${receiptId}/status`, withCountyStudyHeaders({
+      method: 'PATCH',
+      body: JSON.stringify({ status, ...body }),
     })),
 
   dispatch: (id: string, _dto: CountyExceptionSetDto): Promise<CountyExceptionSetDto> =>

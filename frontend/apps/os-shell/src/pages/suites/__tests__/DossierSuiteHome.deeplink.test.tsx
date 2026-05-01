@@ -20,6 +20,7 @@ import { useAdjustmentApplyHandoffStore } from '../adjustmentApplyHandoffStore';
 const activateModuleMock = vi.hoisted(() => vi.fn());
 const recordDownstreamReceiptMock = vi.hoisted(() => vi.fn());
 const updateDownstreamReceiptStatusMock = vi.hoisted(() => vi.fn());
+const updateDownstreamReceiptStatusByReceiptIdMock = vi.hoisted(() => vi.fn());
 const recordApplyHandoffReceiptMock = vi.hoisted(() => vi.fn());
 vi.mock('@/orchestration/moduleActivation', () => ({
   default: activateModuleMock,
@@ -32,6 +33,7 @@ vi.mock('../../forge/county-studio/countyStudyApi', () => ({
   exceptionApi: {
     recordDownstreamReceipt: recordDownstreamReceiptMock,
     updateDownstreamReceiptStatus: updateDownstreamReceiptStatusMock,
+    updateDownstreamReceiptStatusByReceiptId: updateDownstreamReceiptStatusByReceiptIdMock,
   },
 }));
 
@@ -61,6 +63,7 @@ function resetStore() {
   act(() => {
     useSegmentEvidenceDraftStore.getState().clearDraft();
     useDownstreamClosureReceiptStore.getState().clearReceipt('exc-dossier');
+    useDownstreamClosureReceiptStore.getState().clearReceipt('receipt-dossier-direct');
     useAdjustmentApplyHandoffStore.getState().clearHandoff('adj-apply');
   });
 }
@@ -70,6 +73,7 @@ describe('DossierSuiteHome — County Studio deeplink consumption (Task D3)', ()
     activateModuleMock.mockReset();
     recordDownstreamReceiptMock.mockResolvedValue({});
     updateDownstreamReceiptStatusMock.mockResolvedValue({});
+    updateDownstreamReceiptStatusByReceiptIdMock.mockResolvedValue({});
     recordApplyHandoffReceiptMock.mockResolvedValue({
       receiptId: 'apply-receipt',
       adjustmentSetId: 'adj-apply',
@@ -177,6 +181,58 @@ describe('DossierSuiteHome — County Studio deeplink consumption (Task D3)', ()
         metadata: expect.objectContaining({
           segmentId: 'seg-raw',
           exceptionSetId: 'exc-dossier',
+          downstreamStatus: 'Returned',
+        }),
+      }),
+    );
+  });
+
+  it('opens and returns direct segment inspector receipt by receipt id', () => {
+    render(
+      <DossierSuiteHome
+        metadata={{
+          packetTemplate: 'SegmentEvidence',
+          segmentId: 'seg-direct',
+          segmentLabel: 'Direct Segment',
+          downstreamReceiptId: 'receipt-dossier-direct',
+        }}
+      />,
+    );
+
+    const draft = useSegmentEvidenceDraftStore.getState().activeDraft;
+    expect(draft?.handoff?.receiptId).toBe('receipt-dossier-direct');
+    expect(screen.getByTestId('dossier-draft-receipt-status')).toHaveTextContent('Drafted');
+
+    fireEvent.click(screen.getByTestId('dossier-draft-open-builder'));
+    expect(useDownstreamClosureReceiptStore.getState().receipts['receipt-dossier-direct'].status).toBe('Opened');
+    expect(updateDownstreamReceiptStatusByReceiptIdMock).toHaveBeenCalledWith(
+      'receipt-dossier-direct',
+      'Opened',
+      expect.objectContaining({ downstreamEntityId: 'dossier-builder:seg-direct' }),
+    );
+    expect(activateModuleMock).toHaveBeenCalledWith(
+      'property-workbench',
+      expect.objectContaining({
+        metadata: expect.objectContaining({
+          segmentId: 'seg-direct',
+          downstreamReceiptId: 'receipt-dossier-direct',
+        }),
+      }),
+    );
+
+    fireEvent.click(screen.getByTestId('dossier-draft-return-receipt'));
+    expect(useDownstreamClosureReceiptStore.getState().receipts['receipt-dossier-direct'].status).toBe('Returned');
+    expect(updateDownstreamReceiptStatusByReceiptIdMock).toHaveBeenCalledWith(
+      'receipt-dossier-direct',
+      'Returned',
+      expect.objectContaining({ downstreamEntityId: 'dossier-return:seg-direct' }),
+    );
+    expect(activateModuleMock).toHaveBeenCalledWith(
+      'county-studio',
+      expect.objectContaining({
+        metadata: expect.objectContaining({
+          segmentId: 'seg-direct',
+          downstreamReceiptId: 'receipt-dossier-direct',
           downstreamStatus: 'Returned',
         }),
       }),

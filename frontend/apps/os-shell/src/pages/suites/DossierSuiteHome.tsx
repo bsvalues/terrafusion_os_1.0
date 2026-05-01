@@ -88,18 +88,20 @@ function getSourceDisclosure(source: 'snapshot' | 'fixtures' | 'live' | null): s
 }
 
 /** Best-effort parser for the raw backend deeplink query string (Task D3). */
-function parseDossierDeeplinkQuery(raw: unknown): { template?: string; segmentId?: string; exceptionSetId?: string } {
+function parseDossierDeeplinkQuery(raw: unknown): { template?: string; segmentId?: string; exceptionSetId?: string; receiptId?: string } {
   if (typeof raw !== 'string' || raw.length === 0) return {};
   try {
     const trimmed = raw.startsWith('?') ? raw.slice(1) : raw;
     const params  = new URLSearchParams(trimmed);
-    const out: { template?: string; segmentId?: string; exceptionSetId?: string } = {};
+    const out: { template?: string; segmentId?: string; exceptionSetId?: string; receiptId?: string } = {};
     const template = params.get('template');
     if (template) out.template = template;
     const segmentId = params.get('segmentId');
     if (segmentId) out.segmentId = segmentId;
     const exceptionSetId = params.get('exceptionSetId');
     if (exceptionSetId) out.exceptionSetId = exceptionSetId;
+    const receiptId = params.get('receiptId');
+    if (receiptId) out.receiptId = receiptId;
     return out;
   } catch {
     return {};
@@ -240,10 +242,13 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
     const labelFromMeta = typeof metadata.segmentLabel === 'string' ? metadata.segmentLabel : null;
     const exceptionFromMeta = typeof metadata.exceptionSetId === 'string' ? metadata.exceptionSetId : null;
     const exceptionSetId = exceptionFromMeta ?? parsed.exceptionSetId ?? undefined;
+    const receiptFromMeta = typeof metadata.downstreamReceiptId === 'string' ? metadata.downstreamReceiptId : null;
+    const receiptId = receiptFromMeta ?? parsed.receiptId ?? undefined;
 
     if (template === 'SegmentEvidence' && segmentId) {
       const segmentLabel = labelFromMeta ?? segmentId;
       createDraft(template, segmentId, segmentLabel, {
+        receiptId,
         exceptionSetId,
         destination: 'Dossier',
         studyId: typeof metadata.studyId === 'string' ? metadata.studyId : undefined,
@@ -264,6 +269,15 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
           segmentLabel,
           status: 'Drafted',
         }).catch((receiptError) => console.error('Failed to persist Dossier downstream receipt', receiptError));
+      } else if (receiptId) {
+        recordDraftReceipt({
+          receiptId,
+          sourceType: 'SegmentInspector',
+          destination: 'Dossier',
+          template,
+          segmentId,
+          segmentLabel,
+        });
       }
     }
 

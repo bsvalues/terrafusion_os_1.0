@@ -5,12 +5,17 @@ export type DownstreamDestination = 'Dais' | 'Dossier';
 export type DownstreamReceiptStatus = 'Drafted' | 'Opened' | 'Returned';
 
 export interface DownstreamClosureReceipt {
-  exceptionSetId: string;
+  receiptId?: string;
+  exceptionSetId?: string | null;
+  sourceType?: 'ExceptionQueue' | 'SegmentInspector';
   destination: DownstreamDestination;
   template: string;
   segmentId: string;
   segmentLabel: string;
   status: DownstreamReceiptStatus;
+  downstreamEntityId?: string | null;
+  evidenceRef?: string | null;
+  notes?: string | null;
   draftedAt: string;
   updatedAt: string;
 }
@@ -20,15 +25,21 @@ interface DownstreamClosureReceiptState {
   ingestReceipt: (receipt: DownstreamClosureReceipt) => void;
   ingestReceipts: (receipts: DownstreamClosureReceipt[]) => void;
   recordDraft: (receipt: {
-    exceptionSetId: string;
+    receiptId?: string;
+    exceptionSetId?: string | null;
+    sourceType?: 'ExceptionQueue' | 'SegmentInspector';
     destination: DownstreamDestination;
     template: string;
     segmentId: string;
     segmentLabel: string;
   }) => void;
-  markOpened: (exceptionSetId: string) => void;
-  markReturned: (exceptionSetId: string) => void;
-  clearReceipt: (exceptionSetId: string) => void;
+  markOpened: (receiptKey: string) => void;
+  markReturned: (receiptKey: string) => void;
+  clearReceipt: (receiptKey: string) => void;
+}
+
+export function downstreamReceiptKey(receipt: Pick<DownstreamClosureReceipt, 'receiptId' | 'exceptionSetId'>): string {
+  return receipt.exceptionSetId ?? receipt.receiptId ?? '';
 }
 
 function transitionReceipt(
@@ -52,7 +63,7 @@ export const useDownstreamClosureReceiptStore = create<DownstreamClosureReceiptS
         set((state) => ({
           receipts: {
             ...state.receipts,
-            [receipt.exceptionSetId]: receipt,
+            [downstreamReceiptKey(receipt)]: receipt,
           },
         })),
 
@@ -60,19 +71,25 @@ export const useDownstreamClosureReceiptStore = create<DownstreamClosureReceiptS
         set((state) => ({
           receipts: {
             ...state.receipts,
-            ...Object.fromEntries(receipts.map((receipt) => [receipt.exceptionSetId, receipt])),
+            ...Object.fromEntries(receipts
+              .map((receipt) => [downstreamReceiptKey(receipt), receipt])
+              .filter(([key]) => key)),
           },
         })),
 
-      recordDraft: ({ exceptionSetId, destination, template, segmentId, segmentLabel }) =>
+      recordDraft: ({ receiptId, exceptionSetId, sourceType, destination, template, segmentId, segmentLabel }) =>
         set((state) => {
-          const existing = state.receipts[exceptionSetId];
+          const key = exceptionSetId ?? receiptId;
+          if (!key) return state;
+          const existing = state.receipts[key];
           const now = new Date().toISOString();
           return {
             receipts: {
               ...state.receipts,
-              [exceptionSetId]: {
+              [key]: {
+                receiptId,
                 exceptionSetId,
+                sourceType,
                 destination,
                 template,
                 segmentId,
@@ -85,33 +102,33 @@ export const useDownstreamClosureReceiptStore = create<DownstreamClosureReceiptS
           };
         }),
 
-      markOpened: (exceptionSetId) =>
+      markOpened: (receiptKey) =>
         set((state) => {
-          const updated = transitionReceipt(state.receipts[exceptionSetId], 'Opened');
+          const updated = transitionReceipt(state.receipts[receiptKey], 'Opened');
           if (!updated) return state;
           return {
             receipts: {
               ...state.receipts,
-              [exceptionSetId]: updated,
+              [receiptKey]: updated,
             },
           };
         }),
 
-      markReturned: (exceptionSetId) =>
+      markReturned: (receiptKey) =>
         set((state) => {
-          const updated = transitionReceipt(state.receipts[exceptionSetId], 'Returned');
+          const updated = transitionReceipt(state.receipts[receiptKey], 'Returned');
           if (!updated) return state;
           return {
             receipts: {
               ...state.receipts,
-              [exceptionSetId]: updated,
+              [receiptKey]: updated,
             },
           };
         }),
 
-      clearReceipt: (exceptionSetId) =>
+      clearReceipt: (receiptKey) =>
         set((state) => {
-          const { [exceptionSetId]: _removed, ...rest } = state.receipts;
+          const { [receiptKey]: _removed, ...rest } = state.receipts;
           return { receipts: rest };
         }),
     }),

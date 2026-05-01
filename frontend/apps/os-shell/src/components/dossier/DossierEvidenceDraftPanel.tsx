@@ -35,8 +35,9 @@ function formatTimestamp(iso: string): string {
 export default function DossierEvidenceDraftPanel() {
   const activeDraft = useSegmentEvidenceDraftStore((s) => s.activeDraft);
   const clearDraft  = useSegmentEvidenceDraftStore((s) => s.clearDraft);
+  const receiptKey = activeDraft?.handoff?.exceptionSetId ?? activeDraft?.handoff?.receiptId;
   const receipt = useDownstreamClosureReceiptStore((s) =>
-    activeDraft?.handoff?.exceptionSetId ? s.receipts[activeDraft.handoff.exceptionSetId] : undefined,
+    receiptKey ? s.receipts[receiptKey] : undefined,
   );
   const markOpened = useDownstreamClosureReceiptStore((s) => s.markOpened);
   const markReturned = useDownstreamClosureReceiptStore((s) => s.markReturned);
@@ -52,14 +53,23 @@ export default function DossierEvidenceDraftPanel() {
   const handleOpenBuilder = useCallback(() => {
     if (!activeDraft) return;
     const exceptionSetId = activeDraft.handoff?.exceptionSetId;
+    const receiptId = activeDraft.handoff?.receiptId;
+    const key = exceptionSetId ?? receiptId;
+    if (key) {
+      markOpened(key);
+    }
     if (exceptionSetId) {
-      markOpened(exceptionSetId);
       void exceptionApi.recordDownstreamReceipt(exceptionSetId, {
         destination: 'Dossier',
         template: activeDraft.template,
         segmentId: activeDraft.segmentId,
         segmentLabel: activeDraft.segmentLabel,
         status: 'Opened',
+      })
+        .catch((receiptError) => console.error('Failed to persist Dossier receipt opened status', receiptError));
+    } else if (receiptId) {
+      void exceptionApi.updateDownstreamReceiptStatusByReceiptId(receiptId, 'Opened', {
+        downstreamEntityId: `dossier-builder:${activeDraft.segmentId}`,
       })
         .catch((receiptError) => console.error('Failed to persist Dossier receipt opened status', receiptError));
     }
@@ -71,26 +81,40 @@ export default function DossierEvidenceDraftPanel() {
         segmentLabel: activeDraft.segmentLabel,
         countyStudioHandoff: activeDraft.template,
         exceptionSetId,
+        downstreamReceiptId: receiptId,
       },
     });
   }, [activeDraft, markOpened]);
 
   const handleReturnReceipt = useCallback(() => {
-    if (!activeDraft?.handoff?.exceptionSetId) return;
-    markReturned(activeDraft.handoff.exceptionSetId);
-    void exceptionApi.recordDownstreamReceipt(activeDraft.handoff.exceptionSetId, {
-      destination: 'Dossier',
-      template: activeDraft.template,
-      segmentId: activeDraft.segmentId,
-      segmentLabel: activeDraft.segmentLabel,
-      status: 'Returned',
-    })
-      .catch((receiptError) => console.error('Failed to persist Dossier receipt returned status', receiptError));
+    if (!activeDraft) return;
+    const exceptionSetId = activeDraft.handoff?.exceptionSetId;
+    const receiptId = activeDraft.handoff?.receiptId;
+    const key = exceptionSetId ?? receiptId;
+    if (!key) return;
+    markReturned(key);
+    if (exceptionSetId) {
+      void exceptionApi.recordDownstreamReceipt(exceptionSetId, {
+        destination: 'Dossier',
+        template: activeDraft.template,
+        segmentId: activeDraft.segmentId,
+        segmentLabel: activeDraft.segmentLabel,
+        status: 'Returned',
+      })
+        .catch((receiptError) => console.error('Failed to persist Dossier receipt returned status', receiptError));
+    } else if (receiptId) {
+      void exceptionApi.updateDownstreamReceiptStatusByReceiptId(receiptId, 'Returned', {
+        downstreamEntityId: `dossier-return:${activeDraft.segmentId}`,
+        notes: 'Returned from Dossier segment inspector handoff.',
+      })
+        .catch((receiptError) => console.error('Failed to persist Dossier receipt returned status', receiptError));
+    }
     void activateModule('county-studio', {
       source: 'system',
       metadata: {
         segmentId: activeDraft.segmentId,
-        exceptionSetId: activeDraft.handoff.exceptionSetId,
+        exceptionSetId,
+        downstreamReceiptId: receiptId,
         downstreamStatus: 'Returned',
       },
     });
@@ -172,7 +196,7 @@ export default function DossierEvidenceDraftPanel() {
           >
             Open evidence packet builder
           </button>
-          {activeDraft.handoff?.exceptionSetId && (
+          {receiptKey && (
             <button
               type="button"
               data-testid="dossier-draft-return-receipt"
