@@ -99,13 +99,31 @@ describe('CohortCreationDialog', () => {
     });
   });
 
-  it('hides manual parcel-list cohort creation until governed parcel-list support exists', () => {
+  it('creates a manual parcel-list cohort with parsed unique parcel ids', async () => {
     setupWithPendingSelection();
     render(<CohortCreationDialog />);
 
-    expect(screen.getByRole('option', { name: /visual/i })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: /rule-based/i })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: /hybrid/i })).toBeInTheDocument();
-    expect(screen.queryByRole('option', { name: /manual parcel list/i })).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText(/cohort name/i), { target: { value: 'Manual Cohort' } });
+    fireEvent.change(screen.getByLabelText(/selection type/i), { target: { value: 'Manual' } });
+    expect(screen.getByRole('button', { name: /create cohort/i })).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText(/parcel ids/i), {
+      target: { value: 'P-1001\nP-1002, P-1001; p-1003' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /create cohort/i }));
+
+    await waitFor(() => {
+      expect(cohortApi.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Manual Cohort',
+          selectionType: 'Manual',
+          parcelCount: 3,
+          definition: JSON.stringify({
+            source: 'manual-parcel-list',
+            parcelIds: ['P-1001', 'P-1002', 'p-1003'],
+          }),
+        })
+      );
+    });
   });
 });

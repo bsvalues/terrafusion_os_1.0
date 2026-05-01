@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TerraFusion.Core.Entities;
 
-public enum CohortSelectionType { Segment, Neighborhood, Lasso, Rule, Hybrid }
+public enum CohortSelectionType { Segment, Neighborhood, Lasso, Rule, Hybrid, Manual }
 
 public class CountyCohort
 {

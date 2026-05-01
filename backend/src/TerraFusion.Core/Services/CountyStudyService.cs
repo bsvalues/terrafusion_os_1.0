@@ -139,14 +139,15 @@ public class CountyStudyService : ICountyStudyService
     {
         var study = await _db.CountyStudySessions.FindAsync(req.StudyId)
             ?? throw new InvalidOperationException($"Study {req.StudyId} not found");
+        var (definition, parcelCount) = NormalizeCohortPayload(req);
         var cohort = new CountyCohort
         {
             StudyId = req.StudyId,
             CountyId = study.CountyId,
             Name = req.Name,
             SelectionType = req.SelectionType,
-            Definition = req.Definition,
-            ParcelCount = req.ParcelCount,
+            Definition = definition,
+            ParcelCount = parcelCount,
             IsHybrid = req.IsHybrid,
             CreatedBy = userId,
             UpdatedBy = userId
@@ -154,6 +155,71 @@ public class CountyStudyService : ICountyStudyService
         _db.CountyCohorts.Add(cohort);
         await _db.SaveChangesAsync();
         return MapCohort(cohort);
+    }
+
+    private static (string Definition, int ParcelCount) NormalizeCohortPayload(CreateCohortRequest req)
+    {
+        if (req.SelectionType != CohortSelectionType.Manual)
+            return (req.Definition, req.ParcelCount);
+
+        var parcelIds = ExtractManualParcelIds(req.Definition);
+        if (parcelIds.Count == 0)
+            throw new ArgumentException("Manual parcel-list cohorts require at least one parcel id.");
+
+        var definition = JsonSerializer.Serialize(new
+        {
+            source = "manual-parcel-list",
+            parcelIds,
+        });
+        return (definition, parcelIds.Count);
+    }
+
+    private static List<string> ExtractManualParcelIds(string definition)
+    {
+        JsonDocument doc;
+        try
+        {
+            doc = JsonDocument.Parse(definition);
+        }
+        catch (JsonException ex)
+        {
+            throw new ArgumentException("Manual parcel-list cohorts require valid JSON definition.", ex);
+        }
+
+        using (doc)
+        {
+            if (!TryGetPropertyCaseInsensitive(doc.RootElement, "parcelIds", out var idsElement)
+                || idsElement.ValueKind != JsonValueKind.Array)
+                throw new ArgumentException("Manual parcel-list cohorts require a parcelIds array.");
+
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var parcelIds = new List<string>();
+            foreach (var item in idsElement.EnumerateArray())
+            {
+                if (item.ValueKind != JsonValueKind.String)
+                    continue;
+                var parcelId = item.GetString()?.Trim();
+                if (string.IsNullOrWhiteSpace(parcelId) || !seen.Add(parcelId))
+                    continue;
+                parcelIds.Add(parcelId);
+            }
+            return parcelIds;
+        }
+    }
+
+    private static bool TryGetPropertyCaseInsensitive(JsonElement element, string propertyName, out JsonElement value)
+    {
+        foreach (var property in element.EnumerateObject())
+        {
+            if (string.Equals(property.Name, propertyName, StringComparison.OrdinalIgnoreCase))
+            {
+                value = property.Value;
+                return true;
+            }
+        }
+
+        value = default;
+        return false;
     }
 
     public async Task<List<CountyCohortDto>> GetCohortsAsync(Guid studyId)

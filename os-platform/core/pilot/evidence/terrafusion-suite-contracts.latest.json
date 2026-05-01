@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-05-01T01:03:56.754Z",
+  "checkedAt": "2026-05-01T19:26:07.237Z",
   "slice": "terrafusion-suite-contract-layer",
   "status": "PASS",
   "decision": "SUITE_CONTRACTS_REGISTERED_AND_CODIFIED",
@@ -93,36 +93,36 @@
         "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:79",
         "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:34",
         "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:145",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:376",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:15",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:389",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:495",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:20",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:508",
         "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:32",
         "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:32",
         "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:152",
         "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:272",
         "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:286",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:281",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:244",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:307",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:282",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:245",
         "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:308",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:309",
         "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs:33",
         "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs:17",
         "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs:47",
         "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs:49",
         "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs:115",
         "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs:33",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:163",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:164",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:176",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:157",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:158",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:170",
         "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:350",
         "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:31",
         "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:115",
         "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:125",
         "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:146",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:475",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:456",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:494",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:474",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:594",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:575",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:613",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:593",
         "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:348",
         "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:482",
         "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:485",
@@ -430,9 +430,9 @@
       "passed": true,
       "missingPatterns": [],
       "proof": [
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:376",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:15",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:389"
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:495",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:20",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:508"
       ]
     },
     {
@@ -454,10 +454,10 @@
       "passed": true,
       "missingPatterns": [],
       "proof": [
-        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:281",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:244",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:307",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:308"
+        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:282",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:245",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:308",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts:309"
       ]
     },
     {
@@ -480,9 +480,9 @@
       "passed": true,
       "missingPatterns": [],
       "proof": [
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:163",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:164",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:176"
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:157",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:158",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:170"
       ]
     },
     {
@@ -504,10 +504,10 @@
       "passed": true,
       "missingPatterns": [],
       "proof": [
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:475",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:456",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:494",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:474"
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:594",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:575",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:613",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:593"
       ]
     },
     {
