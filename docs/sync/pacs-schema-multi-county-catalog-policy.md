@@ -409,7 +409,10 @@ Updates the C54-MULTI arc:
                  (PacsCatalogManifestSharingHelper static class +
                  PacsCatalogManifestShareReceipt audit record;
                  see Manifest sharing section below).
-- C54-MULTI-D   : deferred — identity-checked diff helper.
+- C54-MULTI-D   : DONE — identity-checked diff helper landed
+                 (PacsSchemaIdentityCheckedReportDiff static class
+                 + PacsSchemaIdentityCheckedDiff record;
+                 enforces ISOL-4 at the API surface).
 - C54-MULTI-E   : deferred — cross-county aggregation surface.
 - C54-MULTI-PROMOTE-* : deferred — per-consumer migration arc.
 
