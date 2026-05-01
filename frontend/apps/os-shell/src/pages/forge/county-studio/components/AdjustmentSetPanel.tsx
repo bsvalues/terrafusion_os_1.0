@@ -10,6 +10,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { adjustmentSetApi } from '../countyStudyApi';
 import type { CountyAdjustmentSetDto, AdjustmentSetApprovalState } from '../types/countyStudio.types';
+import activateModule from '@/orchestration/moduleActivation';
+import { useAdjustmentApplyHandoffStore } from '@/pages/suites/adjustmentApplyHandoffStore';
 
 // ── State badge ───────────────────────────────────────────────────────────────
 
@@ -43,6 +45,48 @@ function StateBadge({ state }: { state: AdjustmentSetApprovalState }) {
   );
 }
 
+type ApplyPostureState = 'blocked' | 'ready' | 'handedOff' | 'applied' | 'rolledBack';
+
+const APPLY_POSTURE: Record<ApplyPostureState, { label: string; detail: string; color: string; bg: string }> = {
+  blocked: {
+    label: 'Apply blocked',
+    detail: 'Approval is not complete. County Studio cannot hand this set to the apply lane yet.',
+    color: 'hsl(var(--tf-muted))',
+    bg: 'hsl(var(--tf-surface))',
+  },
+  ready: {
+    label: 'Ready for apply handoff',
+    detail: 'Approved in County Studio. Actual value mutation still belongs to the governed apply lane.',
+    color: 'hsl(var(--tf-warning, 38 92% 50%))',
+    bg: 'hsl(var(--tf-warning, 38 92% 50%) / 0.14)',
+  },
+  handedOff: {
+    label: 'Handed off for apply',
+    detail: 'Apply packet handoff has been prepared. County Studio is waiting for external publish/apply evidence.',
+    color: 'hsl(var(--tf-accent, 217 91% 60%))',
+    bg: 'hsl(var(--tf-accent, 217 91% 60%) / 0.14)',
+  },
+  applied: {
+    label: 'Applied externally',
+    detail: 'Published state was reported by the governed apply lane.',
+    color: 'hsl(var(--tf-success, 142 71% 45%))',
+    bg: 'hsl(var(--tf-success, 142 71% 45%) / 0.14)',
+  },
+  rolledBack: {
+    label: 'Rolled back',
+    detail: 'Rollback was reported by the governed apply lane.',
+    color: 'hsl(var(--tf-danger, 0 84% 60%))',
+    bg: 'hsl(var(--tf-danger, 0 84% 60%) / 0.14)',
+  },
+};
+
+function applyPostureFor(adj: CountyAdjustmentSetDto, hasHandoff: boolean): ApplyPostureState {
+  if (adj.approvalState === 'Published') return 'applied';
+  if (adj.approvalState === 'RolledBack') return 'rolledBack';
+  if (adj.approvalState !== 'Approved') return 'blocked';
+  return hasHandoff ? 'handedOff' : 'ready';
+}
+
 // ── Legal next-state map ──────────────────────────────────────────────────────
 
 const NEXT_STATES: Partial<Record<AdjustmentSetApprovalState, { state: AdjustmentSetApprovalState; label: string }[]>> = {
@@ -61,14 +105,19 @@ const NEXT_STATES: Partial<Record<AdjustmentSetApprovalState, { state: Adjustmen
 function AdjSetRow({
   adj,
   onAction,
+  onPrepareApply,
+  applyHandoffPrepared,
   busy,
 }: {
   adj: CountyAdjustmentSetDto;
   onAction: (id: string, state: AdjustmentSetApprovalState, reason?: string) => void;
+  onPrepareApply: (adj: CountyAdjustmentSetDto) => void;
+  applyHandoffPrepared: boolean;
   busy: string | null;
 }) {
   const actions = NEXT_STATES[adj.approvalState] ?? [];
   const isBusy  = busy === adj.adjustmentSetId;
+  const applyPosture = APPLY_POSTURE[applyPostureFor(adj, applyHandoffPrepared)];
 
   const handleClick = (state: AdjustmentSetApprovalState) => {
     onAction(adj.adjustmentSetId, state);
@@ -130,6 +179,69 @@ function AdjSetRow({
           ))}
         </div>
       )}
+
+      <div
+        data-testid={`apply-posture-${adj.adjustmentSetId}`}
+        style={{
+          marginTop: 4,
+          padding: '6px 8px',
+          borderRadius: 4,
+          border: '1px solid hsl(var(--tf-border))',
+          background: 'hsl(var(--tf-bg))',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 4,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+          <span
+            style={{
+              padding: '2px 7px',
+              borderRadius: 10,
+              background: applyPosture.bg,
+              color: applyPosture.color,
+              fontSize: 10,
+              fontWeight: 800,
+              textTransform: 'uppercase',
+            }}
+          >
+            {applyPosture.label}
+          </span>
+          {adj.publishedAt && (
+            <span style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>
+              Published {new Date(adj.publishedAt).toLocaleDateString()}
+            </span>
+          )}
+          {adj.rollbackReason && (
+            <span style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>
+              Reason: {adj.rollbackReason}
+            </span>
+          )}
+        </div>
+        <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>
+          {applyPosture.detail}
+        </div>
+        {adj.approvalState === 'Approved' && (
+          <button
+            type="button"
+            data-testid={`btn-PrepareApply-${adj.adjustmentSetId}`}
+            onClick={() => onPrepareApply(adj)}
+            style={{
+              alignSelf: 'flex-start',
+              fontSize: 10,
+              padding: '3px 10px',
+              borderRadius: 4,
+              border: '1px solid hsl(var(--tf-border))',
+              background: applyHandoffPrepared ? 'hsl(var(--tf-surface))' : 'hsl(var(--tf-accent, 217 91% 60%) / 0.14)',
+              color: applyHandoffPrepared ? 'hsl(var(--tf-muted))' : 'hsl(var(--tf-accent, 217 91% 60%))',
+              cursor: 'pointer',
+              fontWeight: 700,
+            }}
+          >
+            {applyHandoffPrepared ? 'Reopen Apply Handoff' : 'Prepare Apply Handoff'}
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -145,6 +257,8 @@ export function AdjustmentSetPanel() {
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState<string | null>(null);
   const [busy,    setBusy]    = useState<string | null>(null);
+  const applyHandoffs = useAdjustmentApplyHandoffStore((s) => s.handoffs);
+  const prepareApplyHandoff = useAdjustmentApplyHandoffStore((s) => s.prepareHandoff);
 
   const load = useCallback(async () => {
     if (!studyId) return;
@@ -177,6 +291,23 @@ export function AdjustmentSetPanel() {
       setBusy(null);
     }
   }, []);
+
+  const handlePrepareApply = useCallback((adj: CountyAdjustmentSetDto) => {
+    prepareApplyHandoff({
+      adjustmentSetId: adj.adjustmentSetId,
+      scenarioId: adj.scenarioId,
+      studyId: adj.studyId,
+    });
+    void activateModule('suite-dossier', {
+      source: 'system',
+      metadata: {
+        applyTemplate: 'AdjustmentApplyPacket',
+        adjustmentSetId: adj.adjustmentSetId,
+        scenarioId: adj.scenarioId,
+        studyId: adj.studyId,
+      },
+    });
+  }, [prepareApplyHandoff]);
 
   if (!studyId) {
     return (
@@ -267,6 +398,8 @@ export function AdjustmentSetPanel() {
             key={adj.adjustmentSetId}
             adj={adj}
             onAction={handleAction}
+            onPrepareApply={handlePrepareApply}
+            applyHandoffPrepared={Boolean(applyHandoffs[adj.adjustmentSetId])}
             busy={busy}
           />
         ))}
