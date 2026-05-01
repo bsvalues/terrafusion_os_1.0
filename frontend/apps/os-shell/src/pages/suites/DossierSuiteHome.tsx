@@ -25,7 +25,7 @@ import DossierEvidenceDraftPanel from '../../components/dossier/DossierEvidenceD
 import { useSegmentEvidenceDraftStore } from './segmentEvidenceDraftStore';
 import { useDownstreamClosureReceiptStore } from './downstreamClosureReceiptStore';
 import { useAdjustmentApplyHandoffStore } from './adjustmentApplyHandoffStore';
-import { exceptionApi } from '../forge/county-studio/countyStudyApi';
+import { adjustmentSetApi, exceptionApi } from '../forge/county-studio/countyStudyApi';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import {
   FolderOpen,
@@ -115,8 +115,42 @@ function ApplyHandoffBanner({ adjustmentSetId }: { adjustmentSetId: string | nul
   const handoff = useAdjustmentApplyHandoffStore((s) =>
     adjustmentSetId ? s.handoffs[adjustmentSetId] : undefined,
   );
+  const ingestApplyReceipt = useAdjustmentApplyHandoffStore((s) => s.ingestReceipt);
+  const markAppliedExternally = useAdjustmentApplyHandoffStore((s) => s.markAppliedExternally);
+  const markRolledBack = useAdjustmentApplyHandoffStore((s) => s.markRolledBack);
 
   if (!adjustmentSetId || !handoff) return null;
+
+  const appliedEvidenceRef = `dossier-apply-return:${adjustmentSetId}`;
+  const rollbackNote = 'Rollback reported by Dossier apply packet review.';
+
+  const handleRecordApplied = () => {
+    markAppliedExternally(
+      adjustmentSetId,
+      appliedEvidenceRef,
+      'External apply reported by Dossier apply packet review.',
+    );
+    void adjustmentSetApi.recordApplyHandoffReceipt(adjustmentSetId, {
+      status: 'AppliedExternally',
+      template: 'AdjustmentApplyPacket',
+      evidenceRef: appliedEvidenceRef,
+      notes: 'External apply reported by Dossier apply packet review.',
+    })
+      .then((receipt) => ingestApplyReceipt(receipt))
+      .catch((receiptError) => console.error('Failed to persist applied apply handoff receipt', receiptError));
+  };
+
+  const handleRecordRollback = () => {
+    markRolledBack(adjustmentSetId, rollbackNote, `dossier-rollback-return:${adjustmentSetId}`);
+    void adjustmentSetApi.recordApplyHandoffReceipt(adjustmentSetId, {
+      status: 'RolledBack',
+      template: 'AdjustmentApplyPacket',
+      evidenceRef: `dossier-rollback-return:${adjustmentSetId}`,
+      notes: rollbackNote,
+    })
+      .then((receipt) => ingestApplyReceipt(receipt))
+      .catch((receiptError) => console.error('Failed to persist rolled-back apply handoff receipt', receiptError));
+  };
 
   return (
     <section data-testid="dossier-apply-handoff" className="px-6 pt-5">
@@ -142,6 +176,41 @@ function ApplyHandoffBanner({ adjustmentSetId }: { adjustmentSetId: string | nul
         <p data-testid="dossier-apply-handoff-status" className="mt-2 text-xs" style={{ color: 'hsl(var(--tf-suite-dossier))' }}>
           Handoff receipt: {handoff.status} · updated {new Date(handoff.updatedAt).toLocaleString()}
         </p>
+        {handoff.evidenceRef && (
+          <p data-testid="dossier-apply-handoff-evidence" className="mt-1 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
+            Evidence: {handoff.evidenceRef}
+          </p>
+        )}
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            type="button"
+            data-testid="dossier-apply-record-applied"
+            onClick={handleRecordApplied}
+            disabled={handoff.status === 'AppliedExternally' || handoff.status === 'RolledBack'}
+            className="rounded-md border px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] transition-opacity disabled:opacity-50"
+            style={{
+              borderColor: 'hsl(var(--tf-suite-dossier) / 0.35)',
+              background: 'hsl(var(--tf-suite-dossier) / 0.12)',
+              color: 'hsl(var(--tf-suite-dossier))',
+            }}
+          >
+            Record External Apply
+          </button>
+          <button
+            type="button"
+            data-testid="dossier-apply-record-rollback"
+            onClick={handleRecordRollback}
+            disabled={handoff.status === 'AppliedExternally' || handoff.status === 'RolledBack'}
+            className="rounded-md border px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] transition-opacity disabled:opacity-50"
+            style={{
+              borderColor: 'hsl(var(--tf-border))',
+              background: 'transparent',
+              color: 'hsl(var(--tf-fg))',
+            }}
+          >
+            Record Rollback
+          </button>
+        </div>
       </div>
     </section>
   );
@@ -154,6 +223,7 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
   const recordDraftReceipt = useDownstreamClosureReceiptStore((s) => s.recordDraft);
   const prepareApplyHandoff = useAdjustmentApplyHandoffStore((s) => s.prepareHandoff);
   const markApplyHandoffOpened = useAdjustmentApplyHandoffStore((s) => s.markOpened);
+  const ingestApplyReceipt = useAdjustmentApplyHandoffStore((s) => s.ingestReceipt);
   const [activeApplyHandoffId, setActiveApplyHandoffId] = useState<string | null>(null);
 
   // ── Consume County Studio handoff metadata on mount (Task D3) ───────────
@@ -204,6 +274,12 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
     if (applyTemplate === 'AdjustmentApplyPacket' && adjustmentSetId && scenarioId && studyId) {
       prepareApplyHandoff({ adjustmentSetId, scenarioId, studyId });
       markApplyHandoffOpened(adjustmentSetId);
+      void adjustmentSetApi.recordApplyHandoffReceipt(adjustmentSetId, {
+        status: 'Opened',
+        template: 'AdjustmentApplyPacket',
+      })
+        .then((receipt) => ingestApplyReceipt(receipt))
+        .catch((receiptError) => console.error('Failed to persist opened apply handoff receipt', receiptError));
       setActiveApplyHandoffId(adjustmentSetId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

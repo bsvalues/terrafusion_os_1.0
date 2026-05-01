@@ -183,6 +183,34 @@ public record UpdateAdjustmentApprovalStateRequest(
     string? RollbackReason = null   // Legacy field; County Studio no longer transitions to RolledBack.
 );
 
+public record CountyApplyHandoffReceiptDto(
+    Guid ReceiptId,
+    Guid AdjustmentSetId,
+    Guid StudyId,
+    Guid CountyId,
+    Guid ScenarioId,
+    string Template,
+    string Status,
+    DateTime PreparedAt,
+    DateTime UpdatedAt,
+    string? EvidenceRef,
+    string? Notes,
+    string UpdatedBy
+);
+
+public record UpsertAdjustmentApplyReceiptRequest(
+    string? Status = null,
+    string? Template = null,
+    string? EvidenceRef = null,
+    string? Notes = null
+);
+
+public record UpdateAdjustmentApplyReceiptStatusRequest(
+    string Status,
+    string? EvidenceRef = null,
+    string? Notes = null
+);
+
 // ── ExceptionSet ──────────────────────────────────────────────────────────────
 
 public record CountyExceptionSetDto(

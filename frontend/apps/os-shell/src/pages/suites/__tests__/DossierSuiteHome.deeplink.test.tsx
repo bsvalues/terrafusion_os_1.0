@@ -20,11 +20,15 @@ import { useAdjustmentApplyHandoffStore } from '../adjustmentApplyHandoffStore';
 const activateModuleMock = vi.hoisted(() => vi.fn());
 const recordDownstreamReceiptMock = vi.hoisted(() => vi.fn());
 const updateDownstreamReceiptStatusMock = vi.hoisted(() => vi.fn());
+const recordApplyHandoffReceiptMock = vi.hoisted(() => vi.fn());
 vi.mock('@/orchestration/moduleActivation', () => ({
   default: activateModuleMock,
   activateModule: activateModuleMock,
 }));
 vi.mock('../../forge/county-studio/countyStudyApi', () => ({
+  adjustmentSetApi: {
+    recordApplyHandoffReceipt: recordApplyHandoffReceiptMock,
+  },
   exceptionApi: {
     recordDownstreamReceipt: recordDownstreamReceiptMock,
     updateDownstreamReceiptStatus: updateDownstreamReceiptStatusMock,
@@ -66,6 +70,20 @@ describe('DossierSuiteHome — County Studio deeplink consumption (Task D3)', ()
     activateModuleMock.mockReset();
     recordDownstreamReceiptMock.mockResolvedValue({});
     updateDownstreamReceiptStatusMock.mockResolvedValue({});
+    recordApplyHandoffReceiptMock.mockResolvedValue({
+      receiptId: 'apply-receipt',
+      adjustmentSetId: 'adj-apply',
+      studyId: 'study-apply',
+      countyId: 'county-apply',
+      scenarioId: 'scenario-apply',
+      template: 'AdjustmentApplyPacket',
+      status: 'Opened',
+      preparedAt: '2026-05-01T00:00:00.000Z',
+      updatedAt: '2026-05-01T00:01:00.000Z',
+      evidenceRef: null,
+      notes: null,
+      updatedBy: 'dossier',
+    });
     resetStore();
   });
 
@@ -183,9 +201,44 @@ describe('DossierSuiteHome — County Studio deeplink consumption (Task D3)', ()
       studyId: 'study-apply',
       status: 'Opened',
     });
+    expect(recordApplyHandoffReceiptMock).toHaveBeenCalledWith(
+      'adj-apply',
+      expect.objectContaining({
+        status: 'Opened',
+        template: 'AdjustmentApplyPacket',
+      }),
+    );
     expect(screen.getByTestId('dossier-apply-handoff')).toHaveTextContent('County Studio Handoff · Apply Packet');
     expect(screen.getByTestId('dossier-apply-handoff')).toHaveTextContent('value mutation still belongs to the governed apply lane');
     expect(screen.getByTestId('dossier-apply-handoff-status')).toHaveTextContent('Opened');
+  });
+
+  it('records external apply return status without mutating values in County Studio', () => {
+    render(
+      <DossierSuiteHome
+        metadata={{
+          applyTemplate: 'AdjustmentApplyPacket',
+          adjustmentSetId: 'adj-apply',
+          scenarioId: 'scenario-apply',
+          studyId: 'study-apply',
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId('dossier-apply-record-applied'));
+
+    expect(useAdjustmentApplyHandoffStore.getState().handoffs['adj-apply']).toMatchObject({
+      status: 'AppliedExternally',
+      evidenceRef: 'dossier-apply-return:adj-apply',
+    });
+    expect(recordApplyHandoffReceiptMock).toHaveBeenCalledWith(
+      'adj-apply',
+      expect.objectContaining({
+        status: 'AppliedExternally',
+        evidenceRef: 'dossier-apply-return:adj-apply',
+      }),
+    );
+    expect(screen.getByTestId('dossier-apply-handoff-status')).toHaveTextContent('AppliedExternally');
   });
 
   it('does not create a draft for an unrecognized template', () => {

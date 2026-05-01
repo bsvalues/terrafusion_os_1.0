@@ -13,6 +13,11 @@ public enum AdjustmentSetApprovalState
     Proposed, ReadyForApproval, Approved, Published, RolledBack
 }
 
+public enum CountyApplyHandoffReceiptStatus
+{
+    Prepared, Opened, AppliedExternally, RolledBack
+}
+
 public class CountyAdjustmentSet
 {
     public Guid AdjustmentSetId { get; set; } = Guid.NewGuid();
@@ -44,10 +49,38 @@ public class CountyAdjustmentSet
 
     // Navigation
     public CountyScenario? Scenario { get; set; }
+    public CountyApplyHandoffReceipt? ApplyHandoffReceipt { get; set; }
 
     // FISMA audit fields
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public string CreatedBy { get; set; } = "system";
     public string UpdatedBy { get; set; } = "system";
+}
+
+public class CountyApplyHandoffReceipt
+{
+    public Guid ReceiptId { get; set; } = Guid.NewGuid();
+    public Guid AdjustmentSetId { get; set; }
+    public Guid StudyId { get; set; }
+    public Guid CountyId { get; set; }
+    public Guid ScenarioId { get; set; }
+
+    [StringLength(100)]
+    public string Template { get; set; } = "AdjustmentApplyPacket";
+
+    public CountyApplyHandoffReceiptStatus Status { get; set; } = CountyApplyHandoffReceiptStatus.Prepared;
+    public DateTime PreparedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    [StringLength(500)]
+    public string? EvidenceRef { get; set; }
+
+    [StringLength(1000)]
+    public string? Notes { get; set; }
+
+    [StringLength(450)]
+    public string UpdatedBy { get; set; } = "system";
+
+    public CountyAdjustmentSet? AdjustmentSet { get; set; }
 }

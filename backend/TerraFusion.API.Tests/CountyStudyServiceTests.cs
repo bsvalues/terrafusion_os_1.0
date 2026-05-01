@@ -834,6 +834,62 @@ public class CountyStudyServiceTests
             svc.UpdateApprovalStateAsync(Guid.NewGuid(), AdjustmentSetApprovalState.ReadyForApproval, "u1"));
     }
 
+    [Fact]
+    public async Task UpsertApplyHandoffReceipt_PersistsPreparedReceipt()
+    {
+        var (svc, adjId) = await SeedProposedAdjSetAsync();
+        await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.ReadyForApproval, "u1");
+        await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Approved, "reviewer");
+
+        var receipt = await svc.UpsertApplyHandoffReceiptAsync(
+            adjId,
+            new UpsertAdjustmentApplyReceiptRequest("Prepared", "AdjustmentApplyPacket"),
+            "router");
+
+        Assert.Equal(adjId, receipt.AdjustmentSetId);
+        Assert.Equal("Prepared", receipt.Status);
+        Assert.Equal("AdjustmentApplyPacket", receipt.Template);
+    }
+
+    [Fact]
+    public async Task UpsertApplyHandoffReceipt_AppliedExternally_RequiresEvidenceRef()
+    {
+        var (svc, adjId) = await SeedProposedAdjSetAsync();
+        await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.ReadyForApproval, "u1");
+        await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Approved, "reviewer");
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            svc.UpsertApplyHandoffReceiptAsync(
+                adjId,
+                new UpsertAdjustmentApplyReceiptRequest("AppliedExternally", "AdjustmentApplyPacket"),
+                "dossier"));
+    }
+
+    [Fact]
+    public async Task UpsertApplyHandoffReceipt_PreparedReopen_DoesNotDowngradeAppliedExternally()
+    {
+        var (svc, adjId) = await SeedProposedAdjSetAsync();
+        await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.ReadyForApproval, "u1");
+        await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Approved, "reviewer");
+
+        await svc.UpsertApplyHandoffReceiptAsync(
+            adjId,
+            new UpsertAdjustmentApplyReceiptRequest(
+                "AppliedExternally",
+                "AdjustmentApplyPacket",
+                "apply-evidence-001",
+                "Governed apply lane reported completion."),
+            "dossier");
+
+        var reopened = await svc.UpsertApplyHandoffReceiptAsync(
+            adjId,
+            new UpsertAdjustmentApplyReceiptRequest("Prepared", "AdjustmentApplyPacket"),
+            "router");
+
+        Assert.Equal("AppliedExternally", reopened.Status);
+        Assert.Equal("apply-evidence-001", reopened.EvidenceRef);
+    }
+
     // ── Evidence Packet (Task H) ──────────────────────────────────────────────
 
     [Fact]

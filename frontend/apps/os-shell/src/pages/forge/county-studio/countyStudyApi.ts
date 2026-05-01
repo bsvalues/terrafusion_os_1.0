@@ -278,6 +278,9 @@ export const adjustmentSetApi = {
   list: (studyId: string): Promise<CountyAdjustmentSetDto[]> =>
     apiFetchJson(`${BASE}/studies/${studyId}/adjustment-sets`, withCountyStudyHeaders()),
 
+  listApplyHandoffReceipts: (studyId: string): Promise<CountyApplyHandoffReceiptDto[]> =>
+    apiFetchJson(`${BASE}/studies/${studyId}/apply-handoff-receipts`, withCountyStudyHeaders()),
+
   updateApprovalState: (
     adjustmentSetId: string,
     newState: AdjustmentSetApprovalState,
@@ -287,7 +290,48 @@ export const adjustmentSetApi = {
       method: 'PATCH',
       body: JSON.stringify({ newState, rollbackReason }),
     })),
+
+  recordApplyHandoffReceipt: (
+    adjustmentSetId: string,
+    body: {
+      status?: CountyApplyHandoffReceiptStatus;
+      template?: string;
+      evidenceRef?: string;
+      notes?: string;
+    },
+  ): Promise<CountyApplyHandoffReceiptDto> =>
+    apiFetchJson(`${BASE}/adjustment-sets/${adjustmentSetId}/apply-handoff-receipt`, withCountyStudyHeaders({
+      method: 'PUT',
+      body: JSON.stringify(body),
+    })),
+
+  updateApplyHandoffReceiptStatus: (
+    adjustmentSetId: string,
+    status: CountyApplyHandoffReceiptStatus,
+    body: { evidenceRef?: string; notes?: string } = {},
+  ): Promise<CountyApplyHandoffReceiptDto> =>
+    apiFetchJson(`${BASE}/adjustment-sets/${adjustmentSetId}/apply-handoff-receipt/status`, withCountyStudyHeaders({
+      method: 'PATCH',
+      body: JSON.stringify({ status, ...body }),
+    })),
 };
+
+export type CountyApplyHandoffReceiptStatus = 'Prepared' | 'Opened' | 'AppliedExternally' | 'RolledBack';
+
+export interface CountyApplyHandoffReceiptDto {
+  receiptId: string;
+  adjustmentSetId: string;
+  studyId: string;
+  countyId: string;
+  scenarioId: string;
+  template: string;
+  status: CountyApplyHandoffReceiptStatus;
+  preparedAt: string;
+  updatedAt: string;
+  evidenceRef: string | null;
+  notes: string | null;
+  updatedBy: string;
+}
 
 // ── Scenario Compare ──────────────────────────────────────────────────────────
 

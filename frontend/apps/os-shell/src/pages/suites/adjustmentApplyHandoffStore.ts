@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import type { CountyApplyHandoffReceiptDto, CountyApplyHandoffReceiptStatus } from '../forge/county-studio/countyStudyApi';
 
-export type AdjustmentApplyHandoffStatus = 'Prepared' | 'Opened';
+export type AdjustmentApplyHandoffStatus = CountyApplyHandoffReceiptStatus;
 
 export interface AdjustmentApplyHandoff {
   adjustmentSetId: string;
@@ -10,6 +11,8 @@ export interface AdjustmentApplyHandoff {
   status: AdjustmentApplyHandoffStatus;
   preparedAt: string;
   updatedAt: string;
+  evidenceRef?: string | null;
+  notes?: string | null;
 }
 
 interface AdjustmentApplyHandoffState {
@@ -19,7 +22,12 @@ interface AdjustmentApplyHandoffState {
     scenarioId: string;
     studyId: string;
   }) => void;
+  ingestReceipt: (receipt: CountyApplyHandoffReceiptDto) => void;
+  ingestReceipts: (receipts: CountyApplyHandoffReceiptDto[]) => void;
+  replaceReceiptsForStudy: (studyId: string, receipts: CountyApplyHandoffReceiptDto[]) => void;
   markOpened: (adjustmentSetId: string) => void;
+  markAppliedExternally: (adjustmentSetId: string, evidenceRef: string, notes?: string) => void;
+  markRolledBack: (adjustmentSetId: string, notes: string, evidenceRef?: string) => void;
   clearHandoff: (adjustmentSetId: string) => void;
 }
 
@@ -47,6 +55,73 @@ export const useAdjustmentApplyHandoffStore = create<AdjustmentApplyHandoffState
           };
         }),
 
+      ingestReceipt: (receipt) =>
+        set((state) => {
+          const existing = state.handoffs[receipt.adjustmentSetId];
+          return {
+            handoffs: {
+              ...state.handoffs,
+              [receipt.adjustmentSetId]: {
+                adjustmentSetId: receipt.adjustmentSetId,
+                scenarioId: receipt.scenarioId,
+                studyId: receipt.studyId,
+                status: receipt.status,
+                preparedAt: existing?.preparedAt ?? receipt.preparedAt,
+                updatedAt: receipt.updatedAt,
+                evidenceRef: receipt.evidenceRef,
+                notes: receipt.notes,
+              },
+            },
+          };
+        }),
+
+      ingestReceipts: (receipts) =>
+        set((state) => {
+          const next = { ...state.handoffs };
+          for (const receipt of receipts) {
+            const existing = next[receipt.adjustmentSetId];
+            next[receipt.adjustmentSetId] = {
+              adjustmentSetId: receipt.adjustmentSetId,
+              scenarioId: receipt.scenarioId,
+              studyId: receipt.studyId,
+              status: receipt.status,
+              preparedAt: existing?.preparedAt ?? receipt.preparedAt,
+              updatedAt: receipt.updatedAt,
+              evidenceRef: receipt.evidenceRef,
+              notes: receipt.notes,
+            };
+          }
+          return { handoffs: next };
+        }),
+
+      replaceReceiptsForStudy: (studyId, receipts) =>
+        set((state) => {
+          const receiptIds = new Set(receipts.map((receipt) => receipt.adjustmentSetId));
+          const next: Record<string, AdjustmentApplyHandoff> = {};
+
+          for (const [adjustmentSetId, handoff] of Object.entries(state.handoffs)) {
+            if (handoff.studyId !== studyId || receiptIds.has(adjustmentSetId)) {
+              next[adjustmentSetId] = handoff;
+            }
+          }
+
+          for (const receipt of receipts) {
+            const existing = next[receipt.adjustmentSetId];
+            next[receipt.adjustmentSetId] = {
+              adjustmentSetId: receipt.adjustmentSetId,
+              scenarioId: receipt.scenarioId,
+              studyId: receipt.studyId,
+              status: receipt.status,
+              preparedAt: existing?.preparedAt ?? receipt.preparedAt,
+              updatedAt: receipt.updatedAt,
+              evidenceRef: receipt.evidenceRef,
+              notes: receipt.notes,
+            };
+          }
+
+          return { handoffs: next };
+        }),
+
       markOpened: (adjustmentSetId) =>
         set((state) => {
           const existing = state.handoffs[adjustmentSetId];
@@ -57,6 +132,42 @@ export const useAdjustmentApplyHandoffStore = create<AdjustmentApplyHandoffState
               [adjustmentSetId]: {
                 ...existing,
                 status: 'Opened',
+                updatedAt: new Date().toISOString(),
+              },
+            },
+          };
+        }),
+
+      markAppliedExternally: (adjustmentSetId, evidenceRef, notes) =>
+        set((state) => {
+          const existing = state.handoffs[adjustmentSetId];
+          if (!existing) return state;
+          return {
+            handoffs: {
+              ...state.handoffs,
+              [adjustmentSetId]: {
+                ...existing,
+                status: 'AppliedExternally',
+                evidenceRef,
+                notes: notes ?? existing.notes,
+                updatedAt: new Date().toISOString(),
+              },
+            },
+          };
+        }),
+
+      markRolledBack: (adjustmentSetId, notes, evidenceRef) =>
+        set((state) => {
+          const existing = state.handoffs[adjustmentSetId];
+          if (!existing) return state;
+          return {
+            handoffs: {
+              ...state.handoffs,
+              [adjustmentSetId]: {
+                ...existing,
+                status: 'RolledBack',
+                evidenceRef: evidenceRef ?? existing.evidenceRef,
+                notes,
                 updatedAt: new Date().toISOString(),
               },
             },

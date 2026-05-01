@@ -693,6 +693,99 @@ public class CountyStudyService : ICountyStudyService
         return MapAdjustmentSet(adj);
     }
 
+    public async Task<List<CountyApplyHandoffReceiptDto>> GetApplyHandoffReceiptsAsync(Guid studyId)
+    {
+        return await _db.CountyApplyHandoffReceipts
+            .AsNoTracking()
+            .Where(r => r.StudyId == studyId)
+            .OrderByDescending(r => r.UpdatedAt)
+            .Select(r => MapApplyHandoffReceipt(r))
+            .ToListAsync();
+    }
+
+    public async Task<CountyApplyHandoffReceiptDto> UpsertApplyHandoffReceiptAsync(
+        Guid adjustmentSetId,
+        UpsertAdjustmentApplyReceiptRequest req,
+        string userId)
+    {
+        var adjustment = await _db.CountyAdjustmentSets.FindAsync(adjustmentSetId)
+            ?? throw new InvalidOperationException($"AdjustmentSet {adjustmentSetId} not found");
+
+        if (adjustment.ApprovalState != AdjustmentSetApprovalState.Approved
+            && adjustment.ApprovalState != AdjustmentSetApprovalState.Published
+            && adjustment.ApprovalState != AdjustmentSetApprovalState.RolledBack)
+            throw new InvalidOperationException("Apply handoff receipts require an approved adjustment set.");
+
+        var requestedStatus = CountyApplyHandoffReceiptStatus.Prepared;
+        if (!string.IsNullOrWhiteSpace(req.Status)
+            && !Enum.TryParse<CountyApplyHandoffReceiptStatus>(req.Status, ignoreCase: true, out requestedStatus))
+            throw new InvalidOperationException($"Unsupported apply handoff receipt status '{req.Status}'.");
+
+        ValidateApplyReceiptReturn(requestedStatus, req.EvidenceRef, req.Notes);
+
+        var now = DateTime.UtcNow;
+        var receipt = await _db.CountyApplyHandoffReceipts
+            .FirstOrDefaultAsync(r => r.AdjustmentSetId == adjustmentSetId);
+
+        if (receipt is null)
+        {
+            receipt = new CountyApplyHandoffReceipt
+            {
+                AdjustmentSetId = adjustmentSetId,
+                StudyId = adjustment.StudyId,
+                CountyId = adjustment.CountyId,
+                ScenarioId = adjustment.ScenarioId,
+                PreparedAt = now,
+            };
+            _db.CountyApplyHandoffReceipts.Add(receipt);
+        }
+
+        var trackedReceipt = receipt!;
+        var status = requestedStatus == CountyApplyHandoffReceiptStatus.Prepared
+                     || (IsTerminalApplyReceiptStatus(trackedReceipt.Status)
+                         && !IsTerminalApplyReceiptStatus(requestedStatus))
+            ? trackedReceipt.Status
+            : requestedStatus;
+
+        trackedReceipt.Template = string.IsNullOrWhiteSpace(req.Template)
+            ? "AdjustmentApplyPacket"
+            : req.Template;
+        trackedReceipt.Status = status;
+        trackedReceipt.EvidenceRef = string.IsNullOrWhiteSpace(req.EvidenceRef)
+            ? trackedReceipt.EvidenceRef
+            : req.EvidenceRef;
+        trackedReceipt.Notes = string.IsNullOrWhiteSpace(req.Notes)
+            ? trackedReceipt.Notes
+            : req.Notes;
+        trackedReceipt.UpdatedAt = now;
+        trackedReceipt.UpdatedBy = userId;
+
+        await _db.SaveChangesAsync();
+        return MapApplyHandoffReceipt(trackedReceipt);
+    }
+
+    public async Task<CountyApplyHandoffReceiptDto> UpdateApplyHandoffReceiptStatusAsync(
+        Guid adjustmentSetId,
+        CountyApplyHandoffReceiptStatus status,
+        string userId,
+        string? evidenceRef = null,
+        string? notes = null)
+    {
+        ValidateApplyReceiptReturn(status, evidenceRef, notes);
+
+        var receipt = await _db.CountyApplyHandoffReceipts
+            .FirstOrDefaultAsync(r => r.AdjustmentSetId == adjustmentSetId)
+            ?? throw new InvalidOperationException($"Apply handoff receipt for AdjustmentSet {adjustmentSetId} not found");
+
+        receipt.Status = status;
+        receipt.EvidenceRef = string.IsNullOrWhiteSpace(evidenceRef) ? receipt.EvidenceRef : evidenceRef;
+        receipt.Notes = string.IsNullOrWhiteSpace(notes) ? receipt.Notes : notes;
+        receipt.UpdatedAt = DateTime.UtcNow;
+        receipt.UpdatedBy = userId;
+        await _db.SaveChangesAsync();
+        return MapApplyHandoffReceipt(receipt);
+    }
+
     // ── Exception Sets ────────────────────────────────────────────────────
 
     public async Task<CountyExceptionSetDto> CreateExceptionSetAsync(CreateCountyExceptionSetRequest req, string userId)
@@ -1459,6 +1552,29 @@ public class CountyStudyService : ICountyStudyService
     private static CountyAdjustmentSetDto MapAdjustmentSet(CountyAdjustmentSet a) =>
         new(a.AdjustmentSetId, a.StudyId, a.ScenarioId, a.EffectiveScope,
             a.ApprovalState.ToString(), a.ApprovedBy, a.PublishedAt, a.RollbackReason);
+
+    private static bool IsTerminalApplyReceiptStatus(CountyApplyHandoffReceiptStatus status) =>
+        status is CountyApplyHandoffReceiptStatus.AppliedExternally
+            or CountyApplyHandoffReceiptStatus.RolledBack;
+
+    private static void ValidateApplyReceiptReturn(
+        CountyApplyHandoffReceiptStatus status,
+        string? evidenceRef,
+        string? notes)
+    {
+        if (status == CountyApplyHandoffReceiptStatus.AppliedExternally
+            && string.IsNullOrWhiteSpace(evidenceRef))
+            throw new InvalidOperationException("AppliedExternally apply handoff receipts require an evidenceRef.");
+
+        if (status == CountyApplyHandoffReceiptStatus.RolledBack
+            && string.IsNullOrWhiteSpace(notes))
+            throw new InvalidOperationException("RolledBack apply handoff receipts require notes.");
+    }
+
+    private static CountyApplyHandoffReceiptDto MapApplyHandoffReceipt(CountyApplyHandoffReceipt r) =>
+        new(r.ReceiptId, r.AdjustmentSetId, r.StudyId, r.CountyId, r.ScenarioId,
+            r.Template, r.Status.ToString(), r.PreparedAt, r.UpdatedAt,
+            r.EvidenceRef, r.Notes, r.UpdatedBy);
 
     public async Task<CountyExceptionSetDto> UpdateExceptionStatusAsync(
         Guid exceptionSetId, ExceptionSetStatus newStatus, string userId)

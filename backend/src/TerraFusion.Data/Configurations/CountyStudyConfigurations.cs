@@ -112,6 +112,29 @@ public sealed class CountyAdjustmentSetConfiguration : IEntityTypeConfiguration<
     }
 }
 
+public sealed class CountyApplyHandoffReceiptConfiguration : IEntityTypeConfiguration<CountyApplyHandoffReceipt>
+{
+    public void Configure(EntityTypeBuilder<CountyApplyHandoffReceipt> builder)
+    {
+        builder.HasKey(e => e.ReceiptId);
+        builder.ToTable("CountyApplyHandoffReceipts");
+        builder.Property(e => e.Template).IsRequired().HasMaxLength(100);
+        builder.Property(e => e.Status).IsRequired().HasConversion<string>().HasMaxLength(50);
+        builder.Property(e => e.EvidenceRef).HasMaxLength(500);
+        builder.Property(e => e.Notes).HasMaxLength(1000);
+        builder.Property(e => e.UpdatedBy).IsRequired().HasMaxLength(450);
+        builder.HasIndex(e => e.AdjustmentSetId)
+               .IsUnique()
+               .HasDatabaseName("IX_CountyApplyHandoffReceipts_AdjustmentSet");
+        builder.HasIndex(e => new { e.StudyId, e.Status })
+               .HasDatabaseName("IX_CountyApplyHandoffReceipts_StudyStatus");
+        builder.HasOne(e => e.AdjustmentSet)
+               .WithOne(e => e.ApplyHandoffReceipt)
+               .HasForeignKey<CountyApplyHandoffReceipt>(e => e.AdjustmentSetId)
+               .OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
 public sealed class CountyExceptionSetConfiguration : IEntityTypeConfiguration<CountyExceptionSet>
 {
     public void Configure(EntityTypeBuilder<CountyExceptionSet> builder)

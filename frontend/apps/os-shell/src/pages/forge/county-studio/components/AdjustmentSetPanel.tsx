@@ -11,7 +11,7 @@ import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { adjustmentSetApi } from '../countyStudyApi';
 import type { CountyAdjustmentSetDto, AdjustmentSetApprovalState } from '../types/countyStudio.types';
 import activateModule from '@/orchestration/moduleActivation';
-import { useAdjustmentApplyHandoffStore } from '@/pages/suites/adjustmentApplyHandoffStore';
+import { useAdjustmentApplyHandoffStore, type AdjustmentApplyHandoff } from '@/pages/suites/adjustmentApplyHandoffStore';
 
 // ── State badge ───────────────────────────────────────────────────────────────
 
@@ -80,11 +80,13 @@ const APPLY_POSTURE: Record<ApplyPostureState, { label: string; detail: string; 
   },
 };
 
-function applyPostureFor(adj: CountyAdjustmentSetDto, hasHandoff: boolean): ApplyPostureState {
+function applyPostureFor(adj: CountyAdjustmentSetDto, handoff?: AdjustmentApplyHandoff): ApplyPostureState {
   if (adj.approvalState === 'Published') return 'applied';
   if (adj.approvalState === 'RolledBack') return 'rolledBack';
   if (adj.approvalState !== 'Approved') return 'blocked';
-  return hasHandoff ? 'handedOff' : 'ready';
+  if (handoff?.status === 'AppliedExternally') return 'applied';
+  if (handoff?.status === 'RolledBack') return 'rolledBack';
+  return handoff ? 'handedOff' : 'ready';
 }
 
 // ── Legal next-state map ──────────────────────────────────────────────────────
@@ -106,18 +108,19 @@ function AdjSetRow({
   adj,
   onAction,
   onPrepareApply,
-  applyHandoffPrepared,
+  applyHandoff,
   busy,
 }: {
   adj: CountyAdjustmentSetDto;
   onAction: (id: string, state: AdjustmentSetApprovalState, reason?: string) => void;
   onPrepareApply: (adj: CountyAdjustmentSetDto) => void;
-  applyHandoffPrepared: boolean;
+  applyHandoff?: AdjustmentApplyHandoff;
   busy: string | null;
 }) {
   const actions = NEXT_STATES[adj.approvalState] ?? [];
   const isBusy  = busy === adj.adjustmentSetId;
-  const applyPosture = APPLY_POSTURE[applyPostureFor(adj, applyHandoffPrepared)];
+  const applyPosture = APPLY_POSTURE[applyPostureFor(adj, applyHandoff)];
+  const applyHandoffPrepared = Boolean(applyHandoff);
 
   const handleClick = (state: AdjustmentSetApprovalState) => {
     onAction(adj.adjustmentSetId, state);
@@ -221,6 +224,15 @@ function AdjSetRow({
         <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>
           {applyPosture.detail}
         </div>
+        {applyHandoff && (
+          <div
+            data-testid={`apply-receipt-${adj.adjustmentSetId}`}
+            style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}
+          >
+            Receipt: {applyHandoff.status} · updated {new Date(applyHandoff.updatedAt).toLocaleString()}
+            {applyHandoff.evidenceRef ? ` · evidence ${applyHandoff.evidenceRef}` : ''}
+          </div>
+        )}
         {adj.approvalState === 'Approved' && (
           <button
             type="button"
@@ -259,20 +271,26 @@ export function AdjustmentSetPanel() {
   const [busy,    setBusy]    = useState<string | null>(null);
   const applyHandoffs = useAdjustmentApplyHandoffStore((s) => s.handoffs);
   const prepareApplyHandoff = useAdjustmentApplyHandoffStore((s) => s.prepareHandoff);
+  const replaceApplyReceiptsForStudy = useAdjustmentApplyHandoffStore((s) => s.replaceReceiptsForStudy);
+  const ingestApplyReceipt = useAdjustmentApplyHandoffStore((s) => s.ingestReceipt);
 
   const load = useCallback(async () => {
     if (!studyId) return;
     setLoading(true);
     setError(null);
     try {
-      const data = await adjustmentSetApi.list(studyId);
+      const [data, receipts] = await Promise.all([
+        adjustmentSetApi.list(studyId),
+        adjustmentSetApi.listApplyHandoffReceipts(studyId),
+      ]);
+      replaceApplyReceiptsForStudy(studyId, receipts);
       setSets(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load adjustment sets');
     } finally {
       setLoading(false);
     }
-  }, [studyId]);
+  }, [replaceApplyReceiptsForStudy, studyId]);
 
   useEffect(() => { void load(); }, [load, lastPromotedAt]);
 
@@ -293,21 +311,35 @@ export function AdjustmentSetPanel() {
   }, []);
 
   const handlePrepareApply = useCallback((adj: CountyAdjustmentSetDto) => {
-    prepareApplyHandoff({
-      adjustmentSetId: adj.adjustmentSetId,
-      scenarioId: adj.scenarioId,
-      studyId: adj.studyId,
-    });
-    void activateModule('suite-dossier', {
-      source: 'system',
-      metadata: {
-        applyTemplate: 'AdjustmentApplyPacket',
-        adjustmentSetId: adj.adjustmentSetId,
-        scenarioId: adj.scenarioId,
-        studyId: adj.studyId,
-      },
-    });
-  }, [prepareApplyHandoff]);
+    setBusy(adj.adjustmentSetId);
+    void adjustmentSetApi.recordApplyHandoffReceipt(adj.adjustmentSetId, {
+      status: 'Prepared',
+      template: 'AdjustmentApplyPacket',
+    })
+      .then((receipt) => {
+        ingestApplyReceipt(receipt);
+        prepareApplyHandoff({
+          adjustmentSetId: adj.adjustmentSetId,
+          scenarioId: adj.scenarioId,
+          studyId: adj.studyId,
+        });
+        void activateModule('suite-dossier', {
+          source: 'system',
+          metadata: {
+            applyTemplate: 'AdjustmentApplyPacket',
+            adjustmentSetId: adj.adjustmentSetId,
+            scenarioId: adj.scenarioId,
+            studyId: adj.studyId,
+          },
+        });
+      })
+      .catch((receiptError) => {
+        setError(receiptError instanceof Error
+          ? receiptError.message
+          : 'Failed to persist adjustment apply handoff receipt');
+      })
+      .finally(() => setBusy(null));
+  }, [ingestApplyReceipt, prepareApplyHandoff]);
 
   if (!studyId) {
     return (
@@ -399,7 +431,7 @@ export function AdjustmentSetPanel() {
             adj={adj}
             onAction={handleAction}
             onPrepareApply={handlePrepareApply}
-            applyHandoffPrepared={Boolean(applyHandoffs[adj.adjustmentSetId])}
+            applyHandoff={applyHandoffs[adj.adjustmentSetId]}
             busy={busy}
           />
         ))}

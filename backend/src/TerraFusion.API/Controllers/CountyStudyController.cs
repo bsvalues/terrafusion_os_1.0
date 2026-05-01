@@ -1019,6 +1019,32 @@ public class CountyStudyController : ControllerBase
     }
 
     /// <summary>
+    /// Returns durable apply handoff receipts for a study's adjustment sets.
+    /// </summary>
+    [HttpGet("studies/{studyId:guid}/apply-handoff-receipts")]
+    public async Task<IActionResult> GetApplyHandoffReceipts(Guid studyId)
+    {
+        try
+        {
+            var scopeResult = await EnsureStudyScopeAsync(studyId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
+            var list = await _svc.GetApplyHandoffReceiptsAsync(studyId);
+            return Ok(list);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] GetApplyHandoffReceipts failed for study {StudyId}", studyId);
+            return StatusCode(500, new { error = "Internal error" });
+        }
+    }
+
+    /// <summary>
     /// Advances the approval state of an adjustment set.
     /// Valid transitions: Proposed → ReadyForApproval → Approved
     /// Also supports ReadyForApproval → Proposed (send-back).
@@ -1046,6 +1072,69 @@ public class CountyStudyController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "[CountyStudy] UpdateApprovalState failed for {Id}", id);
+            return StatusCode(500, new { error = "Internal error" });
+        }
+    }
+
+    /// <summary>
+    /// Creates or updates the durable apply handoff receipt for an adjustment set.
+    /// County Studio can prepare/track receipts, but does not perform value mutation.
+    /// </summary>
+    [HttpPut("adjustment-sets/{id:guid}/apply-handoff-receipt")]
+    public async Task<IActionResult> UpsertApplyHandoffReceipt(
+        Guid id, [FromBody] UpsertAdjustmentApplyReceiptRequest req)
+    {
+        try
+        {
+            var scopeResult = await EnsureAdjustmentSetScopeAsync(id, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
+            var dto = await _svc.UpsertApplyHandoffReceiptAsync(id, req, CurrentUserId);
+            return Ok(dto);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] UpsertApplyHandoffReceipt failed for {Id}", id);
+            return StatusCode(500, new { error = "Internal error" });
+        }
+    }
+
+    /// <summary>
+    /// Updates the durable return status from the governed downstream apply lane.
+    /// AppliedExternally requires an evidenceRef; RolledBack requires notes.
+    /// </summary>
+    [HttpPatch("adjustment-sets/{id:guid}/apply-handoff-receipt/status")]
+    public async Task<IActionResult> UpdateApplyHandoffReceiptStatus(
+        Guid id, [FromBody] UpdateAdjustmentApplyReceiptStatusRequest req)
+    {
+        if (!Enum.TryParse<CountyApplyHandoffReceiptStatus>(req.Status, ignoreCase: true, out var parsed))
+            return BadRequest(new { error = $"Unknown apply handoff receipt status '{req.Status}'." });
+        try
+        {
+            var scopeResult = await EnsureAdjustmentSetScopeAsync(id, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
+            var dto = await _svc.UpdateApplyHandoffReceiptStatusAsync(
+                id,
+                parsed,
+                CurrentUserId,
+                req.EvidenceRef,
+                req.Notes);
+            return Ok(dto);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] UpdateApplyHandoffReceiptStatus failed for {Id}", id);
             return StatusCode(500, new { error = "Internal error" });
         }
     }

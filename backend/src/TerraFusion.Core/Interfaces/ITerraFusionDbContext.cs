@@ -79,6 +79,7 @@ public interface ITerraFusionDbContext
     DbSet<CountyCohort> CountyCohorts { get; set; }
     DbSet<CountyScenario> CountyScenarios { get; set; }
     DbSet<CountyAdjustmentSet> CountyAdjustmentSets { get; set; }
+    DbSet<CountyApplyHandoffReceipt> CountyApplyHandoffReceipts { get; set; }
     DbSet<CountyExceptionSet> CountyExceptionSets { get; set; }
     DbSet<CountyDownstreamClosureReceipt> CountyDownstreamClosureReceipts { get; set; }
     DbSet<CountySpatialArtifact> CountySpatialArtifacts { get; set; }

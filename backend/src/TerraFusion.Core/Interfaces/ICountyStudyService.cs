@@ -34,6 +34,9 @@ public interface ICountyStudyService
     Task<CountyAdjustmentSetDto> PromoteScenarioAsync(PromoteScenarioRequest req, string userId);
     Task<List<CountyAdjustmentSetDto>> GetAdjustmentSetsAsync(Guid studyId);
     Task<CountyAdjustmentSetDto> UpdateApprovalStateAsync(Guid adjustmentSetId, AdjustmentSetApprovalState newState, string userId, string? rollbackReason = null);
+    Task<List<CountyApplyHandoffReceiptDto>> GetApplyHandoffReceiptsAsync(Guid studyId);
+    Task<CountyApplyHandoffReceiptDto> UpsertApplyHandoffReceiptAsync(Guid adjustmentSetId, UpsertAdjustmentApplyReceiptRequest req, string userId);
+    Task<CountyApplyHandoffReceiptDto> UpdateApplyHandoffReceiptStatusAsync(Guid adjustmentSetId, CountyApplyHandoffReceiptStatus status, string userId, string? evidenceRef = null, string? notes = null);
 
     // Exception Sets
     Task<CountyExceptionSetDto> CreateExceptionSetAsync(CreateCountyExceptionSetRequest req, string userId);

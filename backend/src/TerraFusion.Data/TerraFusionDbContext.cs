@@ -288,6 +288,7 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<CountyCohort> CountyCohorts { get; set; } = null!;
   public DbSet<CountyScenario> CountyScenarios { get; set; } = null!;
   public DbSet<CountyAdjustmentSet> CountyAdjustmentSets { get; set; } = null!;
+  public DbSet<CountyApplyHandoffReceipt> CountyApplyHandoffReceipts { get; set; } = null!;
   public DbSet<CountyExceptionSet> CountyExceptionSets { get; set; } = null!;
   public DbSet<CountyDownstreamClosureReceipt> CountyDownstreamClosureReceipts { get; set; } = null!;
   public DbSet<CountySpatialArtifact> CountySpatialArtifacts { get; set; } = null!;
@@ -904,6 +905,7 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     modelBuilder.ApplyConfiguration(new CountyCohortConfiguration());
     modelBuilder.ApplyConfiguration(new CountyScenarioConfiguration());
     modelBuilder.ApplyConfiguration(new CountyAdjustmentSetConfiguration());
+    modelBuilder.ApplyConfiguration(new CountyApplyHandoffReceiptConfiguration());
     modelBuilder.ApplyConfiguration(new CountyExceptionSetConfiguration());
     modelBuilder.ApplyConfiguration(new CountyDownstreamClosureReceiptConfiguration());
     modelBuilder.ApplyConfiguration(new CountySpatialArtifactConfiguration());

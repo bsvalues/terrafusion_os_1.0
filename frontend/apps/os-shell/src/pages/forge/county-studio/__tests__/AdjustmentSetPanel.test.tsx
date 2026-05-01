@@ -19,8 +19,11 @@ vi.mock('@/orchestration/moduleActivation', () => ({
 
 vi.mock('../countyStudyApi', () => ({
   adjustmentSetApi: {
-    list:               vi.fn(),
-    updateApprovalState: vi.fn(),
+    list:                         vi.fn(),
+    listApplyHandoffReceipts:     vi.fn(),
+    updateApprovalState:          vi.fn(),
+    recordApplyHandoffReceipt:    vi.fn(),
+    updateApplyHandoffReceiptStatus: vi.fn(),
   },
 }));
 
@@ -29,7 +32,9 @@ vi.mock('@/stores/countyStudioStore', () => ({
 }));
 
 const mockList              = adjustmentSetApi.list              as ReturnType<typeof vi.fn>;
+const mockListReceipts      = adjustmentSetApi.listApplyHandoffReceipts as ReturnType<typeof vi.fn>;
 const mockUpdateState       = adjustmentSetApi.updateApprovalState as ReturnType<typeof vi.fn>;
+const mockRecordApplyReceipt = adjustmentSetApi.recordApplyHandoffReceipt as ReturnType<typeof vi.fn>;
 const mockStore             = useCountyStudioStore as ReturnType<typeof vi.fn>;
 
 const STUDY_ID = 'study-aaa';
@@ -55,6 +60,21 @@ beforeEach(() => {
     useAdjustmentApplyHandoffStore.getState().clearHandoff('adj-002');
   });
   mockStore.mockReturnValue({ activeStudy: { studyId: STUDY_ID } });
+  mockListReceipts.mockResolvedValue([]);
+  mockRecordApplyReceipt.mockResolvedValue({
+    receiptId: 'receipt-001',
+    adjustmentSetId: 'adj-001',
+    studyId: STUDY_ID,
+    countyId: 'county-001',
+    scenarioId: 'scen-001',
+    template: 'AdjustmentApplyPacket',
+    status: 'Prepared',
+    preparedAt: '2026-05-01T00:00:00.000Z',
+    updatedAt: '2026-05-01T00:00:00.000Z',
+    evidenceRef: null,
+    notes: null,
+    updatedBy: 'tester',
+  });
 });
 
 describe('AdjustmentSetPanel', () => {
@@ -143,6 +163,13 @@ describe('AdjustmentSetPanel', () => {
       studyId: STUDY_ID,
       status: 'Prepared',
     });
+    expect(mockRecordApplyReceipt).toHaveBeenCalledWith(
+      'adj-001',
+      expect.objectContaining({
+        status: 'Prepared',
+        template: 'AdjustmentApplyPacket',
+      }),
+    );
     expect(activateModuleMock).toHaveBeenCalledWith(
       'suite-dossier',
       expect.objectContaining({
@@ -156,6 +183,30 @@ describe('AdjustmentSetPanel', () => {
       }),
     );
     expect(screen.getByTestId('apply-posture-adj-001')).toHaveTextContent('Handed off for apply');
+  });
+
+  test('loads durable apply handoff receipts from the backend', async () => {
+    mockList.mockResolvedValueOnce([makeAdj({ approvalState: 'Approved' })]);
+    mockListReceipts.mockResolvedValueOnce([{
+      receiptId: 'receipt-001',
+      adjustmentSetId: 'adj-001',
+      studyId: STUDY_ID,
+      countyId: 'county-001',
+      scenarioId: 'scen-001',
+      template: 'AdjustmentApplyPacket',
+      status: 'Opened',
+      preparedAt: '2026-05-01T00:00:00.000Z',
+      updatedAt: '2026-05-01T00:05:00.000Z',
+      evidenceRef: null,
+      notes: null,
+      updatedBy: 'dossier',
+    }]);
+
+    render(<AdjustmentSetPanel />);
+
+    await screen.findByTestId('apply-receipt-adj-001');
+    expect(screen.getByTestId('apply-posture-adj-001')).toHaveTextContent('Handed off for apply');
+    expect(screen.getByTestId('apply-receipt-adj-001')).toHaveTextContent('Receipt: Opened');
   });
 
   test('legacy Published set is read-only', async () => {
