@@ -35,9 +35,21 @@ type DecisionState = 'ready' | 'watch' | 'blocked';
 type Recommendation = 'A' | 'B' | 'Tie';
 
 const decisionTone: Record<DecisionState, { label: string; color: string; bg: string }> = {
-  ready: { label: 'Ready', color: '#22c55e', bg: '#22c55e22' },
-  watch: { label: 'Review', color: '#f59e0b', bg: '#f59e0b22' },
-  blocked: { label: 'Blocked', color: '#ef4444', bg: '#ef444422' },
+  ready: {
+    label: 'Ready',
+    color: 'hsl(var(--tf-success, 142 71% 45%))',
+    bg: 'hsl(var(--tf-success, 142 71% 45%) / 0.14)',
+  },
+  watch: {
+    label: 'Review',
+    color: 'hsl(var(--tf-warning, 38 92% 50%))',
+    bg: 'hsl(var(--tf-warning, 38 92% 50%) / 0.14)',
+  },
+  blocked: {
+    label: 'Blocked',
+    color: 'hsl(var(--tf-danger, 0 84% 60%))',
+    bg: 'hsl(var(--tf-danger, 0 84% 60%) / 0.14)',
+  },
 };
 
 interface DecisionStep {
@@ -396,7 +408,7 @@ export function ScenarioCompareGrid() {
                           <td style={{ ...cell, fontWeight: 600 }}>{row.metricLabel}</td>
                           <td style={{ ...cell, textAlign: 'right', color: 'hsl(var(--tf-muted))' }}>{formatMetric(row.metricLabel, row.baseline)}</td>
                           <td style={{ ...cell, textAlign: 'right', fontWeight: 700 }}>{formatMetric(row.metricLabel, after)}</td>
-                          <td style={{ ...cell, textAlign: 'right', color: delta <= 0 && row.metricLabel !== 'Median Ratio' ? '#22c55e' : 'hsl(var(--tf-muted))' }}>
+                          <td style={{ ...cell, textAlign: 'right', color: delta <= 0 && row.metricLabel !== 'Median Ratio' ? 'hsl(var(--tf-success, 142 71% 45%))' : 'hsl(var(--tf-muted))' }}>
                             {delta >= 0 ? '+' : ''}{formatMetric(row.metricLabel, delta)}
                           </td>
                         </tr>
