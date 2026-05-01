@@ -198,19 +198,60 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
             ? InferDictionaries(introspection.Tables, columnsByTable)
             : Array.Empty<PacsDictionary>();
 
-        // Slice C49-FK-B: foreign-key edges. Two passes:
+        // Slice C49-FK-B + C52-OVR-B: foreign-key edges. Three passes:
         //   1. Declared edges from introspection.ForeignKeys
         //      (engine-enforced; ProvenanceSource = InformationSchema).
-        //   2. InferredByName edges from the dictionary list +
+        //   2. Exported edges from the operator-supplied manifest
+        //      (ProvenanceSource = ExportFile). Per HG-OVR-2,
+        //      Exported entries shape-matching a Declared edge are
+        //      dropped; engine reality wins.
+        //   3. InferredByName edges from the dictionary list +
         //      column-name heuristic, EXCLUDING any edge whose
         //      (SourceTable, SourceColumn) pair already has a
-        //      Declared edge — declared takes precedence.
+        //      Declared OR Exported edge — declared+exported take
+        //      precedence over inferred.
         List<PacsForeignKey> declaredFks = TranslateDeclaredForeignKeys(introspection.ForeignKeys);
+
+        // C52-OVR-B: load Exported FK manifest if engaged.
+        PacsExportedFkManifest? exportedFkManifest = null;
+        var exportedFkManifestEngaged = !string.IsNullOrWhiteSpace(_options.ExportedFkManifestPath);
+        if (_options.RequireExportedFkManifest && !exportedFkManifestEngaged)
+        {
+            throw new InvalidOperationException(
+                "[LivePacsSchemaSource] RequireExportedFkManifest=true but ExportedFkManifestPath is null/empty. " +
+                "HG-OVR-3: caller MUST set the path explicitly when requiring an Exported FK manifest.");
+        }
+        if (exportedFkManifestEngaged)
+        {
+            try
+            {
+                var src = new JsonFilePacsExportedFkManifestSource(_options.ExportedFkManifestPath);
+                exportedFkManifest = await src.ReadAsync(ct).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (!_options.RequireExportedFkManifest)
+            {
+                throw new InvalidOperationException(
+                    $"[LivePacsSchemaSource] Exported FK manifest load failed at '{_options.ExportedFkManifestPath}': {ex.Message}. " +
+                    $"Set RequireExportedFkManifest=true to fail closed earlier, or fix the manifest.",
+                    ex);
+            }
+        }
+        List<PacsForeignKey> exportedFks = exportedFkManifest is null
+            ? new List<PacsForeignKey>(0)
+            : TranslateExportedForeignKeys(exportedFkManifest, declaredFks);
+
+        // Inferred suppression now considers declared+exported as the
+        // "already known" set, per the comment block above.
+        var declaredAndExported = new List<PacsForeignKey>(declaredFks.Count + exportedFks.Count);
+        declaredAndExported.AddRange(declaredFks);
+        declaredAndExported.AddRange(exportedFks);
         List<PacsForeignKey> inferredFks = _options.InferDictionaries
-            ? InferDictionaryForeignKeys(introspection.Columns, dictionaries, declaredFks)
+            ? InferDictionaryForeignKeys(introspection.Columns, dictionaries, declaredAndExported)
             : new List<PacsForeignKey>(0);
-        var allFks = new List<PacsForeignKey>(declaredFks.Count + inferredFks.Count);
+
+        var allFks = new List<PacsForeignKey>(declaredFks.Count + exportedFks.Count + inferredFks.Count);
         allFks.AddRange(declaredFks);
+        allFks.AddRange(exportedFks);
         allFks.AddRange(inferredFks);
         var fksBySourceTable = allFks
             .GroupBy(fk => fk.SourceTable, StringComparer.Ordinal)
@@ -276,12 +317,23 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
         // hashes are not applicable for live introspection; we record
         // the connection identifier (operator-supplied label) and
         // ingest moment instead.
+        var sourceFileHashes = new Dictionary<string, string>
+        {
+            [BuildSourceLabel()] = "live-introspection-no-hash",
+        };
+        // Slice C52-OVR-B: surface Exported-FK manifest engagement
+        // via the version's SourceFileHashes map (per the C52-OVR-A
+        // implementation contract — avoids extending the catalog
+        // interface with another property).
+        if (exportedFkManifest is not null)
+        {
+            sourceFileHashes[$"exported-fk-manifest@{exportedFkManifest.ManifestPath}"] =
+                $"{exportedFkManifest.ManifestVersion}#{exportedFkManifest.ManifestEvent}#edges={exportedFkManifest.Edges.Count}";
+        }
+
         var version = new PacsSchemaVersion(
             PacsRelease: _options.PacsReleaseLabel,
-            SourceFileHashes: new Dictionary<string, string>
-            {
-                [BuildSourceLabel()] = "live-introspection-no-hash",
-            },
+            SourceFileHashes: sourceFileHashes,
             IngestedAt: DateTime.UtcNow,
             ConversionManifestHash: BuildManifestStamp(manifest));
 
@@ -434,6 +486,61 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
         }
         return result;
     }
+
+    /// <summary>
+    /// Slice C52-OVR-B: translate operator-supplied Exported-FK
+    /// manifest entries into <see cref="PacsForeignKey"/> records
+    /// with <see cref="PacsForeignKeyConfidence.Exported"/> and
+    /// <see cref="PacsForeignKeySource.ExportFile"/>. Per HG-OVR-2,
+    /// any entry shape-matching a Declared edge is dropped silently
+    /// — engine reality wins.
+    /// </summary>
+    private List<PacsForeignKey> TranslateExportedForeignKeys(
+        PacsExportedFkManifest manifest,
+        IReadOnlyList<PacsForeignKey> declaredFks)
+    {
+        if (manifest.Edges.Count == 0)
+        {
+            return new List<PacsForeignKey>(0);
+        }
+
+        // Build a fast shape-matcher from the declared set:
+        // (SourceTable, SourceColumns-joined, TargetTable, TargetColumns-joined)
+        var declaredShapes = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var d in declaredFks)
+        {
+            declaredShapes.Add(BuildShapeKey(d.SourceTable, d.SourceColumns, d.TargetTable, d.TargetColumns));
+        }
+
+        var result = new List<PacsForeignKey>(manifest.Edges.Count);
+        foreach (var e in manifest.Edges)
+        {
+            var shape = BuildShapeKey(e.SourceTable, e.SourceColumns, e.TargetTable, e.TargetColumns);
+            if (declaredShapes.Contains(shape))
+            {
+                // HG-OVR-2: never override Declared; drop silently.
+                continue;
+            }
+            result.Add(new PacsForeignKey(
+                ConstraintName:    e.ConstraintName,
+                SourceTable:       e.SourceTable,
+                SourceColumns:     e.SourceColumns,
+                TargetTable:       e.TargetTable,
+                TargetColumns:     e.TargetColumns,
+                ProvenanceSource:  PacsForeignKeySource.ExportFile,
+                ProvenancePath:    $"{manifest.ManifestPath}#{e.ConstraintName}",
+                Confidence:        PacsForeignKeyConfidence.Exported,
+                ConversionEra:     PacsConversionEra.Both));
+        }
+        return result;
+    }
+
+    private static string BuildShapeKey(
+        string sourceTable,
+        IReadOnlyList<string> sourceColumns,
+        string targetTable,
+        IReadOnlyList<string> targetColumns) =>
+        $"{sourceTable}({string.Join(",", sourceColumns)})->{targetTable}({string.Join(",", targetColumns)})";
 
     /// <summary>
     /// Slice C49-FK-B: name-matching heuristic for <see cref="PacsForeignKeyConfidence.InferredByName"/>
@@ -731,7 +838,9 @@ public sealed record LivePacsSchemaSourceOptions(
     string? ConversionManifestPath = null,
     bool RequireConversionManifest = false,
     string? PiiManifestPath = null,
-    bool RequirePiiManifest = false)
+    bool RequirePiiManifest = false,
+    string? ExportedFkManifestPath = null,
+    bool RequireExportedFkManifest = false)
 {
     /// <summary>
     /// Sensible default for SQL Server / Harris PACS:
