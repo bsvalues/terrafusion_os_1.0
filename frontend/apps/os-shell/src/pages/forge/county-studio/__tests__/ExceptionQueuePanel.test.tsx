@@ -88,7 +88,7 @@ beforeEach(() => {
     useDownstreamClosureReceiptStore.getState().clearReceipt('exc-2');
     useDownstreamClosureReceiptStore.getState().clearReceipt('exc-3');
   });
-  (useCountyStudioStore as ReturnType<typeof vi.fn>).mockReturnValue({ activeStudyId: 'study-1' });
+  (useCountyStudioStore as ReturnType<typeof vi.fn>).mockReturnValue({ activeStudyId: 'study-1', selectedSegmentId: null });
   (exceptionApi.list as ReturnType<typeof vi.fn>).mockResolvedValue([
     mockException,
     mockDispatchedException,
@@ -166,6 +166,24 @@ describe('ExceptionQueuePanel', () => {
     (exceptionApi.list as ReturnType<typeof vi.fn>).mockResolvedValue([]);
     await act(async () => { renderPanel(); });
     expect(screen.getByText(/No open exceptions/i)).toBeTruthy();
+  });
+
+  test('selected segment scopes the queue and next action counts', async () => {
+    (useCountyStudioStore as ReturnType<typeof vi.fn>).mockReturnValue({
+      activeStudyId: 'study-1',
+      selectedSegmentId: 'sc-1',
+    });
+    (exceptionApi.list as ReturnType<typeof vi.fn>).mockResolvedValue([
+      mockException,
+      { ...mockDispatchedException, sourceScenarioId: 'other-segment' },
+    ]);
+
+    await act(async () => { renderPanel(); });
+
+    expect(screen.getByTestId('exception-queue-segment-scope')).toHaveTextContent('sc-1');
+    expect(screen.getByTestId('exception-queue-command-strip')).toHaveTextContent('Open');
+    expect(screen.getByText(/Low Sample/i)).toBeTruthy();
+    expect(screen.queryByText(/Outlier/i)).toBeNull();
   });
 
   test('expanding row shows Dispatch button for Dais destination', async () => {

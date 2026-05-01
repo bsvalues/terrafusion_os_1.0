@@ -13,6 +13,7 @@ import type {
   CityRollupRowDto,
   NeighborhoodRollupRowDto,
   DrillLevel,
+  SegmentSeverityFilter,
   CountyHealthSummaryDto,
 } from '../pages/forge/county-studio/types/countyStudio.types';
 
@@ -91,6 +92,7 @@ export interface CountyStudioState {
   selectedCity: string | null;
   selectedNeighborhood: string | null;
   selectedNeighborhoodRevalArea: number | null;
+  segmentSeverityFilter: SegmentSeverityFilter;
 
   cityRollup: CityRollupRowDto[];
   neighborhoodRollup: NeighborhoodRollupRowDto[];
@@ -152,6 +154,7 @@ export interface CountyStudioState {
    * drillLevel='neighborhood' without a parent city.
    */
   drillToNeighborhood: (city: string, neighborhoodCode: string, revalArea?: number | null) => void;
+  setSegmentSeverityFilter: (filter: SegmentSeverityFilter) => void;
   /**
    * Jump straight to a specific segment — parent city + neighborhood are both
    * required so the drill state stays consistent. Used by CountyHealthPanel
@@ -220,6 +223,7 @@ export const useCountyStudioStore = create<CountyStudioState>()(
       selectedCity: null,
       selectedNeighborhood: null,
       selectedNeighborhoodRevalArea: null,
+      segmentSeverityFilter: 'all',
       cityRollup: [],
       neighborhoodRollup: [],
       healthSummary: null,
@@ -290,6 +294,8 @@ export const useCountyStudioStore = create<CountyStudioState>()(
         set({ neighborhoodRollup }, false, 'setNeighborhoodRollup'),
       setHealthSummary: (healthSummary) =>
         set({ healthSummary }, false, 'setHealthSummary'),
+      setSegmentSeverityFilter: (segmentSeverityFilter) =>
+        set({ segmentSeverityFilter }, false, `setSegmentSeverityFilter/${segmentSeverityFilter}`),
 
       drillToCounty: () =>
         set(
@@ -299,6 +305,7 @@ export const useCountyStudioStore = create<CountyStudioState>()(
             selectedNeighborhood: null,
             selectedNeighborhoodRevalArea: null,
             selectedSegmentId: null,
+            segmentSeverityFilter: 'all',
           },
           false,
           'drillToCounty'
@@ -311,6 +318,7 @@ export const useCountyStudioStore = create<CountyStudioState>()(
             selectedNeighborhood: null,
             selectedNeighborhoodRevalArea: null,
             selectedSegmentId: null,
+            segmentSeverityFilter: 'all',
           },
           false,
           `drillToCity/${city}`
@@ -323,6 +331,7 @@ export const useCountyStudioStore = create<CountyStudioState>()(
             selectedNeighborhood: neighborhoodCode,
             selectedNeighborhoodRevalArea: revalArea,
             selectedSegmentId: null,
+            segmentSeverityFilter: 'all',
           },
           false,
           `drillToNeighborhood/${city}/${neighborhoodCode}/${revalArea ?? 'na'}`

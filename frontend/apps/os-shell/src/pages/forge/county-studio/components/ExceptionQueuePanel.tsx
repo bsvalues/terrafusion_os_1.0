@@ -496,7 +496,11 @@ const inputStyle: React.CSSProperties = {
 // ── Panel ─────────────────────────────────────────────────────────────────────
 
 export function ExceptionQueuePanel() {
-  const { activeStudyId } = useCountyStudioStore();
+  const studio = useCountyStudioStore() as ReturnType<typeof useCountyStudioStore> & {
+    activeStudyId?: string | null;
+  };
+  const activeStudyId = studio.activeStudy?.studyId ?? studio.activeStudyId ?? null;
+  const selectedSegmentId = studio.selectedSegmentId ?? null;
   const [exceptions, setExceptions] = useState<CountyExceptionSetDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<'all' | 'open' | 'resolved'>('open');
@@ -528,18 +532,22 @@ export function ExceptionQueuePanel() {
     ));
   }, []);
 
-  const filtered = exceptions.filter(e => {
+  const scopedExceptions = selectedSegmentId
+    ? exceptions.filter(e => e.sourceScenarioId === selectedSegmentId)
+    : exceptions;
+
+  const filtered = scopedExceptions.filter(e => {
     if (filter === 'open') return e.status !== 'Resolved';
     if (filter === 'resolved') return e.status === 'Resolved';
     return true;
   });
 
   const counts = {
-    open: exceptions.filter(e => e.status !== 'Resolved').length,
-    resolved: exceptions.filter(e => e.status === 'Resolved').length,
-    unassigned: exceptions.filter(e => e.status !== 'Resolved' && !e.assignedTo).length,
-    dispatched: exceptions.filter(e => e.status === 'Dispatched').length,
-    overdue: exceptions.filter(e => e.status !== 'Resolved' && ageDays(e.createdAt) >= 3).length,
+    open: scopedExceptions.filter(e => e.status !== 'Resolved').length,
+    resolved: scopedExceptions.filter(e => e.status === 'Resolved').length,
+    unassigned: scopedExceptions.filter(e => e.status !== 'Resolved' && !e.assignedTo).length,
+    dispatched: scopedExceptions.filter(e => e.status === 'Dispatched').length,
+    overdue: scopedExceptions.filter(e => e.status !== 'Resolved' && ageDays(e.createdAt) >= 3).length,
   };
 
   const nextQueueAction = counts.open === 0
@@ -598,9 +606,28 @@ export function ExceptionQueuePanel() {
             color: filter === f ? 'hsl(var(--tf-bg))' : 'hsl(var(--tf-muted))',
             fontWeight: filter === f ? 700 : 400,
           }}>
-            {f === 'all' ? `All (${exceptions.length})` : f === 'open' ? `Open (${counts.open})` : `Resolved (${counts.resolved})`}
+            {f === 'all' ? `All (${scopedExceptions.length})` : f === 'open' ? `Open (${counts.open})` : `Resolved (${counts.resolved})`}
           </button>
         ))}
+        {selectedSegmentId && (
+          <span
+            data-testid="exception-queue-segment-scope"
+            title={`Queue scoped to selected segment ${selectedSegmentId}`}
+            style={{
+              fontSize: 10,
+              padding: '2px 8px',
+              borderRadius: 10,
+              border: '1px solid hsl(var(--tf-border))',
+              color: 'hsl(var(--tf-muted))',
+              maxWidth: 180,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Segment {selectedSegmentId}
+          </span>
+        )}
         <span style={{ flex: 1 }} />
         <button onClick={load} disabled={loading} style={{ fontSize: 10, padding: '2px 6px', background: 'transparent', border: '1px solid hsl(var(--tf-border))', borderRadius: 4, color: 'hsl(var(--tf-muted))', cursor: 'pointer' }}>
           {loading ? '…' : '↺'}

@@ -186,6 +186,7 @@ export interface NeighborhoodRollupRowDto {
  * remains visible beneath it.
  */
 export type DrillLevel = 'county' | 'city' | 'neighborhood';
+export type SegmentSeverityFilter = 'all' | 'critical' | 'warnings' | 'healthy' | 'needsData';
 
 // ── Health Summary (Task C — chief appraiser's Monday-morning screen) ──
 

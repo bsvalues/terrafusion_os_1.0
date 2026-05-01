@@ -228,7 +228,7 @@ describe('CountyHealthPanel', () => {
     expect(screen.getByTestId('severity-bar-healthy')).toHaveTextContent('10');
   });
 
-  it('clicking Critical bar collapses drill back to county landing', () => {
+  it('clicking Critical bar drills to the highest-risk critical segment with the critical filter active', () => {
     act(() => {
       useCountyStudioStore.getState().drillToCity('Kennewick');
       useCountyStudioStore.getState().setHealthSummary(summary());
@@ -236,7 +236,12 @@ describe('CountyHealthPanel', () => {
     });
     render(<CountyHealthPanel />);
     fireEvent.click(screen.getByTestId('severity-bar-critical'));
-    expect(useCountyStudioStore.getState().drillLevel).toBe('county');
+    const state = useCountyStudioStore.getState();
+    expect(state.drillLevel).toBe('neighborhood');
+    expect(state.selectedCity).toBe('Kennewick');
+    expect(state.selectedNeighborhood).toBe('NBHD-K1');
+    expect(state.selectedSegmentId).toBe('s1');
+    expect(state.segmentSeverityFilter).toBe('critical');
   });
 
   it('footer surfaces "derived N hours ago" relative time', () => {

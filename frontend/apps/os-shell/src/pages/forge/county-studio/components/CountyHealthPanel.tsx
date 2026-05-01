@@ -262,7 +262,7 @@ export function CountyHealthPanel() {
   const {
     activeStudy, healthSummary,
     loadStatus, loadErrors,
-    drillToSegment, drillToCounty,
+    drillToSegment, drillToCounty, setSegmentSeverityFilter,
   } = useCountyStudioStore();
   const { retryHealthSummary } = useStudyData();
   const status = loadStatus.healthSummary;
@@ -394,11 +394,20 @@ export function CountyHealthPanel() {
         );
       }}
       onCriticalClick={() => {
-        // Stay at county level; let the user pick a city from the rollup
-        // afterwards. A future enhancement would apply a "critical" filter
-        // to the CityRollupTable, but the minimum viable action is "don't
-        // do nothing" — so we just ensure the drill collapses back to the
-        // county landing where the full severity context is visible.
+        setSegmentSeverityFilter('critical');
+        const target = healthSummary.topAlerts
+          .filter((alert) => alert.compositeRisk >= 67)
+          .sort((a, b) => b.compositeRisk - a.compositeRisk)[0]
+          ?? healthSummary.topAlerts[0];
+        if (target) {
+          drillToSegment(
+            target.city ?? 'Unincorporated',
+            target.neighborhoodCode ?? 'UNKNOWN',
+            target.segmentId,
+            target.revalArea,
+          );
+          return;
+        }
         drillToCounty();
       }}
       studyOpen={!!activeStudy}
