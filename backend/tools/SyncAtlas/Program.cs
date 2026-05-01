@@ -70,6 +70,10 @@ internal static class Program
             {
                 return await RunLoadPacsDictionaryAsync(args, cts.Token);
             }
+            if (args.SchemaCatalogHealth)
+            {
+                return await RunSchemaCatalogHealthAsync(args, cts.Token);
+            }
             if (args.MappingReviewProgress)
             {
                 return await RunMappingReviewProgressAsync(args, cts.Token);
@@ -1813,5 +1817,112 @@ internal static class Program
             activeFlag: activeFlag,
             yearColumn: yearColumn);
         return (built.Target, built.Columns, sliceArtifactDir);
+    }
+
+    /// <summary>
+    /// Slice BENTON-SYNC-2: schema-catalog health diagnostic. Looks
+    /// up the SyncSourceConnection for the given county, builds the
+    /// live PACS catalog using the same C48-C / C48-E pipeline the
+    /// dictionary-loader mode uses, and renders a one-shot health
+    /// report via <see cref="PacsSchemaCatalogHealthReporter"/>.
+    ///
+    /// <para>Read-only: never mutates PACS, never mutates workbook,
+    /// never writes canonical landing rows. Pure diagnostic.</para>
+    /// </summary>
+    private static async Task<int> RunSchemaCatalogHealthAsync(CliArgs args, CancellationToken ct)
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:DefaultConnection"] = args.TerraFusionDbConnectionString
+            })
+            .AddEnvironmentVariables()
+            .Build();
+
+        var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
+            .UseNpgsql(args.TerraFusionDbConnectionString, npg =>
+            {
+                npg.MigrationsAssembly("TerraFusion.Data");
+                npg.EnableRetryOnFailure(maxRetryCount: 3);
+            })
+            .Options;
+
+        await using var db = new TerraFusionDbContext(options, configuration);
+
+        var connectionId = args.ConnectionId
+            ?? throw new InvalidOperationException(
+                "Schema-catalog-health mode reached without --connection-id; parser invariant violation.");
+
+        // Look up the SyncSourceConnection (county-scoped).
+        var sourceConnection = await db.SyncSourceConnections
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                c => c.Id == connectionId && c.CountyId == args.CountyId,
+                ct);
+        if (sourceConnection is null)
+        {
+            await Console.Error.WriteLineAsync(
+                $"sync-atlas: SyncSourceConnection {connectionId} not found for county {args.CountyId}.");
+            return 2;
+        }
+        if (!string.Equals(sourceConnection.ConnectionType, "SqlServer", StringComparison.OrdinalIgnoreCase))
+        {
+            await Console.Error.WriteLineAsync(
+                $"sync-atlas: SyncSourceConnection {connectionId} has ConnectionType " +
+                $"'{sourceConnection.ConnectionType}', expected 'SqlServer'.");
+            return 2;
+        }
+
+        var secretResolver = new EnvironmentSecretResolver();
+        var pacsConnectionString = SqlServerMetadataReaderFactory.BuildConnectionString(
+            sourceConnection, secretResolver);
+
+        // Build the live catalog via the same path the dictionary-
+        // loader uses (C48-C SqlInformationSchemaIntrospector +
+        // C48-E LivePacsSchemaSource). No manifests engaged here —
+        // the operator's standing manifest configuration is loader-
+        // mode concern; the health diagnostic just inspects what
+        // the catalog reports today.
+        var introspector = new SqlInformationSchemaIntrospector(pacsConnectionString!, schemaName: "dbo");
+        var liveSource = new LivePacsSchemaSource(
+            introspector,
+            new LivePacsSchemaSourceOptions(
+                SourceLabel:   $"connection-{connectionId}",
+                SchemaName:    "dbo",
+                PacsReleaseLabel: null,
+                InferDictionaries: true));
+
+        Console.WriteLine($"sync-atlas: building catalog for connection {connectionId} (county {args.CountyId})...");
+        var startedAt = DateTimeOffset.UtcNow;
+        IPacsSchemaCatalog catalog;
+        try
+        {
+            catalog = await PacsSchemaCatalog.BuildAsync(liveSource, ct);
+        }
+        catch (Exception ex)
+        {
+            await Console.Error.WriteLineAsync(
+                $"sync-atlas: catalog build FAILED: {ex.GetType().Name}: {ex.Message}");
+            return 2;
+        }
+        var elapsed = DateTimeOffset.UtcNow - startedAt;
+        Console.WriteLine($"sync-atlas: catalog built in {elapsed.TotalMilliseconds:F0} ms");
+        Console.WriteLine();
+
+        var report = PacsSchemaCatalogHealthReporter.BuildReport(catalog);
+        PacsSchemaCatalogHealthReporter.Render(
+            Console.Out,
+            report,
+            countyId:           args.CountyId.ToString(),
+            sourceConnectionId: connectionId.ToString());
+
+        // Exit 0 when the report is clean (no Error rows). Exit 1
+        // when warnings are present but report is structurally
+        // clean — the operator may want to surface them but the
+        // catalog is usable. Exit 2 when an Error row appears (the
+        // catalog build would have thrown earlier per HG7, but
+        // this is the last-line safety check).
+        if (!report.IsClean) return 2;
+        return 0;
     }
 }
