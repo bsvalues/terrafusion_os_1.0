@@ -1525,6 +1525,53 @@ internal static class Program
             }
         }
 
+        // Slice C51-PII-PROMOTE-A: per-call-site PII preflight stance
+        // per the C51-PII-C policy. Mirrors the FK and era preflight
+        // switches above. Same explicit-or-skip pattern.
+        //
+        // property_use (this slice): AllowAny. Rationale: dictionary
+        // loaders are upstream of canonical landing — they read PACS
+        // source columns and write to the workbook, which has its
+        // own access controls. The actual PII gate belongs on
+        // canonical-landing READERS (comp eligibility endpoint, etc.),
+        // not on the loaders that feed the workbook. AllowAny is
+        // principled, not lazy: it surfaces PII metadata in logs
+        // (matched classification + engagement + exhaustive flag) so
+        // the operator can audit state, without blocking on the C48-B
+        // / C51-PII-B legacy bridge state where no manifest is
+        // engaged. Tightening to RequirePiiFreeCanonicalLanding will
+        // happen on the canonical-landing reader side, not here.
+        PiiClassificationPreflightStance? piiStance = configKey switch
+        {
+            "property_use" => PiiClassificationPreflightStance.AllowAny, // C51-PII-PROMOTE-A
+            _              => null,
+        };
+
+        if (piiStance is not null && pacsCatalog is not null)
+        {
+            var piiPreflight = new PiiClassificationPreflight();
+            var piiResult = await piiPreflight.ValidateAsync(
+                pacsCatalog,
+                target.WorkbookSourceTable,
+                new[] { target.WorkbookSourceColumn },
+                piiStance.Value,
+                ct);
+
+            switch (piiResult.Outcome)
+            {
+                case PiiClassificationPreflightOutcome.Pass:
+                    Console.WriteLine(
+                        $"sync-atlas:   PII preflight:      Pass (matched={piiResult.MatchedClassification}, " +
+                        $"engaged={piiResult.ManifestEngaged}, exhaustive={piiResult.TableExhaustive})");
+                    break;
+                case PiiClassificationPreflightOutcome.Warn:
+                    await Console.Error.WriteLineAsync($"sync-atlas: {piiResult.Message}");
+                    break;
+                case PiiClassificationPreflightOutcome.Fail:
+                    throw new InvalidOperationException(piiResult.Message);
+            }
+        }
+
         var loader = new DictionaryLoaderService(db, pacsReader);
 
         Console.WriteLine($"sync-atlas: load-pacs-dictionary for county {args.CountyId}...");
