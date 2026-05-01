@@ -90,6 +90,17 @@ function nextActionForException(exc: CountyExceptionSetDto): string {
   return 'Resolve dispatched work';
 }
 
+function routePathForDestination(destination: string, segmentId: string): string | null {
+  const encodedSegmentId = encodeURIComponent(segmentId);
+  if (destination === 'Dais') {
+    return `/suites/dais?template=SegmentReview&segmentId=${encodedSegmentId}`;
+  }
+  if (destination === 'Dossier') {
+    return `/suites/dossier?template=SegmentEvidence&segmentId=${encodedSegmentId}`;
+  }
+  return null;
+}
+
 const pill = (label: string, color: string, bg = `${color}22`) => (
   <span style={{
     padding: '1px 6px', borderRadius: 10,
@@ -121,7 +132,7 @@ function ExceptionRow({ exc, onUpdated }: RowProps) {
     finally { setBusy(false); }
   }, [onUpdated]);
 
-  const handleDispatch = useCallback(() => {
+  const routeToDestination = useCallback(() => {
     act(async () => {
       const updated = await exceptionApi.updateStatus(exc.exceptionSetId, 'Dispatched');
       if (exc.destination === 'Dais') {
@@ -130,18 +141,36 @@ function ExceptionRow({ exc, onUpdated }: RowProps) {
           exc.sourceScenarioId,
           `Exception: ${reasonLabel(exc.reasonCode)}`,
         );
-        navigate('/suites/dais');
+        navigate(routePathForDestination(exc.destination, exc.sourceScenarioId) ?? '/suites/dais');
       } else if (exc.destination === 'Dossier') {
         createEvidenceDraft(
           'SegmentEvidence',
           exc.sourceScenarioId,
           `Exception: ${reasonLabel(exc.reasonCode)}`,
         );
-        navigate('/suites/dossier');
+        navigate(routePathForDestination(exc.destination, exc.sourceScenarioId) ?? '/suites/dossier');
       }
       return updated;
     });
   }, [exc, act, navigate, createWorkflowDraft, createEvidenceDraft]);
+
+  const reopenDestination = useCallback(() => {
+    if (exc.destination === 'Dais') {
+      createWorkflowDraft(
+        'SegmentReview',
+        exc.sourceScenarioId,
+        `Exception: ${reasonLabel(exc.reasonCode)}`,
+      );
+    } else if (exc.destination === 'Dossier') {
+      createEvidenceDraft(
+        'SegmentEvidence',
+        exc.sourceScenarioId,
+        `Exception: ${reasonLabel(exc.reasonCode)}`,
+      );
+    }
+    const routePath = routePathForDestination(exc.destination, exc.sourceScenarioId);
+    if (routePath) navigate(routePath);
+  }, [exc, navigate, createWorkflowDraft, createEvidenceDraft]);
 
   const handleResolve = useCallback(() =>
     act(() => exceptionApi.updateStatus(exc.exceptionSetId, 'Resolved')), [exc, act]);
@@ -168,6 +197,15 @@ function ExceptionRow({ exc, onUpdated }: RowProps) {
   const tone = TONE[queueToneForException(exc)];
   const nextAction = nextActionForException(exc);
   const rowAgeDays = ageDays(exc.createdAt);
+  const destinationRoute = routePathForDestination(exc.destination, exc.sourceScenarioId);
+  const hasRoute = Boolean(destinationRoute);
+  const routeStatus = resolved
+    ? 'Closure recorded in County Studio'
+    : exc.status === 'Dispatched'
+      ? `Routed to ${exc.destination}`
+      : hasRoute
+        ? `Ready for ${exc.destination} handoff`
+        : 'Internal follow-up';
 
   return (
     <div style={{
@@ -239,14 +277,45 @@ function ExceptionRow({ exc, onUpdated }: RowProps) {
             <span>Age: {rowAgeDays}d</span>
           </div>
 
+          <div
+            data-testid={`exception-routing-closure-${exc.exceptionSetId}`}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr)',
+              gap: 4,
+              fontSize: 10,
+            }}
+          >
+            {[
+              ['Route', routeStatus],
+              ['Owner', exc.assignedTo || 'Unassigned'],
+              ['Closure', resolved ? 'Closed' : exc.status === 'Dispatched' ? 'Awaiting return' : 'Not dispatched'],
+            ].map(([label, value]) => (
+              <div
+                key={label}
+                style={{
+                  padding: '4px 6px',
+                  borderRadius: 4,
+                  border: '1px solid hsl(var(--tf-border))',
+                  background: 'hsl(var(--tf-bg))',
+                  minWidth: 0,
+                }}
+              >
+                <div style={{ color: 'hsl(var(--tf-muted))', fontWeight: 700 }}>{label}</div>
+                <div style={{ color: 'hsl(var(--tf-fg))', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{value}</div>
+              </div>
+            ))}
+          </div>
+
           {/* Action buttons */}
           {!resolved && (
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               <button
-                onClick={handleDispatch} disabled={busy || exc.status === 'Dispatched'}
-                style={actionBtn('#3b82f6', busy || exc.status === 'Dispatched')}
+                onClick={exc.status === 'Dispatched' ? reopenDestination : routeToDestination}
+                disabled={busy || !hasRoute}
+                style={actionBtn('#3b82f6', busy || !hasRoute)}
               >
-                {exc.status === 'Dispatched' ? '✓ Dispatched' : `Dispatch → ${exc.destination}`}
+                {exc.status === 'Dispatched' ? `Open ${exc.destination}` : hasRoute ? `Dispatch → ${exc.destination}` : 'Internal follow-up'}
               </button>
               <button
                 onClick={handleResolve} disabled={busy}

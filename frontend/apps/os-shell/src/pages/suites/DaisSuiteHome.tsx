@@ -12,16 +12,18 @@
  * Per-parcel appeal work routes to the Workbench Dais tab.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { invokeTool } from '../../api/pilotApi';
 import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import { SuiteModuleGrid, type SuiteModuleDef } from '../../components/suites/SuiteModuleGrid';
 import { OperationalQueue } from '../../components/suites/OperationalQueue';
+import DaisWorkflowDraftPanel from '../../components/dais/DaisWorkflowDraftPanel';
 import NoticeBatchQueuePanel from '../../components/dais/NoticeBatchQueuePanel';
 import CertRollPanel from '../../components/dais/CertRollPanel';
 import ManagementDashboardPanel from '../../components/dais/ManagementDashboardPanel';
 import SupervisorFlagQueue from '../../components/dais/SupervisorFlagQueue';
 import { useDaisSuiteStats } from './useDaisSuiteStats';
+import { useSegmentWorkflowDraftStore } from './segmentWorkflowDraftStore';
 import {
   Scale,
   Receipt,
@@ -94,8 +96,29 @@ const DAIS_MODULES: SuiteModuleDef[] = [
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
 const fmtCurrency = (n: number | undefined | null) => (n != null ? `$${n.toLocaleString()}` : '—');
 
-export default function DaisSuiteHome() {
+function parseDaisDeeplinkQuery(raw: unknown): { template?: string; segmentId?: string } {
+  if (typeof raw !== 'string' || raw.length === 0) return {};
+  try {
+    const trimmed = raw.startsWith('?') ? raw.slice(1) : raw;
+    const params = new URLSearchParams(trimmed);
+    const out: { template?: string; segmentId?: string } = {};
+    const template = params.get('template');
+    if (template) out.template = template;
+    const segmentId = params.get('segmentId');
+    if (segmentId) out.segmentId = segmentId;
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+export interface DaisSuiteHomeProps {
+  metadata?: Record<string, unknown>;
+}
+
+export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
   const { stats, loading, error, source } = useDaisSuiteStats();
+  const createDraft = useSegmentWorkflowDraftStore((s) => s.createDraft);
   const [selectedRole, setSelectedRole] = useState<AssessorStaffRole>('chief_appraiser');
   const [briefState, setBriefState] = useState<{
     status: 'idle' | 'loading' | 'success' | 'error';
@@ -103,6 +126,24 @@ export default function DaisSuiteHome() {
     correlationId?: string;
     error?: string;
   }>({ status: 'idle' });
+
+  useEffect(() => {
+    if (!metadata) return;
+    const parsed = parseDaisDeeplinkQuery(metadata.deeplinkQuery);
+
+    const templateFromMeta = typeof metadata.workflowTemplate === 'string' ? metadata.workflowTemplate : null;
+    const template = templateFromMeta ?? parsed.template ?? null;
+
+    const segmentFromMeta = typeof metadata.segmentId === 'string' ? metadata.segmentId : null;
+    const segmentId = segmentFromMeta ?? parsed.segmentId ?? null;
+
+    const labelFromMeta = typeof metadata.segmentLabel === 'string' ? metadata.segmentLabel : null;
+
+    if (template === 'SegmentReview' && segmentId) {
+      createDraft(template, segmentId, labelFromMeta ?? segmentId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const parseToolOutput = <T,>(output: unknown, fallback: T): T => {
     try {
@@ -150,6 +191,8 @@ export default function DaisSuiteHome() {
   return (
     <div data-testid="suite-dais-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
       <ParcelContextBanner suiteTabId="dais" />
+
+      <DaisWorkflowDraftPanel />
 
       {loading && !stats && (
         <div data-testid="dais-loading" role="status" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Loading stats...</div>

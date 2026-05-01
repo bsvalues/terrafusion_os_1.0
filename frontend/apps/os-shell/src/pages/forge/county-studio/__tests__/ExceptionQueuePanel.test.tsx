@@ -7,6 +7,11 @@ import { ExceptionQueuePanel } from '../components/ExceptionQueuePanel';
 import { exceptionApi } from '../countyStudyApi';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 
+const createWorkflowDraftMock = vi.hoisted(() => vi.fn());
+const createEvidenceDraftMock = vi.hoisted(() => vi.fn());
+const clearWorkflowDraftMock = vi.hoisted(() => vi.fn());
+const clearEvidenceDraftMock = vi.hoisted(() => vi.fn());
+
 vi.mock('../countyStudyApi', () => ({
   exceptionApi: {
     list: vi.fn(),
@@ -22,11 +27,19 @@ vi.mock('@/stores/countyStudioStore', () => ({
 }));
 
 vi.mock('@/pages/suites/segmentWorkflowDraftStore', () => ({
-  useSegmentWorkflowDraftStore: vi.fn(() => ({ createDraft: vi.fn() })),
+  useSegmentWorkflowDraftStore: vi.fn((selector) => selector({
+    activeDraft: null,
+    createDraft: createWorkflowDraftMock,
+    clearDraft: clearWorkflowDraftMock,
+  })),
 }));
 
 vi.mock('@/pages/suites/segmentEvidenceDraftStore', () => ({
-  useSegmentEvidenceDraftStore: vi.fn(() => ({ createDraft: vi.fn() })),
+  useSegmentEvidenceDraftStore: vi.fn((selector) => selector({
+    activeDraft: null,
+    createDraft: createEvidenceDraftMock,
+    clearDraft: clearEvidenceDraftMock,
+  })),
 }));
 
 const mockException = {
@@ -103,6 +116,8 @@ describe('ExceptionQueuePanel', () => {
     expect(screen.getByTestId('exception-lifecycle-exc-1')).toHaveTextContent('Assigned');
     expect(screen.getByTestId('exception-next-action-exc-1')).toHaveTextContent('Assign owner');
     expect(screen.getByTestId('exception-next-action-exc-1')).toHaveTextContent('Age: 4d');
+    expect(screen.getByTestId('exception-routing-closure-exc-1')).toHaveTextContent('Ready for Dais handoff');
+    expect(screen.getByTestId('exception-routing-closure-exc-1')).toHaveTextContent('Not dispatched');
   });
 
   test('assigns an owner from the row lifecycle controls', async () => {
@@ -135,5 +150,38 @@ describe('ExceptionQueuePanel', () => {
     const lowSampleEl = screen.getByText(/Low Sample/i);
     await act(async () => { await user.click(lowSampleEl); });
     expect(screen.getByText(/Dispatch → Dais/i)).toBeTruthy();
+  });
+
+  test('dispatch routes a Dais exception into a workflow draft and records closure posture', async () => {
+    const user = userEvent.setup();
+    await act(async () => { renderPanel(); });
+
+    await act(async () => { await user.click(screen.getByText(/Low Sample/i)); });
+    await act(async () => { await user.click(screen.getByRole('button', { name: /Dispatch → Dais/i })); });
+
+    expect(exceptionApi.updateStatus).toHaveBeenCalledWith('exc-1', 'Dispatched');
+    expect(createWorkflowDraftMock).toHaveBeenCalledWith(
+      'SegmentReview',
+      'sc-1',
+      'Exception: Low Sample',
+    );
+    expect(screen.getByTestId('exception-routing-closure-exc-1')).toHaveTextContent('Routed to Dais');
+    expect(screen.getByTestId('exception-routing-closure-exc-1')).toHaveTextContent('Awaiting return');
+  });
+
+  test('dispatched row can reopen its routed Dais handoff without changing status again', async () => {
+    const user = userEvent.setup();
+    await act(async () => { renderPanel(); });
+
+    await act(async () => { await user.click(screen.getByText(/Outlier/i)); });
+    expect(screen.getByTestId('exception-routing-closure-exc-2')).toHaveTextContent('Routed to Dais');
+    await act(async () => { await user.click(screen.getByRole('button', { name: /Open Dais/i })); });
+
+    expect(exceptionApi.updateStatus).not.toHaveBeenCalled();
+    expect(createWorkflowDraftMock).toHaveBeenCalledWith(
+      'SegmentReview',
+      'sc-1',
+      'Exception: Outlier',
+    );
   });
 });
