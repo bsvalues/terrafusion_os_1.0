@@ -14,6 +14,7 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import { vi } from 'vitest';
 import DossierSuiteHome from '../DossierSuiteHome';
 import { useSegmentEvidenceDraftStore } from '../segmentEvidenceDraftStore';
+import { useDownstreamClosureReceiptStore } from '../downstreamClosureReceiptStore';
 
 const activateModuleMock = vi.hoisted(() => vi.fn());
 vi.mock('@/orchestration/moduleActivation', () => ({
@@ -46,6 +47,7 @@ vi.mock('../../../api/pilotApi', () => ({ invokeTool: vi.fn() }));
 function resetStore() {
   act(() => {
     useSegmentEvidenceDraftStore.getState().clearDraft();
+    useDownstreamClosureReceiptStore.getState().clearReceipt('exc-dossier');
   });
 }
 
@@ -92,6 +94,46 @@ describe('DossierSuiteHome — County Studio deeplink consumption (Task D3)', ()
     expect(draft!.segmentId).toBe('seg-raw');
     expect(draft!.segmentLabel).toBe('seg-raw');
     expect(screen.getByTestId('dossier-evidence-draft-panel')).toBeInTheDocument();
+  });
+
+  it('persists exception handoff receipt and opens downstream packet continuation', () => {
+    render(
+      <DossierSuiteHome
+        metadata={{ deeplinkQuery: '?template=SegmentEvidence&segmentId=seg-raw&exceptionSetId=exc-dossier' }}
+      />,
+    );
+
+    const draft = useSegmentEvidenceDraftStore.getState().activeDraft;
+    expect(draft?.handoff?.exceptionSetId).toBe('exc-dossier');
+    expect(screen.getByTestId('dossier-draft-receipt-status')).toHaveTextContent('Drafted');
+
+    fireEvent.click(screen.getByTestId('dossier-draft-open-builder'));
+    expect(useDownstreamClosureReceiptStore.getState().receipts['exc-dossier'].status).toBe('Opened');
+    expect(activateModuleMock).toHaveBeenCalledWith(
+      'property-workbench',
+      expect.objectContaining({
+        source: 'system',
+        metadata: expect.objectContaining({
+          tabId: 'dossier',
+          segmentId: 'seg-raw',
+          exceptionSetId: 'exc-dossier',
+        }),
+      }),
+    );
+
+    fireEvent.click(screen.getByTestId('dossier-draft-return-receipt'));
+    expect(useDownstreamClosureReceiptStore.getState().receipts['exc-dossier'].status).toBe('Returned');
+    expect(activateModuleMock).toHaveBeenCalledWith(
+      'county-studio',
+      expect.objectContaining({
+        source: 'system',
+        metadata: expect.objectContaining({
+          segmentId: 'seg-raw',
+          exceptionSetId: 'exc-dossier',
+          downstreamStatus: 'Returned',
+        }),
+      }),
+    );
   });
 
   it('does not create a draft for an unrecognized template', () => {

@@ -9,6 +9,11 @@ import { exceptionApi } from '../countyStudyApi';
 import type { CountyExceptionSetDto } from '../countyStudyApi';
 import { useSegmentWorkflowDraftStore } from '@/pages/suites/segmentWorkflowDraftStore';
 import { useSegmentEvidenceDraftStore } from '@/pages/suites/segmentEvidenceDraftStore';
+import {
+  useDownstreamClosureReceiptStore,
+  type DownstreamClosureReceipt,
+  type DownstreamDestination,
+} from '@/pages/suites/downstreamClosureReceiptStore';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -90,15 +95,40 @@ function nextActionForException(exc: CountyExceptionSetDto): string {
   return 'Resolve dispatched work';
 }
 
-function routePathForDestination(destination: string, segmentId: string): string | null {
+function routePathForDestination(destination: string, segmentId: string, exceptionSetId?: string): string | null {
   const encodedSegmentId = encodeURIComponent(segmentId);
+  const receiptParam = exceptionSetId ? `&exceptionSetId=${encodeURIComponent(exceptionSetId)}` : '';
   if (destination === 'Dais') {
-    return `/suites/dais?template=SegmentReview&segmentId=${encodedSegmentId}`;
+    return `/suites/dais?template=SegmentReview&segmentId=${encodedSegmentId}${receiptParam}`;
   }
   if (destination === 'Dossier') {
-    return `/suites/dossier?template=SegmentEvidence&segmentId=${encodedSegmentId}`;
+    return `/suites/dossier?template=SegmentEvidence&segmentId=${encodedSegmentId}${receiptParam}`;
   }
   return null;
+}
+
+function isDownstreamDestination(destination: string): destination is DownstreamDestination {
+  return destination === 'Dais' || destination === 'Dossier';
+}
+
+function receiptRouteStatus(exc: CountyExceptionSetDto, receipt: DownstreamClosureReceipt | undefined): string {
+  if (exc.status === 'Resolved') return 'Closure recorded in County Studio';
+  if (!receipt) {
+    return exc.status === 'Dispatched'
+      ? `Routed to ${exc.destination}`
+      : `Ready for ${exc.destination} handoff`;
+  }
+  if (receipt.status === 'Returned') return `Returned from ${receipt.destination}`;
+  if (receipt.status === 'Opened') return `Opened in ${receipt.destination}`;
+  return `Draft saved for ${receipt.destination}`;
+}
+
+function receiptClosureStatus(exc: CountyExceptionSetDto, receipt: DownstreamClosureReceipt | undefined): string {
+  if (exc.status === 'Resolved') return 'Closed';
+  if (receipt?.status === 'Returned') return 'Ready for County Studio closure';
+  if (receipt?.status === 'Opened') return 'Downstream work opened';
+  if (exc.status === 'Dispatched') return 'Awaiting return';
+  return 'Not dispatched';
 }
 
 const pill = (label: string, color: string, bg = `${color}22`) => (
@@ -114,9 +144,10 @@ const pill = (label: string, color: string, bg = `${color}22`) => (
 interface RowProps {
   exc: CountyExceptionSetDto;
   onUpdated: (updated: CountyExceptionSetDto) => void;
+  receipt?: DownstreamClosureReceipt;
 }
 
-function ExceptionRow({ exc, onUpdated }: RowProps) {
+function ExceptionRow({ exc, onUpdated, receipt }: RowProps) {
   const [expanded, setExpanded] = useState(false);
   const [noteText, setNoteText] = useState('');
   const [assignName, setAssignName] = useState('');
@@ -124,6 +155,7 @@ function ExceptionRow({ exc, onUpdated }: RowProps) {
   const navigate = useNavigate();
   const createWorkflowDraft = useSegmentWorkflowDraftStore((s) => s.createDraft);
   const createEvidenceDraft = useSegmentEvidenceDraftStore((s) => s.createDraft);
+  const recordDraft = useDownstreamClosureReceiptStore((s) => s.recordDraft);
 
   const act = useCallback(async (fn: () => Promise<CountyExceptionSetDto>) => {
     setBusy(true);
@@ -135,42 +167,80 @@ function ExceptionRow({ exc, onUpdated }: RowProps) {
   const routeToDestination = useCallback(() => {
     act(async () => {
       const updated = await exceptionApi.updateStatus(exc.exceptionSetId, 'Dispatched');
+      if (isDownstreamDestination(exc.destination)) {
+        recordDraft({
+          exceptionSetId: exc.exceptionSetId,
+          destination: exc.destination,
+          template: exc.destination === 'Dais' ? 'SegmentReview' : 'SegmentEvidence',
+          segmentId: exc.sourceScenarioId,
+          segmentLabel: `Exception: ${reasonLabel(exc.reasonCode)}`,
+        });
+      }
       if (exc.destination === 'Dais') {
         createWorkflowDraft(
           'SegmentReview',
           exc.sourceScenarioId,
           `Exception: ${reasonLabel(exc.reasonCode)}`,
+          {
+            exceptionSetId: exc.exceptionSetId,
+            destination: 'Dais',
+            studyId: exc.studyId,
+          },
         );
-        navigate(routePathForDestination(exc.destination, exc.sourceScenarioId) ?? '/suites/dais');
+        navigate(routePathForDestination(exc.destination, exc.sourceScenarioId, exc.exceptionSetId) ?? '/suites/dais');
       } else if (exc.destination === 'Dossier') {
         createEvidenceDraft(
           'SegmentEvidence',
           exc.sourceScenarioId,
           `Exception: ${reasonLabel(exc.reasonCode)}`,
+          {
+            exceptionSetId: exc.exceptionSetId,
+            destination: 'Dossier',
+            studyId: exc.studyId,
+          },
         );
-        navigate(routePathForDestination(exc.destination, exc.sourceScenarioId) ?? '/suites/dossier');
+        navigate(routePathForDestination(exc.destination, exc.sourceScenarioId, exc.exceptionSetId) ?? '/suites/dossier');
       }
       return updated;
     });
-  }, [exc, act, navigate, createWorkflowDraft, createEvidenceDraft]);
+  }, [exc, act, navigate, createWorkflowDraft, createEvidenceDraft, recordDraft]);
 
   const reopenDestination = useCallback(() => {
+    if (isDownstreamDestination(exc.destination)) {
+      recordDraft({
+        exceptionSetId: exc.exceptionSetId,
+        destination: exc.destination,
+        template: exc.destination === 'Dais' ? 'SegmentReview' : 'SegmentEvidence',
+        segmentId: exc.sourceScenarioId,
+        segmentLabel: `Exception: ${reasonLabel(exc.reasonCode)}`,
+      });
+    }
     if (exc.destination === 'Dais') {
       createWorkflowDraft(
         'SegmentReview',
         exc.sourceScenarioId,
         `Exception: ${reasonLabel(exc.reasonCode)}`,
+        {
+          exceptionSetId: exc.exceptionSetId,
+          destination: 'Dais',
+          studyId: exc.studyId,
+        },
       );
     } else if (exc.destination === 'Dossier') {
       createEvidenceDraft(
         'SegmentEvidence',
         exc.sourceScenarioId,
         `Exception: ${reasonLabel(exc.reasonCode)}`,
+        {
+          exceptionSetId: exc.exceptionSetId,
+          destination: 'Dossier',
+          studyId: exc.studyId,
+        },
       );
     }
-    const routePath = routePathForDestination(exc.destination, exc.sourceScenarioId);
+    const routePath = routePathForDestination(exc.destination, exc.sourceScenarioId, exc.exceptionSetId);
     if (routePath) navigate(routePath);
-  }, [exc, navigate, createWorkflowDraft, createEvidenceDraft]);
+  }, [exc, navigate, createWorkflowDraft, createEvidenceDraft, recordDraft]);
 
   const handleResolve = useCallback(() =>
     act(() => exceptionApi.updateStatus(exc.exceptionSetId, 'Resolved')), [exc, act]);
@@ -197,15 +267,10 @@ function ExceptionRow({ exc, onUpdated }: RowProps) {
   const tone = TONE[queueToneForException(exc)];
   const nextAction = nextActionForException(exc);
   const rowAgeDays = ageDays(exc.createdAt);
-  const destinationRoute = routePathForDestination(exc.destination, exc.sourceScenarioId);
+  const destinationRoute = routePathForDestination(exc.destination, exc.sourceScenarioId, exc.exceptionSetId);
   const hasRoute = Boolean(destinationRoute);
-  const routeStatus = resolved
-    ? 'Closure recorded in County Studio'
-    : exc.status === 'Dispatched'
-      ? `Routed to ${exc.destination}`
-      : hasRoute
-        ? `Ready for ${exc.destination} handoff`
-        : 'Internal follow-up';
+  const routeStatus = hasRoute ? receiptRouteStatus(exc, receipt) : 'Internal follow-up';
+  const closureStatus = hasRoute ? receiptClosureStatus(exc, receipt) : resolved ? 'Closed' : 'Internal follow-up';
 
   return (
     <div style={{
@@ -289,7 +354,7 @@ function ExceptionRow({ exc, onUpdated }: RowProps) {
             {[
               ['Route', routeStatus],
               ['Owner', exc.assignedTo || 'Unassigned'],
-              ['Closure', resolved ? 'Closed' : exc.status === 'Dispatched' ? 'Awaiting return' : 'Not dispatched'],
+              ['Closure', closureStatus],
             ].map(([label, value]) => (
               <div
                 key={label}
@@ -393,6 +458,7 @@ export function ExceptionQueuePanel() {
   const [exceptions, setExceptions] = useState<CountyExceptionSetDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<'all' | 'open' | 'resolved'>('open');
+  const receipts = useDownstreamClosureReceiptStore((s) => s.receipts);
 
   const load = useCallback(async () => {
     if (!activeStudyId) return;
@@ -504,7 +570,12 @@ export function ExceptionQueuePanel() {
           </div>
         ) : (
           filtered.map(exc => (
-            <ExceptionRow key={exc.exceptionSetId} exc={exc} onUpdated={handleUpdated} />
+            <ExceptionRow
+              key={exc.exceptionSetId}
+              exc={exc}
+              receipt={receipts[exc.exceptionSetId]}
+              onUpdated={handleUpdated}
+            />
           ))
         )}
       </div>
