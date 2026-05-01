@@ -1551,6 +1551,7 @@ internal static class Program
             "imprv_det_class" => PiiClassificationPreflightStance.AllowAny, // C51-PII-PROMOTE-E
             "imprv_det_sub_class" => PiiClassificationPreflightStance.AllowAny, // C51-PII-PROMOTE-F
             "imprv_det_meth" => PiiClassificationPreflightStance.AllowAny, // C51-PII-PROMOTE-G
+            "land_soil" => PiiClassificationPreflightStance.AllowAny, // C51-PII-PROMOTE-H
             _              => null,
         };
 
