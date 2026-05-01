@@ -1495,6 +1495,7 @@ internal static class Program
             "property_use:imprv.secondary_use_cd"        => ConversionEraPreflightStance.RequirePost2017OrBoth, // C50-CONV-PROMOTE-D
             "property_use:property_val.secondary_use_cd" => ConversionEraPreflightStance.RequirePost2017OrBoth, // C50-CONV-PROMOTE-D
             "imprv_det_class" => ConversionEraPreflightStance.RequirePost2017OrBoth, // C50-CONV-PROMOTE-E
+            "imprv_det_sub_class" => ConversionEraPreflightStance.RequirePost2017OrBoth, // C50-CONV-PROMOTE-F
             _              => null,
         };
 

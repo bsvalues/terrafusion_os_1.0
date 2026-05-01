@@ -195,6 +195,30 @@ describe('CorrectionDefensePanel', () => {
     });
   });
 
+  test('renders defense lifecycle next action and memo draft from governed workflow state', async () => {
+    renderPanel();
+    await waitFor(() => expect(mockAdjustmentList).toHaveBeenCalledWith('study-1'));
+
+    expect(screen.getByTestId('defense-action-lifecycle')).toHaveTextContent('Defense action lifecycle');
+    await waitFor(() => {
+      expect(screen.getByTestId('defense-next-action')).toHaveTextContent('Advance approval workflow');
+    });
+    expect(screen.getByTestId('defense-memo-draft')).toHaveTextContent('Benton County 2026');
+    expect(screen.getByTestId('defense-memo-draft')).toHaveTextContent('terraforge_correction_priority_v1');
+    expect(screen.getByTestId('defense-memo-draft')).toHaveTextContent('NonCompliant');
+    expect(screen.getByTestId('defense-memo-draft')).toHaveTextContent('1 open exception');
+  });
+
+  test('points the defense lifecycle at promotion when saved scenarios are not yet governed', async () => {
+    mockAdjustmentList.mockResolvedValue([]);
+
+    renderPanel();
+    await waitFor(() => expect(mockAdjustmentList).toHaveBeenCalledWith('study-1'));
+
+    expect(screen.getByTestId('defense-next-action')).toHaveTextContent('Promote saved scenario');
+    expect(screen.getByTestId('defense-action-lifecycle')).toHaveTextContent('No scenario has been promoted into approval.');
+  });
+
   test('opens evidence packet with active scenario context', async () => {
     const user = userEvent.setup();
     renderPanel();

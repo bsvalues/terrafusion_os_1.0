@@ -24,6 +24,10 @@ function iaaoStatus(status: string): string {
   return status;
 }
 
+function plural(count: number, singular: string, pluralLabel = `${singular}s`): string {
+  return `${count.toLocaleString()} ${count === 1 ? singular : pluralLabel}`;
+}
+
 export function evidencePacketToMarkdown(p: EvidencePacketDto): string {
   const lines: string[] = [];
 
@@ -59,6 +63,26 @@ export function evidencePacketToMarkdown(p: EvidencePacketDto): string {
   } else {
     lines.push('_No scenario selected for this packet._');
   }
+  lines.push('');
+
+  // Defense Memo
+  lines.push('## Defense Memo');
+  lines.push(
+    `County Studio defense posture: ${p.countyName} ${p.taxYear} is ${iaaoStatus(p.complianceStatus)} under \`${p.correctionPriorityContractId}\`.`,
+  );
+  lines.push(
+    `Evidence basis: ${plural(p.parcelCount, 'parcel')} / ${plural(p.ratioCount, 'ratio')} with ${plural(p.criticalSegments, 'critical segment')} and ${plural(p.warningSegments, 'warning segment')}.`,
+  );
+  if (p.primaryScenario) {
+    lines.push(
+      `Primary scenario: ${p.primaryScenario.adjustmentType} is ${p.primaryScenario.status}; rationale: ${p.primaryScenario.rationale}.`,
+    );
+  } else {
+    lines.push('Primary scenario: no scenario is attached to this packet.');
+  }
+  lines.push(
+    `Defense risk posture: ${plural(p.topRiskSegments.length, 'top-risk segment signal')} and ${plural(p.exceptions.length, 'exception set')} included for disclosure.`,
+  );
   lines.push('');
 
   // AI Diagnosis
