@@ -367,8 +367,65 @@ Updates the C53-CONS arc:
 - C53-CONS-B   : DONE — invariant engine + report + tests (set 1.0.0).
 - C53-CONS-C   : DONE — consolidated per-slice checks; added DICT-007;
                  invariant set bumped 1.0.0 → 1.1.0.
-- C53-CONS-D   : deferred — invariant report persistence.
+- C53-CONS-D   : DONE — invariant report persistence (JSON artifact
+                 writer; caller-driven; see Persistence section).
 - C53-CONS-E   : deferred — invariant report diffing.
 
 Promotion happens slice-by-slice; nothing in C53-CONS-A should be
-read as authorizing C53-CONS-B until it lands.
+read as authorizing later slices until each lands.
+
+## Persistence (C53-CONS-D)
+
+The `PacsSchemaInvariantReport` produced by the engine is in-memory
+only. C53-CONS-D adds an opt-in artifact writer
+(`PacsSchemaInvariantReportArtifact.WriteAsync`) for audits and
+catalog-build telemetry that prefer not to scrape log output.
+
+### Wire format (binding)
+
+Indented JSON with camelCase fields:
+
+```json
+{
+  "invariantSetVersion": "1.1.0",
+  "producedAtUtc": "2026-04-30T16:34:11.1234567Z",
+  "errorCount": 0,
+  "warningCount": 2,
+  "advisoryCount": 0,
+  "isClean": true,
+  "results": [
+    {
+      "severity": "Warning",
+      "code": "DICT-005",
+      "message": "...",
+      "tableName": "owner",
+      "columnName": null,
+      "provenance": "..."
+    }
+  ]
+}
+```
+
+Header summary fields (`errorCount` / `warningCount` /
+`advisoryCount` / `isClean`) are derived from the engine's
+projections; consumers may read just the header for triage and
+skip the per-row `results` for compact dashboards.
+
+### Hard guards
+
+- **Caller-driven.** The catalog itself does not write the
+  artifact; the helper is invoked by whoever owns the I/O context
+  (operator console, API startup, test harness). Catalog stays
+  HG3 read-only and free of file I/O.
+- **Path is required and explicit.** No glob, no walk, no default
+  location. Caller passes a path or doesn't call.
+- **Fail-closed on I/O failure.** The writer throws; it does not
+  swallow exceptions. Caller decides surfacing.
+
+### Out of scope (C53-CONS-E and later)
+
+- Report diffing across catalog builds (C53-CONS-E).
+- Append-only history (multiple reports in one file).
+- Compression / hash-stable serialization.
+- Any consumer that READS the artifact — downstream surface,
+  not this slice.
