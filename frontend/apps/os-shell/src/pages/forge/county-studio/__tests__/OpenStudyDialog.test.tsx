@@ -70,4 +70,14 @@ describe('OpenStudyDialog', () => {
     render(<OpenStudyDialog open={false} onClose={() => {}} />);
     expect(screen.queryByText(/open study/i)).not.toBeInTheDocument();
   });
+
+  it('hides unsupported study creation types', async () => {
+    render(<OpenStudyDialog open={true} onClose={() => {}} />);
+    fireEvent.click(screen.getByRole('button', { name: /new study/i }));
+
+    expect(screen.getByRole('option', { name: 'RatioStudy' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'MassAppraisal' })).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'EquityStudy' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'CustomStudy' })).not.toBeInTheDocument();
+  });
 });

@@ -25,8 +25,8 @@ public sealed class PacsSchemaCatalogTests
 
         var catalog = await PacsSchemaCatalog.BuildAsync(source, CancellationToken.None);
 
-        catalog.Coverage.TableCount.Should().Be(3);
-        catalog.Coverage.ColumnCount.Should().Be(9);
+        catalog.Coverage.TableCount.Should().Be(4);
+        catalog.Coverage.ColumnCount.Should().Be(11);
         catalog.Coverage.DictionaryCount.Should().Be(1);
         catalog.Version.PacsRelease.Should().Be("PACS-9.0.4-fixture");
     }
@@ -297,8 +297,11 @@ public sealed class PacsSchemaCatalogTests
 
         var act = async () => await PacsSchemaCatalog.BuildAsync(new InMemoryPacsSchemaSource(corrupted), CancellationToken.None);
 
+        // C53-CONS-C: the catalog still refuses to build with a
+        // dangling column reference; the message is now the
+        // engine's COL-002 wrapped in the unified report exception.
         (await act.Should().ThrowAsync<InvalidOperationException>())
-            .WithMessage("*ghost_table*ghost_column*dangling column references*");
+            .WithMessage("*COL-002*ghost_table*ghost_column*");
     }
 
     [Fact]
@@ -313,8 +316,10 @@ public sealed class PacsSchemaCatalogTests
 
         var act = async () => await PacsSchemaCatalog.BuildAsync(new InMemoryPacsSchemaSource(corrupted), CancellationToken.None);
 
+        // C53-CONS-C: duplicate detection now goes through the engine
+        // (TBL-002) before the index-build's defense-in-depth catch.
         (await act.Should().ThrowAsync<InvalidOperationException>())
-            .WithMessage("*Duplicate table names*");
+            .WithMessage("*TBL-002*duplicate*");
     }
 
     // ============================================================================

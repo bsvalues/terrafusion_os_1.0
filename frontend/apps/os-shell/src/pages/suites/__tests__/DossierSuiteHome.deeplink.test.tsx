@@ -170,10 +170,16 @@ describe('DossierSuiteHome — County Studio deeplink consumption (Task D3)', ()
 
     fireEvent.click(screen.getByTestId('dossier-draft-return-receipt'));
     expect(useDownstreamClosureReceiptStore.getState().receipts['exc-dossier'].status).toBe('Returned');
+    expect(useDownstreamClosureReceiptStore.getState().receipts['exc-dossier'].evidenceRef).toBe('dossier-evidence-return:seg-raw');
     expect(recordDownstreamReceiptMock).toHaveBeenCalledWith(
       'exc-dossier',
-      expect.objectContaining({ status: 'Returned' }),
+      expect.objectContaining({
+        status: 'Returned',
+        downstreamEntityId: 'dossier-return:seg-raw',
+        evidenceRef: 'dossier-evidence-return:seg-raw',
+      }),
     );
+    expect(screen.getByTestId('dossier-draft-evidence-ref')).toHaveTextContent('dossier-evidence-return:seg-raw');
     expect(activateModuleMock).toHaveBeenCalledWith(
       'county-studio',
       expect.objectContaining({
@@ -222,10 +228,14 @@ describe('DossierSuiteHome — County Studio deeplink consumption (Task D3)', ()
 
     fireEvent.click(screen.getByTestId('dossier-draft-return-receipt'));
     expect(useDownstreamClosureReceiptStore.getState().receipts['receipt-dossier-direct'].status).toBe('Returned');
+    expect(useDownstreamClosureReceiptStore.getState().receipts['receipt-dossier-direct'].evidenceRef).toBe('dossier-evidence-return:seg-direct');
     expect(updateDownstreamReceiptStatusByReceiptIdMock).toHaveBeenCalledWith(
       'receipt-dossier-direct',
       'Returned',
-      expect.objectContaining({ downstreamEntityId: 'dossier-return:seg-direct' }),
+      expect.objectContaining({
+        downstreamEntityId: 'dossier-return:seg-direct',
+        evidenceRef: 'dossier-evidence-return:seg-direct',
+      }),
     );
     expect(activateModuleMock).toHaveBeenCalledWith(
       'county-studio',

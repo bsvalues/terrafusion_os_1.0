@@ -27,9 +27,8 @@ import { CountyCommandStrip } from './components/CountyCommandStrip';
 import { CountyStatisticsWorkbenchPanel } from './components/CountyStatisticsWorkbenchPanel';
 import { useCountyStudyHub } from './hooks/useCountyStudyHub';
 import { useStudyData } from './hooks/useStudyData';
-import type { CountySegmentDto } from './types/countyStudio.types';
+import type { CountySegmentDto, SegmentSeverityFilter } from './types/countyStudio.types';
 
-type SegmentSeverityFilter = 'all' | 'critical' | 'warnings' | 'healthy' | 'needsData';
 type WorkspaceMode = 'operational-health' | 'statistics-compat';
 
 /**
@@ -72,10 +71,17 @@ const syncColor: Record<string, string> = {
 
 export function CountyStudyPage() {
   const {
-    activeStudy, syncState, drillLevel, selectedNeighborhood, selectedNeighborhoodRevalArea,
+    activeStudy,
+    syncState,
+    drillLevel,
+    selectedCity,
+    selectedNeighborhood,
+    selectedNeighborhoodRevalArea,
+    selectedSegmentId,
+    segmentSeverityFilter,
+    setSegmentSeverityFilter,
   } = useCountyStudioStore();
   const [showOpenStudy, setShowOpenStudy] = useState(false);
-  const [segmentFilter, setSegmentFilter] = useState<SegmentSeverityFilter>('all');
   const [workspaceMode, setWorkspaceMode] = useState<WorkspaceMode>('operational-health');
   const navigate = useNavigate();
 
@@ -94,6 +100,18 @@ export function CountyStudyPage() {
     if (activeStudy.countyName) {
       params.set('countyName', activeStudy.countyName);
     }
+    if (selectedCity) {
+      params.set('city', selectedCity);
+    }
+    if (selectedNeighborhood) {
+      params.set('neighborhoodCode', selectedNeighborhood);
+    }
+    if (selectedNeighborhoodRevalArea !== null) {
+      params.set('revalArea', String(selectedNeighborhoodRevalArea));
+    }
+    if (selectedSegmentId) {
+      params.set('segmentId', selectedSegmentId);
+    }
     navigate(`/forge/atlas-live?${params.toString()}`);
   };
 
@@ -101,7 +119,7 @@ export function CountyStudyPage() {
   // neighborhood drill level). Memoized so the SegmentTable doesn't re-sort on
   // every parent re-render.
   const segmentFilterFn = useMemo(() => {
-    const severity = SEGMENT_FILTERS[segmentFilter];
+    const severity = SEGMENT_FILTERS[segmentSeverityFilter];
     const hood = drillLevel === 'neighborhood' ? selectedNeighborhood : null;
     const revalArea = drillLevel === 'neighborhood' ? selectedNeighborhoodRevalArea : null;
     return (seg: CountySegmentDto) => {
@@ -110,7 +128,7 @@ export function CountyStudyPage() {
       if (revalArea !== null && seg.revalArea !== revalArea) return false;
       return true;
     };
-  }, [segmentFilter, drillLevel, selectedNeighborhood, selectedNeighborhoodRevalArea]);
+  }, [segmentSeverityFilter, drillLevel, selectedNeighborhood, selectedNeighborhoodRevalArea]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -271,15 +289,15 @@ export function CountyStudyPage() {
                     {SEGMENT_FILTER_PILLS.map((p) => (
                       <button
                         key={p.key}
-                        onClick={() => setSegmentFilter(p.key)}
+                        onClick={() => setSegmentSeverityFilter(p.key)}
                         data-testid={`segment-filter-${p.key}`}
-                        aria-pressed={segmentFilter === p.key}
+                        aria-pressed={segmentSeverityFilter === p.key}
                         style={{
                           fontSize: 11, padding: '3px 9px', borderRadius: 10,
                           border: '1px solid hsl(var(--tf-border))',
-                          background: segmentFilter === p.key ? 'hsl(var(--tf-surface))' : 'transparent',
-                          color: segmentFilter === p.key ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))',
-                          fontWeight: segmentFilter === p.key ? 700 : 400,
+                          background: segmentSeverityFilter === p.key ? 'hsl(var(--tf-surface))' : 'transparent',
+                          color: segmentSeverityFilter === p.key ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))',
+                          fontWeight: segmentSeverityFilter === p.key ? 700 : 400,
                           cursor: 'pointer',
                         }}
                       >

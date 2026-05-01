@@ -16,7 +16,10 @@
 import { useCallback } from 'react';
 import activateModule from '@/orchestration/moduleActivation';
 import { useSegmentWorkflowDraftStore } from '../../pages/suites/segmentWorkflowDraftStore';
-import { useDownstreamClosureReceiptStore } from '../../pages/suites/downstreamClosureReceiptStore';
+import {
+  useDownstreamClosureReceiptStore,
+  type DownstreamClosureReceipt,
+} from '../../pages/suites/downstreamClosureReceiptStore';
 import { exceptionApi } from '../../pages/forge/county-studio/countyStudyApi';
 
 function formatTimestamp(iso: string): string {
@@ -41,6 +44,7 @@ export default function DaisWorkflowDraftPanel() {
   );
   const markOpened = useDownstreamClosureReceiptStore((s) => s.markOpened);
   const markReturned = useDownstreamClosureReceiptStore((s) => s.markReturned);
+  const ingestReceipt = useDownstreamClosureReceiptStore((s) => s.ingestReceipt);
 
   const handleBackToCountyStudio = useCallback(() => {
     if (!activeDraft) return;
@@ -55,8 +59,10 @@ export default function DaisWorkflowDraftPanel() {
     const exceptionSetId = activeDraft.handoff?.exceptionSetId;
     const receiptId = activeDraft.handoff?.receiptId;
     const key = exceptionSetId ?? receiptId;
+    const downstreamEntityId = `dais-workbench:${activeDraft.segmentId}`;
+    const notes = 'Opened in Dais workbench from County Studio handoff.';
     if (key) {
-      markOpened(key);
+      markOpened(key, { downstreamEntityId, notes });
     }
     if (exceptionSetId) {
       void exceptionApi.recordDownstreamReceipt(exceptionSetId, {
@@ -65,12 +71,17 @@ export default function DaisWorkflowDraftPanel() {
         segmentId: activeDraft.segmentId,
         segmentLabel: activeDraft.segmentLabel,
         status: 'Opened',
+        downstreamEntityId,
+        notes,
       })
+        .then((saved) => ingestReceipt(saved as DownstreamClosureReceipt))
         .catch((receiptError) => console.error('Failed to persist Dais receipt opened status', receiptError));
     } else if (receiptId) {
       void exceptionApi.updateDownstreamReceiptStatusByReceiptId(receiptId, 'Opened', {
-        downstreamEntityId: `dais-workbench:${activeDraft.segmentId}`,
+        downstreamEntityId,
+        notes,
       })
+        .then((saved) => ingestReceipt(saved as DownstreamClosureReceipt))
         .catch((receiptError) => console.error('Failed to persist Dais receipt opened status', receiptError));
     }
     void activateModule('property-workbench', {
@@ -84,7 +95,7 @@ export default function DaisWorkflowDraftPanel() {
         downstreamReceiptId: receiptId,
       },
     });
-  }, [activeDraft, markOpened]);
+  }, [activeDraft, markOpened, ingestReceipt]);
 
   const handleReturnReceipt = useCallback(() => {
     if (!activeDraft) return;
@@ -92,7 +103,10 @@ export default function DaisWorkflowDraftPanel() {
     const receiptId = activeDraft.handoff?.receiptId;
     const key = exceptionSetId ?? receiptId;
     if (!key) return;
-    markReturned(key);
+    const downstreamEntityId = `dais-return:${activeDraft.segmentId}`;
+    const evidenceRef = `dais-return-receipt:${activeDraft.segmentId}`;
+    const notes = 'Returned from Dais segment workflow with downstream action receipt.';
+    markReturned(key, { downstreamEntityId, evidenceRef, notes });
     if (exceptionSetId) {
       void exceptionApi.recordDownstreamReceipt(exceptionSetId, {
         destination: 'Dais',
@@ -100,13 +114,19 @@ export default function DaisWorkflowDraftPanel() {
         segmentId: activeDraft.segmentId,
         segmentLabel: activeDraft.segmentLabel,
         status: 'Returned',
+        downstreamEntityId,
+        evidenceRef,
+        notes,
       })
+        .then((saved) => ingestReceipt(saved as DownstreamClosureReceipt))
         .catch((receiptError) => console.error('Failed to persist Dais receipt returned status', receiptError));
     } else if (receiptId) {
       void exceptionApi.updateDownstreamReceiptStatusByReceiptId(receiptId, 'Returned', {
-        downstreamEntityId: `dais-return:${activeDraft.segmentId}`,
-        notes: 'Returned from Dais segment inspector handoff.',
+        downstreamEntityId,
+        evidenceRef,
+        notes,
       })
+        .then((saved) => ingestReceipt(saved as DownstreamClosureReceipt))
         .catch((receiptError) => console.error('Failed to persist Dais receipt returned status', receiptError));
     }
     void activateModule('county-studio', {
@@ -118,7 +138,7 @@ export default function DaisWorkflowDraftPanel() {
         downstreamStatus: 'Returned',
       },
     });
-  }, [activeDraft, markReturned]);
+  }, [activeDraft, markReturned, ingestReceipt]);
 
   if (!activeDraft) return null;
 
@@ -154,9 +174,19 @@ export default function DaisWorkflowDraftPanel() {
               Draft is persisted locally until dismissed. County Studio remains the queue owner.
             </p>
             {receipt && (
-              <p className="mt-1 text-xs" data-testid="dais-draft-receipt-status" style={{ color: 'hsl(var(--tf-suite-dais))' }}>
-                Downstream receipt: {receipt.status} · updated {formatTimestamp(receipt.updatedAt)}
-              </p>
+              <div className="mt-2 space-y-1 text-xs" data-testid="dais-draft-receipt-status" style={{ color: 'hsl(var(--tf-suite-dais))' }}>
+                <p>Downstream receipt: {receipt.status} · updated {formatTimestamp(receipt.updatedAt)}</p>
+                {receipt.downstreamEntityId && (
+                  <p data-testid="dais-draft-downstream-entity" style={{ color: 'hsl(var(--tf-muted))' }}>
+                    Downstream artifact: {receipt.downstreamEntityId}
+                  </p>
+                )}
+                {receipt.evidenceRef && (
+                  <p data-testid="dais-draft-evidence-ref" style={{ color: 'hsl(var(--tf-muted))' }}>
+                    Evidence: {receipt.evidenceRef}
+                  </p>
+                )}
+              </div>
             )}
           </div>
           <button

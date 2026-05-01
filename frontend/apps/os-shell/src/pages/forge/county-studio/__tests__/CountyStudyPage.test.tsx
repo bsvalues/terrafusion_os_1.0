@@ -6,7 +6,12 @@ import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
 import { CountyStudyPage } from '../CountyStudyPage';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
-import type { CountySegmentDto, CityRollupRowDto, NeighborhoodRollupRowDto } from '../types/countyStudio.types';
+import type {
+  CountyHealthSummaryDto,
+  CountySegmentDto,
+  CityRollupRowDto,
+  NeighborhoodRollupRowDto,
+} from '../types/countyStudio.types';
 
 vi.mock('../hooks/useCountyStudyHub', () => ({ useCountyStudyHub: () => ({}) }));
 vi.mock('../hooks/useStudyData', () => ({ useStudyData: () => ({ retryAll: vi.fn() }) }));
@@ -62,6 +67,45 @@ const MOCK_NBHD_ROW: NeighborhoodRollupRowDto = {
   segmentCount: 2, parcelCount: 501, medianRatio: 0.95, cod: 15.0, prd: 1.02,
   stabilityScore: 60, riskScore: 55, exceptionCount: 27, exceptionRate: 0.054,
   complianceStatus: 'MarginalCompliance',
+};
+
+const MOCK_HEALTH: CountyHealthSummaryDto = {
+  contractId: 'terraforge_operational_health_v1',
+  correctionPriorityContractId: 'terraforge_correction_priority_v1',
+  studyId: 'study-1',
+  countyId: 'benton',
+  taxYear: 2026,
+  parcelCount: 501,
+  ratioCount: 80,
+  medianRatio: 0.95,
+  cod: 18,
+  prd: 1.02,
+  stabilityScore: 60,
+  riskScore: 55,
+  exceptionCount: 27,
+  complianceStatus: 'NonCompliant',
+  topAlerts: [
+    {
+      segmentId: 's2',
+      segmentName: 'NBHD-K1 · R1 · GOOD',
+      neighborhoodCode: 'NBHD-K1',
+      revalArea: 2,
+      buildingType: 'R1',
+      qualityGrade: 'GOOD',
+      city: 'Kennewick',
+      parcelCount: 89,
+      medianRatio: 0.84,
+      cod: 22.8,
+      prd: 1.06,
+      exceptionCount: 22,
+      compositeRisk: 92,
+      reasons: ['COD 22.8 exceeds IAAO ceiling (20)'],
+    },
+  ],
+  criticalCount: 1,
+  warningCount: 1,
+  healthyCount: 0,
+  derivedAt: '2026-04-26T00:00:00Z',
 };
 
 describe('CountyStudyPage', () => {
@@ -178,5 +222,29 @@ describe('CountyStudyPage', () => {
     // FAILING_SEG: cod=22.8 AND stability=48 → critical. MOCK_SEG: cod=14.2, stability=72 → not critical.
     expect(screen.getByText('Commercial · R1 · GOOD')).toBeInTheDocument();
     expect(screen.queryByText('Residential · R1 · STANDARD')).not.toBeInTheDocument();
+  });
+
+  it('critical severity bar opens a filtered drill on the failing segment scope', () => {
+    act(() => {
+      useCountyStudioStore.getState().setStudy({
+        studyId: 'study-1', countyId: 'benton', taxYear: 2026,
+        studyType: 'RatioStudy', status: 'Active', baselineVersion: null,
+        activeSegmentSetId: 'ss1', createdAt: '', updatedAt: '', createdBy: '', updatedBy: '',
+      });
+      useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG]);
+      useCountyStudioStore.getState().setHealthSummary(MOCK_HEALTH);
+      useCountyStudioStore.getState().setLoadStatus('healthSummary', 'success');
+      useCountyStudioStore.getState().drillToCounty();
+    });
+
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+    fireEvent.click(screen.getByTestId('severity-bar-critical'));
+
+    const panel = screen.getByTestId('cs-drill-panel');
+    expect(panel.dataset.drillLevel).toBe('neighborhood');
+    expect(screen.getByTestId('segment-filter-critical')).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText('Commercial · R1 · GOOD')).toBeInTheDocument();
+    expect(screen.queryByText('Residential · R1 · STANDARD')).not.toBeInTheDocument();
+    expect(useCountyStudioStore.getState().selectedSegmentId).toBe('s2');
   });
 });

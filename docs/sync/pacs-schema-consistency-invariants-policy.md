@@ -113,6 +113,7 @@ NOT silently remove invariants from this list.
 | DICT-004    | Error    | Every catalog dictionary's `KeyColumn` references an existing column on its source table. |
 | DICT-005    | Warning  | A catalog dictionary's `DescriptionColumn` is null (operator may not be able to render lookup values). |
 | DICT-006    | Advisory | A non-dictionary catalog table has a column ending in `_cd` / `_code` / `Code` but no FK edge to a known dictionary. |
+| DICT-007    | Error    | Every catalog dictionary has a non-empty `ProvenancePath` (HG6). Added by C53-CONS-C; subsumes the per-slice ValidateProvenance check that previously fired at catalog-build time. Invariant set version bumped 1.0.0 → 1.1.0. |
 
 ### FK invariants
 
@@ -362,9 +363,10 @@ This slice is docs-only. Acceptance criteria:
 
 Updates the C53-CONS arc:
 
-- C53-CONS-A   : THIS DOC — policy lock.
-- C53-CONS-B   : pending — invariant engine + report + tests.
-- C53-CONS-C   : deferred — consolidate per-slice checks.
+- C53-CONS-A   : DONE — policy lock.
+- C53-CONS-B   : DONE — invariant engine + report + tests (set 1.0.0).
+- C53-CONS-C   : DONE — consolidated per-slice checks; added DICT-007;
+                 invariant set bumped 1.0.0 → 1.1.0.
 - C53-CONS-D   : deferred — invariant report persistence.
 - C53-CONS-E   : deferred — invariant report diffing.
 

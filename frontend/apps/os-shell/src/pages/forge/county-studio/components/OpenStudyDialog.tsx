@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { studyApi } from '../countyStudyApi';
 import { getCountyStudyScope } from '../countyStudyScope';
+import { SUPPORTED_STUDY_TYPES } from '../countyStudioCreationSupport';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import type { CountyStudySessionDto, StudyType } from '../types/countyStudio.types';
 
@@ -35,7 +36,7 @@ const btnStyle = (primary: boolean): React.CSSProperties => ({
   color: primary ? '#000' : 'hsl(var(--tf-muted, 220 13% 50%))',
 });
 
-const STUDY_TYPES: StudyType[] = ['RatioStudy', 'MassAppraisal', 'IncomeApproach', 'CostApproach'];
+const STUDY_TYPES: readonly StudyType[] = SUPPORTED_STUDY_TYPES;
 
 export function OpenStudyDialog({ open, onClose }: Props) {
   const { setStudy } = useCountyStudioStore();

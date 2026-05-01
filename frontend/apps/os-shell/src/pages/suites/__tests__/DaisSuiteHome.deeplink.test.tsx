@@ -156,10 +156,16 @@ describe('DaisSuiteHome - County Studio deeplink consumption', () => {
 
     fireEvent.click(screen.getByTestId('dais-draft-return-receipt'));
     expect(useDownstreamClosureReceiptStore.getState().receipts['exc-dais'].status).toBe('Returned');
+    expect(useDownstreamClosureReceiptStore.getState().receipts['exc-dais'].evidenceRef).toBe('dais-return-receipt:seg-raw');
     expect(recordDownstreamReceiptMock).toHaveBeenCalledWith(
       'exc-dais',
-      expect.objectContaining({ status: 'Returned' }),
+      expect.objectContaining({
+        status: 'Returned',
+        downstreamEntityId: 'dais-return:seg-raw',
+        evidenceRef: 'dais-return-receipt:seg-raw',
+      }),
     );
+    expect(screen.getByTestId('dais-draft-evidence-ref')).toHaveTextContent('dais-return-receipt:seg-raw');
     expect(activateModuleMock).toHaveBeenCalledWith(
       'county-studio',
       expect.objectContaining({
@@ -208,10 +214,14 @@ describe('DaisSuiteHome - County Studio deeplink consumption', () => {
 
     fireEvent.click(screen.getByTestId('dais-draft-return-receipt'));
     expect(useDownstreamClosureReceiptStore.getState().receipts['receipt-dais-direct'].status).toBe('Returned');
+    expect(useDownstreamClosureReceiptStore.getState().receipts['receipt-dais-direct'].evidenceRef).toBe('dais-return-receipt:seg-direct');
     expect(updateDownstreamReceiptStatusByReceiptIdMock).toHaveBeenCalledWith(
       'receipt-dais-direct',
       'Returned',
-      expect.objectContaining({ downstreamEntityId: 'dais-return:seg-direct' }),
+      expect.objectContaining({
+        downstreamEntityId: 'dais-return:seg-direct',
+        evidenceRef: 'dais-return-receipt:seg-direct',
+      }),
     );
     expect(activateModuleMock).toHaveBeenCalledWith(
       'county-studio',

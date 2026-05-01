@@ -24,8 +24,8 @@ public sealed class PacsSchemaCatalogHealthCheckTests
         var result = await sut.CheckHealthAsync(new HealthCheckContext(), CancellationToken.None);
 
         result.Status.Should().Be(HealthStatus.Healthy);
-        result.Data["TableCount"].Should().Be(3);
-        result.Data["ColumnCount"].Should().Be(9);
+        result.Data["TableCount"].Should().Be(4);
+        result.Data["ColumnCount"].Should().Be(11);
         result.Data["DictionaryCount"].Should().Be(1);
         result.Data["PacsRelease"].Should().Be("PACS-9.0.4-fixture");
     }

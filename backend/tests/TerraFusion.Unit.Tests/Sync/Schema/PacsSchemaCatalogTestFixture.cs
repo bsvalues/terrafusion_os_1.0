@@ -63,6 +63,17 @@ internal static class PacsSchemaCatalogTestFixture
                 PiiClassification: PiiClassification.None,
                 ProvenancePath: SchemaVersionFixturePath + "#imprv",
                 ForeignKeys: Array.Empty<PacsForeignKey>()),
+            // C53-CONS-B: dictionary's source table must exist in
+            // catalog (DICT-003). The fixture's dictionary
+            // 'sl_ratio_type_cd_lookup' now resolves to a real table.
+            new(
+                TableName: "sl_ratio_type_cd_lookup",
+                IdentityTuple: new[] { "sl_ratio_type_cd" },
+                ConversionEra: PacsConversionEra.Both,
+                DictionaryReferences: Array.Empty<PacsDictionaryReference>(),
+                PiiClassification: PiiClassification.None,
+                ProvenancePath: SchemaVersionFixturePath + "#sl_ratio_type_cd_lookup",
+                ForeignKeys: Array.Empty<PacsForeignKey>()),
         };
 
         var columns = new List<PacsColumn>
@@ -157,6 +168,30 @@ internal static class PacsSchemaCatalogTestFixture
                 PiiClassification: PiiClassification.None,
                 ProvenanceLine: SchemaVersionFixturePath + "#imprv.ambiguous_legacy_flag",
                 Notes: "Era undeclared in the conversion manifest; treat as ambiguous."),
+            // C53-CONS-B: dictionary key + description columns on the
+            // newly-required source table for the sl_ratio_type_cd_lookup
+            // dictionary. Satisfies DICT-004 (key column exists) and
+            // DICT-005 (description column present).
+            new(
+                TableName: "sl_ratio_type_cd_lookup",
+                ColumnName: "sl_ratio_type_cd",
+                DeclaredType: "varchar(5)",
+                Nullable: false,
+                ConversionEra: PacsConversionEra.Both,
+                DictionaryRef: null,
+                PiiClassification: PiiClassification.None,
+                ProvenanceLine: SchemaVersionFixturePath + "#sl_ratio_type_cd_lookup.sl_ratio_type_cd",
+                Notes: ""),
+            new(
+                TableName: "sl_ratio_type_cd_lookup",
+                ColumnName: "sl_ratio_type_desc",
+                DeclaredType: "varchar(50)",
+                Nullable: true,
+                ConversionEra: PacsConversionEra.Both,
+                DictionaryRef: null,
+                PiiClassification: PiiClassification.None,
+                ProvenanceLine: SchemaVersionFixturePath + "#sl_ratio_type_cd_lookup.sl_ratio_type_desc",
+                Notes: ""),
         };
 
         var dictionaries = new List<PacsDictionary>

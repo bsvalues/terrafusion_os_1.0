@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { cohortApi } from '../countyStudyApi';
+import { SUPPORTED_SELECTION_TYPES } from '../countyStudioCreationSupport';
 import type { SelectionType } from '../types/countyStudio.types';
 
 export function CohortCreationDialog() {
@@ -13,6 +14,12 @@ export function CohortCreationDialog() {
   if (!pendingSelection || !activeStudy) return null;
 
   const canCreate = name.trim().length > 0;
+  const selectionLabels: Record<SelectionType, string> = {
+    Visual: 'Visual (lasso / polygon)',
+    RuleBased: 'Rule-Based',
+    Hybrid: 'Hybrid',
+    Manual: 'Manual parcel list',
+  };
 
   const handleCancel = () => {
     setPendingSelection(null);
@@ -133,9 +140,9 @@ export function CohortCreationDialog() {
               boxSizing: 'border-box',
             }}
           >
-            <option value="Visual">Visual (lasso / polygon)</option>
-            <option value="RuleBased">Rule-Based</option>
-            <option value="Hybrid">Hybrid</option>
+            {SUPPORTED_SELECTION_TYPES.map((type) => (
+              <option key={type} value={type}>{selectionLabels[type]}</option>
+            ))}
           </select>
         </div>
 

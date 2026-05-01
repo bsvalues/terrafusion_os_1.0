@@ -18,7 +18,7 @@
 // hook; each tab handles its own loading / error state so one failing
 // endpoint does not black out the entire panel.
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import activateModule from '@/orchestration/moduleActivation';
@@ -565,6 +565,7 @@ const ActionPanel = ({
   directReceipts: DownstreamClosureReceipt[];
   onReceiptCreated: (receipt: CountyDownstreamClosureReceiptDto) => void;
 }) => {
+  const [handoffError, setHandoffError] = useState<string | null>(null);
   // Spatial handoffs — preserved from the original Inspector, always active.
   const spatial = (
     <div data-testid="inspector-action-spatial" style={{ marginBottom: 10 }}>
@@ -653,6 +654,7 @@ const ActionPanel = ({
     template: 'SegmentReview' | 'SegmentEvidence',
     metadata: Record<string, unknown>,
   ) => {
+    setHandoffError(null);
     try {
       const receipt = await exceptionApi.recordSegmentInspectorReceipt(context.segmentId, {
         studyId: context.studyId,
@@ -671,6 +673,9 @@ const ActionPanel = ({
       });
     } catch (receiptError) {
       console.error(`Failed to persist ${destination} segment inspector handoff receipt`, receiptError);
+      setHandoffError(
+        `Could not create the ${destination} handoff receipt. County Studio did not open the downstream draft because no durable receipt was saved.`,
+      );
     }
   };
 
@@ -686,6 +691,23 @@ const ActionPanel = ({
       >
         Corrective
       </div>
+      {handoffError && (
+        <div
+          role="alert"
+          data-testid="inspector-handoff-error"
+          style={{
+            padding: '7px 9px',
+            borderRadius: 4,
+            border: '1px solid #ef444455',
+            background: '#ef444422',
+            color: '#ef4444',
+            fontSize: 11,
+            marginBottom: 8,
+          }}
+        >
+          {handoffError}
+        </div>
+      )}
       <HandoffButton
         testId="inspector-handoff-salesforge"
         label="Reconcile sales in SalesForge"

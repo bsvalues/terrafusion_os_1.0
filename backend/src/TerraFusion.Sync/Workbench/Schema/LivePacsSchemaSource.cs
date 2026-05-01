@@ -337,7 +337,7 @@ public sealed class LivePacsSchemaSource : IPacsSchemaSource
             IngestedAt: DateTime.UtcNow,
             ConversionManifestHash: BuildManifestStamp(manifest));
 
-        return new PacsSchemaSourceData(tables, columns, dictionaries, version, piiManifest);
+        return new PacsSchemaSourceData(tables, columns, dictionaries, version, piiManifest, _options.SuppressInvariants);
     }
 
     private static string? ResolveFallbackIdentityColumn(
@@ -840,7 +840,8 @@ public sealed record LivePacsSchemaSourceOptions(
     string? PiiManifestPath = null,
     bool RequirePiiManifest = false,
     string? ExportedFkManifestPath = null,
-    bool RequireExportedFkManifest = false)
+    bool RequireExportedFkManifest = false,
+    System.Collections.Generic.IReadOnlySet<string>? SuppressInvariants = null)
 {
     /// <summary>
     /// Sensible default for SQL Server / Harris PACS:

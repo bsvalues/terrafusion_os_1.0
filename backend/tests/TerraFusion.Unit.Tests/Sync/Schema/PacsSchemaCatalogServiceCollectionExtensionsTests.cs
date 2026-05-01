@@ -26,7 +26,7 @@ public sealed class PacsSchemaCatalogServiceCollectionExtensionsTests
         var second = provider.GetRequiredService<IPacsSchemaCatalog>();
 
         first.Should().BeSameAs(second);
-        first.Coverage.TableCount.Should().Be(3);
+        first.Coverage.TableCount.Should().Be(4);
     }
 
     [Fact]

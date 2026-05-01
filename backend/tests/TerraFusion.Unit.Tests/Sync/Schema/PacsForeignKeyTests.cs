@@ -117,8 +117,11 @@ public sealed class PacsForeignKeyTests
         var act = async () => await PacsSchemaCatalog.BuildAsync(
             new InMemoryPacsSchemaSource(corrupted), CancellationToken.None);
 
+        // C53-CONS-C: the catalog still refuses to build with a
+        // dangling FK target; the message is now the engine's FK-002
+        // wrapped in the unified report exception.
         (await act.Should().ThrowAsync<InvalidOperationException>())
-            .WithMessage("*ghost_target*not declared*");
+            .WithMessage("*FK-002*ghost_target*");
     }
 
     [Fact]
@@ -136,8 +139,9 @@ public sealed class PacsForeignKeyTests
         var act = async () => await PacsSchemaCatalog.BuildAsync(
             new InMemoryPacsSchemaSource(corrupted), CancellationToken.None);
 
+        // C53-CONS-C: dangling-column refusal now via engine FK-003.
         (await act.Should().ThrowAsync<InvalidOperationException>())
-            .WithMessage("*ghost_col_does_not_exist*not declared*");
+            .WithMessage("*FK-003*ghost_col_does_not_exist*");
     }
 
     // ────────────────────────────────────────────────────────────────────────

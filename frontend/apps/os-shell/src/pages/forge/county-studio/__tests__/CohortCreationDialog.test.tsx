@@ -98,4 +98,14 @@ describe('CohortCreationDialog', () => {
       expect(useCountyStudioStore.getState().pendingSelection).toBeNull();
     });
   });
+
+  it('hides manual parcel-list cohort creation until governed parcel-list support exists', () => {
+    setupWithPendingSelection();
+    render(<CohortCreationDialog />);
+
+    expect(screen.getByRole('option', { name: /visual/i })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: /rule-based/i })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: /hybrid/i })).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: /manual parcel list/i })).not.toBeInTheDocument();
+  });
 });
