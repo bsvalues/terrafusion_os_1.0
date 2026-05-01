@@ -369,7 +369,9 @@ Updates the C53-CONS arc:
                  invariant set bumped 1.0.0 → 1.1.0.
 - C53-CONS-D   : DONE — invariant report persistence (JSON artifact
                  writer; caller-driven; see Persistence section).
-- C53-CONS-E   : deferred — invariant report diffing.
+- C53-CONS-E   : DONE — invariant report diffing
+                 (PacsSchemaInvariantReportDiff.Compute; see
+                 Diffing section below).
 
 Promotion happens slice-by-slice; nothing in C53-CONS-A should be
 read as authorizing later slices until each lands.
@@ -424,8 +426,71 @@ skip the per-row `results` for compact dashboards.
 
 ### Out of scope (C53-CONS-E and later)
 
-- Report diffing across catalog builds (C53-CONS-E).
 - Append-only history (multiple reports in one file).
 - Compression / hash-stable serialization.
 - Any consumer that READS the artifact — downstream surface,
   not this slice.
+
+## Diffing (C53-CONS-E)
+
+Adds `PacsSchemaInvariantReportDiff.Compute(previous, current)` —
+a pure function that compares two reports and returns a structured
+diff. Used by catalog-build CI / audit dashboards to surface "what
+got better, what got worse" between two builds.
+
+### Diff identity (binding)
+
+Result rows are keyed by `(Code, TableName, ColumnName)`. Two
+reports may have semantically-identical rows whose `Message` or
+`Provenance` strings differ (e.g., the engine's message wording
+changed in a minor invariant-set bump); the diff treats those as
+the same row to avoid noise.
+
+### Three change categories
+
+- **Added** — rows present in current but not previous. New
+  violations surfaced (regression).
+- **Removed** — rows present in previous but not current. Violations
+  fixed (improvement).
+- **SeverityChanged** — same `(Code, TableName, ColumnName)` but
+  different `Severity`. Surfaces suppression-list changes (e.g.,
+  Error → Warning) or unsuppressed regressions
+  (Warning → Error).
+
+Plus per-severity count deltas (`ErrorDelta`, `WarningDelta`,
+`AdvisoryDelta`) for header-level dashboards. Each delta carries
+`Previous` and `Current` counts plus a derived `Diff` (current −
+previous; positive = regression on that severity tier).
+
+### Null-baseline handling
+
+When `previous` is `null` (first build of a catalog, no baseline
+yet), every current row is reported as `Added`. The diff's
+`PreviousInvariantSetVersion` surfaces as the literal string
+`"(none)"` so downstream consumers can distinguish "no baseline"
+from "baseline matches current."
+
+### Hard guards
+
+- **Pure function.** `Compute` does no I/O. Caller passes two
+  reports, gets back a record. No side-effects, no logging, no
+  persistence — the caller decides whether to write the diff
+  somewhere.
+- **No silent merging.** When the two reports have different
+  `InvariantSetVersion` values, the diff surfaces both versions
+  explicitly (`PreviousInvariantSetVersion` /
+  `CurrentInvariantSetVersion`). Consumers may refuse to act on
+  cross-version diffs if they need stable identity.
+- **`null` current rejected.** `ArgumentNullException` for null
+  current report; `null` previous IS allowed and treated as the
+  baseline-empty case.
+
+### Out of scope
+
+- Persistence of the diff (downstream surface; caller writes if
+  it wants).
+- Cross-version semantic remapping (when an invariant code is
+  renamed, the diff surfaces the rename as Added+Removed; consumers
+  that want a "renamed" category build it on top of the diff).
+- Time-windowed history (multiple prior reports diffed against
+  one current).
