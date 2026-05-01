@@ -49,8 +49,17 @@ public interface IPacsSchemaSource
 /// <param name="Columns">All PACS columns declared by the source. Each MUST reference an existing table by <see cref="PacsColumn.TableName"/>.</param>
 /// <param name="Dictionaries">All PACS dictionaries declared by the source.</param>
 /// <param name="Version">Version stamp identifying the source bytes + ingest moment.</param>
+/// <param name="PiiManifest">
+/// Slice C51-PII-D: optional PII classification manifest reference
+/// passed through to the catalog so consumers can query engagement
+/// state and per-table exhaustiveness assertions. <c>null</c> when
+/// no manifest is engaged (the C51-PII-B backwards-compat bridge
+/// state); the catalog reports <c>PiiManifestEngaged=false</c> in
+/// that case.
+/// </param>
 public sealed record PacsSchemaSourceData(
     IReadOnlyList<PacsTable> Tables,
     IReadOnlyList<PacsColumn> Columns,
     IReadOnlyList<PacsDictionary> Dictionaries,
-    PacsSchemaVersion Version);
+    PacsSchemaVersion Version,
+    PacsPiiManifest? PiiManifest = null);

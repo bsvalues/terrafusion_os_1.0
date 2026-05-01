@@ -1,6 +1,6 @@
 # County Studio Data Truth Matrix
 
-Checked: 2026-04-30T18:53:40.681Z
+Checked: 2026-05-01T16:09:46.345Z
 
 Status: PASS_WITH_WARNINGS
 
@@ -28,7 +28,7 @@ Study: `52eb120f-99d3-4790-a69c-49b6de80cd5e`
 | Statistics Studio parity | Comparison snapshot availability | GET /terraforge/comparison-snapshots | partial | Loaded 238 neighborhood snapshots. Neighborhood-level parity still requires row matching to segment keys. |
 | County Studio | Scenario preview | GET /county-study/scenarios/{scenarioId}/preview | partial | Preview returned for scenario 04f34e2a-6cfe-4adc-9d0c-f10710cc81ca; source recomputation still required. |
 | Fixture leakage | Nonexistent county does not receive Benton data | TerraForge county-stats with fake county scope | yes | Fake county returned HTTP 400, not live Benton-looking data. |
-| Fixture leakage | Static Benton/fallback scan | frontend/backend source scan | yes | Found 173 Benton references, none classified as fallback/fixture by this scanner. |
+| Fixture leakage | Static Benton/fallback scan | frontend/backend source scan | yes | Found 170 Benton references, none classified as fallback/fixture by this scanner. |
 
 ## Failures
 
@@ -49,27 +49,18 @@ Study: `52eb120f-99d3-4790-a69c-49b6de80cd5e`
 
 ## Leakage Matches
 
-- frontend/apps/os-shell/src/auth/session.ts:13 [dev-session-normalization] export const BENTON_DEV_COUNTY_ID = '19190019-1919-1919-1919-191919191919';
-- frontend/apps/os-shell/src/auth/session.ts:17 [dev-session-normalization] countyId: BENTON_DEV_COUNTY_ID,
-- frontend/apps/os-shell/src/auth/session.ts:23 [dev-session-normalization] const BENTON_COUNTY_ALIASES = new Set([
-- frontend/apps/os-shell/src/auth/session.ts:26 [reference] '53005',
-- frontend/apps/os-shell/src/auth/session.ts:27 [reference] 'benton',
-- frontend/apps/os-shell/src/auth/session.ts:28 [reference] 'benton county',
-- frontend/apps/os-shell/src/auth/session.ts:29 [dev-session-normalization] BENTON_DEV_COUNTY_ID,
-- frontend/apps/os-shell/src/auth/session.ts:38 [dev-session-normalization] return BENTON_COUNTY_ALIASES.has(key) ? BENTON_DEV_COUNTY_ID : trimmed;
-- frontend/apps/os-shell/src/auth/useSession.ts:9 [dev-session-normalization] import { BENTON_DEV_COUNTY_ID } from './session';
-- frontend/apps/os-shell/src/auth/useSession.ts:22 [dev-session-normalization] countyId: BENTON_DEV_COUNTY_ID,
-- frontend/apps/os-shell/src/auth/useSession.ts:27 [dev-session-normalization] const BENTON_ALIASES = new Set(['5', '005', '53005', 'benton', 'benton county', BENTON_DEV_COUNTY_ID]);
-- frontend/apps/os-shell/src/auth/useSession.ts:33 [dev-session-normalization] return BENTON_ALIASES.has(trimmed.toLowerCase()) ? BENTON_DEV_COUNTY_ID : trimmed;
+- frontend/apps/os-shell/src/auth/useSession.ts:21 [reference] countyId: 'benton',
 - frontend/apps/os-shell/src/pages/forge/countyCertification.ts:3 [reference] 'benton',
 - frontend/apps/os-shell/src/pages/forge/countyCertification.ts:14 [reference] const BENTON_MARKET_REFERENCE_LANE: CertifiedReferenceLane = {
 - frontend/apps/os-shell/src/pages/forge/countyCertification.ts:15 [reference] id: 'benton-certified-market-reference',
 - frontend/apps/os-shell/src/pages/forge/countyCertification.ts:16 [reference] label: 'Benton-certified market reference lane',
 - frontend/apps/os-shell/src/pages/forge/countyCertification.ts:17 [reference-only-certified-lane] endpoint: '/costforge/income-approach/market-data/benton', // reference-only; excluded-from-statistics-parity
 - frontend/apps/os-shell/src/pages/forge/countyCertification.ts:43 [reference] return supportsCertifiedCostScheduleLane(countyId) ? BENTON_MARKET_REFERENCE_LANE : null;
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:976 [reference] The Benton-certified market reference lane is withheld for this county. Statistics
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:977 [reference] Compat will not substitute Benton market data for a non-certified county scope.
-- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:998 [reference] County Studio could not load the Benton-certified reference lane for this study.
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/ContractLineage.tsx:13 [reference] if (normalized.includes('benton')) {
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/ContractLineage.tsx:14 [reference] return 'Benton production provisional · sync-derived · converted legacy sensitive';
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:981 [reference] The Benton-certified market reference lane is withheld for this county. Statistics
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:982 [reference] Compat will not substitute Benton market data for a non-certified county scope.
+- frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1003 [reference] County Studio could not load the Benton-certified reference lane for this study.
 - frontend/apps/os-shell/src/pages/forge/county-studio/hooks/useStudyData.ts:174 [reference] * the actionable part ("HTTP 400: countyId 'benton' is not a valid Guid.").
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CityInspector.test.tsx:57 [test-fixture] studyId: 'study-benton-2026',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CityInspector.test.tsx:58 [test-fixture] countyId: 'benton',
@@ -80,32 +71,38 @@ Study: `52eb120f-99d3-4790-a69c-49b6de80cd5e`
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CityInspector.test.tsx:215 [test-fixture] countyId: 'benton',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CohortCreationDialog.test.tsx:28 [test-fixture] countyId: 'benton',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CorrectionDefensePanel.test.tsx:81 [test-fixture] countyName: 'Benton County',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CorrectionDefensePanel.test.tsx:185 [test-fixture] expect(screen.getByTestId('defense-current-anchors')).toHaveTextContent('Benton County');
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CorrectionDefensePanel.test.tsx:187 [test-fixture] expect(screen.getByTestId('defense-current-anchors')).toHaveTextContent('Benton County');
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CorrectionDefensePanel.test.tsx:190 [test-fixture] expect(screen.getByTestId('county-trust-posture')).toHaveTextContent(/Benton production provisional/i);
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CorrectionDefensePanel.test.tsx:206 [test-fixture] expect(screen.getByTestId('defense-memo-draft')).toHaveTextContent('Benton County 2026');
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyCommandStrip.test.tsx:10 [test-fixture] countyId: 'benton',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyCommandStrip.test.tsx:11 [test-fixture] countyName: 'Benton County',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyCommandStrip.test.tsx:25 [test-fixture] countyId: 'benton',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyCommandStrip.test.tsx:27 [test-fixture] countyId: 'benton',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyCommandStrip.test.tsx:107 [test-fixture] expect(screen.getByTestId('county-trust-posture')).toHaveTextContent(/Benton production provisional/i);
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyDiagnosisModal.test.tsx:36 [test-fixture] countyName: 'Benton',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyDiagnosisModal.test.tsx:80 [test-fixture] narrative: 'Benton 2026 classifies as Model problem (confidence 65%). 4 of 12 segments carry a diagnosed problem.',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyHealthPanel.test.tsx:35 [test-fixture] studyId: 'study-1', countyId: 'benton', taxYear: 2026,
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyHealthPanel.test.tsx:61 [test-fixture] countyId: 'benton',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:45 [test-fixture] countyId: '19190019-1919-1919-1919-191919191919',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:97 [test-fixture] url.includes('income-approach/market-data/benton')
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:99 [test-fixture] county: 'Benton',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:110 [test-fixture] source: 'US Census ACS 2024, WA ESD, Benton-Franklin Trends',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:222 [test-fixture] countyId: '19190019-1919-1919-1919-191919191919',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:223 [test-fixture] countyName: 'Benton County',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:257 [test-fixture] countyId: '19190019-1919-1919-1919-191919191919',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:298 [test-fixture] '19190019-1919-1919-1919-191919191919',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:302 [test-fixture] countyId: '19190019-1919-1919-1919-191919191919',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyHealthPanel.test.tsx:63 [test-fixture] countyId: 'benton',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyHealthPanel.test.tsx:144 [test-fixture] expect(screen.getByTestId('county-trust-posture')).toHaveTextContent(/Benton production provisional/i);
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:40 [test-fixture] url.includes('income-approach/market-data/benton')
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:42 [test-fixture] county: 'Benton',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:53 [test-fixture] source: 'US Census ACS 2024, WA ESD, Benton-Franklin Trends',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:68 [test-fixture] countyId: '19190019-1919-1919-1919-191919191919',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:240 [test-fixture] countyId: '19190019-1919-1919-1919-191919191919',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:241 [test-fixture] countyName: 'Benton County',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:275 [test-fixture] countyId: '19190019-1919-1919-1919-191919191919',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:316 [test-fixture] '19190019-1919-1919-1919-191919191919',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:320 [test-fixture] countyId: '19190019-1919-1919-1919-191919191919',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx:343 [test-fixture] countyId: '19190019-1919-1919-1919-191919191919',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/countyStudioStore.test.ts:22 [test-fixture] countyId: 'benton-wa',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/countyStudioStore.test.ts:30 [test-fixture] createdBy: 'assessor@benton.wa.gov',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/countyStudioStore.test.ts:31 [test-fixture] updatedBy: 'assessor@benton.wa.gov',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStudyPage.test.tsx:98 [test-fixture] studyId: 'study-1', countyId: 'benton', taxYear: 2026,
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStudyPage.test.tsx:110 [test-fixture] studyId: 'study-1', countyId: 'benton', taxYear: 2026,
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/evidencePacketMarkdown.test.ts:6 [test-fixture] countyName: 'Benton County',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/evidencePacketMarkdown.test.ts:56 [test-fixture] expect(md).toContain('Benton County');
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ExportPacketModal.test.tsx:25 [test-fixture] countyName: 'Benton County',
-- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ExportPacketModal.test.tsx:79 [test-fixture] expect(screen.getByText('Benton County')).toBeInTheDocument();
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/evidencePacketMarkdown.test.ts:7 [test-fixture] countyName: 'Benton County',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/evidencePacketMarkdown.test.ts:76 [test-fixture] expect(md).toContain('Benton County');
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/evidencePacketMarkdown.test.ts:97 [test-fixture] expect(md).toContain('Benton County 2025');
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ExportPacketModal.test.tsx:26 [test-fixture] countyName: 'Benton County',
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ExportPacketModal.test.tsx:99 [test-fixture] expect(screen.getByText('Benton County')).toBeInTheDocument();
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/LeftRail.test.tsx:53 [test-fixture] countyId: 'benton',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/NeighborhoodInspector.test.tsx:59 [test-fixture] studyId: 'study-benton-2026',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/NeighborhoodInspector.test.tsx:60 [test-fixture] countyId: 'benton',
@@ -129,3 +126,6 @@ Study: `52eb120f-99d3-4790-a69c-49b6de80cd5e`
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ScenarioWorksheet.test.tsx:20 [test-fixture] studyId: 'study-1', countyId: 'benton', taxYear: 2026,
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ScenarioWorksheet.test.tsx:33 [test-fixture] countyId: 'benton',
 - frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ScenarioWorksheet.test.tsx:113 [test-fixture] expect(screen.getByTestId('scenario-worksheet-scope')).toHaveTextContent(/benton/i);
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/SegmentFilters.nullGuard.test.tsx:44 [test-fixture] studyId: 'study-1', countyId: 'benton', taxYear: 2026,
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/segmentIdentity.test.ts:40 [test-fixture] it('extracts Benton neighborhood codes from compound labels without deriving reval from hood', () => {
+- frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/segmentIdentity.test.ts:72 [test-fixture] it('treats numeric Benton hood codes as neighborhoods without inventing reval from the first digit', () => {

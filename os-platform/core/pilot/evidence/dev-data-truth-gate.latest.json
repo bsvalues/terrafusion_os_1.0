@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-04-30T18:53:40.681Z",
+  "checkedAt": "2026-05-01T16:09:46.345Z",
   "slice": "dev-data-truth-gate",
   "status": "PASS_WITH_WARNINGS",
   "apiBase": "http://localhost:5046/api",
@@ -26,6 +26,8 @@
   },
   "activeSegmentSetId": "91587edb-c234-416d-8968-a32f47582352",
   "healthSummary": {
+    "contractId": "terraforge_operational_health_v1",
+    "correctionPriorityContractId": "terraforge_correction_priority_v1",
     "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
     "countyId": "19190019-1919-1919-1919-191919191919",
     "taxYear": 2026,
@@ -241,140 +243,19 @@
         "text": "endpoint: '/costforge/income-approach/market-data/benton', // reference-only; excluded-from-statistics-parity"
       }
     ],
-    "devSessionNormalizations": [
-      {
-        "file": "frontend/apps/os-shell/src/auth/session.ts",
-        "line": 13,
-        "classification": "dev-session-normalization",
-        "text": "export const BENTON_DEV_COUNTY_ID = '19190019-1919-1919-1919-191919191919';"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/auth/session.ts",
-        "line": 17,
-        "classification": "dev-session-normalization",
-        "text": "countyId: BENTON_DEV_COUNTY_ID,"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/auth/session.ts",
-        "line": 23,
-        "classification": "dev-session-normalization",
-        "text": "const BENTON_COUNTY_ALIASES = new Set(["
-      },
-      {
-        "file": "frontend/apps/os-shell/src/auth/session.ts",
-        "line": 29,
-        "classification": "dev-session-normalization",
-        "text": "BENTON_DEV_COUNTY_ID,"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/auth/session.ts",
-        "line": 38,
-        "classification": "dev-session-normalization",
-        "text": "return BENTON_COUNTY_ALIASES.has(key) ? BENTON_DEV_COUNTY_ID : trimmed;"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/auth/useSession.ts",
-        "line": 9,
-        "classification": "dev-session-normalization",
-        "text": "import { BENTON_DEV_COUNTY_ID } from './session';"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/auth/useSession.ts",
-        "line": 22,
-        "classification": "dev-session-normalization",
-        "text": "countyId: BENTON_DEV_COUNTY_ID,"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/auth/useSession.ts",
-        "line": 27,
-        "classification": "dev-session-normalization",
-        "text": "const BENTON_ALIASES = new Set(['5', '005', '53005', 'benton', 'benton county', BENTON_DEV_COUNTY_ID]);"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/auth/useSession.ts",
-        "line": 33,
-        "classification": "dev-session-normalization",
-        "text": "return BENTON_ALIASES.has(trimmed.toLowerCase()) ? BENTON_DEV_COUNTY_ID : trimmed;"
-      }
-    ],
+    "devSessionNormalizations": [],
     "possibleFallbacks": [],
     "blockers": [],
     "countySovereignStatisticsSupersetProven": true
   },
   "fixtureLeakage": {
-    "totalMatches": 173,
+    "totalMatches": 170,
     "matches": [
       {
-        "file": "frontend/apps/os-shell/src/auth/session.ts",
-        "line": 13,
-        "classification": "dev-session-normalization",
-        "text": "export const BENTON_DEV_COUNTY_ID = '19190019-1919-1919-1919-191919191919';"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/auth/session.ts",
-        "line": 17,
-        "classification": "dev-session-normalization",
-        "text": "countyId: BENTON_DEV_COUNTY_ID,"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/auth/session.ts",
-        "line": 23,
-        "classification": "dev-session-normalization",
-        "text": "const BENTON_COUNTY_ALIASES = new Set(["
-      },
-      {
-        "file": "frontend/apps/os-shell/src/auth/session.ts",
-        "line": 26,
+        "file": "frontend/apps/os-shell/src/auth/useSession.ts",
+        "line": 21,
         "classification": "reference",
-        "text": "'53005',"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/auth/session.ts",
-        "line": 27,
-        "classification": "reference",
-        "text": "'benton',"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/auth/session.ts",
-        "line": 28,
-        "classification": "reference",
-        "text": "'benton county',"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/auth/session.ts",
-        "line": 29,
-        "classification": "dev-session-normalization",
-        "text": "BENTON_DEV_COUNTY_ID,"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/auth/session.ts",
-        "line": 38,
-        "classification": "dev-session-normalization",
-        "text": "return BENTON_COUNTY_ALIASES.has(key) ? BENTON_DEV_COUNTY_ID : trimmed;"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/auth/useSession.ts",
-        "line": 9,
-        "classification": "dev-session-normalization",
-        "text": "import { BENTON_DEV_COUNTY_ID } from './session';"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/auth/useSession.ts",
-        "line": 22,
-        "classification": "dev-session-normalization",
-        "text": "countyId: BENTON_DEV_COUNTY_ID,"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/auth/useSession.ts",
-        "line": 27,
-        "classification": "dev-session-normalization",
-        "text": "const BENTON_ALIASES = new Set(['5', '005', '53005', 'benton', 'benton county', BENTON_DEV_COUNTY_ID]);"
-      },
-      {
-        "file": "frontend/apps/os-shell/src/auth/useSession.ts",
-        "line": 33,
-        "classification": "dev-session-normalization",
-        "text": "return BENTON_ALIASES.has(trimmed.toLowerCase()) ? BENTON_DEV_COUNTY_ID : trimmed;"
+        "text": "countyId: 'benton',"
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/countyCertification.ts",
@@ -413,20 +294,32 @@
         "text": "return supportsCertifiedCostScheduleLane(countyId) ? BENTON_MARKET_REFERENCE_LANE : null;"
       },
       {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/ContractLineage.tsx",
+        "line": 13,
+        "classification": "reference",
+        "text": "if (normalized.includes('benton')) {"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/ContractLineage.tsx",
+        "line": 14,
+        "classification": "reference",
+        "text": "return 'Benton production provisional · sync-derived · converted legacy sensitive';"
+      },
+      {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
-        "line": 976,
+        "line": 981,
         "classification": "reference",
         "text": "The Benton-certified market reference lane is withheld for this county. Statistics"
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
-        "line": 977,
+        "line": 982,
         "classification": "reference",
         "text": "Compat will not substitute Benton market data for a non-certified county scope."
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
-        "line": 998,
+        "line": 1003,
         "classification": "reference",
         "text": "County Studio could not load the Benton-certified reference lane for this study."
       },
@@ -492,9 +385,21 @@
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CorrectionDefensePanel.test.tsx",
-        "line": 185,
+        "line": 187,
         "classification": "test-fixture",
         "text": "expect(screen.getByTestId('defense-current-anchors')).toHaveTextContent('Benton County');"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CorrectionDefensePanel.test.tsx",
+        "line": 190,
+        "classification": "test-fixture",
+        "text": "expect(screen.getByTestId('county-trust-posture')).toHaveTextContent(/Benton production provisional/i);"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CorrectionDefensePanel.test.tsx",
+        "line": 206,
+        "classification": "test-fixture",
+        "text": "expect(screen.getByTestId('defense-memo-draft')).toHaveTextContent('Benton County 2026');"
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyCommandStrip.test.tsx",
@@ -510,9 +415,15 @@
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyCommandStrip.test.tsx",
-        "line": 25,
+        "line": 27,
         "classification": "test-fixture",
         "text": "countyId: 'benton',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyCommandStrip.test.tsx",
+        "line": 107,
+        "classification": "test-fixture",
+        "text": "expect(screen.getByTestId('county-trust-posture')).toHaveTextContent(/Benton production provisional/i);"
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyDiagnosisModal.test.tsx",
@@ -534,61 +445,73 @@
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyHealthPanel.test.tsx",
-        "line": 61,
+        "line": 63,
         "classification": "test-fixture",
         "text": "countyId: 'benton',"
       },
       {
-        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
-        "line": 45,
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyHealthPanel.test.tsx",
+        "line": 144,
         "classification": "test-fixture",
-        "text": "countyId: '19190019-1919-1919-1919-191919191919',"
+        "text": "expect(screen.getByTestId('county-trust-posture')).toHaveTextContent(/Benton production provisional/i);"
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
-        "line": 97,
+        "line": 40,
         "classification": "test-fixture",
         "text": "url.includes('income-approach/market-data/benton')"
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
-        "line": 99,
+        "line": 42,
         "classification": "test-fixture",
         "text": "county: 'Benton',"
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
-        "line": 110,
+        "line": 53,
         "classification": "test-fixture",
         "text": "source: 'US Census ACS 2024, WA ESD, Benton-Franklin Trends',"
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
-        "line": 222,
+        "line": 68,
         "classification": "test-fixture",
         "text": "countyId: '19190019-1919-1919-1919-191919191919',"
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
-        "line": 223,
+        "line": 240,
+        "classification": "test-fixture",
+        "text": "countyId: '19190019-1919-1919-1919-191919191919',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
+        "line": 241,
         "classification": "test-fixture",
         "text": "countyName: 'Benton County',"
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
-        "line": 257,
+        "line": 275,
         "classification": "test-fixture",
         "text": "countyId: '19190019-1919-1919-1919-191919191919',"
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
-        "line": 298,
+        "line": 316,
         "classification": "test-fixture",
         "text": "'19190019-1919-1919-1919-191919191919',"
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
-        "line": 302,
+        "line": 320,
+        "classification": "test-fixture",
+        "text": "countyId: '19190019-1919-1919-1919-191919191919',"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
+        "line": 343,
         "classification": "test-fixture",
         "text": "countyId: '19190019-1919-1919-1919-191919191919',"
       },
@@ -624,25 +547,31 @@
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/evidencePacketMarkdown.test.ts",
-        "line": 6,
+        "line": 7,
         "classification": "test-fixture",
         "text": "countyName: 'Benton County',"
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/evidencePacketMarkdown.test.ts",
-        "line": 56,
+        "line": 76,
         "classification": "test-fixture",
         "text": "expect(md).toContain('Benton County');"
       },
       {
+        "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/evidencePacketMarkdown.test.ts",
+        "line": 97,
+        "classification": "test-fixture",
+        "text": "expect(md).toContain('Benton County 2025');"
+      },
+      {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ExportPacketModal.test.tsx",
-        "line": 25,
+        "line": 26,
         "classification": "test-fixture",
         "text": "countyName: 'Benton County',"
       },
       {
         "file": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ExportPacketModal.test.tsx",
-        "line": 79,
+        "line": 99,
         "classification": "test-fixture",
         "text": "expect(screen.getByText('Benton County')).toBeInTheDocument();"
       },
@@ -1194,13 +1123,13 @@
       },
       {
         "file": "frontend/apps/os-shell/src/services/LiveDataProvider.ts",
-        "line": 176,
+        "line": 145,
         "classification": "reference",
         "text": "countyCode: 'benton',"
       },
       {
         "file": "frontend/apps/os-shell/src/services/LiveDataProvider.ts",
-        "line": 271,
+        "line": 240,
         "classification": "reference",
         "text": "countyCode: 'benton',"
       },
@@ -1302,19 +1231,19 @@
       },
       {
         "file": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs",
-        "line": 1229,
+        "line": 1301,
         "classification": "reference",
         "text": "// ── Benton-depth segment signals ─────────────────────────────────"
       },
       {
         "file": "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs",
-        "line": 60,
+        "line": 62,
         "classification": "reference",
         "text": "// Benton PACS reval/cycle is keyed by PacsPropId, not canonical ParcelId (GeoId string)."
       },
       {
         "file": "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs",
-        "line": 61,
+        "line": 63,
         "classification": "reference",
         "text": "// Resolve the optional Benton metadata separately so counties without PACS still"
       },
@@ -1362,7 +1291,7 @@
       "name": "TerraForge county stats reachability",
       "ok": true,
       "status": 200,
-      "ms": 387,
+      "ms": 2441,
       "url": "http://localhost:5046/api/terraforge/county-stats?taxYear=2026&countyId=19190019-1919-1919-1919-191919191919",
       "bodyPreview": {
         "taxYear": 2026,
@@ -1382,7 +1311,7 @@
       "name": "County Studio study list",
       "ok": true,
       "status": 200,
-      "ms": 36,
+      "ms": 149,
       "url": "http://localhost:5046/api/county-study/studies?countyId=19190019-1919-1919-1919-191919191919",
       "bodyPreview": {
         "kind": "array",
@@ -1393,7 +1322,7 @@
       "name": "County Studio selected study",
       "ok": true,
       "status": 200,
-      "ms": 28,
+      "ms": 103,
       "url": "http://localhost:5046/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e",
       "bodyPreview": {
         "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
@@ -1409,21 +1338,10 @@
       }
     },
     {
-      "name": "County Studio segment sets",
-      "ok": true,
-      "status": 200,
-      "ms": 39,
-      "url": "http://localhost:5046/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e/segment-sets",
-      "bodyPreview": {
-        "kind": "array",
-        "count": 3
-      }
-    },
-    {
       "name": "County Studio cohorts",
       "ok": true,
       "status": 200,
-      "ms": 39,
+      "ms": 307,
       "url": "http://localhost:5046/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e/cohorts",
       "bodyPreview": {
         "kind": "array",
@@ -1434,7 +1352,7 @@
       "name": "County Studio scenarios",
       "ok": true,
       "status": 200,
-      "ms": 46,
+      "ms": 315,
       "url": "http://localhost:5046/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e/scenarios",
       "bodyPreview": {
         "kind": "array",
@@ -1442,10 +1360,21 @@
       }
     },
     {
+      "name": "County Studio segment sets",
+      "ok": true,
+      "status": 200,
+      "ms": 771,
+      "url": "http://localhost:5046/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e/segment-sets",
+      "bodyPreview": {
+        "kind": "array",
+        "count": 3
+      }
+    },
+    {
       "name": "County Studio statistics compat",
       "ok": true,
       "status": 200,
-      "ms": 48,
+      "ms": 1398,
       "url": "http://localhost:5046/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e/statistics-compat",
       "bodyPreview": {
         "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
@@ -1471,7 +1400,7 @@
       "name": "Statistics ratio study",
       "ok": true,
       "status": 200,
-      "ms": 50,
+      "ms": 1487,
       "url": "http://localhost:5046/api/terraforge/ratio-study?taxYear=2026&countyId=19190019-1919-1919-1919-191919191919",
       "bodyPreview": {
         "taxYear": 2026,
@@ -1507,23 +1436,14 @@
       }
     },
     {
-      "name": "Statistics comparison snapshots",
-      "ok": true,
-      "status": 200,
-      "ms": 156,
-      "url": "http://localhost:5046/api/terraforge/comparison-snapshots?taxYear=2026&countyId=19190019-1919-1919-1919-191919191919",
-      "bodyPreview": {
-        "kind": "array",
-        "count": 238
-      }
-    },
-    {
       "name": "County Studio health summary",
       "ok": true,
       "status": 200,
-      "ms": 767,
+      "ms": 46633,
       "url": "http://localhost:5046/api/county-study/studies/52eb120f-99d3-4790-a69c-49b6de80cd5e/health-summary",
       "bodyPreview": {
+        "contractId": "terraforge_operational_health_v1",
+        "correctionPriorityContractId": "terraforge_correction_priority_v1",
         "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
         "countyId": "19190019-1919-1919-1919-191919191919",
         "taxYear": 2026,
@@ -1533,16 +1453,25 @@
         "cod": 41.28,
         "prd": 1.3993,
         "stabilityScore": 77.47,
-        "riskScore": 28.67,
-        "exceptionCount": 867,
-        "complianceStatus": "NonCompliant"
+        "riskScore": 28.67
+      }
+    },
+    {
+      "name": "Statistics comparison snapshots",
+      "ok": true,
+      "status": 200,
+      "ms": 46673,
+      "url": "http://localhost:5046/api/terraforge/comparison-snapshots?taxYear=2026&countyId=19190019-1919-1919-1919-191919191919",
+      "bodyPreview": {
+        "kind": "array",
+        "count": 238
       }
     },
     {
       "name": "County Studio active segments",
       "ok": true,
       "status": 200,
-      "ms": 674,
+      "ms": 3177,
       "url": "http://localhost:5046/api/county-study/segment-sets/91587edb-c234-416d-8968-a32f47582352/segments",
       "bodyPreview": {
         "kind": "array",
@@ -1553,7 +1482,7 @@
       "name": "Segment detail e1eef76d-d3e8-4a45-9447-7a1cfddcf2e1",
       "ok": true,
       "status": 200,
-      "ms": 646,
+      "ms": 1614,
       "url": "http://localhost:5046/api/county-study/segments/e1eef76d-d3e8-4a45-9447-7a1cfddcf2e1/detail",
       "bodyPreview": {
         "segmentId": "e1eef76d-d3e8-4a45-9447-7a1cfddcf2e1",
@@ -1574,7 +1503,7 @@
       "name": "Segment detail 7944c936-c832-41f3-842d-b86880dc86a1",
       "ok": true,
       "status": 200,
-      "ms": 637,
+      "ms": 1651,
       "url": "http://localhost:5046/api/county-study/segments/7944c936-c832-41f3-842d-b86880dc86a1/detail",
       "bodyPreview": {
         "segmentId": "7944c936-c832-41f3-842d-b86880dc86a1",
@@ -1595,7 +1524,7 @@
       "name": "Segment detail 98444a70-d115-491a-bccf-30f9cbc50730",
       "ok": true,
       "status": 200,
-      "ms": 981,
+      "ms": 1893,
       "url": "http://localhost:5046/api/county-study/segments/98444a70-d115-491a-bccf-30f9cbc50730/detail",
       "bodyPreview": {
         "segmentId": "98444a70-d115-491a-bccf-30f9cbc50730",
@@ -1616,7 +1545,7 @@
       "name": "Segment detail f1a8865d-eb3c-4b78-be9e-29d6ed532dc3",
       "ok": true,
       "status": 200,
-      "ms": 766,
+      "ms": 1932,
       "url": "http://localhost:5046/api/county-study/segments/f1a8865d-eb3c-4b78-be9e-29d6ed532dc3/detail",
       "bodyPreview": {
         "segmentId": "f1a8865d-eb3c-4b78-be9e-29d6ed532dc3",
@@ -1637,7 +1566,7 @@
       "name": "Segment detail 57d784b0-2801-4050-bebd-182244db2597",
       "ok": true,
       "status": 200,
-      "ms": 772,
+      "ms": 1487,
       "url": "http://localhost:5046/api/county-study/segments/57d784b0-2801-4050-bebd-182244db2597/detail",
       "bodyPreview": {
         "segmentId": "57d784b0-2801-4050-bebd-182244db2597",
@@ -1658,7 +1587,7 @@
       "name": "Segment detail 84fadd85-8b60-4903-9baf-c22056965ec0",
       "ok": true,
       "status": 200,
-      "ms": 739,
+      "ms": 2661,
       "url": "http://localhost:5046/api/county-study/segments/84fadd85-8b60-4903-9baf-c22056965ec0/detail",
       "bodyPreview": {
         "segmentId": "84fadd85-8b60-4903-9baf-c22056965ec0",
@@ -1679,7 +1608,7 @@
       "name": "Segment detail f3f323f6-6fa9-4f8c-8556-abe732163eee",
       "ok": true,
       "status": 200,
-      "ms": 711,
+      "ms": 1304,
       "url": "http://localhost:5046/api/county-study/segments/f3f323f6-6fa9-4f8c-8556-abe732163eee/detail",
       "bodyPreview": {
         "segmentId": "f3f323f6-6fa9-4f8c-8556-abe732163eee",
@@ -1700,7 +1629,7 @@
       "name": "Segment detail 552539c5-6642-401d-97d8-d7d625ed14b4",
       "ok": true,
       "status": 200,
-      "ms": 608,
+      "ms": 1526,
       "url": "http://localhost:5046/api/county-study/segments/552539c5-6642-401d-97d8-d7d625ed14b4/detail",
       "bodyPreview": {
         "segmentId": "552539c5-6642-401d-97d8-d7d625ed14b4",
@@ -1721,7 +1650,7 @@
       "name": "Segment detail 3fe1ef45-13ad-466e-9816-fa66afeaf113",
       "ok": true,
       "status": 200,
-      "ms": 543,
+      "ms": 1225,
       "url": "http://localhost:5046/api/county-study/segments/3fe1ef45-13ad-466e-9816-fa66afeaf113/detail",
       "bodyPreview": {
         "segmentId": "3fe1ef45-13ad-466e-9816-fa66afeaf113",
@@ -1742,7 +1671,7 @@
       "name": "Segment detail 2c90cf1b-af7d-43f2-b2c3-e12d2fe4d4f1",
       "ok": true,
       "status": 200,
-      "ms": 598,
+      "ms": 1286,
       "url": "http://localhost:5046/api/county-study/segments/2c90cf1b-af7d-43f2-b2c3-e12d2fe4d4f1/detail",
       "bodyPreview": {
         "segmentId": "2c90cf1b-af7d-43f2-b2c3-e12d2fe4d4f1",
@@ -1763,7 +1692,7 @@
       "name": "Scenario preview",
       "ok": true,
       "status": 200,
-      "ms": 57,
+      "ms": 129,
       "url": "http://localhost:5046/api/county-study/scenarios/04f34e2a-6cfe-4adc-9d0c-f10710cc81ca/preview",
       "bodyPreview": {
         "scenarioId": "04f34e2a-6cfe-4adc-9d0c-f10710cc81ca",
@@ -1783,7 +1712,7 @@
       "name": "Fixture leakage fake county stats",
       "ok": false,
       "status": 400,
-      "ms": 7,
+      "ms": 15,
       "url": "http://localhost:5046/api/terraforge/county-stats?taxYear=2026&countyId=00000000-0000-0000-0000-000000000999",
       "bodyPreview": {
         "error": "No county matches '00000000-0000-0000-0000-000000000999'. Accepted forms: Guid (e.g. '19190019-...') or county name ('benton').",
@@ -1840,10 +1769,7 @@
         "defaultConnection": "Host=localhost;Database=terrafusion;Username=postgres;Password=devpassword123;Port=5432",
         "defaultConnectionKind": "postgres",
         "bentonLegacy": "Data Source=../../county-data/wa-benton/county.db",
-        "localOverrides": [
-          "PacsConnection",
-          "PacsSalesConnection"
-        ],
+        "localOverrides": ["PacsConnection", "PacsSalesConnection"],
         "defaultCounty": {
           "Id": "19190019-1919-1919-1919-191919191919",
           "Code": "benton"
@@ -1979,7 +1905,7 @@
       "evidence": {
         "bentonReferenceLaneCount": 0,
         "referenceOnlyCertifiedLaneCount": 1,
-        "devSessionNormalizationCount": 9,
+        "devSessionNormalizationCount": 0,
         "possibleFallbackCount": 0,
         "directSourceProofPresent": true
       }
@@ -2081,7 +2007,7 @@
             "countWithRatio": 36,
             "unmatchedSaleRows": 0
           },
-          "computedAt": "2026-04-30T18:53:32.222106Z"
+          "computedAt": "2026-05-01T16:08:41.1481382Z"
         },
         "ratioStudy": {
           "taxYear": 2026,
@@ -2747,6 +2673,8 @@
       "evidence": {
         "classification": "expected non-equivalent population lenses",
         "health": {
+          "contractId": "terraforge_operational_health_v1",
+          "correctionPriorityContractId": "terraforge_correction_priority_v1",
           "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
           "countyId": "19190019-1919-1919-1919-191919191919",
           "taxYear": 2026,
@@ -3507,9 +3435,9 @@
       "metricBehavior": "Static Benton/fallback scan",
       "sourceOfTruth": "frontend/backend source scan",
       "verified": "yes",
-      "notes": "Found 173 Benton references, none classified as fallback/fixture by this scanner.",
+      "notes": "Found 170 Benton references, none classified as fallback/fixture by this scanner.",
       "evidence": {
-        "totalMatches": 173,
+        "totalMatches": 170,
         "possibleFallbacks": []
       }
     }
