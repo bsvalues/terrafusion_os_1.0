@@ -3,6 +3,7 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import { vi } from 'vitest';
 import DaisSuiteHome from '../DaisSuiteHome';
 import { useSegmentWorkflowDraftStore } from '../segmentWorkflowDraftStore';
+import { useDownstreamClosureReceiptStore } from '../downstreamClosureReceiptStore';
 
 const activateModuleMock = vi.hoisted(() => vi.fn());
 vi.mock('@/orchestration/moduleActivation', () => ({
@@ -51,6 +52,7 @@ vi.mock('../../../api/pilotApi', () => ({ invokeTool: vi.fn() }));
 function resetStore() {
   act(() => {
     useSegmentWorkflowDraftStore.getState().clearDraft();
+    useDownstreamClosureReceiptStore.getState().clearReceipt('exc-dais');
   });
 }
 
@@ -98,6 +100,46 @@ describe('DaisSuiteHome - County Studio deeplink consumption', () => {
     expect(draft!.segmentId).toBe('seg-raw');
     expect(draft!.segmentLabel).toBe('seg-raw');
     expect(screen.getByTestId('dais-workflow-draft-panel')).toBeInTheDocument();
+  });
+
+  it('persists exception handoff receipt and opens downstream workbench continuation', () => {
+    render(
+      <DaisSuiteHome
+        metadata={{ deeplinkQuery: '?template=SegmentReview&segmentId=seg-raw&exceptionSetId=exc-dais' }}
+      />,
+    );
+
+    const draft = useSegmentWorkflowDraftStore.getState().activeDraft;
+    expect(draft?.handoff?.exceptionSetId).toBe('exc-dais');
+    expect(screen.getByTestId('dais-draft-receipt-status')).toHaveTextContent('Drafted');
+
+    fireEvent.click(screen.getByTestId('dais-draft-open-workbench'));
+    expect(useDownstreamClosureReceiptStore.getState().receipts['exc-dais'].status).toBe('Opened');
+    expect(activateModuleMock).toHaveBeenCalledWith(
+      'property-workbench',
+      expect.objectContaining({
+        source: 'system',
+        metadata: expect.objectContaining({
+          tabId: 'dais',
+          segmentId: 'seg-raw',
+          exceptionSetId: 'exc-dais',
+        }),
+      }),
+    );
+
+    fireEvent.click(screen.getByTestId('dais-draft-return-receipt'));
+    expect(useDownstreamClosureReceiptStore.getState().receipts['exc-dais'].status).toBe('Returned');
+    expect(activateModuleMock).toHaveBeenCalledWith(
+      'county-studio',
+      expect.objectContaining({
+        source: 'system',
+        metadata: expect.objectContaining({
+          segmentId: 'seg-raw',
+          exceptionSetId: 'exc-dais',
+          downstreamStatus: 'Returned',
+        }),
+      }),
+    );
   });
 
   it('does not create a draft for an unrecognized template', () => {

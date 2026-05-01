@@ -6,6 +6,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { ExceptionQueuePanel } from '../components/ExceptionQueuePanel';
 import { exceptionApi } from '../countyStudyApi';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
+import { useDownstreamClosureReceiptStore } from '@/pages/suites/downstreamClosureReceiptStore';
 
 const createWorkflowDraftMock = vi.hoisted(() => vi.fn());
 const createEvidenceDraftMock = vi.hoisted(() => vi.fn());
@@ -79,6 +80,11 @@ const renderPanel = () =>
 
 beforeEach(() => {
   vi.clearAllMocks();
+  act(() => {
+    useDownstreamClosureReceiptStore.getState().clearReceipt('exc-1');
+    useDownstreamClosureReceiptStore.getState().clearReceipt('exc-2');
+    useDownstreamClosureReceiptStore.getState().clearReceipt('exc-3');
+  });
   (useCountyStudioStore as ReturnType<typeof vi.fn>).mockReturnValue({ activeStudyId: 'study-1' });
   (exceptionApi.list as ReturnType<typeof vi.fn>).mockResolvedValue([
     mockException,
@@ -164,8 +170,13 @@ describe('ExceptionQueuePanel', () => {
       'SegmentReview',
       'sc-1',
       'Exception: Low Sample',
+      expect.objectContaining({
+        exceptionSetId: 'exc-1',
+        destination: 'Dais',
+        studyId: 'study-1',
+      }),
     );
-    expect(screen.getByTestId('exception-routing-closure-exc-1')).toHaveTextContent('Routed to Dais');
+    expect(screen.getByTestId('exception-routing-closure-exc-1')).toHaveTextContent('Draft saved for Dais');
     expect(screen.getByTestId('exception-routing-closure-exc-1')).toHaveTextContent('Awaiting return');
   });
 
@@ -182,6 +193,11 @@ describe('ExceptionQueuePanel', () => {
       'SegmentReview',
       'sc-1',
       'Exception: Outlier',
+      expect.objectContaining({
+        exceptionSetId: 'exc-2',
+        destination: 'Dais',
+        studyId: 'study-1',
+      }),
     );
   });
 });

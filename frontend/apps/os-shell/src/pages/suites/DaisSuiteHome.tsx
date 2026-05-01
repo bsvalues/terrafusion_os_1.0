@@ -24,6 +24,7 @@ import ManagementDashboardPanel from '../../components/dais/ManagementDashboardP
 import SupervisorFlagQueue from '../../components/dais/SupervisorFlagQueue';
 import { useDaisSuiteStats } from './useDaisSuiteStats';
 import { useSegmentWorkflowDraftStore } from './segmentWorkflowDraftStore';
+import { useDownstreamClosureReceiptStore } from './downstreamClosureReceiptStore';
 import {
   Scale,
   Receipt,
@@ -96,16 +97,18 @@ const DAIS_MODULES: SuiteModuleDef[] = [
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
 const fmtCurrency = (n: number | undefined | null) => (n != null ? `$${n.toLocaleString()}` : '—');
 
-function parseDaisDeeplinkQuery(raw: unknown): { template?: string; segmentId?: string } {
+function parseDaisDeeplinkQuery(raw: unknown): { template?: string; segmentId?: string; exceptionSetId?: string } {
   if (typeof raw !== 'string' || raw.length === 0) return {};
   try {
     const trimmed = raw.startsWith('?') ? raw.slice(1) : raw;
     const params = new URLSearchParams(trimmed);
-    const out: { template?: string; segmentId?: string } = {};
+    const out: { template?: string; segmentId?: string; exceptionSetId?: string } = {};
     const template = params.get('template');
     if (template) out.template = template;
     const segmentId = params.get('segmentId');
     if (segmentId) out.segmentId = segmentId;
+    const exceptionSetId = params.get('exceptionSetId');
+    if (exceptionSetId) out.exceptionSetId = exceptionSetId;
     return out;
   } catch {
     return {};
@@ -119,6 +122,7 @@ export interface DaisSuiteHomeProps {
 export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
   const { stats, loading, error, source } = useDaisSuiteStats();
   const createDraft = useSegmentWorkflowDraftStore((s) => s.createDraft);
+  const recordDraftReceipt = useDownstreamClosureReceiptStore((s) => s.recordDraft);
   const [selectedRole, setSelectedRole] = useState<AssessorStaffRole>('chief_appraiser');
   const [briefState, setBriefState] = useState<{
     status: 'idle' | 'loading' | 'success' | 'error';
@@ -138,9 +142,26 @@ export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
     const segmentId = segmentFromMeta ?? parsed.segmentId ?? null;
 
     const labelFromMeta = typeof metadata.segmentLabel === 'string' ? metadata.segmentLabel : null;
+    const exceptionFromMeta = typeof metadata.exceptionSetId === 'string' ? metadata.exceptionSetId : null;
+    const exceptionSetId = exceptionFromMeta ?? parsed.exceptionSetId ?? undefined;
 
     if (template === 'SegmentReview' && segmentId) {
-      createDraft(template, segmentId, labelFromMeta ?? segmentId);
+      const segmentLabel = labelFromMeta ?? segmentId;
+      createDraft(template, segmentId, segmentLabel, {
+        exceptionSetId,
+        destination: 'Dais',
+        studyId: typeof metadata.studyId === 'string' ? metadata.studyId : undefined,
+        countyId: typeof metadata.countyId === 'string' ? metadata.countyId : undefined,
+      });
+      if (exceptionSetId) {
+        recordDraftReceipt({
+          exceptionSetId,
+          destination: 'Dais',
+          template,
+          segmentId,
+          segmentLabel,
+        });
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -2,14 +2,12 @@
  * DaisWorkflowDraftPanel.tsx
  * -------------------------------------------------------------
  * Task D3 — renders the active segment-workflow draft handed off
- * from County Studio. Shows nothing (returns null) when no draft
- * is in the session-scoped segmentWorkflowDraftStore.
+ * from County Studio. Shows nothing (returns null) when no durable draft
+ * is in the segmentWorkflowDraftStore.
  *
  * Buttons:
- *   • "Open in Dais Workbench" — deferred; tooltip explains that
- *     workflow authoring opens in the Dais workbench when selected.
- *     (Kept truthful: no fake navigation to a screen that doesn't
- *     accept a draft yet.)
+ *   • "Open in Dais Workbench" — opens Property Workbench's Dais tab
+ *     with handoff metadata and records the downstream receipt as opened.
  *   • "Dismiss draft" — clears the draft via clearDraft().
  *
  * Also renders a "← From County Studio · Segment X" chip that
@@ -18,6 +16,7 @@
 import { useCallback } from 'react';
 import activateModule from '@/orchestration/moduleActivation';
 import { useSegmentWorkflowDraftStore } from '../../pages/suites/segmentWorkflowDraftStore';
+import { useDownstreamClosureReceiptStore } from '../../pages/suites/downstreamClosureReceiptStore';
 
 function formatTimestamp(iso: string): string {
   try {
@@ -35,6 +34,11 @@ function formatTimestamp(iso: string): string {
 export default function DaisWorkflowDraftPanel() {
   const activeDraft = useSegmentWorkflowDraftStore((s) => s.activeDraft);
   const clearDraft  = useSegmentWorkflowDraftStore((s) => s.clearDraft);
+  const receipt = useDownstreamClosureReceiptStore((s) =>
+    activeDraft?.handoff?.exceptionSetId ? s.receipts[activeDraft.handoff.exceptionSetId] : undefined,
+  );
+  const markOpened = useDownstreamClosureReceiptStore((s) => s.markOpened);
+  const markReturned = useDownstreamClosureReceiptStore((s) => s.markReturned);
 
   const handleBackToCountyStudio = useCallback(() => {
     if (!activeDraft) return;
@@ -43,6 +47,37 @@ export default function DaisWorkflowDraftPanel() {
       metadata: { segmentId: activeDraft.segmentId },
     });
   }, [activeDraft]);
+
+  const handleOpenWorkbench = useCallback(() => {
+    if (!activeDraft) return;
+    const exceptionSetId = activeDraft.handoff?.exceptionSetId;
+    if (exceptionSetId) {
+      markOpened(exceptionSetId);
+    }
+    void activateModule('property-workbench', {
+      source: 'system',
+      metadata: {
+        tabId: 'dais',
+        segmentId: activeDraft.segmentId,
+        segmentLabel: activeDraft.segmentLabel,
+        countyStudioHandoff: activeDraft.template,
+        exceptionSetId,
+      },
+    });
+  }, [activeDraft, markOpened]);
+
+  const handleReturnReceipt = useCallback(() => {
+    if (!activeDraft?.handoff?.exceptionSetId) return;
+    markReturned(activeDraft.handoff.exceptionSetId);
+    void activateModule('county-studio', {
+      source: 'system',
+      metadata: {
+        segmentId: activeDraft.segmentId,
+        exceptionSetId: activeDraft.handoff.exceptionSetId,
+        downstreamStatus: 'Returned',
+      },
+    });
+  }, [activeDraft, markReturned]);
 
   if (!activeDraft) return null;
 
@@ -75,8 +110,13 @@ export default function DaisWorkflowDraftPanel() {
               <span data-testid="dais-draft-timestamp">Drafted {formatTimestamp(activeDraft.createdAt)}</span>
             </p>
             <p className="mt-1 text-xs" style={{ color: 'hsl(var(--tf-muted) / 0.75)' }}>
-              Draft is session-scoped: it will clear when you close this workspace.
+              Draft is persisted locally until dismissed. County Studio remains the queue owner.
             </p>
+            {receipt && (
+              <p className="mt-1 text-xs" data-testid="dais-draft-receipt-status" style={{ color: 'hsl(var(--tf-suite-dais))' }}>
+                Downstream receipt: {receipt.status} · updated {formatTimestamp(receipt.updatedAt)}
+              </p>
+            )}
           </div>
           <button
             type="button"
@@ -104,8 +144,8 @@ export default function DaisWorkflowDraftPanel() {
           <button
             type="button"
             data-testid="dais-draft-open-workbench"
-            disabled
-            title="Workflow authoring opens in the Dais workbench when selected."
+            onClick={handleOpenWorkbench}
+            title="Open the Property Workbench Dais tab with this County Studio handoff metadata."
             className="rounded-md border px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
               borderColor: 'hsl(var(--tf-suite-dais) / 0.35)',
@@ -115,6 +155,21 @@ export default function DaisWorkflowDraftPanel() {
           >
             Open in Dais Workbench
           </button>
+          {activeDraft.handoff?.exceptionSetId && (
+            <button
+              type="button"
+              data-testid="dais-draft-return-receipt"
+              onClick={handleReturnReceipt}
+              className="rounded-md border px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em]"
+              style={{
+                borderColor: 'hsl(var(--tf-success, 142 71% 45%) / 0.4)',
+                background:  'hsl(var(--tf-success, 142 71% 45%) / 0.12)',
+                color:       'hsl(var(--tf-success, 142 71% 45%))',
+              }}
+            >
+              Return receipt
+            </button>
+          )}
           <button
             type="button"
             data-testid="dais-draft-dismiss"
