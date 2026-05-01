@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-04-27T00:00:00.000Z",
+  "overall": "PASS",
+  "checks": [
+    { "name": "node", "status": "PASS", "detail": "node v20.0.0" },
+    { "name": "pnpm", "status": "PASS", "detail": "pnpm 9.0.0" },
+    { "name": "git", "status": "PASS", "detail": "git 2.40.0" },
+    {
+      "name": "lockedCard",
+      "status": "WARN",
+      "detail": "No locked card found"
+    },
+    {
+      "name": "proofResults",
+      "status": "WARN",
+      "detail": "No proof results found"
+    }
+  ],
+  "lockedCard": null,
+  "proofResults": null,
+  "saveState": null
+}

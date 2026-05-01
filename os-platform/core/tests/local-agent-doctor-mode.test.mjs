@@ -222,7 +222,9 @@ describe('Local agent doctor mode', () => {
   });
 
   it('is included in the local-agent test script', () => {
-    const packageJson = readFileSync(resolve(process.cwd(), 'package.json'), 'utf8');
-    assert.match(packageJson, /local-agent-doctor-mode\.test\.mjs/);
+    const packageJson = JSON.parse(readFileSync(resolve(process.cwd(), 'package.json'), 'utf8'));
+    assert.match(packageJson.scripts['test:local-agent'], /run-local-agent-tests\.mjs/);
+    const runner = readFileSync(resolve(process.cwd(), 'os-platform/core/pilot/run-local-agent-tests.mjs'), 'utf8');
+    assert.ok(runner.includes('^local-agent-.*\\.test\\.mjs$'));
   });
 });

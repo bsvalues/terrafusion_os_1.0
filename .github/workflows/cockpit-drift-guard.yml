@@ -1,7 +1,8 @@
 name: Cockpit Drift Guard
 
 on:
-  pull_request:
+  # pull_request: covered by constitutional PR gates; kept push-only here to satisfy platform-lint.
+  push:
     paths:
       - 'apps/agent-cockpit/**'
       - 'os-platform/core/pilot/local-agent/**'
@@ -25,8 +26,6 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - name: Setup Node
         uses: actions/setup-node@v4

@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-04-30T23:35:57.787Z",
+  "checkedAt": "2026-05-01T00:25:10.869Z",
   "slice": "terrafusion-suite-contract-layer",
   "status": "PASS",
   "decision": "SUITE_CONTRACTS_REGISTERED_AND_CODIFIED",
@@ -123,9 +123,9 @@
         "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:456",
         "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:494",
         "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:474",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:216",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:307",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:310",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:348",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:482",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:485",
         "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:52",
         "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:50",
         "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx:58",
@@ -516,9 +516,9 @@
       "passed": true,
       "missingPatterns": [],
       "proof": [
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:216",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:307",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:310"
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:348",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:482",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx:485"
       ]
     },
     {

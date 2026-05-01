@@ -574,6 +574,9 @@ applications/valuator-pro-studio/
 docs/Dev/
 os-kernel/engines/data-pipeline/exports/
 os-kernel/engines/data-pipeline/project_data/
+# tools/dev contains committed build tooling — override the Dev/ case-insensitive catch-all
+!tools/dev/
+!tools/dev/*.mjs
 
 
 # Native Shell UI build output
