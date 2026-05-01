@@ -1546,6 +1546,8 @@ internal static class Program
             "property_use" => PiiClassificationPreflightStance.AllowAny, // C51-PII-PROMOTE-A
             "property_use:imprv.primary_use_cd" => PiiClassificationPreflightStance.AllowAny, // C51-PII-PROMOTE-B
             "property_use:sale.primary_use_cd"  => PiiClassificationPreflightStance.AllowAny, // C51-PII-PROMOTE-C
+            "property_use:imprv.secondary_use_cd"        => PiiClassificationPreflightStance.AllowAny, // C51-PII-PROMOTE-D
+            "property_use:property_val.secondary_use_cd" => PiiClassificationPreflightStance.AllowAny, // C51-PII-PROMOTE-D
             _              => null,
         };
 
