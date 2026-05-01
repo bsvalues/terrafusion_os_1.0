@@ -8,6 +8,7 @@ import { useDownstreamClosureReceiptStore } from '../downstreamClosureReceiptSto
 const activateModuleMock = vi.hoisted(() => vi.fn());
 const recordDownstreamReceiptMock = vi.hoisted(() => vi.fn());
 const updateDownstreamReceiptStatusMock = vi.hoisted(() => vi.fn());
+const updateDownstreamReceiptStatusByReceiptIdMock = vi.hoisted(() => vi.fn());
 vi.mock('@/orchestration/moduleActivation', () => ({
   default: activateModuleMock,
   activateModule: activateModuleMock,
@@ -16,6 +17,7 @@ vi.mock('../../forge/county-studio/countyStudyApi', () => ({
   exceptionApi: {
     recordDownstreamReceipt: recordDownstreamReceiptMock,
     updateDownstreamReceiptStatus: updateDownstreamReceiptStatusMock,
+    updateDownstreamReceiptStatusByReceiptId: updateDownstreamReceiptStatusByReceiptIdMock,
   },
 }));
 
@@ -61,6 +63,7 @@ function resetStore() {
   act(() => {
     useSegmentWorkflowDraftStore.getState().clearDraft();
     useDownstreamClosureReceiptStore.getState().clearReceipt('exc-dais');
+    useDownstreamClosureReceiptStore.getState().clearReceipt('receipt-dais-direct');
   });
 }
 
@@ -69,6 +72,7 @@ describe('DaisSuiteHome - County Studio deeplink consumption', () => {
     activateModuleMock.mockReset();
     recordDownstreamReceiptMock.mockResolvedValue({});
     updateDownstreamReceiptStatusMock.mockResolvedValue({});
+    updateDownstreamReceiptStatusByReceiptIdMock.mockResolvedValue({});
     resetStore();
   });
 
@@ -163,6 +167,58 @@ describe('DaisSuiteHome - County Studio deeplink consumption', () => {
         metadata: expect.objectContaining({
           segmentId: 'seg-raw',
           exceptionSetId: 'exc-dais',
+          downstreamStatus: 'Returned',
+        }),
+      }),
+    );
+  });
+
+  it('opens and returns direct segment inspector receipt by receipt id', () => {
+    render(
+      <DaisSuiteHome
+        metadata={{
+          workflowTemplate: 'SegmentReview',
+          segmentId: 'seg-direct',
+          segmentLabel: 'Direct Segment',
+          downstreamReceiptId: 'receipt-dais-direct',
+        }}
+      />,
+    );
+
+    const draft = useSegmentWorkflowDraftStore.getState().activeDraft;
+    expect(draft?.handoff?.receiptId).toBe('receipt-dais-direct');
+    expect(screen.getByTestId('dais-draft-receipt-status')).toHaveTextContent('Drafted');
+
+    fireEvent.click(screen.getByTestId('dais-draft-open-workbench'));
+    expect(useDownstreamClosureReceiptStore.getState().receipts['receipt-dais-direct'].status).toBe('Opened');
+    expect(updateDownstreamReceiptStatusByReceiptIdMock).toHaveBeenCalledWith(
+      'receipt-dais-direct',
+      'Opened',
+      expect.objectContaining({ downstreamEntityId: 'dais-workbench:seg-direct' }),
+    );
+    expect(activateModuleMock).toHaveBeenCalledWith(
+      'property-workbench',
+      expect.objectContaining({
+        metadata: expect.objectContaining({
+          segmentId: 'seg-direct',
+          downstreamReceiptId: 'receipt-dais-direct',
+        }),
+      }),
+    );
+
+    fireEvent.click(screen.getByTestId('dais-draft-return-receipt'));
+    expect(useDownstreamClosureReceiptStore.getState().receipts['receipt-dais-direct'].status).toBe('Returned');
+    expect(updateDownstreamReceiptStatusByReceiptIdMock).toHaveBeenCalledWith(
+      'receipt-dais-direct',
+      'Returned',
+      expect.objectContaining({ downstreamEntityId: 'dais-return:seg-direct' }),
+    );
+    expect(activateModuleMock).toHaveBeenCalledWith(
+      'county-studio',
+      expect.objectContaining({
+        metadata: expect.objectContaining({
+          segmentId: 'seg-direct',
+          downstreamReceiptId: 'receipt-dais-direct',
           downstreamStatus: 'Returned',
         }),
       }),

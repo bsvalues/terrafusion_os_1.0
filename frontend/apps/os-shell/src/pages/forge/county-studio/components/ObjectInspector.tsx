@@ -18,12 +18,17 @@
 // hook; each tab handles its own loading / error state so one failing
 // endpoint does not black out the entire panel.
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import activateModule from '@/orchestration/moduleActivation';
 import { useInspectorData } from '../hooks/useInspectorData';
+import { exceptionApi, type CountyDownstreamClosureReceiptDto } from '../countyStudyApi';
 import { AiDiagnosisPanel } from './AiDiagnosisPanel';
+import {
+  useDownstreamClosureReceiptStore,
+  type DownstreamClosureReceipt,
+} from '@/pages/suites/downstreamClosureReceiptStore';
 import type {
   CountySegmentDetailDto,
   EquityClassification,
@@ -308,7 +313,7 @@ const Sparkline = ({
 // ── Handoff button ────────────────────────────────────────────────────────
 
 const HandoffButton = ({
-  label, subtitle, deeplinkQuery, disabledTooltip, onClick, testId,
+  label, subtitle, deeplinkQuery, disabledTooltip, onClick, testId, receiptLabel,
 }: {
   label: string;
   subtitle: string;
@@ -316,6 +321,7 @@ const HandoffButton = ({
   disabledTooltip: string;
   onClick: () => void;
   testId: string;
+  receiptLabel?: string;
 }) => {
   const enabled = deeplinkQuery !== null;
   return (
@@ -334,9 +340,35 @@ const HandoffButton = ({
       <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', marginTop: 2 }}>
         {enabled ? subtitle : disabledTooltip}
       </div>
+      {receiptLabel && (
+        <div
+          data-testid={`${testId}-receipt`}
+          style={{ fontSize: 10, color: 'hsl(var(--tf-accent, 217 91% 60%))', marginTop: 3 }}
+        >
+          {receiptLabel}
+        </div>
+      )}
     </button>
   );
 };
+
+function toLocalReceipt(dto: CountyDownstreamClosureReceiptDto): DownstreamClosureReceipt {
+  return {
+    receiptId: dto.receiptId,
+    exceptionSetId: dto.exceptionSetId,
+    sourceType: dto.sourceType,
+    destination: dto.destination,
+    template: dto.template,
+    segmentId: dto.segmentId,
+    segmentLabel: dto.segmentLabel,
+    status: dto.status,
+    downstreamEntityId: dto.downstreamEntityId,
+    evidenceRef: dto.evidenceRef,
+    notes: dto.notes,
+    draftedAt: dto.draftedAt,
+    updatedAt: dto.updatedAt,
+  };
+}
 
 // ── Tab panels ────────────────────────────────────────────────────────────
 
@@ -525,11 +557,13 @@ const TrendPanel = ({
 };
 
 const ActionPanel = ({
-  context, loading, error, onRetry, onAtlas, onWorkbench,
+  context, loading, error, onRetry, onAtlas, onWorkbench, directReceipts, onReceiptCreated,
 }: {
   context: SegmentActionContextDto | null;
   loading: boolean; error: string | null; onRetry: () => void;
   onAtlas: () => void; onWorkbench: () => void;
+  directReceipts: DownstreamClosureReceipt[];
+  onReceiptCreated: (receipt: CountyDownstreamClosureReceiptDto) => void;
 }) => {
   // Spatial handoffs — preserved from the original Inspector, always active.
   const spatial = (
@@ -604,6 +638,41 @@ const ActionPanel = ({
   const fireModule = (moduleId: string, metadata: Record<string, unknown>) => {
     void activateModule(moduleId, { source: 'system', metadata });
   };
+  const findReceipt = (destination: 'Dais' | 'Dossier') =>
+    directReceipts.find((receipt) =>
+      receipt.sourceType === 'SegmentInspector'
+      && receipt.destination === destination
+      && receipt.segmentId === context.segmentId);
+  const receiptLabel = (receipt: DownstreamClosureReceipt | undefined) =>
+    receipt
+      ? `Backend receipt: ${receipt.status} · updated ${new Date(receipt.updatedAt).toLocaleDateString()}`
+      : undefined;
+  const fireSegmentReceiptModule = async (
+    moduleId: 'suite-dais' | 'suite-dossier',
+    destination: 'Dais' | 'Dossier',
+    template: 'SegmentReview' | 'SegmentEvidence',
+    metadata: Record<string, unknown>,
+  ) => {
+    try {
+      const receipt = await exceptionApi.recordSegmentInspectorReceipt(context.segmentId, {
+        studyId: context.studyId,
+        destination,
+        template,
+        segmentLabel: context.neighborhoodCode ?? context.segmentId,
+        status: 'Drafted',
+      });
+      onReceiptCreated(receipt);
+      void activateModule(moduleId, {
+        source: 'system',
+        metadata: {
+          ...metadata,
+          downstreamReceiptId: receipt.receiptId,
+        },
+      });
+    } catch (receiptError) {
+      console.error(`Failed to persist ${destination} segment inspector handoff receipt`, receiptError);
+    }
+  };
 
   return (
     <>
@@ -664,7 +733,8 @@ const ActionPanel = ({
         subtitle={`Dispatch ${context.dais.workflowTemplate} workflow with ${context.totalParcels.toLocaleString()} parcels`}
         disabledTooltip="Dais integration not yet active."
         deeplinkQuery={context.dais.deeplinkQuery}
-        onClick={() => fireModule('suite-dais', {
+        receiptLabel={receiptLabel(findReceipt('Dais'))}
+        onClick={() => void fireSegmentReceiptModule('suite-dais', 'Dais', 'SegmentReview', {
           countyId:         context.countyId,
           deeplinkQuery:     context.dais.deeplinkQuery,
           workflowTemplate:  context.dais.workflowTemplate,
@@ -678,7 +748,8 @@ const ActionPanel = ({
         subtitle={`Prepare ${context.dossier.packetTemplate} packet for this segment`}
         disabledTooltip="Dossier integration not yet active."
         deeplinkQuery={context.dossier.deeplinkQuery}
-        onClick={() => fireModule('suite-dossier', {
+        receiptLabel={receiptLabel(findReceipt('Dossier'))}
+        onClick={() => void fireSegmentReceiptModule('suite-dossier', 'Dossier', 'SegmentEvidence', {
           countyId:       context.countyId,
           deeplinkQuery:   context.dossier.deeplinkQuery,
           packetTemplate:  context.dossier.packetTemplate,
@@ -704,11 +775,21 @@ export function ObjectInspector() {
   const { segments, selectedSegmentId, activeStudy } = useCountyStudioStore();
   const navigate = useNavigate();
   const seg = segments.find((s) => s.segmentId === selectedSegmentId);
+  const receipts = useDownstreamClosureReceiptStore((s) => s.receipts);
+  const ingestReceipt = useDownstreamClosureReceiptStore((s) => s.ingestReceipt);
+  const ingestReceipts = useDownstreamClosureReceiptStore((s) => s.ingestReceipts);
 
   const {
     detail, detailLoading, detailError, retryDetail,
     context, contextLoading, contextError, retryContext,
   } = useInspectorData(selectedSegmentId);
+
+  useEffect(() => {
+    if (!activeStudy?.studyId) return;
+    void exceptionApi.listDownstreamReceipts(activeStudy.studyId)
+      .then((items) => ingestReceipts(items.map(toLocalReceipt)))
+      .catch((receiptError) => console.error('Failed to load downstream handoff receipts', receiptError));
+  }, [activeStudy?.studyId, ingestReceipts]);
 
   if (!seg) {
     return (
@@ -806,6 +887,10 @@ export function ObjectInspector() {
             onRetry={retryContext}
             onAtlas={handleOpenAtlas}
             onWorkbench={handleFindParcels}
+            directReceipts={Object.values(receipts).filter((receipt) =>
+              receipt.sourceType === 'SegmentInspector'
+              && receipt.segmentId === seg.segmentId)}
+            onReceiptCreated={(receipt) => ingestReceipt(toLocalReceipt(receipt))}
           />
         </TabsContent>
 

@@ -11,6 +11,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export interface SegmentEvidenceDraftHandoff {
+  receiptId?: string;
   exceptionSetId?: string;
   destination?: 'Dossier';
   countyId?: string;

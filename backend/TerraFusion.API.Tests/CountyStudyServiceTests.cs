@@ -723,6 +723,79 @@ public class CountyStudyServiceTests
         Assert.Equal("Returned", reopened.Status);
     }
 
+    [Fact]
+    public async Task UpsertSegmentInspectorHandoffReceipt_PersistsDirectReceiptAndReturnMetadata()
+    {
+        var (ctx, svc) = CreateSut();
+        var study = await svc.CreateStudyAsync(
+            new CreateStudyRequest(Guid.NewGuid().ToString(), 2026, StudyType.RatioStudy, null),
+            "u1");
+        var segmentSet = new CountySegmentSet
+        {
+            SegmentSetId = Guid.NewGuid(),
+            StudyId = study.StudyId,
+            CountyId = study.CountyId,
+            Name = "Inspector Direct",
+            SourceType = SegmentSetSourceType.Hybrid,
+            Version = 1,
+            IsBaseline = true,
+            CreatedBy = "u1",
+            UpdatedBy = "u1",
+        };
+        var segment = new CountySegment
+        {
+            SegmentId = Guid.NewGuid(),
+            SegmentSetId = segmentSet.SegmentSetId,
+            CountyId = study.CountyId,
+            Name = "West Richland R1",
+            SegmentType = SegmentType.Residential,
+            ParcelCount = 42,
+            MedianRatio = 0.97m,
+            CoefficientOfDispersion = 14.2m,
+            PriceRelatedDifferential = 1.01m,
+            StabilityScore = 72,
+            RiskScore = 35,
+            ExceptionCount = 2,
+        };
+        ctx.CountySegmentSets.Add(segmentSet);
+        ctx.CountySegments.Add(segment);
+        await ctx.SaveChangesAsync();
+
+        var drafted = await svc.UpsertSegmentInspectorHandoffReceiptAsync(
+            segment.SegmentId,
+            new UpsertSegmentInspectorHandoffReceiptRequest(
+                StudyId: study.StudyId,
+                Destination: "Dais",
+                Template: "SegmentReview",
+                SegmentLabel: "West Richland R1",
+                Status: "Drafted"),
+            "router");
+
+        Assert.Null(drafted.ExceptionSetId);
+        Assert.Equal("SegmentInspector", drafted.SourceType);
+        Assert.Equal(segment.SegmentId.ToString(), drafted.SegmentId);
+        Assert.Equal("Dais", drafted.Destination);
+        Assert.Equal("Drafted", drafted.Status);
+
+        var returned = await svc.UpdateDownstreamClosureReceiptByReceiptIdAsync(
+            drafted.ReceiptId,
+            DownstreamClosureReceiptStatus.Returned,
+            "dais",
+            downstreamEntityId: "dais-return:seg",
+            notes: "Returned from direct inspector handoff.");
+
+        Assert.Equal("Returned", returned.Status);
+        Assert.Equal("dais-return:seg", returned.DownstreamEntityId);
+        Assert.Equal("Returned from direct inspector handoff.", returned.Notes);
+
+        var receipts = await svc.GetDownstreamClosureReceiptsAsync(study.StudyId);
+        var receipt = Assert.Single(receipts);
+        Assert.Equal(drafted.ReceiptId, receipt.ReceiptId);
+        Assert.Null(receipt.ExceptionSetId);
+        Assert.Equal("SegmentInspector", receipt.SourceType);
+        Assert.Equal("Returned", receipt.Status);
+    }
+
     // ── UpdateApprovalStateAsync — state machine unit tests ──────────────────
 
     /// <summary>

@@ -157,21 +157,32 @@ public sealed class CountyDownstreamClosureReceiptConfiguration : IEntityTypeCon
     {
         builder.HasKey(e => e.ReceiptId);
         builder.ToTable("CountyDownstreamClosureReceipts");
+        builder.Property(e => e.SourceType).IsRequired().HasConversion<string>().HasMaxLength(50)
+               .HasDefaultValue(DownstreamClosureReceiptSource.ExceptionQueue);
         builder.Property(e => e.Destination).IsRequired().HasConversion<string>().HasMaxLength(50);
         builder.Property(e => e.Template).IsRequired().HasMaxLength(100);
         builder.Property(e => e.SegmentId).IsRequired().HasMaxLength(100);
         builder.Property(e => e.SegmentLabel).IsRequired().HasMaxLength(200);
         builder.Property(e => e.Status).IsRequired().HasConversion<string>().HasMaxLength(50);
+        builder.Property(e => e.DownstreamEntityId).HasMaxLength(200);
+        builder.Property(e => e.EvidenceRef).HasMaxLength(500);
+        builder.Property(e => e.Notes).HasMaxLength(1000);
         builder.Property(e => e.UpdatedBy).IsRequired().HasMaxLength(450);
         builder.HasIndex(e => e.ExceptionSetId)
                .IsUnique()
+               .HasFilter("\"ExceptionSetId\" IS NOT NULL")
                .HasDatabaseName("IX_CountyDownstreamClosureReceipts_ExceptionSet");
+        builder.HasIndex(e => new { e.SourceType, e.StudyId, e.SegmentId, e.Destination })
+               .IsUnique()
+               .HasFilter("\"SourceType\" = 'SegmentInspector'")
+               .HasDatabaseName("IX_CountyDownstreamClosureReceipts_SourceSegment");
         builder.HasIndex(e => new { e.StudyId, e.Status })
                .HasDatabaseName("IX_CountyDownstreamClosureReceipts_StudyStatus");
         builder.HasOne(e => e.ExceptionSet)
                .WithOne()
                .HasForeignKey<CountyDownstreamClosureReceipt>(e => e.ExceptionSetId)
-               .OnDelete(DeleteBehavior.Cascade);
+               .OnDelete(DeleteBehavior.Cascade)
+               .IsRequired(false);
     }
 }
 

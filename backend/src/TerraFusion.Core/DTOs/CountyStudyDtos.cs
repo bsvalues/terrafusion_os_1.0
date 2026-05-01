@@ -229,14 +229,18 @@ public record CountyExceptionSetDto(
 
 public record CountyDownstreamClosureReceiptDto(
     Guid ReceiptId,
-    Guid ExceptionSetId,
+    Guid? ExceptionSetId,
     Guid StudyId,
     Guid CountyId,
+    string SourceType,
     string Destination,
     string Template,
     string SegmentId,
     string SegmentLabel,
     string Status,
+    string? DownstreamEntityId,
+    string? EvidenceRef,
+    string? Notes,
     DateTime DraftedAt,
     DateTime UpdatedAt,
     string UpdatedBy
@@ -247,10 +251,29 @@ public record UpsertDownstreamClosureReceiptRequest(
     string Template,
     string SegmentId,
     string SegmentLabel,
-    string? Status = null
+    string? Status = null,
+    string? DownstreamEntityId = null,
+    string? EvidenceRef = null,
+    string? Notes = null
 );
 
-public record UpdateDownstreamClosureReceiptStatusRequest(string Status);
+public record UpsertSegmentInspectorHandoffReceiptRequest(
+    Guid StudyId,
+    string Destination,
+    string Template,
+    string SegmentLabel,
+    string? Status = null,
+    string? DownstreamEntityId = null,
+    string? EvidenceRef = null,
+    string? Notes = null
+);
+
+public record UpdateDownstreamClosureReceiptStatusRequest(
+    string Status,
+    string? DownstreamEntityId = null,
+    string? EvidenceRef = null,
+    string? Notes = null
+);
 
 /// <summary>Body for PATCH api/county-study/studies/{studyId}/status.</summary>
 public record UpdateStudyStatusRequest(string Status);

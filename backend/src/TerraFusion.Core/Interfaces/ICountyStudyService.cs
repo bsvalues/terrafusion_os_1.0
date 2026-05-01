@@ -46,7 +46,9 @@ public interface ICountyStudyService
     Task<CountyExceptionSetDto> AddExceptionNoteAsync(Guid exceptionSetId, string noteText, string userId);
     Task<List<CountyDownstreamClosureReceiptDto>> GetDownstreamClosureReceiptsAsync(Guid studyId);
     Task<CountyDownstreamClosureReceiptDto> UpsertDownstreamClosureReceiptAsync(Guid exceptionSetId, UpsertDownstreamClosureReceiptRequest req, string userId);
+    Task<CountyDownstreamClosureReceiptDto> UpsertSegmentInspectorHandoffReceiptAsync(Guid segmentId, UpsertSegmentInspectorHandoffReceiptRequest req, string userId);
     Task<CountyDownstreamClosureReceiptDto> UpdateDownstreamClosureReceiptStatusAsync(Guid exceptionSetId, DownstreamClosureReceiptStatus status, string userId);
+    Task<CountyDownstreamClosureReceiptDto> UpdateDownstreamClosureReceiptByReceiptIdAsync(Guid receiptId, DownstreamClosureReceiptStatus status, string userId, string? downstreamEntityId = null, string? evidenceRef = null, string? notes = null);
 
     // Rollups (Task B — County → City → Neighborhood drill lattice)
     Task<List<CityRollupRowDto>> GetCityRollupAsync(Guid studyId);

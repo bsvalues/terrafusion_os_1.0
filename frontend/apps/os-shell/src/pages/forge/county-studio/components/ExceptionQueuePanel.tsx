@@ -17,12 +17,17 @@ import {
 
 function toLocalReceipt(dto: CountyDownstreamClosureReceiptDto): DownstreamClosureReceipt {
   return {
+    receiptId: dto.receiptId,
     exceptionSetId: dto.exceptionSetId,
+    sourceType: dto.sourceType,
     destination: dto.destination,
     template: dto.template,
     segmentId: dto.segmentId,
     segmentLabel: dto.segmentLabel,
     status: dto.status,
+    downstreamEntityId: dto.downstreamEntityId,
+    evidenceRef: dto.evidenceRef,
+    notes: dto.notes,
     draftedAt: dto.draftedAt,
     updatedAt: dto.updatedAt,
   };
