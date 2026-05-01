@@ -68,8 +68,8 @@ test('endpoint discovery extracts county controller routes and recommends live e
       [Route("api/counties")]
       public class CountyDataController : ControllerBase
       {
-        [HttpGet("{county}/parcels")]
-        public IActionResult Parcels(string county) => Ok();
+        [HttpGet("{countyToken}/parcels")]
+        public IActionResult Parcels(string countyToken) => Ok();
       }
     `
   );
@@ -104,7 +104,10 @@ test('endpoint discovery extracts county controller routes and recommends live e
     });
 
     const report = JSON.parse(
-      fs.readFileSync(path.join(root, 'generated', 'truth', 'runtime-endpoint-discovery.json'), 'utf8')
+      fs.readFileSync(
+        path.join(root, 'generated', 'truth', 'runtime-endpoint-discovery.json'),
+        'utf8'
+      )
     );
     assert.equal(report.summary.backendRoutesFound, 1);
     assert.equal(report.summary.liveEndpoints >= 1, true);
@@ -158,7 +161,10 @@ test('endpoint discovery classifies test-only routes as not usable', async () =>
     });
 
     const report = JSON.parse(
-      fs.readFileSync(path.join(root, 'generated', 'truth', 'runtime-endpoint-discovery.json'), 'utf8')
+      fs.readFileSync(
+        path.join(root, 'generated', 'truth', 'runtime-endpoint-discovery.json'),
+        'utf8'
+      )
     );
     const testEndpoint = report.candidateEndpoints.find(item =>
       item.filePath.endsWith('CostForgeTestController.cs')

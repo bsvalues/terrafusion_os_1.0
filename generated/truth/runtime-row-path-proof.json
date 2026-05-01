@@ -1,32 +1,29 @@
 {
-  "generatedAt": "2026-05-01T21:18:31.245Z",
+  "generatedAt": "2026-05-01T23:48:04.307Z",
   "repoRoot": "C:\\Users\\bsval\\terrafusion_os_1.0",
   "runtimeBaseUrl": "http://localhost:5046",
   "summary": {
     "candidatesChecked": 4,
-    "passed": 0,
-    "failed": 4,
+    "passed": 1,
+    "failed": 3,
     "silentBentonFallbacks": 0,
-    "zeroRowRuntimeResponses": 4
+    "zeroRowRuntimeResponses": 3
   },
   "proofs": [
     {
       "county": "Benton",
       "candidateReason": "costforge_cf1_or_higher",
       "expectedInventoryRows": 276,
-      "endpoint": null,
-      "endpointStatus": null,
-      "runtimeRowsReturned": 0,
-      "payloadCounty": null,
-      "selectedCountyEchoed": false,
+      "endpoint": "http://localhost:5046/api/counties/benton/parcels",
+      "endpointStatus": 200,
+      "runtimeRowsReturned": 50,
+      "payloadCounty": "Benton County",
+      "selectedCountyEchoed": true,
       "silentBentonFallbackDetected": false,
       "uiConsumerPath": "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx",
       "costForgeTier": "CF1_parcel_public_data",
       "costForgeMode": "public_data_loaded",
-      "allowedWorkflows": [
-        "open_county",
-        "inspect_public_parcel_data"
-      ],
+      "allowedWorkflows": ["open_county", "inspect_public_parcel_data"],
       "blockedWorkflows": [
         "claim_official_county_cost_schedule",
         "claim_county_certified_value",
@@ -51,70 +48,25 @@
         },
         {
           "endpoint": "http://localhost:5046/api/counties/benton/parcels",
-          "status": 404,
-          "runtimeRowsReturned": 0,
-          "payloadCounty": null,
-          "selectedCountyEchoed": false,
-          "silentBentonFallbackDetected": false
-        },
-        {
-          "endpoint": "http://localhost:5046/api/counties/benton/sales",
-          "status": 404,
-          "runtimeRowsReturned": 0,
-          "payloadCounty": null,
-          "selectedCountyEchoed": false,
-          "silentBentonFallbackDetected": false
-        },
-        {
-          "endpoint": "http://localhost:5046/api/county/benton/data",
-          "status": 404,
-          "runtimeRowsReturned": 0,
-          "payloadCounty": null,
-          "selectedCountyEchoed": false,
-          "silentBentonFallbackDetected": false
-        },
-        {
-          "endpoint": "http://localhost:5046/api/real-data/benton",
-          "status": 404,
-          "runtimeRowsReturned": 0,
-          "payloadCounty": null,
-          "selectedCountyEchoed": false,
-          "silentBentonFallbackDetected": false
-        },
-        {
-          "endpoint": "http://localhost:5046/api/terraforge/counties/benton/data",
-          "status": 404,
-          "runtimeRowsReturned": 0,
-          "payloadCounty": null,
-          "selectedCountyEchoed": false,
-          "silentBentonFallbackDetected": false
-        },
-        {
-          "endpoint": "http://localhost:5046/api/costforge/counties/benton/data",
-          "status": 404,
-          "runtimeRowsReturned": 0,
-          "payloadCounty": null,
-          "selectedCountyEchoed": false,
+          "status": 200,
+          "runtimeRowsReturned": 50,
+          "payloadCounty": "Benton County",
+          "selectedCountyEchoed": true,
           "silentBentonFallbackDetected": false
         }
       ],
-      "passed": false,
-      "blockers": [
-        "No runtime endpoint identified.",
-        "Runtime endpoint did not return 200. Status: null",
-        "Runtime returned zero rows.",
-        "Runtime did not echo selected county."
-      ]
+      "passed": true,
+      "blockers": []
     },
     {
       "county": "Pacific",
       "candidateReason": "apparent_full_chain",
       "expectedInventoryRows": 11,
-      "endpoint": null,
-      "endpointStatus": null,
+      "endpoint": "http://localhost:5046/api/counties/pacific/parcels",
+      "endpointStatus": 404,
       "runtimeRowsReturned": 0,
-      "payloadCounty": null,
-      "selectedCountyEchoed": false,
+      "payloadCounty": "pacific",
+      "selectedCountyEchoed": true,
       "silentBentonFallbackDetected": false,
       "uiConsumerPath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "costForgeTier": "CF0_no_runtime_data",
@@ -147,16 +99,16 @@
           "endpoint": "http://localhost:5046/api/counties/pacific/parcels",
           "status": 404,
           "runtimeRowsReturned": 0,
-          "payloadCounty": null,
-          "selectedCountyEchoed": false,
+          "payloadCounty": "pacific",
+          "selectedCountyEchoed": true,
           "silentBentonFallbackDetected": false
         },
         {
           "endpoint": "http://localhost:5046/api/counties/pacific/sales",
           "status": 404,
           "runtimeRowsReturned": 0,
-          "payloadCounty": null,
-          "selectedCountyEchoed": false,
+          "payloadCounty": "pacific",
+          "selectedCountyEchoed": true,
           "silentBentonFallbackDetected": false
         },
         {
@@ -194,21 +146,19 @@
       ],
       "passed": false,
       "blockers": [
-        "No runtime endpoint identified.",
-        "Runtime endpoint did not return 200. Status: null",
-        "Runtime returned zero rows.",
-        "Runtime did not echo selected county."
+        "Runtime endpoint did not return 200. Status: 404",
+        "Runtime returned zero rows."
       ]
     },
     {
       "county": "Franklin",
       "candidateReason": "scraper_api_candidate",
       "expectedInventoryRows": 0,
-      "endpoint": null,
-      "endpointStatus": null,
+      "endpoint": "http://localhost:5046/api/counties/franklin/parcels",
+      "endpointStatus": 404,
       "runtimeRowsReturned": 0,
-      "payloadCounty": null,
-      "selectedCountyEchoed": false,
+      "payloadCounty": "franklin",
+      "selectedCountyEchoed": true,
       "silentBentonFallbackDetected": false,
       "uiConsumerPath": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
       "costForgeTier": "CF0_no_runtime_data",
@@ -241,16 +191,16 @@
           "endpoint": "http://localhost:5046/api/counties/franklin/parcels",
           "status": 404,
           "runtimeRowsReturned": 0,
-          "payloadCounty": null,
-          "selectedCountyEchoed": false,
+          "payloadCounty": "franklin",
+          "selectedCountyEchoed": true,
           "silentBentonFallbackDetected": false
         },
         {
           "endpoint": "http://localhost:5046/api/counties/franklin/sales",
           "status": 404,
           "runtimeRowsReturned": 0,
-          "payloadCounty": null,
-          "selectedCountyEchoed": false,
+          "payloadCounty": "franklin",
+          "selectedCountyEchoed": true,
           "silentBentonFallbackDetected": false
         },
         {
@@ -288,21 +238,19 @@
       ],
       "passed": false,
       "blockers": [
-        "No runtime endpoint identified.",
-        "Runtime endpoint did not return 200. Status: null",
-        "Runtime returned zero rows.",
-        "Runtime did not echo selected county."
+        "Runtime endpoint did not return 200. Status: 404",
+        "Runtime returned zero rows."
       ]
     },
     {
       "county": "Walla Walla",
       "candidateReason": "scraper_only_candidate",
       "expectedInventoryRows": 0,
-      "endpoint": null,
-      "endpointStatus": null,
+      "endpoint": "http://localhost:5046/api/counties/walla-walla/parcels",
+      "endpointStatus": 404,
       "runtimeRowsReturned": 0,
-      "payloadCounty": null,
-      "selectedCountyEchoed": false,
+      "payloadCounty": "walla-walla",
+      "selectedCountyEchoed": true,
       "silentBentonFallbackDetected": false,
       "uiConsumerPath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "costForgeTier": "CF0_no_runtime_data",
@@ -335,16 +283,16 @@
           "endpoint": "http://localhost:5046/api/counties/walla-walla/parcels",
           "status": 404,
           "runtimeRowsReturned": 0,
-          "payloadCounty": null,
-          "selectedCountyEchoed": false,
+          "payloadCounty": "walla-walla",
+          "selectedCountyEchoed": true,
           "silentBentonFallbackDetected": false
         },
         {
           "endpoint": "http://localhost:5046/api/counties/walla-walla/sales",
           "status": 404,
           "runtimeRowsReturned": 0,
-          "payloadCounty": null,
-          "selectedCountyEchoed": false,
+          "payloadCounty": "walla-walla",
+          "selectedCountyEchoed": true,
           "silentBentonFallbackDetected": false
         },
         {
@@ -382,10 +330,8 @@
       ],
       "passed": false,
       "blockers": [
-        "No runtime endpoint identified.",
-        "Runtime endpoint did not return 200. Status: null",
-        "Runtime returned zero rows.",
-        "Runtime did not echo selected county."
+        "Runtime endpoint did not return 200. Status: 404",
+        "Runtime returned zero rows."
       ]
     }
   ]
