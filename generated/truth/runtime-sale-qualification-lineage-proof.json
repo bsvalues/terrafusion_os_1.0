@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-05-02T01:50:39.314Z",
+  "generatedAt": "2026-05-02T04:10:18.884Z",
   "repoRoot": "C:\\Users\\bsval\\terrafusion_os_1.0",
-  "runtimeBaseUrl": "http://localhost:5046",
+  "runtimeBaseUrl": "http://localhost:5000",
   "summary": {
     "candidatesChecked": 1,
     "passed": 1,
@@ -13,9 +13,9 @@
   "proofs": [
     {
       "county": "Benton",
-      "lineageEndpoint": "http://localhost:5046/api/counties/benton/runtime-lineage",
+      "lineageEndpoint": "http://localhost:5000/api/counties/benton/runtime-lineage",
       "lineageStatus": 200,
-      "qualificationEndpoint": "http://localhost:5046/api/sync/qualification-status/19190019-1919-1919-1919-191919191919?taxYear=2026",
+      "qualificationEndpoint": "http://localhost:5000/api/sync/qualification-status/19190019-1919-1919-1919-191919191919?taxYear=2026",
       "qualificationStatus": 200,
       "payloadCounty": "Benton County",
       "selectedCountyEchoed": true,

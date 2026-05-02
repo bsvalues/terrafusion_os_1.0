@@ -1,7 +1,7 @@
 # Runtime Sale Qualification Lineage Proof
 
-Generated: 2026-05-02T01:50:39.315Z
-Runtime base URL: `http://localhost:5046`
+Generated: 2026-05-02T04:10:18.885Z
+Runtime base URL: `http://localhost:5000`
 
 | County | Classification | Comparable Sales | Source Sales | Canonical Qualifications | All Sales | Recommendations | Recommendation Coverage % | Window Sales | Effective Qualified | Decision Qualified | Recommendation Fallback | Result | Blockers | Warnings |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---|---|

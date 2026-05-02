@@ -9,6 +9,7 @@ using TerraFusion.Data;
 using TerraFusion.Sync.Workbench.Comps.Sales;
 using TerraFusion.Sync.Workbench.Mapping;
 using TerraFusion.Sync.Workbench.Schema;
+using TerraFusion.Sync.Workbench.Transforms.Sales;
 
 namespace TerraFusion.API.Controllers;
 
@@ -33,6 +34,7 @@ public class SyncController : ControllerBase
     private readonly ISyncCountyActiveWorkbookService _activeWorkbook;
     private readonly ISalesCompStaleReader _staleReader;
     private readonly ISalesCompStaleSummaryReader _staleSummaryReader;
+    private const int MaxCanonicalSaleQualificationRunSales = 500_000;
 
     public SyncController(
         ISaleQualificationService qualification,
@@ -85,6 +87,107 @@ public class SyncController : ControllerBase
             elapsedMs   = (long)elapsed.TotalMilliseconds,
             completedAt = DateTime.UtcNow
         });
+    }
+
+    /// <summary>
+    /// Runs the mapped-workbook-backed canonical sale qualification landing path.
+    ///
+    /// This is distinct from <see cref="Requalify"/>: Requalify updates
+    /// ComparableSales.QualificationRecommendation; this endpoint writes
+    /// CanonicalSaleQualifications through the C36 runner. It requires the
+    /// operator to provide the county, mapped workbook, and source connection
+    /// explicitly so canonical rows cannot be generated from an implied or
+    /// fallback population.
+    /// </summary>
+    [HttpPost("canonical-sale-qualifications/run")]
+    public async Task<IActionResult> RunCanonicalSaleQualifications(
+        [FromServices] ISalesQualificationCanonicalRunner runner,
+        [FromBody] CanonicalSaleQualificationRunRequest? request,
+        CancellationToken ct)
+    {
+        if (request is null)
+            return BadRequest(new { error = "Request body is required." });
+        if (request.CountyId == Guid.Empty)
+            return BadRequest(new { error = "countyId is required." });
+        if (request.WorkbookId == Guid.Empty)
+            return BadRequest(new { error = "workbookId is required." });
+        if (request.SourceConnectionId == Guid.Empty)
+            return BadRequest(new { error = "sourceConnectionId is required." });
+        if (request.MaxSales <= 0)
+            return BadRequest(new { error = "maxSales must be positive." });
+        if (request.MaxSales > MaxCanonicalSaleQualificationRunSales)
+        {
+            return BadRequest(new
+            {
+                error = $"maxSales must be <= {MaxCanonicalSaleQualificationRunSales}.",
+                request.MaxSales,
+            });
+        }
+
+        var operatorId = string.IsNullOrWhiteSpace(request.OperatorId)
+            ? User.Identity?.Name ?? User.FindFirst("sub")?.Value ?? "sync-api-operator"
+            : request.OperatorId.Trim();
+
+        try
+        {
+            var started = DateTime.UtcNow;
+            var result = await runner.RunAsync(
+                request.CountyId,
+                request.WorkbookId,
+                request.SourceConnectionId,
+                request.MaxSales,
+                operatorId,
+                ct);
+            var elapsed = DateTime.UtcNow - started;
+
+            _logger.LogInformation(
+                "[Sync] Canonical sale qualification run complete: county={CountyId} workbook={WorkbookId} source={SourceConnectionId} read={RowsRead} persisted={RowsPersisted}",
+                request.CountyId,
+                result.WorkbookId,
+                result.SourceConnectionId,
+                result.RowsRead,
+                result.RowsPersisted);
+
+            return Ok(new
+            {
+                countyId = request.CountyId,
+                workbookId = result.WorkbookId,
+                sourceConnectionId = result.SourceConnectionId,
+                maxSales = request.MaxSales,
+                operatorId,
+                rowsRead = result.RowsRead,
+                rowsPersisted = result.RowsPersisted,
+                qualifiedCount = result.QualifiedCount,
+                excludedCount = result.ExcludedCount,
+                inconclusiveCount = result.InconclusiveCount,
+                skippedNoIdentifierCount = result.SkippedNoIdentifierCount,
+                elapsedMs = (long)elapsed.TotalMilliseconds,
+                completedAt = DateTime.UtcNow,
+                sample = result.Entries.Take(25).Select(entry => new
+                {
+                    entry.ChgOfOwnerId,
+                    entry.WacCode,
+                    entry.SaleRatioTypeCode,
+                    transformStatus = entry.TransformStatus.ToString(),
+                    entry.Persisted,
+                    entry.SkipReason,
+                }),
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "[Sync] Canonical sale qualification run rejected: county={CountyId} workbook={WorkbookId} source={SourceConnectionId}",
+                request.CountyId,
+                request.WorkbookId,
+                request.SourceConnectionId);
+            return BadRequest(new { error = ex.Message });
+        }
     }
 
     // ── Qualification pipeline status ──────────────────────────────────────
@@ -1464,3 +1567,10 @@ public class SyncController : ControllerBase
             IngestedAtUtc: version.IngestedAt));
     }
 }
+
+public sealed record CanonicalSaleQualificationRunRequest(
+    Guid CountyId,
+    Guid WorkbookId,
+    Guid SourceConnectionId,
+    int MaxSales = 1_000,
+    string? OperatorId = null);

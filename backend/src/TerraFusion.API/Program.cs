@@ -28,7 +28,10 @@ using TerraFusion.Levy.Services;
 using System.Data;
 using TerraFusion.Core.Services;
 using TerraFusion.Core.PACS;
+using TerraFusion.Sync.Workbench.Atlas;
+using TerraFusion.Sync.Workbench.Mapping;
 using TerraFusion.Sync.Workbench.Schema;
+using TerraFusion.Sync.Workbench.Transforms.Sales;
 using TerraFusion.API.Services.SpecLock;
 using TerraFusion.API.Services.Marketplace;
 using TerraFusion.API.Services.Telemetry;
@@ -1192,6 +1195,18 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     TerraFusion.Sync.Workbench.Comps.Sales.ISalesCompStaleSummaryReader,
     TerraFusion.Sync.Workbench.Comps.Sales.SalesCompStaleSummaryReader>();
+
+// Slice C36 — canonical sale-qualification write runner. This is the
+// controlled read -> decide -> persist path for CanonicalSaleQualifications.
+// It preserves the locked workbook + source-connection contract; request
+// handlers must pass explicit county/workbook/source ids before any source read
+// or canonical write can happen.
+builder.Services.AddScoped<ISecretResolver, EnvironmentSecretResolver>();
+builder.Services.AddScoped<ISyncMappingWorkbookReadModel, SyncMappingWorkbookReadModel>();
+builder.Services.AddScoped<ISalesRowReader, SqlServerSalesRowReader>();
+builder.Services.AddScoped<ICanonicalSalesQualificationWriter, CanonicalSalesQualificationWriter>();
+builder.Services.AddScoped<ISalesQualificationSampleRunner, SalesQualificationSampleRunner>();
+builder.Services.AddScoped<ISalesQualificationCanonicalRunner, SalesQualificationCanonicalRunner>();
 
 // Slice C48-D — opt-in PACS schema catalog wiring. When the operator has
 // configured ConnectionStrings:HarrisPacs (the legacy SOURCE database that
