@@ -10,11 +10,17 @@ namespace TerraFusion.Core.Entities.SyncBridge;
 /// references a <see cref="LoadBatchId"/>. Without it, the row is
 /// not provenanced.</para>
 ///
-/// <para><see cref="SourceFamily"/> values (closed enum, stored as
-/// varchar for forward-compat): <c>PACS_OLTP</c>, <c>PACS_BACKUP</c>,
+/// <para><see cref="SourceFamily"/> values are a closed vocabulary
+/// stored as varchar(64) for forward-compat. The canonical list lives
+/// in <see cref="SourceFamilies"/>. Adding a value is intentionally a
+/// code change.</para>
+///
+/// <para>v1 vocabulary: <c>PACS_OLTP</c>, <c>PACS_BACKUP</c>,
 /// <c>CAMACLOUD</c>, <c>PACS_SPATIAL</c>, <c>PACS_LISTS</c>,
-/// <c>TAAPPSVR</c>, <c>PROVAL</c>, <c>ASCEND</c>, <c>CIAPS</c>,
-/// <c>BENTON_DYNLOADER</c>, <c>LEGACY_UNKNOWN</c>.</para>
+/// <c>PACS_DBPROJECT</c>, <c>PACS_SYNCSERVICE_DB</c>,
+/// <c>WEB_INTERNET_BENTON</c>, <c>TAAPPSVR</c>, <c>PROVAL</c>,
+/// <c>ASCEND</c>, <c>CIAPS</c>, <c>BENTON_DYNLOADER</c>,
+/// <c>ARCGIS_REST</c> (Slice G1-B), <c>LEGACY_UNKNOWN</c>.</para>
 /// </summary>
 public sealed class LoadBatch
 {

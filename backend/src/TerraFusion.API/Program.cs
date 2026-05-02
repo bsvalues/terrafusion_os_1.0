@@ -1595,6 +1595,12 @@ builder.Services.AddScoped<TerraFusion.Core.Services.IComplianceAutomationServic
 builder.Services.Configure<TerraFusion.Core.Configuration.FeatureFlagsOptions>(
     builder.Configuration.GetSection("FeatureFlags"));
 
+// Slice G1-B: ArcGIS feature-service configuration (per-county parcel
+// polygons). v1 binds only; adapter consumption is G1-C/G1-D.
+builder.Services.Configure<TerraFusion.Core.Configuration.ArcGisFeatureServiceOptions>(
+    builder.Configuration.GetSection(
+        TerraFusion.Core.Configuration.ArcGisFeatureServiceOptions.SectionName));
+
 // Redis lockout store (uses existing IDistributedCache from line 70-71)
 builder.Services.AddScoped<TerraFusion.Core.Security.Lockout.ILockoutStore, TerraFusion.Core.Security.Lockout.RedisLockoutStore>();
 
