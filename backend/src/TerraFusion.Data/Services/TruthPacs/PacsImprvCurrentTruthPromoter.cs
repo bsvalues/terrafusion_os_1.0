@@ -1,0 +1,316 @@
+using System;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using TerraFusion.Core.Entities.SyncBridge;
+using TerraFusion.Core.Entities.TruthPacs;
+using TerraFusion.Core.Sync.PacsImprvTruth;
+
+namespace TerraFusion.Data.Services.TruthPacs;
+
+/// <summary>
+/// Slice C2: raw → truth promoter for PACS improvement parents.
+/// Four T-* gates:
+///
+/// <list type="bullet">
+///   <item><c>truth-pacs-imprv-source-batches-completed</c> — both
+///   source batches must be COMPLETED. FAIL refuses promotion.</item>
+///   <item><c>truth-pacs-imprv-supp-aware-join</c> — counts rejects
+///   from no-supp-pointer or stale-sup-num. PASS at zero, WARN otherwise.</item>
+///   <item><c>truth-pacs-imprv-promotion-coverage</c> — every truth
+///   row carries lineage to both source raw rows.</item>
+///   <item><c>truth-pacs-imprv-aggregate</c> — informational; sums
+///   <c>ImprvVal</c> over the supp-filtered set so an operator can
+///   compare against C1-A's aggregate gate.</item>
+/// </list>
+/// </summary>
+public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromoter
+{
+    private readonly TerraFusionDbContext _db;
+    private readonly ILogger<PacsImprvCurrentTruthPromoter> _logger;
+
+    public PacsImprvCurrentTruthPromoter(
+        TerraFusionDbContext db,
+        ILogger<PacsImprvCurrentTruthPromoter> logger)
+    {
+        _db = db;
+        _logger = logger;
+    }
+
+    public async Task<PacsImprvCurrentTruthResult> PromoteAsync(
+        Guid imprvLoadBatchId,
+        Guid suppAssocLoadBatchId,
+        string operatorName,
+        CancellationToken cancellationToken = default)
+    {
+        var batch = new LoadBatch
+        {
+            SourceFamily = SourceFamilies.PacsOltp,
+            SourceSystem = "truth-pacs-imprv-promoter",
+            SourceFileOrDatabase =
+                $"imprv_batch={imprvLoadBatchId};supp_batch={suppAssocLoadBatchId}",
+            SourceQueryHash = string.Empty,
+            Operator = operatorName,
+            Status = "IN_PROGRESS",
+            StartedAt = DateTime.UtcNow,
+        };
+        _db.SyncBridgeLoadBatches.Add(batch);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        try
+        {
+            var imprvBatch = await _db.SyncBridgeLoadBatches
+                .FirstOrDefaultAsync(b => b.LoadBatchId == imprvLoadBatchId, cancellationToken)
+                .ConfigureAwait(false);
+            var suppBatch = await _db.SyncBridgeLoadBatches
+                .FirstOrDefaultAsync(b => b.LoadBatchId == suppAssocLoadBatchId, cancellationToken)
+                .ConfigureAwait(false);
+
+            var imprvOk = imprvBatch is not null && imprvBatch.Status == "COMPLETED";
+            var suppOk = suppBatch is not null && suppBatch.Status == "COMPLETED";
+            if (!imprvOk || !suppOk)
+            {
+                var detail = $"imprvBatch={(imprvBatch?.Status ?? "MISSING")} " +
+                             $"suppBatch={(suppBatch?.Status ?? "MISSING")}";
+                await RecordSourceBatchGateAsync(batch, "FAIL", detail, cancellationToken)
+                    .ConfigureAwait(false);
+
+                batch.Status = "FAILED";
+                batch.CompletedAt = DateTime.UtcNow;
+                batch.ErrorSummary = $"refused: {detail}";
+                await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+                return Refused(batch.LoadBatchId, detail);
+            }
+            await RecordSourceBatchGateAsync(batch, "PASS",
+                "both source batches COMPLETED", cancellationToken).ConfigureAwait(false);
+
+            // Idempotency: clear prior truth rows for this imprv batch.
+            var priorRows = await _db.TruthPacsImprvCurrents
+                .Where(t => t.ImprvLoadBatchId == imprvLoadBatchId)
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+            var priorRowsRemoved = priorRows.Count;
+            if (priorRowsRemoved > 0)
+            {
+                _db.TruthPacsImprvCurrents.RemoveRange(priorRows);
+                await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            }
+
+            // Build supp pointer index from supp batch.
+            var suppRows = await _db.LegacyPacsRawPropSuppAssocs
+                .Where(p => p.LoadBatchId == suppAssocLoadBatchId)
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+            var suppIndex = suppRows
+                .GroupBy(p => (p.PropId, p.PropValYr))
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.OrderBy(r => r.LandedAt).First());
+
+            // Iterate imprv rows.
+            var imprvRows = await _db.LegacyPacsRawImprvs
+                .Where(i => i.LoadBatchId == imprvLoadBatchId)
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+
+            var considered = imprvRows.Count;
+            var promoted = 0;
+            var rejectedNoSupp = 0;
+            var rejectedStaleSup = 0;
+            decimal imprvValSum = 0m;
+            var now = DateTime.UtcNow;
+
+            foreach (var imprv in imprvRows)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (!suppIndex.TryGetValue((imprv.PropId, imprv.PropValYr), out var suppPtr))
+                {
+                    rejectedNoSupp++;
+                    continue;
+                }
+                if (suppPtr.SupNum != imprv.SupNum)
+                {
+                    rejectedStaleSup++;
+                    continue;
+                }
+
+                _db.TruthPacsImprvCurrents.Add(new TruthPacsImprvCurrent
+                {
+                    PropValYr = imprv.PropValYr,
+                    SupNum = imprv.SupNum,
+                    PropId = imprv.PropId,
+                    ImprvId = imprv.ImprvId,
+                    ImprvTypeCd = imprv.ImprvTypeCd,
+                    ImprvStateCd = imprv.ImprvStateCd,
+                    ImprvClassCd = imprv.ImprvClassCd,
+                    ImprvHomesite = imprv.ImprvHomesite,
+                    ImprvVal = imprv.ImprvVal,
+                    ImprvDesc = imprv.ImprvDesc,
+                    YearBuilt = imprv.YearBuilt,
+                    EffectiveYearBuilt = imprv.EffectiveYearBuilt,
+                    ActualYearBuilt = imprv.ActualYearBuilt,
+                    SourceImprvLandedRowId = imprv.LandedRowId,
+                    SourceSuppAssocLandedRowId = suppPtr.LandedRowId,
+                    ImprvLoadBatchId = imprvLoadBatchId,
+                    SuppAssocLoadBatchId = suppAssocLoadBatchId,
+                    PromotionLoadBatchId = batch.LoadBatchId,
+                    PromotedAt = now,
+                });
+                promoted++;
+
+                if (imprv.ImprvVal.HasValue) imprvValSum += imprv.ImprvVal.Value;
+            }
+            await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+            await WriteRemainingGatesAsync(batch, considered, promoted,
+                rejectedNoSupp, rejectedStaleSup, imprvValSum,
+                cancellationToken).ConfigureAwait(false);
+
+            batch.Status = "COMPLETED";
+            batch.CompletedAt = DateTime.UtcNow;
+            batch.RowsExtracted = considered;
+            batch.RowsPromoted = promoted;
+            await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+            _logger.LogInformation(
+                "truth_pacs.imprv_current promotion COMPLETED. batch={BatchId} considered={Considered} promoted={Promoted} noSupp={NoSupp} staleSup={StaleSup} valSum={VS} prior={Prior}",
+                batch.LoadBatchId, considered, promoted, rejectedNoSupp, rejectedStaleSup,
+                imprvValSum, priorRowsRemoved);
+
+            return new PacsImprvCurrentTruthResult
+            {
+                PromotionLoadBatchId = batch.LoadBatchId,
+                Status = "COMPLETED",
+                ImprvsConsidered = considered,
+                ImprvsPromoted = promoted,
+                RejectedNoSuppPointer = rejectedNoSupp,
+                RejectedStaleSupNum = rejectedStaleSup,
+                ImprvValSum = imprvValSum,
+                PriorRowsRemoved = priorRowsRemoved,
+            };
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            var summary = $"{ex.GetType().Name}: {ex.Message}";
+            batch.Status = "FAILED";
+            batch.CompletedAt = DateTime.UtcNow;
+            batch.ErrorSummary = summary;
+            await _db.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
+
+            _logger.LogError(ex,
+                "truth_pacs.imprv_current promotion FAILED. batch={BatchId} summary={Summary}",
+                batch.LoadBatchId, summary);
+
+            return new PacsImprvCurrentTruthResult
+            {
+                PromotionLoadBatchId = batch.LoadBatchId,
+                Status = "FAILED",
+                ImprvsConsidered = 0,
+                ImprvsPromoted = 0,
+                RejectedNoSuppPointer = 0,
+                RejectedStaleSupNum = 0,
+                ImprvValSum = 0m,
+                PriorRowsRemoved = 0,
+                ErrorSummary = summary,
+            };
+        }
+    }
+
+    private static PacsImprvCurrentTruthResult Refused(Guid promotionBatchId, string detail)
+        => new()
+        {
+            PromotionLoadBatchId = promotionBatchId,
+            Status = "REFUSED",
+            ImprvsConsidered = 0,
+            ImprvsPromoted = 0,
+            RejectedNoSuppPointer = 0,
+            RejectedStaleSupNum = 0,
+            ImprvValSum = 0m,
+            PriorRowsRemoved = 0,
+            ErrorSummary = detail,
+        };
+
+    private async Task RecordSourceBatchGateAsync(
+        LoadBatch batch, string status, string detail,
+        CancellationToken cancellationToken)
+    {
+        _db.SyncBridgePromotionGateResults.Add(new PromotionGateResult
+        {
+            LoadBatchId = batch.LoadBatchId,
+            GateName = "truth-pacs-imprv-source-batches-completed",
+            GateStage = "RAW_TO_TRUTH",
+            Status = status,
+            Expected = "both COMPLETED",
+            Actual = status,
+            Detail = detail,
+            ExecutedAt = DateTime.UtcNow,
+        });
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task WriteRemainingGatesAsync(
+        LoadBatch batch,
+        int considered,
+        int promoted,
+        int rejectedNoSupp,
+        int rejectedStaleSup,
+        decimal imprvValSum,
+        CancellationToken cancellationToken)
+    {
+        var now = DateTime.UtcNow;
+        var suppRejects = rejectedNoSupp + rejectedStaleSup;
+
+        // 2) supp-aware-join — PASS at zero, WARN otherwise.
+        _db.SyncBridgePromotionGateResults.Add(new PromotionGateResult
+        {
+            LoadBatchId = batch.LoadBatchId,
+            GateName = "truth-pacs-imprv-supp-aware-join",
+            GateStage = "RAW_TO_TRUTH",
+            Status = suppRejects == 0 ? "PASS" : "WARN",
+            Expected = "0",
+            Actual = suppRejects.ToString(CultureInfo.InvariantCulture),
+            Detail = $"noSuppPointer={rejectedNoSupp} staleSupNum={rejectedStaleSup}",
+            ExecutedAt = now,
+        });
+
+        // 3) promotion-coverage — full lineage on every projected row.
+        var unprovenanced = await _db.TruthPacsImprvCurrents
+            .Where(t => t.PromotionLoadBatchId == batch.LoadBatchId
+                        && (t.SourceImprvLandedRowId == Guid.Empty
+                            || t.SourceSuppAssocLandedRowId == Guid.Empty
+                            || t.ImprvLoadBatchId == Guid.Empty
+                            || t.SuppAssocLoadBatchId == Guid.Empty))
+            .CountAsync(cancellationToken).ConfigureAwait(false);
+
+        _db.SyncBridgePromotionGateResults.Add(new PromotionGateResult
+        {
+            LoadBatchId = batch.LoadBatchId,
+            GateName = "truth-pacs-imprv-promotion-coverage",
+            GateStage = "RAW_TO_TRUTH",
+            Status = unprovenanced == 0 ? "PASS" : "FAIL",
+            Expected = "0",
+            Actual = unprovenanced.ToString(CultureInfo.InvariantCulture),
+            Detail = unprovenanced == 0
+                ? $"all {promoted} promoted rows carry full lineage"
+                : $"{unprovenanced} rows lack lineage",
+            ExecutedAt = now,
+        });
+
+        // 4) aggregate — informational; sum after supp filter.
+        _db.SyncBridgePromotionGateResults.Add(new PromotionGateResult
+        {
+            LoadBatchId = batch.LoadBatchId,
+            GateName = "truth-pacs-imprv-aggregate",
+            GateStage = "RAW_TO_TRUTH",
+            Status = "PASS",
+            Expected = "informational",
+            Actual = promoted.ToString(CultureInfo.InvariantCulture),
+            Detail = $"imprvValSum={imprvValSum.ToString(CultureInfo.InvariantCulture)}",
+            ExecutedAt = now,
+        });
+
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+    }
+}
