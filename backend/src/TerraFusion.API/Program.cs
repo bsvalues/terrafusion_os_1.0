@@ -1654,6 +1654,13 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsSaleCanonical.IPacsSaleCanonicalProjector,
     TerraFusion.Data.Services.CanonicalTf.PacsSaleCanonicalProjector>();
 
+// Slice S4: read-only canonical sales reader for the
+// /api/sales endpoint. Read-only by contract: AsNoTracking,
+// deterministic ordering, county-isolated.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsSaleCanonical.ITfSaleReader,
+    TerraFusion.Data.Services.CanonicalTf.TfSaleReader>();
+
 // Slice G1-D-2: nightly hosted service that walks every configured
 // county. OFF by default — set ArcGisSyncScheduler:Enabled=true in
 // configuration to activate.
