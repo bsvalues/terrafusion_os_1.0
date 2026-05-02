@@ -18,6 +18,7 @@ using TerraFusion.Data;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.AI.Extensions;
+using TerraFusion.Core.GIS.ArcGisRest;
 using TerraFusionOperations = TerraFusion.Operations.Services;
 using TerraFusionOperationsInterfaces = TerraFusion.Operations.Interfaces;
 using Prometheus;
@@ -1600,6 +1601,11 @@ builder.Services.Configure<TerraFusion.Core.Configuration.FeatureFlagsOptions>(
 builder.Services.Configure<TerraFusion.Core.Configuration.ArcGisFeatureServiceOptions>(
     builder.Configuration.GetSection(
         TerraFusion.Core.Configuration.ArcGisFeatureServiceOptions.SectionName));
+
+// Slice G1-C: ArcGIS REST read-only adapter. Registers the named
+// HttpClient and the IArcGisFeatureServiceClient binding. Persistence
+// (canonical_tf landing) is wired in G1-D.
+builder.Services.AddArcGisFeatureServiceClient();
 
 // Redis lockout store (uses existing IDistributedCache from line 70-71)
 builder.Services.AddScoped<TerraFusion.Core.Security.Lockout.ILockoutStore, TerraFusion.Core.Security.Lockout.RedisLockoutStore>();
