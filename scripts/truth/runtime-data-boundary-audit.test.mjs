@@ -102,6 +102,39 @@ test('sync ingest code may reference legacy source', async () => {
   assert.deepEqual(endpoint.blockers, []);
 });
 
+test('workbench sync readiness facade is classified as admin proof, not product runtime', async () => {
+  const root = makeTempRepo('tf-boundary-workbench-sync-readiness-');
+  fs.writeFileSync(
+    path.join(
+      root,
+      'backend',
+      'src',
+      'TerraFusion.API',
+      'Controllers',
+      'WorkbenchSyncReadinessController.cs'
+    ),
+    `
+      [Route("api/workbench/sync-readiness")]
+      public class WorkbenchSyncReadinessController : ControllerBase
+      {
+        public IActionResult Get(Guid countyId, Guid sourceConnectionId) {
+          return Ok(new { status = "ready", canonical = true, sourceConnectionId });
+        }
+      }
+    `
+  );
+
+  const report = await runAudit(root);
+  const endpoint = report.backendEndpoints.find(item =>
+    item.filePath.endsWith('WorkbenchSyncReadinessController.cs')
+  );
+  assert.equal(endpoint.zone, 'allowed_admin_proof');
+  assert.equal(endpoint.dataSourceClass, 'mixed_canonical_and_legacy');
+  assert.deepEqual(endpoint.blockers, []);
+  assert.equal(report.summary.productLegacyViolations, 0);
+  assert.equal(report.summary.syncAdminEndpointsScanned, 1);
+});
+
 test('debug-only test controller is not counted as production product runtime', async () => {
   const root = makeTempRepo('tf-boundary-debug-test-controller-');
   fs.writeFileSync(

@@ -232,6 +232,7 @@ function zoneFor(filePath, content) {
 
   if (relative.includes('/tests/') || relative.startsWith('backend/tests/')) return 'allowed_tests';
   if (/#if\s+DEBUG/i.test(content) && /TestController\.cs$/i.test(relative)) return 'allowed_tests';
+  if (/WorkbenchSyncReadinessController\.cs$/i.test(relative)) return 'allowed_admin_proof';
 
   if (
     /(^|\/)(sync|etl|scrapers?|datamining)(\/|$)/i.test(relative) ||

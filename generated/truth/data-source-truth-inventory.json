@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-02T01:03:26.676Z",
+  "generatedAt": "2026-05-02T05:45:27.774Z",
   "repoRoot": "C:\\Users\\bsval\\terrafusion_os_1.0",
   "summary": {
     "countiesScanned": 39,
@@ -165,10 +165,10 @@
       "scraperOrAdapterExists": false,
       "scraperOrAdapterPath": null,
       "dbTableTargetExists": true,
-      "dbTableTarget": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
+      "dbTableTarget": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs",
       "rowsLanded": 241,
       "runtimeApiConsumesIt": true,
-      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
+      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs",
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx",
       "trustTier": "public_source_seed",
       "classification": "public_data_seed",

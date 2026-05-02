@@ -1,6 +1,6 @@
 # Runtime Candidate Set
 
-Generated: 2026-05-02T05:38:25.807Z
+Generated: 2026-05-02T05:57:35.222Z
 Inventory: `generated/truth/data-source-truth-inventory.json`
 Ledger: `generated/truth/county-runtime-registration-ledger.json`
 

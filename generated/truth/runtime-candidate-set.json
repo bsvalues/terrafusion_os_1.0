@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-02T05:38:25.807Z",
+  "generatedAt": "2026-05-02T05:57:35.222Z",
   "inputs": {
     "inventoryPath": "generated/truth/data-source-truth-inventory.json",
     "ledgerPath": "generated/truth/county-runtime-registration-ledger.json"

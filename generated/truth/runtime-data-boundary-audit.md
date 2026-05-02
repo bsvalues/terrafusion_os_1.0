@@ -1,13 +1,13 @@
 # Runtime Data Boundary Audit
 
-Generated: 2026-05-02T05:05:36.717Z
+Generated: 2026-05-02T05:47:16.592Z
 
 Passed: **yes**
 
 ## Summary
 
 - Product endpoints scanned: 36
-- Sync/admin/test endpoints scanned: 6
+- Sync/admin/test endpoints scanned: 7
 - Product legacy violations: 0
 - Product canonical endpoints: 26
 - Product unproven truth-bearing endpoints: 0
@@ -63,6 +63,7 @@ Passed: **yes**
 `backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs` | allowed_tests | terrafusion_canonical | `Harris`<br>`PACS`
 `backend/src/TerraFusion.API/Controllers/SyncController.cs` | allowed_sync_ingest | mixed_canonical_and_legacy | `PACS`<br>`SourceConnectionId`
 `backend/src/TerraFusion.API/Controllers/TerraFusionSyncController.cs` | allowed_sync_ingest | unproven | `Harris`<br>`PACS`
+`backend/src/TerraFusion.API/Controllers/WorkbenchSyncReadinessController.cs` | allowed_admin_proof | mixed_canonical_and_legacy | `PACS`<br>`sourceConnectionId`
 `backend/tests/TerraFusion.Unit.Tests/Sync/Comps/Api/SyncControllerCompsEligibleTests.cs` | allowed_tests | terrafusion_canonical | -
 `backend/tests/TerraFusion.Unit.Tests/Sync/Comps/Api/SyncControllerHeadMethodTests.cs` | allowed_tests | mixed_canonical_and_legacy | `PACS`<br>`pacs_oltp`<br>`SourceConnectionId`<br>`SyncSourceConnection`
 `backend/tests/TerraFusion.Unit.Tests/Sync/Mapping/Api/SyncControllerActiveWorkbookTests.cs` | allowed_tests | mixed_canonical_and_legacy | `PACS`<br>`pacs_oltp`<br>`SourceConnectionId`<br>`SyncSourceConnection`

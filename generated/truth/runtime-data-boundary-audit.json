@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-02T05:05:36.717Z",
+  "generatedAt": "2026-05-02T05:47:16.592Z",
   "frontendCalls": [
     {
       "filePath": "frontend/apps/os-shell/src/__tests__/shell/swarmTruth.contract.test.tsx",
@@ -10085,6 +10085,19 @@
       "warnings": []
     },
     {
+      "filePath": "backend/src/TerraFusion.API/Controllers/WorkbenchSyncReadinessController.cs",
+      "routeHints": ["api/workbench/sync-readiness"],
+      "zone": "allowed_admin_proof",
+      "endpointRelevance": "truth_bearing_runtime",
+      "dataSourceClass": "mixed_canonical_and_legacy",
+      "legacyTerms": ["PACS", "sourceConnectionId"],
+      "directLegacyTerms": ["sourceConnectionId"],
+      "legacyRouteTerms": [],
+      "canonicalTerms": ["canonical"],
+      "blockers": [],
+      "warnings": []
+    },
+    {
       "filePath": "backend/src/TerraFusion.API/Controllers/WorkflowAutomationController.cs",
       "routeHints": [
         "api/[controller]",
@@ -10826,7 +10839,7 @@
   ],
   "summary": {
     "productEndpointsScanned": 36,
-    "syncAdminEndpointsScanned": 6,
+    "syncAdminEndpointsScanned": 7,
     "productLegacyViolations": 0,
     "productCanonicalEndpoints": 26,
     "productUnprovenEndpoints": 0,

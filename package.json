@@ -91,6 +91,7 @@
     "truth:runtime-row-path-proof": "node scripts/truth/runtime-row-path-proof.mjs",
     "truth:county-runtime-registration-ledger": "node scripts/truth/county-runtime-registration-ledger.mjs",
     "truth:runtime-candidate-set": "node scripts/truth/runtime-candidate-set.mjs",
+    "truth:benton-runtime-pilot-closure": "node scripts/truth/benton-runtime-pilot-closure.mjs",
     "truth:runtime-source-lineage": "node scripts/truth/runtime-row-source-lineage-proof.mjs",
     "truth:runtime-sale-qualification": "node scripts/truth/runtime-sale-qualification-lineage-proof.mjs",
     "truth:runtime-data-boundary-audit": "node scripts/truth/runtime-data-boundary-audit.mjs",
