@@ -2860,4 +2860,62 @@ public class CliArgsParserTests
             "schema-catalog-health does not take --workbook-id and MUST NOT " +
             "complain about it being absent");
     }
+
+    // ========================================================================
+    // BENTON-SYNC-5: --invariant-artifact-path optional flag for the
+    // schema-catalog-health mode. Persists the catalog's invariant report
+    // as a byte-stable JSON artifact via PacsSchemaInvariantReportArtifact.
+    // Caller-driven per the C53-CONS-D contract; absence of the flag
+    // preserves stdout-only behavior.
+    // ========================================================================
+
+    [Fact]
+    public void Parse_SchemaCatalogHealth_WithInvariantArtifactPath_Succeeds()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--schema-catalog-health",
+            "--invariant-artifact-path", "/tmp/benton-invariant.json"
+        });
+
+        err.Should().BeNull();
+        args.Should().NotBeNull();
+        args!.SchemaCatalogHealth.Should().BeTrue();
+        args.InvariantArtifactPath.Should().Be("/tmp/benton-invariant.json");
+    }
+
+    [Fact]
+    public void Parse_SchemaCatalogHealth_WithoutInvariantArtifactPath_PathIsNull()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--schema-catalog-health"
+        });
+
+        err.Should().BeNull();
+        args!.InvariantArtifactPath.Should().BeNull(
+            "absence of --invariant-artifact-path preserves stdout-only behavior");
+    }
+
+    [Fact]
+    public void Parse_InvariantArtifactPath_WithoutValue_ReturnsError()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--schema-catalog-health",
+            "--invariant-artifact-path"
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--invariant-artifact-path requires a value");
+    }
 }

@@ -86,7 +86,15 @@ public sealed record CliArgs(
     // Pure read-only diagnostic over an already-built catalog;
     // requires --connection-id (the source connection identifier
     // for the catalog to inspect) and --county-id.
-    bool SchemaCatalogHealth);
+    bool SchemaCatalogHealth,
+    // Slice BENTON-SYNC-5 — optional artifact path for the invariant
+    // report JSON. When set alongside --schema-catalog-health, the
+    // command writes the catalog's PacsSchemaInvariantReport via
+    // PacsSchemaInvariantReportArtifact.WriteAsync to the supplied
+    // path AFTER rendering the human-readable health output. When
+    // null, behavior is unchanged (stdout only). Caller-driven per
+    // the C53-CONS-D contract; no implicit default location.
+    string? InvariantArtifactPath);
 
 /// <summary>
 /// Pure argument parser. No I/O, no environment access — easy to unit test.
@@ -314,6 +322,9 @@ public static class CliArgsParser
 
         // Slice BENTON-SYNC-2 — schema-catalog health diagnostic mode
         var schemaCatalogHealth = false;
+
+        // Slice BENTON-SYNC-5 — optional invariant artifact path
+        string? invariantArtifactPath = null;
 
         for (var i = 0; i < argv.Length; i++)
         {
@@ -568,6 +579,13 @@ public static class CliArgsParser
                 case "--schema-catalog-health":
                     schemaCatalogHealth = true;
                     break;
+
+                // ── Slice BENTON-SYNC-5 — optional invariant artifact path ─
+                case "--invariant-artifact-path":
+                    if (i + 1 >= argv.Length)
+                        return (null, "--invariant-artifact-path requires a value");
+                    invariantArtifactPath = argv[++i];
+                    break;
                 case "--table":
                     if (i + 1 >= argv.Length)
                         return (null, "--table requires a value");
@@ -645,7 +663,8 @@ public static class CliArgsParser
                 WorkbookSourceSchema:                  workbookSourceSchema,
                 WorkbookSourceTable:                   workbookSourceTable,
                 WorkbookSourceColumn:                  workbookSourceColumn,
-                SchemaCatalogHealth:                   schemaCatalogHealth), null);
+                SchemaCatalogHealth:                   schemaCatalogHealth,
+                InvariantArtifactPath:                 invariantArtifactPath), null);
         }
 
         // ── Always-required, regardless of mode ─────────────────────────
@@ -1467,7 +1486,8 @@ public static class CliArgsParser
             WorkbookSourceSchema:                  workbookSourceSchema,
             WorkbookSourceTable:                   workbookSourceTable,
             WorkbookSourceColumn:                  workbookSourceColumn,
-            SchemaCatalogHealth:                   schemaCatalogHealth), null);
+            SchemaCatalogHealth:                   schemaCatalogHealth,
+            InvariantArtifactPath:                 invariantArtifactPath), null);
     }
 
     public static string UsageText => @"
