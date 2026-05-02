@@ -1676,6 +1676,19 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsImprvDetail.IPacsImprvDetailLandingService,
     TerraFusion.Data.Services.LegacyPacsRaw.PacsImprvDetailLandingService>();
 
+// Slice C1-C: PACS imprv_attr raw landing with dictionary
+// cross-check. Five gates: distribution, 6-key-uniqueness,
+// provenance-coverage, aggregate, dictionary-coverage. Dictionary
+// itself is registered as an empty in-memory default; production
+// configuration overrides via a future D1 dictionary loader.
+builder.Services.AddSingleton<
+    TerraFusion.Core.Sync.PacsImprvAttr.IImprvAttrDictionary>(_ =>
+    new TerraFusion.Core.Sync.PacsImprvAttr.InMemoryImprvAttrDictionary(
+        Array.Empty<string>()));
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsImprvAttr.IPacsImprvAttrLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsImprvAttrLandingService>();
+
 // Slice B2-A: truth_pacs.owner_current promoter — supp-aware
 // owner snapshot with account-link enforcement and HARD pct-
 // completeness gate. Five T-* gates. Idempotent by OwnerLoadBatchId.
