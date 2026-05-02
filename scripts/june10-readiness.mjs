@@ -313,6 +313,15 @@ run('Runtime TerraFusion DB content audit', 'pnpm', ['run', 'truth:runtime-db-co
   timeout: 180_000,
 });
 
+run(
+  'TerraFusion DB product load ledger',
+  'pnpm',
+  ['run', 'truth:terrafusion-db-product-load-ledger'],
+  {
+    timeout: 180_000,
+  }
+);
+
 run('Benton runtime pilot closure', 'pnpm', ['run', 'truth:benton-runtime-pilot-closure'], {
   timeout: 180_000,
 });
