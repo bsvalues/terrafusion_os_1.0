@@ -198,6 +198,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawOwner>
     LegacyPacsRawOwners { get; set; } = null!;
 
+  // Slice B1-C: wash_prop_owner_val landing — WSDOR-grade per-owner
+  // valuation snapshot. Required by the truth_pacs.wash_prop_owner_val
+  // promoter (B2-B).
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawWashPropOwnerVal>
+    LegacyPacsRawWashPropOwnerVals { get; set; } = null!;
+
   // Slice S2-B: truth_pacs.sale — supp-aware-validated,
   // qualification-filtered ('100' only) projection of the raw layer.
   // Stepping stone toward canonical_tf.tf_sale (S3).
@@ -851,6 +857,10 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // Slice B1-B: owner landing — 4-key year-versioned link table.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawOwnerConfiguration());
+
+    // Slice B1-C: wash_prop_owner_val landing — WSDOR-grade values.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawWashPropOwnerValConfiguration());
 
     // Slice S2-B: truth_pacs.sale — qualification-filtered,
     // supp-aware-validated truth layer.
