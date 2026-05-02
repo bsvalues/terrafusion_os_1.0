@@ -187,6 +187,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawPropSuppAssoc>
     LegacyPacsRawPropSuppAssocs { get; set; } = null!;
 
+  // Slice B1-A: account landing — the global party/entity identity
+  // record with the rich PII surface. Block B's first stop.
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawAccount>
+    LegacyPacsRawAccounts { get; set; } = null!;
+
   // Slice S2-B: truth_pacs.sale — supp-aware-validated,
   // qualification-filtered ('100' only) projection of the raw layer.
   // Stepping stone toward canonical_tf.tf_sale (S3).
@@ -816,6 +821,10 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // Slice S2-A: prop_supp_assoc landing — supp-aware-join pointer.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawPropSuppAssocConfiguration());
+
+    // Slice B1-A: account landing — Block B's PII-rich identity table.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawAccountConfiguration());
 
     // Slice S2-B: truth_pacs.sale — qualification-filtered,
     // supp-aware-validated truth layer.
