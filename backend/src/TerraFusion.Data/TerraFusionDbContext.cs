@@ -192,6 +192,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawAccount>
     LegacyPacsRawAccounts { get; set; } = null!;
 
+  // Slice B1-B: owner landing — the 4-key year-versioned link
+  // between property and account. Required by the truth_pacs.owner
+  // promoter (B2-A).
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawOwner>
+    LegacyPacsRawOwners { get; set; } = null!;
+
   // Slice S2-B: truth_pacs.sale — supp-aware-validated,
   // qualification-filtered ('100' only) projection of the raw layer.
   // Stepping stone toward canonical_tf.tf_sale (S3).
@@ -825,6 +831,10 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // Slice B1-A: account landing — Block B's PII-rich identity table.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawAccountConfiguration());
+
+    // Slice B1-B: owner landing — 4-key year-versioned link table.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawOwnerConfiguration());
 
     // Slice S2-B: truth_pacs.sale — qualification-filtered,
     // supp-aware-validated truth layer.

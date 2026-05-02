@@ -1646,6 +1646,14 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsAccount.IPacsAccountLandingService,
     TerraFusion.Data.Services.LegacyPacsRaw.PacsAccountLandingService>();
 
+// Slice B1-B: PACS owner raw landing — 4-key year-versioned link
+// between property and account. Four gates: distribution,
+// 4-key-uniqueness, provenance-coverage, pct-completeness
+// (informational only at this layer).
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsOwner.IPacsOwnerLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsOwnerLandingService>();
+
 // Slice S2-B: truth_pacs.sale promoter — supp-aware join + '100'
 // qualification filter, with five T-* gates. Idempotent by SaleLoadBatchId.
 builder.Services.AddScoped<
