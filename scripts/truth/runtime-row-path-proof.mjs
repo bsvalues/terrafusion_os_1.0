@@ -14,6 +14,7 @@ import process from 'node:process';
 
 const repoRoot = process.argv[2] ? path.resolve(process.argv[2]) : process.cwd();
 const inventoryPath = path.join(repoRoot, 'generated', 'truth', 'data-source-truth-inventory.json');
+const dbIdentityPath = path.join(repoRoot, 'generated', 'truth', 'runtime-db-identity.json');
 const outDir = path.join(repoRoot, 'generated', 'truth');
 const outJson = path.join(outDir, 'runtime-row-path-proof.json');
 const outMd = path.join(outDir, 'runtime-row-path-proof.md');
@@ -49,6 +50,27 @@ function loadInventory() {
     throw new Error(`Inventory not found: ${rel(inventoryPath)}`);
   }
   return JSON.parse(fs.readFileSync(inventoryPath, 'utf8'));
+}
+
+function loadDbIdentity() {
+  if (!fs.existsSync(dbIdentityPath)) {
+    return {
+      passed: false,
+      blockers: [`Runtime DB identity proof not found: ${rel(dbIdentityPath)}`],
+    };
+  }
+
+  const proof = JSON.parse(fs.readFileSync(dbIdentityPath, 'utf8'));
+  return {
+    passed: proof.passed === true,
+    blockers: proof.blockers ?? [],
+    database: proof.identity?.database ?? null,
+    provider: proof.identity?.provider ?? null,
+    expectedJune10Database: proof.identity?.expectedJune10Database ?? null,
+    isExpectedJune10RuntimeDb: proof.identity?.isExpectedJune10RuntimeDb === true,
+    expectedBentonParcelCount: proof.identity?.expectedBentonParcelCount ?? null,
+    isBentonParcelCountExpected: proof.identity?.isBentonParcelCountExpected === true,
+  };
 }
 
 function candidateNames() {
@@ -148,7 +170,7 @@ async function probeCandidate(row) {
     attemptedEndpoints,
   };
 
-  return evaluateRuntimeRowPathProof(proof);
+  return proof;
 }
 
 async function probeEndpoint(endpoint) {
@@ -251,9 +273,14 @@ function countRuntimeRows(value) {
   return 0;
 }
 
-function evaluateRuntimeRowPathProof(proof) {
+function evaluateRuntimeRowPathProof(proof, dbIdentity) {
   const blockers = [];
 
+  if (!dbIdentity.passed) {
+    blockers.push(
+      `Runtime DB identity proof is not trusted: ${(dbIdentity.blockers ?? []).join('; ') || 'unknown blocker'}`
+    );
+  }
   if (!proof.endpoint) blockers.push('No runtime endpoint identified.');
   if (proof.endpointStatus !== 200) {
     blockers.push(`Runtime endpoint did not return 200. Status: ${proof.endpointStatus}`);
@@ -265,22 +292,26 @@ function evaluateRuntimeRowPathProof(proof) {
 
   return {
     ...proof,
+    runtimeDbIdentityPassed: dbIdentity.passed,
     passed: blockers.length === 0,
     blockers,
   };
 }
 
-function summarize(proofs) {
+function summarize(proofs, dbIdentity) {
   return {
     candidatesChecked: proofs.length,
     passed: proofs.filter(proof => proof.passed).length,
     failed: proofs.filter(proof => !proof.passed).length,
     silentBentonFallbacks: proofs.filter(proof => proof.silentBentonFallbackDetected).length,
     zeroRowRuntimeResponses: proofs.filter(proof => proof.runtimeRowsReturned <= 0).length,
+    runtimeDbIdentityPassed: dbIdentity.passed,
+    runtimeDbIdentityDatabase: dbIdentity.database ?? null,
+    runtimeDbIdentityProvider: dbIdentity.provider ?? null,
   };
 }
 
-function renderMarkdown(proofs, summary) {
+function renderMarkdown(proofs, summary, dbIdentity) {
   const rows = proofs.map(proof =>
     [
       proof.county,
@@ -294,6 +325,7 @@ function renderMarkdown(proofs, summary) {
       proof.silentBentonFallbackDetected ? 'yes' : 'no',
       proof.costForgeTier,
       proof.costForgeMode,
+      proof.runtimeDbIdentityPassed ? 'yes' : 'no',
       proof.passed ? 'PASS' : 'FAIL',
       proof.blockers.length ? proof.blockers.join('<br>') : '-',
     ].join(' | ')
@@ -305,8 +337,8 @@ function renderMarkdown(proofs, summary) {
     `Generated: ${new Date().toISOString()}`,
     `Runtime base URL: \`${runtimeBaseUrl}\``,
     '',
-    '| County | Candidate Reason | Inventory Rows | Endpoint | Status | Runtime Rows | Payload County | County Echo | Benton Fallback | CostForge Tier | CostForge Mode | Result | Blockers |',
-    '|---|---|---:|---|---:|---:|---|---|---|---|---|---|---|',
+    '| County | Candidate Reason | Inventory Rows | Endpoint | Status | Runtime Rows | Payload County | County Echo | Benton Fallback | CostForge Tier | CostForge Mode | DB Identity Trusted | Result | Blockers |',
+    '|---|---|---:|---|---:|---:|---|---|---|---|---|---|---|---|',
     ...rows,
     '',
     '## Summary',
@@ -316,6 +348,15 @@ function renderMarkdown(proofs, summary) {
     `- Failed: ${summary.failed}`,
     `- Silent Benton fallbacks: ${summary.silentBentonFallbacks}`,
     `- Zero-row runtime responses: ${summary.zeroRowRuntimeResponses}`,
+    `- Runtime DB identity trusted: ${summary.runtimeDbIdentityPassed ? 'yes' : 'no'}`,
+    `- Runtime DB: ${summary.runtimeDbIdentityDatabase ?? '-'}`,
+    `- Runtime provider: ${summary.runtimeDbIdentityProvider ?? '-'}`,
+    '',
+    '## Runtime DB Identity Blockers',
+    '',
+    ...((dbIdentity.blockers ?? []).length
+      ? dbIdentity.blockers.map(item => `- ${item}`)
+      : ['- none']),
     '',
     '## Scope Note',
     '',
@@ -326,6 +367,7 @@ function renderMarkdown(proofs, summary) {
 
 async function main() {
   const inventory = loadInventory();
+  const dbIdentity = loadDbIdentity();
   const rowsByCounty = new Map(inventory.rows.map(row => [row.county, row]));
   const candidates = candidateNames()
     .map(county => rowsByCounty.get(county))
@@ -334,10 +376,11 @@ async function main() {
   const proofs = [];
 
   for (const row of candidates) {
-    proofs.push(await probeCandidate(row));
+    const proof = await probeCandidate(row);
+    proofs.push(evaluateRuntimeRowPathProof(proof, dbIdentity));
   }
 
-  const summary = summarize(proofs);
+  const summary = summarize(proofs, dbIdentity);
   fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(
     outJson,
@@ -346,6 +389,7 @@ async function main() {
         generatedAt: new Date().toISOString(),
         repoRoot,
         runtimeBaseUrl,
+        runtimeDbIdentity: dbIdentity,
         summary,
         proofs,
       },
@@ -353,7 +397,7 @@ async function main() {
       2
     )
   );
-  fs.writeFileSync(outMd, renderMarkdown(proofs, summary));
+  fs.writeFileSync(outMd, renderMarkdown(proofs, summary, dbIdentity));
 
   console.log(`Wrote ${rel(outJson)}`);
   console.log(`Wrote ${rel(outMd)}`);

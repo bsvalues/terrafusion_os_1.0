@@ -77,6 +77,29 @@ function writeInventory(root) {
   );
 }
 
+function writeDbIdentity(root, overrides = {}) {
+  fs.writeFileSync(
+    path.join(root, 'generated', 'truth', 'runtime-db-identity.json'),
+    JSON.stringify(
+      {
+        passed: true,
+        blockers: [],
+        identity: {
+          database: 'terrafusion',
+          provider: 'Npgsql.EntityFrameworkCore.PostgreSQL',
+          expectedJune10Database: 'terrafusion',
+          isExpectedJune10RuntimeDb: true,
+          expectedBentonParcelCount: 1,
+          isBentonParcelCountExpected: true,
+        },
+        ...overrides,
+      },
+      null,
+      2
+    )
+  );
+}
+
 function startServer(handler) {
   const server = http.createServer(handler);
   return new Promise(resolve => {
@@ -97,6 +120,7 @@ function startServer(handler) {
 test('runtime row path proof passes selected county rows without fallback', async () => {
   const root = makeTempRepo('tf-runtime-proof-pass-');
   writeInventory(root);
+  writeDbIdentity(root);
   const server = await startServer((request, response) => {
     if (request.url === '/api/counties/benton/data') {
       response.setHeader('content-type', 'application/json');
@@ -131,6 +155,7 @@ test('runtime row path proof passes selected county rows without fallback', asyn
 test('runtime row path proof fails silent Benton fallback for non-Benton candidate', async () => {
   const root = makeTempRepo('tf-runtime-proof-fallback-');
   writeInventory(root);
+  writeDbIdentity(root);
   const server = await startServer((request, response) => {
     if (request.url === '/api/counties/pacific/data') {
       response.setHeader('content-type', 'application/json');
@@ -158,6 +183,60 @@ test('runtime row path proof fails silent Benton fallback for non-Benton candida
     assert.equal(report.summary.failed, 1);
     assert.equal(report.proofs[0].silentBentonFallbackDetected, true);
     assert.ok(report.proofs[0].blockers.includes('Silent Benton fallback detected.'));
+  } finally {
+    await server.close();
+  }
+});
+
+test('runtime row path proof fails when runtime DB identity is not trusted', async () => {
+  const root = makeTempRepo('tf-runtime-proof-db-identity-fail-');
+  writeInventory(root);
+  writeDbIdentity(root, {
+    passed: false,
+    blockers: [
+      'Runtime Properties count 128788 does not match configured Benton parcel count 89447.',
+    ],
+    identity: {
+      database: 'terrafusion',
+      provider: 'Npgsql.EntityFrameworkCore.PostgreSQL',
+      expectedJune10Database: 'terrafusion',
+      isExpectedJune10RuntimeDb: true,
+      expectedBentonParcelCount: 89447,
+      isBentonParcelCountExpected: false,
+    },
+  });
+  const server = await startServer((request, response) => {
+    if (request.url === '/api/counties/benton/data') {
+      response.setHeader('content-type', 'application/json');
+      response.end(JSON.stringify({ county: 'Benton County', rows: [{ parcelId: '1' }] }));
+      return;
+    }
+    response.statusCode = 404;
+    response.end('not found');
+  });
+
+  try {
+    await execFileAsync('node', [scriptPath, root], {
+      cwd: process.cwd(),
+      env: {
+        ...process.env,
+        TF_RUNTIME_BASE_URL: server.baseUrl,
+        TF_RUNTIME_ROW_CANDIDATES: 'Benton',
+        TF_RUNTIME_ROW_PROOF_STRICT: '0',
+      },
+    });
+
+    const report = JSON.parse(
+      fs.readFileSync(path.join(root, 'generated', 'truth', 'runtime-row-path-proof.json'), 'utf8')
+    );
+    assert.equal(report.summary.failed, 1);
+    assert.equal(report.summary.runtimeDbIdentityPassed, false);
+    assert.equal(report.proofs[0].runtimeDbIdentityPassed, false);
+    assert.ok(
+      report.proofs[0].blockers.some(blocker =>
+        blocker.includes('Runtime DB identity proof is not trusted')
+      )
+    );
   } finally {
     await server.close();
   }
