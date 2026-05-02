@@ -1645,6 +1645,15 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsSaleTruth.IPacsSaleTruthPromoter,
     TerraFusion.Data.Services.TruthPacs.PacsSaleTruthPromoter>();
 
+// Slice S3: canonical_tf.tf_sale projector — resolves PACS prop_id
+// to TfParcelId via source_xref, projects qualifying truth-pacs
+// sales into canonical_tf.tf_sale, quarantines unresolvable rows
+// to legacy_tf_unproven.sale, writes source_xref for every projected
+// row. Four C-* gates. Idempotent by truth promotion batch.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsSaleCanonical.IPacsSaleCanonicalProjector,
+    TerraFusion.Data.Services.CanonicalTf.PacsSaleCanonicalProjector>();
+
 // Slice G1-D-2: nightly hosted service that walks every configured
 // county. OFF by default — set ArcGisSyncScheduler:Enabled=true in
 // configuration to activate.
