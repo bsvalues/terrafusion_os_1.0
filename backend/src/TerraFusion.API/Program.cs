@@ -1701,6 +1701,14 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsWsdorCanonical.IPacsWsdorCanonicalProjector,
     TerraFusion.Data.Services.CanonicalTf.PacsWsdorCanonicalProjector>();
 
+// Slice B5': read-only WSDOR roll reader for the
+// /api/parcels/{tfParcelId}/wsdor-roll endpoint. Read-only by
+// contract: AsNoTracking, deterministic ordering by AssessedVal,
+// county-isolated.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsWsdorCanonical.ITfParcelWsdorReader,
+    TerraFusion.Data.Services.CanonicalTf.TfParcelWsdorReader>();
+
 // Slice S2-B: truth_pacs.sale promoter — supp-aware join + '100'
 // qualification filter, with five T-* gates. Idempotent by SaleLoadBatchId.
 builder.Services.AddScoped<
