@@ -218,6 +218,16 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.LegacyTfUnproven.LegacyTfUnprovenSale>
     LegacyTfUnprovenSales { get; set; } = null!;
 
+  // Slice B3: canonical_tf.tf_owner + tf_parcel_owner_link with PII
+  // redaction at projection. Owners whose parcel cannot be resolved
+  // are quarantined to legacy_tf_unproven.owner_current.
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfOwner>
+    TfOwners { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfParcelOwnerLink>
+    TfParcelOwnerLinks { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.LegacyTfUnproven.LegacyTfUnprovenOwnerCurrent>
+    LegacyTfUnprovenOwnerCurrents { get; set; } = null!;
+
   // Slice C41-B: per-county pointer naming the operator-active
   // Mapped workbook. Singleton per county (PK = CountyId). See
   // docs/sync/sync-county-active-workbook-pointer-policy.md for the
@@ -856,6 +866,15 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // Slice B2-A: truth_pacs.owner_current — supp-aware owner snapshot.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.TruthPacs.TruthPacsOwnerCurrentConfiguration());
+
+    // Slice B3: canonical_tf.tf_owner + tf_parcel_owner_link with
+    // PII redaction; legacy_tf_unproven.owner_current quarantine.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfOwnerConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfParcelOwnerLinkConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyTfUnproven.LegacyTfUnprovenOwnerCurrentConfiguration());
 
     // Sync Bridge v1 — Phase 0 field_authority seed for the parcel
     // domain. Per docs/pacs/pacs-sync-bridge-v1-spec.md §4.

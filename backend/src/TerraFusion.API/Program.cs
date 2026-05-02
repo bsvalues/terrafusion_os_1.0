@@ -1661,6 +1661,15 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsOwnerTruth.IPacsOwnerCurrentTruthPromoter,
     TerraFusion.Data.Services.TruthPacs.PacsOwnerCurrentTruthPromoter>();
 
+// Slice B3: canonical_tf.tf_owner + tf_parcel_owner_link projector.
+// PII-redacting; resolves PACS prop_id to TfParcelId via source_xref;
+// quarantines unresolvable parcels to legacy_tf_unproven.owner_current;
+// writes source_xref keyed on acct_id. Five C-* gates including the
+// pii-redaction-policy defense-in-depth gate.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsOwnerCanonical.IPacsOwnerCanonicalProjector,
+    TerraFusion.Data.Services.CanonicalTf.PacsOwnerCanonicalProjector>();
+
 // Slice S2-B: truth_pacs.sale promoter — supp-aware join + '100'
 // qualification filter, with five T-* gates. Idempotent by SaleLoadBatchId.
 builder.Services.AddScoped<
