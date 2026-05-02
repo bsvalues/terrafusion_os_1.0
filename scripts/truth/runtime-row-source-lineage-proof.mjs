@@ -16,6 +16,7 @@ const repoRoot = process.argv[2] ? path.resolve(process.argv[2]) : process.cwd()
 const truthDir = path.join(repoRoot, 'generated', 'truth');
 const inventoryPath = path.join(truthDir, 'data-source-truth-inventory.json');
 const rowPathProofPath = path.join(truthDir, 'runtime-row-path-proof.json');
+const dbIdentityPath = path.join(truthDir, 'runtime-db-identity.json');
 const outJson = path.join(truthDir, 'runtime-row-source-lineage-proof.json');
 const outMd = path.join(truthDir, 'runtime-row-source-lineage-proof.md');
 const runtimeBaseUrl =
@@ -49,6 +50,25 @@ function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
+function loadDbIdentity() {
+  const proof = readJson(dbIdentityPath);
+  if (!proof) {
+    return {
+      passed: false,
+      blockers: [`Runtime DB identity proof not found: ${rel(dbIdentityPath)}`],
+    };
+  }
+
+  return {
+    passed: proof.passed === true,
+    blockers: proof.blockers ?? [],
+    database: proof.identity?.database ?? null,
+    provider: proof.identity?.provider ?? null,
+    expectedJune10Database: proof.identity?.expectedJune10Database ?? null,
+    isExpectedJune10RuntimeDb: proof.identity?.isExpectedJune10RuntimeDb === true,
+  };
+}
+
 function candidateRows() {
   const requested = process.env.TF_RUNTIME_SOURCE_LINEAGE_CANDIDATES;
   if (requested) {
@@ -59,9 +79,9 @@ function candidateRows() {
   }
 
   const rowProof = readJson(rowPathProofPath);
-  const passedRuntimeRows = rowProof?.proofs?.filter(proof => proof.passed) ?? [];
-  if (passedRuntimeRows.length > 0) {
-    return passedRuntimeRows.map(proof => ({
+  const runtimeRows = rowProof?.proofs ?? [];
+  if (runtimeRows.length > 0) {
+    return runtimeRows.map(proof => ({
       county: proof.county,
       runtimeEndpoint: proof.endpoint,
     }));
@@ -80,7 +100,7 @@ async function probeCounty(candidate) {
   ).toString();
   const probe = await probeEndpoint(endpoint);
 
-  return evaluateRuntimeSourceLineageProof({
+  return {
     county: candidate.county,
     endpoint,
     endpointStatus: probe.status,
@@ -113,7 +133,7 @@ async function probeCounty(candidate) {
       containsOwnerOrPartyPii: probe.payload?.posture?.containsOwnerOrPartyPii ?? true,
     },
     error: probe.error,
-  });
+  };
 }
 
 async function probeEndpoint(endpoint) {
@@ -154,7 +174,7 @@ function numberAt(value, pathParts) {
   return Number.isFinite(number) ? number : 0;
 }
 
-function evaluateRuntimeSourceLineageProof(proof) {
+function evaluateRuntimeSourceLineageProof(proof, dbIdentity) {
   const blockers = [];
   const canonicalRows =
     proof.canonicalRuntime.properties +
@@ -162,6 +182,11 @@ function evaluateRuntimeSourceLineageProof(proof) {
     proof.canonicalRuntime.canonicalSaleQualifications;
   const sourceRows = proof.sourceMirror.pacsParcels + proof.sourceMirror.pacsSales;
 
+  if (!dbIdentity.passed) {
+    blockers.push(
+      `Runtime DB identity proof is not trusted: ${(dbIdentity.blockers ?? []).join('; ') || 'unknown blocker'}`
+    );
+  }
   if (proof.endpointStatus !== 200) {
     blockers.push(`Runtime lineage endpoint did not return 200. Status: ${proof.endpointStatus}`);
   }
@@ -181,12 +206,13 @@ function evaluateRuntimeSourceLineageProof(proof) {
     ...proof,
     canonicalRows,
     sourceRows,
+    runtimeDbIdentityPassed: dbIdentity.passed,
     passed: blockers.length === 0,
     blockers,
   };
 }
 
-function summarize(proofs) {
+function summarize(proofs, dbIdentity) {
   return {
     candidatesChecked: proofs.length,
     passed: proofs.filter(proof => proof.passed).length,
@@ -196,10 +222,13 @@ function summarize(proofs) {
     mockRuntimeEnabled: proofs.filter(proof => proof.runtimeMockDataEnabled).length,
     eliteOperationsMockEnabled: proofs.filter(proof => proof.eliteOperationsMockDataEnabled).length,
     silentBentonFallbacks: proofs.filter(proof => proof.silentBentonFallbackDetected).length,
+    runtimeDbIdentityPassed: dbIdentity.passed,
+    runtimeDbIdentityDatabase: dbIdentity.database ?? null,
+    runtimeDbIdentityProvider: dbIdentity.provider ?? null,
   };
 }
 
-function renderMarkdown(proofs, summary) {
+function renderMarkdown(proofs, summary, dbIdentity) {
   const rows = proofs.map(proof =>
     [
       proof.county,
@@ -214,6 +243,7 @@ function renderMarkdown(proofs, summary) {
       String(proof.sourceMirror.pacsSales),
       proof.runtimeMockDataEnabled ? 'yes' : 'no',
       proof.eliteOperationsMockDataEnabled ? 'yes' : 'no',
+      proof.runtimeDbIdentityPassed ? 'yes' : 'no',
       proof.passed ? 'PASS' : 'FAIL',
       proof.blockers.length ? proof.blockers.join('<br>') : '-',
     ].join(' | ')
@@ -225,8 +255,8 @@ function renderMarkdown(proofs, summary) {
     `Generated: ${new Date().toISOString()}`,
     `Runtime base URL: \`${runtimeBaseUrl}\``,
     '',
-    '| County | Endpoint | Status | Payload County | Classification | Properties | Comparable Sales | Canonical Sale Qualifications | Source Parcels | Source Sales | County Runtime Mock | Elite Ops Mock | Result | Blockers |',
-    '|---|---|---:|---|---|---:|---:|---:|---:|---:|---|---|---|---|',
+    '| County | Endpoint | Status | Payload County | Classification | Properties | Comparable Sales | Canonical Sale Qualifications | Source Parcels | Source Sales | County Runtime Mock | Elite Ops Mock | DB Identity Trusted | Result | Blockers |',
+    '|---|---|---:|---|---|---:|---:|---:|---:|---:|---|---|---|---|---|',
     ...rows,
     '',
     '## Summary',
@@ -239,6 +269,15 @@ function renderMarkdown(proofs, summary) {
     `- Mock-runtime enabled responses: ${summary.mockRuntimeEnabled}`,
     `- Elite Operations mock enabled responses: ${summary.eliteOperationsMockEnabled}`,
     `- Silent Benton fallbacks: ${summary.silentBentonFallbacks}`,
+    `- Runtime DB identity trusted: ${summary.runtimeDbIdentityPassed ? 'yes' : 'no'}`,
+    `- Runtime DB: ${summary.runtimeDbIdentityDatabase ?? '-'}`,
+    `- Runtime provider: ${summary.runtimeDbIdentityProvider ?? '-'}`,
+    '',
+    '## Runtime DB Identity Blockers',
+    '',
+    ...((dbIdentity.blockers ?? []).length
+      ? dbIdentity.blockers.map(item => `- ${item}`)
+      : ['- none']),
     '',
     '## Scope Note',
     '',
@@ -249,13 +288,15 @@ function renderMarkdown(proofs, summary) {
 
 async function main() {
   const candidates = candidateRows();
+  const dbIdentity = loadDbIdentity();
   const proofs = [];
 
   for (const candidate of candidates) {
-    proofs.push(await probeCounty(candidate));
+    const proof = await probeCounty(candidate);
+    proofs.push(evaluateRuntimeSourceLineageProof(proof, dbIdentity));
   }
 
-  const summary = summarize(proofs);
+  const summary = summarize(proofs, dbIdentity);
   fs.mkdirSync(truthDir, { recursive: true });
   fs.writeFileSync(
     outJson,
@@ -264,6 +305,7 @@ async function main() {
         generatedAt: new Date().toISOString(),
         repoRoot,
         runtimeBaseUrl,
+        runtimeDbIdentity: dbIdentity,
         summary,
         proofs,
       },
@@ -271,7 +313,7 @@ async function main() {
       2
     )
   );
-  fs.writeFileSync(outMd, renderMarkdown(proofs, summary));
+  fs.writeFileSync(outMd, renderMarkdown(proofs, summary, dbIdentity));
 
   console.log(`Wrote ${rel(outJson)}`);
   console.log(`Wrote ${rel(outMd)}`);

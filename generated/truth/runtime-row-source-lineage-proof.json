@@ -1,16 +1,29 @@
 {
-  "generatedAt": "2026-05-02T01:31:52.571Z",
+  "generatedAt": "2026-05-02T15:35:05.591Z",
   "repoRoot": "C:\\Users\\bsval\\terrafusion_os_1.0",
   "runtimeBaseUrl": "http://localhost:5046",
+  "runtimeDbIdentity": {
+    "passed": false,
+    "blockers": [
+      "Runtime Properties count 128788 does not match configured Benton parcel count 89447."
+    ],
+    "database": "terrafusion",
+    "provider": "Npgsql.EntityFrameworkCore.PostgreSQL",
+    "expectedJune10Database": "terrafusion",
+    "isExpectedJune10RuntimeDb": true
+  },
   "summary": {
     "candidatesChecked": 1,
-    "passed": 1,
-    "failed": 0,
+    "passed": 0,
+    "failed": 1,
     "totalCanonicalRows": 387890,
     "totalSourceRows": 569224,
     "mockRuntimeEnabled": 0,
     "eliteOperationsMockEnabled": 1,
-    "silentBentonFallbacks": 0
+    "silentBentonFallbacks": 0,
+    "runtimeDbIdentityPassed": false,
+    "runtimeDbIdentityDatabase": "terrafusion",
+    "runtimeDbIdentityProvider": "Npgsql.EntityFrameworkCore.PostgreSQL"
   },
   "proofs": [
     {
@@ -42,8 +55,11 @@
       "error": null,
       "canonicalRows": 387890,
       "sourceRows": 569224,
-      "passed": true,
-      "blockers": []
+      "runtimeDbIdentityPassed": false,
+      "passed": false,
+      "blockers": [
+        "Runtime DB identity proof is not trusted: Runtime Properties count 128788 does not match configured Benton parcel count 89447."
+      ]
     }
   ]
 }
