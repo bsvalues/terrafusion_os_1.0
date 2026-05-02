@@ -1,22 +1,19 @@
 # Runtime Row Path Proof
 
-Generated: 2026-05-01T23:48:04.309Z
+Generated: 2026-05-02T01:05:14.505Z
 Runtime base URL: `http://localhost:5046`
 
 | County | Candidate Reason | Inventory Rows | Endpoint | Status | Runtime Rows | Payload County | County Echo | Benton Fallback | CostForge Tier | CostForge Mode | Result | Blockers |
 |---|---|---:|---|---:|---:|---|---|---|---|---|---|---|
-Benton | costforge_cf1_or_higher | 276 | `http://localhost:5046/api/counties/benton/parcels` | 200 | 50 | Benton County | yes | no | CF1_parcel_public_data | public_data_loaded | PASS | -
-Pacific | apparent_full_chain | 11 | `http://localhost:5046/api/counties/pacific/parcels` | 404 | 0 | pacific | yes | no | CF0_no_runtime_data | not_available | FAIL | Runtime endpoint did not return 200. Status: 404<br>Runtime returned zero rows.
-Franklin | scraper_api_candidate | 0 | `http://localhost:5046/api/counties/franklin/parcels` | 404 | 0 | franklin | yes | no | CF0_no_runtime_data | not_available | FAIL | Runtime endpoint did not return 200. Status: 404<br>Runtime returned zero rows.
-Walla Walla | scraper_only_candidate | 0 | `http://localhost:5046/api/counties/walla-walla/parcels` | 404 | 0 | walla-walla | yes | no | CF0_no_runtime_data | not_available | FAIL | Runtime endpoint did not return 200. Status: 404<br>Runtime returned zero rows.
+Benton | costforge_cf1_or_higher | 241 | `http://localhost:5046/api/counties/benton/parcels` | 200 | 50 | Benton County | yes | no | CF1_parcel_public_data | public_data_loaded | PASS | -
 
 ## Summary
 
-- Candidates checked: 4
+- Candidates checked: 1
 - Passed: 1
-- Failed: 3
+- Failed: 0
 - Silent Benton fallbacks: 0
-- Zero-row runtime responses: 3
+- Zero-row runtime responses: 0
 
 ## Scope Note
 

@@ -1,6 +1,6 @@
 # Runtime Endpoint Discovery
 
-Generated: 2026-05-01T23:48:12.639Z
+Generated: 2026-05-02T01:05:13.956Z
 Runtime base URL: `http://localhost:5046`
 
 ## Summary
@@ -8,7 +8,7 @@ Runtime base URL: `http://localhost:5046`
 - Backend routes found: 964
 - Frontend calls found: 15
 - Candidate endpoints found: 118
-- Live endpoints: 12
+- Live endpoints: 9
 - County-scoped endpoints: 118
 - Test/demo endpoints: 42
 
@@ -30,7 +30,7 @@ Benton | backend_controller | `backend/src/TerraFusion.API/Controllers/CountyDep
 Benton | backend_controller | `backend/src/TerraFusion.API/Controllers/CountyDeploymentController.cs` | `api/CountyDeployment/deployments/{countyId}/configuration` | `http://localhost:5046/api/CountyDeployment/deployments/benton/configuration` | yes | no | no | 404 | 0 | - | route_unregistered
 Benton | backend_controller | `backend/src/TerraFusion.API/Controllers/CountyDeploymentController.cs` | `api/CountyDeployment/deployments/{countyId}/health` | `http://localhost:5046/api/CountyDeployment/deployments/benton/health` | yes | no | no | 200 | 0 | benton | unknown
 Benton | backend_controller | `backend/src/TerraFusion.API/Controllers/CountyDeploymentController.cs` | `api/CountyDeployment/deployments/{countyId}/validate` | `http://localhost:5046/api/CountyDeployment/deployments/benton/validate` | yes | no | no | 404 | 0 | - | route_unregistered
-Benton | backend_controller | `backend/src/TerraFusion.API/Controllers/CountyRowsController.cs` | `api/counties/{countyToken}/parcels` | `http://localhost:5046/api/counties/benton/parcels` | yes | no | no | 200 | 50 | Benton County | use_for_track_1b
+Benton | backend_controller | `backend/src/TerraFusion.API/Controllers/CountyRowsController.cs` | `api/counties/{countyToken}/parcels` | `http://localhost:5046/api/counties/benton/parcels` | yes | no | no | null | null | - | wrong_base_url_possible
 Benton | backend_controller | `backend/src/TerraFusion.API/Controllers/CountyRowsController.cs` | `api/counties/{countyToken}/sales` | `http://localhost:5046/api/counties/benton/sales` | yes | no | no | null | null | - | wrong_base_url_possible
 Benton | backend_controller | `backend/src/TerraFusion.API/Controllers/DaisController.cs` | `api/dais/benton/fee-schedule` | `http://localhost:5046/api/dais/benton/fee-schedule` | yes | yes | yes | 401 | 0 | - | test_only_do_not_use
 Benton | backend_controller | `backend/src/TerraFusion.API/Controllers/GPTController.cs` | `api/GPT/system/fleet/rag-readiness/{countyId}` | `http://localhost:5046/api/GPT/system/fleet/rag-readiness/benton` | yes | yes | yes | 200 | 0 | benton | test_only_do_not_use
@@ -47,8 +47,8 @@ Benton | backend_controller | `backend/src/TerraFusion.API/Controllers/PropertyV
 Benton | backend_controller | `backend/src/TerraFusion.API/Controllers/TerraFusionSyncController.cs` | `api/TerraFusionSync/counties/{countyName}/sync` | `http://localhost:5046/api/TerraFusionSync/counties/benton/sync` | yes | no | no | 404 | 0 | - | route_unregistered
 Benton | inferred | `scripts/truth/runtime-row-path-proof.mjs` | `api/counties/benton/data` | `http://localhost:5046/api/counties/benton/data` | yes | no | no | 404 | 0 | - | route_unregistered
 Benton | inferred | `scripts/truth/runtime-row-path-proof.mjs` | `api/counties/benton/rows` | `http://localhost:5046/api/counties/benton/rows` | yes | no | no | 404 | 0 | - | route_unregistered
-Benton | inferred | `scripts/truth/runtime-row-path-proof.mjs` | `api/counties/benton/parcels` | `http://localhost:5046/api/counties/benton/parcels` | yes | no | no | 200 | 50 | Benton County | use_for_track_1b
-Benton | inferred | `scripts/truth/runtime-row-path-proof.mjs` | `api/counties/benton/sales` | `http://localhost:5046/api/counties/benton/sales` | yes | no | no | 200 | 50 | Benton County | use_for_track_1b
+Benton | inferred | `scripts/truth/runtime-row-path-proof.mjs` | `api/counties/benton/parcels` | `http://localhost:5046/api/counties/benton/parcels` | yes | no | no | null | null | - | wrong_base_url_possible
+Benton | inferred | `scripts/truth/runtime-row-path-proof.mjs` | `api/counties/benton/sales` | `http://localhost:5046/api/counties/benton/sales` | yes | no | no | null | null | - | wrong_base_url_possible
 Benton | inferred | `scripts/truth/runtime-row-path-proof.mjs` | `api/county/benton/data` | `http://localhost:5046/api/county/benton/data` | yes | no | no | 404 | 0 | - | route_unregistered
 Benton | inferred | `scripts/truth/runtime-row-path-proof.mjs` | `api/real-data/benton` | `http://localhost:5046/api/real-data/benton` | yes | no | no | 404 | 0 | - | route_unregistered
 Benton | inferred | `scripts/truth/runtime-row-path-proof.mjs` | `api/terraforge/counties/benton/data` | `http://localhost:5046/api/terraforge/counties/benton/data` | yes | no | no | 404 | 0 | - | route_unregistered

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-01T23:48:12.639Z",
+  "generatedAt": "2026-05-02T01:05:13.956Z",
   "runtimeBaseUrl": "http://localhost:5046",
   "backendRoutes": [
     {
@@ -10058,13 +10058,13 @@
       "candidateUrl": "http://localhost:5046/api/counties/benton/parcels",
       "probe": {
         "attempted": true,
-        "status": 200,
-        "contentType": "application/json; charset=utf-8",
-        "rowCount": 50,
-        "payloadCounty": "Benton County",
-        "error": null
+        "status": null,
+        "contentType": null,
+        "rowCount": null,
+        "payloadCounty": null,
+        "error": "This operation was aborted"
       },
-      "recommendation": "use_for_track_1b"
+      "recommendation": "wrong_base_url_possible"
     },
     {
       "county": "Benton",
@@ -10398,13 +10398,13 @@
       "candidateUrl": "http://localhost:5046/api/counties/benton/parcels",
       "probe": {
         "attempted": true,
-        "status": 200,
-        "contentType": "application/json; charset=utf-8",
-        "rowCount": 50,
-        "payloadCounty": "Benton County",
-        "error": null
+        "status": null,
+        "contentType": null,
+        "rowCount": null,
+        "payloadCounty": null,
+        "error": "This operation was aborted"
       },
-      "recommendation": "use_for_track_1b"
+      "recommendation": "wrong_base_url_possible"
     },
     {
       "county": "Benton",
@@ -10418,13 +10418,13 @@
       "candidateUrl": "http://localhost:5046/api/counties/benton/sales",
       "probe": {
         "attempted": true,
-        "status": 200,
-        "contentType": "application/json; charset=utf-8",
-        "rowCount": 50,
-        "payloadCounty": "Benton County",
-        "error": null
+        "status": null,
+        "contentType": null,
+        "rowCount": null,
+        "payloadCounty": null,
+        "error": "This operation was aborted"
       },
-      "recommendation": "use_for_track_1b"
+      "recommendation": "wrong_base_url_possible"
     },
     {
       "county": "Benton",
@@ -12131,7 +12131,7 @@
     "backendRoutesFound": 964,
     "frontendCallsFound": 15,
     "candidateEndpointsFound": 118,
-    "liveEndpoints": 12,
+    "liveEndpoints": 9,
     "countyScopedEndpoints": 118,
     "testOrDemoEndpoints": 42
   }

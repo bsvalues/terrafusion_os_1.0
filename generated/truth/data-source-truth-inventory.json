@@ -1,24 +1,26 @@
 {
-  "generatedAt": "2026-05-01T21:04:41.080Z",
+  "generatedAt": "2026-05-02T01:03:26.676Z",
   "repoRoot": "C:\\Users\\bsval\\terrafusion_os_1.0",
   "summary": {
     "countiesScanned": 39,
-    "withScraper": 4,
-    "withDb": 15,
-    "withRows": 14,
-    "withApi": 9,
-    "withUi": 39,
-    "withApparentFullChain": 2,
-    "withPacsMentions": 12,
+    "withScraper": 0,
+    "withDb": 12,
+    "withRows": 11,
+    "withApi": 1,
+    "withUi": 38,
+    "withApparentFullChain": 0,
+    "withPacsMentions": 9,
     "costForgeTierCounts": {
-      "CF0_no_runtime_data": 38,
-      "CF1_parcel_public_data": 1
+      "CF0_no_runtime_data": 28,
+      "CF1_parcel_public_data": 1,
+      "CF2_property_characteristics_available": 10
     },
     "costForgeModeCounts": {
-      "not_available": 38,
-      "public_data_loaded": 1
+      "not_available": 28,
+      "public_data_loaded": 1,
+      "derived_estimate_mode": 10
     },
-    "costForgePilotWorkflowAllowed": 1,
+    "costForgePilotWorkflowAllowed": 11,
     "costForgeOfficialClaimsAllowed": 0
   },
   "rows": [
@@ -35,7 +37,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 4,
       "evidencePaths": [
@@ -102,7 +104,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 4,
       "evidencePaths": [
@@ -159,40 +161,27 @@
     {
       "county": "Benton",
       "state": "WA",
-      "sourceUrlOrSystem": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
-      "scraperOrAdapterExists": true,
-      "scraperOrAdapterPath": "backend/src/TerraFusion.DataMining/ETL/PacmlsEtlPlugin.cs",
+      "sourceUrlOrSystem": "backend/src/TerraFusion.API/Controllers/RealDataController.cs",
+      "scraperOrAdapterExists": false,
+      "scraperOrAdapterPath": null,
       "dbTableTargetExists": true,
-      "dbTableTarget": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
-      "rowsLanded": 276,
+      "dbTableTarget": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
+      "rowsLanded": 241,
       "runtimeApiConsumesIt": true,
-      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
+      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx",
-      "trustTier": "public_source_pilot_unproven",
-      "classification": "possible_runtime_chain_unproven",
+      "trustTier": "public_source_seed",
+      "classification": "public_data_seed",
       "pacsMentionDetected": true,
-      "evidenceCount": 94,
+      "evidenceCount": 81,
       "evidencePaths": [
         "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
         "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
+        "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
         "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs",
         "backend/src/TerraFusion.API/Controllers/RealDataController.cs",
         "backend/src/TerraFusion.API/Controllers/TerraForgeController.cs",
         "backend/src/TerraFusion.CostForge/Services/QuantumFactorEnhancementService.cs",
-        "backend/src/TerraFusion.DataMining/API/RealEstateRoutes.cs",
-        "backend/src/TerraFusion.DataMining/Connectors/HudConnector.cs",
-        "backend/src/TerraFusion.DataMining/Controllers/DataSourceController.cs",
-        "backend/src/TerraFusion.DataMining/ETL/PacmlsEtlPlugin.cs",
-        "backend/src/TerraFusion.DataMining/Models/ZillowModels.cs",
-        "backend/src/TerraFusion.DataMining/Regional/BentonGisConnector.cs",
-        "backend/src/TerraFusion.DataMining/Regional/BentonPacsConnector.cs",
-        "backend/src/TerraFusion.DataMining/Regional/SeWaRegionalConfig.cs",
-        "backend/src/TerraFusion.DataMining/Scrapers/County/BentonCountyScraper.cs",
-        "backend/src/TerraFusion.DataMining/Scrapers/CountyScraperFactory.cs",
-        "backend/src/TerraFusion.DataMining/Scripts/LocationProcessing.cs",
-        "backend/src/TerraFusion.DataMining/Seeds/DataSourceInit.cs",
-        "backend/src/TerraFusion.DataMining/Seeds/DataSourceSeeder.cs",
-        "backend/src/TerraFusion.DataMining/Services/PropertyService.cs",
         "data/benton/README.md",
         "data/cost-matrices/benton_cost_matrix.json",
         "data/cost-matrices/benton_cost_matrix_live.json",
@@ -268,9 +257,7 @@
         "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json",
         "os-platform/core/pilot/washington-39-county-coverage-proof.mjs"
       ],
-      "blockingReasons": [
-        "Full-looking chain still needs source-to-UI runtime proof."
-      ],
+      "blockingReasons": ["No scraper/adapter evidence found."],
       "costForge": {
         "county": "Benton",
         "state": "WA",
@@ -295,8 +282,6 @@
         "hasOfficialCountyCertification": false,
         "hasDerivedCostEstimateOutput": true,
         "costForgeInputEvidencePaths": [
-          "backend/src/TerraFusion.DataMining/Scrapers/County/BentonCountyScraper.cs",
-          "backend/src/TerraFusion.DataMining/Scrapers/CountyScraperFactory.cs",
           "data/benton/README.md",
           "data/cost-matrices/benton_cost_matrix.json",
           "data/cost-matrices/benton_cost_matrix_live.json",
@@ -343,8 +328,8 @@
       "runtimeApiConsumesIt": false,
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
-      "trustTier": "demo_only",
-      "classification": "demo_artifact",
+      "trustTier": "public_source_seed",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 6,
       "evidencePaths": [
@@ -357,8 +342,7 @@
       ],
       "blockingReasons": [
         "No scraper/adapter evidence found.",
-        "No runtime API consumer evidence found.",
-        "Evidence appears demo/sample/synthetic."
+        "No runtime API consumer evidence found."
       ],
       "costForge": {
         "county": "Chelan",
@@ -414,7 +398,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 4,
       "evidencePaths": [
@@ -471,17 +455,17 @@
     {
       "county": "Clark",
       "state": "WA",
-      "sourceUrlOrSystem": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+      "sourceUrlOrSystem": "data/county-intelligence/clark_analysis.json",
       "scraperOrAdapterExists": false,
       "scraperOrAdapterPath": null,
       "dbTableTargetExists": true,
       "dbTableTarget": "data/county-intelligence/clark_analysis.json",
-      "rowsLanded": 18,
+      "rowsLanded": 8,
       "runtimeApiConsumesIt": false,
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
-      "trustTier": "demo_only",
-      "classification": "demo_artifact",
+      "trustTier": "public_source_seed",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 12,
       "evidencePaths": [
@@ -500,8 +484,7 @@
       ],
       "blockingReasons": [
         "No scraper/adapter evidence found.",
-        "No runtime API consumer evidence found.",
-        "Evidence appears demo/sample/synthetic."
+        "No runtime API consumer evidence found."
       ],
       "costForge": {
         "county": "Clark",
@@ -538,37 +521,40 @@
           "docs/proof/washington-39-county-coverage.latest.md",
           "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
         ],
-        "costForgeReadinessTier": "CF0_no_runtime_data",
-        "costForgeCountyMode": "not_available",
-        "allowedWorkflows": [],
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode",
+        "allowedWorkflows": [
+          "open_county",
+          "inspect_public_parcel_data",
+          "run_draft_cost_estimate",
+          "preview_scenario"
+        ],
         "blockedWorkflows": [
-          "run_costforge_workflow",
           "claim_official_county_cost_schedule",
           "claim_county_certified_value",
           "finalize_official_valuation_without_review"
         ],
-        "requiredUserFacingLabel": "No runtime county data available."
+        "requiredUserFacingLabel": "Model-derived CostForge estimate using public property characteristics."
       }
     },
     {
       "county": "Columbia",
       "state": "WA",
-      "sourceUrlOrSystem": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
+      "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
       "scraperOrAdapterExists": false,
       "scraperOrAdapterPath": null,
-      "dbTableTargetExists": true,
-      "dbTableTarget": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
-      "rowsLanded": 11,
-      "runtimeApiConsumesIt": true,
-      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
+      "dbTableTargetExists": false,
+      "dbTableTarget": null,
+      "rowsLanded": 0,
+      "runtimeApiConsumesIt": false,
+      "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
-      "trustTier": "demo_only",
-      "classification": "demo_artifact",
+      "trustTier": "unknown_untrusted",
+      "classification": "public_data_seed",
       "pacsMentionDetected": true,
-      "evidenceCount": 7,
+      "evidenceCount": 6,
       "evidencePaths": [
         "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
-        "backend/src/TerraFusion.DataMining/Regional/SeWaRegionalConfig.cs",
         "database/migrations/002_BentonCountyData.sql",
         "docs/proof/washington-39-county-coverage.latest.md",
         "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
@@ -577,7 +563,9 @@
       ],
       "blockingReasons": [
         "No scraper/adapter evidence found.",
-        "Evidence appears demo/sample/synthetic."
+        "No DB/table target evidence found.",
+        "No landed row evidence found.",
+        "No runtime API consumer evidence found."
       ],
       "costForge": {
         "county": "Columbia",
@@ -621,17 +609,17 @@
     {
       "county": "Cowlitz",
       "state": "WA",
-      "sourceUrlOrSystem": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+      "sourceUrlOrSystem": "data/county-intelligence/cowlitz_analysis.json",
       "scraperOrAdapterExists": false,
       "scraperOrAdapterPath": null,
       "dbTableTargetExists": true,
       "dbTableTarget": "data/county-intelligence/cowlitz_analysis.json",
-      "rowsLanded": 18,
+      "rowsLanded": 8,
       "runtimeApiConsumesIt": false,
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
-      "trustTier": "demo_only",
-      "classification": "demo_artifact",
+      "trustTier": "public_source_seed",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 12,
       "evidencePaths": [
@@ -650,8 +638,7 @@
       ],
       "blockingReasons": [
         "No scraper/adapter evidence found.",
-        "No runtime API consumer evidence found.",
-        "Evidence appears demo/sample/synthetic."
+        "No runtime API consumer evidence found."
       ],
       "costForge": {
         "county": "Cowlitz",
@@ -688,16 +675,20 @@
           "docs/proof/washington-39-county-coverage.latest.md",
           "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
         ],
-        "costForgeReadinessTier": "CF0_no_runtime_data",
-        "costForgeCountyMode": "not_available",
-        "allowedWorkflows": [],
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode",
+        "allowedWorkflows": [
+          "open_county",
+          "inspect_public_parcel_data",
+          "run_draft_cost_estimate",
+          "preview_scenario"
+        ],
         "blockedWorkflows": [
-          "run_costforge_workflow",
           "claim_official_county_cost_schedule",
           "claim_county_certified_value",
           "finalize_official_valuation_without_review"
         ],
-        "requiredUserFacingLabel": "No runtime county data available."
+        "requiredUserFacingLabel": "Model-derived CostForge estimate using public property characteristics."
       }
     },
     {
@@ -713,7 +704,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 4,
       "evidencePaths": [
@@ -780,7 +771,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 4,
       "evidencePaths": [
@@ -837,25 +828,22 @@
     {
       "county": "Franklin",
       "state": "WA",
-      "sourceUrlOrSystem": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
-      "scraperOrAdapterExists": true,
-      "scraperOrAdapterPath": "backend/src/TerraFusion.DataMining/Scrapers/County/FranklinCountyScraper.cs",
-      "dbTableTargetExists": true,
-      "dbTableTarget": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
+      "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+      "scraperOrAdapterExists": false,
+      "scraperOrAdapterPath": null,
+      "dbTableTargetExists": false,
+      "dbTableTarget": null,
       "rowsLanded": 0,
-      "runtimeApiConsumesIt": true,
-      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
+      "runtimeApiConsumesIt": false,
+      "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
       "trustTier": "unknown_untrusted",
-      "classification": "possible_runtime_chain_unproven",
+      "classification": "public_data_seed",
       "pacsMentionDetected": true,
-      "evidenceCount": 10,
+      "evidenceCount": 7,
       "evidencePaths": [
         "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
         "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
-        "backend/src/TerraFusion.DataMining/Regional/SeWaRegionalConfig.cs",
-        "backend/src/TerraFusion.DataMining/Scrapers/County/FranklinCountyScraper.cs",
-        "backend/src/TerraFusion.DataMining/Scrapers/CountyScraperFactory.cs",
         "docs/proof/washington-39-county-coverage.latest.md",
         "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
         "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
@@ -863,8 +851,10 @@
         "os-platform/core/pilot/washington-39-county-coverage-proof.mjs"
       ],
       "blockingReasons": [
+        "No scraper/adapter evidence found.",
+        "No DB/table target evidence found.",
         "No landed row evidence found.",
-        "Full-looking chain still needs source-to-UI runtime proof."
+        "No runtime API consumer evidence found."
       ],
       "costForge": {
         "county": "Franklin",
@@ -890,8 +880,6 @@
         "hasOfficialCountyCertification": false,
         "hasDerivedCostEstimateOutput": false,
         "costForgeInputEvidencePaths": [
-          "backend/src/TerraFusion.DataMining/Scrapers/County/FranklinCountyScraper.cs",
-          "backend/src/TerraFusion.DataMining/Scrapers/CountyScraperFactory.cs",
           "docs/proof/washington-39-county-coverage.latest.md",
           "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
         ],
@@ -910,7 +898,7 @@
     {
       "county": "Garfield",
       "state": "WA",
-      "sourceUrlOrSystem": "backend/src/TerraFusion.DataMining/Regional/SeWaRegionalConfig.cs",
+      "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
       "scraperOrAdapterExists": false,
       "scraperOrAdapterPath": null,
       "dbTableTargetExists": false,
@@ -920,11 +908,10 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
-      "pacsMentionDetected": true,
-      "evidenceCount": 5,
+      "classification": "public_data_seed",
+      "pacsMentionDetected": false,
+      "evidenceCount": 4,
       "evidencePaths": [
-        "backend/src/TerraFusion.DataMining/Regional/SeWaRegionalConfig.cs",
         "docs/proof/washington-39-county-coverage.latest.md",
         "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
         "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json",
@@ -978,17 +965,17 @@
     {
       "county": "Grant",
       "state": "WA",
-      "sourceUrlOrSystem": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+      "sourceUrlOrSystem": "data/county-intelligence/grant_analysis.json",
       "scraperOrAdapterExists": false,
       "scraperOrAdapterPath": null,
       "dbTableTargetExists": true,
       "dbTableTarget": "data/county-intelligence/grant_analysis.json",
-      "rowsLanded": 26,
+      "rowsLanded": 8,
       "runtimeApiConsumesIt": false,
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
-      "trustTier": "demo_only",
-      "classification": "demo_artifact",
+      "trustTier": "public_source_seed",
+      "classification": "public_data_seed",
       "pacsMentionDetected": true,
       "evidenceCount": 14,
       "evidencePaths": [
@@ -1009,8 +996,7 @@
       ],
       "blockingReasons": [
         "No scraper/adapter evidence found.",
-        "No runtime API consumer evidence found.",
-        "Evidence appears demo/sample/synthetic."
+        "No runtime API consumer evidence found."
       ],
       "costForge": {
         "county": "Grant",
@@ -1047,16 +1033,20 @@
           "docs/proof/washington-39-county-coverage.latest.md",
           "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
         ],
-        "costForgeReadinessTier": "CF0_no_runtime_data",
-        "costForgeCountyMode": "not_available",
-        "allowedWorkflows": [],
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode",
+        "allowedWorkflows": [
+          "open_county",
+          "inspect_public_parcel_data",
+          "run_draft_cost_estimate",
+          "preview_scenario"
+        ],
         "blockedWorkflows": [
-          "run_costforge_workflow",
           "claim_official_county_cost_schedule",
           "claim_county_certified_value",
           "finalize_official_valuation_without_review"
         ],
-        "requiredUserFacingLabel": "No runtime county data available."
+        "requiredUserFacingLabel": "Model-derived CostForge estimate using public property characteristics."
       }
     },
     {
@@ -1072,7 +1062,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 4,
       "evidencePaths": [
@@ -1129,17 +1119,17 @@
     {
       "county": "Island",
       "state": "WA",
-      "sourceUrlOrSystem": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+      "sourceUrlOrSystem": "data/county-intelligence/island_analysis.json",
       "scraperOrAdapterExists": false,
       "scraperOrAdapterPath": null,
       "dbTableTargetExists": true,
       "dbTableTarget": "data/county-intelligence/island_analysis.json",
-      "rowsLanded": 18,
+      "rowsLanded": 8,
       "runtimeApiConsumesIt": false,
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/geo/utils/spatialStats.ts",
-      "trustTier": "demo_only",
-      "classification": "demo_artifact",
+      "trustTier": "public_source_seed",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 13,
       "evidencePaths": [
@@ -1159,8 +1149,7 @@
       ],
       "blockingReasons": [
         "No scraper/adapter evidence found.",
-        "No runtime API consumer evidence found.",
-        "Evidence appears demo/sample/synthetic."
+        "No runtime API consumer evidence found."
       ],
       "costForge": {
         "county": "Island",
@@ -1197,16 +1186,20 @@
           "docs/proof/washington-39-county-coverage.latest.md",
           "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
         ],
-        "costForgeReadinessTier": "CF0_no_runtime_data",
-        "costForgeCountyMode": "not_available",
-        "allowedWorkflows": [],
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode",
+        "allowedWorkflows": [
+          "open_county",
+          "inspect_public_parcel_data",
+          "run_draft_cost_estimate",
+          "preview_scenario"
+        ],
         "blockedWorkflows": [
-          "run_costforge_workflow",
           "claim_official_county_cost_schedule",
           "claim_county_certified_value",
           "finalize_official_valuation_without_review"
         ],
-        "requiredUserFacingLabel": "No runtime county data available."
+        "requiredUserFacingLabel": "Model-derived CostForge estimate using public property characteristics."
       }
     },
     {
@@ -1222,7 +1215,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 4,
       "evidencePaths": [
@@ -1285,11 +1278,11 @@
       "dbTableTargetExists": false,
       "dbTableTarget": null,
       "rowsLanded": 0,
-      "runtimeApiConsumesIt": true,
-      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
+      "runtimeApiConsumesIt": false,
+      "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "stub_incomplete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": true,
       "evidenceCount": 7,
       "evidencePaths": [
@@ -1305,7 +1298,7 @@
         "No scraper/adapter evidence found.",
         "No DB/table target evidence found.",
         "No landed row evidence found.",
-        "Evidence contains mock/stub/placeholder language."
+        "No runtime API consumer evidence found."
       ],
       "costForge": {
         "county": "King",
@@ -1359,7 +1352,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 4,
       "evidencePaths": [
@@ -1426,7 +1419,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 4,
       "evidencePaths": [
@@ -1493,7 +1486,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 4,
       "evidencePaths": [
@@ -1560,7 +1553,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 4,
       "evidencePaths": [
@@ -1627,7 +1620,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 4,
       "evidencePaths": [
@@ -1694,7 +1687,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 4,
       "evidencePaths": [
@@ -1761,7 +1754,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 4,
       "evidencePaths": [
@@ -1818,32 +1811,27 @@
     {
       "county": "Pacific",
       "state": "WA",
-      "sourceUrlOrSystem": "backend/src/TerraFusion.DataMining/ETL/PacmlsEtlPlugin.cs",
-      "scraperOrAdapterExists": true,
-      "scraperOrAdapterPath": "backend/src/TerraFusion.DataMining/ETL/PacmlsEtlPlugin.cs",
-      "dbTableTargetExists": true,
-      "dbTableTarget": "backend/src/TerraFusion.DataMining/Seeds/DataSourceSeeder.cs",
-      "rowsLanded": 11,
-      "runtimeApiConsumesIt": true,
-      "runtimeApiPath": "backend/src/TerraFusion.DataMining/API/PacmlsRoutes.cs",
-      "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
-      "trustTier": "public_source_pilot_unproven",
-      "classification": "possible_runtime_chain_unproven",
-      "pacsMentionDetected": true,
-      "evidenceCount": 9,
-      "evidencePaths": [
-        "backend/src/TerraFusion.DataMining/API/PacmlsRoutes.cs",
-        "backend/src/TerraFusion.DataMining/Connectors/PacmlsConnector.cs",
-        "backend/src/TerraFusion.DataMining/ETL/PacmlsEtlPlugin.cs",
-        "backend/src/TerraFusion.DataMining/Seeds/DataSourceSeeder.cs",
-        "database/migrations/002_BentonCountyData.sql",
-        "docs/proof/washington-39-county-coverage.latest.md",
-        "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
-        "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json",
-        "os-platform/core/pilot/washington-39-county-coverage-proof.mjs"
-      ],
+      "sourceUrlOrSystem": null,
+      "scraperOrAdapterExists": false,
+      "scraperOrAdapterPath": null,
+      "dbTableTargetExists": false,
+      "dbTableTarget": null,
+      "rowsLanded": 0,
+      "runtimeApiConsumesIt": false,
+      "runtimeApiPath": null,
+      "uiSurfacePath": null,
+      "trustTier": "unknown_untrusted",
+      "classification": "unknown_untrusted",
+      "pacsMentionDetected": false,
+      "evidenceCount": 0,
+      "evidencePaths": [],
       "blockingReasons": [
-        "Full-looking chain still needs source-to-UI runtime proof."
+        "No source/acquisition evidence found.",
+        "No scraper/adapter evidence found.",
+        "No DB/table target evidence found.",
+        "No landed row evidence found.",
+        "No runtime API consumer evidence found.",
+        "No UI/surface consumer evidence found."
       ],
       "costForge": {
         "county": "Pacific",
@@ -1855,11 +1843,11 @@
         "qualifiedSalesRowsObserved": 0,
         "hasBuildingCharacteristics": false,
         "hasYearBuilt": false,
-        "hasLivingAreaOrBuildingArea": true,
+        "hasLivingAreaOrBuildingArea": false,
         "hasQualityOrGrade": false,
         "hasCondition": false,
         "hasLandSize": false,
-        "hasNeighborhoodOrMarketArea": true,
+        "hasNeighborhoodOrMarketArea": false,
         "hasSalePrice": false,
         "hasSaleDate": false,
         "hasCountySpecificCostSchedule": false,
@@ -1868,10 +1856,7 @@
         "hasCountyCalibrationProof": false,
         "hasOfficialCountyCertification": false,
         "hasDerivedCostEstimateOutput": false,
-        "costForgeInputEvidencePaths": [
-          "docs/proof/washington-39-county-coverage.latest.md",
-          "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
-        ],
+        "costForgeInputEvidencePaths": [],
         "costForgeReadinessTier": "CF0_no_runtime_data",
         "costForgeCountyMode": "not_available",
         "allowedWorkflows": [],
@@ -1897,7 +1882,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 4,
       "evidencePaths": [
@@ -1960,11 +1945,11 @@
       "dbTableTargetExists": false,
       "dbTableTarget": null,
       "rowsLanded": 0,
-      "runtimeApiConsumesIt": true,
-      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
+      "runtimeApiConsumesIt": false,
+      "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "stub_incomplete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": true,
       "evidenceCount": 7,
       "evidencePaths": [
@@ -1980,7 +1965,7 @@
         "No scraper/adapter evidence found.",
         "No DB/table target evidence found.",
         "No landed row evidence found.",
-        "Evidence contains mock/stub/placeholder language."
+        "No runtime API consumer evidence found."
       ],
       "costForge": {
         "county": "Pierce",
@@ -2024,17 +2009,17 @@
     {
       "county": "San Juan",
       "state": "WA",
-      "sourceUrlOrSystem": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+      "sourceUrlOrSystem": "data/county-intelligence/sanjuan_analysis.json",
       "scraperOrAdapterExists": false,
       "scraperOrAdapterPath": null,
       "dbTableTargetExists": true,
       "dbTableTarget": "data/county-intelligence/sanjuan_analysis.json",
-      "rowsLanded": 18,
+      "rowsLanded": 8,
       "runtimeApiConsumesIt": false,
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
-      "trustTier": "demo_only",
-      "classification": "demo_artifact",
+      "trustTier": "public_source_seed",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 12,
       "evidencePaths": [
@@ -2053,8 +2038,7 @@
       ],
       "blockingReasons": [
         "No scraper/adapter evidence found.",
-        "No runtime API consumer evidence found.",
-        "Evidence appears demo/sample/synthetic."
+        "No runtime API consumer evidence found."
       ],
       "costForge": {
         "county": "San Juan",
@@ -2091,16 +2075,20 @@
           "docs/proof/washington-39-county-coverage.latest.md",
           "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
         ],
-        "costForgeReadinessTier": "CF0_no_runtime_data",
-        "costForgeCountyMode": "not_available",
-        "allowedWorkflows": [],
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode",
+        "allowedWorkflows": [
+          "open_county",
+          "inspect_public_parcel_data",
+          "run_draft_cost_estimate",
+          "preview_scenario"
+        ],
         "blockedWorkflows": [
-          "run_costforge_workflow",
           "claim_official_county_cost_schedule",
           "claim_county_certified_value",
           "finalize_official_valuation_without_review"
         ],
-        "requiredUserFacingLabel": "No runtime county data available."
+        "requiredUserFacingLabel": "Model-derived CostForge estimate using public property characteristics."
       }
     },
     {
@@ -2116,7 +2104,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 4,
       "evidencePaths": [
@@ -2183,7 +2171,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 4,
       "evidencePaths": [
@@ -2240,17 +2228,17 @@
     {
       "county": "Snohomish",
       "state": "WA",
-      "sourceUrlOrSystem": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+      "sourceUrlOrSystem": "data/county-intelligence/snohomish_analysis.json",
       "scraperOrAdapterExists": false,
       "scraperOrAdapterPath": null,
       "dbTableTargetExists": true,
       "dbTableTarget": "data/county-intelligence/snohomish_analysis.json",
-      "rowsLanded": 18,
-      "runtimeApiConsumesIt": true,
-      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
+      "rowsLanded": 8,
+      "runtimeApiConsumesIt": false,
+      "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
-      "trustTier": "demo_only",
-      "classification": "demo_artifact",
+      "trustTier": "public_source_seed",
+      "classification": "public_data_seed",
       "pacsMentionDetected": true,
       "evidenceCount": 13,
       "evidencePaths": [
@@ -2270,7 +2258,7 @@
       ],
       "blockingReasons": [
         "No scraper/adapter evidence found.",
-        "Evidence appears demo/sample/synthetic."
+        "No runtime API consumer evidence found."
       ],
       "costForge": {
         "county": "Snohomish",
@@ -2307,16 +2295,20 @@
           "docs/proof/washington-39-county-coverage.latest.md",
           "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
         ],
-        "costForgeReadinessTier": "CF0_no_runtime_data",
-        "costForgeCountyMode": "not_available",
-        "allowedWorkflows": [],
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode",
+        "allowedWorkflows": [
+          "open_county",
+          "inspect_public_parcel_data",
+          "run_draft_cost_estimate",
+          "preview_scenario"
+        ],
         "blockedWorkflows": [
-          "run_costforge_workflow",
           "claim_official_county_cost_schedule",
           "claim_county_certified_value",
           "finalize_official_valuation_without_review"
         ],
-        "requiredUserFacingLabel": "No runtime county data available."
+        "requiredUserFacingLabel": "Model-derived CostForge estimate using public property characteristics."
       }
     },
     {
@@ -2327,12 +2319,12 @@
       "scraperOrAdapterPath": null,
       "dbTableTargetExists": true,
       "dbTableTarget": "data/county-intelligence/spokane_extraction.json",
-      "rowsLanded": 10,
-      "runtimeApiConsumesIt": true,
-      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
+      "rowsLanded": 0,
+      "runtimeApiConsumesIt": false,
+      "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/atlas-live/__tests__/atlasLiveApi.contracts.test.ts",
-      "trustTier": "demo_only",
-      "classification": "demo_artifact",
+      "trustTier": "unknown_untrusted",
+      "classification": "public_data_seed",
       "pacsMentionDetected": true,
       "evidenceCount": 14,
       "evidencePaths": [
@@ -2353,7 +2345,8 @@
       ],
       "blockingReasons": [
         "No scraper/adapter evidence found.",
-        "Evidence appears demo/sample/synthetic."
+        "No landed row evidence found.",
+        "No runtime API consumer evidence found."
       ],
       "costForge": {
         "county": "Spokane",
@@ -2387,32 +2380,36 @@
           "docs/proof/washington-39-county-coverage.latest.md",
           "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
         ],
-        "costForgeReadinessTier": "CF0_no_runtime_data",
-        "costForgeCountyMode": "not_available",
-        "allowedWorkflows": [],
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode",
+        "allowedWorkflows": [
+          "open_county",
+          "inspect_public_parcel_data",
+          "run_draft_cost_estimate",
+          "preview_scenario"
+        ],
         "blockedWorkflows": [
-          "run_costforge_workflow",
           "claim_official_county_cost_schedule",
           "claim_county_certified_value",
           "finalize_official_valuation_without_review"
         ],
-        "requiredUserFacingLabel": "No runtime county data available."
+        "requiredUserFacingLabel": "Model-derived CostForge estimate using public property characteristics."
       }
     },
     {
       "county": "Stevens",
       "state": "WA",
-      "sourceUrlOrSystem": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+      "sourceUrlOrSystem": "data/county-intelligence/stevens_analysis.json",
       "scraperOrAdapterExists": false,
       "scraperOrAdapterPath": null,
       "dbTableTargetExists": true,
       "dbTableTarget": "data/county-intelligence/stevens_analysis.json",
-      "rowsLanded": 18,
+      "rowsLanded": 8,
       "runtimeApiConsumesIt": false,
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
-      "trustTier": "demo_only",
-      "classification": "demo_artifact",
+      "trustTier": "public_source_seed",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 12,
       "evidencePaths": [
@@ -2431,8 +2428,7 @@
       ],
       "blockingReasons": [
         "No scraper/adapter evidence found.",
-        "No runtime API consumer evidence found.",
-        "Evidence appears demo/sample/synthetic."
+        "No runtime API consumer evidence found."
       ],
       "costForge": {
         "county": "Stevens",
@@ -2469,16 +2465,20 @@
           "docs/proof/washington-39-county-coverage.latest.md",
           "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
         ],
-        "costForgeReadinessTier": "CF0_no_runtime_data",
-        "costForgeCountyMode": "not_available",
-        "allowedWorkflows": [],
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode",
+        "allowedWorkflows": [
+          "open_county",
+          "inspect_public_parcel_data",
+          "run_draft_cost_estimate",
+          "preview_scenario"
+        ],
         "blockedWorkflows": [
-          "run_costforge_workflow",
           "claim_official_county_cost_schedule",
           "claim_county_certified_value",
           "finalize_official_valuation_without_review"
         ],
-        "requiredUserFacingLabel": "No runtime county data available."
+        "requiredUserFacingLabel": "Model-derived CostForge estimate using public property characteristics."
       }
     },
     {
@@ -2494,7 +2494,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "stub_incomplete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 5,
       "evidencePaths": [
@@ -2508,8 +2508,7 @@
         "No scraper/adapter evidence found.",
         "No DB/table target evidence found.",
         "No landed row evidence found.",
-        "No runtime API consumer evidence found.",
-        "Evidence contains mock/stub/placeholder language."
+        "No runtime API consumer evidence found."
       ],
       "costForge": {
         "county": "Thurston",
@@ -2563,7 +2562,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 4,
       "evidencePaths": [
@@ -2620,9 +2619,9 @@
     {
       "county": "Walla Walla",
       "state": "WA",
-      "sourceUrlOrSystem": "backend/src/TerraFusion.DataMining/Regional/SeWaRegionalConfig.cs",
-      "scraperOrAdapterExists": true,
-      "scraperOrAdapterPath": "backend/src/TerraFusion.DataMining/Scrapers/County/WallaWallaCountyScraper.cs",
+      "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+      "scraperOrAdapterExists": false,
+      "scraperOrAdapterPath": null,
       "dbTableTargetExists": false,
       "dbTableTarget": null,
       "rowsLanded": 0,
@@ -2630,22 +2629,20 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "stub_incomplete",
-      "pacsMentionDetected": true,
-      "evidenceCount": 6,
+      "classification": "public_data_seed",
+      "pacsMentionDetected": false,
+      "evidenceCount": 4,
       "evidencePaths": [
-        "backend/src/TerraFusion.DataMining/Regional/SeWaRegionalConfig.cs",
-        "backend/src/TerraFusion.DataMining/Scrapers/County/WallaWallaCountyScraper.cs",
         "docs/proof/washington-39-county-coverage.latest.md",
         "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
         "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json",
         "os-platform/core/pilot/washington-39-county-coverage-proof.mjs"
       ],
       "blockingReasons": [
+        "No scraper/adapter evidence found.",
         "No DB/table target evidence found.",
         "No landed row evidence found.",
-        "No runtime API consumer evidence found.",
-        "Evidence contains mock/stub/placeholder language."
+        "No runtime API consumer evidence found."
       ],
       "costForge": {
         "county": "Walla Walla",
@@ -2671,7 +2668,6 @@
         "hasOfficialCountyCertification": false,
         "hasDerivedCostEstimateOutput": false,
         "costForgeInputEvidencePaths": [
-          "backend/src/TerraFusion.DataMining/Scrapers/County/WallaWallaCountyScraper.cs",
           "docs/proof/washington-39-county-coverage.latest.md",
           "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
         ],
@@ -2690,17 +2686,17 @@
     {
       "county": "Whatcom",
       "state": "WA",
-      "sourceUrlOrSystem": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+      "sourceUrlOrSystem": "data/county-intelligence/whatcom_analysis.json",
       "scraperOrAdapterExists": false,
       "scraperOrAdapterPath": null,
       "dbTableTargetExists": true,
       "dbTableTarget": "data/county-intelligence/whatcom_analysis.json",
-      "rowsLanded": 18,
+      "rowsLanded": 8,
       "runtimeApiConsumesIt": false,
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
-      "trustTier": "demo_only",
-      "classification": "demo_artifact",
+      "trustTier": "public_source_seed",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 12,
       "evidencePaths": [
@@ -2719,8 +2715,7 @@
       ],
       "blockingReasons": [
         "No scraper/adapter evidence found.",
-        "No runtime API consumer evidence found.",
-        "Evidence appears demo/sample/synthetic."
+        "No runtime API consumer evidence found."
       ],
       "costForge": {
         "county": "Whatcom",
@@ -2757,16 +2752,20 @@
           "docs/proof/washington-39-county-coverage.latest.md",
           "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
         ],
-        "costForgeReadinessTier": "CF0_no_runtime_data",
-        "costForgeCountyMode": "not_available",
-        "allowedWorkflows": [],
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode",
+        "allowedWorkflows": [
+          "open_county",
+          "inspect_public_parcel_data",
+          "run_draft_cost_estimate",
+          "preview_scenario"
+        ],
         "blockedWorkflows": [
-          "run_costforge_workflow",
           "claim_official_county_cost_schedule",
           "claim_county_certified_value",
           "finalize_official_valuation_without_review"
         ],
-        "requiredUserFacingLabel": "No runtime county data available."
+        "requiredUserFacingLabel": "Model-derived CostForge estimate using public property characteristics."
       }
     },
     {
@@ -2782,7 +2781,7 @@
       "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
       "trustTier": "unknown_untrusted",
-      "classification": "obsolete",
+      "classification": "public_data_seed",
       "pacsMentionDetected": false,
       "evidenceCount": 4,
       "evidencePaths": [
@@ -2839,17 +2838,17 @@
     {
       "county": "Yakima",
       "state": "WA",
-      "sourceUrlOrSystem": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+      "sourceUrlOrSystem": "data/county-intelligence/yakima_analysis.json",
       "scraperOrAdapterExists": false,
       "scraperOrAdapterPath": null,
       "dbTableTargetExists": true,
       "dbTableTarget": "data/county-intelligence/yakima_analysis.json",
-      "rowsLanded": 18,
-      "runtimeApiConsumesIt": true,
-      "runtimeApiPath": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
+      "rowsLanded": 8,
+      "runtimeApiConsumesIt": false,
+      "runtimeApiPath": null,
       "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
-      "trustTier": "demo_only",
-      "classification": "demo_artifact",
+      "trustTier": "public_source_seed",
+      "classification": "public_data_seed",
       "pacsMentionDetected": true,
       "evidenceCount": 13,
       "evidencePaths": [
@@ -2869,7 +2868,7 @@
       ],
       "blockingReasons": [
         "No scraper/adapter evidence found.",
-        "Evidence appears demo/sample/synthetic."
+        "No runtime API consumer evidence found."
       ],
       "costForge": {
         "county": "Yakima",
@@ -2906,16 +2905,20 @@
           "docs/proof/washington-39-county-coverage.latest.md",
           "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json"
         ],
-        "costForgeReadinessTier": "CF0_no_runtime_data",
-        "costForgeCountyMode": "not_available",
-        "allowedWorkflows": [],
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode",
+        "allowedWorkflows": [
+          "open_county",
+          "inspect_public_parcel_data",
+          "run_draft_cost_estimate",
+          "preview_scenario"
+        ],
         "blockedWorkflows": [
-          "run_costforge_workflow",
           "claim_official_county_cost_schedule",
           "claim_county_certified_value",
           "finalize_official_valuation_without_review"
         ],
-        "requiredUserFacingLabel": "No runtime county data available."
+        "requiredUserFacingLabel": "Model-derived CostForge estimate using public property characteristics."
       }
     }
   ]

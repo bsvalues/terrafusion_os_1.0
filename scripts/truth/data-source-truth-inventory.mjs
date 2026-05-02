@@ -134,6 +134,17 @@ function countyAppears(filePath, content, county) {
   const tokenPattern = county.split(/\s+/).filter(Boolean).map(escapeRegex).join('[^a-z0-9]+');
   const boundaryRegex = new RegExp(`(^|[^a-z0-9])${tokenPattern}([^a-z0-9]|$)`, 'i');
 
+  // "Pacific" appears in generic geography phrases like "Pacific Northwest"; those are not
+  // evidence of Pacific County data unless the file is explicitly county-named or says County.
+  if (county === 'Pacific') {
+    const fileTokenRegex = new RegExp(`(^|[^a-z0-9])${tokenPattern}([^a-z0-9]|$)`, 'i');
+    const countyPhraseRegex = new RegExp(
+      `(^|[^a-z0-9])${tokenPattern}[^a-z0-9]+county([^a-z0-9]|$)`,
+      'i'
+    );
+    return fileTokenRegex.test(relative) || countyPhraseRegex.test(joined);
+  }
+
   if (boundaryRegex.test(joined)) return true;
 
   // File systems often collapse multi-word county names, e.g. sanjuan_data.sql.
@@ -190,7 +201,6 @@ function isInventoryCandidate(filePath) {
   return (
     lower.startsWith('docs/washington counties/') ||
     lower.startsWith('docs/proof/washington-39-county-coverage') ||
-    lower.startsWith('backend/src/terrafusion.datamining/') ||
     lower.startsWith('backend/src/terrafusion.core/sync/scrapers/') ||
     lower.startsWith('backend/src/terrafusion.api/controllers/county') ||
     lower.startsWith('backend/src/terrafusion.api/controllers/terraforge') ||
@@ -343,8 +353,7 @@ function classifyFile(filePath, content) {
     lowerPath.startsWith('docs/washington counties/') ||
     lowerPath.startsWith('docs/proof/washington-39-county-coverage') ||
     lowerPath.startsWith('os-platform/core/pilot/evidence/costforge-') ||
-    lowerPath.startsWith('os-platform/core/pilot/evidence/washington-39-county-coverage') ||
-    lowerPath.startsWith('backend/src/terrafusion.datamining/scrapers/');
+    lowerPath.startsWith('os-platform/core/pilot/evidence/washington-39-county-coverage');
 
   const evidence = {
     path: relative,
@@ -562,20 +571,26 @@ function getCountyEvidence(files) {
 function chooseClassification(evidence) {
   if (evidence.length === 0) return 'unknown_untrusted';
 
+  const usableEvidence = evidence.filter(isUsableEvidence);
+
   const hasOperationalShape =
-    evidence.some(item => item.scraperOrAdapter) &&
-    evidence.some(item => item.dbTarget) &&
-    evidence.some(item => item.runtimeApi) &&
-    evidence.some(item => item.uiSurface);
+    usableEvidence.some(item => item.scraperOrAdapter) &&
+    usableEvidence.some(item => item.dbTarget) &&
+    usableEvidence.some(item => item.runtimeApi) &&
+    usableEvidence.some(item => item.uiSurface);
 
   if (hasOperationalShape) return 'possible_runtime_chain_unproven';
+  if (usableEvidence.some(item => item.scraperOrAdapter || item.dbTarget || item.publicSeed))
+    return 'public_data_seed';
   if (evidence.some(item => item.demoArtifact)) return 'demo_artifact';
   if (evidence.some(item => item.stubIncomplete)) return 'stub_incomplete';
   if (evidence.some(item => item.obsolete)) return 'obsolete';
-  if (evidence.some(item => item.scraperOrAdapter || item.dbTarget || item.publicSeed))
-    return 'public_data_seed';
 
   return 'unknown_untrusted';
+}
+
+function isUsableEvidence(item) {
+  return !item.demoArtifact && !item.stubIncomplete && !item.obsolete;
 }
 
 function trustTier(classification, rowsLanded) {
@@ -760,16 +775,18 @@ function evaluateCostForgeMode(input, classification) {
 function buildRows(byCounty) {
   return counties.map(county => {
     const evidence = byCounty.get(county) ?? [];
-    const rowsLanded = evidence.reduce((sum, item) => {
+    const usableEvidence = evidence.filter(isUsableEvidence);
+    const rowsLanded = usableEvidence.reduce((sum, item) => {
       return sum + (Number.isFinite(item.rowEstimate) ? item.rowEstimate : 0);
     }, 0);
     const classification = chooseClassification(evidence);
-    const scraperPath = pick(evidence, item => item.scraperOrAdapter);
-    const dbPath = pick(evidence, item => item.dbTarget);
-    const apiPath = pick(evidence, item => item.runtimeApi);
-    const uiPath = pick(evidence, item => item.uiSurface);
+    const scraperPath = pick(usableEvidence, item => item.scraperOrAdapter);
+    const dbPath = pick(usableEvidence, item => item.dbTarget);
+    const apiPath = pick(usableEvidence, item => item.runtimeApi);
+    const uiPath =
+      pick(usableEvidence, item => item.uiSurface) ?? pick(evidence, item => item.uiSurface);
     const sourcePath = pick(
-      evidence,
+      usableEvidence,
       item => item.acquisitionArtifact || item.publicSeed || item.scraperOrAdapter
     );
 

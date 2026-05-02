@@ -140,6 +140,91 @@ test('inventory flags demo content as demo-only', () => {
   assert.ok(yakima.blockingReasons.some(reason => reason.includes('demo')));
 });
 
+test('inventory does not promote PACMLS/DataMining stubs into runtime county evidence', () => {
+  const root = makeTempRepo('tf-data-truth-pacmls-');
+  fs.mkdirSync(path.join(root, 'backend', 'src', 'TerraFusion.DataMining', 'API'), {
+    recursive: true,
+  });
+  fs.mkdirSync(path.join(root, 'backend', 'src', 'TerraFusion.DataMining', 'ETL'), {
+    recursive: true,
+  });
+  fs.mkdirSync(path.join(root, 'backend', 'src', 'TerraFusion.DataMining', 'Seeds'), {
+    recursive: true,
+  });
+  fs.mkdirSync(path.join(root, 'frontend', 'apps', 'os-shell', 'src', 'pages', 'forge', 'sales'), {
+    recursive: true,
+  });
+
+  fs.writeFileSync(
+    path.join(root, 'backend', 'src', 'TerraFusion.DataMining', 'API', 'PacmlsRoutes.cs'),
+    `
+    public static class PacmlsRoutes {
+      public static void MapPacmlsRoutes() {
+        // Pacific Multiple Listing Service route stub.
+        var listings = Array.Empty<object>();
+        var message = "PACMLS listing search - stub implementation";
+      }
+    }
+  `
+  );
+  fs.writeFileSync(
+    path.join(root, 'backend', 'src', 'TerraFusion.DataMining', 'ETL', 'PacmlsEtlPlugin.cs'),
+    `
+    public class PacmlsEtlPlugin {
+      public string TargetCounty { get; set; } = "Pacific";
+      protected Task<int> LoadAsync(IReadOnlyList<object> records) {
+        // Stub implementation. Does not write runtime tables.
+        return Task.FromResult(records.Count);
+      }
+    }
+  `
+  );
+  fs.writeFileSync(
+    path.join(root, 'backend', 'src', 'TerraFusion.DataMining', 'Seeds', 'DataSourceSeeder.cs'),
+    `
+    public static class DataSourceSeeder {
+      public static object Pacmls = new { Id = "pacmls", Name = "PACMLS", IsActive = false };
+    }
+  `
+  );
+  fs.writeFileSync(
+    path.join(
+      root,
+      'frontend',
+      'apps',
+      'os-shell',
+      'src',
+      'pages',
+      'forge',
+      'sales',
+      'washingtonLaunchApi.ts'
+    ),
+    `
+    export const launchCounties = ["Pacific County"];
+    export const surface = "SalesForge Washington launch UI";
+  `
+  );
+
+  execFileSync('node', [scriptPath, root], { cwd: process.cwd(), stdio: 'pipe' });
+
+  const report = JSON.parse(
+    fs.readFileSync(
+      path.join(root, 'generated', 'truth', 'data-source-truth-inventory.json'),
+      'utf8'
+    )
+  );
+  const pacific = report.rows.find(row => row.county === 'Pacific');
+
+  assert.ok(pacific);
+  assert.equal(pacific.scraperOrAdapterExists, false);
+  assert.equal(pacific.dbTableTargetExists, false);
+  assert.equal(pacific.runtimeApiConsumesIt, false);
+  assert.equal(pacific.rowsLanded, 0);
+  assert.notEqual(pacific.classification, 'possible_runtime_chain_unproven');
+  assert.equal(pacific.trustTier, 'unknown_untrusted');
+  assert.equal(pacific.costForge.costForgeReadinessTier, 'CF0_no_runtime_data');
+});
+
 test('inventory treats non-Benton CostForge coverage as pilot-derived, not official', () => {
   const root = makeTempRepo('tf-data-truth-costforge-');
   fs.mkdirSync(path.join(root, 'data', 'public'), { recursive: true });
