@@ -1670,6 +1670,13 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsOwnerCanonical.IPacsOwnerCanonicalProjector,
     TerraFusion.Data.Services.CanonicalTf.PacsOwnerCanonicalProjector>();
 
+// Slice B5: read-only parcel-owner reader for the
+// /api/parcels/{tfParcelId}/owner-current endpoint. Read-only by
+// contract: AsNoTracking, deterministic ordering, county-isolated.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsOwnerCanonical.ITfParcelOwnerReader,
+    TerraFusion.Data.Services.CanonicalTf.TfParcelOwnerReader>();
+
 // Slice S2-B: truth_pacs.sale promoter — supp-aware join + '100'
 // qualification filter, with five T-* gates. Idempotent by SaleLoadBatchId.
 builder.Services.AddScoped<
