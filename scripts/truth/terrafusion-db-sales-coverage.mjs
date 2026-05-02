@@ -105,7 +105,7 @@ metrics.parcelRowsWithSaleFields = 0; // no sale attributes on Properties row
 // 3. standalone sale fact rows (pacs_sales joined to Benton parcels)
 metrics.standaloneSaleFactRows_pacsSales = singleInt(
   `SELECT COUNT(*) FROM pacs_sales s
-     JOIN "Properties" p ON p."Id" = s."ParcelId"
+     JOIN "Properties" p ON p."PropertyId" = s."PacsPropId"::text
      WHERE p."CountyId" = ${COUNTY};`
 );
 
@@ -119,7 +119,7 @@ metrics.comparableSaleRows = singleInt(`SELECT COUNT(*) FROM "ComparableSales";`
 metrics.salesByYear_top20 = rowsAsArray(
   `SELECT EXTRACT(YEAR FROM s."SaleDate")::int AS yr, COUNT(*) AS cnt
      FROM pacs_sales s
-     JOIN "Properties" p ON p."Id" = s."ParcelId"
+     JOIN "Properties" p ON p."PropertyId" = s."PacsPropId"::text
      WHERE p."CountyId" = ${COUNTY}
        AND s."SaleDate" IS NOT NULL
      GROUP BY yr
@@ -130,7 +130,7 @@ metrics.salesByYear_top20 = rowsAsArray(
 // 6. sales before 2018 (Benton)
 metrics.salesBefore2018 = singleInt(
   `SELECT COUNT(*) FROM pacs_sales s
-     JOIN "Properties" p ON p."Id" = s."ParcelId"
+     JOIN "Properties" p ON p."PropertyId" = s."PacsPropId"::text
      WHERE p."CountyId" = ${COUNTY}
        AND s."SaleDate" IS NOT NULL
        AND s."SaleDate" < '2018-01-01';`
@@ -139,7 +139,7 @@ metrics.salesBefore2018 = singleInt(
 // 7. sales from 2018 onward (Benton)
 metrics.salesFrom2018Onward = singleInt(
   `SELECT COUNT(*) FROM pacs_sales s
-     JOIN "Properties" p ON p."Id" = s."ParcelId"
+     JOIN "Properties" p ON p."PropertyId" = s."PacsPropId"::text
      WHERE p."CountyId" = ${COUNTY}
        AND s."SaleDate" IS NOT NULL
        AND s."SaleDate" >= '2018-01-01';`
@@ -148,7 +148,7 @@ metrics.salesFrom2018Onward = singleInt(
 // 7b. sales with no SaleDate at all
 metrics.salesWithNoSaleDate = singleInt(
   `SELECT COUNT(*) FROM pacs_sales s
-     JOIN "Properties" p ON p."Id" = s."ParcelId"
+     JOIN "Properties" p ON p."PropertyId" = s."PacsPropId"::text
      WHERE p."CountyId" = ${COUNTY}
        AND s."SaleDate" IS NULL;`
 );
@@ -156,13 +156,13 @@ metrics.salesWithNoSaleDate = singleInt(
 // 8. rows with missing WAC code
 metrics.rowsWithMissingWacCd = singleInt(
   `SELECT COUNT(*) FROM pacs_sales s
-     JOIN "Properties" p ON p."Id" = s."ParcelId"
+     JOIN "Properties" p ON p."PropertyId" = s."PacsPropId"::text
      WHERE p."CountyId" = ${COUNTY}
        AND (s."WacCd" IS NULL OR btrim(s."WacCd") = '');`
 );
 metrics.rowsWithWacCdPresent = singleInt(
   `SELECT COUNT(*) FROM pacs_sales s
-     JOIN "Properties" p ON p."Id" = s."ParcelId"
+     JOIN "Properties" p ON p."PropertyId" = s."PacsPropId"::text
      WHERE p."CountyId" = ${COUNTY}
        AND s."WacCd" IS NOT NULL
        AND btrim(s."WacCd") <> '';`
@@ -171,13 +171,13 @@ metrics.rowsWithWacCdPresent = singleInt(
 // 9. rows with missing ratio type code
 metrics.rowsWithMissingSaleRatioTypeCd = singleInt(
   `SELECT COUNT(*) FROM pacs_sales s
-     JOIN "Properties" p ON p."Id" = s."ParcelId"
+     JOIN "Properties" p ON p."PropertyId" = s."PacsPropId"::text
      WHERE p."CountyId" = ${COUNTY}
        AND (s."SaleRatioTypeCd" IS NULL OR btrim(s."SaleRatioTypeCd") = '');`
 );
 metrics.rowsWithSaleRatioTypeCdPresent = singleInt(
   `SELECT COUNT(*) FROM pacs_sales s
-     JOIN "Properties" p ON p."Id" = s."ParcelId"
+     JOIN "Properties" p ON p."PropertyId" = s."PacsPropId"::text
      WHERE p."CountyId" = ${COUNTY}
        AND s."SaleRatioTypeCd" IS NOT NULL
        AND btrim(s."SaleRatioTypeCd") <> '';`
@@ -186,27 +186,33 @@ metrics.rowsWithSaleRatioTypeCdPresent = singleInt(
 // 10. rows with sale price AND sale date
 metrics.rowsWithSalePriceAndSaleDate = singleInt(
   `SELECT COUNT(*) FROM pacs_sales s
-     JOIN "Properties" p ON p."Id" = s."ParcelId"
+     JOIN "Properties" p ON p."PropertyId" = s."PacsPropId"::text
      WHERE p."CountyId" = ${COUNTY}
        AND s."SalePrice" IS NOT NULL AND s."SalePrice" > 0
        AND s."SaleDate" IS NOT NULL;`
 );
 metrics.rowsWithSalePriceMissing = singleInt(
   `SELECT COUNT(*) FROM pacs_sales s
-     JOIN "Properties" p ON p."Id" = s."ParcelId"
+     JOIN "Properties" p ON p."PropertyId" = s."PacsPropId"::text
      WHERE p."CountyId" = ${COUNTY}
        AND (s."SalePrice" IS NULL OR s."SalePrice" = 0);`
 );
 
 // 11. rows attached to valid parcel IDs (== row count joining
-//     successfully through Properties for Benton)
+//     successfully through Properties for Benton).
+//     NOTE: the authoritative join is
+//       pacs_sales.PacsPropId::text = Properties.PropertyId
+//     The UUID column pacs_sales.ParcelId is a generated artifact
+//     and is NOT the join key.
 metrics.rowsAttachedToValidBentonParcels = metrics.standaloneSaleFactRows_pacsSales;
-// orphans = rows whose ParcelId doesn't match any Property
-metrics.salesWithOrphanParcelId = singleInt(
+// orphans = rows whose PacsPropId doesn't match any Property
+metrics.salesWithOrphanPacsPropId = singleInt(
   `SELECT COUNT(*) FROM pacs_sales s
-     LEFT JOIN "Properties" p ON p."Id" = s."ParcelId"
+     LEFT JOIN "Properties" p ON p."PropertyId" = s."PacsPropId"::text
      WHERE p."Id" IS NULL;`
 );
+metrics.joinKeyNote =
+  'Authoritative join: pacs_sales.PacsPropId::text = Properties.PropertyId. UUID ParcelId column not used.';
 
 // 12. rows ELIGIBLE FOR QUALIFICATION before mapping
 //     Definition (no workbook dependency, no source-system reads):
@@ -218,7 +224,7 @@ metrics.salesWithOrphanParcelId = singleInt(
 //       MissingCode on both axes regardless of mapping state)
 metrics.rowsEligibleForQualificationBeforeMapping = singleInt(
   `SELECT COUNT(*) FROM pacs_sales s
-     JOIN "Properties" p ON p."Id" = s."ParcelId"
+     JOIN "Properties" p ON p."PropertyId" = s."PacsPropId"::text
      WHERE p."CountyId" = ${COUNTY}
        AND s."SaleDate" IS NOT NULL
        AND s."SalePrice" IS NOT NULL AND s."SalePrice" > 0
@@ -231,7 +237,7 @@ metrics.rowsEligibleForQualificationBeforeMapping = singleInt(
 // 12b. STRICT eligibility: BOTH axes populated AND date AND price.
 metrics.rowsStrictlyEligibleForQualification = singleInt(
   `SELECT COUNT(*) FROM pacs_sales s
-     JOIN "Properties" p ON p."Id" = s."ParcelId"
+     JOIN "Properties" p ON p."PropertyId" = s."PacsPropId"::text
      WHERE p."CountyId" = ${COUNTY}
        AND s."SaleDate" IS NOT NULL
        AND s."SalePrice" IS NOT NULL AND s."SalePrice" > 0
@@ -384,8 +390,9 @@ md.push(
   `| 11 | Rows attached to valid Benton parcels | ${metrics.rowsAttachedToValidBentonParcels?.toLocaleString() ?? '?'} |`
 );
 md.push(
-  `| 11a | Sales with orphan ParcelId (any county) | ${metrics.salesWithOrphanParcelId?.toLocaleString() ?? '?'} |`
+  `| 11a | Sales with orphan PacsPropId (no matching Property anywhere) | ${metrics.salesWithOrphanPacsPropId?.toLocaleString() ?? '?'} |`
 );
+md.push(`| 11b | Authoritative join key | ${metrics.joinKeyNote} |`);
 md.push(
   `| 12 | Rows eligible for qualification before mapping (loose: ≥1 axis) | ${metrics.rowsEligibleForQualificationBeforeMapping?.toLocaleString() ?? '?'} |`
 );
