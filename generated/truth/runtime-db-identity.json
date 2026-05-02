@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-05-02T07:45:16.964Z",
+  "runtimeBaseUrl": "http://localhost:5046",
+  "endpoint": "http://localhost:5046/api/runtime/truth/db-identity",
+  "endpointStatus": 200,
+  "passed": false,
+  "blockers": [
+    "Expected June 10 TerraFusion DB name is not configured. Set TF_EXPECTED_JUNE10_DB_NAME or RuntimeTruth:ExpectedJune10Database."
+  ],
+  "warnings": [],
+  "identity": {
+    "apiBaseUrl": "http://localhost:5046",
+    "environment": "Development",
+    "provider": "Npgsql.EntityFrameworkCore.PostgreSQL",
+    "connectionStringName": "DefaultConnection",
+    "serverRedacted": "configured-host-redacted",
+    "database": "terrafusion",
+    "expectedJune10Database": null,
+    "isExpectedJune10RuntimeDb": false,
+    "migrationState": {
+      "appliedCount": 55,
+      "pendingCount": 0,
+      "latestApplied": "20260501175030_AddSegmentInspectorDownstreamReceipts"
+    },
+    "rowCounts": {
+      "counties": 1,
+      "properties": 128788,
+      "comparableSales": 259102,
+      "canonicalSaleQualifications": 0
+    },
+    "passed": false,
+    "blockers": [
+      "Expected June 10 TerraFusion DB name is not configured. Set TF_EXPECTED_JUNE10_DB_NAME or RuntimeTruth:ExpectedJune10Database."
+    ],
+    "warnings": []
+  }
+}
