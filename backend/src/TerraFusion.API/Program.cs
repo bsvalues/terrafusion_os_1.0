@@ -1639,6 +1639,12 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsPropSuppAssoc.IPacsPropSuppAssocLandingService,
     TerraFusion.Data.Services.LegacyPacsRaw.PacsPropSuppAssocLandingService>();
 
+// Slice S2-B: truth_pacs.sale promoter — supp-aware join + '100'
+// qualification filter, with five T-* gates. Idempotent by SaleLoadBatchId.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsSaleTruth.IPacsSaleTruthPromoter,
+    TerraFusion.Data.Services.TruthPacs.PacsSaleTruthPromoter>();
+
 // Slice G1-D-2: nightly hosted service that walks every configured
 // county. OFF by default — set ArcGisSyncScheduler:Enabled=true in
 // configuration to activate.
