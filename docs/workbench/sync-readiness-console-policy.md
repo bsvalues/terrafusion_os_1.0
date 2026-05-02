@@ -6,7 +6,16 @@ readiness without re-opening the closed BENTON-SYNC-* track or
 crossing into Forge / TerraFlow / canonical-write product
 domains.).
 
-**Status:** policy-only. Wireframe lands in the same slice at
+**Status (post-OPS-2 closeout):** authoritative. The OPS-1 family
+read path is COMPLETE; see
+`docs/workbench/sync-readiness-console-completion-handoff.md`
+for the binding closeout, per-deliverable re-open conditions,
+and parked-follow-up gates. This policy doc remains the
+authoritative contract for the six pinned questions, hard
+guards, and engagement model; amendments require a fresh
+OPS-2-* policy slice per the closeout's re-open rule.
+
+**Status (original):** policy-only. Wireframe lands in the same slice at
 `docs/workbench/sync-readiness-console-wireframe.md`. Implementation
 lands separately under OPS-1-B (frontend) and OPS-1-A (backend
 read endpoints, if needed).

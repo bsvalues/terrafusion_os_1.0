@@ -3,7 +3,13 @@
 **Slice:** OPS-1 (companion to
 `docs/workbench/sync-readiness-console-policy.md`).
 
-**Status:** docs-only. Pins the visual layout, panel structure,
+**Status (post-OPS-2 closeout):** authoritative. The OPS-1
+family read path is COMPLETE; see
+`docs/workbench/sync-readiness-console-completion-handoff.md`
+for the binding closeout. Wireframe amendments require a fresh
+OPS-2-* policy slice.
+
+**Status (original):** docs-only. Pins the visual layout, panel structure,
 state semantics, and interaction model for the OPS-1-B
 implementation. Does NOT pin pixel-perfect layout, font sizes,
 or component-library choices — OPS-1-B picks those within the
