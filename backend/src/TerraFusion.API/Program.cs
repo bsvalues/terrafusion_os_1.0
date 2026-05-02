@@ -1669,6 +1669,13 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsSaleRegression.IOperatorSalesRegressionService,
     TerraFusion.Data.Services.Regression.OperatorSalesRegressionService>();
 
+// Sales-pipeline operator trigger: chains S2-B → S3 against already-
+// landed raw batches, returning a combined result with both batch
+// ids and per-stage counts.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsSalePipeline.IPacsSaleSyncRunner,
+    TerraFusion.Data.Services.Pipeline.PacsSaleSyncRunner>();
+
 // Slice G1-D-2: nightly hosted service that walks every configured
 // county. OFF by default — set ArcGisSyncScheduler:Enabled=true in
 // configuration to activate.
