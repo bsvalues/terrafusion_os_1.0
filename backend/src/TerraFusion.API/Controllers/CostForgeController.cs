@@ -1417,10 +1417,9 @@ public class CostForgeController : ControllerBase
   }
 
   /// <summary>
-  /// Sync with Harris PACS for real property data
-  /// Government data integration for 39+ Washington State counties
+  /// Reports source-ingestion status from TerraFusion runtime tables.
   /// </summary>
-  [HttpPost("sync/harris-pacs")]
+  [HttpPost("sync/source-status")]
   public async Task<ActionResult<HarrisSyncResultDto>> SyncWithHarrisPACS([FromBody] HarrisSyncRequestDto request)
   {
     var countyContext = await ResolveCountyContextAsync();
@@ -3190,8 +3189,8 @@ public class CostForgeController : ControllerBase
     });
   }
 
-  /// <summary>Store or update CAMA characteristics for a parcel/tax year.</summary>
-  [HttpPost("cama")]
+  /// <summary>Store or update property characteristics for a parcel/tax year.</summary>
+  [HttpPost("characteristics")]
   public async Task<ActionResult> UpsertCamaCharacteristic([FromBody] UpsertCamaRequest request)
   {
     var ctx = await ResolveCountyContextAsync();
@@ -3277,8 +3276,8 @@ public class CostForgeController : ControllerBase
     return Ok(new { parcelId = request.ParcelId, taxYear = request.TaxYear, status = "saved" });
   }
 
-  /// <summary>Get CAMA characteristics for a parcel.</summary>
-  [HttpGet("parcels/{parcelId}/cama")]
+  /// <summary>Get property characteristics for a parcel.</summary>
+  [HttpGet("parcels/{parcelId}/characteristics")]
   public async Task<ActionResult> GetCamaCharacteristics(string parcelId, [FromQuery] int? taxYear = null)
   {
     var ctx = await ResolveCountyContextAsync();

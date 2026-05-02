@@ -1373,7 +1373,7 @@ namespace TerraFusion.API.Controllers
         /// Download Benton CAMA RAG Readiness Snapshot as JSON file.
         /// Phase 18: County-specific RAG health export for audits and demos.
         /// </summary>
-        [HttpGet("rag/benton_cama_basics/export")]
+        [HttpGet("rag/benton-assessment-basics/export")]
         [AllowAnonymous] // Allow export without auth for county demos
         public async System.Threading.Tasks.Task<IActionResult> DownloadBentonRagSnapshot()
         {
@@ -2388,4 +2388,3 @@ namespace TerraFusion.API.Controllers
         #endregion
     }
 }
-

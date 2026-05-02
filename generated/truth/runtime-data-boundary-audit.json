@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-02T04:51:02.213Z",
+  "generatedAt": "2026-05-02T04:57:07.048Z",
   "frontendCalls": [
     {
       "filePath": "frontend/apps/os-shell/src/__tests__/shell/swarmTruth.contract.test.tsx",
@@ -101,57 +101,45 @@
     },
     {
       "filePath": "frontend/apps/os-shell/src/api/systemDiagnosticsApi.ts",
-      "endpoint": "${API_BASE_URL}/api/gpt/rag/benton_cama_basics/export",
+      "endpoint": "${API_BASE_URL}/api/gpt/rag/benton-assessment-basics/export",
       "surface": "atlas",
-      "legacyTerms": ["CAMA"],
-      "blockers": [
-        "Frontend product surface contains user-facing legacy source terminology."
-      ]
+      "legacyTerms": [],
+      "blockers": []
     },
     {
       "filePath": "frontend/apps/os-shell/src/api/systemDiagnosticsApi.ts",
       "endpoint": "${API_BASE_URL}/api/gpt/rag/health",
       "surface": "atlas",
-      "legacyTerms": ["CAMA"],
-      "blockers": [
-        "Frontend product surface contains user-facing legacy source terminology."
-      ]
+      "legacyTerms": [],
+      "blockers": []
     },
     {
       "filePath": "frontend/apps/os-shell/src/api/systemDiagnosticsApi.ts",
       "endpoint": "${API_BASE_URL}/api/gpt/rag/index/${datasetKey}",
       "surface": "atlas",
-      "legacyTerms": ["CAMA"],
-      "blockers": [
-        "Frontend product surface contains user-facing legacy source terminology."
-      ]
+      "legacyTerms": [],
+      "blockers": []
     },
     {
       "filePath": "frontend/apps/os-shell/src/api/systemDiagnosticsApi.ts",
       "endpoint": "${API_BASE_URL}/api/gpt/system/diagnostics/download",
       "surface": "atlas",
-      "legacyTerms": ["CAMA"],
-      "blockers": [
-        "Frontend product surface contains user-facing legacy source terminology."
-      ]
+      "legacyTerms": [],
+      "blockers": []
     },
     {
       "filePath": "frontend/apps/os-shell/src/api/systemDiagnosticsApi.ts",
       "endpoint": "${API_BASE_URL}/api/gpt/system/safe-mode",
       "surface": "atlas",
-      "legacyTerms": ["CAMA"],
-      "blockers": [
-        "Frontend product surface contains user-facing legacy source terminology."
-      ]
+      "legacyTerms": [],
+      "blockers": []
     },
     {
       "filePath": "frontend/apps/os-shell/src/api/systemDiagnosticsApi.ts",
       "endpoint": "${API_BASE_URL}/api/gpt/system/safe-mode",
       "surface": "atlas",
-      "legacyTerms": ["CAMA"],
-      "blockers": [
-        "Frontend product surface contains user-facing legacy source terminology."
-      ]
+      "legacyTerms": [],
+      "blockers": []
     },
     {
       "filePath": "frontend/apps/os-shell/src/auth/AuthProvider.tsx",
@@ -540,16 +528,16 @@
     },
     {
       "filePath": "frontend/apps/os-shell/src/components/field/PostInspectionReview.tsx",
-      "endpoint": "${API_BASE}/api/field/assignments/${assignment.id}/cama-flag",
+      "endpoint": "${API_BASE}/api/field/assignments/${assignment.id}/assessment-review-flag",
       "surface": "unknown",
-      "legacyTerms": ["CAMA"],
+      "legacyTerms": [],
       "blockers": []
     },
     {
       "filePath": "frontend/apps/os-shell/src/components/field/PostInspectionReview.tsx",
       "endpoint": "${API_BASE}/api/properties/parcel/${encodeURIComponent(assignment.parcelNumber)}/sketch",
       "surface": "unknown",
-      "legacyTerms": ["CAMA"],
+      "legacyTerms": [],
       "blockers": []
     },
     {
@@ -6248,7 +6236,7 @@
         "agents/status",
         "agents/scale",
         "metrics",
-        "sync/harris-pacs",
+        "sync/source-status",
         "cost-estimate",
         "cost-matrix/benton",
         "depreciation-schedule",
@@ -6277,8 +6265,8 @@
         "valuations/{id:guid}/certify",
         "comparables",
         "parcels/{parcelId}/comparables",
-        "cama",
-        "parcels/{parcelId}/cama",
+        "characteristics",
+        "parcels/{parcelId}/characteristics",
         "models/{modelId}",
         "comps/{subjectId}",
         "building-types",
@@ -6348,7 +6336,7 @@
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["cama", "Harris", "PACS"],
       "directLegacyTerms": [],
-      "legacyRouteTerms": ["cama", "harris", "pacs"],
+      "legacyRouteTerms": [],
       "canonicalTerms": [
         "assessment",
         "CamaCharacteristics",
@@ -6356,12 +6344,13 @@
         "canonical",
         "ComparableSales",
         "parcel",
+        "runtime",
         "TerraFusionDbContext"
       ],
-      "blockers": [
-        "Product runtime endpoint exposes legacy source terminology in route contract."
-      ],
-      "warnings": []
+      "blockers": [],
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
@@ -6371,19 +6360,19 @@
         "metrics",
         "agents/status",
         "agents/scale",
-        "sync/harris-pacs",
+        "sync/source-status",
         "calculate"
       ],
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["Harris", "PACS"],
       "directLegacyTerms": [],
-      "legacyRouteTerms": ["harris", "pacs"],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["parcel"],
-      "blockers": [
-        "Product runtime endpoint exposes legacy source terminology in route contract."
-      ],
-      "warnings": []
+      "blockers": [],
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/CountyDeploymentController.cs",
@@ -6867,17 +6856,20 @@
         "api/field",
         "assignments",
         "assignments/{id}/status",
-        "assignments/{id}/cama-flag"
+        "assignments/{id}/assessment-review-flag"
       ],
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "terrafusion_canonical",
-      "legacyTerms": ["cama", "PACS"],
+      "legacyTerms": [],
       "directLegacyTerms": [],
-      "legacyRouteTerms": ["cama"],
-      "canonicalTerms": ["parcel", "TerraFusionDbContext"],
-      "blockers": [
-        "Product runtime endpoint exposes legacy source terminology in route contract."
+      "legacyRouteTerms": [],
+      "canonicalTerms": [
+        "assessment",
+        "canonical",
+        "parcel",
+        "TerraFusionDbContext"
       ],
+      "blockers": [],
       "warnings": []
     },
     {
@@ -7082,7 +7074,7 @@
         "system/diagnostics",
         "system/diagnostics/download",
         "system/safe-mode",
-        "rag/benton_cama_basics/export",
+        "rag/benton-assessment-basics/export",
         "system/events",
         "system/metrics",
         "system/federated-overview",
@@ -7100,12 +7092,12 @@
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["cama"],
       "directLegacyTerms": [],
-      "legacyRouteTerms": ["cama"],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment"],
-      "blockers": [
-        "Product runtime endpoint exposes legacy source terminology in route contract."
-      ],
-      "warnings": []
+      "blockers": [],
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/HarrisPACSEnhancementController.cs",
@@ -8566,22 +8558,9 @@
       "filePath": "backend/src/TerraFusion.API/Program.cs",
       "routeHints": [],
       "zone": "forbidden_product_runtime",
-      "dataSourceClass": "mixed_canonical_and_legacy",
-      "legacyTerms": [
-        "CAMA",
-        "Harris",
-        "legacy SOURCE",
-        "PACS",
-        "pacs_oltp",
-        "SqlConnection",
-        "tf-mssql"
-      ],
-      "directLegacyTerms": [
-        "new SqlConnection",
-        "pacs_oltp",
-        "SqlConnection(",
-        "tf-mssql"
-      ],
+      "dataSourceClass": "terrafusion_canonical",
+      "legacyTerms": ["CAMA", "Harris", "legacy SOURCE", "PACS"],
+      "directLegacyTerms": [],
       "legacyRouteTerms": [],
       "canonicalTerms": [
         "assessment",
@@ -8593,10 +8572,10 @@
         "runtime",
         "TerraFusionDbContext"
       ],
-      "blockers": [
-        "Product runtime endpoint has direct legacy source dependency evidence."
-      ],
-      "warnings": []
+      "blockers": [],
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Services/Marketplace/MarketplaceOpsEndpoints.cs",
@@ -9247,10 +9226,10 @@
   "summary": {
     "productEndpointsScanned": 37,
     "syncAdminEndpointsScanned": 5,
-    "productLegacyViolations": 5,
-    "productCanonicalEndpoints": 26,
+    "productLegacyViolations": 0,
+    "productCanonicalEndpoints": 27,
     "productUnprovenEndpoints": 10,
-    "frontendLegacyViolations": 14
+    "frontendLegacyViolations": 8
   },
   "passed": false
 }

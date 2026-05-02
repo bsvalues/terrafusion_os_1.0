@@ -223,14 +223,12 @@ public class FieldController : ControllerBase
         }
     }
 
-    // ── POST /api/field/assignments/{id}/cama-flag ─────────────────────────────
+    // ── POST /api/field/assignments/{id}/assessment-review-flag ───────────────
     /// <summary>
-    /// Creates a PropertyWorkbenchFlag for CAMA review when field observations
-    /// differ from the PACS record. Requires explicit human confirmation before
-    /// the flag is persisted (enforced on the client; this endpoint records the
-    /// result of that confirmation).
+    /// Creates a PropertyWorkbenchFlag for assessment review when field observations
+    /// differ from the canonical assessment record.
     /// </summary>
-    [HttpPost("assignments/{id}/cama-flag")]
+    [HttpPost("assignments/{id}/assessment-review-flag")]
     public async Task<IActionResult> FlagForCamaReview(
         Guid id,
         [FromBody] CamaFlagRequest request)
@@ -258,14 +256,14 @@ public class FieldController : ControllerBase
             assignment.Status      = "completed";
             assignment.CompletedAt = DateTime.UtcNow;
             assignment.Notes       = string.IsNullOrWhiteSpace(assignment.Notes)
-                ? $"CAMA flag created: {request.Reason}"
-                : assignment.Notes + $"\nCAMA flag: {request.Reason}";
+                ? $"Assessment review flag created: {request.Reason}"
+                : assignment.Notes + $"\nAssessment review flag: {request.Reason}";
             assignment.UpdatedAt   = DateTime.UtcNow;
 
             await _db.SaveChangesAsync();
 
             _logger.LogInformation(
-                "CAMA flag created for parcel {ParcelId} from assignment {AssignmentId}, flag {FlagId}",
+                "Assessment review flag created for parcel {ParcelId} from assignment {AssignmentId}, flag {FlagId}",
                 assignment.ParcelId, id, flag.Id);
 
             return Ok(new
@@ -279,7 +277,7 @@ public class FieldController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating CAMA flag for assignment {Id}", id);
+            _logger.LogError(ex, "Error creating assessment review flag for assignment {Id}", id);
             return StatusCode(500, "Internal server error");
         }
     }

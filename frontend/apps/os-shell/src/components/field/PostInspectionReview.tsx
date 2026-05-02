@@ -1,6 +1,6 @@
-// TerraFusion OS — Post-Inspection CAMA Review Panel
+// TerraFusion OS — Post-Inspection Assessment Review Panel
 // Shows field observations vs. canonical assessment record side-by-side.
-// Appraiser must confirm delta before a CAMA review flag is created.
+// Appraiser must confirm delta before an assessment review flag is created.
 // Rule: AI cannot act without human sign-off. This panel is the gate.
 
 import { useEffect, useState } from "react";
@@ -186,7 +186,7 @@ export function PostInspectionReview({
     try {
       const legacyConditionKey = ["pa", "csConditionCode"].join("");
       const legacyAreaKey = ["pa", "csAreaSqft"].join("");
-      const res = await fetch(`${API_BASE}/api/field/assignments/${assignment.id}/cama-flag`, {
+      const res = await fetch(`${API_BASE}/api/field/assignments/${assignment.id}/assessment-review-flag`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -200,7 +200,7 @@ export function PostInspectionReview({
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setFlagged(true);
-      toast.success("CAMA review flag submitted — supervisor will be notified");
+      toast.success("Assessment review flag submitted — supervisor will be notified");
       onFlagSubmitted();
     } catch (err) {
       toast.error("Failed to submit flag", { description: err instanceof Error ? err.message : "Unknown error" });
@@ -296,18 +296,18 @@ export function PostInspectionReview({
         <Card className="border-green-200 bg-green-50/60">
           <CardContent className="p-4 flex items-center gap-2 text-sm text-green-800">
             <CheckCircle2 className="w-4 h-4 shrink-0 text-green-600" />
-            Field observations match the canonical assessment record. No CAMA review flag needed.
+            Field observations match the canonical assessment record. No assessment review flag needed.
           </CardContent>
         </Card>
       )}
 
-      {/* CAMA flag section — only shown when there's a delta */}
+      {/* Assessment review flag section — only shown when there's a delta */}
       {hasDelta && !flagged && (
         <Card className={`border-border/50 ${hasSignificantDelta ? "border-orange-200" : "border-yellow-200"}`}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center gap-2">
               <Flag className={`w-4 h-4 ${hasSignificantDelta ? "text-orange-500" : "text-yellow-500"}`} />
-              Flag for CAMA Review
+              Flag for Assessment Review
               {hasSignificantDelta && (
                 <Badge className="text-[10px] bg-orange-100 text-orange-700 border-orange-300">Significant delta detected</Badge>
               )}
@@ -316,8 +316,8 @@ export function PostInspectionReview({
           <CardContent className="space-y-3">
             <p className="text-xs text-muted-foreground">
               Field observations differ from the canonical assessment record. Review the delta above,
-              then confirm and submit a CAMA review flag for supervisor sign-off before
-              any CAMA update is applied.
+              then confirm and submit an assessment review flag for supervisor sign-off before
+              any assessment update is applied.
             </p>
             <Textarea
               placeholder="Reviewer notes (optional — what did you see that explains this delta?)"
@@ -336,7 +336,7 @@ export function PostInspectionReview({
               />
               <span className="text-xs text-foreground">
                 I have reviewed the delta above and confirm this flag is accurate.
-                I understand this flag will trigger a CAMA review — it does not automatically
+                I understand this flag will trigger an assessment review — it does not automatically
                 change any assessed value.
               </span>
             </label>
@@ -346,7 +346,7 @@ export function PostInspectionReview({
               className={`w-full ${hasSignificantDelta ? "bg-orange-600 hover:bg-orange-700" : "bg-yellow-600 hover:bg-yellow-700"} text-white`}
             >
               <Flag className="w-4 h-4 mr-2" />
-              {submitting ? "Submitting…" : "Submit CAMA Review Flag"}
+              {submitting ? "Submitting…" : "Submit Assessment Review Flag"}
             </Button>
           </CardContent>
         </Card>
@@ -358,8 +358,8 @@ export function PostInspectionReview({
           <CardContent className="p-4 flex items-center gap-3">
             <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
             <div>
-              <p className="text-sm font-medium text-green-900">CAMA review flag submitted</p>
-              <p className="text-xs text-green-700 mt-0.5">Supervisor will review before any CAMA update is applied.</p>
+              <p className="text-sm font-medium text-green-900">Assessment review flag submitted</p>
+              <p className="text-xs text-green-700 mt-0.5">Supervisor will review before any assessment update is applied.</p>
             </div>
           </CardContent>
         </Card>
