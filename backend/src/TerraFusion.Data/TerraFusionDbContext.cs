@@ -193,6 +193,14 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsSale>
     TruthPacsSales { get; set; } = null!;
 
+  // Slice S3: canonical_tf.tf_sale — TerraFusion-native sale identity
+  // backed by sync_bridge.source_xref lineage. Sales whose parcel
+  // cannot be resolved are quarantined to legacy_tf_unproven.sale.
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfSale>
+    TfSales { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.LegacyTfUnproven.LegacyTfUnprovenSale>
+    LegacyTfUnprovenSales { get; set; } = null!;
+
   // Slice C41-B: per-county pointer naming the operator-active
   // Mapped workbook. Singleton per county (PK = CountyId). See
   // docs/sync/sync-county-active-workbook-pointer-policy.md for the
@@ -813,6 +821,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // supp-aware-validated truth layer.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.TruthPacs.TruthPacsSaleConfiguration());
+
+    // Slice S3: canonical_tf.tf_sale + legacy_tf_unproven.sale.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfSaleConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyTfUnproven.LegacyTfUnprovenSaleConfiguration());
 
     // Sync Bridge v1 — Phase 0 field_authority seed for the parcel
     // domain. Per docs/pacs/pacs-sync-bridge-v1-spec.md §4.
