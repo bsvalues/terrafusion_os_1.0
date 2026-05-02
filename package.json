@@ -90,6 +90,7 @@
     "truth:runtime-endpoint-discovery": "node scripts/truth/runtime-endpoint-discovery.mjs",
     "truth:runtime-row-path-proof": "node scripts/truth/runtime-row-path-proof.mjs",
     "truth:runtime-source-lineage": "node scripts/truth/runtime-row-source-lineage-proof.mjs",
+    "truth:runtime-sale-qualification": "node scripts/truth/runtime-sale-qualification-lineage-proof.mjs",
     "truth:direct-source": "node os-platform/core/pilot/direct-source-recompute.mjs",
     "truth:statistics-parity-scope": "node os-platform/core/pilot/statistics-parity-scope-alignment.mjs",
     "truth:statistics-shared-contract": "node os-platform/core/pilot/statistics-shared-population-contract.mjs",
