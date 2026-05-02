@@ -148,10 +148,24 @@ this inventory itself.
 ## Default next implementation slice
 
 ```text
-BENTON-SYNC-2 — SyncAtlas schema-catalog health command
+BENTON-SYNC-6-B — per-loader preflight evidence writer + CLI wiring
 ```
 
-### Why BENTON-SYNC-2 is next
+The original next default (BENTON-SYNC-2 — SyncAtlas schema-catalog
+health command) landed at `commit be308ff28`. The two parked items
+gated on BENTON-SYNC-2 (invariant report artifact wiring,
+per-loader preflight evidence) have promoted in order:
+BENTON-SYNC-5 landed the invariant artifact at `commit d753c61af`,
+and BENTON-SYNC-6-A pinned the policy for the per-loader preflight
+evidence at the head of this current slice. BENTON-SYNC-6-B is the
+implementation half of that slice.
+
+The original BENTON-SYNC-2 rationale below is retained as the
+historical record of why diagnostics-first was the right starting
+posture; the BENTON-SYNC-6-B rationale appears under
+"Why BENTON-SYNC-6-B is next" below it.
+
+### Why BENTON-SYNC-2 was next (historical)
 
 - **Inside the bridge boundary.** Pure Sync diagnostic; no
   workflow / Forge / UI / frontend involvement.
@@ -178,7 +192,30 @@ BENTON-SYNC-2 — SyncAtlas schema-catalog health command
   doc + impl + tests because it's a pure diagnostic over
   existing surfaces.
 
-### What BENTON-SYNC-2 produces (anticipated, not binding)
+### Why BENTON-SYNC-6-B is next
+
+- **Inside the bridge boundary.** SyncAtlas-only artifact write;
+  no PACS mutation, no TerraFusion DB mutation, no UI surface.
+- **Promotes the inventory's parked item #3.** Per-loader preflight
+  evidence rollup was named in BENTON-SYNC-1 as gated on
+  BENTON-SYNC-2 landing. BENTON-SYNC-2 landed at `be308ff28`,
+  so the gate is satisfied.
+- **Reuses the BENTON-SYNC-5 precedent.** The
+  `--invariant-artifact-path` engagement model is byte-for-byte
+  the same as the new `--preflight-evidence-path` flag. Operator-
+  chosen path, opt-in only, fail-fast on write failure.
+- **Operationally useful for Benton today.** Preflight outcomes
+  currently scroll past in stdout. Capturing them in a byte-stable
+  artifact lets BENTON-SYNC-4 / future BENTON-SYNC-6-C-style
+  baselines diff loader behavior over time, and lets audits see
+  exactly which preflights ran and what they returned.
+- **Single-county shape.** Records carry the catalog identity
+  envelope. Multi-county aggregation stays parked.
+- **Policy-then-implementation cadence.** BENTON-SYNC-6-A pinned
+  the schema; BENTON-SYNC-6-B writes the code. No blank-page
+  ambiguity.
+
+### What BENTON-SYNC-2 produced (historical, for reference)
 
 A `sync-atlas schema-catalog-health --connection-id <id>`
 subcommand that emits structured output like:
@@ -220,8 +257,8 @@ explicitly elevates it.
 
 | Parked item                                                          | Gate                                                                |
 |----------------------------------------------------------------------|---------------------------------------------------------------------|
-| Invariant report artifact wiring                                     | After BENTON-SYNC-2 lands                                           |
-| Per-loader preflight evidence rollup                                 | After BENTON-SYNC-2 lands                                           |
+| Invariant report artifact wiring                                     | DONE — BENTON-SYNC-5 (`commit d753c61af`)                            |
+| Per-loader preflight evidence rollup                                 | IN PROGRESS — BENTON-SYNC-6-A policy DONE; BENTON-SYNC-6-B impl NEXT |
 | C51-PII-E manifest authoring tool                                    | Needs fresh policy slice; operator-priority decision                |
 | C50-CONV-D manifest authoring tool                                   | Needs fresh policy slice; operator-priority decision                |
 | C52-OVR-E manifest authoring tool                                    | Needs fresh policy slice; operator-priority decision                |
@@ -308,8 +345,26 @@ reality. Track entries:
                     `docs/sync/benton-pacs-catalog-health-baseline.md`.
                     Pins the live state so future catalog builds
                     can be diffed against it.
-- BENTON-SYNC-5+  : reselected from parked list. This inventory
-                    is refreshed when the next-need is picked.
+- BENTON-SYNC-5   : DONE — invariant report artifact wired into
+                    `--schema-catalog-health` via the new
+                    `--invariant-artifact-path` flag. Live proof
+                    Run ID 20260502T012736Z produced a 400 KB
+                    byte-stable invariant-report.json with all 721
+                    FK-006 rows. Merge `commit d753c61af`. Sync
+                    regression 401/401.
+- BENTON-SYNC-6-A : DONE — per-loader preflight evidence policy at
+                    `docs/sync/dictionary-loader-preflight-evidence-policy.md`.
+                    Pins artifact shape, CLI engagement model
+                    (`--preflight-evidence-path`), hard guards, and
+                    BENTON-SYNC-6-B test matrix. ← this slice
+- BENTON-SYNC-6-B : NEXT — implementation slice. Adds the parser
+                    case, the `DictionaryLoaderPreflightEvidence`
+                    record + writer, the dictionary-loader
+                    instrumentation, the test matrix from the
+                    policy doc, and the live proof.
+- BENTON-SYNC-7+  : reselected from parked list once
+                    BENTON-SYNC-6-B lands. This inventory is
+                    refreshed at that point.
 
 The track is operationally-driven. New entries land as concrete
 bridge needs surface, not as architectural completeness goals.

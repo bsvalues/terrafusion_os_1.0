@@ -65,6 +65,11 @@ Vestigial drift was swept by C48-FIX, C48-FIX2, and C48-HYGIENE.
   + future-slice gate
 - `benton-core-sync-next-need.md` — BENTON-SYNC-1 — current Benton
   Core Sync next-need inventory + named default implementation slice
+- `benton-pacs-catalog-health-baseline.md` — BENTON-SYNC-4 — committed
+  evidence baseline of the live Benton schema-catalog health output
+- `dictionary-loader-preflight-evidence-policy.md` — BENTON-SYNC-6-A —
+  artifact shape and CLI engagement model for rolling per-loader FK /
+  era / PII preflight outcomes into byte-stable JSON evidence
 
 ### Schema catalog (C48 family — COMPLETE)
 
