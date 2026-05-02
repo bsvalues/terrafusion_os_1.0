@@ -1614,6 +1614,12 @@ builder.Services.AddScoped<
     TerraFusion.Core.GIS.ArcGisRest.IArcGisSyncService,
     TerraFusion.Data.Services.GisTf.ArcGisSyncService>();
 
+// Slice G1-E-1: APN crosswalk closure between gis_tf.tf_parcel_geom
+// (ArcGIS-sourced) and canonical_tf.tf_parcel (PACS-sourced).
+builder.Services.AddScoped<
+    TerraFusion.Core.GIS.ArcGisRest.IArcGisCrosswalkService,
+    TerraFusion.Data.Services.GisTf.ArcGisCrosswalkService>();
+
 // Slice G1-D-2: nightly hosted service that walks every configured
 // county. OFF by default — set ArcGisSyncScheduler:Enabled=true in
 // configuration to activate.
