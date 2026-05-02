@@ -291,7 +291,24 @@ reality. Track entries:
                     command landed. PacsSchemaCatalogHealthReporter
                     + PacsSchemaCatalogHealthReport record + Run
                     method in SyncAtlas Program.cs + 12 unit tests.
-- BENTON-SYNC-3+  : reselected from parked list. This inventory
+- BENTON-SYNC-2-FIX1 : DONE — parser corrigendum. The
+                    `--schema-catalog-health` flag was missing its
+                    mode-validation branch in `CliArgsParser.Parse`,
+                    causing fall-through to the load-pacs-dictionary
+                    `else` and a wrong-mode error message. Surfaced
+                    by BENTON-SYNC-3's first attempt; fixed in
+                    `commit 55a1d82c2` with a regression-pinning
+                    integration test.
+- BENTON-SYNC-3   : DONE — live-PACS proof against Benton OLTP
+                    (Run ID 20260502T010520Z). Exit 0; clean
+                    invariant report (0 Errors, 721 FK-006
+                    Warnings); coverage 2229 / 32750 / 210; leak
+                    scan zero-match. Marker `commit be308ff28`.
+- BENTON-SYNC-4   : DONE — committed evidence baseline at
+                    `docs/sync/benton-pacs-catalog-health-baseline.md`.
+                    Pins the live state so future catalog builds
+                    can be diffed against it.
+- BENTON-SYNC-5+  : reselected from parked list. This inventory
                     is refreshed when the next-need is picked.
 
 The track is operationally-driven. New entries land as concrete
