@@ -125,6 +125,7 @@ public sealed class SyncMappingWorkbookReadModel : ISyncMappingWorkbookReadModel
         return new SyncMappingWorkbookSnapshot(
             WorkbookId:     workbook.Id,
             CountyId:       workbook.CountyId,
+            SourceConnectionId: workbook.SourceConnectionId,
             ProfileBatchId: workbook.ProfileBatchId,
             Name:           workbook.Name,
             Columns:        decisions,

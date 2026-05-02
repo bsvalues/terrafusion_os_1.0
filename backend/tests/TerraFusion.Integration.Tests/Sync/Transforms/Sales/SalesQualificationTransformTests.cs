@@ -711,6 +711,7 @@ public class SalesQualificationTransformTests
         return new SyncMappingWorkbookSnapshot(
             WorkbookId:     Guid.NewGuid(),
             CountyId:       Guid.NewGuid(),
+            SourceConnectionId: Guid.NewGuid(),
             ProfileBatchId: Guid.NewGuid(),
             Name:           "synthetic",
             Columns:        new[] { wacCol, ratioCol });

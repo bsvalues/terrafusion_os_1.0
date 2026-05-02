@@ -79,6 +79,12 @@ public sealed class SalesQualificationCanonicalRunner : ISalesQualificationCanon
         // workbooks fail here before PACS is read and before canonical rows
         // can be written.
         var snapshot = await _readModel.LoadMappedAsync(countyId, workbookId, cancellationToken);
+        if (snapshot.SourceConnectionId != sourceConnectionId)
+        {
+            throw new InvalidOperationException(
+                $"Mapping workbook {workbookId} belongs to source connection {snapshot.SourceConnectionId}, " +
+                $"not requested source connection {sourceConnectionId}.");
+        }
 
         var rows = await _salesReader.ReadAsync(connection, maxSales, cancellationToken);
 

@@ -68,6 +68,7 @@ public interface ISyncMappingWorkbookReadModel
 public sealed record SyncMappingWorkbookSnapshot(
     Guid WorkbookId,
     Guid CountyId,
+    Guid SourceConnectionId,
     Guid ProfileBatchId,
     string Name,
     IReadOnlyList<SyncMappingColumnDecision> Columns,

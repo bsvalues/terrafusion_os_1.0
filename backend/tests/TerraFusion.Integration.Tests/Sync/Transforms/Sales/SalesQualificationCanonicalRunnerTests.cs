@@ -360,4 +360,45 @@ public class SalesQualificationCanonicalRunnerTests
             .WithMessage($"*{connB.Id}*not found for county {countyA.Id}*");
         countyB.Id.Should().NotBe(countyA.Id);
     }
+
+    [Fact]
+    public async Task RunAsync_RejectsSameCountySourceConnectionThatDoesNotOwnWorkbook()
+    {
+        await using var db = CreateContext($"c36-source-mismatch-{Guid.NewGuid()}");
+        var (county, workbookConnection, batch) = await SeedScopeAsync(db, "Benton");
+        var requestedConnection = new SyncSourceConnection
+        {
+            Id = Guid.NewGuid(),
+            CountyId = county.Id,
+            Name = "Benton PACS OLTP Alternate",
+            SourceSystem = "PACS",
+            ConnectionType = "SqlServer",
+            Server = "localhost,1433",
+            Database = "pacs_oltp_alt",
+            AuthMode = "SqlAuth",
+            IsActive = true,
+        };
+        db.SyncSourceConnections.Add(requestedConnection);
+        await db.SaveChangesAsync();
+
+        var wbId = await SeedSimpleMappedWorkbookAsync(db, county.Id, workbookConnection.Id, batch.Id);
+        var fakeReader = new FakeSalesRowReader(new[]
+        {
+            new SalesRow("1001", "458-61A-203(1)", "00", 1001),
+        });
+        var sut = CreateSut(db, fakeReader);
+
+        Func<Task> act = () => sut.RunAsync(
+            county.Id,
+            wbId,
+            requestedConnection.Id,
+            maxSales: 10,
+            operatorId: "c36-test");
+
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage($"*belongs to source connection {workbookConnection.Id}*not requested source connection {requestedConnection.Id}*");
+
+        fakeReader.CallCount.Should().Be(0);
+        (await db.CanonicalSaleQualifications.CountAsync()).Should().Be(0);
+    }
 }
