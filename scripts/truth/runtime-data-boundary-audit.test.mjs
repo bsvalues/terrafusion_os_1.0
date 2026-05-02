@@ -61,7 +61,9 @@ test('product runtime controller with direct legacy source connection is blocked
   assert.equal(endpoint.zone, 'forbidden_product_runtime');
   assert.equal(endpoint.dataSourceClass, 'legacy_source_direct');
   assert.ok(
-    endpoint.blockers.includes('Product runtime endpoint references legacy source terms directly.')
+    endpoint.blockers.includes(
+      'Product runtime endpoint has direct legacy source dependency evidence.'
+    )
   );
 });
 
@@ -127,6 +129,32 @@ test('product controller reading TerraFusion canonical table passes', async () =
   );
   assert.equal(endpoint.zone, 'forbidden_product_runtime');
   assert.equal(endpoint.dataSourceClass, 'terrafusion_canonical');
+  assert.deepEqual(endpoint.blockers, []);
+});
+
+test('product controller reading TerraFusion CamaCharacteristics is canonical, not source direct', async () => {
+  const root = makeTempRepo('tf-boundary-product-cama-canonical-');
+  fs.writeFileSync(
+    path.join(root, 'backend', 'src', 'TerraFusion.API', 'Controllers', 'CostForgeController.cs'),
+    `
+      [Route("api/costforge")]
+      public class CostForgeController : ControllerBase
+      {
+        private readonly TerraFusionDbContext _db;
+        public IActionResult Estimate() {
+          return Ok(_db.CamaCharacteristics.Count());
+        }
+      }
+    `
+  );
+
+  const report = await runAudit(root);
+  const endpoint = report.backendEndpoints.find(item =>
+    item.filePath.endsWith('CostForgeController.cs')
+  );
+  assert.equal(endpoint.zone, 'forbidden_product_runtime');
+  assert.equal(endpoint.dataSourceClass, 'terrafusion_canonical');
+  assert.deepEqual(endpoint.directLegacyTerms, []);
   assert.deepEqual(endpoint.blockers, []);
 });
 

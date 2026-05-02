@@ -54,6 +54,21 @@ const legacyPatterns = [
   /\blegacy source\b/i,
 ];
 
+const directLegacySourcePatterns = [
+  /\bpacs_oltp\b/i,
+  /\bPACS_Training\b/i,
+  /\bPacmls\b/i,
+  /\bPACMLS\b/i,
+  /\bSyncSourceConnection\b/i,
+  /\bsourceConnectionId\b/i,
+  /\btf-mssql\b/i,
+  /\bnew\s+SqlConnection\b/i,
+  /\bSqlConnection\s*\(/i,
+  /\bOdbcConnection\s*\(/i,
+];
+
+const legacyRoutePatterns = [/pacs/i, /harris/i, /cama/i];
+
 const canonicalPatterns = [
   /\bTerraFusionDbContext\b/i,
   /\bCanonical\b/i,
@@ -67,6 +82,8 @@ const canonicalPatterns = [
   /\bDbSet\b/i,
   /\bRepository\b/i,
   /\bComparableSales\b/i,
+  /\bCamaCharacteristics\b/i,
+  /\bCamaImprovementDetails\b/i,
 ];
 
 function rel(filePath) {
@@ -215,9 +232,13 @@ function zoneFor(filePath, content) {
   return 'unknown';
 }
 
-function classifyDataSource(legacyTerms, canonicalTerms) {
-  if (legacyTerms.length && canonicalTerms.length) return 'mixed_canonical_and_legacy';
-  if (legacyTerms.length) return 'legacy_source_direct';
+function routeLegacyTerms(routeHints) {
+  return uniqueTermMatches(legacyRoutePatterns, routeHints.join('\n'));
+}
+
+function classifyDataSource(directLegacyTerms, canonicalTerms) {
+  if (directLegacyTerms.length && canonicalTerms.length) return 'mixed_canonical_and_legacy';
+  if (directLegacyTerms.length) return 'legacy_source_direct';
   if (canonicalTerms.length) return 'terrafusion_canonical';
   return 'unproven';
 }
@@ -235,8 +256,10 @@ function classifyBackendEndpoint(filePath, content) {
   const routeHints = extractRouteHints(content);
   const zone = zoneFor(filePath, content);
   const legacyTerms = uniqueTermMatches(legacyPatterns, content);
+  const directLegacyTerms = uniqueTermMatches(directLegacySourcePatterns, content);
+  const legacyRouteTerms = routeLegacyTerms(routeHints);
   const canonicalTerms = uniqueTermMatches(canonicalPatterns, content);
-  const dataSourceClass = classifyDataSource(legacyTerms, canonicalTerms);
+  const dataSourceClass = classifyDataSource(directLegacyTerms, canonicalTerms);
   const blockers = [];
   const warnings = [];
 
@@ -245,7 +268,12 @@ function classifyBackendEndpoint(filePath, content) {
       dataSourceClass === 'legacy_source_direct' ||
       dataSourceClass === 'mixed_canonical_and_legacy'
     ) {
-      blockers.push('Product runtime endpoint references legacy source terms directly.');
+      blockers.push('Product runtime endpoint has direct legacy source dependency evidence.');
+    }
+    if (legacyRouteTerms.length) {
+      blockers.push(
+        'Product runtime endpoint exposes legacy source terminology in route contract.'
+      );
     }
     if (dataSourceClass === 'unproven') {
       blockers.push('Product runtime endpoint has no TerraFusion canonical/runtime data evidence.');
@@ -261,12 +289,20 @@ function classifyBackendEndpoint(filePath, content) {
     warnings.push('Unknown endpoint has no static data-source evidence.');
   }
 
+  if (legacyTerms.length && !directLegacyTerms.length && !legacyRouteTerms.length) {
+    warnings.push(
+      'Legacy/provenance terminology detected without direct source dependency evidence.'
+    );
+  }
+
   return {
     filePath: rel(filePath),
     routeHints,
     zone,
     dataSourceClass,
     legacyTerms,
+    directLegacyTerms,
+    legacyRouteTerms,
     canonicalTerms,
     blockers,
     warnings,
@@ -291,8 +327,8 @@ function summarizeReport(endpoints, frontendCalls) {
   return {
     productEndpointsScanned: product.length,
     syncAdminEndpointsScanned: syncAdmin.length,
-    productLegacyViolations: product.filter(endpoint =>
-      ['legacy_source_direct', 'mixed_canonical_and_legacy'].includes(endpoint.dataSourceClass)
+    productLegacyViolations: product.filter(
+      endpoint => endpoint.directLegacyTerms.length > 0 || endpoint.legacyRouteTerms.length > 0
     ).length,
     productCanonicalEndpoints: product.filter(
       endpoint => endpoint.dataSourceClass === 'terrafusion_canonical'
@@ -322,8 +358,8 @@ function renderMarkdown(report) {
     '',
     '## Product Runtime Endpoints',
     '',
-    '| File | Routes | Source Class | Legacy Terms | Canonical Terms | Blockers | Warnings |',
-    '|---|---|---|---|---|---|---|',
+    '| File | Routes | Source Class | Direct Legacy Terms | Route Legacy Terms | Legacy/Provenance Terms | Canonical Terms | Blockers | Warnings |',
+    '|---|---|---|---|---|---|---|---|---|',
   ];
 
   for (const endpoint of report.backendEndpoints.filter(
@@ -336,6 +372,12 @@ function renderMarkdown(report) {
           ? endpoint.routeHints.map(route => `\`${route}\``).join('<br>')
           : '-',
         endpoint.dataSourceClass,
+        endpoint.directLegacyTerms.length
+          ? endpoint.directLegacyTerms.map(term => `\`${term}\``).join('<br>')
+          : '-',
+        endpoint.legacyRouteTerms.length
+          ? endpoint.legacyRouteTerms.map(term => `\`${term}\``).join('<br>')
+          : '-',
         endpoint.legacyTerms.length
           ? endpoint.legacyTerms.map(term => `\`${term}\``).join('<br>')
           : '-',

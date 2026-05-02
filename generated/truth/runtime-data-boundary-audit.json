@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-02T04:46:09.908Z",
+  "generatedAt": "2026-05-02T04:51:02.213Z",
   "frontendCalls": [
     {
       "filePath": "frontend/apps/os-shell/src/__tests__/shell/swarmTruth.contract.test.tsx",
@@ -4923,6 +4923,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -4939,6 +4941,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -4954,6 +4958,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -4971,6 +4977,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -4987,6 +4995,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5004,6 +5014,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5023,6 +5035,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5042,6 +5056,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5061,6 +5077,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5087,6 +5105,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5106,6 +5126,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5123,6 +5145,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5133,6 +5157,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5153,6 +5179,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5171,6 +5199,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5192,6 +5222,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -5211,6 +5243,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5230,6 +5264,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5247,6 +5283,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5266,6 +5304,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5281,6 +5321,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5300,6 +5342,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5321,6 +5365,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment"],
       "blockers": [],
       "warnings": []
@@ -5346,6 +5392,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5360,6 +5408,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [
         "Product runtime endpoint has no TerraFusion canonical/runtime data evidence."
@@ -5372,6 +5422,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [
         "Product runtime endpoint has no TerraFusion canonical/runtime data evidence."
@@ -5384,6 +5436,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5404,6 +5458,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5430,6 +5486,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["ComparableSales", "TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -5440,6 +5498,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5450,6 +5510,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5467,6 +5529,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["Parcel"],
       "blockers": [],
       "warnings": []
@@ -5484,6 +5548,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment"],
       "blockers": [],
       "warnings": []
@@ -5505,6 +5571,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [
         "Product runtime endpoint has no TerraFusion canonical/runtime data evidence."
@@ -5529,6 +5597,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5548,6 +5618,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5565,6 +5637,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5587,6 +5661,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment", "parcel", "TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -5635,6 +5711,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [
         "assessment",
         "canonical",
@@ -5657,13 +5735,15 @@
         "parcels/{parcelId}"
       ],
       "zone": "forbidden_product_runtime",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["Parcel"],
-      "blockers": [
-        "Product runtime endpoint references legacy source terms directly."
-      ],
-      "warnings": []
+      "blockers": [],
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/AuditController.cs",
@@ -5678,6 +5758,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -5695,6 +5777,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5705,6 +5789,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -5720,13 +5806,17 @@
         "ratio-study"
       ],
       "zone": "forbidden_product_runtime",
-      "dataSourceClass": "legacy_source_direct",
+      "dataSourceClass": "unproven",
       "legacyTerms": ["PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [
-        "Product runtime endpoint references legacy source terms directly."
+        "Product runtime endpoint has no TerraFusion canonical/runtime data evidence."
       ],
-      "warnings": []
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/BentonCountyGisController.cs",
@@ -5734,6 +5824,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["parcel", "TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -5749,6 +5841,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5772,6 +5866,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5795,6 +5891,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["parcel", "TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -5811,6 +5909,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -5821,6 +5921,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment", "canonical"],
       "blockers": [],
       "warnings": []
@@ -5838,6 +5940,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["parcel", "TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -5859,6 +5963,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5878,6 +5984,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5897,6 +6005,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5907,6 +6017,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -5929,6 +6041,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5949,6 +6063,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -5968,6 +6084,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment"],
       "blockers": [],
       "warnings": []
@@ -5985,11 +6103,15 @@
         "performance-summary"
       ],
       "zone": "unknown",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["Harris", "PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["Assessment"],
       "blockers": [],
-      "warnings": []
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/CollaborationController.cs",
@@ -6028,6 +6150,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -6049,6 +6173,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -6065,6 +6191,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -6079,6 +6207,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -6097,6 +6227,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["runtime"],
       "blockers": [],
       "warnings": []
@@ -6213,17 +6345,21 @@
         "batch/cancel/{jobId}"
       ],
       "zone": "forbidden_product_runtime",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["cama", "Harris", "PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": ["cama", "harris", "pacs"],
       "canonicalTerms": [
         "assessment",
+        "CamaCharacteristics",
+        "CamaImprovementDetails",
         "canonical",
         "ComparableSales",
         "parcel",
         "TerraFusionDbContext"
       ],
       "blockers": [
-        "Product runtime endpoint references legacy source terms directly."
+        "Product runtime endpoint exposes legacy source terminology in route contract."
       ],
       "warnings": []
     },
@@ -6239,11 +6375,13 @@
         "calculate"
       ],
       "zone": "forbidden_product_runtime",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["Harris", "PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": ["harris", "pacs"],
       "canonicalTerms": ["parcel"],
       "blockers": [
-        "Product runtime endpoint references legacy source terms directly."
+        "Product runtime endpoint exposes legacy source terminology in route contract."
       ],
       "warnings": []
     },
@@ -6260,11 +6398,15 @@
         "templates"
       ],
       "zone": "unknown",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["Harris", "PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["Assessment"],
       "blockers": [],
-      "warnings": []
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
@@ -6277,6 +6419,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["ComparableSales", "runtime", "TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -6329,7 +6473,14 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
-      "canonicalTerms": ["canonical", "ComparableSales", "parcel"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
+      "canonicalTerms": [
+        "CamaCharacteristics",
+        "canonical",
+        "ComparableSales",
+        "parcel"
+      ],
       "blockers": [],
       "warnings": []
     },
@@ -6391,6 +6542,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [
         "assessment",
         "canonical",
@@ -6411,6 +6564,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -6426,12 +6581,15 @@
         "api/import"
       ],
       "zone": "unknown",
-      "dataSourceClass": "legacy_source_direct",
+      "dataSourceClass": "unproven",
       "legacyTerms": ["PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": [
-        "Unknown endpoint references legacy source terms; classify before June 10 readiness."
+        "Unknown endpoint has no static data-source evidence.",
+        "Legacy/provenance terminology detected without direct source dependency evidence."
       ]
     },
     {
@@ -6440,6 +6598,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment", "parcel"],
       "blockers": [],
       "warnings": []
@@ -6457,6 +6617,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -6502,13 +6664,15 @@
         "{parcelId}/evidence"
       ],
       "zone": "forbidden_product_runtime",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["CAMA"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment", "parcel", "TerraFusionDbContext"],
-      "blockers": [
-        "Product runtime endpoint references legacy source terms directly."
-      ],
-      "warnings": []
+      "blockers": [],
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/EliteDashboardController.cs",
@@ -6520,12 +6684,15 @@
         "counties"
       ],
       "zone": "unknown",
-      "dataSourceClass": "legacy_source_direct",
+      "dataSourceClass": "unproven",
       "legacyTerms": ["Harris", "PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": [
-        "Unknown endpoint references legacy source terms; classify before June 10 readiness."
+        "Unknown endpoint has no static data-source evidence.",
+        "Legacy/provenance terminology detected without direct source dependency evidence."
       ]
     },
     {
@@ -6543,6 +6710,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -6560,6 +6729,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -6582,13 +6753,13 @@
         "health-status"
       ],
       "zone": "unknown",
-      "dataSourceClass": "legacy_source_direct",
+      "dataSourceClass": "unproven",
       "legacyTerms": ["PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": ["pacs"],
       "canonicalTerms": [],
       "blockers": [],
-      "warnings": [
-        "Unknown endpoint references legacy source terms; classify before June 10 readiness."
-      ]
+      "warnings": ["Unknown endpoint has no static data-source evidence."]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/EliteSecurityController.cs",
@@ -6603,6 +6774,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -6618,6 +6791,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [
         "Product runtime endpoint has no TerraFusion canonical/runtime data evidence."
@@ -6639,6 +6814,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -6655,6 +6832,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -6674,6 +6853,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [
         "Product runtime endpoint has no TerraFusion canonical/runtime data evidence."
@@ -6689,11 +6870,13 @@
         "assignments/{id}/cama-flag"
       ],
       "zone": "forbidden_product_runtime",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["cama", "PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": ["cama"],
       "canonicalTerms": ["parcel", "TerraFusionDbContext"],
       "blockers": [
-        "Product runtime endpoint references legacy source terms directly."
+        "Product runtime endpoint exposes legacy source terminology in route contract."
       ],
       "warnings": []
     },
@@ -6713,6 +6896,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment"],
       "blockers": [],
       "warnings": []
@@ -6733,13 +6918,15 @@
         "{parcelId}/reconciliation/commit"
       ],
       "zone": "forbidden_product_runtime",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["CAMA", "PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["ComparableSales", "parcel", "TerraFusionDbContext"],
-      "blockers": [
-        "Product runtime endpoint references legacy source terms directly."
-      ],
-      "warnings": []
+      "blockers": [],
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/GeoForgeController.cs",
@@ -6770,6 +6957,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [
         "assessment",
         "ComparableSales",
@@ -6790,6 +6979,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["ComparableSales", "parcel"],
       "blockers": [],
       "warnings": []
@@ -6807,6 +6998,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["parcel"],
       "blockers": [],
       "warnings": []
@@ -6817,6 +7010,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment"],
       "blockers": [],
       "warnings": []
@@ -6836,6 +7031,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -6851,11 +7048,15 @@
         "health"
       ],
       "zone": "unknown",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["Harris", "PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment", "parcel", "TerraFusionDbContext"],
       "blockers": [],
-      "warnings": []
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/GPTController.cs",
@@ -6896,11 +7097,13 @@
         "explain"
       ],
       "zone": "forbidden_product_runtime",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["cama"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": ["cama"],
       "canonicalTerms": ["assessment"],
       "blockers": [
-        "Product runtime endpoint references legacy source terms directly."
+        "Product runtime endpoint exposes legacy source terminology in route contract."
       ],
       "warnings": []
     },
@@ -6917,11 +7120,15 @@
         "{sessionId}/performance-comparison"
       ],
       "zone": "unknown",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["Harris", "PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["Assessment", "Parcel"],
       "blockers": [],
-      "warnings": []
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/HarrisPACSIntegrationController.cs",
@@ -6941,11 +7148,15 @@
         "health"
       ],
       "zone": "unknown",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["Harris", "PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["parcel", "TerraFusionDbContext"],
       "blockers": [],
-      "warnings": []
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/HealthController.cs",
@@ -6953,6 +7164,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -6963,6 +7176,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -6978,6 +7193,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7007,6 +7224,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7017,6 +7236,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7036,8 +7257,10 @@
         "aggregate-check"
       ],
       "zone": "unknown",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [
         "assessment",
         "Canonical",
@@ -7045,7 +7268,9 @@
         "TerraFusionDbContext"
       ],
       "blockers": [],
-      "warnings": []
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/LevyCalculatorController.cs",
@@ -7058,6 +7283,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7068,6 +7295,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -7076,13 +7305,15 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/LevyController.cs",
       "routeHints": ["api/levy", "rates", "tax-areas", "calculate"],
       "zone": "forbidden_product_runtime",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["parcel", "TerraFusionDbContext"],
-      "blockers": [
-        "Product runtime endpoint references legacy source terms directly."
-      ],
-      "warnings": []
+      "blockers": [],
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/LevyDashboardController.cs",
@@ -7095,6 +7326,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7112,6 +7345,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7132,6 +7367,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["canonical"],
       "blockers": [],
       "warnings": []
@@ -7142,6 +7379,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7158,6 +7397,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7172,11 +7413,15 @@
         "execute-workflow"
       ],
       "zone": "unknown",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["CAMA"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment", "Canonical"],
       "blockers": [],
-      "warnings": []
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/LevyReferenceController.cs",
@@ -7192,11 +7437,15 @@
         "retention-policy"
       ],
       "zone": "unknown",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["Canonical", "parcel", "TerraFusionDbContext"],
       "blockers": [],
-      "warnings": []
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/LevyReportController.cs",
@@ -7204,6 +7453,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7214,6 +7465,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7224,6 +7477,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment"],
       "blockers": [],
       "warnings": []
@@ -7239,6 +7494,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7257,11 +7514,15 @@
         "segments/{modelId}"
       ],
       "zone": "unknown",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["CAMA"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment"],
       "blockers": [],
-      "warnings": []
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/MatrixVersionController.cs",
@@ -7278,6 +7539,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -7304,11 +7567,15 @@
         "health"
       ],
       "zone": "unknown",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["Harris", "PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["Assessment"],
       "blockers": [],
-      "warnings": []
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/ModuleEcosystemController.cs",
@@ -7323,6 +7590,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7333,6 +7602,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["dbSet", "TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -7352,6 +7623,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["runtime"],
       "blockers": [],
       "warnings": []
@@ -7375,6 +7648,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7397,6 +7672,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7414,11 +7691,15 @@
         "federation/report"
       ],
       "zone": "unknown",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["Harris", "PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment", "parcel"],
       "blockers": [],
-      "warnings": []
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/OptimizationController.cs",
@@ -7445,6 +7726,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7453,13 +7736,13 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
       "routeHints": ["api/pacs", "properties", "health"],
       "zone": "unknown",
-      "dataSourceClass": "legacy_source_direct",
+      "dataSourceClass": "unproven",
       "legacyTerms": ["Harris", "PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": ["pacs"],
       "canonicalTerms": [],
       "blockers": [],
-      "warnings": [
-        "Unknown endpoint references legacy source terms; classify before June 10 readiness."
-      ]
+      "warnings": ["Unknown endpoint has no static data-source evidence."]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/PacsOpsController.cs",
@@ -7473,6 +7756,8 @@
       "zone": "unknown",
       "dataSourceClass": "mixed_canonical_and_legacy",
       "legacyTerms": ["PACS", "pacs_oltp"],
+      "directLegacyTerms": ["pacs_oltp"],
+      "legacyRouteTerms": ["pacs"],
       "canonicalTerms": ["parcel", "runtime"],
       "blockers": [],
       "warnings": []
@@ -7491,6 +7776,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7514,6 +7801,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["runtime"],
       "blockers": [],
       "warnings": []
@@ -7532,6 +7821,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -7549,6 +7840,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7566,6 +7859,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["runtime"],
       "blockers": [],
       "warnings": []
@@ -7587,8 +7882,10 @@
         "emergency/{protocolType}"
       ],
       "zone": "unknown",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["Harris", "PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": ["pacs"],
       "canonicalTerms": ["Assessment"],
       "blockers": [],
       "warnings": []
@@ -7605,11 +7902,19 @@
         "parcel/{parcelNumber}/sketch"
       ],
       "zone": "unknown",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["CAMA", "PACS"],
-      "canonicalTerms": ["parcel", "TerraFusionDbContext"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
+      "canonicalTerms": [
+        "CamaCharacteristics",
+        "parcel",
+        "TerraFusionDbContext"
+      ],
       "blockers": [],
-      "warnings": []
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/PropertyAssessmentController.cs",
@@ -7622,6 +7927,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment", "parcel"],
       "blockers": [],
       "warnings": []
@@ -7638,6 +7945,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [
         "assessment",
         "Canonical",
@@ -7658,6 +7967,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["Parcel", "TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -7685,6 +7996,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7702,6 +8015,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7720,6 +8035,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7740,6 +8057,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["parcel"],
       "blockers": [],
       "warnings": []
@@ -7754,6 +8073,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["parcel"],
       "blockers": [],
       "warnings": []
@@ -7774,6 +8095,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [
         "Product runtime endpoint has no TerraFusion canonical/runtime data evidence."
@@ -7796,6 +8119,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["ComparableSales", "TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -7806,6 +8131,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [
         "Product runtime endpoint has no TerraFusion canonical/runtime data evidence."
@@ -7818,6 +8145,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7834,6 +8163,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["parcel"],
       "blockers": [],
       "warnings": []
@@ -7852,6 +8183,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment", "canonical", "Parcel"],
       "blockers": [],
       "warnings": []
@@ -7869,6 +8202,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7891,6 +8226,8 @@
       "zone": "allowed_sync_ingest",
       "dataSourceClass": "mixed_canonical_and_legacy",
       "legacyTerms": ["PACS", "SourceConnectionId"],
+      "directLegacyTerms": ["SourceConnectionId"],
+      "legacyRouteTerms": [],
       "canonicalTerms": [
         "canonical",
         "ComparableSales",
@@ -7906,6 +8243,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7924,11 +8263,15 @@
         "diagnostics"
       ],
       "zone": "unknown",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["Harris", "PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["parcel"],
       "blockers": [],
-      "warnings": []
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/TaxStrategyController.cs",
@@ -7941,6 +8284,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -7977,19 +8322,23 @@
         "comparison-snapshots"
       ],
       "zone": "forbidden_product_runtime",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["cama", "PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [
         "assessment",
+        "CamaCharacteristics",
+        "CamaImprovementDetails",
         "canonical",
         "ComparableSales",
         "parcel",
         "TerraFusionDbContext"
       ],
-      "blockers": [
-        "Product runtime endpoint references legacy source terms directly."
-      ],
-      "warnings": []
+      "blockers": [],
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/TerraFusionMarketplaceController.cs",
@@ -8008,8 +8357,10 @@
         "health"
       ],
       "zone": "unknown",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["Harris", "PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": ["harris"],
       "canonicalTerms": ["runtime"],
       "blockers": [],
       "warnings": []
@@ -8034,11 +8385,15 @@
         "health"
       ],
       "zone": "allowed_sync_ingest",
-      "dataSourceClass": "legacy_source_direct",
+      "dataSourceClass": "unproven",
       "legacyTerms": ["Harris", "PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
-      "warnings": []
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/TerraGaiaController.cs",
@@ -8051,6 +8406,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8061,6 +8418,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment", "parcel"],
       "blockers": [],
       "warnings": []
@@ -8071,6 +8430,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8088,6 +8449,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [
         "Product runtime endpoint has no TerraFusion canonical/runtime data evidence."
@@ -8109,6 +8472,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment", "parcel", "TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -8119,6 +8484,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment", "parcel"],
       "blockers": [],
       "warnings": []
@@ -8134,6 +8501,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["canonical", "parcel"],
       "blockers": [],
       "warnings": []
@@ -8144,6 +8513,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment"],
       "blockers": [],
       "warnings": []
@@ -8154,6 +8525,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["parcel", "TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -8171,6 +8544,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8181,6 +8556,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8199,8 +8576,16 @@
         "SqlConnection",
         "tf-mssql"
       ],
+      "directLegacyTerms": [
+        "new SqlConnection",
+        "pacs_oltp",
+        "SqlConnection(",
+        "tf-mssql"
+      ],
+      "legacyRouteTerms": [],
       "canonicalTerms": [
         "assessment",
+        "CamaCharacteristics",
         "canonical",
         "ComparableSales",
         "parcel",
@@ -8209,7 +8594,7 @@
         "TerraFusionDbContext"
       ],
       "blockers": [
-        "Product runtime endpoint references legacy source terms directly."
+        "Product runtime endpoint has direct legacy source dependency evidence."
       ],
       "warnings": []
     },
@@ -8219,6 +8604,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8229,6 +8616,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8239,6 +8628,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8249,6 +8640,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8275,6 +8668,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8305,6 +8700,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment"],
       "blockers": [],
       "warnings": []
@@ -8325,6 +8722,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8341,6 +8740,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["Repository", "runtime"],
       "blockers": [],
       "warnings": []
@@ -8351,6 +8752,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["Assessment", "runtime"],
       "blockers": [],
       "warnings": []
@@ -8371,6 +8774,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8390,6 +8795,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [
         "Product runtime endpoint has no TerraFusion canonical/runtime data evidence."
@@ -8402,6 +8809,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8412,6 +8821,8 @@
       "zone": "unknown",
       "dataSourceClass": "legacy_source_direct",
       "legacyTerms": ["PACMLS"],
+      "directLegacyTerms": ["PACMLS"],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": [
@@ -8424,6 +8835,8 @@
       "zone": "unknown",
       "dataSourceClass": "mixed_canonical_and_legacy",
       "legacyTerms": ["PACMLS", "PACS"],
+      "directLegacyTerms": ["PACMLS"],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["parcel"],
       "blockers": [],
       "warnings": []
@@ -8434,6 +8847,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8444,6 +8859,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8457,11 +8874,15 @@
         "counties"
       ],
       "zone": "unknown",
-      "dataSourceClass": "mixed_canonical_and_legacy",
+      "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": ["Harris", "PACS"],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment"],
       "blockers": [],
-      "warnings": []
+      "warnings": [
+        "Legacy/provenance terminology detected without direct source dependency evidence."
+      ]
     },
     {
       "filePath": "backend/src/TerraFusion.Operations/Controllers/EliteOperationalController.cs",
@@ -8484,6 +8905,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8494,6 +8917,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8504,6 +8929,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8520,6 +8947,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment"],
       "blockers": [],
       "warnings": []
@@ -8530,6 +8959,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8540,6 +8971,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8567,6 +9000,8 @@
       "zone": "unknown",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment"],
       "blockers": [],
       "warnings": []
@@ -8584,6 +9019,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8607,6 +9044,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8624,6 +9063,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8634,6 +9075,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8644,6 +9087,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8662,6 +9107,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8672,6 +9119,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8689,6 +9138,8 @@
       "zone": "forbidden_product_runtime",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["assessment"],
       "blockers": [],
       "warnings": []
@@ -8712,6 +9163,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8722,6 +9175,8 @@
       "zone": "unknown",
       "dataSourceClass": "unproven",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [],
       "blockers": [],
       "warnings": ["Unknown endpoint has no static data-source evidence."]
@@ -8732,6 +9187,8 @@
       "zone": "allowed_tests",
       "dataSourceClass": "terrafusion_canonical",
       "legacyTerms": [],
+      "directLegacyTerms": [],
+      "legacyRouteTerms": [],
       "canonicalTerms": [
         "Canonical",
         "CanonicalSaleQualification",
@@ -8751,6 +9208,12 @@
         "SourceConnectionId",
         "SyncSourceConnection"
       ],
+      "directLegacyTerms": [
+        "pacs_oltp",
+        "SourceConnectionId",
+        "SyncSourceConnection"
+      ],
+      "legacyRouteTerms": [],
       "canonicalTerms": [
         "Canonical",
         "CanonicalSaleQualification",
@@ -8770,6 +9233,12 @@
         "SourceConnectionId",
         "SyncSourceConnection"
       ],
+      "directLegacyTerms": [
+        "pacs_oltp",
+        "SourceConnectionId",
+        "SyncSourceConnection"
+      ],
+      "legacyRouteTerms": [],
       "canonicalTerms": ["TerraFusionDbContext"],
       "blockers": [],
       "warnings": []
@@ -8778,9 +9247,9 @@
   "summary": {
     "productEndpointsScanned": 37,
     "syncAdminEndpointsScanned": 5,
-    "productLegacyViolations": 11,
-    "productCanonicalEndpoints": 17,
-    "productUnprovenEndpoints": 9,
+    "productLegacyViolations": 5,
+    "productCanonicalEndpoints": 26,
+    "productUnprovenEndpoints": 10,
     "frontendLegacyViolations": 14
   },
   "passed": false
