@@ -105,7 +105,22 @@ public sealed record CliArgs(
     // is byte-identical to BENTON-SYNC-5 (stdout / stderr only).
     // Per the BENTON-SYNC-6-A policy, this flag is rejected on
     // commands that do not invoke dictionary loaders.
-    string? PreflightEvidencePath);
+    string? PreflightEvidencePath,
+    // Slice BENTON-SYNC-7-B — sales qualification coverage-continuity
+    // smoke mode. Read-only diagnostic per the BENTON-SYNC-7-A policy:
+    // reads PACS sale rows, runs the C8-B transform fresh on each,
+    // compares the fresh decision against persisted
+    // CanonicalSaleQualifications rows, and emits forward / backward /
+    // drift gap counts. Mode-mutex member.
+    bool QualifySalesCoverage,
+    // Slice BENTON-SYNC-7-B — optional artifact path for the
+    // sales qualification coverage report JSON. When set alongside
+    // --qualify-sales-coverage, the smoke writes a
+    // SalesQualificationCoverageReport document via
+    // SalesQualificationCoverageReportArtifact.WriteAsync. When null,
+    // behavior is stdout-only. Per the BENTON-SYNC-7-A policy, this
+    // flag is rejected on commands that don't run the coverage smoke.
+    string? CoverageEvidencePath);
 
 /// <summary>
 /// Pure argument parser. No I/O, no environment access — easy to unit test.
@@ -339,6 +354,10 @@ public static class CliArgsParser
 
         // Slice BENTON-SYNC-6-B — optional preflight evidence artifact path
         string? preflightEvidencePath = null;
+
+        // Slice BENTON-SYNC-7-B — sales qualification coverage smoke
+        var qualifySalesCoverage = false;
+        string? coverageEvidencePath = null;
 
         for (var i = 0; i < argv.Length; i++)
         {
@@ -607,6 +626,16 @@ public static class CliArgsParser
                         return (null, "--preflight-evidence-path requires a value");
                     preflightEvidencePath = argv[++i];
                     break;
+
+                // ── Slice BENTON-SYNC-7-B — sales coverage smoke ────────
+                case "--qualify-sales-coverage":
+                    qualifySalesCoverage = true;
+                    break;
+                case "--coverage-evidence-path":
+                    if (i + 1 >= argv.Length)
+                        return (null, "--coverage-evidence-path requires a value");
+                    coverageEvidencePath = argv[++i];
+                    break;
                 case "--table":
                     if (i + 1 >= argv.Length)
                         return (null, "--table requires a value");
@@ -686,7 +715,9 @@ public static class CliArgsParser
                 WorkbookSourceColumn:                  workbookSourceColumn,
                 SchemaCatalogHealth:                   schemaCatalogHealth,
                 InvariantArtifactPath:                 invariantArtifactPath,
-                PreflightEvidencePath:                 preflightEvidencePath), null);
+                PreflightEvidencePath:                 preflightEvidencePath,
+                QualifySalesCoverage:                  qualifySalesCoverage,
+                CoverageEvidencePath:                  coverageEvidencePath), null);
         }
 
         // ── Always-required, regardless of mode ─────────────────────────
@@ -709,21 +740,24 @@ public static class CliArgsParser
             (batchEditMappingWorkbook  ? 1 : 0) +
             (mappingReviewProgress     ? 1 : 0) +
             (loadPacsDictionary        ? 1 : 0) +
-            (schemaCatalogHealth       ? 1 : 0);
+            (schemaCatalogHealth       ? 1 : 0) +
+            (qualifySalesCoverage      ? 1 : 0);   // BENTON-SYNC-7-B
         if (modeToggleCount > 1)
         {
             return (null,
                 "--generate-mapping-workbook, --export-mapping-workbook, --qualify-sales, " +
                 "--edit-mapping-workbook, --lock-mapping-workbook, " +
                 "--batch-edit-mapping-workbook, --mapping-review-progress, " +
-                "--load-pacs-dictionary, and --schema-catalog-health " +
+                "--load-pacs-dictionary, --schema-catalog-health, " +
+                "and --qualify-sales-coverage " +
                 "are mutually exclusive");
         }
 
         // ── Mode-mutual-exclusion: deep-profile flags only in profile mode ──
         if (generateMappingWorkbook || exportMappingWorkbook || qualifySales ||
             editMappingWorkbook || lockMappingWorkbook || batchEditMappingWorkbook ||
-            mappingReviewProgress || loadPacsDictionary || schemaCatalogHealth)
+            mappingReviewProgress || loadPacsDictionary || schemaCatalogHealth ||
+            qualifySalesCoverage)
         {
             var modeName =
                 generateMappingWorkbook   ? "Mapping Workbook" :
@@ -734,6 +768,7 @@ public static class CliArgsParser
                 batchEditMappingWorkbook  ? "Mapping Workbook batch edit" :
                 mappingReviewProgress     ? "Mapping Workbook review progress" :
                 schemaCatalogHealth       ? "Schema catalog health" :
+                qualifySalesCoverage      ? "Sales qualification coverage smoke" :
                                             "PACS dictionary loader";
             if (deepProfile)
             {
@@ -770,6 +805,16 @@ public static class CliArgsParser
                 "(the flag captures dictionary-loader preflight outcomes; not applicable to other modes)");
         }
 
+        // BENTON-SYNC-7-B: --coverage-evidence-path is honored only on
+        // the coverage-continuity smoke. Same shape as
+        // --preflight-evidence-path's mode-restriction.
+        if (coverageEvidencePath is not null && !qualifySalesCoverage)
+        {
+            return (null,
+                "--coverage-evidence-path requires --qualify-sales-coverage " +
+                "(the flag captures the sales qualification coverage report; not applicable to other modes)");
+        }
+
         // ── Schema-catalog-health validation (BENTON-SYNC-2) ────────────
         // The health diagnostic reads the catalog only; it requires
         // --connection-id (the source connection identifier for the
@@ -788,7 +833,8 @@ public static class CliArgsParser
         // ── Profile-mode-specific validation ────────────────────────────
         if (!generateMappingWorkbook && !exportMappingWorkbook && !qualifySales &&
             !editMappingWorkbook && !lockMappingWorkbook && !batchEditMappingWorkbook &&
-            !mappingReviewProgress && !loadPacsDictionary && !schemaCatalogHealth)
+            !mappingReviewProgress && !loadPacsDictionary && !schemaCatalogHealth &&
+            !qualifySalesCoverage)
         {
             if (!connectionId.HasValue) return (null, "--connection-id is required");
 
@@ -1382,6 +1428,65 @@ public static class CliArgsParser
             var batchError = RejectBatchEditModeFlags(inputCsvPath, batchEditDryRun, batchEditApply);
             if (batchError is not null) return (null, batchError);
         }
+        else if (qualifySalesCoverage)
+        {
+            // ── Sales qualification coverage smoke validation
+            //   (BENTON-SYNC-7-B per BENTON-SYNC-7-A) ───────────────────
+            // Read-only diagnostic that proves coverage continuity
+            // between PACS sale rows and CanonicalSaleQualifications.
+            // Required: --workbook-id (workbook scope), --connection-id
+            // (PACS source). Optional: --max-sales (bounded scan;
+            // bounded runs mark backward-traceability gap as
+            // inconclusive), --coverage-evidence-path (artifact write).
+            if (!workbookId.HasValue)
+            {
+                return (null, "--workbook-id is required when --qualify-sales-coverage is set");
+            }
+            if (!connectionId.HasValue)
+            {
+                return (null,
+                    "--connection-id is required when --qualify-sales-coverage is set " +
+                    "(BENTON-SYNC-7-A reads from PACS via SyncSourceConnection)");
+            }
+
+            // Generate-mode flags must not appear.
+            if (profileBatchId.HasValue)
+                return (null, "--profile-batch-id requires --generate-mapping-workbook");
+            if (latestProfileBatch)
+                return (null, "--latest-profile-batch requires --generate-mapping-workbook");
+            if (workbookName is not null)
+                return (null, "--workbook-name requires --generate-mapping-workbook");
+            if (replaceExistingDraft)
+                return (null, "--replace-existing-draft requires --generate-mapping-workbook");
+            if (mappingMaxCandidates.HasValue)
+                return (null, "--mapping-max-candidates requires --generate-mapping-workbook");
+
+            // Export-mode flags must not appear.
+            if (outputDirectory is not null)
+                return (null, "--output-dir requires --export-mapping-workbook");
+            if (exportFormatExplicit)
+                return (null, "--format requires --export-mapping-workbook");
+
+            // Qualify-sales-mode flags must not appear (the coverage
+            // smoke uses --connection-id, not --source-connection-id).
+            if (sourceConnectionId.HasValue)
+                return (null, "--source-connection-id requires --qualify-sales");
+
+            // Edit-mode flags must not appear.
+            var editError = RejectEditModeFlags(
+                editSourceSchema, editSourceValue, editCanonicalTarget,
+                editCanonicalValue, editCanonicalValueNull, editReviewStatus,
+                editIsExcluded, editNotes);
+            if (editError is not null) return (null, editError);
+
+            // Batch-edit-mode flags must not appear.
+            var batchError = RejectBatchEditModeFlags(inputCsvPath, batchEditDryRun, batchEditApply);
+            if (batchError is not null) return (null, batchError);
+
+            // Load-pacs-dictionary mode flags must not appear.
+            if (pacsDictionaryTable is not null)
+                return (null, "--table requires --load-pacs-dictionary");
+        }
         else
         {
             // ── Load-PACS-dictionary mode validation (C22-B) ────────────
@@ -1522,7 +1627,9 @@ public static class CliArgsParser
             WorkbookSourceColumn:                  workbookSourceColumn,
             SchemaCatalogHealth:                   schemaCatalogHealth,
             InvariantArtifactPath:                 invariantArtifactPath,
-            PreflightEvidencePath:                 preflightEvidencePath), null);
+            PreflightEvidencePath:                 preflightEvidencePath,
+            QualifySalesCoverage:                  qualifySalesCoverage,
+            CoverageEvidencePath:                  coverageEvidencePath), null);
     }
 
     public static string UsageText => @"

@@ -94,6 +94,10 @@ internal static class Program
             {
                 return await RunQualifySalesAsync(args, cts.Token);
             }
+            if (args.QualifySalesCoverage)
+            {
+                return await RunQualifySalesCoverageAsync(args, cts.Token);
+            }
             if (args.ExportMappingWorkbook)
             {
                 return await RunExportMappingWorkbookAsync(args, cts.Token);
@@ -584,6 +588,120 @@ internal static class Program
                 Console.WriteLine($"    ... and {result.Sample.Count - 20} more.");
             }
             Console.WriteLine("─────────────────────────────────────────────");
+        }
+
+        return 0;
+    }
+
+    /// <summary>
+    /// Slice BENTON-SYNC-7-B: sales qualification coverage-continuity
+    /// smoke. Read-only diagnostic per the BENTON-SYNC-7-A policy.
+    /// Reads PACS sale rows, runs the C8-B transform fresh on each,
+    /// compares the fresh decision against persisted
+    /// CanonicalSaleQualifications rows, prints a verdict report,
+    /// and optionally writes the report as JSON when
+    /// --coverage-evidence-path is set. Never mutates PACS, the
+    /// canonical landing, or the workbook.
+    /// </summary>
+    private static async Task<int> RunQualifySalesCoverageAsync(CliArgs args, CancellationToken ct)
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:DefaultConnection"] = args.TerraFusionDbConnectionString
+            })
+            .AddEnvironmentVariables()
+            .Build();
+
+        var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
+            .UseNpgsql(args.TerraFusionDbConnectionString, npg =>
+            {
+                npg.MigrationsAssembly("TerraFusion.Data");
+                npg.EnableRetryOnFailure(maxRetryCount: 3);
+            })
+            .Options;
+
+        await using var db = new TerraFusionDbContext(options, configuration);
+
+        var workbookId = args.WorkbookId
+            ?? throw new InvalidOperationException(
+                "Qualify-sales-coverage mode reached without --workbook-id; parser invariant violation.");
+        var connectionId = args.ConnectionId
+            ?? throw new InvalidOperationException(
+                "Qualify-sales-coverage mode reached without --connection-id; parser invariant violation.");
+
+        var secretResolver = new EnvironmentSecretResolver();
+        var salesReader    = new SqlServerSalesRowReader(secretResolver);
+        var readModel      = new SyncMappingWorkbookReadModel(db);
+        var runner         = new SqlSalesQualificationCoverageRunner(db, readModel, salesReader);
+
+        Console.WriteLine($"sync-atlas: qualifying sales coverage smoke for county {args.CountyId}...");
+        Console.WriteLine($"sync-atlas:   workbook id:           {workbookId}");
+        Console.WriteLine($"sync-atlas:   pacs connection:       {connectionId}");
+        Console.WriteLine($"sync-atlas:   max sales:             {(args.MaxSales?.ToString() ?? "(unbounded)")}");
+
+        SalesQualificationCoverageReport report;
+        try
+        {
+            report = await runner.RunAsync(args.CountyId, workbookId, connectionId, args.MaxSales, ct);
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Workbook-status guard, missing connection, cross-county.
+            await Console.Error.WriteLineAsync($"sync-atlas: {ex.Message}");
+            return 2;
+        }
+        catch (Exception ex)
+        {
+            await Console.Error.WriteLineAsync($"sync-atlas: coverage smoke failed: {ex.Message}");
+            return 3;
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine("  Sales Qualification Coverage Smoke");
+        Console.WriteLine("─────────────────────────────────────────────");
+        Console.WriteLine($"  County / Workbook / Source : {report.CountyId} / {report.WorkbookId} / {report.SourceConnectionId}");
+        Console.WriteLine($"  Run id                     : {report.RunId}");
+        Console.WriteLine();
+        Console.WriteLine("  PACS scope");
+        Console.WriteLine($"    rows scanned               : {report.PacsScope.RowsScanned,8:N0}");
+        Console.WriteLine($"    max sales applied          : {(report.PacsScope.MaxSalesApplied?.ToString("N0") ?? "(unbounded)"),8}");
+        Console.WriteLine($"    rows with chg_of_owner_id  : {report.PacsScope.RowsWithChgOfOwnerId,8:N0}");
+        Console.WriteLine();
+        Console.WriteLine("  Canonical landing scope");
+        Console.WriteLine($"    canonical row count        : {report.CanonicalScope.RowCount,8:N0}");
+        Console.WriteLine($"    qualified                  : {report.CanonicalScope.QualifiedCount,8:N0}");
+        Console.WriteLine($"    excluded                   : {report.CanonicalScope.ExcludedCount,8:N0}");
+        Console.WriteLine($"    inconclusive               : {report.CanonicalScope.InconclusiveCount,8:N0}");
+        Console.WriteLine();
+        Console.WriteLine("  Gaps");
+        Console.WriteLine($"    forward coverage           : {report.ForwardCoverageGap.Count,8:N0}");
+        Console.WriteLine($"    backward traceability      : {report.BackwardTraceabilityGap.Count,8:N0}{(report.BackwardTraceabilityGap.IsConclusive ? "" : "  (inconclusive — bounded scan)")}");
+        Console.WriteLine($"    decision drift             : {report.DecisionDrift.Count,8:N0}");
+        Console.WriteLine();
+        Console.WriteLine($"  Verdict: {(report.Verdict.IsClean ? "CLEAN" : "GAPS")}");
+        Console.WriteLine($"    {report.Verdict.Summary}");
+        Console.WriteLine("─────────────────────────────────────────────");
+
+        // BENTON-SYNC-7-B artifact write: best-effort per
+        // BENTON-SYNC-6-C reconciliation. Failure → stderr + exit code
+        // preserved.
+        if (args.CoverageEvidencePath is not null)
+        {
+            try
+            {
+                await SalesQualificationCoverageReportArtifact.WriteAsync(
+                    report, args.CoverageEvidencePath, ct);
+                Console.WriteLine();
+                Console.WriteLine($"sync-atlas: coverage evidence artifact written to {args.CoverageEvidencePath}");
+            }
+            catch (Exception ex)
+            {
+                await Console.Error.WriteLineAsync(
+                    $"sync-atlas: failed to write coverage evidence artifact at " +
+                    $"{args.CoverageEvidencePath}: {ex.Message}");
+            }
         }
 
         return 0;

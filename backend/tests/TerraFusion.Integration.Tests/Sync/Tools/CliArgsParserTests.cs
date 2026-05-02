@@ -3003,4 +3003,157 @@ public class CliArgsParserTests
             "absence of --preflight-evidence-path preserves stdout-only behavior " +
             "(BENTON-SYNC-6-A engagement model: opt-in only)");
     }
+
+    // ========================================================================
+    // BENTON-SYNC-7-B: --qualify-sales-coverage smoke mode + the
+    // --coverage-evidence-path opt-in artifact path. Read-only diagnostic
+    // that proves coverage continuity between PACS sale rows and
+    // CanonicalSaleQualifications. Mode-mutex member; --coverage-evidence-path
+    // is rejected on every other mode.
+    // ========================================================================
+
+    [Fact]
+    public void Parse_QualifySalesCoverage_WithRequiredFlags_Succeeds()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--qualify-sales-coverage",
+            "--workbook-id", ValidWorkbookId
+        });
+
+        err.Should().BeNull();
+        args.Should().NotBeNull();
+        args!.QualifySalesCoverage.Should().BeTrue();
+        args.QualifySales.Should().BeFalse(
+            "coverage smoke is a distinct mode from --qualify-sales sample runner");
+        args.WorkbookId.Should().Be(Guid.Parse(ValidWorkbookId));
+        args.MaxSales.Should().BeNull("--max-sales is optional in coverage mode");
+        args.CoverageEvidencePath.Should().BeNull("artifact write is opt-in");
+    }
+
+    [Fact]
+    public void Parse_QualifySalesCoverage_WithoutWorkbookId_ReturnsError()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--qualify-sales-coverage"
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--workbook-id is required when --qualify-sales-coverage is set");
+    }
+
+    [Fact]
+    public void Parse_QualifySalesCoverage_WithoutConnectionId_ReturnsError()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--qualify-sales-coverage",
+            "--workbook-id", ValidWorkbookId
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain(
+            "--connection-id is required when --qualify-sales-coverage is set");
+    }
+
+    [Fact]
+    public void Parse_QualifySalesCoverage_WithCoverageEvidencePath_Succeeds()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--qualify-sales-coverage",
+            "--workbook-id", ValidWorkbookId,
+            "--coverage-evidence-path", "/tmp/benton-coverage.json"
+        });
+
+        err.Should().BeNull();
+        args!.CoverageEvidencePath.Should().Be("/tmp/benton-coverage.json");
+    }
+
+    [Fact]
+    public void Parse_CoverageEvidencePath_WithoutValue_ReturnsError()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--qualify-sales-coverage",
+            "--workbook-id", ValidWorkbookId,
+            "--coverage-evidence-path"
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--coverage-evidence-path requires a value");
+    }
+
+    [Fact]
+    public void Parse_CoverageEvidencePath_OnSchemaCatalogHealth_Rejects()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--schema-catalog-health",
+            "--coverage-evidence-path", "/tmp/oops.json"
+        });
+
+        args.Should().BeNull(
+            "BENTON-SYNC-7-A: --coverage-evidence-path is mode-restricted to " +
+            "--qualify-sales-coverage; using it with --schema-catalog-health MUST reject");
+        err.Should().Contain("--coverage-evidence-path requires --qualify-sales-coverage");
+    }
+
+    [Fact]
+    public void Parse_QualifySalesCoverage_WithQualifySales_RejectsAsModeMutex()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--qualify-sales-coverage",
+            "--qualify-sales",
+            "--workbook-id", ValidWorkbookId,
+            "--source-connection-id", ValidConnection,
+            "--max-sales", "10"
+        });
+
+        args.Should().BeNull(
+            "the coverage smoke and the --qualify-sales sample runner are " +
+            "mutex members of the SyncAtlas mode-mutex");
+        err.Should().Contain("mutually exclusive");
+    }
+
+    [Fact]
+    public void Parse_QualifySalesCoverage_WithMaxSales_ParsesAsBound()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--qualify-sales-coverage",
+            "--workbook-id", ValidWorkbookId,
+            "--max-sales", "5000"
+        });
+
+        err.Should().BeNull();
+        args!.MaxSales.Should().Be(5000,
+            "bounded coverage runs mark the backward-traceability gap as " +
+            "inconclusive per BENTON-SYNC-7-A");
+    }
 }
