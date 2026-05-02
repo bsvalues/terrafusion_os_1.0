@@ -216,6 +216,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsOwnerCurrent>
     TruthPacsOwnerCurrents { get; set; } = null!;
 
+  // Slice B2-B: truth_pacs.wash_prop_owner_val — supp-aware-validated
+  // WSDOR-grade per-owner valuation snapshot. Stepping stone toward
+  // canonical_tf.tf_assessment_wsdor (B4).
+  public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsWashPropOwnerVal>
+    TruthPacsWashPropOwnerVals { get; set; } = null!;
+
   // Slice S3: canonical_tf.tf_sale — TerraFusion-native sale identity
   // backed by sync_bridge.source_xref lineage. Sales whose parcel
   // cannot be resolved are quarantined to legacy_tf_unproven.sale.
@@ -876,6 +882,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // Slice B2-A: truth_pacs.owner_current — supp-aware owner snapshot.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.TruthPacs.TruthPacsOwnerCurrentConfiguration());
+
+    // Slice B2-B: truth_pacs.wash_prop_owner_val — supp-aware
+    // WSDOR-grade per-owner valuation snapshot.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.TruthPacs.TruthPacsWashPropOwnerValConfiguration());
 
     // Slice B3: canonical_tf.tf_owner + tf_parcel_owner_link with
     // PII redaction; legacy_tf_unproven.owner_current quarantine.
