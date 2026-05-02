@@ -1689,6 +1689,13 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsImprvAttr.IPacsImprvAttrLandingService,
     TerraFusion.Data.Services.LegacyPacsRaw.PacsImprvAttrLandingService>();
 
+// Slice L1: PACS land_detail raw landing — Block C's land lane
+// per-segment table. Four gates: distribution, 4-key-uniqueness,
+// provenance-coverage, aggregate.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsLandDetail.IPacsLandDetailLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsLandDetailLandingService>();
+
 // Slice B2-A: truth_pacs.owner_current promoter — supp-aware
 // owner snapshot with account-link enforcement and HARD pct-
 // completeness gate. Five T-* gates. Idempotent by OwnerLoadBatchId.
