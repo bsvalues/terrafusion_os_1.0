@@ -1916,6 +1916,37 @@ internal static class Program
             countyId:           args.CountyId.ToString(),
             sourceConnectionId: connectionId.ToString());
 
+        // Slice BENTON-SYNC-5: when the operator opts in via
+        // --invariant-artifact-path, persist the catalog's
+        // PacsSchemaInvariantReport as a byte-stable JSON artifact
+        // alongside the human-readable health output. Caller-driven
+        // per the C53-CONS-D contract; absence of the flag is
+        // unchanged behavior (stdout-only).
+        if (!string.IsNullOrWhiteSpace(args.InvariantArtifactPath))
+        {
+            try
+            {
+                await PacsSchemaInvariantReportArtifact.WriteAsync(
+                    catalog.InvariantReport,
+                    args.InvariantArtifactPath!,
+                    ct);
+                Console.WriteLine();
+                Console.WriteLine($"sync-atlas: invariant report artifact written to {args.InvariantArtifactPath}");
+            }
+            catch (Exception ex)
+            {
+                // Per HG7 fail-closed at the artifact layer: the
+                // health output already rendered, but the operator
+                // explicitly asked for an artifact and we couldn't
+                // produce it. Surface the failure on stderr and
+                // return non-zero.
+                await Console.Error.WriteLineAsync(
+                    $"sync-atlas: invariant artifact write FAILED at " +
+                    $"'{args.InvariantArtifactPath}': {ex.GetType().Name}: {ex.Message}");
+                return 2;
+            }
+        }
+
         // Exit 0 when the report is clean (no Error rows). Exit 1
         // when warnings are present but report is structurally
         // clean — the operator may want to surface them but the
