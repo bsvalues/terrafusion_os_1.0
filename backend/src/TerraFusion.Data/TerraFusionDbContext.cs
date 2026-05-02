@@ -174,6 +174,14 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.GisTf.TfParcelGeom>
     TfParcelGeoms { get; set; } = null!;
 
+  // ── Legacy PACS raw landing (Slice S1) ──────────────────────────────
+  // Per docs/plans/terrafusion-90-day-execution-plan.md §4 Block A.
+  // First-stop landing zone for PACS sale rows. Provenance-required
+  // (LoadBatchId + SourceQueryHash). Canonical promotion is a future
+  // slice (truth_pacs.sale → canonical_tf.tf_sale).
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawSale>
+    LegacyPacsRawSales { get; set; } = null!;
+
   // Slice C41-B: per-county pointer naming the operator-active
   // Mapped workbook. Singleton per county (PK = CountyId). See
   // docs/sync/sync-county-active-workbook-pointer-policy.md for the
@@ -780,6 +788,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // Per docs/plans/terrafusion-90-day-execution-plan.md §4 Block D.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.GisTf.TfParcelGeomConfiguration());
+
+    // ── Legacy PACS raw landing (Slice S1) ───────────────────────────
+    // Per docs/plans/terrafusion-90-day-execution-plan.md §4 Block A.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawSaleConfiguration());
 
     // Sync Bridge v1 — Phase 0 field_authority seed for the parcel
     // domain. Per docs/pacs/pacs-sync-bridge-v1-spec.md §4.

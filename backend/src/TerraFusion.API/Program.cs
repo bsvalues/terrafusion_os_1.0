@@ -1626,6 +1626,13 @@ builder.Services.AddScoped<
     TerraFusion.Core.GIS.ArcGisRest.IParcelGeometryReader,
     TerraFusion.Data.Services.GisTf.ParcelGeometryReader>();
 
+// Slice S1: PACS sale raw landing — drains an IPacsSaleSource into
+// legacy_pacs_raw.sale with provenance and writes the four S1
+// promotion gate results. No canonical promotion in S1.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsSale.IPacsSaleLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsSaleLandingService>();
+
 // Slice G1-D-2: nightly hosted service that walks every configured
 // county. OFF by default — set ArcGisSyncScheduler:Enabled=true in
 // configuration to activate.
