@@ -1661,6 +1661,14 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsSaleCanonical.ITfSaleReader,
     TerraFusion.Data.Services.CanonicalTf.TfSaleReader>();
 
+// Slice S5: operator-SQL regression suite. Dual-flavor service that
+// runs three representative ratio-study queries against the raw and
+// canonical layers respectively; the doctrine asserts both flavors
+// produce identical aggregates against the same fixture.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsSaleRegression.IOperatorSalesRegressionService,
+    TerraFusion.Data.Services.Regression.OperatorSalesRegressionService>();
+
 // Slice G1-D-2: nightly hosted service that walks every configured
 // county. OFF by default — set ArcGisSyncScheduler:Enabled=true in
 // configuration to activate.
