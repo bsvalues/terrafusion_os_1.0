@@ -231,9 +231,23 @@ Engagement rules — binding:
   process. No appending to an existing file. If the file
   already exists, it is overwritten (mirrors
   `PacsSchemaInvariantReportArtifact.WriteAsync`).
-- **Failure semantics.** A write failure exits with code 2 and
-  prints to stderr. A successful write prints one stdout line
-  identical-in-shape to the BENTON-SYNC-5 confirmation:
+- **Failure semantics.** A write failure prints to stderr; the
+  loader's primary exit code is preserved (best-effort artifact
+  write, matching the BENTON-SYNC-5 invariant artifact
+  precedent). Rationale: the artifact write happens in the
+  outer finally AFTER the loader's primary operation
+  (preflight chain + dictionary read + CSV / mismatch report
+  writes) has completed; failing the whole run on artifact-
+  write failure would cause flaky behavior (full disk, stale
+  lock, no permission on the artifact directory) to mask a
+  successful loader operation. Stderr output remains the
+  operator's signal that something went wrong with the
+  artifact specifically. (Reconciled at BENTON-SYNC-6-C — the
+  earlier policy wording "exits with code 2" was replaced by
+  this softer posture once the live proof captured the
+  precedent's actual behavior.) A successful write prints one
+  stdout line identical-in-shape to the BENTON-SYNC-5
+  confirmation:
 
   ```text
   sync-atlas: preflight evidence artifact written to <path>
@@ -328,8 +342,10 @@ pin all of the following. These are acceptance gates.
 - `Cli_PreflightEvidencePath_WithLoaderCommand_WritesArtifactAndPrintsConfirmation`
   — full flow: invoke loader command with flag, artifact
   appears, confirmation line prints to stdout.
-- `Cli_PreflightEvidencePath_WriteFailure_ExitsWithCode2`
-  — directory non-existent / non-writable → exit code 2.
+- `Cli_PreflightEvidencePath_WriteFailure_PrintsStderrPreservesExitCode`
+  — directory non-existent / non-writable → stderr message,
+  loader's primary exit code preserved (per the reconciled
+  failure-semantics rule above).
 
 ## Engagement with existing surfaces
 

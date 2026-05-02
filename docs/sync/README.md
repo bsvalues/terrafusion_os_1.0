@@ -70,6 +70,10 @@ Vestigial drift was swept by C48-FIX, C48-FIX2, and C48-HYGIENE.
 - `dictionary-loader-preflight-evidence-policy.md` — BENTON-SYNC-6-A —
   artifact shape and CLI engagement model for rolling per-loader FK /
   era / PII preflight outcomes into byte-stable JSON evidence
+- `benton-dictionary-loader-preflight-evidence-baseline.md` —
+  BENTON-SYNC-6-C — committed evidence baseline of the live Benton
+  preflight evidence artifact, with the BENTON-SYNC-6-A policy /
+  BENTON-SYNC-6-B implementation drift reconciliation
 
 ### Schema catalog (C48 family — COMPLETE)
 

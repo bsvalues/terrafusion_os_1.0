@@ -258,7 +258,7 @@ explicitly elevates it.
 | Parked item                                                          | Gate                                                                |
 |----------------------------------------------------------------------|---------------------------------------------------------------------|
 | Invariant report artifact wiring                                     | DONE — BENTON-SYNC-5 (`commit d753c61af`)                            |
-| Per-loader preflight evidence rollup                                 | IN PROGRESS — BENTON-SYNC-6-A policy DONE; BENTON-SYNC-6-B impl NEXT |
+| Per-loader preflight evidence rollup                                 | DONE — BENTON-SYNC-6-A policy + 6-B impl + 6-C live proof + baseline |
 | C51-PII-E manifest authoring tool                                    | Needs fresh policy slice; operator-priority decision                |
 | C50-CONV-D manifest authoring tool                                   | Needs fresh policy slice; operator-priority decision                |
 | C52-OVR-E manifest authoring tool                                    | Needs fresh policy slice; operator-priority decision                |
@@ -356,15 +356,28 @@ reality. Track entries:
                     `docs/sync/dictionary-loader-preflight-evidence-policy.md`.
                     Pins artifact shape, CLI engagement model
                     (`--preflight-evidence-path`), hard guards, and
-                    BENTON-SYNC-6-B test matrix. ← this slice
-- BENTON-SYNC-6-B : NEXT — implementation slice. Adds the parser
+                    BENTON-SYNC-6-B test matrix.
+- BENTON-SYNC-6-B : DONE — implementation slice. Adds the parser
                     case, the `DictionaryLoaderPreflightEvidence`
-                    record + writer, the dictionary-loader
-                    instrumentation, the test matrix from the
-                    policy doc, and the live proof.
-- BENTON-SYNC-7+  : reselected from parked list once
-                    BENTON-SYNC-6-B lands. This inventory is
-                    refreshed at that point.
+                    record + writer, dictionary-loader
+                    instrumentation, and 12 acceptance tests
+                    (4 parser + 8 writer/builder). Merge
+                    `commit 0d8a02d57`. Schema unit 239/239,
+                    parser 194/194, sync integration 899/899.
+- BENTON-SYNC-6-C : DONE — live PACS proof at Run ID
+                    20260502T042535Z against Benton PACS
+                    Training. Exit 0; clean preflight evidence
+                    artifact (FK / era / PII all Pass; manifests
+                    honestly not-engaged; 1/1/1 summary counts;
+                    leak scan zero-match including raw-value
+                    grep). Committed evidence baseline at
+                    `docs/sync/benton-dictionary-loader-preflight-evidence-baseline.md`.
+                    Reconciled BENTON-SYNC-6-A failure-semantics
+                    wording in the policy doc to match the
+                    BENTON-SYNC-5 best-effort artifact write
+                    precedent. ← this slice
+- BENTON-SYNC-7+  : reselected from parked list. This inventory
+                    is refreshed when the next-need is picked.
 
 The track is operationally-driven. New entries land as concrete
 bridge needs surface, not as architectural completeness goals.
