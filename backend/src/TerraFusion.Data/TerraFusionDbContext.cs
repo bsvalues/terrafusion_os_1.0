@@ -182,6 +182,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawSale>
     LegacyPacsRawSales { get; set; } = null!;
 
+  // Slice S2-A: prop_supp_assoc landing — the supp-aware-join
+  // pointer required by the truth_pacs.sale promoter (S2-B).
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawPropSuppAssoc>
+    LegacyPacsRawPropSuppAssocs { get; set; } = null!;
+
   // Slice C41-B: per-county pointer naming the operator-active
   // Mapped workbook. Singleton per county (PK = CountyId). See
   // docs/sync/sync-county-active-workbook-pointer-policy.md for the
@@ -793,6 +798,10 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // Per docs/plans/terrafusion-90-day-execution-plan.md §4 Block A.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawSaleConfiguration());
+
+    // Slice S2-A: prop_supp_assoc landing — supp-aware-join pointer.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawPropSuppAssocConfiguration());
 
     // Sync Bridge v1 — Phase 0 field_authority seed for the parcel
     // domain. Per docs/pacs/pacs-sync-bridge-v1-spec.md §4.

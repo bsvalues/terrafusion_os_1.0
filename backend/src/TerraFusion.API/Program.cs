@@ -1633,6 +1633,12 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsSale.IPacsSaleLandingService,
     TerraFusion.Data.Services.LegacyPacsRaw.PacsSaleLandingService>();
 
+// Slice S2-A: PACS prop_supp_assoc raw landing — supp-aware-join
+// pointer required by the truth_pacs.sale promoter (S2-B).
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsPropSuppAssoc.IPacsPropSuppAssocLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsPropSuppAssocLandingService>();
+
 // Slice G1-D-2: nightly hosted service that walks every configured
 // county. OFF by default — set ArcGisSyncScheduler:Enabled=true in
 // configuration to activate.
