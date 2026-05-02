@@ -1190,6 +1190,34 @@ builder.Services.AddScoped<
     return new TerraFusion.Sync.Workbench.Readiness.WorkbenchSyncReadinessService(artifactRoot);
 });
 
+// Slice OPS-1-A-2 — PACS reachability probe + Process-backed refresh
+// runner for the Sync Readiness Console refresh endpoint.
+builder.Services.AddScoped<
+    TerraFusion.Sync.Workbench.Atlas.ISecretResolver,
+    TerraFusion.Sync.Workbench.Atlas.EnvironmentSecretResolver>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Interfaces.Workbench.IPacsReachabilityProbeService,
+    TerraFusion.Sync.Workbench.Readiness.PacsReachabilityProbeService>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Interfaces.Workbench.IWorkbenchSyncReadinessRefreshRunner>(sp =>
+{
+    var config = sp.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
+    var dotnet = config["Workbench:SyncReadiness:DotnetExecutable"] ?? "dotnet";
+    var project = config["Workbench:SyncReadiness:SyncAtlasProject"]
+        ?? System.IO.Path.Combine("backend", "tools", "SyncAtlas");
+    var workingDir = config["Workbench:SyncReadiness:WorkingDirectory"]
+        ?? System.IO.Directory.GetCurrentDirectory();
+    var dbConn = config["Workbench:SyncReadiness:DbConnectionString"]
+        ?? config.GetConnectionString("DefaultConnection")
+        ?? throw new InvalidOperationException(
+            "Workbench:SyncReadiness:DbConnectionString or ConnectionStrings:DefaultConnection required for refresh runner.");
+    return new TerraFusion.Sync.Workbench.Readiness.ProcessWorkbenchSyncReadinessRefreshRunner(
+        dotnetExecutable: dotnet,
+        syncAtlasProject: project,
+        workingDirectory: workingDir,
+        dbConnectionString: dbConn);
+});
+
 // Slice C41-B — per-county active-workbook pointer service. Pure metadata
 // surface over SyncCountyActiveWorkbooks; SET / GET / Clear do not trigger
 // C36 / canonical / PACS work (per C41-A Hard Guards).
