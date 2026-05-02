@@ -2822,4 +2822,42 @@ public class CliArgsParserTests
             "imprv_det_type is lane-mismatched in Other and needs its own slice");
         CliArgsParser.IsAllowedPacsDictionaryTable("").Should().BeFalse();
     }
+
+    // ========================================================================
+    // BENTON-SYNC-2-FIX1: --schema-catalog-health mode parser regression.
+    //
+    // BENTON-SYNC-2 added the SchemaCatalogHealth flag to the CliArgs record
+    // and a top-level branch in the dispatcher, but the mode-specific
+    // validation block in Parse() was missing the corresponding `else if`
+    // branch. The flag fell through to the load-pacs-dictionary `else`,
+    // which then rejected the invocation with "--workbook-id is required
+    // when --load-pacs-dictionary is set" — a confusing wrong-mode error
+    // surfaced by BENTON-SYNC-3's live-PACS proof attempt.
+    //
+    // This regression test pins the corrected behavior.
+    // ========================================================================
+
+    [Fact]
+    public void Parse_SchemaCatalogHealth_WithRequiredFlags_Succeeds()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--schema-catalog-health"
+        });
+
+        err.Should().BeNull(
+            "BENTON-SYNC-2-FIX1: --schema-catalog-health is a valid mode and " +
+            "MUST NOT fall through to the load-pacs-dictionary validation block");
+        args.Should().NotBeNull();
+        args!.SchemaCatalogHealth.Should().BeTrue();
+        args.LoadPacsDictionary.Should().BeFalse(
+            "schema-catalog-health is a distinct mode from load-pacs-dictionary");
+        args.GenerateMappingWorkbook.Should().BeFalse();
+        args.WorkbookId.Should().BeNull(
+            "schema-catalog-health does not take --workbook-id and MUST NOT " +
+            "complain about it being absent");
+    }
 }

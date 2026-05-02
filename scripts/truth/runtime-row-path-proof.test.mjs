@@ -100,7 +100,7 @@ test('runtime row path proof passes selected county rows without fallback', asyn
   const server = await startServer((request, response) => {
     if (request.url === '/api/counties/benton/data') {
       response.setHeader('content-type', 'application/json');
-      response.end(JSON.stringify({ county: 'Benton', rows: [{ parcelId: '1' }] }));
+      response.end(JSON.stringify({ county: 'Benton County', rows: [{ parcelId: '1' }] }));
       return;
     }
     response.statusCode = 404;

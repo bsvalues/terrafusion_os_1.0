@@ -20,7 +20,7 @@ const runtimeBaseUrl =
   process.env.TF_RUNTIME_BASE_URL ??
   process.env.TERRAFUSION_RUNTIME_BASE_URL ??
   'http://localhost:5046';
-const probeTimeoutMs = Number(process.env.TF_RUNTIME_ENDPOINT_PROBE_TIMEOUT_MS ?? 1200);
+const probeTimeoutMs = Number(process.env.TF_RUNTIME_ENDPOINT_PROBE_TIMEOUT_MS ?? 5000);
 const counties = (process.env.TF_RUNTIME_ROW_CANDIDATES ?? 'Benton,Pacific,Franklin,Walla Walla')
   .split(',')
   .map(item => item.trim())
@@ -226,7 +226,7 @@ function combineRoutes(prefix, suffix) {
 
 function supportsCountyParameter(routePattern, text) {
   void text;
-  return /(\{county(?:Name|Id|Code|Slug)?\??\}|:county(?:Name|Id|Code|Slug)?|\$\{county(?:Name|Id|Code|Slug)?\}|\/benton(?:\/|$)|\/pacific(?:\/|$)|\/franklin(?:\/|$)|\/walla-walla(?:\/|$))/i.test(
+  return /(\{county(?:Name|Id|Code|Slug|Token)?\??\}|:county(?:Name|Id|Code|Slug|Token)?|\$\{county(?:Name|Id|Code|Slug|Token)?\}|\/benton(?:\/|$)|\/pacific(?:\/|$)|\/franklin(?:\/|$)|\/walla-walla(?:\/|$))/i.test(
     routePattern
   );
 }
@@ -284,7 +284,10 @@ function buildCandidates(backendRoutes, frontendCalls) {
     }
   }
 
-  return uniqueBy(candidates, item => `${item.county}:${item.source}:${item.filePath}:${item.candidateUrl}`);
+  return uniqueBy(
+    candidates,
+    item => `${item.county}:${item.source}:${item.filePath}:${item.candidateUrl}`
+  );
 }
 
 function inferredRoutes(county) {
@@ -336,9 +339,9 @@ function materializeRoute(routePattern, county) {
   }
 
   route = route
-    .replace(/\{county(?:Name|Id|Code|Slug)?\??\}/gi, slug)
-    .replace(/:county(?:Name|Id|Code|Slug)?/gi, slug)
-    .replace(/\$\{county(?:Name|Id|Code|Slug)?\}/gi, slug);
+    .replace(/\{county(?:Name|Id|Code|Slug|Token)?\??\}/gi, slug)
+    .replace(/:county(?:Name|Id|Code|Slug|Token)?/gi, slug)
+    .replace(/\$\{county(?:Name|Id|Code|Slug|Token)?\}/gi, slug);
 
   // Do not invent IDs for non-county parameters. This is discovery, not repair.
   if (/\{[^}]+\}/.test(route) || /:[a-zA-Z]/.test(route)) return null;
@@ -409,7 +412,16 @@ function countRows(value) {
   if (Array.isArray(value)) return value.length;
   if (typeof value !== 'object') return 0;
 
-  for (const key of ['rows', 'data', 'items', 'results', 'records', 'parcels', 'sales', 'properties']) {
+  for (const key of [
+    'rows',
+    'data',
+    'items',
+    'results',
+    'records',
+    'parcels',
+    'sales',
+    'properties',
+  ]) {
     if (Array.isArray(value[key])) return value[key].length;
   }
   for (const key of ['rowCount', 'count', 'total', 'totalCount']) {
@@ -440,6 +452,9 @@ function recommendation(candidate) {
   if (!candidate.supportsCountyParameter) return 'not_county_scoped';
   if (candidate.probe.status === 200 && candidate.probe.rowCount > 0) return 'use_for_track_1b';
   if (candidate.probe.status === null) return 'wrong_base_url_possible';
+  if (candidate.probe.status === 404 && candidate.probe.payloadCounty) {
+    return 'county_not_registered_or_no_runtime_rows';
+  }
   if (candidate.probe.status === 404) return 'route_unregistered';
   return 'unknown';
 }
@@ -451,8 +466,9 @@ function summarize(backendRoutes, frontendCalls, candidateEndpoints) {
     candidateEndpointsFound: candidateEndpoints.length,
     liveEndpoints: candidateEndpoints.filter(item => item.probe.status === 200).length,
     countyScopedEndpoints: candidateEndpoints.filter(item => item.supportsCountyParameter).length,
-    testOrDemoEndpoints: candidateEndpoints.filter(item => item.appearsTestOnly || item.appearsDemoOnly)
-      .length,
+    testOrDemoEndpoints: candidateEndpoints.filter(
+      item => item.appearsTestOnly || item.appearsDemoOnly
+    ).length,
   };
 }
 

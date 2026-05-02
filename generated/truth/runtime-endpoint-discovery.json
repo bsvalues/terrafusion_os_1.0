@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-01T21:45:56.054Z",
+  "generatedAt": "2026-05-01T23:48:12.639Z",
   "runtimeBaseUrl": "http://localhost:5046",
   "backendRoutes": [
     {
@@ -3171,6 +3171,26 @@
       "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
+    },
+    {
+      "filePath": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
+      "source": "backend_controller",
+      "verb": "GET",
+      "routePattern": "api/counties/{countyToken}/parcels",
+      "supportsCountyParameter": true,
+      "appearsTestOnly": false,
+      "appearsDemoOnly": false,
+      "appearsPacsOrLegacyNamed": false
+    },
+    {
+      "filePath": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
+      "source": "backend_controller",
+      "verb": "GET",
+      "routePattern": "api/counties/{countyToken}/sales",
+      "supportsCountyParameter": true,
+      "appearsTestOnly": false,
+      "appearsDemoOnly": false,
+      "appearsPacsOrLegacyNamed": false
     },
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs",
@@ -10029,6 +10049,46 @@
     {
       "county": "Benton",
       "source": "backend_controller",
+      "filePath": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
+      "routePattern": "api/counties/{countyToken}/parcels",
+      "supportsCountyParameter": true,
+      "appearsTestOnly": false,
+      "appearsDemoOnly": false,
+      "appearsPacsOrLegacyNamed": false,
+      "candidateUrl": "http://localhost:5046/api/counties/benton/parcels",
+      "probe": {
+        "attempted": true,
+        "status": 200,
+        "contentType": "application/json; charset=utf-8",
+        "rowCount": 50,
+        "payloadCounty": "Benton County",
+        "error": null
+      },
+      "recommendation": "use_for_track_1b"
+    },
+    {
+      "county": "Benton",
+      "source": "backend_controller",
+      "filePath": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
+      "routePattern": "api/counties/{countyToken}/sales",
+      "supportsCountyParameter": true,
+      "appearsTestOnly": false,
+      "appearsDemoOnly": false,
+      "appearsPacsOrLegacyNamed": false,
+      "candidateUrl": "http://localhost:5046/api/counties/benton/sales",
+      "probe": {
+        "attempted": true,
+        "status": null,
+        "contentType": null,
+        "rowCount": null,
+        "payloadCounty": null,
+        "error": "This operation was aborted"
+      },
+      "recommendation": "wrong_base_url_possible"
+    },
+    {
+      "county": "Benton",
+      "source": "backend_controller",
       "filePath": "backend/src/TerraFusion.API/Controllers/DaisController.cs",
       "routePattern": "api/dais/benton/fee-schedule",
       "supportsCountyParameter": true,
@@ -10338,13 +10398,13 @@
       "candidateUrl": "http://localhost:5046/api/counties/benton/parcels",
       "probe": {
         "attempted": true,
-        "status": 404,
-        "contentType": null,
-        "rowCount": 0,
-        "payloadCounty": null,
+        "status": 200,
+        "contentType": "application/json; charset=utf-8",
+        "rowCount": 50,
+        "payloadCounty": "Benton County",
         "error": null
       },
-      "recommendation": "route_unregistered"
+      "recommendation": "use_for_track_1b"
     },
     {
       "county": "Benton",
@@ -10358,13 +10418,13 @@
       "candidateUrl": "http://localhost:5046/api/counties/benton/sales",
       "probe": {
         "attempted": true,
-        "status": 404,
-        "contentType": null,
-        "rowCount": 0,
-        "payloadCounty": null,
+        "status": 200,
+        "contentType": "application/json; charset=utf-8",
+        "rowCount": 50,
+        "payloadCounty": "Benton County",
         "error": null
       },
-      "recommendation": "route_unregistered"
+      "recommendation": "use_for_track_1b"
     },
     {
       "county": "Benton",
@@ -10585,6 +10645,46 @@
         "error": null
       },
       "recommendation": "route_unregistered"
+    },
+    {
+      "county": "Pacific",
+      "source": "backend_controller",
+      "filePath": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
+      "routePattern": "api/counties/{countyToken}/parcels",
+      "supportsCountyParameter": true,
+      "appearsTestOnly": false,
+      "appearsDemoOnly": false,
+      "appearsPacsOrLegacyNamed": false,
+      "candidateUrl": "http://localhost:5046/api/counties/pacific/parcels",
+      "probe": {
+        "attempted": true,
+        "status": 404,
+        "contentType": "application/json; charset=utf-8",
+        "rowCount": 0,
+        "payloadCounty": "pacific",
+        "error": null
+      },
+      "recommendation": "county_not_registered_or_no_runtime_rows"
+    },
+    {
+      "county": "Pacific",
+      "source": "backend_controller",
+      "filePath": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
+      "routePattern": "api/counties/{countyToken}/sales",
+      "supportsCountyParameter": true,
+      "appearsTestOnly": false,
+      "appearsDemoOnly": false,
+      "appearsPacsOrLegacyNamed": false,
+      "candidateUrl": "http://localhost:5046/api/counties/pacific/sales",
+      "probe": {
+        "attempted": true,
+        "status": 404,
+        "contentType": "application/json; charset=utf-8",
+        "rowCount": 0,
+        "payloadCounty": "pacific",
+        "error": null
+      },
+      "recommendation": "county_not_registered_or_no_runtime_rows"
     },
     {
       "county": "Pacific",
@@ -10839,12 +10939,12 @@
       "probe": {
         "attempted": true,
         "status": 404,
-        "contentType": null,
+        "contentType": "application/json; charset=utf-8",
         "rowCount": 0,
-        "payloadCounty": null,
+        "payloadCounty": "pacific",
         "error": null
       },
-      "recommendation": "route_unregistered"
+      "recommendation": "county_not_registered_or_no_runtime_rows"
     },
     {
       "county": "Pacific",
@@ -10859,12 +10959,12 @@
       "probe": {
         "attempted": true,
         "status": 404,
-        "contentType": null,
+        "contentType": "application/json; charset=utf-8",
         "rowCount": 0,
-        "payloadCounty": null,
+        "payloadCounty": "pacific",
         "error": null
       },
-      "recommendation": "route_unregistered"
+      "recommendation": "county_not_registered_or_no_runtime_rows"
     },
     {
       "county": "Pacific",
@@ -11085,6 +11185,46 @@
         "error": null
       },
       "recommendation": "route_unregistered"
+    },
+    {
+      "county": "Franklin",
+      "source": "backend_controller",
+      "filePath": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
+      "routePattern": "api/counties/{countyToken}/parcels",
+      "supportsCountyParameter": true,
+      "appearsTestOnly": false,
+      "appearsDemoOnly": false,
+      "appearsPacsOrLegacyNamed": false,
+      "candidateUrl": "http://localhost:5046/api/counties/franklin/parcels",
+      "probe": {
+        "attempted": true,
+        "status": 404,
+        "contentType": "application/json; charset=utf-8",
+        "rowCount": 0,
+        "payloadCounty": "franklin",
+        "error": null
+      },
+      "recommendation": "county_not_registered_or_no_runtime_rows"
+    },
+    {
+      "county": "Franklin",
+      "source": "backend_controller",
+      "filePath": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
+      "routePattern": "api/counties/{countyToken}/sales",
+      "supportsCountyParameter": true,
+      "appearsTestOnly": false,
+      "appearsDemoOnly": false,
+      "appearsPacsOrLegacyNamed": false,
+      "candidateUrl": "http://localhost:5046/api/counties/franklin/sales",
+      "probe": {
+        "attempted": true,
+        "status": 404,
+        "contentType": "application/json; charset=utf-8",
+        "rowCount": 0,
+        "payloadCounty": "franklin",
+        "error": null
+      },
+      "recommendation": "county_not_registered_or_no_runtime_rows"
     },
     {
       "county": "Franklin",
@@ -11339,12 +11479,12 @@
       "probe": {
         "attempted": true,
         "status": 404,
-        "contentType": null,
+        "contentType": "application/json; charset=utf-8",
         "rowCount": 0,
-        "payloadCounty": null,
+        "payloadCounty": "franklin",
         "error": null
       },
-      "recommendation": "route_unregistered"
+      "recommendation": "county_not_registered_or_no_runtime_rows"
     },
     {
       "county": "Franklin",
@@ -11359,12 +11499,12 @@
       "probe": {
         "attempted": true,
         "status": 404,
-        "contentType": null,
+        "contentType": "application/json; charset=utf-8",
         "rowCount": 0,
-        "payloadCounty": null,
+        "payloadCounty": "franklin",
         "error": null
       },
-      "recommendation": "route_unregistered"
+      "recommendation": "county_not_registered_or_no_runtime_rows"
     },
     {
       "county": "Franklin",
@@ -11585,6 +11725,46 @@
         "error": null
       },
       "recommendation": "route_unregistered"
+    },
+    {
+      "county": "Walla Walla",
+      "source": "backend_controller",
+      "filePath": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
+      "routePattern": "api/counties/{countyToken}/parcels",
+      "supportsCountyParameter": true,
+      "appearsTestOnly": false,
+      "appearsDemoOnly": false,
+      "appearsPacsOrLegacyNamed": false,
+      "candidateUrl": "http://localhost:5046/api/counties/walla-walla/parcels",
+      "probe": {
+        "attempted": true,
+        "status": 404,
+        "contentType": "application/json; charset=utf-8",
+        "rowCount": 0,
+        "payloadCounty": "walla-walla",
+        "error": null
+      },
+      "recommendation": "county_not_registered_or_no_runtime_rows"
+    },
+    {
+      "county": "Walla Walla",
+      "source": "backend_controller",
+      "filePath": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
+      "routePattern": "api/counties/{countyToken}/sales",
+      "supportsCountyParameter": true,
+      "appearsTestOnly": false,
+      "appearsDemoOnly": false,
+      "appearsPacsOrLegacyNamed": false,
+      "candidateUrl": "http://localhost:5046/api/counties/walla-walla/sales",
+      "probe": {
+        "attempted": true,
+        "status": 404,
+        "contentType": "application/json; charset=utf-8",
+        "rowCount": 0,
+        "payloadCounty": "walla-walla",
+        "error": null
+      },
+      "recommendation": "county_not_registered_or_no_runtime_rows"
     },
     {
       "county": "Walla Walla",
@@ -11839,12 +12019,12 @@
       "probe": {
         "attempted": true,
         "status": 404,
-        "contentType": null,
+        "contentType": "application/json; charset=utf-8",
         "rowCount": 0,
-        "payloadCounty": null,
+        "payloadCounty": "walla-walla",
         "error": null
       },
-      "recommendation": "route_unregistered"
+      "recommendation": "county_not_registered_or_no_runtime_rows"
     },
     {
       "county": "Walla Walla",
@@ -11859,12 +12039,12 @@
       "probe": {
         "attempted": true,
         "status": 404,
-        "contentType": null,
+        "contentType": "application/json; charset=utf-8",
         "rowCount": 0,
-        "payloadCounty": null,
+        "payloadCounty": "walla-walla",
         "error": null
       },
-      "recommendation": "route_unregistered"
+      "recommendation": "county_not_registered_or_no_runtime_rows"
     },
     {
       "county": "Walla Walla",
@@ -11948,11 +12128,11 @@
     }
   ],
   "summary": {
-    "backendRoutesFound": 962,
+    "backendRoutesFound": 964,
     "frontendCallsFound": 15,
-    "candidateEndpointsFound": 110,
-    "liveEndpoints": 9,
-    "countyScopedEndpoints": 110,
+    "candidateEndpointsFound": 118,
+    "liveEndpoints": 12,
+    "countyScopedEndpoints": 118,
     "testOrDemoEndpoints": 42
   }
 }

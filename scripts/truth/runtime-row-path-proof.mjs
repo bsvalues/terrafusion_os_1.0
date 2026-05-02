@@ -37,9 +37,11 @@ function slugifyCounty(county) {
 }
 
 function normalizeCounty(value) {
-  return String(value ?? '')
+  const normalized = String(value ?? '')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '');
+
+  return normalized.endsWith('county') ? normalized.slice(0, -'county'.length) : normalized;
 }
 
 function loadInventory() {
@@ -119,6 +121,13 @@ async function probeCandidate(row) {
       selected = attempt;
       break;
     }
+  }
+
+  if (!selected) {
+    selected =
+      attemptedEndpoints.find(attempt => attempt.selectedCountyEchoed) ??
+      attemptedEndpoints.find(attempt => attempt.status) ??
+      null;
   }
 
   const proof = {
@@ -351,12 +360,13 @@ async function main() {
   console.log(JSON.stringify(summary, null, 2));
 
   if (strict && summary.failed > 0) {
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
-  process.exit(0);
+  process.exitCode = 0;
 }
 
 main().catch(error => {
   console.error(error instanceof Error ? error.message : String(error));
-  process.exit(2);
+  process.exitCode = 2;
 });
