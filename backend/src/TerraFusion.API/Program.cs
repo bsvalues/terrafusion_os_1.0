@@ -1175,6 +1175,21 @@ builder.Services.AddScoped<
     TerraFusion.Sync.Workbench.Comps.Sales.ISalesCompEligibilityReader,
     TerraFusion.Sync.Workbench.Comps.Sales.SalesCompEligibilityReader>();
 
+// Slice OPS-1-A — Workbench Sync Readiness backend facade per the
+// OPS-1 policy at docs/workbench/sync-readiness-console-policy.md.
+// Read-only artifact-directory-backed implementation; the artifact
+// root defaults to the production layout under
+// backend/artifacts/sync-atlas/ relative to the working directory
+// and can be overridden via configuration "Workbench:SyncReadiness:ArtifactRoot".
+builder.Services.AddScoped<
+    TerraFusion.Core.Interfaces.Workbench.IWorkbenchSyncReadinessService>(sp =>
+{
+    var config = sp.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
+    var artifactRoot = config["Workbench:SyncReadiness:ArtifactRoot"]
+        ?? System.IO.Path.Combine("backend", "artifacts", "sync-atlas");
+    return new TerraFusion.Sync.Workbench.Readiness.WorkbenchSyncReadinessService(artifactRoot);
+});
+
 // Slice C41-B — per-county active-workbook pointer service. Pure metadata
 // surface over SyncCountyActiveWorkbooks; SET / GET / Clear do not trigger
 // C36 / canonical / PACS work (per C41-A Hard Guards).
