@@ -216,6 +216,15 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawImprvDetail>
     LegacyPacsRawImprvDetails { get; set; } = null!;
 
+  // Slice C1-C: imprv_attr landing — per-attribute key/value rows
+  // attached to imprv_detail. 6-key composite. Closed-vocabulary
+  // i_attr_val_cd is dictionary-checked at landing; unknown codes
+  // quarantine to legacy_tf_unproven.unresolved_imprv_attr.
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawImprvAttr>
+    LegacyPacsRawImprvAttrs { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.LegacyTfUnproven.LegacyTfUnprovenImprvAttr>
+    LegacyTfUnprovenImprvAttrs { get; set; } = null!;
+
   // Slice S2-B: truth_pacs.sale — supp-aware-validated,
   // qualification-filtered ('100' only) projection of the raw layer.
   // Stepping stone toward canonical_tf.tf_sale (S3).
@@ -895,6 +904,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // Slice C1-B: imprv_detail landing — per-component breakdown.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawImprvDetailConfiguration());
+
+    // Slice C1-C: imprv_attr landing + dictionary-quarantine table.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawImprvAttrConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyTfUnproven.LegacyTfUnprovenImprvAttrConfiguration());
 
     // Slice S2-B: truth_pacs.sale — qualification-filtered,
     // supp-aware-validated truth layer.
