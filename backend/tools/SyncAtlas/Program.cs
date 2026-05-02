@@ -1149,6 +1149,15 @@ internal static class Program
 
         await using var db = new TerraFusionDbContext(options, configuration);
 
+        // BENTON-SYNC-6-B: optional preflight evidence builder. Built
+        // after pacsCatalog so the manifest engagement snapshot is
+        // captured at the same point the loaders see it. Persisted in
+        // the outer finally below per the BENTON-SYNC-6-A policy
+        // (HG7 fail-closed: artifact written even on partial runs).
+        DictionaryLoaderPreflightEvidenceBuilder? evidenceBuilder = null;
+
+        try
+        {
         // Parser invariants per CliArgs C22-B branch.
         var workbookId = args.WorkbookId
             ?? throw new InvalidOperationException(
@@ -1231,6 +1240,29 @@ internal static class Program
         IPacsSchemaCatalog? pacsCatalog = configKeyConsumesCatalog
             ? await BuildPacsCatalogForSyncAtlasAsync(pacsConnectionString, ct)
             : null;
+
+        // BENTON-SYNC-6-B: instantiate evidence builder once we know
+        // the catalog state. Engagement detection mirrors
+        // PacsSchemaCatalogHealthReporter.BuildReport so the artifact's
+        // ManifestEngagement block matches the schema-catalog-health
+        // command's read of the same state.
+        if (args.PreflightEvidencePath is not null && pacsCatalog is not null)
+        {
+            var convEngaged = !string.Equals(
+                pacsCatalog.Version.ConversionManifestHash,
+                "no-conversion-manifest-supplied",
+                StringComparison.Ordinal);
+            var piiEngaged = pacsCatalog.PiiManifestEngaged;
+            var expFkEngaged = pacsCatalog.Version.SourceFileHashes.Keys
+                .Any(k => k.StartsWith("exported-fk-manifest@", StringComparison.Ordinal));
+            evidenceBuilder = new DictionaryLoaderPreflightEvidenceBuilder(
+                countyId: args.CountyId,
+                sourceConnectionId: connectionId,
+                pacsRelease: pacsCatalog.Version.PacsRelease,
+                conversionManifestEngaged: convEngaged,
+                piiManifestEngaged: piiEngaged,
+                exportedFkManifestEngaged: expFkEngaged);
+        }
 
         var (target, columnConfig, sliceArtifactDir) = configKey switch
         {
@@ -1429,6 +1461,18 @@ internal static class Program
                 "'imprv_det_meth', and 'imprv_det_sub_class'."),
         };
 
+        // BENTON-SYNC-6-B: per-call evidence locals. Default to
+        // Skipped — overwritten by the FK / era / PII blocks below
+        // when the corresponding stance is non-null. Honors HG-FK-3 /
+        // HG-CONV-3 / HG-PII-3 no-silent-default-pass: an un-migrated
+        // configKey produces a Skipped record, never a fabricated Pass.
+        var preflightStartedAtUtc = DateTime.UtcNow;
+        var fkEvidence  = DictionaryLoaderPreflightEvidenceFk.Skipped();
+        var eraEvidence = DictionaryLoaderPreflightEvidenceEra.Skipped();
+        var piiEvidence = DictionaryLoaderPreflightEvidencePii.Skipped();
+
+        try
+        {
         // Slice C49-FK-E: per-call-site FK preflight stance per the
         // C49-FK-C policy (HG-FK-3). Each migrated configKey picks
         // RequiredFk or AdvisoryFk based on whether the FK is
@@ -1462,6 +1506,12 @@ internal static class Program
             var preflight = new DictionaryLoaderPreflight();
             var preflightResult = await preflight.ValidateAsync(
                 pacsCatalog, target, columnConfig, preflightStance.Value, ct);
+
+            // BENTON-SYNC-6-B: capture FK evidence regardless of
+            // outcome. On Fail the throw propagates and the outer
+            // finally records this evidence with era/pii=Skipped.
+            fkEvidence = DictionaryLoaderPreflightEvidenceFk.From(
+                preflightStance.Value, preflightResult);
 
             switch (preflightResult.Outcome)
             {
@@ -1514,6 +1564,11 @@ internal static class Program
                 new[] { target.WorkbookSourceColumn },
                 eraStance.Value,
                 ct);
+
+            // BENTON-SYNC-6-B: capture era evidence regardless of
+            // outcome (same pattern as FK above).
+            eraEvidence = DictionaryLoaderPreflightEvidenceEra.From(
+                eraStance.Value, eraResult);
 
             switch (eraResult.Outcome)
             {
@@ -1569,6 +1624,11 @@ internal static class Program
                 piiStance.Value,
                 ct);
 
+            // BENTON-SYNC-6-B: capture PII evidence regardless of
+            // outcome (same pattern as FK / era above).
+            piiEvidence = DictionaryLoaderPreflightEvidencePii.From(
+                piiStance.Value, piiResult);
+
             switch (piiResult.Outcome)
             {
                 case PiiClassificationPreflightOutcome.Pass:
@@ -1581,6 +1641,25 @@ internal static class Program
                     break;
                 case PiiClassificationPreflightOutcome.Fail:
                     throw new InvalidOperationException(piiResult.Message);
+            }
+        }
+        }
+        finally
+        {
+            // BENTON-SYNC-6-B: append the per-call record to the
+            // builder. Runs even when a preflight throws, preserving
+            // partial-run evidence per HG7 fail-closed.
+            if (evidenceBuilder is not null)
+            {
+                evidenceBuilder.Append(new DictionaryLoaderPreflightEvidenceRecord(
+                    ConfigKey:      configKey,
+                    TargetTable:    target.WorkbookSourceTable,
+                    TargetColumn:   target.WorkbookSourceColumn,
+                    StartedAtUtc:   preflightStartedAtUtc,
+                    CompletedAtUtc: DateTime.UtcNow,
+                    FkPreflight:    fkEvidence,
+                    EraPreflight:   eraEvidence,
+                    PiiPreflight:   piiEvidence));
             }
         }
 
@@ -1651,6 +1730,30 @@ internal static class Program
         Console.WriteLine("─────────────────────────────────────────────");
 
         return 0;
+        }
+        finally
+        {
+            // BENTON-SYNC-6-B: write the preflight evidence artifact.
+            // HG7 fail-closed: runs on every exit path (success, early
+            // return, thrown exception). Mirrors the BENTON-SYNC-5
+            // confirmation-line shape on success.
+            if (args.PreflightEvidencePath is not null && evidenceBuilder is not null)
+            {
+                try
+                {
+                    await DictionaryLoaderPreflightEvidenceArtifact.WriteAsync(
+                        evidenceBuilder.Build(), args.PreflightEvidencePath, ct);
+                    Console.WriteLine();
+                    Console.WriteLine($"sync-atlas: preflight evidence artifact written to {args.PreflightEvidencePath}");
+                }
+                catch (Exception ex)
+                {
+                    await Console.Error.WriteLineAsync(
+                        $"sync-atlas: failed to write preflight evidence artifact at " +
+                        $"{args.PreflightEvidencePath}: {ex.Message}");
+                }
+            }
+        }
     }
 
     /// <summary>
