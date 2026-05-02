@@ -58,9 +58,11 @@ function candidates() {
   }
 
   const sourceLineage = readJson(sourceLineagePath);
-  return (sourceLineage?.proofs ?? [])
-    .filter(proof => proof.passed)
-    .map(proof => ({ county: proof.county }));
+  return (sourceLineage?.proofs ?? []).map(proof => ({
+    county: proof.county,
+    sourceLineagePassed: proof.passed === true,
+    sourceLineageBlockers: proof.blockers ?? [],
+  }));
 }
 
 async function probeCounty(candidate) {
@@ -90,6 +92,8 @@ async function probeCounty(candidate) {
       normalizeCounty(lineage.payload?.county) === 'benton',
     countyId,
     runtimeLineageClassification: lineage.payload?.runtimeLineageClassification ?? null,
+    sourceLineagePassed: candidate.sourceLineagePassed ?? true,
+    sourceLineageBlockers: candidate.sourceLineageBlockers ?? [],
     runtimeMockDataEnabled: lineage.payload?.runtimeMockDataEnabled ?? null,
     eliteOperationsMockDataEnabled: lineage.payload?.eliteOperationsMockDataEnabled ?? null,
     comparableSales: numberAt(lineage.payload, ['canonicalRuntime', 'comparableSales']),
@@ -174,6 +178,11 @@ function evaluate(proof) {
   if (proof.lineageStatus !== 200) {
     blockers.push(`Runtime lineage endpoint did not return 200. Status: ${proof.lineageStatus}`);
   }
+  if (!proof.sourceLineagePassed) {
+    blockers.push(
+      `Runtime source-lineage proof is not trusted: ${(proof.sourceLineageBlockers ?? []).join('; ') || 'unknown blocker'}`
+    );
+  }
   if (proof.qualificationStatus !== 200) {
     blockers.push(
       `Qualification status endpoint did not return 200. Status: ${proof.qualificationStatus}`
@@ -248,6 +257,7 @@ function renderMarkdown(proofs, summary) {
     [
       proof.county,
       proof.classification,
+      proof.sourceLineagePassed ? 'yes' : 'no',
       String(proof.comparableSales),
       String(proof.sourceSales),
       String(proof.canonicalSaleQualifications),
@@ -270,8 +280,8 @@ function renderMarkdown(proofs, summary) {
     `Generated: ${new Date().toISOString()}`,
     `Runtime base URL: \`${runtimeBaseUrl}\``,
     '',
-    '| County | Classification | Comparable Sales | Source Sales | Canonical Qualifications | All Sales | Recommendations | Recommendation Coverage % | Window Sales | Effective Qualified | Decision Qualified | Recommendation Fallback | Result | Blockers | Warnings |',
-    '|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---|---|',
+    '| County | Classification | Source Lineage Trusted | Comparable Sales | Source Sales | Canonical Qualifications | All Sales | Recommendations | Recommendation Coverage % | Window Sales | Effective Qualified | Decision Qualified | Recommendation Fallback | Result | Blockers | Warnings |',
+    '|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---|---|',
     ...rows,
     '',
     '## Summary',

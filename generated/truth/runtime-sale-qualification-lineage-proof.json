@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-05-02T05:48:16.386Z",
+  "generatedAt": "2026-05-02T15:36:17.089Z",
   "repoRoot": "C:\\Users\\bsval\\terrafusion_os_1.0",
   "runtimeBaseUrl": "http://localhost:5046",
   "summary": {
     "candidatesChecked": 1,
-    "passed": 1,
-    "failed": 0,
+    "passed": 0,
+    "failed": 1,
     "warnings": 3,
     "canonicalLandingBacked": 0,
     "recommendationBackedCanonicalMissing": 1
@@ -22,6 +22,10 @@
       "silentBentonFallbackDetected": false,
       "countyId": "19190019-1919-1919-1919-191919191919",
       "runtimeLineageClassification": "pacs_mirror_projected_runtime_partial",
+      "sourceLineagePassed": false,
+      "sourceLineageBlockers": [
+        "Runtime DB identity proof is not trusted: Runtime Properties count 128788 does not match configured Benton parcel count 89447."
+      ],
       "runtimeMockDataEnabled": false,
       "eliteOperationsMockDataEnabled": true,
       "comparableSales": 259102,
@@ -47,8 +51,10 @@
       },
       "errors": [],
       "classification": "recommendation_backed_canonical_landing_missing",
-      "passed": true,
-      "blockers": [],
+      "passed": false,
+      "blockers": [
+        "Runtime source-lineage proof is not trusted: Runtime DB identity proof is not trusted: Runtime Properties count 128788 does not match configured Benton parcel count 89447."
+      ],
       "warnings": [
         "CanonicalSaleQualifications landing table is empty for this county.",
         "Ratio-study qualified pool is recommendation-backed, not final-decision-backed.",
