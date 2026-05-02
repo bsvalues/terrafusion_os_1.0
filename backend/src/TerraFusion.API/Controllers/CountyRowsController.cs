@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using TerraFusion.Data;
 
 namespace TerraFusion.API.Controllers;
@@ -15,11 +16,16 @@ public sealed class CountyRowsController : ControllerBase
 {
     private readonly TerraFusionDbContext _db;
     private readonly ILogger<CountyRowsController> _logger;
+    private readonly IConfiguration? _configuration;
 
-    public CountyRowsController(TerraFusionDbContext db, ILogger<CountyRowsController> logger)
+    public CountyRowsController(
+        TerraFusionDbContext db,
+        ILogger<CountyRowsController> logger,
+        IConfiguration? configuration = null)
     {
         _db = db;
         _logger = logger;
+        _configuration = configuration;
     }
 
     [HttpGet("parcels")]
@@ -122,6 +128,109 @@ public sealed class CountyRowsController : ControllerBase
             count = rows.Count,
             rows,
         });
+    }
+
+    [HttpGet("runtime-lineage")]
+    public async Task<IActionResult> GetRuntimeLineage(
+        string countyToken,
+        CancellationToken ct = default)
+    {
+        var county = await ResolveCountyAsync(countyToken, ct);
+        if (county is null)
+            return NotFound(new { county = countyToken, error = "County not found." });
+
+        var propertyCount = await _db.Properties
+            .AsNoTracking()
+            .CountAsync(p => p.CountyId == county.Id, ct);
+        var comparableSaleCount = await _db.ComparableSales
+            .AsNoTracking()
+            .CountAsync(s => s.CountyId == county.Id, ct);
+        var pacsParcelCount = await _db.PacsParcel
+            .AsNoTracking()
+            .CountAsync(p => p.CountyId == county.Id, ct);
+        var pacsParcelIds = _db.PacsParcel
+            .AsNoTracking()
+            .Where(p => p.CountyId == county.Id)
+            .Select(p => p.Id);
+        var pacsSaleCount = await _db.PacsSales
+            .AsNoTracking()
+            .CountAsync(s => pacsParcelIds.Contains(s.ParcelId), ct);
+        var canonicalSaleQualificationCount = await _db.CanonicalSaleQualifications
+            .AsNoTracking()
+            .CountAsync(q => q.CountyId == county.Id, ct);
+
+        var devSeedersSkipped = DevSeedersSkipped();
+        var classification = ClassifyRuntimeLineage(
+            propertyCount,
+            comparableSaleCount,
+            pacsParcelCount,
+            pacsSaleCount,
+            canonicalSaleQualificationCount);
+
+        return Ok(new
+        {
+            county = county.Name,
+            countyId = county.Id,
+            runtimeLineageClassification = classification,
+            databaseProvider = _db.Database.ProviderName,
+            developmentSeedersSkipped = devSeedersSkipped,
+            runtimeMockDataEnabled = ConfigBool("Development:EnableMockData"),
+            eliteOperationsMockDataEnabled = ConfigBool("EliteOperations:MockDataEnabled"),
+            canonicalRuntime = new
+            {
+                properties = propertyCount,
+                comparableSales = comparableSaleCount,
+                canonicalSaleQualifications = canonicalSaleQualificationCount,
+            },
+            sourceMirror = new
+            {
+                pacsParcels = pacsParcelCount,
+                pacsSales = pacsSaleCount,
+            },
+            posture = new
+            {
+                noSilentFallback = true,
+                exposesCountsOnly = true,
+                containsOwnerOrPartyPii = false,
+            },
+        });
+    }
+
+    private bool ConfigBool(string key) =>
+        bool.TryParse(_configuration?[key], out var value) && value;
+
+    private static bool DevSeedersSkipped()
+    {
+        var envValue = Environment.GetEnvironmentVariable("TF_SKIP_DEV_SEEDERS")?.Trim();
+        var argSkipped = Environment.GetCommandLineArgs()
+            .Any(arg => string.Equals(arg, "--skip-dev-seeders", StringComparison.OrdinalIgnoreCase));
+
+        return argSkipped ||
+               string.Equals(envValue, "true", StringComparison.OrdinalIgnoreCase) ||
+               string.Equals(envValue, "1", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string ClassifyRuntimeLineage(
+        int propertyCount,
+        int comparableSaleCount,
+        int pacsParcelCount,
+        int pacsSaleCount,
+        int canonicalSaleQualificationCount)
+    {
+        if (propertyCount <= 0 && comparableSaleCount <= 0)
+            return "no_runtime_rows";
+
+        if (pacsParcelCount > 0 &&
+            propertyCount > 0 &&
+            pacsSaleCount > 0 &&
+            comparableSaleCount > 0 &&
+            canonicalSaleQualificationCount > 0)
+            return "pacs_mirror_canonicalized_runtime";
+
+        if (pacsParcelCount > 0 && propertyCount > 0)
+            return "pacs_mirror_projected_runtime_partial";
+
+        return "canonical_runtime_rows_without_source_mirror_proof";
     }
 
     private async Task<CountyProjection?> ResolveCountyAsync(string countyToken, CancellationToken ct)
