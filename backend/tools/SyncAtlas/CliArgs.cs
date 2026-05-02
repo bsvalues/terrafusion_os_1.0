@@ -1304,6 +1304,31 @@ public static class CliArgsParser
             // lock mode does — surface contract is preventing
             // operator confusion, not punishing extra bytes.
         }
+        else if (schemaCatalogHealth)
+        {
+            // ── Schema-catalog-health mode validation
+            //   (BENTON-SYNC-2 + BENTON-SYNC-2-FIX1) ─────────────────────
+            // Pure read-only diagnostic over the live PACS catalog.
+            // --connection-id was already validated above (the
+            // schemaCatalogHealth top-level block earlier in this method
+            // enforces it). The other mode-specific flags are not
+            // relevant here; reject them via the existing reject-helpers
+            // used by other read-only modes (lock / progress).
+            //
+            // BENTON-SYNC-2-FIX1: this branch was missing in BENTON-SYNC-2,
+            // causing --schema-catalog-health to fall through to the final
+            // load-pacs-dictionary `else` and reject the invocation with
+            // the wrong error message ("--workbook-id is required when
+            // --load-pacs-dictionary is set"). Surfaced by BENTON-SYNC-3's
+            // live-PACS proof attempt.
+            var editError = RejectEditModeFlags(
+                editSourceSchema, editSourceValue, editCanonicalTarget,
+                editCanonicalValue, editCanonicalValueNull, editReviewStatus,
+                editIsExcluded, editNotes);
+            if (editError is not null) return (null, editError);
+            var batchError = RejectBatchEditModeFlags(inputCsvPath, batchEditDryRun, batchEditApply);
+            if (batchError is not null) return (null, batchError);
+        }
         else
         {
             // ── Load-PACS-dictionary mode validation (C22-B) ────────────
