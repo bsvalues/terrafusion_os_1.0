@@ -1607,6 +1607,14 @@ builder.Services.Configure<TerraFusion.Core.Configuration.ArcGisFeatureServiceOp
 // (canonical_tf landing) is wired in G1-D.
 builder.Services.AddArcGisFeatureServiceClient();
 
+// Slice G1-D-1: ArcGIS sync persistence orchestrator. Lands fetched
+// features into gis_tf.tf_parcel_geom under the sync_bridge doctrine
+// (load_batch + source_xref + promotion_gate_result). The hosted
+// scheduler is G1-D-2.
+builder.Services.AddScoped<
+    TerraFusion.Core.GIS.ArcGisRest.IArcGisSyncService,
+    TerraFusion.Data.Services.GisTf.ArcGisSyncService>();
+
 // Redis lockout store (uses existing IDistributedCache from line 70-71)
 builder.Services.AddScoped<TerraFusion.Core.Security.Lockout.ILockoutStore, TerraFusion.Core.Security.Lockout.RedisLockoutStore>();
 
