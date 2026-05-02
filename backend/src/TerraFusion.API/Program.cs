@@ -1662,6 +1662,13 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsWashPropOwnerVal.IPacsWashPropOwnerValLandingService,
     TerraFusion.Data.Services.LegacyPacsRaw.PacsWashPropOwnerValLandingService>();
 
+// Slice C1-A: PACS imprv raw landing — Block C's per-improvement
+// parent table. Four gates: distribution, 4-key-uniqueness,
+// provenance-coverage, aggregate.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsImprv.IPacsImprvLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsImprvLandingService>();
+
 // Slice B2-A: truth_pacs.owner_current promoter — supp-aware
 // owner snapshot with account-link enforcement and HARD pct-
 // completeness gate. Five T-* gates. Idempotent by OwnerLoadBatchId.
