@@ -1,0 +1,48 @@
+{
+  "track": "Track 2F",
+  "title": "TerraFusion DB Sales Coverage Audit",
+  "generatedAt": "2026-05-02T16:08:56.313Z",
+  "countyId": "19190019-1919-1919-1919-191919191919",
+  "countyName": "Benton",
+  "hardGuards": {
+    "sourceSystemReads": false,
+    "sourceCredentialsUsed": false,
+    "workbookDependency": false,
+    "countyStudioRuntimeDependency": false,
+    "rowInvention": false
+  },
+  "metrics": {
+    "parcelRows": 128788,
+    "parcelSaleColumnsOnPropertiesTable": [],
+    "parcelRowsWithSaleFields": 0,
+    "standaloneSaleFactRows_pacsSales": 0,
+    "standaloneSaleFactRows_SaleRecords": 0,
+    "comparableSaleRows": 259102,
+    "salesByYear_top20": [],
+    "salesBefore2018": 0,
+    "salesFrom2018Onward": 0,
+    "salesWithNoSaleDate": 0,
+    "rowsWithMissingWacCd": 0,
+    "rowsWithWacCdPresent": 0,
+    "rowsWithMissingSaleRatioTypeCd": 0,
+    "rowsWithSaleRatioTypeCdPresent": 0,
+    "rowsWithSalePriceAndSaleDate": 0,
+    "rowsWithSalePriceMissing": 0,
+    "rowsAttachedToValidBentonParcels": 0,
+    "salesWithOrphanParcelId": 440274,
+    "rowsEligibleForQualificationBeforeMapping": 0,
+    "rowsStrictlyEligibleForQualification": 0,
+    "rowsAlreadyCanonicalQualified": 0
+  },
+  "verdict": {
+    "gate": "TERRAFUSION_DB_LANDING_GAP",
+    "summary": "TerraFusion DB has zero pacs_sales rows for Benton. This is a Sync landing gap; readiness fails until upstream→TF DB sales sync runs.",
+    "nextSlice": "Wait for / fix TerraFusion Sync landing into TerraFusion DB."
+  },
+  "notes": [
+    "WacCd is not strictly enforced in PACS even where applied; treat WAC presence as a hint, not ground truth.",
+    "Pre-2018 sales are largely uncoded for WacCd by historical reality, not data corruption.",
+    "Properties table carries zero sale-attached columns; sales live in pacs_sales joined by ParcelId.",
+    "CanonicalSaleQualifications is the comp-pool-pre-qualified pipeline; empty means no ratio-study has been prepared, not that sales are missing."
+  ]
+}
