@@ -74,6 +74,11 @@ Vestigial drift was swept by C48-FIX, C48-FIX2, and C48-HYGIENE.
   BENTON-SYNC-6-C — committed evidence baseline of the live Benton
   preflight evidence artifact, with the BENTON-SYNC-6-A policy /
   BENTON-SYNC-6-B implementation drift reconciliation
+- `sales-qualification-coverage-continuity-smoke-policy.md` —
+  BENTON-SYNC-7-A — read-only smoke that proves every PACS sale row
+  the C8-B transform would persist has a matching canonical row, and
+  every canonical row traces back to its PACS source. CLI surface,
+  report shape, hard guards, and BENTON-SYNC-7-B test matrix.
 
 ### Schema catalog (C48 family — COMPLETE)
 
