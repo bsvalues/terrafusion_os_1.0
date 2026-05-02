@@ -209,6 +209,13 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawImprv>
     LegacyPacsRawImprvs { get; set; } = null!;
 
+  // Slice C1-B: imprv_detail landing — per-component breakdown
+  // (ATTGAR, BSMT, COVPATIO, MA, etc). 5-key composite. Required by
+  // the truth_pacs.imprv_current promoter and the Benton Method's
+  // secondary-feature calculations.
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawImprvDetail>
+    LegacyPacsRawImprvDetails { get; set; } = null!;
+
   // Slice S2-B: truth_pacs.sale — supp-aware-validated,
   // qualification-filtered ('100' only) projection of the raw layer.
   // Stepping stone toward canonical_tf.tf_sale (S3).
@@ -884,6 +891,10 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // Slice C1-A: imprv landing — Block C's per-improvement parent table.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawImprvConfiguration());
+
+    // Slice C1-B: imprv_detail landing — per-component breakdown.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawImprvDetailConfiguration());
 
     // Slice S2-B: truth_pacs.sale — qualification-filtered,
     // supp-aware-validated truth layer.
