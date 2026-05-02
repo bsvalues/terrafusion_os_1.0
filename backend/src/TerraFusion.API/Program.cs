@@ -1692,6 +1692,15 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsOwnerCanonical.ITfParcelOwnerReader,
     TerraFusion.Data.Services.CanonicalTf.TfParcelOwnerReader>();
 
+// Slice B4: canonical_tf.tf_assessment_wsdor projector. Resolves
+// PACS prop_id and owner_id (==acct_id) to canonical TfParcelId +
+// TfOwnerId via source_xref; writes assessment_wsdor source_xref
+// keyed on the 4-tuple. Quarantines on either lookup miss to
+// legacy_tf_unproven.wash_prop_owner_val. Five C-* gates.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsWsdorCanonical.IPacsWsdorCanonicalProjector,
+    TerraFusion.Data.Services.CanonicalTf.PacsWsdorCanonicalProjector>();
+
 // Slice S2-B: truth_pacs.sale promoter — supp-aware join + '100'
 // qualification filter, with five T-* gates. Idempotent by SaleLoadBatchId.
 builder.Services.AddScoped<
