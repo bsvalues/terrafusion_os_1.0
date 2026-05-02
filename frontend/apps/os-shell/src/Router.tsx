@@ -61,6 +61,13 @@ const PropertyClerk = lazy(() => import('./pages/workbench/tabs/PropertyClerk'))
 const PropertyTreasury = lazy(() => import('./pages/workbench/tabs/PropertyTreasury'));
 const PropertyAudit = lazy(() => import('./pages/workbench/tabs/PropertyAudit'));
 
+// OPS-1-B: Sync Readiness Console — read-only operator control
+// surface that consumes the OPS-1-A backend facade. Per the OPS-1
+// policy at docs/workbench/sync-readiness-console-policy.md.
+const SyncReadinessConsole = lazy(
+  () => import('./pages/workbench/sync-readiness/SyncReadinessConsole'),
+);
+
 const Monitoring = lazy(() => import('./pages/Monitoring'));
 const TerraFusionMarketplace = lazy(
   () => import('./components/marketplace/TerraFusionMarketplace')
@@ -192,6 +199,12 @@ const Router: React.FC = () => {
                   <Route
                     path='modules/property-workbench/*'
                     element={<LegacyRedirect to='/' legacyAppId='modules.property-workbench' />}
+                  />
+
+                  {/* OPS-1-B: Sync Readiness Console */}
+                  <Route
+                    path='workbench/sync-readiness'
+                    element={<SyncReadinessConsole />}
                   />
 
                   <Route path='monitoring' element={<Monitoring />} />

@@ -60,6 +60,15 @@
   color: hsl(var(--tf-info));
 }
 
+/* OPS-1-B: muted status for the UNKNOWN state on the Sync
+   Readiness Console. Mirrors the .tf-status-* family shape;
+   no new tokens introduced — uses existing --tf-muted. */
+.tf-status-muted {
+  background: hsl(var(--tf-muted) / 0.15);
+  border-color: hsl(var(--tf-muted) / 0.3);
+  color: hsl(var(--tf-muted));
+}
+
 /* ─── Suite Accent Colors ─── */
 
 /* Forge (Orange → mapped to warning-amber channel) */
