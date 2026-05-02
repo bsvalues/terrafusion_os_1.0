@@ -94,7 +94,18 @@ public sealed record CliArgs(
     // path AFTER rendering the human-readable health output. When
     // null, behavior is unchanged (stdout only). Caller-driven per
     // the C53-CONS-D contract; no implicit default location.
-    string? InvariantArtifactPath);
+    string? InvariantArtifactPath,
+    // Slice BENTON-SYNC-6-B — optional artifact path for the
+    // dictionary-loader preflight evidence JSON. When set alongside
+    // --load-pacs-dictionary, the command captures the FK / era /
+    // PII preflight outcomes for every loader call inside the run
+    // and writes a DictionaryLoaderPreflightEvidence document via
+    // DictionaryLoaderPreflightEvidenceArtifact.WriteAsync to the
+    // supplied path AFTER the loader finalizes. When null, behavior
+    // is byte-identical to BENTON-SYNC-5 (stdout / stderr only).
+    // Per the BENTON-SYNC-6-A policy, this flag is rejected on
+    // commands that do not invoke dictionary loaders.
+    string? PreflightEvidencePath);
 
 /// <summary>
 /// Pure argument parser. No I/O, no environment access — easy to unit test.
@@ -325,6 +336,9 @@ public static class CliArgsParser
 
         // Slice BENTON-SYNC-5 — optional invariant artifact path
         string? invariantArtifactPath = null;
+
+        // Slice BENTON-SYNC-6-B — optional preflight evidence artifact path
+        string? preflightEvidencePath = null;
 
         for (var i = 0; i < argv.Length; i++)
         {
@@ -586,6 +600,13 @@ public static class CliArgsParser
                         return (null, "--invariant-artifact-path requires a value");
                     invariantArtifactPath = argv[++i];
                     break;
+
+                // ── Slice BENTON-SYNC-6-B — optional preflight evidence path ─
+                case "--preflight-evidence-path":
+                    if (i + 1 >= argv.Length)
+                        return (null, "--preflight-evidence-path requires a value");
+                    preflightEvidencePath = argv[++i];
+                    break;
                 case "--table":
                     if (i + 1 >= argv.Length)
                         return (null, "--table requires a value");
@@ -664,7 +685,8 @@ public static class CliArgsParser
                 WorkbookSourceTable:                   workbookSourceTable,
                 WorkbookSourceColumn:                  workbookSourceColumn,
                 SchemaCatalogHealth:                   schemaCatalogHealth,
-                InvariantArtifactPath:                 invariantArtifactPath), null);
+                InvariantArtifactPath:                 invariantArtifactPath,
+                PreflightEvidencePath:                 preflightEvidencePath), null);
         }
 
         // ── Always-required, regardless of mode ─────────────────────────
@@ -734,6 +756,18 @@ public static class CliArgsParser
         if (!loadPacsDictionary && workbookSourceSchema is not null)
         {
             return (null, "--workbook-source-column requires --load-pacs-dictionary");
+        }
+
+        // BENTON-SYNC-6-B: --preflight-evidence-path is honored only on
+        // commands whose runtime path actually invokes dictionary
+        // loaders. Reject elsewhere with a clear "not applicable"
+        // message per the BENTON-SYNC-6-A policy ("CLI engagement
+        // model" → opt-in, mode-restricted).
+        if (preflightEvidencePath is not null && !loadPacsDictionary)
+        {
+            return (null,
+                "--preflight-evidence-path requires --load-pacs-dictionary " +
+                "(the flag captures dictionary-loader preflight outcomes; not applicable to other modes)");
         }
 
         // ── Schema-catalog-health validation (BENTON-SYNC-2) ────────────
@@ -1487,7 +1521,8 @@ public static class CliArgsParser
             WorkbookSourceTable:                   workbookSourceTable,
             WorkbookSourceColumn:                  workbookSourceColumn,
             SchemaCatalogHealth:                   schemaCatalogHealth,
-            InvariantArtifactPath:                 invariantArtifactPath), null);
+            InvariantArtifactPath:                 invariantArtifactPath,
+            PreflightEvidencePath:                 preflightEvidencePath), null);
     }
 
     public static string UsageText => @"

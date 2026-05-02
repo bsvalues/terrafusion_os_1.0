@@ -2918,4 +2918,89 @@ public class CliArgsParserTests
         args.Should().BeNull();
         err.Should().Contain("--invariant-artifact-path requires a value");
     }
+
+    // ========================================================================
+    // BENTON-SYNC-6-B: --preflight-evidence-path optional flag for the
+    // load-pacs-dictionary mode. Captures FK / era / PII preflight outcomes
+    // into a byte-stable JSON artifact via
+    // DictionaryLoaderPreflightEvidenceArtifact. Mode-restricted per the
+    // BENTON-SYNC-6-A policy: rejected on commands that do not invoke
+    // dictionary loaders. Absence of the flag preserves stdout-only
+    // behavior.
+    // ========================================================================
+
+    [Fact]
+    public void Parse_PreflightEvidencePath_WithLoaderCommand_Succeeds()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--load-pacs-dictionary",
+            "--workbook-id", ValidWorkbookId,
+            "--table", "property_use",
+            "--preflight-evidence-path", "/tmp/benton-preflight-evidence.json"
+        });
+
+        err.Should().BeNull();
+        args.Should().NotBeNull();
+        args!.LoadPacsDictionary.Should().BeTrue();
+        args.PreflightEvidencePath.Should().Be("/tmp/benton-preflight-evidence.json");
+    }
+
+    [Fact]
+    public void Parse_PreflightEvidencePath_WithoutValue_ReturnsError()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--load-pacs-dictionary",
+            "--workbook-id", ValidWorkbookId,
+            "--table", "property_use",
+            "--preflight-evidence-path"
+        });
+
+        args.Should().BeNull();
+        err.Should().Contain("--preflight-evidence-path requires a value");
+    }
+
+    [Fact]
+    public void Parse_PreflightEvidencePath_OnSchemaCatalogHealth_Rejects()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--schema-catalog-health",
+            "--preflight-evidence-path", "/tmp/oops.json"
+        });
+
+        args.Should().BeNull(
+            "BENTON-SYNC-6-A: --preflight-evidence-path is mode-restricted to " +
+            "--load-pacs-dictionary; using it with --schema-catalog-health MUST reject");
+        err.Should().Contain("--preflight-evidence-path requires --load-pacs-dictionary");
+    }
+
+    [Fact]
+    public void Parse_LoadPacsDictionary_WithoutPreflightEvidencePath_PathIsNull()
+    {
+        var (args, err) = CliArgsParser.Parse(new[]
+        {
+            "--db", ValidDb,
+            "--county-id", ValidCounty,
+            "--connection-id", ValidConnection,
+            "--load-pacs-dictionary",
+            "--workbook-id", ValidWorkbookId,
+            "--table", "property_use"
+        });
+
+        err.Should().BeNull();
+        args!.PreflightEvidencePath.Should().BeNull(
+            "absence of --preflight-evidence-path preserves stdout-only behavior " +
+            "(BENTON-SYNC-6-A engagement model: opt-in only)");
+    }
 }
