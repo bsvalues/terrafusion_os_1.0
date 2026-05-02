@@ -143,6 +143,29 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.Canonical.CanonicalSaleQualification>
     CanonicalSaleQualifications { get; set; } = null!;
 
+  // ── Sync Bridge v1 (PACS source-provenance doctrine) ────────────────
+  // Per docs/pacs/pacs-sync-bridge-v1-spec.md. The control tower for
+  // every PACS → TerraFusion ingest. v1 = scaffolding only; ingest
+  // wires up in a follow-up slice.
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfParcel>
+    TfParcels { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.SyncBridge.SourceXref>
+    SyncBridgeSourceXrefs { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.SyncBridge.FieldAuthority>
+    SyncBridgeFieldAuthorities { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.SyncBridge.LoadBatch>
+    SyncBridgeLoadBatches { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.SyncBridge.DiffLedger>
+    SyncBridgeDiffLedger { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.SyncBridge.ConflictQueue>
+    SyncBridgeConflictQueue { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.SyncBridge.WritebackJournal>
+    SyncBridgeWritebackJournal { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.SyncBridge.RollbackPackage>
+    SyncBridgeRollbackPackages { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.SyncBridge.PromotionGateResult>
+    SyncBridgePromotionGateResults { get; set; } = null!;
+
   // Slice C41-B: per-county pointer naming the operator-active
   // Mapped workbook. Singleton per county (PK = CountyId). See
   // docs/sync/sync-county-active-workbook-pointer-policy.md for the
@@ -723,6 +746,103 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // Mapped workbook (see C41-A policy doc).
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.Sync.SyncCountyActiveWorkbookConfiguration());
+
+    // ── Sync Bridge v1 (PACS source-provenance doctrine) ─────────────
+    // Per docs/pacs/pacs-sync-bridge-v1-spec.md.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfParcelConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.SyncBridge.SourceXrefConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.SyncBridge.FieldAuthorityConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.SyncBridge.LoadBatchConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.SyncBridge.DiffLedgerConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.SyncBridge.ConflictQueueConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.SyncBridge.WritebackJournalConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.SyncBridge.RollbackPackageConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.SyncBridge.PromotionGateResultConfiguration());
+
+    // Sync Bridge v1 — Phase 0 field_authority seed for the parcel
+    // domain. Per docs/pacs/pacs-sync-bridge-v1-spec.md §4.
+    modelBuilder.Entity<TerraFusion.Core.Entities.SyncBridge.FieldAuthority>().HasData(
+      new TerraFusion.Core.Entities.SyncBridge.FieldAuthority
+      {
+        AuthorityId = -1, DomainName = "parcel", FieldName = "parcel_number",
+        Phase = "phase_0", SystemOfRecord = "PACS",
+        PacsToTfAllowed = true, TfToPacsAllowed = false,
+        ConflictStrategy = "PACS_WINS", ApprovalRequired = false, RollbackRequired = true,
+        CreatedAt = new DateTime(2026, 5, 2, 0, 0, 0, DateTimeKind.Utc),
+        UpdatedAt = new DateTime(2026, 5, 2, 0, 0, 0, DateTimeKind.Utc),
+      },
+      new TerraFusion.Core.Entities.SyncBridge.FieldAuthority
+      {
+        AuthorityId = -2, DomainName = "parcel", FieldName = "situs_address",
+        Phase = "phase_0", SystemOfRecord = "PACS",
+        PacsToTfAllowed = true, TfToPacsAllowed = false,
+        ConflictStrategy = "MANUAL_REVIEW", ApprovalRequired = true, RollbackRequired = true,
+        CreatedAt = new DateTime(2026, 5, 2, 0, 0, 0, DateTimeKind.Utc),
+        UpdatedAt = new DateTime(2026, 5, 2, 0, 0, 0, DateTimeKind.Utc),
+      },
+      new TerraFusion.Core.Entities.SyncBridge.FieldAuthority
+      {
+        AuthorityId = -3, DomainName = "parcel", FieldName = "legal_description",
+        Phase = "phase_0", SystemOfRecord = "PACS",
+        PacsToTfAllowed = true, TfToPacsAllowed = false,
+        ConflictStrategy = "PACS_WINS", ApprovalRequired = false, RollbackRequired = true,
+        CreatedAt = new DateTime(2026, 5, 2, 0, 0, 0, DateTimeKind.Utc),
+        UpdatedAt = new DateTime(2026, 5, 2, 0, 0, 0, DateTimeKind.Utc),
+      },
+      new TerraFusion.Core.Entities.SyncBridge.FieldAuthority
+      {
+        AuthorityId = -4, DomainName = "parcel", FieldName = "property_type",
+        Phase = "phase_0", SystemOfRecord = "PACS",
+        PacsToTfAllowed = true, TfToPacsAllowed = false,
+        ConflictStrategy = "PACS_WINS", ApprovalRequired = false, RollbackRequired = true,
+        CreatedAt = new DateTime(2026, 5, 2, 0, 0, 0, DateTimeKind.Utc),
+        UpdatedAt = new DateTime(2026, 5, 2, 0, 0, 0, DateTimeKind.Utc),
+      },
+      new TerraFusion.Core.Entities.SyncBridge.FieldAuthority
+      {
+        AuthorityId = -5, DomainName = "parcel", FieldName = "parcel_status",
+        Phase = "phase_0", SystemOfRecord = "PACS",
+        PacsToTfAllowed = true, TfToPacsAllowed = false,
+        ConflictStrategy = "PACS_WINS", ApprovalRequired = false, RollbackRequired = true,
+        CreatedAt = new DateTime(2026, 5, 2, 0, 0, 0, DateTimeKind.Utc),
+        UpdatedAt = new DateTime(2026, 5, 2, 0, 0, 0, DateTimeKind.Utc),
+      },
+      new TerraFusion.Core.Entities.SyncBridge.FieldAuthority
+      {
+        AuthorityId = -6, DomainName = "parcel", FieldName = "county_id",
+        Phase = "phase_0", SystemOfRecord = "TF",
+        PacsToTfAllowed = false, TfToPacsAllowed = false,
+        ConflictStrategy = "TF_WINS", ApprovalRequired = false, RollbackRequired = true,
+        CreatedAt = new DateTime(2026, 5, 2, 0, 0, 0, DateTimeKind.Utc),
+        UpdatedAt = new DateTime(2026, 5, 2, 0, 0, 0, DateTimeKind.Utc),
+      },
+      new TerraFusion.Core.Entities.SyncBridge.FieldAuthority
+      {
+        AuthorityId = -7, DomainName = "parcel", FieldName = "created_at",
+        Phase = "phase_0", SystemOfRecord = "TF",
+        PacsToTfAllowed = false, TfToPacsAllowed = false,
+        ConflictStrategy = "APPEND_ONLY", ApprovalRequired = false, RollbackRequired = false,
+        CreatedAt = new DateTime(2026, 5, 2, 0, 0, 0, DateTimeKind.Utc),
+        UpdatedAt = new DateTime(2026, 5, 2, 0, 0, 0, DateTimeKind.Utc),
+      },
+      new TerraFusion.Core.Entities.SyncBridge.FieldAuthority
+      {
+        AuthorityId = -8, DomainName = "parcel", FieldName = "updated_at",
+        Phase = "phase_0", SystemOfRecord = "TF",
+        PacsToTfAllowed = false, TfToPacsAllowed = false,
+        ConflictStrategy = "APPEND_ONLY", ApprovalRequired = false, RollbackRequired = false,
+        CreatedAt = new DateTime(2026, 5, 2, 0, 0, 0, DateTimeKind.Utc),
+        UpdatedAt = new DateTime(2026, 5, 2, 0, 0, 0, DateTimeKind.Utc),
+      });
 
     // NOTE: TerraFusionGPT Suite configurations temporarily disabled due to circular dependency
     // These configurations are defined in TerraFusion.Data\Configurations\GPTConfiguration.cs.disabled
