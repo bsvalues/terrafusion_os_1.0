@@ -83,6 +83,12 @@ Vestigial drift was swept by C48-FIX, C48-FIX2, and C48-HYGIENE.
   BENTON-SYNC-7-C — committed evidence baseline of the live Benton
   coverage smoke artifact (CLEAN Training run + GAPS OLTP run),
   with deferred-test-matrix-gate resolution table.
+- `benton-sync-diagnostic-track-completion-handoff.md` —
+  **BENTON-SYNC-8 — closeout handoff capping the diagnostic-first
+  Benton Sync track.** Pins the four completed diagnostic surfaces,
+  per-surface re-open conditions, parked-item gates, and the
+  default-promotion-rule note that no engineering-sequence default
+  remains post-closeout.
 
 ### Schema catalog (C48 family — COMPLETE)
 
