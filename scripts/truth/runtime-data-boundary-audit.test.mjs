@@ -59,6 +59,7 @@ test('product runtime controller with direct legacy source connection is blocked
     item.filePath.endsWith('CostForgeController.cs')
   );
   assert.equal(endpoint.zone, 'forbidden_product_runtime');
+  assert.equal(endpoint.endpointRelevance, 'truth_bearing_runtime');
   assert.equal(endpoint.dataSourceClass, 'legacy_source_direct');
   assert.ok(
     endpoint.blockers.includes(
@@ -96,8 +97,40 @@ test('sync ingest code may reference legacy source', async () => {
     item.filePath.endsWith('SourceController.cs')
   );
   assert.equal(endpoint.zone, 'allowed_sync_ingest');
+  assert.equal(endpoint.endpointRelevance, 'truth_bearing_runtime');
   assert.equal(endpoint.dataSourceClass, 'legacy_source_direct');
   assert.deepEqual(endpoint.blockers, []);
+});
+
+test('debug-only test controller is not counted as production product runtime', async () => {
+  const root = makeTempRepo('tf-boundary-debug-test-controller-');
+  fs.writeFileSync(
+    path.join(
+      root,
+      'backend',
+      'src',
+      'TerraFusion.API',
+      'Controllers',
+      'CostForgeTestController.cs'
+    ),
+    `
+      #if DEBUG
+      [Route("api/costforge-test")]
+      public class CostForgeTestController : ControllerBase
+      {
+        public IActionResult Status() => Ok(new { parcel = "123" });
+      }
+      #endif
+    `
+  );
+
+  const report = await runAudit(root);
+  const endpoint = report.backendEndpoints.find(item =>
+    item.filePath.endsWith('CostForgeTestController.cs')
+  );
+  assert.equal(endpoint.zone, 'allowed_tests');
+  assert.equal(report.summary.productEndpointsScanned, 0);
+  assert.equal(report.summary.syncAdminEndpointsScanned, 1);
 });
 
 test('product controller reading TerraFusion canonical table passes', async () => {
@@ -128,6 +161,7 @@ test('product controller reading TerraFusion canonical table passes', async () =
     item.filePath.endsWith('CountyStudioController.cs')
   );
   assert.equal(endpoint.zone, 'forbidden_product_runtime');
+  assert.equal(endpoint.endpointRelevance, 'truth_bearing_runtime');
   assert.equal(endpoint.dataSourceClass, 'terrafusion_canonical');
   assert.deepEqual(endpoint.blockers, []);
 });
@@ -153,6 +187,7 @@ test('product controller reading TerraFusion CamaCharacteristics is canonical, n
     item.filePath.endsWith('CostForgeController.cs')
   );
   assert.equal(endpoint.zone, 'forbidden_product_runtime');
+  assert.equal(endpoint.endpointRelevance, 'truth_bearing_runtime');
   assert.equal(endpoint.dataSourceClass, 'terrafusion_canonical');
   assert.deepEqual(endpoint.directLegacyTerms, []);
   assert.deepEqual(endpoint.blockers, []);
@@ -176,6 +211,7 @@ test('product endpoint with neither canonical nor legacy evidence is unproven', 
     item.filePath.endsWith('AtlasController.cs')
   );
   assert.equal(endpoint.zone, 'forbidden_product_runtime');
+  assert.equal(endpoint.endpointRelevance, 'truth_bearing_runtime');
   assert.equal(endpoint.dataSourceClass, 'unproven');
   assert.ok(
     endpoint.blockers.includes(
@@ -219,6 +255,7 @@ test('frontend user-facing legacy source reference is blocked', async () => {
     report.frontendCalls.some(
       call =>
         call.filePath.endsWith('CountyStudio.tsx') &&
+        call.frontendScope === 'active_june10' &&
         call.surface === 'county_studio' &&
         call.endpoint === '/api/county-studio/health' &&
         call.legacyTerms.includes('PACS') &&
@@ -228,8 +265,64 @@ test('frontend user-facing legacy source reference is blocked', async () => {
     )
   );
   assert.equal(report.summary.frontendLegacyViolations, 1);
+  assert.equal(report.summary.frontendDeferredLegacyWarnings, 0);
   const endpoint = report.backendEndpoints.find(item =>
     item.filePath.endsWith('CountyStudioController.cs')
   );
   assert.equal(endpoint.dataSourceClass, 'terrafusion_canonical');
+});
+
+test('operational control endpoint without county data access is warning-only', async () => {
+  const root = makeTempRepo('tf-boundary-operational-control-');
+  fs.writeFileSync(
+    path.join(
+      root,
+      'backend',
+      'src',
+      'TerraFusion.API',
+      'Controllers',
+      'ServiceRegistryController.cs'
+    ),
+    `
+      [Route("api/service-registry")]
+      public class ServiceRegistryController : ControllerBase
+      {
+        public IActionResult GetRegistry() => Content("{}", "application/json");
+      }
+    `
+  );
+
+  const report = await runAudit(root);
+  const endpoint = report.backendEndpoints.find(item =>
+    item.filePath.endsWith('ServiceRegistryController.cs')
+  );
+  assert.equal(endpoint.zone, 'forbidden_product_runtime');
+  assert.equal(endpoint.endpointRelevance, 'operational_control');
+  assert.equal(endpoint.dataSourceClass, 'unproven');
+  assert.deepEqual(endpoint.blockers, []);
+  assert.ok(endpoint.warnings.some(reason => reason.includes('operational_control')));
+  assert.equal(report.summary.productUnprovenEndpoints, 0);
+  assert.equal(report.summary.productUnprovenNonBlocking, 1);
+});
+
+test('deferred package frontend legacy references are warnings, not active shell blockers', async () => {
+  const root = makeTempRepo('tf-boundary-deferred-package-');
+  fs.mkdirSync(path.join(root, 'packages', 'terrabuild', 'client', 'src'), { recursive: true });
+  fs.writeFileSync(
+    path.join(root, 'packages', 'terrabuild', 'client', 'src', 'CostCalculatorAPI.tsx'),
+    `
+      export function CostCalculatorAPI() {
+        fetch('/api/costforge/parcels/123/cama');
+        return <span>CAMA lookup</span>;
+      }
+    `
+  );
+
+  const report = await runAudit(root);
+  const call = report.frontendCalls.find(item => item.filePath.endsWith('CostCalculatorAPI.tsx'));
+  assert.equal(call.frontendScope, 'deferred_or_package');
+  assert.deepEqual(call.blockers, []);
+  assert.ok(call.warnings.some(reason => reason.includes('outside the active June 10 shell')));
+  assert.equal(report.summary.frontendLegacyViolations, 0);
+  assert.equal(report.summary.frontendDeferredLegacyWarnings, 1);
 });

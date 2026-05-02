@@ -86,6 +86,14 @@ const canonicalPatterns = [
   /\bCamaImprovementDetails\b/i,
 ];
 
+const activeFrontendRoots = [
+  'frontend/apps/os-shell/',
+  'frontend/apps/county-studio/',
+  'frontend/src/',
+];
+
+const deferredFrontendRoots = ['packages/terrabuild/', 'applications/'];
+
 function rel(filePath) {
   return path.relative(repoRoot, filePath).replaceAll(path.sep, '/');
 }
@@ -157,10 +165,17 @@ function extractFrontendCalls(files) {
   for (const filePath of files.filter(isFrontendFile)) {
     const content = safeRead(filePath);
     const surface = surfaceFor(filePath, content);
+    const frontendScope = frontendScopeFor(filePath);
     const legacyTerms = uniqueTermMatches(legacyPatterns, content);
     const blockers =
-      surface !== 'unknown' && legacyTerms.length
+      frontendScope === 'active_june10' && surface !== 'unknown' && legacyTerms.length
         ? ['Frontend product surface contains user-facing legacy source terminology.']
+        : [];
+    const warnings =
+      frontendScope !== 'active_june10' && surface !== 'unknown' && legacyTerms.length
+        ? [
+            'Frontend legacy terminology appears outside the active June 10 shell; classify before promoting this surface.',
+          ]
         : [];
     let match;
     while ((match = endpointPattern.exec(content)) !== null) {
@@ -170,8 +185,10 @@ function extractFrontendCalls(files) {
         filePath: rel(filePath),
         endpoint,
         surface,
+        frontendScope,
         legacyTerms,
         blockers,
+        warnings,
       });
     }
   }
@@ -179,6 +196,14 @@ function extractFrontendCalls(files) {
   return calls.sort((a, b) =>
     `${a.filePath}:${a.endpoint}`.localeCompare(`${b.filePath}:${b.endpoint}`)
   );
+}
+
+function frontendScopeFor(filePath) {
+  const relative = rel(filePath).replaceAll('\\', '/');
+  if (relative.includes('/__tests__/') || relative.includes('.test.')) return 'test_only';
+  if (activeFrontendRoots.some(root => relative.startsWith(root))) return 'active_june10';
+  if (deferredFrontendRoots.some(root => relative.startsWith(root))) return 'deferred_or_package';
+  return 'unknown';
 }
 
 function extractRouteHints(content) {
@@ -206,6 +231,7 @@ function zoneFor(filePath, content) {
   const lower = `${relative}\n${content}`.toLowerCase();
 
   if (relative.includes('/tests/') || relative.startsWith('backend/tests/')) return 'allowed_tests';
+  if (/#if\s+DEBUG/i.test(content) && /TestController\.cs$/i.test(relative)) return 'allowed_tests';
 
   if (
     /(^|\/)(sync|etl|scrapers?|datamining)(\/|$)/i.test(relative) ||
@@ -223,6 +249,8 @@ function zoneFor(filePath, content) {
     lower.includes('salesforge') ||
     lower.includes('atlas') ||
     lower.includes('workbench') ||
+    lower.includes('service registry') ||
+    lower.includes('service-registry') ||
     lower.includes('forgecontroller') ||
     lower.includes('countyrowscontroller')
   ) {
@@ -243,6 +271,67 @@ function classifyDataSource(directLegacyTerms, canonicalTerms) {
   return 'unproven';
 }
 
+function classifyEndpointRelevance(filePath, content, routeHints) {
+  const relative = rel(filePath).replaceAll('\\', '/').toLowerCase();
+  const text = `${relative}\n${routeHints.join('\n')}\n${content}`.toLowerCase();
+
+  if (
+    relative.endsWith('serviceregistrycontroller.cs') ||
+    text.includes('service registry') ||
+    text.includes('native app urls')
+  ) {
+    return 'operational_control';
+  }
+
+  if (
+    relative.includes('systemgptatlasanomalycontroller.cs') ||
+    relative.includes('systemgptatlasforecastcontroller.cs') ||
+    text.includes('anomaly store') ||
+    text.includes('forecast store')
+  ) {
+    return 'operational_diagnostic_state';
+  }
+
+  if (relative.endsWith('aimodulescontroller.cs') || relative.endsWith('swarmcontroller.cs')) {
+    return 'ai_orchestration_or_reference';
+  }
+
+  if (
+    relative.endsWith('benchmarkingcontroller.cs') ||
+    text.includes('in-memory bentoncostdata.costmatrix') ||
+    text.includes('simulated ratio study')
+  ) {
+    return 'demo_reference_static';
+  }
+
+  if (
+    relative.endsWith('equitycontroller.cs') ||
+    text.includes('/api/equity') ||
+    text.includes('equity metrics')
+  ) {
+    return 'v1_deferred_equity';
+  }
+
+  if (
+    relative.endsWith('elitesystemreportcontroller.cs') ||
+    relative.endsWith('researchanalyticscontroller.cs') ||
+    relative.endsWith('transcendencecontroller.cs') ||
+    relative.endsWith('ultimatecostforgecontroller.cs') ||
+    text.includes('demonstration mode') ||
+    text.includes('research environment') ||
+    text.includes('ultimate costforge') ||
+    text.includes('transcendence')
+  ) {
+    return 'demo_or_advanced_not_v1';
+  }
+
+  return 'truth_bearing_runtime';
+}
+
+function blocksUnprovenRuntime(endpointRelevance) {
+  return endpointRelevance === 'truth_bearing_runtime';
+}
+
 function uniqueTermMatches(patterns, content) {
   const found = [];
   for (const pattern of patterns) {
@@ -260,6 +349,7 @@ function classifyBackendEndpoint(filePath, content) {
   const legacyRouteTerms = routeLegacyTerms(routeHints);
   const canonicalTerms = uniqueTermMatches(canonicalPatterns, content);
   const dataSourceClass = classifyDataSource(directLegacyTerms, canonicalTerms);
+  const endpointRelevance = classifyEndpointRelevance(filePath, content, routeHints);
   const blockers = [];
   const warnings = [];
 
@@ -275,8 +365,13 @@ function classifyBackendEndpoint(filePath, content) {
         'Product runtime endpoint exposes legacy source terminology in route contract.'
       );
     }
-    if (dataSourceClass === 'unproven') {
+    if (dataSourceClass === 'unproven' && blocksUnprovenRuntime(endpointRelevance)) {
       blockers.push('Product runtime endpoint has no TerraFusion canonical/runtime data evidence.');
+    }
+    if (dataSourceClass === 'unproven' && !blocksUnprovenRuntime(endpointRelevance)) {
+      warnings.push(
+        `No TerraFusion canonical/runtime data evidence; classified as ${endpointRelevance}, not an active county data-truth endpoint.`
+      );
     }
   }
 
@@ -299,6 +394,7 @@ function classifyBackendEndpoint(filePath, content) {
     filePath: rel(filePath),
     routeHints,
     zone,
+    endpointRelevance,
     dataSourceClass,
     legacyTerms,
     directLegacyTerms,
@@ -323,6 +419,18 @@ function summarizeReport(endpoints, frontendCalls) {
   const syncAdmin = endpoints.filter(endpoint =>
     ['allowed_sync_ingest', 'allowed_admin_proof', 'allowed_tests'].includes(endpoint.zone)
   );
+  const activeFrontendLegacy = frontendCalls.filter(call => call.blockers.length > 0);
+  const deferredFrontendLegacy = frontendCalls.filter(
+    call => call.blockers.length === 0 && call.legacyTerms?.length > 0
+  );
+  const blockingUnproven = product.filter(
+    endpoint =>
+      endpoint.dataSourceClass === 'unproven' && blocksUnprovenRuntime(endpoint.endpointRelevance)
+  );
+  const nonBlockingUnproven = product.filter(
+    endpoint =>
+      endpoint.dataSourceClass === 'unproven' && !blocksUnprovenRuntime(endpoint.endpointRelevance)
+  );
 
   return {
     productEndpointsScanned: product.length,
@@ -333,9 +441,10 @@ function summarizeReport(endpoints, frontendCalls) {
     productCanonicalEndpoints: product.filter(
       endpoint => endpoint.dataSourceClass === 'terrafusion_canonical'
     ).length,
-    productUnprovenEndpoints: product.filter(endpoint => endpoint.dataSourceClass === 'unproven')
-      .length,
-    frontendLegacyViolations: frontendCalls.filter(call => call.blockers.length > 0).length,
+    productUnprovenEndpoints: blockingUnproven.length,
+    productUnprovenNonBlocking: nonBlockingUnproven.length,
+    frontendLegacyViolations: activeFrontendLegacy.length,
+    frontendDeferredLegacyWarnings: deferredFrontendLegacy.length,
   };
 }
 
@@ -353,13 +462,15 @@ function renderMarkdown(report) {
     `- Sync/admin/test endpoints scanned: ${report.summary.syncAdminEndpointsScanned}`,
     `- Product legacy violations: ${report.summary.productLegacyViolations}`,
     `- Product canonical endpoints: ${report.summary.productCanonicalEndpoints}`,
-    `- Product unproven endpoints: ${report.summary.productUnprovenEndpoints}`,
-    `- Frontend legacy terminology violations: ${report.summary.frontendLegacyViolations}`,
+    `- Product unproven truth-bearing endpoints: ${report.summary.productUnprovenEndpoints}`,
+    `- Product unproven non-blocking endpoints: ${report.summary.productUnprovenNonBlocking}`,
+    `- Active frontend legacy terminology violations: ${report.summary.frontendLegacyViolations}`,
+    `- Deferred/package frontend legacy terminology warnings: ${report.summary.frontendDeferredLegacyWarnings}`,
     '',
     '## Product Runtime Endpoints',
     '',
-    '| File | Routes | Source Class | Direct Legacy Terms | Route Legacy Terms | Legacy/Provenance Terms | Canonical Terms | Blockers | Warnings |',
-    '|---|---|---|---|---|---|---|---|---|',
+    '| File | Routes | Relevance | Source Class | Direct Legacy Terms | Route Legacy Terms | Legacy/Provenance Terms | Canonical Terms | Blockers | Warnings |',
+    '|---|---|---|---|---|---|---|---|---|---|',
   ];
 
   for (const endpoint of report.backendEndpoints.filter(
@@ -371,6 +482,7 @@ function renderMarkdown(report) {
         endpoint.routeHints.length
           ? endpoint.routeHints.map(route => `\`${route}\``).join('<br>')
           : '-',
+        endpoint.endpointRelevance,
         endpoint.dataSourceClass,
         endpoint.directLegacyTerms.length
           ? endpoint.directLegacyTerms.map(term => `\`${term}\``).join('<br>')
@@ -409,16 +521,18 @@ function renderMarkdown(report) {
   }
 
   lines.push('', '## Frontend API Calls', '');
-  lines.push('| File | Surface | Endpoint | Legacy Terms | Blockers |');
-  lines.push('|---|---|---|---|---|');
+  lines.push('| File | Scope | Surface | Endpoint | Legacy Terms | Blockers | Warnings |');
+  lines.push('|---|---|---|---|---|---|---|');
   for (const call of report.frontendCalls) {
     lines.push(
       [
         `\`${call.filePath}\``,
+        call.frontendScope,
         call.surface,
         `\`${call.endpoint}\``,
         call.legacyTerms?.length ? call.legacyTerms.map(term => `\`${term}\``).join('<br>') : '-',
         call.blockers?.length ? call.blockers.join('<br>') : '-',
+        call.warnings?.length ? call.warnings.join('<br>') : '-',
       ].join(' | ')
     );
   }
