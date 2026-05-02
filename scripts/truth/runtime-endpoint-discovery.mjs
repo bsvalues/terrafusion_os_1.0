@@ -232,7 +232,9 @@ function supportsCountyParameter(routePattern, text) {
 }
 
 function appearsTestOnly(text) {
-  return /test|mock|fixture|playground|sample/i.test(text);
+  return /(?:^|[\\/\s])(?:__tests__|tests?|fixtures?|playground|samples?)(?:[\\/\s.]|$)|\b\w*TestController\b|costforge-test/i.test(
+    text
+  );
 }
 
 function appearsDemoOnly(text) {

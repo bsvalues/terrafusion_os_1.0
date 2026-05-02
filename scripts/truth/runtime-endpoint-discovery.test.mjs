@@ -176,3 +176,56 @@ test('endpoint discovery classifies test-only routes as not usable', async () =>
     await server.close();
   }
 });
+
+test('county runtime row contract is usable even when it exposes mock-data config posture', async () => {
+  const root = makeTempRepo('tf-endpoint-discovery-countyrows-runtime-');
+  fs.writeFileSync(
+    path.join(root, 'backend', 'src', 'TerraFusion.API', 'Controllers', 'CountyRowsController.cs'),
+    `
+      [Route("api/counties/{countyToken}")]
+      public class CountyRowsController : ControllerBase
+      {
+        [HttpGet("parcels")]
+        public IActionResult Parcels(string countyToken) =>
+          Ok(new { county = "Benton County", runtimeMockDataEnabled = false, rows = new[] { new { id = 1 } } });
+      }
+    `
+  );
+  gitInit(root);
+
+  const server = await startServer((request, response) => {
+    if (request.url === '/api/counties/benton/parcels') {
+      response.setHeader('content-type', 'application/json');
+      response.end(JSON.stringify({ county: 'Benton County', rows: [{ id: 1 }] }));
+      return;
+    }
+    response.statusCode = 404;
+    response.end('not found');
+  });
+
+  try {
+    await execFileAsync('node', [scriptPath, root], {
+      cwd: process.cwd(),
+      env: {
+        ...process.env,
+        TF_RUNTIME_BASE_URL: server.baseUrl,
+        TF_RUNTIME_ROW_CANDIDATES: 'Benton',
+      },
+    });
+
+    const report = JSON.parse(
+      fs.readFileSync(
+        path.join(root, 'generated', 'truth', 'runtime-endpoint-discovery.json'),
+        'utf8'
+      )
+    );
+    const endpoint = report.candidateEndpoints.find(item =>
+      item.filePath.endsWith('CountyRowsController.cs')
+    );
+    assert.ok(endpoint);
+    assert.equal(endpoint.appearsTestOnly, false);
+    assert.equal(endpoint.recommendation, 'use_for_track_1b');
+  } finally {
+    await server.close();
+  }
+});

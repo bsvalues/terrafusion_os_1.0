@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-02T01:05:13.956Z",
+  "generatedAt": "2026-05-02T05:10:42.362Z",
   "runtimeBaseUrl": "http://localhost:5046",
   "backendRoutes": [
     {
@@ -8,7 +8,7 @@
       "verb": "POST",
       "routePattern": "api/AIAssistant/message",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -18,7 +18,7 @@
       "verb": "GET",
       "routePattern": "api/AIAssistant/swarm-status/{countyId}",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -28,7 +28,7 @@
       "verb": "GET",
       "routePattern": "api/AIAssistant/recommendations/{countyId}",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -38,7 +38,7 @@
       "verb": "POST",
       "routePattern": "api/AIAssistant/analyze-property",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -48,7 +48,7 @@
       "verb": "GET",
       "routePattern": "api/AIAssistant/health",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -418,7 +418,7 @@
       "verb": "GET",
       "routePattern": "api/adjustment/proposals",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -428,7 +428,7 @@
       "verb": "GET",
       "routePattern": "api/adjustment/proposals/{id:guid}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -438,7 +438,7 @@
       "verb": "POST",
       "routePattern": "api/adjustment/proposals",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -448,7 +448,7 @@
       "verb": "PATCH",
       "routePattern": "api/adjustment/proposals/{id:guid}/status",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -458,7 +458,7 @@
       "verb": "DELETE",
       "routePattern": "api/adjustment/proposals/{id:guid}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -468,7 +468,7 @@
       "verb": "POST",
       "routePattern": "api/adjustment/proposals/{id:guid}/simulate",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -478,7 +478,7 @@
       "verb": "GET",
       "routePattern": "api/adjustment/sets",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -488,7 +488,7 @@
       "verb": "GET",
       "routePattern": "api/adjustment/sets/{id:guid}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -498,7 +498,7 @@
       "verb": "POST",
       "routePattern": "api/adjustment/sets",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -508,7 +508,7 @@
       "verb": "POST",
       "routePattern": "api/adjustment/sets/{id:guid}/submit",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -518,7 +518,7 @@
       "verb": "POST",
       "routePattern": "api/adjustment/sets/{id:guid}/approve",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -528,7 +528,7 @@
       "verb": "POST",
       "routePattern": "api/adjustment/sets/{id:guid}/discard",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -538,7 +538,7 @@
       "verb": "GET",
       "routePattern": "api/adjustment/runs",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -548,7 +548,7 @@
       "verb": "GET",
       "routePattern": "api/adjustment/runs/{id:guid}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -558,7 +558,7 @@
       "verb": "POST",
       "routePattern": "api/adjustment/sets/{id:guid}/apply",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -568,7 +568,7 @@
       "verb": "POST",
       "routePattern": "api/adjustment/runs/{id:guid}/revert",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -578,7 +578,7 @@
       "verb": "GET",
       "routePattern": "api/adjustment/recommend",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -588,7 +588,7 @@
       "verb": "GET",
       "routePattern": "api/Analytics/market",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -598,7 +598,7 @@
       "verb": "GET",
       "routePattern": "api/Analytics/trends",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -608,7 +608,7 @@
       "verb": "GET",
       "routePattern": "api/Analytics/regional-comparison",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -618,7 +618,7 @@
       "verb": "GET",
       "routePattern": "api/Analytics/building-type-comparison",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -628,7 +628,7 @@
       "verb": "GET",
       "routePattern": "api/Analytics/property/{parcelId}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -638,7 +638,7 @@
       "verb": "GET",
       "routePattern": "api/Analytics/time-series",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -648,7 +648,7 @@
       "verb": "GET",
       "routePattern": "api/Analytics/cost-breakdown",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -658,7 +658,7 @@
       "verb": "GET",
       "routePattern": "api/Analytics/regional-costs",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -668,7 +668,7 @@
       "verb": "GET",
       "routePattern": "api/Analytics/hierarchical-costs",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -678,7 +678,7 @@
       "verb": "GET",
       "routePattern": "api/Analytics/statistical-correlations",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -1118,7 +1118,7 @@
       "verb": "GET",
       "routePattern": "api/audit/roll-summary",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -1128,7 +1128,7 @@
       "verb": "GET",
       "routePattern": "api/audit/levy-compliance",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -1138,7 +1138,7 @@
       "verb": "POST",
       "routePattern": "api/audit/findings",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -1148,7 +1148,7 @@
       "verb": "POST",
       "routePattern": "api/audit/reconciliation",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -1158,7 +1158,7 @@
       "verb": "GET",
       "routePattern": "api/audit/compliance-report",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -1278,7 +1278,7 @@
       "verb": "POST",
       "routePattern": "api/levy/budget/analyze",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -1288,7 +1288,7 @@
       "verb": "GET",
       "routePattern": "api/levy/budget/visualization",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -1298,7 +1298,7 @@
       "verb": "GET",
       "routePattern": "api/levy/budget/scenarios",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -1828,7 +1828,7 @@
       "verb": "GET",
       "routePattern": "api/codex/reports/daily",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -1838,7 +1838,7 @@
       "verb": "GET",
       "routePattern": "api/codex/reports/weekly",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -1848,7 +1848,7 @@
       "verb": "GET",
       "routePattern": "api/codex/reports/monthly",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -1858,7 +1858,7 @@
       "verb": "GET",
       "routePattern": "api/codex/reports/quarterly",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -1868,7 +1868,7 @@
       "verb": "GET",
       "routePattern": "api/codex/reports/annual",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -1878,7 +1878,7 @@
       "verb": "POST",
       "routePattern": "api/codex/reports/export/csv",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -1888,7 +1888,7 @@
       "verb": "POST",
       "routePattern": "api/codex/reports/export/json",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -1898,7 +1898,7 @@
       "verb": "POST",
       "routePattern": "api/codex/reports/export/pdf",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -1908,7 +1908,7 @@
       "verb": "GET",
       "routePattern": "api/cognitive-framework/monitoring/tier-distribution",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -1918,7 +1918,7 @@
       "verb": "GET",
       "routePattern": "api/cognitive-framework/monitoring/confidence-gates",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -1928,7 +1928,7 @@
       "verb": "GET",
       "routePattern": "api/cognitive-framework/monitoring/cognitive-load",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -1938,7 +1938,7 @@
       "verb": "GET",
       "routePattern": "api/cognitive-framework/monitoring/active-executions",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -1948,7 +1948,7 @@
       "verb": "GET",
       "routePattern": "api/cognitive-framework/monitoring/county-metrics",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -1958,7 +1958,7 @@
       "verb": "GET",
       "routePattern": "api/cognitive-framework/monitoring/ai-swarm-metrics",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -1968,7 +1968,7 @@
       "verb": "GET",
       "routePattern": "api/cognitive-framework/monitoring/performance-summary",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -2086,7 +2086,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
       "source": "backend_controller",
       "verb": "POST",
-      "routePattern": "api/CostForge/sync/harris-pacs",
+      "routePattern": "api/CostForge/sync/source-status",
       "supportsCountyParameter": false,
       "appearsTestOnly": true,
       "appearsDemoOnly": true,
@@ -2386,7 +2386,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
       "source": "backend_controller",
       "verb": "POST",
-      "routePattern": "api/CostForge/cama",
+      "routePattern": "api/CostForge/characteristics",
       "supportsCountyParameter": false,
       "appearsTestOnly": true,
       "appearsDemoOnly": true,
@@ -2396,7 +2396,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
       "source": "backend_controller",
       "verb": "GET",
-      "routePattern": "api/CostForge/parcels/{parcelId}/cama",
+      "routePattern": "api/CostForge/parcels/{parcelId}/characteristics",
       "supportsCountyParameter": false,
       "appearsTestOnly": true,
       "appearsDemoOnly": true,
@@ -3086,7 +3086,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
       "source": "backend_controller",
       "verb": "POST",
-      "routePattern": "api/costforge-test/sync/harris-pacs",
+      "routePattern": "api/costforge-test/sync/source-status",
       "supportsCountyParameter": false,
       "appearsTestOnly": true,
       "appearsDemoOnly": false,
@@ -3193,12 +3193,22 @@
       "appearsPacsOrLegacyNamed": false
     },
     {
+      "filePath": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
+      "source": "backend_controller",
+      "verb": "GET",
+      "routePattern": "api/counties/{countyToken}/runtime-lineage",
+      "supportsCountyParameter": true,
+      "appearsTestOnly": false,
+      "appearsDemoOnly": false,
+      "appearsPacsOrLegacyNamed": false
+    },
+    {
       "filePath": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs",
       "source": "backend_controller",
       "verb": "POST",
       "routePattern": "api/county-study/studies",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3208,7 +3218,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/studies",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3218,7 +3228,7 @@
       "verb": "POST",
       "routePattern": "api/county-study/studies/{studyId:guid}/derive-segments",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3228,7 +3238,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/studies/{studyId:guid}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3238,7 +3248,7 @@
       "verb": "PATCH",
       "routePattern": "api/county-study/studies/{studyId:guid}/status",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3248,7 +3258,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/studies/{studyId:guid}/city-rollup",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3258,7 +3268,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/studies/{studyId:guid}/neighborhood-rollup",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3268,7 +3278,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/studies/{studyId:guid}/health-summary",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3278,7 +3288,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/studies/{studyId:guid}/statistics-compat",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3288,7 +3298,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/segments/{segmentId:guid}/detail",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3298,7 +3308,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/segments/{segmentId:guid}/action-context",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3308,7 +3318,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/segments/{segmentId:guid}/diagnosis",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3318,7 +3328,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/studies/{studyId:guid}/diagnosis",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3328,7 +3338,7 @@
       "verb": "POST",
       "routePattern": "api/county-study/studies/{studyId:guid}/segment-sets",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3338,7 +3348,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/studies/{studyId:guid}/segment-sets",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3348,7 +3358,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/segment-sets/{segmentSetId:guid}/segments",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3358,7 +3368,7 @@
       "verb": "POST",
       "routePattern": "api/county-study/cohorts",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3368,7 +3378,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/studies/{studyId:guid}/cohorts",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3378,7 +3388,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/cohorts/{cohortId:guid}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3388,7 +3398,7 @@
       "verb": "POST",
       "routePattern": "api/county-study/scenarios",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3398,7 +3408,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/studies/{studyId:guid}/scenarios",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3408,7 +3418,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/scenarios/{scenarioId:guid}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3418,7 +3428,7 @@
       "verb": "POST",
       "routePattern": "api/county-study/scenarios/{scenarioId:guid}/save",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3428,7 +3438,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/scenarios/{scenarioId:guid}/preview",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3438,7 +3448,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/scenarios/{scenarioIdA:guid}/compare",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3448,7 +3458,7 @@
       "verb": "POST",
       "routePattern": "api/county-study/scenarios/promote",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3458,7 +3468,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/studies/{studyId:guid}/adjustment-sets",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3468,7 +3478,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/studies/{studyId:guid}/apply-handoff-receipts",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3478,7 +3488,7 @@
       "verb": "PATCH",
       "routePattern": "api/county-study/adjustment-sets/{id:guid}/approval-state",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3488,7 +3498,7 @@
       "verb": "PUT",
       "routePattern": "api/county-study/adjustment-sets/{id:guid}/apply-handoff-receipt",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3498,7 +3508,7 @@
       "verb": "PATCH",
       "routePattern": "api/county-study/adjustment-sets/{id:guid}/apply-handoff-receipt/status",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3508,7 +3518,7 @@
       "verb": "POST",
       "routePattern": "api/county-study/exceptions",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3518,7 +3528,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/studies/{studyId:guid}/exceptions",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3528,7 +3538,7 @@
       "verb": "PATCH",
       "routePattern": "api/county-study/exceptions/{id:guid}/status",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3538,7 +3548,7 @@
       "verb": "PATCH",
       "routePattern": "api/county-study/exceptions/{id:guid}/assign",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3548,7 +3558,7 @@
       "verb": "POST",
       "routePattern": "api/county-study/exceptions/{id:guid}/notes",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3558,7 +3568,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/studies/{studyId:guid}/downstream-receipts",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3568,7 +3578,7 @@
       "verb": "PUT",
       "routePattern": "api/county-study/exceptions/{id:guid}/downstream-receipt",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3578,7 +3588,7 @@
       "verb": "PUT",
       "routePattern": "api/county-study/segments/{segmentId:guid}/downstream-receipt",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3588,7 +3598,7 @@
       "verb": "PATCH",
       "routePattern": "api/county-study/exceptions/{id:guid}/downstream-receipt/status",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3598,7 +3608,7 @@
       "verb": "PATCH",
       "routePattern": "api/county-study/downstream-receipts/{receiptId:guid}/status",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -3608,7 +3618,7 @@
       "verb": "GET",
       "routePattern": "api/county-study/studies/{studyId:guid}/evidence-packet",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4188,7 +4198,7 @@
       "verb": "GET",
       "routePattern": "api/DataQuality/report",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -4198,7 +4208,7 @@
       "verb": "GET",
       "routePattern": "api/DataQuality/issues",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -4208,7 +4218,7 @@
       "verb": "POST",
       "routePattern": "api/DataQuality/validate",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -4218,7 +4228,7 @@
       "verb": "POST",
       "routePattern": "api/dossier/documents/search",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4228,7 +4238,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/documents/{id}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4238,7 +4248,7 @@
       "verb": "POST",
       "routePattern": "api/dossier/evidence/search",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4248,7 +4258,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/evidence/{evidenceId}/chain",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4258,7 +4268,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/stats",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4268,7 +4278,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/{parcelId}/notes",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4278,7 +4288,7 @@
       "verb": "POST",
       "routePattern": "api/dossier/{parcelId}/notes",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4288,7 +4298,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/parcels/{parcelId}/casefile",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4298,7 +4308,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/{parcelId}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4308,7 +4318,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/parcels/{parcelId}/details",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4318,7 +4328,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/parcels/{parcelId}/evidence",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4328,7 +4338,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/document-types",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4338,7 +4348,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/retention-schedule",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4348,7 +4358,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/evidence-categories",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4358,7 +4368,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/packet-templates",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4368,7 +4378,7 @@
       "verb": "POST",
       "routePattern": "api/dossier/classify-document",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4378,7 +4388,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/parcels/{parcelId}/packet/{packetType}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4388,7 +4398,7 @@
       "verb": "POST",
       "routePattern": "api/dossier/documents",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4398,7 +4408,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/documents/persistent/{id}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4408,7 +4418,7 @@
       "verb": "PATCH",
       "routePattern": "api/dossier/documents/persistent/{id}/status",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4418,7 +4428,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/parcels/{parcelId}/documents",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4428,7 +4438,7 @@
       "verb": "POST",
       "routePattern": "api/dossier/evidence",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4438,7 +4448,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/evidence/persistent/{id}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4448,7 +4458,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/parcels/{parcelId}/evidence/persistent",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4458,7 +4468,7 @@
       "verb": "POST",
       "routePattern": "api/dossier/evidence/persistent/{id}/custody",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4468,7 +4478,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/evidence/persistent/{id}/chain",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4478,7 +4488,7 @@
       "verb": "POST",
       "routePattern": "api/dossier/packets",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4488,7 +4498,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/packets/{id}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4498,7 +4508,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/parcels/{parcelId}/packets",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4508,7 +4518,7 @@
       "verb": "POST",
       "routePattern": "api/dossier/notices/drafts",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4518,7 +4528,7 @@
       "verb": "POST",
       "routePattern": "api/dossier/notices",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4528,7 +4538,7 @@
       "verb": "POST",
       "routePattern": "api/dossier/appeals/{appealId}/drafts",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4538,7 +4548,7 @@
       "verb": "POST",
       "routePattern": "api/dossier/boe/{caseId}/response-drafts",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4548,7 +4558,7 @@
       "verb": "POST",
       "routePattern": "api/dossier/memos/drafts",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4558,7 +4568,7 @@
       "verb": "POST",
       "routePattern": "api/dossier/boe/{caseId}/packet",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4568,7 +4578,7 @@
       "verb": "GET",
       "routePattern": "api/dossier/{parcelId}/evidence",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -4738,7 +4748,7 @@
       "verb": "GET",
       "routePattern": "api/EliteSecurity/metrics",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -4748,7 +4758,7 @@
       "verb": "POST",
       "routePattern": "api/EliteSecurity/validate-request",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -4758,7 +4768,7 @@
       "verb": "POST",
       "routePattern": "api/EliteSecurity/threat-detection",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -4768,7 +4778,7 @@
       "verb": "POST",
       "routePattern": "api/EliteSecurity/validate-government-access",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -4778,7 +4788,7 @@
       "verb": "GET",
       "routePattern": "api/EliteSecurity/audit-report",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -4788,7 +4798,7 @@
       "verb": "GET",
       "routePattern": "api/EliteSystemReport/mission-completion",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -4798,7 +4808,7 @@
       "verb": "GET",
       "routePattern": "api/EliteSystemReport/agent-status",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -4808,7 +4818,7 @@
       "verb": "GET",
       "routePattern": "api/EliteSystemReport/architecture-overview",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -4916,7 +4926,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/FieldController.cs",
       "source": "backend_controller",
       "verb": "POST",
-      "routePattern": "api/field/assignments/{id}/cama-flag",
+      "routePattern": "api/field/assignments/{id}/assessment-review-flag",
       "supportsCountyParameter": false,
       "appearsTestOnly": false,
       "appearsDemoOnly": false,
@@ -5296,7 +5306,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/GPTController.cs",
       "source": "backend_controller",
       "verb": "GET",
-      "routePattern": "api/GPT/rag/benton_cama_basics/export",
+      "routePattern": "api/GPT/rag/benton-assessment-basics/export",
       "supportsCountyParameter": false,
       "appearsTestOnly": true,
       "appearsDemoOnly": true,
@@ -5468,7 +5478,7 @@
       "verb": "GET",
       "routePattern": "api/geoforge/ratio-study/neighborhood-stats",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5478,7 +5488,7 @@
       "verb": "GET",
       "routePattern": "api/geoforge/ratio-study/sales",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5488,7 +5498,7 @@
       "verb": "GET",
       "routePattern": "api/geoforge/ratio-study/diagnosis",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5498,7 +5508,7 @@
       "verb": "POST",
       "routePattern": "api/geoforge/ratio-study/gwr",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5508,7 +5518,7 @@
       "verb": "GET",
       "routePattern": "api/geoforge/ratio-study/export",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5518,7 +5528,7 @@
       "verb": "GET",
       "routePattern": "api/geoforge/ratio-study/csv",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5528,7 +5538,7 @@
       "verb": "GET",
       "routePattern": "api/geoforge/ratio-study/monthly-trend",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5538,7 +5548,7 @@
       "verb": "GET",
       "routePattern": "api/geoforge/certification/summary",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5548,7 +5558,7 @@
       "verb": "GET",
       "routePattern": "api/geoforge/parcel/search",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5558,7 +5568,7 @@
       "verb": "GET",
       "routePattern": "api/geoforge/parcel/{parcelNumber}/bloom",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5568,7 +5578,7 @@
       "verb": "GET",
       "routePattern": "api/geoforge/parcel/{parcelNumber}/comps",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5578,7 +5588,7 @@
       "verb": "GET",
       "routePattern": "api/geoforge/certification/print",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5588,7 +5598,7 @@
       "verb": "GET",
       "routePattern": "api/geoforge/sales/outliers",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5598,7 +5608,7 @@
       "verb": "PATCH",
       "routePattern": "api/geoforge/sales/{saleId}/qualification",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5608,7 +5618,7 @@
       "verb": "GET",
       "routePattern": "api/geoforge/neighborhoods/boundaries",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5618,7 +5628,7 @@
       "verb": "GET",
       "routePattern": "api/geoforge/stratification",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5628,7 +5638,7 @@
       "verb": "GET",
       "routePattern": "api/geoforge/neighborhoods/av-change",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5638,7 +5648,7 @@
       "verb": "GET",
       "routePattern": "api/geoforge/neighborhoods/sale-price-trend",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5648,7 +5658,7 @@
       "verb": "GET",
       "routePattern": "api/geoforge/ratio-study/county-trend",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5658,7 +5668,7 @@
       "verb": "GET",
       "routePattern": "api/geoforge/neighborhoods/ratio-drift",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -5668,7 +5678,7 @@
       "verb": "GET",
       "routePattern": "api/geoforge/parcels/points",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6068,7 +6078,7 @@
       "verb": "GET",
       "routePattern": "api/levy/historical/statistics/{districtId}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6078,7 +6088,7 @@
       "verb": "GET",
       "routePattern": "api/levy/historical/trends",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6088,7 +6098,7 @@
       "verb": "GET",
       "routePattern": "api/levy/historical/anomalies",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6098,7 +6108,7 @@
       "verb": "GET",
       "routePattern": "api/levy/audit/dashboard",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6108,7 +6118,7 @@
       "verb": "GET",
       "routePattern": "api/levy/audit/guidance",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6118,7 +6128,7 @@
       "verb": "POST",
       "routePattern": "api/levy/audit/optimization",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6128,7 +6138,7 @@
       "verb": "POST",
       "routePattern": "api/levy/v1/calculate-rate",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6138,7 +6148,7 @@
       "verb": "GET",
       "routePattern": "api/levy/v1/history",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6148,7 +6158,7 @@
       "verb": "POST",
       "routePattern": "api/levy/v1/calculate-batch",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6158,7 +6168,7 @@
       "verb": "GET",
       "routePattern": "api/levy/v1/benton/taxing-districts",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6168,7 +6178,7 @@
       "verb": "GET",
       "routePattern": "api/levy/v1/statutory-limits",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6178,7 +6188,7 @@
       "verb": "GET",
       "routePattern": "api/levy/v1/benton/levy-certification-steps",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6188,7 +6198,7 @@
       "verb": "POST",
       "routePattern": "api/levy/v1/highest-lawful-levy",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6198,7 +6208,7 @@
       "verb": "POST",
       "routePattern": "api/levy/v1/aggregate-check",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6208,7 +6218,7 @@
       "verb": "POST",
       "routePattern": "api/levy/calculator/calculate-rate",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6218,7 +6228,7 @@
       "verb": "POST",
       "routePattern": "api/levy/calculator/bill-impact",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6228,7 +6238,7 @@
       "verb": "GET",
       "routePattern": "api/levy/calculator/rate-comparison/{districtId}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6298,7 +6308,7 @@
       "verb": "GET",
       "routePattern": "api/levy/dashboard/summary",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6308,7 +6318,7 @@
       "verb": "GET",
       "routePattern": "api/levy/dashboard/metrics",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6318,7 +6328,7 @@
       "verb": "GET",
       "routePattern": "api/levy/dashboard/districts-overview",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6378,7 +6388,7 @@
       "verb": "POST",
       "routePattern": "api/levy/v1/data-quality/analyze",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6388,7 +6398,7 @@
       "verb": "POST",
       "routePattern": "api/levy/v1/data-quality/ai-recommendations",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6398,7 +6408,7 @@
       "verb": "GET",
       "routePattern": "api/levy/v1/data-quality/ai-recommendations",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6408,7 +6418,7 @@
       "verb": "GET",
       "routePattern": "api/levy/v1/data-quality/monitoring-status",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6418,7 +6428,7 @@
       "verb": "POST",
       "routePattern": "api/levy/v1/data-quality/monitoring/toggle",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6428,7 +6438,7 @@
       "verb": "GET",
       "routePattern": "api/levy/v1/data-quality/realtime-metrics",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6438,7 +6448,7 @@
       "verb": "GET",
       "routePattern": "api/levy/v1/data-quality/district-risk-summary",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6448,7 +6458,7 @@
       "verb": "POST",
       "routePattern": "api/levy/v1/data-quality/trends",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6458,7 +6468,7 @@
       "verb": "POST",
       "routePattern": "api/levy/v1/data-quality/audit",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6468,7 +6478,7 @@
       "verb": "POST",
       "routePattern": "api/levy/forecast/generate",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6478,7 +6488,7 @@
       "verb": "GET",
       "routePattern": "api/levy/forecast/district/{id}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6488,7 +6498,7 @@
       "verb": "GET",
       "routePattern": "api/levy/forecast/dashboard",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6498,7 +6508,7 @@
       "verb": "GET",
       "routePattern": "api/levy/forecast/compare",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6548,7 +6558,7 @@
       "verb": "GET",
       "routePattern": "api/levy-calculation/ipd-rates",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6558,7 +6568,7 @@
       "verb": "GET",
       "routePattern": "api/levy-calculation/lid-lifts",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6568,7 +6578,7 @@
       "verb": "GET",
       "routePattern": "api/levy-calculation/state-school-levy",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6578,7 +6588,7 @@
       "verb": "GET",
       "routePattern": "api/levy-calculation/refund-fund",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6588,7 +6598,7 @@
       "verb": "GET",
       "routePattern": "api/levy-calculation/tax-code-areas",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6598,7 +6608,7 @@
       "verb": "POST",
       "routePattern": "api/levy-calculation/attest",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6608,7 +6618,7 @@
       "verb": "GET",
       "routePattern": "api/levy-calculation/retention-policy",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": true,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6618,7 +6628,7 @@
       "verb": "GET",
       "routePattern": "api/levy/reports/templates",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6628,7 +6638,7 @@
       "verb": "POST",
       "routePattern": "api/levy/reports/generate",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6638,7 +6648,7 @@
       "verb": "GET",
       "routePattern": "api/levy/reports/scheduled",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -6708,7 +6718,7 @@
       "verb": "POST",
       "routePattern": "api/MassAppraisal/run",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6718,7 +6728,7 @@
       "verb": "POST",
       "routePattern": "api/MassAppraisal/calibrate",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6728,7 +6738,7 @@
       "verb": "GET",
       "routePattern": "api/MassAppraisal/ratio-study/{modelId}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6738,7 +6748,7 @@
       "verb": "GET",
       "routePattern": "api/MassAppraisal/models",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6748,7 +6758,7 @@
       "verb": "GET",
       "routePattern": "api/MassAppraisal/ratio-study/{modelId}/strata",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6758,7 +6768,7 @@
       "verb": "GET",
       "routePattern": "api/MassAppraisal/ratio-study/{modelId}/outliers",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6768,7 +6778,7 @@
       "verb": "POST",
       "routePattern": "api/MassAppraisal/compare",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -6778,7 +6788,7 @@
       "verb": "GET",
       "routePattern": "api/MassAppraisal/segments/{modelId}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -7138,7 +7148,7 @@
       "verb": "GET",
       "routePattern": "api/MultiCountyIntegration/counties/status",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -7148,7 +7158,7 @@
       "verb": "POST",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/sync",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -7158,7 +7168,7 @@
       "verb": "GET",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/config",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -7168,7 +7178,7 @@
       "verb": "GET",
       "routePattern": "api/MultiCountyIntegration/properties/{parcelId}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -7178,7 +7188,7 @@
       "verb": "GET",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/metrics",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -7188,7 +7198,7 @@
       "verb": "POST",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/enable",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -7198,7 +7208,7 @@
       "verb": "GET",
       "routePattern": "api/MultiCountyIntegration/federation/report",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -7568,7 +7578,7 @@
       "verb": "GET",
       "routePattern": "api/Properties",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -7578,7 +7588,7 @@
       "verb": "GET",
       "routePattern": "api/Properties/{id}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -7588,7 +7598,7 @@
       "verb": "GET",
       "routePattern": "api/Properties/parcel/{parcelNumber}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -7598,7 +7608,7 @@
       "verb": "GET",
       "routePattern": "api/Properties/{id}/valuations",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -7608,7 +7618,7 @@
       "verb": "POST",
       "routePattern": "api/Properties/{id}/valuations",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -7618,7 +7628,7 @@
       "verb": "GET",
       "routePattern": "api/Properties/stats",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -7628,7 +7638,7 @@
       "verb": "GET",
       "routePattern": "api/Properties/parcel/{parcelNumber}/activity",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -7638,7 +7648,7 @@
       "verb": "GET",
       "routePattern": "api/Properties/parcel/{parcelNumber}/sketch",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true
     },
@@ -8425,6 +8435,16 @@
     {
       "filePath": "backend/src/TerraFusion.API/Controllers/SyncController.cs",
       "source": "backend_controller",
+      "verb": "POST",
+      "routePattern": "api/sync/canonical-sale-qualifications/run",
+      "supportsCountyParameter": false,
+      "appearsTestOnly": true,
+      "appearsDemoOnly": false,
+      "appearsPacsOrLegacyNamed": true
+    },
+    {
+      "filePath": "backend/src/TerraFusion.API/Controllers/SyncController.cs",
+      "source": "backend_controller",
       "verb": "GET",
       "routePattern": "api/sync/qualification-status/{countyId:guid}",
       "supportsCountyParameter": false,
@@ -9178,7 +9198,7 @@
       "verb": "GET",
       "routePattern": "api/Timeseries/property/{parcelId}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -9188,7 +9208,7 @@
       "verb": "GET",
       "routePattern": "api/Timeseries/market",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -9218,7 +9238,7 @@
       "verb": "POST",
       "routePattern": "api/v1/Transcendence/initialize",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -9228,7 +9248,7 @@
       "verb": "POST",
       "routePattern": "api/v1/Transcendence/quantum-valuation",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -9238,7 +9258,7 @@
       "verb": "POST",
       "routePattern": "api/v1/Transcendence/achieve-transcendence",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -9248,7 +9268,7 @@
       "verb": "GET",
       "routePattern": "api/v1/Transcendence/metrics",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -9258,7 +9278,7 @@
       "verb": "GET",
       "routePattern": "api/v1/Transcendence/health",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -9468,7 +9488,7 @@
       "verb": "POST",
       "routePattern": "api/WorkflowAutomation/execute",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -9478,7 +9498,7 @@
       "verb": "GET",
       "routePattern": "api/WorkflowAutomation/workflows/{department}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -9488,7 +9508,7 @@
       "verb": "GET",
       "routePattern": "api/WorkflowAutomation/status/{executionId}",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -9498,7 +9518,7 @@
       "verb": "POST",
       "routePattern": "api/WorkflowAutomation/analyze",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -9508,7 +9528,7 @@
       "verb": "GET",
       "routePattern": "api/WorkflowAutomation/health",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -9618,7 +9638,7 @@
       "verb": "GET",
       "routePattern": "estimate",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -9628,7 +9648,7 @@
       "verb": "GET",
       "routePattern": "comparables",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     },
@@ -9638,7 +9658,7 @@
       "verb": "GET",
       "routePattern": "health",
       "supportsCountyParameter": false,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false
     }
@@ -9772,7 +9792,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/AIAssistantController.cs",
       "routePattern": "api/AIAssistant/swarm-status/{countyId}",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false,
       "candidateUrl": "http://localhost:5046/api/AIAssistant/swarm-status/benton",
@@ -9784,7 +9804,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "unknown"
     },
     {
       "county": "Benton",
@@ -9792,7 +9812,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/AIAssistantController.cs",
       "routePattern": "api/AIAssistant/recommendations/{countyId}",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false,
       "candidateUrl": "http://localhost:5046/api/AIAssistant/recommendations/benton",
@@ -9804,7 +9824,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "unknown"
     },
     {
       "county": "Benton",
@@ -10058,13 +10078,13 @@
       "candidateUrl": "http://localhost:5046/api/counties/benton/parcels",
       "probe": {
         "attempted": true,
-        "status": null,
-        "contentType": null,
-        "rowCount": null,
-        "payloadCounty": null,
-        "error": "This operation was aborted"
+        "status": 200,
+        "contentType": "application/json; charset=utf-8",
+        "rowCount": 50,
+        "payloadCounty": "Benton County",
+        "error": null
       },
-      "recommendation": "wrong_base_url_possible"
+      "recommendation": "use_for_track_1b"
     },
     {
       "county": "Benton",
@@ -10078,13 +10098,33 @@
       "candidateUrl": "http://localhost:5046/api/counties/benton/sales",
       "probe": {
         "attempted": true,
-        "status": null,
-        "contentType": null,
-        "rowCount": null,
-        "payloadCounty": null,
-        "error": "This operation was aborted"
+        "status": 200,
+        "contentType": "application/json; charset=utf-8",
+        "rowCount": 50,
+        "payloadCounty": "Benton County",
+        "error": null
       },
-      "recommendation": "wrong_base_url_possible"
+      "recommendation": "use_for_track_1b"
+    },
+    {
+      "county": "Benton",
+      "source": "backend_controller",
+      "filePath": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
+      "routePattern": "api/counties/{countyToken}/runtime-lineage",
+      "supportsCountyParameter": true,
+      "appearsTestOnly": false,
+      "appearsDemoOnly": false,
+      "appearsPacsOrLegacyNamed": false,
+      "candidateUrl": "http://localhost:5046/api/counties/benton/runtime-lineage",
+      "probe": {
+        "attempted": true,
+        "status": 200,
+        "contentType": "application/json; charset=utf-8",
+        "rowCount": 0,
+        "payloadCounty": "Benton County",
+        "error": null
+      },
+      "recommendation": "unknown"
     },
     {
       "county": "Benton",
@@ -10132,7 +10172,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/LevyCalculationController.cs",
       "routePattern": "api/levy/v1/benton/taxing-districts",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true,
       "candidateUrl": "http://localhost:5046/api/levy/v1/benton/taxing-districts",
@@ -10144,7 +10184,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "use_for_track_1b"
     },
     {
       "county": "Benton",
@@ -10152,7 +10192,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/LevyCalculationController.cs",
       "routePattern": "api/levy/v1/benton/levy-certification-steps",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true,
       "candidateUrl": "http://localhost:5046/api/levy/v1/benton/levy-certification-steps",
@@ -10164,7 +10204,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "use_for_track_1b"
     },
     {
       "county": "Benton",
@@ -10232,7 +10272,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/MultiCountyIntegrationController.cs",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/sync",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true,
       "candidateUrl": "http://localhost:5046/api/MultiCountyIntegration/counties/benton/sync",
@@ -10244,7 +10284,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "route_unregistered"
     },
     {
       "county": "Benton",
@@ -10252,7 +10292,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/MultiCountyIntegrationController.cs",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/config",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true,
       "candidateUrl": "http://localhost:5046/api/MultiCountyIntegration/counties/benton/config",
@@ -10264,7 +10304,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "unknown"
     },
     {
       "county": "Benton",
@@ -10272,7 +10312,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/MultiCountyIntegrationController.cs",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/metrics",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true,
       "candidateUrl": "http://localhost:5046/api/MultiCountyIntegration/counties/benton/metrics",
@@ -10284,7 +10324,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "unknown"
     },
     {
       "county": "Benton",
@@ -10292,7 +10332,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/MultiCountyIntegrationController.cs",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/enable",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true,
       "candidateUrl": "http://localhost:5046/api/MultiCountyIntegration/counties/benton/enable",
@@ -10304,7 +10344,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "route_unregistered"
     },
     {
       "county": "Benton",
@@ -10398,13 +10438,13 @@
       "candidateUrl": "http://localhost:5046/api/counties/benton/parcels",
       "probe": {
         "attempted": true,
-        "status": null,
-        "contentType": null,
-        "rowCount": null,
-        "payloadCounty": null,
-        "error": "This operation was aborted"
+        "status": 200,
+        "contentType": "application/json; charset=utf-8",
+        "rowCount": 50,
+        "payloadCounty": "Benton County",
+        "error": null
       },
-      "recommendation": "wrong_base_url_possible"
+      "recommendation": "use_for_track_1b"
     },
     {
       "county": "Benton",
@@ -10418,13 +10458,13 @@
       "candidateUrl": "http://localhost:5046/api/counties/benton/sales",
       "probe": {
         "attempted": true,
-        "status": null,
-        "contentType": null,
-        "rowCount": null,
-        "payloadCounty": null,
-        "error": "This operation was aborted"
+        "status": 200,
+        "contentType": "application/json; charset=utf-8",
+        "rowCount": 50,
+        "payloadCounty": "Benton County",
+        "error": null
       },
-      "recommendation": "wrong_base_url_possible"
+      "recommendation": "use_for_track_1b"
     },
     {
       "county": "Benton",
@@ -10512,7 +10552,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/AIAssistantController.cs",
       "routePattern": "api/AIAssistant/swarm-status/{countyId}",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false,
       "candidateUrl": "http://localhost:5046/api/AIAssistant/swarm-status/pacific",
@@ -10524,7 +10564,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "unknown"
     },
     {
       "county": "Pacific",
@@ -10532,7 +10572,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/AIAssistantController.cs",
       "routePattern": "api/AIAssistant/recommendations/{countyId}",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false,
       "candidateUrl": "http://localhost:5046/api/AIAssistant/recommendations/pacific",
@@ -10544,7 +10584,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "unknown"
     },
     {
       "county": "Pacific",
@@ -10689,6 +10729,26 @@
     {
       "county": "Pacific",
       "source": "backend_controller",
+      "filePath": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
+      "routePattern": "api/counties/{countyToken}/runtime-lineage",
+      "supportsCountyParameter": true,
+      "appearsTestOnly": false,
+      "appearsDemoOnly": false,
+      "appearsPacsOrLegacyNamed": false,
+      "candidateUrl": "http://localhost:5046/api/counties/pacific/runtime-lineage",
+      "probe": {
+        "attempted": true,
+        "status": 404,
+        "contentType": "application/json; charset=utf-8",
+        "rowCount": 0,
+        "payloadCounty": "pacific",
+        "error": null
+      },
+      "recommendation": "county_not_registered_or_no_runtime_rows"
+    },
+    {
+      "county": "Pacific",
+      "source": "backend_controller",
       "filePath": "backend/src/TerraFusion.API/Controllers/GPTController.cs",
       "routePattern": "api/GPT/system/fleet/rag-readiness/{countyId}",
       "supportsCountyParameter": true,
@@ -10772,7 +10832,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/MultiCountyIntegrationController.cs",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/sync",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true,
       "candidateUrl": "http://localhost:5046/api/MultiCountyIntegration/counties/pacific/sync",
@@ -10784,7 +10844,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "route_unregistered"
     },
     {
       "county": "Pacific",
@@ -10792,7 +10852,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/MultiCountyIntegrationController.cs",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/config",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true,
       "candidateUrl": "http://localhost:5046/api/MultiCountyIntegration/counties/pacific/config",
@@ -10804,7 +10864,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "unknown"
     },
     {
       "county": "Pacific",
@@ -10812,7 +10872,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/MultiCountyIntegrationController.cs",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/metrics",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true,
       "candidateUrl": "http://localhost:5046/api/MultiCountyIntegration/counties/pacific/metrics",
@@ -10824,7 +10884,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "unknown"
     },
     {
       "county": "Pacific",
@@ -10832,7 +10892,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/MultiCountyIntegrationController.cs",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/enable",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true,
       "candidateUrl": "http://localhost:5046/api/MultiCountyIntegration/counties/pacific/enable",
@@ -10844,7 +10904,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "route_unregistered"
     },
     {
       "county": "Pacific",
@@ -11052,7 +11112,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/AIAssistantController.cs",
       "routePattern": "api/AIAssistant/swarm-status/{countyId}",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false,
       "candidateUrl": "http://localhost:5046/api/AIAssistant/swarm-status/franklin",
@@ -11064,7 +11124,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "unknown"
     },
     {
       "county": "Franklin",
@@ -11072,7 +11132,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/AIAssistantController.cs",
       "routePattern": "api/AIAssistant/recommendations/{countyId}",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false,
       "candidateUrl": "http://localhost:5046/api/AIAssistant/recommendations/franklin",
@@ -11084,7 +11144,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "unknown"
     },
     {
       "county": "Franklin",
@@ -11229,6 +11289,26 @@
     {
       "county": "Franklin",
       "source": "backend_controller",
+      "filePath": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
+      "routePattern": "api/counties/{countyToken}/runtime-lineage",
+      "supportsCountyParameter": true,
+      "appearsTestOnly": false,
+      "appearsDemoOnly": false,
+      "appearsPacsOrLegacyNamed": false,
+      "candidateUrl": "http://localhost:5046/api/counties/franklin/runtime-lineage",
+      "probe": {
+        "attempted": true,
+        "status": 404,
+        "contentType": "application/json; charset=utf-8",
+        "rowCount": 0,
+        "payloadCounty": "franklin",
+        "error": null
+      },
+      "recommendation": "county_not_registered_or_no_runtime_rows"
+    },
+    {
+      "county": "Franklin",
+      "source": "backend_controller",
       "filePath": "backend/src/TerraFusion.API/Controllers/GPTController.cs",
       "routePattern": "api/GPT/system/fleet/rag-readiness/{countyId}",
       "supportsCountyParameter": true,
@@ -11312,7 +11392,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/MultiCountyIntegrationController.cs",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/sync",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true,
       "candidateUrl": "http://localhost:5046/api/MultiCountyIntegration/counties/franklin/sync",
@@ -11324,7 +11404,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "route_unregistered"
     },
     {
       "county": "Franklin",
@@ -11332,7 +11412,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/MultiCountyIntegrationController.cs",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/config",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true,
       "candidateUrl": "http://localhost:5046/api/MultiCountyIntegration/counties/franklin/config",
@@ -11344,7 +11424,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "unknown"
     },
     {
       "county": "Franklin",
@@ -11352,7 +11432,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/MultiCountyIntegrationController.cs",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/metrics",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true,
       "candidateUrl": "http://localhost:5046/api/MultiCountyIntegration/counties/franklin/metrics",
@@ -11364,7 +11444,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "unknown"
     },
     {
       "county": "Franklin",
@@ -11372,7 +11452,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/MultiCountyIntegrationController.cs",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/enable",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true,
       "candidateUrl": "http://localhost:5046/api/MultiCountyIntegration/counties/franklin/enable",
@@ -11384,7 +11464,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "route_unregistered"
     },
     {
       "county": "Franklin",
@@ -11592,7 +11672,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/AIAssistantController.cs",
       "routePattern": "api/AIAssistant/swarm-status/{countyId}",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false,
       "candidateUrl": "http://localhost:5046/api/AIAssistant/swarm-status/walla-walla",
@@ -11604,7 +11684,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "unknown"
     },
     {
       "county": "Walla Walla",
@@ -11612,7 +11692,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/AIAssistantController.cs",
       "routePattern": "api/AIAssistant/recommendations/{countyId}",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": false,
       "candidateUrl": "http://localhost:5046/api/AIAssistant/recommendations/walla-walla",
@@ -11624,7 +11704,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "unknown"
     },
     {
       "county": "Walla Walla",
@@ -11769,6 +11849,26 @@
     {
       "county": "Walla Walla",
       "source": "backend_controller",
+      "filePath": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
+      "routePattern": "api/counties/{countyToken}/runtime-lineage",
+      "supportsCountyParameter": true,
+      "appearsTestOnly": false,
+      "appearsDemoOnly": false,
+      "appearsPacsOrLegacyNamed": false,
+      "candidateUrl": "http://localhost:5046/api/counties/walla-walla/runtime-lineage",
+      "probe": {
+        "attempted": true,
+        "status": 404,
+        "contentType": "application/json; charset=utf-8",
+        "rowCount": 0,
+        "payloadCounty": "walla-walla",
+        "error": null
+      },
+      "recommendation": "county_not_registered_or_no_runtime_rows"
+    },
+    {
+      "county": "Walla Walla",
+      "source": "backend_controller",
       "filePath": "backend/src/TerraFusion.API/Controllers/GPTController.cs",
       "routePattern": "api/GPT/system/fleet/rag-readiness/{countyId}",
       "supportsCountyParameter": true,
@@ -11852,7 +11952,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/MultiCountyIntegrationController.cs",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/sync",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true,
       "candidateUrl": "http://localhost:5046/api/MultiCountyIntegration/counties/walla-walla/sync",
@@ -11864,7 +11964,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "route_unregistered"
     },
     {
       "county": "Walla Walla",
@@ -11872,7 +11972,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/MultiCountyIntegrationController.cs",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/config",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true,
       "candidateUrl": "http://localhost:5046/api/MultiCountyIntegration/counties/walla-walla/config",
@@ -11884,7 +11984,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "unknown"
     },
     {
       "county": "Walla Walla",
@@ -11892,7 +11992,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/MultiCountyIntegrationController.cs",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/metrics",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true,
       "candidateUrl": "http://localhost:5046/api/MultiCountyIntegration/counties/walla-walla/metrics",
@@ -11904,7 +12004,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "unknown"
     },
     {
       "county": "Walla Walla",
@@ -11912,7 +12012,7 @@
       "filePath": "backend/src/TerraFusion.API/Controllers/MultiCountyIntegrationController.cs",
       "routePattern": "api/MultiCountyIntegration/counties/{countyCode}/enable",
       "supportsCountyParameter": true,
-      "appearsTestOnly": true,
+      "appearsTestOnly": false,
       "appearsDemoOnly": false,
       "appearsPacsOrLegacyNamed": true,
       "candidateUrl": "http://localhost:5046/api/MultiCountyIntegration/counties/walla-walla/enable",
@@ -11924,7 +12024,7 @@
         "payloadCounty": null,
         "error": null
       },
-      "recommendation": "test_only_do_not_use"
+      "recommendation": "route_unregistered"
     },
     {
       "county": "Walla Walla",
@@ -12128,11 +12228,11 @@
     }
   ],
   "summary": {
-    "backendRoutesFound": 964,
+    "backendRoutesFound": 966,
     "frontendCallsFound": 15,
-    "candidateEndpointsFound": 118,
-    "liveEndpoints": 9,
-    "countyScopedEndpoints": 118,
-    "testOrDemoEndpoints": 42
+    "candidateEndpointsFound": 122,
+    "liveEndpoints": 14,
+    "countyScopedEndpoints": 122,
+    "testOrDemoEndpoints": 16
   }
 }
