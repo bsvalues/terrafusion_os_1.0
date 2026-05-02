@@ -1669,6 +1669,13 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsOwnerTruth.IPacsOwnerCurrentTruthPromoter,
     TerraFusion.Data.Services.TruthPacs.PacsOwnerCurrentTruthPromoter>();
 
+// Slice B2-B: truth_pacs.wash_prop_owner_val promoter — supp-aware
+// WSDOR-grade per-owner valuation snapshot. Four T-* gates.
+// Idempotent by WpovLoadBatchId.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsWashPropOwnerValTruth.IPacsWashPropOwnerValTruthPromoter,
+    TerraFusion.Data.Services.TruthPacs.PacsWashPropOwnerValTruthPromoter>();
+
 // Slice B3: canonical_tf.tf_owner + tf_parcel_owner_link projector.
 // PII-redacting; resolves PACS prop_id to TfParcelId via source_xref;
 // quarantines unresolvable parcels to legacy_tf_unproven.owner_current;
