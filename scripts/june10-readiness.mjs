@@ -301,6 +301,10 @@ run(
   { timeout: 180_000 }
 );
 
+run('Runtime candidate set', 'pnpm', ['run', 'truth:runtime-candidate-set'], {
+  timeout: 180_000,
+});
+
 failIfPresent(
   'Old County Studio hub path removed',
   String.raw`/api/hubs/county-study`,
