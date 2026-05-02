@@ -92,10 +92,28 @@ public sealed class RuntimeTruthControllerTests : IDisposable
         Assert.Contains("in-memory provider", json);
     }
 
-    private RuntimeTruthController CreateController()
+    [Fact]
+    public async SystemTask GetDbIdentity_FailsWhenRuntimePropertyCountDoesNotMatchConfiguredBentonCount()
+    {
+        var sut = CreateController(new Dictionary<string, string?>
+        {
+            ["RuntimeTruth:ExpectedBentonParcelCount"] = "2",
+        });
+
+        var result = await sut.GetDbIdentity();
+
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var json = JsonSerializer.Serialize(ok.Value);
+
+        Assert.Contains("\"ExpectedBentonParcelCount\":2", json);
+        Assert.Contains("\"IsBentonParcelCountExpected\":false", json);
+        Assert.Contains("does not match configured Benton parcel count 2", json);
+    }
+
+    private RuntimeTruthController CreateController(Dictionary<string, string?>? settings = null)
     {
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>())
+            .AddInMemoryCollection(settings ?? new Dictionary<string, string?>())
             .Build();
         var controller = new RuntimeTruthController(
             _db,

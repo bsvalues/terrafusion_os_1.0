@@ -40,18 +40,30 @@ public sealed class RuntimeTruthController : ControllerBase
         var expectedProvider =
             Environment.GetEnvironmentVariable("TF_EXPECTED_JUNE10_DB_PROVIDER")
             ?? _configuration["RuntimeTruth:ExpectedJune10Provider"];
+        var expectedBentonParcelCount =
+            ReadConfiguredInt("RuntimeTruth:ExpectedBentonParcelCount")
+            ?? ReadConfiguredInt("BentonCounty:ParcelCount");
 
         var blockers = new List<string>();
         var warnings = new List<string>();
         if (!string.IsNullOrWhiteSpace(connectionWarning))
             warnings.Add(connectionWarning);
 
+        var databaseMatchesExpected = false;
+        var providerMatchesExpected = true;
+        var usesRealProvider = !provider.Contains("InMemory", StringComparison.OrdinalIgnoreCase);
+
         if (string.IsNullOrWhiteSpace(expectedDatabase))
         {
             blockers.Add(
                 "Expected June 10 TerraFusion DB name is not configured. Set TF_EXPECTED_JUNE10_DB_NAME or RuntimeTruth:ExpectedJune10Database.");
         }
-        else if (!string.Equals(database, expectedDatabase, StringComparison.OrdinalIgnoreCase))
+        else
+        {
+            databaseMatchesExpected = string.Equals(database, expectedDatabase, StringComparison.OrdinalIgnoreCase);
+        }
+
+        if (!string.IsNullOrWhiteSpace(expectedDatabase) && !databaseMatchesExpected)
         {
             blockers.Add(
                 $"Runtime DB '{database ?? "<unknown>"}' does not match expected June 10 DB '{expectedDatabase}'.");
@@ -60,11 +72,12 @@ public sealed class RuntimeTruthController : ControllerBase
         if (!string.IsNullOrWhiteSpace(expectedProvider) &&
             !provider.Contains(expectedProvider, StringComparison.OrdinalIgnoreCase))
         {
+            providerMatchesExpected = false;
             blockers.Add(
                 $"Runtime provider '{provider}' does not match expected provider '{expectedProvider}'.");
         }
 
-        if (provider.Contains("InMemory", StringComparison.OrdinalIgnoreCase))
+        if (!usesRealProvider)
         {
             blockers.Add("Runtime API is using an in-memory provider; June 10 readiness requires a real TerraFusion DB.");
         }
@@ -81,7 +94,19 @@ public sealed class RuntimeTruthController : ControllerBase
                 warnings,
                 "CanonicalSaleQualifications"));
 
+        var isBentonParcelCountExpected =
+            expectedBentonParcelCount.HasValue &&
+            rowCounts.Properties.HasValue &&
+            rowCounts.Properties.Value == expectedBentonParcelCount.Value;
+
+        if (expectedBentonParcelCount.HasValue && rowCounts.Properties.HasValue && !isBentonParcelCountExpected)
+        {
+            blockers.Add(
+                $"Runtime Properties count {rowCounts.Properties.Value} does not match configured Benton parcel count {expectedBentonParcelCount.Value}.");
+        }
+
         var passed = blockers.Count == 0;
+        var isExpectedJune10RuntimeDb = databaseMatchesExpected && providerMatchesExpected && usesRealProvider;
 
         return Ok(new RuntimeDbIdentityResponse(
             ApiBaseUrl: $"{Request.Scheme}://{Request.Host}",
@@ -91,7 +116,9 @@ public sealed class RuntimeTruthController : ControllerBase
             ServerRedacted: RedactDataSource(dataSource),
             Database: database,
             ExpectedJune10Database: expectedDatabase,
-            IsExpectedJune10RuntimeDb: passed,
+            IsExpectedJune10RuntimeDb: isExpectedJune10RuntimeDb,
+            ExpectedBentonParcelCount: expectedBentonParcelCount,
+            IsBentonParcelCountExpected: isBentonParcelCountExpected,
             MigrationState: migrationState,
             RowCounts: rowCounts,
             Passed: passed,
@@ -174,6 +201,12 @@ public sealed class RuntimeTruthController : ControllerBase
 
         return "configured-host-redacted";
     }
+
+    private int? ReadConfiguredInt(string key)
+    {
+        var raw = _configuration[key];
+        return int.TryParse(raw, out var value) ? value : null;
+    }
 }
 
 public sealed record RuntimeDbIdentityResponse(
@@ -185,6 +218,8 @@ public sealed record RuntimeDbIdentityResponse(
     string? Database,
     string? ExpectedJune10Database,
     bool IsExpectedJune10RuntimeDb,
+    int? ExpectedBentonParcelCount,
+    bool IsBentonParcelCountExpected,
     RuntimeTruthMigrationState MigrationState,
     RuntimeTruthRowCounts RowCounts,
     bool Passed,

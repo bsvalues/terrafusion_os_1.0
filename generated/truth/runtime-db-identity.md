@@ -1,6 +1,6 @@
 # Runtime TerraFusion DB Identity
 
-Generated: 2026-05-02T07:45:16.964Z
+Generated: 2026-05-02T14:44:40.844Z
 Runtime base URL: `http://localhost:5046`
 
 ## Status
@@ -13,8 +13,10 @@ Runtime base URL: `http://localhost:5046`
 - Connection string name: DefaultConnection
 - Server/host: configured-host-redacted
 - Database: terrafusion
-- Expected June 10 DB: -
-- Expected runtime DB: no
+- Expected June 10 DB: terrafusion
+- Expected runtime DB: yes
+- Expected Benton parcel count: 89447
+- Benton parcel count expected: no
 
 ## Migration State
 
@@ -31,7 +33,7 @@ Runtime base URL: `http://localhost:5046`
 
 ## Blockers
 
-- Expected June 10 TerraFusion DB name is not configured. Set TF_EXPECTED_JUNE10_DB_NAME or RuntimeTruth:ExpectedJune10Database.
+- Runtime Properties count 128788 does not match configured Benton parcel count 89447.
 
 ## Warnings
 

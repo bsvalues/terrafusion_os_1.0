@@ -72,6 +72,11 @@ function normalizePayload(payload) {
     isExpectedJune10RuntimeDb: Boolean(
       pick(payload, 'isExpectedJune10RuntimeDb', 'IsExpectedJune10RuntimeDb')
     ),
+    expectedBentonParcelCount:
+      pick(payload, 'expectedBentonParcelCount', 'ExpectedBentonParcelCount') ?? null,
+    isBentonParcelCountExpected: Boolean(
+      pick(payload, 'isBentonParcelCountExpected', 'IsBentonParcelCountExpected')
+    ),
     migrationState: {
       appliedCount: pick(migrationState, 'appliedCount', 'AppliedCount') ?? null,
       pendingCount: pick(migrationState, 'pendingCount', 'PendingCount') ?? null,
@@ -139,6 +144,8 @@ function renderMarkdown(report) {
     `- Database: ${identity.database ?? '-'}`,
     `- Expected June 10 DB: ${identity.expectedJune10Database ?? '-'}`,
     `- Expected runtime DB: ${identity.isExpectedJune10RuntimeDb ? 'yes' : 'no'}`,
+    `- Expected Benton parcel count: ${identity.expectedBentonParcelCount ?? '-'}`,
+    `- Benton parcel count expected: ${identity.isBentonParcelCountExpected ? 'yes' : 'no'}`,
     '',
     '## Migration State',
     '',
