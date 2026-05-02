@@ -204,6 +204,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsSale>
     TruthPacsSales { get; set; } = null!;
 
+  // Slice B2-A: truth_pacs.owner_current — supp-aware-validated
+  // current owner snapshot per (prop_id, owner_tax_yr) joined to
+  // account. Stepping stone toward canonical_tf.tf_owner (B3).
+  public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsOwnerCurrent>
+    TruthPacsOwnerCurrents { get; set; } = null!;
+
   // Slice S3: canonical_tf.tf_sale — TerraFusion-native sale identity
   // backed by sync_bridge.source_xref lineage. Sales whose parcel
   // cannot be resolved are quarantined to legacy_tf_unproven.sale.
@@ -846,6 +852,10 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       new TerraFusion.Data.Configurations.CanonicalTf.TfSaleConfiguration());
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.LegacyTfUnproven.LegacyTfUnprovenSaleConfiguration());
+
+    // Slice B2-A: truth_pacs.owner_current — supp-aware owner snapshot.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.TruthPacs.TruthPacsOwnerCurrentConfiguration());
 
     // Sync Bridge v1 — Phase 0 field_authority seed for the parcel
     // domain. Per docs/pacs/pacs-sync-bridge-v1-spec.md §4.

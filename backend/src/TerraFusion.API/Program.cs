@@ -1654,6 +1654,13 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsOwner.IPacsOwnerLandingService,
     TerraFusion.Data.Services.LegacyPacsRaw.PacsOwnerLandingService>();
 
+// Slice B2-A: truth_pacs.owner_current promoter — supp-aware
+// owner snapshot with account-link enforcement and HARD pct-
+// completeness gate. Five T-* gates. Idempotent by OwnerLoadBatchId.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsOwnerTruth.IPacsOwnerCurrentTruthPromoter,
+    TerraFusion.Data.Services.TruthPacs.PacsOwnerCurrentTruthPromoter>();
+
 // Slice S2-B: truth_pacs.sale promoter — supp-aware join + '100'
 // qualification filter, with five T-* gates. Idempotent by SaleLoadBatchId.
 builder.Services.AddScoped<
