@@ -1609,11 +1609,19 @@ builder.Services.AddArcGisFeatureServiceClient();
 
 // Slice G1-D-1: ArcGIS sync persistence orchestrator. Lands fetched
 // features into gis_tf.tf_parcel_geom under the sync_bridge doctrine
-// (load_batch + source_xref + promotion_gate_result). The hosted
-// scheduler is G1-D-2.
+// (load_batch + source_xref + promotion_gate_result).
 builder.Services.AddScoped<
     TerraFusion.Core.GIS.ArcGisRest.IArcGisSyncService,
     TerraFusion.Data.Services.GisTf.ArcGisSyncService>();
+
+// Slice G1-D-2: nightly hosted service that walks every configured
+// county. OFF by default — set ArcGisSyncScheduler:Enabled=true in
+// configuration to activate.
+builder.Services.Configure<TerraFusion.Core.Configuration.ArcGisSyncSchedulerOptions>(
+    builder.Configuration.GetSection(
+        TerraFusion.Core.Configuration.ArcGisSyncSchedulerOptions.SectionName));
+builder.Services.AddHostedService<
+    TerraFusion.Core.GIS.ArcGisRest.ArcGisNightlySyncHostedService>();
 
 // Redis lockout store (uses existing IDistributedCache from line 70-71)
 builder.Services.AddScoped<TerraFusion.Core.Security.Lockout.ILockoutStore, TerraFusion.Core.Security.Lockout.RedisLockoutStore>();
