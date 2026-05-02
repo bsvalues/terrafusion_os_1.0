@@ -90,6 +90,21 @@ Vestigial drift was swept by C48-FIX, C48-FIX2, and C48-HYGIENE.
   default-promotion-rule note that no engineering-sequence default
   remains post-closeout.
 
+### Workbench consumer of these diagnostics
+
+The closed BENTON-SYNC-* diagnostic surfaces are consumed by the
+Workbench Sync Readiness Console (closed under OPS-2). Cross-track
+pointers:
+
+- `../workbench/sync-readiness-console-policy.md` — OPS-1 policy
+  (six pinned questions answered by the four BENTON-SYNC-* baselines).
+- `../workbench/benton-sync-readiness-console-baseline.md` —
+  OPS-1-C live evidence baseline (running TerraFusion.API surfacing
+  the four committed BENTON-SYNC-* artifacts as a sanitized DTO).
+- `../workbench/sync-readiness-console-completion-handoff.md` —
+  **OPS-1-CLOSE** — closeout handoff capping the OPS-1 read-path
+  family.
+
 ### Schema catalog (C48 family — COMPLETE)
 
 The C48 implementation arc is complete. See
