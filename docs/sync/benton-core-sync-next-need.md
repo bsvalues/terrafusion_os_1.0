@@ -5,8 +5,16 @@ current Benton Core Sync state with one named default next
 implementation slice. Replaces the post-close drift toward
 speculative product expansion with one concrete, operationally
 useful Benton bridge need.).
-**Status:** living inventory; refreshed when the named default
-slice lands.
+**Status:** living inventory; **CAPPED at BENTON-SYNC-8 closeout**.
+The diagnostic-first BENTON-SYNC-* track is functionally complete
+(four major diagnostic surfaces landed). See
+`docs/sync/benton-sync-diagnostic-track-completion-handoff.md`
+for the binding closeout handoff with per-surface re-open
+conditions and parked-item gates. This inventory remains
+authoritative for the parked-items table and the slice ledger;
+it grows again only when a concrete operational signal opens a
+gate or the operator promotes a parked item via a fresh policy
+slice.
 
 **Authoritative cross-references:**
 
@@ -146,6 +154,30 @@ this inventory itself.
    Future slice.
 
 ## Default next implementation slice
+
+```text
+NONE — track CAPPED at BENTON-SYNC-8 closeout.
+```
+
+After BENTON-SYNC-8, there is no automatic engineering-sequence
+default remaining in the diagnostic-first track. The four major
+Benton Sync diagnostic surfaces are complete (catalog health,
+invariant artifact, preflight evidence, coverage continuity).
+Next slices land only when a concrete gate opens — see the
+parked-items table below and the binding closeout handoff at
+`docs/sync/benton-sync-diagnostic-track-completion-handoff.md`
+for re-open conditions.
+
+The "default next implementation slice" line above is
+**intentionally empty** post-BENTON-SYNC-8. An agent reading
+this inventory and finding no auto-promotable item is operating
+correctly — the next move is operator-driven, not agent-driven.
+
+The historical default-next-slice rationale blocks below are
+retained as the historical record of how the track promoted
+through BENTON-SYNC-7-B; they no longer drive the next pick.
+
+### Historical default-next rationale (closed)
 
 ```text
 BENTON-SYNC-7-B — sales qualification coverage-continuity smoke implementation
@@ -437,9 +469,27 @@ reality. Track entries:
                     value passes. Committed evidence baseline at
                     `docs/sync/benton-sales-qualification-coverage-baseline.md`
                     with deferred test-matrix-gate resolution
-                    table. ← this slice
-- BENTON-SYNC-8+  : reselected from parked list. This inventory
-                    is refreshed when the next-need is picked.
+                    table.
+- BENTON-SYNC-8   : DONE — diagnostic track closeout handoff at
+                    `docs/sync/benton-sync-diagnostic-track-completion-handoff.md`.
+                    Caps the BENTON-SYNC-* track with binding
+                    per-surface re-open conditions, parked-item
+                    gates (manifest authoring under operator-
+                    priority gate; multi-county / hot-reload /
+                    consumer migrations under operational-reality
+                    gate; TerraFlow / Forge / UI / Frontend
+                    outside this track's boundary entirely), and
+                    a default-promotion-rule note that an agent's
+                    correct response after this slice is "no
+                    engineering-sequence default remains; awaiting
+                    operator priority or concrete operational
+                    signal." ← this slice (caps the inventory)
+- BENTON-SYNC-9+  : NO AUTOMATIC NEXT. Requires a re-open
+                    condition (per the closeout handoff) or a
+                    fresh operator-priority decision. New entries
+                    land only when operational reality surfaces
+                    a concrete bridge need, not as architectural
+                    completeness goals.
 
 The track is operationally-driven. New entries land as concrete
 bridge needs surface, not as architectural completeness goals.
