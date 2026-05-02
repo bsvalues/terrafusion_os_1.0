@@ -148,22 +148,48 @@ this inventory itself.
 ## Default next implementation slice
 
 ```text
-BENTON-SYNC-6-B — per-loader preflight evidence writer + CLI wiring
+BENTON-SYNC-7-B — sales qualification coverage-continuity smoke implementation
 ```
 
-The original next default (BENTON-SYNC-2 — SyncAtlas schema-catalog
-health command) landed at `commit be308ff28`. The two parked items
-gated on BENTON-SYNC-2 (invariant report artifact wiring,
-per-loader preflight evidence) have promoted in order:
-BENTON-SYNC-5 landed the invariant artifact at `commit d753c61af`,
-and BENTON-SYNC-6-A pinned the policy for the per-loader preflight
-evidence at the head of this current slice. BENTON-SYNC-6-B is the
-implementation half of that slice.
+Slice promotion path so far:
 
-The original BENTON-SYNC-2 rationale below is retained as the
-historical record of why diagnostics-first was the right starting
-posture; the BENTON-SYNC-6-B rationale appears under
-"Why BENTON-SYNC-6-B is next" below it.
+- BENTON-SYNC-2 (catalog-health command) landed at `commit be308ff28`.
+- BENTON-SYNC-5 (invariant report artifact) landed at `commit d753c61af`.
+- BENTON-SYNC-6-A / 6-B / 6-C (per-loader preflight evidence policy +
+  impl + live proof + baseline) landed in order, last at merge `7f95f06ee`.
+- BENTON-SYNC-7-A (this slice) pins the policy for the next parked
+  item — sales qualification coverage-continuity smoke. BENTON-SYNC-7-B
+  is the implementation half.
+
+The earlier BENTON-SYNC-2 / 6-B rationale blocks below are retained
+as the historical record of why each diagnostic was the right next
+move; the BENTON-SYNC-7-B rationale appears under "Why BENTON-SYNC-7-B
+is next" below them.
+
+### Why BENTON-SYNC-7-B is next
+
+- **Inside the bridge boundary.** Read-only smoke over canonical
+  landing + live PACS + workbook. No mutation of any of the three.
+- **Promotes the inventory's parked item #8.** Sales qualification
+  coverage-continuity proof was named in BENTON-SYNC-1 as gated
+  on diagnostic surfaces being in place. The diagnostic surfaces
+  are now in place: BENTON-SYNC-2 (catalog health), BENTON-SYNC-5
+  (invariant artifact), BENTON-SYNC-6 (preflight evidence). The
+  gate is satisfied.
+- **Reuses the BENTON-SYNC-6 precedent.** Same `--qualify-sales-coverage`
+  mode + `--coverage-evidence-path` artifact engagement model as
+  the BENTON-SYNC-6-A / 6-B family. Policy-then-impl-then-live-proof
+  cadence stays consistent.
+- **Operationally useful for Benton today.** The C36 canonical
+  runner has been writing rows; no slice yet proves "every PACS
+  row that should land lands and every land-row traces to its
+  source." The smoke produces that verdict on demand.
+- **Single-county shape.** Records carry the
+  `(CountyId, WorkbookId, SourceConnectionId)` triple; multi-county
+  aggregation stays parked.
+- **Policy-then-implementation cadence.** BENTON-SYNC-7-A pinned
+  the schema; BENTON-SYNC-7-B writes the code. No blank-page
+  ambiguity.
 
 ### Why BENTON-SYNC-2 was next (historical)
 
@@ -263,7 +289,7 @@ explicitly elevates it.
 | C50-CONV-D manifest authoring tool                                   | Needs fresh policy slice; operator-priority decision                |
 | C52-OVR-E manifest authoring tool                                    | Needs fresh policy slice; operator-priority decision                |
 | Comp eligibility read-surface schema-pin                             | When multi-county or HG4 audit posture demands it                   |
-| Sales qualification coverage-continuity smoke                        | After diagnostic surfaces are in place                              |
+| Sales qualification coverage-continuity smoke                        | IN PROGRESS — BENTON-SYNC-7-A policy DONE; BENTON-SYNC-7-B impl NEXT |
 | C54-MULTI-E cross-county aggregation                                 | 3+ operational counties (per C54-MULTI-CLOSE)                       |
 | C54-MULTI-PROMOTE-* per-consumer migration                           | Real consumer needing set-resolution (per C54-MULTI-CLOSE)          |
 | C54-MULTI-RELOAD-* runtime hot-reload                                | Operator workflow demand (per C54-MULTI-CLOSE)                      |
@@ -375,8 +401,28 @@ reality. Track entries:
                     Reconciled BENTON-SYNC-6-A failure-semantics
                     wording in the policy doc to match the
                     BENTON-SYNC-5 best-effort artifact write
-                    precedent. ← this slice
-- BENTON-SYNC-7+  : reselected from parked list. This inventory
+                    precedent.
+- BENTON-SYNC-7-A : DONE — sales qualification coverage-continuity
+                    smoke policy at
+                    `docs/sync/sales-qualification-coverage-continuity-smoke-policy.md`.
+                    Pins smoke definition (forward / backward /
+                    drift gaps), report shape, CLI engagement model
+                    (`--qualify-sales-coverage` mode-mutex member +
+                    `--coverage-evidence-path` opt-in artifact),
+                    hard guards (HG3 / HG6 / HG7 / no-PII / county-
+                    scoped / no-autoremediation), and BENTON-SYNC-7-B
+                    test matrix. ← this slice
+- BENTON-SYNC-7-B : NEXT — implementation slice. Adds parser case +
+                    mode-mutex update + report record types +
+                    `ISalesQualificationCoverageRunner` interface +
+                    SQL implementation + writer + test matrix from
+                    the policy doc.
+- BENTON-SYNC-7-C : OPTIONAL FUTURE — committed Benton evidence
+                    baseline once BENTON-SYNC-7-B's first live run
+                    produces a clean (or forensically-useful)
+                    report (mirrors BENTON-SYNC-6-C's role for the
+                    preflight evidence baseline).
+- BENTON-SYNC-8+  : reselected from parked list. This inventory
                     is refreshed when the next-need is picked.
 
 The track is operationally-driven. New entries land as concrete
