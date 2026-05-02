@@ -86,7 +86,7 @@ public class CostForgeTestController : ControllerBase
                 new { groupName = "Cost Analysis", agentCount = 15000, status = "active", performanceScore = 0.995 },
                 new { groupName = "Data Processing", agentCount = 12500, status = "active", performanceScore = 0.988 },
                 new { groupName = "Validation", agentCount = 8000, status = "active", performanceScore = 0.992 },
-                new { groupName = "Harris PACS Sync", agentCount = 7500, status = "active", performanceScore = 0.975 },
+                new { groupName = "Source Ingestion", agentCount = 7500, status = "active", performanceScore = 0.975 },
                 new { groupName = "County Integration", agentCount = 7247, status = "active", performanceScore = 0.983 }
             }
         });
@@ -111,9 +111,9 @@ public class CostForgeTestController : ControllerBase
     }
 
     /// <summary>
-    /// Mock Harris PACS sync endpoint
+    /// Mock source-ingestion status endpoint
     /// </summary>
-    [HttpPost("sync/harris-pacs")]
+    [HttpPost("sync/source-status")]
     public ActionResult SyncWithHarrisPACS([FromBody] TestHarrisSyncRequest request)
     {
         _logger.LogInformation("CostForge test Harris PACS sync endpoint called: {CountyId}", request.CountyId);

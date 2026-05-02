@@ -1677,7 +1677,8 @@ builder.Services.AddScoped<IDbConnection>(sp =>
 
   if (string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))
   {
-    return new SqlConnection(connStr);
+    throw new InvalidOperationException(
+        "Product runtime IDbConnection is limited to TerraFusion canonical/runtime stores. Use Sync/Admin tooling for source-system SQL Server access.");
   }
   else if (connStr.Contains("Host=") || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase))
   {
@@ -2295,8 +2296,8 @@ app.MapGet("/api/test", () => new
   environment = app.Environment.EnvironmentName
 });
 
-// ── PACS ETL seed trigger (admin only) ───────────────────────────────────────
-// POST /api/admin/pacs/seed  — pulls all 13 tables from tf-mssql pacs_oltp
+// ── Source ETL seed trigger (admin only) ─────────────────────────────────────
+// POST /api/admin/pacs/seed  — pulls source-system tables
 // into TerraFusionDbContext. Idempotent upsert. Safe to re-run.
 // Runs as a background Task — returns 202 immediately; watch server logs for progress.
 {

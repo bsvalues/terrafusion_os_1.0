@@ -63,7 +63,7 @@ const directLegacySourcePatterns = [
   /\bsourceConnectionId\b/i,
   /\btf-mssql\b/i,
   /\bnew\s+SqlConnection\b/i,
-  /\bSqlConnection\s*\(/i,
+  /(?<![A-Za-z])SqlConnection\s*\(/i,
   /\bOdbcConnection\s*\(/i,
 ];
 
