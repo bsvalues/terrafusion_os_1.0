@@ -1,0 +1,1149 @@
+{
+  "generatedAt": "2026-05-02T05:17:15.897Z",
+  "runtimeBaseUrl": "http://localhost:5046",
+  "rows": [
+    {
+      "county": "Adams",
+      "countyToken": "adams",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/adams/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "adams",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/adams/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "adams",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "adams",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Asotin",
+      "countyToken": "asotin",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/asotin/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "asotin",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/asotin/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "asotin",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "asotin",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Benton",
+      "countyToken": "benton",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/benton/parcels?limit=5",
+        "status": 200,
+        "runtimeRows": 5,
+        "payloadCounty": "Benton County",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/benton/sales?limit=5",
+        "status": 200,
+        "runtimeRows": 5,
+        "payloadCounty": "Benton County",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 5,
+      "payloadCounty": "Benton County",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "runtime_proven",
+      "recommendedAction": "keep_runtime_candidate",
+      "blockers": []
+    },
+    {
+      "county": "Chelan",
+      "countyToken": "chelan",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/chelan/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "chelan",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/chelan/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "chelan",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "chelan",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Clallam",
+      "countyToken": "clallam",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/clallam/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "clallam",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/clallam/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "clallam",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "clallam",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Clark",
+      "countyToken": "clark",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/clark/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "clark",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/clark/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "clark",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "clark",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Columbia",
+      "countyToken": "columbia",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/columbia/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "columbia",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/columbia/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "columbia",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "columbia",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Cowlitz",
+      "countyToken": "cowlitz",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/cowlitz/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "cowlitz",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/cowlitz/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "cowlitz",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "cowlitz",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Douglas",
+      "countyToken": "douglas",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/douglas/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "douglas",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/douglas/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "douglas",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "douglas",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Ferry",
+      "countyToken": "ferry",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/ferry/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "ferry",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/ferry/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "ferry",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "ferry",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Franklin",
+      "countyToken": "franklin",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/franklin/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "franklin",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/franklin/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "franklin",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "franklin",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "load_or_register_next",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Garfield",
+      "countyToken": "garfield",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/garfield/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "garfield",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/garfield/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "garfield",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "garfield",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Grant",
+      "countyToken": "grant",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/grant/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "grant",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/grant/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "grant",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "grant",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Grays Harbor",
+      "countyToken": "grays-harbor",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/grays-harbor/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "grays-harbor",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/grays-harbor/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "grays-harbor",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "grays-harbor",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Island",
+      "countyToken": "island",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/island/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "island",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/island/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "island",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "island",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Jefferson",
+      "countyToken": "jefferson",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/jefferson/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "jefferson",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/jefferson/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "jefferson",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "jefferson",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "King",
+      "countyToken": "king",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/king/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "king",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/king/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "king",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "king",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Kitsap",
+      "countyToken": "kitsap",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/kitsap/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "kitsap",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/kitsap/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "kitsap",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "kitsap",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Kittitas",
+      "countyToken": "kittitas",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/kittitas/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "kittitas",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/kittitas/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "kittitas",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "kittitas",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Klickitat",
+      "countyToken": "klickitat",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/klickitat/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "klickitat",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/klickitat/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "klickitat",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "klickitat",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Lewis",
+      "countyToken": "lewis",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/lewis/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "lewis",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/lewis/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "lewis",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "lewis",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Lincoln",
+      "countyToken": "lincoln",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/lincoln/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "lincoln",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/lincoln/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "lincoln",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "lincoln",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Mason",
+      "countyToken": "mason",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/mason/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "mason",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/mason/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "mason",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "mason",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Okanogan",
+      "countyToken": "okanogan",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/okanogan/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "okanogan",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/okanogan/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "okanogan",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "okanogan",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Pacific",
+      "countyToken": "pacific",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/pacific/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "pacific",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/pacific/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "pacific",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "pacific",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "load_or_register_next",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Pend Oreille",
+      "countyToken": "pend-oreille",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/pend-oreille/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "pend-oreille",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/pend-oreille/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "pend-oreille",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "pend-oreille",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Pierce",
+      "countyToken": "pierce",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/pierce/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "pierce",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/pierce/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "pierce",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "pierce",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "San Juan",
+      "countyToken": "san-juan",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/san-juan/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "san-juan",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/san-juan/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "san-juan",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "san-juan",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Skagit",
+      "countyToken": "skagit",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/skagit/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "skagit",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/skagit/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "skagit",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "skagit",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Skamania",
+      "countyToken": "skamania",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/skamania/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "skamania",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/skamania/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "skamania",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "skamania",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Snohomish",
+      "countyToken": "snohomish",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/snohomish/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "snohomish",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/snohomish/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "snohomish",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "snohomish",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Spokane",
+      "countyToken": "spokane",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/spokane/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "spokane",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/spokane/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "spokane",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "spokane",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Stevens",
+      "countyToken": "stevens",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/stevens/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "stevens",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/stevens/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "stevens",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "stevens",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Thurston",
+      "countyToken": "thurston",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/thurston/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "thurston",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/thurston/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "thurston",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "thurston",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Wahkiakum",
+      "countyToken": "wahkiakum",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/wahkiakum/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "wahkiakum",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/wahkiakum/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "wahkiakum",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "wahkiakum",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Walla Walla",
+      "countyToken": "walla-walla",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/walla-walla/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "walla-walla",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/walla-walla/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "walla-walla",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "walla-walla",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "load_or_register_next",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Whatcom",
+      "countyToken": "whatcom",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/whatcom/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "whatcom",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/whatcom/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "whatcom",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "whatcom",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Whitman",
+      "countyToken": "whitman",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/whitman/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "whitman",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/whitman/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "whitman",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "whitman",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    },
+    {
+      "county": "Yakima",
+      "countyToken": "yakima",
+      "parcels": {
+        "endpoint": "http://localhost:5046/api/counties/yakima/parcels?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "yakima",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "sales": {
+        "endpoint": "http://localhost:5046/api/counties/yakima/sales?limit=5",
+        "status": 404,
+        "runtimeRows": 0,
+        "payloadCounty": "yakima",
+        "selectedCountyEchoed": true,
+        "silentBentonFallbackDetected": false,
+        "error": null
+      },
+      "runtimeRows": 0,
+      "payloadCounty": "yakima",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "readinessClass": "not_registered",
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": ["County is not registered in runtime endpoint."]
+    }
+  ],
+  "summary": {
+    "countiesChecked": 39,
+    "runtimeProven": 1,
+    "registeredEmpty": 0,
+    "notRegistered": 38,
+    "endpointErrors": 0,
+    "fallbackViolations": 0,
+    "keepRuntimeCandidate": 1,
+    "loadOrRegisterNext": 3,
+    "downgradeFromRuntimeCandidate": 35,
+    "investigateEndpointError": 0
+  }
+}
