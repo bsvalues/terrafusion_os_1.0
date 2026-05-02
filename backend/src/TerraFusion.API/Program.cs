@@ -1710,6 +1710,12 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsWashPropOwnerValTruth.IPacsWashPropOwnerValTruthPromoter,
     TerraFusion.Data.Services.TruthPacs.PacsWashPropOwnerValTruthPromoter>();
 
+// Slice C2: truth_pacs.imprv_current promoter — supp-aware current
+// improvement snapshot. Four T-* gates. Idempotent by ImprvLoadBatchId.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsImprvTruth.IPacsImprvCurrentTruthPromoter,
+    TerraFusion.Data.Services.TruthPacs.PacsImprvCurrentTruthPromoter>();
+
 // Slice B3: canonical_tf.tf_owner + tf_parcel_owner_link projector.
 // PII-redacting; resolves PACS prop_id to TfParcelId via source_xref;
 // quarantines unresolvable parcels to legacy_tf_unproven.owner_current;

@@ -249,6 +249,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsWashPropOwnerVal>
     TruthPacsWashPropOwnerVals { get; set; } = null!;
 
+  // Slice C2: truth_pacs.imprv_current — supp-aware-validated
+  // current improvement snapshot. Stepping stone toward
+  // canonical_tf.tf_improvement (C3).
+  public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsImprvCurrent>
+    TruthPacsImprvCurrents { get; set; } = null!;
+
   // Slice S3: canonical_tf.tf_sale — TerraFusion-native sale identity
   // backed by sync_bridge.source_xref lineage. Sales whose parcel
   // cannot be resolved are quarantined to legacy_tf_unproven.sale.
@@ -940,6 +946,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // WSDOR-grade per-owner valuation snapshot.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.TruthPacs.TruthPacsWashPropOwnerValConfiguration());
+
+    // Slice C2: truth_pacs.imprv_current — supp-aware-validated
+    // current improvement snapshot.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.TruthPacs.TruthPacsImprvCurrentConfiguration());
 
     // Slice B3: canonical_tf.tf_owner + tf_parcel_owner_link with
     // PII redaction; legacy_tf_unproven.owner_current quarantine.
