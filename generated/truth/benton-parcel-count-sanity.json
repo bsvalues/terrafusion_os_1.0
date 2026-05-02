@@ -1,0 +1,68 @@
+{
+  "generatedAt": "2026-05-02T16:12:29.256Z",
+  "runtimeBaseUrl": "http://localhost:5046",
+  "totalPropertyRows": 128788,
+  "bentonRowsByCountyId": 128788,
+  "bentonRowsByCountyName": 128788,
+  "bentonRowsByCountyToken": 128788,
+  "activeRows": 0,
+  "inactiveRows": 0,
+  "unknownStatusRows": 128788,
+  "distinctParcelNumbers": 128788,
+  "distinctActiveParcelNumbers": 0,
+  "distinctCurrentYearParcelNumbers": 128784,
+  "currentTaxYear": 2026,
+  "rowsByTaxYear": [
+    {
+      "taxYear": 2025,
+      "rows": 4,
+      "distinctParcels": 4
+    },
+    {
+      "taxYear": 2026,
+      "rows": 128784,
+      "distinctParcels": 128784
+    }
+  ],
+  "rowsByPropertyStatus": [
+    {
+      "status": null,
+      "rows": 128788
+    }
+  ],
+  "rowsByCounty": [
+    {
+      "countyId": "19190019-1919-1919-1919-191919191919",
+      "countyName": "Benton County",
+      "rows": 128788
+    }
+  ],
+  "nullCountyRows": 0,
+  "nonBentonRows": 0,
+  "propertyStatusColumns": [],
+  "endpointBehavior": {
+    "endpoint": "/api/counties/benton/parcels",
+    "endpointStatus": 200,
+    "returnedTotal": 128788,
+    "selectedCountyEchoed": true,
+    "appliesCountyFilter": true,
+    "appliesActiveFilter": false,
+    "appliesCurrentYearFilter": false,
+    "collapsesParcelVersions": true
+  },
+  "expectedActiveParcelRange": {
+    "min": 1,
+    "max": 100000,
+    "source": "operator_expectation"
+  },
+  "passed": false,
+  "blockers": [
+    "Benton parcel endpoint does not apply active/current parcel filtering.",
+    "Properties table has 128788 Benton rows with unknown active/inactive status.",
+    "Distinct active Benton parcel count 0 is outside expected range 1-100000.",
+    "Distinct current-year Benton parcel count 128784 is outside expected maximum 100000."
+  ],
+  "warnings": [
+    "Runtime DB currently contains only Benton county property rows."
+  ]
+}

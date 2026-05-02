@@ -322,6 +322,10 @@ run(
   }
 );
 
+run('Benton parcel count sanity', 'pnpm', ['run', 'truth:benton-parcel-count-sanity'], {
+  timeout: 180_000,
+});
+
 run('Benton runtime pilot closure', 'pnpm', ['run', 'truth:benton-runtime-pilot-closure'], {
   timeout: 180_000,
 });
