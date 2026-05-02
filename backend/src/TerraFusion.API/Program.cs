@@ -1654,6 +1654,14 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsOwner.IPacsOwnerLandingService,
     TerraFusion.Data.Services.LegacyPacsRaw.PacsOwnerLandingService>();
 
+// Slice B1-C: PACS wash_prop_owner_val raw landing — WSDOR-grade
+// per-owner valuation snapshot. Four gates: distribution,
+// 4-key-uniqueness, provenance-coverage, aggregate (informational
+// surface for assessed/market sums).
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsWashPropOwnerVal.IPacsWashPropOwnerValLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsWashPropOwnerValLandingService>();
+
 // Slice B2-A: truth_pacs.owner_current promoter — supp-aware
 // owner snapshot with account-link enforcement and HARD pct-
 // completeness gate. Five T-* gates. Idempotent by OwnerLoadBatchId.
