@@ -289,7 +289,7 @@ explicitly elevates it.
 | C50-CONV-D manifest authoring tool                                   | Needs fresh policy slice; operator-priority decision                |
 | C52-OVR-E manifest authoring tool                                    | Needs fresh policy slice; operator-priority decision                |
 | Comp eligibility read-surface schema-pin                             | When multi-county or HG4 audit posture demands it                   |
-| Sales qualification coverage-continuity smoke                        | IN PROGRESS — BENTON-SYNC-7-A policy DONE; BENTON-SYNC-7-B impl NEXT |
+| Sales qualification coverage-continuity smoke                        | DONE — BENTON-SYNC-7-A policy + 7-B impl + 7-C live proof + baseline |
 | C54-MULTI-E cross-county aggregation                                 | 3+ operational counties (per C54-MULTI-CLOSE)                       |
 | C54-MULTI-PROMOTE-* per-consumer migration                           | Real consumer needing set-resolution (per C54-MULTI-CLOSE)          |
 | C54-MULTI-RELOAD-* runtime hot-reload                                | Operator workflow demand (per C54-MULTI-CLOSE)                      |
@@ -411,17 +411,33 @@ reality. Track entries:
                     `--coverage-evidence-path` opt-in artifact),
                     hard guards (HG3 / HG6 / HG7 / no-PII / county-
                     scoped / no-autoremediation), and BENTON-SYNC-7-B
-                    test matrix. ← this slice
-- BENTON-SYNC-7-B : NEXT — implementation slice. Adds parser case +
-                    mode-mutex update + report record types +
-                    `ISalesQualificationCoverageRunner` interface +
-                    SQL implementation + writer + test matrix from
-                    the policy doc.
-- BENTON-SYNC-7-C : OPTIONAL FUTURE — committed Benton evidence
-                    baseline once BENTON-SYNC-7-B's first live run
-                    produces a clean (or forensically-useful)
-                    report (mirrors BENTON-SYNC-6-C's role for the
-                    preflight evidence baseline).
+                    test matrix.
+- BENTON-SYNC-7-B : DONE — implementation slice. Adds parser case +
+                    mode-mutex update (10-way) + report record
+                    types + `ISalesQualificationCoverageRunner`
+                    interface + `SqlSalesQualificationCoverageRunner`
+                    implementation + writer + 20 acceptance tests
+                    (8 parser + 5 writer + 7 coverage runner).
+                    Merge `commit 1bb237ef6`. Schema/sales unit
+                    244/244, parser+coverage 209/209, sync
+                    integration 915/915.
+- BENTON-SYNC-7-C : DONE — live PACS proof at Run ID
+                    20260502T050226Z. Two runs against Benton
+                    Harris PACS:
+                    (1) Training source — vacuously CLEAN (both
+                    sides empty; smoke proves end-to-end
+                    connectivity + workbook load + canonical
+                    query + artifact write under live conditions);
+                    (2) OLTP source — operationally-useful GAPS
+                    verdict (50 forward-coverage gaps surfaced
+                    because OLTP has rows but no canonical rows
+                    have been written; bounded scan correctly
+                    marks backward gap inconclusive). Both exit 0,
+                    leak scan zero-match across pattern + raw-
+                    value passes. Committed evidence baseline at
+                    `docs/sync/benton-sales-qualification-coverage-baseline.md`
+                    with deferred test-matrix-gate resolution
+                    table. ← this slice
 - BENTON-SYNC-8+  : reselected from parked list. This inventory
                     is refreshed when the next-need is picked.
 

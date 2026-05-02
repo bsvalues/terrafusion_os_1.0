@@ -79,6 +79,10 @@ Vestigial drift was swept by C48-FIX, C48-FIX2, and C48-HYGIENE.
   the C8-B transform would persist has a matching canonical row, and
   every canonical row traces back to its PACS source. CLI surface,
   report shape, hard guards, and BENTON-SYNC-7-B test matrix.
+- `benton-sales-qualification-coverage-baseline.md` —
+  BENTON-SYNC-7-C — committed evidence baseline of the live Benton
+  coverage smoke artifact (CLEAN Training run + GAPS OLTP run),
+  with deferred-test-matrix-gate resolution table.
 
 ### Schema catalog (C48 family — COMPLETE)
 
