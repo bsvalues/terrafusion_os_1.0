@@ -1,6 +1,6 @@
 # Runtime Row Path Proof
 
-Generated: 2026-05-02T05:10:40.008Z
+Generated: 2026-05-02T05:28:26.059Z
 Runtime base URL: `http://localhost:5046`
 
 | County | Candidate Reason | Inventory Rows | Endpoint | Status | Runtime Rows | Payload County | County Echo | Benton Fallback | CostForge Tier | CostForge Mode | Result | Blockers |

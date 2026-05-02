@@ -16,6 +16,7 @@ const repoRoot = process.argv[2] ? path.resolve(process.argv[2]) : process.cwd()
 const outDir = path.join(repoRoot, 'generated', 'truth');
 const outJson = path.join(outDir, 'county-runtime-registration-ledger.json');
 const outMd = path.join(outDir, 'county-runtime-registration-ledger.md');
+const dataSourceInventoryJson = path.join(outDir, 'data-source-truth-inventory.json');
 const runtimeBaseUrl =
   process.env.TF_RUNTIME_BASE_URL ??
   process.env.TERRAFUSION_RUNTIME_BASE_URL ??
@@ -64,8 +65,6 @@ const defaultCounties = [
   'Yakima',
 ];
 
-const nextRuntimeCandidates = new Set(['Pacific', 'Franklin', 'Walla Walla']);
-
 function rel(filePath) {
   return path.relative(repoRoot, filePath).replaceAll(path.sep, '/');
 }
@@ -96,6 +95,52 @@ function normalizeCounty(value) {
 function endpointFor(county, rowType) {
   const token = slugifyCounty(county);
   return new URL(`/api/counties/${token}/${rowType}?limit=5`, runtimeBaseUrl).toString();
+}
+
+function readDataSourceInventory() {
+  if (!fs.existsSync(dataSourceInventoryJson)) {
+    return new Map();
+  }
+
+  try {
+    const report = JSON.parse(fs.readFileSync(dataSourceInventoryJson, 'utf8'));
+    const rows = Array.isArray(report.rows) ? report.rows : [];
+    return new Map(rows.map(row => [normalizeCounty(row.county), summarizeInventoryEvidence(row)]));
+  } catch {
+    return new Map();
+  }
+}
+
+function summarizeInventoryEvidence(row) {
+  const costForge = row?.costForge ?? {};
+
+  return {
+    rowsLanded: Number(row?.rowsLanded ?? 0),
+    evidenceCount: Number(row?.evidenceCount ?? 0),
+    sourceUrlOrSystem: row?.sourceUrlOrSystem ?? null,
+    scraperOrAdapterExists: Boolean(row?.scraperOrAdapterExists),
+    dbTableTargetExists: Boolean(row?.dbTableTargetExists),
+    runtimeApiConsumesIt: Boolean(row?.runtimeApiConsumesIt),
+    uiSurfacePath: row?.uiSurfacePath ?? null,
+    trustTier: row?.trustTier ?? 'unknown_untrusted',
+    classification: row?.classification ?? 'unknown_untrusted',
+    costForgeReadinessTier: costForge.costForgeReadinessTier ?? 'CF0_no_runtime_data',
+    costForgeCountyMode: costForge.costForgeCountyMode ?? 'not_available',
+  };
+}
+
+function emptyInventoryEvidence() {
+  return summarizeInventoryEvidence(null);
+}
+
+function getInventoryEvidence(inventoryByCounty, county) {
+  return inventoryByCounty.get(normalizeCounty(county)) ?? emptyInventoryEvidence();
+}
+
+function hasPromotionEvidence(evidence) {
+  if (!evidence) return false;
+
+  return evidence.rowsLanded > 0 && evidence.dbTableTargetExists && evidence.runtimeApiConsumesIt;
 }
 
 async function probeEndpoint(endpoint, county) {
@@ -199,11 +244,21 @@ function classifyCountyRuntime(input) {
   }
 
   if (input.status === 404) {
+    const promotionEvidencePresent = hasPromotionEvidence(input.inventoryEvidence);
+    if (!promotionEvidencePresent) {
+      blockers.push('County is not registered in runtime endpoint.');
+      blockers.push('No active source/DB/runtime row evidence found in data-source inventory.');
+
+      return {
+        readinessClass: 'not_registered',
+        recommendedAction: 'downgrade_from_runtime_candidate',
+        blockers,
+      };
+    }
+
     return {
       readinessClass: 'not_registered',
-      recommendedAction: nextRuntimeCandidates.has(input.county)
-        ? 'load_or_register_next'
-        : 'downgrade_from_runtime_candidate',
+      recommendedAction: 'load_or_register_next',
       blockers: ['County is not registered in runtime endpoint.'],
     };
   }
@@ -236,9 +291,10 @@ function classifyCountyRuntime(input) {
   };
 }
 
-async function buildRow(county) {
+async function buildRow(county, inventoryByCounty) {
   const parcels = await probeEndpoint(endpointFor(county, 'parcels'), county);
   const sales = await probeEndpoint(endpointFor(county, 'sales'), county);
+  const inventoryEvidence = getInventoryEvidence(inventoryByCounty, county);
   const classification = classifyCountyRuntime({
     county,
     status: parcels.status,
@@ -247,11 +303,16 @@ async function buildRow(county) {
     selectedCountyEchoed: parcels.selectedCountyEchoed,
     silentBentonFallbackDetected:
       parcels.silentBentonFallbackDetected || sales.silentBentonFallbackDetected,
+    inventoryEvidence,
   });
 
   return {
     county,
     countyToken: slugifyCounty(county),
+    inventoryEvidence,
+    candidateEvidenceClass: hasPromotionEvidence(inventoryEvidence)
+      ? 'promotion_evidence_present'
+      : 'no_active_runtime_evidence',
     parcels,
     sales,
     runtimeRows: parcels.runtimeRows,
@@ -291,6 +352,10 @@ function renderMarkdown(report) {
       String(row.parcels.runtimeRows),
       String(row.sales.status),
       String(row.sales.runtimeRows),
+      String(row.inventoryEvidence.rowsLanded),
+      String(row.inventoryEvidence.evidenceCount),
+      row.inventoryEvidence.classification,
+      row.inventoryEvidence.costForgeReadinessTier,
       row.payloadCounty ?? '-',
       row.selectedCountyEchoed ? 'yes' : 'no',
       row.silentBentonFallbackDetected ? 'yes' : 'no',
@@ -321,8 +386,8 @@ function renderMarkdown(report) {
     '',
     '## Ledger',
     '',
-    '| County | Token | Parcel Status | Parcel Rows | Sales Status | Sales Rows | Payload County | County Echo | Benton Fallback | Readiness | Recommended Action | Blockers |',
-    '|---|---|---:|---:|---:|---:|---|---|---|---|---|---|',
+    '| County | Token | Parcel Status | Parcel Rows | Sales Status | Sales Rows | Inventory Rows | Evidence Count | Inventory Class | CostForge Tier | Payload County | County Echo | Benton Fallback | Readiness | Recommended Action | Blockers |',
+    '|---|---|---:|---:|---:|---:|---:|---:|---|---|---|---|---|---|---|---|',
     ...rows,
     '',
     '## Scope Note',
@@ -332,14 +397,18 @@ function renderMarkdown(report) {
 }
 
 async function main() {
+  const inventoryByCounty = readDataSourceInventory();
   const rows = [];
   for (const county of counties()) {
-    rows.push(await buildRow(county));
+    rows.push(await buildRow(county, inventoryByCounty));
   }
 
   const report = {
     generatedAt: new Date().toISOString(),
     runtimeBaseUrl,
+    dataSourceInventoryPath: fs.existsSync(dataSourceInventoryJson)
+      ? rel(dataSourceInventoryJson)
+      : null,
     rows,
     summary: summarize(rows),
   };

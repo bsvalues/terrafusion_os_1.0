@@ -16,6 +16,35 @@ function makeTempRepo(prefix) {
   return fs.mkdtempSync(path.join(os.tmpdir(), prefix));
 }
 
+function writeInventory(root, rows) {
+  const outDir = path.join(root, 'generated', 'truth');
+  fs.mkdirSync(outDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(outDir, 'data-source-truth-inventory.json'),
+    JSON.stringify({ rows }, null, 2)
+  );
+}
+
+function inventoryRow(county, overrides = {}) {
+  return {
+    county,
+    rowsLanded: 0,
+    evidenceCount: 0,
+    sourceUrlOrSystem: null,
+    scraperOrAdapterExists: false,
+    dbTableTargetExists: false,
+    runtimeApiConsumesIt: false,
+    uiSurfacePath: null,
+    trustTier: 'unknown_untrusted',
+    classification: 'unknown_untrusted',
+    costForge: {
+      costForgeReadinessTier: 'CF0_no_runtime_data',
+      costForgeCountyMode: 'not_available',
+    },
+    ...overrides,
+  };
+}
+
 function startServer(handler) {
   const server = http.createServer(handler);
   return new Promise(resolve => {
@@ -50,8 +79,30 @@ async function runLedger(root, baseUrl, counties) {
   );
 }
 
-test('ledger classifies runtime-proven county and next-candidate 404 county', async () => {
+test('ledger classifies runtime-proven county and evidence-backed 404 county', async () => {
   const root = makeTempRepo('tf-county-ledger-');
+  writeInventory(root, [
+    inventoryRow('Benton', {
+      rowsLanded: 241,
+      evidenceCount: 81,
+      dbTableTargetExists: true,
+      runtimeApiConsumesIt: true,
+      trustTier: 'public_source_seed',
+      classification: 'public_data_seed',
+      costForge: {
+        costForgeReadinessTier: 'CF1_parcel_public_data',
+        costForgeCountyMode: 'public_data_loaded',
+      },
+    }),
+    inventoryRow('Pacific', {
+      rowsLanded: 11,
+      evidenceCount: 4,
+      dbTableTargetExists: true,
+      runtimeApiConsumesIt: true,
+      trustTier: 'public_source_seed',
+      classification: 'public_data_seed',
+    }),
+  ]);
   const server = await startServer((request, response) => {
     response.setHeader('content-type', 'application/json');
 
@@ -85,9 +136,45 @@ test('ledger classifies runtime-proven county and next-candidate 404 county', as
 
     assert.equal(pacific.readinessClass, 'not_registered');
     assert.equal(pacific.recommendedAction, 'load_or_register_next');
+    assert.equal(pacific.inventoryEvidence.rowsLanded, 11);
+    assert.equal(pacific.candidateEvidenceClass, 'promotion_evidence_present');
     assert.equal(report.summary.runtimeProven, 1);
     assert.equal(report.summary.notRegistered, 1);
     assert.equal(report.summary.loadOrRegisterNext, 1);
+  } finally {
+    await server.close();
+  }
+});
+
+test('ledger downgrades 404 county with no active inventory evidence', async () => {
+  const root = makeTempRepo('tf-county-ledger-no-evidence-');
+  writeInventory(root, [inventoryRow('Pacific')]);
+  const server = await startServer((request, response) => {
+    response.setHeader('content-type', 'application/json');
+
+    if (request.url?.startsWith('/api/counties/pacific/')) {
+      response.statusCode = 404;
+      response.end(JSON.stringify({ county: 'pacific', error: 'County not found.' }));
+      return;
+    }
+
+    response.statusCode = 500;
+    response.end(JSON.stringify({ error: 'unexpected' }));
+  });
+
+  try {
+    const report = await runLedger(root, server.baseUrl, ['Pacific']);
+    const pacific = report.rows.find(row => row.county === 'Pacific');
+
+    assert.equal(pacific.readinessClass, 'not_registered');
+    assert.equal(pacific.recommendedAction, 'downgrade_from_runtime_candidate');
+    assert.equal(pacific.candidateEvidenceClass, 'no_active_runtime_evidence');
+    assert.equal(pacific.inventoryEvidence.rowsLanded, 0);
+    assert.ok(
+      pacific.blockers.some(reason => reason.includes('No active source/DB/runtime row evidence'))
+    );
+    assert.equal(report.summary.loadOrRegisterNext, 0);
+    assert.equal(report.summary.downgradeFromRuntimeCandidate, 1);
   } finally {
     await server.close();
   }

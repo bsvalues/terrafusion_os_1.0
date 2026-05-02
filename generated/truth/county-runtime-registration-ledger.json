@@ -1,10 +1,25 @@
 {
-  "generatedAt": "2026-05-02T05:17:15.897Z",
+  "generatedAt": "2026-05-02T05:28:26.462Z",
   "runtimeBaseUrl": "http://localhost:5046",
+  "dataSourceInventoryPath": "generated/truth/data-source-truth-inventory.json",
   "rows": [
     {
       "county": "Adams",
       "countyToken": "adams",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/adams/parcels?limit=5",
         "status": 404,
@@ -29,11 +44,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Asotin",
       "countyToken": "asotin",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/asotin/parcels?limit=5",
         "status": 404,
@@ -58,11 +90,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Benton",
       "countyToken": "benton",
+      "inventoryEvidence": {
+        "rowsLanded": 241,
+        "evidenceCount": 81,
+        "sourceUrlOrSystem": "backend/src/TerraFusion.API/Controllers/RealDataController.cs",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": true,
+        "runtimeApiConsumesIt": true,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx",
+        "trustTier": "public_source_seed",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF1_parcel_public_data",
+        "costForgeCountyMode": "public_data_loaded"
+      },
+      "candidateEvidenceClass": "promotion_evidence_present",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/benton/parcels?limit=5",
         "status": 200,
@@ -92,6 +141,20 @@
     {
       "county": "Chelan",
       "countyToken": "chelan",
+      "inventoryEvidence": {
+        "rowsLanded": 35,
+        "evidenceCount": 6,
+        "sourceUrlOrSystem": "data/cost-matrices/extracted_cost_matrix.json",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": true,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "public_source_seed",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/chelan/parcels?limit=5",
         "status": 404,
@@ -116,11 +179,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Clallam",
       "countyToken": "clallam",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/clallam/parcels?limit=5",
         "status": 404,
@@ -145,11 +225,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Clark",
       "countyToken": "clark",
+      "inventoryEvidence": {
+        "rowsLanded": 8,
+        "evidenceCount": 12,
+        "sourceUrlOrSystem": "data/county-intelligence/clark_analysis.json",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": true,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "public_source_seed",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/clark/parcels?limit=5",
         "status": 404,
@@ -174,11 +271,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Columbia",
       "countyToken": "columbia",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 6,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/columbia/parcels?limit=5",
         "status": 404,
@@ -203,11 +317,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Cowlitz",
       "countyToken": "cowlitz",
+      "inventoryEvidence": {
+        "rowsLanded": 8,
+        "evidenceCount": 12,
+        "sourceUrlOrSystem": "data/county-intelligence/cowlitz_analysis.json",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": true,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "public_source_seed",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/cowlitz/parcels?limit=5",
         "status": 404,
@@ -232,11 +363,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Douglas",
       "countyToken": "douglas",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/douglas/parcels?limit=5",
         "status": 404,
@@ -261,11 +409,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Ferry",
       "countyToken": "ferry",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/ferry/parcels?limit=5",
         "status": 404,
@@ -290,11 +455,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Franklin",
       "countyToken": "franklin",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 7,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/franklin/parcels?limit=5",
         "status": 404,
@@ -318,12 +500,29 @@
       "selectedCountyEchoed": true,
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
-      "recommendedAction": "load_or_register_next",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Garfield",
       "countyToken": "garfield",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/garfield/parcels?limit=5",
         "status": 404,
@@ -348,11 +547,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Grant",
       "countyToken": "grant",
+      "inventoryEvidence": {
+        "rowsLanded": 8,
+        "evidenceCount": 14,
+        "sourceUrlOrSystem": "data/county-intelligence/grant_analysis.json",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": true,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "public_source_seed",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/grant/parcels?limit=5",
         "status": 404,
@@ -377,11 +593,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Grays Harbor",
       "countyToken": "grays-harbor",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/grays-harbor/parcels?limit=5",
         "status": 404,
@@ -406,11 +639,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Island",
       "countyToken": "island",
+      "inventoryEvidence": {
+        "rowsLanded": 8,
+        "evidenceCount": 13,
+        "sourceUrlOrSystem": "data/county-intelligence/island_analysis.json",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": true,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/geo/utils/spatialStats.ts",
+        "trustTier": "public_source_seed",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/island/parcels?limit=5",
         "status": 404,
@@ -435,11 +685,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Jefferson",
       "countyToken": "jefferson",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/jefferson/parcels?limit=5",
         "status": 404,
@@ -464,11 +731,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "King",
       "countyToken": "king",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 7,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/king/parcels?limit=5",
         "status": 404,
@@ -493,11 +777,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Kitsap",
       "countyToken": "kitsap",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/kitsap/parcels?limit=5",
         "status": 404,
@@ -522,11 +823,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Kittitas",
       "countyToken": "kittitas",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/kittitas/parcels?limit=5",
         "status": 404,
@@ -551,11 +869,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Klickitat",
       "countyToken": "klickitat",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/klickitat/parcels?limit=5",
         "status": 404,
@@ -580,11 +915,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Lewis",
       "countyToken": "lewis",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/lewis/parcels?limit=5",
         "status": 404,
@@ -609,11 +961,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Lincoln",
       "countyToken": "lincoln",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/lincoln/parcels?limit=5",
         "status": 404,
@@ -638,11 +1007,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Mason",
       "countyToken": "mason",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/mason/parcels?limit=5",
         "status": 404,
@@ -667,11 +1053,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Okanogan",
       "countyToken": "okanogan",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/okanogan/parcels?limit=5",
         "status": 404,
@@ -696,11 +1099,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Pacific",
       "countyToken": "pacific",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 0,
+        "sourceUrlOrSystem": null,
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": null,
+        "trustTier": "unknown_untrusted",
+        "classification": "unknown_untrusted",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/pacific/parcels?limit=5",
         "status": 404,
@@ -724,12 +1144,29 @@
       "selectedCountyEchoed": true,
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
-      "recommendedAction": "load_or_register_next",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Pend Oreille",
       "countyToken": "pend-oreille",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/pend-oreille/parcels?limit=5",
         "status": 404,
@@ -754,11 +1191,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Pierce",
       "countyToken": "pierce",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 7,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/pierce/parcels?limit=5",
         "status": 404,
@@ -783,11 +1237,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "San Juan",
       "countyToken": "san-juan",
+      "inventoryEvidence": {
+        "rowsLanded": 8,
+        "evidenceCount": 12,
+        "sourceUrlOrSystem": "data/county-intelligence/sanjuan_analysis.json",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": true,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "public_source_seed",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/san-juan/parcels?limit=5",
         "status": 404,
@@ -812,11 +1283,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Skagit",
       "countyToken": "skagit",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/skagit/parcels?limit=5",
         "status": 404,
@@ -841,11 +1329,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Skamania",
       "countyToken": "skamania",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/skamania/parcels?limit=5",
         "status": 404,
@@ -870,11 +1375,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Snohomish",
       "countyToken": "snohomish",
+      "inventoryEvidence": {
+        "rowsLanded": 8,
+        "evidenceCount": 13,
+        "sourceUrlOrSystem": "data/county-intelligence/snohomish_analysis.json",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": true,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "public_source_seed",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/snohomish/parcels?limit=5",
         "status": 404,
@@ -899,11 +1421,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Spokane",
       "countyToken": "spokane",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 14,
+        "sourceUrlOrSystem": "data/county-intelligence/spokane_extraction.json",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": true,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/atlas-live/__tests__/atlasLiveApi.contracts.test.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/spokane/parcels?limit=5",
         "status": 404,
@@ -928,11 +1467,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Stevens",
       "countyToken": "stevens",
+      "inventoryEvidence": {
+        "rowsLanded": 8,
+        "evidenceCount": 12,
+        "sourceUrlOrSystem": "data/county-intelligence/stevens_analysis.json",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": true,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "public_source_seed",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/stevens/parcels?limit=5",
         "status": 404,
@@ -957,11 +1513,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Thurston",
       "countyToken": "thurston",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 5,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/thurston/parcels?limit=5",
         "status": 404,
@@ -986,11 +1559,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Wahkiakum",
       "countyToken": "wahkiakum",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/wahkiakum/parcels?limit=5",
         "status": 404,
@@ -1015,11 +1605,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Walla Walla",
       "countyToken": "walla-walla",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/walla-walla/parcels?limit=5",
         "status": 404,
@@ -1043,12 +1650,29 @@
       "selectedCountyEchoed": true,
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
-      "recommendedAction": "load_or_register_next",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "recommendedAction": "downgrade_from_runtime_candidate",
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Whatcom",
       "countyToken": "whatcom",
+      "inventoryEvidence": {
+        "rowsLanded": 8,
+        "evidenceCount": 12,
+        "sourceUrlOrSystem": "data/county-intelligence/whatcom_analysis.json",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": true,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "public_source_seed",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/whatcom/parcels?limit=5",
         "status": 404,
@@ -1073,11 +1697,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Whitman",
       "countyToken": "whitman",
+      "inventoryEvidence": {
+        "rowsLanded": 0,
+        "evidenceCount": 4,
+        "sourceUrlOrSystem": "docs/proof/washington-39-county-coverage.latest.md",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": false,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "unknown_untrusted",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF0_no_runtime_data",
+        "costForgeCountyMode": "not_available"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/whitman/parcels?limit=5",
         "status": 404,
@@ -1102,11 +1743,28 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     },
     {
       "county": "Yakima",
       "countyToken": "yakima",
+      "inventoryEvidence": {
+        "rowsLanded": 8,
+        "evidenceCount": 13,
+        "sourceUrlOrSystem": "data/county-intelligence/yakima_analysis.json",
+        "scraperOrAdapterExists": false,
+        "dbTableTargetExists": true,
+        "runtimeApiConsumesIt": false,
+        "uiSurfacePath": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+        "trustTier": "public_source_seed",
+        "classification": "public_data_seed",
+        "costForgeReadinessTier": "CF2_property_characteristics_available",
+        "costForgeCountyMode": "derived_estimate_mode"
+      },
+      "candidateEvidenceClass": "no_active_runtime_evidence",
       "parcels": {
         "endpoint": "http://localhost:5046/api/counties/yakima/parcels?limit=5",
         "status": 404,
@@ -1131,7 +1789,10 @@
       "silentBentonFallbackDetected": false,
       "readinessClass": "not_registered",
       "recommendedAction": "downgrade_from_runtime_candidate",
-      "blockers": ["County is not registered in runtime endpoint."]
+      "blockers": [
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
     }
   ],
   "summary": {
@@ -1142,8 +1803,8 @@
     "endpointErrors": 0,
     "fallbackViolations": 0,
     "keepRuntimeCandidate": 1,
-    "loadOrRegisterNext": 3,
-    "downgradeFromRuntimeCandidate": 35,
+    "loadOrRegisterNext": 0,
+    "downgradeFromRuntimeCandidate": 38,
     "investigateEndpointError": 0
   }
 }
