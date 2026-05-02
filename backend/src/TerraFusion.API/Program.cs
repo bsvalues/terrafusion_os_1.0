@@ -1639,6 +1639,13 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsPropSuppAssoc.IPacsPropSuppAssocLandingService,
     TerraFusion.Data.Services.LegacyPacsRaw.PacsPropSuppAssocLandingService>();
 
+// Slice B1-A: PACS account raw landing — Block B's PII-rich
+// identity table. Four gates: distribution, acct_id-uniqueness,
+// provenance-coverage, pii-flags-recorded.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsAccount.IPacsAccountLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsAccountLandingService>();
+
 // Slice S2-B: truth_pacs.sale promoter — supp-aware join + '100'
 // qualification filter, with five T-* gates. Idempotent by SaleLoadBatchId.
 builder.Services.AddScoped<
