@@ -225,6 +225,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.LegacyTfUnproven.LegacyTfUnprovenImprvAttr>
     LegacyTfUnprovenImprvAttrs { get; set; } = null!;
 
+  // Slice L1: land_detail landing — per-segment land breakdown
+  // (homesite, ag, pasture, timber, etc). 4-key composite. Required
+  // by the truth_pacs.land_current promoter (future).
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawLandDetail>
+    LegacyPacsRawLandDetails { get; set; } = null!;
+
   // Slice S2-B: truth_pacs.sale — supp-aware-validated,
   // qualification-filtered ('100' only) projection of the raw layer.
   // Stepping stone toward canonical_tf.tf_sale (S3).
@@ -910,6 +916,10 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawImprvAttrConfiguration());
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.LegacyTfUnproven.LegacyTfUnprovenImprvAttrConfiguration());
+
+    // Slice L1: land_detail landing — per-segment land breakdown.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawLandDetailConfiguration());
 
     // Slice S2-B: truth_pacs.sale — qualification-filtered,
     // supp-aware-validated truth layer.
