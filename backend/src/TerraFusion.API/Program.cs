@@ -1716,6 +1716,12 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsImprvTruth.IPacsImprvCurrentTruthPromoter,
     TerraFusion.Data.Services.TruthPacs.PacsImprvCurrentTruthPromoter>();
 
+// Slice L2: truth_pacs.land_current promoter — supp-aware current
+// land segment snapshot. Four T-* gates. Idempotent by LandLoadBatchId.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsLandTruth.IPacsLandCurrentTruthPromoter,
+    TerraFusion.Data.Services.TruthPacs.PacsLandCurrentTruthPromoter>();
+
 // Slice B3: canonical_tf.tf_owner + tf_parcel_owner_link projector.
 // PII-redacting; resolves PACS prop_id to TfParcelId via source_xref;
 // quarantines unresolvable parcels to legacy_tf_unproven.owner_current;

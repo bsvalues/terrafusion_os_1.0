@@ -255,6 +255,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsImprvCurrent>
     TruthPacsImprvCurrents { get; set; } = null!;
 
+  // Slice L2: truth_pacs.land_current — supp-aware-validated
+  // current land segment snapshot. Stepping stone toward
+  // canonical_tf.tf_land (L3).
+  public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsLandCurrent>
+    TruthPacsLandCurrents { get; set; } = null!;
+
   // Slice S3: canonical_tf.tf_sale — TerraFusion-native sale identity
   // backed by sync_bridge.source_xref lineage. Sales whose parcel
   // cannot be resolved are quarantined to legacy_tf_unproven.sale.
@@ -951,6 +957,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // current improvement snapshot.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.TruthPacs.TruthPacsImprvCurrentConfiguration());
+
+    // Slice L2: truth_pacs.land_current — supp-aware-validated
+    // current land segment snapshot.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.TruthPacs.TruthPacsLandCurrentConfiguration());
 
     // Slice B3: canonical_tf.tf_owner + tf_parcel_owner_link with
     // PII redaction; legacy_tf_unproven.owner_current quarantine.
