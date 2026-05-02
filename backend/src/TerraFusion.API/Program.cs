@@ -1746,6 +1746,13 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsSalePipeline.IPacsSaleSyncRunner,
     TerraFusion.Data.Services.Pipeline.PacsSaleSyncRunner>();
 
+// Block B operator trigger: chains B2-A → B2-B → B3 → B4 against
+// already-landed raw batches, returning a combined result with all
+// four stage statuses + batch ids + per-stage counts.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsOwnerWsdorPipeline.IPacsOwnerWsdorSyncRunner,
+    TerraFusion.Data.Services.Pipeline.PacsOwnerWsdorSyncRunner>();
+
 // Slice G1-D-2: nightly hosted service that walks every configured
 // county. OFF by default — set ArcGisSyncScheduler:Enabled=true in
 // configuration to activate.
