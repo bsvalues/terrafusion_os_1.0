@@ -43,6 +43,18 @@ public sealed class RuntimeTruthControllerTests : IDisposable
             AssessmentDate = DateTime.UtcNow,
             LastUpdated = DateTime.UtcNow,
         });
+        _db.Properties.Add(new Property
+        {
+            Id = Guid.NewGuid(),
+            CountyId = _db.Counties.Local.First().Id,
+            PropertyId = "BENTON-002",
+            ParcelId = "BENTON-001",
+            ParcelNumber = "BENTON-001",
+            Address = "1 Runtime Truth Way",
+            PropertyType = "residential",
+            AssessmentDate = DateTime.UtcNow,
+            LastUpdated = DateTime.UtcNow,
+        });
         _db.ComparableSales.Add(new ComparableSale
         {
             Id = Guid.NewGuid(),
@@ -73,7 +85,7 @@ public sealed class RuntimeTruthControllerTests : IDisposable
 
         Assert.Contains("Microsoft.EntityFrameworkCore.InMemory", json);
         Assert.Contains("\"Counties\":1", json);
-        Assert.Contains("\"Properties\":1", json);
+        Assert.Contains("\"Properties\":2", json);
         Assert.Contains("\"ComparableSales\":1", json);
     }
 
@@ -97,7 +109,7 @@ public sealed class RuntimeTruthControllerTests : IDisposable
     {
         var sut = CreateController(new Dictionary<string, string?>
         {
-            ["RuntimeTruth:ExpectedBentonParcelCount"] = "2",
+            ["RuntimeTruth:ExpectedBentonParcelCount"] = "3",
         });
 
         var result = await sut.GetDbIdentity();
@@ -105,9 +117,29 @@ public sealed class RuntimeTruthControllerTests : IDisposable
         var ok = Assert.IsType<OkObjectResult>(result);
         var json = JsonSerializer.Serialize(ok.Value);
 
-        Assert.Contains("\"ExpectedBentonParcelCount\":2", json);
+        Assert.Contains("\"ExpectedBentonParcelCount\":3", json);
         Assert.Contains("\"IsBentonParcelCountExpected\":false", json);
-        Assert.Contains("does not match configured Benton parcel count 2", json);
+        Assert.Contains("does not match configured Benton parcel count 3", json);
+    }
+
+    [Fact]
+    public async SystemTask GetDbContent_ClassifiesDistinctParcelCountMismatch()
+    {
+        var sut = CreateController(new Dictionary<string, string?>
+        {
+            ["RuntimeTruth:ExpectedBentonParcelCount"] = "1",
+        });
+
+        var result = await sut.GetDbContent();
+
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var json = JsonSerializer.Serialize(ok.Value);
+
+        Assert.Contains("\"PropertyRows\":2", json);
+        Assert.Contains("\"DistinctParcelIds\":1", json);
+        Assert.Contains("\"DuplicateParcelIdGroups\":1", json);
+        Assert.Contains("configured_count_matches_distinct_parcels_not_rows", json);
+        Assert.Contains("Runtime Benton property rows 2 do not match configured parcel count 1", json);
     }
 
     private RuntimeTruthController CreateController(Dictionary<string, string?>? settings = null)

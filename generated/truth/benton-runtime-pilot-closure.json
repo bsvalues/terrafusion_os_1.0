@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-02T05:57:35.564Z",
+  "generatedAt": "2026-05-02T15:36:50.600Z",
   "inputs": {
     "candidateSetPath": "generated/truth/runtime-candidate-set.json",
     "rowPathProofPath": "generated/truth/runtime-row-path-proof.json",
@@ -7,6 +7,8 @@
   },
   "status": "FAIL",
   "blockers": [
+    "Benton runtime row-path proof did not pass.",
+    "Benton sale-qualification lineage proof did not pass.",
     "Benton sale-qualification lineage is recommendation_backed_canonical_landing_missing, expected canonical_landing_backed.",
     "Benton CanonicalSaleQualifications landing table is empty.",
     "Benton ratio-study window has no final-decision qualified sales."

@@ -309,6 +309,10 @@ run('Runtime TerraFusion DB identity', 'pnpm', ['run', 'truth:runtime-db-identit
   timeout: 180_000,
 });
 
+run('Runtime TerraFusion DB content audit', 'pnpm', ['run', 'truth:runtime-db-content'], {
+  timeout: 180_000,
+});
+
 run('Benton runtime pilot closure', 'pnpm', ['run', 'truth:benton-runtime-pilot-closure'], {
   timeout: 180_000,
 });

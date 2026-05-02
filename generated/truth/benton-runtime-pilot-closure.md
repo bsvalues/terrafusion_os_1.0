@@ -1,6 +1,6 @@
 # Benton Runtime Pilot Closure
 
-Generated: 2026-05-02T05:57:35.564Z
+Generated: 2026-05-02T15:36:50.600Z
 
 ## Status
 
@@ -28,6 +28,8 @@ Generated: 2026-05-02T05:57:35.564Z
 
 ## Blockers
 
+- Benton runtime row-path proof did not pass.
+- Benton sale-qualification lineage proof did not pass.
 - Benton sale-qualification lineage is recommendation_backed_canonical_landing_missing, expected canonical_landing_backed.
 - Benton CanonicalSaleQualifications landing table is empty.
 - Benton ratio-study window has no final-decision qualified sales.
