@@ -778,6 +778,45 @@ public sealed class BlockCContractV1Tests : IDisposable
     }
 
     // ───────────────────────────────────────────────────────────────
+    // v1.4 addendum — QuarantineReasons closed vocabulary (E4a)
+    //
+    // History note: v1.0 §5.2 documented only NO_PARCEL_XREF as the
+    // emitted vocabulary. The E4a audit found that NO_OWNER_XREF and
+    // BOTH_MISSING were already shipping in production projectors
+    // (PacsWsdorCanonicalProjector) but undocumented. v1.4 corrects
+    // the omission cumulatively and adds UNKNOWN_ATTRIBUTE for the
+    // future i_attr_id-aware projector.
+    // ───────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void Contract_v1_4_QuarantineReasons_AllContainsFrozenSet()
+    {
+        // Closed vocabulary per v1.4 §5.2 (corrected from v1.0).
+        QuarantineReasons.All.Should().BeEquivalentTo(new[]
+        {
+            "NO_PARCEL_XREF",     // v1.0 (emitted by all 5 projectors)
+            "NO_OWNER_XREF",      // v1.0 historical (B4) — newly documented in v1.4
+            "BOTH_MISSING",       // v1.0 historical (B4) — newly documented in v1.4
+            "UNKNOWN_ATTRIBUTE",  // v1.4 NEW (E4b will emit it)
+        }, "Block-C contract v1.4 §5.2 freezes the QuarantineReasons vocabulary");
+    }
+
+    [Fact]
+    public void Contract_v1_4_QuarantineReasons_IsKnown_RejectsUnknown()
+    {
+        QuarantineReasons.IsKnown(QuarantineReasons.NoParcelXref).Should().BeTrue();
+        QuarantineReasons.IsKnown(QuarantineReasons.NoOwnerXref).Should().BeTrue();
+        QuarantineReasons.IsKnown(QuarantineReasons.BothMissing).Should().BeTrue();
+        QuarantineReasons.IsKnown(QuarantineReasons.UnknownAttribute).Should().BeTrue();
+        QuarantineReasons.IsKnown("AMBIGUOUS_PARCEL_XREF").Should().BeFalse(
+            "v1.4 §5.2 explicitly excludes the aspirational values that " +
+            "appeared in earlier entity XML docs but were never emitted");
+        QuarantineReasons.IsKnown("PARCEL_XREF_INACTIVE").Should().BeFalse();
+        QuarantineReasons.IsKnown("not-a-reason").Should().BeFalse();
+        QuarantineReasons.IsKnown(string.Empty).Should().BeFalse();
+    }
+
+    // ───────────────────────────────────────────────────────────────
     // §6 — migration list (Block A / B / C scaffolding)
     // ───────────────────────────────────────────────────────────────
 

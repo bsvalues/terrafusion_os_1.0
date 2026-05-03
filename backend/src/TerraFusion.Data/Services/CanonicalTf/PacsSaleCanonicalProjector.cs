@@ -37,7 +37,8 @@ public sealed class PacsSaleCanonicalProjector : IPacsSaleCanonicalProjector
 {
     private const string SaleEntityType = "sale";
     private const string ParcelEntityType = "parcel";
-    private const string QuarantineNoParcelXref = "NO_PARCEL_XREF";
+    // E4a (v1.4): quarantine reasons live in QuarantineReasons —
+    // see docs/pacs/block-c-contract-v1.4.md.
 
     private readonly TerraFusionDbContext _db;
     private readonly ILogger<PacsSaleCanonicalProjector> _logger;
@@ -174,7 +175,7 @@ public sealed class PacsSaleCanonicalProjector : IPacsSaleCanonicalProjector
                         AdjSlPrice = truth.AdjSlPrice,
                         SourceTruthSaleId = truth.TruthSaleId,
                         PromotionLoadBatchId = batch.LoadBatchId,
-                        QuarantineReason = QuarantineNoParcelXref,
+                        QuarantineReason = QuarantineReasons.NoParcelXref,
                         CreatedAt = now,
                     });
                     quarantined++;

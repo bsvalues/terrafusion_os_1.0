@@ -48,7 +48,8 @@ public sealed class PacsOwnerCanonicalProjector : IPacsOwnerCanonicalProjector
 {
     private const string OwnerEntityType = "owner";
     private const string ParcelEntityType = "parcel";
-    private const string QuarantineNoParcelXref = "NO_PARCEL_XREF";
+    // E4a (v1.4): quarantine reasons live in QuarantineReasons —
+    // see docs/pacs/block-c-contract-v1.4.md.
     private const string ConfidentialDisplayName = "[Confidential]";
     private const decimal PrimaryOwnershipThreshold = 50m;
 
@@ -191,7 +192,7 @@ public sealed class PacsOwnerCanonicalProjector : IPacsOwnerCanonicalProjector
                         WebSuppression = truth.WebSuppression,
                         SourceTruthOwnerCurrentId = truth.TruthOwnerCurrentId,
                         PromotionLoadBatchId = batch.LoadBatchId,
-                        QuarantineReason = QuarantineNoParcelXref,
+                        QuarantineReason = QuarantineReasons.NoParcelXref,
                         CreatedAt = now,
                     });
                     quarantined++;
