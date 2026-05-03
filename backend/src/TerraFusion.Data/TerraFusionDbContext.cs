@@ -313,6 +313,15 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.CanonicalTf.DictNeighborhood>
     DictNeighborhoods { get; set; } = null!;
 
+  // Slice E2: canonical_tf.attribute_definition — i_attr_id
+  // mapping spine. Per Block-C contract v1.2
+  // (docs/pacs/block-c-contract-v1.2.md). E3 wires
+  // tf_improvement_feature.AttributeId / tf_land.AttributeId FKs
+  // onto this; E4 adds the UNKNOWN_ATTRIBUTE quarantine path.
+  // E2 itself is schema-only.
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.AttributeDefinition>
+    AttributeDefinitions { get; set; } = null!;
+
   // Slice C41-B: per-county pointer naming the operator-active
   // Mapped workbook. Singleton per county (PK = CountyId). See
   // docs/sync/sync-county-active-workbook-pointer-policy.md for the
@@ -1023,6 +1032,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // dictionary table. Per docs/pacs/block-c-contract-v1.1.md.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.CanonicalTf.DictNeighborhoodConfiguration());
+
+    // Slice E2: canonical_tf.attribute_definition — i_attr_id
+    // mapping spine. Per docs/pacs/block-c-contract-v1.2.md.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.AttributeDefinitionConfiguration());
 
     // Sync Bridge v1 — Phase 0 field_authority seed for the parcel
     // domain. Per docs/pacs/pacs-sync-bridge-v1-spec.md §4.

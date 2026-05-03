@@ -626,6 +626,87 @@ public sealed class BlockCContractV1Tests : IDisposable
     }
 
     // ───────────────────────────────────────────────────────────────
+    // v1.2 addendum — canonical_tf.attribute_definition (Slice E2)
+    // ───────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void Contract_v1_2_AttributeDefinition_HasFrozenShape()
+    {
+        var et = _db.Model.FindEntityType(typeof(AttributeDefinition));
+        et.Should().NotBeNull(
+            "Block-C contract v1.2 §3.8 freezes canonical_tf.attribute_definition");
+
+        var pk = et!.FindPrimaryKey();
+        pk.Should().NotBeNull();
+        pk!.Properties.Should().HaveCount(1);
+        pk.Properties[0].Name.Should().Be(
+            nameof(AttributeDefinition.AttributeDefinitionId));
+
+        et.PropertyNames().Should().Contain(new[]
+        {
+            nameof(AttributeDefinition.AttributeDefinitionId),
+            nameof(AttributeDefinition.CountyId),
+            nameof(AttributeDefinition.IAttrId),
+            nameof(AttributeDefinition.AttributeCode),
+            nameof(AttributeDefinition.AttributeName),
+            nameof(AttributeDefinition.DataType),
+            nameof(AttributeDefinition.ValueDomain),
+            nameof(AttributeDefinition.AppliesTo),
+            nameof(AttributeDefinition.IsActive),
+            nameof(AttributeDefinition.LoadBatchId),
+            nameof(AttributeDefinition.SourceQueryHash),
+            nameof(AttributeDefinition.CreatedAt),
+            nameof(AttributeDefinition.UpdatedAt),
+        });
+    }
+
+    [Fact]
+    public void Contract_v1_2_AttributeDefinition_HasUniqueCountyIAttrIdIndex()
+    {
+        // Sovereign-county isolation requires that i_attr_id is unique
+        // WITHIN a county; the same id can be a different attribute
+        // across counties.
+        var et = _db.Model.FindEntityType(typeof(AttributeDefinition));
+        et.Should().NotBeNull();
+
+        var indexes = et!.GetIndexes().ToList();
+        indexes.Should().Contain(idx =>
+            idx.IsUnique
+            && idx.Properties.Count == 2
+            && idx.Properties[0].Name == nameof(AttributeDefinition.CountyId)
+            && idx.Properties[1].Name == nameof(AttributeDefinition.IAttrId),
+            "Block-C contract v1.2 §3.8 freezes (CountyId, IAttrId) as the natural unique key");
+    }
+
+    [Fact]
+    public void Contract_v1_2_AttributeDefinition_HasUniqueCountyAttributeCodeIndex()
+    {
+        // Two i_attr_ids must not collapse onto the same canonical
+        // handle within a single county.
+        var et = _db.Model.FindEntityType(typeof(AttributeDefinition));
+        et.Should().NotBeNull();
+
+        var indexes = et!.GetIndexes().ToList();
+        indexes.Should().Contain(idx =>
+            idx.IsUnique
+            && idx.Properties.Count == 2
+            && idx.Properties[0].Name == nameof(AttributeDefinition.CountyId)
+            && idx.Properties[1].Name == nameof(AttributeDefinition.AttributeCode),
+            "Block-C contract v1.2 §3.8 freezes (CountyId, AttributeCode) as a uniqueness invariant");
+    }
+
+    [Fact]
+    public void Contract_v1_2_AttributeDefinition_DbSetIsRegistered()
+    {
+        var prop = typeof(TerraFusionDbContext).GetProperty(
+            "AttributeDefinitions",
+            BindingFlags.Public | BindingFlags.Instance);
+        prop.Should().NotBeNull(
+            "Block-C contract v1.2 §3.8 names the attribute_definition DbSet");
+        prop!.PropertyType.Should().Be(typeof(DbSet<AttributeDefinition>));
+    }
+
+    // ───────────────────────────────────────────────────────────────
     // §6 — migration list (Block A / B / C scaffolding)
     // ───────────────────────────────────────────────────────────────
 
@@ -665,6 +746,8 @@ public sealed class BlockCContractV1Tests : IDisposable
             // Note: this migration also closes the tf_land schema
             // gap (entities committed pre-H3, migration deferred).
             "AddDictNeighborhood",
+            // Block-C contract v1.2 — i_attr_id mapping spine (E2).
+            "AddAttributeDefinition",
         };
 
         foreach (var fragment in requiredFragments)
