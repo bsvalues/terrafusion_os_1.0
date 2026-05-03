@@ -192,6 +192,5 @@ jobs:
           name: frontend-dist-${{ github.sha }}
           path: |
             native-shell/ui/dist
-            frontend/dist
           if-no-files-found: warn
           retention-days: 7
