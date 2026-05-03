@@ -471,41 +471,6 @@ public class SyncController : ControllerBase
 
     // ── Comp-eligibility read (Slice C38-B) ─────────────────────────────────
 
-    /// <summary>
-    /// Slice C38-B: read-side HTTP exposure of the C37-B
-    /// <c>ISalesCompEligibilityReader</c> per the C38-A policy.
-    ///
-    /// <para>Returns the comp pool for a county. Single selection rule
-    /// (inherited from C37-A): <c>ComputedDecision = Qualified</c>.
-    /// <c>Excluded</c> and <c>Inconclusive</c> rows are NOT returned.
-    /// This is the WacCd-bug containment surface exposed over HTTP —
-    /// pre-conversion / unmapped / problematic <c>wac_cd</c> codes
-    /// never reach the comp pool by construction.</para>
-    ///
-    /// <para>Authentication required (per C38-A Hard Guard 2).
-    /// County-isolation guard fires server-side (Hard Guard 3): the
-    /// authenticated principal's <c>countyId</c> claim must match the
-    /// requested <paramref name="countyId"/>; cross-county callers
-    /// receive 403 with no row data.</para>
-    ///
-    /// <para>Workbook-pin is opt-in (Hard Guard 7). When
-    /// <paramref name="workbookId"/> is omitted or empty, all
-    /// Qualified rows for the county are returned regardless of
-    /// which workbook produced them. There is no implicit "most
-    /// recent workbook" default — that would silently mask
-    /// workbook drift.</para>
-    /// </summary>
-    /// <param name="countyId">Sovereign-county scope (required).</param>
-    /// <param name="workbookId">
-    /// Optional workbook-pin. Empty / omitted means "all qualified
-    /// rows for this county."
-    /// </param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>
-    /// 200 OK with a (possibly empty) JSON array of
-    /// <see cref="CompEligibleSaleDto"/>. The array is ordered by
-    /// <c>ChgOfOwnerId</c> ascending for deterministic consumption.
-    /// </returns>
     // ── C45-B caching constants per the C45-A policy ───────────────────────
     // Comp endpoints: 60-second window (canonical only changes on C36 writes).
     // Active-workbook: 5-second window (operator promote/clear should reflect fast).
@@ -546,6 +511,45 @@ public class SyncController : ControllerBase
     /// </summary>
     private const int MaxPageSize = 500;
 
+    /// <summary>
+    /// Slice C38-B: read-side HTTP exposure of the C37-B
+    /// <c>ISalesCompEligibilityReader</c> per the C38-A policy.
+    ///
+    /// <para>Returns the comp pool for a county. Single selection rule
+    /// (inherited from C37-A): <c>ComputedDecision = Qualified</c>.
+    /// <c>Excluded</c> and <c>Inconclusive</c> rows are NOT returned.
+    /// This is the WacCd-bug containment surface exposed over HTTP —
+    /// pre-conversion / unmapped / problematic <c>wac_cd</c> codes
+    /// never reach the comp pool by construction.</para>
+    ///
+    /// <para>Authentication required (per C38-A Hard Guard 2).
+    /// County-isolation guard fires server-side (Hard Guard 3): the
+    /// authenticated principal's <c>countyId</c> claim must match the
+    /// requested <paramref name="countyId"/>; cross-county callers
+    /// receive 403 with no row data.</para>
+    ///
+    /// <para>Workbook-pin is opt-in (Hard Guard 7). When
+    /// <paramref name="workbookId"/> is omitted or empty, all
+    /// Qualified rows for the county are returned regardless of
+    /// which workbook produced them. There is no implicit "most
+    /// recent workbook" default — that would silently mask
+    /// workbook drift.</para>
+    /// </summary>
+    /// <param name="countyId">Sovereign-county scope (required).</param>
+    /// <param name="workbookId">
+    /// Optional workbook-pin. Empty / omitted means "all qualified
+    /// rows for this county."
+    /// </param>
+    /// <param name="page">Optional 1-based page index (defaults to 1).</param>
+    /// <param name="pageSize">
+    /// Optional page size; capped by <c>MaxPageSize</c>.
+    /// </param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>
+    /// 200 OK with a (possibly empty) JSON array of
+    /// <see cref="CompEligibleSaleDto"/>. The array is ordered by
+    /// <c>ChgOfOwnerId</c> ascending for deterministic consumption.
+    /// </returns>
     [HttpGet("comps/eligible")]
     [HttpHead("comps/eligible")]
     [Authorize]

@@ -353,13 +353,18 @@ public sealed class SyncMappingWorkbookBatchEditService : ISyncMappingWorkbookBa
                     $"canonical_value_null must be 'true' or empty. Got '{row.CanonicalValueNullRaw}'."));
                 continue;
             }
-            bool? isExcluded = null;
+            // Validation-only: shape-check is_excluded. The parsed bool
+            // is intentionally discarded — the apply phase re-parses
+            // from row.IsExcludedRaw via the same helper rather than
+            // pass a parsed value through ResolvedRow (per the
+            // doctrine note below at the end of this loop).
             if (row.IsExcludedRaw is not null)
             {
                 var trimmed = row.IsExcludedRaw.Trim();
-                if (string.Equals(trimmed, "true", StringComparison.OrdinalIgnoreCase))      isExcluded = true;
-                else if (string.Equals(trimmed, "false", StringComparison.OrdinalIgnoreCase)) isExcluded = false;
-                else
+                var isValidIsExcluded =
+                    string.Equals(trimmed, "true", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(trimmed, "false", StringComparison.OrdinalIgnoreCase);
+                if (!isValidIsExcluded)
                 {
                     errors.Add(new BatchEditValidationError(row.LineNumber, row.Scope, sourceLabel,
                         $"is_excluded must be 'true' or 'false'. Got '{row.IsExcludedRaw}'."));

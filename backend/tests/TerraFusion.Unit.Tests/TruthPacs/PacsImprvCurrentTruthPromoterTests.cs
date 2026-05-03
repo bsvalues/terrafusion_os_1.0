@@ -246,6 +246,8 @@ public sealed class PacsImprvCurrentTruthPromoterTests : IDisposable
             "truth-pacs-imprv-supp-aware-join",
             "truth-pacs-imprv-promotion-coverage",
             "truth-pacs-imprv-aggregate",
+            // G4 (v1.13): pre-conversion-share gate.
+            "truth-pacs-imprv-pre-conversion-share",
         });
     }
 

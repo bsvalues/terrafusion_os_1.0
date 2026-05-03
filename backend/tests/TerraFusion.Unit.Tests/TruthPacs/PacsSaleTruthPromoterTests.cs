@@ -299,6 +299,8 @@ public sealed class PacsSaleTruthPromoterTests : IDisposable
             "truth-pacs-supp-aware-join",
             "truth-pacs-stale-axis-rejected",
             "truth-pacs-promotion-coverage",
+            // G4 (v1.13): pre-conversion-share gate.
+            "truth-pacs-sale-pre-conversion-share",
         });
         gates.Where(g => g.GateName == "truth-pacs-source-batch-completed")
             .Single().Status.Should().Be("PASS");

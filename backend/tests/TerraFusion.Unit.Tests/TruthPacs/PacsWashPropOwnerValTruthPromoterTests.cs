@@ -250,6 +250,8 @@ public sealed class PacsWashPropOwnerValTruthPromoterTests : IDisposable
             "truth-pacs-wpov-supp-aware-join",
             "truth-pacs-wpov-promotion-coverage",
             "truth-pacs-wpov-aggregate",
+            // G4 (v1.13): pre-conversion-share gate.
+            "truth-pacs-wpov-pre-conversion-share",
         });
     }
 

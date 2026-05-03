@@ -400,6 +400,8 @@ public sealed class PacsOwnerCurrentTruthPromoterTests : IDisposable
             "truth-pacs-owner-account-link",
             "truth-pacs-owner-pct-completeness",
             "truth-pacs-owner-promotion-coverage",
+            // G4 (v1.13): pre-conversion-share gate.
+            "truth-pacs-owner-pre-conversion-share",
         });
     }
 

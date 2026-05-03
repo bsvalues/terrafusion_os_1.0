@@ -41,8 +41,11 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
 
     /// <summary>
     /// Latest intent-filter-out count; updated each <see cref="RefreshModulesAsync"/>
-    /// pass. Volatile because <see cref="SystemHealthController.GetSystemHealth"/>
-    /// can read it from a different thread than the one that wrote it.
+    /// pass. Volatile because <c>SystemHealthController.GetSystemHealth</c>
+    /// can read it from a different thread than the one that wrote it
+    /// (the cref is a <c>code</c> tag rather than a typed reference so this
+    /// file does not need a using on a controller type that may not exist
+    /// in every build profile).
     /// </summary>
     private volatile int _lastFilteredOutCount;
     public int LastFilteredOutCount => _lastFilteredOutCount;
