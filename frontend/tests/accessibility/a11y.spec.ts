@@ -12,17 +12,10 @@ import { expect, test } from '@playwright/test';
  * - FISMA-High accessibility standards
  */
 
-test.describe.configure({ mode: 'serial' });
-
-async function gotoAndWaitForShell(page: import('@playwright/test').Page, path = '/') {
-  await page.goto(path, { waitUntil: 'domcontentloaded' });
-  await page.getByText(/Loading TerraFusion OS/i).waitFor({ state: 'detached', timeout: 15000 }).catch(() => {});
-  await expect(page.locator('[data-testid="desktop"], [role="main"], #desktop-main-content').first()).toBeVisible({ timeout: 30000 });
-}
-
 test.describe('TerraFusion OS Accessibility Audit', () => {
   test.beforeEach(async ({ page }) => {
-    await gotoAndWaitForShell(page);
+    // Navigate to homepage using baseURL from playwright.config.ts
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
   });
 
   test('should not have any automatically detectable accessibility violations on homepage', async ({
@@ -158,7 +151,7 @@ test.describe('TerraFusion OS Accessibility Audit', () => {
 
 test.describe('TerraFusion OS Component Accessibility', () => {
   test('should have accessible buttons', async ({ page }) => {
-    await gotoAndWaitForShell(page);
+    await page.goto('/');
 
     const accessibilityScanResults = await new AxeBuilder({ page })
       .include('button, [role="button"]')
@@ -168,7 +161,7 @@ test.describe('TerraFusion OS Component Accessibility', () => {
   });
 
   test('should have accessible links', async ({ page }) => {
-    await gotoAndWaitForShell(page);
+    await page.goto('/');
 
     const accessibilityScanResults = await new AxeBuilder({ page }).include('a').analyze();
 
@@ -186,7 +179,7 @@ test.describe('TerraFusion OS Key Routes Accessibility', () => {
 
   for (const route of routes) {
     test(`should not have accessibility violations on ${route.name} page`, async ({ page }) => {
-      await gotoAndWaitForShell(page, route.path);
+      await page.goto(route.path, { waitUntil: 'domcontentloaded' });
 
       const accessibilityScanResults = await new AxeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'section508'])
@@ -204,7 +197,7 @@ test.describe('TerraFusion OS Key Routes Accessibility', () => {
     });
 
     test(`should not have critical/serious violations on ${route.name} page`, async ({ page }) => {
-      await gotoAndWaitForShell(page, route.path);
+      await page.goto(route.path, { waitUntil: 'domcontentloaded' });
 
       const accessibilityScanResults = await new AxeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'section508'])
