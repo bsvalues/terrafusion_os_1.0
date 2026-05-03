@@ -94,8 +94,21 @@ public class AIDeStubTests
         status.HealthScore.Should().Be(0);
     }
 
+    // Issue #733: ConsciousnessEngineStub.InitializeSwarmAsync and
+    // ExecuteQuantumOptimizationAsync are intentionally compatibility-
+    // surface-only per the v1 governed-quantum-lane policy. They MUST
+    // NOT actually provision agents or run quantum optimization in this
+    // build profile. The stub source documents this with:
+    //   "Governed swarm provisioning and quantum optimization are
+    //    unavailable; compatibility surface only."
+    // and `backend/CLAUDE.md` reinforces it: "DO NOT interfere with
+    // production AI swarm." The tests below pin the unavailable
+    // contract — flipping these assertions back to BeTrue would mean
+    // someone has un-stubbed the governed lane, and that needs to be
+    // a doctrine-level conversation, not a quiet code change.
+
     [Fact]
-    public async System.Threading.Tasks.Task ConsciousnessEngine_InitializeSwarm_CreatesNewAgents()
+    public async System.Threading.Tasks.Task ConsciousnessEngine_InitializeSwarm_ReturnsFalse_GovernedLaneUnavailable()
     {
         await using var ctx = CreateDbContext("CE_InitSwarm");
 
@@ -104,18 +117,21 @@ public class AIDeStubTests
 
         var result = await engine.InitializeSwarmAsync(20, "BENTON");
 
-        result.Should().BeTrue();
-        var agentCount = await ctx.AIAgents.CountAsync();
-        agentCount.Should().Be(20);
+        // #733: stub MUST return false (governed lane unavailable).
+        result.Should().BeFalse(
+            "ConsciousnessEngineStub.InitializeSwarmAsync is a " +
+            "compatibility surface only; agent provisioning is " +
+            "deliberately unavailable in this build profile.");
 
-        var bentonAgents = await ctx.AIAgents
-            .Where(a => a.AssignedCounty == "BENTON")
-            .CountAsync();
-        bentonAgents.Should().Be(20);
+        // And it MUST NOT have created any rows.
+        var agentCount = await ctx.AIAgents.CountAsync();
+        agentCount.Should().Be(0,
+            "stub does not actually provision agents — empty input " +
+            "stays empty.");
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task ConsciousnessEngine_InitializeSwarm_DoesNotDuplicateExisting()
+    public async System.Threading.Tasks.Task ConsciousnessEngine_InitializeSwarm_ReturnsFalse_AndDoesNotMutateExistingAgents()
     {
         await using var ctx = CreateDbContext("CE_InitSwarm_NoDup");
         await SeedAgents(ctx, 15, "Active", "BENTON");
@@ -125,9 +141,16 @@ public class AIDeStubTests
 
         var result = await engine.InitializeSwarmAsync(20, "BENTON");
 
-        result.Should().BeTrue();
+        // #733: stub MUST return false (governed lane unavailable).
+        result.Should().BeFalse();
+
+        // Pre-seeded agents must remain untouched — stub never adds,
+        // never removes, never edits. This is the strongest contract
+        // for a compatibility surface.
         var agentCount = await ctx.AIAgents.CountAsync();
-        agentCount.Should().Be(20, "should only create 5 new agents to reach 20");
+        agentCount.Should().Be(15,
+            "stub does not provision; pre-seeded rows remain " +
+            "exactly as seeded.");
     }
 
     [Fact]
@@ -175,7 +198,7 @@ public class AIDeStubTests
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task ConsciousnessEngine_QuantumOptimization_RecordsMetric()
+    public async System.Threading.Tasks.Task ConsciousnessEngine_QuantumOptimization_ReturnsFailure_AndPersistsNothing()
     {
         await using var ctx = CreateDbContext("CE_Quantum");
         await SeedAgents(ctx, 5, "Active");
@@ -191,16 +214,27 @@ public class AIDeStubTests
 
         var result = await engine.ExecuteQuantumOptimizationAsync(request);
 
-        result.Success.Should().BeTrue();
-        result.QuantumFactor.Should().Be(949);
-        result.OptimizationScore.Should().BeGreaterThan(0);
+        // #733: governed-quantum-lane is unavailable per stub doctrine.
+        result.Success.Should().BeFalse(
+            "ConsciousnessEngineStub.ExecuteQuantumOptimizationAsync " +
+            "is a compatibility surface only.");
+        result.OptimizationScore.Should().Be(0m);
+        result.Results.Should().ContainKey("governed_quantum_lane_available")
+            .WhoseValue.Should().Be(false);
+        result.Results.Should().ContainKey("requested_quantum_factor")
+            .WhoseValue.Should().Be(949,
+                "the requested factor is echoed in the result for " +
+                "operator-side traceback even though no optimization " +
+                "actually ran.");
 
-        // Verify metric was persisted
+        // The stub MUST NOT have persisted a PerformanceMetric row —
+        // recording a fake metric would lie about what happened.
         var metric = await ctx.PerformanceMetrics
             .Where(m => m.MetricName == "QuantumOptimization")
             .FirstOrDefaultAsync();
-        metric.Should().NotBeNull("optimization should record a performance metric");
-        metric!.Source.Should().Be("ConsciousnessEngine");
+        metric.Should().BeNull(
+            "stub does not actually run optimization, therefore must " +
+            "not persist a metric for it.");
     }
 
     [Fact]
