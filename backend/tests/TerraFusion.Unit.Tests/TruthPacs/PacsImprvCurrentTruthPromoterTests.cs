@@ -285,7 +285,9 @@ public sealed class PacsImprvCurrentTruthPromoterTests : IDisposable
         var gates = await _db.SyncBridgePromotionGateResults
             .Where(g => g.LoadBatchId == result.PromotionLoadBatchId)
             .ToListAsync();
-        gates.Should().HaveCount(4);
+        // G4 (v1.13): the new pre-conversion-share gate brings the
+        // imprv lane's gate count to 5.
+        gates.Should().HaveCount(5);
         gates.Should().OnlyContain(g => g.Status != "FAIL");
     }
 
@@ -351,5 +353,48 @@ public sealed class PacsImprvCurrentTruthPromoterTests : IDisposable
         truth.YearBuilt.Should().Be(1990);
         truth.EffectiveYearBuilt.Should().Be(2010);
         truth.ActualYearBuilt.Should().Be(1990);
+    }
+
+    [Fact]
+    public async Task PreConversionShareGate_Trips_WARN_OnPreConversionHeavyBatch()
+    {
+        // G4 (v1.13): one pre-conversion row + one post = 50% share,
+        // well over the 5% threshold ⇒ WARN.
+        var imprvBatch = await SeedBatchAsync("imprv");
+        var suppBatch = await SeedBatchAsync("supp");
+        await SeedSuppAsync(suppBatch, propId: 100, year: 2010, sup: 0);
+        await SeedSuppAsync(suppBatch, propId: 200, year: 2026, sup: 0);
+        await SeedImprvAsync(imprvBatch, propId: 100, imprvId: 1, year: 2010);
+        await SeedImprvAsync(imprvBatch, propId: 200, imprvId: 1, year: 2026);
+
+        var result = await BuildPromoter().PromoteAsync(imprvBatch, suppBatch, "c2-test");
+
+        var gate = await _db.SyncBridgePromotionGateResults
+            .SingleAsync(g => g.LoadBatchId == result.PromotionLoadBatchId
+                           && g.GateName == ConversionEraGate.GateNameFor(
+                                  ConversionEraGate.Lanes.Imprv));
+        gate.Status.Should().Be("WARN");
+        gate.GateStage.Should().Be("RAW_TO_TRUTH");
+        gate.Detail.Should().Contain("preConversion=1");
+        gate.Detail.Should().Contain("total=2");
+    }
+
+    [Fact]
+    public async Task PreConversionShareGate_Stays_PASS_OnAllPostConversionBatch()
+    {
+        // G4 (v1.13): 0% pre-conversion share ⇒ PASS regardless of count.
+        var imprvBatch = await SeedBatchAsync("imprv");
+        var suppBatch = await SeedBatchAsync("supp");
+        await SeedSuppAsync(suppBatch, propId: 100, year: 2026, sup: 0);
+        await SeedImprvAsync(imprvBatch, propId: 100, imprvId: 1);
+
+        var result = await BuildPromoter().PromoteAsync(imprvBatch, suppBatch, "c2-test");
+
+        var gate = await _db.SyncBridgePromotionGateResults
+            .SingleAsync(g => g.LoadBatchId == result.PromotionLoadBatchId
+                           && g.GateName == ConversionEraGate.GateNameFor(
+                                  ConversionEraGate.Lanes.Imprv));
+        gate.Status.Should().Be("PASS");
+        gate.Detail.Should().Contain("preConversion=0");
     }
 }

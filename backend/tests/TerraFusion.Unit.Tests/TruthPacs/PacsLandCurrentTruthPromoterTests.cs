@@ -285,7 +285,9 @@ public sealed class PacsLandCurrentTruthPromoterTests : IDisposable
         var gates = await _db.SyncBridgePromotionGateResults
             .Where(g => g.LoadBatchId == result.PromotionLoadBatchId)
             .ToListAsync();
-        gates.Should().HaveCount(4);
+        // G4 (v1.13): the new pre-conversion-share gate brings the
+        // land lane's gate count to 5.
+        gates.Should().HaveCount(5);
         gates.Should().OnlyContain(g => g.Status != "FAIL");
     }
 
@@ -394,5 +396,46 @@ public sealed class PacsLandCurrentTruthPromoterTests : IDisposable
         truth.LandSegMarketVal.Should().Be(240_000m);
         truth.LandSegAgValue.Should().Be(80_000m);
         truth.LandSegAssessedVal.Should().Be(80_000m);
+    }
+
+    [Fact]
+    public async Task PreConversionShareGate_Trips_WARN_OnPreConversionHeavyBatch()
+    {
+        // G4 (v1.13): one pre + one post = 50% > 5% ⇒ WARN.
+        var landBatch = await SeedBatchAsync("land");
+        var suppBatch = await SeedBatchAsync("supp");
+        await SeedSuppAsync(suppBatch, propId: 100, year: 2010, sup: 0);
+        await SeedSuppAsync(suppBatch, propId: 200, year: 2026, sup: 0);
+        await SeedLandAsync(landBatch, propId: 100, landSegId: 1, year: 2010);
+        await SeedLandAsync(landBatch, propId: 200, landSegId: 1, year: 2026);
+
+        var result = await BuildPromoter().PromoteAsync(landBatch, suppBatch, "l2-test");
+
+        var gate = await _db.SyncBridgePromotionGateResults
+            .SingleAsync(g => g.LoadBatchId == result.PromotionLoadBatchId
+                           && g.GateName == ConversionEraGate.GateNameFor(
+                                  ConversionEraGate.Lanes.Land));
+        gate.Status.Should().Be("WARN");
+        gate.GateStage.Should().Be("RAW_TO_TRUTH");
+        gate.Detail.Should().Contain("preConversion=1");
+        gate.Detail.Should().Contain("total=2");
+    }
+
+    [Fact]
+    public async Task PreConversionShareGate_Stays_PASS_OnAllPostConversionBatch()
+    {
+        var landBatch = await SeedBatchAsync("land");
+        var suppBatch = await SeedBatchAsync("supp");
+        await SeedSuppAsync(suppBatch, propId: 100, year: 2026, sup: 0);
+        await SeedLandAsync(landBatch, propId: 100, landSegId: 1);
+
+        var result = await BuildPromoter().PromoteAsync(landBatch, suppBatch, "l2-test");
+
+        var gate = await _db.SyncBridgePromotionGateResults
+            .SingleAsync(g => g.LoadBatchId == result.PromotionLoadBatchId
+                           && g.GateName == ConversionEraGate.GateNameFor(
+                                  ConversionEraGate.Lanes.Land));
+        gate.Status.Should().Be("PASS");
+        gate.Detail.Should().Contain("preConversion=0");
     }
 }

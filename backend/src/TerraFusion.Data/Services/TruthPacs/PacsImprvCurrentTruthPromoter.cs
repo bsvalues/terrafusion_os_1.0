@@ -118,6 +118,8 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
             var promoted = 0;
             var rejectedNoSupp = 0;
             var rejectedStaleSup = 0;
+            // G4 (v1.13): pre-conversion-share gate counter.
+            var preConversionPromoted = 0;
             decimal imprvValSum = 0m;
             var now = DateTime.UtcNow;
 
@@ -135,6 +137,10 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
                     rejectedStaleSup++;
                     continue;
                 }
+
+                // G1 (v1.10): conversion-era marker derived from PropValYr.
+                var era = ConversionEras.FromYear(imprv.PropValYr);
+                if (era == ConversionEras.PreConversion2017) preConversionPromoted++;
 
                 _db.TruthPacsImprvCurrents.Add(new TruthPacsImprvCurrent
                 {
@@ -156,8 +162,7 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
                     ImprvLoadBatchId = imprvLoadBatchId,
                     SuppAssocLoadBatchId = suppAssocLoadBatchId,
                     PromotionLoadBatchId = batch.LoadBatchId,
-                    // G1 (v1.10): conversion-era marker derived from PropValYr.
-                    ConversionEra = ConversionEras.FromYear(imprv.PropValYr),
+                    ConversionEra = era,
                     PromotedAt = now,
                 });
                 promoted++;
@@ -165,6 +170,12 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
                 if (imprv.ImprvVal.HasValue) imprvValSum += imprv.ImprvVal.Value;
             }
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+            // G4 (v1.13): pre-conversion-share gate. Queued before the
+            // remaining-gate writes so they batch into a single save.
+            ConversionEraGate.AddShareGate(
+                _db, batch, ConversionEraGate.Lanes.Imprv,
+                promoted, preConversionPromoted);
 
             await WriteRemainingGatesAsync(batch, considered, promoted,
                 rejectedNoSupp, rejectedStaleSup, imprvValSum,

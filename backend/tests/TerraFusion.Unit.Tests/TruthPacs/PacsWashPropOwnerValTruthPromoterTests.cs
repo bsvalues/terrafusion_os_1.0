@@ -290,7 +290,9 @@ public sealed class PacsWashPropOwnerValTruthPromoterTests : IDisposable
         var gates = await _db.SyncBridgePromotionGateResults
             .Where(g => g.LoadBatchId == result.PromotionLoadBatchId)
             .ToListAsync();
-        gates.Should().HaveCount(4);
+        // G4 (v1.13): the new pre-conversion-share gate brings the
+        // wpov lane's gate count to 5.
+        gates.Should().HaveCount(5);
         gates.Should().OnlyContain(g => g.Status != "FAIL");
     }
 
@@ -366,5 +368,46 @@ public sealed class PacsWashPropOwnerValTruthPromoterTests : IDisposable
         truth.DisasterProrationPct.Should().Be(50.5m);
         truth.SnrFrzImprvHs.Should().Be(100_000m);
         truth.SnrFrzLandHs.Should().Be(25_000m);
+    }
+
+    [Fact]
+    public async Task PreConversionShareGate_Trips_WARN_OnPreConversionHeavyBatch()
+    {
+        // G4 (v1.13): one pre + one post = 50% > 5% ⇒ WARN.
+        var wpovBatch = await SeedBatchAsync("wpov");
+        var suppBatch = await SeedBatchAsync("supp");
+        await SeedSuppAsync(suppBatch, propId: 100, year: 2010, sup: 0);
+        await SeedSuppAsync(suppBatch, propId: 200, year: 2026, sup: 0);
+        await SeedWpovAsync(wpovBatch, propId: 100, ownerId: 1, year: 2010);
+        await SeedWpovAsync(wpovBatch, propId: 200, ownerId: 2, year: 2026);
+
+        var result = await BuildPromoter().PromoteAsync(wpovBatch, suppBatch, "test-op");
+
+        var gate = await _db.SyncBridgePromotionGateResults
+            .SingleAsync(g => g.LoadBatchId == result.PromotionLoadBatchId
+                           && g.GateName == ConversionEraGate.GateNameFor(
+                                  ConversionEraGate.Lanes.Wpov));
+        gate.Status.Should().Be("WARN");
+        gate.GateStage.Should().Be("RAW_TO_TRUTH");
+        gate.Detail.Should().Contain("preConversion=1");
+        gate.Detail.Should().Contain("total=2");
+    }
+
+    [Fact]
+    public async Task PreConversionShareGate_Stays_PASS_OnAllPostConversionBatch()
+    {
+        var wpovBatch = await SeedBatchAsync("wpov");
+        var suppBatch = await SeedBatchAsync("supp");
+        await SeedSuppAsync(suppBatch, propId: 100, year: 2026, sup: 0);
+        await SeedWpovAsync(wpovBatch, propId: 100, ownerId: 1);
+
+        var result = await BuildPromoter().PromoteAsync(wpovBatch, suppBatch, "test-op");
+
+        var gate = await _db.SyncBridgePromotionGateResults
+            .SingleAsync(g => g.LoadBatchId == result.PromotionLoadBatchId
+                           && g.GateName == ConversionEraGate.GateNameFor(
+                                  ConversionEraGate.Lanes.Wpov));
+        gate.Status.Should().Be("PASS");
+        gate.Detail.Should().Contain("preConversion=0");
     }
 }

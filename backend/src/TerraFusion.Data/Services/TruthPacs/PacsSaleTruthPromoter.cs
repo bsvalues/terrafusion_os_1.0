@@ -149,6 +149,8 @@ public sealed class PacsSaleTruthPromoter : IPacsSaleTruthPromoter
             var rejectedNoSuppPointer = 0;
             var rejectedStaleSupNum = 0;
             var rejectedStaleAxis = 0;
+            // G4 (v1.13): pre-conversion-share gate counter.
+            var preConversionPromoted = 0;
 
             var now = DateTime.UtcNow;
             foreach (var sale in sales)
@@ -181,6 +183,10 @@ public sealed class PacsSaleTruthPromoter : IPacsSaleTruthPromoter
                     continue;
                 }
 
+                // G1 (v1.10): conversion-era marker derived from PropValYr.
+                var era = ConversionEras.FromYear(sale.PropValYr);
+                if (era == ConversionEras.PreConversion2017) preConversionPromoted++;
+
                 _db.TruthPacsSales.Add(new TruthPacsSale
                 {
                     ChgOfOwnerId = sale.ChgOfOwnerId,
@@ -196,13 +202,17 @@ public sealed class PacsSaleTruthPromoter : IPacsSaleTruthPromoter
                     SaleLoadBatchId = saleLoadBatchId,
                     SuppAssocLoadBatchId = suppAssocLoadBatchId,
                     PromotionLoadBatchId = batch.LoadBatchId,
-                    // G1 (v1.10): conversion-era marker derived from PropValYr.
-                    ConversionEra = ConversionEras.FromYear(sale.PropValYr),
+                    ConversionEra = era,
                     PromotedAt = now,
                 });
                 promoted++;
             }
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+            // G4 (v1.13): pre-conversion-share gate.
+            ConversionEraGate.AddShareGate(
+                _db, batch, ConversionEraGate.Lanes.Sale,
+                promoted, preConversionPromoted);
 
             await WriteRemainingGatesAsync(batch, considered, promoted,
                 rejectedNotQualified, rejectedNoSuppPointer, rejectedStaleSupNum,

@@ -1061,6 +1061,55 @@ public sealed class BlockCContractV1Tests : IDisposable
     }
 
     // ───────────────────────────────────────────────────────────────
+    // v1.13 addendum — pre-conversion-share promotion gate (G4)
+    // ───────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void Contract_v1_13_ConversionEraGate_ThresholdIsFrozenAt5Percent()
+    {
+        // v1.13 §1: the WARN threshold is a doctrine constant, not a
+        // runtime knob. Bumping it is a v1.x bump.
+        TerraFusion.Data.Services.TruthPacs.ConversionEraGate
+            .PreConversionShareWarnThreshold
+            .Should().Be(0.05m,
+                "Block-C contract v1.13 §1 freezes the WARN threshold");
+    }
+
+    [Fact]
+    public void Contract_v1_13_ConversionEraGate_GateNameTemplateIsFrozen()
+    {
+        // v1.13 §3: the gate name pattern is "truth-pacs-{lane}-pre-conversion-share".
+        TerraFusion.Data.Services.TruthPacs.ConversionEraGate.GateNamePrefix
+            .Should().Be("truth-pacs");
+        TerraFusion.Data.Services.TruthPacs.ConversionEraGate.GateNameSuffix
+            .Should().Be("pre-conversion-share");
+
+        TerraFusion.Data.Services.TruthPacs.ConversionEraGate
+            .GateNameFor("sale")
+            .Should().Be("truth-pacs-sale-pre-conversion-share");
+    }
+
+    [Fact]
+    public void Contract_v1_13_ConversionEraGate_LaneIdsMatchTheFiveTruthLanes()
+    {
+        // v1.13 §3: the five lane identifiers are frozen and match
+        // the five truth_pacs entities that carry ConversionEra.
+        var lanes = new[]
+        {
+            TerraFusion.Data.Services.TruthPacs.ConversionEraGate.Lanes.Sale,
+            TerraFusion.Data.Services.TruthPacs.ConversionEraGate.Lanes.Owner,
+            TerraFusion.Data.Services.TruthPacs.ConversionEraGate.Lanes.Wpov,
+            TerraFusion.Data.Services.TruthPacs.ConversionEraGate.Lanes.Imprv,
+            TerraFusion.Data.Services.TruthPacs.ConversionEraGate.Lanes.Land,
+        };
+
+        lanes.Should().BeEquivalentTo(new[]
+        {
+            "sale", "owner", "wpov", "imprv", "land",
+        });
+    }
+
+    // ───────────────────────────────────────────────────────────────
     // v1.12 addendum — eraFilter on SalesRatioStudy read endpoints (G3)
     // ───────────────────────────────────────────────────────────────
 

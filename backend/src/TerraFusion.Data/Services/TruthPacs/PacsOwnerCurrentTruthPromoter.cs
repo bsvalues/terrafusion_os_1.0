@@ -144,6 +144,8 @@ public sealed class PacsOwnerCurrentTruthPromoter : IPacsOwnerCurrentTruthPromot
             var rejectedNoSupp = 0;
             var rejectedStaleSup = 0;
             var rejectedNoAccount = 0;
+            // G4 (v1.13): pre-conversion-share gate counter.
+            var preConversionPromoted = 0;
 
             // Pct accumulator across promoted rows only — the hard
             // gate applies to the COMPLETE truth-layer projection.
@@ -170,6 +172,10 @@ public sealed class PacsOwnerCurrentTruthPromoter : IPacsOwnerCurrentTruthPromot
                     continue;
                 }
 
+                // G1 (v1.10): conversion-era marker derived from OwnerTaxYr.
+                var era = ConversionEras.FromYear(owner.OwnerTaxYr);
+                if (era == ConversionEras.PreConversion2017) preConversionPromoted++;
+
                 _db.TruthPacsOwnerCurrents.Add(new TruthPacsOwnerCurrent
                 {
                     PropId = owner.PropId,
@@ -193,8 +199,7 @@ public sealed class PacsOwnerCurrentTruthPromoter : IPacsOwnerCurrentTruthPromot
                     AccountLoadBatchId = accountLoadBatchId,
                     SuppAssocLoadBatchId = suppAssocLoadBatchId,
                     PromotionLoadBatchId = batch.LoadBatchId,
-                    // G1 (v1.10): conversion-era marker derived from OwnerTaxYr.
-                    ConversionEra = ConversionEras.FromYear(owner.OwnerTaxYr),
+                    ConversionEra = era,
                     PromotedAt = now,
                 });
                 promoted++;
@@ -217,6 +222,11 @@ public sealed class PacsOwnerCurrentTruthPromoter : IPacsOwnerCurrentTruthPromot
 
             var pctViolations = groupPctSums.Values.Count(s =>
                 !s.HasValue || Math.Abs(s.Value - 100m) > FullPctTolerance);
+
+            // G4 (v1.13): pre-conversion-share gate.
+            ConversionEraGate.AddShareGate(
+                _db, batch, ConversionEraGate.Lanes.Owner,
+                promoted, preConversionPromoted);
 
             await WriteRemainingGatesAsync(batch, considered, promoted,
                 rejectedNoSupp, rejectedStaleSup, rejectedNoAccount,

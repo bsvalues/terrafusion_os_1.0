@@ -347,7 +347,9 @@ public sealed class PacsSaleTruthPromoterTests : IDisposable
         var gates = await _db.SyncBridgePromotionGateResults
             .Where(g => g.LoadBatchId == result.PromotionLoadBatchId)
             .ToListAsync();
-        gates.Should().HaveCount(5);
+        // G4 (v1.13): the new pre-conversion-share gate brings the
+        // sale lane's gate count to 6.
+        gates.Should().HaveCount(6);
         gates.Where(g => g.GateName == "truth-pacs-stale-axis-rejected")
             .Single().Status.Should().Be("PASS");
     }
@@ -367,5 +369,46 @@ public sealed class PacsSaleTruthPromoterTests : IDisposable
         (await _db.TfParcelGeoms.CountAsync()).Should().Be(0);
         // sync_bridge.source_xref also untouched (canonical lineage is S3).
         (await _db.SyncBridgeSourceXrefs.CountAsync()).Should().Be(0);
+    }
+
+    [Fact]
+    public async Task PreConversionShareGate_Trips_WARN_OnPreConversionHeavyBatch()
+    {
+        // G4 (v1.13): one pre + one post = 50% > 5% ⇒ WARN.
+        var saleBatch = await SeedCompletedBatchAsync("sale-batch");
+        var suppBatch = await SeedCompletedBatchAsync("supp-batch");
+        await SeedSuppAsync(suppBatch, propId: 100, year: 2010, sup: 0);
+        await SeedSuppAsync(suppBatch, propId: 200, year: 2026, sup: 0);
+        await SeedSaleAsync(saleBatch, chgOfOwnerId: 1, propId: 100, year: 2010, sup: 0, code: "100");
+        await SeedSaleAsync(saleBatch, chgOfOwnerId: 2, propId: 200, year: 2026, sup: 0, code: "100");
+
+        var result = await BuildPromoter().PromoteAsync(saleBatch, suppBatch, "test-op");
+
+        var gate = await _db.SyncBridgePromotionGateResults
+            .SingleAsync(g => g.LoadBatchId == result.PromotionLoadBatchId
+                           && g.GateName == ConversionEraGate.GateNameFor(
+                                  ConversionEraGate.Lanes.Sale));
+        gate.Status.Should().Be("WARN");
+        gate.GateStage.Should().Be("RAW_TO_TRUTH");
+        gate.Detail.Should().Contain("preConversion=1");
+        gate.Detail.Should().Contain("total=2");
+    }
+
+    [Fact]
+    public async Task PreConversionShareGate_Stays_PASS_OnAllPostConversionBatch()
+    {
+        var saleBatch = await SeedCompletedBatchAsync("sale-batch");
+        var suppBatch = await SeedCompletedBatchAsync("supp-batch");
+        await SeedSuppAsync(suppBatch, propId: 100, year: 2026, sup: 0);
+        await SeedSaleAsync(saleBatch, chgOfOwnerId: 1, propId: 100, year: 2026, sup: 0, code: "100");
+
+        var result = await BuildPromoter().PromoteAsync(saleBatch, suppBatch, "test-op");
+
+        var gate = await _db.SyncBridgePromotionGateResults
+            .SingleAsync(g => g.LoadBatchId == result.PromotionLoadBatchId
+                           && g.GateName == ConversionEraGate.GateNameFor(
+                                  ConversionEraGate.Lanes.Sale));
+        gate.Status.Should().Be("PASS");
+        gate.Detail.Should().Contain("preConversion=0");
     }
 }
