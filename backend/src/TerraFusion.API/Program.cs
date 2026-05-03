@@ -1747,6 +1747,16 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsWsdorCanonical.IPacsWsdorCanonicalProjector,
     TerraFusion.Data.Services.CanonicalTf.PacsWsdorCanonicalProjector>();
 
+// Slice C3: canonical_tf.tf_improvement + tf_improvement_feature
+// projector. Resolves PACS prop_id to TfParcelId via source_xref,
+// projects parent improvements to canonical, materializes feature
+// rows from raw imprv_detail, quarantines parcel-miss to
+// legacy_tf_unproven.imprv_current. Five C-* gates including
+// feature-coverage informational surface.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsImprvCanonical.IPacsImprvCanonicalProjector,
+    TerraFusion.Data.Services.CanonicalTf.PacsImprvCanonicalProjector>();
+
 // Slice B5': read-only WSDOR roll reader for the
 // /api/parcels/{tfParcelId}/wsdor-roll endpoint. Read-only by
 // contract: AsNoTracking, deterministic ordering by AssessedVal,
