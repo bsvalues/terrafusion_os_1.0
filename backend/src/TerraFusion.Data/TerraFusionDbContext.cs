@@ -297,6 +297,14 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.LegacyTfUnproven.LegacyTfUnprovenImprvCurrent>
     LegacyTfUnprovenImprvCurrents { get; set; } = null!;
 
+  // Slice L3: canonical_tf.tf_land projection. Land segments whose
+  // parcel cannot be resolved are quarantined to
+  // legacy_tf_unproven.land_current.
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfLand>
+    TfLands { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.LegacyTfUnproven.LegacyTfUnprovenLandCurrent>
+    LegacyTfUnprovenLandCurrents { get; set; } = null!;
+
   // Slice C41-B: per-county pointer naming the operator-active
   // Mapped workbook. Singleton per county (PK = CountyId). See
   // docs/sync/sync-county-active-workbook-pointer-policy.md for the
@@ -996,6 +1004,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       new TerraFusion.Data.Configurations.CanonicalTf.TfImprovementFeatureConfiguration());
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.LegacyTfUnproven.LegacyTfUnprovenImprvCurrentConfiguration());
+
+    // Slice L3: canonical_tf.tf_land + legacy_tf_unproven.land_current.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfLandConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyTfUnproven.LegacyTfUnprovenLandCurrentConfiguration());
 
     // Sync Bridge v1 — Phase 0 field_authority seed for the parcel
     // domain. Per docs/pacs/pacs-sync-bridge-v1-spec.md §4.
