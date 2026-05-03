@@ -330,6 +330,14 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.LegacyArcGisRaw.LegacyArcGisRawParcelGeom>
     LegacyArcGisRawParcelGeoms { get; set; } = null!;
 
+  // Slice D2: truth_arcgis.parcel_geom_current — supp-aware-
+  // validated current ArcGIS polygon, latest-per-(CountyId,
+  // ArcGisObjectId). Per docs/pacs/block-d-execution-plan.md §3.2.
+  // Geometry validity gate filters malformed WKT before D3
+  // projects to canonical_tf via APN crosswalk.
+  public DbSet<TerraFusion.Core.Entities.TruthArcGis.TruthArcGisParcelGeomCurrent>
+    TruthArcGisParcelGeomCurrents { get; set; } = null!;
+
   // Slice C41-B: per-county pointer naming the operator-active
   // Mapped workbook. Singleton per county (PK = CountyId). See
   // docs/sync/sync-county-active-workbook-pointer-policy.md for the
@@ -1050,6 +1058,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // landing. Per docs/pacs/block-d-execution-plan.md §3.1.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.LegacyArcGisRaw.LegacyArcGisRawParcelGeomConfiguration());
+
+    // Slice D2: truth_arcgis.parcel_geom_current — latest-per-
+    // (CountyId, ArcGisObjectId) truth promotion.
+    // Per docs/pacs/block-d-execution-plan.md §3.2.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.TruthArcGis.TruthArcGisParcelGeomCurrentConfiguration());
 
     // Sync Bridge v1 — Phase 0 field_authority seed for the parcel
     // domain. Per docs/pacs/pacs-sync-bridge-v1-spec.md §4.

@@ -1706,6 +1706,14 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.ArcGisRawLanding.IArcGisRawLandingService,
     TerraFusion.Data.Services.LegacyArcGisRaw.ArcGisRawLandingService>();
 
+// Slice D2: truth_arcgis.parcel_geom_current promoter. Collapses
+// raw to latest-per-(CountyId, ArcGisObjectId) with geometry
+// validity gate. Four T-* gates per the doctrine pattern. Per
+// docs/pacs/block-d-execution-plan.md §3.2.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.ArcGisTruthPromotion.IArcGisTruthPromotionService,
+    TerraFusion.Data.Services.TruthArcGis.ArcGisTruthPromotionService>();
+
 // Slice B2-A: truth_pacs.owner_current promoter — supp-aware
 // owner snapshot with account-link enforcement and HARD pct-
 // completeness gate. Five T-* gates. Idempotent by OwnerLoadBatchId.
