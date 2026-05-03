@@ -123,6 +123,19 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore ${{ inputs.solution }}
 
+      # CI-HYGIENE-3 (#737): build once, test with --no-build.
+      # Rationale: every prior `dotnet test` invocation re-built the
+      # whole Release solution because `--no-build` was not passed.
+      # On the GH-shared runner this cost ~4–5 minutes of CPU per
+      # job, pushing the test step past the ~8 minute soft cap that
+      # was killing Backend Tests on every PR since 2026-04-28.
+      # Splitting build and test cleanly separates which step fails
+      # and lets the test step run in roughly local time.
+      - name: Build (Release)
+        run: |
+          BUILD_TARGET="${{ inputs.test_project || inputs.solution }}"
+          dotnet build "$BUILD_TARGET" -c "${{ inputs.configuration }}" --no-restore -v:minimal /nologo
+
       - name: Canonical tests (Release)
         if: ${{ !inputs.enable_coverage }}
         env:
@@ -133,7 +146,12 @@ jobs:
           if [ -n "${{ inputs.test_filter }}" ]; then
             ARGS+=(--filter "${{ inputs.test_filter }}")
           fi
-          dotnet test "$TEST_TARGET" -c "${{ inputs.configuration }}" -v:minimal /nologo "${ARGS[@]}"
+          # --blame-hang-timeout: surface which test hangs if the run
+          # ever times out again (defensive diagnostic — 8 min hang
+          # cap is well above local 4 min runtime).
+          dotnet test "$TEST_TARGET" -c "${{ inputs.configuration }}" --no-build -v:minimal /nologo \
+            --blame-hang-timeout 8m --blame-hang-dump-type none \
+            "${ARGS[@]}"
 
       - name: Tests with coverage (Release)
         if: ${{ inputs.enable_coverage }}
@@ -145,7 +163,8 @@ jobs:
           if [ -n "${{ inputs.test_filter }}" ]; then
             ARGS+=(--filter "${{ inputs.test_filter }}")
           fi
-          dotnet test "$TEST_TARGET" -c "${{ inputs.configuration }}" -v:minimal /nologo "${ARGS[@]}" \
+          dotnet test "$TEST_TARGET" -c "${{ inputs.configuration }}" --no-build -v:minimal /nologo "${ARGS[@]}" \
+            --blame-hang-timeout 8m --blame-hang-dump-type none \
             --collect:"XPlat Code Coverage" \
             --logger "trx;LogFileName=test-results.trx" \
             --results-directory ./artifacts/test-results
