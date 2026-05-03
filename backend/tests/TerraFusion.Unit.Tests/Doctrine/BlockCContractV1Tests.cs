@@ -802,6 +802,31 @@ public sealed class BlockCContractV1Tests : IDisposable
     }
 
     [Fact]
+    public async System.Threading.Tasks.Task Contract_v1_5_AttributeCoverageGateName_IsReachable()
+    {
+        // v1.5 §3 adds a sixth canonical-imprv gate name. Asserting
+        // that the gate name persists round-trip via the existing
+        // promotion_gate_result shape with no schema change.
+        var batch = await SeedCompletedBatchAsync();
+        _db.SyncBridgePromotionGateResults.Add(new PromotionGateResult
+        {
+            LoadBatchId = batch,
+            GateName = "canonical-imprv-attribute-coverage",
+            GateStage = "TRUTH_TO_CANONICAL",
+            Status = "PASS",
+            Expected = "informational",
+            Actual = "0",
+            Detail = "considered=0 resolved=0 quarantined=0",
+        });
+        await _db.SaveChangesAsync();
+
+        var saved = await _db.SyncBridgePromotionGateResults
+            .SingleAsync(g => g.GateName == "canonical-imprv-attribute-coverage");
+        saved.GateStage.Should().Be("TRUTH_TO_CANONICAL");
+        saved.Status.Should().Be("PASS");
+    }
+
+    [Fact]
     public void Contract_v1_4_QuarantineReasons_IsKnown_RejectsUnknown()
     {
         QuarantineReasons.IsKnown(QuarantineReasons.NoParcelXref).Should().BeTrue();

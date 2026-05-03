@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TerraFusion.Core.Entities.CanonicalTf;
+using TerraFusion.Core.Entities.LegacyPacsRaw;
 using TerraFusion.Core.Entities.LegacyTfUnproven;
 using TerraFusion.Core.Entities.SyncBridge;
 using TerraFusion.Core.Sync.PacsImprvCanonical;
@@ -101,6 +102,10 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
                     PriorImprovementsRemoved = 0,
                     PriorFeaturesRemoved = 0,
                     PriorQuarantineRowsRemoved = 0,
+                    AttributesConsidered = 0,
+                    AttributesResolved = 0,
+                    AttributesQuarantined = 0,
+                    PriorAttrQuarantineRowsRemoved = 0,
                     ErrorSummary = detail,
                 };
             }
@@ -163,6 +168,20 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
                 .Where(q => truthIdSet.Contains(q.SourceTruthImprvId))
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
 
+            // E4b (v1.5): canonical-layer imprv_attr quarantine
+            // cleanup. Filter by QuarantineReason ==
+            // UnknownAttribute so we never touch landing-layer
+            // quarantine rows (which use UNKNOWN_I_ATTR_VAL_CD).
+            var attrTruthKeys = truthRows
+                .Select(t => (t.PropValYr, t.SupNum, t.PropId, t.ImprvId))
+                .ToHashSet();
+            var canonicalAttrQuarantineCandidates = await _db.LegacyTfUnprovenImprvAttrs
+                .Where(q => q.QuarantineReason == QuarantineReasons.UnknownAttribute)
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+            var priorAttrQuarantine = canonicalAttrQuarantineCandidates
+                .Where(q => attrTruthKeys.Contains((q.PropValYr, q.SupNum, q.PropId, q.ImprvId)))
+                .ToList();
+
             if (priorFeatures.Count > 0)
                 _db.TfImprovementFeatures.RemoveRange(priorFeatures);
             if (priorImprovements.Count > 0)
@@ -171,7 +190,10 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
                 _db.SyncBridgeSourceXrefs.RemoveRange(priorXrefs);
             if (priorQuarantine.Count > 0)
                 _db.LegacyTfUnprovenImprvCurrents.RemoveRange(priorQuarantine);
-            if (priorFeatures.Count + priorImprovements.Count + priorXrefs.Count + priorQuarantine.Count > 0)
+            if (priorAttrQuarantine.Count > 0)
+                _db.LegacyTfUnprovenImprvAttrs.RemoveRange(priorAttrQuarantine);
+            if (priorFeatures.Count + priorImprovements.Count + priorXrefs.Count
+                + priorQuarantine.Count + priorAttrQuarantine.Count > 0)
                 await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
             // ── Build parcel xref index. ──
@@ -191,11 +213,37 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
                 .GroupBy(d => (d.PropId, d.PropValYr, d.SupNum, d.ImprvId))
                 .ToDictionary(g => g.Key, g => g.ToList());
 
+            // ── E4b (v1.5): pre-fetch raw imprv_attr rows that
+            //    could link to truth-pacs imprvs in this batch
+            //    (4-key match). The 5-key (incl. ImprvDetId) is
+            //    not used for batch scoping — multiple attr rows
+            //    can hang off the same parent improvement. ──
+            var allRawAttrs = await _db.LegacyPacsRawImprvAttrs
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+            var attrsByImprv = allRawAttrs
+                .Where(a => attrTruthKeys.Contains((a.PropValYr, a.SupNum, a.PropId, a.ImprvId)))
+                .GroupBy(a => (a.PropValYr, a.SupNum, a.PropId, a.ImprvId))
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            // ── E4b (v1.5): pre-fetch active attribute_definition
+            //    rows. (CountyId, IAttrId) is uniquely indexed per
+            //    v1.2 §3.8; resolution looks up by that tuple. ──
+            var allActiveDefs = await _db.AttributeDefinitions
+                .Where(d => d.IsActive)
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+            var defByCountyAndIAttrId = allActiveDefs
+                .GroupBy(d => (d.CountyId, d.IAttrId))
+                .ToDictionary(g => g.Key, g => g.First());
+
             // ── Walk truth rows. ──
             var considered = truthRows.Count;
             var improvementsProjected = 0;
             var featuresProjected = 0;
             var quarantined = 0;
+            // E4b (v1.5) attribute-resolution counters.
+            var attributesConsidered = 0;
+            var attributesResolved = 0;
+            var attributesQuarantined = 0;
             var now = DateTime.UtcNow;
 
             foreach (var truth in truthRows)
@@ -263,6 +311,7 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
                 improvementsProjected++;
 
                 // Project secondary-feature children from raw imprv_detail.
+                // (v1.0 behavior — these features have AttributeId = NULL.)
                 if (detailsByKey.TryGetValue((truth.PropId, truth.PropValYr, truth.SupNum, truth.ImprvId),
                     out var details))
                 {
@@ -288,11 +337,78 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
                         featuresProjected++;
                     }
                 }
+
+                // E4b (v1.5): resolve raw imprv_attr rows against
+                // canonical_tf.attribute_definition. On match: spawn
+                // tf_improvement_feature with AttributeId. On miss:
+                // quarantine to legacy_tf_unproven.imprv_attr with
+                // QuarantineReasons.UnknownAttribute. See v1.5 §2.2.
+                if (attrsByImprv.TryGetValue((truth.PropValYr, truth.SupNum, truth.PropId, truth.ImprvId),
+                    out var rawAttrs))
+                {
+                    foreach (var attr in rawAttrs)
+                    {
+                        attributesConsidered++;
+
+                        if (defByCountyAndIAttrId.TryGetValue(
+                            (parcelLookup.CountyId, attr.IAttrValId), out var def))
+                        {
+                            // Resolved → tf_improvement_feature row
+                            // with AttributeId populated. v1.5 §2.2
+                            // step 3.
+                            _db.TfImprovementFeatures.Add(new TfImprovementFeature
+                            {
+                                TfImprovementId = imprv.TfImprovementId,
+                                FeatureCode = attr.IAttrValCd,
+                                Value = attr.AttrValueNumeric,
+                                AttributeId = def.AttributeDefinitionId,
+                                // v1.5 §2.2 NB: column name says
+                                // "ImprvDetail" but in the imprv_attr
+                                // case it points at imprv_attr.LandedRowId.
+                                SourceImprvDetailLandedRowId = attr.LandedRowId,
+                                PromotionLoadBatchId = batch.LoadBatchId,
+                                CreatedAt = now,
+                                UpdatedAt = now,
+                            });
+                            featuresProjected++;
+                            attributesResolved++;
+                        }
+                        else
+                        {
+                            // Unresolved → canonical-layer quarantine
+                            // (distinct from landing-layer quarantine
+                            // which uses UNKNOWN_I_ATTR_VAL_CD). See
+                            // v1.5 §2.2 step 4.
+                            _db.LegacyTfUnprovenImprvAttrs.Add(new LegacyTfUnprovenImprvAttr
+                            {
+                                PropValYr = attr.PropValYr,
+                                SupNum = attr.SupNum,
+                                PropId = attr.PropId,
+                                ImprvId = attr.ImprvId,
+                                ImprvDetId = attr.ImprvDetId,
+                                IAttrValId = attr.IAttrValId,
+                                IAttrValCd = attr.IAttrValCd,
+                                AttrValueText = attr.AttrValueText,
+                                AttrValueNumeric = attr.AttrValueNumeric,
+                                // v1.5 §2.2 NB: LandingLoadBatchId is
+                                // reused for canonical-layer batch
+                                // identity. Field name is a known
+                                // awkwardness flagged for v1.6+ cleanup.
+                                LandingLoadBatchId = batch.LoadBatchId,
+                                QuarantineReason = QuarantineReasons.UnknownAttribute,
+                                CreatedAt = now,
+                            });
+                            attributesQuarantined++;
+                        }
+                    }
+                }
             }
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
             await WriteRemainingGatesAsync(batch, considered, improvementsProjected,
-                featuresProjected, quarantined, cancellationToken).ConfigureAwait(false);
+                featuresProjected, quarantined,
+                attributesConsidered, attributesResolved, attributesQuarantined,
+                cancellationToken).ConfigureAwait(false);
 
             batch.Status = "COMPLETED";
             batch.CompletedAt = DateTime.UtcNow;
@@ -301,8 +417,9 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
             _logger.LogInformation(
-                "canonical_tf.tf_improvement projection COMPLETED. batch={BatchId} considered={Considered} improvements={Improvements} features={Features} quarantined={Quarantined}",
-                batch.LoadBatchId, considered, improvementsProjected, featuresProjected, quarantined);
+                "canonical_tf.tf_improvement projection COMPLETED. batch={BatchId} considered={Considered} improvements={Improvements} features={Features} quarantined={Quarantined} attrConsidered={AttrConsidered} attrResolved={AttrResolved} attrQuarantined={AttrQuarantined}",
+                batch.LoadBatchId, considered, improvementsProjected, featuresProjected, quarantined,
+                attributesConsidered, attributesResolved, attributesQuarantined);
 
             return new PacsImprvCanonicalResult
             {
@@ -315,6 +432,10 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
                 PriorImprovementsRemoved = priorImprovements.Count,
                 PriorFeaturesRemoved = priorFeatures.Count,
                 PriorQuarantineRowsRemoved = priorQuarantine.Count,
+                AttributesConsidered = attributesConsidered,
+                AttributesResolved = attributesResolved,
+                AttributesQuarantined = attributesQuarantined,
+                PriorAttrQuarantineRowsRemoved = priorAttrQuarantine.Count,
             };
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
@@ -340,6 +461,10 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
                 PriorImprovementsRemoved = 0,
                 PriorFeaturesRemoved = 0,
                 PriorQuarantineRowsRemoved = 0,
+                AttributesConsidered = 0,
+                AttributesResolved = 0,
+                AttributesQuarantined = 0,
+                PriorAttrQuarantineRowsRemoved = 0,
                 ErrorSummary = summary,
             };
         }
@@ -409,6 +534,9 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
         int improvementsProjected,
         int featuresProjected,
         int quarantined,
+        int attributesConsidered,
+        int attributesResolved,
+        int attributesQuarantined,
         CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
@@ -491,6 +619,24 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
             Expected = "informational",
             Actual = featuresProjected.ToString(CultureInfo.InvariantCulture),
             Detail = $"features={featuresProjected} improvementsWithFeatures={imprvsWithFeatures} improvementsWithoutFeatures={imprvsWithoutFeatures}",
+            ExecutedAt = now,
+        });
+
+        // 6) E4b (v1.5): attribute-coverage — informational PASS.
+        // Per v1.5 §3, this gate records resolved/considered/
+        // quarantined attribute counts. It is intentionally
+        // informational only; an unresolved attribute reflects
+        // missing canonical_tf.attribute_definition data, not a
+        // projector failure.
+        _db.SyncBridgePromotionGateResults.Add(new PromotionGateResult
+        {
+            LoadBatchId = batch.LoadBatchId,
+            GateName = "canonical-imprv-attribute-coverage",
+            GateStage = "TRUTH_TO_CANONICAL",
+            Status = "PASS",
+            Expected = "informational",
+            Actual = attributesResolved.ToString(CultureInfo.InvariantCulture),
+            Detail = $"considered={attributesConsidered} resolved={attributesResolved} quarantined={attributesQuarantined}",
             ExecutedAt = now,
         });
 

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using TerraFusion.Core.Entities.CanonicalTf;
 using TerraFusion.Core.Entities.LegacyPacsRaw;
+using TerraFusion.Core.Entities.LegacyTfUnproven;
 using TerraFusion.Core.Entities.SyncBridge;
 using TerraFusion.Core.Entities.TruthPacs;
 using TerraFusion.Core.Sync.PacsImprvCanonical;
@@ -381,6 +382,7 @@ public sealed class PacsImprvCanonicalProjectorTests : IDisposable
         var gates = await _db.SyncBridgePromotionGateResults
             .Where(g => g.LoadBatchId == result.PromotionLoadBatchId)
             .ToListAsync();
+        // E4b (v1.5) added the sixth gate (attribute-coverage).
         gates.Select(g => g.GateName).Should().BeEquivalentTo(new[]
         {
             "canonical-imprv-source-batch-completed",
@@ -388,6 +390,7 @@ public sealed class PacsImprvCanonicalProjectorTests : IDisposable
             "canonical-imprv-source-xref-coverage",
             "canonical-imprv-county-isolation",
             "canonical-imprv-feature-coverage",
+            "canonical-imprv-attribute-coverage",
         });
     }
 
@@ -404,7 +407,8 @@ public sealed class PacsImprvCanonicalProjectorTests : IDisposable
         var gates = await _db.SyncBridgePromotionGateResults
             .Where(g => g.LoadBatchId == result.PromotionLoadBatchId)
             .ToListAsync();
-        gates.Should().HaveCount(5);
+        // 6 gates per v1.5 (5 v1.0 gates + attribute-coverage).
+        gates.Should().HaveCount(6);
         gates.Should().OnlyContain(g => g.Status != "FAIL");
     }
 
@@ -472,5 +476,278 @@ public sealed class PacsImprvCanonicalProjectorTests : IDisposable
         feature.NumUnits.Should().Be(1);
         feature.YrBuilt.Should().Be(1995);
         feature.SourceImprvDetailLandedRowId.Should().NotBe(Guid.Empty);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // E4b (v1.5) — attribute resolution tests. Per
+    // docs/pacs/block-c-contract-v1.5.md.
+    // ─────────────────────────────────────────────────────────────────
+
+    private async Task SeedRawAttrAsync(
+        int propId, long imprvId, long imprvDetId, long iAttrValId,
+        string iAttrValCd, decimal? numeric = null, string? text = null,
+        short year = 2026, short sup = 0)
+    {
+        _db.LegacyPacsRawImprvAttrs.Add(new LegacyPacsRawImprvAttr
+        {
+            PropValYr = year,
+            SupNum = sup,
+            PropId = propId,
+            ImprvId = imprvId,
+            ImprvDetId = imprvDetId,
+            IAttrValId = iAttrValId,
+            IAttrValCd = iAttrValCd,
+            AttrValueText = text,
+            AttrValueNumeric = numeric,
+            LoadBatchId = Guid.NewGuid(),
+            SourceQueryHash = "qh",
+            SourceRowHash = $"attr-{iAttrValId}",
+        });
+        await _db.SaveChangesAsync();
+    }
+
+    private async Task<Guid> SeedAttributeDefinitionAsync(
+        Guid countyId, long iAttrId, string code,
+        string dataType = "STRING", string appliesTo = "IMPROVEMENT",
+        bool isActive = true)
+    {
+        var def = new AttributeDefinition
+        {
+            CountyId = countyId,
+            IAttrId = iAttrId,
+            AttributeCode = code,
+            DataType = dataType,
+            AppliesTo = appliesTo,
+            IsActive = isActive,
+            LoadBatchId = Guid.NewGuid(),
+            SourceQueryHash = "qh-def",
+        };
+        _db.AttributeDefinitions.Add(def);
+        await _db.SaveChangesAsync();
+        return def.AttributeDefinitionId;
+    }
+
+    [Fact]
+    public async Task E4b_KnownIAttrValId_ResolvesToAttributeId_AndPopulatesFeature()
+    {
+        // Per v1.5 §2.2: imprv_attr.IAttrValId == 47 in Benton resolves
+        // against attribute_definition.IAttrId == 47 with matching CountyId.
+        var truthBatch = await SeedCompletedBatchAsync("truth");
+        var (_, countyId) = await SeedParcelWithXrefAsync(propId: 100);
+        var defId = await SeedAttributeDefinitionAsync(
+            countyId, iAttrId: 47, code: "ROOF_TYPE_TILE");
+        await SeedTruthImprvAsync(truthBatch, propId: 100, imprvId: 1);
+        await SeedRawAttrAsync(
+            propId: 100, imprvId: 1, imprvDetId: 10,
+            iAttrValId: 47, iAttrValCd: "TILE", numeric: 0m);
+
+        var result = await BuildProjector().ProjectAsync(truthBatch, "e4b-test");
+
+        result.Status.Should().Be("COMPLETED");
+        result.AttributesConsidered.Should().Be(1);
+        result.AttributesResolved.Should().Be(1);
+        result.AttributesQuarantined.Should().Be(0);
+
+        var feature = await _db.TfImprovementFeatures
+            .SingleAsync(f => f.AttributeId != null);
+        feature.AttributeId.Should().Be(defId);
+        feature.FeatureCode.Should().Be("TILE");
+
+        // Quarantine surface stays empty.
+        (await _db.LegacyTfUnprovenImprvAttrs.CountAsync()).Should().Be(0);
+    }
+
+    [Fact]
+    public async Task E4b_UnknownIAttrValId_QuarantinesWith_UnknownAttribute()
+    {
+        // Per v1.5 §2.2 step 4: no matching attribute_definition row
+        // → quarantine to legacy_tf_unproven.imprv_attr with reason
+        // QuarantineReasons.UnknownAttribute.
+        var truthBatch = await SeedCompletedBatchAsync("truth");
+        await SeedParcelWithXrefAsync(propId: 100);
+        await SeedTruthImprvAsync(truthBatch, propId: 100, imprvId: 1);
+        // No attribute_definition seeded for IAttrValId=999.
+        await SeedRawAttrAsync(
+            propId: 100, imprvId: 1, imprvDetId: 10,
+            iAttrValId: 999, iAttrValCd: "MYSTERY");
+
+        var result = await BuildProjector().ProjectAsync(truthBatch, "e4b-test");
+
+        result.AttributesConsidered.Should().Be(1);
+        result.AttributesResolved.Should().Be(0);
+        result.AttributesQuarantined.Should().Be(1);
+
+        var quar = await _db.LegacyTfUnprovenImprvAttrs.SingleAsync();
+        quar.QuarantineReason.Should().Be(QuarantineReasons.UnknownAttribute);
+        quar.IAttrValId.Should().Be(999);
+        quar.IAttrValCd.Should().Be("MYSTERY");
+        quar.PropId.Should().Be(100);
+        quar.ImprvId.Should().Be(1);
+
+        // No tf_improvement_feature row was produced from this attr.
+        (await _db.TfImprovementFeatures.CountAsync(f => f.AttributeId != null))
+            .Should().Be(0);
+    }
+
+    [Fact]
+    public async Task E4b_SameIAttrValId_InDifferentCounty_DoesNotResolve()
+    {
+        // Per v1.5 §2.2 step 2: cross-county isolation. A definition
+        // in Benton must NOT resolve a Franklin attribute and vice-versa.
+        var truthBatch = await SeedCompletedBatchAsync("truth");
+        var (_, bentonCountyId) = await SeedParcelWithXrefAsync(propId: 100);
+
+        // Seed the def in a DIFFERENT county.
+        var franklinCountyId = Guid.NewGuid();
+        await SeedAttributeDefinitionAsync(
+            franklinCountyId, iAttrId: 47, code: "FRANKLIN_ROOF");
+
+        await SeedTruthImprvAsync(truthBatch, propId: 100, imprvId: 1);
+        await SeedRawAttrAsync(
+            propId: 100, imprvId: 1, imprvDetId: 10,
+            iAttrValId: 47, iAttrValCd: "TILE");
+
+        var result = await BuildProjector().ProjectAsync(truthBatch, "e4b-test");
+
+        result.AttributesResolved.Should().Be(0);
+        result.AttributesQuarantined.Should().Be(1,
+            "an i_attr_val_id that lives in another county must NOT resolve");
+
+        var quar = await _db.LegacyTfUnprovenImprvAttrs.SingleAsync();
+        quar.QuarantineReason.Should().Be(QuarantineReasons.UnknownAttribute);
+    }
+
+    [Fact]
+    public async Task E4b_InactiveAttributeDefinition_DoesNotResolve()
+    {
+        // Per v1.5 §2.2 step 2: IsActive == true is required.
+        var truthBatch = await SeedCompletedBatchAsync("truth");
+        var (_, countyId) = await SeedParcelWithXrefAsync(propId: 100);
+        await SeedAttributeDefinitionAsync(
+            countyId, iAttrId: 47, code: "RETIRED_ATTR", isActive: false);
+        await SeedTruthImprvAsync(truthBatch, propId: 100, imprvId: 1);
+        await SeedRawAttrAsync(
+            propId: 100, imprvId: 1, imprvDetId: 10,
+            iAttrValId: 47, iAttrValCd: "TILE");
+
+        var result = await BuildProjector().ProjectAsync(truthBatch, "e4b-test");
+
+        result.AttributesResolved.Should().Be(0);
+        result.AttributesQuarantined.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task E4b_AttributeCoverageGate_RecordsCounts()
+    {
+        var truthBatch = await SeedCompletedBatchAsync("truth");
+        var (_, countyId) = await SeedParcelWithXrefAsync(propId: 100);
+        await SeedAttributeDefinitionAsync(countyId, iAttrId: 47, code: "ROOF_TILE");
+        await SeedAttributeDefinitionAsync(countyId, iAttrId: 48, code: "WALL_BRICK");
+        await SeedTruthImprvAsync(truthBatch, propId: 100, imprvId: 1);
+        // Two resolve, one is unknown.
+        await SeedRawAttrAsync(propId: 100, imprvId: 1, imprvDetId: 10,
+            iAttrValId: 47, iAttrValCd: "TILE");
+        await SeedRawAttrAsync(propId: 100, imprvId: 1, imprvDetId: 11,
+            iAttrValId: 48, iAttrValCd: "BRICK");
+        await SeedRawAttrAsync(propId: 100, imprvId: 1, imprvDetId: 12,
+            iAttrValId: 999, iAttrValCd: "MYSTERY");
+
+        var result = await BuildProjector().ProjectAsync(truthBatch, "e4b-test");
+
+        var gate = await _db.SyncBridgePromotionGateResults
+            .SingleAsync(g => g.GateName == "canonical-imprv-attribute-coverage");
+        gate.Status.Should().Be("PASS");
+        gate.GateStage.Should().Be("TRUTH_TO_CANONICAL");
+        gate.Detail.Should().Contain("considered=3");
+        gate.Detail.Should().Contain("resolved=2");
+        gate.Detail.Should().Contain("quarantined=1");
+    }
+
+    [Fact]
+    public async Task E4b_NoParcelXrefQuarantine_StillWorks_AfterE4b()
+    {
+        // Regression guard: v1.0 NO_PARCEL_XREF behavior must remain
+        // intact. imprv_attr rows for missing-parcel improvements are
+        // simply not considered (per v1.5 §2.2 step 1).
+        var truthBatch = await SeedCompletedBatchAsync("truth");
+        // No parcel for prop 100.
+        await SeedTruthImprvAsync(truthBatch, propId: 100, imprvId: 1);
+        // Even though there's an attr — no parcel means the parent
+        // never gets to attribute resolution.
+        await SeedRawAttrAsync(propId: 100, imprvId: 1, imprvDetId: 10,
+            iAttrValId: 47, iAttrValCd: "TILE");
+
+        var result = await BuildProjector().ProjectAsync(truthBatch, "e4b-test");
+
+        result.RowsQuarantined.Should().Be(1);
+        var parentQuar = await _db.LegacyTfUnprovenImprvCurrents.SingleAsync();
+        parentQuar.QuarantineReason.Should().Be(QuarantineReasons.NoParcelXref);
+
+        // attr was never considered because parent didn't project.
+        result.AttributesConsidered.Should().Be(0);
+        (await _db.LegacyTfUnprovenImprvAttrs.CountAsync())
+            .Should().Be(0,
+            "imprv_attr rows for missing-parcel improvements are not " +
+            "evaluated against the dictionary per v1.5 §2.2 step 1");
+    }
+
+    [Fact]
+    public async Task E4b_Idempotent_OnReplay_AttributeQuarantineRowsRemovedAndReinserted()
+    {
+        // Re-running the same batch must clean up prior canonical-layer
+        // imprv_attr quarantine rows and re-insert exactly the same set,
+        // never duplicates.
+        var truthBatch = await SeedCompletedBatchAsync("truth");
+        await SeedParcelWithXrefAsync(propId: 100);
+        await SeedTruthImprvAsync(truthBatch, propId: 100, imprvId: 1);
+        await SeedRawAttrAsync(propId: 100, imprvId: 1, imprvDetId: 10,
+            iAttrValId: 999, iAttrValCd: "MYSTERY");
+
+        var run1 = await BuildProjector().ProjectAsync(truthBatch, "e4b-run1");
+        run1.AttributesQuarantined.Should().Be(1);
+        run1.PriorAttrQuarantineRowsRemoved.Should().Be(0);
+
+        var run2 = await BuildProjector().ProjectAsync(truthBatch, "e4b-run2");
+        run2.AttributesQuarantined.Should().Be(1);
+        run2.PriorAttrQuarantineRowsRemoved.Should().Be(1,
+            "v1.5 §2.4 requires removing prior canonical-layer imprv_attr " +
+            "quarantine rows before re-inserting");
+
+        // Final state: exactly one quarantine row, no duplicates.
+        (await _db.LegacyTfUnprovenImprvAttrs.CountAsync()).Should().Be(1);
+    }
+
+    [Fact]
+    public async Task E4b_DoesNotClean_LandingLayerQuarantineRows()
+    {
+        // Critical doctrine guard per v1.5 §2.4: the cleanup pass must
+        // filter on QuarantineReason == UnknownAttribute. Landing-layer
+        // quarantine rows (which use UNKNOWN_I_ATTR_VAL_CD) must not
+        // be touched.
+        var truthBatch = await SeedCompletedBatchAsync("truth");
+        await SeedParcelWithXrefAsync(propId: 100);
+        await SeedTruthImprvAsync(truthBatch, propId: 100, imprvId: 1);
+
+        // Pre-existing landing-layer quarantine row for the SAME 4-key
+        // (different reason).
+        _db.LegacyTfUnprovenImprvAttrs.Add(new LegacyTfUnprovenImprvAttr
+        {
+            PropValYr = 2026, SupNum = 0, PropId = 100, ImprvId = 1,
+            ImprvDetId = 50,
+            IAttrValId = 777, IAttrValCd = "PRE_EXISTING",
+            LandingLoadBatchId = Guid.NewGuid(),
+            QuarantineReason = "UNKNOWN_I_ATTR_VAL_CD",
+        });
+        await _db.SaveChangesAsync();
+
+        await BuildProjector().ProjectAsync(truthBatch, "e4b-test");
+
+        // Landing-layer row is untouched.
+        var preserved = await _db.LegacyTfUnprovenImprvAttrs
+            .Where(q => q.QuarantineReason == "UNKNOWN_I_ATTR_VAL_CD")
+            .CountAsync();
+        preserved.Should().Be(1,
+            "v1.5 §2.4 forbids touching landing-layer quarantine rows " +
+            "during canonical-layer cleanup");
     }
 }
