@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pgvector;
@@ -13,9 +14,11 @@ using TerraFusion.Data;
 namespace TerraFusion.Data.Migrations
 {
     [DbContext(typeof(TerraFusionDbContext))]
-    partial class TerraFusionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260503062629_AddLegacyArcGisRawParcelGeom")]
+    partial class AddLegacyArcGisRawParcelGeom
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -14754,70 +14757,6 @@ namespace TerraFusion.Data.Migrations
                     b.HasIndex("CountyId", "ParcelId", "TransferDate");
 
                     b.ToTable("TitleChainEntries");
-                });
-
-            modelBuilder.Entity("TerraFusion.Core.Entities.TruthArcGis.TruthArcGisParcelGeomCurrent", b =>
-                {
-                    b.Property<Guid>("TruthParcelGeomId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ArcGisApn")
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
-                    b.Property<long>("ArcGisObjectId")
-                        .HasColumnType("bigint");
-
-                    b.Property<double>("AreaSqFt")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("CentroidLat")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("CentroidLon")
-                        .HasColumnType("double precision");
-
-                    b.Property<Guid>("CountyId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("GeomWkt")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("LandingLoadBatchId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("PromotedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("PromotionLoadBatchId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("SourceLandedRowId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("SourceServiceUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.HasKey("TruthParcelGeomId");
-
-                    b.HasIndex("LandingLoadBatchId")
-                        .HasDatabaseName("ix_truth_arcgis_parcel_geom_landing_batch");
-
-                    b.HasIndex("PromotionLoadBatchId")
-                        .HasDatabaseName("ix_truth_arcgis_parcel_geom_promotion_batch");
-
-                    b.HasIndex("CountyId", "ArcGisApn")
-                        .HasDatabaseName("ix_truth_arcgis_parcel_geom_apn");
-
-                    b.HasIndex("CountyId", "ArcGisObjectId")
-                        .IsUnique()
-                        .HasDatabaseName("ux_truth_arcgis_parcel_geom_county_objectid");
-
-                    b.ToTable("parcel_geom_current", "truth_arcgis");
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.TruthPacs.TruthPacsImprvCurrent", b =>

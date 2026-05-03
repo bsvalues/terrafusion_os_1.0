@@ -1316,9 +1316,27 @@ if (IsFeatureEnabled(builder.Configuration, "HarrisPACS:BackgroundSync:Enabled",
   builder.Services.AddHostedService<TerraFusion.Core.Services.HarrisPACSSyncBackgroundService>();
 }
 
-// 🗺️ Benton County ArcGIS GIS Sync — one-way pull from public FeatureServer
-// Isolation: ArcGIS never queried at request time; only ArcGisSyncService writes GisParcelGeometries.
-if (IsFeatureEnabled(builder.Configuration, "ArcGisSync:Enabled", "TF_ENABLE_ARCGIS_SYNC", true))
+// 🗺️ Legacy ArcGIS sync (pre-doctrine BackgroundService).
+// Disabled by default as of Block-D contract v1.8: the doctrine path
+// (D1 raw → D2 truth → D3 canonical → gis_tf.tf_parcel_geom + source_xref)
+// is now the canonical way ArcGIS geometry enters the system.
+//
+// The legacy service is preserved in code for emergency rollback
+// only. It writes to the legacy GisParcelGeometries table which
+// lives OUTSIDE the 5-schema doctrine and is NOT fed by canonical
+// projection. To re-enable for rollback:
+//   appsettings: "LegacyArcGisSync:Enabled": true
+//   env var:     TF_ENABLE_LEGACY_ARCGIS_SYNC=true
+// See TerraFusion.Core.Configuration.LegacyArcGisSyncOptions and
+// docs/pacs/block-c-contract-v1.8.md for the deprecation rationale.
+builder.Services.Configure<TerraFusion.Core.Configuration.LegacyArcGisSyncOptions>(
+    builder.Configuration.GetSection(
+        TerraFusion.Core.Configuration.LegacyArcGisSyncOptions.SectionName));
+if (IsFeatureEnabled(
+        builder.Configuration,
+        $"{TerraFusion.Core.Configuration.LegacyArcGisSyncOptions.SectionName}:Enabled",
+        "TF_ENABLE_LEGACY_ARCGIS_SYNC",
+        defaultValue: false))
 {
   builder.Services.AddHostedService<ArcGisSyncService>();
 }
@@ -1695,6 +1713,36 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsLandDetail.IPacsLandDetailLandingService,
     TerraFusion.Data.Services.LegacyPacsRaw.PacsLandDetailLandingService>();
+
+// Slice D1: ArcGIS REST FeatureService raw landing. Wraps the
+// existing G1-C IArcGisFeatureServiceClient and writes verbatim
+// to legacy_arcgis_raw.parcel_geom with full provenance. Four
+// R-* gates: source-batch-completed, key-uniqueness,
+// provenance-coverage, aggregate. Per
+// docs/pacs/block-d-execution-plan.md §3.1.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.ArcGisRawLanding.IArcGisRawLandingService,
+    TerraFusion.Data.Services.LegacyArcGisRaw.ArcGisRawLandingService>();
+
+// Slice D2: truth_arcgis.parcel_geom_current promoter. Collapses
+// raw to latest-per-(CountyId, ArcGisObjectId) with geometry
+// validity gate. Four T-* gates per the doctrine pattern. Per
+// docs/pacs/block-d-execution-plan.md §3.2.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.ArcGisTruthPromotion.IArcGisTruthPromotionService,
+    TerraFusion.Data.Services.TruthArcGis.ArcGisTruthPromotionService>();
+
+// Slice D3: ArcGIS canonical projector. Reads truth_arcgis and
+// writes gis_tf.tf_parcel_geom + sync_bridge.source_xref entries
+// (TfEntityType="geom_parcel"). APN crosswalk against
+// canonical_tf.tf_parcel.ParcelNumber. Five C-* gates. Per
+// docs/pacs/block-d-execution-plan.md §3.3 + v1.8 contract.
+// This projector is now THE canonical writer to tf_parcel_geom
+// (the legacy ArcGisSyncService BackgroundService is disabled by
+// default — see LegacyArcGisSyncOptions).
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.ArcGisCanonical.IArcGisCanonicalProjector,
+    TerraFusion.Data.Services.GisTf.ArcGisCanonicalProjector>();
 
 // Slice B2-A: truth_pacs.owner_current promoter — supp-aware
 // owner snapshot with account-link enforcement and HARD pct-
