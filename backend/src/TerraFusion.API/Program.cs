@@ -1752,10 +1752,21 @@ builder.Services.AddScoped<
 // projects parent improvements to canonical, materializes feature
 // rows from raw imprv_detail, quarantines parcel-miss to
 // legacy_tf_unproven.imprv_current. Five C-* gates including
-// feature-coverage informational surface.
+// feature-coverage informational surface. v1.5 (E4b): also
+// resolves raw imprv_attr rows against canonical_tf.attribute_definition
+// and emits a sixth gate (canonical-imprv-attribute-coverage).
 builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsImprvCanonical.IPacsImprvCanonicalProjector,
     TerraFusion.Data.Services.CanonicalTf.PacsImprvCanonicalProjector>();
+
+// Slice L3: canonical_tf.tf_land projector. Resolves PACS prop_id
+// to TfParcelId via source_xref, projects land segments to canonical,
+// quarantines parcel-miss to legacy_tf_unproven.land_current. Five
+// C-* gates including a domain-specific aggregate gate that sums
+// SizeAcres + LandSegMarketVal for spot-checking against L2.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsLandCanonical.IPacsLandCanonicalProjector,
+    TerraFusion.Data.Services.CanonicalTf.PacsLandCanonicalProjector>();
 
 // Slice B5': read-only WSDOR roll reader for the
 // /api/parcels/{tfParcelId}/wsdor-roll endpoint. Read-only by

@@ -11,6 +11,7 @@ using TerraFusion.Core.Entities.CanonicalTf;
 using TerraFusion.Core.Entities.LegacyPacsRaw;
 using TerraFusion.Core.Entities.SyncBridge;
 using TerraFusion.Core.Entities.TruthPacs;
+using TerraFusion.Core.Sync.PacsLandCanonical;
 using TerraFusion.Data;
 using TerraFusion.Data.Services.CanonicalTf;
 using Xunit;
@@ -43,9 +44,11 @@ namespace TerraFusion.Unit.Tests.Doctrine;
 /// </list>
 /// </para>
 ///
-/// <para>L3 is intentionally absent from this harness — its
-/// projector + migration + DI wiring are not yet shipped. When L3
-/// closes, add a sister test here.</para>
+/// <para>L3 added 2026-05-03 once the land projector shipped.
+/// The harness now covers all five canonical projectors at the
+/// pre-E4b shape (S3, B3, B4, C3, L3) plus C3's quarantine
+/// preservation case. E4b's i_attr_id resolution is exercised by
+/// dedicated tests in <c>PacsImprvCanonicalProjectorTests</c>.</para>
 /// </summary>
 public sealed class BlockCReplayHarnessTests : IDisposable
 {
@@ -262,6 +265,50 @@ public sealed class BlockCReplayHarnessTests : IDisposable
         quar.QuarantineReason.Should().Be("NO_PARCEL_XREF");
     }
 
+    [Fact]
+    public async Task Replay_L3_Land_DeterministicReplay_ProducesIdenticalState()
+    {
+        // L3 added 2026-05-03 once the land canonical projector
+        // shipped. Mirrors the C3 pattern; one parcel, multiple
+        // land segments (homesite + ag + pasture) to exercise the
+        // multiple-rows-per-parcel idempotency path.
+        var truthBatch = await SeedCompletedBatchAsync("l3-replay");
+        await SeedParcelWithXrefAsync(propId: 100);
+        await SeedTruthLandAsync(truthBatch, propId: 100, landSegId: 1,
+            useCd: "RES", homesite: "Y", acres: 1.0m, marketVal: 60_000m);
+        await SeedTruthLandAsync(truthBatch, propId: 100, landSegId: 2,
+            useCd: "AG", homesite: "N", acres: 80.0m, marketVal: 100_000m);
+        await SeedTruthLandAsync(truthBatch, propId: 100, landSegId: 3,
+            useCd: "AG", homesite: "N", acres: 40.0m, marketVal: 40_000m);
+
+        var projector = new PacsLandCanonicalProjector(
+            _db, NullLogger<PacsLandCanonicalProjector>.Instance);
+
+        var run1 = await projector.ProjectAsync(truthBatch, "h3-l3-run1");
+        run1.Status.Should().Be("COMPLETED");
+        run1.LandsProjected.Should().Be(3);
+        run1.PriorLandsRemoved.Should().Be(0);
+        run1.SizeAcresProjected.Should().Be(121.0m);
+
+        var snapshot1 = await CaptureLandSnapshotAsync();
+
+        var run2 = await projector.ProjectAsync(truthBatch, "h3-l3-run2");
+        run2.Status.Should().Be("COMPLETED");
+        run2.LandsProjected.Should().Be(3);
+        run2.PriorLandsRemoved.Should().Be(3,
+            "second run removes the 3 lands produced by run 1");
+        run2.SizeAcresProjected.Should().Be(121.0m,
+            "aggregate sums must be deterministic across replays");
+
+        var snapshot2 = await CaptureLandSnapshotAsync();
+        snapshot2.Should().BeEquivalentTo(snapshot1,
+            "L3 replay must produce identical tf_land state");
+
+        (await _db.TfLands.CountAsync()).Should().Be(3);
+        (await _db.SyncBridgeSourceXrefs
+            .CountAsync(x => x.TfEntityType == "land")).Should().Be(3);
+    }
+
     // ───────────────────────────────────────────────────────────────
     // Snapshot helpers — capture the canonical state shape that
     // replay must preserve. Each returns an order-independent
@@ -353,6 +400,33 @@ public sealed class BlockCReplayHarnessTests : IDisposable
             .ToListAsync();
 
         return rows.Cast<object>()
+            .Concat(xrefs.Cast<object>())
+            .OrderBy(o => JsonSerializer.Serialize(o))
+            .ToList();
+    }
+
+    private async Task<List<object>> CaptureLandSnapshotAsync()
+    {
+        var lands = await _db.TfLands
+            .Select(l => new
+            {
+                l.CountyId,
+                l.TfParcelId,
+                l.LandSegTypeCd,
+                l.LandSegUseCd,
+                l.IsHomesite,
+                l.SizeAcres,
+                l.LandSegMarketVal,
+                l.LandSegAgValue,
+            })
+            .ToListAsync();
+
+        var xrefs = await _db.SyncBridgeSourceXrefs
+            .Where(x => x.TfEntityType == "land")
+            .Select(x => new { x.TfEntityType, x.SourceKeyJson })
+            .ToListAsync();
+
+        return lands.Cast<object>()
             .Concat(xrefs.Cast<object>())
             .OrderBy(o => JsonSerializer.Serialize(o))
             .ToList();
@@ -582,6 +656,36 @@ public sealed class BlockCReplayHarnessTests : IDisposable
             SourceImprvLandedRowId = Guid.NewGuid(),
             SourceSuppAssocLandedRowId = Guid.NewGuid(),
             ImprvLoadBatchId = Guid.NewGuid(),
+            SuppAssocLoadBatchId = Guid.NewGuid(),
+            PromotionLoadBatchId = promotionBatchId,
+        });
+        await _db.SaveChangesAsync();
+    }
+
+    private async Task SeedTruthLandAsync(
+        Guid promotionBatchId, int propId, long landSegId,
+        string useCd = "RES", string homesite = "Y",
+        decimal acres = 1.0m, decimal marketVal = 50_000m,
+        short year = 2026, short sup = 0)
+    {
+        _db.TruthPacsLandCurrents.Add(new TruthPacsLandCurrent
+        {
+            PropValYr = year,
+            SupNum = sup,
+            PropId = propId,
+            LandSegId = landSegId,
+            LandSegTypeCd = "PRIMARY",
+            LandSegStateCd = "WA",
+            LandSegClassCd = "R",
+            LandSegUseCd = useCd,
+            LandSegHomesite = homesite,
+            SizeAcres = acres,
+            SizeSquareFeet = acres * 43560m,
+            LandSegMarketVal = marketVal,
+            LandSegAssessedVal = marketVal,
+            SourceLandLandedRowId = Guid.NewGuid(),
+            SourceSuppAssocLandedRowId = Guid.NewGuid(),
+            LandLoadBatchId = Guid.NewGuid(),
             SuppAssocLoadBatchId = Guid.NewGuid(),
             PromotionLoadBatchId = promotionBatchId,
         });
