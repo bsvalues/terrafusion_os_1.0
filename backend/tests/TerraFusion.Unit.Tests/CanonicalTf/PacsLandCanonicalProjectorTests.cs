@@ -118,6 +118,8 @@ public sealed class PacsLandCanonicalProjectorTests : IDisposable
             LandLoadBatchId = Guid.NewGuid(),
             SuppAssocLoadBatchId = Guid.NewGuid(),
             PromotionLoadBatchId = promotionBatchId,
+            // G2 (v1.11): mirror promoter-stamped era.
+            ConversionEra = ConversionEras.FromYear(year),
         };
         _db.TruthPacsLandCurrents.Add(t);
         await _db.SaveChangesAsync();
@@ -182,6 +184,8 @@ public sealed class PacsLandCanonicalProjectorTests : IDisposable
         land.IsHomesite.Should().BeTrue();
         land.SizeAcres.Should().Be(2.5m);
         land.LandSegMarketVal.Should().Be(125_000m);
+        // G2 (v1.11): canonical era from majority-of-truth (single contributor, year=2026).
+        land.ConversionEra.Should().Be(ConversionEras.PostConversion);
 
         var xref = await _db.SyncBridgeSourceXrefs
             .SingleAsync(x => x.TfEntityType == "land");

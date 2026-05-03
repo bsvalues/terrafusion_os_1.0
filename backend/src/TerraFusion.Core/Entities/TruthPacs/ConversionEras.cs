@@ -101,4 +101,55 @@ public static class ConversionEras
     /// </summary>
     public static bool IsKnown(string value) =>
         !string.IsNullOrEmpty(value) && All.Contains(value);
+
+    /// <summary>
+    /// Slice G2 (v1.11): majority-of-underlying-truth resolution
+    /// rule for canonical-layer rows. Walks the contributing truth
+    /// rows' eras and returns:
+    ///
+    /// <list type="bullet">
+    ///   <item>the single agreed-upon era if every non-null
+    ///   contributor returns the same value;</item>
+    ///   <item><see cref="Unknown"/> if contributors disagree, if
+    ///   the sequence is empty, or if every contributor is null.</item>
+    /// </list>
+    ///
+    /// <para>Today every truth → canonical projection is 1:1, so
+    /// callers pass a single-element sequence and the helper returns
+    /// that era unchanged. The helper exists so that future N:1
+    /// projections (multi-source canonical rows, e.g. ArcGIS geometry
+    /// joined with PACS attributes on tf_parcel) can adopt the same
+    /// resolution rule without re-touching every projector.</para>
+    ///
+    /// <para>Doctrine: a non-empty sequence containing both null and
+    /// known values is treated as "the known values are the
+    /// contributors"; the null entries are ignored. If the only
+    /// values present are null, the result is <see cref="Unknown"/>.</para>
+    /// </summary>
+    /// <param name="contributors">
+    /// Era values from each contributing truth row. Null entries
+    /// (e.g. pre-G1 rows that haven't been re-promoted) are skipped.
+    /// </param>
+    public static string MajorityOfTruth(IEnumerable<string?> contributors)
+    {
+        if (contributors is null) return Unknown;
+
+        string? agreed = null;
+        var hasAny = false;
+        foreach (var era in contributors)
+        {
+            if (era is null) continue;
+            if (!IsKnown(era)) continue; // ignore unknown vocab tokens
+            if (!hasAny)
+            {
+                agreed = era;
+                hasAny = true;
+            }
+            else if (agreed != era)
+            {
+                return Unknown;
+            }
+        }
+        return hasAny ? agreed! : Unknown;
+    }
 }

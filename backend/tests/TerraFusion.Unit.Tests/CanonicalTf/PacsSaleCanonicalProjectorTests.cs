@@ -108,6 +108,9 @@ public sealed class PacsSaleCanonicalProjectorTests : IDisposable
             SaleLoadBatchId = Guid.NewGuid(),
             SuppAssocLoadBatchId = Guid.NewGuid(),
             PromotionLoadBatchId = promotionBatchId,
+            // G2 (v1.11): mirror promoter-stamped era so canonical projector
+            // observes a real era on its truth contributors.
+            ConversionEra = ConversionEras.FromYear(year),
         };
         _db.TruthPacsSales.Add(t);
         await _db.SaveChangesAsync();
@@ -169,6 +172,9 @@ public sealed class PacsSaleCanonicalProjectorTests : IDisposable
         sale.ChgOfOwnerId.Should().Be(1);
         sale.SaleQualified.Should().BeTrue();
         sale.PromotionLoadBatchId.Should().Be(result.PromotionLoadBatchId);
+        // G2 (v1.11): canonical era is the majority of contributing truth eras.
+        // Single contributor at year=2026 ⇒ POST_CONVERSION.
+        sale.ConversionEra.Should().Be(ConversionEras.PostConversion);
 
         var xref = await _db.SyncBridgeSourceXrefs
             .SingleAsync(x => x.TfEntityType == "sale");

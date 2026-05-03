@@ -45,5 +45,10 @@ public sealed class TfSaleConfiguration : IEntityTypeConfiguration<TfSale>
         // Identity lookup.
         builder.HasIndex(x => x.ChgOfOwnerId)
             .HasDatabaseName("ix_tf_sale_chgofowner");
+
+        // G2 (v1.11): conversion-era marker.
+        builder.Property(x => x.ConversionEra).HasMaxLength(20);
+        builder.HasIndex(x => x.ConversionEra)
+            .HasDatabaseName("ix_tf_sale_conversion_era");
     }
 }

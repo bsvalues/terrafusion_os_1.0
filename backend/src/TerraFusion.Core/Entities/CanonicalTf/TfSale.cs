@@ -54,6 +54,17 @@ public sealed class TfSale
     /// <summary>The S3 promotion batch that created this row.</summary>
     public Guid PromotionLoadBatchId { get; set; }
 
+    /// <summary>
+    /// Slice G2 (v1.11): conversion-era marker derived via
+    /// <see cref="TerraFusion.Core.Entities.TruthPacs.ConversionEras.MajorityOfTruth"/>
+    /// over the contributing <c>truth_pacs.sale</c> row(s). Today every
+    /// truth → canonical projection is 1:1, so era is a verbatim copy
+    /// from the single contributor; tomorrow's multi-source canonical
+    /// rows resolve via majority with <c>UNKNOWN</c> for ties. Nullable
+    /// for back-compat with rows projected before G2.
+    /// </summary>
+    public string? ConversionEra { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

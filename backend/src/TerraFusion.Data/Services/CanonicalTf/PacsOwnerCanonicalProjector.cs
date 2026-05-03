@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using TerraFusion.Core.Entities.CanonicalTf;
 using TerraFusion.Core.Entities.LegacyTfUnproven;
 using TerraFusion.Core.Entities.SyncBridge;
+using TerraFusion.Core.Entities.TruthPacs;
 using TerraFusion.Core.Sync.PacsOwnerCanonical;
 
 namespace TerraFusion.Data.Services.CanonicalTf;
@@ -319,6 +320,9 @@ public sealed class PacsOwnerCanonicalProjector : IPacsOwnerCanonicalProjector
                 WebSuppression = truth.WebSuppression,
                 TypeOfOwner = truth.TypeOfOwner,
                 PromotionLoadBatchId = promotionBatchId,
+                // G2 (v1.11): era resolved via majority-of-truth.
+                // Single contributor → verbatim copy.
+                ConversionEra = ConversionEras.MajorityOfTruth(new[] { truth.ConversionEra }),
                 CreatedAt = now,
                 UpdatedAt = now,
             };
@@ -335,6 +339,9 @@ public sealed class PacsOwnerCanonicalProjector : IPacsOwnerCanonicalProjector
             WebSuppression = truth.WebSuppression,
             TypeOfOwner = truth.TypeOfOwner,
             PromotionLoadBatchId = promotionBatchId,
+            // G2 (v1.11): era resolved via majority-of-truth.
+            // Single contributor → verbatim copy.
+            ConversionEra = ConversionEras.MajorityOfTruth(new[] { truth.ConversionEra }),
             CreatedAt = now,
             UpdatedAt = now,
         };

@@ -56,6 +56,16 @@ public sealed class TfImprovement
     /// <summary>The C3 promotion batch that created this row.</summary>
     public Guid PromotionLoadBatchId { get; set; }
 
+    /// <summary>
+    /// Slice G2 (v1.11): conversion-era marker derived via
+    /// <see cref="TerraFusion.Core.Entities.TruthPacs.ConversionEras.MajorityOfTruth"/>
+    /// over the contributing <c>truth_pacs.imprv_current</c> row(s).
+    /// Child <see cref="TfImprovementFeature"/> rows inherit this era
+    /// from their parent improvement at projection time. Nullable for
+    /// back-compat with rows projected before G2.
+    /// </summary>
+    public string? ConversionEra { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

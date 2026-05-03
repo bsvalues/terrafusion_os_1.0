@@ -11,6 +11,7 @@ using TerraFusion.Core.Entities.CanonicalTf;
 using TerraFusion.Core.Entities.LegacyPacsRaw;
 using TerraFusion.Core.Entities.LegacyTfUnproven;
 using TerraFusion.Core.Entities.SyncBridge;
+using TerraFusion.Core.Entities.TruthPacs;
 using TerraFusion.Core.Sync.PacsImprvCanonical;
 
 namespace TerraFusion.Data.Services.CanonicalTf;
@@ -283,6 +284,9 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
                     EffectiveYearBuilt = truth.EffectiveYearBuilt,
                     ActualYearBuilt = truth.ActualYearBuilt,
                     PromotionLoadBatchId = batch.LoadBatchId,
+                    // G2 (v1.11): era resolved via majority-of-truth.
+                    // Single contributor → verbatim copy.
+                    ConversionEra = ConversionEras.MajorityOfTruth(new[] { truth.ConversionEra }),
                     CreatedAt = now,
                     UpdatedAt = now,
                 };
@@ -331,6 +335,8 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
                             YrBuilt = detail.YrBuilt,
                             SourceImprvDetailLandedRowId = detail.LandedRowId,
                             PromotionLoadBatchId = batch.LoadBatchId,
+                            // G2 (v1.11): feature inherits parent improvement's era verbatim.
+                            ConversionEra = imprv.ConversionEra,
                             CreatedAt = now,
                             UpdatedAt = now,
                         });
@@ -367,6 +373,8 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
                                 // case it points at imprv_attr.LandedRowId.
                                 SourceImprvDetailLandedRowId = attr.LandedRowId,
                                 PromotionLoadBatchId = batch.LoadBatchId,
+                                // G2 (v1.11): feature inherits parent improvement's era verbatim.
+                                ConversionEra = imprv.ConversionEra,
                                 CreatedAt = now,
                                 UpdatedAt = now,
                             });

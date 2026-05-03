@@ -76,6 +76,15 @@ public sealed class TfImprovementFeature
     public Guid SourceImprvDetailLandedRowId { get; set; }
     public Guid PromotionLoadBatchId { get; set; }
 
+    /// <summary>
+    /// Slice G2 (v1.11): conversion-era marker inherited verbatim
+    /// from the parent <see cref="TfImprovement.ConversionEra"/> at
+    /// projection time. A feature row never has its own contributing
+    /// truth set — it always rides on its parent's era. Nullable for
+    /// back-compat with rows projected before G2.
+    /// </summary>
+    public string? ConversionEra { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

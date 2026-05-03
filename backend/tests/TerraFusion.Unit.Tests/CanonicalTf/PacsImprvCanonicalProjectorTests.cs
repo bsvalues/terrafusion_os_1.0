@@ -110,6 +110,8 @@ public sealed class PacsImprvCanonicalProjectorTests : IDisposable
             ImprvLoadBatchId = Guid.NewGuid(),
             SuppAssocLoadBatchId = Guid.NewGuid(),
             PromotionLoadBatchId = promotionBatchId,
+            // G2 (v1.11): mirror promoter-stamped era.
+            ConversionEra = ConversionEras.FromYear(year),
         };
         _db.TruthPacsImprvCurrents.Add(t);
         await _db.SaveChangesAsync();
@@ -190,10 +192,14 @@ public sealed class PacsImprvCanonicalProjectorTests : IDisposable
         imprv.CountyId.Should().Be(countyId);
         imprv.TfParcelId.Should().Be(parcelId);
         imprv.IsHomesite.Should().BeTrue();
+        // G2 (v1.11): canonical era from majority-of-truth (single contributor, year=2026).
+        imprv.ConversionEra.Should().Be(ConversionEras.PostConversion);
 
         var features = await _db.TfImprovementFeatures.ToListAsync();
         features.Should().HaveCount(4);
         features.Should().OnlyContain(f => f.TfImprovementId == imprv.TfImprovementId);
+        // G2 (v1.11): every feature inherits the parent improvement's era verbatim.
+        features.Should().OnlyContain(f => f.ConversionEra == ConversionEras.PostConversion);
         features.Select(f => f.FeatureCode).Should().BeEquivalentTo(new[]
         {
             "MA", "BSMT", "ATTGAR", "COVPATIO",

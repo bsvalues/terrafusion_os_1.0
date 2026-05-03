@@ -59,5 +59,10 @@ public sealed class TfImprovementFeatureConfiguration
 
         builder.HasIndex(x => x.AttributeId)
             .HasDatabaseName("ix_tf_improvement_feature_attribute_id");
+
+        // G2 (v1.11): conversion-era marker (inherited from parent improvement).
+        builder.Property(x => x.ConversionEra).HasMaxLength(20);
+        builder.HasIndex(x => x.ConversionEra)
+            .HasDatabaseName("ix_tf_improvement_feature_conversion_era");
     }
 }

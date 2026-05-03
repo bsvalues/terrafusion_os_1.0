@@ -975,6 +975,123 @@ public sealed class BlockCContractV1Tests : IDisposable
         }
     }
 
+    // ───────────────────────────────────────────────────────────────
+    // v1.11 addendum — ConversionEra propagation to canonical_tf (G2)
+    // ───────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void Contract_v1_11_MajorityOfTruth_EmptyOrAllNull_ReturnsUnknown()
+    {
+        // v1.11 §2: when no contributing truth row reports an era,
+        // the canonical row's era is UNKNOWN.
+        ConversionEras.MajorityOfTruth(Array.Empty<string?>())
+            .Should().Be(ConversionEras.Unknown);
+        ConversionEras.MajorityOfTruth(new string?[] { null, null, null })
+            .Should().Be(ConversionEras.Unknown);
+    }
+
+    [Fact]
+    public void Contract_v1_11_MajorityOfTruth_SingleContributor_ReturnsThatEra()
+    {
+        // v1.11 §2: 1:1 projections (every truth → canonical mapping
+        // today) reduce to verbatim copy.
+        ConversionEras.MajorityOfTruth(new string?[] { ConversionEras.PostConversion })
+            .Should().Be(ConversionEras.PostConversion);
+        ConversionEras.MajorityOfTruth(new string?[] { ConversionEras.PreConversion2017 })
+            .Should().Be(ConversionEras.PreConversion2017);
+    }
+
+    [Fact]
+    public void Contract_v1_11_MajorityOfTruth_AllAgree_ReturnsAgreedEra()
+    {
+        ConversionEras.MajorityOfTruth(new string?[]
+        {
+            ConversionEras.PostConversion,
+            ConversionEras.PostConversion,
+            ConversionEras.PostConversion,
+        }).Should().Be(ConversionEras.PostConversion);
+    }
+
+    [Fact]
+    public void Contract_v1_11_MajorityOfTruth_Disagree_ReturnsUnknown()
+    {
+        // v1.11 §2: contributors that span the cutover collapse to
+        // UNKNOWN. The canonical layer cannot pretend the row is
+        // unambiguously one era when its truth contributors disagree.
+        ConversionEras.MajorityOfTruth(new string?[]
+        {
+            ConversionEras.PreConversion2017,
+            ConversionEras.PostConversion,
+        }).Should().Be(ConversionEras.Unknown);
+    }
+
+    [Fact]
+    public void Contract_v1_11_MajorityOfTruth_NullsIgnored_AmongstAgreement()
+    {
+        // v1.11 §2: null contributors (pre-G1 rows that haven't been
+        // re-promoted) are skipped, not voted. Surviving non-null
+        // contributors decide.
+        ConversionEras.MajorityOfTruth(new string?[]
+        {
+            null,
+            ConversionEras.PostConversion,
+            null,
+            ConversionEras.PostConversion,
+        }).Should().Be(ConversionEras.PostConversion);
+    }
+
+    [Fact]
+    public void Contract_v1_11_MajorityOfTruth_UnknownVocabTokens_AreIgnored()
+    {
+        // v1.11 §2: out-of-vocabulary tokens are doctrine violations
+        // upstream. The helper does not propagate them — it skips
+        // them as if they were null. If only such tokens appear, the
+        // result is UNKNOWN.
+        ConversionEras.MajorityOfTruth(new string?[]
+        {
+            "BOGUS_ERA",
+            ConversionEras.PostConversion,
+        }).Should().Be(ConversionEras.PostConversion);
+
+        ConversionEras.MajorityOfTruth(new string?[]
+        {
+            "BOGUS_ERA",
+            "ANOTHER_BAD_TOKEN",
+        }).Should().Be(ConversionEras.Unknown);
+    }
+
+    [Fact]
+    public void Contract_v1_11_CanonicalTf_AllSixEntities_HaveConversionEraColumn()
+    {
+        // v1.11 §3: all six canonical lanes that derive from truth
+        // carry a nullable ConversionEra column with MaxLength = 20.
+        var entityTypes = new[]
+        {
+            typeof(TfSale),
+            typeof(TfOwner),
+            typeof(TfAssessmentWsdor),
+            typeof(TfImprovement),
+            typeof(TfImprovementFeature),
+            typeof(TfLand),
+        };
+
+        foreach (var clrType in entityTypes)
+        {
+            var entityType = _db.Model.FindEntityType(clrType);
+            entityType.Should().NotBeNull(
+                $"v1.11 §3: {clrType.Name} must be mapped");
+            var conversionEra = entityType!.FindProperty("ConversionEra");
+            conversionEra.Should().NotBeNull(
+                $"v1.11 §3: {clrType.Name}.ConversionEra must exist");
+            conversionEra!.IsNullable.Should().BeTrue(
+                $"v1.11 §3: {clrType.Name}.ConversionEra must be " +
+                "nullable for back-compat with pre-G2 rows");
+            conversionEra.GetMaxLength().Should().Be(20,
+                $"v1.11 §3: {clrType.Name}.ConversionEra max length " +
+                "is 20 (matches the truth_pacs.* column shape)");
+        }
+    }
+
     [Fact]
     public void Contract_v1_10_TruthPacs_AllFiveEntities_HaveConversionEraColumn()
     {
@@ -1055,6 +1172,9 @@ public sealed class BlockCContractV1Tests : IDisposable
             // Block-C contract v1.10 — ConversionEra column + index
             // on all five truth_pacs lanes (G1).
             "AddConversionEraToTruthPacs",
+            // Block-C contract v1.11 — ConversionEra column + index
+            // on six canonical_tf lanes (G2).
+            "AddConversionEraToCanonicalTf",
         };
 
         foreach (var fragment in requiredFragments)
