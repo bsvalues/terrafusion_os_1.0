@@ -172,18 +172,18 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 | Class | Count |
 |-------|-------|
 | REQUIRED | 3 |
-| PUSH-OPTIONAL | 43 |
+| PUSH-OPTIONAL | 46 |
 | SCHEDULED | 18 |
 | MANUAL | 23 |
 | DEPRECATED | 2 |
-| **Total** | 89 |
+| **Total** | 92 |
 
 **REQUIRED** (3):
 - `core-governance-gates.yml`
 - `seal-gate-fast.yml`
 - `tier1-ui-harness.yml`
 
-**PUSH-OPTIONAL** (43):
+**PUSH-OPTIONAL** (46):
 - `accessibility.yml`
 - `accreditation-compat.yml`
 - `ai-swarm-safety.yml`
@@ -204,6 +204,8 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `county-kit-parity.yml`
 - `deps-fast-lane.yml`
 - `designctl.yml`
+- `frontend-build-guarded.yml`
+- `frontend-data-mode-guard.yml`
 - `gate-pipeline.yml`
 - `golden-corpus-compat.yml`
 - `governance-proof.yml`
@@ -221,6 +223,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `spec-gates.yml`
 - `sqlite-dev-adapter-test.yml`
 - `terra-levy-tests.yml`
+- `terraforge-kernels.yml`
 - `terrafusion-ci-cd-production.yml`
 - `terrafusion-ci.yml`
 - `testing.yml`

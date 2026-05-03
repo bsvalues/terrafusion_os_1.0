@@ -1,1 +1,0 @@
-npm warn config ignoring workspace config at C:\Users\bsval\terrafusion_os_1.0\frontend/.npmrc
