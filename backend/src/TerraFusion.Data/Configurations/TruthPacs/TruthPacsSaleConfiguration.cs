@@ -53,5 +53,10 @@ public sealed class TruthPacsSaleConfiguration : IEntityTypeConfiguration<TruthP
         // Date-range scans.
         builder.HasIndex(x => x.SlDt)
             .HasDatabaseName("ix_truth_pacs_sale_sl_dt");
+
+        // G1 (v1.10): conversion-era marker.
+        builder.Property(x => x.ConversionEra).HasMaxLength(20);
+        builder.HasIndex(x => x.ConversionEra)
+            .HasDatabaseName("ix_truth_pacs_sale_conversion_era");
     }
 }

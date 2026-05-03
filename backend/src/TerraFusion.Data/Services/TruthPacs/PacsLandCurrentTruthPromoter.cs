@@ -160,6 +160,8 @@ public sealed class PacsLandCurrentTruthPromoter : IPacsLandCurrentTruthPromoter
                     LandLoadBatchId = landLoadBatchId,
                     SuppAssocLoadBatchId = suppAssocLoadBatchId,
                     PromotionLoadBatchId = batch.LoadBatchId,
+                    // G1 (v1.10): conversion-era marker derived from PropValYr.
+                    ConversionEra = ConversionEras.FromYear(land.PropValYr),
                     PromotedAt = now,
                 });
                 promoted++;

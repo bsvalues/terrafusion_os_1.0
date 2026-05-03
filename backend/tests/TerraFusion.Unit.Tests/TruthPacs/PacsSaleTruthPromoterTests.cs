@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using TerraFusion.Core.Entities.LegacyPacsRaw;
 using TerraFusion.Core.Entities.SyncBridge;
+using TerraFusion.Core.Entities.TruthPacs;
 using TerraFusion.Core.Sync.PacsSaleTruth;
 using TerraFusion.Data;
 using TerraFusion.Data.Services.TruthPacs;
@@ -160,6 +161,8 @@ public sealed class PacsSaleTruthPromoterTests : IDisposable
         truth.Should().OnlyContain(t => t.SourceSaleLandedRowId != Guid.Empty);
         truth.Should().OnlyContain(t => t.SourceSuppAssocLandedRowId != Guid.Empty);
         truth.Should().OnlyContain(t => t.PromotionLoadBatchId == result.PromotionLoadBatchId);
+        // G1 (v1.10): conversion-era marker is stamped at promotion (year=2026 ⇒ post-conversion).
+        truth.Should().OnlyContain(t => t.ConversionEra == ConversionEras.PostConversion);
     }
 
     [Fact]

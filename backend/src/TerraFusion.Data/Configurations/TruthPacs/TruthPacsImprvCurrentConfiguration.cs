@@ -53,5 +53,10 @@ public sealed class TruthPacsImprvCurrentConfiguration
         // Type-cd scans.
         builder.HasIndex(x => x.ImprvTypeCd)
             .HasDatabaseName("ix_truth_pacs_imprv_type");
+
+        // G1 (v1.10): conversion-era marker.
+        builder.Property(x => x.ConversionEra).HasMaxLength(20);
+        builder.HasIndex(x => x.ConversionEra)
+            .HasDatabaseName("ix_truth_pacs_imprv_conversion_era");
     }
 }

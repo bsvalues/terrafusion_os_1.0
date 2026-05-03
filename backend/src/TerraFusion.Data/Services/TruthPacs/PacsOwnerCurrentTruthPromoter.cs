@@ -193,6 +193,8 @@ public sealed class PacsOwnerCurrentTruthPromoter : IPacsOwnerCurrentTruthPromot
                     AccountLoadBatchId = accountLoadBatchId,
                     SuppAssocLoadBatchId = suppAssocLoadBatchId,
                     PromotionLoadBatchId = batch.LoadBatchId,
+                    // G1 (v1.10): conversion-era marker derived from OwnerTaxYr.
+                    ConversionEra = ConversionEras.FromYear(owner.OwnerTaxYr),
                     PromotedAt = now,
                 });
                 promoted++;

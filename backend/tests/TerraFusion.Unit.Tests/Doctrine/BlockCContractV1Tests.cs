@@ -905,6 +905,109 @@ public sealed class BlockCContractV1Tests : IDisposable
     }
 
     // ───────────────────────────────────────────────────────────────
+    // v1.10 addendum — ConversionEras closed vocabulary (G1)
+    // ───────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void Contract_v1_10_ConversionEras_AllContainsFrozenSet()
+    {
+        // v1.10 §2: closed vocabulary for the ConversionEra column on
+        // truth_pacs.* (and later canonical_tf.*). Adding a new era is
+        // a v1.x bump — there is no runtime extensibility hook.
+        ConversionEras.All.Should().BeEquivalentTo(new[]
+        {
+            "PRE_CONVERSION_2017",
+            "POST_CONVERSION",
+            "UNKNOWN",
+        }, "Block-C contract v1.10 §2 freezes the ConversionEras vocabulary");
+    }
+
+    [Fact]
+    public void Contract_v1_10_ConversionEras_IsKnown_RejectsUnknown()
+    {
+        ConversionEras.IsKnown(ConversionEras.PreConversion2017).Should().BeTrue();
+        ConversionEras.IsKnown(ConversionEras.PostConversion).Should().BeTrue();
+        ConversionEras.IsKnown(ConversionEras.Unknown).Should().BeTrue();
+        ConversionEras.IsKnown("PRE_2018").Should().BeFalse();
+        ConversionEras.IsKnown("not-an-era").Should().BeFalse();
+        ConversionEras.IsKnown(string.Empty).Should().BeFalse();
+    }
+
+    [Fact]
+    public void Contract_v1_10_ConversionEras_CutoverYearIs2018()
+    {
+        // v1.10 §2: the cutover boundary is the 2018 valuation/tax
+        // year. Years strictly less than 2018 are pre-conversion;
+        // years >= 2018 are post-conversion.
+        ConversionEras.CutoverYear.Should().Be((short)2018,
+            "Block-C contract v1.10 §2 freezes the conversion cutover year");
+    }
+
+    [Theory]
+    [InlineData((short)2010, "PRE_CONVERSION_2017")]
+    [InlineData((short)2016, "PRE_CONVERSION_2017")]
+    [InlineData((short)2017, "PRE_CONVERSION_2017")]
+    [InlineData((short)2018, "POST_CONVERSION")]
+    [InlineData((short)2019, "POST_CONVERSION")]
+    [InlineData((short)2026, "POST_CONVERSION")]
+    public void Contract_v1_10_ConversionEras_FromYear_RespectsCutover(
+        short year, string expected)
+    {
+        ConversionEras.FromYear(year).Should().Be(expected,
+            "Block-C contract v1.10 §2: FromYear({0}) MUST resolve to {1}",
+            year, expected);
+    }
+
+    [Fact]
+    public void Contract_v1_10_ConversionEras_TruthLayer_NeverEmitsUnknown()
+    {
+        // v1.10 §2: truth-layer rows always have a year column that
+        // disambiguates. Only canonical-layer rows (whose contributing
+        // truth rows can disagree on era) are allowed to carry
+        // UNKNOWN. The FromYear helper is the truth-layer entry point
+        // and must NEVER return UNKNOWN.
+        for (short year = 1900; year <= 2100; year++)
+        {
+            ConversionEras.FromYear(year).Should().NotBe(
+                ConversionEras.Unknown,
+                "Block-C contract v1.10 §2: truth-layer FromYear({0}) " +
+                "MUST resolve to a definite era", year);
+        }
+    }
+
+    [Fact]
+    public void Contract_v1_10_TruthPacs_AllFiveEntities_HaveConversionEraColumn()
+    {
+        // v1.10 §3: all five truth_pacs lanes carry a nullable
+        // ConversionEra column (back-compat with rows promoted before
+        // G1; new promotions always set it).
+        var entityTypes = new[]
+        {
+            typeof(TruthPacsSale),
+            typeof(TruthPacsOwnerCurrent),
+            typeof(TruthPacsWashPropOwnerVal),
+            typeof(TruthPacsImprvCurrent),
+            typeof(TruthPacsLandCurrent),
+        };
+
+        foreach (var clrType in entityTypes)
+        {
+            var entityType = _db.Model.FindEntityType(clrType);
+            entityType.Should().NotBeNull(
+                $"v1.10 §3: {clrType.Name} must be mapped");
+            var conversionEra = entityType!.FindProperty("ConversionEra");
+            conversionEra.Should().NotBeNull(
+                $"v1.10 §3: {clrType.Name}.ConversionEra must exist");
+            conversionEra!.IsNullable.Should().BeTrue(
+                $"v1.10 §3: {clrType.Name}.ConversionEra must be " +
+                "nullable for back-compat with pre-G1 rows");
+            conversionEra.GetMaxLength().Should().Be(20,
+                $"v1.10 §3: {clrType.Name}.ConversionEra max length " +
+                "is 20 (longest vocabulary token + headroom)");
+        }
+    }
+
+    // ───────────────────────────────────────────────────────────────
     // §6 — migration list (Block A / B / C scaffolding)
     // ───────────────────────────────────────────────────────────────
 
@@ -949,6 +1052,9 @@ public sealed class BlockCContractV1Tests : IDisposable
             // Block-C contract v1.3 — nullable AttributeId FK on
             // tf_improvement_feature + tf_land (E3a).
             "AddAttributeIdNullableFkToFeatureAndLand",
+            // Block-C contract v1.10 — ConversionEra column + index
+            // on all five truth_pacs lanes (G1).
+            "AddConversionEraToTruthPacs",
         };
 
         foreach (var fragment in requiredFragments)
