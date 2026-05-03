@@ -100,7 +100,16 @@ public sealed class PacsImprvAttrLandingService : IPacsImprvAttrLandingService
                 var key = (src.PropValYr, src.SupNum, src.PropId, src.ImprvId, src.ImprvDetId, src.IAttrValId);
                 keyCounts[key] = keyCounts.TryGetValue(key, out var c) ? c + 1 : 1;
 
-                if (_dictionary.Contains(src.IAttrValCd))
+                // Source records declare IAttrValCd as non-null but the
+                // streaming source can yield null on bad rows. Hoist
+                // into a local non-null `iAttrValCd` (empty string for
+                // null inputs) so all downstream uses — dictionary
+                // probe, entity write, histogram key — share the
+                // null-collapsed shape. The unknown / quarantine
+                // branch keeps the literal "<NULL>" histogram key so
+                // operators can distinguish null from empty input.
+                var iAttrValCd = src.IAttrValCd ?? string.Empty;
+                if (_dictionary.Contains(iAttrValCd))
                 {
                     _db.LegacyPacsRawImprvAttrs.Add(new LegacyPacsRawImprvAttr
                     {
@@ -110,7 +119,7 @@ public sealed class PacsImprvAttrLandingService : IPacsImprvAttrLandingService
                         ImprvId = src.ImprvId,
                         ImprvDetId = src.ImprvDetId,
                         IAttrValId = src.IAttrValId,
-                        IAttrValCd = src.IAttrValCd,
+                        IAttrValCd = iAttrValCd,
                         AttrValueText = src.AttrValueText,
                         AttrValueNumeric = src.AttrValueNumeric,
                         LoadBatchId = batch.LoadBatchId,
@@ -119,8 +128,8 @@ public sealed class PacsImprvAttrLandingService : IPacsImprvAttrLandingService
                         LandedAt = DateTime.UtcNow,
                     });
                     landed++;
-                    knownHistogram[src.IAttrValCd] =
-                        knownHistogram.TryGetValue(src.IAttrValCd, out var kc) ? kc + 1 : 1;
+                    knownHistogram[iAttrValCd] =
+                        knownHistogram.TryGetValue(iAttrValCd, out var kc) ? kc + 1 : 1;
                 }
                 else
                 {
@@ -132,7 +141,7 @@ public sealed class PacsImprvAttrLandingService : IPacsImprvAttrLandingService
                         ImprvId = src.ImprvId,
                         ImprvDetId = src.ImprvDetId,
                         IAttrValId = src.IAttrValId,
-                        IAttrValCd = src.IAttrValCd ?? string.Empty,
+                        IAttrValCd = iAttrValCd,
                         AttrValueText = src.AttrValueText,
                         AttrValueNumeric = src.AttrValueNumeric,
                         LandingLoadBatchId = batch.LoadBatchId,

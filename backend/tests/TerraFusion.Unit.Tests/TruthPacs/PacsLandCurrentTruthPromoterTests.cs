@@ -247,6 +247,8 @@ public sealed class PacsLandCurrentTruthPromoterTests : IDisposable
             "truth-pacs-land-supp-aware-join",
             "truth-pacs-land-promotion-coverage",
             "truth-pacs-land-aggregate",
+            // G4 (v1.13): pre-conversion-share gate.
+            "truth-pacs-land-pre-conversion-share",
         });
     }
 
