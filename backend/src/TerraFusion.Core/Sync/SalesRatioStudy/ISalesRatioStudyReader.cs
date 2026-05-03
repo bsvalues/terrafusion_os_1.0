@@ -51,29 +51,55 @@ public interface ISalesRatioStudyReader
         new(2018, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
     /// <summary>
-    /// Q1: count of valid (qualified, post-cutover) sales for a
-    /// county.
+    /// Slice G3 (v1.12): special <c>era</c> token that bypasses the
+    /// era filter entirely. Returns rows regardless of their
+    /// <c>ConversionEra</c> column (including <c>NULL</c>). Used for
+    /// audit / migration sweeps; not the default.
     /// </summary>
+    public const string EraAll = "ALL";
+
+    /// <summary>
+    /// Q1: count of valid (qualified) sales for a county filtered by
+    /// conversion era (G3, v1.12) and a hard date floor.
+    /// </summary>
+    /// <param name="countyId">Sovereign-county scope.</param>
+    /// <param name="fromDate">
+    /// Hard <c>SlDt &gt;= fromDate</c> floor. Defaults to
+    /// <see cref="DefaultFromDate"/>.
+    /// </param>
+    /// <param name="era">
+    /// Conversion-era filter per Block-C contract v1.12 §2. Null
+    /// resolves to <c>POST_CONVERSION</c>. Recognized values:
+    /// <c>POST_CONVERSION</c>, <c>PRE_CONVERSION_2017</c>,
+    /// <c>UNKNOWN</c>, <see cref="EraAll"/>. Unknown values throw
+    /// <see cref="ArgumentException"/>.
+    /// </param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     Task<int> GetValidSaleCountAsync(
         Guid countyId,
         DateTime? fromDate = null,
+        string? era = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Q2: count of valid sales grouped by sale year, descending.
+    /// Q2: count of valid sales grouped by sale year, descending,
+    /// filtered by conversion era (G3, v1.12) and date floor.
     /// </summary>
     Task<IReadOnlyList<SalesByYearRow>> GetValidSalesByYearAsync(
         Guid countyId,
         DateTime? fromDate = null,
+        string? era = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Q3: aggregate sale price (count, sum, average) for valid
-    /// sales whose <c>SlPrice</c> is non-null.
+    /// sales whose <c>SlPrice</c> is non-null, filtered by
+    /// conversion era (G3, v1.12) and date floor.
     /// </summary>
     Task<SalePriceAggregate> GetAggregateSalePriceAsync(
         Guid countyId,
         DateTime? fromDate = null,
+        string? era = null,
         CancellationToken cancellationToken = default);
 }
 
