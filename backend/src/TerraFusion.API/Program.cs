@@ -1744,6 +1744,15 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.ArcGisCanonical.IArcGisCanonicalProjector,
     TerraFusion.Data.Services.GisTf.ArcGisCanonicalProjector>();
 
+// Slice F5: sales-ratio-study read-model. Exposes the operator's
+// Q1/Q2/Q3 morning queries as canonical-equivalent endpoints over
+// canonical_tf.tf_sale. Per docs/pacs/block-c-contract-v1.9.md
+// + docs/sync/operator-sql-regression/sales-ratio-queries.md.
+// Read-only by contract (AsNoTracking); no writes.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.SalesRatioStudy.ISalesRatioStudyReader,
+    TerraFusion.Data.Services.CanonicalTf.SalesRatioStudyReader>();
+
 // Slice B2-A: truth_pacs.owner_current promoter — supp-aware
 // owner snapshot with account-link enforcement and HARD pct-
 // completeness gate. Five T-* gates. Idempotent by OwnerLoadBatchId.
