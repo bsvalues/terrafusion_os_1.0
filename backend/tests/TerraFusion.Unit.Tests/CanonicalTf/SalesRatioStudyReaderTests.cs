@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Entities.CanonicalTf;
+using TerraFusion.Core.Entities.TruthPacs;
 using TerraFusion.Core.Sync.SalesRatioStudy;
 using TerraFusion.Data;
 using TerraFusion.Data.Services.CanonicalTf;
@@ -55,7 +56,8 @@ public sealed class SalesRatioStudyReaderTests : IDisposable
         long chgOfOwnerId,
         DateTime? slDt,
         decimal? slPrice,
-        bool qualified = true)
+        bool qualified = true,
+        string? era = null)
     {
         _db.TfSales.Add(new TfSale
         {
@@ -67,6 +69,11 @@ public sealed class SalesRatioStudyReaderTests : IDisposable
             AdjSlPrice = slPrice,
             SaleQualified = qualified,
             PromotionLoadBatchId = Guid.NewGuid(),
+            // G3 (v1.12): era stamping mirrors what the canonical
+            // projector does. Tests that seed without an era are
+            // deliberately exercising the NULL-fallback path per
+            // doctrine v1.10 §0.5.
+            ConversionEra = era,
         });
         await _db.SaveChangesAsync();
     }
@@ -225,5 +232,150 @@ public sealed class SalesRatioStudyReaderTests : IDisposable
         // Per v1.9 §2: the cutover is 2018-01-01 UTC.
         ISalesRatioStudyReader.DefaultFromDate.Should()
             .Be(new DateTime(2018, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // G3 (v1.12) — era filter
+    // ─────────────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task EraFilter_DefaultsToPostConversion_WhenOmitted()
+    {
+        // v1.12 §2: omitting era resolves to POST_CONVERSION.
+        var benton = Guid.NewGuid();
+        await SeedSaleAsync(benton, 1, new DateTime(2020, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+            100_000m, era: ConversionEras.PostConversion);
+        await SeedSaleAsync(benton, 2, new DateTime(2021, 3, 1, 0, 0, 0, DateTimeKind.Utc),
+            200_000m, era: ConversionEras.Unknown);
+
+        var defaultCount = await Build().GetValidSaleCountAsync(benton);
+        var explicitCount = await Build().GetValidSaleCountAsync(
+            benton, era: ConversionEras.PostConversion);
+
+        defaultCount.Should().Be(1, "only the POST row matches the default");
+        explicitCount.Should().Be(defaultCount,
+            "explicit POST_CONVERSION matches the default behavior");
+    }
+
+    [Fact]
+    public async Task EraFilter_PostConversion_FallsBackToYearForNullEra()
+    {
+        // v1.10 §0.5 + v1.12 §2: rows whose ConversionEra is NULL
+        // fall back to their SlDt year. A 2020 sale with NULL era
+        // is treated as POST under era=POST.
+        var benton = Guid.NewGuid();
+        await SeedSaleAsync(benton, 1, new DateTime(2020, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+            100_000m, era: null); // pre-G2 NULL era
+
+        var count = await Build().GetValidSaleCountAsync(
+            benton, era: ConversionEras.PostConversion);
+        count.Should().Be(1,
+            "v1.10 §0.5: NULL era falls back to SlDt year (2020 ⇒ POST)");
+    }
+
+    [Fact]
+    public async Task EraFilter_PreConversion_RequiresExplicitFromDateOverride()
+    {
+        // PRE-conversion sales have SlDt < 2018 by definition. The
+        // default fromDate of 2018-01-01 excludes them. To query the
+        // pre-conversion era, callers must pass fromDate explicitly.
+        var benton = Guid.NewGuid();
+        await SeedSaleAsync(benton, 1, new DateTime(2010, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+            50_000m, era: ConversionEras.PreConversion2017);
+        await SeedSaleAsync(benton, 2, new DateTime(2015, 8, 1, 0, 0, 0, DateTimeKind.Utc),
+            75_000m, era: null); // NULL era, pre-2018 date
+
+        var count = await Build().GetValidSaleCountAsync(
+            benton,
+            fromDate: new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            era: ConversionEras.PreConversion2017);
+
+        count.Should().Be(2,
+            "explicit PRE row + NULL-era row whose SlDt year derives PRE");
+    }
+
+    [Fact]
+    public async Task EraFilter_Unknown_RequiresExactColumnMatch()
+    {
+        // v1.12 §2: UNKNOWN does not fall back to year — by doctrine
+        // v1.10 §2 the truth-layer never emits UNKNOWN, and
+        // canonical-layer UNKNOWN is the explicit "contributors
+        // disagree" signal. NULL rows do NOT satisfy era=UNKNOWN.
+        var benton = Guid.NewGuid();
+        await SeedSaleAsync(benton, 1, new DateTime(2020, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+            100_000m, era: ConversionEras.Unknown);
+        await SeedSaleAsync(benton, 2, new DateTime(2020, 9, 1, 0, 0, 0, DateTimeKind.Utc),
+            200_000m, era: null);
+
+        var count = await Build().GetValidSaleCountAsync(
+            benton, era: ConversionEras.Unknown);
+        count.Should().Be(1, "only the explicit UNKNOWN row matches");
+    }
+
+    [Fact]
+    public async Task EraFilter_All_BypassesEraEntirely()
+    {
+        var benton = Guid.NewGuid();
+        await SeedSaleAsync(benton, 1, new DateTime(2020, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+            100_000m, era: ConversionEras.PostConversion);
+        await SeedSaleAsync(benton, 2, new DateTime(2021, 3, 1, 0, 0, 0, DateTimeKind.Utc),
+            200_000m, era: ConversionEras.Unknown);
+        await SeedSaleAsync(benton, 3, new DateTime(2022, 9, 1, 0, 0, 0, DateTimeKind.Utc),
+            300_000m, era: null);
+
+        var count = await Build().GetValidSaleCountAsync(
+            benton, era: ISalesRatioStudyReader.EraAll);
+        count.Should().Be(3, "EraAll bypasses the era filter");
+    }
+
+    [Fact]
+    public async Task EraFilter_Q2_ByYear_HonorsEraFilter()
+    {
+        var benton = Guid.NewGuid();
+        await SeedSaleAsync(benton, 1, new DateTime(2020, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+            100_000m, era: ConversionEras.PostConversion);
+        await SeedSaleAsync(benton, 2, new DateTime(2020, 7, 1, 0, 0, 0, DateTimeKind.Utc),
+            150_000m, era: ConversionEras.Unknown);
+
+        var defaultRows = await Build().GetValidSalesByYearAsync(benton);
+        defaultRows.Should().ContainSingle()
+            .Which.Count.Should().Be(1, "default era=POST excludes UNKNOWN row");
+
+        var allRows = await Build().GetValidSalesByYearAsync(
+            benton, era: ISalesRatioStudyReader.EraAll);
+        allRows.Should().ContainSingle()
+            .Which.Count.Should().Be(2, "EraAll includes both rows");
+    }
+
+    [Fact]
+    public async Task EraFilter_Q3_PriceAggregate_HonorsEraFilter()
+    {
+        var benton = Guid.NewGuid();
+        await SeedSaleAsync(benton, 1, new DateTime(2020, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+            100_000m, era: ConversionEras.PostConversion);
+        await SeedSaleAsync(benton, 2, new DateTime(2021, 3, 1, 0, 0, 0, DateTimeKind.Utc),
+            300_000m, era: ConversionEras.Unknown);
+
+        var defaultAgg = await Build().GetAggregateSalePriceAsync(benton);
+        defaultAgg.Count.Should().Be(1);
+        defaultAgg.TotalPrice.Should().Be(100_000m);
+
+        var allAgg = await Build().GetAggregateSalePriceAsync(
+            benton, era: ISalesRatioStudyReader.EraAll);
+        allAgg.Count.Should().Be(2);
+        allAgg.TotalPrice.Should().Be(400_000m);
+        allAgg.AveragePrice.Should().Be(200_000m);
+    }
+
+    [Fact]
+    public async Task EraFilter_InvalidToken_Throws()
+    {
+        var benton = Guid.NewGuid();
+
+        var act = async () => await Build().GetValidSaleCountAsync(
+            benton, era: "BOGUS_ERA");
+
+        await act.Should().ThrowAsync<ArgumentException>()
+            .Where(e => e.Message.Contains("Unrecognized era"));
     }
 }

@@ -1060,6 +1060,45 @@ public sealed class BlockCContractV1Tests : IDisposable
         }).Should().Be(ConversionEras.Unknown);
     }
 
+    // ───────────────────────────────────────────────────────────────
+    // v1.12 addendum — eraFilter on SalesRatioStudy read endpoints (G3)
+    // ───────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void Contract_v1_12_ISalesRatioStudyReader_EraAll_IsFrozen()
+    {
+        // v1.12 §2: the special "ALL" token bypasses the era filter.
+        // The constant is part of the public contract; renaming it is
+        // a v2 BREAKING change.
+        TerraFusion.Core.Sync.SalesRatioStudy.ISalesRatioStudyReader.EraAll
+            .Should().Be("ALL", "Block-C contract v1.12 §2 freezes the EraAll token");
+    }
+
+    [Fact]
+    public void Contract_v1_12_DefaultFromDate_StillLockedToCutoverConvention()
+    {
+        // v1.12 carries forward v1.9's date floor. The date filter
+        // and the era filter are orthogonal — both apply by default.
+        TerraFusion.Core.Sync.SalesRatioStudy.ISalesRatioStudyReader.DefaultFromDate
+            .Should().Be(new DateTime(2018, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                "Block-C contract v1.12 §3 carries forward v1.9's date-floor default");
+    }
+
+    [Fact]
+    public void Contract_v1_12_EraDefault_IsPostConversion()
+    {
+        // v1.12 §2: when the operator omits the era query parameter,
+        // the default is POST_CONVERSION per v1.10 §3. This is locked
+        // by reflecting the controller's default-resolution test.
+        // The reader's contract says null => POST_CONVERSION; the
+        // controller's contract says null/whitespace => POST_CONVERSION.
+        // Both reduce to the same default, which the Doctrine pins
+        // here via the vocabulary identity assertion.
+        ConversionEras.PostConversion
+            .Should().Be("POST_CONVERSION",
+                "v1.12 §2 documented default for omitted era");
+    }
+
     [Fact]
     public void Contract_v1_11_CanonicalTf_AllSixEntities_HaveConversionEraColumn()
     {

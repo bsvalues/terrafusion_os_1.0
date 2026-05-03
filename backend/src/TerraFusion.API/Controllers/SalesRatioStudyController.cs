@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using TerraFusion.Core.Entities.TruthPacs;
 using TerraFusion.Core.Sync.SalesRatioStudy;
 
 namespace TerraFusion.API.Controllers;
@@ -53,6 +55,19 @@ public sealed class SalesRatioStudyController : ControllerBase
     }
 
     /// <summary>
+    /// G3 (v1.12): valid era tokens accepted on the <c>era</c> query
+    /// parameter. Doctrine-frozen set; unrecognized values are 400.
+    /// </summary>
+    private static readonly IReadOnlySet<string> ValidEraValues =
+        new HashSet<string>
+        {
+            ConversionEras.PostConversion,
+            ConversionEras.PreConversion2017,
+            ConversionEras.Unknown,
+            ISalesRatioStudyReader.EraAll,
+        };
+
+    /// <summary>
     /// Q1: count of valid sales for the county.
     /// <c>GET /api/counties/{countyId}/sales-ratio-study/valid-sale-count</c>
     /// </summary>
@@ -61,17 +76,21 @@ public sealed class SalesRatioStudyController : ControllerBase
     public async Task<IActionResult> GetValidSaleCount(
         Guid countyId,
         [FromQuery] DateTime? from = null,
+        [FromQuery] string? era = null,
         CancellationToken ct = default)
     {
         if (!TryAuthorize(countyId, out var fail))
             return fail!;
+        if (!TryNormalizeEra(era, out var resolvedEra, out var eraFail))
+            return eraFail!;
 
-        var count = await _reader.GetValidSaleCountAsync(countyId, from, ct)
+        var count = await _reader.GetValidSaleCountAsync(countyId, from, resolvedEra, ct)
             .ConfigureAwait(false);
         return Ok(new
         {
             countyId,
             fromDate = from ?? ISalesRatioStudyReader.DefaultFromDate,
+            era = resolvedEra,
             validSaleCount = count,
         });
     }
@@ -85,17 +104,21 @@ public sealed class SalesRatioStudyController : ControllerBase
     public async Task<IActionResult> GetValidSalesByYear(
         Guid countyId,
         [FromQuery] DateTime? from = null,
+        [FromQuery] string? era = null,
         CancellationToken ct = default)
     {
         if (!TryAuthorize(countyId, out var fail))
             return fail!;
+        if (!TryNormalizeEra(era, out var resolvedEra, out var eraFail))
+            return eraFail!;
 
-        var rows = await _reader.GetValidSalesByYearAsync(countyId, from, ct)
+        var rows = await _reader.GetValidSalesByYearAsync(countyId, from, resolvedEra, ct)
             .ConfigureAwait(false);
         return Ok(new
         {
             countyId,
             fromDate = from ?? ISalesRatioStudyReader.DefaultFromDate,
+            era = resolvedEra,
             rows,
         });
     }
@@ -110,19 +133,60 @@ public sealed class SalesRatioStudyController : ControllerBase
     public async Task<IActionResult> GetAggregateSalePrice(
         Guid countyId,
         [FromQuery] DateTime? from = null,
+        [FromQuery] string? era = null,
         CancellationToken ct = default)
     {
         if (!TryAuthorize(countyId, out var fail))
             return fail!;
+        if (!TryNormalizeEra(era, out var resolvedEra, out var eraFail))
+            return eraFail!;
 
-        var aggregate = await _reader.GetAggregateSalePriceAsync(countyId, from, ct)
+        var aggregate = await _reader.GetAggregateSalePriceAsync(countyId, from, resolvedEra, ct)
             .ConfigureAwait(false);
         return Ok(new
         {
             countyId,
             fromDate = from ?? ISalesRatioStudyReader.DefaultFromDate,
+            era = resolvedEra,
             aggregate,
         });
+    }
+
+    /// <summary>
+    /// G3 (v1.12): normalizes the <c>era</c> query parameter.
+    /// Null/whitespace resolves to <see cref="ConversionEras.PostConversion"/>
+    /// (the documented default). Unrecognized values produce 400 with
+    /// the valid value list. Returns the resolved string for echo.
+    /// </summary>
+    private bool TryNormalizeEra(
+        string? era,
+        out string resolvedEra,
+        out IActionResult? failureResult)
+    {
+        if (string.IsNullOrWhiteSpace(era))
+        {
+            resolvedEra = ConversionEras.PostConversion;
+            failureResult = null;
+            return true;
+        }
+
+        var trimmed = era.Trim();
+        if (!ValidEraValues.Contains(trimmed))
+        {
+            _logger.LogWarning(
+                "[SalesRatioStudy] invalid era token: {Era}", trimmed);
+            resolvedEra = string.Empty;
+            failureResult = BadRequest(new
+            {
+                error = "invalid era",
+                validValues = ValidEraValues,
+            });
+            return false;
+        }
+
+        resolvedEra = trimmed;
+        failureResult = null;
+        return true;
     }
 
     /// <summary>
