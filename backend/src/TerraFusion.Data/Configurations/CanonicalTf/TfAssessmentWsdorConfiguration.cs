@@ -65,5 +65,10 @@ public sealed class TfAssessmentWsdorConfiguration
         // BOE status scans.
         builder.HasIndex(x => x.BoeStatus)
             .HasDatabaseName("ix_tf_assessment_wsdor_boe_status");
+
+        // G2 (v1.11): conversion-era marker.
+        builder.Property(x => x.ConversionEra).HasMaxLength(20);
+        builder.HasIndex(x => x.ConversionEra)
+            .HasDatabaseName("ix_tf_assessment_wsdor_conversion_era");
     }
 }

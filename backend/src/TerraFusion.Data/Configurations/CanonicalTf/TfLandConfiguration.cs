@@ -57,5 +57,10 @@ public sealed class TfLandConfiguration : IEntityTypeConfiguration<TfLand>
 
         builder.HasIndex(x => x.AttributeId)
             .HasDatabaseName("ix_tf_land_attribute_id");
+
+        // G2 (v1.11): conversion-era marker.
+        builder.Property(x => x.ConversionEra).HasMaxLength(20);
+        builder.HasIndex(x => x.ConversionEra)
+            .HasDatabaseName("ix_tf_land_conversion_era");
     }
 }

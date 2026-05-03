@@ -104,6 +104,8 @@ public sealed class PacsWsdorCanonicalProjectorTests : IDisposable
             WpovLoadBatchId = Guid.NewGuid(),
             SuppAssocLoadBatchId = Guid.NewGuid(),
             PromotionLoadBatchId = promotionBatchId,
+            // G2 (v1.11): mirror promoter-stamped era.
+            ConversionEra = ConversionEras.FromYear(year),
         };
         _db.TruthPacsWashPropOwnerVals.Add(t);
         await _db.SaveChangesAsync();
@@ -185,6 +187,8 @@ public sealed class PacsWsdorCanonicalProjectorTests : IDisposable
         assessment.TfOwnerId.Should().Be(ownerId);
         assessment.AssessmentYear.Should().Be(2026);
         assessment.AssessedVal.Should().Be(250_000m);
+        // G2 (v1.11): canonical era from majority-of-truth (single contributor, year=2026).
+        assessment.ConversionEra.Should().Be(ConversionEras.PostConversion);
 
         var xref = await _db.SyncBridgeSourceXrefs
             .SingleAsync(x => x.TfEntityType == "assessment_wsdor");
@@ -453,6 +457,8 @@ public sealed class PacsWsdorCanonicalProjectorTests : IDisposable
             WpovLoadBatchId = Guid.NewGuid(),
             SuppAssocLoadBatchId = Guid.NewGuid(),
             PromotionLoadBatchId = truthBatch,
+            // G2 (v1.11): mirror promoter-stamped era.
+            ConversionEra = ConversionEras.FromYear(2026),
         });
         await _db.SaveChangesAsync();
 

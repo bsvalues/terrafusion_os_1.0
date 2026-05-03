@@ -120,6 +120,8 @@ public sealed class PacsOwnerCanonicalProjectorTests : IDisposable
             AccountLoadBatchId = Guid.NewGuid(),
             SuppAssocLoadBatchId = Guid.NewGuid(),
             PromotionLoadBatchId = promotionBatchId,
+            // G2 (v1.11): mirror promoter-stamped era (derived from OwnerTaxYr).
+            ConversionEra = ConversionEras.FromYear(year),
         };
         _db.TruthPacsOwnerCurrents.Add(t);
         await _db.SaveChangesAsync();
@@ -177,6 +179,8 @@ public sealed class PacsOwnerCanonicalProjectorTests : IDisposable
         owner.AcctId.Should().Be(1);
         owner.DisplayName.Should().Be("Smith, John");
         owner.ConfidentialFlag.Should().BeFalse();
+        // G2 (v1.11): canonical era from majority-of-truth (single contributor, OwnerTaxYr=2026).
+        owner.ConversionEra.Should().Be(ConversionEras.PostConversion);
 
         var link = await _db.TfParcelOwnerLinks.SingleAsync();
         link.TfParcelId.Should().Be(parcelId);

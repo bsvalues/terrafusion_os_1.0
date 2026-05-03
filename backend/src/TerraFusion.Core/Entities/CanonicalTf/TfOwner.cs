@@ -86,6 +86,14 @@ public sealed class TfOwner
     /// <summary>The B3 promotion batch that created this row.</summary>
     public Guid PromotionLoadBatchId { get; set; }
 
+    /// <summary>
+    /// Slice G2 (v1.11): conversion-era marker derived via
+    /// <see cref="TerraFusion.Core.Entities.TruthPacs.ConversionEras.MajorityOfTruth"/>
+    /// over the contributing <c>truth_pacs.owner_current</c> row(s).
+    /// Nullable for back-compat with rows projected before G2.
+    /// </summary>
+    public string? ConversionEra { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

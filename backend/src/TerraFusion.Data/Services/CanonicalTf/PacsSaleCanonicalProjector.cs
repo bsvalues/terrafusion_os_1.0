@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using TerraFusion.Core.Entities.CanonicalTf;
 using TerraFusion.Core.Entities.LegacyTfUnproven;
 using TerraFusion.Core.Entities.SyncBridge;
+using TerraFusion.Core.Entities.TruthPacs;
 using TerraFusion.Core.Sync.PacsSaleCanonical;
 
 namespace TerraFusion.Data.Services.CanonicalTf;
@@ -192,6 +193,9 @@ public sealed class PacsSaleCanonicalProjector : IPacsSaleCanonicalProjector
                     AdjSlPrice = truth.AdjSlPrice,
                     SaleQualified = true,
                     PromotionLoadBatchId = batch.LoadBatchId,
+                    // G2 (v1.11): era resolved via majority-of-truth.
+                    // Single contributor → verbatim copy.
+                    ConversionEra = ConversionEras.MajorityOfTruth(new[] { truth.ConversionEra }),
                     CreatedAt = now,
                     UpdatedAt = now,
                 };
