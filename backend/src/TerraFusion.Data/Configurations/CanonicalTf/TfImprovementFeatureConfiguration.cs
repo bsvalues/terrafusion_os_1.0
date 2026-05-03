@@ -45,5 +45,19 @@ public sealed class TfImprovementFeatureConfiguration
         // Idempotency: clear by promotion batch.
         builder.HasIndex(x => x.PromotionLoadBatchId)
             .HasDatabaseName("ix_tf_improvement_feature_promotion_batch");
+
+        // ── E3a (v1.3): nullable FK to attribute_definition ──────
+        // Per docs/pacs/block-c-contract-v1.3.md. NoAction on
+        // delete: an attribute_definition row should never be
+        // hard-deleted (soft-retire only), and any future hard
+        // delete must explicitly fail rather than orphan features.
+        builder.HasOne(x => x.AttributeDefinition)
+            .WithMany()
+            .HasForeignKey(x => x.AttributeId)
+            .HasConstraintName("fk_tf_improvement_feature_attribute_definition")
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasIndex(x => x.AttributeId)
+            .HasDatabaseName("ix_tf_improvement_feature_attribute_id");
     }
 }

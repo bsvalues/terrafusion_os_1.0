@@ -707,6 +707,77 @@ public sealed class BlockCContractV1Tests : IDisposable
     }
 
     // ───────────────────────────────────────────────────────────────
+    // v1.3 addendum — nullable FK from
+    // tf_improvement_feature + tf_land → attribute_definition (E3a)
+    // ───────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void Contract_v1_3_TfImprovementFeature_HasNullableAttributeIdColumn()
+    {
+        var et = _db.Model.FindEntityType(typeof(TfImprovementFeature));
+        et.Should().NotBeNull();
+
+        var attributeId = et!
+            .FindProperty(nameof(TfImprovementFeature.AttributeId));
+        attributeId.Should().NotBeNull(
+            "Block-C contract v1.3 §3.4 adds AttributeId to tf_improvement_feature");
+        attributeId!.IsNullable.Should().BeTrue(
+            "v1.3 keeps AttributeId nullable; non-null flip is reserved for E3b (v2)");
+        attributeId.ClrType.Should().Be(typeof(Guid?));
+    }
+
+    [Fact]
+    public void Contract_v1_3_TfLand_HasNullableAttributeIdColumn()
+    {
+        var et = _db.Model.FindEntityType(typeof(TfLand));
+        et.Should().NotBeNull();
+
+        var attributeId = et!
+            .FindProperty(nameof(TfLand.AttributeId));
+        attributeId.Should().NotBeNull(
+            "Block-C contract v1.3 §3.5 adds AttributeId to tf_land");
+        attributeId!.IsNullable.Should().BeTrue(
+            "v1.3 keeps AttributeId nullable; non-null flip is reserved for E3b (v2)");
+        attributeId.ClrType.Should().Be(typeof(Guid?));
+    }
+
+    [Fact]
+    public void Contract_v1_3_TfImprovementFeature_HasFkToAttributeDefinition()
+    {
+        var et = _db.Model.FindEntityType(typeof(TfImprovementFeature));
+        et.Should().NotBeNull();
+
+        var fk = et!.GetForeignKeys().FirstOrDefault(f =>
+            f.PrincipalEntityType.ClrType == typeof(AttributeDefinition));
+        fk.Should().NotBeNull(
+            "Block-C contract v1.3 freezes a FK from tf_improvement_feature → attribute_definition");
+        fk!.Properties.Should().ContainSingle()
+            .Which.Name.Should().Be(nameof(TfImprovementFeature.AttributeId));
+        fk.PrincipalKey.Properties.Should().ContainSingle()
+            .Which.Name.Should().Be(nameof(AttributeDefinition.AttributeDefinitionId));
+        fk.DeleteBehavior.Should().Be(DeleteBehavior.NoAction,
+            "v1.3 §3.4: NoAction on delete to prevent silent orphaning");
+    }
+
+    [Fact]
+    public void Contract_v1_3_TfLand_HasFkToAttributeDefinition()
+    {
+        var et = _db.Model.FindEntityType(typeof(TfLand));
+        et.Should().NotBeNull();
+
+        var fk = et!.GetForeignKeys().FirstOrDefault(f =>
+            f.PrincipalEntityType.ClrType == typeof(AttributeDefinition));
+        fk.Should().NotBeNull(
+            "Block-C contract v1.3 freezes a FK from tf_land → attribute_definition");
+        fk!.Properties.Should().ContainSingle()
+            .Which.Name.Should().Be(nameof(TfLand.AttributeId));
+        fk.PrincipalKey.Properties.Should().ContainSingle()
+            .Which.Name.Should().Be(nameof(AttributeDefinition.AttributeDefinitionId));
+        fk.DeleteBehavior.Should().Be(DeleteBehavior.NoAction,
+            "v1.3 §3.5: NoAction on delete to prevent silent orphaning");
+    }
+
+    // ───────────────────────────────────────────────────────────────
     // §6 — migration list (Block A / B / C scaffolding)
     // ───────────────────────────────────────────────────────────────
 
@@ -748,6 +819,9 @@ public sealed class BlockCContractV1Tests : IDisposable
             "AddDictNeighborhood",
             // Block-C contract v1.2 — i_attr_id mapping spine (E2).
             "AddAttributeDefinition",
+            // Block-C contract v1.3 — nullable AttributeId FK on
+            // tf_improvement_feature + tf_land (E3a).
+            "AddAttributeIdNullableFkToFeatureAndLand",
         };
 
         foreach (var fragment in requiredFragments)

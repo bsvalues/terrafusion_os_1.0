@@ -43,5 +43,19 @@ public sealed class TfLandConfiguration : IEntityTypeConfiguration<TfLand>
             .HasDatabaseName("ix_tf_land_promotion_batch");
         builder.HasIndex(x => x.LandSegUseCd)
             .HasDatabaseName("ix_tf_land_use");
+
+        // ── E3a (v1.3): nullable FK to attribute_definition ──────
+        // Per docs/pacs/block-c-contract-v1.3.md. NoAction delete
+        // semantics — attribute_definition rows are soft-retired,
+        // never hard-deleted; any future hard delete must fail
+        // rather than orphan land segments.
+        builder.HasOne(x => x.AttributeDefinition)
+            .WithMany()
+            .HasForeignKey(x => x.AttributeId)
+            .HasConstraintName("fk_tf_land_attribute_definition")
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasIndex(x => x.AttributeId)
+            .HasDatabaseName("ix_tf_land_attribute_id");
     }
 }

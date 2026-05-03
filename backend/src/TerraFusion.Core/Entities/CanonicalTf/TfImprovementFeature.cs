@@ -55,6 +55,23 @@ public sealed class TfImprovementFeature
     /// <summary>Per-feature year of construction.</summary>
     public short? YrBuilt { get; set; }
 
+    // ── E3a (v1.3): nullable FK to attribute_definition ──────────
+    /// <summary>
+    /// Optional FK to <c>canonical_tf.attribute_definition</c>.
+    /// Per Block-C contract v1.3 (E3a) this column is nullable —
+    /// existing feature rows are never backfilled by E3a, only
+    /// new projector runs that resolve i_attr_id to a canonical
+    /// <c>AttributeDefinition</c> populate it. The flip to
+    /// non-null is reserved for E3b (v2 BREAKING).
+    /// </summary>
+    public Guid? AttributeId { get; set; }
+
+    /// <summary>
+    /// Navigation property to the canonical attribute definition.
+    /// Null when <see cref="AttributeId"/> is null.
+    /// </summary>
+    public AttributeDefinition? AttributeDefinition { get; set; }
+
     // ── Lineage ──────────────────────────────────────────────────
     public Guid SourceImprvDetailLandedRowId { get; set; }
     public Guid PromotionLoadBatchId { get; set; }

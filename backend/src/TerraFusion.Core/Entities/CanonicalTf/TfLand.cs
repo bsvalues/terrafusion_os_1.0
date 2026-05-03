@@ -57,6 +57,23 @@ public sealed class TfLand
     /// <summary>The L3 promotion batch that created this row.</summary>
     public Guid PromotionLoadBatchId { get; set; }
 
+    // ── E3a (v1.3): nullable FK to attribute_definition ──────────
+    /// <summary>
+    /// Optional FK to <c>canonical_tf.attribute_definition</c>.
+    /// Per Block-C contract v1.3 (E3a) this column is nullable —
+    /// existing land rows are never backfilled by E3a; only new
+    /// projector runs that resolve i_attr_id to a canonical
+    /// <c>AttributeDefinition</c> populate it. The flip to non-null
+    /// is reserved for E3b (v2 BREAKING).
+    /// </summary>
+    public Guid? AttributeId { get; set; }
+
+    /// <summary>
+    /// Navigation property to the canonical attribute definition.
+    /// Null when <see cref="AttributeId"/> is null.
+    /// </summary>
+    public AttributeDefinition? AttributeDefinition { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }
