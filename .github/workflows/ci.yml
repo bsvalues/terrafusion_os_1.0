@@ -339,7 +339,12 @@ jobs:
       dotnet_version: '8.0.x'
       configuration: Release
       solution: TerraFusion.sln
-      connection_string: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=postgres'
+      # CI-HYGIENE-2: align Password with the postgres service container's
+      # POSTGRES_PASSWORD env var declared in dotnet-test.yml
+      # (POSTGRES_PASSWORD: terrafusion_test). Latent mismatch: no current
+      # CI test in TerraFusion.sln connects to real Postgres, so this fix is
+      # defensive — but a future test that does would have hit auth failures.
+      connection_string: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=terrafusion_test'
 
   # ═══════════════════════════════════════════════════════════════════════════
   # Vitest Full Suite (REQUIRED — merge gate)
