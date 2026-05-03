@@ -287,6 +287,16 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.LegacyTfUnproven.LegacyTfUnprovenWashPropOwnerVal>
     LegacyTfUnprovenWashPropOwnerVals { get; set; } = null!;
 
+  // Slice C3: canonical_tf.tf_improvement + tf_improvement_feature
+  // projection. Improvements whose parcel cannot be resolved are
+  // quarantined to legacy_tf_unproven.imprv_current.
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfImprovement>
+    TfImprovements { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfImprovementFeature>
+    TfImprovementFeatures { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.LegacyTfUnproven.LegacyTfUnprovenImprvCurrent>
+    LegacyTfUnprovenImprvCurrents { get; set; } = null!;
+
   // Slice C41-B: per-county pointer naming the operator-active
   // Mapped workbook. Singleton per county (PK = CountyId). See
   // docs/sync/sync-county-active-workbook-pointer-policy.md for the
@@ -977,6 +987,15 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       new TerraFusion.Data.Configurations.CanonicalTf.TfAssessmentWsdorConfiguration());
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.LegacyTfUnproven.LegacyTfUnprovenWashPropOwnerValConfiguration());
+
+    // Slice C3: canonical_tf.tf_improvement + tf_improvement_feature
+    // + legacy_tf_unproven.imprv_current.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfImprovementConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfImprovementFeatureConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyTfUnproven.LegacyTfUnprovenImprvCurrentConfiguration());
 
     // Sync Bridge v1 — Phase 0 field_authority seed for the parcel
     // domain. Per docs/pacs/pacs-sync-bridge-v1-spec.md §4.
