@@ -500,7 +500,7 @@ export function GovernanceDashboard(): React.ReactElement {
               </span>
             )}
           </p>
-          <p className='mt-1 text-cyan-500/50'>Government. Transcended.</p>
+          <p className='mt-1 text-cyan-500/50'>Governed Operator Surface</p>
         </div>
       </div>
     </div>

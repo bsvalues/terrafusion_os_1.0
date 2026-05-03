@@ -14,7 +14,7 @@ describe('SystemMonitor', () => {
   beforeEach(() => {
     mockUseRealData.mockReturnValue({
       connectionStatus: {
-        realPacsConnected: true,
+        assessmentDbConnected: true,
         terrafusionSyncConnected: true,
         propertiesDbConnected: true,
       },
@@ -62,7 +62,7 @@ describe('SystemMonitor', () => {
   it('reports database health without implying production traffic readiness', () => {
     mockUseRealData.mockReturnValue({
       connectionStatus: {
-        realPacsConnected: false,
+        assessmentDbConnected: false,
         terrafusionSyncConnected: false,
         propertiesDbConnected: true,
       },

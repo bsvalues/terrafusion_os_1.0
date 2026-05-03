@@ -4,7 +4,6 @@ import ts from 'typescript';
 
 const HEADER = '// GENERATED - DO NOT EDIT';
 const ROOT = process.cwd();
-
 function collectTsTargets(dir) {
   const absDir = path.resolve(ROOT, dir);
   if (!fs.existsSync(absDir)) {

@@ -22,9 +22,9 @@ interface RegressionResult {
   modelType: string;
   rSquared: number;
   adjustedRSquared: number;
-  coefficients: Array<{ variable: string; coefficient: number; pValue: number; significant: boolean }>;
-  observations: number;
-  mse: number;
+  coefficients: Array<{ variable: string; coefficient: number | null; pValue: number | null; significant: boolean | null }>;
+  observations: number | null;
+  mse: number | null;
   runTimestamp: string;
 }
 
@@ -73,21 +73,20 @@ export function RegressionControlPanel({ onRunComplete }: RegressionControlPanel
     setRunning(true);
     setError(null);
     try {
-      await runRegression({ modelType, variables: selected });
-      // Create a synthetic result for display
+      const run = await runRegression({ modelType, variables: selected });
       const data: RegressionResult = {
-        modelType,
-        rSquared: 0.85 + Math.random() * 0.05,
-        adjustedRSquared: 0.84 + Math.random() * 0.05,
+        modelType: run.modelType,
+        rSquared: run.rSquared,
+        adjustedRSquared: run.adjustedRSquared,
         coefficients: selected.map(v => ({
           variable: v,
-          coefficient: Math.random() * 100,
-          pValue: Math.random() * 0.1,
-          significant: Math.random() > 0.3,
+          coefficient: null,
+          pValue: null,
+          significant: null,
         })),
-        observations: 1847,
-        mse: 1500000000 + Math.random() * 500000000,
-        runTimestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+        observations: null,
+        mse: null,
+        runTimestamp: run.timestamp,
       };
       setResult(data);
       onRunComplete?.(data);
@@ -189,11 +188,11 @@ export function RegressionControlPanel({ onRunComplete }: RegressionControlPanel
               </div>
               <div className="text-center p-3 rounded" style={{ background: 'hsl(var(--tf-surface) / 0.5)' }}>
                 <div className="text-xs text-muted-foreground">Observations</div>
-                <div className="text-xl font-bold">{result.observations.toLocaleString()}</div>
+                <div className="text-xl font-bold">{result.observations === null ? 'n/a' : result.observations.toLocaleString()}</div>
               </div>
               <div className="text-center p-3 rounded" style={{ background: 'hsl(var(--tf-surface) / 0.5)' }}>
                 <div className="text-xs text-muted-foreground">MSE</div>
-                <div className="text-xl font-bold">{result.mse.toFixed(2)}</div>
+                <div className="text-xl font-bold">{result.mse === null ? 'n/a' : result.mse.toFixed(2)}</div>
               </div>
             </div>
 
@@ -212,10 +211,12 @@ export function RegressionControlPanel({ onRunComplete }: RegressionControlPanel
                   {result.coefficients.map(c => (
                     <tr key={c.variable} className="border-b">
                       <td className="py-2">{c.variable}</td>
-                      <td className="py-2 text-right font-mono">{c.coefficient.toFixed(4)}</td>
-                      <td className="py-2 text-right font-mono">{c.pValue.toFixed(4)}</td>
+                      <td className="py-2 text-right font-mono">{c.coefficient === null ? 'n/a' : c.coefficient.toFixed(4)}</td>
+                      <td className="py-2 text-right font-mono">{c.pValue === null ? 'n/a' : c.pValue.toFixed(4)}</td>
                       <td className="py-2 text-center">
-                        {c.significant ? (
+                        {c.significant === null ? (
+                          <Badge variant="outline" className="text-xs">n/a</Badge>
+                        ) : c.significant ? (
                           <Badge variant="default" className="text-xs">Yes</Badge>
                         ) : (
                           <Badge variant="secondary" className="text-xs">No</Badge>

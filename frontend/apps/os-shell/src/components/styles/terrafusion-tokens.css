@@ -67,8 +67,11 @@
   --shadow-glow: 0 0 40px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.4);
   --shadow-quantum: 0 0 20px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3);
 
+  /* HS Channel Anchor for glass surface tint (file-local, frost-white) */
+  --tf-tokens-glass-hs: 210 20%;
+
   /* Glass Morphism */
-  --glass-bg: hsl(210 20% 98% / 0.10);
+  --glass-bg: hsl(var(--tf-tokens-glass-hs) 98% / 0.10);
   --glass-border: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.2);
   --glass-shadow: 0 8px 32px hsl(var(--tf-tokens-black-hs) 0% / 0.37);
   --blur-amount: blur(16px);

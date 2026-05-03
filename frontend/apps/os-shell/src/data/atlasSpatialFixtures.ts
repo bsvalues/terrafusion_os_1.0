@@ -12,84 +12,21 @@
  * ======================================================================
  */
 
-// ---------------------------------------------------------------------------
-// Re-export EquityArea (extracted from GeoEquityDashboard inline data)
-// ---------------------------------------------------------------------------
+import type {
+  EquityArea,
+  NeighborhoodSummary,
+  ResidualMapData,
+  SpatialDiagnostics,
+  SpatialParcelRecord,
+} from '@/types/atlasSpatial';
 
-export interface EquityArea {
-  id: string;
-  name: string;
-  equityRatio: number;
-  cod: number;
-  prd: number;
-  parcelCount: number;
-  propertyType: string;
-  center: [number, number];
-}
-
-// ---------------------------------------------------------------------------
-// Spatial Parcel Record — lightweight parcel for map rendering
-// ---------------------------------------------------------------------------
-
-export interface SpatialParcelRecord {
-  parcelId: string;
-  address: string;
-  neighborhood: string;
-  lat: number;
-  lng: number;
-  assessedValue: number;
-  salePrice: number;
-  ratio: number;
-  residual: number;        // actual - predicted (OlsSolver convention)
-  residualPct: number;     // residual / predicted * 100
-}
-
-// ---------------------------------------------------------------------------
-// Neighborhood Summary
-// ---------------------------------------------------------------------------
-
-export interface NeighborhoodSummary {
-  code: string;
-  name: string;
-  parcelCount: number;
-  medianRatio: number;
-  cod: number;
-  prd: number;
-  medianResidual: number;
-  qualified: boolean;       // IAAO: COD ≤15, PRD 0.98–1.03, Median Ratio 0.90–1.10
-  center: [number, number];
-}
-
-// ---------------------------------------------------------------------------
-// Spatial Diagnostics — mirrors SpatialAutocorrelation.cs MoransIResult
-// ---------------------------------------------------------------------------
-
-export interface SpatialDiagnostics {
-  moransI: number;
-  moransIPValue: number;
-  moransIInterpretation: 'clustered' | 'dispersed' | 'random';
-  hotspotCount: number;
-  coldspotCount: number;
-  totalParcels: number;
-  spatiallyAutocorrelated: boolean;
-}
-
-// ---------------------------------------------------------------------------
-// Residual Map Data — aggregated by neighborhood for choropleth
-// ---------------------------------------------------------------------------
-
-export interface ResidualMapData {
-  neighborhoods: Array<{
-    code: string;
-    name: string;
-    medianResidual: number;
-    medianResidualPct: number;
-    parcelCount: number;
-    center: [number, number];
-  }>;
-  globalMedianResidual: number;
-  globalMedianResidualPct: number;
-}
+export type {
+  EquityArea,
+  NeighborhoodSummary,
+  ResidualMapData,
+  SpatialDiagnostics,
+  SpatialParcelRecord,
+} from '@/types/atlasSpatial';
 
 // =========================================================================
 // FIXTURE DATA
@@ -108,6 +45,14 @@ export const EQUITY_AREAS: EquityArea[] = [
   { id: 'ea6', name: 'Northview', equityRatio: 0.93, cod: 14.2, prd: 1.05, parcelCount: 1560, propertyType: 'Residential', center: [46.26, -119.19] },
   { id: 'ea7', name: 'Farm District', equityRatio: 0.87, cod: 22.0, prd: 1.12, parcelCount: 420, propertyType: 'Agricultural', center: [46.215, -119.25] },
 ];
+
+/**
+ * FALLBACK_EQUITY_AREAS — alias of EQUITY_AREAS for use as a store-first
+ * fallback in GeoEquityDashboard when neither the live API nor the spatial
+ * store has equity areas to render. Naming is explicit so the operator can
+ * see in source review that this path is fixture-equivalent.
+ */
+export const FALLBACK_EQUITY_AREAS: EquityArea[] = EQUITY_AREAS;
 
 // ---------------------------------------------------------------------------
 // Spatial Parcels — 20 parcels across 5 Benton County neighborhoods

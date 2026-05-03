@@ -44,22 +44,17 @@ function typeAbbr(type: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// Default data
+// Empty data
 // ---------------------------------------------------------------------------
 
-const DEFAULT_SCHOOLS: NearbySchool[] = [
-  { id: 'ns1', name: 'Vista Elementary', type: 'Elementary', rating: 9, distanceMi: 0.4, district: 'Kennewick SD' },
-  { id: 'ns2', name: 'Desert Hills Middle', type: 'Middle', rating: 8, distanceMi: 1.2, district: 'Kennewick SD' },
-  { id: 'ns3', name: 'Kennewick High', type: 'High', rating: 7, distanceMi: 2.1, district: 'Kennewick SD' },
-  { id: 'ns4', name: 'Lewis & Clark Elem', type: 'Elementary', rating: 8, distanceMi: 3.5, district: 'Richland SD' },
-];
+const EMPTY_SCHOOLS: NearbySchool[] = [];
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
 export default function SchoolDistrictWidget({
-  schools = DEFAULT_SCHOOLS,
+  schools = EMPTY_SCHOOLS,
   parcelAddress,
   maxDisplay = 4,
   className = '',
@@ -92,7 +87,7 @@ export default function SchoolDistrictWidget({
       )}
 
       <div className="space-y-1.5">
-        {sortedSchools.map((school) => (
+        {sortedSchools.length > 0 ? sortedSchools.map((school) => (
           <div key={school.id} className="flex items-center gap-2">
             {/* Rating badge */}
             <div
@@ -114,7 +109,11 @@ export default function SchoolDistrictWidget({
               <span className="text-[10px] text-white/60">{school.distanceMi} mi</span>
             </div>
           </div>
-        ))}
+        )) : (
+          <div className="py-4 text-center text-[10px] text-white/40">
+            No governed school proximity data loaded.
+          </div>
+        )}
       </div>
 
       {schools.length > maxDisplay && (

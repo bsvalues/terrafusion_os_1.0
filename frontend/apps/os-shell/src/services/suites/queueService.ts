@@ -1,20 +1,12 @@
 /**
  * TerraQueue Service — Cross-Parcel Work Queue
  * ===================================================================
- * Fetch wrappers to future /api/dais/queue/* endpoints.
- * Falls back to fixture data when the backend is unavailable.
+ * Fetch wrappers to /api/dais/queue/* endpoints.
  *
  * Owns: queue items, metrics, appraiser productivity, assignment, review.
  */
 
-import {
-  QUEUE_ITEMS,
-  QUEUE_METRICS,
-  APPRAISER_PRODUCTIVITY,
-  type QueueWorkItem,
-  type QueueMetrics,
-  type AppraiserProductivity,
-} from '@/data/queueFixtures';
+import type { QueueWorkItem, QueueMetrics, AppraiserProductivity } from './queueTypes';
 import { getToken } from '@/auth/authStorage';
 
 const API = '/api/dais/queue';
@@ -38,48 +30,63 @@ function authHeadersReadOnly(): Record<string, string> {
 }
 
 // ============================================================================
-// Read Operations
-//
-// Default: silent fixture fallback (backward-compatible).
-// Pass { throwOnError: true } when callers need provenance tracking
-// (e.g. ManagementDashboard's isFixture flag).
+// Read Options (W5C provenance propagation)
 // ============================================================================
 
-interface QueueReadOptions {
+/**
+ * QueueReadOptions — caller-controlled provenance handling for read-only
+ * queue endpoints. When `throwOnError: true`, transport/HTTP failures
+ * surface as thrown errors so callers can mark provenance as
+ * unavailable/fallback. When omitted/false, reads return empty/null
+ * defaults so the dashboard does not synthesize fixture data.
+ */
+export interface QueueReadOptions {
   throwOnError?: boolean;
 }
 
+// ============================================================================
+// Read Operations
+// ============================================================================
+
 export async function getQueueItems(options?: QueueReadOptions): Promise<QueueWorkItem[]> {
-  try {
-    const res = await fetch(`${API}/all`, { headers: authHeadersReadOnly() });
-    if (!res.ok) throw new Error(res.statusText);
-    return res.json();
-  } catch (err) {
-    if (options?.throwOnError) throw err;
-    return QUEUE_ITEMS;
+  const res = await fetch(`${API}/all`, { headers: authHeadersReadOnly() });
+  if (!res.ok) {
+    if (options?.throwOnError) {
+      throw new Error(`Failed to fetch queue items: ${res.statusText}`);
+    }
+    return [];
   }
+  return res.json();
 }
 
-export async function getQueueMetrics(options?: QueueReadOptions): Promise<QueueMetrics> {
-  try {
-    const res = await fetch(`${API}/metrics`, { headers: authHeadersReadOnly() });
-    if (!res.ok) throw new Error(res.statusText);
-    return res.json();
-  } catch (err) {
-    if (options?.throwOnError) throw err;
-    return QUEUE_METRICS;
+export async function getQueueMetrics(options?: QueueReadOptions): Promise<QueueMetrics | null> {
+  const res = await fetch(`${API}/metrics`, { headers: authHeadersReadOnly() });
+  if (!res.ok) {
+    if (options?.throwOnError) {
+      throw new Error(`Failed to fetch queue metrics: ${res.statusText}`);
+    }
+    return null;
   }
+  const data = await res.json();
+  return {
+    totalUnassigned: data.totalUnassigned ?? data.totalQueued ?? 0,
+    totalInProgress: data.totalInProgress ?? 0,
+    totalPendingReview: data.totalPendingReview ?? data.totalQueued ?? 0,
+    completedThisWeek: data.completedThisWeek ?? data.totalCompleted ?? 0,
+    slaViolations: data.slaViolations ?? data.totalFailed ?? 0,
+    avgDaysToComplete: data.avgDaysToComplete ?? 0,
+  };
 }
 
 export async function getAppraiserProductivity(options?: QueueReadOptions): Promise<AppraiserProductivity[]> {
-  try {
-    const res = await fetch(`${API}/productivity`, { headers: authHeadersReadOnly() });
-    if (!res.ok) throw new Error(res.statusText);
-    return res.json();
-  } catch (err) {
-    if (options?.throwOnError) throw err;
-    return APPRAISER_PRODUCTIVITY;
+  const res = await fetch(`${API}/productivity`, { headers: authHeadersReadOnly() });
+  if (!res.ok) {
+    if (options?.throwOnError) {
+      throw new Error(`Failed to fetch appraiser productivity: ${res.statusText}`);
+    }
+    return [];
   }
+  return res.json();
 }
 
 // ============================================================================
@@ -90,30 +97,24 @@ export async function assignWorkItems(
   workItemIds: string[],
   appraiserName: string
 ): Promise<void> {
-  try {
-    const res = await fetch(`${API}/assign`, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: JSON.stringify({ workItemIds, appraiserName }),
-    });
-    if (!res.ok) throw new Error(res.statusText);
-  } catch {
-    // Fixture mode — mutations handled optimistically in store
-  }
+  const res = await fetch(`${API}/assign`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({ workItemIds, appraiserName }),
+  });
+  if (!res.ok) throw new Error(`Failed to assign work items: ${res.statusText}`);
 }
 
 export async function reviewWorkItem(
   workItemId: string,
   action: 'approve' | 'reject'
 ): Promise<void> {
-  try {
-    const res = await fetch(`${API}/review`, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: JSON.stringify({ workItemId, action }),
-    });
-    if (!res.ok) throw new Error(res.statusText);
-  } catch {
-    // Fixture mode — mutations handled optimistically in store
-  }
+  const res = await fetch(`${API}/review`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({ workItemId, action }),
+  });
+  if (!res.ok) throw new Error(`Failed to review work item: ${res.statusText}`);
 }
+
+export type { QueueWorkItem, QueueMetrics, AppraiserProductivity };

@@ -19,6 +19,27 @@ public class GlossaryController : ControllerBase
         _logger = logger;
     }
 
+    private IActionResult CompatibilityUnavailable(string operation, object? context = null)
+    {
+        return StatusCode(StatusCodes.Status501NotImplemented, new
+        {
+            status = "unavailable",
+            mode = "compatibility",
+            operation,
+            context,
+            message = "Levy glossary content is not yet backed by an authoritative curated term set. Use the governed levy reference surfaces until a reviewed glossary packet exists.",
+            liveRoutes = new[]
+            {
+                "/api/levy/v1/ipd-rates",
+                "/api/levy/v1/lid-lifts",
+                "/api/levy/v1/state-school-levy",
+                "/api/levy/v1/refund-fund",
+                "/api/levy/v1/tax-code-areas",
+                "/api/levy/v1/retention-policy",
+            },
+        });
+    }
+
     /// <summary>
     /// Retrieve all glossary terms, optionally filtered by search query.
     /// </summary>
@@ -26,7 +47,7 @@ public class GlossaryController : ControllerBase
     public IActionResult GetTerms([FromQuery] string? q, [FromQuery] string? category)
     {
         _logger.LogInformation("LEV-041: Glossary terms requested");
-        return Ok(new { status = "stub", message = "Glossary terms not yet implemented." });
+        return CompatibilityUnavailable("terms", new { q, category });
     }
 
     /// <summary>
@@ -36,7 +57,7 @@ public class GlossaryController : ControllerBase
     public IActionResult GetTerm(string slug)
     {
         _logger.LogInformation("LEV-041: Glossary term requested: {Slug}", slug);
-        return Ok(new { status = "stub", slug, message = "Glossary term lookup not yet implemented." });
+        return CompatibilityUnavailable("term", new { slug });
     }
 
     /// <summary>
@@ -46,6 +67,6 @@ public class GlossaryController : ControllerBase
     public IActionResult GetCategories()
     {
         _logger.LogInformation("LEV-041: Glossary categories requested");
-        return Ok(new { status = "stub", message = "Glossary categories not yet implemented." });
+        return CompatibilityUnavailable("categories");
     }
 }

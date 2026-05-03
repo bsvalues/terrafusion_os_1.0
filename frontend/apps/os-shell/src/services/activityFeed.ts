@@ -7,8 +7,8 @@
  * parcel from the REST backend. Returns an empty array with error
  * state when the backend is unavailable.
  *
- * R2 HONESTY: Mock fallback removed. When the backend is down,
- * the UI receives an empty array + error message instead of fake data.
+ * R2 HONESTY: Synthetic fallback removed. When the backend is down,
+ * the UI receives an empty array + error message instead of fabricated data.
  *
  * @see components/workbench/ActivityFeed.tsx — Rendering component
  * @see services/api/activityApi.ts — REST client with caching
@@ -33,12 +33,12 @@ export interface UseParcelActivityResult {
 /**
  * Fetches activity entries for a parcel.
  *
- * Strategy: REST-only. No mock fallback.
+ * Strategy: REST-only. No synthetic fallback.
  *   1. Calls fetchParcelActivity() — REST fetch with 30s cache
  *   2. If the backend returns data → uses it directly
  *   3. If the backend is unavailable → returns empty array + error state
  *
- * R2 HONESTY: Silent mock fallback removed. The UI must represent
+ * R2 HONESTY: Silent synthetic fallback removed. The UI must represent
  * the real state — if there are no activity events, show "no activity"
  * instead of fabricated entries.
  */
@@ -88,7 +88,7 @@ export function useParcelActivity(parcelId: string | null): UseParcelActivityRes
         }
       } catch (e) {
         if (cancelled || activeRequestRef.current !== requestId) return;
-        // REST call failed — propagate error honestly instead of masking with mock data
+        // REST call failed — propagate error honestly instead of masking with fabricated data.
         setError(
           e instanceof Error ? e.message : 'Activity feed unavailable',
         );
@@ -108,5 +108,5 @@ export function useParcelActivity(parcelId: string | null): UseParcelActivityRes
   return { entries, loading, error };
 }
 
-// Mock data generator removed in R2 frontend honesty pass.
+// Synthetic data generator removed in R2 frontend honesty pass.
 // Activity feed now shows real data only — no fabricated entries.

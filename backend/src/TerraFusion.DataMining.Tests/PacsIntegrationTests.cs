@@ -85,10 +85,10 @@ namespace TerraFusion.DataMining.Tests
         }
 
         [Fact]
-        public async Task AlertManager_CreatesAndResolves()
+        public async Task AlertService_CreatesAndResolves()
         {
-            var alertMgr = new AlertManager(
-                NullLogger<AlertManager>.Instance,
+            var alertMgr = new AlertService(
+                NullLogger<AlertService>.Instance,
                 BuildConfig(new Dictionary<string, string?>()));
 
             var alert = await alertMgr.CreateAlertAsync("PACS", "Connection failed", AlertSeverity.Critical);

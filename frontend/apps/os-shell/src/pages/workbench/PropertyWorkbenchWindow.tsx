@@ -27,12 +27,13 @@ import { BADGE_PROVIDERS } from '../../services/badges';
 import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { useParcelActivity } from '../../services/activityFeed';
 import { WorkbenchTabCtx } from '../../context/workbenchTabContext';
+import type { WorkbenchSegmentHandoffContext } from '../../context/workbenchTabContext';
 import { emitTraceEvent } from '../../services/terraTrace';
 import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
 import { useWorkbenchRoles } from '../../hooks/useWorkbenchRoles';
 import { validateWorkbenchHost } from '../../contracts/objectPlacement';
 import type { WorkbenchHostViolation } from '../../contracts/objectPlacement';
-import { useRecentParcels, openWorkbenchWindow } from '../../context/parcelContext';
+import { useRecentParcels, useRecentParcelMeta, recordRecentParcelMeta, openWorkbenchWindow } from '../../context/parcelContext';
 import { useCompanionStore } from '../../stores/companionStore';
 import { useParcelSearch } from '../../shell/command-palette/useParcelSearch';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
@@ -40,6 +41,7 @@ import { useSession } from '../../auth/useSession';
 import { useAuthContext } from '../../auth/useAuthContext';
 import { cn } from '@/lib/utils';
 import { buildContextRibbonFacts } from '../../components/workbench/parcelContextFacts';
+import activateModule from '@/orchestration/moduleActivation';
 
 // ============================================================================
 // Lazy-loaded Tab Components (same as Router.tsx)
@@ -129,8 +131,16 @@ const TabLoader: React.FC = () => (
 // ============================================================================
 
 /** Plain panel wrapper (data surface — no glass per Liquid Glass spec) */
-const StartGlassCard: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
-  <div className={cn('p-4 flex flex-col rounded-lg', className)} style={{ border: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-surface))' }}>
+const StartGlassCard: React.FC<React.HTMLAttributes<HTMLDivElement> & { children: React.ReactNode }> = ({
+  children,
+  className = '',
+  ...props
+}) => (
+  <div
+    {...props}
+    className={cn('p-4 flex flex-col rounded-lg', className)}
+    style={{ border: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-surface))', ...props.style }}
+  >
     {children}
   </div>
 );
@@ -192,16 +202,119 @@ const StartActionRow: React.FC<{
   </button>
 );
 
+function readMetadataString(metadata: Record<string, unknown> | undefined, key: string): string | undefined {
+  const value = metadata?.[key];
+  return typeof value === 'string' && value.trim().length > 0 ? value : undefined;
+}
+
+function buildSegmentHandoffContext(
+  metadata: Record<string, unknown> | undefined,
+): WorkbenchSegmentHandoffContext | null {
+  const segmentId = readMetadataString(metadata, 'segmentId');
+  if (!segmentId) return null;
+
+  return {
+    segmentId,
+    segmentLabel: readMetadataString(metadata, 'segmentLabel'),
+    studyId: readMetadataString(metadata, 'studyId'),
+    countyId: readMetadataString(metadata, 'countyId'),
+    source: readMetadataString(metadata, 'sourceSuite') ?? 'CountyStudio',
+    handoffTemplate: readMetadataString(metadata, 'countyStudioHandoff'),
+    exceptionSetId: readMetadataString(metadata, 'exceptionSetId'),
+    downstreamReceiptId: readMetadataString(metadata, 'downstreamReceiptId'),
+    downstreamStatus: readMetadataString(metadata, 'downstreamStatus'),
+  };
+}
+
+const SegmentHandoffDetails: React.FC<{ context: WorkbenchSegmentHandoffContext }> = ({ context }) => {
+  const details = [
+    { label: 'Segment', value: context.segmentLabel ?? context.segmentId },
+    { label: 'Template', value: context.handoffTemplate },
+    { label: 'Receipt', value: context.downstreamReceiptId },
+    { label: 'Exception set', value: context.exceptionSetId },
+    { label: 'Status', value: context.downstreamStatus },
+  ].filter((item): item is { label: string; value: string } => Boolean(item.value));
+
+  return (
+    <dl className="mt-3 grid gap-2">
+      {details.map((item) => (
+        <div key={item.label} className="flex items-start justify-between gap-3">
+          <dt className="text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: 'hsl(var(--tf-text) / 0.45)' }}>
+            {item.label}
+          </dt>
+          <dd className="max-w-[150px] truncate text-right text-xs font-medium" style={{ color: 'hsl(var(--tf-text) / 0.78)' }}>
+            {item.value}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+};
+
+const SegmentHandoffBanner: React.FC<{ context: WorkbenchSegmentHandoffContext }> = ({ context }) => {
+  const handleBackToCountyStudio = useCallback(() => {
+    void activateModule('county-studio', {
+      source: 'system',
+      metadata: {
+        segmentId: context.segmentId,
+        studyId: context.studyId,
+        countyId: context.countyId,
+        exceptionSetId: context.exceptionSetId,
+        downstreamReceiptId: context.downstreamReceiptId,
+        downstreamStatus: context.downstreamStatus,
+      },
+    });
+  }, [context]);
+
+  return (
+    <div
+      data-testid="workbench-segment-handoff-banner"
+      className="flex flex-wrap items-center justify-between gap-3 border-b px-4 py-2"
+      style={{
+        borderColor: 'hsl(var(--tf-border) / 0.18)',
+        background: 'hsl(var(--tf-accent) / 0.08)',
+        color: 'hsl(var(--tf-text) / 0.8)',
+      }}
+    >
+      <div className="min-w-0">
+        <span className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: 'hsl(var(--tf-accent))' }}>
+          County Studio segment context
+        </span>
+        <p className="truncate text-xs">
+          Segment {context.segmentLabel ?? context.segmentId}
+          {context.downstreamReceiptId ? ` · Receipt ${context.downstreamReceiptId}` : ''}
+          {context.downstreamStatus ? ` · ${context.downstreamStatus}` : ''}
+        </p>
+      </div>
+      <button
+        type="button"
+        onClick={handleBackToCountyStudio}
+        className="rounded-md border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em]"
+        style={{
+          borderColor: 'hsl(var(--tf-accent) / 0.35)',
+          color: 'hsl(var(--tf-accent))',
+        }}
+      >
+        Back to County Studio
+      </button>
+    </div>
+  );
+};
+
 /** Workbench Start Scene — parcel intake when no parcel is active */
-const WorkbenchStartScene: React.FC = () => {
+const WorkbenchStartScene: React.FC<{ segmentHandoff?: WorkbenchSegmentHandoffContext | null }> = ({
+  segmentHandoff,
+}) => {
   const recentParcels = useRecentParcels();
+  const recentMeta = useRecentParcelMeta();
   const openPalette = useCommandPaletteStore((s) => s.open);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Inline search
   const [searchQuery, setSearchQuery] = useState('');
-  const { results, isLoading } = useParcelSearch(searchQuery, searchQuery.length >= 3);
+  const { results, totalCount, isLoading } = useParcelSearch(searchQuery, searchQuery.length >= 3);
   const [showResults, setShowResults] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
 
   // Autofocus the search input
   useEffect(() => {
@@ -209,12 +322,14 @@ const WorkbenchStartScene: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Show results when we have them
+  // Show results when we have them; reset selection
   useEffect(() => {
     setShowResults(results.length > 0);
+    setSelectedIndex(-1);
   }, [results]);
 
-  const handleSelectParcel = useCallback((parcelId: string) => {
+  const handleSelectParcel = useCallback((parcelId: string, meta?: { address: string; ownerName: string }) => {
+    if (meta) recordRecentParcelMeta(parcelId, meta);
     openWorkbenchWindow(parcelId);
   }, []);
 
@@ -224,16 +339,50 @@ const WorkbenchStartScene: React.FC = () => {
     }
   }, [recentParcels]);
 
+  const handleBackToCountyStudio = useCallback(() => {
+    if (!segmentHandoff) return;
+    void activateModule('county-studio', {
+      source: 'system',
+      metadata: {
+        segmentId: segmentHandoff.segmentId,
+        studyId: segmentHandoff.studyId,
+        countyId: segmentHandoff.countyId,
+        exceptionSetId: segmentHandoff.exceptionSetId,
+        downstreamReceiptId: segmentHandoff.downstreamReceiptId,
+        downstreamStatus: segmentHandoff.downstreamStatus,
+      },
+    });
+  }, [segmentHandoff]);
+
   const handleSearchKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && results.length > 0) {
+    if (e.key === 'ArrowDown') {
       e.preventDefault();
-      openWorkbenchWindow(results[0].parcelNumber);
+      setSelectedIndex((i) => Math.min(i + 1, results.length - 1));
+      return;
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex((i) => Math.max(i - 1, -1));
+      return;
+    }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const trimmed = searchQuery.trim();
+      const target = selectedIndex >= 0 ? results[selectedIndex] : results[0];
+      if (target) {
+        // Text search: navigate to selected/first result
+        handleSelectParcel(target.parcelNumber, { address: target.address, ownerName: target.ownerName });
+      } else if (/^\d+$/.test(trimmed) && trimmed.length >= 3) {
+        // All-digit input: direct parcel number navigation
+        openWorkbenchWindow(trimmed);
+      }
     }
     if (e.key === 'Escape') {
       setSearchQuery('');
       setShowResults(false);
+      setSelectedIndex(-1);
     }
-  }, [results]);
+  }, [results, searchQuery, selectedIndex, handleSelectParcel]);
 
   return (
     <div className="h-full flex gap-3 p-6" style={{ background: 'hsl(var(--tf-bg))' }}>
@@ -249,18 +398,22 @@ const WorkbenchStartScene: React.FC = () => {
                 <p className="text-xs text-center" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
                   No recent parcels.
                   <br />
-                  Use ⌘K to search.
+                  Use Ctrl+K to search.
                 </p>
               </div>
             ) : (
-              recentParcels.slice(0, 8).map((parcelId) => (
-                <StartActionRow
-                  key={parcelId}
-                  icon={<span className="text-sm">&#127970;</span>}
-                  label={parcelId}
-                  onClick={() => handleSelectParcel(parcelId)}
-                />
-              ))
+              recentParcels.slice(0, 8).map((parcelId) => {
+                const meta = recentMeta[parcelId];
+                return (
+                  <StartActionRow
+                    key={parcelId}
+                    icon={<span className="text-sm">&#127970;</span>}
+                    label={meta?.address ? meta.address : parcelId}
+                    sublabel={meta?.ownerName ? `${parcelId} — ${meta.ownerName}` : parcelId !== (meta?.address ?? parcelId) ? parcelId : undefined}
+                    onClick={() => handleSelectParcel(parcelId)}
+                  />
+                );
+              })
             )}
           </div>
         </StartGlassCard>
@@ -321,15 +474,18 @@ const WorkbenchStartScene: React.FC = () => {
                     boxShadow: '0 4px 12px hsl(0 0% 0% / 0.3)',
                   }}
                 >
-                  {results.map((r) => (
+                  {results.map((r, idx) => (
                     <button
                       key={r.parcelNumber}
                       onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => handleSelectParcel(r.parcelNumber)}
+                      onMouseEnter={() => setSelectedIndex(idx)}
+                      onClick={() => handleSelectParcel(r.parcelNumber, { address: r.address, ownerName: r.ownerName })}
                       className={cn(
                         'flex flex-col w-full px-4 py-2.5 text-left',
                         'transition-colors duration-100',
-                        'hover:bg-[hsl(var(--tf-text)_/_0.06)]',
+                        idx === selectedIndex
+                          ? 'bg-[hsl(var(--tf-accent)_/_0.12)]'
+                          : 'hover:bg-[hsl(var(--tf-text)_/_0.06)]',
                       )}
                     >
                       <span className="text-sm font-medium" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
@@ -340,12 +496,33 @@ const WorkbenchStartScene: React.FC = () => {
                       </span>
                     </button>
                   ))}
+                  {totalCount > results.length && (
+                    <button
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={openPalette}
+                      className="flex w-full items-center justify-center px-4 py-2 text-xs font-medium"
+                      style={{
+                        color: 'hsl(var(--tf-accent))',
+                        borderTop: '1px solid hsl(var(--tf-border) / 0.12)',
+                      }}
+                    >
+                      Show all {totalCount.toLocaleString()} results (Ctrl+K)
+                    </button>
+                  )}
                 </div>
               )}
             </div>
 
             <p className="text-xs" style={{ color: 'hsl(var(--tf-text) / 0.3)' }}>
-              Press ⌘K for full search
+              Or{' '}
+              <button
+                onClick={openPalette}
+                className="underline-offset-2 hover:underline"
+                style={{ color: 'hsl(var(--tf-accent) / 0.7)' }}
+              >
+                Advanced Search (Ctrl+K)
+              </button>
+              {' '}for filters
             </p>
           </div>
         </StartGlassCard>
@@ -353,6 +530,31 @@ const WorkbenchStartScene: React.FC = () => {
 
       {/* ═══ Right Panel: Quick Actions ═══ */}
       <div className="w-[240px] shrink-0 flex flex-col gap-3">
+        {segmentHandoff && (
+          <StartGlassCard data-testid="workbench-segment-handoff-card">
+            <StartSectionHeader icon={<span className="text-sm">&#128203;</span>} title="County Studio Context" />
+            <p className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
+              Segment handoff retained
+            </p>
+            <p className="mt-1 text-xs" style={{ color: 'hsl(var(--tf-text) / 0.48)' }}>
+              Select or search a parcel to continue parcel-level review without losing the originating segment.
+            </p>
+            <SegmentHandoffDetails context={segmentHandoff} />
+            <button
+              type="button"
+              data-testid="workbench-segment-back-county-studio"
+              onClick={handleBackToCountyStudio}
+              className="mt-4 rounded-md border px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em]"
+              style={{
+                borderColor: 'hsl(var(--tf-accent) / 0.35)',
+                background: 'hsl(var(--tf-accent) / 0.1)',
+                color: 'hsl(var(--tf-accent))',
+              }}
+            >
+              Back to County Studio
+            </button>
+          </StartGlassCard>
+        )}
         <StartGlassCard className="flex-1">
           <StartSectionHeader icon={<span className="text-sm">&#9889;</span>} title="Quick Actions" />
           <div className="flex flex-col gap-0.5 -mx-2.5">
@@ -366,7 +568,7 @@ const WorkbenchStartScene: React.FC = () => {
               <StartActionRow
                 icon={<span className="text-sm">&#9654;</span>}
                 label="Resume Last Parcel"
-                sublabel={recentParcels[0]}
+                sublabel={recentMeta[recentParcels[0]]?.address ?? recentParcels[0]}
                 onClick={handleResumeLast}
               />
             )}
@@ -512,6 +714,10 @@ interface PropertyData {
 const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metadata }) => {
   const parcelId = (metadata?.parcelId as string) ?? null;
   const initialTab = (metadata?.tabId as WorkbenchTabSlug) ?? 'summary';
+  const segmentHandoff = useMemo(
+    () => buildSegmentHandoffContext(metadata),
+    [metadata],
+  );
   const session = useSession();
   const auth = useAuthContext();
 
@@ -588,8 +794,8 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
 
   // Context value for tab components (via WorkbenchTabCtx)
   const tabContextValue = useMemo(
-    () => ({ parcelId: parcelId || 'Unknown', propertyData }),
-    [parcelId, propertyData]
+    () => ({ parcelId: parcelId || 'Unknown', propertyData, workMode, segmentHandoff }),
+    [parcelId, propertyData, segmentHandoff, workMode]
   );
 
   // Badge state — collected from all providers
@@ -683,7 +889,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
 
   // No parcel selected — show parcel intake scene
   if (!parcelId) {
-    return <WorkbenchStartScene />;
+    return <WorkbenchStartScene segmentHandoff={segmentHandoff} />;
   }
 
   return (
@@ -701,6 +907,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
         onWorkModeChange={setWorkMode}
         onPopOut={handlePopOut}
       />
+      {segmentHandoff && <SegmentHandoffBanner context={segmentHandoff} />}
 
       {/* Workbench content — state-based tabs, no Router needed */}
       <WorkbenchTabCtx.Provider value={tabContextValue}>

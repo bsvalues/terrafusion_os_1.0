@@ -58,7 +58,7 @@ describe('usePacsStatus', () => {
     })
     expect(result.current.source).toBe('polled')
     await act(async () => {
-      vi.advanceTimersByTime(DAIS_REFRESH.pacsStatusMs)
+      vi.advanceTimersByTime(DAIS_REFRESH.assessmentSourceStatusMs)
       await vi.advanceTimersByTimeAsync(0)
     })
     expect(result.current.source).toBe('fallback')
@@ -74,7 +74,7 @@ describe('usePacsStatus', () => {
     })
     expect(result.current.source).toBe('polled')
     await act(async () => {
-      vi.advanceTimersByTime(DAIS_REFRESH.pacsStatusMs)
+      vi.advanceTimersByTime(DAIS_REFRESH.assessmentSourceStatusMs)
       await vi.advanceTimersByTimeAsync(0)
     })
     expect(result.current.isLoading).toBe(false)
@@ -91,7 +91,7 @@ describe('usePacsStatus', () => {
     })
     expect(result.current.source).toBe('polled')
     await act(async () => {
-      vi.advanceTimersByTime(DAIS_REFRESH.pacsStaleAfterMs + DAIS_REFRESH.pacsStatusMs)
+      vi.advanceTimersByTime(DAIS_REFRESH.assessmentSourceStaleAfterMs + DAIS_REFRESH.assessmentSourceStatusMs)
       await vi.advanceTimersByTimeAsync(0)
     })
     expect(result.current.isStale).toBe(true)

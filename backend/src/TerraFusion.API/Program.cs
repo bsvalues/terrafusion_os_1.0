@@ -18,6 +18,7 @@ using TerraFusion.Data;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.AI.Extensions;
+using TerraFusion.Core.GIS.ArcGisRest;
 using TerraFusionOperations = TerraFusion.Operations.Services;
 using TerraFusionOperationsInterfaces = TerraFusion.Operations.Interfaces;
 using Prometheus;
@@ -28,6 +29,10 @@ using TerraFusion.Levy.Services;
 using System.Data;
 using TerraFusion.Core.Services;
 using TerraFusion.Core.PACS;
+using TerraFusion.Sync.Workbench.Atlas;
+using TerraFusion.Sync.Workbench.Mapping;
+using TerraFusion.Sync.Workbench.Schema;
+using TerraFusion.Sync.Workbench.Transforms.Sales;
 using TerraFusion.API.Services.SpecLock;
 using TerraFusion.API.Services.Marketplace;
 using TerraFusion.API.Services.Telemetry;
@@ -41,6 +46,83 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using System.Threading.RateLimiting;
 
+static IEnumerable<string> EnumerateSelfAndAncestors(string startPath)
+{
+    var current = new DirectoryInfo(Path.GetFullPath(startPath));
+    while (current is not null)
+    {
+        yield return current.FullName;
+        current = current.Parent;
+    }
+}
+
+static string ResolveApiContentRoot()
+{
+    // Explicit override — test harnesses set this before host construction to
+    // bypass the ancestor walk. Honor it first so WebApplicationFactory-style
+    // test fixtures work in non-standard layouts (worktrees, custom bin dirs).
+    var envOverride = Environment.GetEnvironmentVariable("TERRAFUSION_API_CONTENT_ROOT")
+                   ?? Environment.GetEnvironmentVariable("ASPNETCORE_CONTENTROOT");
+    if (!string.IsNullOrWhiteSpace(envOverride) &&
+        File.Exists(Path.Combine(envOverride, "TerraFusion.API.csproj")) &&
+        File.Exists(Path.Combine(envOverride, "appsettings.json")))
+    {
+        return Path.GetFullPath(envOverride);
+    }
+
+    var candidateStarts = new[]
+    {
+        Directory.GetCurrentDirectory(),
+        AppContext.BaseDirectory
+    }
+    .Where(path => !string.IsNullOrWhiteSpace(path))
+    .Select(Path.GetFullPath)
+    .Distinct(StringComparer.OrdinalIgnoreCase);
+
+    foreach (var candidate in candidateStarts)
+    {
+        foreach (var probe in EnumerateSelfAndAncestors(candidate))
+        {
+            if (File.Exists(Path.Combine(probe, "TerraFusion.API.csproj")) &&
+                File.Exists(Path.Combine(probe, "appsettings.json")))
+            {
+                return probe;
+            }
+
+            // Also probe the conventional src/TerraFusion.API sibling layout —
+            // tests run from backend/TerraFusion.API.Tests/bin/..., where the
+            // API source is at backend/src/TerraFusion.API. Without this probe,
+            // the walk finds `backend/` but keeps going without spotting the
+            // API project as a child of an ancestor.
+            var sibling = Path.Combine(probe, "src", "TerraFusion.API");
+            if (File.Exists(Path.Combine(sibling, "TerraFusion.API.csproj")) &&
+                File.Exists(Path.Combine(sibling, "appsettings.json")))
+            {
+                return Path.GetFullPath(sibling);
+            }
+        }
+    }
+
+    throw new InvalidOperationException(
+        $"Unable to resolve TerraFusion.API content root from '{Directory.GetCurrentDirectory()}' and '{AppContext.BaseDirectory}'.");
+}
+
+static IHostBuilder CreateCanonicalHostBuilder(string[] args, string environmentName)
+{
+    var apiContentRoot = ResolveApiContentRoot();
+
+    return Host.CreateDefaultBuilder(args)
+        .UseContentRoot(apiContentRoot)
+        .UseEnvironment(environmentName)
+        .ConfigureAppConfiguration((_, cfg) =>
+        {
+            cfg.SetBasePath(apiContentRoot);
+            cfg.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{environmentName}.local.json", optional: true, reloadOnChange: false);
+        });
+}
+
 // ── Standalone PACS seed mode ──────────────────────────────────────────────
 // Run as: dotnet run --project TerraFusion.API -- --seed-pacs
 // Runs the seeder directly without HTTP server or background services.
@@ -53,13 +135,7 @@ if (args.Contains("--canonicalize-only"))
                   ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                   ?? "Production";
 
-    var canonHost = Host.CreateDefaultBuilder(args)
-        .UseEnvironment(canonEnv)
-        .ConfigureAppConfiguration((ctx, cfg) =>
-        {
-            cfg.AddJsonFile($"appsettings.{canonEnv}.json", optional: true, reloadOnChange: false);
-            cfg.AddJsonFile($"appsettings.{canonEnv}.local.json", optional: true, reloadOnChange: false);
-        })
+    var canonHost = CreateCanonicalHostBuilder(args, canonEnv)
         .ConfigureServices((ctx, svc) =>
         {
             var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
@@ -88,6 +164,44 @@ if (args.Contains("--canonicalize-only"))
     }
 }
 
+// ── Fast Properties-only refresh (Step 1 only) ────────────────────────────
+// Run as: dotnet run --project TerraFusion.API -- --canonicalize-properties-only
+// Re-runs only canonical Property upserts from the PACS mirror.
+if (args.Contains("--canonicalize-properties-only"))
+{
+    var propertiesEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                     ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                     ?? "Production";
+
+    var propertiesHost = CreateCanonicalHostBuilder(args, propertiesEnv)
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+        })
+        .Build();
+
+    using var propertiesScope = propertiesHost.Services.CreateScope();
+    var propertiesDb = propertiesScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var propertiesLogger = propertiesScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.API.Seeds.PacsCanonicalizer>>();
+    try
+    {
+        propertiesLogger.LogInformation("[Canonicalize] Standalone properties-only run...");
+        var canonicalizer = new TerraFusion.API.Seeds.PacsCanonicalizer(propertiesDb, propertiesLogger);
+        var count = await canonicalizer.CanonicalizePropertiesOnlyAsync();
+        propertiesLogger.LogInformation("[Canonicalize] PROPERTIES-ONLY DONE: {Count} Properties", count);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        propertiesLogger.LogError(ex, "[Canonicalize] PROPERTIES-ONLY FAILED");
+        Environment.Exit(1);
+    }
+}
+
 // ── Fast CAMA-only refresh (Step 4 only) ──────────────────────────────────
 // Run as: dotnet run --project TerraFusion.API -- --canonicalize-cama-only
 // Re-runs only CamaCharacteristics from PacsImprovements. Use after cost-field schema updates.
@@ -97,13 +211,7 @@ if (args.Contains("--canonicalize-cama-only"))
                   ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                   ?? "Production";
 
-    var camaHost = Host.CreateDefaultBuilder(args)
-        .UseEnvironment(camaEnv)
-        .ConfigureAppConfiguration((ctx, cfg) =>
-        {
-            cfg.AddJsonFile($"appsettings.{camaEnv}.json", optional: true, reloadOnChange: false);
-            cfg.AddJsonFile($"appsettings.{camaEnv}.local.json", optional: true, reloadOnChange: false);
-        })
+    var camaHost = CreateCanonicalHostBuilder(args, camaEnv)
         .ConfigureServices((ctx, svc) =>
         {
             var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
@@ -132,6 +240,655 @@ if (args.Contains("--canonicalize-cama-only"))
     }
 }
 
+// ── CountyStudy segment derivation (Chunk 3 service, CLI entry) ─────────────
+// Run as: dotnet run --project TerraFusion.API -- --derive-segments --study-id=<guid>
+// Reads Properties + CamaCharacteristics + ComparableSales for the study's
+// (county × tax year) and writes a new baseline CountySegmentSet.
+if (args.Contains("--derive-segments"))
+{
+    var studyIdArg = args
+        .FirstOrDefault(a => a.StartsWith("--study-id=", StringComparison.Ordinal))
+        ?.Substring("--study-id=".Length);
+    Guid studyIdFlag = Guid.Empty;
+    if (string.IsNullOrWhiteSpace(studyIdArg) || !Guid.TryParse(studyIdArg, out studyIdFlag))
+    {
+        Console.Error.WriteLine("[DeriveSegments] Required: --study-id=<guid>. Example:");
+        Console.Error.WriteLine("  dotnet run --project TerraFusion.API -- \\");
+        Console.Error.WriteLine("    --derive-segments --study-id=1a2b3c4d-0000-0000-0000-000000000000");
+        Environment.Exit(2);
+        return;  // unreachable after Environment.Exit but keeps compiler happy
+    }
+
+    var deriveEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                    ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                    ?? "Production";
+
+    var deriveHost = CreateCanonicalHostBuilder(args, deriveEnv)
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.Core.Interfaces.ITerraFusionDbContext>(sp =>
+                sp.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>());
+            svc.AddScoped<TerraFusion.Core.Services.ICountyStudySegmentDerivationService,
+                          TerraFusion.Core.Services.CountyStudySegmentDerivationService>();
+        })
+        .Build();
+
+    using var deriveScope = deriveHost.Services.CreateScope();
+    var deriveSvc = deriveScope.ServiceProvider
+        .GetRequiredService<TerraFusion.Core.Services.ICountyStudySegmentDerivationService>();
+    var deriveLogger = deriveScope.ServiceProvider
+        .GetRequiredService<ILogger<TerraFusion.Core.Services.CountyStudySegmentDerivationService>>();
+
+    try
+    {
+        deriveLogger.LogInformation("[DeriveSegments] Starting derivation for study {StudyId}", studyIdFlag);
+        var result = await deriveSvc.DeriveAsync(studyIdFlag, userId: "cli:derive-segments");
+        deriveLogger.LogInformation(
+            "[DeriveSegments] DONE. segmentSetId={SegmentSetId} segments={SegmentCount} " +
+            "parcels={Parcels} withRatios={WithRatios} iaaoExceptions={ExceptionSegments}",
+            result.SegmentSetId, result.SegmentCount, result.TotalParcels,
+            result.SegmentsWithRatios, result.SegmentsWithIaaoExceptions);
+        Console.WriteLine($"{result.SegmentCount} segments created from {result.TotalParcels} parcels " +
+                          $"({result.SegmentsWithRatios} with ratio stats, " +
+                          $"{result.SegmentsWithIaaoExceptions} with IAAO exceptions). " +
+                          $"segmentSetId={result.SegmentSetId}");
+        Environment.Exit(0);
+    }
+    catch (InvalidOperationException ex)
+    {
+        deriveLogger.LogError(ex, "[DeriveSegments] FAILED — study not found or invalid");
+        Console.Error.WriteLine($"[DeriveSegments] {ex.Message}");
+        Environment.Exit(1);
+    }
+    catch (Exception ex)
+    {
+        deriveLogger.LogError(ex, "[DeriveSegments] UNEXPECTED FAILURE");
+        Console.Error.WriteLine($"[DeriveSegments] Unexpected: {ex.Message}");
+        Environment.Exit(1);
+    }
+}
+
+// ── Levy rebuild from PACS oracle + canonical levy tables ──────────────────
+// Run as: dotnet run --project TerraFusion.API -- --seed-levy-only
+if (args.Contains("--seed-levy-only"))
+{
+    var levyEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                  ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                  ?? "Production";
+
+    var levyHost = CreateCanonicalHostBuilder(args, levyEnv)
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.API.Seeds.PacsDataSeeder>();
+            svc.AddScoped<TerraFusion.API.Services.ISaleQualificationService, TerraFusion.API.Services.SaleQualificationService>();
+        })
+        .Build();
+
+    using var levyScope = levyHost.Services.CreateScope();
+    var seeder = levyScope.ServiceProvider.GetRequiredService<TerraFusion.API.Seeds.PacsDataSeeder>();
+    var logger = levyScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.API.Seeds.PacsDataSeeder>>();
+    try
+    {
+        logger.LogInformation("[PacsSeeder] Standalone levy-only mode...");
+        var result = await seeder.SeedLevyOnlyAsync();
+        logger.LogInformation("[PacsSeeder] LEVY-ONLY DONE: {Result}", result);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "[PacsSeeder] LEVY-ONLY FAILED");
+        Environment.Exit(1);
+    }
+}
+
+// Run as: dotnet run --project TerraFusion.API -- --canonicalize-levy-only
+if (args.Contains("--canonicalize-levy-only"))
+{
+    var levyCanonEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                       ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                       ?? "Production";
+
+    var levyCanonHost = CreateCanonicalHostBuilder(args, levyCanonEnv)
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+        })
+        .Build();
+
+    using var levyCanonScope = levyCanonHost.Services.CreateScope();
+    var levyCanonDb = levyCanonScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var levyCanonLogger = levyCanonScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.API.Seeds.PacsCanonicalizer>>();
+    try
+    {
+        levyCanonLogger.LogInformation("[Canonicalize] Standalone levy-only run...");
+        var canonicalizer = new TerraFusion.API.Seeds.PacsCanonicalizer(levyCanonDb, levyCanonLogger);
+        var count = await canonicalizer.CanonicalizeLevyOnlyAsync();
+        levyCanonLogger.LogInformation("[Canonicalize] LEVY-ONLY DONE: LevyCertifications={Count}", count);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        levyCanonLogger.LogError(ex, "[Canonicalize] LEVY-ONLY FAILED");
+        Environment.Exit(1);
+    }
+}
+
+// Run as: dotnet run --project TerraFusion.API -- --sync-certification-steps-only
+if (args.Contains("--sync-certification-steps-only"))
+{
+    var certEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                  ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                  ?? "Production";
+
+    var certHost = CreateCanonicalHostBuilder(args, certEnv)
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.Core.Interfaces.ITerraFusionDbContext>(sp => sp.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>());
+            svc.AddScoped<TerraFusion.Core.Services.ICertificationService, TerraFusion.Core.Services.CertificationService>();
+        })
+        .Build();
+
+    using var certScope = certHost.Services.CreateScope();
+    var certDb = certScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var certService = certScope.ServiceProvider.GetRequiredService<TerraFusion.Core.Services.ICertificationService>();
+    var certLogger = certScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.Core.Services.CertificationService>>();
+
+    try
+    {
+        var countyIdRaw = Environment.GetEnvironmentVariable("TF_CERT_COUNTY_ID");
+        var countyId = Guid.TryParse(countyIdRaw, out var parsedCountyId)
+            ? parsedCountyId
+            : Guid.Parse("19190019-1919-1919-1919-191919191919");
+        var taxYearRaw = Environment.GetEnvironmentVariable("TF_CERT_TAX_YEAR");
+        var taxYear = int.TryParse(taxYearRaw, out var parsedTaxYear)
+            ? parsedTaxYear
+            : await certDb.LevyCertifications
+                .Where(c => c.CountyId == countyId)
+                .OrderByDescending(c => c.TaxYear)
+                .Select(c => c.TaxYear)
+                .FirstOrDefaultAsync();
+
+        if (taxYear <= 0)
+            throw new InvalidOperationException($"No canonical levy certifications exist for county {countyId}.");
+
+        certLogger.LogInformation(
+            "[CertificationSync] Materializing county certification steps from canonical levy truth for county {CountyId}, tax year {TaxYear}...",
+            countyId,
+            taxYear);
+
+        var steps = await certService.GetByTaxYearAsync(taxYear, countyId);
+        certLogger.LogInformation(
+            "[CertificationSync] DONE: {Count} certification steps materialized for county {CountyId}, tax year {TaxYear}.",
+            steps.Count,
+            countyId,
+            taxYear);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        certLogger.LogError(ex, "[CertificationSync] FAILED");
+        Environment.Exit(1);
+    }
+}
+
+// Run as: dotnet run --project TerraFusion.API -- --complete-certification-step
+if (args.Contains("--complete-certification-step"))
+{
+    var certActionEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                        ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                        ?? "Production";
+
+    var certActionHost = CreateCanonicalHostBuilder(args, certActionEnv)
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.Core.Interfaces.ITerraFusionDbContext>(sp => sp.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>());
+            svc.AddScoped<TerraFusion.Core.Services.ICertificationService, TerraFusion.Core.Services.CertificationService>();
+        })
+        .Build();
+
+    using var certActionScope = certActionHost.Services.CreateScope();
+    var certActionDb = certActionScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var certActionService = certActionScope.ServiceProvider.GetRequiredService<TerraFusion.Core.Services.ICertificationService>();
+    var certActionLogger = certActionScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.Core.Services.CertificationService>>();
+
+    try
+    {
+        var countyIdRaw = Environment.GetEnvironmentVariable("TF_CERT_COUNTY_ID");
+        var countyId = Guid.TryParse(countyIdRaw, out var parsedCountyId)
+            ? parsedCountyId
+            : Guid.Parse("19190019-1919-1919-1919-191919191919");
+        var taxYearRaw = Environment.GetEnvironmentVariable("TF_CERT_TAX_YEAR");
+        var taxYear = int.TryParse(taxYearRaw, out var parsedTaxYear)
+            ? parsedTaxYear
+            : await certActionDb.LevyCertifications
+                .Where(c => c.CountyId == countyId)
+                .OrderByDescending(c => c.TaxYear)
+                .Select(c => c.TaxYear)
+                .FirstOrDefaultAsync();
+        var stepReference = Environment.GetEnvironmentVariable("TF_CERT_STEP_REF");
+        var signedBy = Environment.GetEnvironmentVariable("TF_CERT_SIGNED_BY");
+        var notes = Environment.GetEnvironmentVariable("TF_CERT_NOTES");
+
+        if (taxYear <= 0)
+            throw new InvalidOperationException($"No canonical levy certifications exist for county {countyId}.");
+        if (string.IsNullOrWhiteSpace(stepReference))
+            throw new InvalidOperationException("TF_CERT_STEP_REF is required.");
+        if (string.IsNullOrWhiteSpace(signedBy))
+            throw new InvalidOperationException("TF_CERT_SIGNED_BY is required.");
+
+        certActionLogger.LogInformation(
+            "[CertificationSync] Completing certification step {StepReference} for county {CountyId}, tax year {TaxYear}...",
+            stepReference,
+            countyId,
+            taxYear);
+
+        var step = await certActionService.CompleteStepAsync(stepReference, signedBy, notes, taxYear, countyId);
+        certActionLogger.LogInformation(
+            "[CertificationSync] DONE: {StepCode} completed at {CompletedAt:o}.",
+            step.StepCode,
+            step.CompletedAt);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        certActionLogger.LogError(ex, "[CertificationSync] COMPLETE-STEP FAILED");
+        Environment.Exit(1);
+    }
+}
+
+// Run as: dotnet run --project TerraFusion.API -- --generate-levy-cert-notice
+if (args.Contains("--generate-levy-cert-notice"))
+{
+    var noticeEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                    ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                    ?? "Production";
+
+    var noticeHost = CreateCanonicalHostBuilder(args, noticeEnv)
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.Core.Interfaces.ITerraFusionDbContext>(sp => sp.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>());
+            svc.AddScoped<TerraFusion.Core.Services.INoticeService, TerraFusion.Core.Services.NoticeService>();
+        })
+        .Build();
+
+    using var noticeScope = noticeHost.Services.CreateScope();
+    var noticeDb = noticeScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var noticeService = noticeScope.ServiceProvider.GetRequiredService<TerraFusion.Core.Services.INoticeService>();
+    var noticeLogger = noticeScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.Core.Services.NoticeService>>();
+
+    try
+    {
+        var countyIdRaw = Environment.GetEnvironmentVariable("TF_CERT_COUNTY_ID");
+        var countyId = Guid.TryParse(countyIdRaw, out var parsedCountyId)
+            ? parsedCountyId
+            : Guid.Parse("19190019-1919-1919-1919-191919191919");
+        var taxYearRaw = Environment.GetEnvironmentVariable("TF_CERT_TAX_YEAR");
+        var taxYear = int.TryParse(taxYearRaw, out var parsedTaxYear)
+            ? parsedTaxYear
+            : await noticeDb.LevyCertifications
+                .Where(c => c.CountyId == countyId)
+                .OrderByDescending(c => c.TaxYear)
+                .Select(c => c.TaxYear)
+                .FirstOrDefaultAsync();
+        var deliveryMethod = Environment.GetEnvironmentVariable("TF_NOTICE_DELIVERY_METHOD");
+        var createdBy = Environment.GetEnvironmentVariable("TF_CERT_SIGNED_BY");
+
+        noticeLogger.LogInformation(
+            "[CertificationSync] Generating levy certification notice for county {CountyId}, tax year {TaxYear}...",
+            countyId,
+            taxYear);
+
+        var notice = await noticeService.CreateLevyCertificationNoticeAsync(countyId, taxYear, deliveryMethod, null, createdBy);
+        noticeLogger.LogInformation(
+            "[CertificationSync] DONE: notice {NoticeId} generated for parcel lane {ParcelId}.",
+            notice.Id,
+            notice.ParcelId);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        noticeLogger.LogError(ex, "[CertificationSync] GENERATE-NOTICE FAILED");
+        Environment.Exit(1);
+    }
+}
+
+// Run as: dotnet run --project TerraFusion.API -- --queue-levy-cert-notice
+if (args.Contains("--queue-levy-cert-notice"))
+{
+    var queueNoticeEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                         ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                         ?? "Production";
+
+    var queueNoticeHost = CreateCanonicalHostBuilder(args, queueNoticeEnv)
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.Core.Interfaces.ITerraFusionDbContext>(sp => sp.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>());
+            svc.AddScoped<TerraFusion.Core.Services.INoticeService, TerraFusion.Core.Services.NoticeService>();
+            svc.AddScoped<TerraFusion.Core.Services.IQueueService, TerraFusion.Core.Services.QueueService>();
+        })
+        .Build();
+
+    using var queueNoticeScope = queueNoticeHost.Services.CreateScope();
+    var queueNoticeDb = queueNoticeScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var queueNoticeService = queueNoticeScope.ServiceProvider.GetRequiredService<TerraFusion.Core.Services.INoticeService>();
+    var queueItemService = queueNoticeScope.ServiceProvider.GetRequiredService<TerraFusion.Core.Services.IQueueService>();
+    var queueNoticeLogger = queueNoticeScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.Core.Services.NoticeService>>();
+
+    try
+    {
+        var countyIdRaw = Environment.GetEnvironmentVariable("TF_CERT_COUNTY_ID");
+        var countyId = Guid.TryParse(countyIdRaw, out var parsedCountyId)
+            ? parsedCountyId
+            : Guid.Parse("19190019-1919-1919-1919-191919191919");
+        var taxYearRaw = Environment.GetEnvironmentVariable("TF_CERT_TAX_YEAR");
+        var taxYear = int.TryParse(taxYearRaw, out var parsedTaxYear)
+            ? parsedTaxYear
+            : await queueNoticeDb.LevyCertifications
+                .Where(c => c.CountyId == countyId)
+                .OrderByDescending(c => c.TaxYear)
+                .Select(c => c.TaxYear)
+                .FirstOrDefaultAsync();
+        var deliveryMethod = Environment.GetEnvironmentVariable("TF_NOTICE_DELIVERY_METHOD") ?? "usps_first_class";
+        var queuedBy = Environment.GetEnvironmentVariable("TF_CERT_SIGNED_BY") ?? "system";
+        var levyNotice = await queueNoticeService.GetLatestLevyCertificationNoticeAsync(countyId, taxYear);
+        if (levyNotice is null)
+            throw new InvalidOperationException($"LEVY_RATE notice must be generated before it can be queued for mailing for tax year {taxYear}.");
+
+        levyNotice = await queueNoticeService.UpdateStatusAsync(levyNotice.Id, "queued_for_mailing", countyId);
+        levyNotice.DeliveryMethod = deliveryMethod;
+        levyNotice.UpdatedAt = DateTime.UtcNow;
+        levyNotice.UpdatedBy = queuedBy;
+
+        var noteKey = $"NoticeId={levyNotice.Id}";
+        var existingQueueItem = await queueNoticeDb.QueueItems
+            .AsNoTracking()
+            .FirstOrDefaultAsync(q => q.CountyId == countyId &&
+                                      q.TaskType == "NOTICE_MAILING" &&
+                                      q.Status != "completed" &&
+                                      q.Status != "failed" &&
+                                      q.Notes != null &&
+                                      q.Notes.Contains(noteKey));
+
+        TerraFusion.Core.Entities.QueueItem? queueItem = null;
+        if (existingQueueItem is null)
+        {
+            var queueNotes = $"{noteKey}; TemplateId={levyNotice.TemplateId}; DeliveryMethod={deliveryMethod}; BatchId=CLI-{Guid.NewGuid():N}";
+            if (queueNotes.Length > 120)
+                queueNotes = queueNotes[..120];
+
+            queueItem = await queueItemService.CreateAsync(new TerraFusion.Core.Entities.QueueItem
+            {
+                ParcelId = levyNotice.ParcelId,
+                TaskType = "NOTICE_MAILING",
+                Priority = "high",
+                AssignedTo = "Mail Operations",
+                CountyId = countyId,
+                CreatedBy = queuedBy,
+                UpdatedBy = queuedBy,
+                Notes = queueNotes,
+            });
+        }
+
+        await queueNoticeDb.SaveChangesAsync();
+
+        queueNoticeLogger.LogInformation(
+            "[CertificationSync] DONE: levy notice {NoticeId} queued for mailing for county {CountyId}, tax year {TaxYear}, queue item {QueueItemId}.",
+            levyNotice.Id,
+            countyId,
+            taxYear,
+            queueItem?.Id ?? existingQueueItem?.Id);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        queueNoticeLogger.LogError(ex, "[CertificationSync] QUEUE-LEVY-NOTICE FAILED");
+        Environment.Exit(1);
+    }
+}
+
+// Run as: dotnet run --project TerraFusion.API -- --submit-certification-to-dor
+if (args.Contains("--submit-certification-to-dor"))
+{
+    var dorSubmitEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                       ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                       ?? "Production";
+
+    var dorSubmitHost = CreateCanonicalHostBuilder(args, dorSubmitEnv)
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.Core.Interfaces.ITerraFusionDbContext>(sp => sp.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>());
+            svc.AddScoped<TerraFusion.Core.Services.ICertificationService, TerraFusion.Core.Services.CertificationService>();
+            svc.AddScoped<TerraFusion.Core.Services.INoticeService, TerraFusion.Core.Services.NoticeService>();
+        })
+        .Build();
+
+    using var dorSubmitScope = dorSubmitHost.Services.CreateScope();
+    var dorSubmitDb = dorSubmitScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var dorSubmitService = dorSubmitScope.ServiceProvider.GetRequiredService<TerraFusion.Core.Services.ICertificationService>();
+    var dorNoticeService = dorSubmitScope.ServiceProvider.GetRequiredService<TerraFusion.Core.Services.INoticeService>();
+    var dorSubmitLogger = dorSubmitScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.Core.Services.CertificationService>>();
+
+    try
+    {
+        var countyIdRaw = Environment.GetEnvironmentVariable("TF_CERT_COUNTY_ID");
+        var countyId = Guid.TryParse(countyIdRaw, out var parsedCountyId)
+            ? parsedCountyId
+            : Guid.Parse("19190019-1919-1919-1919-191919191919");
+        var taxYearRaw = Environment.GetEnvironmentVariable("TF_CERT_TAX_YEAR");
+        var taxYear = int.TryParse(taxYearRaw, out var parsedTaxYear)
+            ? parsedTaxYear
+            : await dorSubmitDb.LevyCertifications
+                .Where(c => c.CountyId == countyId)
+                .OrderByDescending(c => c.TaxYear)
+                .Select(c => c.TaxYear)
+                .FirstOrDefaultAsync();
+        var signedBy = Environment.GetEnvironmentVariable("TF_CERT_SIGNED_BY");
+        var notes = Environment.GetEnvironmentVariable("TF_CERT_NOTES");
+
+        var levyNotice = await dorNoticeService.GetLatestLevyCertificationNoticeAsync(countyId, taxYear);
+        if (levyNotice is null)
+            throw new InvalidOperationException($"LEVY_RATE notice must be generated before DOR submission for tax year {taxYear}.");
+        if (!string.Equals(levyNotice.Status, "queued_for_mailing", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(levyNotice.Status, "sent", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(levyNotice.Status, "sealed", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException(
+                $"LEVY_RATE notice {levyNotice.Id} must be queued for mailing or sent before DOR submission for tax year {taxYear}.");
+        }
+
+        var step = await dorSubmitService.CompleteStepAsync(
+            "DOR_SUBMISSION",
+            signedBy ?? "system",
+            notes ?? $"DOR submission anchored to levy notice {levyNotice.Id}.",
+            taxYear,
+            countyId);
+
+        dorSubmitLogger.LogInformation(
+            "[CertificationSync] DONE: DOR submission completed for county {CountyId}, tax year {TaxYear}, step {StepId}.",
+            countyId,
+            taxYear,
+            step.Id);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        dorSubmitLogger.LogError(ex, "[CertificationSync] DOR-SUBMISSION FAILED");
+        Environment.Exit(1);
+    }
+}
+
+// Run as: dotnet run --project TerraFusion.API -- --accept-certification-from-dor
+if (args.Contains("--accept-certification-from-dor"))
+{
+    var dorAcceptEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                       ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                       ?? "Production";
+
+    var dorAcceptHost = CreateCanonicalHostBuilder(args, dorAcceptEnv)
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.Core.Interfaces.ITerraFusionDbContext>(sp => sp.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>());
+            svc.AddScoped<TerraFusion.Core.Services.ICertificationService, TerraFusion.Core.Services.CertificationService>();
+        })
+        .Build();
+
+    using var dorAcceptScope = dorAcceptHost.Services.CreateScope();
+    var dorAcceptDb = dorAcceptScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var dorAcceptService = dorAcceptScope.ServiceProvider.GetRequiredService<TerraFusion.Core.Services.ICertificationService>();
+    var dorAcceptLogger = dorAcceptScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.Core.Services.CertificationService>>();
+
+    try
+    {
+        var countyIdRaw = Environment.GetEnvironmentVariable("TF_CERT_COUNTY_ID");
+        var countyId = Guid.TryParse(countyIdRaw, out var parsedCountyId)
+            ? parsedCountyId
+            : Guid.Parse("19190019-1919-1919-1919-191919191919");
+        var taxYearRaw = Environment.GetEnvironmentVariable("TF_CERT_TAX_YEAR");
+        var taxYear = int.TryParse(taxYearRaw, out var parsedTaxYear)
+            ? parsedTaxYear
+            : await dorAcceptDb.LevyCertifications
+                .Where(c => c.CountyId == countyId)
+                .OrderByDescending(c => c.TaxYear)
+                .Select(c => c.TaxYear)
+                .FirstOrDefaultAsync();
+        var signedBy = Environment.GetEnvironmentVariable("TF_CERT_SIGNED_BY");
+        var notes = Environment.GetEnvironmentVariable("TF_CERT_NOTES");
+
+        var step = await dorAcceptService.CompleteStepAsync(
+            "DOR_ACCEPTANCE",
+            signedBy ?? "system",
+            notes ?? "Department of Revenue acceptance recorded in TerraFusion.",
+            taxYear,
+            countyId);
+
+        dorAcceptLogger.LogInformation(
+            "[CertificationSync] DONE: DOR acceptance completed for county {CountyId}, tax year {TaxYear}, step {StepId}.",
+            countyId,
+            taxYear,
+            step.Id);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        dorAcceptLogger.LogError(ex, "[CertificationSync] DOR-ACCEPTANCE FAILED");
+        Environment.Exit(1);
+    }
+}
+
+// Run as: dotnet run --project TerraFusion.API -- --sync-cost-matrices-only
+if (args.Contains("--sync-cost-matrices-only"))
+{
+    var matrixSyncEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                        ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                        ?? "Production";
+
+    var matrixSyncHost = CreateCanonicalHostBuilder(args, matrixSyncEnv)
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("--sync-cost-matrices-only requires the PostgreSQL canonical runtime, not SQLite.");
+            }
+
+            svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.Core.PACS.PacsSqlAdapter>();
+            svc.AddScoped<TerraFusion.API.Services.PacsToTerraFusionSyncService>();
+        })
+        .Build();
+
+    using var matrixSyncScope = matrixSyncHost.Services.CreateScope();
+    var matrixSyncService = matrixSyncScope.ServiceProvider.GetRequiredService<TerraFusion.API.Services.PacsToTerraFusionSyncService>();
+    var matrixSyncLogger = matrixSyncScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.API.Services.PacsToTerraFusionSyncService>>();
+
+    try
+    {
+        var countyName = Environment.GetEnvironmentVariable("TF_SYNC_COUNTY_NAME") ?? "Benton";
+        var countyState = Environment.GetEnvironmentVariable("TF_SYNC_COUNTY_STATE") ?? "WA";
+
+        matrixSyncLogger.LogInformation(
+            "[TerraFusionSync] Standalone cost-matrix-only sync for county {CountyName}, state {State}...",
+            countyName,
+            countyState);
+
+        var result = await matrixSyncService.SyncCountyDataAsync(
+            countyName,
+            countyState,
+            new TerraFusion.Core.Interfaces.SyncOptions
+            {
+                FullSync = true,
+                ValidateData = true,
+                BatchSize = 500,
+                DataTypes = new List<string> { "CostMatrices" }
+            });
+
+        if (!result.Success)
+        {
+            var joinedErrors = result.Errors.Count > 0
+                ? string.Join("; ", result.Errors)
+                : result.Message;
+
+            throw new InvalidOperationException($"Cost-matrix sync failed: {joinedErrors}");
+        }
+
+        matrixSyncLogger.LogInformation(
+            "[TerraFusionSync] COST-MATRICES-ONLY DONE: added={Added}, updated={Updated}, message={Message}",
+            result.Metadata.TryGetValue("costMatricesAdded", out var added) ? added : 0,
+            result.Metadata.TryGetValue("costMatricesUpdated", out var updated) ? updated : 0,
+            result.Message);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        matrixSyncLogger.LogError(ex, "[TerraFusionSync] COST-MATRICES-ONLY FAILED");
+        Environment.Exit(1);
+    }
+}
+
 if (args.Contains("--seed-pacs"))
 {
     // Determine environment from ASPNETCORE_ENVIRONMENT or DOTNET_ENVIRONMENT
@@ -139,13 +896,7 @@ if (args.Contains("--seed-pacs"))
                   ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                   ?? "Production";
 
-    var seedHost = Host.CreateDefaultBuilder(args)
-        .UseEnvironment(seedEnv)
-        .ConfigureAppConfiguration((ctx, cfg) =>
-        {
-            cfg.AddJsonFile($"appsettings.{seedEnv}.json", optional: true, reloadOnChange: false);
-            cfg.AddJsonFile($"appsettings.{seedEnv}.local.json", optional: true, reloadOnChange: false);
-        })
+    var seedHost = CreateCanonicalHostBuilder(args, seedEnv)
         .ConfigureServices((ctx, svc) =>
         {
             var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
@@ -174,7 +925,26 @@ if (args.Contains("--seed-pacs"))
     }
 }
 
-var builder = WebApplication.CreateBuilder(args);
+var apiContentRoot = ResolveApiContentRoot();
+var runtimeEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+    ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+    ?? Environments.Production;
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    ContentRootPath = apiContentRoot,
+    EnvironmentName = runtimeEnvironment
+});
+builder.Host.UseContentRoot(apiContentRoot);
+builder.Configuration.SetBasePath(apiContentRoot);
+
+// Background services that fail (e.g. ArcGIS sync, AI swarm) must not kill the API host.
+// StopHost is dangerous in development where external integrations may be unavailable.
+builder.Host.ConfigureServices((_, services) =>
+{
+    services.Configure<HostOptions>(opts =>
+        opts.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore);
+});
 
 // Local developer override — appsettings.Development.local.json is gitignored.
 // Use it to set real connection strings without committing credentials.
@@ -344,10 +1114,26 @@ builder.Services.AddControllers()
       options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
       options.JsonSerializerOptions.WriteIndented = false;
       options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never;
+      options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+      // Accept enum request bodies as strings ("RatioStudy" not 0). Response DTOs
+      // already use string-typed enum fields via manual mapping, so this only
+      // affects request-body deserialization of enum-typed properties
+      // (e.g. CreateStudyRequest.StudyType). Matches frontend convention where
+      // enums are serialized as their name, not their numeric value.
+      options.JsonSerializerOptions.Converters.Add(
+        new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<ITerrasyncService, TerrasyncService>();
+
+// ArcGIS FeatureServer client — used only by ArcGisSyncService (no request-time calls)
+builder.Services.AddHttpClient("arcgis", client =>
+{
+    client.BaseAddress = new Uri("https://services7.arcgis.com");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+    client.Timeout = TimeSpan.FromSeconds(90);
+});
 builder.Services.AddMemoryCache();
 builder.Services.AddRateLimiter(options =>
 {
@@ -379,11 +1165,132 @@ builder.Services.AddHostedService<StartupOrchestrationService>();
 builder.Services.AddScoped<TerraFusion.Abstractions.Interfaces.IAuditLogger, TerraFusion.API.Services.AuditLogger>();
 
 // Phase 4 Playground services
-builder.Services.AddSingleton<PrototypeTestingEngine>();
 builder.Services.AddSingleton<ScenarioRunRegistry>();
 
 // 🏛️ Sale Qualification — TerraFusion owns the IAAO ratio-study qualification decision
 builder.Services.AddScoped<TerraFusion.API.Services.ISaleQualificationService, TerraFusion.API.Services.SaleQualificationService>();
+
+// Slice C38-B — Sync comps read endpoint backed by the C37-B canonical landing reader.
+// Read-only EF projection per C37-A's selection rule (ComputedDecision = Qualified).
+builder.Services.AddScoped<
+    TerraFusion.Sync.Workbench.Comps.Sales.ISalesCompEligibilityReader,
+    TerraFusion.Sync.Workbench.Comps.Sales.SalesCompEligibilityReader>();
+
+// Slice OPS-1-A — Workbench Sync Readiness backend facade per the
+// OPS-1 policy at docs/workbench/sync-readiness-console-policy.md.
+// Read-only artifact-directory-backed implementation; the artifact
+// root defaults to the production layout under
+// backend/artifacts/sync-atlas/ relative to the working directory
+// and can be overridden via configuration "Workbench:SyncReadiness:ArtifactRoot".
+builder.Services.AddScoped<
+    TerraFusion.Core.Interfaces.Workbench.IWorkbenchSyncReadinessService>(sp =>
+{
+    var config = sp.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
+    var artifactRoot = config["Workbench:SyncReadiness:ArtifactRoot"]
+        ?? System.IO.Path.Combine("backend", "artifacts", "sync-atlas");
+    return new TerraFusion.Sync.Workbench.Readiness.WorkbenchSyncReadinessService(artifactRoot);
+});
+
+// Slice OPS-1-A-2 — PACS reachability probe + Process-backed refresh
+// runner for the Sync Readiness Console refresh endpoint.
+builder.Services.AddScoped<
+    TerraFusion.Sync.Workbench.Atlas.ISecretResolver,
+    TerraFusion.Sync.Workbench.Atlas.EnvironmentSecretResolver>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Interfaces.Workbench.IPacsReachabilityProbeService,
+    TerraFusion.Sync.Workbench.Readiness.PacsReachabilityProbeService>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Interfaces.Workbench.IWorkbenchSyncReadinessRefreshRunner>(sp =>
+{
+    var config = sp.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
+    var dotnet = config["Workbench:SyncReadiness:DotnetExecutable"] ?? "dotnet";
+    var project = config["Workbench:SyncReadiness:SyncAtlasProject"]
+        ?? System.IO.Path.Combine("backend", "tools", "SyncAtlas");
+    var workingDir = config["Workbench:SyncReadiness:WorkingDirectory"]
+        ?? System.IO.Directory.GetCurrentDirectory();
+    var dbConn = config["Workbench:SyncReadiness:DbConnectionString"]
+        ?? config.GetConnectionString("DefaultConnection")
+        ?? throw new InvalidOperationException(
+            "Workbench:SyncReadiness:DbConnectionString or ConnectionStrings:DefaultConnection required for refresh runner.");
+    return new TerraFusion.Sync.Workbench.Readiness.ProcessWorkbenchSyncReadinessRefreshRunner(
+        dotnetExecutable: dotnet,
+        syncAtlasProject: project,
+        workingDirectory: workingDir,
+        dbConnectionString: dbConn);
+});
+
+// Slice C41-B — per-county active-workbook pointer service. Pure metadata
+// surface over SyncCountyActiveWorkbooks; SET / GET / Clear do not trigger
+// C36 / canonical / PACS work (per C41-A Hard Guards).
+builder.Services.AddScoped<
+    TerraFusion.Sync.Workbench.Mapping.ISyncCountyActiveWorkbookService,
+    TerraFusion.Sync.Workbench.Mapping.SyncCountyActiveWorkbookService>();
+
+// Slice C43-B — stale canonical-row diagnostic reader. Pure read projection
+// (single predicate: SourceWorkbookId <> baseline); inherits all C37-A /
+// C43-A guards. No mutation, no joins, no PACS reads.
+builder.Services.AddScoped<
+    TerraFusion.Sync.Workbench.Comps.Sales.ISalesCompStaleReader,
+    TerraFusion.Sync.Workbench.Comps.Sales.SalesCompStaleReader>();
+
+// Slice C44-B — stale-row aggregate summary reader. Three single-predicate
+// aggregations (top-N groups, group count, total) sharing the C43-B stale
+// predicate. Bounded server-side (max 100 groups per C44-A Hard Guard 4).
+builder.Services.AddScoped<
+    TerraFusion.Sync.Workbench.Comps.Sales.ISalesCompStaleSummaryReader,
+    TerraFusion.Sync.Workbench.Comps.Sales.SalesCompStaleSummaryReader>();
+
+// Slice C36 — canonical sale-qualification write runner. This is the
+// controlled read -> decide -> persist path for CanonicalSaleQualifications.
+// It preserves the locked workbook + source-connection contract; request
+// handlers must pass explicit county/workbook/source ids before any source read
+// or canonical write can happen.
+builder.Services.AddScoped<ISecretResolver, EnvironmentSecretResolver>();
+builder.Services.AddScoped<ISyncMappingWorkbookReadModel, SyncMappingWorkbookReadModel>();
+builder.Services.AddScoped<ISalesRowReader, SqlServerSalesRowReader>();
+builder.Services.AddScoped<ICanonicalSalesQualificationWriter, CanonicalSalesQualificationWriter>();
+builder.Services.AddScoped<ISalesQualificationSampleRunner, SalesQualificationSampleRunner>();
+builder.Services.AddScoped<ISalesQualificationCanonicalRunner, SalesQualificationCanonicalRunner>();
+
+// Slice C48-D — opt-in PACS schema catalog wiring. When the operator has
+// configured ConnectionStrings:HarrisPacs (the legacy SOURCE database that
+// TerraFusion Sync converts FROM), register the live catalog populated via
+// INFORMATION_SCHEMA introspection at startup. When the connection string
+// is absent, the catalog stays unregistered and consumers fall back gracefully
+// (e.g. SyncController.GetSchemaCatalogSummary returns Configured=false).
+//
+// This is intentionally opt-in: production wiring requires explicit operator
+// configuration so the catalog never silently auto-attempts to read from a
+// non-existent or wrong database. Per the C48-A "Source/target model" binding,
+// the connection string MUST point at Harris PACS (the legacy source), never
+// at TerraFusion DB (the destination).
+{
+    var harrisPacsConnString = builder.Configuration.GetConnectionString("HarrisPacs");
+    if (!string.IsNullOrWhiteSpace(harrisPacsConnString))
+    {
+        var pacsRelease = builder.Configuration["Sync:Schema:Catalog:PacsRelease"];
+        var sourceLabel = builder.Configuration["Sync:Schema:Catalog:SourceLabel"]
+            ?? "harris-pacs-prod";
+        var schemaName = builder.Configuration["Sync:Schema:Catalog:SchemaName"]
+            ?? "dbo";
+
+        builder.Services.AddLivePacsSchemaCatalog(
+            connectionString: harrisPacsConnString,
+            options: new TerraFusion.Sync.Workbench.Schema.LivePacsSchemaSourceOptions(
+                SourceLabel: sourceLabel,
+                SchemaName: schemaName,
+                PacsReleaseLabel: pacsRelease));
+    }
+}
+
+// Calibration Workbench services
+builder.Services.AddScoped<TerraFusion.Core.Services.IMatrixDiagnosticService, TerraFusion.API.Services.MatrixDiagnosticService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.ICalibrationMemoService, TerraFusion.Data.Services.CalibrationMemoService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.IGovernanceExportService, TerraFusion.API.Services.GovernanceExportService>();
+
+// Analytics orchestration — real EF Core queries against Properties + CostMatrices
+builder.Services.AddScoped<TerraFusion.API.Controllers.IAnalyticsOrchestrator,
+                            TerraFusion.API.Controllers.AnalyticsOrchestratorImpl>();
 
 // 🏛️ OLS Regression — IAAO market-extracted adjustment derivation (stateless, pure math → singleton)
 builder.Services.AddSingleton<TerraFusion.API.Services.IOlsRegressionService, TerraFusion.API.Services.OlsRegressionService>();
@@ -409,10 +1316,18 @@ if (IsFeatureEnabled(builder.Configuration, "HarrisPACS:BackgroundSync:Enabled",
   builder.Services.AddHostedService<TerraFusion.Core.Services.HarrisPACSSyncBackgroundService>();
 }
 
+// 🗺️ Benton County ArcGIS GIS Sync — one-way pull from public FeatureServer
+// Isolation: ArcGIS never queried at request time; only ArcGisSyncService writes GisParcelGeometries.
+if (IsFeatureEnabled(builder.Configuration, "ArcGisSync:Enabled", "TF_ENABLE_ARCGIS_SYNC", true))
+{
+  builder.Services.AddHostedService<ArcGisSyncService>();
+}
+
 // TIER 4+ Services - Advanced AI Excellence
 builder.Services.AddScoped<IAISwarmIntelligenceOrchestrator, AISwarmIntelligenceOrchestrator>();
 builder.Services.AddScoped<IAdvancedSecurityFrameworkService, AdvancedSecurityFrameworkService>();
 // ✅ RE-ENABLED: Registration of workflow and assistant services needed for Controllers
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessEngine, TerraFusion.Consciousness.Services.ConsciousnessEngineStub>();
 builder.Services.AddScoped<TerraFusion.AI.Services.IWorkflowAutomationService, TerraFusion.AI.Services.WorkflowAutomationService>();
 builder.Services.AddScoped<TerraFusion.AI.Services.IAIAssistantService, TerraFusion.AI.Services.AIAssistantService>();
 // Phase 9B: Muse Mode explain service
@@ -516,15 +1431,35 @@ builder.Services.AddSingleton<ISurfaceContractService, TerraFusion.AI.Services.S
 // Muse router status — probes each lane for live/offline observability
 builder.Services.AddSingleton<IMuseRouterStatusService, TerraFusion.AI.Services.MuseRouterStatusService>();
 // ✅ STUB: Consciousness Engine stub for DI resolution
-builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessEngine, TerraFusion.Consciousness.Services.ConsciousnessEngineStub>();
 // ✅ MISSING SERVICES: Registered missing dependencies for Workflow/AI Services
 builder.Services.AddScoped<TerraFusion.AI.Services.IPropertyValuationService, TerraFusion.AI.Services.PropertyValuationService>();
-builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IComplianceService, TerraFusion.Consciousness.Services.ComplianceServiceStub>();
 
 // TIER 5+ Services - TerraGaia Ultimate AI Consciousness
 // RE-ENABLED: Changed from Singleton → Scoped to properly resolve TerraFusionContext (scoped DbContext) and IAuditLogger (scoped)
 // TerraGaiaService doesn't run background tasks, so Scoped lifetime is appropriate for on-demand AI consciousness queries
 builder.Services.AddScoped<ITerraGaiaService, TerraGaiaService>();
+
+// CostForge Benton Method v2 — Track 1 equity metric compute
+// EquityMetricService is the sole source of IAAO + Benton-method equity metrics.
+// Every stratum view (Triage, Audit, Rollup, Calibration preview) goes through this.
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.IEquityMetricService,
+    TerraFusion.AI.Valuation.EquityMetricService>();
+
+// CostForge Benton Method v2 — Track 2 geographic + stratum rollups
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.IRollupService,
+    TerraFusion.AI.Valuation.RollupService>();
+
+// CostForge Benton Method v2 — Track 3 Benton custom metrics beyond IAAO
+// (decile, stratified COD, condition bias, segment drift, grade drift)
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.IBentonCustomMetricService,
+    TerraFusion.AI.Valuation.BentonCustomMetricService>();
+
+// CostForge Benton Method v2 — Track 4 Data Quality Engine
+// 8 canonical-entity checks: missing quality codes, stale CAMA, missing
+// improvement segments, missing sale pairs, IQR outliers, impossible
+// pairings, year-built anomalies, GLA/land conflicts.
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.ICamaDataQualityService,
+    TerraFusion.AI.DataQuality.CamaDataQualityService>();
 
 // TIER 5+ Cognitive Framework - 3-6-9-12 Development Excellence
 builder.Services.AddScoped<ICognitiveFrameworkService, CognitiveFrameworkService>();
@@ -533,27 +1468,49 @@ builder.Services.AddScoped<ICognitiveFrameworkService, CognitiveFrameworkService
 // "If you only knew the magnificence of the 3, 6 and 9, then you would have a key to the universe." - Nikola Tesla
 builder.Services.AddScoped<TerraFusion.AI.Services.Framework369MetricsEngine>();
 builder.Services.AddScoped<TerraFusion.AI.Services.ICodex369FrameworkService, TerraFusion.AI.Services.Codex369FrameworkService>();
+builder.Services.AddScoped<TerraFusion.AI.Services.ICodexEmailNotificationService, TerraFusion.AI.Services.CodexEmailNotificationService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.IPerformanceOptimizationService, TerraFusion.Core.Services.PerformanceOptimizationService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.ISecurityComplianceService, TerraFusion.Core.Services.SecurityComplianceService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.IScalingOptimizationService, TerraFusion.Core.Services.ScalingOptimizationService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.IPredictiveMaintenanceService, TerraFusion.Core.Services.PredictiveMaintenanceService>();
 
 // 🧠 GOVERNMENT-GRADE RESEARCH ANALYTICS SERVICES - PhD-Level Excellence
 // Elite research coordination and quantum-enhanced analytics services
 builder.Services.AddScoped<IQuantumConsciousnessService, QuantumConsciousnessService>();
 builder.Services.AddScoped<IResearchAnalyticsService, ResearchAnalyticsService>();
-builder.Services.AddScoped<ICrossWorkspaceSyncService, CrossWorkspaceSyncService>();
 builder.Services.AddScoped<IStatisticalAnalysisService, StatisticalAnalysisService>();
 builder.Services.AddScoped<IForgeStatisticsService, ForgeStatisticsService>();
+builder.Services.AddScoped<ISalesAiDiagnosticService, SalesAiDiagnosticService>();
 // Dev stub: returns empty until a real CAMA service is registered
-builder.Services.AddScoped<TerraFusion.API.Controllers.IMassAppraisalService, TerraFusion.API.Controllers.MassAppraisalServiceStub>();
 builder.Services.AddScoped<IPredictiveModelingService, PredictiveModelingService>();
 builder.Services.AddScoped<TerraFusion.API.Interfaces.IPerformanceMonitor, TerraFusion.API.Services.PerformanceMonitorService>();
 
 // Phase 10: PropertyForge valuation service (cost/sales/income/reconciliation)
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IValuationService, TerraFusion.API.Services.ValuationService>();
 
+// RustKernels — options + clients + composite service
+builder.Services.Configure<TerraFusion.API.Configuration.RustKernelsOptions>(
+    builder.Configuration.GetSection(TerraFusion.API.Configuration.RustKernelsOptions.SectionName));
+builder.Services.AddSingleton<TerraFusion.API.Services.Valuation.IRustKernelProcessHost,
+                              TerraFusion.API.Services.Valuation.RustKernelProcessHost>();
+builder.Services.AddScoped<TerraFusion.API.Services.Valuation.ICostKernelClient,
+                           TerraFusion.API.Services.Valuation.CostKernelClient>();
+builder.Services.AddScoped<TerraFusion.API.Services.Valuation.IValuationKernelClient,
+                           TerraFusion.API.Services.Valuation.ValuationKernelClient>();
+builder.Services.AddScoped<TerraFusion.API.Services.Valuation.IKernelValuationService,
+                           TerraFusion.API.Services.Valuation.KernelValuationService>();
+
+// Calibration Workbench services
+builder.Services.AddScoped<TerraFusion.Core.Services.IMatrixDiagnosticService, TerraFusion.API.Services.MatrixDiagnosticService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.ICalibrationMemoService, TerraFusion.Data.Services.CalibrationMemoService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.IGovernanceExportService, TerraFusion.API.Services.GovernanceExportService>();
+
 // Register flexible module catalog system (no hardcoding!)
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IModuleCatalog, DbModuleCatalog>();
 builder.Services.AddScoped<ModuleSeedService>();
 builder.Services.AddScoped<TerraFusion.API.Seeds.PacsDataSeeder>();
 builder.Services.AddScoped<TerraFusion.API.Seeds.DevPropertySeeder>(); // CARD-06: dev property projection seeder
+builder.Services.AddScoped<TerraFusion.API.Seeds.SaleRecordSeeder>();
 builder.Services.AddScoped<TerraFusion.API.Seeds.DevGovernmentUserSeeder>(); // CARD-17: dev admin user seeder
 builder.Services.AddScoped<TerraFusion.API.Health.IFileSystemModuleDiscovery, FileSystemModuleDiscovery>();
 builder.Services.AddScoped<TerraFusion.API.Health.IOrchestratorView, OrchestratorModuleView>();
@@ -616,15 +1573,20 @@ else
 if (redisAvailable)
 {
   builder.Services.AddScoped<TerraFusion.Core.Services.IRedisCacheService, TerraFusion.Core.Services.RedisCacheService>();
+  builder.Services.AddScoped<TerraFusion.Core.Services.Caching.IAdvancedCacheService, TerraFusion.Core.Services.Caching.AdvancedRedisCacheService>();
 }
 else
 {
   builder.Services.AddSingleton<TerraFusion.Core.Services.IRedisCacheService, TerraFusion.Core.Services.NoOpRedisCacheService>();
+  builder.Services.AddSingleton<TerraFusion.Core.Services.Caching.IAdvancedCacheService, TerraFusion.Core.Services.Caching.NoOpAdvancedCacheService>();
 }
+
+builder.Services.AddScoped<TerraFusion.Core.Services.Performance.IPerformanceMonitoringService, TerraFusion.Core.Services.Performance.PerformanceMonitoringService>();
 
 // 🔍 Register Property Data Validation Service - Championship-level data integrity verification
 // Detects discrepancies between Harris PACS and TerraFusion, auto-corrects data issues, maintains 99.9% accuracy
 builder.Services.AddScoped<TerraFusion.Core.Services.IPropertyDataValidationService, TerraFusion.Core.Services.PropertyDataValidationService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.IComplianceAutomationService, TerraFusion.Core.Services.ComplianceAutomationService>();
 
 // ====================================================================
 // 🔐 Phase 4 Sprint 1: NIST 800-63B Storage Infrastructure
@@ -633,6 +1595,239 @@ builder.Services.AddScoped<TerraFusion.Core.Services.IPropertyDataValidationServ
 // Feature flags configuration (all OFF by default - Sprint 1 storage only)
 builder.Services.Configure<TerraFusion.Core.Configuration.FeatureFlagsOptions>(
     builder.Configuration.GetSection("FeatureFlags"));
+
+// Slice G1-B: ArcGIS feature-service configuration (per-county parcel
+// polygons). v1 binds only; adapter consumption is G1-C/G1-D.
+builder.Services.Configure<TerraFusion.Core.Configuration.ArcGisFeatureServiceOptions>(
+    builder.Configuration.GetSection(
+        TerraFusion.Core.Configuration.ArcGisFeatureServiceOptions.SectionName));
+
+// Slice G1-C: ArcGIS REST read-only adapter. Registers the named
+// HttpClient and the IArcGisFeatureServiceClient binding. Persistence
+// (canonical_tf landing) is wired in G1-D.
+builder.Services.AddArcGisFeatureServiceClient();
+
+// Slice G1-D-1: ArcGIS sync persistence orchestrator. Lands fetched
+// features into gis_tf.tf_parcel_geom under the sync_bridge doctrine
+// (load_batch + source_xref + promotion_gate_result).
+builder.Services.AddScoped<
+    TerraFusion.Core.GIS.ArcGisRest.IArcGisSyncService,
+    TerraFusion.Data.Services.GisTf.ArcGisSyncService>();
+
+// Slice G1-E-1: APN crosswalk closure between gis_tf.tf_parcel_geom
+// (ArcGIS-sourced) and canonical_tf.tf_parcel (PACS-sourced).
+builder.Services.AddScoped<
+    TerraFusion.Core.GIS.ArcGisRest.IArcGisCrosswalkService,
+    TerraFusion.Data.Services.GisTf.ArcGisCrosswalkService>();
+
+// Slice G1-E-2: read-only parcel-geometry projection for the
+// /api/parcels/{tfParcelId}/geometry endpoint.
+builder.Services.AddScoped<
+    TerraFusion.Core.GIS.ArcGisRest.IParcelGeometryReader,
+    TerraFusion.Data.Services.GisTf.ParcelGeometryReader>();
+
+// Slice S1: PACS sale raw landing — drains an IPacsSaleSource into
+// legacy_pacs_raw.sale with provenance and writes the four S1
+// promotion gate results. No canonical promotion in S1.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsSale.IPacsSaleLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsSaleLandingService>();
+
+// Slice S2-A: PACS prop_supp_assoc raw landing — supp-aware-join
+// pointer required by the truth_pacs.sale promoter (S2-B).
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsPropSuppAssoc.IPacsPropSuppAssocLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsPropSuppAssocLandingService>();
+
+// Slice B1-A: PACS account raw landing — Block B's PII-rich
+// identity table. Four gates: distribution, acct_id-uniqueness,
+// provenance-coverage, pii-flags-recorded.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsAccount.IPacsAccountLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsAccountLandingService>();
+
+// Slice B1-B: PACS owner raw landing — 4-key year-versioned link
+// between property and account. Four gates: distribution,
+// 4-key-uniqueness, provenance-coverage, pct-completeness
+// (informational only at this layer).
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsOwner.IPacsOwnerLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsOwnerLandingService>();
+
+// Slice B1-C: PACS wash_prop_owner_val raw landing — WSDOR-grade
+// per-owner valuation snapshot. Four gates: distribution,
+// 4-key-uniqueness, provenance-coverage, aggregate (informational
+// surface for assessed/market sums).
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsWashPropOwnerVal.IPacsWashPropOwnerValLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsWashPropOwnerValLandingService>();
+
+// Slice C1-A: PACS imprv raw landing — Block C's per-improvement
+// parent table. Four gates: distribution, 4-key-uniqueness,
+// provenance-coverage, aggregate.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsImprv.IPacsImprvLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsImprvLandingService>();
+
+// Slice C1-B: PACS imprv_detail raw landing — per-component
+// breakdown (ATTGAR, BSMT, COVPATIO, MA, etc). Four gates:
+// distribution, 5-key-uniqueness, provenance-coverage, aggregate.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsImprvDetail.IPacsImprvDetailLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsImprvDetailLandingService>();
+
+// Slice C1-C: PACS imprv_attr raw landing with dictionary
+// cross-check. Five gates: distribution, 6-key-uniqueness,
+// provenance-coverage, aggregate, dictionary-coverage. Dictionary
+// itself is registered as an empty in-memory default; production
+// configuration overrides via a future D1 dictionary loader.
+builder.Services.AddSingleton<
+    TerraFusion.Core.Sync.PacsImprvAttr.IImprvAttrDictionary>(_ =>
+    new TerraFusion.Core.Sync.PacsImprvAttr.InMemoryImprvAttrDictionary(
+        Array.Empty<string>()));
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsImprvAttr.IPacsImprvAttrLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsImprvAttrLandingService>();
+
+// Slice L1: PACS land_detail raw landing — Block C's land lane
+// per-segment table. Four gates: distribution, 4-key-uniqueness,
+// provenance-coverage, aggregate.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsLandDetail.IPacsLandDetailLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsLandDetailLandingService>();
+
+// Slice B2-A: truth_pacs.owner_current promoter — supp-aware
+// owner snapshot with account-link enforcement and HARD pct-
+// completeness gate. Five T-* gates. Idempotent by OwnerLoadBatchId.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsOwnerTruth.IPacsOwnerCurrentTruthPromoter,
+    TerraFusion.Data.Services.TruthPacs.PacsOwnerCurrentTruthPromoter>();
+
+// Slice B2-B: truth_pacs.wash_prop_owner_val promoter — supp-aware
+// WSDOR-grade per-owner valuation snapshot. Four T-* gates.
+// Idempotent by WpovLoadBatchId.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsWashPropOwnerValTruth.IPacsWashPropOwnerValTruthPromoter,
+    TerraFusion.Data.Services.TruthPacs.PacsWashPropOwnerValTruthPromoter>();
+
+// Slice C2: truth_pacs.imprv_current promoter — supp-aware current
+// improvement snapshot. Four T-* gates. Idempotent by ImprvLoadBatchId.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsImprvTruth.IPacsImprvCurrentTruthPromoter,
+    TerraFusion.Data.Services.TruthPacs.PacsImprvCurrentTruthPromoter>();
+
+// Slice L2: truth_pacs.land_current promoter — supp-aware current
+// land segment snapshot. Four T-* gates. Idempotent by LandLoadBatchId.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsLandTruth.IPacsLandCurrentTruthPromoter,
+    TerraFusion.Data.Services.TruthPacs.PacsLandCurrentTruthPromoter>();
+
+// Slice B3: canonical_tf.tf_owner + tf_parcel_owner_link projector.
+// PII-redacting; resolves PACS prop_id to TfParcelId via source_xref;
+// quarantines unresolvable parcels to legacy_tf_unproven.owner_current;
+// writes source_xref keyed on acct_id. Five C-* gates including the
+// pii-redaction-policy defense-in-depth gate.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsOwnerCanonical.IPacsOwnerCanonicalProjector,
+    TerraFusion.Data.Services.CanonicalTf.PacsOwnerCanonicalProjector>();
+
+// Slice B5: read-only parcel-owner reader for the
+// /api/parcels/{tfParcelId}/owner-current endpoint. Read-only by
+// contract: AsNoTracking, deterministic ordering, county-isolated.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsOwnerCanonical.ITfParcelOwnerReader,
+    TerraFusion.Data.Services.CanonicalTf.TfParcelOwnerReader>();
+
+// Slice B4: canonical_tf.tf_assessment_wsdor projector. Resolves
+// PACS prop_id and owner_id (==acct_id) to canonical TfParcelId +
+// TfOwnerId via source_xref; writes assessment_wsdor source_xref
+// keyed on the 4-tuple. Quarantines on either lookup miss to
+// legacy_tf_unproven.wash_prop_owner_val. Five C-* gates.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsWsdorCanonical.IPacsWsdorCanonicalProjector,
+    TerraFusion.Data.Services.CanonicalTf.PacsWsdorCanonicalProjector>();
+
+// Slice C3: canonical_tf.tf_improvement + tf_improvement_feature
+// projector. Resolves PACS prop_id to TfParcelId via source_xref,
+// projects parent improvements to canonical, materializes feature
+// rows from raw imprv_detail, quarantines parcel-miss to
+// legacy_tf_unproven.imprv_current. Five C-* gates including
+// feature-coverage informational surface. v1.5 (E4b): also
+// resolves raw imprv_attr rows against canonical_tf.attribute_definition
+// and emits a sixth gate (canonical-imprv-attribute-coverage).
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsImprvCanonical.IPacsImprvCanonicalProjector,
+    TerraFusion.Data.Services.CanonicalTf.PacsImprvCanonicalProjector>();
+
+// Slice L3: canonical_tf.tf_land projector. Resolves PACS prop_id
+// to TfParcelId via source_xref, projects land segments to canonical,
+// quarantines parcel-miss to legacy_tf_unproven.land_current. Five
+// C-* gates including a domain-specific aggregate gate that sums
+// SizeAcres + LandSegMarketVal for spot-checking against L2.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsLandCanonical.IPacsLandCanonicalProjector,
+    TerraFusion.Data.Services.CanonicalTf.PacsLandCanonicalProjector>();
+
+// Slice B5': read-only WSDOR roll reader for the
+// /api/parcels/{tfParcelId}/wsdor-roll endpoint. Read-only by
+// contract: AsNoTracking, deterministic ordering by AssessedVal,
+// county-isolated.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsWsdorCanonical.ITfParcelWsdorReader,
+    TerraFusion.Data.Services.CanonicalTf.TfParcelWsdorReader>();
+
+// Slice S2-B: truth_pacs.sale promoter — supp-aware join + '100'
+// qualification filter, with five T-* gates. Idempotent by SaleLoadBatchId.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsSaleTruth.IPacsSaleTruthPromoter,
+    TerraFusion.Data.Services.TruthPacs.PacsSaleTruthPromoter>();
+
+// Slice S3: canonical_tf.tf_sale projector — resolves PACS prop_id
+// to TfParcelId via source_xref, projects qualifying truth-pacs
+// sales into canonical_tf.tf_sale, quarantines unresolvable rows
+// to legacy_tf_unproven.sale, writes source_xref for every projected
+// row. Four C-* gates. Idempotent by truth promotion batch.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsSaleCanonical.IPacsSaleCanonicalProjector,
+    TerraFusion.Data.Services.CanonicalTf.PacsSaleCanonicalProjector>();
+
+// Slice S4: read-only canonical sales reader for the
+// /api/sales endpoint. Read-only by contract: AsNoTracking,
+// deterministic ordering, county-isolated.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsSaleCanonical.ITfSaleReader,
+    TerraFusion.Data.Services.CanonicalTf.TfSaleReader>();
+
+// Slice S5: operator-SQL regression suite. Dual-flavor service that
+// runs three representative ratio-study queries against the raw and
+// canonical layers respectively; the doctrine asserts both flavors
+// produce identical aggregates against the same fixture.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsSaleRegression.IOperatorSalesRegressionService,
+    TerraFusion.Data.Services.Regression.OperatorSalesRegressionService>();
+
+// Sales-pipeline operator trigger: chains S2-B → S3 against already-
+// landed raw batches, returning a combined result with both batch
+// ids and per-stage counts.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsSalePipeline.IPacsSaleSyncRunner,
+    TerraFusion.Data.Services.Pipeline.PacsSaleSyncRunner>();
+
+// Block B operator trigger: chains B2-A → B2-B → B3 → B4 against
+// already-landed raw batches, returning a combined result with all
+// four stage statuses + batch ids + per-stage counts.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsOwnerWsdorPipeline.IPacsOwnerWsdorSyncRunner,
+    TerraFusion.Data.Services.Pipeline.PacsOwnerWsdorSyncRunner>();
+
+// Slice G1-D-2: nightly hosted service that walks every configured
+// county. OFF by default — set ArcGisSyncScheduler:Enabled=true in
+// configuration to activate.
+builder.Services.Configure<TerraFusion.Core.Configuration.ArcGisSyncSchedulerOptions>(
+    builder.Configuration.GetSection(
+        TerraFusion.Core.Configuration.ArcGisSyncSchedulerOptions.SectionName));
+builder.Services.AddHostedService<
+    TerraFusion.Core.GIS.ArcGisRest.ArcGisNightlySyncHostedService>();
 
 // Redis lockout store (uses existing IDistributedCache from line 70-71)
 builder.Services.AddScoped<TerraFusion.Core.Security.Lockout.ILockoutStore, TerraFusion.Core.Security.Lockout.RedisLockoutStore>();
@@ -665,6 +1860,12 @@ builder.Services.AddSingleton<IModuleRegistry, ModuleRegistry>();
 builder.Services.AddScoped<IHarrisPACSEnhancementBridge, HarrisPACSEnhancementBridge>();
 builder.Services.AddScoped<ITerraFusionMarketplace, TerraFusionMarketplace>();
 builder.Services.AddScoped<ICountyDeploymentService, CountyDeploymentService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.ICountyResolver, TerraFusion.API.Services.CountyResolver>();
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.ICountyStudyService, TerraFusion.Core.Services.CountyStudyService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.ICountyStudySegmentDerivationService, TerraFusion.Core.Services.CountyStudySegmentDerivationService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.ICountyStudyHealthService, TerraFusion.Core.Services.CountyStudyHealthService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.ICountyStudyInspectorService, TerraFusion.Core.Services.CountyStudyInspectorService>();
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.ICountyStudioAiService, TerraFusion.Core.Services.CountyStudioAiService>();
 
 // Register unified orchestration service
 builder.Services.AddSingleton<IUnifiedOrchestrationService, UnifiedOrchestrationService>();
@@ -753,7 +1954,8 @@ builder.Services.AddScoped<IDbConnection>(sp =>
 
   if (string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))
   {
-    return new SqlConnection(connStr);
+    throw new InvalidOperationException(
+        "Product runtime IDbConnection is limited to TerraFusion canonical/runtime stores. Use Sync/Admin tooling for source-system SQL Server access.");
   }
   else if (connStr.Contains("Host=") || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase))
   {
@@ -786,6 +1988,11 @@ builder.Services.AddScoped<IWorkflowExecutionRepository, TerraFusion.Data.Reposi
 // 📊 TerraFlow Quantum Command Center Service (Phase 1 Week 4)
 builder.Services.AddScoped<TerraFusion.AI.Services.IQuantumAnalyticsService, TerraFusion.AI.Services.QuantumAnalyticsService>();
 
+// Consciousness controller compatibility registrations.
+// The API host truth-gates these routes, but explicit concrete registrations
+// prevent request-time DI activation failures on legacy controller shapes.
+builder.Services.AddScoped<TerraFusion.Consciousness.Services.QuantumConsciousnessOrchestrator>();
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // 🌈 ARC CONSTELLATION - GPT/RAG Subsystem (Phase 9: Operational Hardening)
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -802,27 +2009,15 @@ gptRagOptions.LogConfiguration(heraldLogger);
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IGPTConfigurationService, TerraFusion.AI.Services.GPTConfigurationService>();
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IGPTOrchestrationService, TerraFusion.AI.Services.GPTOrchestrationService>();
 
-// RAG infrastructure: Embedding service (simulated for dev, OpenAI for prod) + Vector storage + RAG orchestration
+// RAG infrastructure: Embedding service (fails closed when provider config is absent) + Vector storage + RAG orchestration
 builder.Services.AddHttpClient<TerraFusion.AI.Services.OpenAIEmbeddingService>();
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IEmbeddingService>(sp =>
 {
-  var options = sp.GetRequiredService<TerraFusion.AI.Configuration.GptRagOptions>();
-
-  if (options.UseRealEmbeddings)
-  {
-    // 🟢 OpenAI embeddings - production mode
-    var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
-    var httpClient = httpClientFactory.CreateClient();
-    var configuration = sp.GetRequiredService<IConfiguration>();
-    var logger = sp.GetRequiredService<ILogger<TerraFusion.AI.Services.OpenAIEmbeddingService>>();
-    return new TerraFusion.AI.Services.OpenAIEmbeddingService(httpClient, configuration, logger);
-  }
-  else
-  {
-    // 🟡 Simulated embeddings - dev/CI safe mode
-    var logger = sp.GetRequiredService<ILogger<TerraFusion.AI.Services.SimulatedEmbeddingService>>();
-    return new TerraFusion.AI.Services.SimulatedEmbeddingService(logger);
-  }
+  var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
+  var httpClient = httpClientFactory.CreateClient();
+  var configuration = sp.GetRequiredService<IConfiguration>();
+  var logger = sp.GetRequiredService<ILogger<TerraFusion.AI.Services.OpenAIEmbeddingService>>();
+  return new TerraFusion.AI.Services.OpenAIEmbeddingService(httpClient, configuration, logger);
 });
 // Register RAG Embedding Repository — pgvector for Postgres, in-memory for SQLite/dev
 {
@@ -903,6 +2098,7 @@ builder.Services.AddDbContext<LevyDbContext>(options =>
 {
   var levyConn = Environment.GetEnvironmentVariable("LEVY_DATABASE_URL")
                 ?? builder.Configuration.GetConnectionString("LevyDatabase")
+                ?? builder.Configuration.GetConnectionString("DefaultConnection")
                 ?? Environment.GetEnvironmentVariable("DATABASE_URL");
   var provider = builder.Configuration["DatabaseProvider"];
 
@@ -933,6 +2129,13 @@ builder.Services.AddDbContext<LevyDbContext>(options =>
 // Register TerraLevy services for championship-level tax assessment
 builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyCalculationService, TerraFusion.Levy.Services.LevyCalculationService>();
 builder.Services.AddScoped<TerraFusion.Levy.Services.IRevenueProjectionService, TerraFusion.Levy.Services.RevenueProjectionService>();
+builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyPropertyAssessmentService, TerraFusion.Levy.Services.LevyPropertyAssessmentService>();
+builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyDataQualityService, TerraFusion.Levy.Services.LevyDataQualityService>();
+builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyRiskScoringService, TerraFusion.Levy.Services.LevyRiskScoringService>();
+// NOTE: Levy certification flow uses TerraFusion.Core.Services.ICertificationService
+// (registered above at the Dais CRUD block). The old TerraFusion.Levy B5
+// certification stub surface has been removed so the runtime no longer carries
+// a dead parallel certification path.
 
 // Add health checks for monitoring
 builder.Services.AddHealthChecks()
@@ -1126,7 +2329,7 @@ app.UseHttpMetrics();
 
 // Authentication & Authorization
 // Serve static files from native-shell/ui/dist BEFORE other middleware
-var uiPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "native-shell", "ui", "dist"));
+var uiPath = Path.GetFullPath(Path.Combine(apiContentRoot, "..", "..", "..", "native-shell", "ui", "dist"));
 Console.WriteLine($"[STARTUP] Looking for UI at: {uiPath}");
 Console.WriteLine($"[STARTUP] UI path exists: {Directory.Exists(uiPath)}");
 
@@ -1180,15 +2383,32 @@ if (app.Environment.IsDevelopment())
                 "read:dossier",
                 "write:dossier",
                 "read:property",
+                "read:properties",
+                "write:properties",
                 "read:levy",
-                "read:costforge"
+                "read:costforge",
+                "access:costforge",
+                "calculate:property-cost",
+                "write:costforge",
+                "read:compsforge",
+                "write:compsforge",
+                "read:incomeforge",
+                "write:incomeforge",
+                "read:system-status",
+                "read:cost-matrix",
+                "read:cost-factors",
+                "read:cost-breakdown",
+                "read:performance-metrics",
+                "read:parcel",
+                "read:atlas"
           }
     };
 
     var token = jwtService.GenerateAccessToken(
           userId: "dev-user-001",
           email: "dev@terrafusion.local",
-          roles: new[] { "Developer", "Assessor" },
+          // GovernmentUser satisfies OSCoreAccess policy (AIModulesController, AISwarmController, etc.)
+          roles: new[] { "Developer", "Assessor", "GovernmentUser" },
           customClaims: customClaims);
 
     return Results.Ok(new
@@ -1338,6 +2558,7 @@ app.MapHub<TerraFusion.AI.Hubs.AnalyticsHub>("/hubs/analytics");
 app.MapHub<TerraFusion.AI.Hubs.WorkflowHub>("/hubs/workflow");
 app.MapHub<TerraFusion.AI.Hubs.CollaborationHub>("/hubs/collaboration");
 app.MapHub<TerraFusion.AI.Hubs.Codex369Hub>("/hubs/codex369");
+app.MapHub<CountyStudyHub>("/hubs/county-study");
 app.MapHealthChecks("/health/codex369", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
 {
   Predicate = check => check.Name.Contains("codex-369", StringComparison.OrdinalIgnoreCase)
@@ -1352,8 +2573,8 @@ app.MapGet("/api/test", () => new
   environment = app.Environment.EnvironmentName
 });
 
-// ── PACS ETL seed trigger (admin only) ───────────────────────────────────────
-// POST /api/admin/pacs/seed  — pulls all 13 tables from tf-mssql pacs_oltp
+// ── Source ETL seed trigger (admin only) ─────────────────────────────────────
+// POST /api/admin/pacs/seed  — pulls source-system tables
 // into TerraFusionDbContext. Idempotent upsert. Safe to re-run.
 // Runs as a background Task — returns 202 immediately; watch server logs for progress.
 {
@@ -1587,7 +2808,7 @@ levy.MapPost("/calculate", async (
     return Results.NotFound(new { error = $"LevyMeasure {req.MeasureId} not found" });
   }
 
-  var result = await calc.CalculateOptimalRateAsync(measure, useQuantumOptimization: true);
+  var result = await calc.CalculateOptimalRateAsync(measure, useQuantumOptimization: false);
   return Results.Ok(result);
 });
 
@@ -1654,7 +2875,7 @@ levy.MapPost("/projections/generate", async (
     return Results.NotFound(new { error = $"LevyScenario {req.ScenarioId} not found" });
   }
 
-  var list = await projections.GenerateProjectionsAsync(scenario, Math.Clamp(req.Years, 1, 10), useQuantumForecasting: true);
+  var list = await projections.GenerateProjectionsAsync(scenario, Math.Clamp(req.Years, 1, 10), useQuantumForecasting: false);
   return Results.Ok(list);
 });
 
@@ -1845,9 +3066,7 @@ levy.MapPost("/scenarios/compare", async (
 //         "/api/modules",
 //         "/api/modules/{name}/status",
 //         "/api/database/status",
-//         "/api/swarm/status",
-//         "/api/swarm/modules",
-//         "/api/swarm/mcp-tools",
+//         "/api/AIAssistant/health",
 //         "/hubs/oscore"
 //     },
 //     timestamp = DateTime.UtcNow
@@ -1876,15 +3095,19 @@ Console.WriteLine("   • GET  /api/modules/{name}/status - Individual module st
 Console.WriteLine("   • POST /api/modules/refresh       - Refresh modules cache");
 Console.WriteLine("   • GET  /api/database/status       - Database connection and initialization status");
 Console.WriteLine("   • POST /api/database/initialize   - Initialize database and seed modules");
-Console.WriteLine("   • GET  /api/swarm/status          - AI swarm status (1,008 agents)");
-Console.WriteLine("   • GET  /api/swarm/modules         - Active AI modules");
-Console.WriteLine("   • GET  /api/swarm/mcp-tools       - MCP tools integration status (87 tools)");
-Console.WriteLine("   • POST /api/swarm/execute         - Execute AI command");
+Console.WriteLine("   • GET  /api/AIAssistant/health    - AI assistant health");
+Console.WriteLine("   • GET  /api/AIAssistant/swarm-status/{countyId} - Governed county assistant status (auth required)");
 Console.WriteLine("   • WS   /hubs/oscore               - SignalR hub for module hot-reload");
 Console.WriteLine("📋 Server configuration: Using ASPNETCORE_URLS environment variable");
-// Console.WriteLine("🧩 Module System: 15 production modules configured");
-// Console.WriteLine("🤖 AI Swarm: 1,008 agents with 87 MCP tools");
-Console.WriteLine("💾 Database: SQLite fallback with background initialization");
+if (startupConnectionString.Contains("Host=", StringComparison.OrdinalIgnoreCase) ||
+    string.Equals(builder.Configuration["DatabaseProvider"], "Postgres", StringComparison.OrdinalIgnoreCase))
+{
+  Console.WriteLine("💾 Database: PostgreSQL canonical runtime");
+}
+else
+{
+  Console.WriteLine("💾 Database: SQLite fallback with background initialization");
+}
 
 try
 {
@@ -1914,21 +3137,36 @@ try
     Console.WriteLine($"🛑 ApplicationStopped event fired at {DateTime.Now:HH:mm:ss.fff}");
   });
 
-  // 🌟 Initialize Ultimate CostForge AI Consciousness
-  // RE-ENABLED: Championship-level 1M agent deployment with quantum Factor 999
+  // Initialize CostForge runtime services required by the active API host.
   await app.Services.InitializeUltimateCostForgeAsync();
 
   // CARD-06: Seed Properties from PacsParcel in Development (idempotent).
-  if (app.Environment.IsDevelopment())
+  // Respect TF_SKIP_DEV_SEEDERS env var — useful when starting against a
+  // Postgres DB that already has canonical data (avoids unique-key conflicts).
+  var skipDevSeedersValue = Environment.GetEnvironmentVariable("TF_SKIP_DEV_SEEDERS")?.Trim();
+  var skipDevSeedersArg = args.Any(arg => string.Equals(arg, "--skip-dev-seeders", StringComparison.OrdinalIgnoreCase));
+  var shouldSkipDevSeeders = skipDevSeedersArg ||
+                              string.Equals(skipDevSeedersValue, "true", StringComparison.OrdinalIgnoreCase) ||
+                              string.Equals(skipDevSeedersValue, "1", StringComparison.OrdinalIgnoreCase);
+
+  Console.WriteLine($"[STARTUP] Dev seeders skip={shouldSkipDevSeeders} (arg={skipDevSeedersArg}, TF_SKIP_DEV_SEEDERS={skipDevSeedersValue ?? "<null>"})");
+
+  if (app.Environment.IsDevelopment() && !shouldSkipDevSeeders)
   {
     using var devSeedScope = app.Services.CreateScope();
     var devPropSeeder = devSeedScope.ServiceProvider
         .GetRequiredService<TerraFusion.API.Seeds.DevPropertySeeder>();
     await devPropSeeder.SeedAsync();
+    await devPropSeeder.EnsureFixturesAsync();
 
     var devGovernmentUserSeeder = devSeedScope.ServiceProvider
         .GetRequiredService<TerraFusion.API.Seeds.DevGovernmentUserSeeder>();
     await devGovernmentUserSeeder.SeedAsync();
+
+    using var saleRecordSeedScope = app.Services.CreateScope();
+    var saleRecordSeeder = saleRecordSeedScope.ServiceProvider
+        .GetRequiredService<TerraFusion.API.Seeds.SaleRecordSeeder>();
+    await saleRecordSeeder.SeedAsync();
   }
 
   Console.WriteLine($"⏳ Calling app.Run()... This should block until shutdown");

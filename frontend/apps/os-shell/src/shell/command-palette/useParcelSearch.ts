@@ -23,6 +23,7 @@ export interface ParcelSearchResult {
 
 export interface UseParcelSearchReturn {
   results: ParcelSearchResult[];
+  totalCount: number;
   isLoading: boolean;
   error: string | null;
 }
@@ -33,7 +34,7 @@ export interface UseParcelSearchReturn {
 
 const DEBOUNCE_MS = 300;
 const MIN_QUERY_LENGTH = 3;
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 15;
 
 // ============================================================================
 // Hook Implementation
@@ -49,6 +50,7 @@ const PAGE_SIZE = 5;
  */
 export function useParcelSearch(query: string, enabled: boolean): UseParcelSearchReturn {
   const [results, setResults] = useState<ParcelSearchResult[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -70,9 +72,12 @@ export function useParcelSearch(query: string, enabled: boolean): UseParcelSearc
 
     const trimmed = query.trim();
 
-    // Don't search if disabled, too short, or all-digits (handled by existing shortcut)
-    if (!enabled || trimmed.length < MIN_QUERY_LENGTH || /^\d+$/.test(trimmed)) {
+    // Don't search if disabled or too short
+    // NOTE: all-digit queries ARE valid — partial parcel number search (e.g. "11422")
+    // Exact full parcel number navigation is handled by Enter key in WorkbenchStartScene
+    if (!enabled || trimmed.length < MIN_QUERY_LENGTH) {
       setResults([]);
+      setTotalCount(0);
       setIsLoading(false);
       setError(null);
       return;
@@ -102,12 +107,14 @@ export function useParcelSearch(query: string, enabled: boolean): UseParcelSearc
             ownerName: r.ownerName,
           }))
         );
+        setTotalCount(response.totalCount ?? response.items.length);
         setError(null);
       } catch (err: unknown) {
         // Ignore abort errors
         if (err instanceof DOMException && err.name === 'AbortError') return;
 
         setResults([]);
+        setTotalCount(0);
         setError('Parcel search failed');
       } finally {
         if (!controller.signal.aborted) {
@@ -129,5 +136,5 @@ export function useParcelSearch(query: string, enabled: boolean): UseParcelSearc
     };
   }, [query, enabled]);
 
-  return { results, isLoading, error };
+  return { results, totalCount, isLoading, error };
 }

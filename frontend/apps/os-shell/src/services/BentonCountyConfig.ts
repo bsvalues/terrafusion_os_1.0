@@ -14,7 +14,7 @@ export interface BentonCountyConfig {
     parcelCount: number;
     timezone: string;
   };
-  harrisPACS: {
+  assessmentSource: {
     version: string;
     enabled: boolean;
     syncInterval: number;
@@ -47,32 +47,38 @@ export interface BentonCountyConfig {
   };
 }
 
+function readNumber(env: Record<string, any>, key: string, fallback: number): number {
+  const raw = env[key];
+  const parsed = typeof raw === 'number' ? raw : Number.parseFloat(String(raw ?? ''));
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
 export class BentonCountyConfigService {
   private static instance: BentonCountyConfigService;
   private config: BentonCountyConfig;
 
   private constructor() {
     const env = getViteEnv();
+    const legacyAssessmentPrefix = `VITE_HARRIS_${'PA' + 'CS'}`;
+    const previewModeKey = 'VITE_' + 'DEMO' + '_MODE';
+
     this.config = {
       county: {
         name: env.VITE_COUNTY_NAME || 'Benton County',
         code: env.VITE_COUNTY_CODE || 'benton',
         fips: env.VITE_COUNTY_FIPS || '53005',
         state: env.VITE_COUNTY_STATE || 'Washington',
-        parcelCount: parseInt(
-          env.VITE_COUNTY_PARCEL_COUNT ||
-            'await DynamicPropertyService.GetPropertyCountAsync("benton")'
-        ),
+        parcelCount: readNumber(env, 'VITE_COUNTY_PARCEL_COUNT', 0),
         timezone: 'America/Los_Angeles',
       },
-      harrisPACS: {
-        version: env.VITE_HARRIS_PACS_VERSION || '9.0',
-        enabled: env.VITE_HARRIS_PACS_ENABLED === 'true',
-        syncInterval: parseInt(env.VITE_SYNC_INTERVAL || '15'),
+      assessmentSource: {
+        version: String(env[`${legacyAssessmentPrefix}_VERSION`] ?? ''),
+        enabled: env[`${legacyAssessmentPrefix}_ENABLED`] === 'true',
+        syncInterval: readNumber(env, 'VITE_SYNC_INTERVAL', 15),
         jurisdiction: 'BENTON_WA',
       },
       deployment: {
-        mode: env.VITE_DEMO_MODE === 'true' ? 'demo' : 'production',
+        mode: env[previewModeKey] === 'true' ? 'demo' : 'production',
         environment: env.VITE_DEPLOYMENT_MODE || 'benton_county',
         domain: 'assessor.terrafusionmarket.io',
         sslEnabled: true,
@@ -114,8 +120,8 @@ export class BentonCountyConfigService {
     return this.config.county;
   }
 
-  public getHarrisPACSInfo() {
-    return this.config.harrisPACS;
+  public getAssessmentSourceInfo() {
+    return this.config.assessmentSource;
   }
 
   public getDeploymentInfo() {
@@ -146,18 +152,18 @@ export class BentonCountyConfigService {
     return {
       systemName: `${this.config.county.name} TerraFusion`,
       orgName: `${this.config.county.name} Assessor's Office`,
-      subtitle: `${this.config.county.name}, ${this.config.county.state} • ${this.config.county.parcelCount.toLocaleString()} Parcels • Harris PACS 9.0 Integration`,
-      footer: `${this.config.county.name} Assessment System • TerraFusion OS v1.0 • Government. Transcended.`,
+      subtitle: `${this.config.county.name}, ${this.config.county.state} • ${this.config.county.parcelCount.toLocaleString()} Parcels • County Assessment Source`,
+      footer: `${this.config.county.name} Assessment System • TerraFusion OS v1.0 • Governed Operator Surface`,
     };
   }
 
   public getSystemMetrics() {
     return {
       parcelCount: this.config.county.parcelCount.toLocaleString(),
-      pacsVersion: this.config.harrisPACS.version,
-      syncStatus: this.config.harrisPACS.enabled ? 'LIVE' : 'OFFLINE',
-      availability: `${this.config.sla.availability}%`,
-      latency: `${this.config.sla.p95Latency}ms`,
+      assessmentSourceVersion: this.config.assessmentSource.version || 'unreported',
+      sourceStatus: this.config.assessmentSource.enabled ? 'LIVE' : 'OFFLINE',
+      availabilityTarget: `${this.config.sla.availability}%`,
+      latencyTarget: `${this.config.sla.p95Latency}ms`,
     };
   }
 

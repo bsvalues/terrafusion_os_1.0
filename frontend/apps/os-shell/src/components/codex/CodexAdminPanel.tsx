@@ -62,7 +62,7 @@ interface CodexConfiguration {
   enableAutoArchive: boolean;
 }
 
-const DEFAULT_CONFIGURATION: CodexConfiguration = {
+const CODEX_CONFIGURATION_BASE: CodexConfiguration = {
   foundationMax: 12.0,
   amplificationSafeguard: 666.0,
   amplificationScale: 55.5,
@@ -91,7 +91,7 @@ const DEFAULT_CONFIGURATION: CodexConfiguration = {
 // ============================================================================
 
 export function CodexAdminPanel() {
-  const [config, setConfig] = useState<CodexConfiguration>(DEFAULT_CONFIGURATION);
+  const [config, setConfig] = useState<CodexConfiguration>(CODEX_CONFIGURATION_BASE);
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -131,7 +131,7 @@ export function CodexAdminPanel() {
   };
 
   const handleReset = () => {
-    setConfig(DEFAULT_CONFIGURATION);
+    setConfig(CODEX_CONFIGURATION_BASE);
     setHasChanges(true);
     toast.info('Configuration reset to defaults');
   };

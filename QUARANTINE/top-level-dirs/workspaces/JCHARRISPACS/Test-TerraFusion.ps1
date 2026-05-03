@@ -4,7 +4,7 @@
 
 param(
     [string]$SqlServer = "localhost,1433",
-    [string]$SaPassword = $(if ($env:SA_PASSWORD) { $env:SA_PASSWORD } else { 'TF_Pacs2026!' }),
+    [string]$SaPassword = $(if ($env:SA_PASSWORD) { $env:SA_PASSWORD } else { ($env:SA_PASSWORD ?? $env:MSSQL_SA_PASSWORD ?? (throw "SA password not set")) }),
     [string]$Environment = "Development",
     [string]$OutputPath = "C:\TerraFusion\Testing",
     [int]$SampleSize = 1000,

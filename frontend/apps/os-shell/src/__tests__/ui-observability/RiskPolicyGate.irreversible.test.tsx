@@ -69,7 +69,11 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
     toolId: 'dais.delete_assessment',
     requestHash: 'sha256-abc123',
     issuedAt: new Date().toISOString(),
-    expiresAt: new Date(Date.now() + 60000).toISOString(), // 60 seconds
+    // 10 minutes — under sweep load the original 60s budget could expire
+    // before the multi-step waitFor chain reached the confirm click,
+    // causing the modal to flip to the 'Approval expired' state and
+    // leave the Confirm button disabled forever.
+    expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
     issuedBy: 'current-user',
     reasonCode: 'correction',
   };

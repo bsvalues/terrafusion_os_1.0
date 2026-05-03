@@ -154,6 +154,33 @@ async function getJson(port, pathname, options = {}) {
   return { status: response.status, payload };
 }
 
+test("pilot runtime prefers TF_PILOT_PORT over PILOT_PORT", async () => {
+  const preferredPort = await getFreePort();
+  const fallbackPort = await getFreePort();
+  const runtimePath = path.resolve("os-platform/core/pilot/dev-pilot-runtime.mjs");
+  const child = spawn(process.execPath, [runtimePath], {
+    cwd: path.resolve("."),
+    env: {
+      ...process.env,
+      TF_PILOT_PORT: String(preferredPort),
+      PILOT_PORT: String(fallbackPort),
+    },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+
+  try {
+    const ready = await waitForReady(child);
+    assert.match(ready.stdout, new RegExp(`http://localhost:${preferredPort}/pilot`));
+
+    const ping = await postJson(preferredPort, "/pilot/canon/ping", { echo: "port-precedence" });
+    assert.equal(ping.status, 200);
+    assert.equal(ping.payload.overallOk, true);
+    assert.equal(ping.payload.normalized?.echo, "port-precedence");
+  } finally {
+    await stopChild(child);
+  }
+});
+
 test("pilot invoke and validate stay aligned on irreversible ingress context", async () => {
   const port = await getFreePort();
   const runtimePath = path.resolve("os-platform/core/pilot/dev-pilot-runtime.mjs");
@@ -161,7 +188,7 @@ test("pilot invoke and validate stay aligned on irreversible ingress context", a
     cwd: path.resolve("."),
     env: {
       ...process.env,
-      PILOT_PORT: String(port),
+      TF_PILOT_PORT: String(port),
       TF_API_PORT: process.env.TF_API_PORT || "5046",
     },
     stdio: ["ignore", "pipe", "pipe"],
@@ -254,7 +281,7 @@ test("pilot invoke and validate enforce county isolation from header context", a
     cwd: path.resolve("."),
     env: {
       ...process.env,
-      PILOT_PORT: String(port),
+      TF_PILOT_PORT: String(port),
       TF_API_PORT: process.env.TF_API_PORT || "5046",
     },
     stdio: ["ignore", "pipe", "pipe"],
@@ -314,7 +341,7 @@ test("pilot validate short-circuits on canonical mode mismatch for governed writ
     cwd: path.resolve("."),
     env: {
       ...process.env,
-      PILOT_PORT: String(port),
+      TF_PILOT_PORT: String(port),
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -365,7 +392,7 @@ test("pilot validate exposes canonical risk and RBAC violations after mode passe
     cwd: path.resolve("."),
     env: {
       ...process.env,
-      PILOT_PORT: String(port),
+      TF_PILOT_PORT: String(port),
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -411,7 +438,7 @@ test("pilot validate and invoke freeze their successful public top-level envelop
     cwd: path.resolve("."),
     env: {
       ...process.env,
-      PILOT_PORT: String(port),
+      TF_PILOT_PORT: String(port),
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -467,7 +494,7 @@ test("pilot validate and invoke stay aligned on paramsSchema.required for missin
     cwd: path.resolve("."),
     env: {
       ...process.env,
-      PILOT_PORT: String(port),
+      TF_PILOT_PORT: String(port),
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -550,7 +577,7 @@ test("pilot invoke failure stops before request_trace_redaction side effects", a
     cwd: path.resolve("."),
     env: {
       ...process.env,
-      PILOT_PORT: String(port),
+      TF_PILOT_PORT: String(port),
       TF_API_PORT: process.env.TF_API_PORT || "5046",
     },
     stdio: ["ignore", "pipe", "pipe"],
@@ -615,7 +642,7 @@ test("pilot runtime preview endpoints return overallOk true", async () => {
     cwd: path.resolve("."),
     env: {
       ...process.env,
-      PILOT_PORT: String(port),
+      TF_PILOT_PORT: String(port),
     },
     stdio: ["ignore", "pipe", "pipe"],
   });

@@ -1,160 +1,85 @@
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { CostFactorPreset } from "@shared/schema";
+import { CostFactorPreset } from '@/types/api';
 import { useMutation, useQuery } from "@tanstack/react-query";
+
+// NOTE: No /api/costforge/cost-factor-presets endpoint exists yet in TerraFusion.API.
+// Queries fail gracefully via React Query error state.
 
 export function useCostFactorPresets() {
   const { toast } = useToast();
 
-  // Get all cost factor presets
   const getAllPresets = useQuery<CostFactorPreset[]>({
-    queryKey: ['/api/cost-factor-presets'],
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: "Failed to fetch cost factor presets",
-        variant: "destructive",
-      });
-      console.error("Failed to fetch cost factor presets:", error);
-    }
+    queryKey: ['/api/costforge/cost-factor-presets'],
+    staleTime: 5 * 60 * 1000,
   });
 
-  // Get default presets
   const getDefaultPresets = useQuery<CostFactorPreset[]>({
-    queryKey: ['/api/cost-factor-presets/defaults'],
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: "Failed to fetch default cost factor presets",
-        variant: "destructive",
-      });
-      console.error("Failed to fetch default presets:", error);
-    }
+    queryKey: ['/api/costforge/cost-factor-presets/defaults'],
+    staleTime: 5 * 60 * 1000,
   });
 
-  // Get user presets
   const getUserPresets = (userId: number) => {
     return useQuery<CostFactorPreset[]>({
-      queryKey: ['/api/cost-factor-presets/user', userId],
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      onError: (error: any) => {
-        toast({
-          title: "Error",
-          description: "Failed to fetch user cost factor presets",
-          variant: "destructive",
-        });
-        console.error("Failed to fetch user presets:", error);
-      }
+      queryKey: ['/api/costforge/cost-factor-presets/user', userId],
+      staleTime: 5 * 60 * 1000,
     });
   };
 
-  // Get a single preset by ID
   const getPreset = (id: number) => {
     return useQuery<CostFactorPreset>({
-      queryKey: ['/api/cost-factor-presets', id],
+      queryKey: ['/api/costforge/cost-factor-presets', id],
       enabled: Boolean(id),
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      onError: (error: any) => {
-        toast({
-          title: "Error",
-          description: "Failed to fetch cost factor preset",
-          variant: "destructive",
-        });
-        console.error("Failed to fetch preset by ID:", error);
-      }
+      staleTime: 5 * 60 * 1000,
     });
   };
 
-  // Create a new preset
   const createPresetMutation = useMutation({
-    mutationFn: (preset: Omit<CostFactorPreset, 'id' | 'createdAt' | 'updatedAt'>) => {
-      return apiRequest('POST', '/api/cost-factor-presets', preset);
-    },
+    mutationFn: (preset: Omit<CostFactorPreset, 'id'>) =>
+      apiRequest('/api/costforge/cost-factor-presets', { method: 'POST', body: JSON.stringify(preset) }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/cost-factor-presets'] });
-      toast({
-        title: "Success",
-        description: "Cost factor preset created successfully",
-      });
+      queryClient.invalidateQueries({ queryKey: ['/api/costforge/cost-factor-presets'] });
+      toast({ title: "Success", description: "Cost factor preset created successfully" });
     },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: "Failed to create cost factor preset",
-        variant: "destructive",
-      });
-      console.error("Failed to create preset:", error);
+    onError: () => {
+      toast({ title: "Error", description: "Failed to create cost factor preset", variant: "destructive" });
     }
   });
 
-  // Update an existing preset
   const updatePresetMutation = useMutation({
-    mutationFn: ({ id, ...data }: { id: number } & Partial<Omit<CostFactorPreset, 'id' | 'createdAt' | 'updatedAt'>>) => {
-      return apiRequest('PATCH', `/api/cost-factor-presets/${id}`, data);
-    },
+    mutationFn: ({ id, ...data }: { id: number } & Partial<Omit<CostFactorPreset, 'id'>>) =>
+      apiRequest(`/api/costforge/cost-factor-presets/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/cost-factor-presets'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/cost-factor-presets', variables.id] });
-      toast({
-        title: "Success",
-        description: "Cost factor preset updated successfully",
-      });
+      queryClient.invalidateQueries({ queryKey: ['/api/costforge/cost-factor-presets'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/costforge/cost-factor-presets', variables.id] });
+      toast({ title: "Success", description: "Cost factor preset updated successfully" });
     },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: "Failed to update cost factor preset",
-        variant: "destructive",
-      });
-      console.error("Failed to update preset:", error);
+    onError: () => {
+      toast({ title: "Error", description: "Failed to update cost factor preset", variant: "destructive" });
     }
   });
 
-  // Delete a preset
   const deletePresetMutation = useMutation({
-    mutationFn: (id: number) => {
-      return apiRequest('DELETE', `/api/cost-factor-presets/${id}`);
-    },
+    mutationFn: (id: number) =>
+      apiRequest(`/api/costforge/cost-factor-presets/${id}`, { method: 'DELETE' }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/cost-factor-presets'] });
-      toast({
-        title: "Success",
-        description: "Cost factor preset deleted successfully",
-      });
+      queryClient.invalidateQueries({ queryKey: ['/api/costforge/cost-factor-presets'] });
+      toast({ title: "Success", description: "Cost factor preset deleted successfully" });
     },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: "Failed to delete cost factor preset",
-        variant: "destructive",
-      });
-      console.error("Failed to delete preset:", error);
+    onError: () => {
+      toast({ title: "Error", description: "Failed to delete cost factor preset", variant: "destructive" });
     }
   });
 
-  // Wrapper functions for mutations to handle the async/await pattern
-  const createPreset = async (preset: Omit<CostFactorPreset, 'id' | 'createdAt' | 'updatedAt'>) => {
-    return createPresetMutation.mutateAsync(preset);
-  };
-
-  const updatePreset = async ({ id, ...data }: { id: number } & Partial<Omit<CostFactorPreset, 'id' | 'createdAt' | 'updatedAt'>>) => {
-    return updatePresetMutation.mutateAsync({ id, ...data });
-  };
-
-  const deletePreset = async (id: number) => {
-    return deletePresetMutation.mutateAsync(id);
-  };
+  const createPreset = (preset: Omit<CostFactorPreset, 'id'>) => createPresetMutation.mutateAsync(preset);
+  const updatePreset = (args: { id: number } & Partial<Omit<CostFactorPreset, 'id'>>) => updatePresetMutation.mutateAsync(args);
+  const deletePreset = (id: number) => deletePresetMutation.mutateAsync(id);
 
   return {
-    // Queries
     getAllPresets,
     getDefaultPresets,
     getUserPresets,
     getPreset,
-
-    // Mutations
     createPreset,
     updatePreset,
     deletePreset,

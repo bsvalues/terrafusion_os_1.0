@@ -55,7 +55,7 @@ export const ForgeYearSelector: React.FC<ForgeYearSelectorProps> = ({
    * taxYear is not present in the layers (e.g. first load was CURRENT_YEAR
    * but the parcel only has 2015). */
   useEffect(() => {
-    if (!data) return;
+    if (!data || !Array.isArray(data.layers)) return;
     const knownYears = data.layers.map((l) => l.year);
     if (knownYears.length === 0) return;
     if (!knownYears.includes(taxYear) && data.defaultYear != null) {
@@ -63,7 +63,11 @@ export const ForgeYearSelector: React.FC<ForgeYearSelectorProps> = ({
     }
   }, [data, taxYear, onTaxYearChange]);
 
-  const hasLayers = data && data.layers.length > 0;
+  // `data.layers` may be undefined when /years returns a partial body
+  // (invalid parcel id, error fallback shape, etc.). Treat any non-array
+  // layers as 'no layers known' rather than throwing into the global
+  // ErrorBoundary — same regression as the PropertyForge layers guard.
+  const hasLayers = Array.isArray(data?.layers) && data!.layers.length > 0;
 
   if (!parcelId) {
     return (
@@ -110,7 +114,7 @@ export const ForgeYearSelector: React.FC<ForgeYearSelectorProps> = ({
           className="tf-text-dim text-xs"
           title={error?.message}
         >
-          {error ? '⚠ year data unavailable' : 'no PACS layers found'}
+          {error ? '⚠ year data unavailable' : 'no assessment layers found'}
         </span>
       </div>
     );
@@ -127,7 +131,7 @@ export const ForgeYearSelector: React.FC<ForgeYearSelectorProps> = ({
         value={taxYear}
         onChange={(e) => onTaxYearChange(Number(e.target.value))}
         className="tf-input px-3 py-1.5 text-sm font-mono"
-        aria-label="Select PACS tax year"
+        aria-label="Select tax year"
       >
         {data.layers.map((layer) => (
           <option
@@ -139,7 +143,7 @@ export const ForgeYearSelector: React.FC<ForgeYearSelectorProps> = ({
         ))}
       </select>
       <span className="tf-text-dim text-xs" data-testid="forge-year-source-badge">
-        PACS · {data.layers.length} layer{data.layers.length !== 1 ? 's' : ''}
+        TerraFusion · {data.layers.length} year layer{data.layers.length !== 1 ? 's' : ''}
       </span>
     </div>
   );

@@ -221,7 +221,7 @@ export const RealWorldChatMessages: Story = {
         id: 2,
         user: 'Bob',
         avatar: 'B',
-        message: 'Great! Just finished the design mockups.',
+    message: 'Great! Just finished the design comps.',
         time: '10:32 AM',
       },
       {

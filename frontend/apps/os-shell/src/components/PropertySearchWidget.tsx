@@ -1,8 +1,8 @@
 /**
  * PropertySearchWidget — Quick parcel search for the OS sidebar.
  *
- * Calls /ops/pacs/properties with search text as geoId prefix,
- * or lists first N results when search is empty.
+ * Calls the canonical property lookup service with search text as a GeoID prefix,
+ * or lists the first N records when search is empty.
  * Clicking a result sets the parcel context.
  *
  * @module components/PropertySearchWidget
@@ -10,7 +10,10 @@
 
 import React, { useCallback, useRef, useState } from 'react';
 import { Search, MapPin, Loader2 } from 'lucide-react';
-import { getPacsProperties, type PacsPropertySummary } from '../services/pacsService';
+import {
+  getAssessmentProperties,
+  type AssessmentPropertySummary,
+} from '../services/assessmentPropertyService';
 
 export interface PropertySearchWidgetProps {
   /** Called when user selects a result. */
@@ -19,7 +22,7 @@ export interface PropertySearchWidgetProps {
 
 export const PropertySearchWidget: React.FC<PropertySearchWidgetProps> = ({ onSelect }) => {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<PacsPropertySummary[]>([]);
+  const [results, setResults] = useState<AssessmentPropertySummary[]>([]);
   const [totalCount, setTotalCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
@@ -31,7 +34,7 @@ export const PropertySearchWidget: React.FC<PropertySearchWidgetProps> = ({ onSe
     try {
       // The backend doesn't have full-text search yet, so we fetch the first page
       // and filter client-side. Once a search endpoint exists, swap here.
-      const page = await getPacsProperties(1, 50);
+      const page = await getAssessmentProperties(1, 50);
       const q = text.toLowerCase();
       const filtered = q
         ? page.items.filter(
@@ -121,7 +124,7 @@ export const PropertySearchWidget: React.FC<PropertySearchWidgetProps> = ({ onSe
       {/* Total count hint */}
       {totalCount !== null && (
         <span style={{ color: 'hsl(var(--tf-muted-foreground))', fontSize: '0.65rem' }}>
-          {totalCount.toLocaleString()} parcels in PACS
+          {totalCount.toLocaleString()} parcels
         </span>
       )}
 

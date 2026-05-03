@@ -5,7 +5,7 @@ namespace TerraFusion.Consciousness.Interfaces
     /// <summary>
     /// AI Orchestration Service interface for comprehensive AI coordination
     /// Orchestrates multiple AI services across TerraFusion consciousness mesh
-    /// Government. Transcended.
+    /// Compatibility AI orchestration contract.
     /// </summary>
     public interface IAIOrchestrationService
     {

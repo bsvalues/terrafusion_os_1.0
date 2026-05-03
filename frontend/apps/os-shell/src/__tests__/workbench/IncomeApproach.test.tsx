@@ -147,3 +147,63 @@ describe('IncomeApproach wrapper', () => {
     expect(onValueIndicated).not.toHaveBeenCalled();
   });
 });
+
+describe('IncomeApproach — NOI Waterfall', () => {
+  beforeEach(() => {
+    mockParcelId = 'P-200';
+    vi.clearAllMocks();
+  });
+
+  const renderWaterfall = () => {
+    const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const onHistoryRecord = vi.fn();
+    const onValueIndicated = vi.fn();
+    const utils = render(
+      <QueryClientProvider client={qc}>
+        <IncomeApproach taxYear={2026} onHistoryRecord={onHistoryRecord} onValueIndicated={onValueIndicated} />
+      </QueryClientProvider>,
+    );
+    return { ...utils, onHistoryRecord, onValueIndicated };
+  };
+
+  it('renders waterfall grid with data-testid', () => {
+    renderWaterfall();
+    expect(screen.getByTestId('income-noi-waterfall')).toBeInTheDocument();
+    expect(screen.getByTestId('income-waterfall-steps')).toBeInTheDocument();
+  });
+
+  it('renders lock gate with checkbox and button', () => {
+    renderWaterfall();
+    expect(screen.getByTestId('income-lock-gate')).toBeInTheDocument();
+    expect(screen.getByTestId('income-lock-checkbox')).toBeInTheDocument();
+    expect(screen.getByTestId('income-lock-btn')).toBeInTheDocument();
+  });
+
+  it('lock button is disabled when no value entered', () => {
+    renderWaterfall();
+    const btn = screen.getByTestId('income-lock-btn');
+    expect(btn).toBeDisabled();
+  });
+
+  it('fires onValueIndicated and onHistoryRecord when locked', async () => {
+    const { onHistoryRecord, onValueIndicated } = renderWaterfall();
+
+    // Enter income + opex so NOI > 0
+    fireEvent.change(screen.getByLabelText(/potential gross income/i), { target: { value: '120000' } });
+    fireEvent.change(screen.getByLabelText(/operating expenses/i), { target: { value: '20000' } });
+
+    // Confirm checkbox + click lock
+    const checkbox = screen.getByTestId('income-lock-checkbox');
+    fireEvent.click(checkbox);
+    const btn = screen.getByTestId('income-lock-btn');
+    expect(btn).not.toBeDisabled();
+    fireEvent.click(btn);
+
+    await waitFor(() => {
+      expect(onValueIndicated).toHaveBeenCalledWith('income', expect.any(Number));
+      expect(onHistoryRecord).toHaveBeenCalledWith(
+        expect.objectContaining({ toolId: 'lock_income_indication', status: 'success' }),
+      );
+    });
+  });
+});

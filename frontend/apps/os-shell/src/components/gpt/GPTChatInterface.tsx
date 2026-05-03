@@ -57,7 +57,7 @@ export const GPTChatInterface: React.FC<GPTChatInterfaceProps> = ({
 
   const conversationNote = useMemo(
     () =>
-      'Live in this slice: conversation create, load, history refresh, send, archive, delete, and manual trace fetch through the canonical GPT API. Streaming, typing indicators, live hub push, and live citations are not currently mapped by the backend.',
+      'Available in this workspace: conversation create, load, history, send, archive, and delete. Streaming and live hub push are not yet active. Trace data is loaded on demand via a manual trace fetch through the canonical GPT API.',
     [],
   );
 

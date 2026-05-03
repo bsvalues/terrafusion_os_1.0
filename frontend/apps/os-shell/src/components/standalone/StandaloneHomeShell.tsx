@@ -27,10 +27,10 @@ import { LiquidPanel, TactileButton, useMaterialQuality } from '../../ui/materia
 import { Badge } from '../ui/badge';
 import { assertUniqueBy } from '../../utils/assertUniqueBy';
 import {
-    DEFAULT_STANDALONE_META,
     isHandlerAction,
     isHandlerKeyAction,
     isNavigationAction,
+    STANDALONE_META_BASE,
     type StandaloneHomeAction,
     type StandaloneHomeContext,
     type StandaloneHomeMeta,
@@ -350,10 +350,10 @@ export function StandaloneHomeShell({
   const resolvedMeta = useMemo<StandaloneHomeMeta>(() => {
     const registryMeta = featureDefinition?.homeMeta ?? {};
     return {
-      ...DEFAULT_STANDALONE_META,
-      title: featureDefinition?.label ?? DEFAULT_STANDALONE_META.title,
-      description: featureDefinition?.description ?? DEFAULT_STANDALONE_META.description,
-      icon: featureDefinition?.icon ?? DEFAULT_STANDALONE_META.icon,
+      ...STANDALONE_META_BASE,
+      title: featureDefinition?.label ?? STANDALONE_META_BASE.title,
+      description: featureDefinition?.description ?? STANDALONE_META_BASE.description,
+      icon: featureDefinition?.icon ?? STANDALONE_META_BASE.icon,
       ...registryMeta,
       ...metaOverrides,
       // Merge actions arrays (override-wins dedup by id)

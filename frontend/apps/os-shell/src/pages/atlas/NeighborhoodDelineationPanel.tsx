@@ -21,6 +21,24 @@ export function NeighborhoodDelineationPanel() {
   const selectedNeighborhood = useAtlasSpatialStore((s) => s.selectedNeighborhood);
   const selectNeighborhood = useAtlasSpatialStore((s) => s.selectNeighborhood);
 
+  if (neighborhoods.length === 0) {
+    return (
+      <div data-testid="neighborhood-delineation" className="space-y-4 p-4" style={{ color: 'hsl(var(--tf-fg))' }}>
+        <div
+          data-testid="neighborhood-delineation-unavailable"
+          className="rounded border px-4 py-3 text-sm"
+          style={{
+            borderColor: 'hsl(var(--tf-warning, 40 90% 60%) / 0.35)',
+            background: 'hsl(var(--tf-warning, 40 90% 60%) / 0.08)',
+            color: 'hsl(var(--tf-fg))',
+          }}
+        >
+          Neighborhood delineation unavailable. Atlas does not have a governed neighborhood-statistics feed for this panel, and the legacy fixture bundle is not rendered here.
+        </div>
+      </div>
+    );
+  }
+
   const qualifiedCount = neighborhoods.filter((n) => n.qualified).length;
 
   return (

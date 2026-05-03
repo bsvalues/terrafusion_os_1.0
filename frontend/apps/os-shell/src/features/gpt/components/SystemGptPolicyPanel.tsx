@@ -277,7 +277,7 @@ export const SystemGptPolicyPanel: React.FC<SystemGptPolicyPanelProps> = ({
             {/* Placeholder notice */}
             {policy.isPlaceholder && (
               <div className='mt-3 rounded-lg border border-slate-600/50 bg-slate-800/50 px-3 py-2 text-xs text-slate-400'>
-                ℹ️ This is a placeholder policy. County not fully configured.
+                ℹ️ Policy configuration is pending for this county.
               </div>
             )}
           </div>

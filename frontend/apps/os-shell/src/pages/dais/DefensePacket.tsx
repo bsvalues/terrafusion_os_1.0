@@ -9,6 +9,7 @@
 import React, { useState } from 'react';
 import { invokeTool } from '../../api/pilotApi';
 import { ModelReceipt } from '../../components/dais/ModelReceipt';
+import { computePacketReadiness, type PacketMetadata } from '../../services/suites/packetComposition';
 
 // ============================================================================
 // Types
@@ -30,6 +31,14 @@ interface NarrativeRequest {
   propertyAddress: string;
   propertyType: string;
   taxYear: number;
+}
+
+interface OpenAppealPacketSummary {
+  appealId: string;
+  packetRef: string;
+  payloadRef: string;
+  sections: string[];
+  chainOfCustody: string[];
 }
 
 // ============================================================================
@@ -239,6 +248,8 @@ export default function DefensePacket() {
   const [error, setError] = useState<string | null>(null);
   const [packetReady, setPacketReady] = useState(false);
   const [currentParcelId, setCurrentParcelId] = useState('');
+  const [packetSummary, setPacketSummary] = useState<OpenAppealPacketSummary | null>(null);
+  const [packetLoading, setPacketLoading] = useState(false);
 
   const handleGenerate = async (request: NarrativeRequest) => {
     setGenerating(true);
@@ -247,10 +258,35 @@ export default function DefensePacket() {
     try {
       const result = await generateDefenseNarrative(request);
       setNarrative(result);
+      setPacketLoading(true);
+      const packetResponse = await invokeTool({
+        toolId: 'open_appeal_packet',
+        params: {
+          county: 'benton',
+          appealId: request.parcelId,
+        },
+        parcelId: request.parcelId,
+      });
+      if (packetResponse.success && packetResponse.result) {
+        try {
+          setPacketSummary(JSON.parse(packetResponse.result.output) as OpenAppealPacketSummary);
+        } catch {
+          setPacketSummary({
+            appealId: request.parcelId,
+            packetRef: `packet:${request.parcelId}`,
+            payloadRef: `payload:${request.parcelId}`,
+            sections: [],
+            chainOfCustody: [],
+          });
+        }
+      } else {
+        setPacketSummary(null);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate narrative');
     } finally {
       setGenerating(false);
+      setPacketLoading(false);
     }
   };
 
@@ -283,6 +319,24 @@ export default function DefensePacket() {
     }
   };
 
+  const packetMetadata: PacketMetadata | null = currentParcelId
+    ? {
+        parcelId: currentParcelId,
+        packetType: 'defense',
+        createdBy: 'dais-operator',
+        createdAt: narrative?.generatedAt ?? new Date().toISOString(),
+        status: packetReady ? 'ready' : 'draft',
+        title: narrative ? `Defense Packet for ${currentParcelId}` : '',
+        sections: [
+          ...(packetSummary?.sections?.length
+            ? [{ sectionType: 'documents' as const, itemIds: packetSummary.sections }]
+            : []),
+          ...(narrative ? [{ sectionType: 'narratives' as const, itemIds: [narrative.payloadRef] }] : []),
+        ],
+      }
+    : null;
+  const packetReadiness = packetMetadata ? computePacketReadiness(packetMetadata) : null;
+
   return (
     <div className="space-y-6 p-6" data-testid="defense-packet" style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-fg))' }}>
       {/* Header */}
@@ -300,6 +354,72 @@ export default function DefensePacket() {
 
       {/* Input Form */}
       <ParcelInputForm onGenerate={handleGenerate} generating={generating} />
+
+      <div
+        className="rounded-lg bg-card p-6"
+        style={{ border: '1px solid hsl(var(--tf-border) / 0.15)' }}
+        data-testid="defense-packet-governed-brief"
+        data-material="bento"
+      >
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <div>
+            <h3 className="text-lg font-semibold">Governed Packet Readiness</h3>
+            <p className="text-sm text-muted-foreground">
+              Dais drafts the defense narrative, Dossier tracks the packet posture, and export only proceeds once the packet is ready.
+            </p>
+          </div>
+          {packetReadiness && (
+            <span className="rounded-full border border-white/10 px-3 py-1 text-xs uppercase tracking-wide text-white/70">
+              {packetReadiness.status}
+            </span>
+          )}
+        </div>
+
+        {!currentParcelId && (
+          <p className="text-sm text-muted-foreground">
+            Enter an appeal parcel and generate the defense narrative to load governed packet posture.
+          </p>
+        )}
+
+        {currentParcelId && (
+          <div className="space-y-3 text-sm">
+            <div className="grid gap-3 md:grid-cols-3">
+              <div className="rounded-md border border-white/10 bg-white/5 p-3">
+                <div className="text-xs uppercase tracking-wide text-white/40">Parcel</div>
+                <div className="mt-2 font-semibold">{currentParcelId}</div>
+              </div>
+              <div className="rounded-md border border-white/10 bg-white/5 p-3">
+                <div className="text-xs uppercase tracking-wide text-white/40">Packet Ref</div>
+                <div className="mt-2 font-semibold">
+                  {packetLoading ? 'Loading...' : packetSummary?.packetRef ?? 'pending'}
+                </div>
+              </div>
+              <div className="rounded-md border border-white/10 bg-white/5 p-3">
+                <div className="text-xs uppercase tracking-wide text-white/40">Sections</div>
+                <div className="mt-2 font-semibold">
+                  {packetSummary?.sections.length ?? 0} governed sections
+                </div>
+              </div>
+            </div>
+
+            {packetReadiness && packetReadiness.blockers.length > 0 && (
+              <div className="rounded-md border border-amber-500/20 bg-amber-500/10 p-3 text-amber-200">
+                Blockers: {packetReadiness.blockers.join(', ')}
+              </div>
+            )}
+
+            {packetReadiness?.exportModel && (
+              <div className="rounded-md border border-emerald-500/20 bg-emerald-500/10 p-3 text-emerald-200">
+                Export-ready: {packetReadiness.exportModel.sectionCount} sections, {packetReadiness.exportModel.totalItems} total items.
+              </div>
+            )}
+
+            <div className="text-xs text-muted-foreground">
+              {narrative?.correlationId ? `corr ${narrative.correlationId}` : 'corr pending'} | Appeal packet routing stays governed through Dossier evidence and Dais assembly.
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Narrative Preview */}
       {narrative && (

@@ -101,14 +101,16 @@ namespace TerraFusion.API.Controllers
         /// <summary>
         /// Get all available GPTs for current user
         /// </summary>
+        [AllowAnonymous]
         [HttpGet]
         public async System.Threading.Tasks.Task<ActionResult<List<GPTConfiguration>>> GetAvailableGPTs()
         {
             try
             {
-                var userId = GetUserId();
-                var countyId = GetCountyId();
-                var role = GetUserRole();
+                var isAuth = User?.Identity?.IsAuthenticated == true;
+                var userId   = isAuth ? GetUserId()   : "dev-anonymous";
+                var countyId = isAuth ? GetCountyId() : 1;
+                var role     = isAuth ? GetUserRole() : "User";
 
                 var gpts = await _configService.GetAvailableGPTsAsync(userId, countyId, role);
                 return Ok(gpts);
@@ -123,6 +125,7 @@ namespace TerraFusion.API.Controllers
         /// <summary>
         /// Get system-provided GPTs
         /// </summary>
+        [AllowAnonymous]
         [HttpGet("system")]
         public async System.Threading.Tasks.Task<ActionResult<List<GPTConfiguration>>> GetSystemGPTs()
         {
@@ -1370,7 +1373,7 @@ namespace TerraFusion.API.Controllers
         /// Download Benton CAMA RAG Readiness Snapshot as JSON file.
         /// Phase 18: County-specific RAG health export for audits and demos.
         /// </summary>
-        [HttpGet("rag/benton_cama_basics/export")]
+        [HttpGet("rag/benton-assessment-basics/export")]
         [AllowAnonymous] // Allow export without auth for county demos
         public async System.Threading.Tasks.Task<IActionResult> DownloadBentonRagSnapshot()
         {
@@ -2385,4 +2388,3 @@ namespace TerraFusion.API.Controllers
         #endregion
     }
 }
-

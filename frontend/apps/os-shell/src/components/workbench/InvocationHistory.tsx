@@ -54,12 +54,12 @@ export const InvocationHistory: React.FC<InvocationHistoryProps> = ({
 
   return (
     <LiquidPanel variant='infrastructure' radius='xl' className='p-5'>
-      <h3 className='text-white font-semibold mb-4 flex items-center gap-2'>
+      <h3 className='tf-text font-semibold mb-4 flex items-center gap-2'>
         <span>{icon}</span> {title}
       </h3>
 
       {displayRecords.length === 0 ? (
-        <p className='text-white/40 text-center py-4'>{emptyMessage}</p>
+        <p className='tf-text-tertiary text-center py-4'>{emptyMessage}</p>
       ) : (
         <div className='space-y-3'>
           {displayRecords.map((record) => (

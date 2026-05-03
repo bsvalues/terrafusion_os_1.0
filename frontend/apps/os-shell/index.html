@@ -2,9 +2,21 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- Theme bootstrap: read localStorage before any CSS render to prevent flash -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('tf-theme');
+          // Default to 'night' on first visit
+          document.documentElement.setAttribute('data-theme', t || 'night');
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'night');
+        }
+      })();
+    </script>
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
     <title>TerraFusion OS - Government. Transcended.</title>
     <meta

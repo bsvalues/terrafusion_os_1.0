@@ -73,8 +73,8 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
-      ConnectionStrings__PacsConnection: "Server=host.docker.internal,1433;Database=pacs_oltp;User Id=sa;Password=TF_Pacs2026!;TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;"
-      ConnectionStrings__PacsSalesConnection: "Server=host.docker.internal,1433;Database=pacs_golive;User Id=sa;Password=TF_Pacs2026!;TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;"
+      ConnectionStrings__PacsConnection: "Server=host.docker.internal,1433;Database=pacs_oltp;User Id=sa;Password=<redacted-local-dev-sql-password>;TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;"
+      ConnectionStrings__PacsSalesConnection: "Server=host.docker.internal,1433;Database=pacs_golive;User Id=sa;Password=<redacted-local-dev-sql-password>;TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;"
 ```
 
 This is the only compose addition required to bridge Phase 33's live PACS proof into Phase 34.
@@ -126,5 +126,5 @@ That was before Phase 33 proved the contract layer.
 ## Open Question (answer before coding Phase 34)
 
 Does `GET /api/swarm/status` or equivalent exist on the running API?
-Check: `http://localhost:5000/api/consciousness/status` or similar.
+Check: `http://localhost:${TF_API_PORT:-5046}/api/consciousness/status` or similar.
 If not, the rehearsal proof falls back to Consciousness container `/health` alone — which is sufficient.

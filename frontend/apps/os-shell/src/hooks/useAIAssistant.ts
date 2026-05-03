@@ -1,11 +1,3 @@
-/**
- * ═══════════════════════════════════════════════════════════════
- * USE AI ASSISTANT HOOK - React Hook for AI Integration
- * TerraFusion OS Frontend AI Coordination
- * Government. Transcended.
- * ═══════════════════════════════════════════════════════════════
- */
-
 import { useCallback, useEffect, useState } from 'react';
 import { getToken } from '../auth/authStorage';
 import { getApiBase } from '../lib/apiBase';
@@ -23,11 +15,11 @@ interface AIMessage {
 interface AISwarmStatus {
   countyId: string;
   activeAgents: number;
-  swarmActivity: number;
+  swarmActivity: string;
   quantumOptimizationFactor: number;
   responseTime: number;
   accuracyScore: number;
-  consciousnessLevel: string;
+  consciousnessLevel: number;
   lastUpdate: Date;
 }
 
@@ -63,9 +55,8 @@ export const useAIAssistant = ({
       const welcomeMessage: AIMessage = {
         id: 'system-welcome',
         role: 'system',
-        content: `🏛️ **AI Swarm Connected** - ${countyId.toUpperCase()} Government Excellence Mode\n\nI'm your TerraFusion AI Assistant with access to 50,000+ specialized agents. I can help you with:\n\n✨ **Property Assessment** - Instant valuations with 99.5% accuracy\n🔍 **Data Analysis** - Real-time insights from county systems\n📊 **Compliance Validation** - IAAO standards verification\n⚡ **Workflow Automation** - Intelligent task completion\n\nHow can I amplify your capabilities today?`,
+        content: `**AI Assistant Compatibility Mode** - ${countyId.toUpperCase()}\n\nResponses come from the governed TerraFusion AI Assistant API. Agent counts, valuation accuracy, compliance status, and workflow completion are shown only when returned with backend evidence.\n\nRole context: ${employeeRole}`,
         timestamp: new Date(),
-        confidence: 1.0,
       };
 
       setMessages([welcomeMessage]);
@@ -128,7 +119,7 @@ export const useAIAssistant = ({
           id: `error-${Date.now()}`,
           role: 'system',
           content:
-            'I apologize, but I encountered an issue processing your request. Please try again.',
+            'AI Assistant evidence unavailable. This route does not substitute generated advice or workflow claims.',
           timestamp: new Date(),
           confidence: 0,
         };

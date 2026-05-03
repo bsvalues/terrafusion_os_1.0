@@ -7,7 +7,11 @@ import { securityPlugin } from './apps/os-shell/src/middleware/security-plugin';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const appRoot = path.resolve(__dirname, 'apps/os-shell');
-  const backendUrl = process.env.VITE_API_URL || `http://localhost:${process.env.TF_API_PORT || 5000}`;
+  const configuredApiUrl = process.env.VITE_API_URL;
+  const backendUrl =
+    configuredApiUrl && /^https?:\/\//i.test(configuredApiUrl)
+      ? configuredApiUrl
+      : `http://localhost:${process.env.TF_API_PORT || process.env.VITE_API_PORT || 5000}`;
 
   // Dev-mode middleware: serves service-registry.json directly from disk.
   // The .NET ServiceRegistryController serves this in production. In dev, this
@@ -81,6 +85,7 @@ export default defineConfig(({ mode }) => {
     plugins,
 
     root: appRoot,
+    envDir: __dirname,
 
     publicDir: path.resolve(appRoot, 'public'),
 
@@ -128,7 +133,7 @@ export default defineConfig(({ mode }) => {
     },
 
     server: {
-      port: parseInt(process.env.VITE_PORT || '5173'),
+      port: parseInt(process.env.PORT || process.env.VITE_PORT || '5173'),
       host: '0.0.0.0',
       strictPort: false,
       // Suppress the blocking error overlay for pnpm store issues (e.g. stale
@@ -139,7 +144,7 @@ export default defineConfig(({ mode }) => {
       proxy: {
         // Capture error boundary reports in pilot runtime (dev diagnostics)
         '/api/errors': {
-          target: `http://localhost:${process.env.PILOT_PORT || 4317}`,
+          target: backendUrl,
           changeOrigin: true,
           secure: false,
         },
@@ -148,6 +153,19 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
           ws: true, // WebSocket support for SignalR
+        },
+        '/hubs': {
+          target: backendUrl,
+          changeOrigin: true,
+          secure: false,
+          ws: true,
+        },
+        // Minimal-API levy routes (TerraLevy Cycle Cockpit reaches these for
+        // district AV / measure target amounts). Served by Program.cs at /levy/*.
+        '/levy': {
+          target: backendUrl,
+          changeOrigin: true,
+          secure: false,
         },
         '/health': {
           target: backendUrl,
@@ -159,11 +177,14 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
-        // Proxy Pilot runtime (TerraCanon dev-pilot-runtime)
+        // Proxy Pilot runtime — routes /pilot/** to .NET backend /api/pilot/**
+        // The dedicated pilot runtime (port 4317) is optional; when offline the
+        // backend stubs return gracefully-degraded responses.
         '/pilot': {
-          target: `http://localhost:${process.env.PILOT_PORT || 4317}`,
+          target: backendUrl,
           changeOrigin: true,
           secure: false,
+          rewrite: (path: string) => path.replace(/^\/pilot/, '/api/pilot'),
         },
       },
     },
@@ -174,7 +195,25 @@ export default defineConfig(({ mode }) => {
     },
 
     optimizeDeps: {
-      include: ['react', 'react-dom', '@mui/material', 'recharts'],
+      include: [
+        'react',
+        'react-dom',
+        '@mui/material',
+        'recharts',
+        '@radix-ui/react-slot',
+        '@radix-ui/react-label',
+        '@radix-ui/react-select',
+        '@radix-ui/react-dropdown-menu',
+        '@radix-ui/react-dialog',
+        '@radix-ui/react-tooltip',
+        '@radix-ui/react-tabs',
+        '@radix-ui/react-popover',
+        'class-variance-authority',
+        'clsx',
+        'tailwind-merge',
+        'lucide-react',
+        'zustand',
+      ],
     },
 
     define: {

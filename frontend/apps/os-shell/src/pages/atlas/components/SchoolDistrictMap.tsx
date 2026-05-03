@@ -34,47 +34,10 @@ export interface SchoolDistrictMapProps {
 }
 
 // ---------------------------------------------------------------------------
-// Default data
+// Empty data
 // ---------------------------------------------------------------------------
 
-const DEFAULT_DISTRICTS: SchoolDistrict[] = [
-  {
-    id: 'd1',
-    name: 'Kennewick SD',
-    color: '#3B82F6',
-    studentCount: 18500,
-    center: [46.21, -119.17],
-    schools: [
-      { id: 's1', name: 'Kennewick High', type: 'High', rating: 7, center: [46.215, -119.17] },
-      { id: 's2', name: 'Desert Hills Middle', type: 'Middle', rating: 8, center: [46.205, -119.18] },
-      { id: 's3', name: 'Vista Elementary', type: 'Elementary', rating: 9, center: [46.22, -119.16] },
-    ],
-  },
-  {
-    id: 'd2',
-    name: 'Richland SD',
-    color: '#22C55E',
-    studentCount: 14200,
-    center: [46.27, -119.28],
-    schools: [
-      { id: 's4', name: 'Richland High', type: 'High', rating: 8, center: [46.275, -119.28] },
-      { id: 's5', name: 'Chief Joseph Middle', type: 'Middle', rating: 7, center: [46.265, -119.29] },
-      { id: 's6', name: 'Lewis & Clark Elem', type: 'Elementary', rating: 8, center: [46.28, -119.27] },
-    ],
-  },
-  {
-    id: 'd3',
-    name: 'Pasco SD',
-    color: '#F59E0B',
-    studentCount: 19800,
-    center: [46.24, -119.1],
-    schools: [
-      { id: 's7', name: 'Pasco High', type: 'High', rating: 6, center: [46.245, -119.1] },
-      { id: 's8', name: 'Stevens Middle', type: 'Middle', rating: 7, center: [46.235, -119.11] },
-      { id: 's9', name: 'Whittier Elem', type: 'Elementary', rating: 7, center: [46.25, -119.09] },
-    ],
-  },
-];
+const EMPTY_DISTRICTS: SchoolDistrict[] = [];
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -98,7 +61,7 @@ function ratingBadge(rating: number): string {
 // ---------------------------------------------------------------------------
 
 export default function SchoolDistrictMap({
-  districts = DEFAULT_DISTRICTS,
+  districts = EMPTY_DISTRICTS,
   className = '',
 }: SchoolDistrictMapProps) {
   const [selectedDistrictId, setSelectedDistrictId] = useState<string | null>(null);
@@ -118,6 +81,12 @@ export default function SchoolDistrictMap({
     <div className={`flex bg-terra-midnight text-white rounded-lg border border-white/10 overflow-hidden ${className}`}>
       {/* Map */}
       <div className="flex-1 relative min-h-[400px]">
+        {districts.length === 0 && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center text-sm text-white/50">
+            No governed school district layer loaded.
+          </div>
+        )}
+
         <div className="absolute inset-0 opacity-10">
           <svg width="100%" height="100%">
             <defs>

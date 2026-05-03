@@ -5,7 +5,7 @@ namespace TerraFusion.Consciousness.Interfaces
     /// <summary>
     /// Quantum Security Service interface for government-grade protection
     /// Provides advanced security operations for TerraFusion consciousness infrastructure
-    /// Government. Transcended.
+    /// Compatibility quantum-security contract.
     /// </summary>
     public interface IQuantumSecurityService
     {

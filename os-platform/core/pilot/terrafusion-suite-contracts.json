@@ -1,0 +1,600 @@
+{
+  "schemaVersion": "1.0.0",
+  "slice": "terrafusion-suite-contract-layer",
+  "updatedAt": "2026-04-30T21:15:00Z",
+  "doctrine": {
+    "operationalRecord": "TerraFusion DB",
+    "legacyRole": "Legacy Benton/PACS data is upstream input, not operational truth.",
+    "syncRole": "TerraFusion Sync is a bridge/projection layer, not source truth.",
+    "demoRole": "Washington 39-county data remains demo/reference unless county-specific official source, lineage, sync, and recomputation proof promote it.",
+    "soloDevRule": "Every important metric gets one blessed definition, one blessed read path, one proof artifact, and one visible trust posture."
+  },
+  "requiredContracts": [
+    "terraforge_operational_health_v1",
+    "terraforge_statistics_compat_v1",
+    "terraforge_segment_derivation_v1",
+    "terraforge_correction_priority_v1",
+    "costforge_calibration_priority_v1",
+    "county_data_trust_launch_context_v1",
+    "compsforge_candidate_reconciliation_v1",
+    "costforge_cost_value_v1"
+  ],
+  "contracts": [
+    {
+      "id": "terraforge_operational_health_v1",
+      "version": 1,
+      "status": "codified",
+      "population": "active County Studio segment-set parcel rollup",
+      "purpose": "County command/workbench health view for operational triage, not Statistics Studio parity.",
+      "owner": "TerraFusion.Core.Services.CountyStudyHealthService.GetHealthSummaryAsync",
+      "readPath": "GET /county-study/studies/{studyId}/health-summary",
+      "sourceOfTruth": [
+        "CountyStudySession.ActiveSegmentSetId",
+        "CountySegment rows in the active segment set",
+        "canonical Properties",
+        "canonical ComparableSales"
+      ],
+      "metrics": [
+        "contractId",
+        "correctionPriorityContractId",
+        "parcelCount",
+        "ratioCount",
+        "medianRatio",
+        "cod",
+        "prd",
+        "stabilityScore",
+        "riskScore",
+        "exceptionCount",
+        "complianceStatus",
+        "topAlerts"
+      ],
+      "trustPosture": [
+        "county-data-trust-tier required",
+        "Benton production_provisional until row-level qualification lineage closes",
+        "39-county reference_demo cannot prove operational health"
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json",
+        "os-platform/core/pilot/evidence/direct-source-recompute.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not compare directly against qualified-sale ratio-study parity.",
+        "Do not treat as statewide production proof.",
+        "Do not recompute client-side."
+      ],
+      "implementationAnchors": [
+        {
+          "path": "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs",
+          "patterns": [
+            "GetHealthSummaryAsync",
+            "OperationalHealthContractId",
+            "CorrectionPriorityContractId",
+            "LoadParcelRatiosAsync",
+            "ClassifyCompliance",
+            "TopAlerts"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts",
+          "patterns": [
+            "health-summary",
+            "CountyHealthSummaryDto",
+            "must not be used interchangeably with health-summary"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "terraforge_statistics_compat_v1",
+      "version": 1,
+      "status": "codified",
+      "implementationContractId": "statistics_ratio_study_compat_v1",
+      "population": "qualified sale ratio rows using the shared Statistics/TerraForge ratio-study population contract",
+      "purpose": "Same-population parity lens between County Studio and TerraForge/Statistics ratio-study analytics.",
+      "owner": "TerraFusion.Core.Services.CountyStudyHealthService.GetStatisticsCompatAsync",
+      "readPath": "GET /county-study/studies/{studyId}/statistics-compat",
+      "sourceOfTruth": [
+        "canonical ComparableSales",
+        "canonical Properties assessed value join",
+        "statistics_ratio_study_compat_v1 sale window",
+        "statistics_ratio_study_compat_v1 qualification/suppression/outlier policy"
+      ],
+      "metrics": [
+        "contractId",
+        "countWithRatio",
+        "outliersExcluded",
+        "trimmedCount",
+        "medianRatio",
+        "meanRatio",
+        "weightedMeanRatio",
+        "cod",
+        "prd",
+        "prb",
+        "conversionSensitiveCounts",
+        "parcelIdentityReconciliation",
+        "trustPosture"
+      ],
+      "trustPosture": [
+        "statistics parity proven only for the exact shared population",
+        "Benton qualification fields remain converted_legacy_sensitive until sync lineage closes",
+        "Operational Health remains a different population"
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/statistics-shared-population-contract.latest.json",
+        "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not substitute for operational health.",
+        "Do not hide conversion-sensitive qualification counts.",
+        "Do not use Benton reference-only lanes as parity evidence."
+      ],
+      "implementationAnchors": [
+        {
+          "path": "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs",
+          "patterns": [
+            "StatisticsCompatContractId",
+            "statistics_ratio_study_compat_v1",
+            "GetStatisticsCompatAsync",
+            "ConversionSensitiveCounts",
+            "ParcelIdentityReconciliation"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/types/countyStudio.types.ts",
+          "patterns": [
+            "CountyStatisticsCompatDto",
+            "statistics_ratio_study_compat_v1",
+            "conversionSensitiveCounts",
+            "parcelIdentityReconciliation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "terraforge_segment_derivation_v1",
+      "version": 1,
+      "status": "codified",
+      "population": "canonical parcels grouped by neighborhood, reval area, building type, and quality grade for an active county study",
+      "purpose": "Derive governed CountySegmentSet and CountySegment rows from canonical TerraFusion DB tables.",
+      "owner": "TerraFusion.Core.Services.CountyStudySegmentDerivationService.DeriveAsync",
+      "readPath": "POST /county-study/studies/{studyId}/derive-segments",
+      "sourceOfTruth": [
+        "canonical Properties",
+        "canonical CamaCharacteristics",
+        "canonical ComparableSales",
+        "Benton PACS valuation metadata for neighborhood/cycle when available"
+      ],
+      "metrics": [
+        "contractId",
+        "segmentCount",
+        "totalParcels",
+        "segmentsWithRatios",
+        "segmentsWithIaaoExceptions",
+        "medianRatio",
+        "cod",
+        "prd",
+        "riskScore",
+        "exceptionCount"
+      ],
+      "trustPosture": [
+        "direct-source recomputation required for production confidence",
+        "Benton sync-derived and converted-legacy-sensitive fields must stay visible",
+        "39-county reference_demo cannot certify segment derivation"
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/direct-source-recompute.latest.json",
+        "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not derive from UI fixture data.",
+        "Do not silently substitute Benton defaults for another county.",
+        "Do not collapse segment derivation into Statistics Compat."
+      ],
+      "implementationAnchors": [
+        {
+          "path": "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs",
+          "patterns": [
+            "DeriveAsync",
+            "SegmentDerivationContractId",
+            "Properties.AsNoTracking",
+            "CamaCharacteristics.AsNoTracking",
+            "ComparableSales.AsNoTracking",
+            "SegmentDerivationResult"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts",
+          "patterns": [
+            "derive-segments",
+            "SegmentDerivationResult",
+            "segmentSetApi"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "terraforge_correction_priority_v1",
+      "version": 1,
+      "status": "codified",
+      "population": "County Studio active segment alerts ranked for correction and defense workflow",
+      "purpose": "Determine which segment/cohort problems route first into correction, approval, exception, and evidence workflows.",
+      "owner": "TerraFusion.Core.Services.CountyStudyHealthService.ComputeCompositeRisk",
+      "readPath": "GET /county-study/studies/{studyId}/health-summary plus GET /county-study/studies/{studyId}/evidence-packet",
+      "sourceOfTruth": [
+        "CountySegment metrics",
+        "CountyStudyHealthService composite risk formula",
+        "CountyExceptionSet lifecycle",
+        "Evidence packet topRiskSegments"
+      ],
+      "metrics": [
+        "correctionPriorityContractId",
+        "compositeRisk",
+        "reasons",
+        "criticalCount",
+        "warningCount",
+        "healthyCount",
+        "topAlerts",
+        "topRiskSegments",
+        "exceptionCount"
+      ],
+      "trustPosture": [
+        "uses operational health population, not Statistics Compat population",
+        "defense packet must carry segment-level trace",
+        "exceptions remain workflow state, not metric truth"
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/county-studio-correction-and-defense.latest.json",
+        "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not let AI summaries invent priority outside the composite risk contract.",
+        "Do not rank demo/reference counties as production correction work.",
+        "Do not export defense packets without segment-level trace."
+      ],
+      "implementationAnchors": [
+        {
+          "path": "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs",
+          "patterns": [
+            "ComputeCompositeRisk",
+            "CorrectionPriorityContractId",
+            "BuildSegmentAlert",
+            "OrderByDescending(a => a.CompositeRisk)",
+            "CriticalCount"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts",
+          "patterns": [
+            "correctionPriorityContractId",
+            "EvidenceSegmentSignal",
+            "topRiskSegments",
+            "EvidencePacketDto"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx",
+          "patterns": [
+            "Correction & Defense Chain",
+            "Promote Saved Scenario",
+            "Export Evidence Packet"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "costforge_calibration_priority_v1",
+      "version": 1,
+      "status": "codified",
+      "population": "CostForge county-scoped neighborhood calibration matrix rows with minimum sale-count filtering",
+      "purpose": "Rank neighborhoods for CostForge calibration triage using COD deviation, median-ratio deviation, PRB deviation, and sale-count exposure.",
+      "owner": "frontend.apps.os-shell.pages.forge.cost.tabs.TriageTab.computePriorityScore",
+      "readPath": "GET /costforge/calibration/neighborhood-matrix?taxYear={taxYear}&minSales=3 plus GET /equity/deciles",
+      "sourceOfTruth": [
+        "CostForge neighborhood calibration matrix endpoint",
+        "Equity decile endpoint for county-wide vertical-equity context",
+        "county-scoped CostForge session headers",
+        "COSTFORGE_CALIBRATION_PRIORITY_FORMULA constants"
+      ],
+      "metrics": [
+        "contractId",
+        "codWeight",
+        "ratioWeight",
+        "prbWeight",
+        "criticalThreshold",
+        "watchThreshold",
+        "minSales",
+        "priorityScore",
+        "priorityTier",
+        "saleCount",
+        "medianRatio",
+        "cod",
+        "prd",
+        "prb",
+        "decilePattern"
+      ],
+      "trustPosture": [
+        "CostForge calibration priority is a cost-calibration triage contract, not County Studio correction priority.",
+        "Requires county-scoped runtime and neighborhood matrix source data.",
+        "Do not treat 39-county demo/reference data as production calibration proof."
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/costforge-calibration-priority-contract.latest.json",
+        "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not substitute for County Studio correction priority.",
+        "Do not rank production correction work from demo/reference counties.",
+        "Do not change formula weights or thresholds without updating this contract and proof artifact."
+      ],
+      "implementationAnchors": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx",
+          "patterns": [
+            "costforge_calibration_priority_v1",
+            "COSTFORGE_TRIAGE_CONTRACT_CLASSIFICATION",
+            "COSTFORGE_CALIBRATION_PRIORITY_FORMULA",
+            "computePriorityScore",
+            "codWeight: 2",
+            "ratioWeight: 100",
+            "prbWeight: 50",
+            "criticalThreshold: 20",
+            "watchThreshold: 5",
+            "minSales: 3"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/cost/__tests__/CostForge.contracts.test.tsx",
+          "patterns": [
+            "costforge-triage-contract-classification",
+            "data-contract-id",
+            "COSTFORGE_TRIAGE_CONTRACT_CLASSIFICATION"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "county_data_trust_launch_context_v1",
+      "version": 1,
+      "status": "codified",
+      "population": "Atlas Live county context resolved from County Studio route scope and Washington launch/county trust posture",
+      "purpose": "Prevent Benton operational/provisional data, 39-county reference/demo data, geometry availability, and production-claim posture from being treated as the same trust class.",
+      "owner": "frontend.apps.os-shell.pages.forge.atlas-live.atlasLiveApi.fetchAtlasCountyContext",
+      "readPath": "GET /launch-data/washington/counties/status.json plus county detail route",
+      "sourceOfTruth": [
+        "county-data-trust-tiers.json",
+        "Washington launch county status file",
+        "Washington launch county detail file",
+        "Atlas route scope from County Studio handoff"
+      ],
+      "metrics": [
+        "contractId",
+        "countyId",
+        "countyCode",
+        "trustTier",
+        "trustLabel",
+        "dataTrustBadges",
+        "databasePosture",
+        "launchContextPosture",
+        "productionClaimAllowed",
+        "geometryAvailability",
+        "geometryMessage",
+        "primarySourceMode",
+        "prometheusStatus",
+        "stagedSales",
+        "needsReview"
+      ],
+      "trustPosture": [
+        "Benton is production_provisional, sync_derived, and converted_legacy_sensitive until lineage and conversion-sensitive sales qualification proof closes.",
+        "Washington 39-county launch/reference corpus is reference_demo and not certified for operational valuation.",
+        "Geometry availability is launch context, not proof of production valuation data."
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/county-data-trust-launch-context-contract.latest.json",
+        "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not treat 39-county launch/reference data as official production data.",
+        "Do not infer production readiness from geometry availability alone.",
+        "Do not hide Benton converted-legacy sensitivity when presenting county context."
+      ],
+      "implementationAnchors": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts",
+          "patterns": [
+            "ATLAS_COUNTY_LAUNCH_CONTEXT_CONTRACT_ID",
+            "county_data_trust_launch_context_v1",
+            "buildCountyTrustContext",
+            "production_provisional",
+            "reference_demo",
+            "productionClaimAllowed",
+            "dataTrustMessage"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx",
+          "patterns": [
+            "atlas-county-trust-posture",
+            "data-contract-id",
+            "data-trust-tier",
+            "dataTrustBadges"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "compsforge_candidate_reconciliation_v1",
+      "version": 1,
+      "status": "codified",
+      "population": "CompsForge county sales shard candidates for the active parcel or County Studio rollup handoff scope, followed by Benton-certified CostForge adjustment/reconciliation where supported",
+      "purpose": "Keep comparable-sales candidate selection, qualified-sale filtering, sale-window scope, top-candidate selection, and governed reconciliation from becoming unversioned UI logic.",
+      "owner": "frontend.apps.os-shell.pages.suites.modules.CompsForgeModule",
+      "readPath": "GET /launch-data/washington/sales/by-county/{countyCode}.json plus POST /api/costforge/sales-comparison/adjust-comparable and POST /api/costforge/sales-comparison/reconcile",
+      "sourceOfTruth": [
+        "Washington launch county sales shards",
+        "active parcel subject from propertyStore",
+        "County Studio rollup handoff metadata when no parcel subject is active",
+        "CostForge governed comparable adjustment endpoint",
+        "CostForge governed reconciliation endpoint"
+      ],
+      "metrics": [
+        "contractId",
+        "qualifiedOnlyDefault",
+        "saleWindowDefault",
+        "maxCandidates",
+        "defaultSelectedCandidates",
+        "similarityScore",
+        "pricePerSqft",
+        "adjustedPrice",
+        "grossAdjustmentPct",
+        "weightedAverage",
+        "reconciliationConfidence",
+        "governedAdjustmentCountyCode"
+      ],
+      "trustPosture": [
+        "Candidate selection is county-shard scoped and may run in rollup scouting mode, but scoring and reconciliation remain parcel-bound.",
+        "Qualified-only filtering defaults to true and the default sale window is 2016-01-01 through 2026-12-31.",
+        "Governed paired adjustment and reconciliation are Benton-certified only until additional county proof is promoted."
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/compsforge-candidate-reconciliation-contract.latest.json",
+        "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not treat rollup scouting sales as parcel-bound reconciled value evidence.",
+        "Do not treat non-Benton adjustment/reconciliation as certified without promoting county proof.",
+        "Do not change qualified-only defaults, sale window, candidate cap, or default selected count without updating this contract and proof artifact."
+      ],
+      "implementationAnchors": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx",
+          "patterns": [
+            "COMPSFORGE_CANDIDATE_RECONCILIATION_CONTRACT",
+            "compsforge_candidate_reconciliation_v1",
+            "qualifiedOnlyDefault: true",
+            "saleWindowDefault: INITIAL_SALE_WINDOW",
+            "maxCandidates: 30",
+            "defaultSelectedCandidates: 3",
+            "governedAdjustmentCountyCode: '005'",
+            "findCompsForSubject",
+            "adjustComp",
+            "reconcileComps",
+            "compsforge-contract-classification",
+            "data-contract-id"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CompsForgeModule.deeplink.test.tsx",
+          "patterns": [
+            "compsforge-contract-classification",
+            "compsforge_candidate_reconciliation_v1",
+            "governed adjustment and reconciliation remain Benton-certified"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "costforge_cost_value_v1",
+      "version": 1,
+      "status": "codified",
+      "population": "Benton parcel-bound CostForge cost approach value preview, governed API verification, scenario comparison, and TerraPilot BOE packet commit gate",
+      "purpose": "Keep RCNLD, matrix provenance, depreciation, API verification, and cost-value commit semantics under a named contract instead of treating calculator output as unconstrained suite truth.",
+      "owner": "frontend.apps.os-shell.pages.suites.modules.CostForgeModule",
+      "readPath": "Benton 2025 cost matrix in forgeService.calculateCost plus POST /costforge/calculate and Pilot tool assemble_boe_packet",
+      "sourceOfTruth": [
+        "Benton County 2025 cost matrix in forgeService",
+        "CostCalculationInput from parcel-bound CostForge module state",
+        "forgeService.calculateCost RCNLD preview path",
+        "POST /costforge/calculate governed API verification",
+        "assemble_boe_packet TerraPilot commit gate"
+      ],
+      "metrics": [
+        "contractId",
+        "matrixYear",
+        "buildingTypeCount",
+        "regionCount",
+        "baseRate",
+        "adjustedRate",
+        "costPerSqFt",
+        "rcnNew",
+        "depreciation",
+        "rcnld",
+        "confidence",
+        "matrixSource",
+        "apiVerifiedValue",
+        "apiVariance",
+        "commitCorrelationId"
+      ],
+      "trustPosture": [
+        "Cost value output is Benton cost-matrix scoped and parcel-bound.",
+        "Local RCNLD is preview evidence until governed API verification and TerraPilot BOE packet commit are completed.",
+        "Do not treat 39-county demo/reference cost calculator output as production value proof."
+      ],
+      "proofArtifacts": [
+        "os-platform/core/pilot/evidence/costforge-cost-value-contract.latest.json",
+        "os-platform/core/pilot/evidence/contract-adoption-audit.latest.json"
+      ],
+      "forbiddenUses": [
+        "Do not treat local calculator preview as committed BOE evidence without the commit gate.",
+        "Do not use CostForge cost value as County Studio correction priority or CostForge calibration priority.",
+        "Do not promote non-Benton cost values as production proof without county-specific cost matrix lineage."
+      ],
+      "implementationAnchors": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx",
+          "patterns": [
+            "COSTFORGE_COST_VALUE_CONTRACT",
+            "costforge_cost_value_v1",
+            "matrixYear: 2025",
+            "buildingTypeCount: 14",
+            "regionCount: 3",
+            "parcelBoundRequired: true",
+            "apiVerificationPath: '/costforge/calculate'",
+            "commitToolId: 'assemble_boe_packet'",
+            "calculateCost",
+            "verifyViaApi",
+            "handleCommitCostValue",
+            "costforge-cost-value-contract-classification",
+            "data-contract-id"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/services/forgeService.ts",
+          "patterns": [
+            "COST_MATRIX",
+            "Matrix Year 2025",
+            "DEPRECIATION_CONFIG",
+            "calculateCost",
+            "rcnNew",
+            "depreciation",
+            "rcnld",
+            "matrixSource"
+          ]
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CostForgeModule.contracts.test.tsx",
+          "patterns": [
+            "costforge-cost-value-contract-classification",
+            "costforge_cost_value_v1",
+            "local RCNLD is a preview until API verification"
+          ]
+        }
+      ]
+    }
+  ],
+  "agentEnforcement": {
+    "mustReport": [
+      "contract id",
+      "population",
+      "read path",
+      "trust posture",
+      "proof artifact"
+    ],
+    "rejectWhen": [
+      "metric logic has no registered contract",
+      "population is implicit",
+      "demo/reference data is used as production proof",
+      "AI summary lacks proof artifact",
+      "County Studio health is compared directly to Statistics Compat"
+    ]
+  }
+}

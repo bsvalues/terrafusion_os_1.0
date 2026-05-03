@@ -33,7 +33,7 @@ const SECTIONS: DocSection[] = [
     articles: [
       { title: 'Pilot API', summary: 'Tool invocation, correlationId tracing, and error handling.', route: '/docs/api#pilot' },
       { title: 'System API', summary: 'Health checks, stats, logs, and administrative endpoints.', route: '/docs/api#system' },
-      { title: 'PACS Integration', summary: 'Harris PACS 9.0 sync protocol and data mapping.', route: '/docs/api#pacs' },
+      { title: 'Assessment Data Integration', summary: 'County data sync protocol and field mapping.', route: '/docs/api#pacs' },
       { title: 'Authentication', summary: 'JWT tokens, dev-preview mode, and SSO configuration.', route: '/docs/api#auth' },
     ],
   },

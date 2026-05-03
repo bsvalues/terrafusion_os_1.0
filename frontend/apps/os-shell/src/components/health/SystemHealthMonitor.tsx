@@ -2,12 +2,12 @@
  * ═══════════════════════════════════════════════════════════════
  * ELITE SYSTEM HEALTH MONITOR - THE TERRAFUSION WAY
  * Advanced Health Monitoring with Quantum Excellence
- * PhD-Level Engineering with Zero React Version Conflicts
+ * Evidence-gated health surface
  * ═══════════════════════════════════════════════════════════════
  */
 
 import { Card, CardHeader } from '@/components/terrafusion-design-system';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   EliteActivityIcon,
   EliteBrainIcon,
@@ -59,91 +59,44 @@ interface SystemHealth {
 const SystemHealthMonitor: React.FC = () => {
   const [systemHealth, setSystemHealth] = useState<SystemHealth>({
     backend: {
-      status: 'healthy',
-      connected: true,
-      responseTime: 245,
+      status: 'unhealthy',
+      connected: false,
+      responseTime: 0,
       lastCheck: new Date().toISOString(),
-      uptime: 99.8,
-      memoryUsage: 65,
-      cpuUsage: 23,
+      uptime: 0,
+      memoryUsage: 0,
+      cpuUsage: 0,
     },
     database: {
-      status: 'healthy',
-      connected: true,
-      queryCount: 1247,
-      slowQueries: 3,
-      connectionPool: 45,
-      diskUsage: 78,
+      status: 'unhealthy',
+      connected: false,
+      queryCount: 0,
+      slowQueries: 0,
+      connectionPool: 0,
+      diskUsage: 0,
     },
     users: {
-      activeUsers: 124,
-      peakUsers: 189,
-      sessionsToday: 567,
-      avgSessionDuration: 18.5,
+      activeUsers: 0,
+      peakUsers: 0,
+      sessionsToday: 0,
+      avgSessionDuration: 0,
     },
     performance: {
-      responseTime: 185,
-      throughput: 1420,
-      errorRate: 0.2,
-      availability: 99.95,
+      responseTime: 0,
+      throughput: 0,
+      errorRate: 0,
+      availability: 0,
     },
     realTime: {
       timestamp: new Date().toISOString(),
-      systemLoad: 0.67,
-      networkLatency: 23,
-      memoryUsage: 2.8,
-      cpuUsage: 15.2,
+      systemLoad: 0,
+      networkLatency: 0,
+      memoryUsage: 0,
+      cpuUsage: 0,
     },
   });
 
-  const [errorCount, setErrorCount] = useState(0);
-  const [isLive, setIsLive] = useState(true);
-
-  // Real-time monitoring updates
-  useEffect(() => {
-    if (!isLive) return;
-
-    const updateHealth = () => {
-      setSystemHealth((prev) => ({
-        ...prev,
-        backend: {
-          ...prev.backend,
-          responseTime: Math.max(
-            150,
-            Math.min(500, prev.backend.responseTime + (Math.random() - 0.5) * 50)
-          ),
-          cpuUsage: Math.max(10, Math.min(90, prev.backend.cpuUsage + (Math.random() - 0.5) * 5)),
-          memoryUsage: Math.max(
-            30,
-            Math.min(90, prev.backend.memoryUsage + (Math.random() - 0.5) * 3)
-          ),
-        },
-        performance: {
-          ...prev.performance,
-          responseTime: Math.max(
-            100,
-            Math.min(300, prev.performance.responseTime + (Math.random() - 0.5) * 20)
-          ),
-          throughput: Math.max(
-            800,
-            Math.min(2000, prev.performance.throughput + (Math.random() - 0.5) * 100)
-          ),
-        },
-        realTime: {
-          ...prev.realTime,
-          timestamp: new Date().toISOString(),
-          networkLatency: Math.max(
-            10,
-            Math.min(50, prev.realTime.networkLatency + (Math.random() - 0.5) * 5)
-          ),
-          cpuUsage: Math.max(5, Math.min(80, prev.realTime.cpuUsage + (Math.random() - 0.5) * 3)),
-        },
-      }));
-    };
-
-    const interval = setInterval(updateHealth, 3000);
-    return () => clearInterval(interval);
-  }, [isLive]);
+  const [isLive] = useState(false);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -172,6 +125,10 @@ const SystemHealthMonitor: React.FC = () => {
   };
 
   const getHealthPercentage = () => {
+    if (!systemHealth.backend.connected && !systemHealth.database.connected) {
+      return 0;
+    }
+
     const backendHealth =
       systemHealth.backend.status === 'healthy'
         ? 100
@@ -199,7 +156,7 @@ const SystemHealthMonitor: React.FC = () => {
           </div>
           <div>
             <h2 className='text-2xl font-bold text-white'>Elite System Health Monitor</h2>
-            <p className='text-gray-400'>Real-time quantum monitoring - THE TERRAFUSION WAY</p>
+            <p className='text-gray-400'>Evidence-gated monitoring. Connect telemetry before trusting health metrics.</p>
           </div>
         </div>
 
@@ -221,7 +178,7 @@ const SystemHealthMonitor: React.FC = () => {
           <div
             className={`w-4 h-4 rounded-full ${isLive ? 'bg-terra-cyan animate-pulse' : 'bg-gray-400'}`}
           />
-          <span className='text-xs text-gray-400'>{isLive ? 'LIVE' : 'PAUSED'}</span>
+          <span className='text-xs text-gray-400'>{isLive ? 'LIVE' : 'UNAVAILABLE'}</span>
         </div>
       </div>
 
@@ -323,7 +280,7 @@ const SystemHealthMonitor: React.FC = () => {
               <h3 className='text-lg font-semibold text-white'>User Activity</h3>
               <div className='flex items-center space-x-2'>
                 <EliteShieldIcon className='w-4 h-4 text-terra-cyan' />
-                <span className='text-sm font-medium text-terra-cyan'>ACTIVE</span>
+                <span className='text-sm font-medium text-gray-400'>UNVERIFIED</span>
               </div>
             </div>
           </CardHeader>
@@ -359,7 +316,7 @@ const SystemHealthMonitor: React.FC = () => {
               <h3 className='text-lg font-semibold text-white'>Performance</h3>
               <div className='flex items-center space-x-2'>
                 <EliteActivityIcon className='w-4 h-4 text-green-400' />
-                <span className='text-sm font-medium text-green-400'>OPTIMAL</span>
+                <span className='text-sm font-medium text-gray-400'>UNVERIFIED</span>
               </div>
             </div>
           </CardHeader>
@@ -405,7 +362,7 @@ const SystemHealthMonitor: React.FC = () => {
               <h3 className='text-lg font-semibold text-white'>Real-time</h3>
               <div className='flex items-center space-x-2'>
                 <div className='w-2 h-2 rounded-full bg-terra-cyan animate-pulse' />
-                <span className='text-sm font-medium text-terra-cyan'>LIVE</span>
+                <span className='text-sm font-medium text-gray-400'>UNAVAILABLE</span>
               </div>
             </div>
           </CardHeader>
@@ -445,20 +402,20 @@ const SystemHealthMonitor: React.FC = () => {
               <h3 className='text-lg font-semibold text-white'>Elite Status</h3>
               <div className='flex items-center space-x-2'>
                 <EliteShieldIcon className='w-4 h-4 text-green-400' />
-                <span className='text-sm font-medium text-green-400'>ALL SYSTEMS OPERATIONAL</span>
+                <span className='text-sm font-medium text-yellow-400'>EVIDENCE REQUIRED</span>
               </div>
             </div>
           </CardHeader>
           <div className='p-6 pt-0'>
             <div className='space-y-3'>
               <div className='text-center p-4 rounded-lg bg-gradient-to-r from-terra-cyan/10 to-green-500/10 border border-terra-cyan/20'>
-                <div className='text-2xl font-bold text-terra-cyan mb-1'>ELITE</div>
-                <div className='text-xs text-gray-400'>THE TERRAFUSION WAY</div>
+                <div className='text-2xl font-bold text-yellow-400 mb-1'>UNVERIFIED</div>
+                <div className='text-xs text-gray-400'>Telemetry required</div>
               </div>
               <div className='text-xs text-gray-400 text-center'>
-                PhD-Level Engineering Excellence
+                No local health claim
                 <br />
-                Quantum Health Monitoring System
+                Governed telemetry not connected
                 <br />
                 Last Updated: {new Date().toLocaleTimeString()}
               </div>

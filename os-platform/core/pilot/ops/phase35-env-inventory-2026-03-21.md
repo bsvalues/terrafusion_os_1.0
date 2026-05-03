@@ -22,7 +22,7 @@ Excluded: `.git/`, `node_modules/`, `bin/`, `obj/`
 | `TF_DEV_DB_PASSWORD` | `backend/compose.dev.yml`, `backend/api-unified/appsettings.Development.json`, `compose/docker-compose.dev.enhanced.yml` | Local Postgres container | Dev-only. Prod uses separate DB credential. |
 | `TF_DEV_JWT_SECRET` | `backend/api-unified/appsettings.Development.json`, `backend/src/TerraFusion.Operations/appsettings.Development.json`, `backend/publish/appsettings.Development.json` | JWT signing in dev | Dev-only static value. Prod uses `TF_JWT_SECRET`. |
 | `TF_DEV_ENCRYPTION_KEY` | `backend/api-unified/appsettings.Development.json` | Data-at-rest encryption key in dev | Must be 256-bit. |
-| `TF_DEV_PACS_PASSWORD` | `backend/src/TerraFusion.API/appsettings.Development.json` | SA password for tf-mssql container | Resolved via `appsettings.Development.local.json` (gitignored). Value: `TF_Pacs2026!` |
+| `TF_DEV_PACS_PASSWORD` | `backend/src/TerraFusion.API/appsettings.Development.json` | SA password for tf-mssql container | Resolved via `appsettings.Development.local.json` (gitignored). Value: `<redacted-local-dev-sql-password>` |
 | `TF_DEV_GRAFANA_PASSWORD` | `backend/ai-models/BENTON_COUNTY_CHAMPIONSHIP_PLAYBOOK/docker-compose.yml` | Grafana admin UI in dev | Low priority for Phase 35. |
 | `TF_DEV_PGADMIN_PASSWORD` | `backend/compose.dev.yml` | pgAdmin dev UI | Low priority for Phase 35. |
 | `TF_DEV_KEYCLOAK_PASSWORD` | `.ci_artifacts_local/docker-compose.dev.yml` | Keycloak dev admin | Phase 35 scope if Keycloak is in compose slice. |
@@ -40,8 +40,8 @@ Excluded: `.git/`, `node_modules/`, `bin/`, `obj/`
 
 | Variable | Where Used | Default | Notes |
 |----------|-----------|---------|-------|
-| `TF_API_URL` / `TF_API_BASE_URL` | Frontend `.env.*`, scripts | `http://localhost:5000` | Vite `VITE_API_URL` mirrors this. |
-| `TF_API_PORT` / `TF_API_HTTPS_PORT` | Scripts | `5000` / `5001` | Dynamic in dev via `ServiceRegistry`. |
+| `TF_API_URL` / `TF_API_BASE_URL` | Frontend `.env.*`, scripts | `http://localhost:5046` | Current dev launcher/runtime default; Vite `VITE_API_URL` mirrors this when set. |
+| `TF_API_PORT` / `TF_API_HTTPS_PORT` | Scripts | `5046` / _no active repo default_ | Current dev launcher enforces `TF_API_PORT=5046`; no active code path defines a default `TF_API_HTTPS_PORT`. |
 | `TF_DB_HOST` | Compose overrides | `localhost` / `postgres` (compose DNS) | Compose sets automatically for inner-network. |
 | `TF_DB_PASSWORD` | Compose overrides | → `TF_PROD_DB_PASSWORD` | Alias. |
 

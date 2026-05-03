@@ -499,13 +499,12 @@ public sealed class R1Week5CxR1ClosureTests
 
     var result = controller.GetLayers();
 
-    var objectResult = result.Should().BeOfType<ObjectResult>().Subject;
-    objectResult.StatusCode.Should().Be(StatusCodes.Status501NotImplemented);
-    controller.HttpContext.Response.Headers["X-R1-Scope"].ToString().Should().Be("Post-R1");
+    var objectResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    controller.HttpContext.Response.Headers["X-Atlas-Source"].ToString().Should().Be("benton-arcgis-layer-catalog-fy2025");
 
-    using var json = JsonDocument.Parse(JsonSerializer.Serialize(objectResult.Value));
-    json.RootElement.GetProperty("scope").GetString().Should().Be("Post-R1");
-    json.RootElement.GetProperty("operation").GetString().Should().Be("layers");
+    var json = JsonSerializer.Serialize(objectResult.Value);
+    json.Should().Contain("parcels");
+    json.Should().Contain("Benton County ArcGIS FeatureServer");
   }
 
   [Fact]
@@ -807,16 +806,16 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge")]
-  public void CostForge_RealCalculator_R1Central_StandardQuality_ReturnsExpectedCost()
+  public void CostForge_RealCalculator_R1Reval1_StandardQuality_ReturnsExpectedCost()
   {
-    // From quarantine: R1 Central $127.50/sqft, 2000sqft, built 2015 (age ~10 → bracket 6-15 → 0.87)
+    // FY2025 Benton matrix: R1 Reval 1 $127.50/sqft, 2000sqft, built 2015 (age ~10 → bracket 6-15 → 0.87)
     var result = CostForgeController.ComputeCostEstimate(
-      "R1", "Central", 2000m, 2015, "STANDARD", "GOOD", "STANDARD");
+      "R1", "Reval 1", 2000m, 2015, "STANDARD", "GOOD", "STANDARD");
 
     result.Should().NotBeNull();
     result!.BuildingType.Should().Be("R1");
     result.BaseCostPerSqft.Should().Be(127.50m);
-    result.RegionFactor.Should().Be(1.00m);
+    result.RevalAreaFactor.Should().Be(1.00m);
     result.QualityFactor.Should().Be(1.00m);
     result.ConditionFactor.Should().Be(1.00m);
     result.ComplexityFactor.Should().Be(1.00m);
@@ -829,12 +828,12 @@ public sealed class R1Week5CxR1ClosureTests
   [Trait("Category", "CostForge")]
   public void CostForge_RealCalculator_VerifiesAllBuildingTypes()
   {
-    // All 11 building types should resolve for Central region
+    // All 11 building types should resolve for the default Benton revaluation area.
     string[] types = ["R1", "R2", "C1", "C2", "C3", "C4", "A1", "A2", "I1", "S1", "S2"];
     foreach (var bt in types)
     {
       var result = CostForgeController.ComputeCostEstimate(
-        bt, "Central", 1000m, 2024, "STANDARD", "GOOD", "STANDARD");
+        bt, "Reval 1", 1000m, 2024, "STANDARD", "GOOD", "STANDARD");
       result.Should().NotBeNull($"Building type {bt} should have a cost matrix entry");
       result!.TotalCost.Should().BeGreaterThan(0m);
     }
@@ -844,7 +843,7 @@ public sealed class R1Week5CxR1ClosureTests
   [Trait("Category", "CostForge")]
   public void CostForge_RealCalculator_VerifiesAllRegions()
   {
-    string[] regions = ["Central", "East", "West", "North", "South"];
+    string[] regions = ["Reval 1", "Reval 2", "Reval 3", "Reval 4", "Reval 5", "Reval 6"];
     foreach (var region in regions)
     {
       var result = CostForgeController.ComputeCostEstimate(
@@ -868,9 +867,9 @@ public sealed class R1Week5CxR1ClosureTests
   public void CostForge_RealCalculator_QualityGradesAffectCost()
   {
     var economy = CostForgeController.ComputeCostEstimate(
-      "R1", "Central", 1000m, 2024, "ECONOMY", "GOOD", "STANDARD")!;
+      "R1", "Reval 1", 1000m, 2024, "ECONOMY", "GOOD", "STANDARD")!;
     var luxury = CostForgeController.ComputeCostEstimate(
-      "R1", "Central", 1000m, 2024, "LUXURY", "GOOD", "STANDARD")!;
+      "R1", "Reval 1", 1000m, 2024, "LUXURY", "GOOD", "STANDARD")!;
 
     luxury.TotalCost.Should().BeGreaterThan(economy.TotalCost,
       "LUXURY quality should produce higher cost than ECONOMY");
@@ -910,9 +909,9 @@ public sealed class R1Week5CxR1ClosureTests
   public void CostForge_RealCalculator_CaseInsensitiveInputs()
   {
     var upper = CostForgeController.ComputeCostEstimate(
-      "R1", "CENTRAL", 1000m, 2020, "standard", "good", "standard");
+      "R1", "REVAL 1", 1000m, 2020, "standard", "good", "standard");
     var lower = CostForgeController.ComputeCostEstimate(
-      "r1", "central", 1000m, 2020, "STANDARD", "GOOD", "STANDARD");
+      "r1", "reval 1", 1000m, 2020, "STANDARD", "GOOD", "STANDARD");
 
     upper.Should().NotBeNull();
     lower.Should().NotBeNull();
@@ -930,10 +929,10 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge")]
-  public void CostForge_RealCalculator_MatrixHas55Entries()
+  public void CostForge_RealCalculator_MatrixHas66Entries()
   {
-    // 11 building types × 5 regions = 55 entries
-    CostForgeController.BentonCostData.CostMatrix.Should().HaveCount(55);
+    // 11 building types × 6 revaluation areas = 66 entries
+    CostForgeController.BentonCostData.CostMatrix.Should().HaveCount(66);
   }
 
   [Fact]
@@ -994,7 +993,7 @@ public sealed class R1Week5CxR1ClosureTests
     var result = await controller.CalculateCostEstimate(new CostEstimateRequest
     {
       BuildingType = "R1",
-      Region = "Central",
+      Region = "Reval 1",
       SquareFeet = 2000m,
       YearBuilt = 2020,
       QualityGrade = "STANDARD",
@@ -1008,6 +1007,47 @@ public sealed class R1Week5CxR1ClosureTests
     // Verify source header
     controller.Response.Headers["X-CostForge-Source"].ToString()
       .Should().Be("benton-real-calculator-fy2025");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge")]
+  public async Task CostForge_CostEstimate_MissingRevalArea_ReturnsBadRequest()
+  {
+    await using var db = CreateDbContext(nameof(CostForge_CostEstimate_MissingRevalArea_ReturnsBadRequest));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var costForgeService = new Mock<CostForgeService>(MockBehavior.Strict);
+    var costForgeAiService = new Mock<CostForgeAIService>(MockBehavior.Strict);
+    var auditLogger = new Mock<AuditLogger>(MockBehavior.Strict);
+
+    var controller = new CostForgeController(
+      costForgeService.Object,
+      costForgeAiService.Object,
+      db,
+      auditLogger.Object,
+      NullLogger<CostForgeController>.Instance);
+    AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
+    controller.ControllerContext.HttpContext = new DefaultHttpContext
+    {
+      User = CreatePrincipal(countyId, "BENTON"),
+    };
+
+    var result = await controller.CalculateCostEstimate(new CostEstimateRequest
+    {
+      BuildingType = "R1",
+      SquareFeet = 2000m,
+      YearBuilt = 2020,
+      QualityGrade = "STANDARD",
+      ConditionGrade = "GOOD",
+      ComplexityGrade = "STANDARD",
+    });
+
+    var badRequest = result.Should().BeOfType<BadRequestObjectResult>().Subject;
+    var problem = badRequest.Value.Should().BeOfType<ProblemDetails>().Subject;
+    problem.Title.Should().Be("Region/Reval Area is required");
+    problem.Detail.Should().Contain("will not infer cycle from neighborhood code");
   }
 
   [Fact]
@@ -1505,9 +1545,9 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "Dais")]
-  public async Task Dais_AssessmentImpact_WithoutClaims_ReturnsForbid()
+  public async Task Dais_AssessmentImpact_WithoutClaims_ReturnsUnauthorized()
   {
-    await using var db = CreateDbContext(nameof(Dais_AssessmentImpact_WithoutClaims_ReturnsForbid));
+    await using var db = CreateDbContext(nameof(Dais_AssessmentImpact_WithoutClaims_ReturnsUnauthorized));
     var controller = new DaisController(db, NullLogger<DaisController>.Instance,
         new Mock<IExemptionService>().Object,
         new Mock<IAppealService>().Object,
@@ -1519,7 +1559,8 @@ public sealed class R1Week5CxR1ClosureTests
     AttachPrincipal(controller, CreateEmptyPrincipal());
 
     var result = await controller.GetPermitAssessmentImpact("12345");
-    result.Should().BeOfType<ForbidResult>();
+    var unauthorized = result.Should().BeOfType<UnauthorizedObjectResult>().Subject;
+    unauthorized.Value.Should().Be("County authentication required.");
   }
 
   [Fact]
@@ -2830,9 +2871,44 @@ public sealed class R1Week5CxR1ClosureTests
     json.Should().Contain("Richland");
     json.Should().Contain("West Richland");
     json.Should().Contain("Kennewick");
-    json.Should().Contain("Pasco");
+    json.Should().Contain("Rural Ag Lands");
     json.Should().Contain("Benton City");
     json.Should().Contain("Prosser");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public async Task CostForge_Neighborhoods_UsesExplicitRevalArea_NotHoodDigit()
+  {
+    await using var db = CreateDbContext(nameof(CostForge_Neighborhoods_UsesExplicitRevalArea_NotHoodDigit));
+    var countyId = Guid.NewGuid();
+    db.CamaCharacteristics.Add(new CamaCharacteristic
+    {
+      ParcelId = "P-HOOD-101",
+      TaxYear = 2026,
+      BuildingType = "R1",
+      NeighborhoodCode = "101",
+      Region = "Reval 3",
+      SquareFeet = 1_800m,
+      CountyId = countyId,
+    });
+    await db.SaveChangesAsync();
+
+    var controller = new CostForgeController(
+      new Mock<CostForgeService>(MockBehavior.Strict).Object,
+      new Mock<CostForgeAIService>(MockBehavior.Strict).Object,
+      db,
+      new Mock<AuditLogger>(MockBehavior.Strict).Object,
+      NullLogger<CostForgeController>.Instance);
+    AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
+
+    var result = await controller.GetNeighborhoods();
+
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"hoodCd\":\"101\"");
+    json.Should().Contain("\"revalArea\":\"Reval 3\"");
+    json.Should().NotContain("\"revalArea\":\"Reval 1\"");
   }
 
   [Fact]
@@ -3644,7 +3720,7 @@ public sealed class R1Week5CxR1ClosureTests
     var request = new CostForgeController.FullLineageRequest
     {
       BuildingType = "R1",
-      Region = "Central",
+      Region = "Reval 1",
       SquareFeet = 2000m,
       YearBuilt = 2015,
       QualityGrade = "STANDARD",
@@ -3683,7 +3759,7 @@ public sealed class R1Week5CxR1ClosureTests
     var request = new CostForgeController.FullLineageRequest
     {
       BuildingType = "R1",
-      Region = "Central",
+      Region = "Reval 1",
       SquareFeet = 1800m,
       YearBuilt = 2020,
       QualityGrade = "STANDARD",
@@ -3718,7 +3794,7 @@ public sealed class R1Week5CxR1ClosureTests
     var request = new CostForgeController.FullLineageRequest
     {
       BuildingType = "C1",
-      Region = "Central",
+      Region = "Reval 1",
       SquareFeet = 5000m,
       YearBuilt = 1990,
       QualityGrade = "STANDARD",
@@ -3753,7 +3829,7 @@ public sealed class R1Week5CxR1ClosureTests
     var request = new CostForgeController.FullLineageRequest
     {
       BuildingType = "R1",
-      Region = "Central",
+      Region = "Reval 1",
       SquareFeet = 1500m,
       EffectiveAge = 100,  // Way beyond economic life
       QualityGrade = "STANDARD",
@@ -3779,7 +3855,7 @@ public sealed class R1Week5CxR1ClosureTests
     var request = new CostForgeController.FullLineageRequest
     {
       BuildingType = "INVALID",
-      Region = "Central",
+      Region = "Reval 1",
       SquareFeet = 1000m,
     };
     var result = controller.ComputeFullValuationLineage(request);
@@ -3794,7 +3870,7 @@ public sealed class R1Week5CxR1ClosureTests
     var request = new CostForgeController.FullLineageRequest
     {
       BuildingType = "C1",
-      Region = "Central",
+      Region = "Reval 1",
       SquareFeet = 3000m,
       EffectiveAge = 25,
       QualityGrade = "STANDARD",
@@ -3822,7 +3898,7 @@ public sealed class R1Week5CxR1ClosureTests
     var request = new CostForgeController.FullLineageRequest
     {
       BuildingType = "I1",
-      Region = "Central",
+      Region = "Reval 1",
       SquareFeet = 10000m,
       EffectiveAge = 20,
       QualityGrade = "STANDARD",
@@ -3849,7 +3925,7 @@ public sealed class R1Week5CxR1ClosureTests
     var request = new CostForgeController.FullLineageRequest
     {
       BuildingType = "R1",
-      Region = "Central",
+      Region = "Reval 1",
       SquareFeet = 2000m,
       EffectiveAge = 20,
       FunctionalObsolescence = 10m,
@@ -3884,7 +3960,7 @@ public sealed class R1Week5CxR1ClosureTests
     var request = new CostForgeController.FullLineageRequest
     {
       BuildingType = "R1",
-      Region = "Central",
+      Region = "Reval 1",
       SquareFeet = 2500m,
       EffectiveAge = 0,
       QualityGrade = "STANDARD",
@@ -3913,7 +3989,7 @@ public sealed class R1Week5CxR1ClosureTests
     var request = new CostForgeController.FullLineageRequest
     {
       BuildingType = "R1",
-      Region = "West",  // factor 1.05
+      Region = "Reval 2",  // factor 1.05
       SquareFeet = 1000m,
       EffectiveAge = 0,
       QualityGrade = "PREMIUM",     // factor 1.30
@@ -3930,7 +4006,7 @@ public sealed class R1Week5CxR1ClosureTests
     var rcn = jsonDoc.RootElement.GetProperty("ReplacementCostNew").GetDecimal();
     var adjRate = jsonDoc.RootElement.GetProperty("AdjustedRatePerSqft").GetDecimal();
 
-    // Base = 133.88 (West R1) → ×1.05 region ×1.30 quality ×1.10 condition ×1.10 complexity ×1.15 local ×1.15 entrep
+    // Base = 133.88 (Reval 2 R1) → ×1.05 region ×1.30 quality ×1.10 condition ×1.10 complexity ×1.15 local ×1.15 entrep
     // All factors compound, so RCN should be > base×sqft significantly
     rcn.Should().Be(adjRate * 1000m); // rate × sqft
     adjRate.Should().BeGreaterThan(133.88m); // adjusted > base
@@ -3944,7 +4020,7 @@ public sealed class R1Week5CxR1ClosureTests
     var request = new CostForgeController.FullLineageRequest
     {
       BuildingType = "R1",
-      Region = "Central",
+      Region = "Reval 1",
       SquareFeet = 1500m,
       EffectiveAge = 0,
       LandAreaSqft = 10000m,
@@ -3969,7 +4045,7 @@ public sealed class R1Week5CxR1ClosureTests
     var request = new CostForgeController.FullLineageRequest
     {
       BuildingType = "R1",
-      Region = "Central",
+      Region = "Reval 1",
       SquareFeet = 1500m,
       EffectiveAge = 0,
       LandAreaSqft = 5000m,
@@ -3999,7 +4075,7 @@ public sealed class R1Week5CxR1ClosureTests
     var youngRequest = new CostForgeController.FullLineageRequest
     {
       BuildingType = "R1",
-      Region = "Central",
+      Region = "Reval 1",
       SquareFeet = 1500m,
       EffectiveAge = 5,
       LandAreaSqft = 5000m,
@@ -4009,7 +4085,7 @@ public sealed class R1Week5CxR1ClosureTests
     var oldRequest = new CostForgeController.FullLineageRequest
     {
       BuildingType = "R1",
-      Region = "Central",
+      Region = "Reval 1",
       SquareFeet = 1500m,
       EffectiveAge = 30,
       LandAreaSqft = 5000m,

@@ -244,7 +244,7 @@ export const SizesAndVariants: Story = {
 export const FileUploadProgress: Story = {
   render: () => {
     const [files, setFiles] = useState([
-      { id: 1, name: 'design-mockups.fig', size: '2.4 MB', progress: 100, status: 'complete' },
+    { id: 1, name: 'design-comps.fig', size: '2.4 MB', progress: 100, status: 'complete' },
       { id: 2, name: 'user-research.pdf', size: '1.8 MB', progress: 67, status: 'uploading' },
       { id: 3, name: 'wireframes.sketch', size: '3.2 MB', progress: 23, status: 'uploading' },
       { id: 4, name: 'assets.zip', size: '15.7 MB', progress: 0, status: 'pending' },

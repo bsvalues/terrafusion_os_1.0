@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
+import { createStableId } from '@/utils/stableId';
 
 // Types matching backend
 interface SystemWideCodex {
@@ -62,7 +63,7 @@ interface ComplianceMetrics {
 const FOUNDATION_MAX = 12;
 
 function createCorrelationId() {
-  return `codex-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  return createStableId('codex');
 }
 
 export function CodexDashboard() {

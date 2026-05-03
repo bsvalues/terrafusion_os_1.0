@@ -281,6 +281,8 @@ describe('Window Component', () => {
       render(<Window window={mockWindow} />);
 
       const windowVisuals = screen.getByTestId('tf-window-chrome');
+      // Active windows use --tf-text/0.12 for the activated edge
+      // (LuminPrimitiveContract Phase 7).
       expect(windowVisuals).toHaveStyle({
         border: '0.5px solid hsl(var(--tf-text) / 0.12)',
       });
@@ -299,6 +301,7 @@ describe('Window Component', () => {
       render(<Window window={mockWindow} />);
 
       const windowVisuals = screen.getByTestId('tf-window-chrome');
+      // Inactive windows use the structural --tf-border at 0.3 opacity.
       expect(windowVisuals).toHaveStyle({
         border: '0.5px solid hsl(var(--tf-border) / 0.3)',
       });
@@ -373,7 +376,8 @@ describe('Window Component', () => {
       const titleBar = screen.getByTestId('window-titlebar');
       const title = titleBar.querySelector('span.truncate');
       expect(title).not.toBeNull();
-      expect(title!.className).toContain('text-white');
+      // Component uses CSS-variable-based class for active title color
+      expect(title!.className).toContain('text-[hsl(var(--tf-text))]');
     });
 
     it('shows inactive title color when window is not active', () => {
@@ -391,7 +395,8 @@ describe('Window Component', () => {
       const titleBar = screen.getByTestId('window-titlebar');
       const title = titleBar.querySelector('span.truncate');
       expect(title).not.toBeNull();
-      expect(title!.className).toContain('text-white/60');
+      // Component uses CSS-variable-based class for inactive title color
+      expect(title!.className).toContain('text-[hsl(var(--tf-text)/0.5)]');
     });
 
     it('toggles maximize on double-click', async () => {

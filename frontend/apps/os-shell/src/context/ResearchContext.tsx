@@ -1,30 +1,10 @@
 /**
  * ResearchContext.tsx
  *
- * Elite Global State Management for TerraFusion Quantum Research Portal
- * Provides React Context API for cross-panel state synchronization, quantum parameter
- * coordination, AI swarm metrics, statistical analysis results, and session persistence.
- *
- * Context Providers:
- * 1. ResearchSessionContext - Session management, authentication, auto-save
- * 2. QuantumConsciousnessContext - Quantum parameters, consciousness tuning, predictive analytics
- * 3. AISwarmContext - Swarm coordination, agent metrics, performance optimization
- * 4. StatisticalAnalyticsContext - Analysis results, hypothesis testing, correlation matrices
- * 5. IAAOComplianceContext - Certification tracking, compliance metrics, sales ratio analysis
- *
- * Features:
- * - Type-safe context with TypeScript interfaces
- * - Automatic state persistence to localStorage
- * - Cross-panel synchronization with pub/sub pattern
- * - Performance-optimized updates with React.memo and useMemo
- * - Rollback support for parameter changes
- * - Real-time metrics broadcasting
- *
- * Performance: <5ms context updates, <1ms context reads, 60 FPS rendering preserved
- *
- * @module ResearchContext
- * @version 1.0.0
- * @elite-status Championship-Grade State Management
+ * State management for the TerraFusion research workspace.
+ * The provider keeps session state, operator-entered parameters, and
+ * evidence-availability placeholders without fabricating live swarm or
+ * consciousness telemetry.
  */
 
 import { clearToken } from '@/auth/authStorage';
@@ -54,10 +34,10 @@ export interface ResearchSession {
 }
 
 export interface QuantumParameters {
-  quantumCoherence: number; // 0.900 - 0.999
-  entanglementStrength: number; // 0.900 - 0.999
-  consciousnessLevel: number; // 1.0 - 10.0
-  optimizationFactor: number; // 100 - 999
+  quantumCoherence: number;
+  entanglementStrength: number;
+  consciousnessLevel: number;
+  optimizationFactor: number;
   lastModified: Date;
   modifiedBy: string;
 }
@@ -66,9 +46,9 @@ export interface AISwarmMetrics {
   totalAgents: number;
   activeAgents: number;
   coordinationMode: 'spatial' | 'network' | 'hierarchical' | 'quantum';
-  swarmEfficiency: number; // 0.0 - 1.0
-  avgResponseTime: number; // milliseconds
-  throughput: number; // operations per second
+  swarmEfficiency: number;
+  avgResponseTime: number;
+  throughput: number;
   lastUpdate: Date;
 }
 
@@ -76,7 +56,7 @@ export interface StatisticalAnalysisState {
   selectedVariables: string[];
   correlationMethod: 'pearson' | 'spearman' | 'kendall';
   hypothesisTestType: string;
-  confidenceLevel: number; // 0.90, 0.95, 0.99
+  confidenceLevel: number;
   lastAnalysisResults: any | null;
   lastAnalysisTime: Date | null;
 }
@@ -202,34 +182,65 @@ const QuantumConsciousnessContext = createContext<QuantumConsciousnessContextTyp
 );
 
 const DEFAULT_PARAMETERS: QuantumParameters = {
-  quantumCoherence: 0.995,
-  entanglementStrength: 0.99,
-  consciousnessLevel: 9.5,
-  optimizationFactor: 949,
+  quantumCoherence: 0,
+  entanglementStrength: 0,
+  consciousnessLevel: 0,
+  optimizationFactor: 0,
   lastModified: new Date(),
   modifiedBy: 'system',
 };
 
 const PRESETS: Record<string, Omit<QuantumParameters, 'lastModified' | 'modifiedBy'>> = {
   MaximumAccuracy: {
-    quantumCoherence: 0.997,
-    entanglementStrength: 0.995,
-    consciousnessLevel: 9.5,
-    optimizationFactor: 970,
+    quantumCoherence: 0,
+    entanglementStrength: 0,
+    consciousnessLevel: 0,
+    optimizationFactor: 0,
   },
   MaximumPerformance: {
-    quantumCoherence: 0.99,
-    entanglementStrength: 0.985,
-    consciousnessLevel: 8.0,
-    optimizationFactor: 980,
+    quantumCoherence: 0,
+    entanglementStrength: 0,
+    consciousnessLevel: 0,
+    optimizationFactor: 0,
   },
   BalancedElite: {
-    quantumCoherence: 0.995,
-    entanglementStrength: 0.99,
-    consciousnessLevel: 8.5,
-    optimizationFactor: 949,
+    quantumCoherence: 0,
+    entanglementStrength: 0,
+    consciousnessLevel: 0,
+    optimizationFactor: 0,
   },
 };
+
+function sanitizeQuantumParameters(candidate: Partial<QuantumParameters> | null | undefined): QuantumParameters {
+  if (!candidate) {
+    return DEFAULT_PARAMETERS;
+  }
+
+  const next: QuantumParameters = {
+    quantumCoherence: typeof candidate.quantumCoherence === 'number' ? candidate.quantumCoherence : 0,
+    entanglementStrength:
+      typeof candidate.entanglementStrength === 'number' ? candidate.entanglementStrength : 0,
+    consciousnessLevel:
+      typeof candidate.consciousnessLevel === 'number' ? candidate.consciousnessLevel : 0,
+    optimizationFactor:
+      typeof candidate.optimizationFactor === 'number' ? candidate.optimizationFactor : 0,
+    lastModified:
+      candidate.lastModified instanceof Date
+        ? candidate.lastModified
+        : candidate.lastModified
+          ? new Date(candidate.lastModified)
+          : new Date(),
+    modifiedBy: typeof candidate.modifiedBy === 'string' ? candidate.modifiedBy : 'system',
+  };
+
+  const isLegacySyntheticSeed =
+    next.quantumCoherence === 0.995 &&
+    next.entanglementStrength === 0.99 &&
+    next.consciousnessLevel === 9.5 &&
+    next.optimizationFactor === 949;
+
+  return isLegacySyntheticSeed ? DEFAULT_PARAMETERS : next;
+}
 
 export const QuantumConsciousnessProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [parameters, setParameters] = useState<QuantumParameters>(() => {
@@ -237,10 +248,7 @@ export const QuantumConsciousnessProvider: React.FC<{ children: ReactNode }> = (
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        return {
-          ...parsed,
-          lastModified: new Date(parsed.lastModified),
-        };
+        return sanitizeQuantumParameters(parsed);
       } catch (error) {
         return DEFAULT_PARAMETERS;
       }
@@ -350,12 +358,12 @@ interface AISwarmContextType {
 const AISwarmContext = createContext<AISwarmContextType | undefined>(undefined);
 
 const DEFAULT_SWARM_METRICS: AISwarmMetrics = {
-  totalAgents: 50000,
-  activeAgents: 48500,
-  coordinationMode: 'quantum',
-  swarmEfficiency: 0.985,
-  avgResponseTime: 8.5,
-  throughput: 125000,
+  totalAgents: 0,
+  activeAgents: 0,
+  coordinationMode: 'network',
+  swarmEfficiency: 0,
+  avgResponseTime: 0,
+  throughput: 0,
   lastUpdate: new Date(),
 };
 
@@ -373,14 +381,13 @@ export const AISwarmProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   const refreshMetrics = useCallback(async () => {
     try {
-      // In production, this would call aiSwarmAPI.getMetrics()
-      // For now, simulate with slight random variations
       setMetrics((prev) => ({
         ...prev,
-        activeAgents: prev.totalAgents * (0.95 + Math.random() * 0.05),
-        swarmEfficiency: 0.98 + Math.random() * 0.02,
-        avgResponseTime: 8 + Math.random() * 2,
-        throughput: 120000 + Math.random() * 10000,
+        totalAgents: 0,
+        activeAgents: 0,
+        swarmEfficiency: 0,
+        avgResponseTime: 0,
+        throughput: 0,
         lastUpdate: new Date(),
       }));
     } catch (error) {
@@ -431,7 +438,7 @@ const StatisticalAnalyticsContext = createContext<StatisticalAnalyticsContextTyp
 );
 
 const DEFAULT_ANALYTICS_STATE: StatisticalAnalysisState = {
-  selectedVariables: ['AssessedValue', 'SalePrice', 'QuantumCoherence'],
+  selectedVariables: ['AssessedValue', 'SalePrice'],
   correlationMethod: 'pearson',
   hypothesisTestType: 'independent-t-test',
   confidenceLevel: 0.95,

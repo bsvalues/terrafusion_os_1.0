@@ -10,26 +10,29 @@
  *   - Similarity scoring: QUARANTINE/.../comparison/similarityService.ts
  *   - Adjustment math: CostForgeController POST /api/costforge/sales-comparison/adjust-comparable
  *   - Reconciliation: CostForgeController POST /api/costforge/sales-comparison/reconcile
- *   - Data: dev-snapshots/benton-comparable-sales.json
+ *   - Data: Washington statewide launch package (launch-data/washington/sales/by-county/*.json)
  *
  * GUARDRAIL: All adjustment/reconciliation math stays in backend CostForge
  * endpoints. Frontend only does filtering, sorting, and similarity scoring
  * for candidate selection.
  */
 
-import bentonCompsSnapshot from '../data/dev-snapshots/benton-comparable-sales.json';
-
 // ═══════════════════════════════════════════════════════════════
 // Types
 // ═══════════════════════════════════════════════════════════════
 
-/** Shape of a comparable sale record from Benton County snapshot */
+/** Shape of a comparable sale record from TerraFusion-normalized county sales */
 export interface ComparableSale {
   parcelId: string;
   saleDate: string;
   salePrice: number;
   propertyType: string;
   address: string;
+  countyCode?: string | null;
+  countyName?: string | null;
+  city?: string | null;
+  neighborhoodCode?: string | null;
+  currentNeighborhoodCode?: string | null;
   grossLivingArea: number | null;
   lotSizeSqft: number | null;
   yearBuilt: number | null;
@@ -107,29 +110,206 @@ export interface ReconciliationResult {
 // Data Loading
 // ═══════════════════════════════════════════════════════════════
 
-/** Load Benton County comparable sales from dev snapshot */
-export function loadBentonComps(): ComparableSale[] {
-  return (bentonCompsSnapshot as ComparableSale[]).map((raw) => ({
-    parcelId: raw.parcelId,
-    saleDate: raw.saleDate,
-    salePrice: raw.salePrice,
-    propertyType: raw.propertyType || 'residential',
-    address: raw.address,
-    grossLivingArea: raw.grossLivingArea,
-    lotSizeSqft: raw.lotSizeSqft,
-    yearBuilt: raw.yearBuilt,
-    bedrooms: raw.bedrooms,
-    bathrooms: raw.bathrooms,
-    condition: raw.condition,
-    qualityGrade: raw.qualityGrade,
-    saleQualification: raw.saleQualification,
-  }));
+interface LaunchSaleRecord {
+  countyCode: string;
+  parcelNumber: string | null;
+  saleDate: string | null;
+  salePrice: number | null;
+  adjustedSalePrice: number | null;
+  useCode: string | null;
+  situsAddress: string | null;
+  situsCity: string | null;
+  situsZip: string | null;
+  acres: number | string | null;
+  neighborhoodCode: string | null;
+  currentNeighborhoodCode: string | null;
+  reviewStatus: string | null;
+  flags: {
+    needsReview: boolean;
+  };
+}
+
+interface LaunchCountySalesShard {
+  county: string;
+  countyCode: string;
+  records: LaunchSaleRecord[];
+}
+
+const WASHINGTON_COUNTIES = [
+  { code: '001', name: 'Adams' },
+  { code: '003', name: 'Asotin' },
+  { code: '005', name: 'Benton' },
+  { code: '007', name: 'Chelan' },
+  { code: '009', name: 'Clallam' },
+  { code: '011', name: 'Clark' },
+  { code: '013', name: 'Columbia' },
+  { code: '015', name: 'Cowlitz' },
+  { code: '017', name: 'Douglas' },
+  { code: '019', name: 'Ferry' },
+  { code: '021', name: 'Franklin' },
+  { code: '023', name: 'Garfield' },
+  { code: '025', name: 'Grant' },
+  { code: '027', name: 'Grays Harbor' },
+  { code: '029', name: 'Island' },
+  { code: '031', name: 'Jefferson' },
+  { code: '033', name: 'King' },
+  { code: '035', name: 'Kitsap' },
+  { code: '037', name: 'Kittitas' },
+  { code: '039', name: 'Klickitat' },
+  { code: '041', name: 'Lewis' },
+  { code: '043', name: 'Lincoln' },
+  { code: '045', name: 'Mason' },
+  { code: '047', name: 'Okanogan' },
+  { code: '049', name: 'Pacific' },
+  { code: '051', name: 'Pend Oreille' },
+  { code: '053', name: 'Pierce' },
+  { code: '055', name: 'San Juan' },
+  { code: '057', name: 'Skagit' },
+  { code: '059', name: 'Skamania' },
+  { code: '061', name: 'Snohomish' },
+  { code: '063', name: 'Spokane' },
+  { code: '065', name: 'Stevens' },
+  { code: '067', name: 'Thurston' },
+  { code: '069', name: 'Wahkiakum' },
+  { code: '071', name: 'Walla Walla' },
+  { code: '073', name: 'Whatcom' },
+  { code: '075', name: 'Whitman' },
+  { code: '077', name: 'Yakima' },
+] as const;
+
+const COUNTY_SHARD_BASE = '/launch-data/washington/sales/by-county';
+const countyShardCache = new Map<string, Promise<ComparableSale[]>>();
+
+function normalizeCountyCode(raw: string | null | undefined): string {
+  const value = String(raw ?? '').trim();
+  if (/^\d{1,3}$/.test(value)) return value.padStart(3, '0');
+  const byName = WASHINGTON_COUNTIES.find(
+    (county) => county.name.toLowerCase() === value.toLowerCase(),
+  );
+  return byName?.code ?? '005';
+}
+
+function normalizeCountyScopeToken(raw: string | null | undefined): string | null {
+  const value = String(raw ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/^county-/, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return value.length > 0 ? value : null;
+}
+
+export function getComparableCountyCode(raw: string | null | undefined): string {
+  return normalizeCountyCode(raw);
+}
+
+export function getComparableCountyName(raw: string | null | undefined): string {
+  const code = normalizeCountyCode(raw);
+  return WASHINGTON_COUNTIES.find((county) => county.code === code)?.name ?? 'Washington';
+}
+
+export function getComparableCountyScopeToken(raw: string | null | undefined): string {
+  return normalizeCountyScopeToken(getComparableCountyName(raw)) ?? 'washington';
+}
+
+export function getPilotCountyScopeToken(raw: string | null | undefined): string | null {
+  return normalizeCountyScopeToken(raw);
+}
+
+export function doesPilotCountyMatchComparableCounty(
+  pilotCounty: string | null | undefined,
+  countyCode: string | null | undefined,
+): boolean {
+  const pilotToken = getPilotCountyScopeToken(pilotCounty);
+  if (!pilotToken) return false;
+  return pilotToken === getComparableCountyScopeToken(countyCode);
+}
+
+export function supportsGovernedComparableAdjustments(
+  countyCode: string | null | undefined,
+): boolean {
+  return normalizeCountyCode(countyCode) === '005';
+}
+
+function addressForSale(record: LaunchSaleRecord): string {
+  const joined = [record.situsAddress, record.situsCity, record.situsZip]
+    .filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+    .join(', ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return joined || 'Address unavailable';
+}
+
+function numberOrNull(value: number | string | null | undefined): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string') {
+    const parsed = Number.parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
+function toComparableSale(record: LaunchSaleRecord): ComparableSale {
+  return {
+    parcelId: record.parcelNumber ?? '',
+    saleDate: record.saleDate ?? '',
+    salePrice: record.adjustedSalePrice ?? record.salePrice ?? 0,
+    propertyType: record.useCode ?? 'unknown',
+    address: addressForSale(record),
+    countyCode: record.countyCode,
+    countyName: WASHINGTON_COUNTIES.find((county) => county.code === record.countyCode)?.name ?? null,
+    city: record.situsCity,
+    neighborhoodCode: record.neighborhoodCode,
+    currentNeighborhoodCode: record.currentNeighborhoodCode,
+    grossLivingArea: null,
+    lotSizeSqft: (() => {
+      const acres = numberOrNull(record.acres);
+      return acres != null && acres > 0 ? Math.round(acres * 43560) : null;
+    })(),
+    yearBuilt: null,
+    bedrooms: null,
+    bathrooms: null,
+    condition: null,
+    qualityGrade: null,
+    saleQualification: record.flags.needsReview ? 'review_required' : record.reviewStatus,
+  };
+}
+
+export async function loadCountyComps(countyCode: string): Promise<ComparableSale[]> {
+  const normalizedCountyCode = normalizeCountyCode(countyCode);
+  const cached = countyShardCache.get(normalizedCountyCode);
+  if (cached) return cached;
+
+  const promise = fetch(`${COUNTY_SHARD_BASE}/${normalizedCountyCode}.json`, { cache: 'no-store' })
+    .then(async (response) => {
+      if (!response.ok) {
+        throw new Error(`County comp shard unavailable for ${normalizedCountyCode} (${response.status})`);
+      }
+      return response.json() as Promise<LaunchCountySalesShard>;
+    })
+    .then((shard) =>
+      shard.records
+        .filter(
+          (record) =>
+            typeof record.parcelNumber === 'string' &&
+            record.parcelNumber.trim().length > 0 &&
+            typeof record.saleDate === 'string' &&
+            record.saleDate.trim().length > 0 &&
+            typeof (record.adjustedSalePrice ?? record.salePrice) === 'number' &&
+            (record.adjustedSalePrice ?? record.salePrice ?? 0) > 0,
+        )
+        .map(toComparableSale),
+    );
+
+  countyShardCache.set(normalizedCountyCode, promise);
+  return promise;
 }
 
 // ═══════════════════════════════════════════════════════════════
 // Filtering — adapted from QUARANTINE comparablesService.ts
 // ═══════════════════════════════════════════════════════════════
 
+/**
 /** Apply filter pipeline to narrow comp candidates */
 export function filterComps(
   subject: SubjectProperty,

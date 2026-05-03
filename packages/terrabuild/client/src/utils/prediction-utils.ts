@@ -13,7 +13,7 @@ import { apiRequest } from '@/lib/queryClient';
 export interface BuildingFeatures {
   squareFeet: number;
   buildingType: string;
-  region: string;
+  revalArea: string;
   year?: number;
   quality?: string;
   complexity?: string;
@@ -483,9 +483,9 @@ export class CostPredictionModel {
     
     // Define known categorical features
     const knownCategoricalFeatures = [
-      'buildingType', 'region', 'quality', 'complexity', 'condition'
+      'buildingType', 'revalArea', 'quality', 'complexity', 'condition'
     ];
-    
+
     for (const feature of knownCategoricalFeatures) {
       // Get unique values
       const uniqueValuesSet = new Set();
@@ -837,7 +837,7 @@ export class CostPredictionModel {
     
     // Reduce confidence for missing features
     const expectedFeatures = [
-      'squareFeet', 'buildingType', 'region', 'year', 'quality', 'complexity', 'condition'
+      'squareFeet', 'buildingType', 'revalArea', 'year', 'quality', 'complexity', 'condition'
     ];
     
     const missingFeatures = expectedFeatures.filter(f => 
@@ -906,7 +906,7 @@ export class CostPredictionModel {
       // Map feature names to readable versions
       const featureMap: { [key: string]: string } = {
         'buildingType': 'Building Type',
-        'region': 'Region',
+        'revalArea': 'Reval Area',
         'quality': 'Quality',
         'complexity': 'Complexity',
         'condition': 'Condition'

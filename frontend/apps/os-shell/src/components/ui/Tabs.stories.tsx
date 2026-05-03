@@ -833,7 +833,7 @@ export const UsageGuidelines: Story = {
 /**
  * ## Story 9: Accessibility Test
  *
- * Interactive demonstration of keyboard navigation and accessibility features.
+ * Interactive example of keyboard navigation and accessibility features.
  * Tests WCAG 2.1 AAA compliance for tab navigation.
  */
 export const AccessibilityTest: Story = {

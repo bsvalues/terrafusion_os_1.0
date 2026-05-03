@@ -5,7 +5,7 @@ namespace TerraFusion.Consciousness.Interfaces
     /// <summary>
     /// Million Agent Service interface for massive-scale AI coordination
     /// Manages up to 1,000,000+ AI agents across TerraFusion OS
-    /// Government. Transcended.
+    /// Compatibility large-scale coordination contract.
     /// </summary>
     public interface IMillionAgentService
     {

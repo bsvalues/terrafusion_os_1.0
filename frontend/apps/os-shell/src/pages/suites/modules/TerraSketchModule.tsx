@@ -5,16 +5,18 @@
  * Owns: Parcel boundary editing, sketch tools, geometry validation.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { invokeTool } from '@/api/pilotApi';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TactileButton } from '@/ui/materials';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { usePropertyStore } from '@/stores/propertyStore';
 import {
   Crosshair, Pencil, Square, Circle, Move, Undo2, Redo2, Trash2,
-  Save, Download, CheckCircle2, AlertTriangle, Ruler,
+  Save, Download, CheckCircle2, AlertTriangle, Ruler, Bot,
 } from 'lucide-react';
 
 /* -------------------------------------------------------------------------- */
@@ -22,6 +24,12 @@ import {
 /* -------------------------------------------------------------------------- */
 
 type SketchTool = 'select' | 'polygon' | 'rectangle' | 'circle' | 'line' | 'point' | 'move';
+
+interface GeometryBrief {
+  narrative: string;
+  boundaryNote: string;
+  routingNote: string;
+}
 
 interface SketchVertex {
   id: string;
@@ -58,43 +66,77 @@ const SKETCH_TOOLS: { id: SketchTool; label: string; icon: typeof Pencil }[] = [
 ];
 
 /* -------------------------------------------------------------------------- */
-/* Mock data                                                                   */
-/* -------------------------------------------------------------------------- */
-
-const MOCK_VERTICES: SketchVertex[] = [
-  { id: 'v1', x: -119.2650, y: 46.2100, label: 'A' },
-  { id: 'v2', x: -119.2640, y: 46.2100, label: 'B' },
-  { id: 'v3', x: -119.2640, y: 46.2090, label: 'C' },
-  { id: 'v4', x: -119.2650, y: 46.2090, label: 'D' },
-];
-
-const MOCK_HISTORY: SketchHistory[] = [
-  { action: 'Loaded parcel 104841000002000', timestamp: '10:32:14 AM', user: 'Assessor' },
-  { action: 'Adjusted vertex B (+2.3ft E)', timestamp: '10:34:01 AM', user: 'Assessor' },
-  { action: 'Added vertex E (midpoint A-B)', timestamp: '10:35:22 AM', user: 'Assessor' },
-  { action: 'Validated geometry — PASS', timestamp: '10:35:45 AM', user: 'System' },
-];
-
-const MOCK_VALIDATION: ValidationResult = {
-  valid: true,
-  area: 8_494,
-  perimeter: 386,
-  vertexCount: 4,
-  warnings: ['Vertex C within 1ft of right-of-way boundary'],
-};
-
-/* -------------------------------------------------------------------------- */
 /* Component                                                                   */
 /* -------------------------------------------------------------------------- */
 
 export default function TerraSketchModule() {
+  const activeParcel = usePropertyStore((state) => state.activeParcel);
   const [activeTool, setActiveTool] = useState<SketchTool>('select');
-  const [vertices] = useState<SketchVertex[]>(MOCK_VERTICES);
-  const [history] = useState<SketchHistory[]>(MOCK_HISTORY);
-  const [validation] = useState<ValidationResult>(MOCK_VALIDATION);
-  const [parcelId, setParcelId] = useState('104841000002000');
   const [snapEnabled, setSnapEnabled] = useState(true);
   const [gridEnabled, setGridEnabled] = useState(false);
+  const [geoBrief, setGeoBrief] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: GeometryBrief; correlationId?: string; error?: string }>({ status: 'idle' });
+  const parcelId = activeParcel?.parcelId ?? '';
+  const hasActiveParcel = parcelId.length > 0;
+  const vertices = useMemo<SketchVertex[]>(() => [], [parcelId]);
+  const history = useMemo<SketchHistory[]>(() => [], [parcelId]);
+  const validation = useMemo<ValidationResult>(() => ({
+    valid: false,
+    area: 0,
+    perimeter: 0,
+    vertexCount: 0,
+    warnings: [
+      hasActiveParcel
+        ? 'Governed boundary geometry is not available for this active parcel.'
+        : 'Select an active parcel before boundary editing.',
+    ],
+  }), [hasActiveParcel]);
+  const hasBoundaryGeometry = vertices.length > 0 && validation.vertexCount > 0;
+  const canAnalyzeGeometry = hasActiveParcel && hasBoundaryGeometry;
+  const canPersistGeometry = hasActiveParcel && hasBoundaryGeometry && validation.valid;
+
+  const handleAnalyzeGeometry = useCallback(async () => {
+    if (geoBrief.status === 'loading') return;
+    if (!hasActiveParcel) {
+      setGeoBrief({ status: 'error', error: 'Select an active parcel before geometry analysis.' });
+      return;
+    }
+    if (!hasBoundaryGeometry) {
+      setGeoBrief({ status: 'error', error: 'Governed boundary geometry is required before analysis.' });
+      return;
+    }
+    setGeoBrief({ status: 'loading' });
+    try {
+      const resp = await invokeTool({
+        toolId: 'analyze_sketch_geometry',
+        args: {
+          parcelId,
+          vertexCount: vertices.length,
+          area: validation.area,
+          perimeter: validation.perimeter,
+          warnings: validation.warnings,
+        },
+      });
+      if (resp.success && resp.result) {
+        const parsed = typeof resp.result.output === 'string'
+          ? JSON.parse(resp.result.output) as GeometryBrief
+          : resp.result.output as GeometryBrief;
+        setGeoBrief({
+          status: 'success',
+          result: {
+            narrative: parsed.narrative ?? 'No governed geometry analyst narrative returned.',
+            boundaryNote: parsed.boundaryNote ?? 'No governed boundary finding returned.',
+            routingNote: parsed.routingNote ?? 'No governed routing disposition returned.',
+          },
+          correlationId: resp.correlationId,
+        });
+      } else {
+        setGeoBrief({ status: 'error', error: 'No result from AI analyst.' });
+      }
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Unknown error';
+      setGeoBrief({ status: 'error', error: msg });
+    }
+  }, [parcelId, vertices, validation, geoBrief.status, hasActiveParcel, hasBoundaryGeometry]);
 
   return (
     <div className='p-6 space-y-6'>
@@ -105,7 +147,7 @@ export default function TerraSketchModule() {
           TerraSketch
         </h2>
         <p style={{ color: 'hsl(var(--tf-muted))' }} className='mt-1'>
-          Parcel geometry editing — Benton County, WA
+          Parcel geometry editing — active parcel boundary evidence required
         </p>
       </div>
 
@@ -161,11 +203,14 @@ export default function TerraSketchModule() {
               <div>
                 <span className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Target Parcel</span>
                 <Input
-                  value={parcelId}
-                  onChange={(e) => setParcelId(e.target.value)}
+                  value={parcelId || 'No active parcel selected'}
+                  readOnly
                   className='mt-1 font-mono text-sm'
                   style={{ background: 'hsl(var(--tf-input-bg))', borderColor: 'hsl(var(--tf-border))' }}
                 />
+                <p className='mt-1 text-xs' style={{ color: 'hsl(var(--tf-muted) / 0.7)' }}>
+                  Parcel context comes from the Property Workbench.
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -189,10 +234,10 @@ export default function TerraSketchModule() {
                   )}
                 </div>
                 <div className='flex items-center gap-2'>
-                  <TactileButton size='sm' leftIcon={<Save size={14} />}>
+                  <TactileButton size='sm' leftIcon={<Save size={14} />} disabled={!canPersistGeometry}>
                     Save
                   </TactileButton>
-                  <TactileButton variant='secondary' size='sm' leftIcon={<Download size={14} />}>
+                  <TactileButton variant='secondary' size='sm' leftIcon={<Download size={14} />} disabled={!canPersistGeometry}>
                     Export
                   </TactileButton>
                 </div>
@@ -201,12 +246,16 @@ export default function TerraSketchModule() {
               <div className='relative h-[480px] flex items-center justify-center' style={{ background: 'hsl(var(--tf-bg))' }}>
                 <div className='text-center space-y-3'>
                   <Crosshair className='mx-auto' size={64} style={{ color: 'hsl(var(--tf-suite-atlas) / 0.3)' }} />
-                  <p style={{ color: 'hsl(var(--tf-muted))' }} className='text-lg'>Sketch Canvas</p>
+                  <p style={{ color: 'hsl(var(--tf-muted))' }} className='text-lg'>
+                    {hasBoundaryGeometry ? 'Sketch Canvas' : 'Governed Geometry Required'}
+                  </p>
                   <p style={{ color: 'hsl(var(--tf-muted) / 0.6)' }} className='text-sm'>
-                    Parcel {parcelId} · {vertices.length} vertices
+                    {hasActiveParcel ? `Parcel ${parcelId} · ${vertices.length} governed vertices` : 'No active parcel selected'}
                   </p>
                   <p className='text-xs' style={{ color: 'hsl(var(--tf-muted) / 0.5)' }}>
-                    Canvas rendering engine integration point
+                    {hasBoundaryGeometry
+                      ? 'Boundary geometry available for editing.'
+                      : 'Load active parcel boundary evidence before editing, saving, or export.'}
                   </p>
                 </div>
               </div>
@@ -220,7 +269,7 @@ export default function TerraSketchModule() {
           <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
             <CardHeader className='pb-2'>
               <CardTitle className='text-base flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
-                {validation.valid ? (
+                {hasBoundaryGeometry && validation.valid ? (
                   <CheckCircle2 size={16} style={{ color: 'hsl(var(--tf-success-hs) 45%)' }} />
                 ) : (
                   <AlertTriangle size={16} style={{ color: 'hsl(var(--tf-error-hs) 60%)' }} />
@@ -230,10 +279,10 @@ export default function TerraSketchModule() {
             </CardHeader>
             <CardContent className='space-y-2'>
               {[
-                ['Status', validation.valid ? 'Valid Geometry' : 'Invalid'],
-                ['Area', `${validation.area.toLocaleString()} sq ft`],
-                ['Perimeter', `${validation.perimeter.toLocaleString()} ft`],
-                ['Vertices', validation.vertexCount.toString()],
+                ['Status', hasBoundaryGeometry ? (validation.valid ? 'Valid Geometry' : 'Invalid') : 'Unavailable'],
+                ['Area', hasBoundaryGeometry ? `${validation.area.toLocaleString()} sq ft` : 'Unavailable'],
+                ['Perimeter', hasBoundaryGeometry ? `${validation.perimeter.toLocaleString()} ft` : 'Unavailable'],
+                ['Vertices', hasBoundaryGeometry ? validation.vertexCount.toString() : 'Unavailable'],
               ].map(([label, value]) => (
                 <div key={label} className='flex justify-between py-0.5'>
                   <span className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>{label}</span>
@@ -256,14 +305,20 @@ export default function TerraSketchModule() {
             </CardHeader>
             <CardContent>
               <div className='space-y-1'>
-                {vertices.map((v) => (
-                  <div key={v.id} className='flex items-center justify-between py-1 px-2 rounded' style={{ background: 'hsl(var(--tf-bg))' }}>
-                    <span className='text-xs font-mono font-bold' style={{ color: 'hsl(var(--tf-suite-atlas))' }}>{v.label}</span>
-                    <span className='text-xs font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>
-                      {v.y.toFixed(4)}, {v.x.toFixed(4)}
-                    </span>
+                {vertices.length > 0 ? (
+                  vertices.map((v) => (
+                    <div key={v.id} className='flex items-center justify-between py-1 px-2 rounded' style={{ background: 'hsl(var(--tf-bg))' }}>
+                      <span className='text-xs font-mono font-bold' style={{ color: 'hsl(var(--tf-suite-atlas))' }}>{v.label}</span>
+                      <span className='text-xs font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>
+                        {v.y.toFixed(4)}, {v.x.toFixed(4)}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div className='rounded p-2 text-xs' style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-muted))' }}>
+                    No governed vertices available for this parcel.
                   </div>
-                ))}
+                )}
               </div>
             </CardContent>
           </Card>
@@ -274,18 +329,68 @@ export default function TerraSketchModule() {
               <CardTitle className='text-base' style={{ color: 'hsl(var(--tf-fg))' }}>Edit History</CardTitle>
             </CardHeader>
             <CardContent className='space-y-2'>
-              {history.map((h, i) => (
-                <div key={i} className='py-1' style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.3)' }}>
-                  <p className='text-xs' style={{ color: 'hsl(var(--tf-fg))' }}>{h.action}</p>
-                  <p className='text-xs' style={{ color: 'hsl(var(--tf-muted) / 0.6)' }}>
-                    {h.timestamp} · {h.user}
-                  </p>
+              {history.length > 0 ? (
+                history.map((h, i) => (
+                  <div key={i} className='py-1' style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.3)' }}>
+                    <p className='text-xs' style={{ color: 'hsl(var(--tf-fg))' }}>{h.action}</p>
+                    <p className='text-xs' style={{ color: 'hsl(var(--tf-muted) / 0.6)' }}>
+                      {h.timestamp} · {h.user}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className='rounded p-2 text-xs' style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-muted))' }}>
+                  No governed edit events recorded for this parcel.
                 </div>
-              ))}
+              )}
             </CardContent>
           </Card>
         </div>
       </div>
+
+      {/* Governed AI Geometry Brief */}
+      <Card
+        data-testid='terrasketch-governed-brief'
+        style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-suite-atlas) / 0.3)' }}
+      >
+        <CardHeader className='pb-2'>
+          <CardTitle className='text-base flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
+            <Bot size={16} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
+            AI Geometry Analyst
+          </CardTitle>
+          <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+            Governed routing — analyze_sketch_geometry
+          </CardDescription>
+        </CardHeader>
+        <CardContent className='space-y-3'>
+          <Button
+            size='sm'
+            onClick={handleAnalyzeGeometry}
+            disabled={geoBrief.status === 'loading' || !canAnalyzeGeometry}
+            style={{ background: 'hsl(var(--tf-suite-atlas) / 0.15)', color: 'hsl(var(--tf-suite-atlas))', border: '1px solid hsl(var(--tf-suite-atlas) / 0.3)' }}
+          >
+            {geoBrief.status === 'loading' ? 'Analyzing…' : 'Analyze Geometry'}
+          </Button>
+          {!canAnalyzeGeometry && (
+            <p className='text-xs' style={{ color: 'hsl(var(--tf-muted) / 0.7)' }}>
+              Geometry analysis opens after active parcel boundary evidence is present.
+            </p>
+          )}
+          {geoBrief.status === 'success' && geoBrief.result && (
+            <div className='space-y-2 text-sm'>
+              <p style={{ color: 'hsl(var(--tf-fg))' }}>{geoBrief.result.narrative}</p>
+              <p style={{ color: 'hsl(var(--tf-muted))' }}><strong>Boundary:</strong> {geoBrief.result.boundaryNote}</p>
+              <p style={{ color: 'hsl(var(--tf-muted))' }}><strong>Routing:</strong> {geoBrief.result.routingNote}</p>
+              {geoBrief.correlationId && (
+                <p className='text-xs font-mono' style={{ color: 'hsl(var(--tf-muted) / 0.5)' }}>corr: {geoBrief.correlationId}</p>
+              )}
+            </div>
+          )}
+          {geoBrief.status === 'error' && (
+            <p className='text-sm' style={{ color: 'hsl(var(--tf-error-hs) 60%)' }}>{geoBrief.error}</p>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

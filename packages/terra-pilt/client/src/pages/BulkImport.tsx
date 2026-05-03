@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, FileText, CheckCircle, AlertCircle, Loader2  } from '@mui/icons-material';
+import { Upload, FileText, CheckCircle, AlertCircle, Loader2  } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 
@@ -136,11 +136,10 @@ export default function BulkImport() {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div><>
+      <div>
 
         <h1 className="text-3xl font-bold tracking-tight">Bulk CSV Import</h1>
-        <p
-</> className="text-muted-foreground">
+        <p className="text-muted-foreground">
           Import multiple CSV files efficiently without AI processing
         </p>
       </div>
@@ -149,42 +148,37 @@ export default function BulkImport() {
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><>
+              <CardTitle className="flex items-center gap-2">
 
                 <Upload className="h-5 w-5" />
                 Upload CSV Files
               </CardTitle>
-              <CardDescription
-</>>
+              <CardDescription>
                 Select multiple CSV files to import your 2024 PILT data
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2"><>
+              <div className="space-y-2">
 
                 <Label htmlFor="default-year">Default Year</Label>
-                <Select
-</> value={defaultYear} onValueChange={setDefaultYear}>
-                  <SelectTrigger className="w-full"><>
+                <Select value={defaultYear} onValueChange={setDefaultYear}>
+                  <SelectTrigger className="w-full">
 
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent
-</>><>
+                  <SelectContent>
 
                     <SelectItem value="2024">2024</SelectItem>
-                    <SelectItem
-</> value="2023">2023</SelectItem>
+                    <SelectItem value="2023">2023</SelectItem>
                     <SelectItem value="2022">2022</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="space-y-2"><>
+              <div className="space-y-2">
 
                 <Label htmlFor="csv-files">Select CSV Files</Label>
                 <Input
-</>
                   id="csv-files"
                   type="file"
                   multiple
@@ -195,12 +189,11 @@ export default function BulkImport() {
               </div>
 
               {files.length > 0 && (
-                <div className="space-y-3"><>
+                <div className="space-y-3">
 
                   <h4 className="font-medium">Files to Import ({files.length})</h4>
-                  <div
-</> className="space-y-2 max-h-64 overflow-y-auto">
-                    {files.map((fileUpload /* , index */) => (
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {files.map((fileUpload , index) => (
                       <div key={index} className="flex items-center gap-3 p-3 border rounded-lg">
                         {getStatusIcon(fileUpload.status)}
                         <div className="flex-1 min-w-0">
@@ -219,12 +212,11 @@ export default function BulkImport() {
                             onValueChange={(value) => updateFile(index, { dataType: value })}
                             disabled={fileUpload.status !== 'pending'}
                           >
-                            <SelectTrigger className="w-40"><>
+                            <SelectTrigger className="w-40">
 
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent
-</>>
+                            <SelectContent>
                               {dataTypes.map(type => (
                                 <SelectItem key={type.value} value={type.value}>
                                   {type.label}
@@ -267,36 +259,32 @@ export default function BulkImport() {
               <CardTitle>Import Status</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between"><>
+              <div className="flex items-center justify-between">
 
                 <span className="text-sm">Files Selected:</span>
-                <Badge
-</> variant="secondary">{files.length}</Badge>
+                <Badge variant="secondary">{files.length}</Badge>
               </div>
               
-              <div className="flex items-center justify-between"><>
+              <div className="flex items-center justify-between">
 
                 <span className="text-sm">Ready to Process:</span>
-                <Badge
-</> variant="outline">
+                <Badge variant="outline">
                   {files.filter(f => f.status === 'pending').length}
                 </Badge>
               </div>
 
-              <div className="flex items-center justify-between"><>
+              <div className="flex items-center justify-between">
 
                 <span className="text-sm">Completed:</span>
-                <Badge
-</> variant="default">
+                <Badge variant="default">
                   {files.filter(f => f.status === 'success').length}
                 </Badge>
               </div>
 
-              <div className="flex items-center justify-between"><>
+              <div className="flex items-center justify-between">
 
                 <span className="text-sm">Errors:</span>
-                <Badge
-</> variant="destructive">
+                <Badge variant="destructive">
                   {files.filter(f => f.status === 'error').length}
                 </Badge>
               </div>
@@ -326,15 +314,13 @@ export default function BulkImport() {
             <CardHeader>
               <CardTitle className="text-sm">Tips for Best Results</CardTitle>
             </CardHeader>
-            <CardContent className="text-xs space-y-2"><>
+            <CardContent className="text-xs space-y-2">
 
               <p>• CSV files should have headers in the first row</p>
-              <p
-</>>• Use consistent date formats (YYYY-MM-DD)</p><>
+              <p>• Use consistent date formats (YYYY-MM-DD)</p>
 
               <p>• Numbers should not contain commas</p>
-              <p
-</>>• District names should match existing records</p>
+              <p>• District names should match existing records</p>
             </CardContent>
           </Card>
         </div>

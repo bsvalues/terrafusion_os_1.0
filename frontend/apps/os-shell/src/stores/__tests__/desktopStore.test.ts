@@ -20,6 +20,12 @@ import { useDesktopStore } from '../desktopStore';
 
 // Reset store before each test
 beforeEach(() => {
+  // Ensure JSDOM viewport is large enough that 700-height windows are not
+  // clamped by getUsableDesktopBounds() (768 - 44 - 48 = 676 is too small).
+  // We need at least 700 + 44 + 48 = 792 in innerHeight.
+  Object.defineProperty(window, 'innerHeight', { value: 1200, writable: true, configurable: true });
+  Object.defineProperty(window, 'innerWidth', { value: 1280, writable: true, configurable: true });
+
   // Clear the store state before each test
   useDesktopStore.setState({
     windows: [],

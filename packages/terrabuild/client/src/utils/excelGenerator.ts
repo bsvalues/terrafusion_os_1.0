@@ -13,11 +13,11 @@ export interface CostCalculation {
   squareFootage: number;
   quality: string;
   buildingAge: number;
-  region: string;
+  revalArea: string;
   complexityFactor: number;
   conditionFactor: number;
   baseCost: number;
-  regionalMultiplier: number;
+  revalAreaMultiplier: number;
   ageDepreciation: number;
   totalCost: number;
   materialCosts: {
@@ -77,7 +77,7 @@ export function generateCostCSV(calculation: CostCalculation, options: ExcelOpti
   csvRows.push(`Building Type,${calculation.buildingType}`);
   csvRows.push(`Square Footage,${calculation.squareFootage}`);
   csvRows.push(`Quality Level,${calculation.quality}`);
-  csvRows.push(`Region,${calculation.region}`);
+  csvRows.push(`Reval Area,${calculation.revalArea}`);
   csvRows.push(`Building Age,${calculation.buildingAge} years`);
   csvRows.push('');
 
@@ -85,7 +85,7 @@ export function generateCostCSV(calculation: CostCalculation, options: ExcelOpti
   csvRows.push('Cost Factors');
   csvRows.push(`Complexity Factor,${calculation.complexityFactor.toFixed(2)}`);
   csvRows.push(`Condition Factor,${calculation.conditionFactor.toFixed(2)}`);
-  csvRows.push(`Regional Multiplier,${calculation.regionalMultiplier.toFixed(2)}`);
+  csvRows.push(`Reval Area Multiplier,${calculation.revalAreaMultiplier.toFixed(2)}`);
   csvRows.push(`Age Depreciation,${calculation.ageDepreciation}%`);
   csvRows.push('');
 

@@ -21,11 +21,25 @@ export function CostManualComponent({ qualityClass }: CostManualComponentProps) 
 
   useEffect(() => {
     setLoading(true);
-    getCostSchedule({ qualityClass, search })
+    setError(null);
+    getCostSchedule({ qualityClass })
       .then(setEntries)
-      .catch((e) => setError(e.message))
+      .catch((e) => {
+        setEntries([]);
+        setError(e.message);
+      })
       .finally(() => setLoading(false));
-  }, [qualityClass, search]);
+  }, [qualityClass]);
+
+  const filteredEntries = entries.filter((entry) => {
+    const query = search.trim().toLowerCase();
+    if (!query) return true;
+    return (
+      entry.code.toLowerCase().includes(query) ||
+      entry.description.toLowerCase().includes(query) ||
+      entry.qualityClass.toLowerCase().includes(query)
+    );
+  });
 
   return (
     <Card>
@@ -39,7 +53,15 @@ export function CostManualComponent({ qualityClass }: CostManualComponentProps) 
         />
       </CardHeader>
       <CardContent>
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && (
+          <div className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 mb-3" data-testid="cost-manual-component-unavailable">
+            <p className="text-sm font-medium">Live cost schedule unavailable.</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Certified cost schedule rows are not being replaced with local sample data.
+            </p>
+            <p className="text-xs text-amber-500 mt-2">{error}</p>
+          </div>
+        )}
         {loading ? (
           <div className="space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -58,7 +80,7 @@ export function CostManualComponent({ qualityClass }: CostManualComponentProps) 
               </TableRow>
             </TableHeader>
             <TableBody>
-              {entries.map((entry) => (
+              {filteredEntries.map((entry) => (
                 <TableRow key={entry.code}>
                   <TableCell className="font-mono text-xs">{entry.code}</TableCell>
                   <TableCell>{entry.description}</TableCell>
@@ -69,10 +91,10 @@ export function CostManualComponent({ qualityClass }: CostManualComponentProps) 
                   <TableCell>{entry.unit}</TableCell>
                 </TableRow>
               ))}
-              {entries.length === 0 && (
+              {filteredEntries.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-muted-foreground">
-                    No entries found
+                    {error ? 'Cost schedule unavailable. No certified schedule rows are being shown.' : 'No entries found'}
                   </TableCell>
                 </TableRow>
               )}

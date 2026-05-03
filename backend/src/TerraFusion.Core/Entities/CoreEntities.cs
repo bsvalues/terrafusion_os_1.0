@@ -18,6 +18,12 @@ public class PropertyAssessment
     public Guid AssessorId { get; set; }
     public DateTime AssessmentDate { get; set; }
     public bool IsActive { get; set; } = true;
+
+    // FISMA-required audit fields — auto-populated by AuditableEntityInterceptor
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public string CreatedBy { get; set; } = "system";
+    public string? UpdatedBy { get; set; }
 }
 
 public class TaxLevy

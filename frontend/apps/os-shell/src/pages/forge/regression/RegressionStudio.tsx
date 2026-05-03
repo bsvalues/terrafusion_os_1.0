@@ -4,13 +4,11 @@
  * Regression studio landing page. Model list, create new, version
  * comparison, coefficient detail. Store-driven via forgeRegressionStore.
  *
- * DATA POSTURE: The Saved Models list is always sourced from REGRESSION_MODELS
- * fixtures. No live path exists for model records. Run history may be API-backed
- * when the backend is available; the store discloses fixture fallback via error state.
+ * DATA POSTURE: saved models and run history are API-only. Empty/unavailable
+ * backend responses are rendered as empty states, not fixture-backed analytics.
  */
 
 import React, { useEffect, useState } from 'react';
-import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,8 +17,9 @@ import { CoefficientPanel } from './CoefficientPanel';
 import { VersionComparePanel } from './VersionComparePanel';
 import { ResidualPlot, CoefficientBarChart, PredictedVsActual, QQPlot } from './charts';
 import { useForgeRegressionStore } from '@/stores/forgeRegressionStore';
+import { RegressionStudioDashboard } from './RegressionStudioDashboard';
 
-type View = 'list' | 'new' | 'compare' | 'detail';
+type View = 'list' | 'new' | 'compare' | 'detail' | 'advanced';
 
 export function RegressionStudio() {
   const [view, setView] = useState<View>('list');
@@ -38,7 +37,7 @@ export function RegressionStudio() {
     fetchModels();
   }, [fetchModels]);
 
-  const statusColor = (status: string) => {
+  const statusColor = (status: string): 'default' | 'secondary' | 'outline' => {
     switch (status) {
       case 'production': return 'default';
       case 'validated': return 'secondary';
@@ -77,6 +76,13 @@ export function RegressionStudio() {
           >
             Compare
           </Button>
+          <Button
+            variant={view === 'advanced' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setView('advanced')}
+          >
+            Advanced
+          </Button>
         </div>
       </div>
 
@@ -93,8 +99,6 @@ export function RegressionStudio() {
       {/* View: Models List */}
       {view === 'list' && (
         <>
-          {/* Card 46C: Saved Models list is always REGRESSION_MODELS fixtures — no live path */}
-          <DemoDataBanner module="Regression Studio" />
           <Card>
             <CardHeader>
               <CardTitle>Saved Models</CardTitle>
@@ -106,6 +110,11 @@ export function RegressionStudio() {
                 </div>
               ) : (
                 <div className="space-y-2">
+                  {models.length === 0 && (
+                    <div className="py-8 text-center text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>
+                      No governed regression models returned by the backend.
+                    </div>
+                  )}
                   {models.map((model) => (
                     <div
                       key={model.id}
@@ -126,7 +135,7 @@ export function RegressionStudio() {
                         <span className="font-mono text-sm" style={{ color: 'hsl(var(--tf-fg))' }}>
                           R² = {model.rSquared.toFixed(4)}
                         </span>
-                        <Badge variant={statusColor(model.status) as any}>{model.status}</Badge>
+                        <Badge variant={statusColor(model.status)}>{model.status}</Badge>
                       </div>
                     </div>
                   ))}
@@ -151,6 +160,13 @@ export function RegressionStudio() {
                   </tr>
                 </thead>
                 <tbody>
+                  {runs.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="py-6 text-center text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>
+                        No governed regression run history returned by the backend.
+                      </td>
+                    </tr>
+                  )}
                   {runs.map((run) => (
                     <tr key={run.id} style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.1)' }}>
                       <td className="py-2" style={{ color: 'hsl(var(--tf-muted))' }}>{run.timestamp}</td>
@@ -209,6 +225,9 @@ export function RegressionStudio() {
 
       {/* View: Compare */}
       {view === 'compare' && <VersionComparePanel />}
+
+      {/* View: Advanced — full regression statistical laboratory */}
+      {view === 'advanced' && <RegressionStudioDashboard />}
 
       {/* View: Model Detail */}
       {view === 'detail' && selectedModelId && (

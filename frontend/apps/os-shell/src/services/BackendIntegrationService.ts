@@ -1,5 +1,5 @@
 /**
- * BackendIntegrationService -- mock fallback removed. Errors propagate honestly.
+ * BackendIntegrationService -- fallback data removed. Errors propagate honestly.
  *
  * This service provides backend connectivity with real API calls to the
  * Terrafusion .NET backend services. When the backend is unavailable,
@@ -48,7 +48,7 @@ export class BackendIntegrationService {
   /**
    * Initialize backend connection and verify system health
    */
-  async initialize(): Promise<{ success: boolean; mockMode: boolean; healthStatus: SystemHealth }> {
+  async initialize(): Promise<{ success: boolean; degradedMode: boolean; healthStatus: SystemHealth }> {
 
     try {
       const healthCheck = await this.performHealthCheck();
@@ -56,7 +56,7 @@ export class BackendIntegrationService {
       if (healthCheck.backend_connected) {
         return {
           success: true,
-          mockMode: false,
+          degradedMode: false,
           healthStatus: healthCheck,
         };
       } else {
@@ -68,7 +68,7 @@ export class BackendIntegrationService {
 
       return {
         success: false,
-        mockMode: false,
+        degradedMode: true,
         healthStatus: this.healthStatus,
       };
     }
@@ -191,10 +191,10 @@ export class BackendIntegrationService {
 
   /**
    * Check if system is connected to backend
-   * Always returns false now that mock mode has been removed.
+   * Returns true when backend connectivity is degraded.
    * Callers should use getHealthStatus().backend_connected instead.
    */
-  isMockMode(): boolean {
+  isDegradedMode(): boolean {
     return !this.healthStatus.backend_connected;
   }
 
@@ -223,13 +223,13 @@ export class BackendIntegrationService {
    * Get connection statistics
    */
   getConnectionStats(): {
-    mockMode: boolean;
+    degradedMode: boolean;
     retryAttempts: number;
     lastHealthCheck: string;
     environment: string;
   } {
     return {
-      mockMode: !this.healthStatus.backend_connected,
+      degradedMode: !this.healthStatus.backend_connected,
       retryAttempts: this.connectionRetries,
       lastHealthCheck: this.healthStatus.last_health_check,
       environment: this.config.environment,

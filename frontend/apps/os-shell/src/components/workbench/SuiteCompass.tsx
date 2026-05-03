@@ -46,10 +46,10 @@ export interface SuiteCompassProps {
 }
 
 // ============================================================================
-// Default Compass Items (Canonical Order)
+// Compass Items (Canonical Order)
 // ============================================================================
 
-const DEFAULT_COMPASS_ITEMS: readonly SuiteCompassItem[] = [
+const SUITE_COMPASS_ITEMS: readonly SuiteCompassItem[] = [
   {
     slug: 'summary',
     label: 'Summary',
@@ -107,7 +107,7 @@ const DEFAULT_COMPASS_ITEMS: readonly SuiteCompassItem[] = [
 export const SuiteCompass: React.FC<SuiteCompassProps> = ({
   activeTab,
   onTabChange,
-  items = DEFAULT_COMPASS_ITEMS as unknown as SuiteCompassItem[],
+  items = SUITE_COMPASS_ITEMS as unknown as SuiteCompassItem[],
 }) => {
   const [hoveredSlug, setHoveredSlug] = useState<WorkbenchTabSlug | null>(null);
 

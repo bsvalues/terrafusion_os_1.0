@@ -50,19 +50,17 @@ public class SystemHealthController : ControllerBase
                 IntentFilter = intentFilter,
                 ModuleCountTotal = totalDiscovered,
                 ModuleCountActive = activeLoaded,
-                ModuleCountFilteredOut = 0,
+                // Real intent-filter-out count from the most recent module
+                // refresh (was previously hardcoded to 0, which broke the
+                // SystemHealth contract test as soon as ANY module was
+                // filtered or invalid). Note: validation-failed modules
+                // are NOT counted here — they're surfaced via FailedModules
+                // on the underlying health probe and contribute to Warnings.
+                ModuleCountFilteredOut = _moduleLoader.LastFilteredOutCount,
                 ModuleCount = health.ModuleCount,
                 HealthyModules = health.HealthyModules,
                 SystemComponents = health.SystemComponents,
-                Warnings = health.IsHealthy
-                    ? new List<string>()
-                    : new List<string>
-                    {
-                        health.ErrorMessage ?? "One or more components are unhealthy",
-                        unhealthyComponents.Count > 0
-                            ? $"Unhealthy components: {string.Join(", ", unhealthyComponents)}"
-                            : "No component detail available"
-                    }
+                Warnings = BuildHealthWarnings(health, unhealthyComponents, activeLoaded, totalDiscovered)
             };
 
             return Ok(response);
@@ -83,5 +81,36 @@ public class SystemHealthController : ControllerBase
                 Warnings = new List<string> { "Health probe exception", ex.Message }
             });
         }
+    }
+
+    private static List<string> BuildHealthWarnings(
+        SystemHealthStatus health,
+        List<string> unhealthyComponents,
+        int activeLoaded,
+        int totalDiscovered)
+    {
+        var warnings = new List<string>();
+
+        if (!health.IsHealthy)
+        {
+            warnings.Add(health.ErrorMessage ?? "One or more components are unhealthy");
+            warnings.Add(unhealthyComponents.Count > 0
+                ? $"Unhealthy components: {string.Join(", ", unhealthyComponents)}"
+                : "No component detail available");
+        }
+
+        if (health.FailedModules > 0)
+        {
+            warnings.Add($"Modules in ValidationFailed state: {health.FailedModules}");
+        }
+
+        // Informational — not a failure. Inactive-by-design scaffolds are expected
+        // during platform bring-up and do NOT flip overall Healthy.
+        if (activeLoaded == 0 && totalDiscovered > 0)
+        {
+            warnings.Add($"No active modules loaded ({totalDiscovered} discovered, all inactive-by-design)");
+        }
+
+        return warnings;
     }
 }

@@ -1,0 +1,20 @@
+{
+  "contractPackVersion": "1.0.0",
+  "moduleApiVersion": "1.0.0",
+  "requestId": "test-req-001",
+  "action": "calculate_cost",
+  "payload": {
+    "subject": {
+      "parcelId": "PARCEL-0001",
+      "attributes": {
+        "sqft": 1850.0,
+        "quality": "GOOD",
+        "condition": "AVERAGE"
+      }
+    },
+    "tables": {
+      "baseRate": 145.5,
+      "modifiers": { "GOOD": 1.15, "AVERAGE": 1.0, "DepreciationRate": 0.1 }
+    }
+  }
+}

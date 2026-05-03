@@ -158,8 +158,8 @@ const CostWizardPage: React.FC = () => {
                       <span>{savedEstimate.inputValues.yearBuilt}</span>
                     </div>
                     <div className="flex justify-between border-b pb-1">
-                      <span className="text-muted-foreground">Region:</span>
-                      <span>{savedEstimate.inputValues.region}</span>
+                      <span className="text-muted-foreground">Reval Area:</span>
+                      <span>{savedEstimate.inputValues.revalArea ?? savedEstimate.inputValues.region}</span>
                     </div>
                   </div>
                 </div>

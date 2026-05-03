@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { getSession } from '../auth/session';
 import { useCompanionStore } from '../stores/companionStore';
 import type { EditorMarker } from '../stores/companionStore';
+import type { Property } from '../types/domain';
+import { createStableId } from '../utils/stableId';
 
 // ============================================================================
 // Design tokens — matches TerraFusion light warm theme
@@ -81,7 +83,7 @@ interface ExplainContext {
 // ============================================================================
 
 function makeId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  return createStableId('muse');
 }
 
 function formatTime(d: Date): string {
@@ -115,11 +117,80 @@ function buildContextSignature(ctx: ExplainContext): string {
   ].join('|');
 }
 
-async function callExplain(
+/**
+ * ParcelSummary — bounded subset of Property fields wired into the explain
+ * call body so the backend has parcel-grounded context without a second
+ * lookup. specialDistricts is flattened to a comma-separated string for
+ * canonical wire serialization.
+ */
+export interface ParcelSummary {
+  address?: string;
+  city?: string;
+  totalAssessedValue?: number;
+  yearBuilt?: number;
+  lastSalePrice?: number;
+  neighborhood?: string;
+  zoning?: string;
+  specialDistricts?: string;
+  latitude?: number;
+  longitude?: number;
+  marketValue?: number;
+  landValue?: number;
+  improvementValue?: number;
+  taxableValue?: number;
+  ownerName?: string;
+  propertyType?: string;
+  landAcreage?: number;
+  buildingSquareFeet?: number;
+  legalDescription?: string;
+  taxDistrictName?: string;
+}
+
+/**
+ * buildParcelSummary — derive a ParcelSummary from the active parcel store
+ * snapshot. Returns undefined when there is no parcel context or the
+ * parcel id does not match the active id (stale store guard).
+ */
+export function buildParcelSummary(
+  parcel: Property | null | undefined,
+  activeParcelId: string | null | undefined,
+): ParcelSummary | undefined {
+  if (!parcel || !activeParcelId) return undefined;
+  if (parcel.parcelId !== activeParcelId) return undefined;
+
+  const summary: ParcelSummary = {
+    address: parcel.address,
+    city: parcel.city,
+    totalAssessedValue: parcel.totalAssessedValue,
+    yearBuilt: parcel.yearBuilt,
+    lastSalePrice: parcel.lastSalePrice,
+    neighborhood: parcel.neighborhood,
+    zoning: parcel.zoning,
+    specialDistricts: parcel.specialDistricts && parcel.specialDistricts.length > 0
+      ? parcel.specialDistricts.join(', ')
+      : undefined,
+    latitude: parcel.latitude,
+    longitude: parcel.longitude,
+    marketValue: parcel.marketValue,
+    landValue: parcel.landValue,
+    improvementValue: parcel.improvementValue,
+    taxableValue: parcel.taxableValue,
+    ownerName: parcel.ownerName,
+    propertyType: parcel.propertyType,
+    landAcreage: parcel.landAcreage,
+    buildingSquareFeet: parcel.buildingSquareFeet,
+    legalDescription: parcel.legalDescription,
+    taxDistrictName: parcel.taxDistrictName,
+  };
+  return summary;
+}
+
+export async function callExplain(
   query: string,
   countyId: string,
   actorId: string,
-  context: ExplainContext
+  context: ExplainContext,
+  parcelSummary?: ParcelSummary,
 ): Promise<ExplainApiResponse> {
   const body: Record<string, unknown> = {
     query,
@@ -130,6 +201,7 @@ async function callExplain(
   };
   // Keep legacy parcelId at top level for backward compat with existing backend handler
   if (context.activeParcelId) body.parcelId = context.activeParcelId;
+  if (parcelSummary) body.parcelSummary = parcelSummary;
 
   const res = await fetch('/api/pilot/explain', {
     method: 'POST',

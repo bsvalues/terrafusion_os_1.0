@@ -11,7 +11,9 @@
  * hammering the endpoint while the user is mid-typing.
  */
 
-import { useCallback, useEffect, useReducer, useState } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
+import { getSession } from '@/auth/session';
+import { buildCountyScopedSessionHeaders } from '@/services/countyIsolation';
 import { apiFetch } from '../../lib/apiBase';
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -34,7 +36,7 @@ interface CompsPoolItem {
   bathrooms:          number | null;
   condition:          string | null;
   qualityGrade:       string | null;
-  pacsComputedRatio:  number | null;
+  salesRatio:         number | null;
   qualificationSource: 'decision' | 'recommendation';
 }
 
@@ -143,9 +145,9 @@ function fmtNum(n: number | null): string {
 }
 
 function fmtRatio(n: number | null): string {
-  // pacsComputedRatio is on the 0–100 scale from PACS
+  // salesRatio is a 0–1 decimal (TF-computed: AssessedValue / SalePrice)
   if (n == null) return '—';
-  return `${n.toFixed(1)}%`;
+  return `${(n * 100).toFixed(1)}%`;
 }
 
 function conditionLabel(c: string | null): string {
@@ -160,6 +162,12 @@ interface Props {
 }
 
 export function CompsPoolBrowser({ taxYear = TAX_YEAR }: Props) {
+  const countyScope = useMemo(() => {
+    const session = getSession();
+    const { headers, isolated } = buildCountyScopedSessionHeaders(session);
+    return { countyId: session?.countyId ?? null, headers, isolated };
+  }, []);
+
   const [form,      setForm]      = useState<FilterForm>(EMPTY_FORM);
   const [committed, setCommitted] = useState<CommittedFilters>(EMPTY_COMMITTED);
 
@@ -182,15 +190,21 @@ export function CompsPoolBrowser({ taxYear = TAX_YEAR }: Props) {
       if (f.maxPrice)     params.set('maxPrice',     String(f.maxPrice));
       if (f.minGla)       params.set('minGla',       String(f.minGla));
       if (f.maxGla)       params.set('maxGla',       String(f.maxGla));
-      return `/api/terraforge/comps-pool?${params.toString()}`;
+      if (countyScope.countyId) params.set('countyId', countyScope.countyId);
+      return `/terraforge/comps-pool?${params.toString()}`;
     },
-    [taxYear],
+    [countyScope.countyId, taxYear],
   );
 
   const fetchPage = useCallback(async () => {
     dispatch({ type: 'FETCH_START' });
+    if (!countyScope.isolated) {
+      dispatch({ type: 'FETCH_ERR', error: 'County scope required for comps pool.' });
+      return;
+    }
+
     try {
-      const res  = await apiFetch(buildUrl(state.page, committed));
+      const res  = await apiFetch(buildUrl(state.page, committed), { headers: countyScope.headers });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = (await res.json()) as CompsPoolPage;
 
@@ -208,7 +222,7 @@ export function CompsPoolBrowser({ taxYear = TAX_YEAR }: Props) {
         error: e instanceof Error ? e.message : 'Failed to load',
       });
     }
-  }, [buildUrl, state.page, committed]);
+  }, [buildUrl, countyScope.headers, countyScope.isolated, state.page, committed]);
 
   useEffect(() => {
     void fetchPage();
@@ -389,7 +403,7 @@ export function CompsPoolBrowser({ taxYear = TAX_YEAR }: Props) {
             <span role="columnheader">Yr blt</span>
             <span role="columnheader">Bed/Bath</span>
             <span role="columnheader">Condition</span>
-            <span role="columnheader">PACS ratio</span>
+            <span role="columnheader">Sales ratio</span>
             <span role="columnheader">Source</span>
           </div>
 
@@ -427,13 +441,13 @@ export function CompsPoolBrowser({ taxYear = TAX_YEAR }: Props) {
                 {conditionLabel(item.condition)}
               </span>
               <span className="cp-cell cp-cell--num" role="cell">
-                {item.pacsComputedRatio != null ? (
+                {item.salesRatio != null ? (
                   <span className={`cp-ratio-badge ${
-                    item.pacsComputedRatio >= 90 && item.pacsComputedRatio <= 110
+                    item.salesRatio >= 0.9 && item.salesRatio <= 1.1
                       ? 'cp-ratio-badge--ok'
                       : 'cp-ratio-badge--out'
                   }`}>
-                    {fmtRatio(item.pacsComputedRatio)}
+                    {fmtRatio(item.salesRatio)}
                   </span>
                 ) : (
                   <span className="cp-ratio-badge cp-ratio-badge--missing">—</span>

@@ -243,7 +243,7 @@ public class ToolRiskPolicyTests
         var toolsFile = Path.Combine(repoRoot, "tools", "registry", "terrapilot.tools.json");
         if (!File.Exists(toolsFile)) return;
 
-        var validLanes = new HashSet<string> { "forge", "atlas", "dais", "dossier", "os", "pilot", "gpt" };
+        var validLanes = new HashSet<string> { "forge", "atlas", "dais", "dossier", "os", "pilot", "gpt", "clerk", "treasury", "audit" };
 
         using var doc = JsonDocument.Parse(File.ReadAllText(toolsFile));
         var tools = doc.RootElement.GetProperty("tools");
@@ -263,7 +263,7 @@ public class ToolRiskPolicyTests
         }
 
         violations.Should().BeEmpty(
-            "writeLane values must be canonical suites (forge|atlas|dais|dossier|os|pilot|gpt). " +
+            "writeLane values must be canonical suites (forge|atlas|dais|dossier|os|pilot|gpt|clerk|treasury|audit). " +
             $"Found {violations.Count} violation(s):\n" +
             string.Join("\n", violations));
     }
@@ -420,7 +420,7 @@ public class ToolRiskPolicyTests
         var toolsFile = Path.Combine(repoRoot, "tools", "registry", "terrapilot.tools.json");
         if (!File.Exists(toolsFile)) return;
 
-        var validSuites = new HashSet<string> { "forge", "atlas", "dais", "dossier", "os", "pilot", "gpt" };
+        var validSuites = new HashSet<string> { "forge", "atlas", "dais", "dossier", "os", "pilot", "gpt", "clerk", "treasury", "audit" };
 
         using var doc = JsonDocument.Parse(File.ReadAllText(toolsFile));
         var tools = doc.RootElement.GetProperty("tools");
@@ -438,7 +438,7 @@ public class ToolRiskPolicyTests
         }
 
         violations.Should().BeEmpty(
-            "all tool suite values must be canonical (forge|atlas|dais|dossier|os|pilot|gpt). " +
+            "all tool suite values must be canonical (forge|atlas|dais|dossier|os|pilot|gpt|clerk|treasury|audit). " +
             $"Found {violations.Count} violation(s):\n" +
             string.Join("\n", violations));
     }

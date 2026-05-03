@@ -124,6 +124,102 @@ export interface ValuationModelResult {
   correlationId?: string;
 }
 
+/* ── assessor superpowers: calibration workbench ───────── */
+
+export type CalibrationScope = 'county' | 'reval_area' | 'neighborhood';
+
+export interface CountyImpactPreview {
+  prdBefore: number;
+  prdAfter: number;
+  codBefore: number;
+  codAfter: number;
+  avDelta: number;
+  fairnessDelta: number;
+}
+
+export interface AssessorActionSummary {
+  draftVersion: string;
+  reasonCode: string;
+  confirmation: boolean;
+  impactPreview: CountyImpactPreview;
+  signoffRequired: boolean;
+  traceRef: string;
+  targetLane: string;
+}
+
+export interface AssessorFindingSummary {
+  findingType: string;
+  scope: string;
+  severity: string;
+  confidence: number;
+  countyId: string;
+  taxYear: number;
+  evidenceLineage: string[];
+  affectedParcelIds: string[];
+  recommendedAction: string;
+  assignedRole: string;
+  correlationId: string;
+}
+
+export interface RateAdjustmentRecommendation {
+  scopeId: string;
+  factor: number;
+  rationale: string;
+}
+
+export interface RateAdjustmentProposalResult {
+  proposalId: string;
+  action: AssessorActionSummary;
+  findings: AssessorFindingSummary[];
+  recommendedAdjustments: RateAdjustmentRecommendation[];
+  narrative: string;
+}
+
+export interface ApplyRateAdjustmentResult {
+  action: AssessorActionSummary;
+  status: 'draft_updated';
+  payloadRef: string;
+  signoffPacketId: string;
+}
+
+export interface RatioStudyResult {
+  metrics: CountyImpactPreview;
+  readyForSignoff: boolean;
+  narrative: string;
+}
+
+export interface MatrixComparisonResult {
+  baseVersion: string;
+  compareVersion: string;
+  changedCells: number;
+  impactedScopes: string[];
+  summary: string;
+}
+
+export type ParcelIssueType =
+  | 'classification'
+  | 'condition'
+  | 'geometry'
+  | 'sale_linkage'
+  | 'permit_gap';
+
+export interface ParcelDataIssueResult {
+  queueItemId: string;
+  payloadRef: string;
+  route: {
+    parcelId: string;
+    nextTool: 'route_to_parcel';
+  };
+  action: AssessorActionSummary;
+}
+
+export interface CalibrationMemoResult {
+  payloadRef: string;
+  sections: string[];
+  summary: string;
+  action: AssessorActionSummary;
+}
+
 /* ── Shared sub-tab props ───────────────────────────────── */
 
 export interface ForgeSubTabProps {
@@ -150,6 +246,26 @@ export const VALUATION_REASON_CODES = [
   { value: 'market_adjustment', label: 'Market Adjustment' },
   { value: 'new_construction', label: 'New Construction' },
   { value: 'correction', label: 'Correction' },
+] as const;
+
+export const CALIBRATION_SCOPES = [
+  { value: 'county', label: 'County' },
+  { value: 'reval_area', label: 'Reval Area' },
+  { value: 'neighborhood', label: 'Neighborhood' },
+] as const;
+
+export const CALIBRATION_MEMO_AUDIENCES = [
+  { value: 'internal', label: 'Internal Review' },
+  { value: 'board', label: 'Board Packet' },
+  { value: 'dor', label: 'DOR Packet' },
+] as const;
+
+export const PARCEL_ISSUE_TYPES = [
+  { value: 'classification', label: 'Classification' },
+  { value: 'condition', label: 'Condition' },
+  { value: 'geometry', label: 'Geometry' },
+  { value: 'sale_linkage', label: 'Sale Linkage' },
+  { value: 'permit_gap', label: 'Permit Gap' },
 ] as const;
 
 /* ── Utilities ──────────────────────────────────────────── */

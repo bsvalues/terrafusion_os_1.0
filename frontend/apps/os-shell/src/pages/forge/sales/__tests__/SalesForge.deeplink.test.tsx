@@ -1,0 +1,193 @@
+// frontend/apps/os-shell/src/pages/forge/sales/__tests__/SalesForge.deeplink.test.tsx
+//
+// Task D2 — SalesForge deeplink consumption.
+// Verifies the mount-time handler for County Studio Inspector metadata:
+//   - stratumKey → setSelectedStratumKey + activeTab='ai-audit'
+//   - taxYear → setTaxYear (queue state reset so stale data isn't shown)
+//   - segmentId/segmentLabel → setContextSegment → renders Scoped From chip
+//   - chip click → activateModule('county-studio', ...) for round-trip
+//   - deeplinkQuery-only fallback parsing still produces the same effects
+//   - no-metadata mount does NOT clobber existing store state
+
+import React from 'react';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
+import SalesForge from '../SalesForge';
+import { useSalesForgeStore } from '../salesForgeStore';
+
+// Mock activateModule so chip-click is observable without the full shell.
+const activateModuleMock = vi.hoisted(() => vi.fn());
+vi.mock('@/orchestration/moduleActivation', () => ({
+  default: activateModuleMock,
+  activateModule: activateModuleMock,
+}));
+
+// The child panels fetch live data — replace them with cheap render stubs
+// so tests don't need to mock every PACS endpoint.
+vi.mock('../panels/QualificationQueuePanel', () => ({
+  QualificationQueuePanel: () => <div data-testid="stub-queue" />,
+}));
+vi.mock('../panels/RatioAuditPanel', () => ({
+  RatioAuditPanel: () => <div data-testid="stub-ratio" />,
+}));
+vi.mock('../panels/NeighborhoodViewPanel', () => ({
+  NeighborhoodViewPanel: () => <div data-testid="stub-hood" />,
+}));
+vi.mock('../panels/CodeAuditPanel', () => ({
+  CodeAuditPanel: () => <div data-testid="stub-code" />,
+}));
+vi.mock('../panels/DorExportPanel', () => ({
+  DorExportPanel: () => <div data-testid="stub-dor" />,
+}));
+vi.mock('../audit/AuditCommandCenter', () => ({
+  AuditCommandCenter: ({ taxYear }: { taxYear: number }) => (
+    <div data-testid="stub-ai-audit" data-year={taxYear} />
+  ),
+}));
+vi.mock('../components/RunningStatsPanel', () => ({
+  RunningStatsPanel: () => <div data-testid="stub-stats" />,
+}));
+
+function resetStore() {
+  // Reset via store actions so the setter contracts are exercised too.
+  act(() => {
+    const s = useSalesForgeStore.getState();
+    s.setActiveTab('queue');
+    s.setSelectedStratumKey(null);
+    s.setTaxYear(2026);
+    s.setContextSegment(null);
+    s.clearFilters();
+  });
+}
+
+describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
+  beforeEach(() => {
+    activateModuleMock.mockReset();
+    resetStore();
+  });
+
+  it('does not touch store state when no metadata is provided', () => {
+    render(<SalesForge />);
+    const s = useSalesForgeStore.getState();
+    expect(s.selectedStratumKey).toBeNull();
+    expect(s.contextSegmentId).toBeNull();
+    // Default tab stays 'queue' (no forced switch).
+    expect(s.activeTab).toBe('queue');
+    // No scoped-from chip when there's no segment context.
+    expect(screen.queryByTestId('sf-scoped-from-chip')).not.toBeInTheDocument();
+  });
+
+  it('consumes pre-split metadata (stratumKey / taxYear / segmentId) on mount', async () => {
+    render(
+      <SalesForge
+        metadata={{
+          deeplinkQuery: '?stratum=R1&year=2025&segmentId=seg-42',
+          stratumKey: 'R1',
+          taxYear: 2025,
+          segmentId: 'seg-42',
+          segmentLabel: 'Kennewick R1',
+        }}
+      />
+    );
+    const s = useSalesForgeStore.getState();
+    // Stratum selection drives AI AUDIT landing tab.
+    expect(s.selectedStratumKey).toBe('R1');
+    expect(s.activeTab).toBe('ai-audit');
+    // Year filter swapped.
+    expect(s.taxYear).toBe(2025);
+    // Segment context drives Scoped From chip.
+    expect(s.contextSegmentId).toBe('seg-42');
+    expect(s.contextSegmentLabel).toBe('Kennewick R1');
+
+    const chip = screen.getByTestId('sf-scoped-from-chip');
+    expect(chip).toHaveAttribute('data-segment-id', 'seg-42');
+    expect(chip.textContent).toMatch(/Kennewick R1/);
+
+    // AI AUDIT panel is lazy + Suspense — wait for the resolve.
+    const aiAudit = await screen.findByTestId('stub-ai-audit');
+    expect(aiAudit.getAttribute('data-year')).toBe('2025');
+  });
+
+  it('falls back to parsing raw deeplinkQuery when pre-split fields are absent', () => {
+    render(
+      <SalesForge
+        metadata={{ deeplinkQuery: '?stratum=C2&year=2024&segmentId=seg-7' }}
+      />
+    );
+    const s = useSalesForgeStore.getState();
+    expect(s.selectedStratumKey).toBe('C2');
+    expect(s.taxYear).toBe(2024);
+    expect(s.contextSegmentId).toBe('seg-7');
+    // Label is unknown, chip still renders using the segmentId.
+    const chip = screen.getByTestId('sf-scoped-from-chip');
+    expect(chip.textContent).toMatch(/seg-7/);
+  });
+
+  it('applies neighborhood rollup scope to county and hood filters', async () => {
+    render(
+      <SalesForge
+        metadata={{
+          countyName: 'Benton County',
+          taxYear: 2026,
+          rollupScope: 'neighborhood',
+          neighborhoodCode: 'NBHD-WR01',
+          neighborhoodName: 'West Richland Estates',
+        }}
+      />
+    );
+
+    await waitFor(() => {
+      const s = useSalesForgeStore.getState();
+      expect(s.committedFilters.countyCode).toBe('005');
+      expect(s.committedFilters.hood).toBe('NBHD-WR01');
+      expect(s.activeTab).toBe('neighborhoods');
+    });
+
+    expect(screen.getAllByText(/West Richland Estates/).length).toBeGreaterThan(0);
+    expect(
+      screen.getByText(/counties track reval area and neighborhood before parcel-level action/i),
+    ).toBeInTheDocument();
+  });
+
+  it('keeps city overview handoffs honest and county-scoped', async () => {
+    render(
+      <SalesForge
+        metadata={{
+          countyName: 'Benton County',
+          taxYear: 2026,
+          rollupScope: 'city',
+          city: 'Kennewick',
+        }}
+      />
+    );
+
+    await waitFor(() => {
+      const s = useSalesForgeStore.getState();
+      expect(s.committedFilters.countyCode).toBe('005');
+      expect(s.committedFilters.hood).toBeNull();
+      expect(s.activeTab).toBe('queue');
+    });
+
+    expect(screen.getAllByText(/city overview/i).length).toBeGreaterThan(0);
+    expect(
+      screen.getByText(/city scope remains triage-only until you narrow below the city rollup/i),
+    ).toBeInTheDocument();
+  });
+
+  it('Scoped From chip click fires activateModule("county-studio") with segmentId', () => {
+    render(
+      <SalesForge
+        metadata={{ stratumKey: 'R1', taxYear: 2026, segmentId: 'seg-back' }}
+      />
+    );
+    const chip = screen.getByTestId('sf-scoped-from-chip');
+    fireEvent.click(chip);
+    expect(activateModuleMock).toHaveBeenCalledWith(
+      'county-studio',
+      expect.objectContaining({
+        source: 'system',
+        metadata: expect.objectContaining({ segmentId: 'seg-back' }),
+      })
+    );
+  });
+});

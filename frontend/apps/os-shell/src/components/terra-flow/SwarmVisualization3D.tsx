@@ -2,10 +2,9 @@
  * SwarmVisualization3D Component
  *
  * 3D visualization of the TerraFusion AI agent swarm using Three.js.
- * Displays up to 50,000 agents in real-time with hierarchical organization.
+ * Displays provider-backed agent state when available.
  *
- * Phase 1: Placeholder with connection to backend swarm data
- * Phase 2: Full 3D rendering with WebGL acceleration @ 60 FPS
+ * No synthetic operational counts are generated in the browser.
  *
  * @author TerraFusion Elite Government OS Engineering Agent
  * @version 1.0.0 - Phase 1 Foundation
@@ -52,16 +51,16 @@ export function SwarmVisualization3D({
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [metrics, setMetrics] = useState<AgentMetrics>({
     totalAgents: agentCount,
-    activeAgents: Math.floor(agentCount * 0.87),
-    idleAgents: Math.floor(agentCount * 0.12),
-    errorAgents: Math.floor(agentCount * 0.01),
-    avgCpuUsage: 34.2,
-    avgMemoryUsage: 52.8,
-    tasksCompleted: 12847
+    activeAgents: 0,
+    idleAgents: 0,
+    errorAgents: 0,
+    avgCpuUsage: 0,
+    avgMemoryUsage: 0,
+    tasksCompleted: 0
   });
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Phase 1: Placeholder - will be replaced with Three.js in Phase 2
+  // Provider-backed visualization shell.
   useEffect(() => {
     if (!canvasRef.current) return;
 
@@ -80,7 +79,7 @@ export function SwarmVisualization3D({
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Simple 2D placeholder visualization (will be replaced with Three.js)
+    // Source-backed 2D visualization shell. No browser-generated operational counts.
     let animationId: number;
     let frame = 0;
 
@@ -153,8 +152,8 @@ export function SwarmVisualization3D({
 
       ctx.font = '12px monospace';
       ctx.fillStyle = 'var(--tf-text-secondary)'; // slate-500
-      ctx.fillText('Phase 1: Placeholder Visualization', canvas.width / 2, canvas.height / 2 + 40);
-      ctx.fillText('Phase 2: Full 3D WebGL Rendering @ 60 FPS', canvas.width / 2, canvas.height / 2 + 60);
+      ctx.fillText('Provider-backed visualization shell', canvas.width / 2, canvas.height / 2 + 40);
+      ctx.fillText('Operational counts require governed swarm telemetry', canvas.width / 2, canvas.height / 2 + 60);
 
       frame++;
       animationId = requestAnimationFrame(animate);
@@ -170,21 +169,8 @@ export function SwarmVisualization3D({
     };
   }, [isPlaying, agentCount, coherence, harmony]);
 
-  // Update metrics periodically
   useEffect(() => {
-    const interval = setInterval(() => {
-      setMetrics(prev => ({
-        totalAgents: agentCount,
-        activeAgents: Math.floor(agentCount * (0.85 + Math.random() * 0.05)),
-        idleAgents: Math.floor(agentCount * (0.10 + Math.random() * 0.05)),
-        errorAgents: Math.floor(agentCount * (0.005 + Math.random() * 0.01)),
-        avgCpuUsage: 30 + Math.random() * 10,
-        avgMemoryUsage: 50 + Math.random() * 10,
-        tasksCompleted: prev.tasksCompleted + Math.floor(Math.random() * 50)
-      }));
-    }, 2000);
-
-    return () => clearInterval(interval);
+    setMetrics((prev) => ({ ...prev, totalAgents: agentCount }));
   }, [agentCount]);
 
   const togglePlayback = () => {
@@ -198,13 +184,11 @@ export function SwarmVisualization3D({
 
   return (
     <div className="space-y-6">
-      {/* Phase 1 Notice */}
       <Alert className="bg-blue-900/20 border-blue-800">
         <AlertCircle className="h-4 w-4 text-blue-400" />
-        <AlertTitle className="text-blue-400">Phase 1 Placeholder</AlertTitle>
+        <AlertTitle className="text-blue-400">Swarm Visualization — Telemetry Required</AlertTitle>
         <AlertDescription className="text-slate-300">
-          This is a simplified 2D visualization. Phase 2 will implement full 3D rendering with Three.js/WebGL,
-          supporting real-time visualization of 50,000 agents at 60 FPS with interactive controls.
+          This surface no longer fabricates agent status. Operational counts require governed swarm telemetry.
         </AlertDescription>
       </Alert>
 

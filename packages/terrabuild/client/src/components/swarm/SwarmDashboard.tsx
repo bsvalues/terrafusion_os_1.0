@@ -88,15 +88,52 @@ export function SwarmDashboard() {
 
   const isActive = statusData?.active;
   const agentCount = statusData?.status?.agentCount || 0;
+  const activeAgents = statusData?.status?.activeAgents || 0;
+  const idleAgents = statusData?.status?.idleAgents || 0;
+  const busyAgents = statusData?.status?.busyAgents || 0;
   const pendingTasks = statusData?.status?.pendingTasks || 0;
+  const successRate = statusData?.status?.successRate || 0;
+  const throughput = statusData?.status?.throughputPerMinute || 0;
 
   return (
     <div className="space-y-4">
+      {/* Swarm metrics row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <Card>
+          <CardContent className="pt-4 pb-3">
+            <div className="text-xs text-muted-foreground">Total Agents</div>
+            <div className="text-2xl font-bold">{agentCount.toLocaleString()}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 pb-3">
+            <div className="text-xs text-muted-foreground">Active / Idle</div>
+            <div className="text-2xl font-bold">
+              <span className="text-green-500">{activeAgents}</span>
+              <span className="text-muted-foreground text-lg"> / </span>
+              <span className="text-slate-400">{idleAgents}</span>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 pb-3">
+            <div className="text-xs text-muted-foreground">Success Rate</div>
+            <div className="text-2xl font-bold">{(successRate * 100).toFixed(1)}%</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 pb-3">
+            <div className="text-xs text-muted-foreground">Throughput/min</div>
+            <div className="text-2xl font-bold">{throughput.toFixed(1)}</div>
+          </CardContent>
+        </Card>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle>AI Swarm Control Panel</CardTitle>
           <CardDescription>
-            Manage and monitor the TerraBuild AI agent swarm
+            Manage and monitor the TerraFusion OS AI agent swarm
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -106,7 +143,7 @@ export function SwarmDashboard() {
                 {isActive ? "Active" : "Inactive"}
               </Badge>
               <span className="text-sm text-gray-500">
-                {agentCount} agents | {pendingTasks} pending tasks
+                {agentCount.toLocaleString()} agents | {busyAgents} busy | {pendingTasks} pending
               </span>
             </div>
             <Button
@@ -132,7 +169,7 @@ export function SwarmDashboard() {
             </TabsContent>
 
             <TabsContent value="tasks">
-              <SwarmTaskRunner isActive={isActive} />
+              <SwarmTaskRunner isActive={isActive ?? false} />
             </TabsContent>
 
             <TabsContent value="demos" className="space-y-4">

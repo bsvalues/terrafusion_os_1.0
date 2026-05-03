@@ -81,7 +81,7 @@ export const ForgeYearContextPanel: React.FC<ForgeYearContextPanelProps> = ({
         <Chip
           label="⚓ Baseline"
           variant="default"
-          title="Earliest PACS layer — asend/proval migration floor"
+          title="Earliest year on record for this parcel — used as the valuation baseline"
         />
       )}
 
@@ -90,7 +90,7 @@ export const ForgeYearContextPanel: React.FC<ForgeYearContextPanelProps> = ({
         <Chip
           label={`State: ${layer.propState}`}
           variant="default"
-          title="PACS PropState code"
+          title="Property state code for this assessment year"
         />
       )}
 
@@ -115,7 +115,7 @@ export const ForgeYearContextPanel: React.FC<ForgeYearContextPanelProps> = ({
         <Chip
           label={`Exemptions: ${layer.programs.exemptionCodes.join(', ')}`}
           variant="info"
-          title="Active exemption codes for this year layer"
+          title="Active exemption codes for this assessment year"
         />
       )}
 

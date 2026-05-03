@@ -21,7 +21,17 @@ export function SpatialDiagnosticsPanel() {
   if (!diagnostics) {
     return (
       <div data-testid="spatial-diagnostics" className="p-4">
-        <span style={{ color: 'hsl(var(--tf-muted))' }}>No diagnostics data available</span>
+        <div
+          data-testid="spatial-diagnostics-unavailable"
+          className="rounded border px-4 py-3 text-sm"
+          style={{
+            borderColor: 'hsl(var(--tf-warning, 40 90% 60%) / 0.35)',
+            background: 'hsl(var(--tf-warning, 40 90% 60%) / 0.08)',
+            color: 'hsl(var(--tf-fg))',
+          }}
+        >
+          Spatial diagnostics unavailable. Atlas does not have a governed Moran&apos;s I diagnostics feed for this panel, and the legacy fixture bundle is not rendered here.
+        </div>
       </div>
     );
   }

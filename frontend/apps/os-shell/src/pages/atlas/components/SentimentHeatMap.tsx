@@ -38,24 +38,17 @@ function sentimentColor(score: number): string {
 }
 
 // ---------------------------------------------------------------------------
-// Default data
+// Empty data
 // ---------------------------------------------------------------------------
 
-const DEFAULT_AREAS: SentimentArea[] = [
-  { id: 's1', name: 'Downtown', score: 72, center: [46.23, -119.2] },
-  { id: 's2', name: 'Riverside', score: 85, center: [46.24, -119.21] },
-  { id: 's3', name: 'West Hills', score: 79, center: [46.25, -119.23] },
-  { id: 's4', name: 'Eastgate', score: 45, center: [46.22, -119.18] },
-  { id: 's5', name: 'Southridge', score: 91, center: [46.21, -119.22] },
-  { id: 's6', name: 'Northview', score: 62, center: [46.26, -119.19] },
-];
+const EMPTY_AREAS: SentimentArea[] = [];
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
 export default function SentimentHeatMap({
-  areas = DEFAULT_AREAS,
+  areas = EMPTY_AREAS,
   mapCenter = [46.235, -119.21],
   onAreaClick,
   className = '',
@@ -75,6 +68,12 @@ export default function SentimentHeatMap({
       role="img"
       aria-label="Neighborhood sentiment heatmap"
     >
+      {areas.length === 0 && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center text-sm text-white/50">
+          No governed sentiment layer loaded.
+        </div>
+      )}
+
       {/* Grid */}
       <div className="absolute inset-0 opacity-10">
         <svg width="100%" height="100%">
@@ -131,6 +130,7 @@ export default function SentimentHeatMap({
       })}
 
       {/* Color scale legend */}
+      {areas.length > 0 && (
       <div className="absolute bottom-3 left-3 bg-terra-midnight/80 backdrop-blur-sm rounded border border-white/10 p-2">
         <p className="text-[9px] text-white/40 uppercase tracking-wider mb-1">Sentiment</p>
         <div className="flex items-center gap-1">
@@ -142,6 +142,7 @@ export default function SentimentHeatMap({
           <span className="text-[9px] text-[#22C55E]">High</span>
         </div>
       </div>
+      )}
     </div>
   );
 }

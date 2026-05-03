@@ -1,0 +1,77 @@
+{
+  "checkedAt": "2026-04-30T23:25:44.839Z",
+  "slice": "compsforge-candidate-reconciliation-contract",
+  "status": "PASS",
+  "decision": "COMPSFORGE_CANDIDATE_RECONCILIATION_CONTRACT_REGISTERED_AND_ECHOED",
+  "contractId": "compsforge_candidate_reconciliation_v1",
+  "policy": {
+    "qualifiedOnlyDefault": true,
+    "saleWindowDefault": {
+      "start": "2016-01-01",
+      "end": "2026-12-31"
+    },
+    "maxCandidates": 30,
+    "defaultSelectedCandidates": 3,
+    "governedAdjustmentCountyCode": "005"
+  },
+  "population": "CompsForge county sales shard candidates for the active parcel or County Studio rollup handoff scope, followed by Benton-certified CostForge adjustment/reconciliation where supported",
+  "readPath": "GET /launch-data/washington/sales/by-county/{countyCode}.json plus POST /api/costforge/sales-comparison/adjust-comparable and POST /api/costforge/sales-comparison/reconcile",
+  "trustPosture": [
+    "Candidate selection is county-shard scoped and may run in rollup scouting mode, but scoring and reconciliation remain parcel-bound.",
+    "Qualified-only filtering defaults to true and the default sale window is 2016-01-01 through 2026-12-31.",
+    "Governed paired adjustment and reconciliation are Benton-certified only until additional county proof is promoted."
+  ],
+  "checks": [
+    {
+      "id": "contract-registered",
+      "passed": true,
+      "proof": ["os-platform/core/pilot/terrafusion-suite-contracts.json"],
+      "note": "CompsForge candidate/reconciliation contract is present in the suite registry."
+    },
+    {
+      "id": "contract-required",
+      "passed": true,
+      "proof": [
+        "terraforge_operational_health_v1",
+        "terraforge_statistics_compat_v1",
+        "terraforge_segment_derivation_v1",
+        "terraforge_correction_priority_v1",
+        "costforge_calibration_priority_v1",
+        "county_data_trust_launch_context_v1",
+        "compsforge_candidate_reconciliation_v1"
+      ],
+      "note": "Contract is part of the required suite contract list."
+    },
+    {
+      "id": "module-runtime-echo",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx"
+      ],
+      "note": "CompsForge module declares contract id, candidate policy, Benton-only governed adjustment posture, and UI contract echo."
+    },
+    {
+      "id": "service-selection-and-reconciliation-boundary",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/services/comparableSalesService.ts"
+      ],
+      "note": "Comparable sales service contains the filter, score, candidate selection, CostForge adjustment, and reconciliation boundaries."
+    },
+    {
+      "id": "ui-contract-test",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/suites/modules/__tests__/CompsForgeModule.deeplink.test.tsx"
+      ],
+      "note": "Focused CompsForge test proves the contract posture is visible in the module."
+    },
+    {
+      "id": "audit-adopted",
+      "passed": true,
+      "proof": ["os-platform/core/pilot/contract-adoption-audit.json"],
+      "note": "Contract adoption audit treats CompsForge as contract-backed instead of future out-of-scope work."
+    }
+  ],
+  "failures": []
+}

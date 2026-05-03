@@ -21,14 +21,10 @@ namespace TerraFusion.AI.Controllers
     [Produces("application/json")]
     public class AIOrchestrationController : ControllerBase
     {
-        private readonly IAIOrchestrationService _orchestrationService;
         private readonly ILogger<AIOrchestrationController> _logger;
 
-        public AIOrchestrationController(
-            IAIOrchestrationService orchestrationService,
-            ILogger<AIOrchestrationController> logger)
+        public AIOrchestrationController(ILogger<AIOrchestrationController> logger)
         {
-            _orchestrationService = orchestrationService;
             _logger = logger;
         }
 
@@ -42,8 +38,8 @@ namespace TerraFusion.AI.Controllers
         {
             try
             {
-                var status = await _orchestrationService.GetOrchestrationStatusAsync();
-                return Ok(status);
+                await Task.CompletedTask;
+                return OrchestrationUnavailable("status");
             }
             catch (Exception ex)
             {
@@ -62,8 +58,8 @@ namespace TerraFusion.AI.Controllers
         {
             try
             {
-                var performance = await _orchestrationService.GetAgentPerformanceAsync();
-                return Ok(performance);
+                await Task.CompletedTask;
+                return OrchestrationUnavailable("agents/performance");
             }
             catch (Exception ex)
             {
@@ -84,8 +80,8 @@ namespace TerraFusion.AI.Controllers
             try
             {
                 _logger.LogInformation("Distributing task: {TaskId}", task.TaskId);
-                var result = await _orchestrationService.DistributeTaskAsync(task);
-                return Ok(result);
+                await Task.CompletedTask;
+                return OrchestrationUnavailable("tasks/distribute");
             }
             catch (Exception ex)
             {
@@ -104,8 +100,8 @@ namespace TerraFusion.AI.Controllers
         {
             try
             {
-                var metrics = await _orchestrationService.GetLoadBalancingMetricsAsync();
-                return Ok(metrics);
+                await Task.CompletedTask;
+                return OrchestrationUnavailable("load-balancing");
             }
             catch (Exception ex)
             {
@@ -126,8 +122,8 @@ namespace TerraFusion.AI.Controllers
             try
             {
                 _logger.LogInformation("Running swarm optimization: {Strategy}", config.Strategy);
-                var report = await _orchestrationService.OptimizeSwarmAsync(config);
-                return Ok(report);
+                await Task.CompletedTask;
+                return OrchestrationUnavailable("optimize");
             }
             catch (Exception ex)
             {
@@ -146,8 +142,8 @@ namespace TerraFusion.AI.Controllers
         {
             try
             {
-                var status = await _orchestrationService.GetCoordinationStatusAsync();
-                return Ok(status);
+                await Task.CompletedTask;
+                return OrchestrationUnavailable("coordination");
             }
             catch (Exception ex)
             {
@@ -166,14 +162,26 @@ namespace TerraFusion.AI.Controllers
         {
             try
             {
-                var metrics = await _orchestrationService.GetSwarmIntelligenceMetricsAsync();
-                return Ok(metrics);
+                await Task.CompletedTask;
+                return OrchestrationUnavailable("intelligence");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting swarm intelligence metrics");
                 return StatusCode(500, new { error = "Failed to get swarm intelligence metrics" });
             }
+        }
+
+        private IActionResult OrchestrationUnavailable(string operation)
+        {
+            return StatusCode(StatusCodes.Status501NotImplemented, new
+            {
+                status = "unavailable",
+                operation,
+                message = "The /api/ai/orchestration route family is unavailable.",
+                detail = "This controller previously depended on seeded in-memory agent hierarchies and simulated orchestration metrics. No governed execution or telemetry plane is attached to this contract.",
+                requestId = HttpContext.TraceIdentifier
+            });
         }
     }
 }

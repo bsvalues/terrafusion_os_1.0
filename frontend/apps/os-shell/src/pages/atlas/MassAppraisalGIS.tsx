@@ -1,478 +1,649 @@
 /**
- * BIV-094: Mass Appraisal GIS Page
- * GIS visualization for mass appraisal spatial display.
- * Parcel map with color-coded overlays (neighborhood, zoning, property type).
- * Atlas renders spatial data -- it does NOT compute values or run sync.
+ * MassAppraisalGIS
+ * Live Benton County parcel map for county-scale Atlas review.
  *
- * DATA POSTURE:
- * - `DEMO_PARCELS` (5 sample parcels) are displayed when the API is unavailable.
- * - DemoDataBanner shown while `isFixtureParcels === true` (starts `true`, cleared
- *   on successful `/api/atlas/parcels/search` response with ≥1 result).
- * - Live-mapped parcels have partial attributes only (sqft/yearBuilt/bedroom = 0).
+ * Data posture:
+ * - Live ArcGIS parcel polygons via POST /api/atlas/mass-appraisal/parcels
+ * - Live county valuation stats via GET /api/atlas/stats
+ * - No demo parcel fallback
+ * - Explicit empty/error states when live data is unavailable
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
+import {
+  atlasService,
+  type MassAppraisalFeature,
+  type MassAppraisalFeatureCollection,
+  type SpatialStats,
+} from '@/services/atlasService';
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
+type OverlayMode = 'propertyType' | 'neighborhood' | 'ratio' | 'zoning';
+type AuditMetric = 'residuals' | 'uniformity' | 'zoning';
+type LoadState = 'idle' | 'loading' | 'success' | 'error';
 
-export interface ParcelFeature {
-  id: string;
-  parcelNumber: string;
+interface ViewBounds {
+  minLng: number;
+  maxLng: number;
+  minLat: number;
+  maxLat: number;
+}
+
+interface AuditSummary {
+  title: string;
+  narrative: string;
+  hotspotCount: number;
+  recommendedAction: string;
+}
+
+interface ParcelSummary {
+  parcelId: string;
   address: string;
+  propertyType: string;
   neighborhood: string;
   zoning: string;
-  propertyType: string;
-  sqft: number;
-  lotSize: number;
-  yearBuilt: number;
-  stories: number;
-  bedrooms: number;
-  bathrooms: number;
-  coordinates: [number, number];
-  polygon?: [number, number][];
+  marketValue: number | null;
+  currentRatio: number | null;
+  areaSqFt: number | null;
 }
 
-type OverlayMode = 'neighborhood' | 'zoning' | 'propertyType' | 'none';
-
-interface LayerConfig {
-  id: string;
-  label: string;
-  visible: boolean;
-  color: string;
-}
-
-// ---------------------------------------------------------------------------
-// Color palettes for overlays
-// ---------------------------------------------------------------------------
-
-const NEIGHBORHOOD_COLORS: Record<string, string> = {
-  Downtown: '#3B82F6',
-  Riverside: '#10B981',
-  'West Hills': '#F59E0B',
-  Eastgate: '#EF4444',
-  Southridge: '#8B5CF6',
-  Northview: '#EC4899',
-  default: '#6B7280',
+const PROPERTY_TYPE_COLORS: Record<string, string> = {
+  'Resource Production and Extraction & Agriculture': '#84cc16',
+  'Undeveloped Land and Water': '#94a3b8',
+  Residential: '#22c55e',
+  Commercial: '#38bdf8',
+  Industrial: '#f59e0b',
+  'Multi-Family': '#8b5cf6',
+  default: '#20d4c8',
 };
 
 const ZONING_COLORS: Record<string, string> = {
-  'R-1': '#22C55E',
-  'R-2': '#16A34A',
-  'R-3': '#15803D',
-  'C-1': '#3B82F6',
-  'C-2': '#2563EB',
-  'C-3': '#1D4ED8',
-  'I-1': '#F59E0B',
-  'I-2': '#D97706',
-  AG: '#A3E635',
-  PUD: '#A855F7',
-  default: '#9CA3AF',
+  'RL-40': '#0ea5e9',
+  'R-1': '#22c55e',
+  'R-2': '#16a34a',
+  'C-1': '#38bdf8',
+  'C-2': '#0284c7',
+  AG: '#84cc16',
+  default: '#f59e0b',
 };
 
-const PROPERTY_TYPE_COLORS: Record<string, string> = {
-  Residential: '#22C55E',
-  Commercial: '#3B82F6',
-  Industrial: '#F59E0B',
-  Agricultural: '#A3E635',
-  Vacant: '#9CA3AF',
-  'Multi-Family': '#8B5CF6',
-  default: '#6B7280',
-};
+const MAP_WIDTH = 1080;
+const MAP_HEIGHT = 720;
+const MAP_PADDING = 24;
 
-function getOverlayColor(mode: OverlayMode, parcel: ParcelFeature): string {
-  if (mode === 'none') return '#00FFFF';
-  const palettes: Record<string, Record<string, string>> = {
-    neighborhood: NEIGHBORHOOD_COLORS,
-    zoning: ZONING_COLORS,
-    propertyType: PROPERTY_TYPE_COLORS,
+function getFeatureRings(
+  feature: MassAppraisalFeature,
+): [number, number][][] {
+  const { geometry } = feature;
+  if (!geometry) return [];
+
+  if (geometry.type === 'Polygon') {
+    return geometry.coordinates.map((ring) => ring as [number, number][]);
+  }
+
+  return geometry.coordinates.flatMap((polygon) =>
+    polygon.map((ring) => ring as [number, number][]),
+  );
+}
+
+function getViewBounds(features: MassAppraisalFeature[]): ViewBounds | null {
+  const coordinates = features.flatMap((feature) =>
+    getFeatureRings(feature).flatMap((ring) => ring),
+  );
+
+  if (coordinates.length === 0) return null;
+
+  const [firstLng, firstLat] = coordinates[0];
+  return coordinates.reduce<ViewBounds>(
+    (acc, [lng, lat]) => ({
+      minLng: Math.min(acc.minLng, lng),
+      maxLng: Math.max(acc.maxLng, lng),
+      minLat: Math.min(acc.minLat, lat),
+      maxLat: Math.max(acc.maxLat, lat),
+    }),
+    { minLng: firstLng, maxLng: firstLng, minLat: firstLat, maxLat: firstLat },
+  );
+}
+
+function projectPoint([lng, lat]: [number, number], bounds: ViewBounds): [number, number] {
+  const lngSpan = Math.max(bounds.maxLng - bounds.minLng, 0.0001);
+  const latSpan = Math.max(bounds.maxLat - bounds.minLat, 0.0001);
+  const x = MAP_PADDING + ((lng - bounds.minLng) / lngSpan) * (MAP_WIDTH - MAP_PADDING * 2);
+  const y = MAP_HEIGHT - MAP_PADDING - ((lat - bounds.minLat) / latSpan) * (MAP_HEIGHT - MAP_PADDING * 2);
+  return [x, y];
+}
+
+function ringToPath(ring: [number, number][], bounds: ViewBounds): string {
+  return ring
+    .map((point, index) => {
+      const [x, y] = projectPoint(point, bounds);
+      return `${index === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)}`;
+    })
+    .join(' ') + ' Z';
+}
+
+function featureToPath(feature: MassAppraisalFeature, bounds: ViewBounds): string {
+  return getFeatureRings(feature)
+    .filter((ring) => ring.length >= 3)
+    .map((ring) => ringToPath(ring, bounds))
+    .join(' ');
+}
+
+function formatCurrency(value: number | null | undefined): string {
+  if (value == null || Number.isNaN(value)) return 'Unavailable';
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function formatRatio(value: number | null | undefined): string {
+  if (value == null || Number.isNaN(value)) return 'Unavailable';
+  return value.toFixed(2);
+}
+
+function summarizeParcel(feature: MassAppraisalFeature): ParcelSummary {
+  const properties = feature.properties ?? {};
+  return {
+    parcelId: properties.Parcel_ID ?? feature.id?.toString() ?? 'Unknown',
+    address: properties.situs_display?.replace(/\s+/g, ' ').trim() || 'Unknown address',
+    propertyType: properties.Property_Type ?? 'Unknown type',
+    neighborhood: properties.neighborhood ?? 'Unknown neighborhood',
+    zoning: properties.zoning ?? 'Unzoned/blank',
+    marketValue: properties.TotalMarketValue ?? properties.ASSESSED_VAL ?? null,
+    currentRatio: properties.Current_Ratio ?? null,
+    areaSqFt: properties.Shape__Area ?? null,
   };
-  const key =
-    mode === 'neighborhood'
-      ? parcel.neighborhood
-      : mode === 'zoning'
-        ? parcel.zoning
-        : parcel.propertyType;
-  return palettes[mode][key] ?? palettes[mode].default ?? '#6B7280';
 }
 
-// ---------------------------------------------------------------------------
-// Demo data
-// ---------------------------------------------------------------------------
+function getOverlayColor(mode: OverlayMode, feature: MassAppraisalFeature): string {
+  const properties = feature.properties ?? {};
+  if (mode === 'propertyType') {
+    return PROPERTY_TYPE_COLORS[properties.Property_Type ?? 'default'] ?? PROPERTY_TYPE_COLORS.default;
+  }
+  if (mode === 'zoning') {
+    return ZONING_COLORS[properties.zoning ?? 'default'] ?? ZONING_COLORS.default;
+  }
+  if (mode === 'neighborhood') {
+    const neighborhood = properties.neighborhood ?? 'default';
+    const digits = neighborhood.replace(/\D/g, '');
+    const hue = digits ? parseInt(digits.slice(-3), 10) % 360 : 190;
+    return `hsl(${hue} 75% 58%)`;
+  }
 
-const DEMO_PARCELS: ParcelFeature[] = [
-  {
-    id: 'p1',
-    parcelNumber: '1-0234-100-0001',
-    address: '123 Main St',
-    neighborhood: 'Downtown',
-    zoning: 'C-1',
-    propertyType: 'Commercial',
-    sqft: 4200,
-    lotSize: 8500,
-    yearBuilt: 1985,
-    stories: 2,
-    bedrooms: 0,
-    bathrooms: 2,
-    coordinates: [46.2304, -119.2],
-  },
-  {
-    id: 'p2',
-    parcelNumber: '1-0234-100-0002',
-    address: '456 Oak Ave',
-    neighborhood: 'Riverside',
-    zoning: 'R-1',
-    propertyType: 'Residential',
-    sqft: 1850,
-    lotSize: 7200,
-    yearBuilt: 2001,
-    stories: 1,
-    bedrooms: 3,
-    bathrooms: 2,
-    coordinates: [46.235, -119.21],
-  },
-  {
-    id: 'p3',
-    parcelNumber: '1-0234-100-0003',
-    address: '789 Industrial Pkwy',
-    neighborhood: 'Eastgate',
-    zoning: 'I-1',
-    propertyType: 'Industrial',
-    sqft: 12000,
-    lotSize: 35000,
-    yearBuilt: 1972,
-    stories: 1,
-    bedrooms: 0,
-    bathrooms: 1,
-    coordinates: [46.225, -119.19],
-  },
-  {
-    id: 'p4',
-    parcelNumber: '1-0234-100-0004',
-    address: '321 Elm St',
-    neighborhood: 'West Hills',
-    zoning: 'R-2',
-    propertyType: 'Multi-Family',
-    sqft: 3600,
-    lotSize: 5000,
-    yearBuilt: 1995,
-    stories: 2,
-    bedrooms: 6,
-    bathrooms: 4,
-    coordinates: [46.24, -119.22],
-  },
-  {
-    id: 'p5',
-    parcelNumber: '1-0234-100-0005',
-    address: '555 Country Rd',
-    neighborhood: 'Southridge',
-    zoning: 'AG',
-    propertyType: 'Agricultural',
-    sqft: 2200,
-    lotSize: 180000,
-    yearBuilt: 1960,
-    stories: 1,
-    bedrooms: 4,
-    bathrooms: 2,
-    coordinates: [46.215, -119.23],
-  },
-];
-
-// ---------------------------------------------------------------------------
-// Sub-components
-// ---------------------------------------------------------------------------
-
-interface LayerTogglePanelProps {
-  layers: LayerConfig[];
-  overlayMode: OverlayMode;
-  onToggleLayer: (id: string) => void;
-  onSetOverlayMode: (mode: OverlayMode) => void;
+  const ratio = properties.Current_Ratio;
+  if (ratio == null) return '#94a3b8';
+  if (ratio < 0.9) return '#ef4444';
+  if (ratio > 1.1) return '#f59e0b';
+  return '#22c55e';
 }
 
-function LayerTogglePanel({
-  layers,
+function buildAuditSummary(features: MassAppraisalFeature[], metric: AuditMetric): AuditSummary {
+  const parcels = features.map(summarizeParcel);
+  const ratioOutliers = parcels.filter((parcel) => parcel.currentRatio != null && (parcel.currentRatio < 0.9 || parcel.currentRatio > 1.1));
+  const missingZoning = parcels.filter((parcel) => parcel.zoning === 'Unzoned/blank');
+
+  const neighborhoodCounts = parcels.reduce<Record<string, number>>((acc, parcel) => {
+    acc[parcel.neighborhood] = (acc[parcel.neighborhood] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  const dominantNeighborhood =
+    Object.entries(neighborhoodCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'countywide';
+
+  if (metric === 'zoning') {
+    return {
+      title: 'Live zoning audit',
+      narrative: `${missingZoning.length} of ${parcels.length} live parcels in the current slice are missing zoning labels. The heaviest concentration is around ${dominantNeighborhood}.`,
+      hotspotCount: missingZoning.length,
+      recommendedAction: missingZoning.length > 0
+        ? 'Review zoning overlays in Atlas before routing parcel corrections to Workbench.'
+        : 'Zoning labels are present for this live slice. Continue parcel review by neighborhood.',
+    };
+  }
+
+  if (metric === 'uniformity') {
+    const neighborhoodsWithSpread = Object.values(
+      parcels.reduce<Record<string, number[]>>((acc, parcel) => {
+        if (parcel.currentRatio == null) return acc;
+        if (!acc[parcel.neighborhood]) acc[parcel.neighborhood] = [];
+        acc[parcel.neighborhood].push(parcel.currentRatio);
+        return acc;
+      }, {}),
+    ).filter((ratios) => ratios.length >= 2 && Math.max(...ratios) - Math.min(...ratios) > 0.18);
+
+    return {
+      title: 'Live uniformity review',
+      narrative: `${neighborhoodsWithSpread.length} neighborhood clusters show ratio spread above 0.18 in the current live slice. ${dominantNeighborhood} is the current dominant geography.`,
+      hotspotCount: neighborhoodsWithSpread.length,
+      recommendedAction: neighborhoodsWithSpread.length > 0
+        ? 'Drill into the widest ratio-spread cluster, then send parcel defects to Workbench before any county calibration discussion.'
+        : 'Current live slice is within the expected ratio spread threshold. Expand the parcel slice or change the filter to continue county review.',
+    };
+  }
+
+  return {
+    title: 'Live residual review',
+    narrative: `${ratioOutliers.length} parcels in the current live slice are outside the 0.90-1.10 ratio band. ${dominantNeighborhood} contains the densest parcel concentration in view.`,
+    hotspotCount: ratioOutliers.length,
+    recommendedAction: ratioOutliers.length > 0
+      ? 'Audit the outlier parcels first, then route confirmed parcel defects to ParcelLens or Workbench before discussing TerraForge adjustments.'
+      : 'No ratio outliers in the current slice. Expand the search or shift to uniformity review.',
+  };
+}
+
+function MapPanel({
+  features,
+  bounds,
   overlayMode,
-  onToggleLayer,
-  onSetOverlayMode,
-}: LayerTogglePanelProps) {
-  const overlayOptions: { value: OverlayMode; label: string }[] = [
-    { value: 'none', label: 'None' },
-    { value: 'neighborhood', label: 'Neighborhood' },
-    { value: 'zoning', label: 'Zoning' },
-    { value: 'propertyType', label: 'Property Type' },
-  ];
+  selectedParcelId,
+  onSelectParcel,
+}: {
+  features: MassAppraisalFeature[];
+  bounds: ViewBounds | null;
+  overlayMode: OverlayMode;
+  selectedParcelId: string | null;
+  onSelectParcel: (parcelId: string) => void;
+}) {
+  if (!bounds || features.length === 0) {
+    return (
+      <div className="flex h-full items-center justify-center rounded-xl border border-white/10 bg-terra-slate/40">
+        <p className="text-sm text-white/60">No live parcel geometry is available for the current Atlas slice.</p>
+      </div>
+    );
+  }
 
   return (
-    <Card variant="glass" data-material="bento" className="w-64">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-sm font-medium text-terra-cyan">Layers</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {layers.map((layer) => (
-          <label key={layer.id} className="flex items-center gap-2 cursor-pointer text-sm">
-            <input
-              type="checkbox"
-              checked={layer.visible}
-              onChange={() => onToggleLayer(layer.id)}
-              className="accent-terra-cyan"
-            />
-            <span
-              className="w-3 h-3 rounded-sm"
-              style={{ backgroundColor: layer.color }}
-            />
-            <span className="text-white/80">{layer.label}</span>
-          </label>
-        ))}
+    <svg
+      viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
+      className="h-full w-full"
+      aria-label="Mass appraisal parcel map"
+    >
+      <rect width={MAP_WIDTH} height={MAP_HEIGHT} fill="#05161d" />
+      {features.map((feature) => {
+        const parcel = summarizeParcel(feature);
+        const pathData = featureToPath(feature, bounds);
+        const fill = getOverlayColor(overlayMode, feature);
+        const isSelected = selectedParcelId === parcel.parcelId;
 
-        <div className="border-t border-white/10 pt-3 mt-3">
-          <p className="text-xs text-white/50 mb-2 uppercase tracking-wider">Color Overlay</p>
-          {overlayOptions.map((opt) => (
-            <label key={opt.value} className="flex items-center gap-2 cursor-pointer text-sm mb-1">
-              <input
-                type="radio"
-                name="overlay"
-                checked={overlayMode === opt.value}
-                onChange={() => onSetOverlayMode(opt.value)}
-                className="accent-terra-cyan"
-              />
-              <span className="text-white/80">{opt.label}</span>
-            </label>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+        if (!pathData) return null;
 
-interface ParcelSidebarProps {
-  parcel: ParcelFeature;
-  onClose: () => void;
-}
-
-function ParcelSidebar({ parcel, onClose }: ParcelSidebarProps) {
-  const details: { label: string; value: string | number }[] = [
-    { label: 'Parcel #', value: parcel.parcelNumber },
-    { label: 'Address', value: parcel.address },
-    { label: 'Neighborhood', value: parcel.neighborhood },
-    { label: 'Zoning', value: parcel.zoning },
-    { label: 'Property Type', value: parcel.propertyType },
-    { label: 'Sq Ft', value: parcel.sqft.toLocaleString() },
-    { label: 'Lot Size', value: `${parcel.lotSize.toLocaleString()} sq ft` },
-    { label: 'Year Built', value: parcel.yearBuilt },
-    { label: 'Stories', value: parcel.stories },
-    { label: 'Bedrooms', value: parcel.bedrooms },
-    { label: 'Bathrooms', value: parcel.bathrooms },
-  ];
-
-  return (
-    <Card variant="glass" data-material="bento" className="w-72">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-medium text-terra-cyan">Parcel Details</CardTitle>
-          <button
-            onClick={onClose}
-            className="text-white/40 hover:text-white transition-colors text-lg leading-none"
-            aria-label="Close parcel details"
+        return (
+          <path
+            key={parcel.parcelId}
+            d={pathData}
+            fill={fill}
+            fillOpacity={isSelected ? 0.48 : 0.28}
+            stroke={isSelected ? '#ffffff' : '#7dd3fc'}
+            strokeOpacity={isSelected ? 0.95 : 0.45}
+            strokeWidth={isSelected ? 2.2 : 0.8}
+            onClick={() => onSelectParcel(parcel.parcelId)}
+            style={{ cursor: 'pointer' }}
           >
-            x
-          </button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <dl className="space-y-2">
-          {details.map((d) => (
-            <div key={d.label} className="flex justify-between text-sm">
-              <dt className="text-white/50">{d.label}</dt>
-              <dd className="text-white font-medium">{d.value}</dd>
-            </div>
-          ))}
-        </dl>
-      </CardContent>
-    </Card>
+            <title>{`${parcel.parcelId} | ${parcel.address} | ${parcel.propertyType}`}</title>
+          </path>
+        );
+      })}
+    </svg>
   );
 }
-
-// ---------------------------------------------------------------------------
-// Main Page Component
-// ---------------------------------------------------------------------------
 
 export default function MassAppraisalGIS() {
-  const [overlayMode, setOverlayMode] = useState<OverlayMode>('neighborhood');
-  const [selectedParcel, setSelectedParcel] = useState<ParcelFeature | null>(null);
-  const [layers, setLayers] = useState<LayerConfig[]>([
-    { id: 'parcels', label: 'Parcels', visible: true, color: '#00FFFF' },
-    { id: 'roads', label: 'Roads', visible: true, color: '#94A3B8' },
-    { id: 'water', label: 'Water Bodies', visible: false, color: '#3B82F6' },
-    { id: 'flood', label: 'Flood Zones', visible: false, color: '#EF4444' },
-    { id: 'contours', label: 'Contour Lines', visible: false, color: '#A3E635' },
-  ]);
-  const [parcels, setParcels] = useState<ParcelFeature[]>(DEMO_PARCELS);
-  const [isFixtureParcels, setIsFixtureParcels] = useState(true);
+  const [overlayMode, setOverlayMode] = useState<OverlayMode>('propertyType');
+  const [auditMetric, setAuditMetric] = useState<AuditMetric>('residuals');
+  const [query, setQuery] = useState('');
+  const [propertyTypeFilter, setPropertyTypeFilter] = useState<string>('all');
+  const [loadState, setLoadState] = useState<LoadState>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [stats, setStats] = useState<SpatialStats | null>(null);
+  const [featureCollection, setFeatureCollection] = useState<MassAppraisalFeatureCollection | null>(null);
+  const [selectedParcelId, setSelectedParcelId] = useState<string | null>(null);
 
-  // Load live parcels on mount; fall back to DEMO_PARCELS if unavailable
+  const loadParcelSlice = useCallback(
+    async (options?: { query?: string; propertyType?: string }) => {
+      setLoadState('loading');
+      setErrorMessage(null);
+
+      try {
+        const data = await atlasService.searchMassAppraisalParcels({
+          query: options?.query,
+          propertyType: options?.propertyType,
+          limit: 25,
+        });
+        setFeatureCollection(data);
+
+        const firstParcel = data.features[0]?.properties?.Parcel_ID ?? null;
+        setSelectedParcelId((current) =>
+          current && data.features.some((feature) => feature.properties?.Parcel_ID === current)
+            ? current
+            : firstParcel,
+        );
+        setLoadState('success');
+      } catch (error) {
+        setFeatureCollection(null);
+        setSelectedParcelId(null);
+        setLoadState('error');
+        setErrorMessage(error instanceof Error ? error.message : 'Atlas could not load live parcel geometry.');
+      }
+    },
+    [],
+  );
+
   useEffect(() => {
-    fetch('/api/atlas/parcels/search', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ Limit: 50 }),
-    })
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((data: { results?: Array<{ parcelId?: string; address?: string; propertyType?: string }> }) => {
-        if (Array.isArray(data.results) && data.results.length > 0) {
-          const mapped: ParcelFeature[] = data.results.map((p, i) => ({
-            id: p.parcelId ?? `live-${i}`,
-            parcelNumber: p.parcelId ?? `live-${i}`,
-            address: p.address ?? 'Unknown Address',
-            neighborhood: 'County',
-            zoning: 'R-1',
-            propertyType: p.propertyType ?? 'Residential',
-            sqft: 0,
-            lotSize: 0,
-            yearBuilt: 0,
-            stories: 1,
-            bedrooms: 0,
-            bathrooms: 0,
-            coordinates: [46.23 + (i % 10) * 0.003, -119.2 - Math.floor(i / 10) * 0.003],
-          }));
-          setParcels(mapped);
-          setIsFixtureParcels(false);
-        }
-      })
-      .catch(() => {
-        // Keep DEMO_PARCELS; banner remains visible
-      });
+    atlasService.getMassAppraisalStats().then(setStats).catch(() => setStats(null));
   }, []);
 
-  const handleToggleLayer = useCallback((id: string) => {
-    setLayers((prev) => prev.map((l) => (l.id === id ? { ...l, visible: !l.visible } : l)));
-  }, []);
+  useEffect(() => {
+    void loadParcelSlice();
+  }, [loadParcelSlice]);
 
-  const legendItems = useMemo(() => {
-    const palettes: Record<string, Record<string, string>> = {
-      neighborhood: NEIGHBORHOOD_COLORS,
-      zoning: ZONING_COLORS,
-      propertyType: PROPERTY_TYPE_COLORS,
-    };
-    if (overlayMode === 'none') return [];
-    const palette = palettes[overlayMode];
-    return Object.entries(palette)
-      .filter(([k]) => k !== 'default')
-      .map(([label, color]) => ({ label, color }));
-  }, [overlayMode]);
+  const features = featureCollection?.features ?? [];
+  const bounds = useMemo(() => getViewBounds(features), [features]);
+  const selectedFeature = useMemo(
+    () =>
+      features.find((feature) => feature.properties?.Parcel_ID === selectedParcelId) ?? null,
+    [features, selectedParcelId],
+  );
+  const selectedParcel = selectedFeature ? summarizeParcel(selectedFeature) : null;
+  const auditSummary = useMemo(() => buildAuditSummary(features, auditMetric), [features, auditMetric]);
+  const visibleMarketValue = useMemo(
+    () =>
+      features.reduce(
+        (sum, feature) =>
+          sum + (feature.properties?.TotalMarketValue ?? feature.properties?.ASSESSED_VAL ?? 0),
+        0,
+      ),
+    [features],
+  );
+
+  const propertyTypeOptions = useMemo(() => {
+    const fromStats = stats?.typeBreakdown?.map((entry) => entry.type).filter(Boolean) ?? [];
+    const fromFeatures = features
+      .map((feature) => feature.properties?.Property_Type)
+      .filter((value): value is string => Boolean(value));
+    return ['all', ...Array.from(new Set([...fromStats, ...fromFeatures]))];
+  }, [features, stats]);
+
+  const handleSearchSubmit = useCallback(() => {
+    void loadParcelSlice({
+      query: query.trim() || undefined,
+      propertyType: propertyTypeFilter === 'all' ? undefined : propertyTypeFilter,
+    });
+  }, [loadParcelSlice, propertyTypeFilter, query]);
 
   return (
     <div data-testid="mass-appraisal-gis" className="flex h-full bg-terra-midnight text-white">
-      {isFixtureParcels && <DemoDataBanner module="Mass Appraisal GIS" />}
-      {/* Layer panel */}
-      <aside className="flex-shrink-0 p-4 space-y-4 overflow-y-auto border-r border-white/10">
-        <LayerTogglePanel
-          layers={layers}
-          overlayMode={overlayMode}
-          onToggleLayer={handleToggleLayer}
-          onSetOverlayMode={setOverlayMode}
-        />
+      <aside className="flex w-[22rem] shrink-0 flex-col gap-4 overflow-y-auto border-r border-white/10 p-4">
+        <Card variant="glass" data-material="bento">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-terra-cyan">Live parcel slice</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div data-testid="mass-appraisal-live-state" className="rounded-lg border border-white/10 bg-white/5 p-3">
+              <p className="text-xs uppercase tracking-[0.2em] text-white/40">Data posture</p>
+              <p className="mt-1 text-sm text-white/80">
+                {loadState === 'loading' && 'Loading live Benton parcel geometry.'}
+                {loadState === 'success' &&
+                  `Live Benton County ArcGIS geometry and ${
+                    stats?.layers?.includes('benton-arcgis-mass-appraisal-fy2025')
+                      ? 'county market stats from Benton ArcGIS.'
+                      : 'Atlas county stats.'
+                  }`}
+                {loadState === 'error' && 'Live Atlas query failed. No demo fallback is shown.'}
+                {loadState === 'idle' && 'Preparing live Atlas query.'}
+              </p>
+            </div>
 
-        {legendItems.length > 0 && (
-          <Card variant="glass" data-material="bento" className="w-64">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs uppercase tracking-wider text-white/50">
-                Legend
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-1">
-              {legendItems.map((item) => (
-                <div key={item.label} className="flex items-center gap-2 text-xs">
-                  <span
-                    className="w-3 h-3 rounded-sm flex-shrink-0"
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <span className="text-white/70">{item.label}</span>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        )}
+            <label className="block text-xs uppercase tracking-[0.2em] text-white/40">
+              Parcel search
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Parcel ID or situs"
+                className="mt-2 w-full rounded border border-white/10 bg-terra-slate/70 px-3 py-2 text-sm text-white outline-none"
+              />
+            </label>
+
+            <label className="block text-xs uppercase tracking-[0.2em] text-white/40">
+              Property type
+              <select
+                value={propertyTypeFilter}
+                onChange={(event) => setPropertyTypeFilter(event.target.value)}
+                className="mt-2 w-full rounded border border-white/10 bg-terra-slate/70 px-3 py-2 text-sm text-white"
+              >
+                {propertyTypeOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option === 'all' ? 'All property types' : option}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <button
+              type="button"
+              onClick={handleSearchSubmit}
+              disabled={loadState === 'loading'}
+              className="w-full rounded border border-terra-cyan/40 bg-terra-cyan/10 px-3 py-2 text-sm font-medium text-terra-cyan transition-colors hover:bg-terra-cyan/15 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loadState === 'loading' ? 'Loading live parcels...' : 'Refresh live slice'}
+            </button>
+          </CardContent>
+        </Card>
+
+        <Card variant="glass" data-material="bento" data-testid="mass-appraisal-governed-brief">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-terra-cyan">Live county audit</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <label className="block text-xs uppercase tracking-[0.2em] text-white/40">
+              Audit focus
+              <select
+                value={auditMetric}
+                onChange={(event) => setAuditMetric(event.target.value as AuditMetric)}
+                className="mt-2 w-full rounded border border-white/10 bg-terra-slate/70 px-3 py-2 text-sm text-white"
+              >
+                <option value="residuals">Residual review</option>
+                <option value="uniformity">Uniformity review</option>
+                <option value="zoning">Zoning review</option>
+              </select>
+            </label>
+
+            <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+              <p className="text-xs uppercase tracking-[0.2em] text-white/40">{auditSummary.title}</p>
+              <p className="mt-2 text-sm text-white/80">{auditSummary.narrative}</p>
+              <p className="mt-2 text-xs text-white/60">Hotspots: {auditSummary.hotspotCount}</p>
+              <p className="mt-2 text-xs text-white/70">{auditSummary.recommendedAction}</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card variant="glass" data-material="bento">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-terra-cyan">County posture</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+              <span className="text-white/60">Visible parcels</span>
+              <span className="font-semibold text-white">{features.length}</span>
+            </div>
+            <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+              <span className="text-white/60">Visible market value</span>
+              <span className="font-semibold text-white">{formatCurrency(visibleMarketValue)}</span>
+            </div>
+            <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+              <span className="text-white/60">County parcel count</span>
+              <span className="font-semibold text-white">
+                {stats ? stats.totalParcels.toLocaleString() : 'Loading...'}
+              </span>
+            </div>
+            <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+              <span className="text-white/60">County avg market value</span>
+              <span className="font-semibold text-white">
+                {stats ? formatCurrency(stats.averageMarketValue ?? stats.averageAssessedValue) : 'Loading...'}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
       </aside>
 
-      {/* Map area */}
-      <main className="flex-1 relative overflow-hidden">
-        <div className="absolute inset-0 bg-terra-midnight">
-          {/* Placeholder map grid */}
-          <div className="absolute inset-0 opacity-10">
-            <svg width="100%" height="100%">
-              <defs>
-                <pattern id="gis-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="0.5" />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#gis-grid)" />
-            </svg>
+      <main className="flex min-w-0 flex-1 flex-col">
+        <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+          <div>
+            <h2 className="text-xl font-semibold text-white">Mass Appraisal GIS</h2>
+            <p className="mt-1 text-sm text-white/50">
+              Live Benton parcel geometry from the AssessorPropVal polygon layer. No demo parcel cloud.
+            </p>
           </div>
-
-          {/* Parcel markers */}
-          <div className="absolute inset-0 flex flex-wrap items-center justify-center gap-6 p-8">
-            {parcels.map((parcel) => {
-              const color = getOverlayColor(overlayMode, parcel);
-              const isSelected = selectedParcel?.id === parcel.id;
-              return (
-                <button
-                  key={parcel.id}
-                  onClick={() => setSelectedParcel(isSelected ? null : parcel)}
-                  className="relative group transition-transform hover:scale-105"
-                  style={{
-                    width: Math.max(60, Math.min(parcel.lotSize / 500, 180)),
-                    height: Math.max(40, Math.min(parcel.lotSize / 800, 120)),
-                  }}
-                  aria-label={`Select parcel ${parcel.parcelNumber}`}
-                >
-                  <div
-                    className="absolute inset-0 rounded border-2 transition-all"
-                    style={{
-                      backgroundColor: `${color}22`,
-                      borderColor: isSelected ? '#FFFFFF' : `${color}88`,
-                      boxShadow: isSelected ? `0 0 12px ${color}` : 'none',
-                    }}
-                  />
-                  <span className="absolute inset-0 flex items-center justify-center text-[10px] text-white/70 group-hover:text-white truncate px-1">
-                    {parcel.address}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Zoom controls */}
-          <div className="absolute bottom-4 right-4 flex flex-col gap-1">
-            <button
-              className="w-8 h-8 rounded bg-terra-slate/60 border border-white/10 text-white/80 hover:bg-terra-slate hover:text-white transition-colors text-lg leading-none"
-              aria-label="Zoom in"
+          <label className="text-xs uppercase tracking-[0.2em] text-white/40">
+            Overlay
+            <select
+              value={overlayMode}
+              onChange={(event) => setOverlayMode(event.target.value as OverlayMode)}
+              className="ml-3 rounded border border-white/10 bg-terra-slate/70 px-3 py-2 text-sm text-white"
             >
-              +
-            </button>
-            <button
-              className="w-8 h-8 rounded bg-terra-slate/60 border border-white/10 text-white/80 hover:bg-terra-slate hover:text-white transition-colors text-lg leading-none"
-              aria-label="Zoom out"
-            >
-              -
-            </button>
+              <option value="propertyType">Property type</option>
+              <option value="neighborhood">Neighborhood</option>
+              <option value="ratio">Current ratio</option>
+              <option value="zoning">Zoning</option>
+            </select>
+          </label>
+        </div>
+
+        <div className="flex min-h-0 flex-1 flex-col gap-4 p-4">
+          <div className="min-h-[26rem] flex-1 overflow-hidden rounded-2xl border border-white/10 bg-[#041118]">
+            {loadState === 'error' ? (
+              <div className="flex h-full items-center justify-center p-8 text-center">
+                <div>
+                  <p className="text-lg font-semibold text-white">Live Atlas parcel query failed</p>
+                  <p className="mt-2 text-sm text-white/60">{errorMessage}</p>
+                  <button
+                    type="button"
+                    onClick={handleSearchSubmit}
+                    className="mt-4 rounded border border-terra-cyan/40 bg-terra-cyan/10 px-4 py-2 text-sm font-medium text-terra-cyan"
+                  >
+                    Retry live query
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <MapPanel
+                features={features}
+                bounds={bounds}
+                overlayMode={overlayMode}
+                selectedParcelId={selectedParcelId}
+                onSelectParcel={setSelectedParcelId}
+              />
+            )}
           </div>
 
-          {/* Coordinate display */}
-          <div className="absolute bottom-4 left-4 text-[10px] text-white/40 font-mono bg-terra-midnight/60 px-2 py-1 rounded">
-            46.2304 N, 119.2000 W | Benton County, WA
+          <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
+            <Card variant="glass" data-material="bento">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-terra-cyan">Live parcel results</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {featureCollection?.properties?.exceededTransferLimit && (
+                  <div className="rounded border border-amber-400/25 bg-amber-400/10 p-3 text-xs text-amber-100">
+                    ArcGIS returned a transfer limit notice. Refine the slice if you need a narrower geography.
+                  </div>
+                )}
+
+                {features.length === 0 && loadState === 'success' ? (
+                  <div className="rounded border border-white/10 bg-white/5 p-4 text-sm text-white/60">
+                    No live parcels matched the current Atlas filter.
+                  </div>
+                ) : (
+                  <div className="max-h-[18rem] space-y-2 overflow-y-auto pr-1">
+                    {features.map((feature) => {
+                      const parcel = summarizeParcel(feature);
+                      const isSelected = parcel.parcelId === selectedParcelId;
+
+                      return (
+                        <button
+                          key={parcel.parcelId}
+                          type="button"
+                          onClick={() => setSelectedParcelId(parcel.parcelId)}
+                          className="w-full rounded-lg border px-3 py-3 text-left transition-colors"
+                          style={{
+                            borderColor: isSelected ? 'rgba(32,212,200,0.55)' : 'rgba(255,255,255,0.08)',
+                            background: isSelected ? 'rgba(32,212,200,0.12)' : 'rgba(255,255,255,0.04)',
+                          }}
+                        >
+                          <div className="flex items-center justify-between gap-3">
+                            <div>
+                              <p className="text-sm font-semibold text-white">{parcel.address}</p>
+                              <p className="mt-1 text-xs text-white/50">{parcel.parcelId}</p>
+                            </div>
+                            <span className="rounded-full border border-white/10 px-2 py-1 text-[11px] text-white/70">
+                              {parcel.propertyType}
+                            </span>
+                          </div>
+                          <div className="mt-2 flex flex-wrap gap-3 text-xs text-white/60">
+                            <span>Neighborhood: {parcel.neighborhood}</span>
+                            <span>Ratio: {formatRatio(parcel.currentRatio)}</span>
+                            <span>Market: {formatCurrency(parcel.marketValue)}</span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card variant="glass" data-material="bento">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-terra-cyan">Selected parcel</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {selectedParcel ? (
+                  <dl className="space-y-3 text-sm">
+                    <div className="flex items-start justify-between gap-4">
+                      <dt className="text-white/50">Parcel ID</dt>
+                      <dd className="font-mono text-right text-white">{selectedParcel.parcelId}</dd>
+                    </div>
+                    <div className="flex items-start justify-between gap-4">
+                      <dt className="text-white/50">Address</dt>
+                      <dd className="text-right text-white">{selectedParcel.address}</dd>
+                    </div>
+                    <div className="flex items-start justify-between gap-4">
+                      <dt className="text-white/50">Property type</dt>
+                      <dd className="text-right text-white">{selectedParcel.propertyType}</dd>
+                    </div>
+                    <div className="flex items-start justify-between gap-4">
+                      <dt className="text-white/50">Neighborhood</dt>
+                      <dd className="text-right text-white">{selectedParcel.neighborhood}</dd>
+                    </div>
+                    <div className="flex items-start justify-between gap-4">
+                      <dt className="text-white/50">Zoning</dt>
+                      <dd className="text-right text-white">{selectedParcel.zoning}</dd>
+                    </div>
+                    <div className="flex items-start justify-between gap-4">
+                      <dt className="text-white/50">Market value</dt>
+                      <dd className="text-right text-white">{formatCurrency(selectedParcel.marketValue)}</dd>
+                    </div>
+                    <div className="flex items-start justify-between gap-4">
+                      <dt className="text-white/50">Current ratio</dt>
+                      <dd className="text-right text-white">{formatRatio(selectedParcel.currentRatio)}</dd>
+                    </div>
+                    <div className="flex items-start justify-between gap-4">
+                      <dt className="text-white/50">Shape area</dt>
+                      <dd className="text-right text-white">
+                        {selectedParcel.areaSqFt ? `${Math.round(selectedParcel.areaSqFt).toLocaleString()} sq ft` : 'Unavailable'}
+                      </dd>
+                    </div>
+                  </dl>
+                ) : (
+                  <p className="text-sm text-white/60">
+                    Select a live parcel polygon or result row to inspect the county record.
+                  </p>
+                )}
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>
-
-      {/* Parcel detail sidebar */}
-      {selectedParcel && (
-        <aside className="flex-shrink-0 p-4 border-l border-white/10">
-          <ParcelSidebar parcel={selectedParcel} onClose={() => setSelectedParcel(null)} />
-        </aside>
-      )}
     </div>
   );
 }

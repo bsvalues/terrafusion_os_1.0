@@ -44,7 +44,7 @@ export const DataModeIndicator: React.FC = () => {
           color: hasBackendHealth ? 'hsl(142 71% 45%)' : 'hsl(38 92% 50%)',
         }}
       >
-        {hasBackendHealth ? 'LIVE' : 'MOCK'}
+        {hasBackendHealth ? 'HEALTH' : 'MOCK'}
       </span>
     </div>
   );

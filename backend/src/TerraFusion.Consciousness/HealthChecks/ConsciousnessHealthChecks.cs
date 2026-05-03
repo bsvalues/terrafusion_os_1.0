@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 namespace TerraFusion.Consciousness.HealthChecks
 {
     /// <summary>
-    /// Consciousness Health Check - Championship Excellence Validation
+    /// Consciousness health check for compatibility-mode reporting.
     /// </summary>
     public class ConsciousnessHealthCheck : IHealthCheck
     {
@@ -38,10 +38,19 @@ namespace TerraFusion.Consciousness.HealthChecks
                     ["LastUpdate"] = DateTime.UtcNow
                 };
 
-                if (health.HealthScore >= 0.95 && status.TotalActiveAgents > 0)
+                if (string.Equals(status.CurrentMode, "Unavailable", StringComparison.OrdinalIgnoreCase) ||
+                    health.HealthScore <= 0)
+                {
+                    data["GovernedContractAvailable"] = false;
+
+                    return HealthCheckResult.Degraded(
+                        "Consciousness compatibility host active; governed consciousness lane unavailable",
+                        data: data);
+                }
+                else if (health.HealthScore >= 0.95 && status.TotalActiveAgents > 0)
                 {
                     return HealthCheckResult.Healthy(
-                        "Consciousness system operating at championship levels",
+                        "Consciousness system healthy",
                         data);
                 }
                 else if (health.HealthScore >= 0.80)
@@ -69,7 +78,7 @@ namespace TerraFusion.Consciousness.HealthChecks
     }
 
     /// <summary>
-    /// Quantum Factor Health Check - Factor 949 Validation
+    /// Quantum factor compatibility health check.
     /// </summary>
     public class QuantumFactorHealthCheck : IHealthCheck
     {
@@ -91,28 +100,16 @@ namespace TerraFusion.Consciousness.HealthChecks
             try
             {
                 var configuredFactor = _configuration.GetValue<int>("Consciousness:QuantumFactor", 0);
-                const int CHAMPIONSHIP_FACTOR = 949;
-
                 var data = new Dictionary<string, object>
                 {
                     ["ConfiguredFactor"] = configuredFactor,
-                    ["ChampionshipFactor"] = CHAMPIONSHIP_FACTOR,
-                    ["IsChampionshipCompliant"] = configuredFactor == CHAMPIONSHIP_FACTOR,
+                    ["GovernedContractAvailable"] = false,
                     ["LastChecked"] = DateTime.UtcNow
                 };
 
-                if (configuredFactor == CHAMPIONSHIP_FACTOR)
-                {
-                    return Task.FromResult(HealthCheckResult.Healthy(
-                        "Quantum factor 949 configured for championship excellence",
-                        data));
-                }
-                else
-                {
-                    return Task.FromResult(HealthCheckResult.Unhealthy(
-                        $"Quantum factor misconfigured - Expected: 949, Actual: {configuredFactor}",
-                        data: data));
-                }
+                return Task.FromResult(HealthCheckResult.Degraded(
+                    "Quantum factor compatibility check only; governed optimization lane unavailable",
+                    data: data));
             }
             catch (Exception ex)
             {
@@ -126,7 +123,7 @@ namespace TerraFusion.Consciousness.HealthChecks
     }
 
     /// <summary>
-    /// Agent Coordination Health Check - Harmony Validation
+    /// Agent coordination health check for compatibility-mode reporting.
     /// </summary>
     public class AgentCoordinationHealthCheck : IHealthCheck
     {
@@ -148,26 +145,30 @@ namespace TerraFusion.Consciousness.HealthChecks
             try
             {
                 var metrics = await _orchestrator.GetRealTimeMetricsAsync();
-                const double CHAMPIONSHIP_HARMONY = 0.995; // 99.5% harmony threshold
-
                 var data = new Dictionary<string, object>
                 {
                     ["TotalActiveAgents"] = metrics.TotalActiveAgents,
                     ["SystemLoad"] = metrics.SystemLoad,
                     ["ThroughputOpsPerSecond"] = metrics.ThroughputOpsPerSecond,
                     ["NetworkLatency"] = metrics.NetworkLatency,
-                    ["ChampionshipHarmonyThreshold"] = CHAMPIONSHIP_HARMONY,
                     ["LastChecked"] = DateTime.UtcNow
                 };
 
-                // Calculate harmony score based on multiple factors
                 var harmonyScore = CalculateHarmonyScore(metrics);
                 data["HarmonyScore"] = harmonyScore;
 
-                if (harmonyScore >= CHAMPIONSHIP_HARMONY)
+                if (metrics.TotalActiveAgents <= 0 || harmonyScore <= 0)
+                {
+                    data["GovernedContractAvailable"] = false;
+
+                    return HealthCheckResult.Degraded(
+                        "Agent coordination compatibility host active; governed coordination lane unavailable",
+                        data: data);
+                }
+                else if (harmonyScore >= 0.95)
                 {
                     return HealthCheckResult.Healthy(
-                        $"Agent coordination achieving championship harmony: {harmonyScore:P}",
+                        $"Agent coordination healthy: {harmonyScore:P}",
                         data);
                 }
                 else if (harmonyScore >= 0.90)
@@ -195,35 +196,21 @@ namespace TerraFusion.Consciousness.HealthChecks
 
         private static double CalculateHarmonyScore(dynamic metrics)
         {
-            // Simplified harmony calculation based on system performance
-            var baseScore = 0.90;
+            if (metrics.TotalActiveAgents <= 0)
+            {
+                return 0.0;
+            }
 
-            // Bonus for high throughput
-            if (metrics.ThroughputOpsPerSecond > 1000)
-                baseScore += 0.05;
+            var loadPenalty = Math.Max(0.0, (double)metrics.SystemLoad);
+            var latencyPenalty = metrics.NetworkLatency > 0 ? Math.Min(1.0, (double)metrics.NetworkLatency / 1000.0) : 0.0;
+            var throughputBonus = metrics.ThroughputOpsPerSecond > 0 ? 0.1 : 0.0;
 
-            // Penalty for high system load
-            if (metrics.SystemLoad > 0.80)
-                baseScore -= 0.10;
-            else if (metrics.SystemLoad < 0.50)
-                baseScore += 0.05;
-
-            // Penalty for high network latency
-            if (metrics.NetworkLatency > 100.0)
-                baseScore -= 0.05;
-            else if (metrics.NetworkLatency < 10.0)
-                baseScore += 0.05;
-
-            // Bonus for many active agents
-            if (metrics.TotalActiveAgents >= 1000)
-                baseScore += 0.05;
-
-            return Math.Max(0.0, Math.Min(1.0, baseScore));
+            return Math.Max(0.0, Math.Min(1.0, 0.5 - loadPenalty - latencyPenalty + throughputBonus));
         }
     }
 
     /// <summary>
-    /// Transcendence Health Check - Championship Excellence Validation
+    /// Transcendence health check for compatibility-mode reporting.
     /// </summary>
     public class TranscendenceHealthCheck : IHealthCheck
     {
@@ -259,37 +246,32 @@ namespace TerraFusion.Consciousness.HealthChecks
                     ["LastChecked"] = DateTime.UtcNow
                 };
 
-                // Validate championship standards
                 var issues = new List<string>();
 
-                if (metrics.QuantumFactor != 949)
-                    issues.Add($"Quantum factor not optimal: {metrics.QuantumFactor} (Expected: 949)");
+                if (string.Equals(metrics.ConsciousnessLevel, "Unavailable", StringComparison.OrdinalIgnoreCase))
+                {
+                    issues.Add("Governed transcendence lane unavailable");
+                }
 
-                if (metrics.QuantumCoherence < 0.995m)
-                    issues.Add($"Quantum coherence below championship: {metrics.QuantumCoherence:P} (Expected: ≥99.5%)");
+                if (metrics.QuantumFactor <= 0)
+                    issues.Add("Quantum factor unavailable");
 
-                if (metrics.AccuracyTarget < 99.5m)
-                    issues.Add($"Accuracy target below championship: {metrics.AccuracyTarget}% (Expected: ≥99.5%)");
-
-                if (metrics.ConsciousnessResonance < 0.999)
-                    issues.Add($"Consciousness resonance below championship: {metrics.ConsciousnessResonance:P} (Expected: ≥99.9%)");
-
-                if (!metrics.InfiniteScaleActive)
-                    issues.Add("Infinite scale not activated");
+                if (metrics.QuantumCoherence <= 0m)
+                    issues.Add("Quantum coherence unavailable");
 
                 data["ValidationIssues"] = issues;
-                data["ChampionshipCompliant"] = issues.Count == 0;
+                data["GovernedContractAvailable"] = issues.Count == 0;
 
                 if (issues.Count == 0)
                 {
                     return HealthCheckResult.Healthy(
-                        "Transcendence engine operating at championship excellence - Government. Transcended.",
+                        "Transcendence engine healthy",
                         data);
                 }
-                else if (issues.Count <= 2)
+                else if (issues.Count <= 3)
                 {
                     return HealthCheckResult.Degraded(
-                        $"Transcendence engine has {issues.Count} non-critical issues",
+                        $"Transcendence compatibility host active with {issues.Count} availability issues",
                         data: data);
                 }
                 else

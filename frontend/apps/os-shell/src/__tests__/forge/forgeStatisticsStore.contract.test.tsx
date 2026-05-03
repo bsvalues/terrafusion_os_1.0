@@ -23,12 +23,23 @@ const { mockService } = vi.hoisted(() => ({
   mockService: {
     computeRatioStudy: vi.fn(),
     emitModelReceipt: vi.fn(),
+    getOutliers: vi.fn(),
+    getStrata: vi.fn(),
+    compareModels: vi.fn(),
   },
 }));
 
 vi.mock('@/services/forge/ratioAnalysisService', () => ({
   computeRatioStudy: mockService.computeRatioStudy,
   emitModelReceipt: mockService.emitModelReceipt,
+}));
+
+vi.mock('@/services/forge/statisticsAPI', () => ({
+  statisticsAPI: {
+    getOutliers: mockService.getOutliers,
+    getStrata: mockService.getStrata,
+    compareModels: mockService.compareModels,
+  },
 }));
 
 // ---------------------------------------------------------------------------
@@ -51,8 +62,8 @@ import {
 
 describe('Phase 16: forgeStatisticsStore Contract', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     // Reset store to initial state between tests
-    const store = useForgeStatisticsStore.getState();
     useForgeStatisticsStore.setState({
       studyResult: null,
       filters: { ...STUDY_FILTER_DEFAULT },
@@ -63,7 +74,9 @@ describe('Phase 16: forgeStatisticsStore Contract', () => {
       loading: false,
       error: null,
     });
-    vi.clearAllMocks();
+    mockService.getOutliers.mockResolvedValue(OUTLIER_RECORDS);
+    mockService.getStrata.mockResolvedValue(STRATA_RESULTS);
+    mockService.compareModels.mockResolvedValue(MODEL_COMPARISON);
   });
 
   // =========================================================================

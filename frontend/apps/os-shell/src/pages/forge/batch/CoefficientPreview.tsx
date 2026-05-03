@@ -12,8 +12,7 @@
  * backend-capability gate, blocker display, and audit event emission.
  *
  * DATA POSTURE:
- * - `FIXTURE_MODELS` and `FIXTURE_PREVIEW` are used when the backend is
- *   unavailable. DemoDataBanner shown while `isFixtureModels || isFixturePreview`.
+ * - No model list or preview result is fabricated when the backend is unavailable.
  * - `BACKEND_APPLY_CAPABLE = false`: the coefficient apply endpoint is not yet
  *   wired. Apply is blocked at the UI layer until this flag is set to true.
  */
@@ -22,7 +21,6 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 
 // ---------------------------------------------------------------------------
 // 1E: Apply-mode types & audit event emitter
@@ -62,7 +60,7 @@ function emitAuditEvent(
 }
 
 // ---------------------------------------------------------------------------
-// Fixture data (Benton County)
+// Preview data
 // ---------------------------------------------------------------------------
 
 interface CoefficientDelta {
@@ -98,60 +96,17 @@ interface PreviewResult {
   impactBuckets: ImpactBucket[];
 }
 
-const FIXTURE_MODELS = [
-  { id: 'mdl-prod-2024', name: 'Residential OLS 2024 (Fixture Baseline)' },
-  { id: 'mdl-cand-2025a', name: 'Residential OLS 2025a (Fixture Candidate)' },
-  { id: 'mdl-cand-2025b', name: 'Residential OLS 2025b (Alt Fixture Candidate)' },
-];
-
-const FIXTURE_PREVIEW: PreviewResult = {
-  sourceModelId: 'mdl-prod-2024',
-  sourceModelName: 'Residential OLS 2024 (Fixture Baseline)',
-  candidateModelId: 'mdl-cand-2025a',
-  candidateModelName: 'Residential OLS 2025a (Fixture Candidate)',
-  deltas: [
-    { variable: 'Living Area (sqft)', currentValue: 48.32, proposedValue: 51.07, delta: 2.75, deltaPct: 5.69 },
-    { variable: 'Lot Size (acres)', currentValue: 12400, proposedValue: 11800, delta: -600, deltaPct: -4.84 },
-    { variable: 'Age (years)', currentValue: -285.5, proposedValue: -310.2, delta: -24.7, deltaPct: 8.65 },
-    { variable: 'Grade Quality', currentValue: 18500, proposedValue: 19200, delta: 700, deltaPct: 3.78 },
-    { variable: 'Bathroom Count', currentValue: 6200, proposedValue: 5800, delta: -400, deltaPct: -6.45 },
-    { variable: 'Garage Area (sqft)', currentValue: 22.1, proposedValue: 24.8, delta: 2.7, deltaPct: 12.22 },
-    { variable: 'Condition Score', currentValue: 8900, proposedValue: 9100, delta: 200, deltaPct: 2.25 },
-    { variable: 'Intercept', currentValue: -42000, proposedValue: -38500, delta: 3500, deltaPct: -8.33 },
-  ],
-  metrics: {
-    codDelta: -1.2,
-    prdDelta: -0.008,
-    meanRatioDelta: 0.015,
-    medianRatioDelta: 0.012,
-  },
-  impactedParcelCount: 24_800,
-  totalParcelsEvaluated: 28_450,
-  impactBuckets: [
-    { label: '< -10%', count: 420, meanDollarImpact: -38_200 },
-    { label: '-10% to -5%', count: 1_850, meanDollarImpact: -18_400 },
-    { label: '-5% to -2%', count: 3_100, meanDollarImpact: -8_600 },
-    { label: '-2% to 0%', count: 2_400, meanDollarImpact: -2_100 },
-    { label: '0% to +2%', count: 3_650, meanDollarImpact: 2_300 },
-    { label: '+2% to +5%', count: 6_200, meanDollarImpact: 8_900 },
-    { label: '+5% to +10%', count: 5_800, meanDollarImpact: 19_100 },
-    { label: '> +10%', count: 1_380, meanDollarImpact: 42_500 },
-  ],
-};
-
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
 export function CoefficientPreview() {
-  const [sourceId, setSourceId] = useState(FIXTURE_MODELS[0].id);
-  const [candidateId, setCandidateId] = useState(FIXTURE_MODELS[1].id);
+  const [sourceId, setSourceId] = useState('');
+  const [candidateId, setCandidateId] = useState('');
   const [preview, setPreview] = useState<PreviewResult | null>(null);
-  const [models, setModels] = useState<{ id: string; name: string }[]>(FIXTURE_MODELS);
-  const [isFixtureModels, setIsFixtureModels] = useState(true);
-  const [isFixturePreview, setIsFixturePreview] = useState(true);
+  const [models, setModels] = useState<{ id: string; name: string }[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  // Load live models on mount; fall back to FIXTURE_MODELS if unavailable
   useEffect(() => {
     fetch('/api/MassAppraisal/models')
       .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
@@ -164,11 +119,14 @@ export function CoefficientPreview() {
           setModels(mapped);
           setSourceId(mapped[0].id);
           if (mapped.length > 1) setCandidateId(mapped[1].id);
-          setIsFixtureModels(false);
+          setError(null);
         }
       })
-      .catch(() => {
-        // Keep FIXTURE_MODELS; banner remains visible
+      .catch((err) => {
+        setModels([]);
+        setSourceId('');
+        setCandidateId('');
+        setError(`Model registry unavailable: ${err instanceof Error ? err.message : String(err)}`);
       });
   }, []);
 
@@ -177,6 +135,7 @@ export function CoefficientPreview() {
   const [auditLog, setAuditLog] = useState<AuditEvent[]>([]);
 
   const handlePreview = useCallback(async () => {
+    setError(null);
     try {
       const response = await fetch('/api/MassAppraisal/compare', {
         method: 'POST',
@@ -202,14 +161,13 @@ export function CoefficientPreview() {
           impactBuckets: [],
         };
         setPreview(livePreview);
-        setIsFixturePreview(false);
       } else {
-        setPreview(FIXTURE_PREVIEW);
-        setIsFixturePreview(true);
+        setPreview(null);
+        setError(`Coefficient preview request failed: ${response.status}`);
       }
-    } catch {
-      setPreview(FIXTURE_PREVIEW);
-      setIsFixturePreview(true);
+    } catch (err) {
+      setPreview(null);
+      setError(`Coefficient preview unavailable: ${err instanceof Error ? err.message : String(err)}`);
     }
     setApplyMode('preview_only');
     const evt = emitAuditEvent('preview_only', 'preview_generated');
@@ -247,11 +205,18 @@ export function CoefficientPreview() {
 
   return (
     <div data-testid="coefficient-preview" className="space-y-4 p-4">
-      {(isFixtureModels || isFixturePreview) && <DemoDataBanner module="Coefficient Preview" />}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-fg))' }}>Coefficient Application Preview</h1>
         <Badge variant="outline">Preview Only</Badge>
       </div>
+      {error && (
+        <div className="text-xs px-2 py-1 rounded" style={{
+          background: 'hsl(40 80% 40% / 0.2)',
+          color: 'hsl(40 80% 70%)',
+        }}>
+          {error}
+        </div>
+      )}
 
       {/* Model selector */}
       <Card>
@@ -267,6 +232,7 @@ export function CoefficientPreview() {
                 className="w-full px-3 py-2 rounded border text-sm"
                 style={{ background: 'hsl(var(--tf-card-bg) / 0.5)', borderColor: 'hsl(var(--tf-border) / 0.3)', color: 'hsl(var(--tf-fg))' }}
               >
+                {models.length === 0 && <option value="">No governed models returned</option>}
                 {models.map((m) => (
                   <option key={m.id} value={m.id}>{m.name}</option>
                 ))}
@@ -281,13 +247,14 @@ export function CoefficientPreview() {
                 className="w-full px-3 py-2 rounded border text-sm"
                 style={{ background: 'hsl(var(--tf-card-bg) / 0.5)', borderColor: 'hsl(var(--tf-border) / 0.3)', color: 'hsl(var(--tf-fg))' }}
               >
+                {models.length === 0 && <option value="">No governed models returned</option>}
                 {models.map((m) => (
                   <option key={m.id} value={m.id}>{m.name}</option>
                 ))}
               </select>
             </div>
           </div>
-          <Button data-testid="coeff-preview-btn" onClick={handlePreview} className="w-full">
+          <Button data-testid="coeff-preview-btn" onClick={handlePreview} disabled={!sourceId || !candidateId || sourceId === candidateId} className="w-full">
             Generate Preview
           </Button>
 

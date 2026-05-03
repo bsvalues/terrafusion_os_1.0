@@ -689,18 +689,21 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
             'transition-shadow duration-200'
           )}
           style={{
+            // Border contract: active windows glow with --tf-text edge
+            // (subtle activated outline); inactive windows show structural
+            // --tf-border. Both reference design tokens — no raw rgba.
             border: isActive
-              ? '0.5px solid hsl(var(--tf-border) / 0.5)'
-              : '0.5px solid hsl(var(--tf-border) / 0.25)',
+              ? '0.5px solid hsl(var(--tf-text) / 0.12)'
+              : '0.5px solid hsl(var(--tf-border) / 0.3)',
             boxShadow: isActive
               ? `
                 0 0 0 0.5px hsl(var(--tf-accent) / 0.08),
-                0 20px 50px hsl(222 24% 4% / 0.65),
-                0 4px 12px hsl(222 24% 4% / 0.4),
+                0 20px 50px hsl(var(--tf-bg) / 0.65),
+                0 4px 12px hsl(var(--tf-bg) / 0.4),
                 inset 0 0.5px 0 hsl(var(--tf-text) / 0.08)
               `
               : `
-                0 10px 30px hsl(222 24% 4% / 0.5),
+                0 10px 30px hsl(var(--tf-bg) / 0.5),
                 inset 0 0.5px 0 hsl(var(--tf-text) / 0.04)
               `,
           }}

@@ -38,7 +38,7 @@ export function MassAppraisalPage() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                Marshall &amp; Swift cost schedule reference tables. Select a
+                Benton County cost schedule reference tables — locally calibrated from ratio studies. Select a
                 building class and quality grade to view base rates.
               </p>
             </CardContent>

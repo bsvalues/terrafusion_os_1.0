@@ -73,8 +73,9 @@ export class AuthErrorBoundary extends Component<AuthErrorBoundaryProps, AuthErr
   };
 
   handleLogout = (): void => {
-    // Navigate to logout
-    window.location.href = '/api/logout';
+    // CostForge is an OS module — logout is owned by TerraFusion OS shell.
+    // Post a message to the parent frame to trigger OS-level logout.
+    window.parent.postMessage({ type: 'TF_LOGOUT' }, '*');
   };
 
   render(): ReactNode {

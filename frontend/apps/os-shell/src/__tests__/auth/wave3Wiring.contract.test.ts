@@ -6,12 +6,12 @@
  * Enforces that:
  *   1. forgeRegressionStore imports regressionAPI and does not use Math.random
  *   2. regressionAPI attaches auth via existing token pattern
- *   3. forgeStatisticsStore performs API-first loading with fixture fallback support
+ *   3. forgeStatisticsStore performs API-first loading without fixture fallback
  *   4. ManagementDashboard imports useSession
  *   5. ManagementDashboard does not retain hardcoded page-local dashboard arrays
- *   6. SegmentDiscoveryDashboard is API-first or explicitly fixture-backed
+ *   6. SegmentDiscoveryDashboard is API-first with explicit unavailable behavior
  *   7. GeoEquityDashboard remains store-driven and is not page-local mocked
- *   8. Scoped pages expose disclosed fallback instead of silent live-looking mock data
+ *   8. Scoped pages expose explicit unavailable state instead of silent live-looking mock data
  *
  * These are static-analysis tests (file content inspection) — they do NOT
  * require a running backend or React rendering.
@@ -75,19 +75,25 @@ describe('Gate 2 — regressionAPI auth interceptor', () => {
 });
 
 // ============================================================================
-// Gate 3: forgeStatisticsStore performs API-first with fixture fallback support
+// Gate 3: forgeStatisticsStore performs API-first loading without fixture fallback
 // ============================================================================
 
-describe('Gate 3 — forgeStatisticsStore API-first with fixture fallback', () => {
+describe('Gate 3 — forgeStatisticsStore API-first without fixture fallback', () => {
   const src = readSrc('stores/forgeStatisticsStore.ts');
 
   it('calls computeRatioStudy (real API)', () => {
     expect(src).toContain('computeRatioStudy');
   });
 
-  it('has fixture fallback in loadComparison or marks comparison as fixture', () => {
-    // loadComparison should either attempt API-first or mark data as fixture
-    expect(src).toMatch(/isFixture|api.*comparison|comparison.*api/i);
+  it('calls statisticsAPI for outliers, strata, and comparison', () => {
+    expect(src).toContain('statisticsAPI.getOutliers');
+    expect(src).toContain('statisticsAPI.getStrata');
+    expect(src).toContain('statisticsAPI.compareModels');
+  });
+
+  it('does not import runtime fixtures or track isFixture state', () => {
+    expect(src).not.toMatch(/forgeStatisticsFixtures|OUTLIER_RECORDS|STRATA_RESULTS|MODEL_COMPARISON/);
+    expect(src).not.toContain('isFixture');
   });
 });
 
@@ -136,18 +142,23 @@ describe('Gate 5 — ManagementDashboard no hardcoded page-local arrays', () => 
 });
 
 // ============================================================================
-// Gate 6: SegmentDiscoveryDashboard is API-first or explicitly fixture-backed
+// Gate 6: SegmentDiscoveryDashboard is API-first with explicit unavailable handling
 // ============================================================================
 
-describe('Gate 6 — SegmentDiscoveryDashboard API-first or fixture-backed', () => {
+describe('Gate 6 — SegmentDiscoveryDashboard API-first with explicit unavailable handling', () => {
   const src = readSrc('pages/forge/calibration/SegmentDiscoveryDashboard.tsx');
 
   it('does not have hardcoded DISCOVERED_SEGMENTS in page', () => {
     expect(src).not.toMatch(/^const DISCOVERED_SEGMENTS.*=\s*\[/m);
   });
 
-  it('uses a store or service for data', () => {
-    expect(src).toMatch(/useForge|useFetch|Store|Service|Fixtures|segmentDiscoveryFixtures/i);
+  it('uses a service for governed data', () => {
+    expect(src).toMatch(/statisticsAPI|discoverSegments/i);
+  });
+
+  it('does not import page-local fixtures or DemoDataBanner', () => {
+    expect(src).not.toMatch(/segmentDiscoveryFixtures|DISCOVERED_SEGMENTS_FIXTURE/i);
+    expect(src).not.toContain('DemoDataBanner');
   });
 });
 
@@ -176,20 +187,26 @@ describe('Gate 7 — GeoEquityDashboard store-driven', () => {
 // Gate 8: Scoped pages expose disclosed fallback instead of silent mocks
 // ============================================================================
 
-describe('Gate 8 — disclosed fallback instead of silent mocks', () => {
-  it('forgeRegressionStore has fixture fallback disclosure', () => {
+describe('Gate 8 — explicit unavailable state instead of silent mocks', () => {
+  it('forgeRegressionStore has explicit unavailable messaging instead of fixture fallback', () => {
     const src = readSrc('stores/forgeRegressionStore.ts');
-    expect(src).toMatch(/isFixture|fixture.*fallback|Using fixture/i);
+    expect(src).toContain('Saved regression model registry unavailable; run history only.');
+    expect(src).toContain('No governed regression models or run history returned by the backend.');
+    expect(src).not.toMatch(/REGRESSION_MODELS|REGRESSION_RUNS|fixture/i);
   });
 
-  it('ManagementDashboard has fixture fallback disclosure', () => {
+  it('ManagementDashboard has explicit unavailable disclosure without fixtures', () => {
     const src = readSrc('pages/dais/ManagementDashboard.tsx');
-    expect(src).toMatch(/isFixture|DemoDataBanner|fixture/i);
+    expect(src).toContain('WorkbenchSourceBadge');
+    expect(src).toContain('Certification deadlines unavailable.');
+    expect(src).not.toMatch(/DemoDataBanner|isFixture/);
   });
 
-  it('SegmentDiscoveryDashboard has fixture fallback disclosure', () => {
+  it('SegmentDiscoveryDashboard has explicit unavailable disclosure instead of fixture fallback', () => {
     const src = readSrc('pages/forge/calibration/SegmentDiscoveryDashboard.tsx');
-    expect(src).toMatch(/isFixture|DemoDataBanner|fixture/i);
+    expect(src).toContain('Segment discovery unavailable.');
+    expect(src).toContain('segment-discovery-unavailable');
+    expect(src).not.toContain('DemoDataBanner');
   });
 
   it('No Math.random in any store', () => {

@@ -1,0 +1,116 @@
+{
+  "createdAt": 1777178246,
+  "version": "0.1.0",
+  "productName": "TerraFusion Local Agent Runtime",
+  "internalCodename": "Prometheus",
+  "freezeStatus": "launch-ready-root-dependency-remediation-pending",
+  "releaseStatus": "release-ready-mvp",
+  "launchVerdict": "launch-ready",
+  "canonicalCloseout": "Local Agent: release-truth complete, source-code security clean, root dependency remediation pending.",
+  "guardedArtifacts": [
+    {
+      "name": "Command Registry",
+      "path": ".terrafusion/command-registry.json",
+      "required": true,
+      "exists": true,
+      "ok": true,
+      "sha256": "df28a68275e495114e0fbf590a457e0ba51dc626161b5820ad52f64fd2550024",
+      "summary": "Artifact is readable and fingerprinted."
+    },
+    {
+      "name": "Control Center State",
+      "path": ".terrafusion/control-center-state.json",
+      "required": true,
+      "exists": true,
+      "ok": true,
+      "sha256": "d85d366b13103d842361e2fd19b8e959cc46cfc5c03e367816f8c16b2f77094d",
+      "summary": "Artifact is readable and fingerprinted."
+    },
+    {
+      "name": "Release Notes",
+      "path": ".terrafusion/release-notes-0.1.0.json",
+      "required": true,
+      "exists": true,
+      "ok": true,
+      "sha256": "2b222b4d90b698d4a56db4e6b1722f75d1053344ff953f42f2924e9634dab890",
+      "summary": "Artifact is readable and fingerprinted."
+    },
+    {
+      "name": "Docs Index",
+      "path": ".terrafusion/docs-index.json",
+      "required": true,
+      "exists": true,
+      "ok": true,
+      "sha256": "fe5c8faac31c07d4342cff02968d9035058b5d0e4f81cae6242173805adbfc52",
+      "summary": "Docs index has no missing required artifacts."
+    },
+    {
+      "name": "Product Manifest",
+      "path": ".terrafusion/product-manifest.json",
+      "required": true,
+      "exists": true,
+      "ok": true,
+      "sha256": "efebf9e1d14d31133efc1bd708c383dc111fecf7cc15fc37332e5f0c87747bd0",
+      "summary": "Artifact is readable and fingerprinted."
+    },
+    {
+      "name": "Release Check Report",
+      "path": ".terrafusion/release-check-report.json",
+      "required": true,
+      "exists": true,
+      "ok": true,
+      "sha256": "d9092e4df03aff9b81393b8d30e99f9f1a8ad7350a78032ea35194fd41ab5aae",
+      "summary": "Release check passed and was fingerprinted."
+    },
+    {
+      "name": "Doctor Report",
+      "path": ".terrafusion/doctor-report.json",
+      "required": false,
+      "exists": false,
+      "ok": false,
+      "sha256": null,
+      "summary": "Artifact missing."
+    },
+    {
+      "name": "Model Runtime Status",
+      "path": ".terrafusion/model-runtime-status.json",
+      "required": false,
+      "exists": false,
+      "ok": false,
+      "sha256": null,
+      "summary": "Artifact missing."
+    }
+  ],
+  "proofGates": [
+    {
+      "command": "node --test os-platform/core/tests/local-agent-launch-smoke.test.mjs",
+      "purpose": "Re-run founder launch and runtime smoke before changing the frozen slice."
+    },
+    {
+      "command": "pnpm run test:local-agent",
+      "purpose": "Re-run the local-agent proof wall after any local-agent source change."
+    },
+    {
+      "command": "pnpm run check:generated",
+      "purpose": "Verify generated JS companions still match their TypeScript sources."
+    },
+    {
+      "command": "node --test os-platform/core/tests/phase83-tools.test.mjs",
+      "purpose": "Keep the core pilot tooling contract intact."
+    },
+    {
+      "command": "pnpm run type-check",
+      "purpose": "Re-check the governed TypeScript boundary before unfreezing."
+    }
+  ],
+  "disclosures": [
+    "Founder launch readiness was proven separately by launch smoke and the local-agent proof wall; this card snapshots the release evidence bundle and rerun gates.",
+    "Local-agent source-code security is recorded as clean for this slice; root dependency remediation remains pending outside the local-agent source path.",
+    "The freeze card is evidence only. It does not approve, tag, or push a release."
+  ],
+  "notes": [
+    "Freeze capture is release-memory, not release authority.",
+    "Prometheus remains the internal codename; TerraFusion Local Agent Runtime remains the public product name.",
+    "Any future change to the guarded artifacts should trigger the listed proof gates before another freeze capture."
+  ]
+}

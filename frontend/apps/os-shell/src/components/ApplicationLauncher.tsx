@@ -18,12 +18,12 @@ const ApplicationLauncher: React.FC = () => {
       id: 1,
       name: 'Government Edition',
       path: 'modules/government-edition/index.html',
-      description: 'Property Assessment Suite with county records integration (await DynamicPropertyService.GetPropertyCountAsync("benton") parcels)',
+      description: 'Property assessment suite with county records integration',
       status: 'active',
     },
     {
       id: 2,
-      name: 'CostForge AI Champion',
+      name: 'CostForge AI',
       path: 'modules/costforge-ai-champion/index.html',
       description: 'AI-powered cost estimation and budget forecasting',
       status: 'active',
@@ -53,28 +53,28 @@ const ApplicationLauncher: React.FC = () => {
       id: 6,
       name: 'AI Command Brain',
       path: 'modules/ai-command-brain/index.html',
-      description: '1,008 AI agents with 87 MCP tools (Supreme Commander + Field Generals)',
+      description: 'Governed AI command surface with visible tool execution evidence',
       status: 'active',
     },
     {
       id: 7,
       name: 'AI Swarm Orchestrator',
       path: 'modules/ai-swarm/index.html',
-      description: 'Swarm coordination managing 1,008 concurrent agents',
+      description: 'AI coordination surface for governed task distribution',
       status: 'active',
     },
     {
       id: 8,
       name: 'Enhanced Revenue Hunter',
       path: 'modules/ai-advanced/index.html',
-      description: 'Revenue optimization with 47,231% demonstrated ROI',
+      description: 'Revenue review workflow with anomaly detection and evidence tracking',
       status: 'active',
     },
     {
       id: 9,
       name: 'Testing Suite',
       path: 'modules/testing-suite/visual-test-dashboard.html',
-      description: '716 real tests with 94.7% code coverage',
+      description: 'Governed test harness and release validation evidence',
       status: 'active',
     },
     {
@@ -93,7 +93,7 @@ const ApplicationLauncher: React.FC = () => {
     },
     {
       id: 12,
-      name: 'Marketplace Champion',
+      name: 'Marketplace',
       path: 'modules/marketplace-champion/index.html',
       description: 'Data marketplace with REST APIs and GraphQL integration',
       status: 'active',
@@ -116,23 +116,19 @@ const ApplicationLauncher: React.FC = () => {
       id: 15,
       name: 'Property Workbench',
       path: 'modules/property-workbench/index.html',
-      description: 'Property management dashboard with MLS data feeds',
+      description: 'Property workbench for county parcel, sales, and valuation evidence',
       status: 'active',
     },
   ];
   const launchApp = (app: Application) => {
-    // Simulate launching the application
     setLaunchedApps((prev) => new Set(prev).add(app.id));
 
-    // In a real implementation, this would open the application
     if (process.env.NODE_ENV === 'development') {
       // eslint-disable-next-line no-console
       // eslint-disable-next-line no-console
     }
 
-    // Simulate opening in new window/tab
     if (typeof window !== 'undefined') {
-      // In production, this would actually launch the application
       window.open(app.path, '_blank');
     }
   };
@@ -183,7 +179,7 @@ const ApplicationLauncher: React.FC = () => {
             margin: '0 0 20px 0',
           }}
         >
-          Terrafusion REAL Applications
+          Terrafusion Applications
         </h1>
         <div
           style={{
@@ -192,7 +188,7 @@ const ApplicationLauncher: React.FC = () => {
             marginBottom: '20px',
           }}
         >
-          15 Production-Ready Government Modules - Official ACTIVE_MODULES.md Registry!
+          Registered government modules from the local application manifest
         </div>
         <div
           style={{
@@ -201,7 +197,7 @@ const ApplicationLauncher: React.FC = () => {
             marginBottom: '40px',
           }}
         >
-          🚀 Registry v{REGISTRY_VERSION} | Hard refresh browser (Ctrl+Shift+R) if you see cached
+          Registry v{REGISTRY_VERSION} | Hard refresh browser (Ctrl+Shift+R) if you see cached
           old modules
         </div>
       </div>
@@ -228,7 +224,7 @@ const ApplicationLauncher: React.FC = () => {
           >
             Registry:
           </strong>{' '}
-          ACTIVE_MODULES.md Production Configuration
+          ACTIVE_MODULES.md Configuration
         </div>
         <div
           style={{
@@ -242,7 +238,7 @@ const ApplicationLauncher: React.FC = () => {
           >
             Contents:
           </strong>{' '}
-          15 government modules with proper architecture
+          {applications.length} registered government modules
         </div>
         <div
           style={{
@@ -256,7 +252,7 @@ const ApplicationLauncher: React.FC = () => {
           >
             Property Data:
           </strong>{' '}
-          await DynamicPropertyService.GetPropertyCountAsync("benton") County Parcels
+          Backend-reported county parcel evidence only
         </div>
         <div>
           <strong
@@ -266,15 +262,15 @@ const ApplicationLauncher: React.FC = () => {
           >
             Status:
           </strong>{' '}
-          ✅ PRODUCTION READY - GOVERNMENT ARCHITECTURE
+          Registry loaded
         </div>
       </div>
 
       {/* Status Banner */}
       <div className='text-center'>
-        ✅ Official ACTIVE_MODULES.md registry - 15 production-ready government modules
+        ACTIVE_MODULES.md registry loaded for launch routing
         <br />
-        Core Government + AI Agents + Development Tools + Commercial + Specialized modules!
+        Module status is registration state only; operational readiness requires each app gate.
       </div>
 
       {/* Applications Grid */}
@@ -431,14 +427,14 @@ const ApplicationLauncher: React.FC = () => {
                 marginBottom: '5px',
               }}
             >
-              1008
+              n/a
             </div>
             <div
               style={{
                 color: 'hsl(var(--tf-text) / 0.7)',
               }}
             >
-              Active AI Agents
+              AI Agent Count
             </div>
           </div>
           <div>
@@ -450,7 +446,7 @@ const ApplicationLauncher: React.FC = () => {
                 marginBottom: '5px',
               }}
             >
-              await DynamicPropertyService.GetPropertyCountAsync("benton")
+              n/a
             </div>
             <div
               style={{
@@ -485,4 +481,3 @@ const ApplicationLauncher: React.FC = () => {
   );
 };
 export default ApplicationLauncher;
-

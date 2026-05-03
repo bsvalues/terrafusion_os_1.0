@@ -11,7 +11,7 @@ class SyncService {
   public isApplyingSync = false;
 
   constructor() {
-    // Channel initialized in init() to allow for mocking/lazy loading
+// Channel initialized in init() to allow lazy loading.
   }
 
   public init() {

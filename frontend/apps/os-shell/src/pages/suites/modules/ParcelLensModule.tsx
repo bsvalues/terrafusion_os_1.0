@@ -1,11 +1,12 @@
 /**
- * ParcelLens Module -- Detailed Parcel Inspection
+ * ParcelLens Module -- Live Parcel Inspection
  * ===================================================================
  * Constitutional module of TerraAtlas (Article V Section 5.1).
- * Owns: Deep parcel inspection, measurement tools, property detail views.
+ * Owns: Parcel-level Atlas inspection using live Benton parcel records
+ * and live ArcGIS overlay workflow metadata.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -19,336 +20,643 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Search, MapPin, Ruler, Home, Building2, DollarSign, Calendar, ArrowRight } from 'lucide-react';
-import { atlasService, type ParcelResult } from '@/services/atlasService';
+import {
+  ArrowUpRight,
+  Building2,
+  DollarSign,
+  Layers3,
+  MapPin,
+  ScanSearch,
+  Search,
+  Shapes,
+} from 'lucide-react';
+import {
+  atlasService,
+  type ParcelLensRecord,
+  type ParcelResult,
+  type ParcelSpatialProfileResponse,
+} from '@/services/atlasService';
 
-/* -------------------------------------------------------------------------- */
-/* Helpers                                                                     */
-/* -------------------------------------------------------------------------- */
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
+function formatCurrency(value?: number): string {
+  if (typeof value !== 'number' || Number.isNaN(value)) return '—';
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(value);
 }
 
-function formatAcres(value: number): string {
+function formatAcres(value?: number): string {
+  if (typeof value !== 'number' || Number.isNaN(value) || value <= 0) return '—';
   return `${value.toFixed(3)} ac`;
 }
 
-function sqft(acres: number): string {
-  return `${Math.round(acres * 43_560).toLocaleString()} sq ft`;
+function formatText(value?: string): string {
+  return value && value.trim().length > 0 ? value : '—';
 }
 
-/* -------------------------------------------------------------------------- */
-/* Mock detail data (supplement from atlasService defaults)                    */
-/* -------------------------------------------------------------------------- */
+function getGeometryRings(geometry?: GeoJSON.Geometry): [number, number][][] {
+  if (!geometry) return [];
+  if (geometry.type === 'Polygon') {
+    return geometry.coordinates.map((ring) => ring as [number, number][]);
+  }
 
-interface ParcelDetail extends ParcelResult {
-  yearBuilt?: number;
-  bedrooms?: number;
-  bathrooms?: number;
-  sqFootage?: number;
-  stories?: number;
-  roofType?: string;
-  foundation?: string;
-  heating?: string;
-  lastSaleDate?: string;
-  lastSalePrice?: number;
-  taxDistrict?: string;
-  schoolDistrict?: string;
-  fireDistrict?: string;
-  improvements: ImprovementRecord[];
+  if (geometry.type === 'MultiPolygon') {
+    return geometry.coordinates.flatMap((polygon) =>
+      polygon.map((ring) => ring as [number, number][]),
+    );
+  }
+
+  return [];
 }
 
-interface ImprovementRecord {
-  id: string;
-  type: string;
-  yearBuilt: number;
-  sqFootage: number;
-  condition: 'excellent' | 'good' | 'average' | 'fair' | 'poor';
-  value: number;
+function buildGeometryPath(geometry?: GeoJSON.Geometry): string | null {
+  const rings = getGeometryRings(geometry);
+  if (rings.length === 0) return null;
+
+  const coordinates = rings.flatMap((ring) => ring);
+  const longitudes = coordinates.map(([lng]) => lng);
+  const latitudes = coordinates.map(([, lat]) => lat);
+
+  const minLng = Math.min(...longitudes);
+  const maxLng = Math.max(...longitudes);
+  const minLat = Math.min(...latitudes);
+  const maxLat = Math.max(...latitudes);
+
+  const width = Math.max(maxLng - minLng, 0.0001);
+  const height = Math.max(maxLat - minLat, 0.0001);
+  const padding = 18;
+  const svgWidth = 320;
+  const svgHeight = 220;
+
+  return rings
+    .map((ring) =>
+      ring
+        .map(([lng, lat], index) => {
+          const x = padding + ((lng - minLng) / width) * (svgWidth - padding * 2);
+          const y = svgHeight - padding - ((lat - minLat) / height) * (svgHeight - padding * 2);
+          return `${index === 0 ? 'M' : 'L'}${x.toFixed(1)} ${y.toFixed(1)}`;
+        })
+        .join(' '),
+    )
+    .map((segment) => `${segment} Z`)
+    .join(' ');
 }
 
-const MOCK_DETAILS: Record<string, Omit<ParcelDetail, keyof ParcelResult>> = {
-  '104841000002000': {
-    yearBuilt: 2004, bedrooms: 4, bathrooms: 2.5, sqFootage: 2_145, stories: 2,
-    roofType: 'Composition', foundation: 'Concrete', heating: 'Forced Air Gas',
-    lastSaleDate: '2021-06-15', lastSalePrice: 365_000,
-    taxDistrict: 'Kennewick 15', schoolDistrict: 'Kennewick SD 17', fireDistrict: 'KCFD #1',
-    improvements: [
-      { id: 'imp-1', type: 'Primary Residence', yearBuilt: 2004, sqFootage: 2_145, condition: 'good', value: 310_000 },
-      { id: 'imp-2', type: 'Attached Garage', yearBuilt: 2004, sqFootage: 576, condition: 'good', value: 28_800 },
-    ],
-  },
-  '104841000015200': {
-    yearBuilt: 1998, bedrooms: 3, bathrooms: 2, sqFootage: 1_780, stories: 1,
-    roofType: 'Composition', foundation: 'Concrete', heating: 'Heat Pump',
-    lastSaleDate: '2023-03-22', lastSalePrice: 370_000,
-    taxDistrict: 'Kennewick 15', schoolDistrict: 'Kennewick SD 17', fireDistrict: 'KCFD #1',
-    improvements: [
-      { id: 'imp-3', type: 'Primary Residence', yearBuilt: 1998, sqFootage: 1_780, condition: 'good', value: 320_000 },
-      { id: 'imp-4', type: 'Detached Garage', yearBuilt: 1998, sqFootage: 484, condition: 'average', value: 19_360 },
-    ],
-  },
-};
+function ParcelGeometryPreview({ geometry }: { geometry?: GeoJSON.Geometry }) {
+  const pathData = useMemo(() => buildGeometryPath(geometry), [geometry]);
 
-/* -------------------------------------------------------------------------- */
-/* Component                                                                   */
-/* -------------------------------------------------------------------------- */
-
-export default function ParcelLensModule() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [parcels, setParcels] = useState<ParcelResult[]>([]);
-  const [selected, setSelected] = useState<ParcelDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      setLoading(true);
-      const data = await atlasService.searchParcels({ query: '', limit: 10 });
-      if (!cancelled) {
-        setParcels(data.results);
-        setLoading(false);
-      }
-    }
-    load();
-    return () => { cancelled = true; };
-  }, []);
-
-  const handleSearch = useCallback(async () => {
-    const data = await atlasService.searchParcels({ query: searchTerm, limit: 20 });
-    setParcels(data.results);
-    setSelected(null);
-  }, [searchTerm]);
-
-  const selectParcel = useCallback(async (parcel: ParcelResult) => {
-    const detail = await atlasService.getParcel(parcel.parcelId);
-    const extras = MOCK_DETAILS[parcel.parcelId];
-    setSelected({
-      ...(detail ?? parcel),
-      improvements: extras?.improvements ?? [],
-      ...extras,
-    } as ParcelDetail);
-  }, []);
-
-  if (loading) {
+  if (!pathData) {
     return (
-      <div className='p-6 flex items-center justify-center min-h-[400px]'>
-        <p style={{ color: 'hsl(var(--tf-muted))' }}>Loading ParcelLens...</p>
+      <div
+        className='flex min-h-[220px] items-center justify-center rounded-xl border'
+        style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg))' }}
+      >
+        <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+          Live parcel geometry is not available for this record.
+        </p>
       </div>
     );
   }
 
   return (
+    <div
+      className='rounded-xl border p-3'
+      style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg))' }}
+    >
+      <svg viewBox='0 0 320 220' className='h-[220px] w-full' aria-label='ParcelLens live parcel geometry'>
+        <rect width='320' height='220' fill='#07131a' rx='16' />
+        <path d={pathData} fill='rgba(32,212,200,0.24)' stroke='#7dd3fc' strokeWidth='2.2' />
+      </svg>
+    </div>
+  );
+}
+
+interface SelectedParcelState {
+  record: ParcelLensRecord;
+  profile: ParcelSpatialProfileResponse;
+}
+
+export default function ParcelLensModule() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [parcels, setParcels] = useState<ParcelResult[]>([]);
+  const [loadingSearch, setLoadingSearch] = useState(true);
+  const [selected, setSelected] = useState<SelectedParcelState | null>(null);
+  const [selectingParcel, setSelectingParcel] = useState(false);
+  const [selectionError, setSelectionError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setLoadingSearch(true);
+      try {
+        const data = await atlasService.searchParcels({ query: '', limit: 12 });
+        if (!cancelled) setParcels(data.results);
+      } catch {
+        if (!cancelled) setParcels([]);
+      } finally {
+        if (!cancelled) setLoadingSearch(false);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleSearch = useCallback(async () => {
+    setLoadingSearch(true);
+    try {
+      const data = await atlasService.searchParcels({ query: searchTerm.trim(), limit: 20 });
+      setParcels(data.results);
+      setSelected(null);
+      setSelectionError(null);
+    } catch (error) {
+      setParcels([]);
+      setSelectionError(error instanceof Error ? error.message : 'Parcel search failed.');
+    } finally {
+      setLoadingSearch(false);
+    }
+  }, [searchTerm]);
+
+  const selectParcel = useCallback(async (parcel: ParcelResult) => {
+    setSelectingParcel(true);
+    setSelectionError(null);
+
+    try {
+      const [record, profile] = await Promise.all([
+        atlasService.getParcelLensRecord(parcel.parcelId),
+        atlasService.getParcelSpatialProfile(parcel.parcelId),
+      ]);
+
+      setSelected({ record, profile });
+    } catch (error) {
+      setSelected(null);
+      setSelectionError(
+        error instanceof Error
+          ? error.message
+          : 'ParcelLens could not load a live Benton parcel record.',
+      );
+    } finally {
+      setSelectingParcel(false);
+    }
+  }, []);
+
+  const overlayCount = selected?.profile.overlayLayers.length ?? 0;
+  const liveNarrative = selected
+    ? overlayCount > 0
+      ? `This parcel resolves against ${overlayCount} live Benton overlay layers. Review overlay facts in Atlas and route parcel corrections to Workbench before any county calibration decision.`
+      : 'No intersect overlays were returned for this parcel. Confirm layer availability and parcel geometry before escalating the issue upstream.'
+    : null;
+
+  return (
     <div className='p-6 space-y-6'>
-      {/* Header */}
       <div>
-        <h2 className='text-2xl font-semibold flex items-center gap-3' style={{ color: 'hsl(var(--tf-fg))' }}>
-          <Search style={{ color: 'hsl(var(--tf-suite-atlas))' }} size={28} />
+        <h2
+          className='text-2xl font-semibold flex items-center gap-3'
+          style={{ color: 'hsl(var(--tf-fg))' }}
+        >
+          <ScanSearch style={{ color: 'hsl(var(--tf-suite-atlas))' }} size={28} />
           ParcelLens
         </h2>
         <p style={{ color: 'hsl(var(--tf-muted))' }} className='mt-1'>
-          Detailed parcel inspection with measurement tools — Benton County, WA
+          Live Benton parcel inspection from county roll search, ArcGIS parcel attributes, and Atlas
+          overlay workflow metadata.
         </p>
       </div>
 
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-        {/* Search Panel */}
         <div className='space-y-4'>
           <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
             <CardHeader className='pb-2'>
-              <CardTitle className='text-base flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
+              <CardTitle
+                className='text-base flex items-center gap-2'
+                style={{ color: 'hsl(var(--tf-fg))' }}
+              >
                 <Search size={16} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
                 Parcel Search
               </CardTitle>
+              <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+                Search live Benton parcels by ID, address, or owner.
+              </CardDescription>
             </CardHeader>
             <CardContent className='space-y-3'>
               <div className='flex gap-2'>
                 <Input
                   placeholder='GeoID, address, or owner...'
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  style={{ background: 'hsl(var(--tf-input-bg))', borderColor: 'hsl(var(--tf-border))' }}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  onKeyDown={(event) => event.key === 'Enter' && void handleSearch()}
+                  style={{
+                    background: 'hsl(var(--tf-input-bg))',
+                    borderColor: 'hsl(var(--tf-border))',
+                  }}
                 />
-                <Button variant='outline' size='sm' onClick={handleSearch} style={{ borderColor: 'hsl(var(--tf-border))' }}>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={() => void handleSearch()}
+                  style={{ borderColor: 'hsl(var(--tf-border))' }}
+                >
                   <Search size={14} />
                 </Button>
               </div>
-              <div className='space-y-1 max-h-[400px] overflow-y-auto'>
-                {parcels.map((p) => (
-                  <button
-                    key={p.parcelId}
-                    onClick={() => selectParcel(p)}
-                    className={`w-full text-left p-2.5 rounded-lg transition-colors ${
-                      selected?.parcelId === p.parcelId ? 'bg-white/10' : 'hover:bg-white/5'
-                    }`}
-                  >
-                    <p className='text-sm font-mono' style={{ color: 'hsl(var(--tf-fg))' }}>{p.parcelId}</p>
-                    <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>{p.address}</p>
-                  </button>
-                ))}
+
+              <div className='rounded-lg border px-3 py-2 text-xs' style={{ borderColor: 'hsl(var(--tf-border))', color: 'hsl(var(--tf-muted))' }}>
+                ParcelLens shows only live Benton fields returned by Atlas and ArcGIS. No fabricated
+                bedrooms, bathrooms, or improvement rows are injected into the record.
               </div>
+
+              {loadingSearch ? (
+                <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  Loading live Benton parcel search…
+                </p>
+              ) : (
+                <div className='space-y-1 max-h-[420px] overflow-y-auto'>
+                  {parcels.map((parcel) => {
+                    const isSelected = selected?.record.parcelId === parcel.parcelId;
+                    return (
+                      <button
+                        key={parcel.parcelId}
+                        type='button'
+                        onClick={() => void selectParcel(parcel)}
+                        className='w-full rounded-lg border p-3 text-left transition-colors'
+                        style={{
+                          borderColor: isSelected
+                            ? 'rgba(32,212,200,0.45)'
+                            : 'hsl(var(--tf-border))',
+                          background: isSelected ? 'rgba(32,212,200,0.12)' : 'rgba(255,255,255,0.03)',
+                        }}
+                      >
+                        <p className='text-sm font-mono' style={{ color: 'hsl(var(--tf-fg))' }}>
+                          {parcel.parcelId}
+                        </p>
+                        <p className='text-xs mt-1' style={{ color: 'hsl(var(--tf-muted))' }}>
+                          {parcel.address}
+                        </p>
+                        <p className='text-xs mt-1' style={{ color: 'hsl(var(--tf-muted) / 0.8)' }}>
+                          {parcel.owner}
+                        </p>
+                      </button>
+                    );
+                  })}
+
+                  {parcels.length === 0 && (
+                    <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+                      No live parcel search results were returned.
+                    </p>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
 
-        {/* Detail Panel */}
         <div className='lg:col-span-2 space-y-4'>
           {!selected ? (
             <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
-              <CardContent className='p-12 flex flex-col items-center justify-center min-h-[400px]'>
+              <CardContent className='p-12 flex flex-col items-center justify-center min-h-[420px]'>
                 <MapPin size={48} style={{ color: 'hsl(var(--tf-suite-atlas) / 0.3)' }} />
-                <p className='mt-4 text-lg' style={{ color: 'hsl(var(--tf-muted))' }}>Select a parcel to inspect</p>
-                <p className='text-sm' style={{ color: 'hsl(var(--tf-muted) / 0.6)' }}>Search and click a parcel to view full details</p>
+                <p className='mt-4 text-lg' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  Select a parcel to inspect
+                </p>
+                <p className='text-sm text-center max-w-xl' style={{ color: 'hsl(var(--tf-muted) / 0.75)' }}>
+                  ParcelLens will load the live Benton parcel record, the live ArcGIS parcel feature,
+                  and the Atlas spatial-profile workflow for the selected parcel.
+                </p>
               </CardContent>
             </Card>
           ) : (
             <>
-              {/* Property Overview */}
-              <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
+              <Card
+                data-testid='parcel-lens-governed-brief'
+                style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}
+              >
                 <CardHeader className='pb-2'>
-                  <div className='flex items-center justify-between'>
-                    <div>
-                      <CardTitle style={{ color: 'hsl(var(--tf-fg))' }}>{selected.address}</CardTitle>
-                      <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
-                        GeoID: {selected.parcelId} · Owner: {selected.owner}
-                      </CardDescription>
-                    </div>
-                    <Badge variant='outline' style={{ background: 'hsl(var(--tf-suite-atlas) / 0.1)', color: 'hsl(var(--tf-suite-atlas))', borderColor: 'hsl(var(--tf-suite-atlas) / 0.3)' }}>
-                      {selected.zoning}
-                    </Badge>
-                  </div>
+                  <CardTitle className='text-base' style={{ color: 'hsl(var(--tf-fg))' }}>
+                    Live Parcel Atlas Profile
+                  </CardTitle>
+                  <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+                    Atlas is reading this parcel from the live Benton query-builder and live overlay
+                    workflow. Parcel corrections still route to Workbench, and county calibration stays
+                    in TerraForge.
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
-                    <div className='p-3 rounded-lg' style={{ background: 'hsl(var(--tf-bg))' }}>
-                      <div className='flex items-center gap-2 mb-1'>
-                        <DollarSign size={14} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
-                        <span className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Assessed Value</span>
-                      </div>
-                      <p className='text-lg font-mono font-semibold' style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(selected.assessedValue)}</p>
-                    </div>
-                    <div className='p-3 rounded-lg' style={{ background: 'hsl(var(--tf-bg))' }}>
-                      <div className='flex items-center gap-2 mb-1'>
-                        <Ruler size={14} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
-                        <span className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Lot Size</span>
-                      </div>
-                      <p className='text-lg font-mono font-semibold' style={{ color: 'hsl(var(--tf-fg))' }}>{formatAcres(selected.acreage)}</p>
-                      <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>{sqft(selected.acreage)}</p>
-                    </div>
-                    <div className='p-3 rounded-lg' style={{ background: 'hsl(var(--tf-bg))' }}>
-                      <div className='flex items-center gap-2 mb-1'>
-                        <Home size={14} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
-                        <span className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Building</span>
-                      </div>
-                      <p className='text-lg font-mono font-semibold' style={{ color: 'hsl(var(--tf-fg))' }}>
-                        {selected.sqFootage ? `${selected.sqFootage.toLocaleString()} sf` : '—'}
-                      </p>
-                      <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
-                        {selected.yearBuilt ? `Built ${selected.yearBuilt}` : '—'}
-                      </p>
-                    </div>
-                    <div className='p-3 rounded-lg' style={{ background: 'hsl(var(--tf-bg))' }}>
-                      <div className='flex items-center gap-2 mb-1'>
-                        <Calendar size={14} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
-                        <span className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Last Sale</span>
-                      </div>
-                      <p className='text-lg font-mono font-semibold' style={{ color: 'hsl(var(--tf-fg))' }}>
-                        {selected.lastSalePrice ? formatCurrency(selected.lastSalePrice) : '—'}
-                      </p>
-                      <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>{selected.lastSaleDate ?? '—'}</p>
-                    </div>
+                <CardContent className='space-y-3'>
+                  <div className='flex flex-wrap items-center gap-3'>
+                    <Badge
+                      variant='outline'
+                      style={{
+                        borderColor: 'rgba(32,212,200,0.35)',
+                        color: 'hsl(var(--tf-suite-atlas))',
+                        background: 'rgba(32,212,200,0.08)',
+                      }}
+                    >
+                      Live Benton ArcGIS
+                    </Badge>
+                    <span className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+                      Overlay layers: {overlayCount}
+                    </span>
+                    <a
+                      href={selected.record.queryUrl}
+                      target='_blank'
+                      rel='noreferrer'
+                      className='inline-flex items-center gap-1 text-sm'
+                      style={{ color: 'hsl(var(--tf-suite-atlas))' }}
+                    >
+                      Open ArcGIS parcel query
+                      <ArrowUpRight size={14} />
+                    </a>
                   </div>
+
+                  {liveNarrative && (
+                    <div
+                      className='rounded-lg border p-3 text-sm'
+                      style={{
+                        borderColor: 'hsl(var(--tf-border))',
+                        background: 'hsl(var(--tf-bg))',
+                        color: 'hsl(var(--tf-fg))',
+                      }}
+                    >
+                      {liveNarrative}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
-              {/* Property Characteristics */}
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              {selectionError && (
+                <div
+                  className='rounded-lg border px-4 py-3 text-sm'
+                  style={{
+                    borderColor: 'hsl(var(--tf-suite-dossier) / 0.35)',
+                    color: 'hsl(var(--tf-suite-dossier))',
+                    background: 'hsl(var(--tf-card-bg))',
+                  }}
+                >
+                  {selectionError}
+                </div>
+              )}
+
+              {selectingParcel ? (
                 <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
-                  <CardHeader className='pb-2'>
-                    <CardTitle className='text-base flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
-                      <Building2 size={16} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
-                      Characteristics
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className='space-y-2'>
-                    {[
-                      ['Land Use', selected.landUse],
-                      ['Bedrooms', selected.bedrooms?.toString() ?? '—'],
-                      ['Bathrooms', selected.bathrooms?.toString() ?? '—'],
-                      ['Stories', selected.stories?.toString() ?? '—'],
-                      ['Roof Type', selected.roofType ?? '—'],
-                      ['Foundation', selected.foundation ?? '—'],
-                      ['Heating', selected.heating ?? '—'],
-                    ].map(([label, value]) => (
-                      <div key={label} className='flex justify-between py-1' style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.5)' }}>
-                        <span className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>{label}</span>
-                        <span className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>{value}</span>
-                      </div>
-                    ))}
+                  <CardContent className='p-8'>
+                    <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+                      Loading live Benton parcel inspection…
+                    </p>
                   </CardContent>
                 </Card>
-
-                <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
-                  <CardHeader className='pb-2'>
-                    <CardTitle className='text-base flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
-                      <MapPin size={16} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
-                      Districts
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className='space-y-2'>
-                    {[
-                      ['Tax District', selected.taxDistrict ?? '—'],
-                      ['School District', selected.schoolDistrict ?? '—'],
-                      ['Fire District', selected.fireDistrict ?? '—'],
-                      ['Zoning', selected.zoning],
-                      ['Land Use Code', selected.landUse],
-                    ].map(([label, value]) => (
-                      <div key={label} className='flex justify-between py-1' style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.5)' }}>
-                        <span className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>{label}</span>
-                        <span className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>{value}</span>
+              ) : (
+                <>
+                  <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
+                    <CardHeader className='pb-2'>
+                      <div className='flex items-start justify-between gap-4'>
+                        <div>
+                          <CardTitle style={{ color: 'hsl(var(--tf-fg))' }}>
+                            {selected.record.address}
+                          </CardTitle>
+                          <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+                            Parcel ID: {selected.record.parcelId} · Owner: {selected.record.owner}
+                          </CardDescription>
+                        </div>
+                        <Badge
+                          variant='outline'
+                          style={{
+                            background: 'hsl(var(--tf-suite-atlas) / 0.1)',
+                            color: 'hsl(var(--tf-suite-atlas))',
+                            borderColor: 'hsl(var(--tf-suite-atlas) / 0.3)',
+                          }}
+                        >
+                          {selected.record.zoning}
+                        </Badge>
                       </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Improvements Table */}
-              {selected.improvements.length > 0 && (
-                <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
-                  <CardHeader className='pb-2'>
-                    <CardTitle className='text-base' style={{ color: 'hsl(var(--tf-fg))' }}>Improvements</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow style={{ borderColor: 'hsl(var(--tf-border))' }}>
-                          <TableHead style={{ color: 'hsl(var(--tf-muted))' }}>Type</TableHead>
-                          <TableHead style={{ color: 'hsl(var(--tf-muted))' }}>Year Built</TableHead>
-                          <TableHead style={{ color: 'hsl(var(--tf-muted))' }}>Sq Ft</TableHead>
-                          <TableHead style={{ color: 'hsl(var(--tf-muted))' }}>Condition</TableHead>
-                          <TableHead style={{ color: 'hsl(var(--tf-muted))' }} className='text-right'>Value</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {selected.improvements.map((imp) => (
-                          <TableRow key={imp.id} style={{ borderColor: 'hsl(var(--tf-border))' }}>
-                            <TableCell style={{ color: 'hsl(var(--tf-fg))' }}>{imp.type}</TableCell>
-                            <TableCell style={{ color: 'hsl(var(--tf-muted))' }}>{imp.yearBuilt}</TableCell>
-                            <TableCell style={{ color: 'hsl(var(--tf-muted))' }}>{imp.sqFootage.toLocaleString()}</TableCell>
-                            <TableCell>
-                              <Badge variant='outline' className='capitalize' style={{ borderColor: 'hsl(var(--tf-border))' }}>
-                                {imp.condition}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className='text-right font-mono' style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(imp.value)}</TableCell>
-                          </TableRow>
+                    </CardHeader>
+                    <CardContent>
+                      <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+                        {[
+                          ['Assessed value', formatCurrency(selected.record.assessedValue)],
+                          ['Land value', formatCurrency(selected.record.landValue)],
+                          ['Improvement value', formatCurrency(selected.record.improvementValue)],
+                          ['Lot size', formatAcres(selected.record.acreage)],
+                        ].map(([label, value]) => (
+                          <div
+                            key={label}
+                            className='p-3 rounded-lg'
+                            style={{ background: 'hsl(var(--tf-bg))' }}
+                          >
+                            <div className='flex items-center gap-2 mb-1'>
+                              <DollarSign size={14} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
+                              <span className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                                {label}
+                              </span>
+                            </div>
+                            <p
+                              className='text-lg font-mono font-semibold'
+                              style={{ color: 'hsl(var(--tf-fg))' }}
+                            >
+                              {value}
+                            </p>
+                          </div>
                         ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <div className='grid grid-cols-1 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] gap-4'>
+                    <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
+                      <CardHeader className='pb-2'>
+                        <CardTitle
+                          className='text-base flex items-center gap-2'
+                          style={{ color: 'hsl(var(--tf-fg))' }}
+                        >
+                          <Shapes size={16} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
+                          Live Parcel Geometry
+                        </CardTitle>
+                        <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+                          Parcel polygon returned by the Benton ArcGIS parcel query.
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <ParcelGeometryPreview geometry={selected.record.geometry} />
+                      </CardContent>
+                    </Card>
+
+                    <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
+                      <CardHeader className='pb-2'>
+                        <CardTitle
+                          className='text-base flex items-center gap-2'
+                          style={{ color: 'hsl(var(--tf-fg))' }}
+                        >
+                          <Building2 size={16} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
+                          Live Record Detail
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className='space-y-2'>
+                        {[
+                          ['Property type', selected.record.landUse],
+                          ['Tax code', selected.record.taxCode],
+                          ['APN', selected.record.apn],
+                          ['PIN', selected.record.pin],
+                          ['Total ArcGIS value', formatCurrency(selected.record.totalValue)],
+                          ['Source', selected.record.source],
+                        ].map(([label, value]) => (
+                          <div
+                            key={label}
+                            className='flex justify-between gap-4 py-1.5'
+                            style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.5)' }}
+                          >
+                            <span className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+                              {label}
+                            </span>
+                            <span
+                              className='text-sm text-right font-medium'
+                              style={{ color: 'hsl(var(--tf-fg))' }}
+                            >
+                              {typeof value === 'string' ? formatText(value) : value}
+                            </span>
+                          </div>
+                        ))}
+
+                        <Separator className='my-2' />
+
+                        <div className='space-y-2'>
+                          <p className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
+                            Legal Description
+                          </p>
+                          <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+                            {formatText(selected.record.legalDescription)}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
+                    <CardHeader className='pb-2'>
+                      <CardTitle
+                        className='text-base flex items-center gap-2'
+                        style={{ color: 'hsl(var(--tf-fg))' }}
+                      >
+                        <Layers3 size={16} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
+                        Spatial Profile Workflow
+                      </CardTitle>
+                      <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+                        Live overlay workflow metadata returned by Atlas for this parcel.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className='space-y-4'>
+                      <div className='grid grid-cols-1 md:grid-cols-3 gap-3'>
+                        <div className='rounded-lg border p-3' style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg))' }}>
+                          <p className='text-xs uppercase tracking-[0.2em]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                            Workflow
+                          </p>
+                          <p className='mt-2 text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
+                            {selected.profile.workflow}
+                          </p>
+                        </div>
+                        <div className='rounded-lg border p-3' style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg))' }}>
+                          <p className='text-xs uppercase tracking-[0.2em]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                            Overlay Layers
+                          </p>
+                          <p className='mt-2 text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
+                            {overlayCount}
+                          </p>
+                        </div>
+                        <div className='rounded-lg border p-3' style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg))' }}>
+                          <p className='text-xs uppercase tracking-[0.2em]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                            Source
+                          </p>
+                          <p className='mt-2 text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
+                            {selected.profile.source}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className='space-y-3'>
+                        {selected.profile.steps.map((step) => (
+                          <div
+                            key={step.step}
+                            className='rounded-lg border p-4'
+                            style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg))' }}
+                          >
+                            <div className='flex items-center justify-between gap-3'>
+                              <div>
+                                <p className='text-xs uppercase tracking-[0.2em]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                                  Step {step.step}
+                                </p>
+                                <p className='text-sm font-medium mt-1' style={{ color: 'hsl(var(--tf-fg))' }}>
+                                  {step.action}
+                                </p>
+                              </div>
+                              {typeof step.overlayCount === 'number' && (
+                                <Badge variant='outline' style={{ borderColor: 'hsl(var(--tf-border))' }}>
+                                  {step.overlayCount} overlays
+                                </Badge>
+                              )}
+                            </div>
+
+                            {step.url && (
+                              <a
+                                href={step.url}
+                                target='_blank'
+                                rel='noreferrer'
+                                className='mt-3 inline-flex items-center gap-1 text-sm'
+                                style={{ color: 'hsl(var(--tf-suite-atlas))' }}
+                              >
+                                Open workflow URL
+                                <ArrowUpRight size={14} />
+                              </a>
+                            )}
+
+                            {step.overlays && step.overlays.length > 0 && (
+                              <div className='mt-4 overflow-x-auto'>
+                                <Table>
+                                  <TableHeader>
+                                    <TableRow style={{ borderColor: 'hsl(var(--tf-border))' }}>
+                                      <TableHead style={{ color: 'hsl(var(--tf-muted))' }}>Layer</TableHead>
+                                      <TableHead style={{ color: 'hsl(var(--tf-muted))' }}>Fields</TableHead>
+                                      <TableHead style={{ color: 'hsl(var(--tf-muted))' }}>Query</TableHead>
+                                    </TableRow>
+                                  </TableHeader>
+                                  <TableBody>
+                                    {step.overlays.map((overlay) => (
+                                      <TableRow key={overlay.layerId} style={{ borderColor: 'hsl(var(--tf-border))' }}>
+                                        <TableCell style={{ color: 'hsl(var(--tf-fg))' }}>
+                                          <div>
+                                            <p className='font-medium'>{overlay.layerName}</p>
+                                            <p className='text-xs font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>
+                                              {overlay.layerId}
+                                            </p>
+                                          </div>
+                                        </TableCell>
+                                        <TableCell style={{ color: 'hsl(var(--tf-muted))' }}>
+                                          {overlay.fields.join(', ')}
+                                        </TableCell>
+                                        <TableCell>
+                                          <a
+                                            href={overlay.queryUrl}
+                                            target='_blank'
+                                            rel='noreferrer'
+                                            className='inline-flex items-center gap-1 text-sm'
+                                            style={{ color: 'hsl(var(--tf-suite-atlas))' }}
+                                          >
+                                            Open query
+                                            <ArrowUpRight size={14} />
+                                          </a>
+                                        </TableCell>
+                                      </TableRow>
+                                    ))}
+                                  </TableBody>
+                                </Table>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </>
               )}
             </>
           )}

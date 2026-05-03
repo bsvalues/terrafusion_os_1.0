@@ -16,6 +16,15 @@ public interface IModuleLoaderService
     System.Threading.Tasks.Task<Module?> LoadModuleAsync(string moduleName);
     System.Threading.Tasks.Task<bool> IsModuleAvailableAsync(string moduleName);
     System.Threading.Tasks.Task RefreshModulesAsync();
+
+    /// <summary>
+    /// Number of module directories the most recent refresh skipped because
+    /// they were excluded by the active intent filter (TF_MODULE_INTENT_FILTER).
+    /// Distinct from invalid (ValidationFailed) modules; used by SystemHealth
+    /// to populate <c>SystemHealthResponse.ModuleCountFilteredOut</c> with
+    /// real data instead of the previous hardcoded zero.
+    /// </summary>
+    int LastFilteredOutCount { get; }
 }
 
 public class ModuleLoaderService : BackgroundService, IModuleLoaderService
@@ -29,6 +38,14 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
     private readonly string _manifestFileName;
     private readonly string? _intentFilter;
     private const int RefreshIntervalMinutes = 5; // Refresh module cache every 5 minutes
+
+    /// <summary>
+    /// Latest intent-filter-out count; updated each <see cref="RefreshModulesAsync"/>
+    /// pass. Volatile because <see cref="SystemHealthController.GetSystemHealth"/>
+    /// can read it from a different thread than the one that wrote it.
+    /// </summary>
+    private volatile int _lastFilteredOutCount;
+    public int LastFilteredOutCount => _lastFilteredOutCount;
 
     public ModuleLoaderService(
         ILogger<ModuleLoaderService> logger,
@@ -140,8 +157,9 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
             }
 
             var modules = _runtimeModules.Values
+                .Where(m => m is not null)
                 .OrderBy(m => m.Priority)
-                .ThenBy(m => m.Name, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(m => m.Name ?? string.Empty, StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
             _logger.LogInformation(
@@ -271,6 +289,8 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
                     }
                 }
             }
+
+            _lastFilteredOutCount = filteredCount;
 
             _logger.LogInformation(
                 "Refreshed module runtime snapshot. Loaded {ActiveCount} active modules and {InvalidCount} invalid module folders from {Total} directories",

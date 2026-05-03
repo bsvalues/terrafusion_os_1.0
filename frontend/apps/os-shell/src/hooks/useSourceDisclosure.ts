@@ -28,7 +28,7 @@ export function useSourceDisclosure(
 
   if (source === 'live' || source === 'polled') {
     if (isStale) {
-      return { source: 'fallback', label: 'Demo data', variant: 'warning' };
+      return { source: 'fallback', label: 'Non-live data', variant: 'warning' };
     }
     const { liveFields, totalFields } = opts ?? {};
     if (liveFields != null && totalFields != null && liveFields < totalFields) {
@@ -42,5 +42,5 @@ export function useSourceDisclosure(
   }
 
   // source === 'fallback'
-  return { source: 'fallback', label: 'Demo data', variant: 'warning' };
+  return { source: 'fallback', label: 'Non-live data', variant: 'warning' };
 }

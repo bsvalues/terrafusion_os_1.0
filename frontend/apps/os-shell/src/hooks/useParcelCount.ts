@@ -22,7 +22,7 @@ async function fetchParcelStats(): Promise<ParcelCountStats> {
   if (!res.ok) throw new Error(`government/stats fetch failed: ${res.status}`);
   const body = await res.json();
   // Backend wraps stats: { county, stats: { totalParcels, ... }, timestamp }
-  // Support both nested (real API) and flat (test mocks / legacy)
+      // Support both nested API payloads and flat legacy payloads.
   return (body.stats ?? body) as ParcelCountStats;
 }
 

@@ -52,7 +52,7 @@ interface GptTemplate {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Mock data                                                                   */
+/* Templates                                                                   */
 /* -------------------------------------------------------------------------- */
 
 const TEMPLATES: GptTemplate[] = [
@@ -72,7 +72,7 @@ const MODELS = [
   { provider: 'local', name: 'llama-3.1-70b', label: 'LLaMA 3.1 70B (Local)' },
 ];
 
-const DEFAULT_DRAFT: GptDraft = {
+const EMPTY_DRAFT: GptDraft = {
   name: '', displayName: '', description: '', category: 'Assessment',
   modelProvider: 'openai', modelName: 'gpt-4o', systemPrompt: '',
   temperature: 0.7, maxTokens: 4096, enableRAG: false, ragDatasetId: '',
@@ -84,7 +84,7 @@ const DEFAULT_DRAFT: GptDraft = {
 /* -------------------------------------------------------------------------- */
 
 export default function GPTBuilderModule() {
-  const [draft, setDraft] = useState<GptDraft>(DEFAULT_DRAFT);
+  const [draft, setDraft] = useState<GptDraft>(EMPTY_DRAFT);
   const [step, setStep] = useState<'template' | 'configure' | 'prompt' | 'test'>('template');
 
   const updateDraft = useCallback(<K extends keyof GptDraft>(key: K, value: GptDraft[K]) => {

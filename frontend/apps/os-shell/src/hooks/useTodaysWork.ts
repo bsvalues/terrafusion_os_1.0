@@ -1,12 +1,11 @@
 /**
- * @fileoverview Today's Work hook — queue-backed task feed with explicit fallback.
- * Starts with sample tasks so the home scene stays populated in dev/offline mode,
- * then promotes to live Dais queue tasks when the backend is reachable.
+ * @fileoverview Today's Work hook - queue-backed task feed.
+ * Returns only Dais queue data; backend failures surface as unavailable state.
  */
 
 import { useEffect, useState } from 'react';
 import { getQueueItems } from '../services/suites/queueService';
-import type { QueueWorkItem } from '../data/queueFixtures';
+import type { QueueWorkItem } from '../services/suites/queueService';
 
 export interface TodaysWorkItem {
   id: string;
@@ -16,29 +15,7 @@ export interface TodaysWorkItem {
   category: 'workbench' | 'suite' | 'os-feature';
 }
 
-const SAMPLE_TASKS: TodaysWorkItem[] = [
-  {
-    id: 'tw-1',
-    title: 'Review 3 appeals',
-    subtitle: 'Dais \u2014 Board of Equalization',
-    route: 'terradais',
-    category: 'suite',
-  },
-  {
-    id: 'tw-2',
-    title: 'Inspect 12 parcels',
-    subtitle: 'Workbench \u2014 Field Review',
-    route: 'workbench',
-    category: 'workbench',
-  },
-  {
-    id: 'tw-3',
-    title: 'Ratio study due Friday',
-    subtitle: 'Forge \u2014 Statistical Analysis',
-    route: 'terraforge',
-    category: 'suite',
-  },
-];
+export type TodaysWorkReadState = 'loading' | 'live' | 'unavailable';
 
 type TodaysWorkSource = Partial<QueueWorkItem> & {
   id?: string;
@@ -166,12 +143,13 @@ export function mapQueueItemsToTodaysWork(items: readonly TodaysWorkSource[]): T
 export function useTodaysWork(): {
   tasks: TodaysWorkItem[];
   loading: boolean;
-  /** True when returning sample fixtures instead of live backend data */
-  isSampleData: boolean;
+  error: string | null;
+  readState: TodaysWorkReadState;
 } {
-  const [tasks, setTasks] = useState<TodaysWorkItem[]>(SAMPLE_TASKS);
+  const [tasks, setTasks] = useState<TodaysWorkItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isSampleData, setIsSampleData] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [readState, setReadState] = useState<TodaysWorkReadState>('loading');
 
   useEffect(() => {
     let cancelled = false;
@@ -182,11 +160,13 @@ export function useTodaysWork(): {
         if (cancelled) return;
 
         setTasks(mapQueueItemsToTodaysWork(queueItems as TodaysWorkSource[]));
-        setIsSampleData(false);
-      } catch {
+        setReadState('live');
+        setError(null);
+      } catch (cause) {
         if (cancelled) return;
-        setTasks(SAMPLE_TASKS);
-        setIsSampleData(true);
+        setTasks([]);
+        setReadState('unavailable');
+        setError(cause instanceof Error ? cause.message : 'Today\'s Work queue unavailable.');
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -201,5 +181,5 @@ export function useTodaysWork(): {
     };
   }, []);
 
-  return { tasks, loading, isSampleData };
+  return { tasks, loading, error, readState };
 }

@@ -1,0 +1,68 @@
+{
+  "checkedAt": "2026-04-30T23:07:01.893Z",
+  "slice": "county-data-trust-launch-context-contract",
+  "status": "PASS",
+  "decision": "COUNTY_DATA_TRUST_LAUNCH_CONTEXT_CONTRACT_REGISTERED_AND_ECHOED",
+  "contractId": "county_data_trust_launch_context_v1",
+  "population": "Atlas Live county context resolved from County Studio route scope and Washington launch/county trust posture",
+  "readPath": "GET /launch-data/washington/counties/status.json plus county detail route",
+  "trustPosture": [
+    "Benton is production_provisional, sync_derived, and converted_legacy_sensitive until lineage and conversion-sensitive sales qualification proof closes.",
+    "Washington 39-county launch/reference corpus is reference_demo and not certified for operational valuation.",
+    "Geometry availability is launch context, not proof of production valuation data."
+  ],
+  "tierRules": {
+    "benton": "production_provisional + sync_derived + converted_legacy_sensitive",
+    "washingtonReferenceDefault": "reference_demo"
+  },
+  "checks": [
+    {
+      "id": "contract-registered",
+      "passed": true,
+      "proof": ["os-platform/core/pilot/terrafusion-suite-contracts.json"],
+      "note": "County data-trust launch-context contract is registered."
+    },
+    {
+      "id": "contract-required",
+      "passed": true,
+      "proof": [
+        "terraforge_operational_health_v1",
+        "terraforge_statistics_compat_v1",
+        "terraforge_segment_derivation_v1",
+        "terraforge_correction_priority_v1",
+        "costforge_calibration_priority_v1",
+        "county_data_trust_launch_context_v1"
+      ],
+      "note": "Contract is included in the required suite contract list."
+    },
+    {
+      "id": "trust-tier-source-present",
+      "passed": true,
+      "proof": ["os-platform/core/pilot/county-data-trust-tiers.json"],
+      "note": "Contract depends on explicit Benton operational/provisional and 39-county reference/demo posture."
+    },
+    {
+      "id": "atlas-api-runtime-echo",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts"
+      ],
+      "note": "Atlas county context API emits contract id, trust tier, DB posture, and production-claim posture."
+    },
+    {
+      "id": "atlas-ui-exposes-posture",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx"
+      ],
+      "note": "Atlas Live county context card exposes trust posture and contract id."
+    },
+    {
+      "id": "adoption-audit-promoted",
+      "passed": true,
+      "proof": ["os-platform/core/pilot/contract-adoption-audit.json"],
+      "note": "Contract adoption audit treats Atlas county context as contract-backed."
+    }
+  ],
+  "failures": []
+}

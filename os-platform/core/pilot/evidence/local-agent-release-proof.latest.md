@@ -1,9 +1,9 @@
 # Local Agent Release Proof
 
-- Generated At: 2026-04-28T18:22:39.233Z
+- Generated At: 2026-05-01T00:26:51.899Z
 - Overall: PASS
 - Temp Repo Cleaned Up: true
-- Temp Repo Root: C:\Users\bsval\AppData\Local\Temp\tf-local-agent-release-proof-dkUP17
+- Temp Repo Root: C:\Users\bsval\AppData\Local\Temp\tf-local-agent-release-proof-en2U6q
 
 ## Commands
 
@@ -25,7 +25,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777400559,
+  "createdAt": 1777595211,
   "version": "0.1.0",
   "identity": {
     "productName": "TerraFusion Local Agent Runtime",
@@ -361,7 +361,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777400559,
+  "createdAt": 1777595211,
   "version": "0.1.0",
   "productName": "TerraFusion Local Agent Runtime",
   "internalCodename": "Prometheus",
@@ -602,7 +602,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777400559,
+  "createdAt": 1777595211,
   "version": "0.1.0-mvp",
   "productId": "terrafusion-local-agent",
   "productName": "TerraFusion Local Agent Runtime",
@@ -650,7 +650,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777400559,
+  "createdAt": 1777595211,
   "ok": true,
   "releaseStatus": "release-ready-mvp",
   "criticalFailures": 0,
@@ -709,7 +709,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777400559,
+  "createdAt": 1777595211,
   "version": "0.1.0",
   "entries": [
     {
@@ -909,7 +909,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777400559,
+  "createdAt": 1777595211,
   "version": "0.1.0",
   "productName": "TerraFusion Local Agent Runtime",
   "internalCodename": "Prometheus",
@@ -924,7 +924,7 @@
       "required": true,
       "exists": true,
       "ok": true,
-      "sha256": "2497244049f5ae32cf6346136ec2bfe19827da095ee9489f8f591fee0953c4ef",
+      "sha256": "8d7887d608cd0c05ad61eb8dc7ff9dce18c6713b4f2e2c710a43be7dd861e3bb",
       "summary": "Artifact is readable and fingerprinted."
     },
     {
@@ -933,7 +933,7 @@
       "required": true,
       "exists": true,
       "ok": true,
-      "sha256": "4a64922dac9a7120aa6fef8c237473ba136b730f0ae16b45daef92fd4910d78e",
+      "sha256": "57081d432a772dd58d1c4737e088f40f54f961e45fc02838bd840ac7c57cf5ac",
       "summary": "Artifact is readable and fingerprinted."
     },
     {
@@ -942,7 +942,7 @@
       "required": true,
       "exists": true,
       "ok": true,
-      "sha256": "a60bd91558a9d3e986ffb79c4f968c337df7cab61e876fc2741aa157e1a36a71",
+      "sha256": "bb894934b395941d37404850980e0c7b725d34e66e3760c0b59e2e40217c9e82",
       "summary": "Artifact is readable and fingerprinted."
     },
     {
@@ -951,7 +951,7 @@
       "required": true,
       "exists": true,
       "ok": true,
-      "sha256": "dc7b670827096e495496385f8b27e51f51df86258952394c8232fdf8af1f7992",
+      "sha256": "e136e5469ec4546c21e17e26027e4096e1807b307cda846e72d68fb7c923d06d",
       "summary": "Docs index has no missing required artifacts."
     },
     {
@@ -960,7 +960,7 @@
       "required": true,
       "exists": true,
       "ok": true,
-      "sha256": "4d5c0335c00dcfef5bf43ae2e28a990f25bf23ddee9949ac05ea59e40cdb841d",
+      "sha256": "d39f8beaa6a9895ace06785740e8d9e63ff58c49363a4a51bd00d30190bc9aea",
       "summary": "Artifact is readable and fingerprinted."
     },
     {
@@ -969,7 +969,7 @@
       "required": true,
       "exists": true,
       "ok": true,
-      "sha256": "8546d57efda9d41d7714e10cb08c0e59b1a288d55d73a341f63aca257f50ef47",
+      "sha256": "641c2ae0441f980f2eb512a54502eb58e5c4c01289f801c87df56efafd98edd9",
       "summary": "Release check passed and was fingerprinted."
     },
     {
@@ -1033,7 +1033,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777400559,
+  "createdAt": 1777595211,
   "ok": true,
   "outputDir": "release",
   "steps": [
@@ -1119,7 +1119,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777400559,
+  "createdAt": 1777595212,
   "version": "0.1.0",
   "productName": "TerraFusion Local Agent Runtime",
   "internalCodename": "Prometheus",
@@ -1224,7 +1224,7 @@
 - Result:
 ```json
 {
-  "approvedAt": 1777400559,
+  "approvedAt": 1777595212,
   "version": "0.1.0",
   "productName": "TerraFusion Local Agent Runtime",
   "internalCodename": "Prometheus",
@@ -1247,7 +1247,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777400559,
+  "createdAt": 1777595212,
   "version": "0.1.0",
   "productName": "TerraFusion Local Agent Runtime",
   "internalCodename": "Prometheus",
@@ -1281,7 +1281,7 @@
 - Result:
 ```json
 {
-  "createdAt": 1777400559,
+  "createdAt": 1777595212,
   "version": "0.1.0",
   "productName": "TerraFusion Local Agent Runtime",
   "internalCodename": "Prometheus",

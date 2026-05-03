@@ -1,10 +1,8 @@
 /*
- * Enhanced TerraFusion Consciousness Service
- * 
- * Elite AI swarm orchestration with quantum consciousness optimization
- * Supports 50,000+ AI agents with real-time monitoring and PhD-level analytics
- * 
- * @author TerraFusion Elite Government OS Engineering Agent
+ * Legacy TerraFusion consciousness controller.
+ *
+ * The governed core-consciousness surface is currently unavailable while
+ * synthetic orchestrator paths are being retired.
  */
 
 using Microsoft.AspNetCore.Mvc;
@@ -45,6 +43,20 @@ public class ConsciousnessOrchestrationController : ControllerBase
         _performanceMonitor = performanceMonitor;
     }
 
+    private ObjectResult GovernedSurfaceUnavailable(string operation)
+    {
+        _logger.LogWarning("Governed core-consciousness surface unavailable for operation {Operation}", operation);
+
+        return StatusCode(501, new
+        {
+            error = "Governed core-consciousness surface unavailable",
+            operation,
+            surface = "core-consciousness",
+            governedContractAvailable = false,
+            status = "unavailable"
+        });
+    }
+
     /// <summary>
     /// Get real-time consciousness agents for visualization
     /// </summary>
@@ -54,35 +66,8 @@ public class ConsciousnessOrchestrationController : ControllerBase
         [FromQuery] string? specialization = null,
         [FromQuery] decimal minConsciousnessLevel = 0.0m)
     {
-        try
-        {
-            _logger.LogInformation("🧠 Fetching consciousness agents - Limit: {Limit}, Specialization: {Specialization}",
-                limit, specialization);
-
-            var agents = await _orchestrator.GetActiveAgentsAsync(limit, specialization, minConsciousnessLevel);
-
-            var agentDtos = agents.Select(agent => new ConsciousnessAgentDto
-            {
-                Id = agent.Id,
-                Position = new[] { agent.PositionX, agent.PositionY, agent.PositionZ },
-                ConsciousnessLevel = agent.ConsciousnessLevel,
-                Connections = agent.Connections?.Split(',').ToList() ?? new List<string>(),
-                Performance = agent.Performance,
-                Specialization = agent.Specialization,
-                LastActivity = agent.LastActivity,
-                Workload = agent.Workload,
-                Accuracy = agent.Accuracy,
-                QuantumEntanglement = agent.QuantumEntanglement,
-                LearningRate = agent.LearningRate
-            }).ToList();
-
-            return Ok(agentDtos);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to fetch consciousness agents");
-            return StatusCode(500, new { error = "Failed to fetch agents", details = ex.Message });
-        }
+        await Task.CompletedTask;
+        return GovernedSurfaceUnavailable("agents");
     }
 
     /// <summary>
@@ -91,27 +76,8 @@ public class ConsciousnessOrchestrationController : ControllerBase
     [HttpGet("quantum-metrics")]
     public async Task<ActionResult<QuantumMetricsDto>> GetQuantumMetricsAsync()
     {
-        try
-        {
-            var metrics = await _orchestrator.GetQuantumMetricsAsync();
-
-            return Ok(new QuantumMetricsDto
-            {
-                EntanglementStrength = metrics.EntanglementStrength,
-                CoherenceLevel = metrics.CoherenceLevel,
-                DecoherenceRate = metrics.DecoherenceRate,
-                QuantumFidelity = metrics.QuantumFidelity,
-                InformationFlow = metrics.InformationFlow,
-                NetworkTopology = metrics.NetworkTopology,
-                QuantumFactor = metrics.QuantumFactor,
-                SwarmIntelligence = metrics.SwarmIntelligence
-            });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to fetch quantum metrics");
-            return StatusCode(500, new { error = "Failed to fetch quantum metrics", details = ex.Message });
-        }
+        await Task.CompletedTask;
+        return GovernedSurfaceUnavailable("quantum-metrics");
     }
 
     /// <summary>
@@ -120,27 +86,14 @@ public class ConsciousnessOrchestrationController : ControllerBase
     [HttpGet("health")]
     public async Task<ActionResult<ConsciousnessSystemHealthDto>> GetSystemHealthAsync()
     {
-        try
+        await Task.CompletedTask;
+        return StatusCode(200, new
         {
-            var health = await _orchestrator.GetSystemHealthAsync();
-
-            return Ok(new ConsciousnessSystemHealthDto
-            {
-                TotalAgents = health.TotalAgents,
-                ActiveAgents = health.ActiveAgents,
-                AveragePerformance = health.AveragePerformance,
-                SystemLoad = health.SystemLoad,
-                QuantumCoherence = health.QuantumCoherence,
-                NetworkLatency = health.NetworkLatency,
-                ErrorRate = health.ErrorRate,
-                Uptime = health.Uptime
-            });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to fetch system health");
-            return StatusCode(500, new { error = "Failed to fetch system health", details = ex.Message });
-        }
+            status = "unavailable",
+            surface = "core-consciousness",
+            governedContractAvailable = false,
+            message = "Governed core-consciousness surface unavailable"
+        });
     }
 
     /// <summary>
@@ -150,47 +103,8 @@ public class ConsciousnessOrchestrationController : ControllerBase
     public async Task<ActionResult<TrainingTaskDto>> TrainAgentsAsync(
         [FromBody] AgentTrainingRequestDto request)
     {
-        try
-        {
-            _logger.LogInformation("🚀 Starting agent training - Mode: {Mode}, Target Accuracy: {Accuracy}",
-                request.TrainingMode, request.TargetAccuracy);
-
-            var trainingTask = await _orchestrator.StartTrainingAsync(new AgentTrainingRequest
-            {
-                AgentIds = request.AgentIds,
-                TrainingMode = request.TrainingMode,
-                TargetAccuracy = request.TargetAccuracy,
-                MaxIterations = request.MaxIterations,
-                LearningRate = request.LearningRate,
-                QuantumParameters = request.QuantumParameters != null ? new QuantumTrainingParameters
-                {
-                    EntanglementFactor = request.QuantumParameters.EntanglementFactor,
-                    CoherenceTarget = request.QuantumParameters.CoherenceTarget,
-                    DecoherenceThreshold = request.QuantumParameters.DecoherenceThreshold
-                } : null
-            });
-
-            // Notify connected clients about training start
-            await _hubContext.Clients.All.SendAsync("TrainingStarted", new
-            {
-                TaskId = trainingTask.TaskId,
-                EstimatedDuration = trainingTask.EstimatedDuration,
-                AgentCount = request.AgentIds?.Count ?? 0
-            });
-
-            return Ok(new TrainingTaskDto
-            {
-                TaskId = trainingTask.TaskId,
-                EstimatedDuration = trainingTask.EstimatedDuration,
-                Status = "Started",
-                StartedAt = DateTime.UtcNow
-            });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to start agent training");
-            return StatusCode(500, new { error = "Training failed", details = ex.Message });
-        }
+        await Task.CompletedTask;
+        return GovernedSurfaceUnavailable("train");
     }
 
     /// <summary>
@@ -200,45 +114,8 @@ public class ConsciousnessOrchestrationController : ControllerBase
     public async Task<ActionResult<OptimizationResultDto>> OptimizeSystemAsync(
         [FromBody] OptimizationRequestDto request)
     {
-        try
-        {
-            _logger.LogInformation("⚡ Starting system optimization - Target: {Target}, Aggressiveness: {Aggressiveness}",
-                request.Target, request.Aggressiveness);
-
-            var optimizationResult = await _orchestrator.OptimizeSystemAsync(new OptimizationRequest
-            {
-                Target = request.Target,
-                Aggressiveness = request.Aggressiveness,
-                Constraints = new OptimizationConstraints
-                {
-                    MaxLatency = request.Constraints.MaxLatency,
-                    MinAccuracy = request.Constraints.MinAccuracy,
-                    ResourceLimits = request.Constraints.ResourceLimits
-                }
-            });
-
-            // Notify connected clients about optimization
-            await _hubContext.Clients.All.SendAsync("OptimizationCompleted", new
-            {
-                OptimizationId = optimizationResult.OptimizationId,
-                Improvements = optimizationResult.Improvements,
-                PerformanceGain = optimizationResult.PerformanceGain
-            });
-
-            return Ok(new OptimizationResultDto
-            {
-                OptimizationId = optimizationResult.OptimizationId,
-                Improvements = optimizationResult.Improvements,
-                PerformanceGain = optimizationResult.PerformanceGain,
-                CompletedAt = DateTime.UtcNow,
-                Status = "Completed"
-            });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to optimize system");
-            return StatusCode(500, new { error = "Optimization failed", details = ex.Message });
-        }
+        await Task.CompletedTask;
+        return GovernedSurfaceUnavailable("optimize");
     }
 
     /// <summary>
@@ -247,35 +124,8 @@ public class ConsciousnessOrchestrationController : ControllerBase
     [HttpGet("agents/{agentId}")]
     public async Task<ActionResult<ConsciousnessAgentDto>> GetAgentAsync([FromRoute] string agentId)
     {
-        try
-        {
-            var agent = await _orchestrator.GetAgentAsync(agentId);
-
-            if (agent == null)
-            {
-                return NotFound($"Agent {agentId} not found");
-            }
-
-            return Ok(new ConsciousnessAgentDto
-            {
-                Id = agent.Id,
-                Position = new[] { agent.PositionX, agent.PositionY, agent.PositionZ },
-                ConsciousnessLevel = agent.ConsciousnessLevel,
-                Connections = agent.Connections?.Split(',').ToList() ?? new List<string>(),
-                Performance = agent.Performance,
-                Specialization = agent.Specialization,
-                LastActivity = agent.LastActivity,
-                Workload = agent.Workload,
-                Accuracy = agent.Accuracy,
-                QuantumEntanglement = agent.QuantumEntanglement,
-                LearningRate = agent.LearningRate
-            });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to fetch agent {AgentId}", agentId);
-            return StatusCode(500, new { error = "Failed to fetch agent", details = ex.Message });
-        }
+        await Task.CompletedTask;
+        return GovernedSurfaceUnavailable("agent-detail");
     }
 
     /// <summary>
@@ -286,52 +136,8 @@ public class ConsciousnessOrchestrationController : ControllerBase
         [FromRoute] string agentId,
         [FromBody] UpdateAgentRequestDto request)
     {
-        try
-        {
-            var updatedAgent = await _orchestrator.UpdateAgentAsync(agentId, new AgentUpdateParameters
-            {
-                ConsciousnessLevel = request.ConsciousnessLevel,
-                LearningRate = request.LearningRate,
-                Specialization = request.Specialization,
-                TargetPerformance = request.TargetPerformance
-            });
-
-            // Notify connected clients about agent update
-            await _hubContext.Clients.All.SendAsync("AgentUpdate", new ConsciousnessAgentDto
-            {
-                Id = updatedAgent.Id,
-                Position = new[] { updatedAgent.PositionX, updatedAgent.PositionY, updatedAgent.PositionZ },
-                ConsciousnessLevel = updatedAgent.ConsciousnessLevel,
-                Connections = updatedAgent.Connections?.Split(',').ToList() ?? new List<string>(),
-                Performance = updatedAgent.Performance,
-                Specialization = updatedAgent.Specialization,
-                LastActivity = updatedAgent.LastActivity,
-                Workload = updatedAgent.Workload,
-                Accuracy = updatedAgent.Accuracy,
-                QuantumEntanglement = updatedAgent.QuantumEntanglement,
-                LearningRate = updatedAgent.LearningRate
-            });
-
-            return Ok(new ConsciousnessAgentDto
-            {
-                Id = updatedAgent.Id,
-                Position = new[] { updatedAgent.PositionX, updatedAgent.PositionY, updatedAgent.PositionZ },
-                ConsciousnessLevel = updatedAgent.ConsciousnessLevel,
-                Connections = updatedAgent.Connections?.Split(',').ToList() ?? new List<string>(),
-                Performance = updatedAgent.Performance,
-                Specialization = updatedAgent.Specialization,
-                LastActivity = updatedAgent.LastActivity,
-                Workload = updatedAgent.Workload,
-                Accuracy = updatedAgent.Accuracy,
-                QuantumEntanglement = updatedAgent.QuantumEntanglement,
-                LearningRate = updatedAgent.LearningRate
-            });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to update agent {AgentId}", agentId);
-            return StatusCode(500, new { error = "Failed to update agent", details = ex.Message });
-        }
+        await Task.CompletedTask;
+        return GovernedSurfaceUnavailable("agent-update");
     }
 
     /// <summary>
@@ -340,26 +146,8 @@ public class ConsciousnessOrchestrationController : ControllerBase
     [HttpGet("agents/{agentId}/entanglements")]
     public async Task<ActionResult<List<QuantumEntanglementDto>>> GetAgentEntanglementsAsync([FromRoute] string agentId)
     {
-        try
-        {
-            var entanglements = await _orchestrator.GetQuantumEntanglementsAsync(agentId);
-
-            var entanglementDtos = entanglements.Select(e => new QuantumEntanglementDto
-            {
-                EntangledAgents = e.EntangledAgents,
-                Strength = e.Strength,
-                CoherenceLevel = e.CoherenceLevel,
-                EstablishedAt = e.EstablishedAt,
-                Type = e.Type
-            }).ToList();
-
-            return Ok(entanglementDtos);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to fetch entanglements for agent {AgentId}", agentId);
-            return StatusCode(500, new { error = "Failed to fetch entanglements", details = ex.Message });
-        }
+        await Task.CompletedTask;
+        return GovernedSurfaceUnavailable("agent-entanglements");
     }
 
     /// <summary>
@@ -368,28 +156,8 @@ public class ConsciousnessOrchestrationController : ControllerBase
     [HttpGet("performance/elite-metrics")]
     public async Task<ActionResult<ElitePerformanceMetricsDto>> GetElitePerformanceMetricsAsync()
     {
-        try
-        {
-            var metrics = await _performanceMonitor.GetEliteMetricsAsync();
-
-            return Ok(new ElitePerformanceMetricsDto
-            {
-                ChampionshipLatency = metrics.ChampionshipLatency,
-                QuantumThroughput = metrics.QuantumThroughput,
-                ConsciousnessEfficiency = metrics.ConsciousnessEfficiency,
-                SwarmCoordination = metrics.SwarmCoordination,
-                PredictiveAccuracy = metrics.PredictiveAccuracy,
-                ResourceOptimization = metrics.ResourceOptimization,
-                EliteRecommendations = metrics.EliteRecommendations,
-                PerformanceScore = metrics.PerformanceScore,
-                Timestamp = metrics.Timestamp
-            });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to fetch elite performance metrics");
-            return StatusCode(500, new { error = "Failed to fetch elite metrics", details = ex.Message });
-        }
+        await Task.CompletedTask;
+        return GovernedSurfaceUnavailable("elite-performance-metrics");
     }
 }
 
@@ -438,7 +206,7 @@ public class AgentTrainingRequestDto
 {
     public List<string>? AgentIds { get; set; }
     public string TrainingMode { get; set; } = "hybrid";
-    public decimal TargetAccuracy { get; set; } = 0.999m;
+    public decimal TargetAccuracy { get; set; } = 0m;
     public int MaxIterations { get; set; } = 1000;
     public decimal LearningRate { get; set; } = 0.001m;
     public QuantumTrainingParametersDto? QuantumParameters { get; set; }
@@ -469,7 +237,7 @@ public class OptimizationRequestDto
 public class OptimizationConstraintsDto
 {
     public decimal MaxLatency { get; set; } = 10m; // 10ms
-    public decimal MinAccuracy { get; set; } = 0.999m; // 99.9%
+    public decimal MinAccuracy { get; set; } = 0m;
     public decimal ResourceLimits { get; set; } = 1.0m; // 100% resource utilization
 }
 

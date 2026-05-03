@@ -26,6 +26,7 @@ import {
 } from '../../lib/trustedShellUrl';
 import { getViteEnv } from '../../shared/viteEnv';
 import { emitLegacyUiHit } from '../../telemetry/legacyUiTelemetry';
+import { createStableId } from '../../utils/stableId';
 
 // Get port from env or use default (Jest-compatible via getViteEnv)
 const env = getViteEnv();
@@ -62,7 +63,7 @@ const SecurityPolicyError: React.FC = () => (
         error={{
           message: 'TerraPrime launch was blocked by the shell URL trust policy.',
           errorCode: 'SUITE_TRUST_POLICY_BLOCKED',
-          correlationId: `trust-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 7)}`,
+          correlationId: createStableId('trust'),
           timestamp: new Date().toISOString(),
           component: 'TerraPrimeSuite',
         }}
@@ -93,7 +94,7 @@ const ConnectionError: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
         error={{
           message: `Unable to connect to TerraPrime at ${TERRAPRIME_URL}`,
           errorCode: 'SUITE_CONNECTION_ERROR',
-          correlationId: `net-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 7)}`,
+          correlationId: createStableId('net'),
           timestamp: new Date().toISOString(),
           component: 'TerraPrimeSuite',
         }}

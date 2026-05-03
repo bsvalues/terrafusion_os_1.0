@@ -16,7 +16,7 @@ namespace TerraFusion.DataMining.ETL
     /// </summary>
     public class ScheduledJob
     {
-        /// <summary>The job key matching a registered job in EtlJobManager.</summary>
+        /// <summary>The job key matching a registered job in EtlJobService.</summary>
         public string JobKey { get; set; } = string.Empty;
 
         /// <summary>Cron expression (simplified: minute hour day-of-month month day-of-week).</summary>
@@ -34,12 +34,12 @@ namespace TerraFusion.DataMining.ETL
 
     /// <summary>
     /// Background service that periodically evaluates cron expressions and triggers
-    /// ETL jobs via the <see cref="EtlJobManager"/>. Uses a simplified cron format.
+    /// ETL jobs via the <see cref="EtlJobService"/>. Uses a simplified cron format.
     /// </summary>
     public class EtlScheduler : BackgroundService
     {
         private readonly ILogger<EtlScheduler> _logger;
-        private readonly EtlJobManager _jobManager;
+        private readonly EtlJobService _jobManager;
         private readonly ConcurrentDictionary<string, ScheduledJob> _schedules = new();
         private readonly TimeSpan _checkInterval = TimeSpan.FromSeconds(30);
 
@@ -48,7 +48,7 @@ namespace TerraFusion.DataMining.ETL
         /// </summary>
         /// <param name="jobManager">Job manager for triggering jobs.</param>
         /// <param name="logger">Logger instance.</param>
-        public EtlScheduler(EtlJobManager jobManager, ILogger<EtlScheduler> logger)
+        public EtlScheduler(EtlJobService jobManager, ILogger<EtlScheduler> logger)
         {
             _jobManager = jobManager ?? throw new ArgumentNullException(nameof(jobManager));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

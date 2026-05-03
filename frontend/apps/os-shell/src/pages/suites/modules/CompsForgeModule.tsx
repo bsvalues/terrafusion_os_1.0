@@ -1,253 +1,83 @@
 /**
- * CompsForge Module — Sales Comparison Approach
- * ===================================================================
- * Constitutional module of TerraForge (Article V Section 5.1).
+ * CompsForge Module - Sales Comparison Approach
  *
- * Provides comparable sales analysis for property valuation.
- * Uses Benton County comparable sale data with paired adjustments.
+ * Uses the active parcel as subject context, TerraFusion-normalized county sales as the
+ * candidate pool, and CostForge endpoints as the adjustment/reconciliation
+ * authority. The module does not fabricate subject characteristics or comp
+ * values when source data is unavailable.
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import activateModule from '@/orchestration/moduleActivation';
+import { parseRollupHandoff } from '@/pages/forge/shared/rollupHandoff';
 import {
+  AlertTriangle,
   BarChart3,
-  MapPin,
   Calendar,
-  Ruler,
-  Home,
-  ArrowUpDown,
   CheckCircle2,
   DollarSign,
+  Home,
+  Ruler,
   Search,
 } from 'lucide-react';
+import { usePropertyStore } from '@/stores/propertyStore';
+import { useCompsForgeHandoffStore } from './compsForgeHandoffStore';
+import {
+  adjustComp,
+  findCompsForSubject,
+  getComparableCountyName,
+  loadCountyComps,
+  reconcileComps,
+  supportsGovernedComparableAdjustments,
+  type AdjustmentResult,
+  type ComparableSale,
+  type ReconciliationResult,
+  type ScoredComp,
+  type SubjectProperty,
+} from '@/services/comparableSalesService';
 
-// ============================================================================
-// Types
-// ============================================================================
-
-interface ComparableSale {
-  id: string;
-  parcelId: string;
-  address: string;
-  saleDate: string;
-  salePrice: number;
-  squareFeet: number;
-  yearBuilt: number;
-  quality: string;
-  condition: string;
-  bedrooms: number;
-  bathrooms: number;
-  garageSize: number;
-  lotSize: number;
-  distanceMiles: number;
-  neighborhood: string;
-}
-
-interface AdjustmentItem {
-  category: string;
-  amount: number;
-  percent: number;
-}
-
-type SortKey = 'distance' | 'price' | 'date' | 'size';
-
-// ============================================================================
-// Demo Comparable Sales (Benton County)
-// ============================================================================
-
-const DEMO_COMPS: ComparableSale[] = [
-  {
-    id: 'comp-1',
-    parcelId: '1-0935-100-0001-001',
-    address: '2341 Jadwin Ave, Richland',
-    saleDate: '2024-11-15',
-    salePrice: 385000,
-    squareFeet: 2150,
-    yearBuilt: 2008,
-    quality: 'Good',
-    condition: 'Good',
-    bedrooms: 4,
-    bathrooms: 2.5,
-    garageSize: 480,
-    lotSize: 7200,
-    distanceMiles: 0.4,
-    neighborhood: 'South Richland',
-  },
-  {
-    id: 'comp-2',
-    parcelId: '1-0935-200-0045-002',
-    address: '1128 Thayer Dr, Richland',
-    saleDate: '2024-09-22',
-    salePrice: 342000,
-    squareFeet: 1850,
-    yearBuilt: 2003,
-    quality: 'Standard',
-    condition: 'Good',
-    bedrooms: 3,
-    bathrooms: 2,
-    garageSize: 400,
-    lotSize: 6500,
-    distanceMiles: 0.8,
-    neighborhood: 'South Richland',
-  },
-  {
-    id: 'comp-3',
-    parcelId: '1-1023-300-0012-003',
-    address: '4520 Desert Plateau Ct, West Richland',
-    saleDate: '2024-12-03',
-    salePrice: 425000,
-    squareFeet: 2400,
-    yearBuilt: 2015,
-    quality: 'Good',
-    condition: 'Excellent',
-    bedrooms: 4,
-    bathrooms: 3,
-    garageSize: 576,
-    lotSize: 8500,
-    distanceMiles: 2.1,
-    neighborhood: 'West Richland',
-  },
-  {
-    id: 'comp-4',
-    parcelId: '1-0880-100-0078-004',
-    address: '3015 Duportail St, Richland',
-    saleDate: '2025-01-08',
-    salePrice: 298000,
-    squareFeet: 1680,
-    yearBuilt: 1998,
-    quality: 'Standard',
-    condition: 'Average',
-    bedrooms: 3,
-    bathrooms: 2,
-    garageSize: 400,
-    lotSize: 6000,
-    distanceMiles: 1.3,
-    neighborhood: 'Central Richland',
-  },
-  {
-    id: 'comp-5',
-    parcelId: '1-1100-200-0023-005',
-    address: '6012 W Canal Dr, Kennewick',
-    saleDate: '2024-10-30',
-    salePrice: 365000,
-    squareFeet: 2050,
-    yearBuilt: 2010,
-    quality: 'Good',
-    condition: 'Good',
-    bedrooms: 4,
-    bathrooms: 2.5,
-    garageSize: 440,
-    lotSize: 7000,
-    distanceMiles: 3.5,
-    neighborhood: 'South Kennewick',
-  },
-  {
-    id: 'comp-6',
-    parcelId: '1-0990-100-0056-006',
-    address: '812 Meadow Hills Dr, Richland',
-    saleDate: '2024-08-14',
-    salePrice: 415000,
-    squareFeet: 2300,
-    yearBuilt: 2012,
-    quality: 'High',
-    condition: 'Good',
-    bedrooms: 4,
-    bathrooms: 3,
-    garageSize: 528,
-    lotSize: 8000,
-    distanceMiles: 1.0,
-    neighborhood: 'Meadow Hills',
-  },
-];
-
-// ============================================================================
-// Adjustment Engine
-// ============================================================================
-
-const SUBJECT_DEFAULTS = {
-  squareFeet: 2000,
-  yearBuilt: 2005,
-  quality: 'Standard',
-  condition: 'Good',
-  garageSize: 400,
-  lotSize: 7000,
+type SaleWindow = {
+  start: string;
+  end: string;
 };
 
-function calculateAdjustments(comp: ComparableSale): AdjustmentItem[] {
-  const adjustments: AdjustmentItem[] = [];
+export interface CompsForgeModuleProps {
+  metadata?: Record<string, unknown>;
+}
 
-  // Time adjustment (0.3% per month from Jan 2025)
-  const saleDate = new Date(comp.saleDate);
-  const baseline = new Date('2025-01-01');
-  const monthsDiff = (baseline.getTime() - saleDate.getTime()) / (30.44 * 24 * 60 * 60 * 1000);
-  if (Math.abs(monthsDiff) > 0.5) {
-    const timeAdj = monthsDiff * 0.003 * comp.salePrice;
-    adjustments.push({ category: 'Time', amount: timeAdj, percent: monthsDiff * 0.3 });
-  }
+const INITIAL_SALE_WINDOW: SaleWindow = {
+  start: '2016-01-01',
+  end: '2026-12-31',
+};
 
-  // Size adjustment ($75/sqft difference
-  const sizeDiff = SUBJECT_DEFAULTS.squareFeet - comp.squareFeet;
-  if (Math.abs(sizeDiff) > 50) {
-    const sizeAdj = sizeDiff * 75;
-    adjustments.push({ category: 'Size', amount: sizeAdj, percent: (sizeAdj / comp.salePrice) * 100 });
-  }
+export const COMPSFORGE_CANDIDATE_RECONCILIATION_CONTRACT = {
+  status: 'contract-backed',
+  contractId: 'compsforge_candidate_reconciliation_v1',
+  population: 'County sales shard candidates for the active parcel or rollup scope',
+  source: 'Washington launch sales shards plus CostForge governed adjustment/reconciliation endpoints',
+  trustPosture:
+    'Candidate selection is county-shard scoped; governed adjustment and reconciliation remain Benton-certified until additional county proof is promoted.',
+  candidatePolicy: {
+    qualifiedOnlyDefault: true,
+    saleWindowDefault: INITIAL_SALE_WINDOW,
+    maxCandidates: 30,
+    defaultSelectedCandidates: 3,
+    governedAdjustmentCountyCode: '005',
+  },
+} as const;
 
-  // Age adjustment ($1500/yr difference
-  const ageDiff = comp.yearBuilt - SUBJECT_DEFAULTS.yearBuilt;
-  if (Math.abs(ageDiff) > 1) {
-    const ageAdj = -ageDiff * 1500;
-    adjustments.push({ category: 'Age', amount: ageAdj, percent: (ageAdj / comp.salePrice) * 100 });
-  }
+function compKey(comp: ScoredComp): string {
+  return `${comp.parcelId}|${comp.saleDate}`;
+}
 
-  // Quality adjustment
-  const qualityMap: Record<string, number> = { Economy: -2, Standard: 0, Good: 1, High: 2, Luxury: 3 };
-  const qualDiff = (qualityMap[SUBJECT_DEFAULTS.quality] ?? 0) - (qualityMap[comp.quality] ?? 0);
-  if (qualDiff !== 0) {
-    const qualAdj = qualDiff * 12000;
-    adjustments.push({ category: 'Quality', amount: qualAdj, percent: (qualAdj / comp.salePrice) * 100 });
-  }
-
-  // Condition adjustment
-  const condMap: Record<string, number> = { Poor: -2, Fair: -1, Average: 0, Good: 1, Excellent: 2 };
-  const condDiff = (condMap[SUBJECT_DEFAULTS.condition] ?? 0) - (condMap[comp.condition] ?? 0);
-  if (condDiff !== 0) {
-    const condAdj = condDiff * 8000;
-    adjustments.push({ category: 'Condition', amount: condAdj, percent: (condAdj / comp.salePrice) * 100 });
-  }
-
-  // Location/distance adjustment (farther = less reliable, small penalty)
-  if (comp.distanceMiles > 2) {
-    const locAdj = -(comp.distanceMiles - 2) * 2000;
-    adjustments.push({ category: 'Location', amount: locAdj, percent: (locAdj / comp.salePrice) * 100 });
-  }
-
-  // Garage adjustment ($40/sqft difference
-  const garageDiff = SUBJECT_DEFAULTS.garageSize - comp.garageSize;
-  if (Math.abs(garageDiff) > 20) {
-    const garageAdj = garageDiff * 40;
-    adjustments.push({ category: 'Garage', amount: garageAdj, percent: (garageAdj / comp.salePrice) * 100 });
-  }
-
-  // Lot size adjustment ($3/sqft lot
-  const lotDiff = SUBJECT_DEFAULTS.lotSize - comp.lotSize;
-  if (Math.abs(lotDiff) > 200) {
-    const lotAdj = lotDiff * 3;
-    adjustments.push({ category: 'Lot Size', amount: lotAdj, percent: (lotAdj / comp.salePrice) * 100 });
-  }
-
-  return adjustments;
+function numberOrZero(value: number | null | undefined): number {
+  return typeof value === 'number' && Number.isFinite(value) ? value : 0;
 }
 
 function formatCurrency(value: number): string {
@@ -258,132 +88,503 @@ function formatCurrency(value: number): string {
   }).format(value);
 }
 
-// ============================================================================
-// Component
-// ============================================================================
+function formatOptionalNumber(value: number): string {
+  return value > 0 ? value.toLocaleString() : 'Unavailable';
+}
 
-export default function CompsForgeModule() {
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set(['comp-1', 'comp-2', 'comp-4']));
-  const [sortKey, setSortKey] = useState<SortKey>('distance');
-  const [maxDistance, setMaxDistance] = useState(5);
+function formatDate(value: string): string {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value.slice(0, 10) : date.toLocaleDateString();
+}
 
-  const toggleSelect = useCallback((id: string) => {
-    setSelectedIds((prev) => {
+function sameText(left: string | null | undefined, right: string | null | undefined): boolean {
+  return String(left ?? '').trim().toLowerCase() === String(right ?? '').trim().toLowerCase();
+}
+
+function adjustmentSummary(adjustment: AdjustmentResult | undefined): string {
+  if (!adjustment) return 'Waiting for governed adjustment';
+  return `${formatCurrency(adjustment.adjustedPrice)} adjusted`;
+}
+
+function buildSubjectFromActiveParcel(
+  activeParcel: ReturnType<typeof usePropertyStore.getState>['activeParcel'],
+): SubjectProperty | null {
+  if (!activeParcel) return null;
+
+  return {
+    parcelId: activeParcel.parcelId,
+    address: activeParcel.address,
+    grossLivingArea: numberOrZero(activeParcel.buildingSquareFeet),
+    lotSizeSqft: numberOrZero(activeParcel.landAcreage) > 0
+      ? Math.round(numberOrZero(activeParcel.landAcreage) * 43560)
+      : 0,
+    yearBuilt: numberOrZero(activeParcel.yearBuilt),
+    bedrooms: numberOrZero(activeParcel.bedrooms),
+    bathrooms: numberOrZero(activeParcel.bathrooms),
+    condition: 'Average',
+    qualityGrade: 'Unspecified',
+    propertyType: activeParcel.propertyType,
+    assessedValue: numberOrZero(activeParcel.totalAssessedValue),
+  };
+}
+
+export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {}) {
+  const activeParcel = usePropertyStore((state) => state.activeParcel);
+  const setHandoffContext = useCompsForgeHandoffStore((state) => state.setHandoffContext);
+  const clearHandoffContext = useCompsForgeHandoffStore((state) => state.clearHandoffContext);
+  const contextSegmentId = useCompsForgeHandoffStore((state) => state.contextSegmentId);
+  const contextSegmentLabel = useCompsForgeHandoffStore((state) => state.contextSegmentLabel);
+  const preloadedSampleIds = useCompsForgeHandoffStore((state) => state.preloadedSampleIds);
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
+  const [qualifiedOnly, setQualifiedOnly] = useState(true);
+  const [saleWindow, setSaleWindow] = useState<SaleWindow>(INITIAL_SALE_WINDOW);
+  const [allSales, setAllSales] = useState<ComparableSale[]>([]);
+  const [salesLoading, setSalesLoading] = useState(false);
+  const [salesError, setSalesError] = useState<string | null>(null);
+  const [adjustments, setAdjustments] = useState<Record<string, AdjustmentResult>>({});
+  const [reconciliation, setReconciliation] = useState<ReconciliationResult | null>(null);
+  const [adjustmentError, setAdjustmentError] = useState<string | null>(null);
+  const [isAdjusting, setIsAdjusting] = useState(false);
+  const handoff = useMemo(() => parseRollupHandoff(metadata), [metadata]);
+
+  const subject = useMemo(() => buildSubjectFromActiveParcel(activeParcel), [activeParcel]);
+  const countyCode = activeParcel?.countyCode ?? handoff.countyCode ?? null;
+  const countyName = useMemo(() => getComparableCountyName(countyCode), [countyCode]);
+  const adjustmentsSupported = useMemo(
+    () => supportsGovernedComparableAdjustments(countyCode),
+    [countyCode],
+  );
+  const hasRollupHandoff = handoff.rollupScope === 'city' || handoff.rollupScope === 'neighborhood';
+  const rollupScopeLabel = handoff.rollupScope === 'neighborhood'
+    ? `${handoff.neighborhoodName ?? handoff.neighborhoodCode ?? 'Neighborhood'}${handoff.revalArea !== null ? ` · Reval ${handoff.revalArea}` : ''}`
+    : handoff.city ?? 'City overview';
+
+  useEffect(() => {
+    if (handoff.sampleParcelIds.length > 0 || handoff.segmentId) {
+      setHandoffContext(handoff.sampleParcelIds, handoff.segmentId, handoff.segmentLabel);
+      return;
+    }
+    clearHandoffContext();
+  }, [
+    clearHandoffContext,
+    handoff.sampleParcelIds,
+    handoff.segmentId,
+    handoff.segmentLabel,
+    setHandoffContext,
+  ]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSales() {
+      if (!countyCode) {
+        setAllSales([]);
+        setSalesError('Active parcel is missing a county code, so CompsForge cannot load the county sales shard.');
+        setSalesLoading(false);
+        return;
+      }
+
+      setSalesLoading(true);
+      setSalesError(null);
+
+      try {
+        const sales = await loadCountyComps(countyCode);
+        if (!cancelled) {
+          setAllSales(sales);
+          setSalesLoading(false);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setAllSales([]);
+          setSalesError(
+            error instanceof Error
+              ? error.message
+              : `CompsForge could not load the ${countyName} County sales shard.`,
+          );
+          setSalesLoading(false);
+        }
+      }
+    }
+
+    void loadSales();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [countyCode, countyName]);
+
+  const rollupCandidates = useMemo(() => {
+    let scopedSales = allSales;
+    if (handoff.rollupScope === 'neighborhood' && handoff.neighborhoodCode) {
+      scopedSales = scopedSales.filter((sale) =>
+        sale.neighborhoodCode === handoff.neighborhoodCode
+        || sale.currentNeighborhoodCode === handoff.neighborhoodCode,
+      );
+    } else if (handoff.rollupScope === 'city' && handoff.city) {
+      scopedSales = scopedSales.filter((sale) => sameText(sale.city, handoff.city));
+    }
+
+    return scopedSales
+      .slice()
+      .sort((left, right) => right.saleDate.localeCompare(left.saleDate))
+      .slice(0, 30)
+      .map((sale) => ({
+        ...sale,
+        similarityScore: 0,
+        pricePerSqft:
+          sale.grossLivingArea != null && sale.grossLivingArea > 0
+            ? Math.round((sale.salePrice / sale.grossLivingArea) * 100) / 100
+            : null,
+      }));
+  }, [allSales, handoff.city, handoff.neighborhoodCode, handoff.rollupScope]);
+
+  const candidates = useMemo(() => {
+    if (!subject) return [];
+    return findCompsForSubject(
+      subject,
+      allSales,
+      {
+        qualifiedOnly,
+        saleDateRange: {
+          start: saleWindow.start,
+          end: saleWindow.end,
+        },
+      },
+      30,
+    );
+  }, [allSales, qualifiedOnly, saleWindow.end, saleWindow.start, subject]);
+
+  useEffect(() => {
+    setAdjustments({});
+    setReconciliation(null);
+    setAdjustmentError(null);
+    setSelectedKeys(() => new Set(candidates.slice(0, Math.min(3, candidates.length)).map(compKey)));
+  }, [candidates]);
+
+  const selectedComps = useMemo(
+    () => candidates.filter((candidate) => selectedKeys.has(compKey(candidate))),
+    [candidates, selectedKeys],
+  );
+  const displayComps = subject ? candidates : rollupCandidates;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function runGovernedAdjustment() {
+      if (!subject || selectedComps.length === 0) {
+        setAdjustments({});
+        setReconciliation(null);
+        return;
+      }
+
+      if (!adjustmentsSupported) {
+        setAdjustments({});
+        setReconciliation(null);
+        setAdjustmentError(
+          `${countyName} County comparable sales are available, but governed paired adjustments and reconciliation are currently certified only for Benton County.`,
+        );
+        return;
+      }
+
+      setIsAdjusting(true);
+      setAdjustmentError(null);
+      setReconciliation(null);
+
+      try {
+        const adjustedEntries = await Promise.all(
+          selectedComps.map(async (comp) => {
+            const result = await adjustComp(subject, comp);
+            return [compKey(comp), result] as const;
+          }),
+        );
+
+        if (cancelled) return;
+
+        const nextAdjustments = Object.fromEntries(adjustedEntries) as Record<string, AdjustmentResult>;
+        setAdjustments(nextAdjustments);
+
+        if (adjustedEntries.length >= 2) {
+          const reconciled = await reconcileComps(
+            adjustedEntries.map(([, result]) => ({
+              adjustedPrice: result.adjustedPrice,
+              grossAdjustmentPct: result.grossAdjustmentPct,
+            })),
+          );
+          if (!cancelled) setReconciliation(reconciled);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setAdjustments({});
+          setReconciliation(null);
+          setAdjustmentError(error instanceof Error ? error.message : 'CostForge adjustment failed');
+        }
+      } finally {
+        if (!cancelled) setIsAdjusting(false);
+      }
+    }
+
+    void runGovernedAdjustment();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [adjustmentsSupported, countyName, selectedComps, subject]);
+
+  const toggleSelect = useCallback((comp: ScoredComp) => {
+    const key = compKey(comp);
+    setSelectedKeys((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
       return next;
     });
   }, []);
 
-  const filteredComps = useMemo(() => {
-    const filtered = DEMO_COMPS.filter((c) => c.distanceMiles <= maxDistance);
-    return filtered.sort((a, b) => {
-      switch (sortKey) {
-        case 'distance': return a.distanceMiles - b.distanceMiles;
-        case 'price': return a.salePrice - b.salePrice;
-        case 'date': return new Date(b.saleDate).getTime() - new Date(a.saleDate).getTime();
-        case 'size': return a.squareFeet - b.squareFeet;
-        default: return 0;
-      }
-    });
-  }, [sortKey, maxDistance]);
+  const subjectCanScore = Boolean(
+    subject &&
+    subject.grossLivingArea > 0 &&
+    subject.yearBuilt > 0 &&
+    subject.assessedValue > 0,
+  );
 
-  const selectedComps = filteredComps.filter((c) => selectedIds.has(c.id));
-
-  const reconciled = useMemo(() => {
-    if (selectedComps.length === 0) return null;
-    const adjustedValues = selectedComps.map((comp) => {
-      const adjs = calculateAdjustments(comp);
-      const totalAdj = adjs.reduce((sum, a) => sum + a.amount, 0);
-      return comp.salePrice + totalAdj;
+  const handleBackToCountyStudio = useCallback(() => {
+    if (!contextSegmentId) return;
+    void activateModule('county-studio', {
+      source: 'system',
+      metadata: { segmentId: contextSegmentId },
     });
-    const sorted = [...adjustedValues].sort((a, b) => a - b);
-    const median = sorted.length % 2 === 0
-      ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
-      : sorted[Math.floor(sorted.length / 2)];
-    const average = adjustedValues.reduce((s, v) => s + v, 0) / adjustedValues.length;
-    return { median, average, low: sorted[0], high: sorted[sorted.length - 1], count: selectedComps.length };
-  }, [selectedComps]);
+  }, [contextSegmentId]);
 
   return (
     <div className='p-6 space-y-6'>
-      {/* Header */}
       <div>
-        <h2
-          className='text-2xl font-semibold flex items-center gap-3'
-          style={{ color: 'hsl(var(--tf-fg))' }}
-        >
-          <BarChart3 style={{ color: 'hsl(var(--tf-suite-forge))' }} size={28} />
-          CompsForge — Sales Comparison
-        </h2>
-        <p style={{ color: 'hsl(var(--tf-muted))' }} className='mt-1'>
-          Comparable sales analysis with paired adjustments — Benton County MLS data
-        </p>
-      </div>
-
-      {/* Controls */}
-      <div className='flex items-center gap-4 flex-wrap'>
-        <div className='flex items-center gap-2'>
-          <Label className='text-sm shrink-0' style={{ color: 'hsl(var(--tf-muted))' }}>Sort by</Label>
-          <Select value={sortKey} onValueChange={(v) => setSortKey(v as SortKey)}>
-            <SelectTrigger
-              className='w-[140px]'
+        <div className='flex items-center gap-3 flex-wrap'>
+          <h2
+            className='text-2xl font-semibold flex items-center gap-3'
+            style={{ color: 'hsl(var(--tf-fg))' }}
+          >
+            <BarChart3 style={{ color: 'hsl(var(--tf-suite-forge))' }} size={28} />
+            CompsForge - Sales Comparison
+          </h2>
+          {contextSegmentId && (
+            <button
+              type='button'
+              data-testid='cfg-scoped-from-chip'
+              onClick={handleBackToCountyStudio}
               style={{
-                background: 'hsl(var(--tf-bg))',
-                borderColor: 'hsl(var(--tf-border))',
-                color: 'hsl(var(--tf-fg))',
+                background: 'hsl(var(--tf-suite-forge) / 0.12)',
+                border: '1px solid hsl(var(--tf-suite-forge) / 0.4)',
+                color: 'hsl(var(--tf-suite-forge))',
+                padding: '4px 10px',
+                borderRadius: 999,
+                fontSize: 11,
+                fontWeight: 600,
+                cursor: 'pointer',
               }}
             >
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='distance'>Distance</SelectItem>
-              <SelectItem value='price'>Price</SelectItem>
-              <SelectItem value='date'>Date</SelectItem>
-              <SelectItem value='size'>Size</SelectItem>
-            </SelectContent>
-          </Select>
+              ← From County Studio · Segment {contextSegmentLabel ?? contextSegmentId}
+            </button>
+          )}
+          {hasRollupHandoff && (
+            <Badge variant='outline'>
+              {handoff.rollupScope === 'neighborhood' ? 'Neighborhood rollup' : 'City overview'}
+            </Badge>
+          )}
         </div>
+        <p style={{ color: 'hsl(var(--tf-muted))' }} className='mt-1'>
+          Active-parcel comp selection using TerraFusion-normalized {countyName} County sales and CostForge governed adjustments.
+        </p>
+        <div
+          data-testid='compsforge-contract-classification'
+          data-contract-status={COMPSFORGE_CANDIDATE_RECONCILIATION_CONTRACT.status}
+          data-contract-id={COMPSFORGE_CANDIDATE_RECONCILIATION_CONTRACT.contractId}
+          className='mt-3 flex items-center gap-2 flex-wrap text-xs'
+          style={{ color: 'hsl(var(--tf-muted))' }}
+        >
+          <Badge variant='outline'>
+            {COMPSFORGE_CANDIDATE_RECONCILIATION_CONTRACT.contractId}
+          </Badge>
+          <span>
+            {COMPSFORGE_CANDIDATE_RECONCILIATION_CONTRACT.trustPosture}
+          </span>
+        </div>
+      </div>
+
+      {!subject && !hasRollupHandoff && (
+        <Card
+          style={{
+            background: 'hsl(var(--tf-card-bg))',
+            borderColor: 'hsl(var(--tf-warning) / 0.4)',
+          }}
+        >
+          <CardContent className='pt-6 flex items-start gap-3'>
+            <AlertTriangle size={22} style={{ color: 'hsl(var(--tf-warning))' }} />
+            <div>
+              <p className='font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
+                Select a parcel before running sales comparison.
+              </p>
+              <p className='text-sm mt-1' style={{ color: 'hsl(var(--tf-muted))' }}>
+                CompsForge requires an active subject parcel so scoring, evidence, and any Pilot action remain parcel-bound.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {!subject && hasRollupHandoff && (
+        <Card
+          style={{
+            background: 'hsl(var(--tf-card-bg))',
+            borderColor: 'hsl(var(--tf-suite-forge) / 0.35)',
+          }}
+        >
+          <CardContent className='pt-6 flex items-start gap-3'>
+            <AlertTriangle size={22} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
+            <div>
+              <p className='font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
+                {handoff.rollupScope === 'neighborhood'
+                  ? `Rollup scouting mode is active for ${rollupScopeLabel}.`
+                  : `${rollupScopeLabel} opened as a city overview, not a parcel subject.`}
+              </p>
+              <p className='text-sm mt-1' style={{ color: 'hsl(var(--tf-muted))' }}>
+                {handoff.rollupScope === 'neighborhood'
+                  ? 'CompsForge is loading real county sales for this neighborhood. Scoring, adjustment, and reconciliation still stay parcel-bound until you drill to a subject parcel.'
+                  : 'Cities are overview geography only. Counties actually work comps by reval area and neighborhood, so this surface stays in county-scoped scouting mode until you narrow below the city rollup.'}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {salesError && (
+        <Card
+          style={{
+            background: 'hsl(var(--tf-card-bg))',
+            borderColor: 'hsl(var(--tf-warning) / 0.35)',
+          }}
+        >
+          <CardContent className='pt-5 text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+            {salesError}
+          </CardContent>
+        </Card>
+      )}
+
+      {subject && !subjectCanScore && (
+        <Card
+          style={{
+            background: 'hsl(var(--tf-card-bg))',
+            borderColor: 'hsl(var(--tf-warning) / 0.35)',
+          }}
+        >
+          <CardContent className='pt-5 text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+            Subject data is incomplete. Candidate sales can still be reviewed, but scoring quality is limited until GLA,
+            year built, and assessed value are present in the parcel provider.
+          </CardContent>
+        </Card>
+      )}
+
+      {subject && !adjustmentsSupported && (
+        <Card
+          style={{
+            background: 'hsl(var(--tf-card-bg))',
+            borderColor: 'hsl(var(--tf-warning) / 0.35)',
+          }}
+        >
+          <CardContent className='pt-5 text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+            {countyName} County sales are loaded from the statewide launch bundle, but governed paired adjustments and reconciliation are still Benton-certified only.
+          </CardContent>
+        </Card>
+      )}
+
+      <div className='flex items-center gap-4 flex-wrap'>
+        <label className='flex items-center gap-2 text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+          <input
+            type='checkbox'
+            checked={qualifiedOnly}
+            onChange={(event) => setQualifiedOnly(event.target.checked)}
+          />
+          Qualified sales only
+        </label>
 
         <div className='flex items-center gap-2'>
-          <Label className='text-sm shrink-0' style={{ color: 'hsl(var(--tf-muted))' }}>Max distance</Label>
+          <Label className='text-sm shrink-0' style={{ color: 'hsl(var(--tf-muted))' }}>Sale from</Label>
           <Input
-            type='number'
-            min={0.5}
-            max={20}
-            step={0.5}
-            value={maxDistance}
-            onChange={(e) => setMaxDistance(Number(e.target.value))}
-            className='w-[80px]'
+            type='date'
+            value={saleWindow.start}
+            onChange={(event) => setSaleWindow((prev) => ({ ...prev, start: event.target.value }))}
+            className='w-[150px]'
             style={{
               background: 'hsl(var(--tf-bg))',
               borderColor: 'hsl(var(--tf-border))',
               color: 'hsl(var(--tf-fg))',
             }}
           />
-          <span className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>mi</span>
+        </div>
+
+        <div className='flex items-center gap-2'>
+          <Label className='text-sm shrink-0' style={{ color: 'hsl(var(--tf-muted))' }}>through</Label>
+          <Input
+            type='date'
+            value={saleWindow.end}
+            onChange={(event) => setSaleWindow((prev) => ({ ...prev, end: event.target.value }))}
+            className='w-[150px]'
+            style={{
+              background: 'hsl(var(--tf-bg))',
+              borderColor: 'hsl(var(--tf-border))',
+              color: 'hsl(var(--tf-fg))',
+            }}
+          />
         </div>
 
         <Badge variant='outline' style={{ color: 'hsl(var(--tf-fg))' }}>
-          {selectedIds.size} selected / {filteredComps.length} shown
+          {subject ? `${selectedKeys.size} selected / ${candidates.length} candidates` : `${displayComps.length} scoped sales`}
         </Badge>
+
+        <Button
+          type='button'
+          variant='outline'
+          onClick={() => setSelectedKeys(new Set(candidates.slice(0, Math.min(3, candidates.length)).map(compKey)))}
+          disabled={!subject || candidates.length === 0}
+        >
+          Use top 3
+        </Button>
       </div>
 
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-        {/* Comp Cards */}
         <div className='lg:col-span-2 space-y-3'>
-          {filteredComps.map((comp) => {
-            const isSelected = selectedIds.has(comp.id);
-            const adjustments = calculateAdjustments(comp);
-            const totalAdj = adjustments.reduce((sum, a) => sum + a.amount, 0);
-            const adjustedPrice = comp.salePrice + totalAdj;
+          {displayComps.length === 0 && (
+            <Card
+              style={{
+                background: 'hsl(var(--tf-card-bg))',
+                borderColor: 'hsl(var(--tf-border))',
+              }}
+            >
+              <CardContent className='text-center py-10'>
+                <Search size={32} className='mx-auto mb-3' style={{ color: 'hsl(var(--tf-muted) / 0.4)' }} />
+                <p style={{ color: 'hsl(var(--tf-muted))' }}>
+                  {salesLoading
+                    ? `Loading ${countyName} County sales…`
+                    : salesError
+                      ? 'Comparable sales are unavailable until the county sales shard is restored.'
+                      : hasRollupHandoff
+                        ? 'No county sales match the current rollup scope.'
+                        : 'No comparable sales match the current parcel and filters.'}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {displayComps.map((comp) => {
+            const key = compKey(comp);
+            const isSelected = selectedKeys.has(key);
+            const adjustment = adjustments[key];
+            const isSelectable = Boolean(subject);
 
             return (
               <Card
-                key={comp.id}
-                className='cursor-pointer transition-all duration-200'
-                onClick={() => toggleSelect(comp.id)}
+                key={key}
+                className={isSelectable ? 'cursor-pointer transition-all duration-200' : 'transition-all duration-200'}
+                onClick={isSelectable ? () => toggleSelect(comp) : undefined}
                 style={{
                   background: 'hsl(var(--tf-card-bg))',
                   borderColor: isSelected ? 'hsl(var(--tf-suite-forge))' : 'hsl(var(--tf-border))',
@@ -391,14 +592,14 @@ export default function CompsForgeModule() {
                 }}
               >
                 <CardContent className='pt-4'>
-                  <div className='flex items-start justify-between'>
-                    <div className='flex-1'>
+                  <div className='flex items-start justify-between gap-4'>
+                    <div className='flex-1 min-w-0'>
                       <div className='flex items-center gap-2'>
                         {isSelected && (
                           <CheckCircle2 size={16} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
                         )}
-                        <span className='font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
-                          {comp.address}
+                        <span className='font-medium truncate' style={{ color: 'hsl(var(--tf-fg))' }}>
+                          {comp.address || 'Address unavailable'}
                         </span>
                       </div>
                       <p className='text-xs mt-0.5' style={{ color: 'hsl(var(--tf-muted))' }}>
@@ -410,7 +611,7 @@ export default function CompsForgeModule() {
                         {formatCurrency(comp.salePrice)}
                       </p>
                       <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
-                        {formatCurrency(comp.salePrice / comp.squareFeet)}/sqft
+                        {comp.pricePerSqft ? `${formatCurrency(comp.pricePerSqft)}/sqft` : 'Price/sqft unavailable'}
                       </p>
                     </div>
                   </div>
@@ -418,47 +619,51 @@ export default function CompsForgeModule() {
                   <div className='flex items-center gap-4 mt-3 text-xs flex-wrap' style={{ color: 'hsl(var(--tf-muted))' }}>
                     <span className='flex items-center gap-1'>
                       <Calendar size={12} />
-                      {new Date(comp.saleDate).toLocaleDateString()}
+                      {formatDate(comp.saleDate)}
                     </span>
                     <span className='flex items-center gap-1'>
                       <Ruler size={12} />
-                      {comp.squareFeet.toLocaleString()} sqft
+                      {formatOptionalNumber(numberOrZero(comp.grossLivingArea))} sqft
                     </span>
                     <span className='flex items-center gap-1'>
                       <Home size={12} />
-                      {comp.bedrooms}bd/{comp.bathrooms}ba • {comp.yearBuilt}
+                      {formatOptionalNumber(numberOrZero(comp.yearBuilt))}
                     </span>
-                    <span className='flex items-center gap-1'>
-                      <MapPin size={12} />
-                      {comp.distanceMiles} mi
+                    {subject ? (
+                      <span>
+                        Similarity: {Math.round(comp.similarityScore * 100)}%
+                      </span>
+                    ) : (
+                      <span>
+                        Scope: {comp.neighborhoodCode ?? comp.city ?? 'Countywide'}
+                      </span>
+                    )}
+                    <span>
+                      Qualification: {comp.saleQualification || 'Unspecified'}
                     </span>
                   </div>
 
-                  {isSelected && adjustments.length > 0 && (
-                    <div className='mt-3 pt-3' style={{ borderTop: '1px solid hsl(var(--tf-border))' }}>
-                      <div className='grid grid-cols-2 md:grid-cols-4 gap-2'>
-                        {adjustments.map((adj) => (
-                          <div key={adj.category} className='text-xs'>
-                            <span style={{ color: 'hsl(var(--tf-muted))' }}>{adj.category}</span>
-                            <span
-                              className='ml-1 font-medium'
-                              style={{
-                                color: adj.amount >= 0
-                                  ? 'hsl(var(--tf-success, 140 70% 50%))'
-                                  : 'hsl(var(--tf-danger, 0 70% 60%))',
-                              }}
-                            >
-                              {adj.amount >= 0 ? '+' : ''}{formatCurrency(adj.amount)}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                      <div className='flex justify-between mt-2 pt-2 text-sm' style={{ borderTop: '1px solid hsl(var(--tf-border))' }}>
-                        <span style={{ color: 'hsl(var(--tf-muted))' }}>Adjusted Value</span>
-                        <span className='font-semibold' style={{ color: 'hsl(var(--tf-suite-forge))' }}>
-                          {formatCurrency(adjustedPrice)}
+                  {isSelected && subject && (
+                    <div className='mt-3 pt-3 text-sm' style={{ borderTop: '1px solid hsl(var(--tf-border))' }}>
+                      <div className='flex justify-between'>
+                        <span style={{ color: 'hsl(var(--tf-muted))' }}>CostForge adjustment</span>
+                        <span className='font-medium' style={{ color: 'hsl(var(--tf-suite-forge))' }}>
+                          {adjustmentSummary(adjustment)}
                         </span>
                       </div>
+                      {adjustment && (
+                        <div className='grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-xs'>
+                          <span style={{ color: 'hsl(var(--tf-muted))' }}>
+                            Net: {formatCurrency(adjustment.totalNetAdjustment)}
+                          </span>
+                          <span style={{ color: 'hsl(var(--tf-muted))' }}>
+                            Gross adj: {Math.round(adjustment.grossAdjustmentPct)}%
+                          </span>
+                          <span style={{ color: 'hsl(var(--tf-muted))' }}>
+                            Source: {adjustment.source}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   )}
                 </CardContent>
@@ -467,7 +672,6 @@ export default function CompsForgeModule() {
           })}
         </div>
 
-        {/* Reconciliation Panel */}
         <div className='space-y-4'>
           <Card
             style={{
@@ -485,20 +689,17 @@ export default function CompsForgeModule() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {reconciled ? (
+              {reconciliation ? (
                 <div className='space-y-4'>
                   <div className='text-center space-y-1'>
                     <p className='text-xs uppercase tracking-wider' style={{ color: 'hsl(var(--tf-muted))' }}>
-                      Indicated Value (Median)
+                      Governed Indication
                     </p>
-                    <p
-                      className='text-3xl font-bold'
-                      style={{ color: 'hsl(var(--tf-fg))' }}
-                    >
-                      {formatCurrency(reconciled.median)}
+                    <p className='text-3xl font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
+                      {formatCurrency(reconciliation.weightedAverage)}
                     </p>
                     <Badge className='bg-green-500/20 text-green-400 border-green-500/30' variant='outline'>
-                      {reconciled.count} comps selected
+                      {reconciliation.confidence} confidence
                     </Badge>
                   </div>
 
@@ -506,22 +707,20 @@ export default function CompsForgeModule() {
 
                   <div className='space-y-2 text-sm'>
                     <div className='flex justify-between'>
-                      <span style={{ color: 'hsl(var(--tf-muted))' }}>Average</span>
-                      <span style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(reconciled.average)}</span>
+                      <span style={{ color: 'hsl(var(--tf-muted))' }}>Median</span>
+                      <span style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(reconciliation.median)}</span>
                     </div>
                     <div className='flex justify-between'>
                       <span style={{ color: 'hsl(var(--tf-muted))' }}>Low</span>
-                      <span style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(reconciled.low)}</span>
+                      <span style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(reconciliation.low)}</span>
                     </div>
                     <div className='flex justify-between'>
                       <span style={{ color: 'hsl(var(--tf-muted))' }}>High</span>
-                      <span style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(reconciled.high)}</span>
+                      <span style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(reconciliation.high)}</span>
                     </div>
                     <div className='flex justify-between'>
-                      <span style={{ color: 'hsl(var(--tf-muted))' }}>Range</span>
-                      <span style={{ color: 'hsl(var(--tf-fg))' }}>
-                        {formatCurrency(reconciled.high - reconciled.low)}
-                      </span>
+                      <span style={{ color: 'hsl(var(--tf-muted))' }}>Source</span>
+                      <span style={{ color: 'hsl(var(--tf-fg))' }}>{reconciliation.source}</span>
                     </div>
                   </div>
                 </div>
@@ -529,14 +728,24 @@ export default function CompsForgeModule() {
                 <div className='text-center py-8'>
                   <Search size={32} className='mx-auto mb-3' style={{ color: 'hsl(var(--tf-muted) / 0.4)' }} />
                   <p style={{ color: 'hsl(var(--tf-muted))' }}>
-                    Select comparable sales to reconcile a value
+                    {!subject && hasRollupHandoff
+                      ? 'Rollup scouting mode loads county sales, but reconciliation waits for a parcel-bound subject.'
+                      : isAdjusting
+                        ? 'CostForge is adjusting selected sales.'
+                        : selectedComps.length < 2
+                          ? 'Select at least two sales for reconciliation.'
+                          : 'Reconciliation waits for governed CostForge adjustment output.'}
                   </p>
+                  {adjustmentError && (
+                    <p className='text-xs mt-3' style={{ color: 'hsl(var(--tf-warning))' }}>
+                      {adjustmentError}
+                    </p>
+                  )}
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {/* Subject Property Summary */}
           <Card
             style={{
               background: 'hsl(var(--tf-card-bg))',
@@ -549,33 +758,87 @@ export default function CompsForgeModule() {
                 style={{ color: 'hsl(var(--tf-fg))' }}
               >
                 <Home size={16} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
-                Subject Property
+                {subject ? 'Subject Property' : 'Rollup Context'}
               </CardTitle>
             </CardHeader>
             <CardContent className='space-y-1 text-sm'>
-              <div className='flex justify-between'>
-                <span style={{ color: 'hsl(var(--tf-muted))' }}>Size</span>
-                <span style={{ color: 'hsl(var(--tf-fg))' }}>{SUBJECT_DEFAULTS.squareFeet.toLocaleString()} sqft</span>
+              <div className='flex justify-between gap-4'>
+                <span style={{ color: 'hsl(var(--tf-muted))' }}>County</span>
+                <span style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {countyCode ? `${countyName} (${countyCode})` : 'Unavailable'}
+                </span>
               </div>
-              <div className='flex justify-between'>
+              {!subject && hasRollupHandoff && (
+                <>
+                  <div className='flex justify-between gap-4'>
+                    <span style={{ color: 'hsl(var(--tf-muted))' }}>Rollup scope</span>
+                    <span className='text-right' style={{ color: 'hsl(var(--tf-fg))' }}>
+                      {handoff.rollupScope === 'neighborhood' ? 'Neighborhood' : 'City overview'}
+                    </span>
+                  </div>
+                  {handoff.city && (
+                    <div className='flex justify-between gap-4'>
+                      <span style={{ color: 'hsl(var(--tf-muted))' }}>City</span>
+                      <span className='text-right' style={{ color: 'hsl(var(--tf-fg))' }}>
+                        {handoff.city}
+                      </span>
+                    </div>
+                  )}
+                  {handoff.neighborhoodCode && (
+                    <div className='flex justify-between gap-4'>
+                      <span style={{ color: 'hsl(var(--tf-muted))' }}>Neighborhood</span>
+                      <span className='text-right' style={{ color: 'hsl(var(--tf-fg))' }}>
+                        {handoff.neighborhoodName ?? handoff.neighborhoodCode}
+                      </span>
+                    </div>
+                  )}
+                  {preloadedSampleIds && preloadedSampleIds.length > 0 && (
+                    <div className='flex justify-between gap-4'>
+                      <span style={{ color: 'hsl(var(--tf-muted))' }}>Sample parcels</span>
+                      <span className='text-right' style={{ color: 'hsl(var(--tf-fg))' }}>
+                        {preloadedSampleIds.length}
+                      </span>
+                    </div>
+                  )}
+                </>
+              )}
+              {subject && (
+                <div className='flex justify-between gap-4'>
+                  <span style={{ color: 'hsl(var(--tf-muted))' }}>Parcel</span>
+                  <span className='text-right' style={{ color: 'hsl(var(--tf-fg))' }}>
+                    {subject.parcelId}
+                  </span>
+                </div>
+              )}
+              <div className='flex justify-between gap-4'>
+                <span style={{ color: 'hsl(var(--tf-muted))' }}>Neighborhood code</span>
+                <span className='text-right' style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {activeParcel?.neighborhood ?? handoff.neighborhoodCode ?? 'Unavailable from current provider'}
+                </span>
+              </div>
+              <div className='flex justify-between gap-4'>
+                <span style={{ color: 'hsl(var(--tf-muted))' }}>GLA</span>
+                <span style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {subject ? `${formatOptionalNumber(subject.grossLivingArea)} sqft` : 'Scouting only'}
+                </span>
+              </div>
+              <div className='flex justify-between gap-4'>
                 <span style={{ color: 'hsl(var(--tf-muted))' }}>Year Built</span>
-                <span style={{ color: 'hsl(var(--tf-fg))' }}>{SUBJECT_DEFAULTS.yearBuilt}</span>
+                <span style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {subject ? formatOptionalNumber(subject.yearBuilt) : 'Scouting only'}
+                </span>
               </div>
-              <div className='flex justify-between'>
-                <span style={{ color: 'hsl(var(--tf-muted))' }}>Quality</span>
-                <span style={{ color: 'hsl(var(--tf-fg))' }}>{SUBJECT_DEFAULTS.quality}</span>
+              <div className='flex justify-between gap-4'>
+                <span style={{ color: 'hsl(var(--tf-muted))' }}>Assessed</span>
+                <span style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {subject && subject.assessedValue > 0 ? formatCurrency(subject.assessedValue) : 'Unavailable'}
+                </span>
               </div>
-              <div className='flex justify-between'>
-                <span style={{ color: 'hsl(var(--tf-muted))' }}>Condition</span>
-                <span style={{ color: 'hsl(var(--tf-fg))' }}>{SUBJECT_DEFAULTS.condition}</span>
-              </div>
-              <div className='flex justify-between'>
-                <span style={{ color: 'hsl(var(--tf-muted))' }}>Garage</span>
-                <span style={{ color: 'hsl(var(--tf-fg))' }}>{SUBJECT_DEFAULTS.garageSize} sqft</span>
-              </div>
-              <div className='flex justify-between'>
+              <div className='flex justify-between gap-4'>
                 <span style={{ color: 'hsl(var(--tf-muted))' }}>Lot</span>
-                <span style={{ color: 'hsl(var(--tf-fg))' }}>{SUBJECT_DEFAULTS.lotSize.toLocaleString()} sqft</span>
+                <span style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {subject ? `${formatOptionalNumber(subject.lotSizeSqft)} sqft` : 'Scouting only'}
+                </span>
               </div>
             </CardContent>
           </Card>

@@ -1,0 +1,198 @@
+{
+  "checkedAt": "2026-04-30T20:40:31.536Z",
+  "slice": "statistics-studio-retirement-gap-audit",
+  "status": "PASS",
+  "decision": "RETIRE_STATISTICS_STUDIO",
+  "sourcePresence": {
+    "statisticsStudioStandaloneModule": false,
+    "statisticsStudioRetiredFromLaunch": true,
+    "statisticsStudioCoreTabs": true,
+    "countyStudioCoreModes": true,
+    "countyStatisticsCompat": true,
+    "countyNativeIntelligence": true,
+    "advancedTabsShared": true,
+    "countyVeiPinnedToStudy": false,
+    "countyVeiAdHocTaxYearExploration": true,
+    "statisticsVeiCanChangeTaxYear": true
+  },
+  "prerequisiteProofs": {
+    "statisticsSharedContract": {
+      "path": "os-platform/core/pilot/evidence/statistics-shared-population-contract.latest.json",
+      "status": "PASS",
+      "apiParity": "PASS"
+    },
+    "devDataTruth": {
+      "path": "os-platform/core/pilot/evidence/dev-data-truth-gate.latest.json",
+      "status": "PASS_WITH_WARNINGS",
+      "failures": 0
+    }
+  },
+  "summary": {
+    "totalCapabilities": 12,
+    "missing": 0,
+    "keepTemporarily": 0,
+    "retireOrDemote": 9,
+    "countyStudioOnly": 2
+  },
+  "matrix": [
+    {
+      "capability": "Ratio-study metrics and IAAO status",
+      "statisticsStudioSurface": "Ratio Study tab uses TerraForge store data.",
+      "countyStudioEquivalent": "Statistics Compat mode uses County Studio statistics-compat endpoint and renders the same RatioStudyPanel.",
+      "uiProof": [
+        "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:290",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:592",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:889"
+      ],
+      "parityStatus": "proven",
+      "recommendation": "retire-or-demote-standalone",
+      "notes": "statistics_ratio_study_compat_v1 is live-proven; Statistics Studio is no longer uniquely needed for ratio-study parity."
+    },
+    {
+      "capability": "Stratified/DOR study table and CSV export",
+      "statisticsStudioSurface": "Stratified Study tab renders StratifiedStudyPanel.",
+      "countyStudioEquivalent": "County Studio imports the same StratifiedStudyPanel with active study county scope.",
+      "uiProof": [
+        "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:301",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:902",
+        "frontend/apps/os-shell/src/pages/forge/statistics/StratifiedStudyPanel.tsx:50"
+      ],
+      "parityStatus": "shared-component",
+      "recommendation": "retire-or-demote-standalone",
+      "notes": "No separate Statistics Studio-only implementation was found."
+    },
+    {
+      "capability": "COD/PRD trend charts",
+      "statisticsStudioSurface": "Trends tab calls TerraForge trends endpoint and renders COD/PRD charts.",
+      "countyStudioEquivalent": "County Studio calls the same trends endpoint and renders the same COD/PRD charts.",
+      "uiProof": [
+        "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:127",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:760",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:911",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:923"
+      ],
+      "parityStatus": "covered-same-endpoint",
+      "recommendation": "retire-or-demote-standalone",
+      "notes": "Covered natively inside the County Studio workbench."
+    },
+    {
+      "capability": "Valuation Equity Index",
+      "statisticsStudioSurface": "Equity tab renders VEIDashboard and lets the local Statistics Studio tax year change.",
+      "countyStudioEquivalent": "County Studio renders VEIDashboard with ad hoc tax-year exploration while preserving the active study scope for non-VEI statistics.",
+      "uiProof": [
+        "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:346",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:939",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:941"
+      ],
+      "parityStatus": "covered-in-county-studio",
+      "recommendation": "retire-or-demote-standalone",
+      "notes": "The prior ad hoc VEI tax-year exploration gap is now inside County Studio."
+    },
+    {
+      "capability": "Outlier review",
+      "statisticsStudioSurface": "Outliers tab renders OutlierReviewPanel.",
+      "countyStudioEquivalent": "County Studio renders the same OutlierReviewPanel in its analytics modes.",
+      "uiProof": [
+        "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:355",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1037"
+      ],
+      "parityStatus": "shared-component",
+      "recommendation": "retire-or-demote-standalone",
+      "notes": "No unique Statistics Studio-only outlier surface was found."
+    },
+    {
+      "capability": "Model comparison",
+      "statisticsStudioSurface": "Comparison tab renders ModelComparisonPanel.",
+      "countyStudioEquivalent": "County Studio renders the same ModelComparisonPanel.",
+      "uiProof": [
+        "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:358",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1039"
+      ],
+      "parityStatus": "shared-component",
+      "recommendation": "retire-or-demote-standalone",
+      "notes": "No unique Statistics Studio-only model comparison implementation was found."
+    },
+    {
+      "capability": "Calibration matrix and value-driver attribution",
+      "statisticsStudioSurface": "Calibration tab renders CostRatioAnalysis and ValueDriverPanel.",
+      "countyStudioEquivalent": "County Studio renders CostRatioAnalysis and ValueDriverPanel with active county scope override.",
+      "uiProof": [
+        "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:363",
+        "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:364",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1043",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1044"
+      ],
+      "parityStatus": "shared-component",
+      "recommendation": "retire-or-demote-standalone",
+      "notes": "Covered in County Studio with study county context."
+    },
+    {
+      "capability": "Cost analytics",
+      "statisticsStudioSurface": "Cost Analytics tab renders CostForgeDashboard.",
+      "countyStudioEquivalent": "County Studio renders the same CostForgeDashboard.",
+      "uiProof": [
+        "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:369",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1048"
+      ],
+      "parityStatus": "shared-component",
+      "recommendation": "retire-or-demote-standalone",
+      "notes": "Covered, but still conceptually a specialist CostForge surface inside County Studio."
+    },
+    {
+      "capability": "Advanced diagnostics, spatial/temporal, and calibration engine",
+      "statisticsStudioSurface": "Advanced tabs render DiagnosticsTab, SpatialTemporalTab, and CalibrationEngineTab.",
+      "countyStudioEquivalent": "County Studio renders the same advanced panels and applies the same advanced certification guard.",
+      "uiProof": [
+        "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx:254",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1049",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:835"
+      ],
+      "parityStatus": "shared-component",
+      "recommendation": "retire-or-demote-standalone",
+      "notes": "Advanced panels are shared; certification posture is preserved."
+    },
+    {
+      "capability": "Market context and economics",
+      "statisticsStudioSurface": "Statistics Studio does not expose a market-context tab.",
+      "countyStudioEquivalent": "County Studio adds a reference-only certified market lane plus MarketAnalyticsDashboard, MarketDashboard, and EconomicIndicators.",
+      "uiProof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:972",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:989",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:1010"
+      ],
+      "parityStatus": "county-studio-only-reference-context",
+      "recommendation": "keep-in-county-studio",
+      "notes": "This is additional County Studio context, not a reason to keep Statistics Studio."
+    },
+    {
+      "capability": "Assessment intelligence and quality control",
+      "statisticsStudioSurface": "Statistics Studio does not expose these as tabs.",
+      "countyStudioEquivalent": "County Studio derives AssessmentIntelligence and QualityControlPanel from active study health and segment data.",
+      "uiProof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:441",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:321",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:952",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:965"
+      ],
+      "parityStatus": "county-studio-only",
+      "recommendation": "keep-in-county-studio",
+      "notes": "County Studio now exceeds Statistics Studio for operational triage context."
+    },
+    {
+      "capability": "Standalone module entrypoint",
+      "statisticsStudioSurface": "Statistics Studio remains only as historical generated catalog metadata; launch aliases resolve to County Studio and the renderer shell is removed.",
+      "countyStudioEquivalent": "County Studio requires an active study for its workbench-native statistics surface.",
+      "uiProof": [
+        "frontend/apps/os-shell/src/config/moduleComponents.tsx:63",
+        "frontend/apps/os-shell/src/config/generatedModules.ts:431",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx:854"
+      ],
+      "parityStatus": "standalone-shell-retired",
+      "recommendation": "retired",
+      "notes": "The final product gap is closed: direct Statistics Studio launch now resolves to County Studio."
+    }
+  ],
+  "requiredClosureBeforeHiding": [
+    "No remaining standalone Statistics Studio closure item. Keep shared statistics panels because County Studio imports them as native workbench capabilities."
+  ]
+}

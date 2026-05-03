@@ -10,11 +10,16 @@ using Pgvector;
 //   TerraFusionDbContext.OnModelCreatingExtensions = GptAiEntityConfigurations.Apply;
 //
 // The hook is called at the end of OnModelCreating, before ConfigureEncryption.
+//
+// NOTE: SaleAuditDiagnosis and SalesAuditAdjustmentProposal are TerraFusion.Core entities,
+// not TerraFusion.AI entities.  Their configurations live in
+// TerraFusion.Data.Configurations.SalesAuditEntityConfigurations and are applied
+// directly in TerraFusionDbContext.OnModelCreating — no hook needed.
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TerraFusion.AI.Entities;
-using TerraFusion.Core.Entities;
 
 namespace TerraFusion.AI.Data;
 
@@ -39,6 +44,9 @@ public static class GptAiEntityConfigurations
         mb.ApplyConfiguration(new GPTUsageMetricConfiguration());
         mb.ApplyConfiguration(new GPTAuditConfiguration());
         mb.ApplyConfiguration(new GPTMarketplaceInstallConfiguration());
+        // SaleAuditDiagnosis and SalesAuditAdjustmentProposal are TerraFusion.Core entities.
+        // Their configurations are registered directly in TerraFusionDbContext.OnModelCreating
+        // via SalesAuditEntityConfigurations — no hook needed.
     }
 
     private sealed class GPTMessageConfiguration : IEntityTypeConfiguration<GPTMessage>
@@ -139,6 +147,15 @@ public static class GptAiEntityConfigurations
 
         public void Configure(EntityTypeBuilder<RAGEmbedding> builder)
         {
+            var embeddingComparer = new ValueComparer<float[]>(
+                (left, right) =>
+                    ReferenceEquals(left, right) ||
+                    (left != null && right != null && left.SequenceEqual(right)),
+                values => values == null
+                    ? 0
+                    : values.Aggregate(0, (hash, value) => HashCode.Combine(hash, value)),
+                values => values == null ? Array.Empty<float>() : values.ToArray());
+
             builder.HasKey(e => e.Id);
             builder.ToTable("RAGEmbeddings");
 
@@ -163,11 +180,14 @@ public static class GptAiEntityConfigurations
                     .HasColumnType("vector(1536)")
                     .HasConversion(
                         v => new Vector(v),
-                        v => v.Memory.ToArray());
+                        v => v.Memory.ToArray())
+                    .Metadata.SetValueComparer(embeddingComparer);
             }
             else
             {
-                builder.Property(e => e.Embedding).IsRequired();
+                builder.Property(e => e.Embedding)
+                    .IsRequired()
+                    .Metadata.SetValueComparer(embeddingComparer);
             }
 
             builder.HasOne(e => e.Document)
@@ -278,4 +298,5 @@ public static class GptAiEntityConfigurations
                    .HasDatabaseName("IX_GPTMarketplaceInstalls_UserGPT_Unique");
         }
     }
+
 }

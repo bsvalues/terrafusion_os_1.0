@@ -259,9 +259,12 @@ describe('useSystemGptAtlasLive', () => {
         eventSource!.simulateError();
       });
 
-      // Advance timers to trigger reconnection (5000ms base delay + jitter, but jitter is mocked to 0)
+      // Advance timers to trigger reconnection. Hook uses deterministic
+      // backoff: delay = RECONNECT_DELAY_MS (5000) * 1.5^(retry-1) plus
+      // (retry % 10) * 100ms jitter. First retry total is 5100ms, so
+      // 5500ms gives a safe margin without flaking on slower workers.
       await act(async () => {
-        vi.advanceTimersByTime(5001);
+        vi.advanceTimersByTime(5500);
       });
 
       expect(MockEventSource.instances.length).toBeGreaterThan(initialInstanceCount);

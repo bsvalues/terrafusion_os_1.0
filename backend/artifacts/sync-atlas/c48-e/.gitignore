@@ -1,0 +1,3 @@
+# C48-E smoke runner build output. Keep csproj + Program.cs +
+# .gitignore + the JSON proof artifacts checked in; ignore bin/obj.
+build/

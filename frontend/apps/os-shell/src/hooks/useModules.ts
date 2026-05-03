@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 
 import { moduleAPI } from '../services/moduleAPI';
 import { useLogger } from '@/hooks/useLogger';
 
 interface Module {
-  id: string;
+  id: string | number;
   name: string;
   displayName: string;
   description?: string;
@@ -29,9 +28,10 @@ export const useModules = () => {
     data: modules = [],
     isLoading,
     error,
-  } = useQuery<Module[]>('modules', moduleAPI.getAllModules, {
+  } = useQuery<Module[], Error>('modules', moduleAPI.getAllModules, {
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 10 * 60 * 1000, // 10 minutes
+    retry: false,
   });
 
   const launchModuleMutation = useMutation(
@@ -82,6 +82,7 @@ export const useModules = () => {
     modules,
     isLoading,
     error,
+    errorMessage: error?.message ?? null,
     loadModule,
     unloadModule,
     getModulesByTier,

@@ -181,7 +181,7 @@
   color: var(--tf-text-primary);
 }
 
-.mock-data-warning {
+.unverified-data-warning {
   margin-top: 8px;
   padding: 8px;
   background: hsl(var(--tf-warning-hs) var(--tf-l-50) / 0.2);

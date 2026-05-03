@@ -868,7 +868,7 @@ export const EdgeCases: Story = {
               </SelectItem>
               <SelectItem value='available2'>Available Option 2</SelectItem>
               <SelectItem value='disabled2' disabled>
-                Disabled Option (Coming Soon)
+                    Disabled Option (Queued)
               </SelectItem>
               <SelectItem value='available3'>Available Option 3</SelectItem>
             </SelectContent>

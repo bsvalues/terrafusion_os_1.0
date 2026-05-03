@@ -326,7 +326,8 @@
   --tf-info: 207 34% 50%;      /* warm slate blue — informational                       */
   --tf-r-lg: var(--radius-lg); /* 1rem                                                   */
   --tf-r-xl: var(--radius-xl); /* 1.5rem                                                 */
-  --tf-shadow: 0 10px 30px hsl(16 28% 28% / 0.10); /* terracotta shadow                */
+  --tf-shadow-warm-hs: 16 28%; /* terracotta shadow H+S anchor                       */
+  --tf-shadow: 0 10px 30px hsl(var(--tf-shadow-warm-hs) 28% / 0.10); /* terracotta shadow */
 
   /* ═══ CANONICAL MATERIAL TOKENS ═══ */
   --tf-terracotta: 16 55% 56%; /* Terracotta — spec-exact warm accent on linen    */
@@ -335,7 +336,7 @@
 
   /* ═══ COMPAT ALIASES (Shadcn/Radix name bridge) ═══
      These map Shadcn-style names → TF Lumin Bridge channel values.
-     Usage pattern: hsl(var(--tf-foreground)) = hsl(0 0% 100%)
+     Usage pattern: hsl(var(--tf-foreground))   resolves to a raw H S L triplet
      Never wrap these in hsl() when defining — they ARE raw H S L.   */
   --tf-foreground: var(--tf-text);          /* primary text (0 0% 100%) */
   --tf-muted-foreground: var(--tf-muted);   /* muted text   (215 20% 65%) */
@@ -355,15 +356,28 @@
   --tf-suite-dais: 347 48% 56%;       /* Dais claret   */
   --tf-suite-dossier: 148 38% 46%;    /* Dossier green */
   --tf-suite-pilot: 226 58% 61%;      /* Pilot indigo  */
+  --tf-suite-pilot-hs: 226 58%;       /* Pilot indigo  H+S only            */
+  --tf-suite-pilot-bright-hs: 226 80%; /* Pilot indigo  brighter variant   */
   --tf-suite-gpt: var(--tf-suite-pilot); /* alias */
+
+  /* HS anchor for canvas scale-marker drawing in PlanTracePanel.tsx */
+  --tf-trace-marker-hs: 142 76%;      /* PlanTrace scale-marker green H+S */
+
+  /* AISwarmDashboard pilot-required chip colour, replaces a prior raw hex */
+  --tf-pilot-required-hs: 204 100%;
+  --tf-pilot-required: hsl(var(--tf-pilot-required-hs) 78%);
 
   /* ═══ LIQUID GLASS (Manifesto Layer 1: Shell Material) ═══
      Light cream glass — transparent over the warm wallpaper gradient.
      Backdrop blur creates the refractive Liquid Glass effect.              */
-  --glass-bg: hsl(45 18% 96% / 0.78);
-  --glass-bg-light: hsl(45 16% 97% / 0.60);
-  --glass-bg-heavy: hsl(44 18% 94% / 0.92);
-  --glass-border: hsl(38 18% 72% / 0.50);
+  --tf-glass-cream-hs: 45 18%;        /* primary cream-glass H+S            */
+  --tf-glass-cream-light-hs: 45 16%;  /* lighter cream variant H+S          */
+  --tf-glass-cream-heavy-hs: 44 18%;  /* heavier cream variant H+S          */
+  --tf-glass-cream-border-hs: 38 18%; /* warm border H+S                    */
+  --glass-bg: hsl(var(--tf-glass-cream-hs) 96% / 0.78);
+  --glass-bg-light: hsl(var(--tf-glass-cream-light-hs) 97% / 0.60);
+  --glass-bg-heavy: hsl(var(--tf-glass-cream-heavy-hs) 94% / 0.92);
+  --glass-border: hsl(var(--tf-glass-cream-border-hs) 72% / 0.50);
   --glass-border-hover: hsl(var(--tf-accent) / 0.4);
   --glass-blur: blur(18px);
   --glass-backdrop: saturate(140%) blur(20px);
@@ -406,6 +420,10 @@
   --tf-glass-border: var(--glass-border);
   --tf-glass-bg: var(--glass-bg);
   --tf-blur-near: 40px;
+
+  /* ═══ COMPAT ALIASES — keeps component code stable ═══ */
+  --tf-fg: var(--tf-text);          /* foreground channel alias → --tf-text   */
+  --tf-destructive: var(--tf-error); /* destructive channel alias → --tf-error */
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -421,10 +439,14 @@
   --tf-border: 220 16% 26%;
   --tf-text: 214 22% 91%;
   --tf-muted: 214 16% 58%;
-  --glass-bg: hsl(220 18% 16% / 0.72);
-  --glass-bg-light: hsl(220 18% 16% / 0.45);
-  --glass-bg-heavy: hsl(220 18% 16% / 0.88);
-  --glass-border: hsl(220 24% 35% / 0.45);
+  /* Night accent: switch terracotta → cyan for dark-mode cohesion */
+  --tf-accent: 192 58% 60%;
+  --tf-glass-night-hs: 220 18%;        /* night-mode glass H+S              */
+  --tf-glass-night-border-hs: 220 24%; /* night-mode border H+S             */
+  --glass-bg: hsl(var(--tf-glass-night-hs) 16% / 0.72);
+  --glass-bg-light: hsl(var(--tf-glass-night-hs) 16% / 0.45);
+  --glass-bg-heavy: hsl(var(--tf-glass-night-hs) 16% / 0.88);
+  --glass-border: hsl(var(--tf-glass-night-border-hs) 35% / 0.45);
 }
 
 /* ═══════════════════════════════════════════════════════════════

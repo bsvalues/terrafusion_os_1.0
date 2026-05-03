@@ -273,10 +273,11 @@ export function anonymizeCalculationData(
   }
   
   // Anonymize location-related information
-  if (mergedOptions.anonymizeLocations && anonymized.region) {
-    // Preserve region info if it's a standard code, otherwise anonymize it
-    if (!/^(CENTRAL|EAST|WEST|NORTH|SOUTH)$/.test(anonymized.region)) {
-      anonymized.region = anonymizeString(anonymized.region, 'location');
+  if (mergedOptions.anonymizeLocations && (anonymized.revalArea ?? anonymized.region)) {
+    // Preserve reval area info if it's a standard code, otherwise anonymize it
+    const locationField = anonymized.revalArea !== undefined ? 'revalArea' : 'region';
+    if (!/^Reval \d$/.test(anonymized[locationField])) {
+      anonymized[locationField] = anonymizeString(anonymized[locationField], 'location');
     }
   }
   

@@ -4,7 +4,7 @@ namespace TerraFusion.Consciousness.Interfaces
 {
     /// <summary>
     /// TerraFusion Transcendence Engine Interface - Championship Excellence
-    /// Government. Transcended. - Infinite scalability with quantum precision
+    /// Compatibility transcendence-engine contract.
     /// </summary>
     public interface ITranscendenceEngine
     {

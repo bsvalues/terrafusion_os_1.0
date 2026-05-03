@@ -76,6 +76,17 @@ export interface OfficeRegistry {
 }
 
 export type { SwarmEventPayload } from './swarm.js';
+export type {
+  AssessorActionContract,
+  AssessorFindingContract,
+  AssessorStaffRole,
+  CountyFindingScope,
+  CountyFindingType,
+  CountyImpactPreview,
+  CountyQueueType,
+  CountyRecommendedTool,
+  RoleBriefContract,
+} from './assessorSuperpowers.js';
 
 // ============================================================================
 // Tool Manifest Types

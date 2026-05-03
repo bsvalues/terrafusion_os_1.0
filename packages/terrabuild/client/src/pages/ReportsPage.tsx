@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
+import MainLayout from "@/components/layout/MainLayout";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -39,17 +40,35 @@ export default function ReportsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<string | null>(null);
   
-  // Fetch reports
-  const { 
-    data: reports = [],
+  // Fetch valuation history — real TerraFusion OS endpoint
+  const {
+    data: rawReports = [],
     isLoading,
     isError,
     refetch
-  } = useQuery<Report[]>({ 
-    queryKey: ['/api/reports'],
+  } = useQuery<any[]>({
+    queryKey: ['/api/costforge/valuations'],
+    queryFn: async () => {
+      const res = await fetch('/api/costforge/valuations');
+      if (!res.ok) throw new Error(`${res.status}`);
+      const data = await res.json();
+      // Normalize TF valuations → Report shape
+      const arr: any[] = data?.valuations ?? data?.Valuations ?? data ?? [];
+      return arr.map((v: any, i: number) => ({
+        id: v.ValuationId ?? v.valuationId ?? v.Id ?? i,
+        title: `${v.BuildingType ?? v.buildingType ?? 'Valuation'} — ${v.ParcelId ?? v.parcelId ?? ''}`.trim().replace(/ — $/, ''),
+        description: `RCNLD: ${v.Rcnld ?? v.rcnld ?? v.TotalValue ?? v.totalValue ?? '—'} | ${v.Region ?? v.region ?? ''} | ${v.QualityGrade ?? v.qualityGrade ?? ''}`,
+        report_type: v.ValuationMethod ?? v.valuationMethod ?? 'cost-approach',
+        created_at: v.CreatedAt ?? v.createdAt ?? new Date().toISOString(),
+        is_public: false,
+        content: v,
+      }));
+    },
     refetchOnMount: true,
     refetchOnWindowFocus: false
   });
+
+  const reports: Report[] = Array.isArray(rawReports) ? rawReports : [];
   
   // Get the selected report
   const selectedReport = selectedReportId 
@@ -83,14 +102,10 @@ export default function ReportsPage() {
   const reportTypes = Array.from(reportTypesSet);
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Assessment Reports</h1>
-        <p className="text-muted-foreground">
-          View, analyze, and manage property assessment reports
-        </p>
-      </div>
-
+    <MainLayout
+      pageTitle="Assessment Reports"
+      pageDescription="View, analyze, and manage property assessment reports"
+    >
       {selectedReport ? (
         <ReportDetail 
           report={selectedReport} 
@@ -308,6 +323,6 @@ export default function ReportsPage() {
           </div>
         </>
       )}
-    </div>
+    </MainLayout>
   );
 }

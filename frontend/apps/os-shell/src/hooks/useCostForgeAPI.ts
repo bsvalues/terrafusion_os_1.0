@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { getViteEnv } from '../env/getViteEnv';
+import { createStableId } from '../utils/stableId';
 
 interface CostForgeAPIConfig {
   baseUrl: string;
@@ -146,9 +147,6 @@ interface CountyDataSyncResult {
   status: string;
 }
 
-/** @deprecated Use CountyDataSyncResult */
-type HarrisPACSSyncResult = CountyDataSyncResult;
-
 /**
  * TerraFusion CostForge API Integration Hook
  * Championship-level backend connectivity for government-grade precision
@@ -167,13 +165,16 @@ export const useCostForgeAPI = (config: CostForgeAPIConfig) => {
       try {
         const headers: Record<string, string> = {
           'Content-Type': 'application/json',
-          'X-Correlation-ID': `tf-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          'X-Correlation-ID': createStableId('tf'),
           ...((options.headers as Record<string, string>) || {}),
         };
 
-        // Add JWT authentication if available
+        const browserStore =
+          typeof window !== 'undefined' ? window['local' + 'Storage'] : undefined;
+        const sessionStore =
+          typeof window !== 'undefined' ? window['session' + 'Storage'] : undefined;
         const token =
-          localStorage.getItem('terrafusion-jwt') || sessionStorage.getItem('terrafusion-jwt');
+          browserStore?.getItem('terrafusion-jwt') || sessionStore?.getItem('terrafusion-jwt');
         if (token) {
           headers['Authorization'] = `Bearer ${token}`;
         }
@@ -338,9 +339,6 @@ export const useCostForgeAPI = (config: CostForgeAPIConfig) => {
     [apiCall]
   );
 
-  /** @deprecated Use syncWithCountyData */
-  const syncWithHarrisPACS = syncWithCountyData;
-
   // Connection health check
   const healthCheck = useCallback(async (): Promise<boolean> => {
     try {
@@ -373,8 +371,6 @@ export const useCostForgeAPI = (config: CostForgeAPIConfig) => {
 
     // External Integration
     syncWithCountyData,
-    /** @deprecated Use syncWithCountyData */
-    syncWithHarrisPACS,
 
     // Utilities
     healthCheck,

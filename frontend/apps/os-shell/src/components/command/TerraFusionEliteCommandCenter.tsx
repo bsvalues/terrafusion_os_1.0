@@ -1,567 +1,228 @@
-/**
- * ═══════════════════════════════════════════════════════════════
- * TERRAFUSION ELITE SYSTEM COMMAND CENTER
- * Ultimate Government OS Demonstration & System Overview
- * Real-Time System Health, Performance Metrics & Platform Status
- * THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.
- * ═══════════════════════════════════════════════════════════════
- */
-
 import { TerraSphere } from '@/components/brand/TerraSphere';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent as CardBody, CardHeader } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import React, { useCallback, useEffect, useState } from 'react';
+import { systemAPI } from '@/services/systemAPI';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-interface SystemOverview {
-  totalPlatforms: number;
-  operationalPlatforms: number;
-  totalAgents: number;
-  activeAgents: number;
-  systemUptime: number;
-  averagePerformance: number;
-  quantumEnhancedSystems: number;
-  totalThroughput: number;
-  averageLatency: number;
-  criticalAlerts: number;
-  optimizationTasks: number;
-  governmentCompliance: number;
-}
-
-interface PlatformSummary {
-  id: string;
-  name: string;
-  emoji: string;
-  status: 'ELITE' | 'OPTIMAL' | 'EXCELLENT' | 'GOOD' | 'DEGRADED';
-  performance: number;
-  agents: number;
-  throughput: number;
-  latency: number;
-  quantumEnhanced: boolean;
-  viewMode: string;
-  keyFeatures: string[];
-}
-
-interface LiveMetrics {
-  timestamp: string;
-  cpuUsage: number;
-  memoryUsage: number;
-  networkThroughput: number;
-  activeConnections: number;
-  requestsPerSecond: number;
-  responseTime: number;
-  errorRate: number;
-  quantumProcessing: number;
+interface SystemHealthResponse {
+  status: string;
+  moduleCount: number;
+  healthyModules: number;
+  systemComponents: Record<string, boolean>;
+  warnings: string[];
+  intentFilter?: string | null;
+  moduleCountTotal?: number | null;
+  moduleCountActive?: number | null;
+  moduleCountFilteredOut?: number | null;
 }
 
 interface CommandCenterProps {
   className?: string;
 }
 
-export const TerraFusionEliteCommandCenter: React.FC<CommandCenterProps> = ({ className = '' }) => {
-  const [systemOverview, setSystemOverview] = useState<SystemOverview>({
-    totalPlatforms: 7,
-    operationalPlatforms: 7,
-    totalAgents: 81735,
-    activeAgents: 81735,
-    systemUptime: 99.97,
-    averagePerformance: 95.1,
-    quantumEnhancedSystems: 5,
-    totalThroughput: 1427158,
-    averageLatency: 7.7,
-    criticalAlerts: 0,
-    optimizationTasks: 5,
-    governmentCompliance: 100.0,
-  });
+function normalizeHealth(raw: unknown): SystemHealthResponse {
+  const data = raw as Partial<SystemHealthResponse> | null;
+  if (!data || typeof data.status !== 'string') {
+    throw new Error('System health response does not match /api/system/health.');
+  }
 
-  const [platforms, setPlatforms] = useState<PlatformSummary[]>([]);
-  const [liveMetrics, setLiveMetrics] = useState<LiveMetrics>({
-    timestamp: new Date().toISOString(),
-    cpuUsage: 67.4,
-    memoryUsage: 72.8,
-    networkThroughput: 1247.6,
-    activeConnections: 2847,
-    requestsPerSecond: 18476,
-    responseTime: 7.7,
-    errorRate: 0.006,
-    quantumProcessing: 89.4,
-  });
+  return {
+    status: data.status,
+    moduleCount: typeof data.moduleCount === 'number' ? data.moduleCount : 0,
+    healthyModules: typeof data.healthyModules === 'number' ? data.healthyModules : 0,
+    systemComponents:
+      data.systemComponents && typeof data.systemComponents === 'object'
+        ? data.systemComponents
+        : {},
+    warnings: Array.isArray(data.warnings) ? data.warnings : [],
+    intentFilter: data.intentFilter ?? null,
+    moduleCountTotal: data.moduleCountTotal ?? null,
+    moduleCountActive: data.moduleCountActive ?? null,
+    moduleCountFilteredOut: data.moduleCountFilteredOut ?? null,
+  };
+}
+
+function statusClass(status: string): string {
+  const normalized = status.toLowerCase();
+  if (normalized === 'healthy') return 'bg-green-500 text-white';
+  if (normalized === 'degraded') return 'bg-yellow-500 text-terra-midnight';
+  return 'bg-red-500 text-white';
+}
+
+export const TerraFusionEliteCommandCenter: React.FC<CommandCenterProps> = ({
+  className = '',
+}) => {
+  const [health, setHealth] = useState<SystemHealthResponse | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadHealth = useCallback(async () => {
+    try {
+      setError(null);
+      const data = normalizeHealth(await systemAPI.getSystemHealth());
+      setHealth(data);
+      setLastUpdated(new Date());
+    } catch (err) {
+      setHealth(null);
+      setError(err instanceof Error ? err.message : 'System health evidence is unavailable.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    initializeCommandCenter();
-    const interval = setInterval(updateLiveMetrics, 2000);
+    void loadHealth();
+    const interval = setInterval(() => {
+      void loadHealth();
+    }, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [loadHealth]);
 
-  const initializeCommandCenter = useCallback(() => {
-
-    const platformSummaries: PlatformSummary[] = [
-      {
-        id: 'ai-consciousness',
-        name: 'AI Consciousness Network',
-        emoji: '🧠',
-        status: 'ELITE',
-        performance: 97.8,
-        agents: 50247,
-        throughput: 847532,
-        latency: 4.2,
-        quantumEnhanced: true,
-        viewMode: 'AI_CONSCIOUSNESS_NETWORK',
-        keyFeatures: [
-          '50K+ Agent Swarm',
-          'Quantum Coordination',
-          'Real-Time Intelligence',
-          'Elite Performance',
-        ],
-      },
-      {
-        id: 'quantum-computing',
-        name: 'Quantum Computing Platform',
-        emoji: '⚛️',
-        status: 'OPTIMAL',
-        performance: 94.6,
-        agents: 847,
-        throughput: 12847,
-        latency: 2.1,
-        quantumEnhanced: true,
-        viewMode: 'QUANTUM_COMPUTING',
-        keyFeatures: [
-          "Shor's Algorithm",
-          'Quantum Circuits',
-          'Entanglement Validation',
-          'Quantum Optimization',
-        ],
-      },
-      {
-        id: 'ml-intelligence',
-        name: 'ML Intelligence Hub',
-        emoji: '🤖',
-        status: 'ELITE',
-        performance: 96.3,
-        agents: 12847,
-        throughput: 234789,
-        latency: 6.8,
-        quantumEnhanced: true,
-        viewMode: 'ML_INTELLIGENCE_HUB',
-        keyFeatures: [
-          '99.9% Accuracy',
-          'Quantum-Enhanced ML',
-          'Real-Time Inference',
-          'Predictive Analytics',
-        ],
-      },
-      {
-        id: 'blockchain-ledger',
-        name: 'Blockchain Government Ledger',
-        emoji: '⛓️',
-        status: 'EXCELLENT',
-        performance: 93.7,
-        agents: 2847,
-        throughput: 45789,
-        latency: 12.4,
-        quantumEnhanced: true,
-        viewMode: 'BLOCKCHAIN_LEDGER',
-        keyFeatures: [
-          'FISMA-High Security',
-          'Smart Contracts',
-          'Immutable Records',
-          'Government Compliance',
-        ],
-      },
-      {
-        id: 'advanced-analytics',
-        name: 'Advanced Analytics Pipeline',
-        emoji: '📊',
-        status: 'OPTIMAL',
-        performance: 95.8,
-        agents: 8947,
-        throughput: 187456,
-        latency: 8.7,
-        quantumEnhanced: false,
-        viewMode: 'ADVANCED_ANALYTICS',
-        keyFeatures: [
-          'Real-Time Processing',
-          'AI Insights',
-          'Multi-Dimensional Analysis',
-          'Government Intelligence',
-        ],
-      },
-      {
-        id: 'edge-coordination',
-        name: 'Edge Computing & IoT Coordination',
-        emoji: '🌐',
-        status: 'EXCELLENT',
-        performance: 92.4,
-        agents: 5847,
-        throughput: 98745,
-        latency: 15.3,
-        quantumEnhanced: true,
-        viewMode: 'EDGE_COORDINATION',
-        keyFeatures: [
-          'Distributed Networks',
-          'IoT Management',
-          'Edge Intelligence',
-          'Quantum Coordination',
-        ],
-      },
-      {
-        id: 'system-integration',
-        name: 'System Integration & Optimization',
-        emoji: '🏛️',
-        status: 'ELITE',
-        performance: 98.2,
-        agents: 1234,
-        throughput: 156789,
-        latency: 5.4,
-        quantumEnhanced: false,
-        viewMode: 'SYSTEM_INTEGRATION',
-        keyFeatures: [
-          'Elite Orchestration',
-          'Performance Optimization',
-          'System Coordination',
-          'Government Excellence',
-        ],
-      },
-    ];
-
-    setPlatforms(platformSummaries);
-  }, []);
-
-  const updateLiveMetrics = useCallback(() => {
-    setLiveMetrics((prev) => ({
-      ...prev,
-      timestamp: new Date().toISOString(),
-      cpuUsage: Math.max(0, Math.min(100, prev.cpuUsage + (Math.random() - 0.5) * 5)),
-      memoryUsage: Math.max(0, Math.min(100, prev.memoryUsage + (Math.random() - 0.5) * 3)),
-      networkThroughput: Math.max(500, prev.networkThroughput + (Math.random() - 0.5) * 200),
-      activeConnections: Math.max(
-        1000,
-        prev.activeConnections + Math.floor((Math.random() - 0.5) * 200)
-      ),
-      requestsPerSecond: Math.max(
-        10000,
-        prev.requestsPerSecond + Math.floor((Math.random() - 0.5) * 2000)
-      ),
-      responseTime: Math.max(1, prev.responseTime + (Math.random() - 0.5) * 2),
-      errorRate: Math.max(0, Math.min(1, prev.errorRate + (Math.random() - 0.5) * 0.01)),
-      quantumProcessing: Math.max(
-        70,
-        Math.min(100, prev.quantumProcessing + (Math.random() - 0.5) * 5)
-      ),
-    }));
-
-    // Update platform performance
-    setPlatforms((prev) =>
-      prev.map((platform) => ({
-        ...platform,
-        performance: Math.max(85, Math.min(100, platform.performance + (Math.random() - 0.5) * 2)),
-        throughput: Math.max(1000, platform.throughput + Math.floor((Math.random() - 0.5) * 10000)),
-        latency: Math.max(1, platform.latency + (Math.random() - 0.5) * 2),
-      }))
-    );
-  }, []);
-
-  const getStatusColor = (status: PlatformSummary['status']) => {
-    switch (status) {
-      case 'ELITE':
-        return 'bg-terra-cyan text-terra-midnight';
-      case 'OPTIMAL':
-        return 'bg-green-500 text-white';
-      case 'EXCELLENT':
-        return 'bg-blue-500 text-white';
-      case 'GOOD':
-        return 'bg-yellow-500 text-terra-midnight';
-      case 'DEGRADED':
-        return 'bg-red-500 text-white';
-    }
-  };
-
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-    return num.toString();
-  };
+  const componentEntries = useMemo(() => Object.entries(health?.systemComponents ?? {}), [health]);
+  const unhealthyComponents = componentEntries.filter(([, healthy]) => !healthy);
+  const totalModules = health?.moduleCountTotal ?? health?.moduleCount ?? 0;
+  const activeModules = health?.moduleCountActive ?? health?.healthyModules ?? 0;
+  const moduleProgress = totalModules > 0 ? (activeModules / totalModules) * 100 : 0;
 
   return (
     <div
       className={`min-h-screen bg-gradient-to-br from-terra-midnight via-terra-slate to-terra-midnight p-6 ${className}`}
     >
-      {/* Elite Command Center Header */}
       <div className='text-center mb-8'>
         <div className='flex items-center justify-center gap-6 mb-4'>
           <TerraSphere size='lg' variant='quantum' />
           <div>
             <h1 className='text-5xl font-bold text-terra-cyan glow-text mb-2'>
-              TerraFusion Elite Command Center
+              TerraFusion Command Center
             </h1>
             <p className='text-xl text-terra-blue/80'>
-              Ultimate Government OS - All Systems Operational
+              Governed operating status from backend health evidence.
             </p>
           </div>
         </div>
 
-        {/* Mission Status Banner */}
         <div className='bg-terra-cyan/10 border border-terra-cyan/30 rounded-lg p-4 mb-6'>
-          <div className='text-2xl font-bold text-terra-cyan mb-2'>
-            🎊 MISSION STATUS: GOVERNMENT. TRANSCENDED. 🎊
-          </div>
+          <div className='text-2xl font-bold text-terra-cyan mb-2'>Mission Status</div>
           <div className='text-terra-blue'>
-            All 7 Elite Platforms Operational • 81,735 AI Agents Active • 99.97% System Uptime
+            {loading
+              ? 'Loading system health evidence...'
+              : health
+                ? `${health.status} • ${activeModules}/${totalModules} active modules`
+                : 'System health evidence unavailable'}
           </div>
         </div>
       </div>
 
-      {/* System Overview Dashboard */}
-      <div className='grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8'>
-        <Card className='terra-glass border-terra-cyan/20 text-center'>
-          <CardBody className='p-4'>
-            <div className='text-2xl font-bold text-terra-cyan'>
-              {systemOverview.operationalPlatforms}/{systemOverview.totalPlatforms}
-            </div>
-            <div className='text-xs text-terra-blue/70'>Platforms Online</div>
+      {error && (
+        <Card className='terra-glass border-yellow-500/30 mb-8'>
+          <CardBody className='p-6'>
+            <div className='text-yellow-300 font-semibold'>Command center evidence unavailable</div>
+            <div className='text-sm text-gray-300 mt-2'>{error}</div>
           </CardBody>
         </Card>
+      )}
 
-        <Card className='terra-glass border-terra-cyan/20 text-center'>
-          <CardBody className='p-4'>
-            <div className='text-2xl font-bold text-green-400'>
-              {formatNumber(systemOverview.activeAgents)}
-            </div>
-            <div className='text-xs text-terra-blue/70'>Active AI Agents</div>
-          </CardBody>
-        </Card>
+      {health && (
+        <>
+          <div className='grid grid-cols-1 md:grid-cols-4 gap-4 mb-8'>
+            <Card className='terra-glass border-terra-cyan/20 text-center'>
+              <CardBody className='p-4'>
+                <Badge className={statusClass(health.status)}>{health.status.toUpperCase()}</Badge>
+                <div className='text-sm text-gray-400 mt-3'>System Status</div>
+              </CardBody>
+            </Card>
 
-        <Card className='terra-glass border-terra-cyan/20 text-center'>
-          <CardBody className='p-4'>
-            <div className='text-2xl font-bold text-blue-400'>
-              {systemOverview.averagePerformance.toFixed(1)}%
-            </div>
-            <div className='text-xs text-terra-blue/70'>Avg Performance</div>
-          </CardBody>
-        </Card>
+            <Card className='terra-glass border-terra-cyan/20 text-center'>
+              <CardBody className='p-4'>
+                <div className='text-2xl font-bold text-terra-cyan'>
+                  {activeModules}/{totalModules}
+                </div>
+                <Progress value={moduleProgress} className='mt-3' />
+                <div className='text-sm text-gray-400 mt-3'>Active Modules</div>
+              </CardBody>
+            </Card>
 
-        <Card className='terra-glass border-terra-cyan/20 text-center'>
-          <CardBody className='p-4'>
-            <div className='text-2xl font-bold text-purple-400'>
-              {systemOverview.systemUptime.toFixed(2)}%
-            </div>
-            <div className='text-xs text-terra-blue/70'>System Uptime</div>
-          </CardBody>
-        </Card>
+            <Card className='terra-glass border-terra-cyan/20 text-center'>
+              <CardBody className='p-4'>
+                <div className='text-2xl font-bold text-terra-cyan'>
+                  {health.healthyModules}/{health.moduleCount}
+                </div>
+                <div className='text-sm text-gray-400 mt-3'>Healthy Modules</div>
+              </CardBody>
+            </Card>
 
-        <Card className='terra-glass border-terra-cyan/20 text-center'>
-          <CardBody className='p-4'>
-            <div className='text-2xl font-bold text-orange-400'>
-              {formatNumber(systemOverview.totalThroughput)}
-            </div>
-            <div className='text-xs text-terra-blue/70'>Ops/Second</div>
-          </CardBody>
-        </Card>
-
-        <Card className='terra-glass border-terra-cyan/20 text-center'>
-          <CardBody className='p-4'>
-            <div className='text-2xl font-bold text-pink-400'>
-              {systemOverview.averageLatency.toFixed(1)}ms
-            </div>
-            <div className='text-xs text-terra-blue/70'>Avg Latency</div>
-          </CardBody>
-        </Card>
-      </div>
-
-      {/* Live System Metrics */}
-      <Card className='terra-glass border-terra-cyan/20 mb-8'>
-        <CardHeader>
-          <h2 className='text-2xl font-semibold text-terra-cyan flex items-center gap-3'>
-            <TerraSphere size='sm' variant='pulse' />
-            Live System Metrics - Real-Time Government OS Performance
-          </h2>
-        </CardHeader>
-        <CardBody>
-          <div className='grid grid-cols-2 md:grid-cols-4 gap-6'>
-            <div>
-              <div className='flex justify-between text-sm mb-2'>
-                <span className='text-terra-blue/70'>CPU Usage</span>
-                <span className='text-orange-400'>{liveMetrics.cpuUsage.toFixed(1)}%</span>
-              </div>
-              <Progress value={liveMetrics.cpuUsage} className='h-3 mb-1' />
-              <div className='text-xs text-terra-blue/50'>Elite Performance Range</div>
-            </div>
-
-            <div>
-              <div className='flex justify-between text-sm mb-2'>
-                <span className='text-terra-blue/70'>Memory Usage</span>
-                <span className='text-purple-400'>{liveMetrics.memoryUsage.toFixed(1)}%</span>
-              </div>
-              <Progress value={liveMetrics.memoryUsage} className='h-3 mb-1' />
-              <div className='text-xs text-terra-blue/50'>Quantum Optimized</div>
-            </div>
-
-            <div>
-              <div className='flex justify-between text-sm mb-2'>
-                <span className='text-terra-blue/70'>Network Throughput</span>
-                <span className='text-green-400'>
-                  {liveMetrics.networkThroughput.toFixed(1)} MB/s
-                </span>
-              </div>
-              <Progress
-                value={Math.min(100, (liveMetrics.networkThroughput / 2000) * 100)}
-                className='h-3 mb-1'
-              />
-              <div className='text-xs text-terra-blue/50'>Government Grade</div>
-            </div>
-
-            <div>
-              <div className='flex justify-between text-sm mb-2'>
-                <span className='text-terra-blue/70'>Quantum Processing</span>
-                <span className='text-terra-cyan'>{liveMetrics.quantumProcessing.toFixed(1)}%</span>
-              </div>
-              <Progress value={liveMetrics.quantumProcessing} className='h-3 mb-1' />
-              <div className='text-xs text-terra-blue/50'>Consciousness Enhanced</div>
-            </div>
+            <Card className='terra-glass border-terra-cyan/20 text-center'>
+              <CardBody className='p-4'>
+                <div className='text-2xl font-bold text-terra-cyan'>
+                  {unhealthyComponents.length}
+                </div>
+                <div className='text-sm text-gray-400 mt-3'>Unhealthy Components</div>
+              </CardBody>
+            </Card>
           </div>
 
-          <div className='mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-center'>
-            <div>
-              <div className='text-lg font-bold text-blue-400'>
-                {formatNumber(liveMetrics.activeConnections)}
-              </div>
-              <div className='text-xs text-terra-blue/70'>Active Connections</div>
-            </div>
-            <div>
-              <div className='text-lg font-bold text-green-400'>
-                {formatNumber(liveMetrics.requestsPerSecond)}/s
-              </div>
-              <div className='text-xs text-terra-blue/70'>Requests</div>
-            </div>
-            <div>
-              <div className='text-lg font-bold text-purple-400'>
-                {liveMetrics.responseTime.toFixed(1)}ms
-              </div>
-              <div className='text-xs text-terra-blue/70'>Response Time</div>
-            </div>
-            <div>
-              <div className='text-lg font-bold text-orange-400'>
-                {(liveMetrics.errorRate * 100).toFixed(3)}%
-              </div>
-              <div className='text-xs text-terra-blue/70'>Error Rate</div>
-            </div>
-          </div>
-        </CardBody>
-      </Card>
-
-      {/* Platform Status Grid */}
-      <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8'>
-        {platforms.map((platform) => (
-          <Card key={platform.id} className='terra-glass border-terra-cyan/20'>
-            <CardHeader className='pb-3'>
-              <div className='flex justify-between items-start'>
-                <div>
-                  <div className='flex items-center gap-3 mb-2'>
-                    <span className='text-2xl'>{platform.emoji}</span>
-                    <h3 className='text-lg font-semibold text-terra-cyan'>{platform.name}</h3>
-                  </div>
-                  <div className='flex gap-2 mb-2'>
-                    <Badge className={getStatusColor(platform.status)} variant='secondary'>
-                      {platform.status}
-                    </Badge>
-                    {platform.quantumEnhanced && (
-                      <Badge
-                        className='bg-terra-cyan/20 text-terra-cyan border-terra-cyan/30'
-                        variant='outline'
+          <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+            <Card className='terra-glass border-terra-cyan/20'>
+              <CardHeader>
+                <h2 className='text-2xl font-bold text-terra-cyan'>Component Health</h2>
+              </CardHeader>
+              <CardBody className='p-6'>
+                {componentEntries.length === 0 ? (
+                  <div className='text-gray-400'>No component-level evidence returned.</div>
+                ) : (
+                  <div className='space-y-3'>
+                    {componentEntries.map(([component, isHealthy]) => (
+                      <div
+                        key={component}
+                        className='flex items-center justify-between p-3 bg-terra-midnight/40 rounded-lg'
                       >
-                        QUANTUM
-                      </Badge>
-                    )}
+                        <span className='text-white'>{component}</span>
+                        <Badge className={isHealthy ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}>
+                          {isHealthy ? 'Healthy' : 'Unhealthy'}
+                        </Badge>
+                      </div>
+                    ))}
                   </div>
-                </div>
-                <div className='text-right text-sm'>
-                  <div className='text-terra-blue/70'>View Mode</div>
-                  <div className='text-terra-cyan font-mono text-xs'>{platform.viewMode}</div>
-                </div>
-              </div>
-            </CardHeader>
-            <CardBody className='space-y-4'>
-              <div>
-                <div className='flex justify-between text-sm mb-1'>
-                  <span className='text-terra-blue/70'>Performance Score</span>
-                  <span className='text-terra-cyan'>{platform.performance.toFixed(1)}%</span>
-                </div>
-                <Progress value={platform.performance} className='h-3' />
-              </div>
+                )}
+              </CardBody>
+            </Card>
 
-              <div className='grid grid-cols-3 gap-3 text-center text-sm'>
-                <div>
-                  <div className='text-terra-blue/70'>Agents</div>
-                  <div className='text-lg font-semibold text-green-400'>
-                    {formatNumber(platform.agents)}
+            <Card className='terra-glass border-terra-cyan/20'>
+              <CardHeader>
+                <h2 className='text-2xl font-bold text-terra-cyan'>Warnings</h2>
+              </CardHeader>
+              <CardBody className='p-6'>
+                {health.warnings.length === 0 ? (
+                  <div className='text-gray-400'>No warnings returned by the health endpoint.</div>
+                ) : (
+                  <div className='space-y-3'>
+                    {health.warnings.map((warning, index) => (
+                      <div
+                        key={`${warning}-${index}`}
+                        className='p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-200'
+                      >
+                        {warning}
+                      </div>
+                    ))}
                   </div>
-                </div>
-                <div>
-                  <div className='text-terra-blue/70'>Throughput</div>
-                  <div className='text-lg font-semibold text-blue-400'>
-                    {formatNumber(platform.throughput)}/s
-                  </div>
-                </div>
-                <div>
-                  <div className='text-terra-blue/70'>Latency</div>
-                  <div className='text-lg font-semibold text-purple-400'>
-                    {platform.latency.toFixed(1)}ms
-                  </div>
-                </div>
-              </div>
+                )}
+              </CardBody>
+            </Card>
+          </div>
+        </>
+      )}
 
-              <div>
-                <div className='text-terra-blue/70 text-xs mb-2'>Key Features:</div>
-                <div className='flex flex-wrap gap-1'>
-                  {platform.keyFeatures.map((feature, index) => (
-                    <Badge key={index} variant='outline' className='text-xs terra-glass'>
-                      {feature}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-        ))}
+      <div className='mt-8 flex justify-center gap-3'>
+        <Button onClick={() => void loadHealth()} variant='outline'>
+          Refresh Evidence
+        </Button>
+        <div className='text-xs text-gray-500 self-center'>
+          Last updated: {lastUpdated ? lastUpdated.toLocaleString() : 'not available'}
+        </div>
       </div>
-
-      {/* Elite System Status Footer */}
-      <Card className='terra-glass border-terra-cyan/20'>
-        <CardBody className='text-center py-6'>
-          <div className='flex items-center justify-center gap-4 mb-4'>
-            <TerraSphere size='md' variant='quantum' />
-            <div>
-              <div className='text-2xl font-bold text-terra-cyan'>🏛️ THE TERRAFUSION WAY 🏛️</div>
-              <div className='text-terra-blue'>
-                Elite Government Technology Platform - Operational Excellence Achieved
-              </div>
-            </div>
-          </div>
-
-          <div className='flex justify-center gap-6 text-sm'>
-            <div className='text-center'>
-              <div className='text-terra-cyan font-bold'>Development Server</div>
-              <div className='text-terra-blue'>http://localhost:5175/</div>
-            </div>
-            <div className='text-center'>
-              <div className='text-terra-cyan font-bold'>System Status</div>
-              <div className='text-green-400'>All Systems Operational</div>
-            </div>
-            <div className='text-center'>
-              <div className='text-terra-cyan font-bold'>Mission Status</div>
-              <div className='text-terra-cyan'>GOVERNMENT. TRANSCENDED.</div>
-            </div>
-          </div>
-
-          <div className='mt-6'>
-            <Button className='bg-terra-cyan text-terra-midnight hover:bg-terra-cyan/80 px-8 py-3'>
-              <TerraSphere size='sm' variant='pulse' className='mr-2' />
-              Access Elite Government OS
-            </Button>
-          </div>
-        </CardBody>
-      </Card>
     </div>
   );
 };

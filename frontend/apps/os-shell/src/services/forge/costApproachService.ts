@@ -29,7 +29,7 @@ export interface CostSchedule {
   regionFactor: number;
   /** Depreciation schedule */
   depreciationTable: DepreciationEntry[];
-  /** Source system (e.g. 'Harris PACS 9.0') */
+  /** Source system (e.g. 'County Assessment Source') */
   sourceSystem: string;
 }
 

@@ -78,24 +78,29 @@ describe('useParcelSearch', () => {
       expect(mockSearch).not.toHaveBeenCalled();
     });
 
-    it('does not search when query is all digits (handled by existing shortcut)', async () => {
+    it('searches when query is all digits (partial parcel number search)', async () => {
+      // Contract update: all-digit queries ARE valid — they search for partial
+      // parcel numbers (e.g. "11422"). Exact full-parcel navigation is handled
+      // by the Enter key in WorkbenchStartScene, not by gating here.
+      mockSearch.mockResolvedValue(SAMPLE_RESULTS);
       renderHook(() => useParcelSearch('123456', true));
       await act(async () => { vi.advanceTimersByTime(500); });
-      expect(mockSearch).not.toHaveBeenCalled();
+      expect(mockSearch).toHaveBeenCalledWith({ text: '123456', pageSize: 15 });
     });
 
     it('does search when query is 3+ non-digit characters', async () => {
       mockSearch.mockResolvedValue(SAMPLE_RESULTS);
       renderHook(() => useParcelSearch('Main', true));
       await act(async () => { vi.advanceTimersByTime(500); });
-      expect(mockSearch).toHaveBeenCalledWith({ text: 'Main', pageSize: 5 });
+      // PAGE_SIZE constant is 15 in the hook.
+      expect(mockSearch).toHaveBeenCalledWith({ text: 'Main', pageSize: 15 });
     });
 
     it('searches for mixed alphanumeric queries', async () => {
       mockSearch.mockResolvedValue(SAMPLE_RESULTS);
       renderHook(() => useParcelSearch('123 Main', true));
       await act(async () => { vi.advanceTimersByTime(500); });
-      expect(mockSearch).toHaveBeenCalledWith({ text: '123 Main', pageSize: 5 });
+      expect(mockSearch).toHaveBeenCalledWith({ text: '123 Main', pageSize: 15 });
     });
   });
 

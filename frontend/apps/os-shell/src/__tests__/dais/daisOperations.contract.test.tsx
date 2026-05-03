@@ -71,6 +71,53 @@ vi.mock('@/components/ui/button', () => ({
   ),
 }));
 
+vi.mock('../../api/pilotApi', () => ({
+  invokeTool: vi.fn(async ({ toolId }: { toolId: string }) => {
+    if (toolId === 'open_appeal_packet') {
+      return {
+        success: true,
+        correlationId: 'corr-packet-001',
+        result: {
+          output: JSON.stringify({
+            appealId: 'P-123',
+            packetRef: 'packet:P-123',
+            payloadRef: 'payload:P-123',
+            sections: ['summary', 'evidence'],
+            chainOfCustody: ['entry-1'],
+          }),
+        },
+      };
+    }
+
+    if (toolId === 'draft_appeal_response') {
+      return {
+        success: true,
+        correlationId: 'corr-draft-001',
+        result: {
+          output: JSON.stringify({
+            draftSummary: 'Narrative ready for board review.',
+            payloadRef: 'payload:P-123',
+          }),
+        },
+      };
+    }
+
+    if (toolId === 'assemble_boe_packet') {
+      return {
+        success: true,
+        correlationId: 'corr-assemble-001',
+        result: { output: 'assembled' },
+      };
+    }
+
+    return {
+      success: false,
+      correlationId: 'corr-error-001',
+      error: { message: 'Unexpected tool' },
+    };
+  }),
+}));
+
 // ---------------------------------------------------------------------------
 // Mocks — daisService (getCertificationStatus)
 // ---------------------------------------------------------------------------
@@ -123,6 +170,61 @@ vi.mock('@/services/fieldStore', () => ({
     getByParcel: vi.fn().mockResolvedValue([]),
   },
   FieldStore: vi.fn(),
+}));
+
+vi.mock('@/services/fieldStoreV2', () => ({
+  getAssignments: vi.fn().mockResolvedValue([
+    {
+      id: 'assignment-1',
+      parcelId: 'P-123',
+      parcelNumber: 'P-123',
+      address: '123 Benton Ave',
+      city: 'Richland',
+      latitude: 46.28,
+      longitude: -119.27,
+      currentValue: 425000,
+      propertyClass: 'Residential',
+      priority: 'routine',
+      status: 'assigned',
+      assignedAt: '2026-04-15T16:00:00.000Z',
+      inspectedAt: null,
+      notes: null,
+    },
+  ]),
+  saveAssignments: vi.fn().mockResolvedValue(undefined),
+  addObservation: vi.fn().mockResolvedValue('observation-1'),
+  getObservations: vi.fn().mockResolvedValue([]),
+  updateAssignmentStatus: vi.fn().mockResolvedValue(undefined),
+  getQueueStats: vi.fn().mockResolvedValue({ pending: 0, synced: 0, error: 0, total: 0 }),
+}));
+
+vi.mock('@/hooks/useFieldSync', () => ({
+  useFieldSync: vi.fn(() => ({
+    isOnline: true,
+    isSyncing: false,
+    lastSyncResult: null,
+    lastSyncAt: null,
+    progress: null,
+    queueStats: { pending: 0, synced: 0, error: 0, total: 0 },
+    syncNow: vi.fn().mockResolvedValue({ synced: 0, errors: 0, conflicts: 0, retried: 0 }),
+    refresh: vi.fn().mockResolvedValue(undefined),
+  })),
+}));
+
+vi.mock('../../components/field/InspectionPanel', () => ({
+  InspectionPanel: () => <div data-testid="inspection-panel">Inspection panel</div>,
+}));
+
+vi.mock('../../components/field/SyncStatusBanner', () => ({
+  SyncStatusBanner: () => <div data-testid="field-sync-banner">Sync banner</div>,
+}));
+
+vi.mock('../../components/field/PreVisitBriefingPanel', () => ({
+  PreVisitBriefingPanel: () => <div data-testid="pre-visit-briefing">Briefing</div>,
+}));
+
+vi.mock('../../components/field/PostInspectionReview', () => ({
+  PostInspectionReview: () => <div data-testid="post-inspection-review">Review</div>,
 }));
 
 // ---------------------------------------------------------------------------
@@ -180,6 +282,11 @@ describe('Phase 9: Dais Operations Contract', () => {
     it('no light-mode classes in rendered output', () => {
       const { container } = render(<DefensePacket />);
       assertNoLightModeClasses(container);
+    });
+
+    it('renders governed packet readiness panel', () => {
+      render(<DefensePacket />);
+      expect(screen.getByTestId('defense-packet-governed-brief')).toBeInTheDocument();
     });
   });
 

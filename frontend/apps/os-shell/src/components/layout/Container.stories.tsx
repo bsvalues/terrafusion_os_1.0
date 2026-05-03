@@ -284,7 +284,7 @@ export const PaddingVariants: Story = {
 
 /**
  * Story 4: Nested Containers
- * Demonstration of container nesting patterns
+ * Example of container nesting patterns
  */
 export const NestedContainers: Story = {
   render: () => (

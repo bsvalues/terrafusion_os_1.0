@@ -9,6 +9,7 @@
 
 import { assertWriteLane } from '../writeLane';
 import { emitTraceEvent } from '../terraTrace';
+import { createStableId } from '../../utils/stableId';
 
 // ============================================================================
 // Types
@@ -71,7 +72,7 @@ export interface CertificationReadinessResult {
 // ============================================================================
 
 function generateOutcomeId(): string {
-  return `OUT-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return createStableId('OUT');
 }
 
 // ============================================================================

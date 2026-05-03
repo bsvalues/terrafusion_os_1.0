@@ -12,6 +12,7 @@
 
 import { Component, ErrorInfo as ReactErrorInfo, ReactNode } from 'react';
 import { ErrorInfo } from '../../hooks/useErrorHandler';
+import { createStableId } from '../../utils/stableId';
 import { ErrorDisplay } from './ErrorDisplay';
 
 interface ErrorBoundaryProps {
@@ -44,16 +45,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
-    const timestamp = Date.now().toString(36);
-    const random = Math.random().toString(36).substring(2, 9);
     return {
       hasError: true,
       errorInfo: {
         message: error.message || 'An unexpected error occurred',
         stack: error.stack,
         timestamp: new Date().toISOString(),
-        errorId: `boundary-${Date.now()}`,
-        correlationId: `ebnd-${timestamp}-${random}`,
+        errorId: createStableId('boundary'),
+        correlationId: createStableId('ebnd'),
         context: {
           errorCode: 'REACT_RENDER_ERROR',
           component: 'ErrorBoundary',
@@ -71,7 +70,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       stack: error.stack,
       componentStack: errorInfo.componentStack,
       timestamp: new Date().toISOString(),
-      errorId: `boundary-${Date.now()}`,
+      errorId: createStableId('boundary'),
       correlationId,
       context: {
         errorCode: 'REACT_RENDER_ERROR',
@@ -101,13 +100,17 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   /**
-   * Generate correlationId for error tracking
-   * Format: ebnd-<timestamp>-<random>
+   * Generate correlationId for error tracking.
+   * Format: ebnd-<timestamp36>-<random36> (matches /^ebnd-[a-z0-9]+-[a-z0-9]+$/).
+   * Hyphenated UUIDs are flattened so the id stays 2-segment for downstream
+   * trace consumers that key off `correlationId.split('-')`.
    */
   private generateCorrelationId(): string {
-    const timestamp = Date.now().toString(36);
-    const random = Math.random().toString(36).substring(2, 9);
-    return `ebnd-${timestamp}-${random}`;
+    const ts = Date.now().toString(36);
+    const rand = (globalThis.crypto?.randomUUID?.() ?? '')
+      .replace(/-/g, '')
+      .slice(0, 12) || Math.random().toString(36).slice(2, 14);
+    return `ebnd-${ts}-${rand}`;
   }
 
   /**

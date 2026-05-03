@@ -11,7 +11,13 @@ import React from 'react';
 import { MuseChat } from './MuseChat';
 
 export function PilotHome(): React.ReactElement {
-  return <MuseChat />;
+  // Phase 25 landmark: stable testid lets DesktopRouteLandmarkContract /
+  // DesktopDeepLinkContract verify that /pilot mounts non-empty content.
+  return (
+    <div data-testid='pilot-console-content' style={{ width: '100%', height: '100%' }}>
+      <MuseChat />
+    </div>
+  );
 }
 
 export default PilotHome;

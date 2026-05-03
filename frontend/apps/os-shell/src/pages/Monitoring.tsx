@@ -1,21 +1,31 @@
 /**
- * 📊 Terrafusion OS 1.0 - Monitoring Page
- * Real-time monitoring and control interface for the AI Swarm
+ * Monitoring route guardrail.
+ * This page remains mounted so legacy links do not imply live swarm telemetry.
  */
 
 import React from 'react';
-import { Container, Typography, Grid, Paper, Box } from '@mui/material';
+import { Alert, Container, Typography, Grid, Paper, Box } from '@mui/material';
 import AISwarmDashboard from '../components/dashboard/AISwarmDashboard';
 
 const Monitoring: React.FC = () => {
   return (
     <Container maxWidth='xl' sx={{ mt: 4, mb: 4 }}>
-      <Box sx={{ mb: 4 }}>
+      <Box sx={{ mb: 4 }} data-testid='monitoring-governed-unavailable'>
         <Typography variant='h3' component='h1' gutterBottom>
-          🤖 Terrafusion AI Swarm Workspace Monitor
+          AI Swarm Telemetry Guardrail
         </Typography>
         <Typography variant='h6' color='text.secondary'>
-          Workspace simulation of swarm telemetry and control patterns, not live county agent telemetry
+          No governed county agent telemetry feed is attached to this route.
+        </Typography>
+        <Alert severity='warning' sx={{ mt: 2 }}>
+          This legacy monitoring page is retained only as a guardrail. It does not display live
+          county agent counts, live task throughput, or live health telemetry.
+        </Alert>
+      </Box>
+
+      <Box sx={{ mb: 2 }}>
+        <Typography variant='subtitle1' color='text.secondary'>
+          Governed telemetry unavailable
         </Typography>
       </Box>
 

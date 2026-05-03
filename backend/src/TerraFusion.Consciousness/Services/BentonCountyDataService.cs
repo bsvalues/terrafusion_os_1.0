@@ -12,12 +12,21 @@ namespace TerraFusion.Consciousness.Services
 {
     /// <summary>
     /// Benton County Data Service
-    /// PRODUCTION-READY integration with real Benton County government systems
-    /// Replacing mock data with actual property assessment, citizen services, and emergency response data
-    /// THE TERRAFUSION WAY - Government. Transcended.
+    /// Partial Benton County integration host.
+    /// Property assessment reads governed Benton data; citizen services, emergency response,
+    /// and cross-source sync remain unavailable until backed by real entities and pipelines.
     /// </summary>
     public class BentonCountyDataService : IBentonCountyDataService
     {
+        private const string PartialServiceReason =
+            "Governed Benton County service is partial: property assessment read lane available; citizen services, emergency response, and cross-source sync unavailable.";
+        private const string CitizenServicesUnavailableReason =
+            "Governed Benton citizen-services lane unavailable; no backed entity or source pipeline exists.";
+        private const string EmergencyResponseUnavailableReason =
+            "Governed Benton emergency-response lane unavailable; no backed entity or source pipeline exists.";
+        private const string SyncUnavailableReason =
+            "Governed Benton cross-source sync unavailable; no end-to-end source pipeline exists.";
+
         private readonly ILogger<BentonCountyDataService> _logger;
         private readonly IConfiguration _configuration;
         private readonly TerraFusionContext _context;
@@ -67,17 +76,15 @@ namespace TerraFusion.Consciousness.Services
         public async Task<BentonCountyInitializationResultDto> InitializeAsync()
         {
             var stopwatch = Stopwatch.StartNew();
-            _logger.LogInformation("🏛️⚡ Initializing Benton County Data Integration - THE TERRAFUSION WAY!");
+            _logger.LogInformation("Initializing Benton County data service in governed partial mode.");
 
             try
             {
                 var initializationTasks = new List<Task>
                 {
-                    ValidateApiConnectionsAsync(),
                     ValidateDatabaseConnectionAsync(),
                     InitializeDataSourceMappingsAsync(),
-                    CreateIndexesForOptimalPerformanceAsync(),
-                    PerformInitialDataSyncAsync()
+                    CreateIndexesForOptimalPerformanceAsync()
                 };
 
                 await Task.WhenAll(initializationTasks);
@@ -88,21 +95,21 @@ namespace TerraFusion.Consciousness.Services
                 var result = new BentonCountyInitializationResultDto
                 {
                     Success = true,
-                    ConnectionStatus = "Connected to all Benton County data sources",
+                    ConnectionStatus = "Partial",
                     LastSync = DateTime.UtcNow,
-                    AvailableDataSources = _dataSourceEndpoints.Count,
+                    AvailableDataSources = 1,
                     InitializationMessages = new List<string>
                     {
-                        "🏛️ Benton County API connection established",
-                        "🗄️ Database connection validated",
-                        "📊 Data source mappings initialized",
-                        "⚡ Performance indexes created",
-                        "🔄 Initial data sync completed",
-                        "🎯 REAL government data now powering quantum consciousness!"
+                        "Benton property assessment database connection validated.",
+                        "Compatibility mappings initialized for the Benton host.",
+                        "Property assessment read lane available.",
+                        CitizenServicesUnavailableReason,
+                        EmergencyResponseUnavailableReason,
+                        SyncUnavailableReason
                     }
                 };
 
-                _logger.LogInformation("🎉 Benton County integration successful in {ElapsedMs}ms - Government. Transcended!",
+                _logger.LogInformation("Benton County data service initialized in partial mode in {ElapsedMs}ms.",
                     stopwatch.ElapsedMilliseconds);
 
                 return result;
@@ -238,270 +245,65 @@ namespace TerraFusion.Consciousness.Services
         public async Task<CitizenServicesDataDto> GetCitizenServicesDataAsync(CitizenServicesRequestDto request)
         {
             await Task.CompletedTask;
-            await Task.CompletedTask;
             EnsureInitialized();
+            _logger.LogWarning(CitizenServicesUnavailableReason);
 
-            _logger.LogInformation("👥 Retrieving citizen services data for Benton County: {Request}",
-                System.Text.Json.JsonSerializer.Serialize(request));
-
-            var stopwatch = Stopwatch.StartNew();
-
-            try
+            return new CitizenServicesDataDto
             {
-                // TODO: CitizenServices DbSet not yet implemented in TerraFusionContext
-                // Using mock data approach until CitizenServices entity is implemented
-                var mockServices = new List<object>
+                ServiceRecords = new List<CitizenServiceRecord>(),
+                TotalRecords = 0,
+                DataAsOf = DateTime.UtcNow,
+                ServiceMetrics = new Dictionary<string, object>
                 {
-                    new {
-                        ServiceId = Guid.NewGuid().ToString(),
-                        ServiceType = request.ServiceType ?? "Property Assessment",
-                        CitizenId = request.CitizenId ?? "MOCK001",
-                        RequestDate = request.RequestDate ?? DateTime.UtcNow,
-                        Status = "Active",
-                        Description = "Mock citizen service request"
-                    }
-                };
-
-                // Apply basic filtering on mock data
-                var filteredServices = mockServices.Where(s =>
-                    (string.IsNullOrEmpty(request.ServiceType) ||
-                     ((dynamic)s).ServiceType.ToString().Contains(request.ServiceType, StringComparison.OrdinalIgnoreCase)) &&
-                    (string.IsNullOrEmpty(request.CitizenId) ||
-                     ((dynamic)s).CitizenId == request.CitizenId) &&
-                    (!request.RequestDate.HasValue ||
-                     ((DateTime)((dynamic)s).RequestDate).Date == request.RequestDate.Value.Date)
-                ).ToList();
-
-                var serviceRecords = filteredServices.Select(s => new CitizenServiceRecord
-                {
-                    ServiceId = ((dynamic)s).ServiceId,
-                    ServiceType = ((dynamic)s).ServiceType,
-                    Status = ((dynamic)s).Status,
-                    RequestDate = ((dynamic)s).RequestDate,
-                    CompletionDate = null, // Mock data doesn't have completion date
-                    ServiceData = new Dictionary<string, object>
-                    {
-                        { "County", "Benton" },
-                        { "State", "Washington" },
-                        { "CitizenId", ((dynamic)s).CitizenId },
-                        { "Department", "General Services" },
-                        { "Priority", "Normal" },
-                        { "EstimatedCompletion", DateTime.UtcNow.AddDays(7) },
-                        { "ServiceFee", 0.0 },
-                        { "Description", ((dynamic)s).Description }
-                    }
-                }).ToList();
-
-                stopwatch.Stop();
-
-                var result = new CitizenServicesDataDto
-                {
-                    ServiceRecords = serviceRecords,
-                    TotalRecords = serviceRecords.Count,
-                    DataAsOf = DateTime.UtcNow,
-                    ServiceMetrics = new Dictionary<string, object>
-                    {
-                        { "QueryTimeMs", stopwatch.ElapsedMilliseconds },
-                        { "ServiceTypes", serviceRecords.GroupBy(s => s.ServiceType).ToDictionary(g => g.Key, g => g.Count()) },
-                        { "StatusDistribution", serviceRecords.GroupBy(s => s.Status).ToDictionary(g => g.Key, g => g.Count()) },
-                        { "CompletionRate", serviceRecords.Count(s => s.CompletionDate.HasValue) / (double)Math.Max(1, serviceRecords.Count) },
-                        { "AverageProcessingDays", CalculateAverageProcessingDays(serviceRecords) }
-                    }
-                };
-
-                _logger.LogInformation("👥✅ Retrieved {Count} citizen service records in {ElapsedMs}ms",
-                    serviceRecords.Count, stopwatch.ElapsedMilliseconds);
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Failed to retrieve citizen services data");
-                throw;
-            }
+                    { "GovernedContractAvailable", false },
+                    { "Reason", CitizenServicesUnavailableReason },
+                    { "QueryTimeMs", 0L }
+                }
+            };
         }
 
         public async Task<EmergencyResponseDataDto> GetEmergencyResponseDataAsync(EmergencyDataRequestDto request)
         {
             await Task.CompletedTask;
-            await Task.CompletedTask;
             EnsureInitialized();
+            _logger.LogWarning(EmergencyResponseUnavailableReason);
 
-            _logger.LogInformation("🚨 Retrieving emergency response data for Benton County: {Request}",
-                System.Text.Json.JsonSerializer.Serialize(request));
-
-            var stopwatch = Stopwatch.StartNew();
-
-            try
+            return new EmergencyResponseDataDto
             {
-                // TODO: EmergencyRecords DbSet not yet implemented in TerraFusionContext
-                // Using mock data approach until EmergencyRecords entity is implemented
-                var mockEmergencies = new List<object>
+                EmergencyRecords = new List<EmergencyRecord>(),
+                TotalRecords = 0,
+                DataAsOf = DateTime.UtcNow,
+                EmergencyMetrics = new Dictionary<string, object>
                 {
-                    new {
-                        IncidentId = Guid.NewGuid().ToString(),
-                        EmergencyType = request.EmergencyType ?? "Property Emergency",
-                        Severity = request.Severity ?? "Medium",
-                        OccurredAt = request.StartDate ?? DateTime.UtcNow.AddDays(-1),
-                        Status = "Active",
-                        Location = "Benton County, WA",
-                        Description = "Mock emergency response record"
-                    }
-                };
-
-                // Apply basic filtering on mock data
-                var filteredEmergencies = mockEmergencies.Where(e =>
-                    (string.IsNullOrEmpty(request.EmergencyType) ||
-                     ((dynamic)e).EmergencyType.ToString().Contains(request.EmergencyType, StringComparison.OrdinalIgnoreCase)) &&
-                    (string.IsNullOrEmpty(request.Severity) ||
-                     ((dynamic)e).Severity == request.Severity) &&
-                    (!request.StartDate.HasValue ||
-                     ((DateTime)((dynamic)e).OccurredAt) >= request.StartDate.Value) &&
-                    (!request.EndDate.HasValue ||
-                     ((DateTime)((dynamic)e).OccurredAt) <= request.EndDate.Value)
-                ).ToList();
-
-                var emergencyRecords = filteredEmergencies.Select(e => new EmergencyRecord
-                {
-                    EmergencyId = ((dynamic)e).IncidentId,
-                    EmergencyType = ((dynamic)e).EmergencyType,
-                    Severity = ((dynamic)e).Severity,
-                    OccurredAt = ((dynamic)e).OccurredAt,
-                    ResolvedAt = null, // Mock data - not yet resolved
-                    Status = ((dynamic)e).Status,
-                    EmergencyDetails = new Dictionary<string, object>
-                    {
-                        { "County", "Benton" },
-                        { "State", "Washington" },
-                        { "Location", ((dynamic)e).Location },
-                        { "ResponseTime", TimeSpan.FromMinutes(15) }, // Mock response time
-                        { "UnitsDispatched", 2 }, // Mock units dispatched
-                        { "Description", ((dynamic)e).Description },
-                        { "RespondingAgencies", "Benton County Emergency Services" },
-                        { "Casualties", 0 }, // Mock - no casualties
-                        { "PropertyDamage", 0.0 } // Mock - no property damage
-                    }
-                }).ToList();
-
-                stopwatch.Stop();
-
-                var result = new EmergencyResponseDataDto
-                {
-                    EmergencyRecords = emergencyRecords,
-                    TotalRecords = emergencyRecords.Count,
-                    DataAsOf = DateTime.UtcNow,
-                    EmergencyMetrics = new Dictionary<string, object>
-                    {
-                        { "QueryTimeMs", stopwatch.ElapsedMilliseconds },
-                        { "EmergencyTypes", emergencyRecords.GroupBy(e => e.EmergencyType).ToDictionary(g => g.Key, g => g.Count()) },
-                        { "SeverityDistribution", emergencyRecords.GroupBy(e => e.Severity).ToDictionary(g => g.Key, g => g.Count()) },
-                        { "ResolutionRate", emergencyRecords.Count(e => e.ResolvedAt.HasValue) / (double)Math.Max(1, emergencyRecords.Count) },
-                        { "AverageResponseTimeMinutes", CalculateAverageResponseTime(emergencyRecords) }
-                    }
-                };
-
-                _logger.LogInformation("🚨✅ Retrieved {Count} emergency response records in {ElapsedMs}ms",
-                    emergencyRecords.Count, stopwatch.ElapsedMilliseconds);
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Failed to retrieve emergency response data");
-                throw;
-            }
+                    { "GovernedContractAvailable", false },
+                    { "Reason", EmergencyResponseUnavailableReason },
+                    { "QueryTimeMs", 0L }
+                }
+            };
         }
 
         public async Task<BentonCountySyncResultDto> SyncWithBentonCountyAsync()
         {
             EnsureInitialized();
-
-            _logger.LogInformation("🔄 Starting comprehensive data sync with Benton County systems - THE TERRAFUSION WAY!");
-
-            var stopwatch = Stopwatch.StartNew();
+            _logger.LogWarning(SyncUnavailableReason);
             var syncStartTime = DateTime.UtcNow;
-            var recordsSynced = 0;
-            var recordsUpdated = 0;
-            var recordsAdded = 0;
-            var syncMessages = new List<string>();
+            await Task.CompletedTask;
 
-            try
+            return new BentonCountySyncResultDto
             {
-                // Sync all data sources in parallel for maximum efficiency
-                var syncTasks = new List<Task<(string Source, int Synced, int Updated, int Added)>>
+                Success = false,
+                SyncStartTime = syncStartTime,
+                SyncEndTime = DateTime.UtcNow,
+                RecordsSynced = 0,
+                RecordsUpdated = 0,
+                RecordsAdded = 0,
+                SyncMessages = new List<string> { SyncUnavailableReason },
+                SyncMetrics = new Dictionary<string, object>
                 {
-                    SyncPropertyAssessmentsAsync(),
-                    SyncCitizenServicesAsync(),
-                    SyncEmergencyResponseAsync(),
-                    SyncPermitsAndLicensesAsync(),
-                    SyncZoningDataAsync(),
-                    SyncTaxRecordsAsync()
-                };
-
-                var syncResults = await Task.WhenAll(syncTasks);
-
-                foreach (var (source, synced, updated, added) in syncResults)
-                {
-                    recordsSynced += synced;
-                    recordsUpdated += updated;
-                    recordsAdded += added;
-                    syncMessages.Add($"✅ {source}: {synced} synced, {updated} updated, {added} added");
-
-                    // Update last sync time
-                    _lastSyncTimes[source] = DateTime.UtcNow;
+                    { "GovernedContractAvailable", false },
+                    { "Reason", SyncUnavailableReason }
                 }
-
-                // Save changes to database
-                await _context.SaveChangesAsync();
-
-                stopwatch.Stop();
-
-                var result = new BentonCountySyncResultDto
-                {
-                    Success = true,
-                    SyncStartTime = syncStartTime,
-                    SyncEndTime = DateTime.UtcNow,
-                    RecordsSynced = recordsSynced,
-                    RecordsUpdated = recordsUpdated,
-                    RecordsAdded = recordsAdded,
-                    SyncMessages = syncMessages,
-                    SyncMetrics = new Dictionary<string, object>
-                    {
-                        { "TotalSyncTimeMs", stopwatch.ElapsedMilliseconds },
-                        { "SyncedDataSources", syncResults.Length },
-                        { "RecordsPerSecond", recordsSynced / Math.Max(1, stopwatch.Elapsed.TotalSeconds) },
-                        { "LastSyncTimes", _lastSyncTimes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value) },
-                        { "SyncSuccess", true },
-                        { "NextScheduledSync", DateTime.UtcNow.AddHours(1) } // Schedule next sync
-                    }
-                };
-
-                _logger.LogInformation("🎉 Benton County data sync completed successfully! " +
-                    "{RecordsSynced} records synced in {ElapsedMs}ms - Government. Transcended!",
-                    recordsSynced, stopwatch.ElapsedMilliseconds);
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Failed to sync with Benton County systems");
-
-                return new BentonCountySyncResultDto
-                {
-                    Success = false,
-                    SyncStartTime = syncStartTime,
-                    SyncEndTime = DateTime.UtcNow,
-                    RecordsSynced = recordsSynced,
-                    RecordsUpdated = recordsUpdated,
-                    RecordsAdded = recordsAdded,
-                    SyncMessages = new List<string> { $"Sync failed: {ex.Message}" },
-                    SyncMetrics = new Dictionary<string, object>
-                    {
-                        { "Error", ex.Message },
-                        { "PartialSyncTimeMs", stopwatch.ElapsedMilliseconds }
-                    }
-                };
-            }
+            };
         }
 
         #region Private Helper Methods
@@ -592,62 +394,45 @@ namespace TerraFusion.Consciousness.Services
 
         private async Task PerformInitialDataSyncAsync()
         {
-            _logger.LogDebug("🔄 Performing initial data sync...");
-
-            // Perform a lightweight initial sync
-            try
-            {
-                var initialSyncResult = await SyncWithBentonCountyAsync();
-                _logger.LogDebug("✅ Initial data sync completed: {RecordCount} records",
-                    initialSyncResult.RecordsSynced);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "⚠️ Initial data sync encountered issues but will continue");
-            }
+            _logger.LogWarning(SyncUnavailableReason);
+            await Task.CompletedTask;
         }
 
         // Sync methods for each data source
         private async Task<(string Source, int Synced, int Updated, int Added)> SyncPropertyAssessmentsAsync()
         {
-            // Simulate property assessment sync with Benton County
-            await Task.Delay(200);
-            return ("PropertyAssessments", 15420, 892, 156);
+            await Task.CompletedTask;
+            return ("PropertyAssessments", 0, 0, 0);
         }
 
         private async Task<(string Source, int Synced, int Updated, int Added)> SyncCitizenServicesAsync()
         {
-            // Simulate citizen services sync
-            await Task.Delay(150);
-            return ("CitizenServices", 3247, 198, 45);
+            await Task.CompletedTask;
+            return ("CitizenServices", 0, 0, 0);
         }
 
         private async Task<(string Source, int Synced, int Updated, int Added)> SyncEmergencyResponseAsync()
         {
-            // Simulate emergency response sync
-            await Task.Delay(100);
-            return ("EmergencyResponse", 142, 23, 8);
+            await Task.CompletedTask;
+            return ("EmergencyResponse", 0, 0, 0);
         }
 
         private async Task<(string Source, int Synced, int Updated, int Added)> SyncPermitsAndLicensesAsync()
         {
-            // Simulate permits and licenses sync
-            await Task.Delay(180);
-            return ("PermitsLicenses", 2156, 134, 67);
+            await Task.CompletedTask;
+            return ("PermitsLicenses", 0, 0, 0);
         }
 
         private async Task<(string Source, int Synced, int Updated, int Added)> SyncZoningDataAsync()
         {
-            // Simulate zoning data sync
-            await Task.Delay(120);
-            return ("ZoningData", 876, 43, 12);
+            await Task.CompletedTask;
+            return ("ZoningData", 0, 0, 0);
         }
 
         private async Task<(string Source, int Synced, int Updated, int Added)> SyncTaxRecordsAsync()
         {
-            // Simulate tax records sync
-            await Task.Delay(220);
-            return ("TaxRecords", 18932, 1247, 203);
+            await Task.CompletedTask;
+            return ("TaxRecords", 0, 0, 0);
         }
 
         private double CalculateAverageProcessingDays(List<CitizenServiceRecord> records)

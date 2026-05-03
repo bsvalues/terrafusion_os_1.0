@@ -104,7 +104,7 @@ type GPTFormState = {
 
 const MODEL_PROVIDERS = ['OpenAI', 'Anthropic', 'Azure', 'Local'] as const;
 
-const DEFAULT_FORM_STATE: GPTFormState = {
+const EMPTY_FORM_STATE: GPTFormState = {
   name: '',
   displayName: '',
   description: '',
@@ -131,7 +131,7 @@ const DEFAULT_FORM_STATE: GPTFormState = {
 
 function toFormState(gpt?: GPTConfiguration | null): GPTFormState {
   if (!gpt) {
-    return { ...DEFAULT_FORM_STATE };
+    return { ...EMPTY_FORM_STATE };
   }
 
   return {
@@ -271,7 +271,7 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = () 
   const [editorMode, setEditorMode] = useState<EditorMode>('create');
   const [editorOpen, setEditorOpen] = useState(false);
   const [editingGPT, setEditingGPT] = useState<GPTConfiguration | null>(null);
-  const [editorForm, setEditorForm] = useState<GPTFormState>(DEFAULT_FORM_STATE);
+  const [editorForm, setEditorForm] = useState<GPTFormState>(EMPTY_FORM_STATE);
   const [isSaving, setIsSaving] = useState(false);
   const [noticeMessage, setNoticeMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -386,7 +386,7 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = () 
     clearMessages();
     setEditorMode('create');
     setEditingGPT(null);
-    setEditorForm({ ...DEFAULT_FORM_STATE });
+    setEditorForm({ ...EMPTY_FORM_STATE });
     setEditorOpen(true);
   };
 
@@ -831,8 +831,8 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = () 
           <DialogTitle>{editorMode === 'create' ? 'Create GPT' : 'Edit GPT Configuration'}</DialogTitle>
           <DialogDescription>
             {editorMode === 'create'
-              ? 'Create a real GPT configuration on the canonical /api/gpt surface.'
-              : 'Update the live GPT configuration using the canonical /api/gpt/{id} contract.'}
+              ? 'Create a new GPT configuration.'
+              : 'Update the GPT configuration.'}
           </DialogDescription>
         </DialogHeader>
 
@@ -999,7 +999,7 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = () 
             <div className="flex items-center justify-between gap-4">
               <div>
                 <Label htmlFor="gpt-public-switch">Public visibility</Label>
-                <p className="text-xs text-gray-500">Uses the canonical update contract on the GPT record.</p>
+                <p className="text-xs text-gray-500">Controls whether this GPT is visible to other users.</p>
               </div>
               <Switch
                 id="gpt-public-switch"

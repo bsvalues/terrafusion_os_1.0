@@ -171,7 +171,7 @@ Dropdown select menus with search, grouping, and keyboard navigation.
 1. **Default** - Basic select with placeholder
 2. **Grouped** - Options organized into groups with labels
 3. **Scrollable** - Long list of options with scroll behavior
-4. **Disabled** - Disabled state demonstration
+4. **Disabled** - Disabled state example
 5. **WithIcons** - Options with icon prefixes
 6. **Form** - Select within form context
 7. **RealWorldFormSelect** - Country/region selection in form

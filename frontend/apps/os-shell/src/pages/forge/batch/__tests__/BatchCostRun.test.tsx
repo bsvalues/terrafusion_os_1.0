@@ -1,30 +1,32 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { BatchCostRun } from '../BatchCostRun';
 
 describe('BatchCostRun', () => {
-  it('discloses fixture-backed history on first render', () => {
+  it('renders an explicit governed unavailable state instead of demo fixtures', () => {
     render(<BatchCostRun />);
 
-    expect(screen.getByText(/DEMO DATA/i)).toBeInTheDocument();
+    expect(screen.getByTestId('batch-cost-run-unavailable')).toBeInTheDocument();
     expect(
-      screen.getByText(/Batch Cost Run is displaying sample fixtures, not live county data/i)
+      screen.getByText(/Governed batch cost run unavailable/i)
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        'Source: Fixture-backed run history; preview and apply use workspace batch valuation APIs when available'
+        'Source: No governed batch valuation engine is currently wired for this module.'
       )
     ).toBeInTheDocument();
+    expect(screen.queryByText(/DEMO DATA/i)).not.toBeInTheDocument();
   });
 
-  it('uses preview and applied labels instead of a live history badge', () => {
+  it('lists the blocked preview, apply, and history lanes', () => {
     render(<BatchCostRun />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Run History' }));
-
-    expect(screen.getAllByText('Applied').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Preview').length).toBeGreaterThan(0);
-    expect(screen.queryByText(/^Live$/)).not.toBeInTheDocument();
+    expect(screen.getByText('Preview Engine')).toBeInTheDocument();
+    expect(screen.getByText('Apply Endpoint')).toBeInTheDocument();
+    expect(screen.getByText('Run History')).toBeInTheDocument();
+    expect(
+      screen.getByText(/Use Cost Manual for governed Benton schedule review/i)
+    ).toBeInTheDocument();
   });
 });

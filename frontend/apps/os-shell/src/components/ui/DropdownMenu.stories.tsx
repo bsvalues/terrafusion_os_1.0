@@ -463,7 +463,7 @@ export const RealWorldExamples: Story = {
             <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
-          <DropdownMenuItem disabled>API (Coming soon)</DropdownMenuItem>
+                <DropdownMenuItem disabled>API (Queued)</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem>Log out</DropdownMenuItem>
         </DropdownMenuContent>

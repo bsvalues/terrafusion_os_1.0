@@ -7,24 +7,22 @@ import {
   Button,
   Chip,
   IconButton,
-  Badge,
   Avatar,
 } from '@mui/material';
 import {
   Notifications,
-  AccountCircle,
   Business,
   Analytics,
   Security,
   CloudQueue,
+  Warning,
 } from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
+import { alpha, styled } from '@mui/material/styles';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   /* HS Channel Anchors (file-local, professional-header palette) */
   '--tf-prh-cyan-hs': '191 100%',
   '--tf-prh-teal-hs': '192 91%',
-  '--tf-prh-green-hs': '160 100%',
   '--tf-prh-neutral-hs': '0 0%',
   background: 'linear-gradient(135deg, hsl(var(--tf-prh-teal-hs) 36% / 0.95), hsl(var(--tf-prh-cyan-hs) 50% / 0.85))',
   backdropFilter: 'blur(20px)',
@@ -39,12 +37,12 @@ const LogoContainer = styled(Box)(({ theme }) => ({
 }));
 
 const StatusChip = styled(Chip)(({ theme }) => ({
-  background: 'hsl(var(--tf-prh-green-hs) 50% / 0.15)',
-  color: 'var(--tf-accent-success)',
-  border: '1px solid hsl(var(--tf-prh-green-hs) 50% / 0.3)',
+  background: alpha(theme.palette.warning.main, 0.14),
+  color: theme.palette.warning.dark,
+  border: `1px solid ${alpha(theme.palette.warning.main, 0.4)}`,
   fontWeight: 600,
   '& .MuiChip-icon': {
-    color: 'var(--tf-accent-success)',
+    color: theme.palette.warning.dark,
   },
 }));
 
@@ -55,6 +53,24 @@ const SystemStats = styled(Box)(({ theme }) => ({
 }));
 
 const ProfessionalHeader: React.FC = () => {
+  const statusChips = [
+    {
+      icon: <CloudQueue />,
+      label: 'Runtime status unavailable',
+      testId: 'professional-header-runtime-status',
+    },
+    {
+      icon: <Analytics />,
+      label: 'County connectivity unverified',
+      testId: 'professional-header-county-status',
+    },
+    {
+      icon: <Security />,
+      label: 'Compliance state unavailable',
+      testId: 'professional-header-compliance-status',
+    },
+  ];
+
   return (
     <StyledAppBar position='static' elevation={0}>
       <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
@@ -94,21 +110,27 @@ const ProfessionalHeader: React.FC = () => {
                 letterSpacing: '0.5px',
               }}
             >
-              Government. Transcended.
+              Governed Operator Surface
             </Typography>
           </Box>
         </LogoContainer>
 
         <SystemStats>
-          <StatusChip icon={<CloudQueue />} label='1,008 AI Agents Active' size='small' />
-          <StatusChip icon={<Analytics />} label='County System Online' size='small' />
-
-          <StatusChip icon={<Security />} label='FISMA Compliant' size='small' />
+          {statusChips.map((statusChip) => (
+            <StatusChip
+              key={statusChip.label}
+              icon={statusChip.icon}
+              label={statusChip.label}
+              size='small'
+              data-testid={statusChip.testId}
+            />
+          ))}
         </SystemStats>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Button
             variant='outlined'
+            disabled
             sx={{
               color: 'white',
               borderColor: 'hsl(var(--tf-prh-neutral-hs) 100% / 0.3)',
@@ -118,13 +140,11 @@ const ProfessionalHeader: React.FC = () => {
               },
             }}
           >
-            Admin Portal
+            Operator Access Pending
           </Button>
 
-          <IconButton sx={{ color: 'white' }}>
-            <Badge badgeContent={3} color='error'>
-              <Notifications />
-            </Badge>
+          <IconButton sx={{ color: 'white' }} aria-label='Notifications unavailable'>
+            <Notifications />
           </IconButton>
 
           <Avatar
@@ -133,7 +153,7 @@ const ProfessionalHeader: React.FC = () => {
               ml: 1,
             }}
           >
-            <AccountCircle />
+            <Warning />
           </Avatar>
         </Box>
       </Toolbar>

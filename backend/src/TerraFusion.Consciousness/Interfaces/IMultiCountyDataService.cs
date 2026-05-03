@@ -5,7 +5,7 @@ namespace TerraFusion.Consciousness.Interfaces
     /// <summary>
     /// Multi-County Data Service interface for federated government operations
     /// Manages data integration across multiple Washington State counties
-    /// Government. Transcended.
+    /// Compatibility multi-county data contract.
     /// </summary>
     public interface IMultiCountyDataService
     {

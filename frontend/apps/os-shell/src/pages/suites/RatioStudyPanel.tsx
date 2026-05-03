@@ -5,7 +5,7 @@
  * GET /api/terraforge/ratio-study?taxYear=…&page=…&pageSize=…
  *
  * Surface: ForgeSuiteHome (os-shell), NOT the standalone terraforge harness.
- * Read-only: ratios are PACS-computed, not staff-editable here.
+ * Read-only: ratios are computed from TerraFusion-normalized sales, not staff-editable here.
  *
  * IAAO reference thresholds (residential):
  *   Median ratio: 0.90 – 1.10   (level of appraisal)
@@ -13,8 +13,10 @@
  *   PRD:          0.98 – 1.03   (vertical equity)
  */
 
-import { useCallback, useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
+import { getSession } from '../../auth/session';
 import { apiFetch } from '../../lib/apiBase';
+import { buildCountyScopedSessionHeaders } from '../../services/countyIsolation';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -32,8 +34,7 @@ interface RatioStudyItem {
   salePrice:          number;
   rawSalePrice:       number;
   adjustedSalePrice:  number | null;
-  pacsComputedRatio:  number | null;
-  ratio:              number | null;
+  salesRatio:         number | null;
   gla:                number | null;
   yearBuilt:          number | null;
   hood:               string | null;
@@ -161,6 +162,12 @@ interface Props {
 }
 
 export function RatioStudyPanel({ taxYear = TAX_YEAR }: Props) {
+  const countyScope = useMemo(() => {
+    const session = getSession();
+    const { headers, isolated } = buildCountyScopedSessionHeaders(session);
+    return { countyId: session?.countyId ?? null, headers, isolated };
+  }, []);
+
   const [state, dispatch] = useReducer(reducer, {
     page:    1,
     data:    null,
@@ -171,10 +178,22 @@ export function RatioStudyPanel({ taxYear = TAX_YEAR }: Props) {
   const fetchPage = useCallback(async () => {
     dispatch({ type: 'FETCH_START' });
     try {
+      if (!countyScope.isolated) {
+        throw new Error('County context required to load ratio study.');
+      }
+
+      const params = new URLSearchParams({
+        taxYear: String(taxYear),
+        page: String(state.page),
+        pageSize: String(RS_PAGE_SIZE),
+      });
+      if (countyScope.countyId) {
+        params.set('countyId', countyScope.countyId);
+      }
+
       const url =
-        `/api/terraforge/ratio-study` +
-        `?taxYear=${taxYear}&page=${state.page}&pageSize=${RS_PAGE_SIZE}`;
-      const res = await apiFetch(url);
+        `/terraforge/ratio-study?${params.toString()}`;
+      const res = await apiFetch(url, { headers: countyScope.headers });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = (await res.json()) as RatioStudyPage;
 
@@ -192,7 +211,7 @@ export function RatioStudyPanel({ taxYear = TAX_YEAR }: Props) {
         error: e instanceof Error ? e.message : 'Failed to load',
       });
     }
-  }, [taxYear, state.page]);
+  }, [countyScope, taxYear, state.page]);
 
   useEffect(() => {
     void fetchPage();
@@ -285,7 +304,7 @@ export function RatioStudyPanel({ taxYear = TAX_YEAR }: Props) {
                 <span role="columnheader">Sale date</span>
                 <span role="columnheader">Sale price</span>
                 <span role="columnheader">Ratio</span>
-                <span role="columnheader">Hood</span>
+                <span role="columnheader">Neighborhood code</span>
                 <span role="columnheader">Source</span>
               </div>
 
@@ -301,13 +320,13 @@ export function RatioStudyPanel({ taxYear = TAX_YEAR }: Props) {
                     {fmtPrice(item.salePrice)}
                   </span>
                   <span className="rs-cell rs-cell--ratio" role="cell">
-                    {item.ratio != null ? (
+                    {item.salesRatio != null ? (
                       <span className={`rs-ratio-badge ${
-                        item.ratio >= 0.9 && item.ratio <= 1.1
+                        item.salesRatio >= 0.9 && item.salesRatio <= 1.1
                           ? 'rs-ratio-badge--ok'
                           : 'rs-ratio-badge--out'
                       }`}>
-                        {fmtRatio(item.ratio)}
+                        {fmtRatio(item.salesRatio)}
                       </span>
                     ) : (
                       <span className="rs-ratio-badge rs-ratio-badge--missing">—</span>

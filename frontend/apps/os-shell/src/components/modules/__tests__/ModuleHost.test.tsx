@@ -286,13 +286,14 @@ describe('ModuleHost', () => {
 
       render(<ModuleHost moduleId={failingModuleId} onClose={onClose} />);
 
-      // Wait for error UI to render, then click close
-      await waitFor(async () => {
-        const closeButton = screen.queryByRole('button', { name: /close/i });
-        if (closeButton) {
-          await userEvent.click(closeButton);
-        }
-      });
+      // Wait for the error-state close button to appear, THEN click it.
+      // The previous version wrapped the click inside a waitFor callback
+      // with a conditional — when the button hadn't rendered yet the
+      // callback returned cleanly without clicking, satisfying waitFor
+      // and leaving onClose uncalled. Under sweep saturation that race
+      // surfaced as a flaky failure.
+      const closeButton = await screen.findByRole('button', { name: /close/i });
+      await userEvent.click(closeButton);
 
       expect(onClose).toHaveBeenCalledTimes(1);
     });

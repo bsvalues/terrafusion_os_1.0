@@ -6,7 +6,7 @@
  * Save to backend. No math in component.
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   Legend, ResponsiveContainer, ReferenceLine,
@@ -29,42 +29,78 @@ interface DepreciationCurveEditorProps {
   buildingType?: string;
 }
 
-const DEFAULT_CURVE: DepreciationPoint[] = [
-  { age: 0, physical: 0, functional: 0, external: 0, total: 0 },
-  { age: 5, physical: 5, functional: 2, external: 0, total: 7 },
-  { age: 10, physical: 12, functional: 4, external: 1, total: 17 },
-  { age: 15, physical: 20, functional: 7, external: 2, total: 29 },
-  { age: 20, physical: 30, functional: 10, external: 3, total: 43 },
-  { age: 25, physical: 38, functional: 13, external: 4, total: 55 },
-  { age: 30, physical: 46, functional: 16, external: 5, total: 67 },
-  { age: 40, physical: 58, functional: 20, external: 6, total: 84 },
-  { age: 50, physical: 68, functional: 22, external: 7, total: 97 },
-  { age: 60, physical: 75, functional: 23, external: 7, total: 100 },
-];
+function isDepreciationPoint(value: unknown): value is DepreciationPoint {
+  if (!value || typeof value !== 'object') return false;
+  const point = value as Record<string, unknown>;
+  return ['age', 'physical', 'functional', 'external', 'total'].every((field) => (
+    typeof point[field] === 'number' && Number.isFinite(point[field])
+  ));
+}
+
+function readCurvePoints(payload: unknown): DepreciationPoint[] {
+  if (Array.isArray(payload)) return payload.filter(isDepreciationPoint);
+  if (!payload || typeof payload !== 'object') return [];
+
+  const points = (payload as Record<string, unknown>).points;
+  return Array.isArray(points) ? points.filter(isDepreciationPoint) : [];
+}
 
 export function DepreciationCurveEditor({
   countyId = 'benton',
   buildingType = 'Single Family Residential',
 }: DepreciationCurveEditorProps) {
-  const [curveData, setCurveData] = useState<DepreciationPoint[]>(DEFAULT_CURVE);
+  const [curveData, setCurveData] = useState<DepreciationPoint[]>([]);
   const [selectedPointIndex, setSelectedPointIndex] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadCurve = async () => {
+      setLoading(true);
+      setError(null);
+      setSelectedPointIndex(null);
+      try {
+        const query = new URLSearchParams({ buildingType });
+        const response = await fetch(`/api/depreciation-curves/${encodeURIComponent(countyId)}?${query.toString()}`);
+        if (!response.ok) throw new Error(`Failed to load depreciation curve: ${response.statusText}`);
+        const points = readCurvePoints(await response.json());
+        if (!active) return;
+        setCurveData(points);
+        setDirty(false);
+      } catch (loadError) {
+        if (!active) return;
+        setCurveData([]);
+        setError(loadError instanceof Error ? loadError.message : 'Depreciation curve unavailable.');
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    void loadCurve();
+
+    return () => {
+      active = false;
+    };
+  }, [buildingType, countyId]);
 
   const handlePointUpdate = useCallback((index: number, field: 'physical' | 'functional' | 'external', value: string) => {
     const numValue = parseFloat(value);
     if (isNaN(numValue) || numValue < 0 || numValue > 100) return;
     setCurveData(prev => {
       const updated = [...prev];
+      const physical = field === 'physical' ? numValue : updated[index].physical;
+      const functional = field === 'functional' ? numValue : updated[index].functional;
+      const external = field === 'external' ? numValue : updated[index].external;
       updated[index] = {
         ...updated[index],
-        [field]: numValue,
-        total: field === 'physical'
-          ? numValue + updated[index].functional + updated[index].external
-          : field === 'functional'
-            ? updated[index].physical + numValue + updated[index].external
-            : updated[index].physical + updated[index].functional + numValue,
+        physical,
+        functional,
+        external,
+        total: Math.min(100, physical + functional + external),
       };
       return updated;
     });
@@ -72,6 +108,11 @@ export function DepreciationCurveEditor({
   }, []);
 
   const handleSave = useCallback(async () => {
+    if (curveData.length === 0) {
+      setError('No depreciation curve points were returned by the API.');
+      return;
+    }
+
     setSaving(true);
     setError(null);
     try {
@@ -97,6 +138,7 @@ export function DepreciationCurveEditor({
         <h2 className="text-2xl font-bold">Depreciation Curve Editor</h2>
         <div className="flex items-center gap-2">
           <Badge variant="outline">{buildingType}</Badge>
+          {loading && <Badge variant="secondary">Loading</Badge>}
           {dirty && <Badge variant="secondary">Unsaved Changes</Badge>}
         </div>
       </div>
@@ -104,6 +146,12 @@ export function DepreciationCurveEditor({
       {error && (
         <div className="p-3 rounded bg-red-50 text-red-700 text-sm border border-red-200">
           {error}
+        </div>
+      )}
+
+      {!loading && !error && curveData.length === 0 && (
+        <div className="p-3 rounded text-sm border" style={{ borderColor: 'hsl(var(--tf-border))', color: 'hsl(var(--tf-muted))' }}>
+          No depreciation curve points were returned for this county and building type.
         </div>
       )}
 
@@ -227,8 +275,8 @@ export function DepreciationCurveEditor({
       </div>
 
       <div className="flex justify-end">
-        <Button onClick={handleSave} disabled title="Save not yet wired to backend">
-          Save Curve
+        <Button onClick={handleSave} disabled={saving || !dirty || curveData.length === 0}>
+          {saving ? 'Saving...' : 'Save Curve'}
         </Button>
       </div>
     </div>

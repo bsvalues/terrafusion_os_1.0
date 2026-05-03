@@ -34,7 +34,10 @@ describe('useCostForgeAPI - Integration (fetch + headers)', () => {
       expect.objectContaining({
         Authorization: 'Bearer jwt_123',
         'Content-Type': 'application/json',
-        'X-Correlation-ID': expect.stringMatching(/^tf-\d+-[a-z0-9]+$/i),
+        // useCostForgeAPI now produces tf-<uuid>; accept either the legacy
+        // 'tf-<digits>-<alnum>' shape or 'tf-<uuid>' so the assertion stays
+        // resilient to the correlation ID format.
+        'X-Correlation-ID': expect.stringMatching(/^tf-([a-f0-9-]+|\d+-[a-z0-9]+)$/i),
       })
     );
   });

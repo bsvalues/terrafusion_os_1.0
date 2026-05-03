@@ -68,9 +68,12 @@ export function SwarmStatusCard({ swarm }: SwarmStatusCardProps) {
             <span className="text-sm font-medium text-white capitalize">{data.connectionState}</span>
           </div>
           <p className="text-xs tf-text-dim">
-            {data.healthyAgents.toLocaleString()} / {data.totalAgents.toLocaleString()} agents healthy
+            {data.activeAgents.toLocaleString()} active agents
           </p>
-          <p className="text-xs tf-text-dim capitalize">{data.overallStatus}</p>
+          <p className="text-xs tf-text-dim capitalize">{data.swarmActivity}</p>
+          <p className="text-xs tf-text-dim">
+            Accuracy {(data.accuracyScore * 100).toFixed(1)}%
+          </p>
         </>
       )}
     </div>

@@ -243,7 +243,7 @@ export const PropertyClerk: React.FC = () => {
     <div className='tf-suite-clerk space-y-4'>
       <ParcelContextHeader icon='📜' title='TerraClerk' parcelId={parcelId} subtitle={`Recording & title services for ${parcelId}`} />
 
-      {/* Loaded recording history from store */}
+      {/* Recording history from store */}
       {recordings.length > 0 && (
         <BentoCard variant="table" title={`Loaded Recording History (${recordings.length})`}>
           <p className='tf-text-tertiary text-sm mb-3'>Shown from the recording history currently loaded for this parcel.</p>
@@ -286,14 +286,14 @@ export const PropertyClerk: React.FC = () => {
             <div className='space-y-2'>
               <div className='tf-panel p-4'>
                 <span className='font-semibold tf-text'>{searchState.result.totalCount} document(s) found</span>
-                <p className='text-xs tf-text-dim mt-2'>Shows the returned document count and preview entries for this parcel query.</p>
+                <p className='text-xs tf-text-dim mt-1 mb-2'>Shows the returned document count and preview entries for this parcel query.</p>
                 {searchState.result.documents.slice(0, 5).map(d => (
                   <div key={d.documentId} className='text-sm tf-text-secondary mt-1'>
                     {d.type} — {d.grantor} → {d.grantee} ({formatDate(d.recordedAt)})
                   </div>
                 ))}
               </div>
-              {searchState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{searchState.correlationId.slice(0, 16)}...</code></div>}
+              {searchState.correlationId && <div className='text-xs tf-text-dim'>Ref: <code className='tf-suite-accent-text font-mono'>{searchState.correlationId.slice(0, 16)}...</code></div>}
             </div>
           )}
           {searchState.status === 'error' && searchState.error && <ErrorDisplay error={{ message: searchState.error.message, errorCode: searchState.error.code, correlationId: searchState.correlationId }} />}
@@ -317,7 +317,7 @@ export const PropertyClerk: React.FC = () => {
                   </div>
                 ))}
               </div>
-              {titleChainState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{titleChainState.correlationId.slice(0, 16)}...</code></div>}
+              {titleChainState.correlationId && <div className='text-xs tf-text-dim'>Ref: <code className='tf-suite-accent-text font-mono'>{titleChainState.correlationId.slice(0, 16)}...</code></div>}
             </div>
           )}
           {titleChainState.status === 'error' && titleChainState.error && <ErrorDisplay error={{ message: titleChainState.error.message, errorCode: titleChainState.error.code, correlationId: titleChainState.correlationId }} />}
@@ -346,7 +346,7 @@ export const PropertyClerk: React.FC = () => {
                 ))}
                 <p className='text-xs tf-text-dim mt-2'>Effective: {formatDate(feesState.result.effectiveDate)}</p>
               </div>
-              {feesState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{feesState.correlationId.slice(0, 16)}...</code></div>}
+              {feesState.correlationId && <div className='text-xs tf-text-dim'>Ref: <code className='tf-suite-accent-text font-mono'>{feesState.correlationId.slice(0, 16)}...</code></div>}
             </div>
           )}
           {feesState.status === 'error' && feesState.error && <ErrorDisplay error={{ message: feesState.error.message, errorCode: feesState.error.code, correlationId: feesState.correlationId }} />}
@@ -379,7 +379,7 @@ export const PropertyClerk: React.FC = () => {
           {recordState.status === 'success' && recordState.result && (
             <div className='space-y-2'>
               <div className='tf-panel p-4'><span className='font-semibold tf-text'>Recording confirmed: {recordState.result.recordingNumber}</span><p className='tf-text-secondary text-sm'>Doc {recordState.result.documentId} | {formatDate(recordState.result.recordedAt)}</p></div>
-              {recordState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{recordState.correlationId.slice(0, 16)}...</code></div>}
+              {recordState.correlationId && <div className='text-xs tf-text-dim'>Ref: <code className='tf-suite-accent-text font-mono'>{recordState.correlationId.slice(0, 16)}...</code></div>}
             </div>
           )}
           {recordState.status === 'error' && recordState.error && <ErrorDisplay error={{ message: recordState.error.message, errorCode: recordState.error.code, correlationId: recordState.correlationId }} />}
@@ -396,7 +396,7 @@ export const PropertyClerk: React.FC = () => {
           {releaseState.status === 'success' && releaseState.result && (
             <div className='space-y-2'>
               <div className='tf-panel p-4'><span className='font-semibold tf-text'>Lien {releaseState.result.lienId} Released</span><p className='tf-text-secondary text-sm'>Status: {releaseState.result.status} | Doc: {releaseState.result.documentId}</p></div>
-              {releaseState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{releaseState.correlationId.slice(0, 16)}...</code></div>}
+              {releaseState.correlationId && <div className='text-xs tf-text-dim'>Ref: <code className='tf-suite-accent-text font-mono'>{releaseState.correlationId.slice(0, 16)}...</code></div>}
             </div>
           )}
           {releaseState.status === 'error' && releaseState.error && <ErrorDisplay error={{ message: releaseState.error.message, errorCode: releaseState.error.code, correlationId: releaseState.correlationId }} />}
@@ -421,7 +421,7 @@ export const PropertyClerk: React.FC = () => {
                   <div key={i} className='text-sm tf-text-secondary mt-1'>{r.type}: {r.parties} ({formatDate(r.date)})</div>
                 ))}
               </div>
-              {summaryState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{summaryState.correlationId.slice(0, 16)}...</code></div>}
+              {summaryState.correlationId && <div className='text-xs tf-text-dim'>Ref: <code className='tf-suite-accent-text font-mono'>{summaryState.correlationId.slice(0, 16)}...</code></div>}
             </div>
           )}
           {summaryState.status === 'error' && summaryState.error && <ErrorDisplay error={{ message: summaryState.error.message, errorCode: summaryState.error.code, correlationId: summaryState.correlationId }} />}

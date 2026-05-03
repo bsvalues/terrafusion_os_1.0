@@ -1,0 +1,743 @@
+{
+  "checkedAt": "2026-04-30T17:08:04.228Z",
+  "slice": "county-studio-direct-source-recompute-and-mismatch-classification",
+  "status": "PASS",
+  "directSourceRecompute": true,
+  "study": {
+    "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+    "countyId": "19190019-1919-1919-1919-191919191919",
+    "taxYear": 2026,
+    "countyName": "Benton County",
+    "activeSegmentSetId": "91587edb-c234-416d-8968-a32f47582352"
+  },
+  "sampleSize": 10,
+  "connection": {
+    "host": "localhost",
+    "port": "5432",
+    "database": "terrafusion",
+    "user": "postgres",
+    "password": "<redacted>"
+  },
+  "sourceTables": [
+    "Properties",
+    "CamaCharacteristics",
+    "pacs_valuations",
+    "ComparableSales"
+  ],
+  "caveats": [
+    "This recomputes County Studio segment metrics using the same canonical population rule as CountyStudySegmentDerivationService.",
+    "This does not resolve the cross-surface scope mismatch with TerraForge ratio-study, which uses a different tax-year/window/qualification population."
+  ],
+  "segments": [
+    {
+      "segmentId": "a3ca37fb-cd84-4593-a912-c15bce1334b7",
+      "name": "15061 · R · UNKNOWN",
+      "rule": {
+        "revalArea": 5,
+        "buildingType": "R",
+        "neighborhood": "15061",
+        "qualityGrade": "UNKNOWN"
+      },
+      "status": "PASS",
+      "classification": "direct-source-match",
+      "notes": "Matched median/COD/PRD/sales count/exception count from canonical source tables; PRB=0.1045, weightedMean=0.9443.",
+      "countyStudio": {
+        "segmentId": "a3ca37fb-cd84-4593-a912-c15bce1334b7",
+        "name": "15061 · R · UNKNOWN",
+        "rule": {
+          "revalArea": 5,
+          "buildingType": "R",
+          "neighborhood": "15061",
+          "qualityGrade": "UNKNOWN"
+        },
+        "parcelCount": 1281,
+        "medianRatio": 0.9409,
+        "cod": 4.65,
+        "prd": 0.9982,
+        "exceptionCount": 0
+      },
+      "recomputed": {
+        "parcelCount": 1281,
+        "salesCount": 97,
+        "sourceSaleRows": 98,
+        "medianRatio": 0.9409,
+        "cod": 4.65,
+        "weightedMeanRatio": 0.9443,
+        "prd": 0.9982,
+        "prb": 0.1045,
+        "exceptionCount": 0
+      },
+      "checks": [
+        {
+          "metric": "medianRatio",
+          "api": 0.9409,
+          "recomputed": 0.9409,
+          "pass": true
+        },
+        {
+          "metric": "cod",
+          "api": 4.65,
+          "recomputed": 4.65,
+          "pass": true
+        },
+        {
+          "metric": "prd",
+          "api": 0.9982,
+          "recomputed": 0.9982,
+          "pass": true
+        },
+        {
+          "metric": "salesCount",
+          "api": 97,
+          "recomputed": 97,
+          "pass": true
+        },
+        {
+          "metric": "exceptionCount",
+          "api": 0,
+          "recomputed": 0,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "segmentId": "84fadd85-8b60-4903-9baf-c22056965ec0",
+      "name": "11040 · R · UNKNOWN",
+      "rule": {
+        "revalArea": 1,
+        "buildingType": "R",
+        "neighborhood": "11040",
+        "qualityGrade": "UNKNOWN"
+      },
+      "status": "PASS",
+      "classification": "direct-source-match",
+      "notes": "Matched median/COD/PRD/sales count/exception count from canonical source tables; PRB=-0.2148, weightedMean=0.943.",
+      "countyStudio": {
+        "segmentId": "84fadd85-8b60-4903-9baf-c22056965ec0",
+        "name": "11040 · R · UNKNOWN",
+        "rule": {
+          "revalArea": 1,
+          "buildingType": "R",
+          "neighborhood": "11040",
+          "qualityGrade": "UNKNOWN"
+        },
+        "parcelCount": 1247,
+        "medianRatio": 0.9503,
+        "cod": 5.44,
+        "prd": 1.005,
+        "exceptionCount": 1
+      },
+      "recomputed": {
+        "parcelCount": 1247,
+        "salesCount": 99,
+        "sourceSaleRows": 99,
+        "medianRatio": 0.9503,
+        "cod": 5.44,
+        "weightedMeanRatio": 0.943,
+        "prd": 1.005,
+        "prb": -0.2148,
+        "exceptionCount": 1
+      },
+      "checks": [
+        {
+          "metric": "medianRatio",
+          "api": 0.9503,
+          "recomputed": 0.9503,
+          "pass": true
+        },
+        {
+          "metric": "cod",
+          "api": 5.44,
+          "recomputed": 5.44,
+          "pass": true
+        },
+        {
+          "metric": "prd",
+          "api": 1.005,
+          "recomputed": 1.005,
+          "pass": true
+        },
+        {
+          "metric": "salesCount",
+          "api": 99,
+          "recomputed": 99,
+          "pass": true
+        },
+        {
+          "metric": "exceptionCount",
+          "api": 1,
+          "recomputed": 1,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "segmentId": "dc820fbf-2607-4af0-a64e-7ce159c6c6fd",
+      "name": "12060 · R · UNKNOWN",
+      "rule": {
+        "revalArea": 2,
+        "buildingType": "R",
+        "neighborhood": "12060",
+        "qualityGrade": "UNKNOWN"
+      },
+      "status": "PASS",
+      "classification": "direct-source-match",
+      "notes": "Matched median/COD/PRD/sales count/exception count from canonical source tables; PRB=0.2362, weightedMean=0.9547.",
+      "countyStudio": {
+        "segmentId": "dc820fbf-2607-4af0-a64e-7ce159c6c6fd",
+        "name": "12060 · R · UNKNOWN",
+        "rule": {
+          "revalArea": 2,
+          "buildingType": "R",
+          "neighborhood": "12060",
+          "qualityGrade": "UNKNOWN"
+        },
+        "parcelCount": 1138,
+        "medianRatio": 0.9506,
+        "cod": 6.69,
+        "prd": 0.9916,
+        "exceptionCount": 1
+      },
+      "recomputed": {
+        "parcelCount": 1138,
+        "salesCount": 70,
+        "sourceSaleRows": 71,
+        "medianRatio": 0.9506,
+        "cod": 6.69,
+        "weightedMeanRatio": 0.9547,
+        "prd": 0.9916,
+        "prb": 0.2362,
+        "exceptionCount": 1
+      },
+      "checks": [
+        {
+          "metric": "medianRatio",
+          "api": 0.9506,
+          "recomputed": 0.9506,
+          "pass": true
+        },
+        {
+          "metric": "cod",
+          "api": 6.69,
+          "recomputed": 6.69,
+          "pass": true
+        },
+        {
+          "metric": "prd",
+          "api": 0.9916,
+          "recomputed": 0.9916,
+          "pass": true
+        },
+        {
+          "metric": "salesCount",
+          "api": 70,
+          "recomputed": 70,
+          "pass": true
+        },
+        {
+          "metric": "exceptionCount",
+          "api": 1,
+          "recomputed": 1,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "segmentId": "05ea1e91-99f4-4dbb-9219-4711efc4ab36",
+      "name": "13171 · R · UNKNOWN",
+      "rule": {
+        "revalArea": 3,
+        "buildingType": "R",
+        "neighborhood": "13171",
+        "qualityGrade": "UNKNOWN"
+      },
+      "status": "PASS",
+      "classification": "direct-source-match",
+      "notes": "Matched median/COD/PRD/sales count/exception count from canonical source tables; PRB=-0.3568, weightedMean=0.944.",
+      "countyStudio": {
+        "segmentId": "05ea1e91-99f4-4dbb-9219-4711efc4ab36",
+        "name": "13171 · R · UNKNOWN",
+        "rule": {
+          "revalArea": 3,
+          "buildingType": "R",
+          "neighborhood": "13171",
+          "qualityGrade": "UNKNOWN"
+        },
+        "parcelCount": 1129,
+        "medianRatio": 0.9557,
+        "cod": 5.6,
+        "prd": 1.0103,
+        "exceptionCount": 5
+      },
+      "recomputed": {
+        "parcelCount": 1129,
+        "salesCount": 274,
+        "sourceSaleRows": 275,
+        "medianRatio": 0.9557,
+        "cod": 5.6,
+        "weightedMeanRatio": 0.944,
+        "prd": 1.0103,
+        "prb": -0.3568,
+        "exceptionCount": 5
+      },
+      "checks": [
+        {
+          "metric": "medianRatio",
+          "api": 0.9557,
+          "recomputed": 0.9557,
+          "pass": true
+        },
+        {
+          "metric": "cod",
+          "api": 5.6,
+          "recomputed": 5.6,
+          "pass": true
+        },
+        {
+          "metric": "prd",
+          "api": 1.0103,
+          "recomputed": 1.0103,
+          "pass": true
+        },
+        {
+          "metric": "salesCount",
+          "api": 274,
+          "recomputed": 274,
+          "pass": true
+        },
+        {
+          "metric": "exceptionCount",
+          "api": 5,
+          "recomputed": 5,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "segmentId": "783a30c3-5863-4451-8a1f-e88989619aed",
+      "name": "16091 · R · UNKNOWN",
+      "rule": {
+        "revalArea": 6,
+        "buildingType": "R",
+        "neighborhood": "16091",
+        "qualityGrade": "UNKNOWN"
+      },
+      "status": "PASS",
+      "classification": "direct-source-match",
+      "notes": "Matched median/COD/PRD/sales count/exception count from canonical source tables; PRB=-0.0643, weightedMean=0.7763.",
+      "countyStudio": {
+        "segmentId": "783a30c3-5863-4451-8a1f-e88989619aed",
+        "name": "16091 · R · UNKNOWN",
+        "rule": {
+          "revalArea": 6,
+          "buildingType": "R",
+          "neighborhood": "16091",
+          "qualityGrade": "UNKNOWN"
+        },
+        "parcelCount": 1122,
+        "medianRatio": 0.7805,
+        "cod": 13.01,
+        "prd": 1.0013,
+        "exceptionCount": 21
+      },
+      "recomputed": {
+        "parcelCount": 1122,
+        "salesCount": 86,
+        "sourceSaleRows": 87,
+        "medianRatio": 0.7805,
+        "cod": 13.01,
+        "weightedMeanRatio": 0.7763,
+        "prd": 1.0013,
+        "prb": -0.0643,
+        "exceptionCount": 21
+      },
+      "checks": [
+        {
+          "metric": "medianRatio",
+          "api": 0.7805,
+          "recomputed": 0.7805,
+          "pass": true
+        },
+        {
+          "metric": "cod",
+          "api": 13.01,
+          "recomputed": 13.01,
+          "pass": true
+        },
+        {
+          "metric": "prd",
+          "api": 1.0013,
+          "recomputed": 1.0013,
+          "pass": true
+        },
+        {
+          "metric": "salesCount",
+          "api": 86,
+          "recomputed": 86,
+          "pass": true
+        },
+        {
+          "metric": "exceptionCount",
+          "api": 21,
+          "recomputed": 21,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "segmentId": "9de176ef-d7df-45fb-ad31-b407223eb772",
+      "name": "12091 · R · UNKNOWN",
+      "rule": {
+        "revalArea": 2,
+        "buildingType": "R",
+        "neighborhood": "12091",
+        "qualityGrade": "UNKNOWN"
+      },
+      "status": "PASS",
+      "classification": "direct-source-match",
+      "notes": "Matched median/COD/PRD/sales count/exception count from canonical source tables; PRB=-0.0555, weightedMean=0.9161.",
+      "countyStudio": {
+        "segmentId": "9de176ef-d7df-45fb-ad31-b407223eb772",
+        "name": "12091 · R · UNKNOWN",
+        "rule": {
+          "revalArea": 2,
+          "buildingType": "R",
+          "neighborhood": "12091",
+          "qualityGrade": "UNKNOWN"
+        },
+        "parcelCount": 1084,
+        "medianRatio": 0.9172,
+        "cod": 7.36,
+        "prd": 1.0028,
+        "exceptionCount": 2
+      },
+      "recomputed": {
+        "parcelCount": 1084,
+        "salesCount": 78,
+        "sourceSaleRows": 79,
+        "medianRatio": 0.9172,
+        "cod": 7.36,
+        "weightedMeanRatio": 0.9161,
+        "prd": 1.0028,
+        "prb": -0.0555,
+        "exceptionCount": 2
+      },
+      "checks": [
+        {
+          "metric": "medianRatio",
+          "api": 0.9172,
+          "recomputed": 0.9172,
+          "pass": true
+        },
+        {
+          "metric": "cod",
+          "api": 7.36,
+          "recomputed": 7.36,
+          "pass": true
+        },
+        {
+          "metric": "prd",
+          "api": 1.0028,
+          "recomputed": 1.0028,
+          "pass": true
+        },
+        {
+          "metric": "salesCount",
+          "api": 78,
+          "recomputed": 78,
+          "pass": true
+        },
+        {
+          "metric": "exceptionCount",
+          "api": 2,
+          "recomputed": 2,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "segmentId": "6598f82e-b227-4235-981c-419539955815",
+      "name": "16071 · R · UNKNOWN",
+      "rule": {
+        "revalArea": 6,
+        "buildingType": "R",
+        "neighborhood": "16071",
+        "qualityGrade": "UNKNOWN"
+      },
+      "status": "PASS",
+      "classification": "direct-source-match",
+      "notes": "Matched median/COD/PRD/sales count/exception count from canonical source tables; PRB=0.1011, weightedMean=0.7974.",
+      "countyStudio": {
+        "segmentId": "6598f82e-b227-4235-981c-419539955815",
+        "name": "16071 · R · UNKNOWN",
+        "rule": {
+          "revalArea": 6,
+          "buildingType": "R",
+          "neighborhood": "16071",
+          "qualityGrade": "UNKNOWN"
+        },
+        "parcelCount": 1045,
+        "medianRatio": 0.7832,
+        "cod": 9.88,
+        "prd": 0.9979,
+        "exceptionCount": 12
+      },
+      "recomputed": {
+        "parcelCount": 1045,
+        "salesCount": 69,
+        "sourceSaleRows": 69,
+        "medianRatio": 0.7832,
+        "cod": 9.88,
+        "weightedMeanRatio": 0.7974,
+        "prd": 0.9979,
+        "prb": 0.1011,
+        "exceptionCount": 12
+      },
+      "checks": [
+        {
+          "metric": "medianRatio",
+          "api": 0.7832,
+          "recomputed": 0.7832,
+          "pass": true
+        },
+        {
+          "metric": "cod",
+          "api": 9.88,
+          "recomputed": 9.88,
+          "pass": true
+        },
+        {
+          "metric": "prd",
+          "api": 0.9979,
+          "recomputed": 0.9979,
+          "pass": true
+        },
+        {
+          "metric": "salesCount",
+          "api": 69,
+          "recomputed": 69,
+          "pass": true
+        },
+        {
+          "metric": "exceptionCount",
+          "api": 12,
+          "recomputed": 12,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "segmentId": "13464a28-1d1b-4e58-8529-d0890bc190d5",
+      "name": "14061 · R · UNKNOWN",
+      "rule": {
+        "revalArea": 4,
+        "buildingType": "R",
+        "neighborhood": "14061",
+        "qualityGrade": "UNKNOWN"
+      },
+      "status": "PASS",
+      "classification": "direct-source-match",
+      "notes": "Matched median/COD/PRD/sales count/exception count from canonical source tables; PRB=0.045, weightedMean=0.9115.",
+      "countyStudio": {
+        "segmentId": "13464a28-1d1b-4e58-8529-d0890bc190d5",
+        "name": "14061 · R · UNKNOWN",
+        "rule": {
+          "revalArea": 4,
+          "buildingType": "R",
+          "neighborhood": "14061",
+          "qualityGrade": "UNKNOWN"
+        },
+        "parcelCount": 934,
+        "medianRatio": 0.9148,
+        "cod": 7.35,
+        "prd": 0.9963,
+        "exceptionCount": 1
+      },
+      "recomputed": {
+        "parcelCount": 934,
+        "salesCount": 54,
+        "sourceSaleRows": 55,
+        "medianRatio": 0.9148,
+        "cod": 7.35,
+        "weightedMeanRatio": 0.9115,
+        "prd": 0.9963,
+        "prb": 0.045,
+        "exceptionCount": 1
+      },
+      "checks": [
+        {
+          "metric": "medianRatio",
+          "api": 0.9148,
+          "recomputed": 0.9148,
+          "pass": true
+        },
+        {
+          "metric": "cod",
+          "api": 7.35,
+          "recomputed": 7.35,
+          "pass": true
+        },
+        {
+          "metric": "prd",
+          "api": 0.9963,
+          "recomputed": 0.9963,
+          "pass": true
+        },
+        {
+          "metric": "salesCount",
+          "api": 54,
+          "recomputed": 54,
+          "pass": true
+        },
+        {
+          "metric": "exceptionCount",
+          "api": 1,
+          "recomputed": 1,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "segmentId": "b379ec44-5424-4acd-9995-e8d656c65a88",
+      "name": "14011 · R · UNKNOWN",
+      "rule": {
+        "revalArea": 4,
+        "buildingType": "R",
+        "neighborhood": "14011",
+        "qualityGrade": "UNKNOWN"
+      },
+      "status": "PASS",
+      "classification": "direct-source-match",
+      "notes": "Matched median/COD/PRD/sales count/exception count from canonical source tables; PRB=0.0218, weightedMean=0.9173.",
+      "countyStudio": {
+        "segmentId": "b379ec44-5424-4acd-9995-e8d656c65a88",
+        "name": "14011 · R · UNKNOWN",
+        "rule": {
+          "revalArea": 4,
+          "buildingType": "R",
+          "neighborhood": "14011",
+          "qualityGrade": "UNKNOWN"
+        },
+        "parcelCount": 930,
+        "medianRatio": 0.9426,
+        "cod": 6.85,
+        "prd": 0.999,
+        "exceptionCount": 3
+      },
+      "recomputed": {
+        "parcelCount": 930,
+        "salesCount": 96,
+        "sourceSaleRows": 96,
+        "medianRatio": 0.9426,
+        "cod": 6.85,
+        "weightedMeanRatio": 0.9173,
+        "prd": 0.999,
+        "prb": 0.0218,
+        "exceptionCount": 3
+      },
+      "checks": [
+        {
+          "metric": "medianRatio",
+          "api": 0.9426,
+          "recomputed": 0.9426,
+          "pass": true
+        },
+        {
+          "metric": "cod",
+          "api": 6.85,
+          "recomputed": 6.85,
+          "pass": true
+        },
+        {
+          "metric": "prd",
+          "api": 0.999,
+          "recomputed": 0.999,
+          "pass": true
+        },
+        {
+          "metric": "salesCount",
+          "api": 96,
+          "recomputed": 96,
+          "pass": true
+        },
+        {
+          "metric": "exceptionCount",
+          "api": 3,
+          "recomputed": 3,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "segmentId": "adf4b363-f80f-4587-8cf6-4e8c0ca7d3f5",
+      "name": "15191 · R · UNKNOWN",
+      "rule": {
+        "revalArea": 5,
+        "buildingType": "R",
+        "neighborhood": "15191",
+        "qualityGrade": "UNKNOWN"
+      },
+      "status": "PASS",
+      "classification": "direct-source-match",
+      "notes": "Matched median/COD/PRD/sales count/exception count from canonical source tables; PRB=-0.1841, weightedMean=0.9353.",
+      "countyStudio": {
+        "segmentId": "adf4b363-f80f-4587-8cf6-4e8c0ca7d3f5",
+        "name": "15191 · R · UNKNOWN",
+        "rule": {
+          "revalArea": 5,
+          "buildingType": "R",
+          "neighborhood": "15191",
+          "qualityGrade": "UNKNOWN"
+        },
+        "parcelCount": 893,
+        "medianRatio": 0.9361,
+        "cod": 4.07,
+        "prd": 1.0047,
+        "exceptionCount": 0
+      },
+      "recomputed": {
+        "parcelCount": 893,
+        "salesCount": 110,
+        "sourceSaleRows": 113,
+        "medianRatio": 0.9361,
+        "cod": 4.07,
+        "weightedMeanRatio": 0.9353,
+        "prd": 1.0047,
+        "prb": -0.1841,
+        "exceptionCount": 0
+      },
+      "checks": [
+        {
+          "metric": "medianRatio",
+          "api": 0.9361,
+          "recomputed": 0.9361,
+          "pass": true
+        },
+        {
+          "metric": "cod",
+          "api": 4.07,
+          "recomputed": 4.07,
+          "pass": true
+        },
+        {
+          "metric": "prd",
+          "api": 1.0047,
+          "recomputed": 1.0047,
+          "pass": true
+        },
+        {
+          "metric": "salesCount",
+          "api": 110,
+          "recomputed": 110,
+          "pass": true
+        },
+        {
+          "metric": "exceptionCount",
+          "api": 0,
+          "recomputed": 0,
+          "pass": true
+        }
+      ]
+    }
+  ]
+}

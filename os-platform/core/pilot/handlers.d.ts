@@ -249,6 +249,177 @@ export declare const searchTraceByCorrelationHandler: ToolHandler<SearchTraceByC
  * Add Dossier Note - Pilot/write_low/payload_ref
  */
 export declare const addDossierNoteHandler: ToolHandler<AddDossierNoteParams, AddDossierNoteResult>;
+export interface GenerateMorningBriefParams {
+    county: string;
+    role: import("../types/assessorSuperpowers.js").AssessorStaffRole;
+    taxYear: number;
+    queueType?: import("../types/assessorSuperpowers.js").CountyQueueType;
+}
+export interface GenerateMorningBriefResult {
+    brief: import("../types/assessorSuperpowers.js").RoleBriefContract;
+    findings: import("../types/assessorSuperpowers.js").AssessorFindingContract[];
+    summary: string;
+    generatedAt: string;
+}
+export interface ClassifyCountyFindingParams {
+    county: string;
+    taxYear: number;
+    scope?: import("../types/assessorSuperpowers.js").CountyFindingScope;
+    signal?: 'ratio_drift' | 'parcel_outlier' | 'market_shift' | 'residual_cluster' | 'appeal_spike' | 'evidence_stale';
+    subjectId?: string;
+    includeSpatialContext?: boolean;
+}
+export interface ClassifyCountyFindingResult {
+    primaryFinding: import("../types/assessorSuperpowers.js").AssessorFindingContract;
+    findings: import("../types/assessorSuperpowers.js").AssessorFindingContract[];
+    recommendedTool: import("../types/assessorSuperpowers.js").CountyRecommendedTool;
+    narrative: string;
+}
+export interface ProposeRateAdjustmentParams {
+    county: string;
+    taxYear: number;
+    draftVersion: string;
+    scope?: import("../types/assessorSuperpowers.js").CountyFindingScope;
+    scopeId?: string;
+}
+export interface ProposeRateAdjustmentResult {
+    proposalId: string;
+    action: import("../types/assessorSuperpowers.js").AssessorActionContract;
+    findings: import("../types/assessorSuperpowers.js").AssessorFindingContract[];
+    recommendedAdjustments: Array<{
+        scopeId: string;
+        factor: number;
+        rationale: string;
+    }>;
+    narrative: string;
+}
+export interface ApplyRateAdjustmentToDraftParams {
+    county: string;
+    draftVersion: string;
+    adjustmentId?: string;
+    scopeId?: string;
+    factor?: number;
+    reasonCode?: string;
+}
+export interface ApplyRateAdjustmentToDraftResult {
+    action: import("../types/assessorSuperpowers.js").AssessorActionContract;
+    status: 'draft_updated';
+    payloadRef: string;
+    signoffPacketId: string;
+}
+export interface RerunRatioStudyParams {
+    county: string;
+    taxYear: number;
+    draftVersion?: string;
+    scope?: import("../types/assessorSuperpowers.js").CountyFindingScope;
+}
+export interface RerunRatioStudyResult {
+    metrics: import("../types/assessorSuperpowers.js").CountyImpactPreview;
+    readyForSignoff: boolean;
+    narrative: string;
+}
+export interface CompareMatrixVersionsParams {
+    county: string;
+    baseVersion: string;
+    compareVersion: string;
+}
+export interface CompareMatrixVersionsResult {
+    baseVersion: string;
+    compareVersion: string;
+    changedCells: number;
+    impactedScopes: string[];
+    summary: string;
+}
+export interface FlagParcelDataIssueParams {
+    county: string;
+    parcelId: string;
+    findingId: string;
+    issueType?: 'classification' | 'condition' | 'geometry' | 'sale_linkage' | 'permit_gap';
+    reasonCode?: string;
+}
+export interface FlagParcelDataIssueResult {
+    queueItemId: string;
+    payloadRef: string;
+    route: {
+        parcelId: string;
+        nextTool: 'route_to_parcel';
+    };
+    action: import("../types/assessorSuperpowers.js").AssessorActionContract;
+}
+export interface ExplainSpatialAnomalyParams {
+    county: string;
+    taxYear: number;
+    metric: 'prd' | 'prb' | 'cod' | 'residual_cluster';
+    geographyId?: string;
+}
+export interface ExplainSpatialAnomalyResult {
+    finding: import("../types/assessorSuperpowers.js").AssessorFindingContract;
+    hotspotCount: number;
+    narrative: string;
+    recommendedTool: import("../types/assessorSuperpowers.js").CountyRecommendedTool;
+}
+export interface OpenAppealPacketParams {
+    county: string;
+    appealId: string;
+}
+export interface OpenAppealPacketResult {
+    appealId: string;
+    packetRef: string;
+    payloadRef: string;
+    sections: string[];
+    chainOfCustody: string[];
+}
+export interface GenerateCalibrationMemoParams {
+    county: string;
+    draftVersion: string;
+    audience?: 'internal' | 'board' | 'dor';
+    reasonCode?: string;
+}
+export interface GenerateCalibrationMemoResult {
+    payloadRef: string;
+    sections: string[];
+    summary: string;
+    action: import("../types/assessorSuperpowers.js").AssessorActionContract;
+}
+export interface ExportEqualizationPackageParams {
+    county: string;
+    draftVersion: string;
+    taxYear: number;
+    reasonCode?: string;
+}
+export interface ExportEqualizationPackageResult {
+    payloadRef: string;
+    packageRef: string;
+    artifactCount: number;
+    checklist: string[];
+    action: import("../types/assessorSuperpowers.js").AssessorActionContract;
+}
+export interface ExportAuditBundleParams {
+    county: string;
+    taxYear: number;
+    bundleScope?: 'county' | 'appeal' | 'neighborhood';
+    subjectId?: string;
+    reasonCode?: string;
+}
+export interface ExportAuditBundleResult {
+    payloadRef: string;
+    bundleRef: string;
+    artifactCount: number;
+    traceRef: string;
+    action: import("../types/assessorSuperpowers.js").AssessorActionContract;
+}
+export declare const generateMorningBriefHandler: ToolHandler<GenerateMorningBriefParams, GenerateMorningBriefResult>;
+export declare const classifyCountyFindingHandler: ToolHandler<ClassifyCountyFindingParams, ClassifyCountyFindingResult>;
+export declare const proposeRateAdjustmentHandler: ToolHandler<ProposeRateAdjustmentParams, ProposeRateAdjustmentResult>;
+export declare const applyRateAdjustmentToDraftHandler: ToolHandler<ApplyRateAdjustmentToDraftParams, ApplyRateAdjustmentToDraftResult>;
+export declare const rerunRatioStudyHandler: ToolHandler<RerunRatioStudyParams, RerunRatioStudyResult>;
+export declare const compareMatrixVersionsHandler: ToolHandler<CompareMatrixVersionsParams, CompareMatrixVersionsResult>;
+export declare const flagParcelDataIssueHandler: ToolHandler<FlagParcelDataIssueParams, FlagParcelDataIssueResult>;
+export declare const explainSpatialAnomalyHandler: ToolHandler<ExplainSpatialAnomalyParams, ExplainSpatialAnomalyResult>;
+export declare const openAppealPacketHandler: ToolHandler<OpenAppealPacketParams, OpenAppealPacketResult>;
+export declare const generateCalibrationMemoHandler: ToolHandler<GenerateCalibrationMemoParams, GenerateCalibrationMemoResult>;
+export declare const exportEqualizationPackageHandler: ToolHandler<ExportEqualizationPackageParams, ExportEqualizationPackageResult>;
+export declare const exportAuditBundleHandler: ToolHandler<ExportAuditBundleParams, ExportAuditBundleResult>;
 /**
  * Register all Phase 8.3 tool handlers with a ToolRunner instance.
  */
@@ -289,4 +460,18 @@ export declare const phase84Handlers: {
     readonly summarize_sales_comps_rationale: ToolHandler<SummarizeSalesCompsParams, SummarizeSalesCompsResult>;
     readonly search_trace_by_correlation: ToolHandler<SearchTraceByCorrelationParams, SearchTraceByCorrelationResult>;
     readonly add_dossier_note: ToolHandler<AddDossierNoteParams, AddDossierNoteResult>;
+};
+export declare const assessorSuperpowerHandlers: {
+    readonly generate_morning_brief: ToolHandler<GenerateMorningBriefParams, GenerateMorningBriefResult>;
+    readonly classify_county_finding: ToolHandler<ClassifyCountyFindingParams, ClassifyCountyFindingResult>;
+    readonly propose_rate_adjustment: ToolHandler<ProposeRateAdjustmentParams, ProposeRateAdjustmentResult>;
+    readonly apply_rate_adjustment_to_draft: ToolHandler<ApplyRateAdjustmentToDraftParams, ApplyRateAdjustmentToDraftResult>;
+    readonly rerun_ratio_study: ToolHandler<RerunRatioStudyParams, RerunRatioStudyResult>;
+    readonly compare_matrix_versions: ToolHandler<CompareMatrixVersionsParams, CompareMatrixVersionsResult>;
+    readonly flag_parcel_data_issue: ToolHandler<FlagParcelDataIssueParams, FlagParcelDataIssueResult>;
+    readonly explain_spatial_anomaly: ToolHandler<ExplainSpatialAnomalyParams, ExplainSpatialAnomalyResult>;
+    readonly open_appeal_packet: ToolHandler<OpenAppealPacketParams, OpenAppealPacketResult>;
+    readonly generate_calibration_memo: ToolHandler<GenerateCalibrationMemoParams, GenerateCalibrationMemoResult>;
+    readonly export_equalization_package: ToolHandler<ExportEqualizationPackageParams, ExportEqualizationPackageResult>;
+    readonly export_audit_bundle: ToolHandler<ExportAuditBundleParams, ExportAuditBundleResult>;
 };

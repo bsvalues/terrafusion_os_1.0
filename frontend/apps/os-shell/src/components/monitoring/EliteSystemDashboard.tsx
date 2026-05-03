@@ -75,7 +75,7 @@ const EliteSystemDashboard: React.FC = () => {
           🏆 ELITE SYSTEM DASHBOARD
         </h1>
         <p className='text-xl text-slate-600 font-medium'>
-          Government. Transcended. - Real-Time Championship Monitoring
+          Governed Monitoring Surface - Live telemetry lane
         </p>
         <div className='flex items-center justify-center space-x-2'>
           <div
@@ -284,7 +284,7 @@ const EliteSystemDashboard: React.FC = () => {
       <div className='text-center text-slate-500 text-sm'>
         <p>TerraFusion Elite System Dashboard - Last Updated: {new Date().toLocaleTimeString()}</p>
         <p className='font-semibold text-blue-600'>
-          Government. Transcended. - THE TERRAFUSION WAY
+          Governed Monitoring Surface - TerraFusion telemetry
         </p>
       </div>
     </div>

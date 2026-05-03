@@ -47,6 +47,9 @@ public class PacsLevyTaxAreaAssoc
     [MaxLength(23)]
     public string? TaxAreaNumber { get; set; }
 
+    /// <summary>Fund identifier from PACS tax_area_fund_assoc, used for certification traceability.</summary>
+    public int? FundId { get; set; }
+
     // Audit
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

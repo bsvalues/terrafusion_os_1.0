@@ -837,7 +837,7 @@ export function PilotConsoleContent(): React.ReactElement {
             ? 'Preflight-First Enforcement • Live'
             : 'Preflight Gate (backend required to enforce)'}
         </p>
-        <p className='mt-1 text-cyan-500/50'>Government. Transcended.</p>
+        <p className='mt-1 text-cyan-500/50'>Governed Operator Surface</p>
       </div>
 
       {/* Modal */}

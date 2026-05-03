@@ -7,10 +7,10 @@
  * This is the regression wall for all disclosure, route-collapse, and
  * surface-honesty contracts established across W4A → W5D.
  *
- * Gate 1: DemoDataBanner inventory — every governed surface that uses
- *         fixture data must import and render DemoDataBanner
- * Gate 2: isFixture / isSampleData provenance tracking — every API-first
- *         component must track data origin
+ * Gate 1: DemoDataBanner inventory — every governed fixture surface discloses,
+ *         and TerraLevy stays on the live service path
+ * Gate 2: isFixture / governed-unavailable provenance tracking — API-first
+ *         components disclose truth instead of silently falling back
  * Gate 3: Workbench route-collapse — all suite tabs lazy-loaded + routed
  * Gate 4: Standalone suite routes — constitutional routes wired
  * Gate 5: No undisclosed fixture surfaces — governed pages must not
@@ -34,106 +34,137 @@ function srcExists(relPath: string): boolean {
 }
 
 // ============================================================================
-// Gate 1 — DemoDataBanner inventory (7 governed surfaces)
+// Gate 1 — DemoDataBanner inventory plus TerraLevy live-path proof
 // ============================================================================
 
 describe('Gate 1 — DemoDataBanner inventory: every fixture surface discloses', () => {
-  it('CostManual renders DemoDataBanner unconditionally', () => {
+  it('CostManual stays on the live schedule path and does not import DemoDataBanner', () => {
     const src = readSrc('pages/forge/cost/CostManual.tsx');
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toContain('module="Cost Manual"');
+    expect(src).not.toContain('DemoDataBanner');
+    expect(src).toContain('data-testid="cost-manual-unavailable"');
+    expect(src).toContain('Live cost schedule unavailable.');
   });
 
-  it('BatchCostRun renders DemoDataBanner unconditionally', () => {
+  it('BatchCostRun renders an explicit unavailable state instead of DemoDataBanner', () => {
     const src = readSrc('pages/forge/batch/BatchCostRun.tsx');
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toContain('module="Batch Cost Run"');
+    expect(src).not.toContain('DemoDataBanner');
+    expect(src).toContain('data-testid="batch-cost-run-unavailable"');
+    expect(src).toContain('Governed batch cost run unavailable.');
   });
 
-  it('TerraLevyDashboard renders DemoDataBanner unconditionally', () => {
+  it('TerraLevyDashboard stays on live levy services and does not import DemoDataBanner', () => {
     const src = readSrc('applications/terra-levy/TerraLevyDashboard.tsx');
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toContain('module="TerraLevy"');
+    expect(src).not.toContain('DemoDataBanner');
+    expect(src).toContain('getLevyDashboardSummary');
+    expect(src).toContain('getLevyDashboardMetrics');
+    expect(src).toContain('getLevyDistrictOverview');
+    expect(src).toContain('getBudgetScenarios');
+    expect(src).toContain('getBudgetVisualization');
+    expect(src).toContain('getDataQualityRecommendations');
+    expect(src).toContain('getDistrictRiskScores');
   });
 
-  it('StatisticsStudio renders DemoDataBanner conditionally on isFixture', () => {
+  it('StatisticsStudio stays on live/store-backed paths without DemoDataBanner dead code', () => {
     const src = readSrc('pages/forge/statistics/StatisticsStudio.tsx');
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toMatch(/isFixture.*&&.*DemoDataBanner|DemoDataBanner.*isFixture/s);
+    expect(src).not.toContain('DemoDataBanner');
+    expect(src).not.toContain('isFixture');
+    expect(src).toContain('useForgeStatisticsStore');
+    expect(src).toContain('apiFetch(');
+    expect(src).toContain('/terraforge/ratio-study/trends?taxYear=${taxYear}');
+    expect(src).toContain('countyId ? `&countyId=${encodeURIComponent(countyId)}` : \'\'');
   });
 
-  it('SegmentDiscoveryDashboard renders DemoDataBanner on isFixture', () => {
+  it('SegmentDiscoveryDashboard renders explicit unavailable state instead of DemoDataBanner', () => {
     const src = readSrc('pages/forge/calibration/SegmentDiscoveryDashboard.tsx');
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toContain('isFixture');
-    expect(src).toContain('module="Segment Discovery"');
+    expect(src).toContain('segment-discovery-unavailable');
+    expect(src).toContain('Segment discovery unavailable.');
+    expect(src).not.toContain('DemoDataBanner');
   });
 
-  it('GeoEquityDashboard renders DemoDataBanner on isFixture', () => {
+  it('GeoEquityDashboard renders explicit unavailable state instead of DemoDataBanner', () => {
     const src = readSrc('pages/atlas/GeoEquityDashboard.tsx');
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toContain('isFixture');
-    expect(src).toContain('module="GeoEquity"');
+    expect(src).toContain('geo-equity-unavailable');
+    expect(src).toContain('GeoEquityReadState');
+    expect(src).not.toContain('DemoDataBanner');
+    expect(src).not.toContain('isFixture');
+    expect(src).toContain('getGeoEquityAreas(25)');
   });
 
-  it('ManagementDashboard renders DemoDataBanner on isFixture', () => {
+  it('ManagementDashboard does not import DemoDataBanner and uses explicit unavailable states', () => {
     const src = readSrc('pages/dais/ManagementDashboard.tsx');
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toContain('isFixture');
-    expect(src).toContain('module="Management Dashboard"');
+    expect(src).not.toContain('DemoDataBanner');
+    expect(src).not.toContain('isFixture');
+    expect(src).toContain('WorkbenchSourceBadge');
+    expect(src).toContain('Certification deadlines unavailable.');
   });
 });
 
 // ============================================================================
-// Gate 2 — isFixture / isSampleData provenance tracking
+// Gate 2 — isFixture / governed-unavailable provenance tracking
 // ============================================================================
 
 describe('Gate 2 — provenance tracking: hooks and components expose data origin', () => {
-  it('useTodaysWork tracks both live and fallback provenance', () => {
+  it('useTodaysWork tracks explicit live and unavailable read states', () => {
     const src = readSrc('hooks/useTodaysWork.ts');
-    expect(src).toContain('isSampleData');
-    expect(src).toContain('setIsSampleData(false)');
-    expect(src).toContain('setIsSampleData(true)');
-    expect(src).toContain('SAMPLE_TASKS');
+    expect(src).toContain('readState: TodaysWorkReadState');
+    expect(src).toContain("setReadState('live')");
+    expect(src).toContain("setReadState('unavailable')");
     expect(src).toContain('getQueueItems({ throwOnError: true })');
+    expect(src).not.toContain('isSampleData');
+    expect(src).not.toContain('SAMPLE_TASKS');
   });
 
-  it('useBudgetData tracks both live and fallback provenance', () => {
+  it('useBudgetData exposes an explicit live-data gap without sample fallback state', () => {
     const src = readSrc('applications/terra-levy/hooks/useBudgetData.ts');
-    expect(src).toContain('isSampleData');
-    expect(src).toContain('setIsSampleData(false)');
-    expect(src).toContain('setIsSampleData(true)');
     expect(src).toContain('/levy/dashboard/summary');
+    expect(src).toContain('/levy/budget/scenarios');
+    expect(src).toContain('/levy/budget/visualization');
+    expect(src).toContain('Live levy budget endpoints returned no certified budget-category data.');
+    expect(src).not.toContain('isSampleData');
   });
 
-  it('SegmentDiscoveryDashboard tracks isFixture state', () => {
+  it('SegmentDiscoveryDashboard tracks explicit read state', () => {
     const src = readSrc('pages/forge/calibration/SegmentDiscoveryDashboard.tsx');
-    expect(src).toContain('isFixture');
-    expect(src).toContain('setIsFixture');
+    expect(src).toContain('SegmentDiscoveryReadState');
+    expect(src).toContain("setReadState('live')");
+    expect(src).toContain("setReadState('unavailable')");
   });
 
-  it('GeoEquityDashboard tracks isFixture state', () => {
+  it('GeoEquityDashboard tracks explicit live and unavailable read state', () => {
     const src = readSrc('pages/atlas/GeoEquityDashboard.tsx');
-    expect(src).toContain('isFixture');
-    expect(src).toContain('setIsFixture');
+    expect(src).toContain('GeoEquityReadState');
+    expect(src).toContain("setReadState('loading')");
+    expect(src).toContain("setReadState('live')");
+    expect(src).toContain("setReadState('unavailable')");
+    expect(src).not.toContain('isFixture');
   });
 
-  it('ManagementDashboard tracks isFixture state', () => {
+  it('ManagementDashboard tracks explicit live read state instead of isFixture', () => {
     const src = readSrc('pages/dais/ManagementDashboard.tsx');
-    expect(src).toContain('isFixture');
-    expect(src).toContain('setIsFixture');
+    expect(src).toContain('readState');
+    expect(src).toContain('certification: false');
+    expect(src).not.toContain('isFixture');
   });
 
-  it('BatchCostRun tracks BACKEND_APPLY_CAPABLE gate', () => {
+  it('BatchCostRun exposes explicit governed blockers instead of a fake apply gate', () => {
     const src = readSrc('pages/forge/batch/BatchCostRun.tsx');
-    expect(src).toContain('BACKEND_APPLY_CAPABLE');
-    expect(src).toContain('ForgeApplyMode');
+    expect(src).toContain("lane: 'Preview Engine'");
+    expect(src).toContain("lane: 'Apply Endpoint'");
+    expect(src).toContain("lane: 'Run History'");
+    expect(src).not.toContain('BACKEND_APPLY_CAPABLE');
   });
 
   it('queueService has throwOnError for provenance propagation (W5C)', () => {
     const src = readSrc('services/suites/queueService.ts');
     expect(src).toContain('QueueReadOptions');
     expect(src).toContain('throwOnError');
+  });
+
+  it('StageZeroState renders explicit unavailable text instead of DemoDataBanner', () => {
+    const src = readSrc('shell/desktop/StageZeroState.tsx');
+    expect(src).not.toContain('DemoDataBanner');
+    expect(src).not.toContain('isSampleData');
+    expect(src).toContain("Today's work unavailable from TerraDais.");
   });
 });
 
@@ -252,15 +283,19 @@ describe('Gate 4A — /gpt bounded workspace host', () => {
 // ============================================================================
 
 describe('Gate 5 — no fake surfaces: governed pages disclose fixture status', () => {
-  it('CostManual uses SAMPLE_ prefix for fixture data', () => {
+  it('CostManual uses the live schedule API with explicit unavailable state', () => {
     const src = readSrc('pages/forge/cost/CostManual.tsx');
-    expect(src).toContain('SAMPLE_COST_SCHEDULES');
     expect(src).toContain('getCostSchedule');
+    expect(src).not.toContain('SAMPLE_COST_SCHEDULES');
+    expect(src).not.toContain('DemoDataBanner');
+    expect(src).toContain('readState === \'unavailable\'');
   });
 
-  it('BatchCostRun uses FIXTURE_ prefix for history data', () => {
+  it('BatchCostRun no longer uses fixture history or demo disclosure', () => {
     const src = readSrc('pages/forge/batch/BatchCostRun.tsx');
-    expect(src).toContain('FIXTURE_HISTORY');
+    expect(src).not.toContain('FIXTURE_HISTORY');
+    expect(src).not.toContain('DemoDataBanner');
+    expect(src).toContain('Governed batch engine unavailable');
   });
 
   it('no governed forge page has stray console.log (debug noise)', () => {
@@ -276,11 +311,8 @@ describe('Gate 5 — no fake surfaces: governed pages disclose fixture status', 
     }
   });
 
-  it('BatchCostRun uses TerraTrace emit helpers for audit (not console.log)', () => {
+  it('BatchCostRun does not use console.log in its blocked state', () => {
     const src = readSrc('pages/forge/batch/BatchCostRun.tsx');
-    expect(src).toContain('emitToolInvoked');
-    expect(src).toContain('emitToolSucceeded');
-    expect(src).toContain('emitToolFailed');
     expect(src).not.toContain('console.log');
   });
 
@@ -309,10 +341,10 @@ describe('Gate 6 — DemoDataBanner component is governance-correct', () => {
     expect(src).toContain('role="status"');
   });
 
-  it('displays warning text with module name interpolation', () => {
-    expect(src).toContain('DEMO DATA');
+  it('displays non-live warning text with module name interpolation', () => {
+    expect(src).toContain('NON-LIVE DATA');
     expect(src).toContain('{module}');
-    expect(src).toContain('sample fixtures');
+    expect(src).toContain('non-live or simulated data');
     expect(src).toContain('not live county data');
   });
 
@@ -340,17 +372,21 @@ describe('Gate 7 — sealed wave regression wall', () => {
   });
 
   // W4B: SegmentDiscoveryDashboard disclosure
-  it('SegmentDiscoveryDashboard has DemoDataBanner + isFixture (W4B)', () => {
+  it('SegmentDiscoveryDashboard has explicit unavailable disclosure (W4B)', () => {
     const src = readSrc('pages/forge/calibration/SegmentDiscoveryDashboard.tsx');
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toContain('isFixture');
+    expect(src).toContain('segment-discovery-unavailable');
+    expect(src).toContain('Segment discovery unavailable.');
+    expect(src).not.toContain('DemoDataBanner');
   });
 
   // W5B: GeoEquityDashboard disclosure
-  it('GeoEquityDashboard has DemoDataBanner + isFixture + store (W5B)', () => {
+  it('GeoEquityDashboard has explicit unavailable disclosure + live service path + store priming (W5B)', () => {
     const src = readSrc('pages/atlas/GeoEquityDashboard.tsx');
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toContain('isFixture');
+    expect(src).toContain('geo-equity-unavailable');
+    expect(src).toContain('GeoEquityReadState');
+    expect(src).toContain('getGeoEquityAreas(25)');
+    expect(src).not.toContain('DemoDataBanner');
+    expect(src).not.toContain('isFixture');
     expect(src).toContain('useAtlasSpatialStore');
   });
 
@@ -376,21 +412,23 @@ describe('Gate 7 — sealed wave regression wall', () => {
   });
 
   // W5D: Honesty sweep
-  it('useTodaysWork keeps dynamic fallback provenance (W5D)', () => {
+  it('useTodaysWork keeps explicit live/unavailable read state (W5D)', () => {
     const src = readSrc('hooks/useTodaysWork.ts');
-    expect(src).toContain('setIsSampleData(false)');
-    expect(src).toContain('setIsSampleData(true)');
+    expect(src).toContain("setReadState('live')");
+    expect(src).toContain("setReadState('unavailable')");
+    expect(src).not.toContain('isSampleData');
   });
 
-  it('useBudgetData keeps dynamic fallback provenance (W5D)', () => {
+  it('useBudgetData keeps explicit live-data gap handling without sample fallback state (W5D)', () => {
     const src = readSrc('applications/terra-levy/hooks/useBudgetData.ts');
-    expect(src).toContain('setIsSampleData(false)');
-    expect(src).toContain('setIsSampleData(true)');
+    expect(src).toContain('Live levy budget endpoints returned no certified budget-category data.');
+    expect(src).not.toContain('isSampleData');
   });
 
-  it('BatchCostRun has DemoDataBanner + BACKEND_APPLY_CAPABLE (W5D)', () => {
+  it('BatchCostRun keeps the explicit unavailable posture (W5D)', () => {
     const src = readSrc('pages/forge/batch/BatchCostRun.tsx');
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toContain('BACKEND_APPLY_CAPABLE');
+    expect(src).toContain('Governed batch cost run unavailable.');
+    expect(src).toContain("lane: 'Apply Endpoint'");
+    expect(src).not.toContain('DemoDataBanner');
   });
 });

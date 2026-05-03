@@ -15,6 +15,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { emitTrace, resetActionPolicy, setActionPolicy } from '../../../services/osActions';
 import { compilePolicyRules, type PolicyRule } from '../../../services/policyEngine';
 import { createPolicyStore } from '../../../services/policyStore';
+import { createStableId } from '../../../utils/stableId';
 
 // ============================================================================
 // Policy Store Instance
@@ -92,7 +93,7 @@ export function PolicyPanel() {
     }
 
     const newRule: PolicyRule = {
-      id: `rule-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: createStableId('rule'),
       effect: 'deny',
       ...(actionId && { actionId }),
       ...(suiteId && { suiteId }),

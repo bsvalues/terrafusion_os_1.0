@@ -19,7 +19,7 @@
 export interface Property {
   readonly parcelId: string;
   readonly countyCode: string;
-  harrisPacsId?: string;
+  assessmentSourceId?: string;
 
   // Location
   address: string;
@@ -42,7 +42,12 @@ export interface Property {
   // Physical
   landAcreage: number;
   yearBuilt: number;
-  buildingSquareFeet: number;
+  buildingSquareFeet: number;   // GLA proxy (above-grade finished area)
+  grossLivingArea?: number;     // Gross Living Area — above-grade only (USPAP)
+  basementSqft?: number;        // Below-grade area — excluded from GLA per USPAP
+  garageSqft?: number;          // Garage area — excluded from GLA per USPAP
+  lotWidthFront?: number;       // Lot frontage width in feet (PACS land_detail)
+  lotDepth?: number;            // Lot depth in feet (PACS land_detail)
   bedrooms?: number;
   bathrooms?: number;
 
@@ -107,8 +112,8 @@ export type AssessmentStatus =
   | 'sealed';
 
 export type DataSource =
-  | 'harris-pacs'
-  | 'harris-pacs-live'
+  | 'assessment-source'
+  | 'assessment-source-live'
   | 'manual-entry'
   | 'ai-enhancement'
   | 'batch-import'
@@ -454,12 +459,18 @@ export interface CountyAggregateStats {
   totalParcels: number;
   totalAssessedValue: number;
   averageAssessedValue: number;
-  medianAssessedValue: number;
-  assessedThisYear: number;
-  pendingAssessments: number;
-  activeAppeals: number;
-  totalLevyRevenue: number;
-  assessmentCompletionPercent: number;
+  /** null = not available from live backend — UI must show '—' */
+  medianAssessedValue: number | null;
+  /** null = not available from live backend */
+  assessedThisYear: number | null;
+  /** null = not available from live backend */
+  pendingAssessments: number | null;
+  /** null = not available from live backend */
+  activeAppeals: number | null;
+  /** null = not available from live backend */
+  totalLevyRevenue: number | null;
+  /** null = not available from live backend */
+  assessmentCompletionPercent: number | null;
   parcelsByType: Record<PropertyType, number>;
   parcelsByCity: Record<string, number>;
 }

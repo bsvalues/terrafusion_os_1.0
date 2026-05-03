@@ -161,7 +161,7 @@ describe('PropertySummary — Phase 5 honesty contract', () => {
         screen.getByText(/Displayed values reflect the loaded parcel summary for assessment year 2026\./i)
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/This route does not show a more precise as-of timestamp than that assessment year\. Source: PACS\./i)
+        screen.getByText(/This route does not show a more precise as-of timestamp than that assessment year\. Source: county assessment record\./i)
       ).toBeInTheDocument();
     });
   });

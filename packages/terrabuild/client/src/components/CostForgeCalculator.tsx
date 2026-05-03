@@ -30,7 +30,7 @@ interface CostCalculationResult {
   };
   confidence: number;
   factors: {
-    region: number;
+    revalArea: number;
     buildingType: number;
     quality: number;
     complexity: number;
@@ -40,7 +40,7 @@ interface CostCalculationResult {
 interface CalculationFormData {
   buildingType: string;
   squareFootage: number;
-  region: string;
+  revalArea: string;
   qualityLevel: string;
   complexityFactor: number;
   yearBuilt?: number;
@@ -59,10 +59,13 @@ const BUILDING_TYPES = [
   { value: 'W1', label: 'W1 - Warehouse', baseCost: 75 },
 ];
 
-const REGIONS = [
-  { value: 'CENTRAL_DISTRICT', label: 'Central District', factor: 1.0 },
-  { value: 'EAST_DISTRICT', label: 'East District', factor: 0.95 },
-  { value: 'WEST_DISTRICT', label: 'West District', factor: 1.05 },
+const REVAL_AREAS = [
+  { value: 'Reval 1', label: 'Reval 1 — Kennewick (Urban Core)', factor: 1.00 },
+  { value: 'Reval 2', label: 'Reval 2 — West Richland / Badger Mtn', factor: 1.05 },
+  { value: 'Reval 3', label: 'Reval 3 — North Richland / Horn Rapids', factor: 1.10 },
+  { value: 'Reval 4', label: 'Reval 4 — East Benton / Benton City', factor: 0.95 },
+  { value: 'Reval 5', label: 'Reval 5 — Prosser / Wine Country', factor: 0.90 },
+  { value: 'Reval 6', label: 'Reval 6 — Rural / Agricultural Lands', factor: 0.82 },
 ];
 
 const QUALITY_LEVELS = [
@@ -84,7 +87,7 @@ export default function CostForgeCalculator() {
   const [formData, setFormData] = useState<CalculationFormData>({
     buildingType: 'R1',
     squareFootage: 2000,
-    region: 'CENTRAL_DISTRICT',
+    revalArea: 'Reval 1',
     qualityLevel: 'STANDARD',
     complexityFactor: 1.0,
     stories: 1,
@@ -108,7 +111,7 @@ export default function CostForgeCalculator() {
       await new Promise(resolve => setTimeout(resolve, 800));
 
       const buildingType = BUILDING_TYPES.find(bt => bt.value === formData.buildingType);
-      const region = REGIONS.find(r => r.value === formData.region);
+      const region = REVAL_AREAS.find(r => r.value === formData.revalArea);
       const quality = QUALITY_LEVELS.find(q => q.value === formData.qualityLevel);
       const condition = CONDITIONS.find(c => c.value === formData.condition);
 
@@ -153,7 +156,7 @@ export default function CostForgeCalculator() {
         },
         confidence,
         factors: {
-          region: regionalFactor,
+          revalArea: regionalFactor,
           buildingType: baseCost,
           quality: qualityFactor,
           complexity: complexityFactor,
@@ -304,24 +307,24 @@ export default function CostForgeCalculator() {
                     />
                   </div>
 
-                  {/* Region */}
+                  {/* Reval Area (Cycle) */}
                   <div className="space-y-2">
-                    <Label className="text-cyan-300 font-semibold">Region</Label>
+                    <Label className="text-cyan-300 font-semibold">Reval Area (Cycle)</Label>
                     <Select
-                      value={formData.region}
-                      onValueChange={(value: string) => setFormData(prev => ({ ...prev, region: value }))}
+                      value={formData.revalArea}
+                      onValueChange={(value: string) => setFormData(prev => ({ ...prev, revalArea: value }))}
                     >
                       <SelectTrigger className="bg-white/10 border-cyan-500/20 text-cyan-100">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-[#1a2332] border-cyan-500/20">
-                        {REGIONS.map(region => (
+                        {REVAL_AREAS.map(ra => (
                           <SelectItem
-                            key={region.value}
-                            value={region.value}
+                            key={ra.value}
+                            value={ra.value}
                             className="text-cyan-100"
                           >
-                            {region.label}
+                            {ra.label}
                           </SelectItem>
                         ))}
                       </SelectContent>

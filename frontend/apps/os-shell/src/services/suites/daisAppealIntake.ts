@@ -12,6 +12,7 @@
 
 import { assertWriteLane } from '../writeLane';
 import { emitTraceEvent } from '../terraTrace';
+import { createStableId } from '../../utils/stableId';
 
 import type { AppealHandoffModel } from './dossierAppealHandoff';
 
@@ -48,7 +49,7 @@ export interface PacketValidityResult {
 // ============================================================================
 
 function generateAppealId(): string {
-  return `APL-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return createStableId('APL');
 }
 
 export function acceptAppealHandoff(handoff: AppealHandoffModel): IntakeResult {

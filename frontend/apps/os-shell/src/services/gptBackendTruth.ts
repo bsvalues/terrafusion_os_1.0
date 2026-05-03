@@ -17,7 +17,7 @@
 
 export type ImplementationStatus = 'real' | 'stub' | 'placeholder';
 export type AuthStatus = 'authorized' | 'anonymous' | 'role_gated';
-export type IsolationStatus = 'county_scoped' | 'unscoped' | 'hardcoded_county';
+export type IsolationStatus = 'county_scoped' | 'unscoped' | 'fixed_county';
 export type AlignmentStatus = 'aligned' | 'no_frontend_client' | 'no_backend_endpoint';
 
 export interface BackendEndpoint {
@@ -167,7 +167,7 @@ export const GPT_ANONYMOUS_ENDPOINTS: readonly BackendEndpoint[] = [
     route: '/api/gpt/rag/index/{datasetId}',
     implementation: 'real',
     auth: 'anonymous',
-    isolation: 'hardcoded_county',
+    isolation: 'fixed_county',
     alignment: 'aligned',
     persistence: 'ef_core',
     securityFinding: 'W2-GPT-A02',
@@ -222,7 +222,7 @@ export const GPT_ANONYMOUS_ENDPOINTS: readonly BackendEndpoint[] = [
     route: '/api/gpt/rag/benton_cama_basics/export',
     implementation: 'real',
     auth: 'anonymous',
-    isolation: 'hardcoded_county',
+    isolation: 'fixed_county',
     alignment: 'aligned',
     persistence: 'ef_core',
     securityFinding: 'W2-GPT-A07',
@@ -403,7 +403,7 @@ export function getAnonymousEndpoints(): readonly BackendEndpoint[] {
 /** Endpoints with county isolation gaps */
 export function getUnscopedEndpoints(): readonly BackendEndpoint[] {
   return ALL_ENDPOINTS.filter(
-    (e) => e.isolation === 'unscoped' || e.isolation === 'hardcoded_county',
+    (e) => e.isolation === 'unscoped' || e.isolation === 'fixed_county',
   );
 }
 

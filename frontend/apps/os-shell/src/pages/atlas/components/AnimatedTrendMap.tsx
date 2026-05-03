@@ -30,23 +30,10 @@ export interface AnimatedTrendMapProps {
 }
 
 // ---------------------------------------------------------------------------
-// Default data
+// Empty data
 // ---------------------------------------------------------------------------
 
-const DEFAULT_FRAMES: TrendFrame[] = Array.from({ length: 8 }, (_, i) => {
-  const year = 2019 + i;
-  return {
-    timestamp: `${year}-01-01`,
-    label: String(year),
-    areas: [
-      { id: 'a1', name: 'Downtown', value: 120 + i * 15 + Math.round(Math.random() * 10), center: [46.23, -119.2] },
-      { id: 'a2', name: 'Riverside', value: 85 + i * 12 + Math.round(Math.random() * 8), center: [46.24, -119.21] },
-      { id: 'a3', name: 'West Hills', value: 95 + i * 10 + Math.round(Math.random() * 12), center: [46.25, -119.23] },
-      { id: 'a4', name: 'Eastgate', value: 60 + i * 8 + Math.round(Math.random() * 6), center: [46.22, -119.18] },
-      { id: 'a5', name: 'Southridge', value: 110 + i * 14 + Math.round(Math.random() * 10), center: [46.21, -119.22] },
-    ],
-  };
-});
+const EMPTY_FRAMES: TrendFrame[] = [];
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -70,7 +57,7 @@ function interpolateColor(lowHex: string, highHex: string, t: number): string {
 // ---------------------------------------------------------------------------
 
 export default function AnimatedTrendMap({
-  frames = DEFAULT_FRAMES,
+  frames = EMPTY_FRAMES,
   valueLabel = 'Activity',
   colorScale = { low: '#22C55E', mid: '#F59E0B', high: '#EF4444' },
   className = '',
@@ -82,6 +69,7 @@ export default function AnimatedTrendMap({
   const currentFrame = frames[frameIndex] ?? frames[0];
 
   const { minValue, maxValue } = useMemo(() => {
+    if (frames.length === 0) return { minValue: 0, maxValue: 0 };
     let min = Infinity;
     let max = -Infinity;
     frames.forEach((f) =>
@@ -122,6 +110,7 @@ export default function AnimatedTrendMap({
   }, [isPlaying, frames.length]);
 
   const togglePlay = useCallback(() => {
+    if (frames.length === 0) return;
     if (frameIndex >= frames.length - 1) {
       setFrameIndex(0);
       setIsPlaying(true);
@@ -139,6 +128,12 @@ export default function AnimatedTrendMap({
     <div className={`flex flex-col bg-terra-midnight text-white rounded-lg border border-white/10 overflow-hidden ${className}`}>
       {/* Map area */}
       <div className="flex-1 relative min-h-[300px]">
+        {!currentFrame && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center text-sm text-white/50">
+            No governed trend frames loaded.
+          </div>
+        )}
+
         <div className="absolute inset-0 opacity-10">
           <svg width="100%" height="100%">
             <defs>
@@ -218,8 +213,9 @@ export default function AnimatedTrendMap({
         <input
           type="range"
           min="0"
-          max={frames.length - 1}
+          max={Math.max(frames.length - 1, 0)}
           value={frameIndex}
+          disabled={frames.length === 0}
           onChange={handleScrub}
           className="flex-1 accent-terra-cyan h-1"
           aria-label="Timeline scrubber"

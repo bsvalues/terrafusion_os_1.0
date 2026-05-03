@@ -1,0 +1,62 @@
+{
+  "checkedAt": "2026-04-30T20:40:31.125Z",
+  "slice": "statistics-shell-cleanup-and-import-graph-verification",
+  "status": "PASS_WITH_SOURCE_RETAINED",
+  "decision": "IMPORT_GRAPH_CLEAN_STANDALONE_SHELL_SOURCE_RETAINED_FOR_DIRTY_TREE_CLEANUP",
+  "shellSource": {
+    "path": "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx",
+    "exists": true,
+    "retainedReason": "No production importers remain, but source deletion is deferred because this working tree already has uncommitted edits in StatisticsStudio.tsx.",
+    "bytes": 14941
+  },
+  "shellReferences": [],
+  "checks": [
+    {
+      "id": "statistics-studio-shell-has-no-production-importers",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src"
+      ],
+      "note": "No frontend production source imports or renders the retired StatisticsStudio shell."
+    },
+    {
+      "id": "module-renderer-shell-path-is-removed",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/config/moduleComponents.tsx:63",
+        "frontend/apps/os-shell/src/config/moduleComponents.tsx"
+      ],
+      "note": "The renderer no longer owns a standalone Statistics Studio path; legacy id normalization opens County Studio."
+    },
+    {
+      "id": "retired-shell-filtered-from-default-module-catalog",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/config/modules.ts:63",
+        "frontend/apps/os-shell/src/config/modules.ts:67"
+      ],
+      "note": "Generated catalog metadata may remain, but Statistics Studio is filtered from default Gen2 modules."
+    },
+    {
+      "id": "county-studio-keeps-shared-statistics-panels-live",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx"
+      ],
+      "note": "Shared analytics panels are still imported and used by County Studio."
+    },
+    {
+      "id": "standalone-shell-closure-evidence-is-green",
+      "passed": true,
+      "proof": [
+        "os-platform/core/pilot/evidence/statistics-studio-standalone-shell-closure.latest.json"
+      ],
+      "note": "The standalone shell closure proof remains green."
+    }
+  ],
+  "failures": [],
+  "nextClosure": [
+    "Remove StatisticsStudio.tsx only in a clean-tree cleanup after preserving or discarding the existing unrelated edits intentionally.",
+    "Do not remove shared statistics panels; County Studio imports them as native analytics capabilities."
+  ]
+}

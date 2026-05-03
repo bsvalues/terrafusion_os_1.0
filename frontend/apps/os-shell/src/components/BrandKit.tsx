@@ -153,7 +153,7 @@ const BrandKit: React.FC = () => {
               letterSpacing: '2px',
             }}
           >
-            Government. Transcended.
+            Governed Operator Surface
           </div>
 
           <div
@@ -353,7 +353,7 @@ const BrandKit: React.FC = () => {
                     letterSpacing: '-2px',
                   }}
                 >
-                  Government. Transcended.
+                  Governed Operator Surface
                 </div>
               </div>
 
@@ -468,7 +468,7 @@ const BrandKit: React.FC = () => {
             letterSpacing: '2px',
           }}
         >
-          Government. Transcended.
+          Governed Operator Surface
         </div>
       </footer>
     </div>

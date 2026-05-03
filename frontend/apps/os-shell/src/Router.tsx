@@ -1,11 +1,12 @@
-import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import React, { Suspense, lazy, useEffect } from 'react';
+import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { AuthGuard, AuthProvider } from './auth/AuthProvider';
 import { ErrorBoundary } from './components/errors/ErrorBoundary';
 import { LegacyRedirect } from './components/legacy/LegacyRedirect';
 import { getViteEnv } from './env/getViteEnv';
+import { activateFromRoute } from './orchestration/moduleActivation';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -60,17 +61,35 @@ const PropertyClerk = lazy(() => import('./pages/workbench/tabs/PropertyClerk'))
 const PropertyTreasury = lazy(() => import('./pages/workbench/tabs/PropertyTreasury'));
 const PropertyAudit = lazy(() => import('./pages/workbench/tabs/PropertyAudit'));
 
+// OPS-1-B: Sync Readiness Console — read-only operator control
+// surface that consumes the OPS-1-A backend facade. Per the OPS-1
+// policy at docs/workbench/sync-readiness-console-policy.md.
+const SyncReadinessConsole = lazy(
+  () => import('./pages/workbench/sync-readiness/SyncReadinessConsole'),
+);
+
 const Monitoring = lazy(() => import('./pages/Monitoring'));
 const TerraFusionMarketplace = lazy(
   () => import('./components/marketplace/TerraFusionMarketplace')
 );
+const ResearchPortal = lazy(() => import('./components/research/ResearchPortal'));
+const ResearchProviders = lazy(() => import('./context/ResearchContext'));
 const ExperimentsList = lazy(() => import('./pages/experiments/ExperimentsList'));
 const CreateExperiment = lazy(() => import('./pages/experiments/CreateExperiment'));
 const NotificationPreferences = lazy(() => import('./components/codex/NotificationPreferences'));
 
+// TerraForge County Studio (Plan 2) + Atlas Live View (Plan 3)
+const CountyStudyPage = lazy(() =>
+  import('./pages/forge/county-studio/CountyStudyPage').then((m) => ({ default: m.CountyStudyPage }))
+);
+const AtlasLivePage = lazy(() =>
+  import('./pages/forge/atlas-live/AtlasLivePage').then((m) => ({ default: m.AtlasLivePage }))
+);
+
 // Gen2 Module Routes
 const TerraForgeGen2 = lazy(() => import('./pages/gen2/TerraForgeGen2'));
 const TerraDossierGen2 = lazy(() => import('./pages/gen2/TerraDossierGen2'));
+const TerraLevyGen2 = lazy(() => import('./pages/gen2/TerraLevyGen2'));
 
 // Suite Wrappers (Phase 5: MWUX Slices)
 // TerraPrimeSuite — replaced by native PropertySearch page (legacy redirect active)
@@ -106,6 +125,17 @@ const LegacyMetricsViewer = lazy(() => import('./pages/dev/LegacyMetricsViewer')
 
 // Phase 17: Login page (auth redirect target)
 const LoginPage = lazy(() => import('./pages/LoginPage'));
+
+const ModuleRouteHandoff: React.FC<{ moduleId: string }> = ({ moduleId }) => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    void activateFromRoute(moduleId);
+    navigate('/', { replace: true });
+  }, [moduleId, navigate]);
+
+  return <LoadingFallback />;
+};
 
 const Router: React.FC = () => {
   return (
@@ -171,8 +201,22 @@ const Router: React.FC = () => {
                     element={<LegacyRedirect to='/' legacyAppId='modules.property-workbench' />}
                   />
 
+                  {/* OPS-1-B: Sync Readiness Console */}
+                  <Route
+                    path='workbench/sync-readiness'
+                    element={<SyncReadinessConsole />}
+                  />
+
                   <Route path='monitoring' element={<Monitoring />} />
                   <Route path='marketplace' element={<TerraFusionMarketplace />} />
+                  <Route
+                    path='elite-research'
+                    element={
+                      <ResearchProviders>
+                        <ResearchPortal />
+                      </ResearchProviders>
+                    }
+                  />
                   <Route path='experiments' element={<ExperimentsList />} />
                   <Route path='experiments/create' element={<CreateExperiment />} />
                   <Route path='codex/preferences' element={<NotificationPreferences />} />
@@ -180,6 +224,7 @@ const Router: React.FC = () => {
                   {/* Gen2 Module Routes - Internal OS modules */}
                   <Route path='gen2/terraforge' element={<TerraForgeGen2 />} />
                   <Route path='gen2/dossier' element={<TerraDossierGen2 />} />
+                    <Route path='gen2/terralevy' element={<TerraLevyGen2 />} />
 
                   {/* Suite Routes (Phase 5: MWUX Slices) */}
                   {/* TerraPrime → migrated to native PropertySearch (legacy redirect with telemetry) */}
@@ -187,6 +232,10 @@ const Router: React.FC = () => {
 
                   {/* Constitutional Suite Home Routes (Phase 9) */}
                   <Route path='forge' element={<ForgeHome />} />
+                  {/* TerraForge County Studio */}
+                  <Route path='forge/county-studio' element={<CountyStudyPage />} />
+                  {/* Atlas Live View */}
+                  <Route path='forge/atlas-live' element={<AtlasLivePage />} />
                   <Route path='atlas' element={<AtlasHome />} />
                   <Route path='dais' element={<DaisHome />} />
                   <Route path='dossier' element={<DossierHome />} />

@@ -8,14 +8,7 @@ import {
   YAxis,
 } from 'recharts';
 
-// Mock Data
-const DATA = [
-  { name: 'Jan', value: 4000 },
-  { name: 'Feb', value: 3000 },
-  { name: 'Mar', value: 5000 },
-  { name: 'Apr', value: 2780 },
-  { name: 'May', value: 1890 },
-];
+const DATA: Array<{ name: string; value: number }> = [];
 
 export const StrategyDashboard = () => {
   // 1. EXTRACT TOKENS AS STRINGS
@@ -40,8 +33,9 @@ export const StrategyDashboard = () => {
         VALUATION VELOCITY
       </h3>
 
-      <ResponsiveContainer width='100%' height='100%'>
-        <LineChart data={DATA}>
+      {DATA.length > 0 ? (
+        <ResponsiveContainer width='100%' height='100%'>
+          <LineChart data={DATA}>
           <CartesianGrid strokeDasharray='3 3' stroke={gridColor} />
           <XAxis
             dataKey='name'
@@ -73,8 +67,13 @@ export const StrategyDashboard = () => {
             dot={{ fill: lineColor, strokeWidth: 0, r: 4 }}
             activeDot={{ r: 6, stroke: 'var(--tf-substrate)', strokeWidth: 2 }}
           />
-        </LineChart>
-      </ResponsiveContainer>
+          </LineChart>
+        </ResponsiveContainer>
+      ) : (
+        <div className='flex h-full items-center justify-center text-xs text-[var(--tf-foreground-muted)]'>
+          No governed valuation velocity data loaded.
+        </div>
+      )}
     </div>
   );
 };

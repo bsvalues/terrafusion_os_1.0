@@ -49,7 +49,17 @@ function buildPilotHeaders(): Record<string, string> {
 // TYPE DEFINITIONS (mirrors os-platform/core/types)
 // ═══════════════════════════════════════════════════════════════
 
-export type Suite = 'forge' | 'atlas' | 'dais' | 'dossier' | 'os' | 'pilot' | 'gpt';
+export type Suite =
+  | 'forge'
+  | 'atlas'
+  | 'dais'
+  | 'dossier'
+  | 'audit'
+  | 'clerk'
+  | 'treasury'
+  | 'os'
+  | 'pilot'
+  | 'gpt';
 export type Risk = 'read_only' | 'write_low' | 'write_high' | 'irreversible';
 export type Mode = 'pilot' | 'muse';
 export type PiiHandling = 'none' | 'sanitize' | 'payload_ref';
@@ -369,7 +379,7 @@ export async function invokePilotTool(request: PilotInvokeRequest): Promise<Pilo
 
   // Normalize confirmation to flat wire format (INVOKE_CONTRACT.md)
   const { confirmation, reasonCode, supervisorApproval, ...rest } = request;
-  let wireBody: Record<string, unknown> = { ...rest };
+  const wireBody: Record<string, unknown> = { ...rest };
 
   if (typeof confirmation === 'object' && confirmation !== null) {
     // Nested form → flatten

@@ -40,7 +40,7 @@ namespace TerraFusion.Core.Interfaces
 
         /// <summary>
         /// Step 4: Execute CostForge AI valuation calculation
-        /// Quantum-enhanced building cost estimation with Marshall &amp; Swift integration
+        /// Quantum-enhanced building cost estimation using Benton County locally calibrated cost schedules
         /// Target: &lt;2 second calculation time, 99.9% IAAO accuracy
         /// </summary>
         Task<CostForgeValuationResult> ExecuteCostForgeValuationAsync(PropertyData propertyData, AISwarmAnalysisResult swarmAnalysis);

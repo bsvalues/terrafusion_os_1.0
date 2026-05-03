@@ -1,11 +1,3 @@
-/*
- * ═══════════════════════════════════════════════════════════════
- * AI ASSISTANT CONTROLLER - API Endpoints for County Employees
- * TerraFusion.API - Elite Government AI Integration
- * Government. Transcended.
- * ═══════════════════════════════════════════════════════════════
- */
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -160,12 +152,12 @@ namespace TerraFusion.API.Controllers
         {
             return Ok(new
             {
-                status = "healthy",
+                status = "partial",
                 service = "AI Assistant",
                 timestamp = DateTime.UtcNow,
                 version = "1.0.0",
-                consciousness_engine_port = 3004,
-                quantum_optimization_factor = 949
+                mode = "compatibility",
+                message = "County-scoped assistant messaging and swarm-status routes are mounted. Governed execution, optimization, and model telemetry are not asserted by this health endpoint."
             });
         }
     }

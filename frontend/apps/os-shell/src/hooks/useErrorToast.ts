@@ -41,10 +41,10 @@ export interface ErrorToastReporter {
 }
 
 // ============================================================================
-// Default Options
+// Base Options
 // ============================================================================
 
-const DEFAULT_OPTIONS: Required<ErrorToastOptions> = {
+const ERROR_TOAST_OPTIONS: Required<ErrorToastOptions> = {
   showToast: true,
   duration: 5000,
   errorType: 'error',
@@ -92,8 +92,7 @@ export function useErrorToast(
   componentName: string,
   options: ErrorToastOptions = {}
 ): ErrorToastReporter {
-  // Merge options with defaults
-  const opts = { ...DEFAULT_OPTIONS, ...options };
+  const opts = { ...ERROR_TOAST_OPTIONS, ...options };
 
   // Get base error reporter
   const baseReporter = useErrorReporter(componentName);

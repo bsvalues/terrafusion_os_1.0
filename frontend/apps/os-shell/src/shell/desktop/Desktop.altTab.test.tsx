@@ -11,10 +11,20 @@
 import { vi, type Mock, describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAltTabStore } from '../../stores/altTabStore';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { makeWindow } from '../../test/factories/windowFactory';
 import { Desktop } from './Desktop';
+
+const desktopWrapper = ({ children }: { children: React.ReactNode }) => {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>{children}</MemoryRouter>
+    </QueryClientProvider>
+  );
+};
 
 // Mock stores and hooks
 vi.mock('../../stores/desktopStore', async () => {
@@ -39,11 +49,20 @@ vi.mock('../../stores/desktopStore', async () => {
 
 vi.mock('../../stores/altTabStore');
 vi.mock('../../stores/startMenuStore', () => ({
-  useStartMenuStore: vi.fn(() => ({
-    isOpen: false,
-    toggle: vi.fn(),
-    close: vi.fn(),
-  })),
+  useStartMenuStore: vi.fn((selector?: (state: any) => any) => {
+    const state = {
+      isOpen: false,
+      searchQuery: '',
+      pinnedApps: [],
+      allApps: [],
+      focusedIndex: -1,
+      focusedSection: 'search',
+      toggle: vi.fn(),
+      close: vi.fn(),
+      setSearchQuery: vi.fn(),
+    };
+    return selector ? selector(state) : state;
+  }),
 }));
 
 vi.mock('react-i18next', () => ({
@@ -132,7 +151,7 @@ describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
   });
 
   it('should open Alt+Tab on Alt+Tab keydown', () => {
-    render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+    render(<Desktop />, { wrapper: desktopWrapper });
     fireEvent.keyDown(document, {
       key: 'Tab',
       altKey: true,
@@ -142,7 +161,7 @@ describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
   });
 
   it('should exclude minimized windows from Alt+Tab candidates', () => {
-    render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+    render(<Desktop />, { wrapper: desktopWrapper });
     fireEvent.keyDown(document, {
       key: 'Tab',
       altKey: true,
@@ -165,7 +184,7 @@ describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
       return selector ? selector(state) : state;
     });
 
-    render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+    render(<Desktop />, { wrapper: desktopWrapper });
     fireEvent.keyDown(document, { key: 'Tab', target: { tagName: 'DIV' } });
     expect(mockNextAltTab).toHaveBeenCalled();
   });
@@ -184,7 +203,7 @@ describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
       return selector ? selector(state) : state;
     });
 
-    render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+    render(<Desktop />, { wrapper: desktopWrapper });
     fireEvent.keyDown(document, {
       key: 'Tab',
       shiftKey: true,
@@ -212,7 +231,7 @@ describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
       return selector ? selector(state) : state;
     });
 
-    render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+    render(<Desktop />, { wrapper: desktopWrapper });
     // First press Alt+Tab to set the ref (even though switcher is already "open" in mock)
     fireEvent.keyDown(document, {
       key: 'Tab',
@@ -239,13 +258,13 @@ describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
       return selector ? selector(state) : state;
     });
 
-    render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+    render(<Desktop />, { wrapper: desktopWrapper });
     fireEvent.keyDown(document, { key: 'Escape', target: { tagName: 'DIV' } });
     expect(mockCancelAltTab).toHaveBeenCalled();
   });
 
   it('should not open Alt+Tab when typing in input field', () => {
-    render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+    render(<Desktop />, { wrapper: desktopWrapper });
     const input = document.createElement('input');
     document.body.appendChild(input);
     input.focus();
@@ -257,7 +276,7 @@ describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
   });
 
   it('should sort candidates by zIndex descending', () => {
-    render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+    render(<Desktop />, { wrapper: desktopWrapper });
     fireEvent.keyDown(document, {
       key: 'Tab',
       altKey: true,
@@ -309,7 +328,7 @@ describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
       return selector ? selector(state) : state;
     });
 
-    render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+    render(<Desktop />, { wrapper: desktopWrapper });
     fireEvent.keyDown(document, {
       key: 'Tab',
       altKey: true,
@@ -355,7 +374,7 @@ describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
       return selector ? selector(state) : state;
     });
 
-    render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+    render(<Desktop />, { wrapper: desktopWrapper });
     fireEvent.keyDown(document, {
       key: 'Tab',
       altKey: true,

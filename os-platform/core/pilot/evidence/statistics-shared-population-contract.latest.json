@@ -1,0 +1,814 @@
+{
+  "checkedAt": "2026-04-30T18:53:23.232Z",
+  "slice": "statistics-shared-population-contract",
+  "status": "PASS",
+  "decision": "PATH_A_IMPLEMENTED_SHARED_PARITY_MODE_PROVEN",
+  "apiBase": "http://localhost:5046/api",
+  "scopeProof": {
+    "path": "os-platform/core/pilot/evidence/statistics-parity-scope-alignment.latest.json",
+    "status": "BLOCKED_SCOPE_MISMATCH",
+    "rootCause": "scope_mismatch_different_population_definitions",
+    "countDifference": {
+      "countyStudioHealthRatioCount": 5559,
+      "terraForgeCountWithRatio": 36,
+      "delta": 5523
+    }
+  },
+  "study": {
+    "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+    "countyId": "19190019-1919-1919-1919-191919191919",
+    "taxYear": 2026,
+    "countyName": "Benton County",
+    "status": "Draft",
+    "activeSegmentSetId": "91587edb-c234-416d-8968-a32f47582352"
+  },
+  "currentMetrics": {
+    "countyStudioHealth": {
+      "countLabel": "ratioCount",
+      "count": 5559,
+      "medianRatio": 0.9268,
+      "cod": 41.28,
+      "prd": 1.3993
+    },
+    "terraForgeRatioStudy": {
+      "countLabel": "countWithRatio",
+      "count": 36,
+      "outliersExcluded": 1,
+      "medianRatio": 0.7224,
+      "cod": 40.24,
+      "prd": 2.1352,
+      "weightedMeanRatio": 0.3053,
+      "prb": -0.1672
+    },
+    "overlap": {
+      "sharedSaleRows": 36,
+      "healthSaleRowsNotInTerraForge": 5686,
+      "terraForgeSaleRowsNotInHealth": 0
+    }
+  },
+  "sourcePresence": {
+    "countyHealthUsesParcelRollup": true,
+    "countyHealthUsesHealthQualificationRule": true,
+    "terraForgeUsesRatioStudyLens": true,
+    "terraForgeUsesParcelNumberAssessedJoin": true,
+    "countyWorkbenchStillHasBentonReferenceLane": false,
+    "countyStudyStatisticsCompatEndpoint": true,
+    "countyStudyStatisticsCompatDtoContract": true,
+    "countyWorkbenchStatisticsCompatMode": true
+  },
+  "sharedParityContract": {
+    "id": "statistics_ratio_study_compat_v1",
+    "intent": "Give County Studio a same-population parity mode that can be compared honestly against the existing Statistics/TerraForge ratio-study lens.",
+    "parityTarget": "TerraForge ratio-study compatibility, not County Studio health summary equivalence.",
+    "rules": [
+      {
+        "field": "county",
+        "value": "Exact countyId 19190019-1919-1919-1919-191919191919",
+        "reason": "Avoid Benton/default/fallback contamination."
+      },
+      {
+        "field": "tax year",
+        "value": "Exact taxYear 2026",
+        "reason": "Both surfaces must use the same assessment year."
+      },
+      {
+        "field": "comparison unit",
+        "value": "qualified sale ratio row",
+        "reason": "Statistics Studio ratio-study is sale-row based; County Studio health is parcel-rollup based and must not be used as the parity comparator."
+      },
+      {
+        "field": "assessed value join",
+        "value": "ComparableSales.ParcelId resolved to the canonical parcel identity used for Properties assessed value; report ParcelId vs ParcelNumber mapping and unmatched counts.",
+        "reason": "Current surfaces disagree: County Studio health joins through Properties.ParcelId while TerraForge ratio-study joins through Properties.ParcelNumber."
+      },
+      {
+        "field": "sale window",
+        "value": "SalesYear=2026, or null SalesYear with SaleDate >= Jan 1 2024 and < Jan 1 2026",
+        "reason": "Matches the current Statistics/TerraForge ratio-study lens for immediate parity compatibility."
+      },
+      {
+        "field": "qualification rule",
+        "value": "QualificationDecision == qualified, or null decision with QualificationRecommendation == qualified/null; additionally report SaleQualification-only inclusions as conversion-sensitive, not silent truth.",
+        "reason": "Matches current ratio-study compatibility while making 2017 conversion-sensitive fallback risk visible."
+      },
+      {
+        "field": "suppression/no-calc",
+        "value": "Exclude SuppressOnRatioRptCd=T and IncludeNoCalc=true.",
+        "reason": "Matches current Statistics/TerraForge ratio-study and avoids known non-ratio-report rows."
+      },
+      {
+        "field": "outlier policy",
+        "value": "Report countWithRatio before trimming; compute stats on Tukey/IQR-trimmed rows; report outliersExcluded.",
+        "reason": "Matches current ratio-study statistics semantics."
+      },
+      {
+        "field": "segment/cohort scope",
+        "value": "County-wide by default; optional activeSegmentSetId/segmentId/cohortId filters may be added, but every response must echo the applied scope.",
+        "reason": "Keeps Statistics parity county-wide while allowing County Studio scoped drilldowns without changing metric meaning."
+      },
+      {
+        "field": "trust posture",
+        "value": "Benton Production Provisional / Sync-Derived / Converted Legacy Sensitive until qualification lineage is closed.",
+        "reason": "Prevents 2017 conversion-sensitive qualified-sale fields from being treated as production-verified proof."
+      }
+    ]
+  },
+  "apiParity": {
+    "reachable": true,
+    "status": "PASS",
+    "contractOk": true,
+    "compat": {
+      "studyId": "52eb120f-99d3-4790-a69c-49b6de80cd5e",
+      "countyId": "19190019-1919-1919-1919-191919191919",
+      "taxYear": 2026,
+      "mode": "StatisticsCompat",
+      "contractId": "statistics_ratio_study_compat_v1",
+      "population": "qualified sale ratio rows",
+      "identityJoin": "ComparableSales.ParcelId -> Properties.ParcelNumber",
+      "saleWindow": {
+        "taxYear": 2026,
+        "lookbackStart": "2024-01-01T00:00:00Z",
+        "lookbackEndExclusive": "2026-01-01T00:00:00Z",
+        "rule": "SalesYear=2026, or null SalesYear with SaleDate >= 2024-01-01 and < 2026-01-01"
+      },
+      "qualificationPolicy": "QualificationDecision == qualified, or null decision with QualificationRecommendation == qualified/null.",
+      "suppressionPolicy": "Exclude SuppressOnRatioRptCd=T and IncludeNoCalc=true.",
+      "outlierPolicy": "Report countWithRatio before trimming; compute stats on Tukey/IQR-trimmed rows.",
+      "trustPosture": [
+        "Production Provisional",
+        "Sync-Derived",
+        "Converted Legacy Sensitive"
+      ],
+      "totalSales": 36,
+      "countWithRatio": 36,
+      "outliersExcluded": 1,
+      "trimmedCount": 35,
+      "medianRatio": 0.7224,
+      "meanRatio": 0.6519,
+      "weightedMeanRatio": 0.3053,
+      "cod": 40.24,
+      "prd": 2.1352,
+      "prb": -0.1672,
+      "cov": 52.21,
+      "tierSlope": -0.1672,
+      "tierMedians": {
+        "q1": 0.7046,
+        "q2": 0.9319,
+        "q3": 0.9422,
+        "q4": 0.1866
+      },
+      "conversionSensitiveCounts": {
+        "candidateRows": 52,
+        "decisionQualifiedRows": 0,
+        "recommendationQualifiedRows": 36,
+        "recommendationNullDefaultQualifiedRows": 0,
+        "saleQualificationOnlyQualifiedRows": 0,
+        "suppressedExcludedRows": 0,
+        "includeNoCalcExcludedRows": 0,
+        "salesYearAssignedRows": 52,
+        "nullSalesYearWindowRows": 0
+      },
+      "parcelIdentityReconciliation": {
+        "joinMode": "ComparableSales.ParcelId -> Properties.ParcelNumber",
+        "saleRows": 36,
+        "distinctSaleParcelIds": 36,
+        "matchedPropertyRows": 36,
+        "countWithRatio": 36,
+        "unmatchedSaleRows": 0
+      },
+      "computedAt": "2026-04-30T18:53:23.1949633Z"
+    },
+    "terraForgeRatioStudy": {
+      "taxYear": 2026,
+      "total": 36,
+      "countWithRatio": 36,
+      "outliersExcluded": 1,
+      "iaaoCompliant": false,
+      "complianceNotes": [
+        "COD 40.2 ✗ (< 15.0)",
+        "PRD 2.135 ✗ (0.98–1.03)",
+        "PRB -0.167 ✗ (|PRB| < 0.05)",
+        "Median 0.722 ✗ (0.90–1.10)"
+      ],
+      "stats": {
+        "medianRatio": 0.7224,
+        "meanRatio": 0.6519,
+        "weightedMeanRatio": 0.3053,
+        "cod": 40.24,
+        "prd": 2.1352,
+        "prb": -0.1672,
+        "cov": 52.21,
+        "tierSlope": -0.1672,
+        "tierMedians": {
+          "q1": 0.7046,
+          "q2": 0.9319,
+          "q3": 0.9422,
+          "q4": 0.1866
+        }
+      },
+      "filters": {
+        "taxYear": 2026,
+        "hood": null,
+        "propertyType": null
+      },
+      "page": 1,
+      "pageSize": 50,
+      "items": [
+        {
+          "saleId": "be2a4161-cac7-405c-a26b-54fcc7e77889",
+          "parcelId": "40MW11900000000",
+          "saleDate": "2026-01-13T00:00:00Z",
+          "salePrice": 42000,
+          "rawSalePrice": 42000,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.335,
+          "gla": 938,
+          "yearBuilt": 1978,
+          "hood": "41030",
+          "propertyType": "MH",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "aa0f13be-ad53-4ae0-8e1a-1971b33c4d6e",
+          "parcelId": "101974030000025",
+          "saleDate": "2026-01-08T00:00:00Z",
+          "salePrice": 605000,
+          "rawSalePrice": 605000,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.9604793388429752,
+          "gla": 2411,
+          "yearBuilt": 2011,
+          "hood": "15041",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "c78657dd-4646-4a05-ad39-fca821010e45",
+          "parcelId": "118971040000013",
+          "saleDate": "2026-01-08T00:00:00Z",
+          "salePrice": 334900,
+          "rawSalePrice": 334900,
+          "adjustedSalePrice": null,
+          "salesRatio": 1.041266049567035,
+          "gla": 1573,
+          "yearBuilt": 2012,
+          "hood": "14011",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "e7d0dc19-04a8-436b-8d64-7f08a8b6cf3d",
+          "parcelId": "127982090000012",
+          "saleDate": "2026-01-08T00:00:00Z",
+          "salePrice": 505000,
+          "rawSalePrice": 505000,
+          "adjustedSalePrice": null,
+          "salesRatio": 1.0204950495049505,
+          "gla": 2160,
+          "yearBuilt": 2008,
+          "hood": "16171",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "ffedc4b6-8cba-4e6c-bec0-2f3ac8e63b98",
+          "parcelId": "106984030000011",
+          "saleDate": "2026-01-08T00:00:00Z",
+          "salePrice": 470700,
+          "rawSalePrice": 470700,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.8977905247503718,
+          "gla": 1768,
+          "yearBuilt": 2025,
+          "hood": "15053",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "15834798-00c1-442d-a43a-295980a42118",
+          "parcelId": "113894070000005",
+          "saleDate": "2026-01-08T00:00:00Z",
+          "salePrice": 365500,
+          "rawSalePrice": 365500,
+          "adjustedSalePrice": null,
+          "salesRatio": 1.0224623803009576,
+          "gla": 1664,
+          "yearBuilt": 1970,
+          "hood": "12091",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "7a770a1f-cee8-463a-8d39-e4b3637e3dfa",
+          "parcelId": "121972060005001",
+          "saleDate": "2026-01-08T00:00:00Z",
+          "salePrice": 498900,
+          "rawSalePrice": 498900,
+          "adjustedSalePrice": null,
+          "salesRatio": 1.0426137502505513,
+          "gla": 1864,
+          "yearBuilt": 2016,
+          "hood": "14031",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "99090091-a34f-42f1-af5f-bbdbdfc91e33",
+          "parcelId": "40MH16610000000",
+          "saleDate": "2026-01-08T00:00:00Z",
+          "salePrice": 138300,
+          "rawSalePrice": 138300,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.6877801879971077,
+          "gla": 1620,
+          "yearBuilt": 2018,
+          "hood": "424030DWN",
+          "propertyType": "MH",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "1cc36d9c-a4e3-4e60-91c2-aa40a387a006",
+          "parcelId": "110893030000079",
+          "saleDate": "2026-01-07T00:00:00Z",
+          "salePrice": 462000,
+          "rawSalePrice": 462000,
+          "adjustedSalePrice": null,
+          "salesRatio": 1.0277705627705627,
+          "gla": 1966,
+          "yearBuilt": 2006,
+          "hood": "11161",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "15dac3ec-c992-40b4-a4ba-e9fc9514c912",
+          "parcelId": "111982020617022",
+          "saleDate": "2026-01-07T00:00:00Z",
+          "salePrice": 2385000,
+          "rawSalePrice": 2385000,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.48085953878406706,
+          "gla": 7380,
+          "yearBuilt": 1991,
+          "hood": "66000",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "fc416efd-0f15-4027-ad50-8fcc106a13c9",
+          "parcelId": "126981020007001",
+          "saleDate": "2026-01-07T00:00:00Z",
+          "salePrice": 475000,
+          "rawSalePrice": 475000,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.742378947368421,
+          "gla": 1886,
+          "yearBuilt": 1977,
+          "hood": "16132",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "fe11a79a-a59c-4bc2-9a5e-a55c7032396d",
+          "parcelId": "111982020617024",
+          "saleDate": "2026-01-07T00:00:00Z",
+          "salePrice": 2385000,
+          "rawSalePrice": 2385000,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.5022893081761006,
+          "gla": 7380,
+          "yearBuilt": 1991,
+          "hood": "66000",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "6f08d055-4bf0-455c-befa-de99e64fbe8a",
+          "parcelId": "102891030003008",
+          "saleDate": "2026-01-07T00:00:00Z",
+          "salePrice": 350000,
+          "rawSalePrice": 350000,
+          "adjustedSalePrice": null,
+          "salesRatio": 1.0478571428571428,
+          "gla": 1323,
+          "yearBuilt": 2023,
+          "hood": "12010",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "74e9aace-4d50-4630-a5d6-e4d7baca482d",
+          "parcelId": "117892100000007",
+          "saleDate": "2026-01-07T00:00:00Z",
+          "salePrice": 409900,
+          "rawSalePrice": 409900,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.9318858258111734,
+          "gla": 1407,
+          "yearBuilt": 2025,
+          "hood": "13171",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "8d3d2e0c-3339-4093-8c5f-f1501019c3e9",
+          "parcelId": "40MW17000000000",
+          "saleDate": "2026-01-07T00:00:00Z",
+          "salePrice": 8000,
+          "rawSalePrice": 8000,
+          "adjustedSalePrice": null,
+          "salesRatio": 2.625,
+          "gla": 1050,
+          "yearBuilt": 1983,
+          "hood": "41030",
+          "propertyType": "MH",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "4e41ed4f-c2d4-44a8-9c5a-3a372fe1be7e",
+          "parcelId": "102983020729001",
+          "saleDate": "2026-01-06T00:00:00Z",
+          "salePrice": 420652,
+          "rawSalePrice": 420652,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.8528665024771069,
+          "gla": 1800,
+          "yearBuilt": 1944,
+          "hood": "16081",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "0c39c6a2-eced-42bc-99c0-12890481f0b1",
+          "parcelId": "108983030000003",
+          "saleDate": "2026-01-06T00:00:00Z",
+          "salePrice": 365000,
+          "rawSalePrice": 365000,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.9364383561643835,
+          "gla": 1316,
+          "yearBuilt": 1997,
+          "hood": "15061",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "68f34f26-b113-4f1f-bacc-b100a28f365a",
+          "parcelId": "134994070007002",
+          "saleDate": "2026-01-06T00:00:00Z",
+          "salePrice": 315000,
+          "rawSalePrice": 315000,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.7596190476190476,
+          "gla": 868,
+          "yearBuilt": 1958,
+          "hood": "11071",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "225a3b7c-8c12-4575-b975-25e8375c7a75",
+          "parcelId": "126083030001006",
+          "saleDate": "2026-01-05T00:00:00Z",
+          "salePrice": 6420150,
+          "rawSalePrice": 6420150,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.12112801102777973,
+          "gla": 8400,
+          "yearBuilt": 1978,
+          "hood": "66060",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "75a8aede-0fe3-4024-bc2d-adfb078360cd",
+          "parcelId": "126083030002008",
+          "saleDate": "2026-01-05T00:00:00Z",
+          "salePrice": 6420150,
+          "rawSalePrice": 6420150,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.0821600741415699,
+          "gla": 8400,
+          "yearBuilt": 1978,
+          "hood": "16040",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "bf9ed8de-f09e-460c-a14c-808793e5a423",
+          "parcelId": "122891020003005",
+          "saleDate": "2026-01-05T00:00:00Z",
+          "salePrice": 625000,
+          "rawSalePrice": 625000,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.946544,
+          "gla": 2482,
+          "yearBuilt": 1991,
+          "hood": "13182",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "97a9a15c-38fe-458c-9715-75bfc25e0801",
+          "parcelId": "102883050000014",
+          "saleDate": "2026-01-05T00:00:00Z",
+          "salePrice": 765000,
+          "rawSalePrice": 765000,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.7224052287581699,
+          "gla": 1398,
+          "yearBuilt": 1991,
+          "hood": "13101",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "dbac1e1f-98f0-47ea-affa-466707b72e03",
+          "parcelId": "102983020705019",
+          "saleDate": "2026-01-05T00:00:00Z",
+          "salePrice": 425000,
+          "rawSalePrice": 425000,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.8782823529411765,
+          "gla": 2350,
+          "yearBuilt": 1944,
+          "hood": "16082",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "e0c44c83-5c6a-4aa6-9ce2-27c6a3a7cafe",
+          "parcelId": "132981030000087",
+          "saleDate": "2026-01-05T00:00:00Z",
+          "salePrice": 765000,
+          "rawSalePrice": 765000,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.9421699346405229,
+          "gla": 3142,
+          "yearBuilt": 2022,
+          "hood": "13011",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "931f0560-850c-40c3-ab73-1fb57773f9d3",
+          "parcelId": "126083030002006",
+          "saleDate": "2026-01-05T00:00:00Z",
+          "salePrice": 6420150,
+          "rawSalePrice": 6420150,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.07956044640701541,
+          "gla": 8400,
+          "yearBuilt": 1978,
+          "hood": "66060",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "4919b93c-4aa7-4b4d-8ae7-9a65725c0cba",
+          "parcelId": "112893120002001",
+          "saleDate": "2026-01-05T00:00:00Z",
+          "salePrice": 380000,
+          "rawSalePrice": 380000,
+          "adjustedSalePrice": null,
+          "salesRatio": 1.0824736842105263,
+          "gla": 1894,
+          "yearBuilt": 1958,
+          "hood": "12060",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "12e45118-6c91-441b-a211-698364cedd06",
+          "parcelId": "126083030002007",
+          "saleDate": "2026-01-05T00:00:00Z",
+          "salePrice": 6420150,
+          "rawSalePrice": 6420150,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.09762544488835931,
+          "gla": 8400,
+          "yearBuilt": 1978,
+          "hood": "66060",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "51e318f8-52e4-44b9-abd8-3228c5ed8828",
+          "parcelId": "126083030001007",
+          "saleDate": "2026-01-05T00:00:00Z",
+          "salePrice": 6420150,
+          "rawSalePrice": 6420150,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.19483968443104913,
+          "gla": 8400,
+          "yearBuilt": 1978,
+          "hood": "66060",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "533acde1-134a-41a9-9392-649fe1732dd2",
+          "parcelId": "103983020323014",
+          "saleDate": "2026-01-05T00:00:00Z",
+          "salePrice": 229900,
+          "rawSalePrice": 229900,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.7213571117877338,
+          "gla": 528,
+          "yearBuilt": 1944,
+          "hood": "16081",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "f9851545-8083-4c6b-aa7a-28159ca13630",
+          "parcelId": "111983020626006",
+          "saleDate": "2026-01-05T00:00:00Z",
+          "salePrice": 3285000,
+          "rawSalePrice": 3285000,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.3181704718417047,
+          "gla": 2812,
+          "yearBuilt": 1955,
+          "hood": "66000",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "25b2fd46-590e-473a-acf0-c5023a3a52e0",
+          "parcelId": "115982030170003",
+          "saleDate": "2026-01-02T00:00:00Z",
+          "salePrice": 355000,
+          "rawSalePrice": 355000,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.5019718309859155,
+          "gla": 1034,
+          "yearBuilt": 1952,
+          "hood": "16101",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "40a759f7-c2d2-4b69-bc48-3bb5e6a755a6",
+          "parcelId": "115981020161001",
+          "saleDate": "2026-01-02T00:00:00Z",
+          "salePrice": 299900,
+          "rawSalePrice": 299900,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.6701233744581527,
+          "gla": 864,
+          "yearBuilt": 1948,
+          "hood": "16091",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "56ef4c59-6562-4566-85e2-5450fb625470",
+          "parcelId": "111881013482001",
+          "saleDate": "2026-01-02T00:00:00Z",
+          "salePrice": 5100000,
+          "rawSalePrice": 5100000,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.18655882352941178,
+          "gla": 20080,
+          "yearBuilt": 2017,
+          "hood": "61000",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "e3e13ae3-9ab5-4a3d-8f22-006bd79618ae",
+          "parcelId": "103892030000012",
+          "saleDate": "2026-01-02T00:00:00Z",
+          "salePrice": 390000,
+          "rawSalePrice": 390000,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.3290769230769231,
+          "gla": 1550,
+          "yearBuilt": 1954,
+          "hood": "63000",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "92cb7349-d2c5-4eee-8600-698be0dad263",
+          "parcelId": "111881013482002",
+          "saleDate": "2026-01-02T00:00:00Z",
+          "salePrice": 5100000,
+          "rawSalePrice": 5100000,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.32834117647058825,
+          "gla": 20080,
+          "yearBuilt": 2017,
+          "hood": "61000",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        },
+        {
+          "saleId": "abadee1c-dff3-4ef1-b1b9-da7272b91a0f",
+          "parcelId": "112891BP6030002",
+          "saleDate": "2026-01-02T00:00:00Z",
+          "salePrice": 285000,
+          "rawSalePrice": 285000,
+          "adjustedSalePrice": null,
+          "salesRatio": 0.3234035087719298,
+          "gla": null,
+          "yearBuilt": null,
+          "hood": "62000",
+          "propertyType": "R",
+          "qualificationSource": "recommendation"
+        }
+      ]
+    },
+    "rows": [
+      {
+        "field": "countWithRatio",
+        "countyStudio": 36,
+        "terraForge": 36,
+        "tolerance": 0,
+        "delta": 0,
+        "pass": true
+      },
+      {
+        "field": "outliersExcluded",
+        "countyStudio": 1,
+        "terraForge": 1,
+        "tolerance": 0,
+        "delta": 0,
+        "pass": true
+      },
+      {
+        "field": "medianRatio",
+        "countyStudio": 0.7224,
+        "terraForge": 0.7224,
+        "tolerance": 0.0001,
+        "delta": 0,
+        "pass": true
+      },
+      {
+        "field": "cod",
+        "countyStudio": 40.24,
+        "terraForge": 40.24,
+        "tolerance": 0.01,
+        "delta": 0,
+        "pass": true
+      },
+      {
+        "field": "prd",
+        "countyStudio": 2.1352,
+        "terraForge": 2.1352,
+        "tolerance": 0.0001,
+        "delta": 0,
+        "pass": true
+      },
+      {
+        "field": "prb",
+        "countyStudio": -0.1672,
+        "terraForge": -0.1672,
+        "tolerance": 0.0001,
+        "delta": 0,
+        "pass": true
+      },
+      {
+        "field": "weightedMeanRatio",
+        "countyStudio": 0.3053,
+        "terraForge": 0.3053,
+        "tolerance": 0.0001,
+        "delta": 0,
+        "pass": true
+      }
+    ],
+    "mismatches": []
+  },
+  "implementationAssessment": [
+    {
+      "surface": "TerraForge ratio-study",
+      "implementsSharedContract": "partial",
+      "notes": "Implements the ratio-study lens and current countWithRatio population, but does not emit a contract id, parcel identity reconciliation counts, or conversion-sensitive qualification classifications."
+    },
+    {
+      "surface": "County Studio health summary",
+      "implementsSharedContract": "no",
+      "notes": "Uses segment-set parcel health rollup semantics. It is intentionally not the comparator for statistics parity."
+    },
+    {
+      "surface": "County Studio statistics workbench",
+      "implementsSharedContract": "yes",
+      "notes": "Declares an explicit Statistics Compat mode and renders the statistics_ratio_study_compat_v1 contract fields as first-class data."
+    },
+    {
+      "surface": "County Studio statistics-compat endpoint",
+      "implementsSharedContract": "yes",
+      "notes": "Backend endpoint and DTO surface contract id, countWithRatio, outliersExcluded, conversion-sensitive counts, parcel identity reconciliation, and trust posture."
+    }
+  ],
+  "blockers": [
+    "County Studio health summary remains a different analytical surface and must not be used as the Statistics parity comparator.",
+    "Benton qualification fields remain conversion-sensitive until row-level sync lineage closes the 2017 risk."
+  ],
+  "requiredClosure": [
+    "Keep the live same-population parity proof attached to this artifact.",
+    "Only upgrade the Statistics superset claim when both surfaces agree on the shared contract and Benton reference lanes remain reference-only.",
+    "Keep Statistics Studio visible until the shared-population parity mode passes against live Benton data."
+  ]
+}

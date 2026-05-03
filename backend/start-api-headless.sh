@@ -4,4 +4,5 @@
 export DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLOR_REDIRECTION=1
 export DOTNET_NOLOGO=1
 export NO_COLOR=1
+export ASPNETCORE_ENVIRONMENT=Development
 exec dotnet run --project src/TerraFusion.API/TerraFusion.API.csproj "$@"

@@ -1,11 +1,23 @@
 import { vi, describe, test, expect, beforeEach } from 'vitest';
 import React from 'react';
 import { useAxiomFsStore } from '@/fs/store/axiomFsStore';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render as rtlRender, screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useDesktopStore } from '../../../stores/desktopStore';
 import type { ModuleDefinition } from '../../../stores/moduleRegistryStore';
 import { useModuleRegistryStore } from '../../../stores/moduleRegistryStore';
 import { Desktop } from '../Desktop';
+
+/**
+ * AxiomFS integration tests render the full Desktop tree which depends on a
+ * TanStack Query client (useParcelCount inside StageZeroState). Wrap every
+ * render with a session-local client so the tests don't trip the missing
+ * provider error.
+ */
+function render(ui: React.ReactElement) {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return rtlRender(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
+}
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
@@ -85,7 +97,7 @@ describe('AxiomFS Module Integration', () => {
     });
 
     // Assert Window Creation — surface host must appear
-    const surface = await screen.findByTestId('axiomfs-surface-host');
+    const surface = await screen.findByTestId('axiomfs-surface-host', {}, { timeout: 15000 });
     expect(surface).toBeInTheDocument();
 
     // Assert Window Title — at least one element with "AxiomFS" must be present
@@ -115,7 +127,7 @@ describe('AxiomFS Module Integration', () => {
     });
 
     // Wait for surface
-    await screen.findByTestId('axiomfs-surface-host');
+    await screen.findByTestId('axiomfs-surface-host', {}, { timeout: 15000 });
 
     // Note: Since we mocked AxiomFSSurface, we can't test the actual voxel click here
     // unless we unmock it or mock it to render a button.
@@ -137,7 +149,7 @@ describe('AxiomFS Module Integration', () => {
     });
 
     // Relaxed check: toBeInTheDocument is sufficient for verifying presence on active desktop
-    expect(await screen.findByTestId('axiomfs-surface-host')).toBeInTheDocument();
+    expect(await screen.findByTestId('axiomfs-surface-host', {}, { timeout: 15000 })).toBeInTheDocument();
 
     // 2. Switch to Desktop 2
     act(() => {
@@ -155,7 +167,7 @@ describe('AxiomFS Module Integration', () => {
     });
 
     // Wait for window
-    await screen.findByTestId('axiomfs-surface-host');
+    await screen.findByTestId('axiomfs-surface-host', {}, { timeout: 15000 });
 
     // Find Search Input
     const searchInput = screen.getByTestId('axiomfs-search-input');

@@ -8,10 +8,8 @@ using System.Diagnostics;
 namespace TerraFusion.Consciousness.Hubs
 {
     /// <summary>
-    /// AI Layer Mesh Hub - Real-Time Mesh Communication and Monitoring
-    /// L1-L5 Architecture with Live Updates - THE TERRAFUSION WAY!
-    /// Provides real-time updates for mesh operations, validation rings, and cross-county federation
-    /// Government. Transcended.
+    /// AI Layer Mesh compatibility hub.
+    /// Provides SignalR access to current compatibility-mode mesh status and notifications.
     /// </summary>
     public class AILayerMeshHub : Hub
     {
@@ -97,7 +95,7 @@ namespace TerraFusion.Consciousness.Hubs
             await Clients.Caller.SendAsync("GroupJoined", new
             {
                 Group = MESH_ADMINISTRATORS,
-                Message = "✅ Joined Mesh Administrators - You'll receive system-wide mesh notifications",
+                Message = "Joined Mesh Administrators compatibility channel. Governed mesh orchestration is currently unavailable.",
                 Permissions = new[] { "SystemOperations", "ConfigurationUpdates", "EmergencyAlerts" }
             });
 
@@ -122,7 +120,7 @@ namespace TerraFusion.Consciousness.Hubs
             await Clients.Caller.SendAsync("GroupJoined", new
             {
                 Group = COUNTY_COORDINATORS,
-                Message = "✅ Joined County Coordinators - You'll receive cross-county federation updates",
+                Message = "Joined County Coordinators compatibility channel. Governed county federation is currently unavailable.",
                 Permissions = new[] { "CountyOperations", "FederationUpdates", "CrossCountyAnalytics" }
             });
 
@@ -147,7 +145,7 @@ namespace TerraFusion.Consciousness.Hubs
             await Clients.Caller.SendAsync("GroupJoined", new
             {
                 Group = VALIDATION_MONITORS,
-                Message = "✅ Joined Validation Monitors - You'll receive real-time validation ring updates",
+                Message = "Joined Validation Monitors compatibility channel. Governed validation rings are currently unavailable.",
                 Permissions = new[] { "ValidationRings", "ConsensusMonitoring", "QualityAssurance" }
             });
 
@@ -172,7 +170,7 @@ namespace TerraFusion.Consciousness.Hubs
             await Clients.Caller.SendAsync("GroupJoined", new
             {
                 Group = PERFORMANCE_ANALYSTS,
-                Message = "✅ Joined Performance Analysts - You'll receive performance metrics and optimization insights",
+                Message = "Joined Performance Analysts compatibility channel. Governed performance telemetry is currently unavailable.",
                 Permissions = new[] { "PerformanceMetrics", "OptimizationRecommendations", "CapacityPlanning" }
             });
 
@@ -197,7 +195,7 @@ namespace TerraFusion.Consciousness.Hubs
             await Clients.Caller.SendAsync("GroupJoined", new
             {
                 Group = COMPLIANCE_AUDITORS,
-                Message = "✅ Joined Compliance Auditors - You'll receive compliance validation updates",
+                Message = "Joined Compliance Auditors compatibility channel. Governed federation compliance is currently unavailable.",
                 Permissions = new[] { "ComplianceValidation", "AuditResults", "RegulatoryUpdates" }
             });
 
@@ -418,17 +416,18 @@ namespace TerraFusion.Consciousness.Hubs
         {
             await Clients.Caller.SendAsync("WelcomeMessage", new
             {
-                Message = "🌌✨ Welcome to TerraFusion AI Layer Mesh - Government. Transcended!",
-                MeshVersion = "2.0",
-                Architecture = "L1-L5 with Validation Rings",
+                Message = "Connected to TerraFusion AI Layer Mesh compatibility host.",
+                MeshVersion = "compatibility",
+                Architecture = "L1-L5 compatibility surface",
                 Capabilities = new[]
                 {
-                    "Cross-county federation",
-                    "Quantum consciousness integration",
-                    "Privacy-preserving analytics",
-                    "Real-time validation consensus",
-                    "Championship performance monitoring"
+                    "Compatibility mesh status",
+                    "Compatibility county status",
+                    "Compatibility validation status",
+                    "Compatibility performance status",
+                    "Compatibility compliance status"
                 },
+                GovernedContractAvailable = false,
                 AvailableGroups = new[]
                 {
                     MESH_ADMINISTRATORS,
@@ -482,8 +481,9 @@ namespace TerraFusion.Consciousness.Hubs
                     {
                         OverallHealth = layerHealth.OverallHealth,
                         PerformanceScore = performance.PerformanceScore,
-                        ActiveLayers = 5,
-                        ValidationRingsActive = 4
+                        ActiveLayers = 0,
+                        ValidationRingsActive = 0,
+                        GovernedContractAvailable = false
                     },
                     LayerStatus = new
                     {
@@ -515,7 +515,8 @@ namespace TerraFusion.Consciousness.Hubs
                     TotalFederatedCounties = availableCounties.TotalFederatedCounties,
                     AvailableForConnection = availableCounties.AvailableForConnection,
                     MeshStatus = availableCounties.MeshStatus,
-                    Statistics = availableCounties.Statistics
+                    Statistics = availableCounties.Statistics,
+                    GovernedContractAvailable = false
                 });
             }
             catch (Exception ex)

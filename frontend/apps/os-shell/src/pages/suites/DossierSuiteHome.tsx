@@ -6,11 +6,26 @@
  *
  * Shows: county stats, module launcher grid, shared recent parcel queue.
  * Does NOT host parcel execution — that lives in the Property Workbench.
+ *
+ * Task D3 — receives County Studio Inspector handoff metadata on mount.
+ * Supported metadata keys (all optional):
+ *   deeplinkQuery:  '?template=SegmentEvidence&segmentId=s1' — raw query;
+ *                   parsed as a fallback if pre-split fields are missing.
+ *   packetTemplate: string (currently always 'SegmentEvidence').
+ *   segmentId:      string — seeds the draft + back-chip.
+ *   segmentLabel:   string — human label for the draft.
  */
 
+import { useCallback, useEffect, useState } from 'react';
+import { invokeTool } from '../../api/pilotApi';
 import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import { SuiteModuleGrid, type SuiteModuleDef } from '../../components/suites/SuiteModuleGrid';
 import { OperationalQueue } from '../../components/suites/OperationalQueue';
+import DossierEvidenceDraftPanel from '../../components/dossier/DossierEvidenceDraftPanel';
+import { useSegmentEvidenceDraftStore } from './segmentEvidenceDraftStore';
+import { useDownstreamClosureReceiptStore } from './downstreamClosureReceiptStore';
+import { useAdjustmentApplyHandoffStore } from './adjustmentApplyHandoffStore';
+import { adjustmentSetApi, exceptionApi } from '../forge/county-studio/countyStudyApi';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import {
   FolderOpen,
@@ -33,30 +48,361 @@ const DOSSIER_MODULES: SuiteModuleDef[] = [
   { id: 'photos', label: 'Photo Manager', icon: Camera, description: 'Geotagged property photos with metadata', launchMode: 'workbench', workbenchTab: 'dossier' },
   { id: 'search', label: 'Deep Search', icon: FileSearch, description: 'Full-text search across all documents and evidence', launchMode: 'workbench', workbenchTab: 'dossier' },
   // Standalone-mode (system/admin, opens standalone window)
-  { id: 'pacs-bridge', label: 'PACS DataBridge', icon: Plug, description: 'Harris PACS 9.0 data import/export & sync management', launchMode: 'standalone', moduleId: 'pacs-bridge', truthState: 'queued' },
+  { id: 'assessment-data-bridge', label: 'Assessment DataBridge', icon: Plug, description: 'County data import/export & sync management', launchMode: 'standalone', moduleId: 'assessment-data-bridge', truthState: 'queued' },
   { id: 'terra-sync', label: 'TerraSync', icon: RefreshCw, description: 'County data synchronization — multi-source ETL pipeline', launchMode: 'standalone', moduleId: 'terra-sync', truthState: 'queued' },
   { id: 'terra-flow', label: 'TerraFlow', icon: Zap, description: 'Workflow automation engine — assessment pipeline orchestration', launchMode: 'standalone', moduleId: 'terra-flow', truthState: 'queued' },
 ];
 
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
 
+interface OpenAppealPacketSummary {
+  appealId: string;
+  packetRef: string;
+  payloadRef: string;
+  sections: string[];
+  chainOfCustody: string[];
+}
+
+interface ExportEqualizationPackageSummary {
+  payloadRef: string;
+  packageRef: string;
+  artifactCount: number;
+  checklist: string[];
+}
+
+interface ExportAuditBundleSummary {
+  payloadRef: string;
+  bundleRef: string;
+  artifactCount: number;
+  traceRef: string;
+}
+
 function getSourceDisclosure(source: 'snapshot' | 'fixtures' | 'live' | null): string | null {
   if (source === 'snapshot') {
     return 'Snapshot-backed county aggregates: TerraDossier stats are using bundled county snapshot data, not live backend metrics.';
   }
   if (source === 'fixtures') {
-    return 'Fixture-backed county aggregates: TerraDossier stats are using test fixture data, not live backend metrics.';
+    return 'Non-live county aggregate mode is active; TerraDossier stats are not live backend metrics.';
   }
   return null;
 }
 
-export default function DossierSuiteHome() {
+/** Best-effort parser for the raw backend deeplink query string (Task D3). */
+function parseDossierDeeplinkQuery(raw: unknown): { template?: string; segmentId?: string; exceptionSetId?: string; receiptId?: string } {
+  if (typeof raw !== 'string' || raw.length === 0) return {};
+  try {
+    const trimmed = raw.startsWith('?') ? raw.slice(1) : raw;
+    const params  = new URLSearchParams(trimmed);
+    const out: { template?: string; segmentId?: string; exceptionSetId?: string; receiptId?: string } = {};
+    const template = params.get('template');
+    if (template) out.template = template;
+    const segmentId = params.get('segmentId');
+    if (segmentId) out.segmentId = segmentId;
+    const exceptionSetId = params.get('exceptionSetId');
+    if (exceptionSetId) out.exceptionSetId = exceptionSetId;
+    const receiptId = params.get('receiptId');
+    if (receiptId) out.receiptId = receiptId;
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+export interface DossierSuiteHomeProps {
+  /** Optional metadata from the shell's window system (County Studio handoff). */
+  metadata?: Record<string, unknown>;
+}
+
+function ApplyHandoffBanner({ adjustmentSetId }: { adjustmentSetId: string | null }) {
+  const handoff = useAdjustmentApplyHandoffStore((s) =>
+    adjustmentSetId ? s.handoffs[adjustmentSetId] : undefined,
+  );
+  const ingestApplyReceipt = useAdjustmentApplyHandoffStore((s) => s.ingestReceipt);
+  const markAppliedExternally = useAdjustmentApplyHandoffStore((s) => s.markAppliedExternally);
+  const markRolledBack = useAdjustmentApplyHandoffStore((s) => s.markRolledBack);
+
+  if (!adjustmentSetId || !handoff) return null;
+
+  const appliedEvidenceRef = `dossier-apply-return:${adjustmentSetId}`;
+  const rollbackNote = 'Rollback reported by Dossier apply packet review.';
+
+  const handleRecordApplied = () => {
+    markAppliedExternally(
+      adjustmentSetId,
+      appliedEvidenceRef,
+      'External apply reported by Dossier apply packet review.',
+    );
+    void adjustmentSetApi.recordApplyHandoffReceipt(adjustmentSetId, {
+      status: 'AppliedExternally',
+      template: 'AdjustmentApplyPacket',
+      evidenceRef: appliedEvidenceRef,
+      notes: 'External apply reported by Dossier apply packet review.',
+    })
+      .then((receipt) => ingestApplyReceipt(receipt))
+      .catch((receiptError) => console.error('Failed to persist applied apply handoff receipt', receiptError));
+  };
+
+  const handleRecordRollback = () => {
+    markRolledBack(adjustmentSetId, rollbackNote, `dossier-rollback-return:${adjustmentSetId}`);
+    void adjustmentSetApi.recordApplyHandoffReceipt(adjustmentSetId, {
+      status: 'RolledBack',
+      template: 'AdjustmentApplyPacket',
+      evidenceRef: `dossier-rollback-return:${adjustmentSetId}`,
+      notes: rollbackNote,
+    })
+      .then((receipt) => ingestApplyReceipt(receipt))
+      .catch((receiptError) => console.error('Failed to persist rolled-back apply handoff receipt', receiptError));
+  };
+
+  return (
+    <section data-testid="dossier-apply-handoff" className="px-6 pt-5">
+      <div
+        className="rounded-xl border p-5"
+        style={{
+          borderColor: 'hsl(var(--tf-suite-dossier) / 0.35)',
+          background: 'hsl(var(--tf-suite-dossier) / 0.08)',
+        }}
+      >
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: 'hsl(var(--tf-suite-dossier))' }}>
+          County Studio Handoff · Apply Packet
+        </p>
+        <h2 className="mt-2 text-lg font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>
+          Adjustment apply handoff opened
+        </h2>
+        <p className="mt-2 max-w-3xl text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>
+          Adjustment set <code>{handoff.adjustmentSetId.slice(0, 8)}</code> for scenario <code>{handoff.scenarioId.slice(0, 8)}</code> is ready for governed apply/publish handling.
+        </p>
+        <p className="mt-1 text-xs" style={{ color: 'hsl(var(--tf-muted) / 0.75)' }}>
+          County Studio approved the set and prepared this handoff. Dossier can assemble apply evidence, but value mutation still belongs to the governed apply lane.
+        </p>
+        <p data-testid="dossier-apply-handoff-status" className="mt-2 text-xs" style={{ color: 'hsl(var(--tf-suite-dossier))' }}>
+          Handoff receipt: {handoff.status} · updated {new Date(handoff.updatedAt).toLocaleString()}
+        </p>
+        {handoff.evidenceRef && (
+          <p data-testid="dossier-apply-handoff-evidence" className="mt-1 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
+            Evidence: {handoff.evidenceRef}
+          </p>
+        )}
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            type="button"
+            data-testid="dossier-apply-record-applied"
+            onClick={handleRecordApplied}
+            disabled={handoff.status === 'AppliedExternally' || handoff.status === 'RolledBack'}
+            className="rounded-md border px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] transition-opacity disabled:opacity-50"
+            style={{
+              borderColor: 'hsl(var(--tf-suite-dossier) / 0.35)',
+              background: 'hsl(var(--tf-suite-dossier) / 0.12)',
+              color: 'hsl(var(--tf-suite-dossier))',
+            }}
+          >
+            Record External Apply
+          </button>
+          <button
+            type="button"
+            data-testid="dossier-apply-record-rollback"
+            onClick={handleRecordRollback}
+            disabled={handoff.status === 'AppliedExternally' || handoff.status === 'RolledBack'}
+            className="rounded-md border px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] transition-opacity disabled:opacity-50"
+            style={{
+              borderColor: 'hsl(var(--tf-border))',
+              background: 'transparent',
+              color: 'hsl(var(--tf-fg))',
+            }}
+          >
+            Record Rollback
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {}) {
   const { stats, loading, error, source } = useCountyStats();
   const sourceDisclosure = getSourceDisclosure(source);
+  const createDraft = useSegmentEvidenceDraftStore((s) => s.createDraft);
+  const recordDraftReceipt = useDownstreamClosureReceiptStore((s) => s.recordDraft);
+  const prepareApplyHandoff = useAdjustmentApplyHandoffStore((s) => s.prepareHandoff);
+  const markApplyHandoffOpened = useAdjustmentApplyHandoffStore((s) => s.markOpened);
+  const ingestApplyReceipt = useAdjustmentApplyHandoffStore((s) => s.ingestReceipt);
+  const [activeApplyHandoffId, setActiveApplyHandoffId] = useState<string | null>(null);
+
+  // ── Consume County Studio handoff metadata on mount (Task D3) ───────────
+  useEffect(() => {
+    if (!metadata) return;
+    const parsed = parseDossierDeeplinkQuery(metadata.deeplinkQuery);
+
+    const templateFromMeta = typeof metadata.packetTemplate === 'string' ? metadata.packetTemplate : null;
+    const template = templateFromMeta ?? parsed.template ?? null;
+
+    const segmentFromMeta = typeof metadata.segmentId === 'string' ? metadata.segmentId : null;
+    const segmentId = segmentFromMeta ?? parsed.segmentId ?? null;
+
+    const labelFromMeta = typeof metadata.segmentLabel === 'string' ? metadata.segmentLabel : null;
+    const exceptionFromMeta = typeof metadata.exceptionSetId === 'string' ? metadata.exceptionSetId : null;
+    const exceptionSetId = exceptionFromMeta ?? parsed.exceptionSetId ?? undefined;
+    const receiptFromMeta = typeof metadata.downstreamReceiptId === 'string' ? metadata.downstreamReceiptId : null;
+    const receiptId = receiptFromMeta ?? parsed.receiptId ?? undefined;
+
+    if (template === 'SegmentEvidence' && segmentId) {
+      const segmentLabel = labelFromMeta ?? segmentId;
+      createDraft(template, segmentId, segmentLabel, {
+        receiptId,
+        exceptionSetId,
+        destination: 'Dossier',
+        studyId: typeof metadata.studyId === 'string' ? metadata.studyId : undefined,
+        countyId: typeof metadata.countyId === 'string' ? metadata.countyId : undefined,
+      });
+      if (exceptionSetId) {
+        recordDraftReceipt({
+          exceptionSetId,
+          destination: 'Dossier',
+          template,
+          segmentId,
+          segmentLabel,
+        });
+        void exceptionApi.recordDownstreamReceipt(exceptionSetId, {
+          destination: 'Dossier',
+          template,
+          segmentId,
+          segmentLabel,
+          status: 'Drafted',
+        }).catch((receiptError) => console.error('Failed to persist Dossier downstream receipt', receiptError));
+      } else if (receiptId) {
+        recordDraftReceipt({
+          receiptId,
+          sourceType: 'SegmentInspector',
+          destination: 'Dossier',
+          template,
+          segmentId,
+          segmentLabel,
+        });
+      }
+    }
+
+    const applyTemplate = typeof metadata.applyTemplate === 'string' ? metadata.applyTemplate : null;
+    const adjustmentSetId = typeof metadata.adjustmentSetId === 'string' ? metadata.adjustmentSetId : null;
+    const scenarioId = typeof metadata.scenarioId === 'string' ? metadata.scenarioId : null;
+    const studyId = typeof metadata.studyId === 'string' ? metadata.studyId : null;
+    if (applyTemplate === 'AdjustmentApplyPacket' && adjustmentSetId && scenarioId && studyId) {
+      prepareApplyHandoff({ adjustmentSetId, scenarioId, studyId });
+      markApplyHandoffOpened(adjustmentSetId);
+      void adjustmentSetApi.recordApplyHandoffReceipt(adjustmentSetId, {
+        status: 'Opened',
+        template: 'AdjustmentApplyPacket',
+      })
+        .then((receipt) => ingestApplyReceipt(receipt))
+        .catch((receiptError) => console.error('Failed to persist opened apply handoff receipt', receiptError));
+      setActiveApplyHandoffId(adjustmentSetId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const [appealId, setAppealId] = useState('BOE-2026-001');
+  const [draftVersion, setDraftVersion] = useState('benton-2026-working');
+  const [packetState, setPacketState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: OpenAppealPacketSummary; correlationId?: string; error?: string }>({ status: 'idle' });
+  const [equalizationState, setEqualizationState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: ExportEqualizationPackageSummary; correlationId?: string; error?: string }>({ status: 'idle' });
+  const [auditBundleState, setAuditBundleState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: ExportAuditBundleSummary; correlationId?: string; error?: string }>({ status: 'idle' });
+
+  const parseToolOutput = <T,>(output: unknown, fallback: T): T => {
+    try {
+      return typeof output === 'string' ? JSON.parse(output) as T : output as T;
+    } catch {
+      return fallback;
+    }
+  };
+
+  const handleOpenAppealPacket = useCallback(async () => {
+    setPacketState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'open_appeal_packet',
+        params: { county: 'benton', appealId },
+      });
+      if (response.success && response.result) {
+        const parsed = parseToolOutput<OpenAppealPacketSummary>(response.result.output, {
+          appealId,
+          packetRef: '',
+          payloadRef: '',
+          sections: [],
+          chainOfCustody: [],
+        });
+        setPacketState({ status: 'success', result: parsed, correlationId: response.correlationId });
+      } else {
+        setPacketState({ status: 'error', correlationId: response.correlationId, error: response.error?.message || 'Failed to open appeal packet.' });
+      }
+    } catch (toolError) {
+      setPacketState({
+        status: 'error',
+        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+        error: toolError instanceof Error ? toolError.message : 'Failed to open appeal packet.',
+      });
+    }
+  }, [appealId]);
+
+  const handleExportEqualization = useCallback(async () => {
+    setEqualizationState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'export_equalization_package',
+        params: { county: 'benton', draftVersion, taxYear: 2026, reasonCode: 'annual_certification' },
+        confirmation: { confirmed: true, reasonCode: 'annual_certification' },
+      });
+      if (response.success && response.result) {
+        const parsed = parseToolOutput<ExportEqualizationPackageSummary>(response.result.output, {
+          payloadRef: '',
+          packageRef: '',
+          artifactCount: 0,
+          checklist: [],
+        });
+        setEqualizationState({ status: 'success', result: parsed, correlationId: response.correlationId });
+      } else {
+        setEqualizationState({ status: 'error', correlationId: response.correlationId, error: response.error?.message || 'Failed to export equalization package.' });
+      }
+    } catch (toolError) {
+      setEqualizationState({
+        status: 'error',
+        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+        error: toolError instanceof Error ? toolError.message : 'Failed to export equalization package.',
+      });
+    }
+  }, [draftVersion]);
+
+  const handleExportAuditBundle = useCallback(async () => {
+    setAuditBundleState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'export_audit_bundle',
+        params: { county: 'benton', taxYear: 2026, bundleScope: 'county', reasonCode: 'annual_certification' },
+        confirmation: { confirmed: true, reasonCode: 'annual_certification' },
+      });
+      if (response.success && response.result) {
+        const parsed = parseToolOutput<ExportAuditBundleSummary>(response.result.output, {
+          payloadRef: '',
+          bundleRef: '',
+          artifactCount: 0,
+          traceRef: '',
+        });
+        setAuditBundleState({ status: 'success', result: parsed, correlationId: response.correlationId });
+      } else {
+        setAuditBundleState({ status: 'error', correlationId: response.correlationId, error: response.error?.message || 'Failed to export audit bundle.' });
+      }
+    } catch (toolError) {
+      setAuditBundleState({
+        status: 'error',
+        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+        error: toolError instanceof Error ? toolError.message : 'Failed to export audit bundle.',
+      });
+    }
+  }, []);
 
   return (
     <div data-testid="suite-dossier-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
       <ParcelContextBanner suiteTabId="dossier" />
+
+      {/* Task D3 — County Studio handoff: segment evidence draft */}
+      <DossierEvidenceDraftPanel />
+      <ApplyHandoffBanner adjustmentSetId={activeApplyHandoffId} />
 
       {/* Source disclosure — only when not live */}
       {stats && sourceDisclosure && (
@@ -108,6 +454,186 @@ export default function DossierSuiteHome() {
 
       {/* Module Grid + Operational Queue */}
       <main className="flex-1 min-h-0 overflow-y-auto">
+        <section data-testid="dossier-defense-plane" className="px-6 pt-5">
+          <div
+            className="rounded-xl border p-5"
+            style={{
+              borderColor: 'hsl(var(--tf-border))',
+              background: 'hsl(var(--tf-card-bg) / 0.5)',
+            }}
+          >
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: 'hsl(var(--tf-muted))' }}>
+                  Defense Plane
+                </p>
+                <h2 className="mt-2 text-lg font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>
+                  Packet Readiness & Export Posture
+                </h2>
+                <p className="mt-2 max-w-3xl text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>
+                  Governed county evidence actions for appeals, equalization, and audit bundles. Use this surface to verify readiness before routing into parcel-scoped dossier work.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <span
+                  className="rounded-full px-3 py-1 text-xs font-semibold"
+                  style={{ background: 'hsl(var(--tf-suite-dossier) / 0.12)', color: 'hsl(var(--tf-suite-dossier))' }}
+                >
+                  {fmtNum(stats?.activeAppeals)} active appeals
+                </span>
+                <span
+                  className="rounded-full px-3 py-1 text-xs font-semibold"
+                  style={{ background: 'hsl(var(--tf-border) / 0.2)', color: 'hsl(var(--tf-fg))' }}
+                >
+                  {fmtNum(stats?.pendingAssessments)} pending assessments
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-5 grid gap-4 xl:grid-cols-[1.1fr_1fr]">
+              <div
+                className="rounded-lg border p-4"
+                style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg) / 0.35)' }}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <div className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>Appeal Packet Access</div>
+                    <div className="mt-1 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Open the governed BOE packet, chain-of-custody view, and section posture for a live appeal.</div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleOpenAppealPacket}
+                    disabled={packetState.status === 'loading'}
+                    className="rounded-md border px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] transition-opacity disabled:opacity-50"
+                    style={{
+                      borderColor: 'hsl(var(--tf-suite-dossier) / 0.35)',
+                      background: 'hsl(var(--tf-suite-dossier) / 0.12)',
+                      color: 'hsl(var(--tf-suite-dossier))',
+                    }}
+                  >
+                    {packetState.status === 'loading' ? 'Opening…' : 'Open Packet'}
+                  </button>
+                </div>
+                <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto]">
+                  <input
+                    value={appealId}
+                    onChange={(e) => setAppealId(e.target.value)}
+                    className="rounded-md border px-3 py-2 text-sm"
+                    style={{
+                      borderColor: 'hsl(var(--tf-border))',
+                      background: 'hsl(var(--tf-card-bg) / 0.4)',
+                      color: 'hsl(var(--tf-fg))',
+                    }}
+                  />
+                </div>
+                {packetState.status === 'success' && packetState.result && (
+                  <div className="mt-4 space-y-3">
+                    <div className="rounded-lg border p-3" style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.35)' }}>
+                      <div className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: 'hsl(var(--tf-muted))' }}>Packet Ref</div>
+                      <div className="mt-1 text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{packetState.result.packetRef || 'Pending packet reference'}</div>
+                      <div className="mt-2 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>{packetState.result.payloadRef}</div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {packetState.result.sections.map((section) => (
+                        <span key={section} className="rounded-full border px-2 py-1 text-xs" style={{ borderColor: 'hsl(var(--tf-border))', color: 'hsl(var(--tf-fg))' }}>
+                          {section}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
+                      Chain of custody: {packetState.result.chainOfCustody.join(' → ') || 'No chain entries returned.'}
+                    </div>
+                  </div>
+                )}
+                {packetState.status === 'error' && (
+                  <div className="mt-4 rounded-lg border px-4 py-3 text-sm" style={{ borderColor: 'hsl(var(--tf-suite-dossier) / 0.24)', background: 'hsl(var(--tf-suite-dossier) / 0.08)', color: 'hsl(var(--tf-suite-dossier))' }}>
+                    {packetState.error}
+                  </div>
+                )}
+              </div>
+
+              <div
+                className="rounded-lg border p-4"
+                style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg) / 0.35)' }}
+              >
+                <div className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>County Exports</div>
+                <div className="mt-1 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Draft governed equalization and audit artifacts for certification, DOR, and oversight reviews.</div>
+                <div className="mt-4 grid gap-3">
+                  <input
+                    value={draftVersion}
+                    onChange={(e) => setDraftVersion(e.target.value)}
+                    className="rounded-md border px-3 py-2 text-sm"
+                    style={{
+                      borderColor: 'hsl(var(--tf-border))',
+                      background: 'hsl(var(--tf-card-bg) / 0.4)',
+                      color: 'hsl(var(--tf-fg))',
+                    }}
+                  />
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={handleExportEqualization}
+                      disabled={equalizationState.status === 'loading'}
+                      className="rounded-md border px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] transition-opacity disabled:opacity-50"
+                      style={{
+                        borderColor: 'hsl(var(--tf-suite-dossier) / 0.35)',
+                        background: 'hsl(var(--tf-suite-dossier) / 0.12)',
+                        color: 'hsl(var(--tf-suite-dossier))',
+                      }}
+                    >
+                      {equalizationState.status === 'loading' ? 'Exporting…' : 'Equalization Package'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleExportAuditBundle}
+                      disabled={auditBundleState.status === 'loading'}
+                      className="rounded-md border px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] transition-opacity disabled:opacity-50"
+                      style={{
+                        borderColor: 'hsl(var(--tf-border))',
+                        background: 'transparent',
+                        color: 'hsl(var(--tf-fg))',
+                      }}
+                    >
+                      {auditBundleState.status === 'loading' ? 'Exporting…' : 'Audit Bundle'}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mt-4 grid gap-3">
+                  {equalizationState.status === 'success' && equalizationState.result && (
+                    <div className="rounded-lg border p-3" style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.35)' }}>
+                      <div className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: 'hsl(var(--tf-muted))' }}>Equalization Package</div>
+                      <div className="mt-1 text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{equalizationState.result.packageRef || 'Pending package reference'}</div>
+                      <div className="mt-2 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>{equalizationState.result.artifactCount} artifacts</div>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {equalizationState.result.checklist.map((item) => (
+                          <span key={item} className="rounded-full border px-2 py-1 text-xs" style={{ borderColor: 'hsl(var(--tf-border))', color: 'hsl(var(--tf-fg))' }}>
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {auditBundleState.status === 'success' && auditBundleState.result && (
+                    <div className="rounded-lg border p-3" style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.35)' }}>
+                      <div className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: 'hsl(var(--tf-muted))' }}>Audit Bundle</div>
+                      <div className="mt-1 text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{auditBundleState.result.bundleRef || 'Pending bundle reference'}</div>
+                      <div className="mt-2 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>{auditBundleState.result.artifactCount} artifacts</div>
+                      <div className="mt-2 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>{auditBundleState.result.traceRef}</div>
+                    </div>
+                  )}
+                </div>
+
+                {(equalizationState.status === 'error' || auditBundleState.status === 'error') && (
+                  <div className="mt-4 rounded-lg border px-4 py-3 text-sm" style={{ borderColor: 'hsl(var(--tf-suite-dossier) / 0.24)', background: 'hsl(var(--tf-suite-dossier) / 0.08)', color: 'hsl(var(--tf-suite-dossier))' }}>
+                    {equalizationState.error || auditBundleState.error}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Proof posture note — workbench tools are parcel-scoped; system integrations are queued */}
         <p
           data-testid="dossier-proof-note"
@@ -116,7 +642,7 @@ export default function DossierSuiteHome() {
           style={{ color: 'hsl(var(--tf-muted))' }}
         >
           Document and evidence tools open in the Property Workbench for parcel-scoped operations.
-          PACS DataBridge, TerraSync, and TerraFlow are queued — these integrations are not yet implemented in this build.
+          Assessment DataBridge, TerraSync, and TerraFlow remain queued until governed providers are registered.
         </p>
         <SuiteModuleGrid modules={DOSSIER_MODULES} accentVar="--tf-suite-dossier" />
         <OperationalQueue title="Recent Parcels" accentVar="--tf-suite-dossier" emptyMessage="No recent parcel activity" />

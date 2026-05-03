@@ -39,9 +39,9 @@ const PullTab: React.FC<{ isOpen: boolean; onToggle: () => void }> = ({ isOpen, 
       borderRadius: '8px 0 0 8px',
       width: 24,
       height: 64,
-      background: 'hsl(226 58% 55% / 0.85)',
+      background: 'hsl(var(--tf-suite-pilot-hs, 226 58%) 55% / 0.85)',
       backdropFilter: 'blur(8px)',
-      border: '1px solid hsl(226 58% 70% / 0.3)',
+      border: '1px solid hsl(var(--tf-suite-pilot-hs, 226 58%) 70% / 0.3)',
       borderRight: 'none',
       display: 'flex',
       alignItems: 'center',
@@ -53,7 +53,7 @@ const PullTab: React.FC<{ isOpen: boolean; onToggle: () => void }> = ({ isOpen, 
     <Bot
       size={13}
       style={{
-        color: 'hsl(226 80% 92%)',
+        color: 'hsl(var(--tf-suite-pilot-bright-hs, 226 80%) 92%)',
         flexShrink: 0,
       }}
     />
@@ -106,7 +106,7 @@ const PanelHeader: React.FC<{
       flexShrink: 0,
     }}
   >
-    <Bot size={15} style={{ color: 'hsl(226 58% 65%)', flexShrink: 0 }} />
+    <Bot size={15} style={{ color: 'hsl(var(--tf-suite-pilot-hs, 226 58%) 65%)', flexShrink: 0 }} />
 
     <span
       style={{
@@ -190,7 +190,7 @@ export const CompanionPanel: React.FC = () => {
           flexDirection: 'column',
           background: 'hsl(var(--tf-surface-dark-hs, 226 30%) 9%)',
           borderLeft: '1px solid hsl(var(--tf-border) / 0.2)',
-          boxShadow: isOpen ? '-8px 0 32px hsl(226 58% 10% / 0.4)' : 'none',
+          boxShadow: isOpen ? '-8px 0 32px hsl(var(--tf-suite-pilot-hs, 226 58%) 10% / 0.4)' : 'none',
           overflow: 'hidden',
           pointerEvents: isOpen ? 'auto' : 'none',
         }}

@@ -28,7 +28,7 @@ public sealed class ControllerSecurityBoundaryTests
     public async Task PropertiesController_GetProperties_ReturnsBadRequest_WhenCountyClaimMissing()
     {
         var propertyService = new Mock<IPropertyService>(MockBehavior.Strict);
-        var controller = new PropertiesController(propertyService.Object, Mock.Of<ILogger<PropertiesController>>())
+        var controller = new PropertiesController(propertyService.Object, BuildDbContext(), Mock.Of<ILogger<PropertiesController>>())
         {
             ControllerContext = BuildControllerContext()
         };
@@ -45,7 +45,7 @@ public sealed class ControllerSecurityBoundaryTests
         var claimCountyId = Guid.NewGuid();
         var requestedCountyId = Guid.NewGuid();
         var propertyService = new Mock<IPropertyService>(MockBehavior.Strict);
-        var controller = new PropertiesController(propertyService.Object, Mock.Of<ILogger<PropertiesController>>())
+        var controller = new PropertiesController(propertyService.Object, BuildDbContext(), Mock.Of<ILogger<PropertiesController>>())
         {
             ControllerContext = BuildControllerContext(new Claim("countyId", claimCountyId.ToString()))
         };
@@ -65,7 +65,7 @@ public sealed class ControllerSecurityBoundaryTests
             .Setup(service => service.GetPropertyByParcelAsync("123-456", countyId))
             .ReturnsAsync(new PropertyDto { Id = Guid.NewGuid(), ParcelNumber = "123-456", Address = "1 Main", CountyId = countyId, CountyName = "Benton" });
 
-        var controller = new PropertiesController(propertyService.Object, Mock.Of<ILogger<PropertiesController>>())
+        var controller = new PropertiesController(propertyService.Object, BuildDbContext(), Mock.Of<ILogger<PropertiesController>>())
         {
             ControllerContext = BuildControllerContext(new Claim("countyId", countyId.ToString()))
         };

@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { queryClient, apiRequest } from '@/lib/queryClient';
-import { FileUpload, insertFileUploadSchema } from '@shared/schema';
+import { FileUpload, insertFileUploadSchema } from '@/types/api';
 import { toast } from '@/hooks/use-toast';
 import { z } from 'zod';
 
@@ -35,7 +35,7 @@ export function useFileUploads() {
       const validatedData = fileUploadSchema.parse(data);
       return apiRequest('/api/file-uploads', {
         method: 'POST',
-        data: validatedData
+        body: JSON.stringify(validatedData)
       });
     },
     onSuccess: () => {
@@ -67,7 +67,7 @@ export function useFileUploads() {
     }) => {
       return apiRequest(`/api/file-uploads/${id}/status`, {
         method: 'PATCH',
-        data: { status, processedItems, totalItems, errors }
+        body: JSON.stringify({ status, processedItems, totalItems, errors })
       });
     },
     onSuccess: (_, variables) => {
@@ -151,7 +151,7 @@ export function useFileUploads() {
     }) => {
       return apiRequest('/api/properties/import', {
         method: 'POST',
-        data: files
+        body: JSON.stringify(files)
       });
     },
     onSuccess: (data: any) => {

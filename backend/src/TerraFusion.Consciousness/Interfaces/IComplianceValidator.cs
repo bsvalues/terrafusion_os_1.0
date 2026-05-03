@@ -5,7 +5,7 @@ namespace TerraFusion.Consciousness.Interfaces
     /// <summary>
     /// Compliance Validator interface for government standards validation
     /// Ensures FISMA, FedRAMP, and SOC2 compliance across consciousness operations
-    /// Government. Transcended.
+    /// Compatibility compliance validation contract.
     /// </summary>
     public interface IComplianceValidator
     {

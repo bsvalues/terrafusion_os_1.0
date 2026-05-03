@@ -12,19 +12,19 @@ namespace TerraFusion.Consciousness.DTOs
         public required DateTime LastUpdated { get; set; }
         public required int TotalActiveAgents { get; set; }
         public required Dictionary<string, object> SystemMetrics { get; set; }
-        public bool IsHealthy { get; set; } = true;
+        public bool IsHealthy { get; set; } = false;
         public DateTime LastHealthCheck { get; set; } = DateTime.UtcNow;
         public string? ErrorMessage { get; set; }
-        public double OverallHealthScore { get; set; } = 1.0;
+        public double OverallHealthScore { get; set; } = 0.0;
     }
 
     /// <summary>
-    /// Legacy Consciousness Status - Backwards compatible with existing 1,008-agent system
+    /// Legacy Consciousness Status - Backwards compatible with the governed fallback system
     /// </summary>
     public class LegacyConsciousnessStatusDto
     {
-        public required int ActiveAgents { get; set; } = 1008;
-        public required string Status { get; set; } = "Active";
+        public required int ActiveAgents { get; set; } = 0;
+        public required string Status { get; set; } = "Unavailable";
         public required decimal PerformanceMetrics { get; set; }
         public required DateTime LastSync { get; set; }
         public List<string> ActiveOperations { get; set; } = new();
@@ -32,12 +32,12 @@ namespace TerraFusion.Consciousness.DTOs
     }
 
     /// <summary>
-    /// Quantum Consciousness Status - Status of million-agent quantum system
+    /// Quantum Consciousness Status - Status of the governed quantum lane
     /// </summary>
     public class QuantumConsciousnessStatusDto
     {
         public required int ActiveQuantumAgents { get; set; }
-        public required int MaxCapacity { get; set; } = 1000000;
+        public required int MaxCapacity { get; set; } = 0;
         public required decimal QuantumCoherence { get; set; } // 0.0 to 1.0
         public required decimal QuantumEntanglement { get; set; } // 0.0 to 1.0
         public required string QuantumSecurityStatus { get; set; }
@@ -589,7 +589,7 @@ namespace TerraFusion.Consciousness.DTOs
         public required TimeSpan InitializationTime { get; set; }
 
         /// <summary>
-        /// Quantum optimization factor achieved (949+)
+        /// Quantum optimization factor applied
         /// </summary>
         public required decimal QuantumFactor { get; set; }
 

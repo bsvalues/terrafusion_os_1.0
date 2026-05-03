@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import EliteProgress from '@/components/ui/EliteProgress';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import ElitePerformanceAnalytics from '../analytics/ElitePerformanceAnalytics';
 import EliteBackendConnectivityMonitor from '../connectivity/EliteBackendConnectivityMonitor';
 import {
@@ -44,198 +44,36 @@ interface SystemIntelligence {
 }
 
 const EliteAIDashboard: React.FC = () => {
-  const [aiInsights, setAIInsights] = useState<AIInsight[]>([
-    {
-      id: '1',
-      type: 'optimization',
-      priority: 'high',
-      title: 'GPU Acceleration Opportunity',
-      description: 'Quantum animations can be optimized with WebGL acceleration',
-      confidence: 94,
-      impact: '+35% render performance',
-      timestamp: new Date(),
-      autoApplicable: true,
-    },
-    {
-      id: '2',
-      type: 'prediction',
-      priority: 'medium',
-      title: 'Memory Usage Trend',
-      description: 'Predicted memory threshold breach in 2.3 hours',
-      confidence: 87,
-      impact: 'Potential degradation',
-      timestamp: new Date(),
-      autoApplicable: false,
-    },
-    {
-      id: '3',
-      type: 'recommendation',
-      priority: 'low',
-      title: 'Cache Strategy Enhancement',
-      description: 'Implement smart prefetching for frequently accessed modules',
-      confidence: 76,
-      impact: '+20% response time',
-      timestamp: new Date(),
-      autoApplicable: true,
-    },
-    {
-      id: '4',
-      type: 'alert',
-      priority: 'critical',
-      title: 'Security Enhancement Required',
-      description: 'API endpoints lack rate limiting on government data access',
-      confidence: 99,
-      impact: 'Security vulnerability',
-      timestamp: new Date(),
-      autoApplicable: false,
-    },
-  ]);
+  const [aiInsights] = useState<AIInsight[]>([]);
 
   const [systemIntelligence, setSystemIntelligence] = useState<SystemIntelligence>({
-    overallHealth: 94,
-    predictedIssues: 2,
-    optimizationOpportunities: 7,
-    automationLevel: 78,
-    learningProgress: 85,
-    systemIQ: 142,
+    overallHealth: 0,
+    predictedIssues: 0,
+    optimizationOpportunities: 0,
+    automationLevel: 0,
+    learningProgress: 0,
+    systemIQ: 0,
   });
 
   const [aiMode, setAIMode] = useState<'learning' | 'optimizing' | 'monitoring' | 'predicting'>(
     'monitoring'
   );
-  const [autoOptimization, setAutoOptimization] = useState(true);
+  const [autoOptimization] = useState(false);
   const [isLearning, setIsLearning] = useState(false);
-
-  // AI Learning and Adaptation
-  useEffect(() => {
-    const aiLearningCycle = () => {
-      if (aiMode === 'learning' || isLearning) {
-        setSystemIntelligence((prev) => ({
-          ...prev,
-          learningProgress: Math.min(100, prev.learningProgress + 0.5),
-          systemIQ: Math.min(200, prev.systemIQ + 0.1),
-          automationLevel: Math.min(95, prev.automationLevel + 0.2),
-        }));
-      }
-
-      // Generate new insights periodically
-      if (Math.random() > 0.8) {
-        const newInsightTypes: AIInsight['type'][] = [
-          'optimization',
-          'prediction',
-          'recommendation',
-        ];
-        const priorities: AIInsight['priority'][] = ['low', 'medium', 'high'];
-
-        const newInsight: AIInsight = {
-          id: Date.now().toString(),
-          type: newInsightTypes[Math.floor(Math.random() * newInsightTypes.length)],
-          priority: priorities[Math.floor(Math.random() * priorities.length)],
-          title: 'AI Generated Insight',
-          description: 'Dynamic system optimization opportunity detected',
-          confidence: 70 + Math.random() * 25,
-          impact: '+' + Math.floor(10 + Math.random() * 30) + '% improvement',
-          timestamp: new Date(),
-          autoApplicable: Math.random() > 0.6,
-        };
-
-        setAIInsights((prev) => [newInsight, ...prev.slice(0, 9)]); // Keep last 10
-      }
-
-      // Update system health based on applied optimizations
-      setSystemIntelligence((prev) => ({
-        ...prev,
-        overallHealth: Math.max(85, Math.min(99, prev.overallHealth + (Math.random() - 0.4) * 2)),
-        predictedIssues: Math.max(
-          0,
-          Math.min(5, prev.predictedIssues + (Math.random() > 0.7 ? 1 : -1))
-        ),
-        optimizationOpportunities: Math.max(
-          3,
-          Math.min(15, prev.optimizationOpportunities + (Math.random() > 0.6 ? 1 : -1))
-        ),
-      }));
-    };
-
-    const interval = setInterval(aiLearningCycle, 4000); // Every 4 seconds
-    return () => clearInterval(interval);
-  }, [aiMode, isLearning]);
-
-  // Auto-apply optimizations
-  useEffect(() => {
-    if (!autoOptimization) return;
-
-    const autoApplyOptimizations = () => {
-      const applicableInsights = aiInsights.filter(
-        (insight) =>
-          insight.autoApplicable && insight.type === 'optimization' && insight.confidence > 85
-      );
-
-      if (applicableInsights.length > 0) {
-        const insight = applicableInsights[0];
-
-        // Remove applied insight
-        setAIInsights((prev) => prev.filter((i) => i.id !== insight.id));
-
-        // Update system intelligence
-        setSystemIntelligence((prev) => ({
-          ...prev,
-          overallHealth: Math.min(99, prev.overallHealth + 2),
-          optimizationOpportunities: Math.max(0, prev.optimizationOpportunities - 1),
-        }));
-      }
-    };
-
-    const interval = setInterval(autoApplyOptimizations, 15000); // Every 15 seconds
-    return () => clearInterval(interval);
-  }, [autoOptimization, aiInsights]);
+  const [actionMessage, setActionMessage] = useState<string | null>(null);
 
   const applyInsight = (insightId: string) => {
     const insight = aiInsights.find((i) => i.id === insightId);
     if (!insight) return;
 
-
-    setAIInsights((prev) => prev.filter((i) => i.id !== insightId));
-
-    // Apply insight effects based on type
-    switch (insight.type) {
-      case 'optimization':
-        setSystemIntelligence((prev) => ({
-          ...prev,
-          overallHealth: Math.min(99, prev.overallHealth + 3),
-          optimizationOpportunities: Math.max(0, prev.optimizationOpportunities - 1),
-        }));
-        break;
-      case 'prediction':
-        setSystemIntelligence((prev) => ({
-          ...prev,
-          predictedIssues: Math.max(0, prev.predictedIssues - 1),
-        }));
-        break;
-      case 'recommendation':
-        setSystemIntelligence((prev) => ({
-          ...prev,
-          automationLevel: Math.min(95, prev.automationLevel + 2),
-        }));
-        break;
-    }
+    setActionMessage(`Insight "${insight.title}" was not applied. AI actions require a governed backend/Pilot execution path.`);
   };
 
   const activateDeepLearning = () => {
-    setIsLearning(true);
-    setAIMode('learning');
-
-    setTimeout(() => {
-      setIsLearning(false);
-      setAIMode('monitoring');
-
-      setSystemIntelligence((prev) => ({
-        ...prev,
-        systemIQ: Math.min(200, prev.systemIQ + 5),
-        learningProgress: Math.min(100, prev.learningProgress + 10),
-        automationLevel: Math.min(95, prev.automationLevel + 5),
-      }));
-    }, 8000);
+    setIsLearning(false);
+    setAIMode('monitoring');
+    setSystemIntelligence((prev) => ({ ...prev }));
+    setActionMessage('Deep learning is unavailable until a governed AI backend returns evidence, confidence, and provenance.');
   };
 
   const getPriorityColor = (priority: string) => {
@@ -304,11 +142,12 @@ const EliteAIDashboard: React.FC = () => {
             <Button
               variant='outline'
               size='sm'
-              onClick={() => setAutoOptimization(!autoOptimization)}
+              disabled
               className={`border-purple-500/30 ${autoOptimization ? 'text-purple-400 bg-purple-500/10' : 'text-gray-400'} hover:bg-purple-500/10`}
+              title='Auto-optimization requires governed backend execution'
             >
               <EliteZapIcon className='w-4 h-4 mr-2' />
-              {autoOptimization ? 'Auto-AI' : 'Manual'}
+              Governed AI
             </Button>
 
             <Button
@@ -331,6 +170,12 @@ const EliteAIDashboard: React.FC = () => {
               )}
             </Button>
           </div>
+
+          {actionMessage && (
+            <div className='p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-sm text-yellow-300'>
+              {actionMessage}
+            </div>
+          )}
         </CardHeader>
 
         <CardContent className='space-y-6'>
@@ -422,7 +267,7 @@ const EliteAIDashboard: React.FC = () => {
           </div>
 
           {/* AI Insights */}
-          {aiInsights.length > 0 && (
+          {aiInsights.length > 0 ? (
             <div className='space-y-3'>
               <h4 className='text-sm font-semibold text-white flex items-center'>
                 <EliteBrainIcon className='w-4 h-4 mr-2 text-purple-400' />
@@ -469,6 +314,10 @@ const EliteAIDashboard: React.FC = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          ) : (
+            <div className='p-4 rounded-lg bg-terra-slate/30 border border-terra-cyan/10 text-sm text-gray-300'>
+              No AI insights are displayed because no governed AI guidance endpoint has returned evidence, confidence, and provenance.
             </div>
           )}
         </CardContent>

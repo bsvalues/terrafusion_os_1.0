@@ -14,7 +14,7 @@ import { AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
  */
 export function RegionalCostHeatmap({
   data,
-  region,
+  revalArea,
   buildingType,
   isLoading = false,
   onCountySelect
@@ -54,9 +54,9 @@ export function RegionalCostHeatmap({
   
   // Handle county selection
   const handleCountyClick = (county: RegionalCostData) => {
-    setSelectedCounty(county.name);
+    setSelectedCounty(county.name ?? null);
     if (onCountySelect) {
-      onCountySelect(county.name);
+      onCountySelect(county.name ?? '');
     }
   };
   
@@ -86,16 +86,16 @@ export function RegionalCostHeatmap({
     return (
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Regional Cost Analysis</CardTitle>
+          <CardTitle>Reval Area Cost Analysis</CardTitle>
           <CardDescription>
-            Building costs across counties in {region}
+            Building costs across Reval Areas in {revalArea}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              No cost data available for {buildingType} buildings in {region}.
+              No cost data available for {buildingType} buildings in Reval Area {revalArea}.
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -108,9 +108,9 @@ export function RegionalCostHeatmap({
       <CardHeader>
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle>Regional Cost Analysis</CardTitle>
+            <CardTitle>Reval Area Cost Analysis</CardTitle>
             <CardDescription>
-              Building costs across counties in {region}
+              Building costs by Reval Area (Cycle) — Benton County
             </CardDescription>
           </div>
           <button 
@@ -131,7 +131,7 @@ export function RegionalCostHeatmap({
                 selectedCounty === county.name ? 'ring-2 ring-primary' : ''
               }`}
               style={{
-                backgroundColor: calculateColor(county.avgCost, minCost, maxCost),
+                backgroundColor: calculateColor(county.avgCost, minCost ?? 0, maxCost ?? 0),
                 color: county.avgCost && county.avgCost > (maxCost || 0) * 0.7 ? 'white' : 'black'
               }}
               onClick={() => handleCountyClick(county)}
@@ -154,8 +154,8 @@ export function RegionalCostHeatmap({
             <div className="h-full w-1/3" style={{ background: 'linear-gradient(to right, #ffff00, #ff0000)' }}></div>
           </div>
           <div className="flex justify-between w-full text-xs mt-1">
-            <span>{formatCurrency(minCost)}</span>
-            <span>{formatCurrency(maxCost)}</span>
+            <span>{formatCurrency(minCost ?? 0)}</span>
+            <span>{formatCurrency(maxCost ?? 0)}</span>
           </div>
         </div>
       </CardContent>

@@ -235,8 +235,8 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
-      ConnectionStrings__PacsConnection: "Server=host.docker.internal,1433;Database=pacs_oltp;User Id=sa;Password=TF_Pacs2026!;TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;"
-      ConnectionStrings__PacsSalesConnection: "Server=host.docker.internal,1433;Database=pacs_golive;User Id=sa;Password=TF_Pacs2026!;TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;"
+      ConnectionStrings__PacsConnection: "Server=host.docker.internal,1433;Database=pacs_oltp;User Id=sa;Password=<redacted-local-dev-sql-password>;TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;"
+      ConnectionStrings__PacsSalesConnection: "Server=host.docker.internal,1433;Database=pacs_golive;User Id=sa;Password=<redacted-local-dev-sql-password>;TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;"
 
   consciousness:
     environment:

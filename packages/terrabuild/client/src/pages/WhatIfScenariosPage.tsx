@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Helmet } from "react-helmet";
+import MainLayout from "@/components/layout/MainLayout";
 import { 
   Card, 
   CardContent, 
@@ -27,17 +27,27 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import ScenarioResults from "../components/scenarios/ScenarioResults";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { PlusCircle, Edit, Trash2, Save, BarChartHorizontal } from "lucide-react";
+
+// Benton County Reval Areas (PACS Cycle 1–6)
+const REVAL_AREAS = [
+  { id: 'Reval 1', label: 'Reval 1 — Kennewick (Urban Core)',      factor: 1.00 },
+  { id: 'Reval 2', label: 'Reval 2 — West Richland / Badger Mtn',  factor: 1.05 },
+  { id: 'Reval 3', label: 'Reval 3 — North Richland / Horn Rapids', factor: 1.10 },
+  { id: 'Reval 4', label: 'Reval 4 — East Benton / Benton City',   factor: 0.95 },
+  { id: 'Reval 5', label: 'Reval 5 — Prosser / Wine Country',      factor: 0.90 },
+  { id: 'Reval 6', label: 'Reval 6 — Rural / Agricultural Lands',  factor: 0.82 },
+];
 
 // Define scenario types for TypeScript
 interface Scenario {
-  id: number;
+  id: string | number;
   name: string;
   description: string;
   parameters: {
     buildingType: string;
-    region: string;
+    revalArea: string;
     baseYear: number;
     comparisonYear: number;
     adjustmentFactor: number;
@@ -46,7 +56,7 @@ interface Scenario {
     complexityFactor: number;
     [key: string]: any;
   };
-  results: {
+  results?: {
     baseCost: number;
     adjustedCost: number;
     difference: number;
@@ -57,7 +67,7 @@ interface Scenario {
       percentImpact: number;
     }[];
     chartData?: any[];
-  };
+  } | null;
   is_saved: boolean;
   created_at: string;
 }
@@ -81,7 +91,7 @@ export default function WhatIfScenariosPage() {
     name: "",
     description: "",
     buildingType: "R1",
-    region: "Central Benton",
+    revalArea: "Reval 1",
     baseYear: 2025,
     comparisonYear: 2025,
     adjustmentFactor: 1.0,
@@ -90,73 +100,142 @@ export default function WhatIfScenariosPage() {
     complexityFactor: 1.0
   });
   
-  // Fetch scenarios from API
-  const { data: scenarios, isLoading, error } = useQuery<Scenario[]>({
+  const queryClient = useQueryClient();
+
+  // Fetch scenarios — real TerraFusion OS endpoint (WhatIfScenariosController)
+  const { data: scenarios, isLoading, error } = useQuery({
     queryKey: ["/api/what-if-scenarios"],
+    queryFn: async () => {
+      const res = await fetch('/api/what-if-scenarios');
+      if (!res.ok) throw new Error(`${res.status}`);
+      const data = await res.json();
+      const raw: any[] = data?.scenarios ?? data?.Scenarios ?? (Array.isArray(data) ? data : []);
+      // Normalize backend shape (scenarioId + assumptions) to frontend shape (id + parameters)
+      return raw.map((s: any) => ({
+        id: s.scenarioId ?? s.id ?? 0,
+        name: s.name ?? '',
+        description: s.description ?? '',
+        parameters: {
+          buildingType: s.assumptions?.buildingType ?? s.parameters?.buildingType ?? 'R1',
+          revalArea: s.assumptions?.revalArea ?? s.parameters?.revalArea ?? 'Reval 1',
+          baseYear: Number(s.assumptions?.baseYear ?? s.parameters?.baseYear ?? 2025),
+          comparisonYear: Number(s.assumptions?.comparisonYear ?? s.parameters?.comparisonYear ?? 2025),
+          adjustmentFactor: Number(s.assumptions?.adjustmentFactor ?? s.parameters?.adjustmentFactor ?? 1.0),
+          qualityFactor: Number(s.assumptions?.qualityFactor ?? s.parameters?.qualityFactor ?? 1.0),
+          conditionFactor: Number(s.assumptions?.conditionFactor ?? s.parameters?.conditionFactor ?? 1.0),
+          complexityFactor: Number(s.assumptions?.complexityFactor ?? s.parameters?.complexityFactor ?? 1.0),
+        },
+        results: s.results ? {
+          baseCost: Number(s.results.baseCost ?? 0),
+          adjustedCost: Number(s.results.adjustedCost ?? 0),
+          difference: Number(s.results.difference ?? 0),
+          percentChange: Number(s.results.percentChange ?? 0),
+          details: s.results.details ?? [],
+          chartData: s.results.chartData ?? [],
+        } : null,
+        is_saved: true,
+        created_at: s.createdAt ?? s.created_at ?? new Date().toISOString(),
+      })) as Scenario[];
+    },
     refetchOnWindowFocus: false,
   });
-  
+
+  const createMutation = useMutation({
+    mutationFn: async (payload: typeof formData) => {
+      const res = await fetch('/api/what-if-scenarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: payload.name,
+          description: payload.description,
+          assumptions: {
+            buildingType: payload.buildingType,
+            revalArea: payload.revalArea,
+            baseYear: payload.baseYear,
+            comparisonYear: payload.comparisonYear,
+            adjustmentFactor: payload.adjustmentFactor,
+            qualityFactor: payload.qualityFactor,
+            conditionFactor: payload.conditionFactor,
+            complexityFactor: payload.complexityFactor,
+          },
+        }),
+      });
+      if (!res.ok) throw new Error(`${res.status}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/what-if-scenarios'] });
+      toast({ title: "Scenario Created", description: `${formData.name} has been saved.` });
+      setNewScenarioOpen(false);
+      setFormData({ name: "", description: "", buildingType: "R1", revalArea: "Reval 1", baseYear: 2025, comparisonYear: 2025, adjustmentFactor: 1.0, qualityFactor: 1.0, conditionFactor: 1.0, complexityFactor: 1.0 });
+    },
+    onError: () => toast({ variant: "destructive", title: "Create Failed", description: "Could not save scenario." }),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, payload }: { id: string | number; payload: typeof formData }) => {
+      const res = await fetch(`/api/what-if-scenarios/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: payload.name,
+          description: payload.description,
+          assumptions: {
+            buildingType: payload.buildingType,
+            revalArea: payload.revalArea,
+            baseYear: payload.baseYear,
+            comparisonYear: payload.comparisonYear,
+            adjustmentFactor: payload.adjustmentFactor,
+            qualityFactor: payload.qualityFactor,
+            conditionFactor: payload.conditionFactor,
+            complexityFactor: payload.complexityFactor,
+          },
+        }),
+      });
+      if (!res.ok) throw new Error(`${res.status}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/what-if-scenarios'] });
+      toast({ title: "Scenario Updated", description: `${formData.name} has been updated.` });
+      setEditScenarioOpen(false);
+    },
+    onError: () => toast({ variant: "destructive", title: "Update Failed", description: "Could not update scenario." }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string | number) => {
+      const res = await fetch(`/api/what-if-scenarios/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error(`${res.status}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/what-if-scenarios'] });
+      toast({ title: "Scenario Deleted", description: "The scenario has been removed." });
+      setDeleteConfirmOpen(false);
+      setSelectedScenario(null);
+      setActiveTab("scenarios");
+    },
+    onError: () => toast({ variant: "destructive", title: "Delete Failed", description: "Could not delete scenario." }),
+  });
+
   // Handle selecting a scenario
   const handleSelectScenario = (scenario: Scenario) => {
     setSelectedScenario(scenario);
     setActiveTab("results");
   };
-  
-  // Handle creating a new scenario
-  const handleCreateScenario = () => {
-    // Mock API call - In a real app, this would call the API to create the scenario
-    toast({
-      title: "Scenario Created",
-      description: `${formData.name} has been created.`,
-    });
-    
-    setNewScenarioOpen(false);
-    // Reset form data
-    setFormData({
-      name: "",
-      description: "",
-      buildingType: "R1",
-      region: "Central Benton",
-      baseYear: 2025,
-      comparisonYear: 2025,
-      adjustmentFactor: 1.0,
-      qualityFactor: 1.0,
-      conditionFactor: 1.0,
-      complexityFactor: 1.0
-    });
-  };
-  
-  // Handle updating a scenario
+
+  const handleCreateScenario = () => createMutation.mutate(formData);
+
   const handleUpdateScenario = () => {
-    // Mock API call - In a real app, this would call the API to update the scenario
-    toast({
-      title: "Scenario Updated",
-      description: `${formData.name} has been updated.`,
-    });
-    
-    setEditScenarioOpen(false);
+    if (selectedScenario) updateMutation.mutate({ id: selectedScenario.id, payload: formData });
   };
-  
-  // Handle deleting a scenario
+
   const handleDeleteScenario = () => {
-    // Mock API call - In a real app, this would call the API to delete the scenario
-    toast({
-      title: "Scenario Deleted",
-      description: "The scenario has been removed.",
-    });
-    
-    setDeleteConfirmOpen(false);
-    setSelectedScenario(null);
-    setActiveTab("scenarios");
+    if (selectedScenario) deleteMutation.mutate(selectedScenario.id);
   };
-  
-  // Handle saving a scenario
+
   const handleSaveScenario = () => {
-    // Mock API call - In a real app, this would call the API to save the scenario
-    toast({
-      title: "Scenario Saved",
-      description: "The scenario has been saved to your collection.",
-    });
+    if (selectedScenario) updateMutation.mutate({ id: selectedScenario.id, payload: formData });
   };
   
   // Handle edit scenario button
@@ -165,7 +244,7 @@ export default function WhatIfScenariosPage() {
       name: scenario.name,
       description: scenario.description,
       buildingType: scenario.parameters.buildingType,
-      region: scenario.parameters.region,
+      revalArea: scenario.parameters.revalArea ?? scenario.parameters.region ?? "Reval 1",
       baseYear: scenario.parameters.baseYear,
       comparisonYear: scenario.parameters.comparisonYear,
       adjustmentFactor: scenario.parameters.adjustmentFactor,
@@ -179,46 +258,35 @@ export default function WhatIfScenariosPage() {
   // Render loading state
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8">
-        <div className="text-center">
-          <p>Loading scenarios...</p>
-        </div>
-      </div>
+      <MainLayout pageTitle="What-If Scenarios" loading>
+        <div />
+      </MainLayout>
     );
   }
-  
+
   // Render error state
   if (error) {
     return (
-      <div className="container mx-auto py-8">
-        <div className="text-center text-red-500">
-          <p>Error loading scenarios. Please try again.</p>
-        </div>
-      </div>
+      <MainLayout
+        pageTitle="What-If Scenarios"
+        error={{ message: 'Error loading scenarios. Please try again.' }}
+      >
+        <div />
+      </MainLayout>
     );
   }
   
   return (
-    <>
-      <Helmet>
-        <title>What-If Scenarios | BCBS</title>
-      </Helmet>
-      
-      <div className="container mx-auto py-8 px-4">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">What-If Scenarios</h1>
-            <p className="text-muted-foreground">
-              Create and analyze different cost scenarios for building assessments
-            </p>
-          </div>
-          
-          <div className="mt-4 md:mt-0">
-            <Button onClick={() => setNewScenarioOpen(true)}>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              New Scenario
-            </Button>
-          </div>
+    <MainLayout
+      pageTitle="What-If Scenarios"
+      pageDescription="Create and analyze different Benton County cost scenarios using the cost matrix. Reval Area (Cycle) factors are applied per PACS."
+    >
+      <div className="py-4">
+        <div className="flex justify-end mb-6">
+          <Button onClick={() => setNewScenarioOpen(true)}>
+            <PlusCircle className="mr-2 h-4 w-4" />
+            New Scenario
+          </Button>
         </div>
         
         <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -276,8 +344,8 @@ export default function WhatIfScenariosPage() {
                           <p>{scenario.parameters.buildingType}</p>
                         </div>
                         <div>
-                          <span className="text-muted-foreground">Region:</span>
-                          <p>{scenario.parameters.region}</p>
+                          <span className="text-muted-foreground">Reval Area (Cycle):</span>
+                          <p>{scenario.parameters.revalArea ?? scenario.parameters.region ?? '—'}</p>
                         </div>
                         <div>
                           <span className="text-muted-foreground">Base Year:</span>
@@ -401,23 +469,26 @@ export default function WhatIfScenariosPage() {
               </div>
               
               <div className="grid gap-2">
-                <Label htmlFor="region">Region</Label>
+                <Label htmlFor="revalArea">Reval Area (Cycle)</Label>
                 <Select
-                  value={formData.region}
-                  onValueChange={(value) => setFormData({ ...formData, region: value })}
+                  value={formData.revalArea}
+                  onValueChange={(value) => {
+                    const area = REVAL_AREAS.find(a => a.id === value);
+                    setFormData({ ...formData, revalArea: value, adjustmentFactor: area ? area.factor : 1.0 });
+                  }}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select region" />
+                    <SelectValue placeholder="Select Reval Area" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="East Benton">East Benton</SelectItem>
-                    <SelectItem value="Central Benton">Central Benton</SelectItem>
-                    <SelectItem value="West Benton">West Benton</SelectItem>
+                    {REVAL_AREAS.map(area => (
+                      <SelectItem key={area.id} value={area.id}>{area.label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="baseYear">Base Year</Label>
@@ -521,26 +592,14 @@ export default function WhatIfScenariosPage() {
               </div>
               
               <div className="grid gap-2">
-                <Label htmlFor="adjustmentFactor">Regional Adjustment</Label>
-                <Select
-                  value={formData.adjustmentFactor.toString()}
-                  onValueChange={(value) => setFormData({ ...formData, adjustmentFactor: parseFloat(value) })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select factor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0.95">Low (-5%)</SelectItem>
-                    <SelectItem value="1.0">Standard (0%)</SelectItem>
-                    <SelectItem value="1.05">Moderate (+5%)</SelectItem>
-                    <SelectItem value="1.1">High (+10%)</SelectItem>
-                    <SelectItem value="1.15">Very High (+15%)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Reval Area Factor</Label>
+                <div className="flex items-center h-9 px-3 rounded-md border bg-muted text-sm text-muted-foreground">
+                  {formData.adjustmentFactor.toFixed(2)} — set by Reval Area above
+                </div>
               </div>
             </div>
           </div>
-          
+
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setNewScenarioOpen(false)}>
               Cancel
@@ -551,7 +610,7 @@ export default function WhatIfScenariosPage() {
           </div>
         </DialogContent>
       </Dialog>
-      
+
       {/* Edit Scenario Dialog */}
       <Dialog open={editScenarioOpen} onOpenChange={setEditScenarioOpen}>
         <DialogContent className="sm:max-w-[500px]">
@@ -609,23 +668,26 @@ export default function WhatIfScenariosPage() {
               </div>
               
               <div className="grid gap-2">
-                <Label htmlFor="edit-region">Region</Label>
+                <Label htmlFor="edit-revalArea">Reval Area (Cycle)</Label>
                 <Select
-                  value={formData.region}
-                  onValueChange={(value) => setFormData({ ...formData, region: value })}
+                  value={formData.revalArea}
+                  onValueChange={(value) => {
+                    const area = REVAL_AREAS.find(a => a.id === value);
+                    setFormData({ ...formData, revalArea: value, adjustmentFactor: area ? area.factor : 1.0 });
+                  }}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select region" />
+                    <SelectValue placeholder="Select Reval Area" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="East Benton">East Benton</SelectItem>
-                    <SelectItem value="Central Benton">Central Benton</SelectItem>
-                    <SelectItem value="West Benton">West Benton</SelectItem>
+                    {REVAL_AREAS.map(area => (
+                      <SelectItem key={area.id} value={area.id}>{area.label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            
+
             {/* Years */}
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
@@ -731,26 +793,14 @@ export default function WhatIfScenariosPage() {
               </div>
               
               <div className="grid gap-2">
-                <Label htmlFor="edit-adjustmentFactor">Regional Adjustment</Label>
-                <Select
-                  value={formData.adjustmentFactor.toString()}
-                  onValueChange={(value) => setFormData({ ...formData, adjustmentFactor: parseFloat(value) })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select factor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0.95">Low (-5%)</SelectItem>
-                    <SelectItem value="1.0">Standard (0%)</SelectItem>
-                    <SelectItem value="1.05">Moderate (+5%)</SelectItem>
-                    <SelectItem value="1.1">High (+10%)</SelectItem>
-                    <SelectItem value="1.15">Very High (+15%)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Reval Area Factor</Label>
+                <div className="flex items-center h-9 px-3 rounded-md border bg-muted text-sm text-muted-foreground">
+                  {formData.adjustmentFactor.toFixed(2)} — set by Reval Area above
+                </div>
               </div>
             </div>
           </div>
-          
+
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setEditScenarioOpen(false)}>
               Cancel
@@ -782,6 +832,6 @@ export default function WhatIfScenariosPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </>
+    </MainLayout>
   );
 }

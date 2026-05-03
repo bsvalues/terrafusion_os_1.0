@@ -1,10 +1,7 @@
 /*
- * ═══════════════════════════════════════════════════════════════
- * TERRAFUSION OS - ELITE ENDPOINT VALIDATION SUITE
- * Championship-Level API Endpoint Testing and Validation
- * Government-Grade Quality Assurance and Performance Monitoring
- * THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.
- * ═══════════════════════════════════════════════════════════════
+ * TerraFusion OS endpoint validation suite.
+ * Validates currently governed API surfaces and avoids probing retired
+ * synthetic routes as if they were production dependencies.
  */
 
 using System.Diagnostics;
@@ -49,7 +46,7 @@ public class EliteEndpointValidationService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("🎯 Elite Endpoint Validation Service started - Government. Transcended.");
+        _logger.LogInformation("Endpoint Validation Service started.");
 
         // Wait for application startup to complete
         await Task.Delay(_startupDelay, stoppingToken);
@@ -226,8 +223,7 @@ public class EliteEndpointValidationService : BackgroundService
             new EndpointTest("/api/test", "API Test Endpoint", HttpMethod.Get, Critical: true),
             new EndpointTest("/api/modules", "Module Listing", HttpMethod.Get, Critical: false, AuthRequired: true),
             new EndpointTest("/api/database/status", "Database Status", HttpMethod.Get, Critical: false),
-            new EndpointTest("/api/swarm/status", "AI Swarm Status", HttpMethod.Get, Critical: false),
-            new EndpointTest("/api/swarm/modules", "AI Modules", HttpMethod.Get, Critical: false),
+            new EndpointTest("/api/AIAssistant/health", "AI Assistant Health", HttpMethod.Get, Critical: false),
             new EndpointTest("/api/aimodules/status", "AI Modules Status", HttpMethod.Get, Critical: false, AuthRequired: true),
             new EndpointTest("/api/elitesystemreport/mission-completion", "Elite Mission Report", HttpMethod.Get, Critical: false),
             new EndpointTest("/levy/health", "Levy System Health", HttpMethod.Get, Critical: false)
@@ -430,11 +426,11 @@ public class EliteEndpointValidationService : BackgroundService
         }
         else if (passedCount == totalCount)
         {
-            _logger.LogInformation("🏆 SYSTEM STATUS: TRANSCENDENT — {Passed}/{Total} passed, 0 real failures", passedCount, totalCount);
+            _logger.LogInformation("SYSTEM STATUS: HEALTHY — {Passed}/{Total} passed, 0 real failures", passedCount, totalCount);
         }
         else
         {
-            _logger.LogInformation("⚡ SYSTEM STATUS: OPERATIONAL — {Passed} passed, {Auth} expected-auth (protected endpoints probed anonymously), 0 real failures",
+            _logger.LogInformation("SYSTEM STATUS: OPERATIONAL — {Passed} passed, {Auth} expected-auth (protected endpoints probed anonymously), 0 real failures",
                 passedCount, expectedAuthCount);
         }
     }

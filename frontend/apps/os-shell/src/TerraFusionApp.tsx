@@ -97,7 +97,7 @@ const QuantumConsciousnessDashboard = () => (
             <div className='text-3xl font-light text-violet-400 quantum-glow'>TRANSCENDED</div>
           </div>
         </div>
-        <div className='text-sm text-terra-cyan/70'>Government. Transcended.</div>
+        <div className='text-sm text-terra-cyan/70'>Governed Operator Surface</div>
         <div className='mt-4 h-2 bg-terra-slate/50 rounded-full overflow-hidden'>
           <div className='h-full bg-gradient-to-r from-violet-500 to-terra-cyan w-full quantum-orbital'></div>
         </div>
@@ -201,7 +201,7 @@ export default function TerraFusionApp() {
         <div className='bg-terra-midnight/80 backdrop-blur-xl border border-terra-cyan/20 rounded-xl p-3 terra-glass'>
           <div className='flex items-center space-x-2'>
             <TerraSphereLogo size='sm' variant='quantum' />
-            <span className='text-xs text-terra-cyan font-medium'>GOVERNMENT. TRANSCENDED.</span>
+            <span className='text-xs text-terra-cyan font-medium'>GOVERNED OPERATOR SURFACE</span>
           </div>
         </div>
       </div>

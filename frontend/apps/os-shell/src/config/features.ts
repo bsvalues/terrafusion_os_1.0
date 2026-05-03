@@ -16,11 +16,17 @@ interface FeatureFlags {
   USE_MOCK_DATA: boolean;
 }
 
+type RuntimeEnv = Record<string, string | boolean | undefined>;
+type RuntimeGlobal = typeof globalThis & {
+  import?: { meta?: { env?: RuntimeEnv } };
+  importMeta?: { env?: RuntimeEnv };
+};
+
 const getEnvBool = (key: string, defaultVal: boolean = false): boolean => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- globalThis.import.meta is a Jest test mock shim, not in TypeScript lib
+  const runtime = globalThis as RuntimeGlobal;
   const env =
-    (globalThis as any).import?.meta?.env ??
-    (globalThis as any).importMeta?.env ??
+    runtime.import?.meta?.env ??
+    runtime.importMeta?.env ??
     {};
   if (env[key] === 'true') return true;
   if (env[key] === 'false') return false;

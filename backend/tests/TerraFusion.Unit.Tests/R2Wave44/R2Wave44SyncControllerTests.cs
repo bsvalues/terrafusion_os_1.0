@@ -7,6 +7,7 @@ using Moq;
 using TerraFusion.API.Controllers;
 using TerraFusion.API.Services;
 using TerraFusion.Core.Entities;
+using TerraFusion.Sync.Workbench.Transforms.Sales;
 using Xunit;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 using ComparableSale = TerraFusion.Core.Entities.ComparableSale;
@@ -50,8 +51,12 @@ public sealed class R2Wave44SyncControllerTests
 
     private static SyncController CreateController(DataDbContext db, ISaleQualificationService? svc = null)
     {
-        var qualification = svc ?? new Mock<ISaleQualificationService>().Object;
-        return new SyncController(qualification, db, NullLogger<SyncController>.Instance);
+        var qualification     = svc ?? new Mock<ISaleQualificationService>().Object;
+        var compReader        = new Mock<TerraFusion.Sync.Workbench.Comps.Sales.ISalesCompEligibilityReader>().Object;
+        var activeWorkbook    = new Mock<TerraFusion.Sync.Workbench.Mapping.ISyncCountyActiveWorkbookService>().Object;
+        var staleReader       = new Mock<TerraFusion.Sync.Workbench.Comps.Sales.ISalesCompStaleReader>().Object;
+        var staleSummaryReader = new Mock<TerraFusion.Sync.Workbench.Comps.Sales.ISalesCompStaleSummaryReader>().Object;
+        return new SyncController(qualification, db, NullLogger<SyncController>.Instance, compReader, activeWorkbook, staleReader, staleSummaryReader);
     }
 
     private static async Task SeedCountyAsync(DataDbContext db)
@@ -360,5 +365,81 @@ public sealed class R2Wave44SyncControllerTests
         dynamic body = ok.Value!;
         double coverage = (double)body.allTime.recommendationCoverage;
         coverage.Should().BeApproximately(60.0, precision: 0.1);
+    }
+
+    [Fact]
+    public async Task WF44_13_CanonicalQualificationRun_RejectsInvalidPayloadBeforeRunner()
+    {
+        await using var db = CreateDbContext(nameof(WF44_13_CanonicalQualificationRun_RejectsInvalidPayloadBeforeRunner));
+        var ctrl = CreateController(db);
+        var runner = new Mock<ISalesQualificationCanonicalRunner>(MockBehavior.Strict);
+
+        var result = await ctrl.RunCanonicalSaleQualifications(
+            runner.Object,
+            new CanonicalSaleQualificationRunRequest(
+                CountyId: Guid.Empty,
+                WorkbookId: Guid.NewGuid(),
+                SourceConnectionId: Guid.NewGuid()),
+            CancellationToken.None);
+
+        result.Should().BeOfType<BadRequestObjectResult>();
+        runner.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task WF44_14_CanonicalQualificationRun_CallsRunnerWithExplicitCountyWorkbookAndSource()
+    {
+        await using var db = CreateDbContext(nameof(WF44_14_CanonicalQualificationRun_CallsRunnerWithExplicitCountyWorkbookAndSource));
+        var ctrl = CreateController(db);
+        var workbookId = Guid.NewGuid();
+        var sourceConnectionId = Guid.NewGuid();
+        var operatorId = "canonical-run-test";
+        var runner = new Mock<ISalesQualificationCanonicalRunner>(MockBehavior.Strict);
+        runner
+            .Setup(r => r.RunAsync(
+                BentonCountyId,
+                workbookId,
+                sourceConnectionId,
+                25,
+                operatorId,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new SalesQualificationCanonicalRunResult(
+                WorkbookId: workbookId,
+                SourceConnectionId: sourceConnectionId,
+                RowsRead: 2,
+                QualifiedCount: 1,
+                ExcludedCount: 1,
+                InconclusiveCount: 0,
+                SkippedNoIdentifierCount: 0,
+                RowsPersisted: 2,
+                Entries: new[]
+                {
+                    new SalesQualificationCanonicalRunEntry(
+                        ChgOfOwnerId: 101,
+                        WacCode: "Q",
+                        SaleRatioTypeCode: "R",
+                        TransformStatus: SalesQualificationDecisionStatus.Qualified,
+                        Persisted: true,
+                        SkipReason: null),
+                }));
+
+        var result = await ctrl.RunCanonicalSaleQualifications(
+            runner.Object,
+            new CanonicalSaleQualificationRunRequest(
+                CountyId: BentonCountyId,
+                WorkbookId: workbookId,
+                SourceConnectionId: sourceConnectionId,
+                MaxSales: 25,
+                OperatorId: operatorId),
+            CancellationToken.None);
+
+        var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        dynamic body = ok.Value!;
+        ((Guid)body.countyId).Should().Be(BentonCountyId);
+        ((Guid)body.workbookId).Should().Be(workbookId);
+        ((Guid)body.sourceConnectionId).Should().Be(sourceConnectionId);
+        ((int)body.rowsRead).Should().Be(2);
+        ((int)body.rowsPersisted).Should().Be(2);
+        runner.VerifyAll();
     }
 }

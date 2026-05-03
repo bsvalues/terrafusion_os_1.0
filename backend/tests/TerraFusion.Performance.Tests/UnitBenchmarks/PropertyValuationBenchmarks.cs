@@ -132,7 +132,7 @@ public class PropertyValuationBenchmarks
     public async Task SimulateCostForgeValuation()
     {
         // 🎯 Target: <800ms for quantum-enhanced valuation calculation
-        // Simulates CostForge AI calculation with Marshall & Swift integration
+        // Simulates CostForge AI calculation with Benton County locally calibrated cost schedules
         await Task.Delay(750); // Realistic CostForge calculation delay
     }
 

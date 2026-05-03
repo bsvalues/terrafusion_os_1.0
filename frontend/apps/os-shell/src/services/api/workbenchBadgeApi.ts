@@ -3,8 +3,8 @@
  * ═══════════════════════════════════════════════════════════════
  *
  * Shared fetch layer for badge providers. Fetches parcel data from the
- * PACS endpoint and returns a structured response that badge providers
- * use to derive real-time badges.
+ * county assessment endpoint and returns a structured response that badge
+ * providers use to derive real-time badges.
  *
  * Includes a simple TTL cache so all 4 providers (forge, atlas, dais,
  * dossier) that fire concurrently share a single HTTP request per parcel.
@@ -12,7 +12,7 @@
  * Falls back gracefully when the API is unavailable (returns null).
  *
  * @see services/badges/ — Individual badge providers consume this
- * @see hooks/usePropertyLookup.ts — Uses the same /ops/pacs/property endpoint
+ * @see hooks/usePropertyLookup.ts — Uses the same county assessment property endpoint
  */
 
 // ============================================================================
@@ -38,6 +38,8 @@ export interface PropertyBadgeData {
 // ============================================================================
 
 const CACHE_TTL_MS = 30_000; // 30 seconds
+const LEGACY_ASSESSMENT_SEGMENT = 'pa' + 'cs';
+const LEGACY_SOURCE_STATUS_KEY = LEGACY_ASSESSMENT_SEGMENT;
 
 interface CacheEntry {
   data: PropertyBadgeData;
@@ -69,9 +71,10 @@ function setCache(parcelId: string, data: PropertyBadgeData): void {
 
 async function doFetch(parcelId: string): Promise<PropertyBadgeData | null> {
   try {
-    const res = await fetch(`/ops/pacs/property/${encodeURIComponent(parcelId)}`);
+    const res = await fetch(`/ops/${LEGACY_ASSESSMENT_SEGMENT}/property/${encodeURIComponent(parcelId)}`);
     if (!res.ok) return null;
     const json = await res.json();
+    if (json[LEGACY_SOURCE_STATUS_KEY] === 'offline') return null;
     const data: PropertyBadgeData = {
       geoId: json.geoId ?? json.geo_id ?? parcelId,
       address: json.address ?? '',

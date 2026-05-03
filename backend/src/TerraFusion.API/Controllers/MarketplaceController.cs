@@ -20,7 +20,7 @@ namespace TerraFusion.API.Controllers
         }
 
         [HttpGet("plugins")]
-        public async Task<ActionResult> GetPlugins([FromQuery] string? search = null, [FromQuery] string? category = null, [FromQuery] string sort = "downloads")
+        public async Task<ActionResult> GetPlugins([FromQuery] string? search = null, [FromQuery] string? category = null, [FromQuery] string sort = "name")
         {
             try
             {
@@ -29,11 +29,11 @@ namespace TerraFusion.API.Controllers
                 // Transform modules to marketplace plugin format
                 var plugins = modules.Select(m => new
                 {
-                    id = m.Name?.ToLower().Replace(" ", "-"),
+                    id = BuildPluginId(string.IsNullOrWhiteSpace(m.DisplayName) ? m.Name : m.DisplayName),
                     name = string.IsNullOrWhiteSpace(m.DisplayName) ? m.Name : m.DisplayName,
                     version = m.Version ?? "1.0.0",
                     description = m.Description,
-                    author = "TerraFusion",
+                    author = (string?)null,
                     category = m.IsCore ? "Core" : m.Tier.ToString(),
                     tags = new[] { m.Tier.ToString().ToLower(), "government", "terrafusion" },
                     metricsAvailable = false
@@ -57,8 +57,9 @@ namespace TerraFusion.API.Controllers
                 // Apply sorting
                 plugins = sort switch
                 {
+                    "version" => plugins.OrderByDescending(p => p.version).ToList(),
                     "name" => plugins.OrderBy(p => p.name).ToList(),
-                    _ => plugins.OrderByDescending(p => p.version).ToList()
+                    _ => plugins.OrderBy(p => p.name).ToList()
                 };
 
                 return Ok(new { plugins });
@@ -100,9 +101,12 @@ namespace TerraFusion.API.Controllers
         {
             try
             {
-                // Convert plugin id back to module name
-                var moduleName = id.Replace("-", " ");
-                var module = await _moduleService.GetModuleByNameAsync(moduleName);
+                var modules = await _moduleService.GetAllModulesAsync();
+                var module = modules.FirstOrDefault(m =>
+                    string.Equals(
+                        BuildPluginId(string.IsNullOrWhiteSpace(m.DisplayName) ? m.Name : m.DisplayName),
+                        id,
+                        StringComparison.OrdinalIgnoreCase));
 
                 if (module == null)
                     return NotFound();
@@ -131,6 +135,11 @@ namespace TerraFusion.API.Controllers
             "Compliance" => "FileCheck",
             _ => "Package"
         };
+
+        private static string BuildPluginId(string? value) =>
+            string.IsNullOrWhiteSpace(value)
+                ? string.Empty
+                : value.Trim().ToLowerInvariant().Replace(" ", "-");
 
     }
 }

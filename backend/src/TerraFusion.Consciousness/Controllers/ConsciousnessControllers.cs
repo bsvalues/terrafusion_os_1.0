@@ -8,9 +8,8 @@ using System.ComponentModel.DataAnnotations;
 namespace TerraFusion.Consciousness.Controllers
 {
     /// <summary>
-    /// Quantum Consciousness Controller
-    /// THE TERRAFUSION WAY - REST API for Million-Agent Quantum Consciousness
-    /// Government. Transcended.
+    /// Legacy quantum consciousness controller.
+    /// This compatibility surface reports unavailable until a governed backend exists.
     /// </summary>
     [ApiController]
     [Route("api/v1/consciousness")]
@@ -20,13 +19,26 @@ namespace TerraFusion.Consciousness.Controllers
         private readonly IQuantumConsciousnessOrchestrator _orchestrator;
         private readonly ILogger<QuantumConsciousnessController> _logger;
 
-        public QuantumConsciousnessController(
-            IQuantumConsciousnessOrchestrator orchestrator,
-            ILogger<QuantumConsciousnessController> logger)
+    public QuantumConsciousnessController(
+        IQuantumConsciousnessOrchestrator orchestrator,
+        ILogger<QuantumConsciousnessController> logger)
         {
-            _orchestrator = orchestrator;
-            _logger = logger;
-        }
+        _orchestrator = orchestrator;
+        _logger = logger;
+    }
+
+    private ObjectResult GovernedQuantumSurfaceUnavailable(string operation)
+    {
+        _logger.LogWarning("Governed quantum-consciousness surface unavailable for operation {Operation}", operation);
+
+        return StatusCode(501, new
+        {
+            Error = "Governed quantum-consciousness surface unavailable",
+            Operation = operation,
+            GovernedContractAvailable = false,
+            Status = "Unavailable"
+        });
+    }
 
         /// <summary>
         /// Get Current Consciousness Status
@@ -35,17 +47,8 @@ namespace TerraFusion.Consciousness.Controllers
         [HttpGet("status")]
         public async Task<ActionResult<HybridConsciousnessStatusDto>> GetConsciousnessStatus()
         {
-            try
-            {
-                _logger.LogInformation("🧠 Retrieving consciousness status - THE TERRAFUSION WAY!");
-                var status = await _orchestrator.GetConsciousnessStatusAsync();
-                return Ok(status);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Failed to get consciousness status");
-                return StatusCode(500, new { Error = "Failed to retrieve consciousness status", Details = ex.Message });
-            }
+            await Task.CompletedTask;
+            return GovernedQuantumSurfaceUnavailable("status");
         }
 
         /// <summary>
@@ -56,24 +59,8 @@ namespace TerraFusion.Consciousness.Controllers
         public async Task<ActionResult<ConsciousnessScalingResultDto>> ScaleConsciousness(
             [FromBody] ConsciousnessScalingRequestDto request)
         {
-            try
-            {
-                if (request.TargetAgentCount < 0 || request.TargetAgentCount > 1000000)
-                {
-                    return BadRequest(new { Error = "Target agent count must be between 0 and 1,000,000" });
-                }
-
-                _logger.LogInformation("⚡ Scaling consciousness to {TargetAgents} agents - Government. Transcended!",
-                    request.TargetAgentCount);
-
-                var result = await _orchestrator.ScaleConsciousnessAsync(request);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Failed to scale consciousness");
-                return StatusCode(500, new { Error = "Failed to scale consciousness", Details = ex.Message });
-            }
+            await Task.CompletedTask;
+            return GovernedQuantumSurfaceUnavailable("scale");
         }
 
         /// <summary>
@@ -84,19 +71,8 @@ namespace TerraFusion.Consciousness.Controllers
         public async Task<ActionResult<OperationExecutionResultDto>> ExecuteOperations(
             [FromBody] OperationExecutionRequestDto request)
         {
-            try
-            {
-                _logger.LogInformation("🎯 Executing operation {OperationType} with priority {Priority}",
-                    request.OperationType, request.Priority);
-
-                var result = await _orchestrator.ExecuteOperationsAsync(request);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Failed to execute operations");
-                return StatusCode(500, new { Error = "Failed to execute operations", Details = ex.Message });
-            }
+            await Task.CompletedTask;
+            return GovernedQuantumSurfaceUnavailable("operations");
         }
 
         /// <summary>
@@ -106,16 +82,8 @@ namespace TerraFusion.Consciousness.Controllers
         [HttpGet("metrics")]
         public async Task<ActionResult<ConsciousnessMetricsDto>> GetRealTimeMetrics()
         {
-            try
-            {
-                var metrics = await _orchestrator.GetRealTimeMetricsAsync();
-                return Ok(metrics);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Failed to get real-time metrics");
-                return StatusCode(500, new { Error = "Failed to retrieve metrics", Details = ex.Message });
-            }
+            await Task.CompletedTask;
+            return GovernedQuantumSurfaceUnavailable("metrics");
         }
 
         /// <summary>
@@ -125,16 +93,8 @@ namespace TerraFusion.Consciousness.Controllers
         [HttpGet("security/status")]
         public async Task<ActionResult<QuantumSecurityStatusDto>> GetQuantumSecurityStatus()
         {
-            try
-            {
-                var securityStatus = await _orchestrator.GetQuantumSecurityStatusAsync();
-                return Ok(securityStatus);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Failed to get quantum security status");
-                return StatusCode(500, new { Error = "Failed to retrieve security status", Details = ex.Message });
-            }
+            await Task.CompletedTask;
+            return GovernedQuantumSurfaceUnavailable("security-status");
         }
 
         /// <summary>
@@ -144,16 +104,8 @@ namespace TerraFusion.Consciousness.Controllers
         [HttpGet("compliance/status")]
         public async Task<ActionResult<ComplianceStatusDto>> GetComplianceStatus()
         {
-            try
-            {
-                var complianceStatus = await _orchestrator.GetComplianceStatusAsync();
-                return Ok(complianceStatus);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Failed to get compliance status");
-                return StatusCode(500, new { Error = "Failed to retrieve compliance status", Details = ex.Message });
-            }
+            await Task.CompletedTask;
+            return GovernedQuantumSurfaceUnavailable("compliance-status");
         }
 
         /// <summary>
@@ -164,19 +116,8 @@ namespace TerraFusion.Consciousness.Controllers
         public async Task<ActionResult<EmergencyResponseDto>> TriggerEmergencyProtocols(
             [FromBody] EmergencyRequestDto request)
         {
-            try
-            {
-                _logger.LogCritical("🚨 EMERGENCY PROTOCOL TRIGGERED: {EmergencyType} - Severity: {Severity}",
-                    request.EmergencyType, request.Severity);
-
-                var response = await _orchestrator.TriggerEmergencyProtocolsAsync(request);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Failed to trigger emergency protocols");
-                return StatusCode(500, new { Error = "Failed to trigger emergency protocols", Details = ex.Message });
-            }
+            await Task.CompletedTask;
+            return GovernedQuantumSurfaceUnavailable("emergency");
         }
 
         /// <summary>
@@ -187,45 +128,20 @@ namespace TerraFusion.Consciousness.Controllers
         [AllowAnonymous] // Health checks should be accessible
         public async Task<ActionResult<object>> GetSystemHealth()
         {
-            try
+            await Task.CompletedTask;
+            return Ok(new
             {
-                var status = await _orchestrator.GetConsciousnessStatusAsync();
-                var metrics = await _orchestrator.GetRealTimeMetricsAsync();
-                var security = await _orchestrator.GetQuantumSecurityStatusAsync();
-                var compliance = await _orchestrator.GetComplianceStatusAsync();
-
-                var health = new
-                {
-                    Status = "Healthy",
-                    Timestamp = DateTime.UtcNow,
-                    TotalAgents = status.TotalActiveAgents,
-                    QuantumSecurity = security.QuantumEncryptionActive && security.QuantumKeyDistributionActive,
-                    Compliance = compliance.FISMACompliant && compliance.FedRAMPCompliant && compliance.SOC2Compliant,
-                    SystemLoad = metrics.SystemLoad,
-                    QuantumCoherence = status.QuantumSystem.QuantumCoherence,
-                    CurrentMode = status.CurrentMode,
-                    GovernmentGrade = true,
-                    Message = "TerraFusion OS - Government. Transcended."
-                };
-
-                return Ok(health);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Health check failed");
-                return StatusCode(503, new
-                {
-                    Status = "Unhealthy",
-                    Timestamp = DateTime.UtcNow,
-                    Error = ex.Message
-                });
-            }
+                Status = "Unavailable",
+                Timestamp = DateTime.UtcNow,
+                GovernedContractAvailable = false,
+                Message = "Governed quantum-consciousness surface unavailable"
+            });
         }
     }
 
     /// <summary>
-    /// Benton County Data Controller
-    /// REST API for real Benton County government data integration
+    /// Benton County data controller.
+    /// Property assessment is governed; other legacy demo lanes remain unavailable.
     /// </summary>
     [ApiController]
     [Route("api/v1/benton-county")]
@@ -272,17 +188,13 @@ namespace TerraFusion.Consciousness.Controllers
         public async Task<ActionResult<CitizenServicesDataDto>> GetCitizenServicesData(
             [FromBody] CitizenServicesRequestDto request)
         {
-            try
+            await Task.CompletedTask;
+            return StatusCode(501, new
             {
-                _logger.LogInformation("👥 Retrieving citizen services data for Benton County");
-                var data = await _bentonCountyDataService.GetCitizenServicesDataAsync(request);
-                return Ok(data);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Failed to get citizen services data");
-                return StatusCode(500, new { Error = "Failed to retrieve citizen services data", Details = ex.Message });
-            }
+                Error = "Governed Benton citizen-services lane unavailable",
+                GovernedContractAvailable = false,
+                Status = "Unavailable"
+            });
         }
 
         /// <summary>
@@ -293,17 +205,13 @@ namespace TerraFusion.Consciousness.Controllers
         public async Task<ActionResult<EmergencyResponseDataDto>> GetEmergencyResponseData(
             [FromBody] EmergencyDataRequestDto request)
         {
-            try
+            await Task.CompletedTask;
+            return StatusCode(501, new
             {
-                _logger.LogInformation("🚨 Retrieving emergency response data for Benton County");
-                var data = await _bentonCountyDataService.GetEmergencyResponseDataAsync(request);
-                return Ok(data);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Failed to get emergency response data");
-                return StatusCode(500, new { Error = "Failed to retrieve emergency response data", Details = ex.Message });
-            }
+                Error = "Governed Benton emergency-response lane unavailable",
+                GovernedContractAvailable = false,
+                Status = "Unavailable"
+            });
         }
 
         /// <summary>
@@ -313,17 +221,13 @@ namespace TerraFusion.Consciousness.Controllers
         [HttpPost("sync")]
         public async Task<ActionResult<DataSyncResultDto>> SyncWithBentonCounty()
         {
-            try
+            await Task.CompletedTask;
+            return StatusCode(501, new
             {
-                _logger.LogInformation("🔄 Starting data sync with Benton County systems - THE TERRAFUSION WAY!");
-                var result = await _bentonCountyDataService.SyncWithBentonCountyAsync();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Failed to sync with Benton County");
-                return StatusCode(500, new { Error = "Failed to sync with Benton County", Details = ex.Message });
-            }
+                Error = "Governed Benton sync lane unavailable",
+                GovernedContractAvailable = false,
+                Status = "Unavailable"
+            });
         }
 
         /// <summary>
@@ -334,35 +238,22 @@ namespace TerraFusion.Consciousness.Controllers
         public async Task<ActionResult<object>> GetDataSourceStatus()
         {
             await Task.CompletedTask;
-            await Task.CompletedTask;
-            try
+            return Ok(new
             {
-                // This would be implemented with actual status checks
-                var status = new
+                Status = "Partial",
+                Timestamp = DateTime.UtcNow,
+                DataSources = new
                 {
-                    Status = "Connected",
-                    Timestamp = DateTime.UtcNow,
-                    DataSources = new
-                    {
-                        PropertyAssessments = "Active",
-                        CitizenServices = "Active",
-                        EmergencyResponse = "Active",
-                        PermitsLicenses = "Active",
-                        ZoningData = "Active",
-                        TaxRecords = "Active"
-                    },
-                    LastSync = DateTime.UtcNow.AddMinutes(-15),
-                    NextScheduledSync = DateTime.UtcNow.AddMinutes(45),
-                    Message = "Real Benton County data powering quantum consciousness!"
-                };
-
-                return Ok(status);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Failed to get data source status");
-                return StatusCode(500, new { Error = "Failed to retrieve data source status", Details = ex.Message });
-            }
+                    PropertyAssessments = "Available",
+                    CitizenServices = "Unavailable",
+                    EmergencyResponse = "Unavailable",
+                    Sync = "Unavailable",
+                    PermitsLicenses = "Unverified",
+                    ZoningData = "Unverified",
+                    TaxRecords = "Unverified"
+                },
+                Message = "Only the Benton property-assessment lane is currently governed."
+            });
         }
     }
 
@@ -386,6 +277,19 @@ namespace TerraFusion.Consciousness.Controllers
             _logger = logger;
         }
 
+        private ObjectResult GovernedQuantumSecurityUnavailable(string operation)
+        {
+            _logger.LogWarning("Governed quantum-security surface unavailable for operation {Operation}", operation);
+
+            return StatusCode(501, new
+            {
+                Error = "Governed quantum-security surface unavailable",
+                Operation = operation,
+                GovernedContractAvailable = false,
+                Status = "Unavailable"
+            });
+        }
+
         /// <summary>
         /// Deploy Security to All Agents
         /// Deploy quantum-resistant security to all million agents
@@ -393,17 +297,8 @@ namespace TerraFusion.Consciousness.Controllers
         [HttpPost("deploy")]
         public async Task<ActionResult<QuantumSecurityDeploymentResultDto>> DeploySecurityToAllAgents()
         {
-            try
-            {
-                _logger.LogInformation("🔐 Deploying quantum security to all agents - THE TERRAFUSION WAY!");
-                var result = await _quantumSecurityService.DeploySecurityToAllAgentsAsync();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Failed to deploy security to all agents");
-                return StatusCode(500, new { Error = "Failed to deploy security", Details = ex.Message });
-            }
+            await Task.CompletedTask;
+            return GovernedQuantumSecurityUnavailable("deploy");
         }
 
         /// <summary>
@@ -413,16 +308,8 @@ namespace TerraFusion.Consciousness.Controllers
         [HttpGet("threats")]
         public async Task<ActionResult<QuantumThreatMonitoringResultDto>> MonitorQuantumThreats()
         {
-            try
-            {
-                var threats = await _quantumSecurityService.MonitorQuantumThreatsAsync();
-                return Ok(threats);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Failed to monitor quantum threats");
-                return StatusCode(500, new { Error = "Failed to monitor threats", Details = ex.Message });
-            }
+            await Task.CompletedTask;
+            return GovernedQuantumSecurityUnavailable("threats");
         }
 
         /// <summary>
@@ -432,16 +319,8 @@ namespace TerraFusion.Consciousness.Controllers
         [HttpGet("compliance")]
         public async Task<ActionResult<SecurityComplianceResultDto>> ValidateSecurityCompliance()
         {
-            try
-            {
-                var compliance = await _quantumSecurityService.ValidateSecurityComplianceAsync();
-                return Ok(compliance);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Failed to validate security compliance");
-                return StatusCode(500, new { Error = "Failed to validate compliance", Details = ex.Message });
-            }
+            await Task.CompletedTask;
+            return GovernedQuantumSecurityUnavailable("compliance");
         }
 
         /// <summary>
@@ -452,19 +331,8 @@ namespace TerraFusion.Consciousness.Controllers
         public async Task<ActionResult<SecurityIncidentResponseDto>> RespondToSecurityIncident(
             [FromBody] SecurityIncidentDto incident)
         {
-            try
-            {
-                _logger.LogCritical("🚨 SECURITY INCIDENT: {IncidentType} - {Severity}",
-                    incident.IncidentType, incident.Severity);
-
-                var response = await _quantumSecurityService.RespondToSecurityIncidentAsync(incident);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Failed to respond to security incident");
-                return StatusCode(500, new { Error = "Failed to respond to incident", Details = ex.Message });
-            }
+            await Task.CompletedTask;
+            return GovernedQuantumSecurityUnavailable("incident-response");
         }
     }
 }

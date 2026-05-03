@@ -33,23 +33,17 @@ function sentimentColor(score: number): string {
 }
 
 // ---------------------------------------------------------------------------
-// Default data
+// Empty data
 // ---------------------------------------------------------------------------
 
-const DEFAULT_AREAS: SentimentAreaCompact[] = [
-  { id: 'sw1', name: 'Downtown', score: 72, center: [46.23, -119.2] },
-  { id: 'sw2', name: 'Riverside', score: 85, center: [46.24, -119.21] },
-  { id: 'sw3', name: 'West Hills', score: 79, center: [46.25, -119.23] },
-  { id: 'sw4', name: 'Eastgate', score: 45, center: [46.22, -119.18] },
-  { id: 'sw5', name: 'Southridge', score: 91, center: [46.21, -119.22] },
-];
+const EMPTY_AREAS: SentimentAreaCompact[] = [];
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
 export default function SentimentHeatMapWidget({
-  areas = DEFAULT_AREAS,
+  areas = EMPTY_AREAS,
   mapCenter = [46.235, -119.21],
   onAreaClick,
   className = '',
@@ -63,6 +57,12 @@ export default function SentimentHeatMapWidget({
       role="img"
       aria-label="Sentiment heatmap widget"
     >
+      {areas.length === 0 && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center px-4 text-center text-xs text-white/50">
+          No governed sentiment areas loaded.
+        </div>
+      )}
+
       {/* Grid */}
       <div className="absolute inset-0 opacity-10">
         <svg width="100%" height="100%">
@@ -116,11 +116,13 @@ export default function SentimentHeatMapWidget({
       })}
 
       {/* Simplified legend */}
+      {areas.length > 0 && (
       <div className="absolute bottom-1 right-1 flex gap-1.5 text-[8px] bg-terra-midnight/60 px-1 py-0.5 rounded">
         <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--tf-success))]" />Good</span>
         <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--tf-warning))]" />Fair</span>
         <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--tf-error))]" />Low</span>
       </div>
+      )}
     </div>
   );
 }

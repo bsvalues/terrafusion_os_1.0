@@ -101,7 +101,7 @@ const STEP_GUIDANCE = {
   [WizardStep.LOCATION]: {
     title: 'Geographic Location',
     icon: <Eye className="h-5 w-5 text-primary" />,
-    description: 'Construction costs vary significantly by region due to labor, material costs, and local regulations.',
+    description: 'Construction costs vary significantly by reval area due to labor, material costs, and local regulations.',
     tips: [
       'Urban areas typically have higher construction costs than rural areas',
       'Remote locations may have higher costs due to material transportation',

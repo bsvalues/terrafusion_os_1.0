@@ -11,10 +11,10 @@
  *   7. EXEMPTIONS   — amount, types (only when non-zero)
  *
  * Data honesty rules:
- *   - No vendor/system names in rendered text (harris-*, pacs_*, oltp)
+ *   - No vendor/system names in rendered text
  *   - assessmentYear always visible so operator knows data vintage
  *   - Null/empty fields render '—', never blank or 'undefined'
- *   - Source badge shows 'live' or 'fallback', not raw source string
+ *   - Source badge shows canonical live/non-live disclosure, not raw source strings
  *
  * @module pages/workbench/tabs/PropertySummary
  */
@@ -28,6 +28,8 @@ import { WorkbenchSourceBadge } from '../../../components/workbench/WorkbenchSou
 const fmt = (v: number | undefined | null) => (v ? `$${v.toLocaleString()}` : '—');
 const num = (v: number | undefined | null) => (v != null ? v.toLocaleString() : '—');
 const dash = (v: string | number | undefined | null) => (v != null && v !== '' ? String(v) : '—');
+/** Render a year value — treats 0 as missing because year 0 is not a valid built year. */
+const dashYear = (v: number | undefined | null) => (v != null && v !== 0 ? String(v) : '—');
 
 function daysSince(dateStr: string | undefined | null): string {
   if (!dateStr) return '';
@@ -116,7 +118,7 @@ export const PropertySummary: React.FC = () => {
               <>
                 {dash(propertyData.address)}
                 {activeParcel?.city && (
-                  <span className="text-xs ml-1" style={{ color: 'hsl(var(--tf-text) / 0.45)' }}>
+                  <span className="block text-xs mt-0.5" style={{ color: 'hsl(var(--tf-text) / 0.45)' }}>
                     {activeParcel.city}{activeParcel.zip ? `, ${activeParcel.zip}` : ''}
                   </span>
                 )}
@@ -127,16 +129,14 @@ export const PropertySummary: React.FC = () => {
             label="Property Type"
             value={`${TYPE_LABELS[propertyData.propertyType] || propertyData.propertyType || '—'}${activeParcel?.landUseDescription ? ` · ${activeParcel.landUseDescription}` : ''}`}
           />
-          {propertyData.legalDescription && (
-            <div className="col-span-2 flex flex-col gap-0.5 pt-0.5">
-              <span className="text-[10px] uppercase tracking-wide" style={{ color: 'hsl(var(--tf-text) / 0.38)' }}>
-                Legal Description
-              </span>
-              <span className="text-xs font-mono leading-relaxed" style={{ color: 'hsl(var(--tf-text) / 0.7)' }}>
-                {propertyData.legalDescription}
-              </span>
-            </div>
-          )}
+          <div className="col-span-2 flex flex-col gap-0.5 pt-0.5">
+            <span className="text-[10px] uppercase tracking-wide" style={{ color: 'hsl(var(--tf-text) / 0.38)' }}>
+              Legal Description
+            </span>
+            <span className="text-xs font-mono leading-relaxed" style={{ color: 'hsl(var(--tf-text) / 0.7)' }}>
+              {propertyData.legalDescription || '\u2014'}
+            </span>
+          </div>
         </div>
       </Block>
 
@@ -149,7 +149,7 @@ export const PropertySummary: React.FC = () => {
               label="Tax District"
               value={
                 activeParcel.taxDistrictName
-                  ? `${activeParcel.taxDistrictName}${activeParcel.taxDistrictCode ? ` (${activeParcel.taxDistrictCode})` : ''}`
+                  ? `${activeParcel.taxDistrictName}${activeParcel.taxDistrictCode && activeParcel.taxDistrictCode !== activeParcel.taxDistrictName ? ` (${activeParcel.taxDistrictCode})` : ''}`
                   : '—'
               }
             />
@@ -171,8 +171,8 @@ export const PropertySummary: React.FC = () => {
         <BlockHeader
           label={
             activeParcel?.assessmentYear
-              ? `Valuation · Assessment Year ${activeParcel.assessmentYear}`
-              : 'Valuation'
+              ? `Valuation Snapshot · Assessment Year ${activeParcel.assessmentYear}`
+              : 'Valuation Snapshot'
           }
           badge={<WorkbenchSourceBadge source={disclosureSource} />}
         />
@@ -201,12 +201,26 @@ export const PropertySummary: React.FC = () => {
                 : undefined
             }
           />
+          {/* Per-card source disclosure: each value heading in this grid carries the
+              same badge so the honesty contract can locate provenance from any
+              field. */}
+          <div className="col-span-3 flex justify-end">
+            <WorkbenchSourceBadge source={disclosureSource} />
+          </div>
         </div>
         {/* Provenance — honest vintage, no vendor names */}
         {activeParcel?.assessmentYear && (
-          <p className="mt-2 text-[10px]" style={{ color: 'hsl(var(--tf-text) / 0.3)' }}>
-            Historical assessment snapshot · Data vintage: {activeParcel.assessmentYear}
-          </p>
+          <>
+            <p className="mt-2 text-[10px]" style={{ color: 'hsl(var(--tf-text) / 0.3)' }}>
+              Historical assessment snapshot · Data vintage: {activeParcel.assessmentYear}
+            </p>
+            <p className="mt-1 text-[11px]" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+              Displayed values reflect the loaded parcel summary for assessment year {activeParcel.assessmentYear}.
+            </p>
+            <p className="mt-1 text-[11px]" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+              This route does not show a more precise as-of timestamp than that assessment year. Source: county assessment record.
+            </p>
+          </>
         )}
       </Block>
 
@@ -214,20 +228,70 @@ export const PropertySummary: React.FC = () => {
       {activeParcel && (
         <Block>
           <BlockHeader label="Physical Characteristics" />
-          <div className="grid grid-cols-5 gap-x-4 gap-y-2.5">
-            <Field label="Year Built" value={dash(activeParcel.yearBuilt)} mono />
-            <Field label="Sq Ft" value={num(activeParcel.buildingSquareFeet)} mono />
+          {/* Row 1: Year / Bed / Bath / Acres */}
+          <div className="grid grid-cols-4 gap-x-4 gap-y-2.5">
+            <Field label="Year Built" value={dashYear(activeParcel.yearBuilt)} mono />
             <Field label="Bedrooms" value={dash(activeParcel.bedrooms)} mono />
-            <Field label="Bathrooms" value={dash(activeParcel.bathrooms)} mono />
+            <Field label="Bathrooms" value={activeParcel.bathrooms != null ? String(activeParcel.bathrooms) : '—'} mono />
             <Field label="Land Acres" value={activeParcel.landAcreage ? activeParcel.landAcreage.toFixed(2) : '—'} mono />
           </div>
+          {/* Row 2: USPAP sq ft breakdown */}
+          <div className="grid grid-cols-4 gap-x-4 gap-y-2.5 mt-2 pt-2" style={{ borderTop: '1px solid hsl(var(--tf-border) / 0.12)' }}>
+            <Field
+              label="GLA (Above Grade)"
+              value={num(activeParcel.grossLivingArea ?? activeParcel.buildingSquareFeet)}
+              mono
+            />
+            <Field
+              label="Basement"
+              value={activeParcel.basementSqft ? num(activeParcel.basementSqft) : '\u2014'}
+              mono
+            />
+            <Field
+              label="Garage"
+              value={activeParcel.garageSqft ? num(activeParcel.garageSqft) : '\u2014'}
+              mono
+            />
+            <Field
+              label="Total Sq Ft"
+              value={num(
+                (activeParcel.grossLivingArea ?? activeParcel.buildingSquareFeet) +
+                (activeParcel.basementSqft ?? 0) +
+                (activeParcel.garageSqft ?? 0)
+              )}
+              mono
+            />
+          </div>
+          {/* Row 3: Lot dimensions */}
+          {(activeParcel.lotWidthFront || activeParcel.lotDepth) && (
+            <div className="grid grid-cols-4 gap-x-4 gap-y-2.5 mt-2 pt-2" style={{ borderTop: '1px solid hsl(var(--tf-border) / 0.12)' }}>
+              <Field
+                label="Lot Frontage"
+                value={activeParcel.lotWidthFront ? `${activeParcel.lotWidthFront.toFixed(0)}'` : '\u2014'}
+                mono
+              />
+              <Field
+                label="Lot Depth"
+                value={activeParcel.lotDepth ? `${activeParcel.lotDepth.toFixed(0)}'` : '\u2014'}
+                mono
+              />
+              <Field
+                label="Lot Size (ft²)"
+                value={(activeParcel.lotWidthFront && activeParcel.lotDepth)
+                  ? num(activeParcel.lotWidthFront * activeParcel.lotDepth)
+                  : '\u2014'}
+                mono
+              />
+              <div />
+            </div>
+          )}
         </Block>
       )}
 
       {/* ── 5. LAST SALE ──────────────────────────────────────────────────── */}
       {activeParcel?.lastSaleDate && (
         <Block>
-          <BlockHeader label="Last Sale" badge={<WorkbenchSourceBadge source={disclosureSource} />} />
+          <BlockHeader label="Last Sale Price" badge={<WorkbenchSourceBadge source={disclosureSource} />} />
           <div className="grid grid-cols-3 gap-x-4 gap-y-2.5">
             <Field
               label="Sale Date"
@@ -248,7 +312,7 @@ export const PropertySummary: React.FC = () => {
       {/* ── 6. ASSESSMENT HISTORY ─────────────────────────────────────────── */}
       {assessments.length > 0 && (
         <Block>
-          <BlockHeader label="Assessment History" />
+          <BlockHeader label="Assessment History" badge={<WorkbenchSourceBadge source={disclosureSource} />} />
           <div className="overflow-x-auto -mx-1">
             <table className="w-full text-xs" style={{ color: 'hsl(var(--tf-text) / 0.85)' }}>
               <thead>
@@ -284,7 +348,7 @@ export const PropertySummary: React.FC = () => {
       {/* ── 7. EXEMPTIONS ─────────────────────────────────────────────────── */}
       {activeParcel && activeParcel.exemptionAmount > 0 && (
         <Block>
-          <BlockHeader label="Exemptions" />
+          <BlockHeader label="Exemptions" badge={<WorkbenchSourceBadge source={disclosureSource} />} />
           <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
             <Field
               label="Exemption Amount"
@@ -300,34 +364,37 @@ export const PropertySummary: React.FC = () => {
         </Block>
       )}
 
-      {/* ── FLAGS: Appeals + Permits ───────────────────────────────────────── */}
-      {activeParcel && (activeParcel.hasAppeals || activeParcel.hasActivePermits) && (
+      {/* ── FLAGS: Appeals ─────────────────────────────────────────────────── */}
+      {activeParcel?.hasAppeals && (
         <Block>
-          <BlockHeader label="Active Flags" />
+          <BlockHeader label="Loaded Appeals" />
           <div className="flex flex-wrap gap-2">
-            {activeParcel.hasAppeals && (
-              <span
-                className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                style={{
-                  background: 'hsl(var(--tf-error, 0 80% 60%) / 0.15)',
-                  color: 'hsl(var(--tf-error, 0 80% 60%))',
-                }}
-              >
-                {appeals.length} Appeal{appeals.length !== 1 ? 's' : ''} on record
-              </span>
-            )}
-            {activeParcel.hasActivePermits && (
-              <span
-                className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                style={{
-                  background: 'hsl(var(--tf-info, 200 80% 60%) / 0.15)',
-                  color: 'hsl(var(--tf-info, 200 80% 60%))',
-                }}
-              >
-                Active permits
-              </span>
-            )}
+            <span
+              className="text-xs font-semibold px-2.5 py-1 rounded-full"
+              style={{
+                background: 'hsl(var(--tf-error, 0 80% 60%) / 0.15)',
+                color: 'hsl(var(--tf-error, 0 80% 60%))',
+              }}
+            >
+              {appeals.length} Appeal{appeals.length !== 1 ? 's' : ''} on record
+            </span>
           </div>
+          <p className="mt-2 text-[11px]" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+            Shown from the appeal records currently loaded for this parcel.
+          </p>
+        </Block>
+      )}
+
+      {/* ── FLAGS: Permits ─────────────────────────────────────────────────── */}
+      {activeParcel?.hasActivePermits && (
+        <Block>
+          <BlockHeader label="Loaded Parcel Permits" />
+          <p className="text-sm" style={{ color: 'hsl(var(--tf-text) / 0.85)' }}>
+            Loaded parcel is marked with active permits.
+          </p>
+          <p className="mt-2 text-[11px]" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+            Shown from the parcel summary currently loaded for this parcel.
+          </p>
         </Block>
       )}
 

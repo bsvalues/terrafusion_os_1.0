@@ -12,8 +12,8 @@ import { Activity,
   CheckCircle, 
   AlertCircle,
   TrendingUp,
-  Refresh
- } from '@mui/icons-material';
+  RefreshCw
+ } from 'lucide-react';
 
 interface SystemMetrics {
   status: 'healthy' | 'warning' | 'error';
@@ -111,11 +111,10 @@ export default function RealTimePiltMonitor() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center"><>
+        <div className="text-center">
 
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p
-</> className="text-gray-600">Loading system metrics...</p>
+          <p className="text-gray-600">Loading system metrics...</p>
         </div>
       </div>
     );
@@ -134,11 +133,10 @@ export default function RealTimePiltMonitor() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <div><>
+        <div>
 
           <h1 className="text-3xl font-bold text-gray-900">Real-Time System Monitor</h1>
-          <p
-</> className="text-gray-600 mt-1">Live PILT system performance and status</p>
+          <p className="text-gray-600 mt-1">Live PILT system performance and status</p>
         </div>
         <div className="flex gap-2">
           <Button
@@ -146,13 +144,12 @@ export default function RealTimePiltMonitor() {
             size="sm"
             onClick={() => setAutoRefresh(!autoRefresh)}
             className={autoRefresh ? 'bg-green-50 border-green-200' : ''}
-          ><>
+          >
 
-            <Refresh className={`w-4 h-4 mr-2 ${autoRefresh ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 mr-2 ${autoRefresh ? 'animate-spin' : ''}`} />
             {autoRefresh ? 'Auto-Refresh ON' : 'Auto-Refresh OFF'}
           </Button>
-          <Button
-</> variant="outline" size="sm" onClick={fetchMetrics}>
+          <Button variant="outline" size="sm" onClick={fetchMetrics}>
             Refresh Now
           </Button>
         </div>
@@ -162,50 +159,45 @@ export default function RealTimePiltMonitor() {
       <Card className={`border-2 ${getStatusColor(metrics.status)}`}>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2"><>
+            <CardTitle className="flex items-center gap-2">
 
               <Activity className="h-5 w-5" />
               System Status
             </CardTitle>
-            <Badge
-</> className={getStatusColor(metrics.status)}>
+            <Badge className={getStatusColor(metrics.status)}>
               {metrics.status.toUpperCase()}
             </Badge>
           </div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="text-center"><>
+            <div className="text-center">
 
               <div className="text-2xl font-bold text-gray-900">
                 {formatUptime(metrics.uptime)}
               </div>
-              <p
-</> className="text-sm text-gray-600">System Uptime</p>
+              <p className="text-sm text-gray-600">System Uptime</p>
             </div>
-            <div className="text-center"><>
+            <div className="text-center">
 
               <div className="text-2xl font-bold text-gray-900">
                 {metrics.activeConnections}
               </div>
-              <p
-</> className="text-sm text-gray-600">Active Connections</p>
+              <p className="text-sm text-gray-600">Active Connections</p>
             </div>
-            <div className="text-center"><>
+            <div className="text-center">
 
               <div className="text-2xl font-bold text-gray-900">
                 {metrics.processingSpeed.toFixed(1)}%
               </div>
-              <p
-</> className="text-sm text-gray-600">Processing Efficiency</p>
+              <p className="text-sm text-gray-600">Processing Efficiency</p>
             </div>
-            <div className="text-center"><>
+            <div className="text-center">
 
               <div className="text-2xl font-bold text-gray-900">
                 {metrics.dataIntegrity}%
               </div>
-              <p
-</> className="text-sm text-gray-600">Data Integrity</p>
+              <p className="text-sm text-gray-600">Data Integrity</p>
             </div>
           </div>
         </CardContent>
@@ -214,17 +206,15 @@ export default function RealTimePiltMonitor() {
       {/* Performance Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 
             <CardTitle className="text-sm font-medium">Database Performance</CardTitle>
-            <Database
-</> className="h-4 w-4 text-muted-foreground" />
+            <Database className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent><>
+          <CardContent>
 
             <div className="text-2xl font-bold">Fast</div>
-            <Progress
-</> value={metrics.processingSpeed} className="mt-2" />
+            <Progress value={metrics.processingSpeed} className="mt-2" />
             <p className="text-xs text-muted-foreground mt-2">
               Query response time: &lt;1ms
             </p>
@@ -232,11 +222,10 @@ export default function RealTimePiltMonitor() {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 
             <CardTitle className="text-sm font-medium">PACS Integration</CardTitle>
-            <Wifi
-</> className="h-4 w-4 text-muted-foreground" />
+            <Wifi className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
@@ -250,17 +239,15 @@ export default function RealTimePiltMonitor() {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 
             <CardTitle className="text-sm font-medium">Server Health</CardTitle>
-            <Server
-</> className="h-4 w-4 text-muted-foreground" />
+            <Server className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent><>
+          <CardContent>
 
             <div className="text-2xl font-bold text-green-600">Optimal</div>
-            <Progress
-</> value={98} className="mt-2" />
+            <Progress value={98} className="mt-2" />
             <p className="text-xs text-muted-foreground mt-2">
               Memory usage: 75MB RSS
             </p>
@@ -271,31 +258,28 @@ export default function RealTimePiltMonitor() {
       {/* Recent Activity */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><>
+          <CardTitle className="flex items-center gap-2">
 
             <Clock className="h-5 w-5" />
             Recent Activity
           </CardTitle>
-          <CardDescription
-</>>
+          <CardDescription>
             Live system events and operations
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {metrics.recentActivity.map((activity /* , index */) => (
-              <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"><>
+            {metrics.recentActivity.map((activity , index) => (
+              <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
 
                 <div className={`w-2 h-2 rounded-full ${
                   activity.status === 'success' ? 'bg-green-500' :
                   activity.status === 'warning' ? 'bg-yellow-500' : 'bg-red-500'
                 }`}></div>
-                <div
-</> className="flex-1"><>
+                <div className="flex-1">
 
                   <p className="text-sm font-medium">{activity.action}</p>
-                  <p
-</> className="text-xs text-gray-600">
+                  <p className="text-xs text-gray-600">
                     {new Date(activity.timestamp).toLocaleString()}
                   </p>
                 </div>
@@ -314,73 +298,63 @@ export default function RealTimePiltMonitor() {
       {/* Performance Charts Placeholder */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
-          <CardHeader><>
+          <CardHeader>
 
             <CardTitle>Response Time Trends</CardTitle>
-            <CardDescription
-</>>API response times over the last hour</CardDescription>
+            <CardDescription>API response times over the last hour</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-48 flex items-center justify-center bg-gray-50 rounded-lg">
               <div className="text-center">
-                <TrendingUp className="h-12 w-12 text-gray-400 mx-auto mb-2" /><>
+                <TrendingUp className="h-12 w-12 text-gray-400 mx-auto mb-2" />
 
                 <p className="text-gray-600">Real-time chart visualization</p>
-                <p
-</> className="text-sm text-gray-500">Chart.js integration available</p>
+                <p className="text-sm text-gray-500">Chart.js integration available</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader><>
+          <CardHeader>
 
             <CardTitle>System Load</CardTitle>
-            <CardDescription
-</>>Resource utilization metrics</CardDescription>
+            <CardDescription>Resource utilization metrics</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div>
-                <div className="flex justify-between text-sm mb-1"><>
+                <div className="flex justify-between text-sm mb-1">
 
                   <span>CPU Usage</span>
-                  <span
-</>>12%</span>
-                </div><>
+                  <span>12%</span>
+                </div>
 
                 <Progress value={12} className="h-2" />
               </div>
-              <div
-</>>
-                <div className="flex justify-between text-sm mb-1"><>
+              <div>
+                <div className="flex justify-between text-sm mb-1">
 
                   <span>Memory Usage</span>
-                  <span
-</>>68%</span>
-                </div><>
+                  <span>68%</span>
+                </div>
 
                 <Progress value={68} className="h-2" />
               </div>
-              <div
-</>>
-                <div className="flex justify-between text-sm mb-1"><>
+              <div>
+                <div className="flex justify-between text-sm mb-1">
 
                   <span>Disk I/O</span>
-                  <span
-</>>23%</span>
-                </div><>
+                  <span>23%</span>
+                </div>
 
                 <Progress value={23} className="h-2" />
               </div>
-              <div
-</>>
-                <div className="flex justify-between text-sm mb-1"><>
+              <div>
+                <div className="flex justify-between text-sm mb-1">
 
                   <span>Network</span>
-                  <span
-</>>8%</span>
+                  <span>8%</span>
                 </div>
                 <Progress value={8} className="h-2" />
               </div>

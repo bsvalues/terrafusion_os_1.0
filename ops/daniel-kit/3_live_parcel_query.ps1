@@ -6,7 +6,7 @@
     Demonstrates all three adapter query paths: Core, Ownership, History.
 #>
 param(
-    [string]$SaPassword = "TF_Pacs2026!",
+    [string]$SaPassword = ($env:SA_PASSWORD ?? $env:MSSQL_SA_PASSWORD ?? (throw "SA password not set; export SA_PASSWORD or MSSQL_SA_PASSWORD before running")),
     [string]$ContainerName = "tf-mssql"
 )
 $ErrorActionPreference = "Stop"

@@ -1,0 +1,245 @@
+{
+  "schemaVersion": "1.0.0",
+  "slice": "contract-adoption-audit",
+  "baselineContractRegistry": "os-platform/core/pilot/terrafusion-suite-contracts.json",
+  "requiredContracts": [
+    "terraforge_operational_health_v1",
+    "terraforge_statistics_compat_v1",
+    "terraforge_segment_derivation_v1",
+    "terraforge_correction_priority_v1",
+    "costforge_calibration_priority_v1",
+    "county_data_trust_launch_context_v1",
+    "compsforge_candidate_reconciliation_v1",
+    "costforge_cost_value_v1"
+  ],
+  "statusDoctrine": {
+    "pass": "Surface consumes a registered contract id and exposes enough posture for proof or user review.",
+    "partial": "Surface consumes contract-backed data but does not yet expose the contract id or trust posture clearly.",
+    "gap": "Surface computes or displays suite-truth metrics without a registered contract id.",
+    "outOfScope": "Surface is related domain functionality but needs a future domain-specific contract, not one of the four current suite contracts."
+  },
+  "surfaces": [
+    {
+      "surface": "County Studio health summary API",
+      "path": "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs",
+      "metricBehavior": "Operational health summary and correction-priority alert ranking.",
+      "contractBacked": true,
+      "contractIds": [
+        "terraforge_operational_health_v1",
+        "terraforge_correction_priority_v1"
+      ],
+      "trustPostureExposed": "api",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "Runtime DTOs echo both operational health and correction priority contract ids."
+    },
+    {
+      "surface": "County Studio segment derivation API",
+      "path": "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs",
+      "metricBehavior": "Derives segment set metrics from canonical TerraFusion DB tables.",
+      "contractBacked": true,
+      "contractIds": ["terraforge_segment_derivation_v1"],
+      "trustPostureExposed": "api",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "SegmentDerivationResult echoes the registered segment derivation contract id."
+    },
+    {
+      "surface": "County Studio Statistics Compat panel",
+      "path": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
+      "metricBehavior": "Same-population ratio-study parity, population contract fields, and parity rows.",
+      "contractBacked": true,
+      "contractIds": [
+        "terraforge_statistics_compat_v1",
+        "statistics_ratio_study_compat_v1"
+      ],
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "The panel displays contractId, population, trustPosture, sale window, qualification policy, suppression policy, outlier policy, conversion-sensitive counts, and parity rows."
+    },
+    {
+      "surface": "County Studio command strip",
+      "path": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyCommandStrip.tsx",
+      "metricBehavior": "Displays median ratio, COD, PRD, critical/warning counts, needs-data count, and exceptions.",
+      "contractBacked": true,
+      "contractIds": [
+        "terraforge_operational_health_v1",
+        "terraforge_correction_priority_v1"
+      ],
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "Uses healthSummary and visibly exposes operational contract id, correction priority contract id, and county trust posture."
+    },
+    {
+      "surface": "County Studio health panel",
+      "path": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyHealthPanel.tsx",
+      "metricBehavior": "Displays operational health metrics, top action items, and composite-risk explanation.",
+      "contractBacked": true,
+      "contractIds": [
+        "terraforge_operational_health_v1",
+        "terraforge_correction_priority_v1"
+      ],
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "Visible health surface now exposes operational contract id, correction priority contract id, and county trust posture."
+    },
+    {
+      "surface": "County Studio correction and defense panel",
+      "path": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx",
+      "metricBehavior": "Shows defense readiness, county posture, correction counts, and evidence readiness.",
+      "contractBacked": true,
+      "contractIds": [
+        "terraforge_correction_priority_v1",
+        "terraforge_operational_health_v1"
+      ],
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "Defense readiness now exposes operational contract id, correction priority contract id, and county trust posture alongside current anchors."
+    },
+    {
+      "surface": "County Studio AI diagnosis panel",
+      "path": "frontend/apps/os-shell/src/pages/forge/county-studio/components/AiDiagnosisPanel.tsx",
+      "metricBehavior": "Displays deterministic findings, evidence values, and recommended actions.",
+      "contractBacked": true,
+      "contractIds": [
+        "terraforge_segment_derivation_v1",
+        "terraforge_correction_priority_v1"
+      ],
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "The panel now labels diagnosis as deterministic action routing over segment derivation and correction priority, not an independent metric source."
+    },
+    {
+      "surface": "Evidence packet modal and markdown export",
+      "path": "frontend/apps/os-shell/src/pages/forge/county-studio/components/ExportPacketModal.tsx",
+      "metricBehavior": "Exports DOR-defensible packet with correction-priority contract id and segment signals.",
+      "contractBacked": true,
+      "contractIds": ["terraforge_correction_priority_v1"],
+      "trustPostureExposed": "partial",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "Correction contract is visible. A future improvement can attach county trust tier directly."
+    },
+    {
+      "surface": "Atlas Live overlay manager",
+      "path": "frontend/apps/os-shell/src/pages/forge/atlas-live/components/AtlasOverlayManager.tsx",
+      "metricBehavior": "Colors parcels for ratio-like metric overlays, scenario deltas, cohort shading, and edge warnings.",
+      "contractBacked": true,
+      "contractIds": [
+        "terraforge_segment_derivation_v1",
+        "terraforge_statistics_compat_v1",
+        "terraforge_correction_priority_v1"
+      ],
+      "trustPostureExposed": "feature-state",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "Overlay feature state now carries atlasContractId, atlasSourcePopulation, and atlasTrustPosture; default overlay mappings preserve contract lineage when projections omit explicit metadata."
+    },
+    {
+      "surface": "Atlas Live county context",
+      "path": "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts",
+      "metricBehavior": "Loads Washington launch county status, Benton compatibility geometry, staged sales, and review counts.",
+      "contractBacked": true,
+      "contractIds": ["county_data_trust_launch_context_v1"],
+      "trustPostureExposed": "api+ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "Atlas county context now emits county_data_trust_launch_context_v1 with trust tier, DB posture, launch posture, geometry availability, and production-claim posture."
+    },
+    {
+      "surface": "GeoForge county health panel",
+      "path": "frontend/apps/os-shell/src/pages/forge/geo/panels/CountyHealthPanel.tsx",
+      "metricBehavior": "Displays contract-backed operational health metrics and keeps neighborhood spatial diagnostics clearly supplemental.",
+      "contractBacked": true,
+      "contractIds": [
+        "terraforge_operational_health_v1",
+        "terraforge_correction_priority_v1"
+      ],
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "Countywide metrics now come from County Studio healthSummary and visibly show operational contract id, correction priority contract id, and trust posture; local neighborhood calculations are limited to supplemental spatial context."
+    },
+    {
+      "surface": "CostForge triage tab",
+      "path": "frontend/apps/os-shell/src/pages/forge/cost/tabs/TriageTab.tsx",
+      "metricBehavior": "Computes AI priority score from COD deviation, median-ratio deviation, PRB deviation, and sale count.",
+      "contractBacked": true,
+      "contractIds": ["costforge_calibration_priority_v1"],
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "The tab now emits the registered costforge_calibration_priority_v1 contract and keeps its population distinct from County Studio correction priority."
+    },
+    {
+      "surface": "SalesForge running stats",
+      "path": "frontend/apps/os-shell/src/pages/forge/sales/components/RunningStatsPanel.tsx",
+      "metricBehavior": "Displays qualification counts, median ratio, weighted mean, COD, PRD, PRB, and IAAO compliance.",
+      "contractBacked": true,
+      "contractIds": [
+        "terraforge_statistics_compat_v1",
+        "statistics_ratio_study_compat_v1"
+      ],
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "The running-stats rail now visibly declares the registered Statistics Compat contract, implementation alias, qualified-sale population, and parity-compatible trust posture for sale-qualification stats."
+    },
+    {
+      "surface": "SalesForge ratio audit",
+      "path": "frontend/apps/os-shell/src/pages/forge/sales/panels/RatioAuditPanel.tsx",
+      "metricBehavior": "Filters qualified sales, sorts by ratio, and flags outliers using local thresholds.",
+      "contractBacked": true,
+      "contractIds": [
+        "terraforge_statistics_compat_v1",
+        "statistics_ratio_study_compat_v1"
+      ],
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "The audit panel now surfaces Statistics Compat lineage and keeps its local 0.85/1.15 outlier screen labeled as a SalesForge audit lens under the qualified-sale population."
+    },
+    {
+      "surface": "CompsForge module",
+      "path": "frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx",
+      "metricBehavior": "Loads comparable county sales, filters qualified sales, scores candidates, and runs governed adjustment/reconciliation.",
+      "contractBacked": true,
+      "contractIds": ["compsforge_candidate_reconciliation_v1"],
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "CompsForge now emits compsforge_candidate_reconciliation_v1 and exposes candidate/reconciliation posture, qualified-only default, sale-window scope, candidate cap, and Benton-only governed adjustment certification."
+    },
+    {
+      "surface": "CostForge calculator module",
+      "path": "frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx",
+      "metricBehavior": "Computes RCNLD, cost factors, matrix provenance, API verification, and cost commit gate.",
+      "contractBacked": true,
+      "contractIds": ["costforge_cost_value_v1"],
+      "trustPostureExposed": "ui",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "CostForge calculator output now emits costforge_cost_value_v1 and distinguishes local RCNLD preview, Benton matrix provenance, governed API verification, and TerraPilot BOE packet commit posture."
+    },
+    {
+      "surface": "Legacy Statistics API client",
+      "path": "frontend/apps/os-shell/src/services/forge/statisticsAPI.ts",
+      "metricBehavior": "Calls MassAppraisal ratio-study, strata, outlier, comparison, and segment endpoints.",
+      "contractBacked": true,
+      "contractIds": [
+        "terraforge_statistics_compat_v1",
+        "statistics_ratio_study_compat_v1"
+      ],
+      "trustPostureExposed": "client-metadata",
+      "status": "pass",
+      "migrationNeeded": false,
+      "notes": "The client exports contract metadata and exposes it on the service instance while preserving existing MassAppraisal method return shapes."
+    }
+  ],
+  "nextClosures": []
+}

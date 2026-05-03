@@ -5,7 +5,7 @@
  * useParcelTrace(parcelId) contract required by R1 spec.
  *
  * Returns TraceEvent[] for the EvidenceRail.
- * Calls GET /pilot/traces filtered by parcelId (real backend, not mock).
+ * Calls GET /pilot/traces filtered by parcelId.
  */
 
 import type { PilotTraceEvent } from '../api/pilotApi';
@@ -19,7 +19,7 @@ export interface UseParcelTraceResult {
 }
 
 /**
- * Fetch real trace events for a parcel (replaces generateMockActivity).
+ * Fetch real trace events for a parcel.
  *
  * @param parcelId - Parcel to query trace events for. null = idle.
  * @param pollMs - Polling interval in ms. Default 5000.

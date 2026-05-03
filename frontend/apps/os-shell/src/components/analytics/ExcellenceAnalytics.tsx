@@ -1,7 +1,6 @@
 /**
- * TerraFusion Real-Time Excellence Analytics
- * Championship-level performance monitoring for government transcendence
- * 99.99% uptime tracking with quantum consciousness metrics
+ * TerraFusion Evidence-Gated Excellence Analytics
+ * Displays only source-backed analytics and derived hook metrics.
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useQuantumPerformance } from '../../hooks/useQuantumPerformance';
@@ -37,12 +36,12 @@ interface GovernmentMetric {
 
 export function useExcellenceAnalytics() {
   const [metrics, setMetrics] = useState<ExcellenceMetrics>({
-    systemHealth: 99.5,
-    userSatisfaction: 94.2,
-    governmentEfficiency: 96.8,
-    transcendenceLevel: 87.3,
-    infiniteScalability: 92.1,
-    quantumReadiness: 89.7,
+    systemHealth: 0,
+    userSatisfaction: 0,
+    governmentEfficiency: 0,
+    transcendenceLevel: 0,
+    infiniteScalability: 0,
+    quantumReadiness: 0,
   });
 
   const [kpis, setKpis] = useState<PerformanceKPI[]>([]);
@@ -105,14 +104,6 @@ export function useExcellenceAnalytics() {
 
     const newKPIs: PerformanceKPI[] = [
       {
-        label: 'System Uptime',
-        value: 99.97,
-        target: 99.99,
-        trend: 'up',
-        status: 'excellent',
-        unit: '%',
-      },
-      {
         label: 'Average Response Time',
         value: performanceMetrics.interactionLatency,
         target: 100,
@@ -151,55 +142,13 @@ export function useExcellenceAnalytics() {
               : 'warning',
         unit: '%',
       },
-      {
-        label: 'Government Excellence',
-        value: excellenceScore,
-        target: 99.5,
-        trend: 'up',
-        status: excellenceScore > 98 ? 'excellent' : excellenceScore > 95 ? 'good' : 'warning',
-        unit: '%',
-      },
-      {
-        label: 'Transcendence Index',
-        value: metrics.transcendenceLevel,
-        target: 95,
-        trend: 'up',
-        status:
-          metrics.transcendenceLevel > 90
-            ? 'excellent'
-            : metrics.transcendenceLevel > 80
-              ? 'good'
-              : 'warning',
-        unit: '/100',
-      },
     ];
 
     setKpis(newKPIs);
   }, [calculateExcellenceScore, performanceMetrics, consciousness, securityState, metrics]);
 
-  // Simulate government county data
   const generateGovernmentData = useCallback(() => {
-    const counties = [
-      'King County',
-      'Pierce County',
-      'Snohomish County',
-      'Spokane County',
-      'Clark County',
-      'Thurston County',
-      'Kitsap County',
-      'Whatcom County',
-    ];
-
-    const data: GovernmentMetric[] = counties.map((county) => ({
-      county,
-      assessments: Math.floor(Math.random() * 1000) + 500,
-      accuracy: 98.5 + Math.random() * 1.5,
-      processingTime: 2.1 + Math.random() * 0.8,
-      citizenSatisfaction: 92 + Math.random() * 8,
-      aiEfficiency: 94 + Math.random() * 6,
-    }));
-
-    setGovernmentData(data);
+    setGovernmentData([]);
   }, []);
 
   // Track metrics history for trending
@@ -252,39 +201,12 @@ export function useExcellenceAnalytics() {
       updateMetricsHistory();
       checkForAlerts();
 
-      // Simulate small metric fluctuations for realism
-      setMetrics((prev) => ({
-        systemHealth: Math.min(100, Math.max(95, prev.systemHealth + (Math.random() - 0.5) * 0.2)),
-        userSatisfaction: Math.min(
-          100,
-          Math.max(85, prev.userSatisfaction + (Math.random() - 0.5) * 0.3)
-        ),
-        governmentEfficiency: Math.min(
-          100,
-          Math.max(90, prev.governmentEfficiency + (Math.random() - 0.5) * 0.25)
-        ),
-        transcendenceLevel: Math.min(
-          100,
-          Math.max(80, prev.transcendenceLevel + (Math.random() - 0.5) * 0.15)
-        ),
-        infiniteScalability: Math.min(
-          100,
-          Math.max(85, prev.infiniteScalability + (Math.random() - 0.5) * 0.2)
-        ),
-        quantumReadiness: Math.min(
-          100,
-          Math.max(85, prev.quantumReadiness + (Math.random() - 0.5) * 0.1)
-        ),
-      }));
     }, 2000);
 
-    // Generate government data every 30 seconds
-    const governmentInterval = setInterval(generateGovernmentData, 30000);
     generateGovernmentData(); // Initial load
 
     return () => {
       clearInterval(interval);
-      clearInterval(governmentInterval);
     };
   }, [
     updateMetricsFromPerformance,
@@ -394,7 +316,7 @@ export function ExcellenceDashboard() {
                   key: 'status',
                   className: `tf-metric-description text-sm ${isTranscendent ? 'text-terra-cyan' : 'text-gray-400'}`,
                 },
-                isTranscendent ? 'TRANSCENDENT ACHIEVEMENT' : 'CHAMPIONSHIP PERFORMANCE'
+                isTranscendent ? 'TRANSCENDENT ACHIEVEMENT' : 'EVIDENCE REQUIRED'
               ),
             ]
           ),

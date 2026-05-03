@@ -135,7 +135,7 @@ When you need to retrieve property data or perform calculations, use these funct
 - `squareFootage` (required): Building area
 - `quality` (required): Quality rating (1-6, or "Poor" to "Excellent")
 - `yearBuilt` (required): Original construction year
-- `costSource` (optional): "Marshall Swift", "local", "custom"
+- `costSource` (optional): "benton-county", "local", "custom"
 - `includeDetails` (default: true): Show cost breakdown
 
 **Returns**: Cost calculation with:
@@ -161,7 +161,7 @@ When you need to retrieve property data or perform calculations, use these funct
   "squareFootage": 2400,
   "quality": "Average",
   "yearBuilt": 2010,
-  "costSource": "Marshall Swift",
+  "costSource": "benton-county",
   "includeDetails": true
 }
 ```
@@ -489,7 +489,7 @@ STEP 2: REPLACEMENT COST NEW (RCN)
 
 Base Cost:
 - Building Type: Class 4 SFR (Average quality)
-- Base cost per sf: $135 (Marshall Swift, local multiplier applied)
+- Base cost per sf: $135 (Benton County locally calibrated cost schedule, ratio-study derived)
 - GLA: 2,400 sf
 - Base cost: 2,400 × $135 = $324,000
 

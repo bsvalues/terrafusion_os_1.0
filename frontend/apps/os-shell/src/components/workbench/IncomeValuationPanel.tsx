@@ -11,13 +11,11 @@
  *   - Cap rate visualization: legacy income module market range bar
  *   - Backend math: CostForge income-approach/calculate-noi + calculate-valuation
  *   - Expense structure: CostForge NoiCalculationRequest schema
- *   - Client preview: forgeService.ts calculateIncome() (deprecated, offline only)
  *
  * GUARDRAILS:
  *   - All NOI/valuation math stays in backend CostForge endpoints
  *   - Frontend only provides inputs and displays results
- *   - Client-side preview used ONLY when backend is unavailable
- *   - Graceful degradation with clear "preview only" labeling
+ *   - No client-side valuation fallback in the governed workbench lane
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -25,11 +23,10 @@ import { useWorkbenchTab } from '../../context/workbenchTabContext';
 import { usePropertyStore } from '../../stores/propertyStore';
 import {
   calculateIncomeValuation,
+  EMPTY_EXPENSES,
   fetchValuationRecord,
-  previewValuation,
   saveIncomeValuationRecord,
   totalExpenses,
-  DEFAULT_EXPENSES,
   BENTON_LOCATIONS,
   INCOME_PROPERTY_TYPES,
   type IncomeExpenses,
@@ -49,9 +46,7 @@ const SUCCESS_BG = 'hsl(var(--tf-success) / 0.1)';
 const SUCCESS_BORDER = '1px solid hsl(var(--tf-success) / 0.2)';
 const WARNING_COLOR = 'hsl(var(--tf-warning))';
 const WARNING_BG = 'hsl(var(--tf-warning) / 0.1)';
-const WARNING_BG_SUBTLE = 'hsl(var(--tf-warning) / 0.08)';
 const WARNING_BORDER = '1px solid hsl(var(--tf-warning) / 0.2)';
-const WARNING_BORDER_DASHED = '1px dashed hsl(var(--tf-warning) / 0.3)';
 const ERROR_COLOR = 'hsl(var(--tf-error))';
 const ERROR_BG = 'hsl(var(--tf-error) / 0.08)';
 const ERROR_BORDER = '1px solid hsl(var(--tf-error) / 0.2)';
@@ -205,31 +200,35 @@ export const IncomeValuationPanel: React.FC<IncomeValuationPanelProps> = ({
   const activeParcel = usePropertyStore((s) => s.activeParcel);
 
   // Income inputs
-  const [annualRentalIncome, setAnnualRentalIncome] = useState(240000);
-  const [vacancyRate, setVacancyRate] = useState(5);
+  const [annualRentalIncome, setAnnualRentalIncome] = useState(0);
+  const [vacancyRate, setVacancyRate] = useState(0);
   const [otherIncome, setOtherIncome] = useState(0);
-  const [expenses, setExpenses] = useState<IncomeExpenses>(DEFAULT_EXPENSES);
-  const [capRate, setCapRate] = useState(7.5);
-  const [location, setLocation] = useState('Richland');
-  const [propertyType, setPropertyType] = useState('300');
+  const [expenses, setExpenses] = useState<IncomeExpenses>(EMPTY_EXPENSES);
+  const [capRate, setCapRate] = useState(0);
+  const [location, setLocation] = useState('');
+  const [propertyType, setPropertyType] = useState('');
 
   // Result state
   const [result, setResult] = useState<IncomeValuationResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [backendError, setBackendError] = useState<string | null>(null);
-  const [isPreview, setIsPreview] = useState(false);
   const [recordNotice, setRecordNotice] = useState<string | null>(null);
   const [recordError, setRecordError] = useState<string | null>(null);
 
-  // Derive property type from parcel if available
+  // Derive property type and location from parcel if available
   useEffect(() => {
     if (activeParcel?.propertyType) {
       const match = INCOME_PROPERTY_TYPES.find(
-        (t) =>
-          t.label.toLowerCase().includes(activeParcel.propertyType?.toLowerCase() || '') ||
-          activeParcel.propertyType?.includes(t.id),
+        (t) => t.code === activeParcel.propertyType,
       );
       if (match) setPropertyType(match.id);
+    }
+    if (activeParcel?.city) {
+      const cityNorm = activeParcel.city.trim().toLowerCase();
+      const locMatch = BENTON_LOCATIONS.find(
+        (l) => l.id.toLowerCase() === cityNorm || l.label.toLowerCase() === cityNorm,
+      );
+      if (locMatch) setLocation(locMatch.id);
     }
   }, [activeParcel]);
 
@@ -247,6 +246,12 @@ export const IncomeValuationPanel: React.FC<IncomeValuationPanelProps> = ({
     propertyType,
   }), [annualRentalIncome, vacancyRate, otherIncome, expenses, capRate, location, propertyType]);
 
+  const valuationInputsReady =
+    annualRentalIncome > 0 &&
+    capRate > 0 &&
+    propertyType.length > 0 &&
+    location.length > 0;
+
   // Computed NOI waterfall values (for live preview as user types)
   const waterfallPreview = useMemo(() => {
     const vacLoss = Math.round(annualRentalIncome * (vacancyRate / 100));
@@ -256,12 +261,11 @@ export const IncomeValuationPanel: React.FC<IncomeValuationPanelProps> = ({
     return { pgi: annualRentalIncome, vacancyLoss: vacLoss, otherIncome, egi, expenses: expTotal, noi };
   }, [annualRentalIncome, vacancyRate, otherIncome, expenses]);
 
-  /** Run valuation — try backend, fall back to preview */
+  /** Run valuation through the governed backend only. */
   const handleCalculate = useCallback(async () => {
-    if (annualRentalIncome <= 0) return;
+    if (!valuationInputsReady) return;
     setLoading(true);
     setBackendError(null);
-    setIsPreview(false);
     setRecordNotice(null);
     setRecordError(null);
 
@@ -294,14 +298,12 @@ export const IncomeValuationPanel: React.FC<IncomeValuationPanelProps> = ({
         }
       }
     } catch {
-      // Graceful degradation: use client-side preview
-      setBackendError('Backend unavailable — showing client-side preview (not authoritative)');
-      setIsPreview(true);
-      setResult(previewValuation(input));
+      setResult(null);
+      setBackendError('CostForge backend unavailable. No governed valuation was produced.');
     } finally {
       setLoading(false);
     }
-  }, [annualRentalIncome, buildInput, parcelId, propertyType, taxYear]);
+  }, [buildInput, parcelId, propertyType, taxYear, valuationInputsReady]);
 
   // No parcel context
   if (!parcelId && !activeParcel) {
@@ -355,6 +357,7 @@ export const IncomeValuationPanel: React.FC<IncomeValuationPanelProps> = ({
                   color: 'hsl(var(--tf-text))',
                 }}
               >
+                <option value="" disabled>Select property type</option>
                 {INCOME_PROPERTY_TYPES.map((t) => (
                   <option key={t.id} value={t.id}>
                     {t.code} — {t.label}
@@ -376,6 +379,7 @@ export const IncomeValuationPanel: React.FC<IncomeValuationPanelProps> = ({
                   color: 'hsl(var(--tf-text))',
                 }}
               >
+                <option value="" disabled>Select location</option>
                 {BENTON_LOCATIONS.map((l) => (
                   <option key={l.id} value={l.id}>{l.label}</option>
                 ))}
@@ -540,19 +544,19 @@ export const IncomeValuationPanel: React.FC<IncomeValuationPanelProps> = ({
           {/* Calculate button */}
           <button
             onClick={handleCalculate}
-            disabled={loading || annualRentalIncome <= 0}
+            disabled={loading || !valuationInputsReady}
             className="w-full py-2 px-4 rounded text-xs font-semibold transition-colors"
             style={{
               background: loading ? 'hsl(var(--tf-accent) / 0.05)' : 'hsl(var(--tf-accent) / 0.1)',
               color: 'hsl(var(--tf-accent))',
               border: '1px solid hsl(var(--tf-accent) / 0.2)',
-              opacity: loading || annualRentalIncome <= 0 ? 0.5 : 1,
+              opacity: loading || !valuationInputsReady ? 0.5 : 1,
             }}
           >
             {loading ? 'Calculating...' : 'Run Income Valuation'}
           </button>
 
-          {/* Backend error / preview warning */}
+          {/* Backend error */}
           {backendError && (
             <div
               className="text-xs px-3 py-2 rounded"
@@ -594,21 +598,7 @@ export const IncomeValuationPanel: React.FC<IncomeValuationPanelProps> = ({
 
           {/* Valuation result */}
           {result && (
-            <>
-              {isPreview && (
-                <div
-                  className="text-[10px] px-2 py-1 rounded text-center"
-                  style={{
-                    background: WARNING_BG_SUBTLE,
-                    color: WARNING_COLOR,
-                    border: WARNING_BORDER_DASHED,
-                  }}
-                >
-                  Preview only — not authoritative
-                </div>
-              )}
-              <CapitalizationResult result={result} />
-            </>
+            <CapitalizationResult result={result} />
           )}
 
           {/* Empty state */}
@@ -617,7 +607,7 @@ export const IncomeValuationPanel: React.FC<IncomeValuationPanelProps> = ({
               className="text-xs text-center py-8"
               style={{ color: 'hsl(var(--tf-text) / 0.3)' }}
             >
-              Enter income data and run valuation
+              Enter income, cap rate, property type, and location to run governed valuation
             </div>
           )}
         </div>

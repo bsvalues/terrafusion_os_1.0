@@ -15,14 +15,19 @@
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Testcontainers" />
     <PackageReference Include="Testcontainers.PostgreSql" />
+    <PackageReference Include="Testcontainers.MsSql" />
     <PackageReference Include="Npgsql" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
     <PackageReference Include="YamlDotNet" />
+    <PackageReference Include="Moq" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/TerraFusion.Core/TerraFusion.Core.csproj" />
     <ProjectReference Include="../../src/TerraFusion.Data/TerraFusion.Data.csproj" />
     <ProjectReference Include="../../src/TerraFusion.AI/TerraFusion.AI.csproj" />
     <ProjectReference Include="../../src/TerraFusion.Operations/TerraFusion.Operations.csproj" />
+    <ProjectReference Include="../../src/TerraFusion.Sync/TerraFusion.Sync.csproj" />
+    <ProjectReference Include="../../tools/SyncAtlas/SyncAtlas.csproj" />
+    <ProjectReference Include="../../tools/SalesCompProof/SalesCompProof.csproj" />
   </ItemGroup>
 </Project>

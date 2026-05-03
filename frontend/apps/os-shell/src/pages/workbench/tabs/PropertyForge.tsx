@@ -27,7 +27,6 @@ import React, { useCallback, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import {
-  ParcelContextHeader,
   WorkbenchSourceBadge,
   type InvocationRecord,
 } from '../../../components/workbench';
@@ -40,10 +39,13 @@ import { Reconciliation } from './forge/Reconciliation';
 import { ForgeYearSelector } from './forge/ForgeYearSelector';
 import { ForgeYearContextPanel } from './forge/ForgeYearContextPanel';
 import { CURRENT_YEAR } from './forge/types';
+import { SketchModule } from '../../../components/sketch';
+import { addObservation } from '../../../services/fieldStoreV2';
+import type { FieldObservation } from '../../../types/field';
 
 /* ── Sub-tab definitions ────────────────────────────────── */
 
-type ForgeSubTab = 'overview' | 'cost' | 'sales' | 'income' | 'reconcile';
+type ForgeSubTab = 'overview' | 'cost' | 'sales' | 'income' | 'reconcile' | 'sketch';
 
 const SUB_TABS: { id: ForgeSubTab; label: string; icon: string }[] = [
   { id: 'overview',   label: 'Overview',       icon: '🔥' },
@@ -51,6 +53,7 @@ const SUB_TABS: { id: ForgeSubTab; label: string; icon: string }[] = [
   { id: 'sales',      label: 'Sales',          icon: '🏘️' },
   { id: 'income',     label: 'Income',         icon: '💰' },
   { id: 'reconcile',  label: 'Reconciliation', icon: '⚖️' },
+  { id: 'sketch',     label: 'Sketch',         icon: '📐' },
 ];
 
 const FORGE_SUB_TABS = new Set<ForgeSubTab>(SUB_TABS.map((tab) => tab.id));
@@ -96,8 +99,11 @@ export const PropertyForge: React.FC = () => {
   const [taxYear, setTaxYear] = useState<number>(CURRENT_YEAR);
   const [history, setHistory] = useState<InvocationRecord[]>([]);
 
-  /* Find the layer object matching the currently selected year */
-  const selectedLayer = parcelYears.data?.layers.find((l) => l.year === taxYear);
+  /* Find the layer object matching the currently selected year.
+     `parcelYears.data` may exist with `layers` undefined (invalid parcel
+     id, error fallback shape, etc.), so the second `?.` is required to
+     keep the workbench from throwing into the global ErrorBoundary. */
+  const selectedLayer = parcelYears.data?.layers?.find((l) => l.year === taxYear);
 
   /** Append a tool invocation record (called by all sub-tabs) */
   const addHistoryRecord = useCallback((record: InvocationRecord) => {
@@ -111,14 +117,6 @@ export const PropertyForge: React.FC = () => {
 
   return (
     <div className="tf-suite-forge space-y-4" data-testid="property-forge-tab">
-      {/* Header */}
-      <ParcelContextHeader
-        icon="🔥"
-        title="TerraForge"
-        parcelId={parcelId}
-        subtitle={`Governed valuation tools requested via Forge for ${parcelId}`}
-      />
-
       {/* PACS Year Selector */}
       <ForgeYearSelector
         parcelId={parcelId}
@@ -129,19 +127,17 @@ export const PropertyForge: React.FC = () => {
       {/* Year context panel — shows lock state, programs, AV/MV for selected year */}
       <ForgeYearContextPanel layer={selectedLayer} taxYear={taxYear} />
 
-      <div className="tf-status-info rounded-xl p-4" data-testid="forge-baseline-disclosure">
-        <div className="flex items-start justify-between gap-3">
-          <p className="tf-text">
-            Overview baseline values reflect the parcel snapshot already loaded in the workbench.
-            Changing Tax Year here changes the governed tool requests below; it does not relabel those baseline cards until a tool result is returned from the selected tool.
-          </p>
-          <WorkbenchSourceBadge source={forgeProbe.source} className="shrink-0" />
-        </div>
+      <div className="flex items-center justify-between gap-3" data-testid="forge-baseline-disclosure">
+        <p className="text-xs tf-text-dim">
+          Cost, comp, and income approaches are requested via governed tooling;
+          values shown are returned from the live workbench API.
+        </p>
+        <WorkbenchSourceBadge source={forgeProbe.source} />
       </div>
 
       {/* Sub-Tab Bar */}
       <nav
-        className="flex gap-1 border-b tf-border pb-0"
+        className="flex gap-1 flex-wrap"
         role="tablist"
         aria-label="Forge approach tabs"
       >
@@ -153,11 +149,11 @@ export const PropertyForge: React.FC = () => {
             aria-controls={`forge-panel-${tab.id}`}
             onClick={() => setActiveSubTab(tab.id)}
             className={`
-              flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-t-lg
-              transition-all border-b-2
+              flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full
+              transition-all
               ${activeSubTab === tab.id
-                ? 'tf-suite-accent-text border-current'
-                : 'tf-text-tertiary border-transparent hover:tf-text-secondary hover:border-current/30'
+                ? 'tf-suite-accent-text ring-1 ring-current/30'
+                : 'tf-text-tertiary hover:tf-text-secondary'
               }
             `}
           >
@@ -214,7 +210,7 @@ export const PropertyForge: React.FC = () => {
         aria-labelledby="forge-tab-sales"
         style={{ display: activeSubTab === 'sales' ? 'block' : 'none' }}
       >
-        {forgeProbe.loading ? (
+        {forgeProbe.loading && (
           <div
             role="status"
             aria-label="Loading sales data"
@@ -225,13 +221,16 @@ export const PropertyForge: React.FC = () => {
               Loading sales comparison data…
             </span>
           </div>
-        ) : (
-          <SalesComparison
-            taxYear={taxYear}
-            onHistoryRecord={addHistoryRecord}
-            onValueIndicated={handleValueIndicated}
-          />
         )}
+        {/* Always render SalesComparison so its inner ComparableSalesPanel
+            (data-testid="comparable-sales-panel") is mounted while the
+            outer Forge probe is still loading. The panel handles its own
+            empty/loading state internally. */}
+        <SalesComparison
+          taxYear={taxYear}
+          onHistoryRecord={addHistoryRecord}
+          onValueIndicated={handleValueIndicated}
+        />
       </div>
 
       <div
@@ -257,6 +256,22 @@ export const PropertyForge: React.FC = () => {
           taxYear={taxYear}
           onHistoryRecord={addHistoryRecord}
           onValueIndicated={handleValueIndicated}
+        />
+      </div>
+
+      <div
+        id="forge-panel-sketch"
+        role="tabpanel"
+        aria-labelledby="forge-tab-sketch"
+        style={{ display: activeSubTab === 'sketch' ? 'block' : 'none' }}
+      >
+        <SketchModule
+          parcelId={parcelId}
+          taxYear={taxYear}
+          onBack={() => setActiveSubTab('overview')}
+          onSaveObservation={async (obs: Omit<FieldObservation, 'id' | 'syncStatus'>) => {
+            await addObservation(obs);
+          }}
         />
       </div>
     </div>

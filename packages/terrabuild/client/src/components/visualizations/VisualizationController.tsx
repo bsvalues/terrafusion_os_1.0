@@ -3,9 +3,9 @@ import { VisualizationControllerProps, VisualizationFilterState } from '@/lib/vi
 import { getCachedData, invalidateCache, cacheKeys } from '@/lib/visualizationCache';
 import { useQuery } from '@tanstack/react-query';
 
-// Default filters
+// Default filters — Benton County uses Reval Areas (PACS Cycle), not compass regions
 const DEFAULT_FILTERS: VisualizationFilterState = {
-  region: 'Northwest',
+  revalArea: 'Reval 1',
   buildingType: 'Residential'
 };
 
@@ -48,54 +48,57 @@ export function VisualizationController({
     });
   }, [onFilterChange]);
   
-  // Fetch regional costs data for heatmap
+  // Fetch Reval Area cost data — Benton County only
   const regionalCostsQuery = useQuery({
-    queryKey: ['benchmarking', 'regionalCosts', filters.region, filters.buildingType],
+    queryKey: ['benchmarking', 'regionalCosts', filters.revalArea, filters.buildingType],
     queryFn: async () => {
-      const cacheKey = cacheKeys.regionalCosts(filters.region, filters.buildingType);
+      const cacheKey = cacheKeys.regionalCosts(filters.revalArea ?? 'Reval 1', filters.buildingType);
       return getCachedData(cacheKey, async () => {
-        const response = await fetch(
-          `/api/benchmarking/regional-costs/${filters.region}/${filters.buildingType}`
-        );
+        const params = new URLSearchParams({ county: 'Benton' });
+        if (filters.revalArea) params.set('revalArea', filters.revalArea);
+        if (filters.buildingType) params.set('buildingType', filters.buildingType);
+        const response = await fetch(`/api/benchmarking/regional-costs?${params}`);
         return response.json();
       });
     }
   });
-  
+
   // Fetch hierarchical costs data for drill-down visualization
   const hierarchicalCostsQuery = useQuery({
-    queryKey: ['benchmarking', 'hierarchicalCosts', filters.region, filters.buildingType],
+    queryKey: ['benchmarking', 'hierarchicalCosts', filters.revalArea, filters.buildingType],
     queryFn: async () => {
-      const cacheKey = cacheKeys.hierarchicalCosts(filters.region, filters.buildingType);
+      const cacheKey = cacheKeys.hierarchicalCosts(filters.revalArea ?? 'Reval 1', filters.buildingType);
       return getCachedData(cacheKey, async () => {
-        const response = await fetch(
-          `/api/benchmarking/hierarchical-costs/${filters.region}/${filters.buildingType}`
-        );
+        const params = new URLSearchParams({ county: 'Benton' });
+        if (filters.revalArea) params.set('revalArea', filters.revalArea);
+        if (filters.buildingType) params.set('buildingType', filters.buildingType);
+        const response = await fetch(`/api/benchmarking/hierarchical-costs?${params}`);
         return response.json();
       });
     }
   });
-  
+
   // Fetch statistical data for correlation analysis
   const statisticalDataQuery = useQuery({
-    queryKey: ['benchmarking', 'statisticalData', filters.region, filters.buildingType],
+    queryKey: ['benchmarking', 'statisticalData', filters.revalArea, filters.buildingType],
     queryFn: async () => {
-      const cacheKey = cacheKeys.statisticalData(filters.region, filters.buildingType);
+      const cacheKey = cacheKeys.statisticalData(filters.revalArea ?? 'Reval 1', filters.buildingType);
       return getCachedData(cacheKey, async () => {
-        const response = await fetch(
-          `/api/benchmarking/statistical-data/${filters.region}/${filters.buildingType}`
-        );
+        const params = new URLSearchParams({ county: 'Benton' });
+        if (filters.revalArea) params.set('revalArea', filters.revalArea);
+        if (filters.buildingType) params.set('buildingType', filters.buildingType);
+        const response = await fetch(`/api/benchmarking/statistical-data?${params}`);
         return response.json();
       });
     }
   });
-  
+
   // Function to refresh all data
   const refreshData = useCallback(() => {
     // Invalidate cache for current filters
-    invalidateCache(cacheKeys.regionalCosts(filters.region, filters.buildingType));
-    invalidateCache(cacheKeys.hierarchicalCosts(filters.region, filters.buildingType));
-    invalidateCache(cacheKeys.statisticalData(filters.region, filters.buildingType));
+    invalidateCache(cacheKeys.regionalCosts(filters.revalArea ?? 'Reval 1', filters.buildingType));
+    invalidateCache(cacheKeys.hierarchicalCosts(filters.revalArea ?? 'Reval 1', filters.buildingType));
+    invalidateCache(cacheKeys.statisticalData(filters.revalArea ?? 'Reval 1', filters.buildingType));
     
     // Refetch data
     regionalCostsQuery.refetch();

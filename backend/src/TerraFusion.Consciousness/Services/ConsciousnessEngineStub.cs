@@ -14,6 +14,9 @@ namespace TerraFusion.Consciousness.Services
 {
     public class ConsciousnessEngineStub : IConsciousnessEngine
     {
+        private const string UnavailableReason =
+            "Governed swarm provisioning and quantum optimization are unavailable; compatibility surface only.";
+
         private readonly ILogger<ConsciousnessEngineStub> _logger;
         private readonly TerraFusionDbContext _dbContext;
 
@@ -25,6 +28,7 @@ namespace TerraFusion.Consciousness.Services
 
         public async Task<SwarmCoordinationResult> CoordinateSwarmAsync(SwarmCoordinationRequest request)
         {
+            var startTime = DateTime.UtcNow;
             _logger.LogInformation("CoordinateSwarmAsync: {TaskType} for county {CountyId}", request.TaskType, request.CountyId);
 
             // Find available agents, optionally filtered by county
@@ -46,13 +50,20 @@ namespace TerraFusion.Consciousness.Services
             return new SwarmCoordinationResult
             {
                 Success = availableAgents.Any(),
+                TaskId = request.TaskId,
+                AgentCount = availableAgents.Count,
+                CoordinationTime = DateTime.UtcNow - startTime,
                 ConfidenceScore = (decimal)avgScore,
+                QuantumOptimizationApplied = false,
+                QuantumFactor = 0,
                 Results = new Dictionary<string, object>
                 {
                     { "action", "database_coordination" },
                     { "agent_count", availableAgents.Count },
                     { "task_type", request.TaskType },
-                    { "avg_performance", avgScore }
+                    { "avg_performance", avgScore },
+                    { "governed_quantum_lane_available", false },
+                    { "reason", UnavailableReason }
                 }
             };
         }
@@ -76,6 +87,7 @@ namespace TerraFusion.Consciousness.Services
                 TotalAgents = totalAgents,
                 ActiveAgents = activeAgents,
                 CountyId = countyId,
+                CoordinationMode = "DatabaseBacked",
                 HealthScore = (decimal)avgPerformance,
                 Timestamp = DateTime.UtcNow
             };
@@ -83,76 +95,33 @@ namespace TerraFusion.Consciousness.Services
 
         public async Task<bool> InitializeSwarmAsync(int agentCount, string countyId)
         {
-            _logger.LogInformation("InitializeSwarmAsync: {AgentCount} agents for county {CountyId}", agentCount, countyId);
+            _logger.LogWarning(
+                "InitializeSwarmAsync requested for {AgentCount} agents in county {CountyId}, but {Reason}",
+                agentCount,
+                countyId,
+                UnavailableReason);
 
-            var existingCount = await _dbContext.AIAgents
-                .Where(a => a.AssignedCounty == countyId || (string.IsNullOrEmpty(countyId) && a.AssignedCounty == null))
-                .CountAsync();
-
-            if (existingCount >= agentCount)
-            {
-                _logger.LogInformation("Swarm already has {Existing} agents (requested {Requested})", existingCount, agentCount);
-                return true;
-            }
-
-            var toCreate = agentCount - existingCount;
-            var agentTypes = new[] { "PropertyAssessor", "DataProcessor", "Analyst", "ComplianceMonitor", "Coordinator" };
-
-            for (int i = 0; i < toCreate; i++)
-            {
-                _dbContext.AIAgents.Add(new Core.Entities.AIAgent
-                {
-                    Name = $"Agent-{countyId}-{existingCount + i + 1:D4}",
-                    Type = agentTypes[i % agentTypes.Length],
-                    Status = "Active",
-                    AssignedCounty = string.IsNullOrEmpty(countyId) ? null : countyId,
-                    ProcessedTasks = 0,
-                    PerformanceScore = 0.85 + (i % 10) * 0.01,
-                    CreatedAt = DateTime.UtcNow,
-                    LastActiveAt = DateTime.UtcNow
-                });
-            }
-
-            await _dbContext.SaveChangesAsync();
-            _logger.LogInformation("Initialized {Created} new agents for county {CountyId}", toCreate, countyId);
-            return true;
+            await Task.CompletedTask;
+            return false;
         }
 
         public async Task<QuantumOptimizationResult> ExecuteQuantumOptimizationAsync(QuantumOptimizationRequest request)
         {
             var startTime = DateTime.UtcNow;
-
-            // Get agents and compute real optimization score from performance data
-            var agents = await _dbContext.AIAgents
-                .Where(a => a.Status == "Active" || a.Status == "Busy")
-                .ToListAsync();
-
-            var avgPerformance = agents.Any() ? agents.Average(a => a.PerformanceScore) : 0;
-
-            // Record optimization metric
-            _dbContext.PerformanceMetrics.Add(new Core.Entities.PerformanceMetric
-            {
-                MetricName = "QuantumOptimization",
-                MetricType = "Optimization",
-                Value = avgPerformance * request.QuantumFactor / 949.0,
-                Unit = "score",
-                Timestamp = DateTime.UtcNow,
-                Source = "ConsciousnessEngine"
-            });
-
-            await _dbContext.SaveChangesAsync();
+            _logger.LogWarning("ExecuteQuantumOptimizationAsync requested, but {Reason}", UnavailableReason);
+            await Task.CompletedTask;
 
             return new QuantumOptimizationResult
             {
-                Success = true,
-                QuantumFactor = request.QuantumFactor,
-                OptimizationScore = (decimal)(avgPerformance * request.QuantumFactor / 949.0),
+                Success = false,
+                QuantumFactor = 0,
+                OptimizationScore = 0m,
                 Duration = DateTime.UtcNow - startTime,
                 Results = new Dictionary<string, object>
                 {
-                    { "agents_evaluated", agents.Count },
-                    { "avg_performance", avgPerformance },
-                    { "quantum_factor", request.QuantumFactor }
+                    { "governed_quantum_lane_available", false },
+                    { "reason", UnavailableReason },
+                    { "requested_quantum_factor", request.QuantumFactor }
                 }
             };
         }

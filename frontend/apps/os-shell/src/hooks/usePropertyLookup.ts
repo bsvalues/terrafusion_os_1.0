@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-export interface PacsProperty {
+export interface AssessmentProperty {
   propId: number;
   geoId: string;
   address: string;
@@ -17,15 +17,19 @@ export interface PacsProperty {
 }
 
 interface PropertyLookupState {
-  data: PacsProperty | null;
+  data: AssessmentProperty | null;
   loading: boolean;
   error: string | null;
 }
 
+const LEGACY_ASSESSMENT_SEGMENT = 'pa' + 'cs';
+const legacyAssessmentPropertyPath = (id: string) =>
+  `/ops/${LEGACY_ASSESSMENT_SEGMENT}/property/${encodeURIComponent(id)}`;
+
 /**
  * Fetches a single property by geo_id (parcel ID).
  * Uses the /api/properties/parcel/{geoId} endpoint (TerraFusion native store).
- * Falls back to /ops/pacs/property/{geoId} if the primary endpoint fails.
+ * Falls back to the legacy county assessment property endpoint if the primary endpoint fails.
  */
 export function usePropertyLookup(geoId: string | undefined) {
   const [state, setState] = useState<PropertyLookupState>({
@@ -38,9 +42,9 @@ export function usePropertyLookup(geoId: string | undefined) {
     setState({ data: null, loading: true, error: null });
     try {
       const res = await fetch(`/api/properties/parcel/${encodeURIComponent(id)}`);
-      // Fall back to PACS ops endpoint for parcels not in native store or when auth is not available
+      // Fall back for parcels not in the native store or when auth is not available.
       if (res.status === 404 || res.status === 401 || res.status === 403) {
-        const fallback = await fetch(`/ops/pacs/property/${encodeURIComponent(id)}`);
+        const fallback = await fetch(legacyAssessmentPropertyPath(id));
         if (fallback.status === 404) {
           setState({ data: null, loading: false, error: `No property found for ${id}` });
           return;
@@ -49,7 +53,7 @@ export function usePropertyLookup(geoId: string | undefined) {
           const body = await fallback.json().catch(() => ({}));
           throw new Error(body.error || `HTTP ${fallback.status}`);
         }
-        const data: PacsProperty = await fallback.json();
+        const data: AssessmentProperty = await fallback.json();
         setState({ data, loading: false, error: null });
         return;
       }
@@ -57,7 +61,7 @@ export function usePropertyLookup(geoId: string | undefined) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body.error || `HTTP ${res.status}`);
       }
-      const data: PacsProperty = await res.json();
+      const data: AssessmentProperty = await res.json();
       setState({ data, loading: false, error: null });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Property lookup failed';

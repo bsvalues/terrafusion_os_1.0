@@ -12,7 +12,7 @@
 |---|---|
 | tf-mssql container running | UP (4+ hours) |
 | Connected to pacs_oltp | ✅ |
-| SA auth (TF_Pacs2026!) | ✅ |
+| SA auth (<redacted-local-dev-sql-password>) | ✅ |
 
 ### Core Views — pacs_oltp
 | View | Status |
@@ -79,7 +79,7 @@ PacsSalesConnection (pacs_golive):
 Per user feedback (2026-03-21): agent read repo first, asked second.
 
 **What the repo proved without human input:**
-- SA password default: `TF_Pacs2026!` (from ops/dev/test-pacs-contract.ps1)
+- SA password default: `<redacted-local-dev-sql-password>` (from ops/dev/test-pacs-contract.ps1)
 - Container: tf-mssql UP on localhost:1433 (docker ps)
 - Connection strings: PacsConnection → pacs_oltp, PacsSalesConnection → pacs_golive (appsettings.Development.json)
 - Adapter split: pacs_oltp for core views, pacs_golive for enrichment (PacsSqlAdapter.cs)
@@ -92,7 +92,7 @@ Per user feedback (2026-03-21): agent read repo first, asked second.
 
 ## Open Items (post-CP26)
 
-- [ ] Wire `pacsService.ts` live path — backend must be running on port 5000 for frontend to route to `/api/pacs/properties`
+- [ ] Wire `pacsService.ts` live path — backend must be running on `TF_API_PORT` (current dev default `5046`) for frontend to route to `/api/pacs/properties`
 - [ ] End-to-end smoke: frontend PropertySearch → backend PacsController → PacsSqlAdapter → pacs_oltp query
 - [ ] Set TF_DEV_PACS_PASSWORD in shell profile so .NET picks it up from env (currently defaults work via hardcoded dev config)
 

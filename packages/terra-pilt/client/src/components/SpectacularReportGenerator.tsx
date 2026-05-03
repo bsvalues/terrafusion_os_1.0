@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Download, FileText, BarChart3, TrendingUp, AlertCircle, CheckCircle, Building2, DollarSign, Calculator, MapPin, Users, PieChart, Target, Activity  } from '@mui/icons-material';
+import { Download, FileText, BarChart3, TrendingUp, AlertCircle, CheckCircle, Building2, DollarSign, Calculator, MapPin, Users, PieChart, Target, Activity  } from 'lucide-react';
 
 interface ReportTemplate {
   id: string;
@@ -131,11 +131,10 @@ export default function SpectacularReportGenerator() {
       const htmlContent = `
 <!DOCTYPE html>
 <html>
-<head><>
+<head>
 
     <title>${reportTitle}</title>
-    <meta
-</> charset="utf-8">
+    <meta charset="utf-8">
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
         .header { background: linear-gradient(to right, #2563eb, #1e40af); color: white; padding: 20px; margin-bottom: 20px; }
@@ -149,11 +148,10 @@ export default function SpectacularReportGenerator() {
     </style>
 </head>
 <body>
-    <div class="header"><>
+    <div class="header">
 
         <h1>Benton County PILT Report</h1>
-        <p
-</>>Generated: ${new Date().toLocaleDateString()} | Year: ${selectedYear} | Type: ${selectedTemplate}</p>
+        <p>Generated: ${new Date().toLocaleDateString()} | Year: ${selectedYear} | Type: ${selectedTemplate}</p>
     </div>
     ${document.querySelector('.space-y-6')?.innerHTML || 'Report content not available'}
 </body>
@@ -347,11 +345,10 @@ export default function SpectacularReportGenerator() {
           <Card key={section.id} className="mb-6 border-2 border-blue-600">
             <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
               <div className="flex items-center justify-between">
-                <div><>
+                <div>
 
                   <CardTitle className="text-xl font-bold">BENTON COUNTY</CardTitle>
-                  <p
-</> className="text-blue-100">OFFICE OF THE ASSESSOR</p>
+                  <p className="text-blue-100">OFFICE OF THE ASSESSOR</p>
                 </div>
                 <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center">
                   <div className="text-blue-600 font-bold text-xs text-center">
@@ -361,22 +358,19 @@ export default function SpectacularReportGenerator() {
               </div>
             </CardHeader>
             <CardContent className="p-6">
-              <div className="space-y-4"><>
+              <div className="space-y-4">
 
                 <div className="text-right text-sm text-muted-foreground">
                   {section.data.reportDate}
                 </div>
                 
-                <div
-</> className="space-y-2"><>
+                <div className="space-y-2">
 
                   <p className="font-medium">{section.data.treasurerTitle}</p>
-                  <p
-</>>{section.data.treasurerName}</p><>
+                  <p>{section.data.treasurerName}</p>
 
                   <p>PO Box 630</p>
-                  <p
-</>>Prosser WA 99350</p>
+                  <p>Prosser WA 99350</p>
                 </div>
 
                 <div className="py-4">
@@ -394,24 +388,21 @@ export default function SpectacularReportGenerator() {
                   </p>
                 </div>
 
-                <div className="pt-6 space-y-2"><>
+                <div className="pt-6 space-y-2">
 
                   <p>Sincerely,</p>
-                  <div
-</> className="py-4"><>
+                  <div className="py-4">
 
                     <div className="border-b border-gray-400 w-48 mb-2"></div>
-                    <p
-</> className="font-bold">{section.data.assessorName}</p>
+                    <p className="font-bold">{section.data.assessorName}</p>
                     <p>{section.data.assessorTitle}</p>
                   </div>
                 </div>
 
-                <div className="pt-4 text-sm text-muted-foreground"><>
+                <div className="pt-4 text-sm text-muted-foreground">
 
                   <p>Enclosures: {section.data.county} Total Assessed Value</p>
-                  <p
-</> className="ml-12">Payment in Lieu of Tax for Hanford Site</p>
+                  <p className="ml-12">Payment in Lieu of Tax for Hanford Site</p>
                 </div>
               </div>
             </CardContent>
@@ -421,13 +412,12 @@ export default function SpectacularReportGenerator() {
       case 'historical_chart':
         return (
           <Card key={section.id} className="mb-6">
-            <CardHeader><>
+            <CardHeader>
 
               <CardTitle className="text-center text-xl font-bold text-blue-800">
                 {section.data.chartTitle}
               </CardTitle>
-              <p
-</> className="text-center text-sm text-muted-foreground">
+              <p className="text-center text-sm text-muted-foreground">
                 {section.data.subtitle}
               </p>
             </CardHeader>
@@ -442,13 +432,12 @@ export default function SpectacularReportGenerator() {
                         const isCurrentYear = item.year === section.data.currentYear;
                         
                         return (
-                          <div key={idx} className="flex flex-col items-center"><>
+                          <div key={idx} className="flex flex-col items-center">
 
                             <div className="text-xs mb-1 font-bold">
                               {formatNumber(item.amount)}
                             </div>
                             <div
-</>
                               className={`w-8 transition-all duration-300 ${
                                 isCurrentYear 
                                   ? 'bg-red-500 border-2 border-red-700' 
@@ -470,29 +459,26 @@ export default function SpectacularReportGenerator() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                  <div className="text-center p-4 bg-green-50 rounded-lg"><>
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
 
                     <div className="text-xl font-bold text-green-600">
                       {formatNumber(section.data.currentAmount)}
                     </div>
-                    <p
-</> className="text-sm text-muted-foreground">Current Year ({section.data.currentYear})</p>
+                    <p className="text-sm text-muted-foreground">Current Year ({section.data.currentYear})</p>
                   </div>
-                  <div className="text-center p-4 bg-blue-50 rounded-lg"><>
+                  <div className="text-center p-4 bg-blue-50 rounded-lg">
 
                     <div className="text-xl font-bold text-blue-600">
                       {section.data.historicalData.length}
                     </div>
-                    <p
-</> className="text-sm text-muted-foreground">Years of Data</p>
+                    <p className="text-sm text-muted-foreground">Years of Data</p>
                   </div>
-                  <div className="text-center p-4 bg-purple-50 rounded-lg"><>
+                  <div className="text-center p-4 bg-purple-50 rounded-lg">
 
                     <div className="text-xl font-bold text-purple-600">
                       {formatNumber(section.data.historicalData.reduce((sum: number, d: any) => sum + d.amount, 0))}
                     </div>
-                    <p
-</> className="text-sm text-muted-foreground">Total PILT (All Years)</p>
+                    <p className="text-sm text-muted-foreground">Total PILT (All Years)</p>
                   </div>
                 </div>
 
@@ -517,29 +503,26 @@ export default function SpectacularReportGenerator() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-blue-50 rounded-lg"><>
+                <div className="text-center p-4 bg-blue-50 rounded-lg">
 
                   <div className="text-2xl font-bold text-blue-600">
                     {formatNumber(section.data.totalAmount)}
                   </div>
-                  <p
-</> className="text-sm text-muted-foreground">Total PILT Amount</p>
+                  <p className="text-sm text-muted-foreground">Total PILT Amount</p>
                 </div>
-                <div className="text-center p-4 bg-green-50 rounded-lg"><>
+                <div className="text-center p-4 bg-green-50 rounded-lg">
 
                   <div className="text-2xl font-bold text-green-600">
                     {section.data.totalDistricts}
                   </div>
-                  <p
-</> className="text-sm text-muted-foreground">Districts Served</p>
+                  <p className="text-sm text-muted-foreground">Districts Served</p>
                 </div>
-                <div className="text-center p-4 bg-purple-50 rounded-lg"><>
+                <div className="text-center p-4 bg-purple-50 rounded-lg">
 
                   <div className="text-2xl font-bold text-purple-600">
                     {section.data.assessedValue ? formatNumber(section.data.assessedValue) : 'N/A'}
                   </div>
-                  <p
-</> className="text-sm text-muted-foreground">Assessed Value</p>
+                  <p className="text-sm text-muted-foreground">Assessed Value</p>
                 </div>
               </div>
             </CardContent>
@@ -560,33 +543,29 @@ export default function SpectacularReportGenerator() {
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse border border-gray-300">
                     <thead>
-                      <tr className="bg-blue-600 text-white"><>
+                      <tr className="bg-blue-600 text-white">
 
                         <th className="border border-gray-300 p-3 text-left font-semibold">District</th>
-                        <th
-</> className="border border-gray-300 p-3 text-right font-semibold">Assessed Value</th><>
+                        <th className="border border-gray-300 p-3 text-right font-semibold">Assessed Value</th>
 
                         <th className="border border-gray-300 p-3 text-right font-semibold">Levy Rate*</th>
-                        <th
-</> className="border border-gray-300 p-3 text-center font-semibold">Less 81-874 deduction</th>
+                        <th className="border border-gray-300 p-3 text-center font-semibold">Less 81-874 deduction</th>
                         <th className="border border-gray-300 p-3 text-right font-semibold">PILT Due</th>
                       </tr>
                     </thead>
                     <tbody>
                       {section.data.distributions.map((dist: any, idx: number) => (
-                        <tr key={idx} className={idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'}><>
+                        <tr key={idx} className={idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
 
                           <td className="border border-gray-300 p-3 font-medium">{dist.district}</td>
-                          <td
-</> className="border border-gray-300 p-3 text-right">
+                          <td className="border border-gray-300 p-3 text-right">
                             $ {formatNumber(dist.assessedValue)}
-                          </td><>
+                          </td>
 
                           <td className="border border-gray-300 p-3 text-right">
                             {dist.levyRate.toFixed(10)}
                           </td>
-                          <td
-</> className="border border-gray-300 p-3 text-center text-gray-500">
+                          <td className="border border-gray-300 p-3 text-center text-gray-500">
                             {dist.less81874Deduction}
                           </td>
                           <td className="border border-gray-300 p-3 text-right font-semibold text-green-600">
@@ -594,15 +573,13 @@ export default function SpectacularReportGenerator() {
                           </td>
                         </tr>
                       ))}
-                      <tr className="bg-gray-800 text-white font-bold"><>
+                      <tr className="bg-gray-800 text-white font-bold">
 
                         <td className="border border-gray-300 p-3">Total PILT DUE</td>
-                        <td
-</> className="border border-gray-300 p-3"></td><>
+                        <td className="border border-gray-300 p-3"></td>
 
                         <td className="border border-gray-300 p-3"></td>
-                        <td
-</> className="border border-gray-300 p-3"></td>
+                        <td className="border border-gray-300 p-3"></td>
                         <td className="border border-gray-300 p-3 text-right">
                           $ {formatNumber(section.data.totalPiltDue)}
                         </td>
@@ -616,29 +593,26 @@ export default function SpectacularReportGenerator() {
                 </div>
 
                 {/* PILT Due Chart */}
-                <div className="mt-6"><>
+                <div className="mt-6">
 
                   <h4 className="text-lg font-semibold mb-4 text-center bg-gray-700 text-white p-2">PILT DUE</h4>
-                  <div
-</> className="bg-gradient-to-r from-blue-600 to-orange-500 p-4 rounded-lg">
+                  <div className="bg-gradient-to-r from-blue-600 to-orange-500 p-4 rounded-lg">
                     <div className="space-y-2">
                       {section.data.distributions
                         .sort((a: any, b: any) => b.piltDue - a.piltDue)
                         .map((dist: any, idx: number) => {
                           const percentage = (dist.piltDue / section.data.totalPiltDue) * 100;
                           return (
-                            <div key={idx} className="flex items-center justify-between text-white text-sm"><>
+                            <div key={idx} className="flex items-center justify-between text-white text-sm">
 
                               <span className="w-1/3 truncate">{dist.district}</span>
-                              <div
-</> className="w-1/2 bg-white bg-opacity-20 rounded-full h-6 mr-2 relative overflow-hidden"><>
+                              <div className="w-1/2 bg-white bg-opacity-20 rounded-full h-6 mr-2 relative overflow-hidden">
 
                                 <div 
                                   className="bg-white h-full rounded-full transition-all duration-500"
                                   style={{ width: `${percentage}%` }}
                                 ></div>
-                                <span
-</> className="absolute inset-0 flex items-center justify-center text-xs font-bold">
+                                <span className="absolute inset-0 flex items-center justify-center text-xs font-bold">
                                   {percentage.toFixed(1)}%
                                 </span>
                               </div>
@@ -670,46 +644,41 @@ export default function SpectacularReportGenerator() {
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse border border-gray-300 text-sm">
                     <thead>
-                      <tr className="bg-green-600 text-white"><>
+                      <tr className="bg-green-600 text-white">
 
                         <th className="border border-gray-300 p-2 text-left">Row Labels</th>
-                        <th
-</> className="border border-gray-300 p-2 text-right">Sum of acres</th><>
+                        <th className="border border-gray-300 p-2 text-right">Sum of acres</th>
 
                         <th className="border border-gray-300 p-2 text-right">Sum of $/acre</th>
-                        <th
-</> className="border border-gray-300 p-2 text-right">Sum of value</th>
+                        <th className="border border-gray-300 p-2 text-right">Sum of value</th>
                         <th className="border border-gray-300 p-2 text-right">Sum of Total Value</th>
                       </tr>
                     </thead>
                     <tbody>
                       {section.data.classifications.map((classification: any, idx: number) => (
                         <React.Fragment key={idx}>
-                          <tr className="bg-gray-100 font-semibold"><>
+                          <tr className="bg-gray-100 font-semibold">
 
                             <td className="border border-gray-300 p-2" colSpan={4}>
                               📋 {classification.district}
                             </td>
-                            <td
-</> className="border border-gray-300 p-2 text-right font-bold">
+                            <td className="border border-gray-300 p-2 text-right font-bold">
                               ${formatNumber(classification.totalValue)}
                             </td>
                           </tr>
                           
                           {classification.dryland && (
-                            <tr><>
+                            <tr>
 
                               <td className="border border-gray-300 p-2 pl-6">Dryland *(per acre)</td>
-                              <td
-</> className="border border-gray-300 p-2 text-right">
+                              <td className="border border-gray-300 p-2 text-right">
                                 {classification.dryland.acres.toLocaleString()}
-                              </td><>
+                              </td>
 
                               <td className="border border-gray-300 p-2 text-right">
                                 ${classification.dryland.rate}
                               </td>
-                              <td
-</> className="border border-gray-300 p-2 text-right">
+                              <td className="border border-gray-300 p-2 text-right">
                                 ${formatNumber(classification.dryland.value)}
                               </td>
                               <td className="border border-gray-300 p-2"></td>
@@ -717,19 +686,17 @@ export default function SpectacularReportGenerator() {
                           )}
                           
                           {classification.irrigable && (
-                            <tr><>
+                            <tr>
 
                               <td className="border border-gray-300 p-2 pl-6">Irrigable Land (Per Acre)</td>
-                              <td
-</> className="border border-gray-300 p-2 text-right">
+                              <td className="border border-gray-300 p-2 text-right">
                                 {classification.irrigable.acres.toLocaleString()}
-                              </td><>
+                              </td>
 
                               <td className="border border-gray-300 p-2 text-right">
                                 ${classification.irrigable.rate.toLocaleString()}
                               </td>
-                              <td
-</> className="border border-gray-300 p-2 text-right">
+                              <td className="border border-gray-300 p-2 text-right">
                                 ${formatNumber(classification.irrigable.value)}
                               </td>
                               <td className="border border-gray-300 p-2"></td>
@@ -737,19 +704,17 @@ export default function SpectacularReportGenerator() {
                           )}
                           
                           {classification.riverfront && (
-                            <tr><>
+                            <tr>
 
                               <td className="border border-gray-300 p-2 pl-6">Lesser Riverfront (per linear foot)</td>
-                              <td
-</> className="border border-gray-300 p-2 text-right">
+                              <td className="border border-gray-300 p-2 text-right">
                                 {classification.riverfront.acres.toLocaleString()}
-                              </td><>
+                              </td>
 
                               <td className="border border-gray-300 p-2 text-right">
                                 ${classification.riverfront.rate}
                               </td>
-                              <td
-</> className="border border-gray-300 p-2 text-right">
+                              <td className="border border-gray-300 p-2 text-right">
                                 ${formatNumber(classification.riverfront.value)}
                               </td>
                               <td className="border border-gray-300 p-2"></td>
@@ -757,19 +722,17 @@ export default function SpectacularReportGenerator() {
                           )}
                           
                           {classification.residential && (
-                            <tr><>
+                            <tr>
 
                               <td className="border border-gray-300 p-2 pl-6">Rural Residential(per acre)</td>
-                              <td
-</> className="border border-gray-300 p-2 text-right">
+                              <td className="border border-gray-300 p-2 text-right">
                                 {classification.residential.acres}
-                              </td><>
+                              </td>
 
                               <td className="border border-gray-300 p-2 text-right">
                                 ${classification.residential.rate.toLocaleString()}
                               </td>
-                              <td
-</> className="border border-gray-300 p-2 text-right">
+                              <td className="border border-gray-300 p-2 text-right">
                                 ${formatNumber(classification.residential.value)}
                               </td>
                               <td className="border border-gray-300 p-2"></td>
@@ -777,19 +740,17 @@ export default function SpectacularReportGenerator() {
                           )}
                           
                           {classification.townPlats && (
-                            <tr><>
+                            <tr>
 
                               <td className="border border-gray-300 p-2 pl-6">Town Plats (per acre)</td>
-                              <td
-</> className="border border-gray-300 p-2 text-right">
+                              <td className="border border-gray-300 p-2 text-right">
                                 {classification.townPlats.acres}
-                              </td><>
+                              </td>
 
                               <td className="border border-gray-300 p-2 text-right">
                                 ${classification.townPlats.rate.toLocaleString()}
                               </td>
-                              <td
-</> className="border border-gray-300 p-2 text-right">
+                              <td className="border border-gray-300 p-2 text-right">
                                 ${formatNumber(classification.townPlats.value)}
                               </td>
                               <td className="border border-gray-300 p-2"></td>
@@ -799,15 +760,13 @@ export default function SpectacularReportGenerator() {
                       ))}
                       
                       {/* County Totals */}
-                      <tr className="bg-blue-600 text-white font-bold"><>
+                      <tr className="bg-blue-600 text-white font-bold">
 
                         <td className="border border-gray-300 p-2">Benton County</td>
-                        <td
-</> className="border border-gray-300 p-2"></td><>
+                        <td className="border border-gray-300 p-2"></td>
 
                         <td className="border border-gray-300 p-2"></td>
-                        <td
-</> className="border border-gray-300 p-2"></td>
+                        <td className="border border-gray-300 p-2"></td>
                         <td className="border border-gray-300 p-2 text-right">
                           $ {formatNumber(section.data.grandTotal)}
                         </td>
@@ -837,21 +796,19 @@ export default function SpectacularReportGenerator() {
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-300">
                   <thead>
-                    <tr className="bg-gray-50"><>
+                    <tr className="bg-gray-50">
 
                       <th className="border border-gray-300 px-4 py-2 text-left">District</th>
-                      <th
-</> className="border border-gray-300 px-4 py-2 text-right">Amount</th>
+                      <th className="border border-gray-300 px-4 py-2 text-right">Amount</th>
                       <th className="border border-gray-300 px-4 py-2 text-right">Percentage</th>
                     </tr>
                   </thead>
                   <tbody>
                     {section.data.distributions.map((dist: any, idx: number) => (
-                      <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}><>
+                      <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
 
                         <td className="border border-gray-300 px-4 py-2 font-medium">{dist.district}</td>
-                        <td
-</> className="border border-gray-300 px-4 py-2 text-right">{formatNumber(dist.amount)}</td>
+                        <td className="border border-gray-300 px-4 py-2 text-right">{formatNumber(dist.amount)}</td>
                         <td className="border border-gray-300 px-4 py-2 text-right">
                           {dist.percentage ? `${dist.percentage.toFixed(2)}%` : 'N/A'}
                         </td>
@@ -876,21 +833,19 @@ export default function SpectacularReportGenerator() {
             <CardContent>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Bar Chart Representation */}
-                <div><>
+                <div>
 
                   <h4 className="font-medium mb-3">Distribution by Amount</h4>
-                  <div
-</> className="space-y-2">
+                  <div className="space-y-2">
                     {(section.data.barChart || section.data.pieChart || []).map((item: any, idx: number) => {
                       const maxValue = Math.max(...(section.data.barChart || section.data.pieChart || []).map((d: any) => d.value || d.amount));
                       const width = ((item.value || item.amount) / maxValue) * 100;
                       return (
                         <div key={idx} className="space-y-1">
-                          <div className="flex justify-between text-sm"><>
+                          <div className="flex justify-between text-sm">
 
                             <span className="font-medium">{item.name || item.district}</span>
-                            <span
-</>>{formatNumber(item.value || item.amount)}</span>
+                            <span>{formatNumber(item.value || item.amount)}</span>
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
                             <div 
@@ -905,17 +860,15 @@ export default function SpectacularReportGenerator() {
                 </div>
 
                 {/* Percentage Breakdown */}
-                <div><>
+                <div>
 
                   <h4 className="font-medium mb-3">Percentage Distribution</h4>
-                  <div
-</> className="space-y-2">
+                  <div className="space-y-2">
                     {(section.data.pieChart || []).map((item: any, idx: number) => (
-                      <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 rounded"><>
+                      <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 rounded">
 
                         <span className="text-sm font-medium">{item.name}</span>
-                        <Badge
-</> variant="secondary">{item.percentage.toFixed(1)}%</Badge>
+                        <Badge variant="secondary">{item.percentage.toFixed(1)}%</Badge>
                       </div>
                     ))}
                   </div>
@@ -937,48 +890,42 @@ export default function SpectacularReportGenerator() {
             <CardContent>
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-green-50 rounded-lg"><>
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
 
                     <div className="text-xl font-bold text-green-600">
                       {section.data.growthRate > 0 ? '+' : ''}{section.data.growthRate.toFixed(1)}%
                     </div>
-                    <p
-</> className="text-sm text-muted-foreground">Growth Rate</p>
+                    <p className="text-sm text-muted-foreground">Growth Rate</p>
                   </div>
-                  <div className="text-center p-4 bg-blue-50 rounded-lg"><>
+                  <div className="text-center p-4 bg-blue-50 rounded-lg">
 
                     <div className="text-xl font-bold text-blue-600">
                       {section.data.historicalData.length}
                     </div>
-                    <p
-</> className="text-sm text-muted-foreground">Years Analyzed</p>
+                    <p className="text-sm text-muted-foreground">Years Analyzed</p>
                   </div>
-                  <div className="text-center p-4 bg-purple-50 rounded-lg"><>
+                  <div className="text-center p-4 bg-purple-50 rounded-lg">
 
                     <div className="text-xl font-bold text-purple-600">
                       {formatNumber(section.data.historicalData.reduce((sum: number, d: any) => sum + d.amount, 0))}
                     </div>
-                    <p
-</> className="text-sm text-muted-foreground">Total PILT</p>
+                    <p className="text-sm text-muted-foreground">Total PILT</p>
                   </div>
                 </div>
                 
-                <div><>
+                <div>
 
                   <h4 className="font-medium mb-3">Year-over-Year Analysis</h4>
-                  <div
-</> className="overflow-x-auto">
+                  <div className="overflow-x-auto">
                     <table className="w-full border-collapse border border-gray-300">
                       <thead>
-                        <tr className="bg-gray-50"><>
+                        <tr className="bg-gray-50">
 
                           <th className="border border-gray-300 px-4 py-2 text-left">Year</th>
-                          <th
-</> className="border border-gray-300 px-4 py-2 text-right">PILT Amount</th><>
+                          <th className="border border-gray-300 px-4 py-2 text-right">PILT Amount</th>
 
                           <th className="border border-gray-300 px-4 py-2 text-right">Assessed Value</th>
-                          <th
-</> className="border border-gray-300 px-4 py-2 text-right">Change</th>
+                          <th className="border border-gray-300 px-4 py-2 text-right">Change</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -986,17 +933,15 @@ export default function SpectacularReportGenerator() {
                           const prevYear = idx > 0 ? section.data.historicalData[idx - 1] : null;
                           const change = prevYear ? ((year.amount - prevYear.amount) / prevYear.amount * 100) : 0;
                           return (
-                            <tr key={year.year}><>
+                            <tr key={year.year}>
 
                               <td className="border border-gray-300 px-4 py-2 font-medium">{year.year}</td>
-                              <td
-</> className="border border-gray-300 px-4 py-2 text-right">{formatNumber(year.amount)}</td><>
+                              <td className="border border-gray-300 px-4 py-2 text-right">{formatNumber(year.amount)}</td>
 
                               <td className="border border-gray-300 px-4 py-2 text-right">
                                 {year.assessedValue ? formatNumber(year.assessedValue) : 'N/A'}
                               </td>
-                              <td
-</> className={`border border-gray-300 px-4 py-2 text-right ${change > 0 ? 'text-green-600' : change < 0 ? 'text-red-600' : ''}`}>
+                              <td className={`border border-gray-300 px-4 py-2 text-right ${change > 0 ? 'text-green-600' : change < 0 ? 'text-red-600' : ''}`}>
                                 {idx > 0 ? `${change > 0 ? '+' : ''}${change.toFixed(1)}%` : '-'}
                               </td>
                             </tr>
@@ -1022,45 +967,40 @@ export default function SpectacularReportGenerator() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div className="text-center p-4 bg-blue-50 rounded-lg"><>
+                <div className="text-center p-4 bg-blue-50 rounded-lg">
 
                   <div className="text-xl font-bold text-blue-600">
                     {formatNumber(section.data.totalImpact)}
                   </div>
-                  <p
-</> className="text-sm text-muted-foreground">Total Impact</p>
+                  <p className="text-sm text-muted-foreground">Total Impact</p>
                 </div>
-                <div className="text-center p-4 bg-green-50 rounded-lg"><>
+                <div className="text-center p-4 bg-green-50 rounded-lg">
 
                   <div className="text-xl font-bold text-green-600">
                     {formatNumber(section.data.averagePerDistrict)}
                   </div>
-                  <p
-</> className="text-sm text-muted-foreground">Avg per District</p>
+                  <p className="text-sm text-muted-foreground">Avg per District</p>
                 </div>
-                <div className="text-center p-4 bg-purple-50 rounded-lg"><>
+                <div className="text-center p-4 bg-purple-50 rounded-lg">
 
                   <div className="text-xl font-bold text-purple-600">
                     {section.data.concentrationIndex.toFixed(1)}%
                   </div>
-                  <p
-</> className="text-sm text-muted-foreground">Top 3 Concentration</p>
+                  <p className="text-sm text-muted-foreground">Top 3 Concentration</p>
                 </div>
-                <div className="text-center p-4 bg-orange-50 rounded-lg"><>
+                <div className="text-center p-4 bg-orange-50 rounded-lg">
 
                   <div className="text-xl font-bold text-orange-600">
                     {formatNumber(parseFloat(section.data.largestRecipient.amount.toString()))}
                   </div>
-                  <p
-</> className="text-sm text-muted-foreground">Largest Recipient</p>
+                  <p className="text-sm text-muted-foreground">Largest Recipient</p>
                 </div>
               </div>
               
-              <div className="bg-gray-50 p-4 rounded-lg"><>
+              <div className="bg-gray-50 p-4 rounded-lg">
 
                 <h4 className="font-medium mb-2">Impact Summary</h4>
-                <p
-</> className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   <strong>{section.data.largestRecipient.district}</strong> receives the largest allocation, 
                   representing a significant portion of county PILT distributions. The top three districts 
                   account for {section.data.concentrationIndex.toFixed(1)}% of total distributions, 
@@ -1090,11 +1030,10 @@ export default function SpectacularReportGenerator() {
                   
                   return (
                     <div key={key} className="p-4 border rounded-lg">
-                      <div className="flex items-center justify-between mb-2"><>
+                      <div className="flex items-center justify-between mb-2">
 
                         <span className="text-sm font-medium">{displayName}</span>
-                        <span
-</> className="text-lg font-bold">{percentage.toFixed(1)}%</span>
+                        <span className="text-lg font-bold">{percentage.toFixed(1)}%</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
@@ -1130,50 +1069,43 @@ export default function SpectacularReportGenerator() {
             <CardContent>
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="text-center p-4 bg-green-50 rounded-lg"><>
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
 
                     <div className="text-xl font-bold text-green-600">{section.data.passedChecks}</div>
-                    <p
-</> className="text-sm text-muted-foreground">Passed</p>
+                    <p className="text-sm text-muted-foreground">Passed</p>
                   </div>
-                  <div className="text-center p-4 bg-yellow-50 rounded-lg"><>
+                  <div className="text-center p-4 bg-yellow-50 rounded-lg">
 
                     <div className="text-xl font-bold text-yellow-600">{section.data.warningChecks}</div>
-                    <p
-</> className="text-sm text-muted-foreground">Warnings</p>
+                    <p className="text-sm text-muted-foreground">Warnings</p>
                   </div>
-                  <div className="text-center p-4 bg-red-50 rounded-lg"><>
+                  <div className="text-center p-4 bg-red-50 rounded-lg">
 
                     <div className="text-xl font-bold text-red-600">{section.data.failedChecks}</div>
-                    <p
-</> className="text-sm text-muted-foreground">Failed</p>
+                    <p className="text-sm text-muted-foreground">Failed</p>
                   </div>
-                  <div className="text-center p-4 bg-blue-50 rounded-lg"><>
+                  <div className="text-center p-4 bg-blue-50 rounded-lg">
 
                     <div className="text-xl font-bold text-blue-600">{section.data.totalChecks}</div>
-                    <p
-</> className="text-sm text-muted-foreground">Total Checks</p>
+                    <p className="text-sm text-muted-foreground">Total Checks</p>
                   </div>
                 </div>
 
-                <div><>
+                <div>
 
                   <h4 className="font-medium mb-3">Compliance Items</h4>
-                  <div
-</> className="space-y-2">
+                  <div className="space-y-2">
                     {section.data.complianceItems.map((item: any, idx: number) => (
-                      <div key={idx} className="flex items-center gap-3 p-3 border rounded-lg"><>
+                      <div key={idx} className="flex items-center gap-3 p-3 border rounded-lg">
 
                         <div className={`w-3 h-3 rounded-full ${
                           item.status === 'PASS' ? 'bg-green-500' :
                           item.status === 'WARN' ? 'bg-yellow-500' : 'bg-red-500'
                         }`}></div>
-                        <div
-</> className="flex-1"><>
+                        <div className="flex-1">
 
                           <div className="font-medium">{item.item}</div>
-                          <div
-</> className="text-sm text-muted-foreground">{item.detail}</div>
+                          <div className="text-sm text-muted-foreground">{item.detail}</div>
                         </div>
                         <Badge variant={item.status === 'PASS' ? 'default' : 'destructive'}>
                           {item.status}
@@ -1196,23 +1128,21 @@ export default function SpectacularReportGenerator() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><>
+          <CardTitle className="flex items-center gap-2">
 
             <TrendingUp className="h-6 w-6" />
             Spectacular Report Generator
           </CardTitle>
-          <CardDescription
-</>>
+          <CardDescription>
             Generate comprehensive PILT analysis reports with advanced insights and professional formatting
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2"><>
+            <TabsList className="grid w-full grid-cols-2">
 
               <TabsTrigger value="configure">Configure Report</TabsTrigger>
-              <TabsTrigger
-</> value="preview" disabled={!generatedReport}>
+              <TabsTrigger value="preview" disabled={!generatedReport}>
                 Preview & Download
               </TabsTrigger>
             </TabsList>
@@ -1220,26 +1150,23 @@ export default function SpectacularReportGenerator() {
             <TabsContent value="configure" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <div className="space-y-2"><>
+                  <div className="space-y-2">
 
                     <label className="text-sm font-medium">Report Template</label>
-                    <Select
-</> value={selectedTemplate} onValueChange={setSelectedTemplate}>
-                      <SelectTrigger><>
+                    <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+                      <SelectTrigger>
 
                         <SelectValue placeholder="Choose a report template" />
                       </SelectTrigger>
-                      <SelectContent
-</>>
+                      <SelectContent>
                         {templates?.templates?.map((template: ReportTemplate) => (
                           <SelectItem key={template.id} value={template.id}>
                             <div className="flex items-center gap-2">
                               {getTemplateIcon(template.id)}
-                              <div><>
+                              <div>
 
                                 <div className="font-medium">{template.name}</div>
-                                <div
-</> className="text-xs text-muted-foreground">{template.description}</div>
+                                <div className="text-xs text-muted-foreground">{template.description}</div>
                               </div>
                             </div>
                           </SelectItem>
@@ -1248,17 +1175,15 @@ export default function SpectacularReportGenerator() {
                     </Select>
                   </div>
 
-                  <div className="space-y-2"><>
+                  <div className="space-y-2">
 
                     <label className="text-sm font-medium">Tax Year</label>
-                    <Select
-</> value={selectedYear} onValueChange={setSelectedYear}>
-                      <SelectTrigger><>
+                    <Select value={selectedYear} onValueChange={setSelectedYear}>
+                      <SelectTrigger>
 
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent
-</>>
+                      <SelectContent>
                         {availableYears.map((year) => (
                           <SelectItem key={year} value={year}>
                             {year}
@@ -1270,34 +1195,29 @@ export default function SpectacularReportGenerator() {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="space-y-2"><>
+                  <div className="space-y-2">
 
                     <label className="text-sm font-medium">Output Format</label>
-                    <Select
-</> value={selectedFormat} onValueChange={(value: 'html' | 'pdf' | 'excel' | 'json') => setSelectedFormat(value)}>
-                      <SelectTrigger><>
+                    <Select value={selectedFormat} onValueChange={(value: 'html' | 'pdf' | 'excel' | 'json') => setSelectedFormat(value)}>
+                      <SelectTrigger>
 
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent
-</>><>
+                      <SelectContent>
 
                         <SelectItem value="html">HTML Report</SelectItem>
-                        <SelectItem
-</> value="pdf">PDF Document</SelectItem><>
+                        <SelectItem value="pdf">PDF Document</SelectItem>
 
                         <SelectItem value="excel">Excel Spreadsheet</SelectItem>
-                        <SelectItem
-</> value="json">JSON Data</SelectItem>
+                        <SelectItem value="json">JSON Data</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
-                  <div className="space-y-3"><>
+                  <div className="space-y-3">
 
                     <label className="text-sm font-medium">Report Options</label>
-                    <div
-</> className="space-y-2">
+                    <div className="space-y-2">
                       <label className="flex items-center space-x-2">
                         <input
                           type="checkbox"
@@ -1326,13 +1246,12 @@ export default function SpectacularReportGenerator() {
                   <CardContent className="pt-4">
                     <div className="flex items-start gap-3">
                       {getTemplateIcon(selectedTemplate)}
-                      <div><>
+                      <div>
 
                         <h4 className="font-medium">
                           {templates?.templates?.find((t: ReportTemplate) => t.id === selectedTemplate)?.name}
                         </h4>
-                        <p
-</> className="text-sm text-muted-foreground">
+                        <p className="text-sm text-muted-foreground">
                           {templates?.templates?.find((t: ReportTemplate) => t.id === selectedTemplate)?.description}
                         </p>
                         <Badge variant="secondary" className="mt-2">
@@ -1365,11 +1284,10 @@ export default function SpectacularReportGenerator() {
               {generatedReport ? (
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                    <div><>
+                    <div>
 
                       <h3 className="text-xl font-bold">{generatedReport.title}</h3>
-                      <p
-</> className="text-sm text-muted-foreground">
+                      <p className="text-sm text-muted-foreground">
                         Generated on {new Date(generatedReport.generatedAt).toLocaleString()}
                       </p>
                     </div>
@@ -1381,43 +1299,39 @@ export default function SpectacularReportGenerator() {
 
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <Card>
-                      <CardContent className="pt-4"><>
+                      <CardContent className="pt-4">
 
                         <div className="text-2xl font-bold text-green-600">
                           {formatNumber(generatedReport.metadata.totalPilt)}
                         </div>
-                        <p
-</> className="text-sm text-muted-foreground">Total PILT</p>
+                        <p className="text-sm text-muted-foreground">Total PILT</p>
                       </CardContent>
                     </Card>
                     <Card>
-                      <CardContent className="pt-4"><>
+                      <CardContent className="pt-4">
 
                         <div className="text-2xl font-bold text-blue-600">
                           {generatedReport.metadata.totalDistricts}
                         </div>
-                        <p
-</> className="text-sm text-muted-foreground">Districts</p>
+                        <p className="text-sm text-muted-foreground">Districts</p>
                       </CardContent>
                     </Card>
                     <Card>
-                      <CardContent className="pt-4"><>
+                      <CardContent className="pt-4">
 
                         <div className="text-2xl font-bold text-purple-600">
                           {generatedReport.metadata.dataQualityScore}%
                         </div>
-                        <p
-</> className="text-sm text-muted-foreground">Data Quality</p>
+                        <p className="text-sm text-muted-foreground">Data Quality</p>
                       </CardContent>
                     </Card>
                     <Card>
-                      <CardContent className="pt-4"><>
+                      <CardContent className="pt-4">
 
                         <div className="text-2xl font-bold text-orange-600">
                           {generatedReport.metadata.confidenceLevel}%
                         </div>
-                        <p
-</> className="text-sm text-muted-foreground">Confidence</p>
+                        <p className="text-sm text-muted-foreground">Confidence</p>
                       </CardContent>
                     </Card>
                   </div>
@@ -1475,11 +1389,10 @@ export default function SpectacularReportGenerator() {
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" /><>
+                  <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
 
                   <h3 className="text-lg font-medium mb-2">No Report Generated</h3>
-                  <p
-</> className="text-muted-foreground">
+                  <p className="text-muted-foreground">
                     Configure and generate a report to see the preview here.
                   </p>
                 </div>

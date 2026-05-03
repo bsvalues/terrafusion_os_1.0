@@ -9,9 +9,9 @@
 
 // Contracts
 export {
-    DEFAULT_STANDALONE_META,
     isHandlerAction,
     isNavigationAction,
+    STANDALONE_META_BASE,
     type StandaloneHomeAction,
     type StandaloneHomeContext,
     type StandaloneHomeMeta,

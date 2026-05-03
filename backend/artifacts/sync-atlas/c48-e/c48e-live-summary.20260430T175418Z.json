@@ -1,0 +1,17 @@
+{
+  "configured": true,
+  "tableCount": 2229,
+  "columnCount": 32750,
+  "dictionaryCount": 210,
+  "pacsRelease": "Harris PACS 9.0",
+  "ingestedAtUtc": "2026-04-30T17:54:20.3482505Z",
+  "proof": {
+    "slice": "C48-E",
+    "sourceLabel": "benton-pacs-prod",
+    "schemaName": "dbo",
+    "elapsedMs": 2267,
+    "identityProof": "live-introspection-via-information-schema",
+    "piiFreeProof": "introspector-queries-information-schema-only",
+    "mutationProof": "no-writes-zero-side-effects"
+  }
+}

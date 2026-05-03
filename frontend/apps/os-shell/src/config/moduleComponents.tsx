@@ -58,13 +58,15 @@ export const MODULE_ALIASES: Record<string, string> = {
 
   // Application Constellation aliases (Gen2 catalog)
   regression: 'regression-studio',
-  stats: 'statistics-studio',
-  statistics: 'statistics-studio',
+  stats: 'county-studio',
+  statistics: 'county-studio',
+  'statistics-studio': 'county-studio',
   permit: 'terra-permit',
   pilt: 'terra-pilt',
   sync: 'terra-sync',
   flow: 'terra-flow',
   pacs: 'pacs-bridge',
+  'assessment-data-bridge': 'pacs-bridge',
   gama: 'terra-gama',
   'property-tax': 'property-tax-ai',
   management: 'management-dashboard',
@@ -85,6 +87,32 @@ export const MODULE_ALIASES: Record<string, string> = {
   dashboard: 'sovereign-dashboard',
   'doc-viewer': 'sovereign-dashboard',
   'document-viewer': 'sovereign-dashboard',
+
+  // Atlas suite module aliases
+  'layer-works': 'layer-works',
+  layerworks: 'layer-works',
+  layers: 'layer-works',
+  'terra-query': 'terra-query',
+  terraquery: 'terra-query',
+  'spatial-query': 'terra-query',
+
+  // Terra-Print + Terra-Sketch aliases
+  'terra-print': 'terra-print',
+  terraprint: 'terra-print',
+  print: 'terra-print',
+  'terra-sketch': 'terra-sketch',
+  terrasketch: 'terra-sketch',
+  sketch: 'terra-sketch',
+
+  // GeoForge aliases
+  geoforge: 'geo-forge',
+  'geo-forge-gis': 'geo-forge',
+  'gis-analytics': 'geo-forge',
+
+  // County Studio + Atlas Live View
+  'county-studio': 'county-studio',
+  'atlas-live-view': 'atlas-live-view',
+  'atlas-live': 'atlas-live-view',
 
   // Property Workbench (desktop window adapter)
   workbench: 'property-workbench',
@@ -132,6 +160,7 @@ export function normalizeModuleId(moduleId: string): string {
 export const MODULE_REGISTRY = new Set<string>([
   'federation-dashboard',
   'costforge',
+  'comps-forge',
   'terra-gaia',
   'levy-calculator',
   'gis-viewer',
@@ -150,7 +179,6 @@ export const MODULE_REGISTRY = new Set<string>([
   // NOTE: income-valuation and comparable-sales REMOVED (Phase 5G) — archived in Phase 3,
   // absorbed into Workbench → Forge → Income/Sales sub-tabs
   'regression-studio',
-  'statistics-studio',
   'batch-cost-run',
   'coefficient-preview',
   'vei',
@@ -194,6 +222,23 @@ export const MODULE_REGISTRY = new Set<string>([
   'mass-appraisal-gis',
   'cost-manual',
   'value-audit-module',
+  // SalesForge — sale qualification & ratio audit flagship
+  'sales-forge',
+  // Neighborhood Ratio Study — per-hood COD/PRD/Median dashboard
+  'neighborhood-ratio-study',
+  // Cost Analytics — CostForge dashboard stats (property type dist, depreciation)
+  'cost-analytics',
+  // Atlas suite modules (Phase 36+)
+  'layer-works',
+  'terra-query',
+  'terra-print',
+  'terra-sketch',
+  // GeoForge — GIS-first mass appraisal analytics
+  'geo-forge',
+  // County Studio — segment-first countywide valuation workspace
+  'county-studio',
+  // Atlas Live View — study-aware spatial surface (session subscriber)
+  'atlas-live-view',
 ]);
 
 /**
@@ -229,8 +274,9 @@ const FederationDashboard = lazy(
   () => import('../applications/federation-dashboard/FederationDashboard')
 );
 
-// CostForge — native app hosted via AppFrame (packages/terrabuild, port 5002)
-// The shell NEVER imports CostForge code directly — it loads the running service URL.
+// CostForge — PhD workflow workspace (8-tab audit-diagnose-fix-verify loop)
+// Upgraded from AppFrame / port-5002 pattern to OS-native React module.
+const CostForge = lazy(() => import('../pages/forge/cost/CostForge'));
 
 // TerraPilt — PILT (Payment in Lieu of Taxes) surface.
 // OS-native React module, follows CostForge canon (no iframe, no external server).
@@ -284,12 +330,14 @@ const SovereignDashboardWindow = lazy(() =>
   }))
 );
 
+// CompsForge — Sales comparison approach (demo data, standalone window)
+const CompsForgeModule = lazy(
+  () => import('../pages/suites/modules/CompsForgeModule')
+);
+
 // ============================================================================
 // Phase C: Rehosted Module Components
 // ============================================================================
-const StatisticsStudio = lazy(
-  () => import('../pages/forge/statistics/StatisticsStudio')
-);
 const RegressionStudio = lazy(
   () => import('../pages/forge/regression/RegressionStudio')
 );
@@ -317,6 +365,55 @@ const ManagementDashboard = lazy(
 );
 const TerraQueue = lazy(
   () => import('../pages/dais/TerraQueue')
+);
+
+// SalesForge — sale qualification & ratio audit flagship (standalone window)
+const SalesForge = lazy(
+  () => import('../pages/forge/sales/SalesForge')
+);
+
+// Neighborhood Ratio Study — per-hood COD/PRD dashboard
+const NeighborhoodRatioStudyDashboard = lazy(
+  () => import('../pages/forge/valuation/NeighborhoodRatioStudyDashboard').then(m => ({ default: m.NeighborhoodRatioStudyDashboard }))
+);
+
+// Cost Analytics — CostForge dashboard stats
+const CostForgeDashboard = lazy(
+  () => import('../pages/forge/cost/CostForgeDashboard').then(m => ({ default: m.CostForgeDashboard }))
+);
+
+// Atlas suite modules — LayerWorks + TerraQuery + TerraPrint + TerraSketch
+const LayerWorksModule = lazy(
+  () => import('../pages/suites/modules/LayerWorksModule')
+);
+const TerraQueryModule = lazy(
+  () => import('../pages/suites/modules/TerraQueryModule')
+);
+const TerraPrintModule = lazy(
+  () => import('../pages/suites/modules/TerraPrintModule')
+);
+const TerraSketchModule = lazy(
+  () => import('../pages/suites/modules/TerraSketchModule')
+);
+
+// GeoForge — GIS-first mass appraisal analytics (full-canvas Mapbox + Benton Method)
+const GeoForgePage = lazy(
+  () => import('../pages/forge/geo/GeoForgePage').then((m) => ({ default: m.GeoForgePage }))
+);
+
+// GeoForge v2 — Assessor Audit Command Center (Lumin Bridge / Liquid Glass)
+const GeoForgeV2Page = lazy(
+  () => import('../pages/forge/geo/v2/GeoForgeV2Page').then((m) => ({ default: m.GeoForgeV2Page }))
+);
+
+// County Studio — segment-first countywide valuation workspace
+const CountyStudyPage = lazy(() =>
+  import('../pages/forge/county-studio/CountyStudyPage').then((m) => ({ default: m.CountyStudyPage }))
+);
+
+// Atlas Live View — study-aware spatial surface (session subscriber)
+const AtlasLivePage = lazy(() =>
+  import('../pages/forge/atlas-live/AtlasLivePage').then((m) => ({ default: m.AtlasLivePage }))
 );
 
 // NOTE: ComparableSalesPanel is used inside Forge → Sales sub-tab (not standalone)
@@ -356,7 +453,7 @@ export type ModuleEntry = {
 
 const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'federation-dashboard': { Component: FederationDashboard },
-  // costforge renders via AppFrame (native app, not a React component)
+  costforge: { Component: CostForge },
   'terra-gaia': { Component: TerraGaiaDashboard },
   reporting: { Component: AnalyticsDashboard },
   'atlas-ai': { Component: ATLAS },
@@ -392,6 +489,13 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'mass-appraisal-gis': { Component: MassAppraisalGIS },
   'cost-manual': { Component: CostManual },
   'value-audit-module': { Component: ValueAuditModule },
+  // SalesForge — sale qualification & ratio audit flagship
+  'sales-forge': { Component: SalesForge },
+  // Atlas suite modules
+  'layer-works': { Component: LayerWorksModule },
+  'terra-query': { Component: TerraQueryModule },
+  'terra-print': { Component: TerraPrintModule },
+  'terra-sketch': { Component: TerraSketchModule },
 };
 
 export function getModuleEntry(moduleId: string): ModuleEntry | undefined {
@@ -430,11 +534,11 @@ const PlaceholderModule: React.FC<PlaceholderModuleProps> = ({
   launchSurface,
 }) => {
   const statusConfig: Record<PlaceholderStatus, { color: string; label: string }> = {
-    placeholder: { color: 'hsl(var(--tf-warning))', label: 'Placeholder' },
+    placeholder: { color: 'hsl(var(--tf-warning))', label: 'Scheduled' },
     partial: { color: 'hsl(var(--tf-info))', label: 'Partial' },
     rehosting: { color: 'hsl(var(--tf-accent-2))', label: 'Rehosting' },
     live: { color: 'hsl(var(--tf-success) / 1)', label: 'Live' },
-    'coming-soon': { color: 'hsl(var(--tf-warning))', label: 'Coming Soon' },
+    'coming-soon': { color: 'hsl(var(--tf-warning))', label: 'Queued' },
     'in-development': { color: 'hsl(var(--tf-info))', label: 'In Development' },
     beta: { color: 'hsl(var(--tf-accent-2))', label: 'Beta' },
   };
@@ -628,21 +732,21 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
         </Suspense>
       );
 
-    // CostForge — iframes the real terrabuild app (packages/terrabuild, port 5002)
+    // CostForge — OS-native PhD workflow (8-tab audit-diagnose-fix-verify)
+    // Replaced AppFrame / port-5002 with inline React workspace module.
     case 'costforge':
       return (
-        <AppFrame
-          moduleId="costforge"
-          parcelContext={
-            metadata?.parcelId
-              ? {
-                  parcelId: String(metadata.parcelId),
-                  countyId: String(metadata.countyId ?? ''),
-                  assessmentYear: Number(metadata.assessmentYear ?? new Date().getFullYear()),
-                }
-              : undefined
-          }
-        />
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <CostForge metadata={metadata as Record<string, unknown> | undefined} />
+        </Suspense>
+      );
+
+    // CompsForge — Sales comparison approach with active parcel context.
+    case 'comps-forge':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <CompsForgeModule metadata={metadata as Record<string, unknown> | undefined} />
+        </Suspense>
       );
 
     // TerraGaia - Natural Language AI Assistant
@@ -713,13 +817,6 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
       return (
         <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Regression Studio...</span></div>}>
           <RegressionStudio />
-        </Suspense>
-      );
-
-    case 'statistics-studio':
-      return (
-        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Statistics Studio...</span></div>}>
-          <StatisticsStudio />
         </Suspense>
       );
 
@@ -995,13 +1092,28 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
           />
         );
       }
+      // Task D3: Dais and Dossier suite homes consume County Studio
+      // Inspector metadata (segmentId + workflowTemplate / packetTemplate)
+      // on mount to seed a segment-scoped draft. Forward metadata.
+      if (module.id === 'suite-dais') {
+        return (
+          <Suspense fallback={<ModuleLoadingFallback />}>
+            <DaisSuiteHome metadata={metadata as Record<string, unknown> | undefined} />
+          </Suspense>
+        );
+      }
+      if (module.id === 'suite-dossier') {
+        return (
+          <Suspense fallback={<ModuleLoadingFallback />}>
+            <DossierSuiteHome metadata={metadata as Record<string, unknown> | undefined} />
+          </Suspense>
+        );
+      }
       const SuiteComponent = {
         'suite-forge': ForgeSuiteHome,
         'suite-atlas': AtlasSuiteHome,
-        'suite-dais': DaisSuiteHome,
-        'suite-dossier': DossierSuiteHome,
         'suite-gpt': GptSuiteHome,
-      }[module.id]!;
+      }[module.id as 'suite-forge' | 'suite-atlas' | 'suite-gpt']!;
       return (
         <Suspense fallback={<ModuleLoadingFallback />}>
           <SuiteComponent />
@@ -1190,6 +1302,107 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
       return (
         <Suspense fallback={<ModuleLoadingFallback />}>
           <ValueAuditModule />
+        </Suspense>
+      );
+
+    // ========================================================================
+    // SALESFORGE — Sale Qualification & Ratio Audit flagship
+    // ========================================================================
+
+    case 'sales-forge':
+      return (
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading SalesForge...</span></div>}>
+          <SalesForge metadata={metadata as Record<string, unknown> | undefined} />
+        </Suspense>
+      );
+
+    // ========================================================================
+    // NEIGHBORHOOD RATIO STUDY — per-hood COD/PRD/Median dashboard
+    // ========================================================================
+
+    case 'neighborhood-ratio-study':
+      return (
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Neighborhood Ratio Study...</span></div>}>
+          <div className="p-6 overflow-y-auto h-full">
+            <NeighborhoodRatioStudyDashboard />
+          </div>
+        </Suspense>
+      );
+
+    // ========================================================================
+    // COST ANALYTICS — CostForge dashboard stats
+    // ========================================================================
+
+    case 'cost-analytics':
+      return (
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Cost Analytics...</span></div>}>
+          <div className="p-6 overflow-y-auto h-full">
+            <CostForgeDashboard />
+          </div>
+        </Suspense>
+      );
+
+    // ========================================================================
+    // GEOFORGE — GIS-first mass appraisal analytics
+    // ========================================================================
+
+    case 'geo-forge':
+      return (
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center h-full">
+              <span className="text-muted-foreground">Loading GeoForge…</span>
+            </div>
+          }
+        >
+          <GeoForgeV2Page />
+        </Suspense>
+      );
+
+    case 'geo-forge-v1':
+      return (
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center h-full">
+              <span className="text-muted-foreground">Loading GeoForge v1…</span>
+            </div>
+          }
+        >
+          <GeoForgePage />
+        </Suspense>
+      );
+
+    // ========================================================================
+    // COUNTY STUDIO — segment-first countywide valuation workspace
+    // ========================================================================
+
+    case 'county-studio':
+      return (
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center h-full">
+              <span className="text-muted-foreground">Loading County Studio…</span>
+            </div>
+          }
+        >
+          <CountyStudyPage />
+        </Suspense>
+      );
+
+    // ========================================================================
+    // ATLAS LIVE VIEW — study-aware spatial surface (session subscriber)
+    // ========================================================================
+
+    case 'atlas-live-view':
+      return (
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center h-full">
+              <span className="text-muted-foreground">Loading Atlas Live View…</span>
+            </div>
+          }
+        >
+          <AtlasLivePage />
         </Suspense>
       );
 

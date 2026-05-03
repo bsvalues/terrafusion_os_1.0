@@ -102,6 +102,42 @@ public class PacsDataSeeder
         return result;
     }
 
+    public async Task<PacsSeederResult> SeedLevyOnlyAsync(CancellationToken ct = default)
+    {
+        var cs = _config.GetConnectionString("PacsConnection")
+            ?? throw new InvalidOperationException(
+                "PacsConnection not configured. Add it to appsettings.BentonCounty.local.json.");
+
+        await EnsureSchemaAsync(ct);
+        await EnsureLevyMirrorSchemaAsync(ct);
+
+        var result = new PacsSeederResult();
+
+        await using var pacs = new SqlConnection(cs);
+        await pacs.OpenAsync(ct);
+        _logger.LogInformation("[PacsSeeder][LevyOnly] Connected to pacs_oltp.");
+
+        result.LevyRates = await SeedLevyRatesAsync(pacs, ct);
+        result.LevyTaxAreaMirror = await SeedLevyTaxAreaAssocsAsync(pacs, ct);
+        result.LevyCertificationData = await SeedLevyCertificationDataAsync(pacs, ct);
+        result.LevyCertificationHighestLawful = await SeedLevyCertificationHighestLawfulAsync(pacs, ct);
+        result.LevyCertificationConstLimits = await SeedLevyCertificationConstLimitsAsync(pacs, ct);
+        result.LevyCertificationAggLimits = await SeedLevyCertificationAggLimitsAsync(pacs, ct);
+
+        var canonicalizer = new PacsCanonicalizer(_db, _logger);
+        result.CanonicalLevyCertifications = await canonicalizer.CanonicalizeLevyOnlyAsync(ct);
+        result.CanonicalTaxLevies = await _db.TaxLevies.CountAsync(t => t.CountyId == BentonCountyId, ct);
+
+        _logger.LogInformation(
+            "[PacsSeeder][LevyOnly] Done. LevyRates={LevyRates} LevyTaxAreaMirror={LevyTaxAreaMirror} CanonicalTaxLevies={CanonicalTaxLevies} CanonicalLevyCertifications={CanonicalLevyCertifications}",
+            result.LevyRates,
+            result.LevyTaxAreaMirror,
+            result.CanonicalTaxLevies,
+            result.CanonicalLevyCertifications);
+
+        return result;
+    }
+
     public async Task<PacsSeederResult> SeedAllAsync(CancellationToken ct = default)
     {
         var cs = _config.GetConnectionString("PacsConnection")
@@ -116,6 +152,7 @@ public class PacsDataSeeder
         // we generate the full DDL script and execute each statement individually,
         // silently skipping any "already exists" errors for pre-existing tables.
         await EnsureSchemaAsync(ct);
+        await EnsureLevyMirrorSchemaAsync(ct);
         _logger.LogInformation("[PacsSeeder] Schema ensured (missing tables created if any).");
 
         // Full-refresh: clear all PACS mirror tables before seeding so we do plain
@@ -158,8 +195,12 @@ public class PacsDataSeeder
         // Phase 0b: Levy rate tables (R2 Phase 2.1 — TerraLevy)
         // Levy data is county-neutral PACS mirror — no parcel FK dependency.
         // Must run before parcel ETL so tables are present; safe to run any time.
-        await SeedLevyRatesAsync(pacs, ct);
-        await SeedLevyTaxAreaAssocsAsync(pacs, ct);
+        result.LevyRates = await SeedLevyRatesAsync(pacs, ct);
+        result.LevyTaxAreaMirror = await SeedLevyTaxAreaAssocsAsync(pacs, ct);
+        result.LevyCertificationData = await SeedLevyCertificationDataAsync(pacs, ct);
+        result.LevyCertificationHighestLawful = await SeedLevyCertificationHighestLawfulAsync(pacs, ct);
+        result.LevyCertificationConstLimits = await SeedLevyCertificationConstLimitsAsync(pacs, ct);
+        result.LevyCertificationAggLimits = await SeedLevyCertificationAggLimitsAsync(pacs, ct);
 
         // Phase 1: Root parcels — must run first
         var propMap = await SeedParcelsAsync(pacs, ct);
@@ -203,10 +244,12 @@ public class PacsDataSeeder
         // All downstream services (ValuationService, etc.) must read canonical entities only.
         var canonicalizer = new PacsCanonicalizer(_db, _logger);
         var canonical = await canonicalizer.CanonicalizeAsync(ct);
-        result.CanonicalProperties      = canonical.Properties;
+        result.CanonicalProperties = canonical.Properties;
         result.CanonicalValuationRecords = canonical.ValuationRecords;
-        result.CanonicalComparableSales  = canonical.ComparableSales;
+        result.CanonicalComparableSales = canonical.ComparableSales;
         result.CanonicalCamaCharacteristics = canonical.CamaCharacteristics;
+        result.CanonicalTaxLevies = canonical.TaxLevies;
+        result.CanonicalLevyCertifications = canonical.LevyCertifications;
 
         // Phase 8: Run FK-aware sales qualification using seeded lookup tables.
         // Must run after CanonicalizeAsync so ComparableSales rows exist.
@@ -298,22 +341,21 @@ public class PacsDataSeeder
 
     /// <summary>
     /// Seeds pacs_levy_rates from PACS dbo.levy.
-    /// Captures all levy years >= 2024 (covers 2024 certified + 2025 + 2026 current).
+    /// Captures the full historical levy range needed for TerraFusion replacement.
     /// Rate column is per $1,000 of assessed value.
     /// Upsert key: (Year, TaxDistrictId, LevyCd) — unique constraint in migration.
     /// Full-refresh: removes all existing rows then inserts fresh from PACS.
     /// </summary>
-    private async Task SeedLevyRatesAsync(SqlConnection pacs, CancellationToken ct)
+    private async Task<int> SeedLevyRatesAsync(SqlConnection pacs, CancellationToken ct)
     {
         _logger.LogInformation("[PacsSeeder] Seeding PacsLevyRates from levy...");
 
         const string sql =
             "SELECT year, tax_district_id, levy_cd, " +
-            "       ISNULL(levy_rate, 0) AS levy_rate, " +
-            "       levy_type_cd, levy_description, " +
-            "       ISNULL(include_in_levy_certification, 0) AS include_in_cert " +
+            "       levy_rate, levy_type_cd, levy_description, " +
+            "       include_in_levy_certification, end_year, primary_fund_number, " +
+            "       voted_levy_amt, voted_levy_rate " +
             "FROM levy " +
-            "WHERE year >= 2024 " +
             "ORDER BY year, tax_district_id, levy_cd";
 
         var rows = new List<PacsLevyRate>();
@@ -323,24 +365,28 @@ public class PacsDataSeeder
         {
             rows.Add(new PacsLevyRate
             {
-                Id                    = Guid.NewGuid(),
-                Year                  = rdr.GetInt16(0),        // year is smallint in PACS
-                TaxDistrictId         = rdr.GetInt32(1),
-                LevyCd                = rdr.GetString(2).Trim(),
-                LevyRate              = (decimal)rdr.GetDouble(3),
-                LevyTypeCd            = rdr.IsDBNull(4) ? null : rdr.GetString(4).Trim(),
-                LevyDescription       = rdr.IsDBNull(5) ? null : rdr.GetString(5).Trim(),
-                IncludeInCertification = rdr.GetBoolean(6),
-                CreatedAt             = DateTime.UtcNow,
-                UpdatedAt             = DateTime.UtcNow
+                Id = Guid.NewGuid(),
+                Year = Int(rdr, "year") ?? 0,
+                TaxDistrictId = Int(rdr, "tax_district_id") ?? 0,
+                LevyCd = Str(rdr, "levy_cd") ?? string.Empty,
+                LevyRate = Dec(rdr, "levy_rate") ?? 0m,
+                LevyTypeCd = Str(rdr, "levy_type_cd"),
+                LevyDescription = Str(rdr, "levy_description"),
+                IncludeInCertification = Bool(rdr, "include_in_levy_certification") ?? false,
+                EndYear = Int(rdr, "end_year"),
+                PrimaryFundNumber = Int(rdr, "primary_fund_number"),
+                VotedLevyAmount = Dec(rdr, "voted_levy_amt"),
+                VotedLevyRate = Dec(rdr, "voted_levy_rate"),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             });
         }
 
-        _db.PacsLevyRates.RemoveRange(_db.PacsLevyRates);
-        await _db.SaveChangesAsync(ct);
+        await _db.PacsLevyRates.ExecuteDeleteAsync(ct);
         await _db.PacsLevyRates.AddRangeAsync(rows, ct);
         await _db.SaveChangesAsync(ct);
         _logger.LogInformation("[PacsSeeder] PacsLevyRates seeded: {Count} rows.", rows.Count);
+        return rows.Count;
     }
 
     /// <summary>
@@ -349,16 +395,15 @@ public class PacsDataSeeder
     /// Upsert key: (Year, TaxDistrictId, LevyCd, TaxAreaId) — unique constraint in migration.
     /// Full-refresh: removes all existing rows then inserts fresh.
     /// </summary>
-    private async Task SeedLevyTaxAreaAssocsAsync(SqlConnection pacs, CancellationToken ct)
+    private async Task<int> SeedLevyTaxAreaAssocsAsync(SqlConnection pacs, CancellationToken ct)
     {
         _logger.LogInformation("[PacsSeeder] Seeding PacsLevyTaxAreaAssocs from tax_area_fund_assoc...");
 
         const string sql =
             "SELECT tafa.year, tafa.tax_district_id, tafa.levy_cd, " +
-            "       tafa.tax_area_id, ta.tax_area_number " +
+            "       tafa.tax_area_id, ta.tax_area_number, tafa.fund_id " +
             "FROM tax_area_fund_assoc tafa " +
             "JOIN tax_area ta ON ta.tax_area_id = tafa.tax_area_id " +
-            "WHERE tafa.year >= 2024 " +
             "ORDER BY tafa.year, tafa.tax_area_id, tafa.levy_cd";
 
         var rows = new List<PacsLevyTaxAreaAssoc>();
@@ -368,22 +413,200 @@ public class PacsDataSeeder
         {
             rows.Add(new PacsLevyTaxAreaAssoc
             {
-                Id            = Guid.NewGuid(),
-                Year          = rdr.GetInt16(0),
-                TaxDistrictId = rdr.GetInt32(1),
-                LevyCd        = rdr.GetString(2).Trim(),
-                TaxAreaId     = rdr.GetInt32(3),
-                TaxAreaNumber = rdr.IsDBNull(4) ? null : rdr.GetString(4).Trim(),
-                CreatedAt     = DateTime.UtcNow,
-                UpdatedAt     = DateTime.UtcNow
+                Id = Guid.NewGuid(),
+                Year = Int(rdr, "year") ?? 0,
+                TaxDistrictId = Int(rdr, "tax_district_id") ?? 0,
+                LevyCd = Str(rdr, "levy_cd") ?? string.Empty,
+                TaxAreaId = Int(rdr, "tax_area_id") ?? 0,
+                TaxAreaNumber = Str(rdr, "tax_area_number"),
+                FundId = Int(rdr, "fund_id"),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             });
         }
 
-        _db.PacsLevyTaxAreaAssocs.RemoveRange(_db.PacsLevyTaxAreaAssocs);
-        await _db.SaveChangesAsync(ct);
+        await _db.PacsLevyTaxAreaAssocs.ExecuteDeleteAsync(ct);
         await _db.PacsLevyTaxAreaAssocs.AddRangeAsync(rows, ct);
         await _db.SaveChangesAsync(ct);
         _logger.LogInformation("[PacsSeeder] PacsLevyTaxAreaAssocs seeded: {Count} rows.", rows.Count);
+        return rows.Count;
+    }
+
+    private async Task<int> SeedLevyCertificationDataAsync(SqlConnection pacs, CancellationToken ct)
+    {
+        _logger.LogInformation("[PacsSeeder] Seeding PacsLevyCertificationData from __levy_cert_levy_data_limit_yr...");
+
+        const string sql = @"
+            SELECT levy_cert_run_id, year, tax_district_id, tax_district_name,
+                   levy_cd, levy_description, levy_type_cd, levy_type_desc,
+                   voted, timber_assessed_full, timber_assessed_half, timber_assessed_roll,
+                   budget_amount, tax_base, levy_rate, outstanding_item_cnt
+            FROM dbo.[__levy_cert_levy_data_limit_yr]
+            ORDER BY year, tax_district_id, levy_cd";
+
+        var rows = new List<PacsLevyCertificationData>();
+        await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 240 };
+        await using var rdr = await cmd.ExecuteReaderAsync(ct);
+        while (await rdr.ReadAsync(ct))
+        {
+            rows.Add(new PacsLevyCertificationData
+            {
+                Id = Guid.NewGuid(),
+                LevyCertRunId = Int(rdr, "levy_cert_run_id") ?? 0,
+                Year = Int(rdr, "year") ?? 0,
+                TaxDistrictId = Int(rdr, "tax_district_id") ?? 0,
+                TaxDistrictName = Str(rdr, "tax_district_name"),
+                LevyCd = Str(rdr, "levy_cd") ?? string.Empty,
+                LevyDescription = Str(rdr, "levy_description"),
+                LevyTypeCd = Str(rdr, "levy_type_cd"),
+                LevyTypeDescription = Str(rdr, "levy_type_desc"),
+                Voted = Bool(rdr, "voted") ?? false,
+                TimberAssessedFull = Dec(rdr, "timber_assessed_full"),
+                TimberAssessedHalf = Dec(rdr, "timber_assessed_half"),
+                TimberAssessedRoll = Dec(rdr, "timber_assessed_roll"),
+                BudgetAmount = Dec(rdr, "budget_amount"),
+                TaxBase = Dec(rdr, "tax_base"),
+                LevyRate = Dec(rdr, "levy_rate"),
+                OutstandingItemCount = Int(rdr, "outstanding_item_cnt"),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            });
+        }
+
+        await _db.PacsLevyCertificationData.ExecuteDeleteAsync(ct);
+        await _db.PacsLevyCertificationData.AddRangeAsync(rows, ct);
+        await _db.SaveChangesAsync(ct);
+        _logger.LogInformation("[PacsSeeder] PacsLevyCertificationData seeded: {Count} rows.", rows.Count);
+        return rows.Count;
+    }
+
+    private async Task<int> SeedLevyCertificationHighestLawfulAsync(SqlConnection pacs, CancellationToken ct)
+    {
+        _logger.LogInformation("[PacsSeeder] Seeding PacsLevyCertificationHighestLawful from __levy_cert_highest_lawful_limit_yr...");
+
+        const string sql = @"
+            SELECT levy_cert_run_id, year, tax_district_id, levy_cd, levy_year, highest_lawful_levy
+            FROM dbo.[__levy_cert_highest_lawful_limit_yr]
+            ORDER BY year, tax_district_id, levy_cd, levy_year";
+
+        var rawRows = new List<PacsLevyCertificationHighestLawful>();
+        await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 240 };
+        await using var rdr = await cmd.ExecuteReaderAsync(ct);
+        while (await rdr.ReadAsync(ct))
+        {
+            rawRows.Add(new PacsLevyCertificationHighestLawful
+            {
+                Id = Guid.NewGuid(),
+                LevyCertRunId = Int(rdr, "levy_cert_run_id") ?? 0,
+                Year = Int(rdr, "year") ?? 0,
+                TaxDistrictId = Int(rdr, "tax_district_id") ?? 0,
+                LevyCd = Str(rdr, "levy_cd") ?? string.Empty,
+                LevyYear = Int(rdr, "levy_year") ?? 0,
+                HighestLawfulLevy = Dec(rdr, "highest_lawful_levy") ?? 0m,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            });
+        }
+
+        var rows = rawRows
+            .GroupBy(x => new { x.Year, x.TaxDistrictId, x.LevyCd, x.LevyYear })
+            .Select(g =>
+            {
+                var best = g.OrderByDescending(x => x.HighestLawfulLevy).First();
+                best.Id = Guid.NewGuid();
+                return best;
+            })
+            .ToList();
+
+        await _db.PacsLevyCertificationHighestLawful.ExecuteDeleteAsync(ct);
+        await _db.PacsLevyCertificationHighestLawful.AddRangeAsync(rows, ct);
+        await _db.SaveChangesAsync(ct);
+        _logger.LogInformation(
+            "[PacsSeeder] PacsLevyCertificationHighestLawful seeded: {Count} rows ({Duplicates} duplicates collapsed).",
+            rows.Count,
+            rawRows.Count - rows.Count);
+        return rows.Count;
+    }
+
+    private async Task<int> SeedLevyCertificationConstLimitsAsync(SqlConnection pacs, CancellationToken ct)
+    {
+        _logger.LogInformation("[PacsSeeder] Seeding PacsLevyCertificationConstitutionalLimits from __levy_cert_const_limit_yr...");
+
+        const string sql = @"
+            SELECT levy_cert_run_id, year, tax_district_id, levy_cd, status,
+                   original_levy_rate, levy_reduction, final_levy_rate,
+                   original_senior_levy_rate, senior_levy_reduction, final_senior_levy_rate
+            FROM dbo.[__levy_cert_const_limit_yr]
+            ORDER BY year, tax_district_id, levy_cd";
+
+        var rows = new List<PacsLevyCertificationConstitutionalLimit>();
+        await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 240 };
+        await using var rdr = await cmd.ExecuteReaderAsync(ct);
+        while (await rdr.ReadAsync(ct))
+        {
+            rows.Add(new PacsLevyCertificationConstitutionalLimit
+            {
+                Id = Guid.NewGuid(),
+                LevyCertRunId = Int(rdr, "levy_cert_run_id") ?? 0,
+                Year = Int(rdr, "year") ?? 0,
+                TaxDistrictId = Int(rdr, "tax_district_id") ?? 0,
+                LevyCd = Str(rdr, "levy_cd") ?? string.Empty,
+                Status = Bool(rdr, "status") ?? false,
+                OriginalLevyRate = Dec(rdr, "original_levy_rate"),
+                LevyReduction = Dec(rdr, "levy_reduction"),
+                FinalLevyRate = Dec(rdr, "final_levy_rate"),
+                OriginalSeniorLevyRate = Dec(rdr, "original_senior_levy_rate"),
+                SeniorLevyReduction = Dec(rdr, "senior_levy_reduction"),
+                FinalSeniorLevyRate = Dec(rdr, "final_senior_levy_rate"),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            });
+        }
+
+        await _db.PacsLevyCertificationConstitutionalLimits.ExecuteDeleteAsync(ct);
+        await _db.PacsLevyCertificationConstitutionalLimits.AddRangeAsync(rows, ct);
+        await _db.SaveChangesAsync(ct);
+        _logger.LogInformation("[PacsSeeder] PacsLevyCertificationConstitutionalLimits seeded: {Count} rows.", rows.Count);
+        return rows.Count;
+    }
+
+    private async Task<int> SeedLevyCertificationAggLimitsAsync(SqlConnection pacs, CancellationToken ct)
+    {
+        _logger.LogInformation("[PacsSeeder] Seeding PacsLevyCertificationAggregateLimits from __levy_cert_agg_limit_yr...");
+
+        const string sql = @"
+            SELECT levy_cert_run_id, year, tax_area_id, tax_area_number, tax_area_description,
+                   status, original_levy_rate, levy_reduction, final_levy_rate
+            FROM dbo.[__levy_cert_agg_limit_yr]
+            ORDER BY year, tax_area_id";
+
+        var rows = new List<PacsLevyCertificationAggregateLimit>();
+        await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 240 };
+        await using var rdr = await cmd.ExecuteReaderAsync(ct);
+        while (await rdr.ReadAsync(ct))
+        {
+            rows.Add(new PacsLevyCertificationAggregateLimit
+            {
+                Id = Guid.NewGuid(),
+                LevyCertRunId = Int(rdr, "levy_cert_run_id") ?? 0,
+                Year = Int(rdr, "year") ?? 0,
+                TaxAreaId = Int(rdr, "tax_area_id") ?? 0,
+                TaxAreaNumber = Str(rdr, "tax_area_number"),
+                TaxAreaDescription = Str(rdr, "tax_area_description"),
+                Status = Int(rdr, "status") ?? 0,
+                OriginalLevyRate = Dec(rdr, "original_levy_rate"),
+                LevyReduction = Dec(rdr, "levy_reduction"),
+                FinalLevyRate = Dec(rdr, "final_levy_rate"),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            });
+        }
+
+        await _db.PacsLevyCertificationAggregateLimits.ExecuteDeleteAsync(ct);
+        await _db.PacsLevyCertificationAggregateLimits.AddRangeAsync(rows, ct);
+        await _db.SaveChangesAsync(ct);
+        _logger.LogInformation("[PacsSeeder] PacsLevyCertificationAggregateLimits seeded: {Count} rows.", rows.Count);
+        return rows.Count;
     }
 
     // ── Clear PACS tables (full-refresh) ─────────────────────────────────
@@ -396,6 +619,8 @@ public class PacsDataSeeder
         // Postgres TRUNCATE is far faster than DELETE and avoids FK ordering issues.
         const string truncateSql = @"
             TRUNCATE TABLE
+                pacs_levy_cert_agg_limits, pacs_levy_cert_const_limits, pacs_levy_cert_highest_lawful, pacs_levy_cert_data,
+                pacs_levy_tax_area_assocs, pacs_levy_rates,
                 pacs_tax_area_assocs, pacs_tax_areas, pacs_appeals, pacs_exemptions, pacs_sales,
                 pacs_owner_vals, pacs_owners, pacs_land_details,
                 pacs_improvement_attributes, pacs_improvement_details, pacs_improvements,
@@ -411,6 +636,12 @@ public class PacsDataSeeder
             // Fallback: individual DELETEs with FK-safe order
             var deleteStatements = new[]
             {
+                ("pacs_levy_cert_agg_limits", "DELETE FROM \"pacs_levy_cert_agg_limits\""),
+                ("pacs_levy_cert_const_limits", "DELETE FROM \"pacs_levy_cert_const_limits\""),
+                ("pacs_levy_cert_highest_lawful", "DELETE FROM \"pacs_levy_cert_highest_lawful\""),
+                ("pacs_levy_cert_data", "DELETE FROM \"pacs_levy_cert_data\""),
+                ("pacs_levy_tax_area_assocs", "DELETE FROM \"pacs_levy_tax_area_assocs\""),
+                ("pacs_levy_rates", "DELETE FROM \"pacs_levy_rates\""),
                 ("pacs_tax_area_assocs", "DELETE FROM \"pacs_tax_area_assocs\""),
                 ("pacs_tax_areas", "DELETE FROM \"pacs_tax_areas\""),
                 ("pacs_appeals", "DELETE FROM \"pacs_appeals\""),
@@ -438,6 +669,28 @@ public class PacsDataSeeder
                     _logger.LogWarning("[PacsSeeder] Could not clear {Table}: {Msg}", tbl, inner.Message);
                 }
             }
+        }
+    }
+
+    private async Task EnsureLevyMirrorSchemaAsync(CancellationToken ct)
+    {
+        if (!string.Equals(_db.Database.ProviderName, "Npgsql.EntityFrameworkCore.PostgreSQL", StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        var alterStatements = new[]
+        {
+            "ALTER TABLE pacs_levy_rates ADD COLUMN IF NOT EXISTS \"EndYear\" integer NULL;",
+            "ALTER TABLE pacs_levy_rates ADD COLUMN IF NOT EXISTS \"PrimaryFundNumber\" integer NULL;",
+            "ALTER TABLE pacs_levy_rates ADD COLUMN IF NOT EXISTS \"VotedLevyAmount\" numeric(18,2) NULL;",
+            "ALTER TABLE pacs_levy_rates ADD COLUMN IF NOT EXISTS \"VotedLevyRate\" numeric(14,10) NULL;",
+            "ALTER TABLE pacs_levy_tax_area_assocs ADD COLUMN IF NOT EXISTS \"FundId\" integer NULL;"
+        };
+
+        foreach (var sql in alterStatements)
+        {
+            await _db.Database.ExecuteSqlRawAsync(sql, ct);
         }
     }
 
@@ -2476,12 +2729,20 @@ public sealed record PacsSeederResult
     public int TaxAreas               { get; set; }
     public int TaxAreaAssocs          { get; set; }
     public int PropertyProfiles        { get; set; }
+    public int LevyRates              { get; set; }
+    public int LevyTaxAreaMirror      { get; set; }
+    public int LevyCertificationData { get; set; }
+    public int LevyCertificationHighestLawful { get; set; }
+    public int LevyCertificationConstLimits { get; set; }
+    public int LevyCertificationAggLimits { get; set; }
 
     // Phase 7: canonical entity counts (populated by PacsCanonicalizer)
     public int CanonicalProperties         { get; set; }
     public int CanonicalValuationRecords   { get; set; }
     public int CanonicalComparableSales    { get; set; }
     public int CanonicalCamaCharacteristics { get; set; }
+    public int CanonicalTaxLevies { get; set; }
+    public int CanonicalLevyCertifications { get; set; }
 
     public override string ToString() =>
         $"Parcels={Parcels} Situs={Situs} Vals={Valuations} " +
@@ -2489,6 +2750,9 @@ public sealed record PacsSeederResult
         $"Land={LandDetails} Owners={Owners} OwnerVals={OwnerVals} Sales={Sales} " +
         $"Exemptions={Exemptions} Appeals={Appeals} TaxAreas={TaxAreas} " +
         $"TaxAreaAssocs={TaxAreaAssocs} Profiles={PropertyProfiles} " +
+        $"LevyRates={LevyRates} LevyAreas={LevyTaxAreaMirror} LevyCertData={LevyCertificationData} " +
+        $"LevyHighestLawful={LevyCertificationHighestLawful} LevyConst={LevyCertificationConstLimits} LevyAgg={LevyCertificationAggLimits} " +
         $"[Canonical] Props={CanonicalProperties} Vals={CanonicalValuationRecords} " +
-        $"Sales={CanonicalComparableSales} Cama={CanonicalCamaCharacteristics}";
+        $"Sales={CanonicalComparableSales} Cama={CanonicalCamaCharacteristics} " +
+        $"TaxLevies={CanonicalTaxLevies} LevyCerts={CanonicalLevyCertifications}";
 }

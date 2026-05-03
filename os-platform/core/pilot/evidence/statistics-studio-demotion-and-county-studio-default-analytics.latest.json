@@ -1,0 +1,55 @@
+{
+  "checkedAt": "2026-04-30T20:31:02.828Z",
+  "slice": "statistics-studio-demotion-and-county-studio-default-analytics",
+  "status": "PASS",
+  "decision": "COUNTY_STUDIO_DEFAULT_ANALYTICS_STATISTICS_STUDIO_SHELL_RETIRED",
+  "checks": [
+    {
+      "id": "generic-statistics-aliases-route-to-county-studio",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/config/moduleComponents.tsx:61",
+        "frontend/apps/os-shell/src/config/moduleComponents.tsx:62"
+      ],
+      "note": "Normal analytics aliases now open County Studio instead of the standalone Statistics Studio shell."
+    },
+    {
+      "id": "canonical-statistics-studio-now-resolves-to-county-studio",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/config/moduleComponents.tsx:63"
+      ],
+      "note": "The legacy Statistics Studio id now resolves into County Studio instead of launching a separate shell."
+    },
+    {
+      "id": "forge-suite-does-not-list-statistics-studio",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx"
+      ],
+      "note": "Statistics Studio is no longer shown as a Forge suite card."
+    },
+    {
+      "id": "county-studio-is-default-analytics-workbench",
+      "passed": true,
+      "proof": [
+        "frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx:596",
+        "frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx:601"
+      ],
+      "note": "Forge now presents County Studio as the normal study-anchored analytics path."
+    },
+    {
+      "id": "retirement-gap-audit-supports-full-shell-retirement",
+      "passed": true,
+      "proof": [
+        "os-platform/core/pilot/evidence/statistics-studio-retirement-gap-audit.latest.json"
+      ],
+      "note": "The audit now supports full shell retirement: analytics and VEI exploration are covered by County Studio."
+    }
+  ],
+  "failures": [],
+  "nextClosure": [
+    "Keep shared statistics panels in place; County Studio imports them as native workbench capabilities.",
+    "Treat StatisticsStudio.tsx source removal as a separate import-graph cleanup, not a product-gate blocker."
+  ]
+}

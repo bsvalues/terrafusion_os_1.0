@@ -11,10 +11,8 @@ using TerraFusion.Abstractions.Interfaces;
 namespace TerraFusion.API.Services
 {
   /// <summary>
-  /// 🏛️ TerraFusion Elite Government Compliance Service - TIER 3 Championship Excellence
-  /// Complete FISMA, WCAG 2.1 AA, and Washington State multi-county deployment certification
-  /// Supporting 50,000+ AI agents with government-grade security and autonomous compliance validation
-  /// "Government. Transcended." - Infinite scale compliance for championship-level operations
+  /// Government compliance evidence service.
+  /// Missing governed evidence must fail closed instead of producing certification claims.
   /// </summary>
   public class GovernmentComplianceService : BackgroundService, IGovernmentComplianceService
   {
@@ -22,29 +20,29 @@ namespace TerraFusion.API.Services
     private readonly IConfiguration _configuration;
     private readonly IServiceScopeFactory _scopeFactory;
 
-    // 🎯 TIER 3 Compliance Monitoring Infrastructure
+    // Compliance monitoring infrastructure
     private readonly ConcurrentDictionary<string, ComplianceStatus> _complianceStatusCache;
     private readonly ConcurrentDictionary<string, DateTime> _lastComplianceCheck;
     private readonly ConcurrentQueue<ComplianceViolation> _violationQueue;
     private readonly Timer _complianceMonitorTimer;
     private readonly SemaphoreSlim _complianceSemaphore;
 
-    // 🔒 FISMA Compliance Components
+    // FISMA compliance components
     private readonly ConcurrentDictionary<string, SecurityControl> _fismaControls;
     private readonly ConcurrentDictionary<string, AuditTrail> _auditTrails;
 
-    // ♿ WCAG 2.1 AA Accessibility Compliance
+    // WCAG 2.1 AA accessibility compliance
     private readonly ConcurrentDictionary<string, AccessibilityStatus> _wcagCompliance;
 
-    // 🏛️ Washington State Multi-County Compliance
+    // Washington State multi-county compliance
     private readonly ConcurrentDictionary<string, CountyComplianceStatus> _countyCompliance;
     private readonly List<string> _washingtonStateCounties;
 
-    // 📊 Real-time Compliance Metrics
+    // Compliance metrics
     private static readonly ActivitySource ActivitySource = new("TerraFusion.Compliance");
     private readonly ConcurrentDictionary<string, long> _complianceMetrics;
 
-    // ⚡ AI Agent Compliance for 50,000+ Agents
+    // AI-agent compliance evidence collected by governed audits.
     private readonly ConcurrentDictionary<string, AgentComplianceStatus> _agentCompliance;
 
     public GovernmentComplianceService(
@@ -56,7 +54,7 @@ namespace TerraFusion.API.Services
       _configuration = configuration;
       _scopeFactory = scopeFactory;
 
-      // Initialize TIER 3 compliance infrastructure
+      // Initialize compliance infrastructure
       _complianceStatusCache = new ConcurrentDictionary<string, ComplianceStatus>();
       _lastComplianceCheck = new ConcurrentDictionary<string, DateTime>();
       _violationQueue = new ConcurrentQueue<ComplianceViolation>();
@@ -93,13 +91,12 @@ namespace TerraFusion.API.Services
       // Initialize county compliance baselines
       InitializeCountyCompliance();
 
-      _logger.LogInformation("🏛️ TerraFusion Elite Government Compliance Service initialized - TIER 3 Championship Excellence. Counties: {CountyCount}, FISMA Controls: {FISMACount}",
+      _logger.LogInformation("Government compliance service initialized. Counties configured: {CountyCount}, FISMA controls loaded: {FISMACount}",
           _washingtonStateCounties.Count, _fismaControls.Count);
     }
 
     /// <summary>
-    /// 🎯 TIER 3 Real-Time Compliance Validation
-    /// Comprehensive validation across all government standards with championship performance
+    /// Evidence-backed compliance validation across configured government standards.
     /// </summary>
   public async Task<GovernmentComplianceResult> ValidateComplianceAsync(string component, string operation)
     {
@@ -150,7 +147,7 @@ namespace TerraFusion.API.Services
           result.OverallCompliant = false;
         }
 
-        // AI Agent Compliance for 50,000+ Agents
+        // AI-agent compliance evidence
         var agentResult = await ValidateAIAgentComplianceAsync(component, operation);
         result.AIAgentCompliant = agentResult.IsCompliant;
         result.AIAgentScore = agentResult.ComplianceScore;
@@ -263,8 +260,19 @@ namespace TerraFusion.API.Services
         // System and Communications Protection (SC) Family
         await ValidateSystemCommunicationsProtectionCompliance(component, operation, result);
 
-        // Calculate FISMA compliance score
         var totalControls = _fismaControls.Count;
+        if (totalControls == 0)
+        {
+          MarkEvidenceUnavailable(
+            result,
+            component,
+            operation,
+            "FISMA_EVIDENCE_UNAVAILABLE",
+            "No governed FISMA control evidence is loaded.");
+          return result;
+        }
+
+        // Calculate FISMA compliance score
         var compliantControls = _fismaControls.Values.Count(c => c.IsCompliant);
         result.ComplianceScore = totalControls > 0 ? (double)compliantControls / totalControls : 1.0;
         result.IsCompliant = result.ComplianceScore >= 0.95; // 95% compliance threshold
@@ -307,8 +315,19 @@ namespace TerraFusion.API.Services
         // Principle 4: Robust
         await ValidateRobustCompliance(component, operation, result);
 
-        // Calculate WCAG compliance score
         var totalCriteria = _wcagCompliance.Count;
+        if (totalCriteria == 0)
+        {
+          MarkEvidenceUnavailable(
+            result,
+            component,
+            operation,
+            "WCAG_EVIDENCE_UNAVAILABLE",
+            "No governed WCAG accessibility evidence is loaded.");
+          return result;
+        }
+
+        // Calculate WCAG compliance score
         var compliantCriteria = _wcagCompliance.Values.Count(c => c.IsCompliant);
         result.ComplianceScore = totalCriteria > 0 ? (double)compliantCriteria / totalCriteria : 1.0;
         result.IsCompliant = result.ComplianceScore >= 1.0; // 100% compliance required for AA level
@@ -339,6 +358,17 @@ namespace TerraFusion.API.Services
 
       try
       {
+        if (_countyCompliance.IsEmpty)
+        {
+          MarkEvidenceUnavailable(
+            result,
+            component,
+            operation,
+            "COUNTY_EVIDENCE_UNAVAILABLE",
+            "No county accreditation or compliance evidence is loaded.");
+          return result;
+        }
+
         foreach (var county in _washingtonStateCounties)
         {
           var countyKey = $"{county}_{component}";
@@ -374,8 +404,7 @@ namespace TerraFusion.API.Services
     }
 
     /// <summary>
-    /// 🤖 AI Agent Compliance Validation for 50,000+ Agents
-    /// Specialized compliance for massive AI agent swarms
+    /// AI-agent compliance validation from governed audit evidence.
     /// </summary>
     private async Task<DetailedComplianceResult> ValidateAIAgentComplianceAsync(string component, string operation)
     {
@@ -400,8 +429,19 @@ namespace TerraFusion.API.Services
         // AI Performance and Bias Monitoring
         await ValidateAIPerformanceBiasCompliance(component, operation, result);
 
-        // Calculate AI agent compliance score
         var totalAgentChecks = _agentCompliance.Count;
+        if (totalAgentChecks == 0)
+        {
+          MarkEvidenceUnavailable(
+            result,
+            component,
+            operation,
+            "AI_AGENT_EVIDENCE_UNAVAILABLE",
+            "No governed AI-agent compliance audit evidence is loaded.");
+          return result;
+        }
+
+        // Calculate AI agent compliance score
         var compliantAgentChecks = _agentCompliance.Values.Count(c => c.IsCompliant);
         result.ComplianceScore = totalAgentChecks > 0 ? (double)compliantAgentChecks / totalAgentChecks : 1.0;
         result.IsCompliant = result.ComplianceScore >= 0.99; // 99% compliance threshold for AI agents
@@ -417,9 +457,28 @@ namespace TerraFusion.API.Services
       }
     }
 
-    // ... (Additional compliance validation methods will be implemented)
-    // Due to length constraints, I'll provide the core structure and key methods
-    // The full implementation would include all detailed validation methods
+    private static void MarkEvidenceUnavailable(
+      DetailedComplianceResult result,
+      string component,
+      string operation,
+      string type,
+      string description)
+    {
+      result.IsCompliant = false;
+      result.ComplianceScore = 0.0;
+      result.Violations.Add(new ComplianceViolation
+      {
+        Type = type,
+        Component = component,
+        Operation = operation,
+        Severity = ViolationSeverity.Critical,
+        Description = description,
+        Recommendation = "Load governed compliance evidence before reporting this lane as compliant."
+      });
+    }
+
+    // Additional compliance validation methods are intentionally fail-closed until
+    // governed evidence sources are wired into the service.
 
     /// <summary>
     /// 📊 Calculate Overall Compliance Score
@@ -559,31 +618,38 @@ namespace TerraFusion.API.Services
     private async Task ValidatePublicRecordsCompliance(string county, string component, string operation, DetailedComplianceResult result) { await Task.CompletedTask; }
     private async Task ValidateOpenGovernmentCompliance(string county, string component, string operation, DetailedComplianceResult result) { await Task.CompletedTask; }
     /// <summary>
-    /// Enhanced County-Specific Compliance Validation - Fixed Elite Implementation
+    /// County-specific compliance validation must be backed by governed evidence.
     /// </summary>
     private async Task ValidateCountySpecificCompliance(string county, string component, string operation, DetailedComplianceResult result)
     {
         var countyKey = $"{county}_{component}_{operation}";
-
-        // Elite compliance validation - ensure proper county status tracking
-        var countyStatus = new CountyComplianceStatus
+        if (!_countyCompliance.TryGetValue(countyKey, out var countyStatus))
         {
-            County = county,
-            Component = component,
-            IsCompliant = true, // Elite system assumes baseline compliance
-            ComplianceScore = 1.0, // 100% compliance for elite systems
-            LastValidated = DateTime.UtcNow,
-            Requirements = new List<string> { "TIER_3_GOVERNMENT_GRADE", "WASHINGTON_STATE_COMPLIANT" }
-        };
-
-        // Update county compliance tracking to fix 75% scoring issue
-        _countyCompliance.AddOrUpdate(countyKey, countyStatus, (key, existing) =>
+            result.IsCompliant = false;
+            result.ComplianceScore = 0.0;
+            result.Violations.Add(new ComplianceViolation
+            {
+                Type = "COUNTY_REQUIREMENT_EVIDENCE_UNAVAILABLE",
+                Component = component,
+                Operation = operation,
+                Severity = ViolationSeverity.High,
+                Description = $"No governed county compliance evidence is loaded for {county}.",
+                Recommendation = "Load county accreditation evidence before reporting county compliance."
+            });
+        }
+        else if (!countyStatus.IsCompliant)
         {
-            existing.LastValidated = DateTime.UtcNow;
-            existing.IsCompliant = true; // Elite systems maintain compliance
-            existing.ComplianceScore = 1.0; // Maintain 100% score
-            return existing;
-        });
+            result.IsCompliant = false;
+            result.Violations.Add(new ComplianceViolation
+            {
+                Type = "COUNTY_REQUIREMENT_NON_COMPLIANT",
+                Component = component,
+                Operation = operation,
+                Severity = ViolationSeverity.High,
+                Description = $"{county} compliance evidence reports a non-compliant state.",
+                Recommendation = "Review county compliance evidence and remediation requirements."
+            });
+        }
 
         await Task.CompletedTask;
     }

@@ -2,7 +2,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  * 🤖 TerraFusion AI Health Status Chip
  * Phase 15.3: OS Surface Integration - Real-time AI subsystem health indicator
- * Government. Transcended.
+ * Evidence-gated AI health surface.
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 

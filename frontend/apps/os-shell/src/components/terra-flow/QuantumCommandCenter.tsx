@@ -1,9 +1,9 @@
 /**
  * TerraFlow Quantum Command Center - Main Component
  *
- * The central hub for PhD-level AI operations and analytics.
+ * Experimental analytics workbench with governed county assistant telemetry.
  * Provides unified access to:
- * - 3D AI Swarm Visualization (50,000 agents)
+ * - 3D agent visualization shell
  * - Analytics Workbench (Jupyter-style notebooks)
  * - AI Workflow Designer (visual programming)
  * - Statistical Analysis Lab (hypothesis testing, causal inference)
@@ -57,7 +57,11 @@ export function QuantumCommandCenter() {
   const {
     agentCount,
     coherence,
-    harmony
+    harmony,
+    isConnected: swarmConnected,
+    isLoading: swarmLoading,
+    error: swarmError,
+    metrics: swarmMetrics
   } = useAgentSwarmStatus();
 
   // Check connection status
@@ -96,7 +100,9 @@ export function QuantumCommandCenter() {
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
                   TerraFlow Quantum Command Center
                 </h1>
-                <p className="text-sm text-slate-400">PhD-Level AI Operations & Analytics Platform</p>
+                <p className="text-sm text-slate-400">
+                  Analytics workbench with governed county assistant telemetry
+                </p>
               </div>
             </div>
 
@@ -113,9 +119,17 @@ export function QuantumCommandCenter() {
               {/* AI Swarm Status */}
               <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 rounded-lg">
                 <Activity className="w-4 h-4 text-cyan-400" />
-                <span className="text-sm font-medium">{agentCount.toLocaleString()} Agents</span>
-                <span className="text-xs text-slate-400">|</span>
-                <span className="text-sm text-green-400">{(coherence * 100).toFixed(1)}% Coherence</span>
+                {swarmConnected ? (
+                  <>
+                    <span className="text-sm font-medium">{agentCount.toLocaleString()} Active Agents</span>
+                    <span className="text-xs text-slate-400">|</span>
+                    <span className="text-sm text-green-400">{(coherence * 100).toFixed(1)}% Consciousness</span>
+                  </>
+                ) : (
+                  <span className="text-sm font-medium text-amber-200">
+                    {swarmLoading ? 'County swarm loading…' : 'County swarm unavailable'}
+                  </span>
+                )}
               </div>
 
               {/* Analytics Status */}
@@ -144,6 +158,31 @@ export function QuantumCommandCenter() {
               <div className="mt-2">
                 <code className="text-xs">cd backend/TerraFusion.QuantumAnalytics && dotnet run</code>
               </div>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {!swarmConnected && (
+          <Alert className="mb-6 border-amber-500/30 bg-amber-500/10 text-amber-50">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Governed county swarm status unavailable</AlertTitle>
+            <AlertDescription>
+              {swarmError ?? 'No authenticated county assistant status route is available for this session.'}
+              <div className="mt-2 text-xs text-amber-100/80">
+                The visualization tab remains a shell and will not invent swarm counts or topology.
+              </div>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {swarmConnected && swarmMetrics && (
+          <Alert className="mb-6 border-cyan-500/30 bg-cyan-500/10 text-cyan-50">
+            <Activity className="h-4 w-4" />
+            <AlertTitle>Governed county swarm status</AlertTitle>
+            <AlertDescription>
+              {swarmMetrics.countyId} county assistant route is live with {swarmMetrics.activeAgents.toLocaleString()} active agents,
+              {` `}{swarmMetrics.swarmActivity.toLowerCase()} activity, {swarmMetrics.responseTimeMs.toFixed(1)} ms response time,
+              and {(harmony * 100).toFixed(1)}% accuracy.
             </AlertDescription>
           </Alert>
         )}

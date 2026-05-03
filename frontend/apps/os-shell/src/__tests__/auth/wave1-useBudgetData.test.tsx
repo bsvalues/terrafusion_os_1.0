@@ -57,12 +57,11 @@ describe('Wave 1 — useBudgetData', () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-    expect(result.current.isSampleData).toBe(false);
     expect(result.current.error).toBeNull();
     expect(result.current.budgetData).toEqual([category]);
   });
 
-  it('falls back to sample provenance when levy endpoints return no category data', async () => {
+  it('returns an explicit live-data gap when levy endpoints return no category data', async () => {
     mockedApiGet
       .mockResolvedValueOnce({ data: { status: 'stub', message: 'summary unavailable' } } as any)
       .mockResolvedValueOnce({ data: { status: 'stub', message: 'scenarios unavailable' } } as any)
@@ -72,8 +71,7 @@ describe('Wave 1 — useBudgetData', () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-    expect(result.current.isSampleData).toBe(true);
     expect(result.current.budgetData).toEqual([]);
-    expect(result.current.error).toBe('Levy budget endpoints returned no category data.');
+    expect(result.current.error).toBe('Live levy budget endpoints returned no certified budget-category data.');
   });
 });

@@ -8,6 +8,11 @@
  * on their own ports. The shell NEVER imports their code — it only loads
  * their URL here.
  *
+ * Fallback: When a service is stopped but has a ShellRoute in the registry,
+ * AppFrame iframes the shell's own route for that module (same-origin).
+ * This bridges the gap until the standalone service ships, with no change
+ * to the window-based UX model.
+ *
  * Wire contract: packages/tf-sdk/src/index.ts
  */
 
@@ -41,16 +46,38 @@ interface AppFrameProps {
   overrideUrl?: string;
 }
 
-/** Reads the backend service registry JSON for app base URLs. */
-async function resolveAppUrl(moduleId: string): Promise<string | null> {
+/** Registry entry shape (relevant fields only). */
+interface RegistryEntry {
+  Url?: string;
+  Status?: string;
+  ShellRoute?: string;
+}
+
+/** Result of resolving a module from the registry. */
+type ResolvedTarget =
+  | { kind: 'url'; url: string }
+  | { kind: 'shellRoute'; url: string }   // same-origin shell route as a full URL
+  | { kind: 'notFound' };
+
+/** Reads the backend service registry and resolves the best launch target. */
+async function resolveTarget(moduleId: string): Promise<ResolvedTarget> {
   try {
     const res = await fetch('/api/service-registry');
-    if (!res.ok) return null;
+    if (!res.ok) return { kind: 'notFound' };
     const registry = await res.json();
-    const entry = registry?.Services?.[moduleId];
-    return entry?.Url ?? null;
+    const entry: RegistryEntry | undefined = registry?.Services?.[moduleId];
+    if (!entry) return { kind: 'notFound' };
+    // If service is running, use its URL.
+    if (entry.Status === 'running' && entry.Url) return { kind: 'url', url: entry.Url };
+    // If stopped but has a shell-native route, iframe it at the same origin.
+    if (entry.ShellRoute) {
+      const shellUrl = `${window.location.origin}${entry.ShellRoute}`;
+      return { kind: 'shellRoute', url: shellUrl };
+    }
+    // Otherwise fall through to error.
+    return { kind: 'notFound' };
   } catch {
-    return null;
+    return { kind: 'notFound' };
   }
 }
 
@@ -60,15 +87,17 @@ export function AppFrame({ moduleId, parcelContext, overrideUrl }: AppFrameProps
   const [errorMsg, setErrorMsg] = useState<string>('');
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Resolve URL from service registry
+  // Resolve launch target from service registry
   useEffect(() => {
     if (overrideUrl) {
       setUrl(overrideUrl);
       return;
     }
-    resolveAppUrl(moduleId).then((resolved) => {
-      if (resolved) {
-        setUrl(resolved);
+    resolveTarget(moduleId).then((target) => {
+      if (target.kind === 'url' || target.kind === 'shellRoute') {
+        // Both cases iframe a URL — either the standalone service or the
+        // shell-native route at the same origin (ShellRoute fallback).
+        setUrl(target.url);
       } else {
         setStatus('error');
         setErrorMsg(

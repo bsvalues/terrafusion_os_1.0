@@ -55,8 +55,14 @@ export class PiltApiError extends Error {
   }
 }
 
+let piltCorrelationSequence = 0;
+
 function createClientCorrelationId(prefix = 'net'): string {
-  return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+  const uuid = globalThis.crypto?.randomUUID?.();
+  if (uuid) return `${prefix}-${uuid}`;
+
+  piltCorrelationSequence = (piltCorrelationSequence + 1) % Number.MAX_SAFE_INTEGER;
+  return `${prefix}-${Date.now().toString(36)}-${piltCorrelationSequence.toString(36)}`;
 }
 
 function readCorrelationId(headerValue: unknown): string | null {

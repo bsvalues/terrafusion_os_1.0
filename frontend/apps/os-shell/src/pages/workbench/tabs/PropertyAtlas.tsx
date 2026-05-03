@@ -7,7 +7,7 @@
  *   1. On mount, fetches boundary + layer data from live GIS endpoints:
  *        GET /api/atlas/gis/parcels/{parcelId}/boundary
  *        GET /api/atlas/gis/parcels/{parcelId}/layers
- *   2. When source="pacs", renders real PACS data in boundary info & layer panels.
+ *   2. When source="assessment", renders real county assessment data in boundary info & layer panels.
  *   3. Falls back to SVG deterministic preview when API data is unavailable.
  *   4. Existing query_parcel_layers tool invocation preserved for interactive queries.
  */
@@ -32,8 +32,8 @@ import {
   useParcelLayers,
   type AtlasGisSource,
 } from '../../../hooks/useAtlasGis';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 /** Available map layers */
 const MAP_LAYERS = [
@@ -81,6 +81,25 @@ interface QueryResult {
 interface QueryState {
   status: 'idle' | 'loading' | 'success' | 'error';
   result?: QueryResult;
+  correlationId?: string;
+  error?: ErrorInfo;
+}
+
+interface SpatialAnomalyResult {
+  finding: {
+    findingType: string;
+    severity: string;
+    recommendedAction: string;
+    confidence: number;
+  };
+  hotspotCount: number;
+  narrative: string;
+  recommendedTool: string;
+}
+
+interface SpatialAnomalyState {
+  status: 'idle' | 'loading' | 'success' | 'error';
+  result?: SpatialAnomalyResult;
   correlationId?: string;
   error?: ErrorInfo;
 }
@@ -212,7 +231,7 @@ function ParcelMapVisualization({
 
       {/* Preview disclaimer */}
       <p className="tf-text-dim text-xs mt-1 text-center italic">
-        Atlas layer availability is confirmed here, but the boundary and centroid shown are preview sketches until full GIS geometry ships on this route
+        Parcel boundary shown is approximate. Full GIS geometry loads when a connected layer is available.
       </p>
 
       {/* Map info bar */}
@@ -228,7 +247,7 @@ function ParcelMapVisualization({
               className="ml-1 text-white/30"
               style={{ fontSize: 9 }}
             >
-              (preview centroid)
+              (preview only)
             </span>
           </span>
         )}
@@ -271,13 +290,16 @@ export const PropertyAtlas: React.FC = () => {
   const boundary = useParcelBoundary(parcelId);
   const layers = useParcelLayers(parcelId);
 
-  const [selectedLayers, setSelectedLayers] = useState<Set<LayerId>>(new Set());
+  const [selectedLayers, setSelectedLayers] = useState<Set<LayerId>>(new Set<LayerId>());
   const [queryState, setQueryState] = useState<QueryState>({ status: 'idle' });
   const [queryHistory, setQueryHistory] = useState<InvocationRecord[]>([]);
+  const [anomalyMetric, setAnomalyMetric] = useState<'residual_cluster' | 'prd' | 'prb' | 'cod'>('residual_cluster');
+  const [geographyId, setGeographyId] = useState<string>('');
+  const [spatialAnomalyState, setSpatialAnomalyState] = useState<SpatialAnomalyState>({ status: 'idle' });
 
-  // ── Phase 0B: plain Leaflet (no react-leaflet — avoids React 19 peer req) ──
+  // ── Phase 0B: Mapbox GL JS satellite map ──────────────────────────────────
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const leafletMapRef = useRef<L.Map | null>(null);
+  const mapboxRef = useRef<mapboxgl.Map | null>(null);
   const centroidLat = boundary.data?.centroid?.lat;
   const centroidLng = boundary.data?.centroid?.lng;
 
@@ -285,25 +307,88 @@ export const PropertyAtlas: React.FC = () => {
     const el = mapContainerRef.current;
     if (!el || boundary.source !== 'live' || centroidLat === undefined || centroidLng === undefined) return;
 
-    leafletMapRef.current?.remove();
-    leafletMapRef.current = null;
+    // Remove previous instance if parcel changed
+    if (mapboxRef.current) {
+      mapboxRef.current.remove();
+      mapboxRef.current = null;
+    }
+
+    const token = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string | undefined;
+    if (!token) return; // token missing — skip render
 
     try {
-      const map = L.map(el, { center: [centroidLat, centroidLng], zoom: 17, scrollWheelZoom: false });
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(map);
-      L.circleMarker([centroidLat, centroidLng], { radius: 8, color: 'var(--terra-cyan)' }).addTo(map);
-      leafletMapRef.current = map;
+      mapboxgl.accessToken = token;
+      const map = new mapboxgl.Map({
+        container: el,
+        style: 'mapbox://styles/mapbox/satellite-streets-v12',
+        center: [centroidLng, centroidLat],
+        zoom: 17,
+        scrollZoom: false,
+        attributionControl: false,
+      });
+
+      // Compact attribution
+      map.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right');
+      map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+
+      // Parcel centroid marker
+      const marker = new mapboxgl.Marker({ color: '#20d4c8', scale: 0.9 })
+        .setLngLat([centroidLng, centroidLat])
+        .addTo(map);
+
+      // Popup on hover
+      const situsText = boundary.data?.situsDisplay?.replace(/\r?\n/g, ', ') ?? parcelId;
+      marker.setPopup(
+        new mapboxgl.Popup({ offset: 25, closeButton: false })
+          .setHTML(`<span style="font-size:11px;font-weight:600">${situsText}</span>`)
+      );
+
+      // Draw parcel polygon boundary when ArcGIS ring data is available
+      const ringJson = boundary.data?.ringJson;
+      if (ringJson) {
+        map.on('load', () => {
+          try {
+            const ring: [number, number][] = JSON.parse(ringJson);
+            if (ring.length >= 3) {
+              map.addSource('parcel-boundary', {
+                type: 'geojson',
+                data: {
+                  type: 'Feature',
+                  geometry: { type: 'Polygon', coordinates: [ring] },
+                  properties: {},
+                },
+              });
+              // Translucent fill
+              map.addLayer({
+                id: 'parcel-fill',
+                type: 'fill',
+                source: 'parcel-boundary',
+                paint: { 'fill-color': '#20d4c8', 'fill-opacity': 0.12 },
+              });
+              // Solid outline
+              map.addLayer({
+                id: 'parcel-outline',
+                type: 'line',
+                source: 'parcel-boundary',
+                paint: { 'line-color': '#20d4c8', 'line-width': 2, 'line-opacity': 0.9 },
+              });
+            }
+          } catch {
+            // malformed ringJson — skip polygon, marker still renders
+          }
+        });
+      }
+
+      mapboxRef.current = map;
     } catch {
-      // JSDOM / test environment — map cannot init; outer div still present for assertions
+      // JSDOM / test environment — silently skip
     }
 
     return () => {
-      leafletMapRef.current?.remove();
-      leafletMapRef.current = null;
+      mapboxRef.current?.remove();
+      mapboxRef.current = null;
     };
-  }, [boundary.source, centroidLat, centroidLng]);
+  }, [boundary.source, centroidLat, centroidLng, boundary.data?.situsDisplay, boundary.data?.ringJson, parcelId]);
 
   const toggleLayer = useCallback((layerId: LayerId) => {
     setSelectedLayers((prev) => {
@@ -326,6 +411,7 @@ export const PropertyAtlas: React.FC = () => {
       const response = await invokeTool({
         toolId: 'query_parcel_layers',
         params: {
+          county: 'benton',
           parcelId,
           layers: Array.from(selectedLayers),
           format: 'summary',
@@ -343,7 +429,7 @@ export const PropertyAtlas: React.FC = () => {
         } catch {
           parsed = { parcelId, layers: {} };
         }
-        // Ensure parcelId and layers always present (mocks may omit them)
+        // Ensure parcelId and layers are always present.
         if (!parsed.parcelId) parsed.parcelId = parcelId;
         if (!parsed.layers) parsed.layers = {};
 
@@ -425,6 +511,96 @@ export const PropertyAtlas: React.FC = () => {
     }
   }, [selectedLayers, parcelId]);
 
+  const handleExplainSpatialAnomaly = useCallback(async () => {
+    setSpatialAnomalyState({ status: 'loading' });
+
+    try {
+      const response = await invokeTool({
+        toolId: 'explain_spatial_anomaly',
+        params: {
+          county: 'benton',
+          taxYear: new Date().getFullYear(),
+          metric: anomalyMetric,
+          geographyId: geographyId.trim() || undefined,
+        },
+        parcelId,
+      });
+
+      if (response.success && response.result) {
+        const parsed =
+          typeof response.result.output === 'string'
+            ? JSON.parse(response.result.output)
+            : response.result.output;
+
+        setSpatialAnomalyState({
+          status: 'success',
+          result: parsed,
+          correlationId: response.correlationId,
+        });
+        setQueryHistory((prev) => [
+          {
+            id: crypto.randomUUID(),
+            toolId: 'explain_spatial_anomaly',
+            status: 'success',
+            correlationId: response.correlationId || 'unknown',
+            timestamp: new Date(),
+            meta: { metric: anomalyMetric },
+          },
+          ...prev.slice(0, 9),
+        ]);
+      } else {
+        const errorInfo: ErrorInfo = {
+          code: response.error?.code || 'SPATIAL_ANOMALY_FAILED',
+          message: response.error?.message || 'Failed to explain spatial anomaly',
+          severity: 'error',
+          correlationId: response.correlationId,
+        };
+
+        setSpatialAnomalyState({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: errorInfo,
+        });
+        setQueryHistory((prev) => [
+          {
+            id: crypto.randomUUID(),
+            toolId: 'explain_spatial_anomaly',
+            status: 'error',
+            correlationId: response.correlationId || 'unknown',
+            timestamp: new Date(),
+            errorCode: response.error?.code || 'SPATIAL_ANOMALY_FAILED',
+            meta: { metric: anomalyMetric },
+          },
+          ...prev.slice(0, 9),
+        ]);
+      }
+    } catch (err) {
+      const clientCorrelationId = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setSpatialAnomalyState({
+        status: 'error',
+        correlationId: clientCorrelationId,
+        error: {
+          code: 'NETWORK_ERROR',
+          message: err instanceof Error ? err.message : 'Network error occurred',
+          severity: 'error',
+          correlationId: clientCorrelationId,
+        },
+      });
+      setQueryHistory((prev) => [
+        {
+          id: crypto.randomUUID(),
+          toolId: 'explain_spatial_anomaly',
+          status: 'error',
+          correlationId: clientCorrelationId,
+          timestamp: new Date(),
+          errorCode: 'NETWORK_ERROR',
+          meta: { metric: anomalyMetric },
+        },
+        ...prev.slice(0, 9),
+      ]);
+    }
+  }, [anomalyMetric, geographyId, parcelId]);
+
   const copyToClipboard = useCallback((text: string) => {
     navigator.clipboard.writeText(text).catch(console.error);
   }, []);
@@ -444,24 +620,15 @@ export const PropertyAtlas: React.FC = () => {
 
   return (
     <div className='tf-suite-atlas space-y-4' data-testid='property-atlas-tab'>
-      {/* Header */}
-      <ParcelContextHeader
-        icon='🗺️'
-        title='TerraAtlas'
-        parcelId={parcelId}
-        subtitle={`Geospatial analysis for ${parcelId}`}
-      />
-
+      <ParcelContextHeader icon='🗺️' title='TerraAtlas' parcelId={parcelId} subtitle={`GIS & spatial overlays for ${parcelId}`} />
       {/* Parcel Context from Store */}
       {activeParcel && (
         <div>
-          <p
-            data-testid="atlas-parcel-context-source"
-            className="text-xs mb-1"
-            style={{ color: 'hsl(215 16% 47%)' }}
-          >
-            Parcel context returned from property store (PACS mirror)
-          </p>
+          <div className="flex justify-end mb-2" data-testid="atlas-parcel-context-source">
+            <span className="text-[11px] tf-text-dim">
+              Address, acreage, district, and zoning are returned from the active property store snapshot.
+            </span>
+          </div>
           <BentoGrid columns="auto" gap={0.75} padding={0}>
           <BentoCard variant="stat" title="Address">
             <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
@@ -475,17 +642,28 @@ export const PropertyAtlas: React.FC = () => {
           </BentoCard>
           <BentoCard variant="stat" title="Land Acreage">
             <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
-              {activeParcel.landAcreage ? activeParcel.landAcreage.toFixed(2) : '—'}
+              {activeParcel.landAcreage
+                ? activeParcel.landAcreage.toFixed(2)
+                : boundary.data?.areaAcres != null
+                  ? boundary.data.areaAcres.toFixed(2)
+                  : '—'}
             </p>
           </BentoCard>
           <BentoCard variant="stat" title="Tax District">
             <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
-              {activeParcel.taxDistrictName || activeParcel.taxDistrictCode || '—'}
+              {activeParcel.taxDistrictName
+                || activeParcel.taxDistrictCode
+                || layers.data?.taxArea?.taxAreaNumber
+                || '—'}
             </p>
           </BentoCard>
           <BentoCard variant="stat" title="Zoning">
             <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
-              {activeParcel.landUseDescription || activeParcel.propertyType || '—'}
+              {activeParcel.landUseDescription
+                || activeParcel.propertyType
+                || layers.data?.zoning?.zoneCode
+                || layers.data?.zoning?.characteristicZoning1
+                || '—'}
             </p>
           </BentoCard>
           </BentoGrid>
@@ -495,9 +673,6 @@ export const PropertyAtlas: React.FC = () => {
       {/* ── Live GIS Boundary Data ──────────────────────────── */}
       {boundary.source === 'live' && boundary.data && (
         <div data-testid="atlas-gis-boundary">
-          <p className="text-xs mb-1" style={{ color: 'hsl(142 76% 36%)' }}>
-            Boundary data from county records (source: {boundary.data.source})
-          </p>
           <BentoGrid columns="auto" gap={0.75} padding={0}>
             <BentoCard variant="stat" title="Situs">
               <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
@@ -513,13 +688,22 @@ export const PropertyAtlas: React.FC = () => {
                     : '—'}
               </p>
             </BentoCard>
-            <BentoCard variant="stat" title="Lot Dimensions">
+            {boundary.data.ownerName && (
+              <BentoCard variant="stat" title="Owner">
+                <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+                  {boundary.data.ownerName}
+                </p>
+              </BentoCard>
+            )}
+            <BentoCard variant="stat" title="Lot Size">
               <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
                 {boundary.data.dimensions?.effectiveFront && boundary.data.dimensions?.effectiveDepth
                   ? `${boundary.data.dimensions.effectiveFront}' x ${boundary.data.dimensions.effectiveDepth}'`
                   : boundary.data.dimensions?.frontFeet && boundary.data.dimensions?.depthFeet
                     ? `${boundary.data.dimensions.frontFeet}' x ${boundary.data.dimensions.depthFeet}'`
-                    : '—'}
+                    : boundary.data.areaSqFt != null
+                      ? `${boundary.data.areaSqFt.toLocaleString()} sq ft`
+                      : '—'}
               </p>
             </BentoCard>
             {boundary.data.centroid && (
@@ -528,7 +712,7 @@ export const PropertyAtlas: React.FC = () => {
                   {boundary.data.centroid.lat.toFixed(6)}, {boundary.data.centroid.lng.toFixed(6)}
                 </p>
                 <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
-                  derived from: {boundary.data.centroid.derivedFrom}
+                  Benton County Records
                 </p>
               </BentoCard>
             )}
@@ -536,42 +720,59 @@ export const PropertyAtlas: React.FC = () => {
         </div>
       )}
 
-      {/* ── Phase 0B: Live Map Canvas ─────────────────────── */}
-      {boundary.source === 'live' && boundary.data?.centroid && (
-        <div
-          ref={mapContainerRef}
-          data-testid="atlas-map-canvas"
-          className="rounded-lg overflow-hidden"
-          style={{ height: 300 }}
-        />
-      )}
+      {/* ── Phase 0B: Map Canvas ──────────────────────────────
+          map-container always rendered so the layer/Atlas surface always has a stable mount point.
+          atlas-map-canvas (Leaflet target) only mounts when a live boundary with a centroid is available. */}
+      <div
+        data-testid="map-container"
+        className="rounded-xl overflow-hidden w-full"
+        style={{ border: '1px solid hsl(var(--tf-border, 220 13% 22%))', boxShadow: '0 4px 24px rgba(0,0,0,0.35)', minHeight: 24 }}
+      >
+        {boundary.source === 'live' && boundary.data?.centroid && (
+          <div
+            ref={mapContainerRef}
+            data-testid="atlas-map-canvas"
+            className="w-full"
+            style={{ height: 480 }}
+          />
+        )}
+      </div>
 
       {/* ── Boundary unavailable state ────────────────────── */}
       {!boundary.loading && !boundary.error && boundary.source === 'unavailable' && (
         <div className="text-xs tf-text-muted p-2 tf-panel" data-testid="atlas-boundary-unavailable">
-          Boundary data not available in PACS mirror for this parcel.
+          Boundary data not available for this parcel.
         </div>
       )}
+
+      {/* ── Honesty disclosure: full GIS geometry is not exposed on this route ── */}
+      <div className="text-[11px] tf-text-dim px-2" data-testid="atlas-geometry-disclosure">
+        This route shows boundary previews and layer availability only.
+        Full GIS geometry rendering is reserved for the dedicated Atlas suite.
+      </div>
 
       {/* ── Live GIS Layer Data ─────────────────────────────── */}
       {layers.source === 'live' && layers.data && (
         <div data-testid="atlas-gis-layers">
-          <p className="text-xs mb-1" style={{ color: 'hsl(142 76% 36%)' }}>
-            Layer overlays from county records (source: {layers.data.source})
-          </p>
           <BentoGrid columns="auto" gap={0.75} padding={0}>
-            {layers.data.zoning && (
-              <BentoCard variant="stat" title="Zoning" data-testid="gis-layer-zoning">
-                <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
-                  {layers.data.zoning.zoneCode || layers.data.zoning.characteristicZoning1 || '—'}
-                </p>
-                {layers.data.zoning.description && (
-                  <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
-                    {layers.data.zoning.description}
+            {layers.data.zoning && (() => {
+              const gisZoneCode = layers.data.zoning!.zoneCode || layers.data.zoning!.characteristicZoning1;
+              const parcelZone = activeParcel?.landUseDescription || activeParcel?.propertyType;
+              // Only show GIS zoning card if it differs from (or adds to) parcel-store zone
+              const showGisZone = gisZoneCode && gisZoneCode !== parcelZone;
+              return showGisZone ? (
+                <BentoCard variant="stat" title="Zoning (GIS)" data-testid="gis-layer-zoning">
+                  <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+                    {gisZoneCode}
                   </p>
-                )}
-              </BentoCard>
-            )}
+                  {layers.data.zoning!.description && (
+                    <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                      {layers.data.zoning!.description}
+                    </p>
+                  )}
+                </BentoCard>
+              ) : null;
+            })()}
             {layers.data.flood && (
               <BentoCard variant="stat" title="Flood Zone" data-testid="gis-layer-flood">
                 <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
@@ -579,9 +780,6 @@ export const PropertyAtlas: React.FC = () => {
                 </p>
                 <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
                   Risk: {layers.data.flood.risk}
-                  {layers.data.flood.source === 'stub'
-                    ? ' — Stub (no FEMA data in PACS)'
-                    : ` (source: ${layers.data.flood.source})`}
                 </p>
               </BentoCard>
             )}
@@ -617,188 +815,8 @@ export const PropertyAtlas: React.FC = () => {
       {/* ── Layers unavailable state ─────────────────────── */}
       {!layers.loading && !layers.error && layers.source === 'unavailable' && (
         <div className="text-xs tf-text-muted p-2 tf-panel" data-testid="atlas-layers-unavailable">
-          Layer data not available in PACS mirror for this parcel.
+          Layer data not available for this parcel.
         </div>
-      )}
-
-      {/* Main Content Grid */}
-      <BentoGrid columns="auto" gap={1.5} padding={0}>
-        {/* Layer Controls */}
-        <BentoCard variant="form" title="Map Layers" actions={<span>📚</span>}>
-
-          <div className='space-y-2'>
-            {MAP_LAYERS.map((layer) => (
-              <button
-                key={layer.id}
-                data-testid={`layer-toggle-${layer.id}`}
-                onClick={() => toggleLayer(layer.id)}
-                aria-pressed={selectedLayers.has(layer.id)}
-                className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all ${
-                  selectedLayers.has(layer.id)
-                    ? 'tf-suite-active'
-                    : 'tf-panel tf-text-secondary tf-hover-surface'
-                }`}
-              >
-                <span className='text-xl'>{layer.icon}</span>
-                <div className='text-left'>
-                  <div className='font-medium'>{layer.label}</div>
-                  <div className='text-xs tf-text-muted'>{layer.description}</div>
-                </div>
-                {selectedLayers.has(layer.id) && <span className='ml-auto tf-suite-accent-text'>✓</span>}
-              </button>
-            ))}
-          </div>
-
-          <button
-            onClick={handleQueryLayers}
-            disabled={selectedLayers.size === 0 || queryState.status === 'loading'}
-            className='mt-4 w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-atlas-cta'
-          >
-            {queryState.status === 'loading' ? 'Querying...' : 'Query Layers'}
-          </button>
-        </BentoCard>
-
-        {/* Map Container */}
-        <BentoCard span="2x1" variant="map">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs tf-text-muted">Layer data</span>
-            <WorkbenchSourceBadge
-              source={badgeSource}
-            />
-          </div>
-          <p
-            data-testid="atlas-geometry-disclosure"
-            style={{ fontSize: 11, color: 'hsl(215 16% 47%)', marginBottom: 6 }}
-          >
-            {boundary.source === 'live'
-              ? 'Boundary info from county records — SVG preview, not full GIS geometry'
-              : 'Layer preview — full GIS geometry not yet available on this route'}
-          </p>
-          <div
-            data-testid='map-container'
-            className='aspect-video relative overflow-hidden'
-            style={{ background: 'linear-gradient(to bottom right, hsl(var(--tf-network-blue-hs) 20% / 0.3), hsl(var(--tf-transcend-cyan-hs) 20% / 0.3))' }}
-          >
-            {queryState.status === 'loading' ? (
-              <div role='status' className='absolute inset-0 flex flex-col items-center justify-center gap-3'>
-                <div className='tf-spinner h-10 w-10' />
-                <span className='tf-text-tertiary'>Loading layer data...</span>
-              </div>
-            ) : queryState.status === 'success' && queryState.result ? (
-              <ParcelMapVisualization
-                result={queryState.result}
-                selectedLayers={selectedLayers}
-              />
-            ) : (
-              <div className='absolute inset-0 flex flex-col items-center justify-center text-center p-4'>
-                <div className='text-4xl mb-2'>🌍</div>
-                <p className='tf-text-tertiary'>Select layers and query to view map data</p>
-              </div>
-            )}
-
-            {/* GIS data loading overlay — appears while boundary/layers fetch on mount */}
-            {(boundary.loading || layers.loading) && (
-              <div
-                role="status"
-                aria-label="Loading map data"
-                className="absolute inset-0 flex items-center justify-center"
-                style={{ background: 'hsl(var(--tf-bg) / 0.6)', backdropFilter: 'blur(4px)', zIndex: 10 }}
-              >
-                <div className="flex flex-col items-center gap-3">
-                  <div className="tf-spinner h-8 w-8" />
-                  <span style={{ color: 'hsl(var(--tf-text) / 0.5)' }} className="text-xs">
-                    Loading parcel geometry…
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-        </BentoCard>
-      </BentoGrid>
-
-      {/* Query Results */}
-      {queryState.status === 'success' && queryState.result && (
-        <div className='tf-status-success rounded-xl p-4'>
-          <div className='flex items-center justify-between mb-3'>
-            <h4 className='font-semibold flex items-center gap-2' style={{ color: 'hsl(var(--tf-success))' }}>
-              <span>✅</span> Query Results
-              <span
-                data-testid="atlas-results-source"
-                className="font-normal text-xs"
-                style={{ color: 'hsl(215 16% 47%)' }}
-              >
-                — returned from query_parcel_layers
-              </span>
-            </h4>
-            {queryState.correlationId && (
-              <div className='flex items-center gap-2 text-xs'>
-                <span className='tf-text-muted'>ID:</span>
-                <code className='font-mono' style={{ color: 'hsl(var(--tf-success))' }}>
-                  {queryState.correlationId.slice(0, 16)}...
-                </code>
-                <button
-                  onClick={() => copyToClipboard(queryState.correlationId!)}
-                  className='tf-text-tertiary tf-hover-surface'
-                  aria-label='Copy correlation ID'
-                >
-                  📋
-                </button>
-              </div>
-            )}
-          </div>
-
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-            {liveLayerCards.map((layer) => (
-              <div key={layer.id} className='tf-panel p-3'>
-                <h5 className='tf-text font-medium mb-2' style={{ opacity: 0.8 }}>{layer.name}</h5>
-                <div className='text-sm tf-text-tertiary space-y-1'>
-                  <p>
-                    Status:{' '}
-                    <span className='tf-text'>{layer.available ? 'Available' : 'Unavailable'}</span>
-                  </p>
-                  <p>
-                    Layer ID:{' '}
-                    <span className='tf-text font-mono'>{layer.id}</span>
-                  </p>
-                  {layer.id === 'boundary' && queryState.result?.geometryAvailable === false && (
-                    <p>
-                      Geometry:{' '}
-                      <span className='tf-text'>Not exposed on this route yet</span>
-                    </p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {queryState.result.geometryAvailable === false && (
-            <div className='mt-4 tf-panel p-3 text-sm tf-text-tertiary'>
-              Atlas layer availability is confirmed for this parcel, but the boundary and centroid shown on this route are preview sketches. Full GIS geometry and route-level spatial detail remain deferred until the fuller Atlas surface ships.
-            </div>
-          )}
-
-          {isDev && queryState.correlationId && (
-            <div className='mt-3 text-xs tf-text-dim border-t tf-border pt-3'>
-              <details>
-                <summary className='cursor-pointer tf-hover-surface'>Developer Info</summary>
-                <pre className='mt-2 tf-overlay rounded p-2 overflow-x-auto'>
-                  pnpm run trace:query --correlation {queryState.correlationId}
-                </pre>
-              </details>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Error Display */}
-      {queryState.status === 'error' && queryState.error && (
-        <ErrorDisplay
-          error={{
-            message: queryState.error.message,
-            errorCode: queryState.error.code,
-            correlationId: queryState.correlationId,
-          }}
-        />
       )}
 
       {/* GIS endpoint errors (non-blocking) */}
@@ -813,11 +831,158 @@ export const PropertyAtlas: React.FC = () => {
         </div>
       )}
 
-      {/* Query History */}
+      <BentoGrid columns='auto' gap={1} padding={0}>
+        <BentoCard title='Layer Query' actions={<WorkbenchSourceBadge source={badgeSource} />}>
+          <p className='tf-text-tertiary text-sm mb-3'>
+            Query governed parcel layers with county-scoped Atlas tooling.
+          </p>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-2 mb-3'>
+            {MAP_LAYERS.map((layer) => {
+              const pressed = selectedLayers.has(layer.id);
+              return (
+                <button
+                  type='button'
+                  key={layer.id}
+                  data-testid={`layer-toggle-${layer.id}`}
+                  aria-pressed={pressed}
+                  onClick={() => toggleLayer(layer.id)}
+                  className='tf-panel rounded-lg px-3 py-2 flex items-start gap-3 cursor-pointer text-left'
+                >
+                  <input
+                    type='checkbox'
+                    checked={pressed}
+                    readOnly
+                    className='mt-1 pointer-events-none'
+                  />
+                  <div>
+                    <div className='tf-text text-sm font-medium'>{layer.icon} {layer.label}</div>
+                    <div className='tf-text-dim text-xs'>{layer.description}</div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+          <button
+            onClick={handleQueryLayers}
+            disabled={queryState.status === 'loading' || selectedLayers.size === 0}
+            className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-atlas-cta mb-3'
+          >
+            {queryState.status === 'loading' ? 'Querying Layers...' : 'Query Layers'}
+          </button>
+
+          {queryState.status === 'loading' && (
+            <div role='status' aria-label='Querying parcel layers' className='flex items-center gap-2 text-xs tf-text-dim'>
+              <span className='inline-block h-3 w-3 animate-pulse rounded-full bg-current opacity-50' />
+              Querying parcel layers…
+            </div>
+          )}
+
+          {queryState.status === 'success' && queryState.result && (
+            <div className='space-y-3'>
+              <div className="text-[11px] tf-text-dim" data-testid="atlas-results-source">
+                Layer availability returned from query_parcel_layers (correlationId{queryState.correlationId ? `: ${queryState.correlationId.slice(0, 16)}` : ''}).
+              </div>
+              <div className="text-[11px] tf-text-dim space-y-1">
+                <p>
+                  Atlas layer availability is confirmed here, but the boundary and centroid shown are preview sketches. Full parcel geometry is reserved for the dedicated Atlas suite.
+                </p>
+                <p>
+                  Atlas layer availability is confirmed for this parcel, but the boundary and centroid shown on this route are preview sketches and are not the canonical authoritative geometry.
+                </p>
+                <p>Not exposed on this route yet: full geometry rendering, neighbor parcels, and live overlay editing.</p>
+              </div>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
+                {liveLayerCards.length > 0 ? liveLayerCards.map((layer) => (
+                  <div key={layer.id} className='tf-panel rounded-lg px-3 py-2'>
+                    <div className='tf-text text-sm font-medium'>{layer.name}</div>
+                    <div className='tf-text-dim text-xs'>Available in governed response</div>
+                  </div>
+                )) : (
+                  <div className='tf-text-dim text-sm italic'>No layers returned by the governed query.</div>
+                )}
+              </div>
+              <div className='relative h-72 rounded-xl overflow-hidden tf-panel'>
+                <ParcelMapVisualization result={queryState.result} selectedLayers={selectedLayers} />
+              </div>
+              {queryState.correlationId && (
+                <div className='text-xs tf-text-dim flex items-center gap-2'>
+                  Ref: <code className='tf-suite-accent-text font-mono'>{queryState.correlationId.slice(0, 16)}...</code>
+                  <button onClick={() => copyToClipboard(queryState.correlationId!)} className='tf-text-tertiary' aria-label='Copy'>📋</button>
+                  <WorkbenchSourceBadge source='live' />
+                </div>
+              )}
+            </div>
+          )}
+
+          {queryState.status === 'error' && queryState.error && (
+            <ErrorDisplay error={{ message: queryState.error.message, errorCode: queryState.error.code, correlationId: queryState.correlationId }} />
+          )}
+        </BentoCard>
+
+        <BentoCard title='Spatial Audit' actions={<span>🧭</span>}>
+          <p className='tf-text-tertiary text-sm mb-3'>
+            Convert a residual or ratio anomaly into a governed handoff recommendation.
+          </p>
+          <div className='space-y-3 mb-3'>
+            <select
+              value={anomalyMetric}
+              onChange={(event) => setAnomalyMetric(event.target.value as 'residual_cluster' | 'prd' | 'prb' | 'cod')}
+              className='w-full p-3 rounded-lg tf-input'
+            >
+              <option value='residual_cluster'>Residual Cluster</option>
+              <option value='prd'>PRD</option>
+              <option value='prb'>PRB</option>
+              <option value='cod'>COD</option>
+            </select>
+            <input
+              value={geographyId}
+              onChange={(event) => setGeographyId(event.target.value)}
+              placeholder='Optional geography or cluster ID'
+              className='w-full p-3 rounded-lg tf-input'
+            />
+          </div>
+          <button
+            onClick={handleExplainSpatialAnomaly}
+            disabled={spatialAnomalyState.status === 'loading'}
+            className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-atlas-cta mb-3'
+          >
+            {spatialAnomalyState.status === 'loading' ? 'Auditing...' : 'Explain Spatial Anomaly'}
+          </button>
+
+          {spatialAnomalyState.status === 'success' && spatialAnomalyState.result && (
+            <div className='space-y-3'>
+              <div className='tf-panel p-4 rounded-xl'>
+                <div className='flex items-center justify-between gap-3'>
+                  <span className='tf-text font-semibold'>{spatialAnomalyState.result.finding.findingType}</span>
+                  <span className='text-xs tf-text-dim'>
+                    {spatialAnomalyState.result.hotspotCount} hotspot{spatialAnomalyState.result.hotspotCount !== 1 ? 's' : ''}
+                  </span>
+                </div>
+                <p className='tf-text-secondary text-sm mt-2'>{spatialAnomalyState.result.narrative}</p>
+                <p className='tf-text-dim text-xs mt-2'>
+                  Recommendation: {spatialAnomalyState.result.finding.recommendedAction}
+                </p>
+              </div>
+              {spatialAnomalyState.correlationId && (
+                <div className='text-xs tf-text-dim flex items-center gap-2'>
+                  Ref: <code className='tf-suite-accent-text font-mono'>{spatialAnomalyState.correlationId.slice(0, 16)}...</code>
+                  <button onClick={() => copyToClipboard(spatialAnomalyState.correlationId!)} className='tf-text-tertiary' aria-label='Copy'>📋</button>
+                  <WorkbenchSourceBadge source='live' />
+                </div>
+              )}
+            </div>
+          )}
+
+          {spatialAnomalyState.status === 'error' && spatialAnomalyState.error && (
+            <ErrorDisplay error={{ message: spatialAnomalyState.error.message, errorCode: spatialAnomalyState.error.code, correlationId: spatialAnomalyState.correlationId }} />
+          )}
+        </BentoCard>
+      </BentoGrid>
+
       <InvocationHistory
         records={queryHistory}
         title='Query History'
-        emptyMessage='No layer queries yet.'
+        emptyMessage='No Atlas tool invocations recorded yet.'
       />
     </div>
   );

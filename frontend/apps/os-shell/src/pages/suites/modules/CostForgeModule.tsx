@@ -6,10 +6,12 @@
  * Lineage: BCBSCOSTApp → TerraBuild → TerraFusionBuild → CostForge → TerraForge
  *
  * ALL cost data is Benton County's OWN cost approach system.
- * Matrix data: 42 entries (14 building types × 3 regions) from Harris PACS 9.0.
+ * Matrix data: 42 entries (14 building types x 3 regions) from Benton County cost tables.
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { invokeTool } from '@/api/pilotApi';
+import { usePropertyStore } from '@/stores/propertyStore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -45,6 +47,8 @@ import {
   WifiOff,
   Loader2,
   ShieldCheck,
+  Lock,
+  CheckCircle2,
 } from 'lucide-react';
 import {
   BUILDING_TYPES,
@@ -61,6 +65,19 @@ import {
   type CostCalculationResult,
   type CostScenario,
 } from '@/services/forgeService';
+
+interface CostCommitResult {
+  caseId: string;
+  packetRef: string;
+  sections: string[];
+  payloadRef: string;
+}
+
+type CostCommitState =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'success'; result: CostCommitResult; correlationId: string }
+  | { status: 'error'; error: string; correlationId: string };
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -88,26 +105,49 @@ const CATEGORY_LABELS: Record<string, string> = {
   agricultural: 'Agricultural',
 };
 
-const DEFAULT_INPUTS: CostCalculationInput = {
-  buildingType: '100',
-  quality: 'STD',
-  condition: 'AVG',
-  region: 'BC-RICHLAND',
-  squareFeet: 2000,
-  yearBuilt: 2005,
+const COST_INPUT_TEMPLATE: CostCalculationInput = {
+  buildingType: '',
+  quality: '',
+  condition: '',
+  region: '',
+  squareFeet: 0,
+  yearBuilt: 0,
   stories: 1,
   complexity: 50,
   basement: false,
   basementFinished: false,
-  garageSize: 400,
+  garageSize: 0,
 };
 
+export const COSTFORGE_COST_VALUE_CONTRACT = {
+  status: 'contract-backed',
+  contractId: 'costforge_cost_value_v1',
+  population: 'Benton parcel-bound cost approach value preview and commit gate',
+  source: 'Benton County 2025 cost matrix plus TerraFusion CostForge API verification and TerraPilot BOE packet commit',
+  trustPosture:
+    'Cost value outputs are Benton cost-matrix scoped; local RCNLD is a preview until API verification and TerraPilot evidence commit are completed.',
+  valuePolicy: {
+    matrixYear: 2025,
+    buildingTypeCount: 14,
+    regionCount: 3,
+    parcelBoundRequired: true,
+    apiVerificationPath: '/costforge/calculate',
+    commitToolId: 'assemble_boe_packet',
+  },
+} as const;
+
 export default function CostForgeModule() {
-  const [inputs, setInputs] = useState<CostCalculationInput>(DEFAULT_INPUTS);
+  const [inputs, setInputs] = useState<CostCalculationInput>(COST_INPUT_TEMPLATE);
   const [showBreakdown, setShowBreakdown] = useState(true);
   const [scenarios, setScenarios] = useState<CostScenario[]>(() => loadScenarios());
   const [scenarioName, setScenarioName] = useState('');
   const [compareId, setCompareId] = useState<string | null>(null);
+
+  // TerraPilot: cost approach commit gate
+  const activeParcel = usePropertyStore((s) => s.activeParcel);
+  const activeParcelId = activeParcel?.parcelId ?? activeParcel?.parcelNumber ?? null;
+  const [costCommitConfirmed, setCostCommitConfirmed] = useState(false);
+  const [costCommitState, setCostCommitState] = useState<CostCommitState>({ status: 'idle' });
 
   const result: CostCalculationResult = useMemo(() => calculateCost(inputs), [inputs]);
 
@@ -121,9 +161,31 @@ export default function CostForgeModule() {
     [inputs.region],
   );
 
+  const costInputsReady = Boolean(
+    activeParcelId &&
+    inputs.buildingType &&
+    inputs.quality &&
+    inputs.condition &&
+    inputs.region &&
+    inputs.squareFeet > 0 &&
+    inputs.yearBuilt > 0 &&
+    inputs.stories > 0,
+  );
+
   const [apiResult, setApiResult] = useState<{ totalCost: number; method: string } | null>(null);
   const [apiLoading, setApiLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!activeParcel) return;
+
+    setInputs((prev) => ({
+      ...prev,
+      squareFeet: prev.squareFeet || activeParcel.buildingSquareFeet || activeParcel.grossLivingArea || 0,
+      yearBuilt: prev.yearBuilt || activeParcel.yearBuilt || 0,
+      garageSize: prev.garageSize || activeParcel.garageSqft || 0,
+    }));
+  }, [activeParcel]);
 
   const updateInput = useCallback(
     <K extends keyof CostCalculationInput>(key: K, value: CostCalculationInput[K]) => {
@@ -135,11 +197,12 @@ export default function CostForgeModule() {
   );
 
   const verifyViaApi = useCallback(async () => {
+    if (!costInputsReady || !activeParcelId) return;
     setApiLoading(true);
     setApiError(null);
     try {
       const res = await api.post('/costforge/calculate', {
-        parcelNumber: 'COSTFORGE-VERIFY',
+        parcelNumber: activeParcelId,
         buildingType: inputs.buildingType,
         quality: inputs.quality,
         condition: inputs.condition,
@@ -158,7 +221,7 @@ export default function CostForgeModule() {
     } finally {
       setApiLoading(false);
     }
-  }, [inputs]);
+  }, [activeParcelId, costInputsReady, inputs]);
 
   const handleSaveScenario = useCallback(() => {
     if (!scenarioName.trim()) return;
@@ -174,6 +237,34 @@ export default function CostForgeModule() {
   }, []);
 
   const compareScenario = scenarios.find((s) => s.id === compareId);
+
+  const handleCommitCostValue = useCallback(async () => {
+    if (!costCommitConfirmed || !costInputsReady || !activeParcelId) return;
+    const caseId = activeParcelId;
+    setCostCommitState({ status: 'loading' });
+    try {
+      const res = await invokeTool<CostCommitResult>({
+        toolId: 'assemble_boe_packet',
+        params: {
+          county: 'benton',
+          caseId,
+          include: ['evidence', 'valuation_history', 'cost_approach'],
+        },
+      });
+      setCostCommitState({
+        status: 'success',
+        result: res.result,
+        correlationId: res.correlationId,
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Commit failed';
+      setCostCommitState({
+        status: 'error',
+        error: msg,
+        correlationId: (err as { correlationId?: string })?.correlationId ?? 'unknown',
+      });
+    }
+  }, [activeParcelId, costCommitConfirmed, costInputsReady]);
 
   // Group building types by category
   const groupedTypes = useMemo(() => {
@@ -200,6 +291,20 @@ export default function CostForgeModule() {
           <p style={{ color: 'hsl(var(--tf-muted))' }} className='mt-1'>
             Benton County Cost Approach — 89,247 parcels • Matrix Year 2025 • 14 building types × 3 regions
           </p>
+          <div
+            data-testid='costforge-cost-value-contract-classification'
+            data-contract-status={COSTFORGE_COST_VALUE_CONTRACT.status}
+            data-contract-id={COSTFORGE_COST_VALUE_CONTRACT.contractId}
+            className='mt-3 flex items-center gap-2 flex-wrap text-xs'
+            style={{ color: 'hsl(var(--tf-muted))' }}
+          >
+            <Badge variant='outline'>
+              {COSTFORGE_COST_VALUE_CONTRACT.contractId}
+            </Badge>
+            <span>
+              {COSTFORGE_COST_VALUE_CONTRACT.trustPosture}
+            </span>
+          </div>
         </div>
         {result.matrixSource && (
           <Badge
@@ -249,7 +354,7 @@ export default function CostForgeModule() {
                         color: 'hsl(var(--tf-fg))',
                       }}
                     >
-                      <SelectValue />
+                      <SelectValue placeholder='Select building type' />
                     </SelectTrigger>
                     <SelectContent>
                       {Object.entries(groupedTypes).map(([cat, types]) => (
@@ -279,7 +384,7 @@ export default function CostForgeModule() {
                         color: 'hsl(var(--tf-fg))',
                       }}
                     >
-                      <SelectValue />
+                      <SelectValue placeholder='Select quality' />
                     </SelectTrigger>
                     <SelectContent>
                       {QUALITY_LEVELS.map((q) => (
@@ -304,7 +409,7 @@ export default function CostForgeModule() {
                         color: 'hsl(var(--tf-fg))',
                       }}
                     >
-                      <SelectValue />
+                      <SelectValue placeholder='Select condition' />
                     </SelectTrigger>
                     <SelectContent>
                       {CONDITION_OPTIONS.map((c) => (
@@ -339,7 +444,7 @@ export default function CostForgeModule() {
                       color: 'hsl(var(--tf-fg))',
                     }}
                   >
-                    <SelectValue />
+                  <SelectValue placeholder='Select Benton region' />
                   </SelectTrigger>
                   <SelectContent>
                     {REGIONS.map((r) => (
@@ -359,9 +464,9 @@ export default function CostForgeModule() {
                   <Label style={{ color: 'hsl(var(--tf-fg))' }}>Square Footage</Label>
                   <Input
                     type='number'
-                    min={100}
+                    min={0}
                     max={100000}
-                    value={inputs.squareFeet}
+                    value={inputs.squareFeet || ''}
                     onChange={(e) => updateInput('squareFeet', Number(e.target.value))}
                     style={{
                       background: 'hsl(var(--tf-bg))',
@@ -377,7 +482,7 @@ export default function CostForgeModule() {
                     type='number'
                     min={1850}
                     max={new Date().getFullYear()}
-                    value={inputs.yearBuilt}
+                    value={inputs.yearBuilt || ''}
                     onChange={(e) => updateInput('yearBuilt', Number(e.target.value))}
                     style={{
                       background: 'hsl(var(--tf-bg))',
@@ -605,6 +710,27 @@ export default function CostForgeModule() {
 
         {/* Results Panel */}
         <div className='space-y-4'>
+          {!costInputsReady && (
+            <Card
+              data-testid='cost-inputs-required'
+              style={{
+                background: 'hsl(var(--tf-card-bg))',
+                borderColor: 'hsl(var(--tf-warning-hs) 55% / 0.35)',
+              }}
+            >
+              <CardHeader className='pb-2'>
+                <CardTitle className='text-sm' style={{ color: 'hsl(var(--tf-fg))' }}>
+                  Cost Evidence Required
+                </CardTitle>
+                <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+                  Select a parcel and enter building type, quality, condition, Benton region, square footage, year built, and stories before CostForge produces or commits a value.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          )}
+
+          {costInputsReady && (
+            <>
           {/* RCN Pipeline Card */}
           <Card
             style={{
@@ -629,7 +755,7 @@ export default function CostForgeModule() {
                   {formatCurrency(result.rcnld)}
                 </p>
                 <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
-                  {formatCurrency(result.costPerSqFt)}/sqft
+                  {formatCurrency(result.costPerSqFt)}/sq ft
                 </p>
                 <Badge className={CONFIDENCE_COLORS[result.confidence]} variant='outline'>
                   {result.confidence} Confidence
@@ -867,7 +993,7 @@ export default function CostForgeModule() {
             <CardContent className='space-y-3'>
               <TactileButton
                 onClick={verifyViaApi}
-                disabled={apiLoading}
+                disabled={apiLoading || !costInputsReady}
                 size='sm'
                 fullWidth
                 loading={apiLoading}
@@ -906,11 +1032,113 @@ export default function CostForgeModule() {
               )}
               {apiError && (
                 <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
-                  API offline or auth required — local calculation remains authoritative
+                  Governed API confirmation is unavailable. Do not commit this value without Pilot evidence.
                 </p>
               )}
             </CardContent>
           </Card>
+
+          {/* TerraPilot: Commit Cost Value Gate */}
+          <Card
+            data-testid='cost-commit-gate'
+            style={{
+              background: 'hsl(var(--tf-card-bg))',
+              borderColor: 'hsl(var(--tf-suite-forge) / 0.4)',
+            }}
+          >
+            <CardHeader className='pb-2'>
+              <CardTitle
+                className='text-sm flex items-center gap-2'
+                style={{ color: 'hsl(var(--tf-fg))' }}
+              >
+                <Lock size={14} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
+                TerraPilot: Commit Cost Value
+              </CardTitle>
+              <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+                Assemble and lock the cost approach into the BOE packet
+              </CardDescription>
+            </CardHeader>
+            <CardContent className='space-y-3'>
+              <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                RCNLD{' '}
+                <span className='font-mono font-semibold' style={{ color: 'hsl(var(--tf-suite-forge))' }}>
+                  {formatCurrency(result.rcnld)}
+                </span>{' '}
+                for{' '}
+                <span className='font-mono' style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {activeParcel?.parcelId ?? activeParcel?.parcelNumber ?? 'no parcel selected'}
+                </span>
+                . TerraPilot will assemble the cost approach into the BOE packet — you review before any submission.
+              </p>
+
+              <label className='flex items-center gap-2 cursor-pointer'>
+                <input
+                  type='checkbox'
+                  checked={costCommitConfirmed}
+                  onChange={(e) => setCostCommitConfirmed(e.target.checked)}
+                  data-testid='cost-commit-confirm-checkbox'
+                  style={{ accentColor: 'hsl(var(--tf-suite-forge))' }}
+                />
+                <span className='text-xs' style={{ color: 'hsl(var(--tf-fg))' }}>
+                  I confirm the cost inputs and RCNLD are correct and authorise TerraPilot to commit this value.
+                </span>
+              </label>
+
+              <TactileButton
+                size='sm'
+                onClick={handleCommitCostValue}
+                disabled={!costCommitConfirmed || !costInputsReady || costCommitState.status === 'loading'}
+                data-testid='cost-commit-submit-btn'
+                fullWidth
+                leftIcon={<Lock size={14} />}
+              >
+                {costCommitState.status === 'loading' ? 'Committing…' : 'Commit Cost Value'}
+              </TactileButton>
+
+              {/* Error */}
+              {costCommitState.status === 'error' && (
+                <div
+                  className='p-2 rounded text-xs space-y-1'
+                  style={{ background: 'hsl(var(--tf-error-hs) 60% / 0.1)', color: 'hsl(var(--tf-error-hs) 60%)' }}
+                >
+                  <p>{costCommitState.error}</p>
+                  <p className='font-mono text-[10px]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    ref: {costCommitState.correlationId}
+                  </p>
+                </div>
+              )}
+
+              {/* Success */}
+              {costCommitState.status === 'success' && (
+                <div
+                  className='p-3 rounded space-y-1'
+                  style={{
+                    background: 'hsl(var(--tf-success-hs) 45% / 0.1)',
+                    border: '1px solid hsl(var(--tf-success-hs) 45% / 0.3)',
+                  }}
+                  data-testid='cost-commit-success'
+                >
+                  <div className='flex items-center gap-2'>
+                    <CheckCircle2 size={14} style={{ color: 'hsl(var(--tf-success-hs) 45%)' }} />
+                    <span className='text-xs font-medium' style={{ color: 'hsl(var(--tf-success-hs) 45%)' }}>
+                      Cost value committed to BOE packet
+                    </span>
+                  </div>
+                  <p className='text-[10px] font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    ref: {costCommitState.result.packetRef}
+                  </p>
+                  <p className='text-[10px]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    Sections: {costCommitState.result.sections?.join(', ')}
+                  </p>
+                  <p className='text-[10px] font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    correlationId: {costCommitState.correlationId}
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+            </>
+          )}
         </div>
       </div>
     </div>

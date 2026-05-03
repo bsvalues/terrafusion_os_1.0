@@ -115,7 +115,7 @@ JCHARRISPACS/
 
 | What | Value | Used By |
 |------|-------|---------|
-| SA Password | `TF_Pacs2026!` | publish.ps1, docker compose, DBA work |
+| SA Password | `<redacted-local-dev-sql-password>` | publish.ps1, docker compose, DBA work |
 | pacs_api_svc password | `PacsApi_Svc2026!` | PacsApi runtime (`PACS_API_SVC_PASSWORD`) |
 | JWT secret | set `PACS_JWT_SECRET` | PacsApi auth (must be ≥ 32 chars) |
 
@@ -135,7 +135,7 @@ Created by `scripts/sql/create_api_service_account.sql` (runs automatically at e
 To re-provision manually:
 ```powershell
 docker exec tf-mssql /opt/mssql-tools18/bin/sqlcmd `
-  -S localhost -U sa -P "TF_Pacs2026!" -C `
+  -S localhost -U sa -P "<redacted-local-dev-sql-password>" -C `
   -i /path/to/scripts/sql/create_api_service_account.sql
 ```
 

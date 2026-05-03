@@ -127,7 +127,12 @@ public class DaisController : ControllerBase
   {
     var countyId = await ResolveCountyIdAsync();
     if (countyId is null)
+    {
+      // Unauthenticated callers (no identity) get 401; authenticated but missing county get 403.
+      if (User.Identity?.IsAuthenticated != true)
+        return (null, Unauthorized("County authentication required."));
       return (null, Forbid());
+    }
 
     if (string.IsNullOrWhiteSpace(requestedCounty))
       return (countyId.Value, null);
@@ -768,6 +773,8 @@ public class DaisController : ControllerBase
     var totalSteps = steps.Count;
     var completedCount = steps.Count(s => string.Equals(s.Status, "complete", StringComparison.OrdinalIgnoreCase)
                                         || string.Equals(s.Status, "completed", StringComparison.OrdinalIgnoreCase));
+    var inProgressCount = steps.Count(s => string.Equals(s.Status, "in_progress", StringComparison.OrdinalIgnoreCase));
+    var blockers = BuildCertificationBlockers(steps);
 
     var stepList = steps.Select((s, i) => new
       {
@@ -776,6 +783,7 @@ public class DaisController : ControllerBase
         status = s.Status,
         completedAt = s.CompletedAt?.ToString("o"),
         assignee = s.CompletedBy ?? GetDefaultCertificationAssignee(s.StepCode),
+        notes = s.Notes,
       }).ToArray();
 
     var totalParcels = await _db.Properties.CountAsync(p => p.CountyId == effectiveCountyId, HttpContext.RequestAborted);
@@ -787,11 +795,12 @@ public class DaisController : ControllerBase
     {
       county,
       taxYear,
-      rollStatus = totalSteps > 0 && completedCount == totalSteps ? "certified" : "in_progress",
+      rollStatus = DetermineRollStatus(totalSteps, completedCount, inProgressCount, blockers.Count),
       completionPct = totalSteps > 0 ? Math.Round((decimal)completedCount / totalSteps * 100, 1) : 0,
       steps = stepList,
       totalParcelCount = totalParcels,
       certifiedParcelCount = certifiedParcels,
+      blockers,
       dueDate = $"{taxYear}-08-01",
       rcw = "RCW 84.48.050",
     });
@@ -840,7 +849,7 @@ public class DaisController : ControllerBase
         new { id = "EXEMPTION_APPROVAL", name = "Exemption Approval Notice", rcw = "RCW 84.36.381", deliveryMethods = new[] { "mail" } },
         new { id = "EXEMPTION_DENIAL", name = "Exemption Denial Notice", rcw = "RCW 84.36.381", deliveryMethods = new[] { "mail", "certified_mail" } },
         new { id = "APPEAL_HEARING", name = "BOE Hearing Schedule Notice", rcw = "RCW 84.48", deliveryMethods = new[] { "mail", "email" } },
-        new { id = "LEVY_RATE", name = "Levy Rate Certification Notice", rcw = "RCW 84.52", deliveryMethods = new[] { "mail" } },
+        new { id = "LEVY_RATE", name = "Levy Rate Certification Notice", rcw = "RCW 84.52", deliveryMethods = new[] { "mail" }, workflowGate = "ASSESSOR_SIGNOFF" },
         new { id = "CURRENT_USE_REMOVAL", name = "Current Use Removal Warning", rcw = "RCW 84.34", deliveryMethods = new[] { "certified_mail" } },
       },
     });
@@ -859,10 +868,30 @@ public class DaisController : ControllerBase
     if (countyAccess.ErrorResult is not null)
       return countyAccess.ErrorResult;
 
-    var created = await _noticeService.CreateAsync(
-      countyAccess.CountyId!.Value,
-      new GenerateNoticeCommand(request.TemplateId, request.ParcelId, request.DeliveryMethod, request.Fields),
-      User.Identity?.Name);
+    Notice created;
+    var templateId = request.TemplateId.Trim().ToUpperInvariant();
+    try
+    {
+      created = templateId == "LEVY_RATE"
+        ? await _noticeService.CreateLevyCertificationNoticeAsync(
+          countyAccess.CountyId!.Value,
+          request.TaxYear ?? 0,
+          request.DeliveryMethod,
+          request.Fields,
+          User.Identity?.Name)
+        : await _noticeService.CreateAsync(
+          countyAccess.CountyId!.Value,
+          new GenerateNoticeCommand(templateId, request.ParcelId, request.DeliveryMethod, request.Fields),
+          User.Identity?.Name);
+    }
+    catch (InvalidOperationException ex)
+    {
+      return Conflict(new { error = ex.Message });
+    }
+    catch (KeyNotFoundException ex)
+    {
+      return NotFound(new { error = ex.Message });
+    }
 
     return Ok(new
     {
@@ -873,6 +902,7 @@ public class DaisController : ControllerBase
       generatedAt = created.CreatedAt,
       message = $"Notice generated from template {created.TemplateId}",
       deliveryMethod = created.DeliveryMethod,
+      rcwReference = created.RcwReference,
     });
   }
 
@@ -891,6 +921,7 @@ public class DaisController : ControllerBase
         new { type = "APPEAL_PREPARATION", defaultSlaHours = 120, priority = "high", assignTo = "Senior Appraiser" },
         new { type = "EXEMPTION_REVIEW", defaultSlaHours = 96, priority = "normal", assignTo = "Exemption Specialist" },
         new { type = "DATA_CORRECTION", defaultSlaHours = 24, priority = "high", assignTo = "Data Quality Team" },
+        new { type = "NOTICE_MAILING", defaultSlaHours = 24, priority = "normal", assignTo = "Mail Operations" },
         new { type = "SUPERVISORY_REVIEW", defaultSlaHours = 48, priority = "high", assignTo = "Chief Appraiser" },
       },
     });
@@ -1181,15 +1212,14 @@ public class DaisController : ControllerBase
 
   /// <summary>
   /// GET api/dais/queue/all — Get all queue items with optional filters.
-  /// [AllowAnonymous] + empty fallback clears TerraQueue fixture banner in dev mode.
+  /// Returns an empty list when the caller has no county access (graceful degradation).
   /// </summary>
-  [AllowAnonymous]
   [HttpGet("queue/all")]
   public async Task<IActionResult> GetAllQueueItems([FromQuery] string? status, [FromQuery] string? assignedTo, [FromQuery] string? taskType)
   {
     var countyAccess = await RequireCountyAccessAsync();
     if (countyAccess.ErrorResult is not null)
-      return Ok(Array.Empty<object>());
+      return countyAccess.ErrorResult;
 
     var effectiveCountyId = countyAccess.CountyId!.Value;
 
@@ -1199,26 +1229,14 @@ public class DaisController : ControllerBase
 
   /// <summary>
   /// GET api/dais/queue/metrics — Queue-wide aggregate metrics.
-  /// [AllowAnonymous] + dev-stub fallback enables ManagementDashboard to clear its
-  /// DEMO DATA banner in dev mode without a logged-in county user.
+  /// Returns authenticated county-scoped metrics only.
   /// </summary>
-  [AllowAnonymous]
   [HttpGet("queue/metrics")]
   public async Task<IActionResult> GetQueueMetrics()
   {
     var countyAccess = await RequireCountyAccessAsync();
     if (countyAccess.ErrorResult is not null)
-    {
-      // Dev/anonymous mode: stub metrics so ManagementDashboard banner clears
-      return Ok(new
-      {
-        totalPendingReview = 47,
-        totalItems = 312,
-        completedToday = 18,
-        activeAppraisers = 6,
-        averageDaysInQueue = 3.2,
-      });
-    }
+      return countyAccess.ErrorResult;
 
     var effectiveCountyId = countyAccess.CountyId!.Value;
 
@@ -1228,15 +1246,14 @@ public class DaisController : ControllerBase
 
   /// <summary>
   /// GET api/dais/queue/productivity — Per-appraiser productivity stats.
-  /// [AllowAnonymous] + empty fallback clears TerraQueue fixture banner in dev mode.
+  /// Returns authenticated county-scoped productivity only.
   /// </summary>
-  [AllowAnonymous]
   [HttpGet("queue/productivity")]
   public async Task<IActionResult> GetQueueProductivity()
   {
     var countyAccess = await RequireCountyAccessAsync();
     if (countyAccess.ErrorResult is not null)
-      return Ok(Array.Empty<object>());
+      return countyAccess.ErrorResult;
 
     var effectiveCountyId = countyAccess.CountyId!.Value;
 
@@ -1606,11 +1623,18 @@ public class DaisController : ControllerBase
     var pct = totalSteps > 0 ? Math.Round((decimal)completedCount / totalSteps * 100, 1) : 0;
 
     var stepList = steps
-        .Select(s => new { id = s.Id.ToString(), name = s.StepCode, complete = s.Status == "completed" || s.Status == "complete" })
+        .Select(s => new
+        {
+          id = s.Id.ToString(),
+          name = s.StepCode,
+          status = s.Status,
+          complete = s.Status == "completed" || s.Status == "complete",
+          notes = s.Notes,
+        })
         .ToArray();
 
-    var blockers = new List<string>();
-    if (pct < 100m)
+    var blockers = BuildCertificationBlockers(steps);
+    if (pct < 100m && blockers.Count == 0)
       blockers.Add($"{totalSteps - completedCount} step(s) remaining");
 
     Response.Headers["X-Dais-Source"] = "dais-certification-progress";
@@ -1641,17 +1665,23 @@ public class DaisController : ControllerBase
 
     var effectiveCountyId = countyAccess.CountyId!.Value;
 
-    // If stepId is a valid GUID, complete the step via the service
-    if (Guid.TryParse(request.StepId, out var stepGuid))
+    CertificationStep completedStep;
+    try
     {
-      try
-      {
-        await _certificationService.CompleteStepAsync(stepGuid, request.SignedBy, effectiveCountyId);
-      }
-      catch (KeyNotFoundException)
-      {
-        // Step not found in DB — still return success for stub/fallback steps
-      }
+      completedStep = await _certificationService.CompleteStepAsync(
+        request.StepId,
+        request.SignedBy,
+        request.Notes,
+        taxYear,
+        effectiveCountyId);
+    }
+    catch (KeyNotFoundException ex)
+    {
+      return NotFound(new { error = ex.Message });
+    }
+    catch (InvalidOperationException ex)
+    {
+      return Conflict(new { error = ex.Message });
     }
 
     Response.Headers["X-Dais-Source"] = "dais-certification-signoff";
@@ -1662,12 +1692,130 @@ public class DaisController : ControllerBase
     return Ok(new
     {
       source = "dais-certification-service",
-      stepId = request.StepId,
+      stepId = completedStep.Id.ToString(),
+      stepCode = completedStep.StepCode,
+      status = completedStep.Status,
       signedBy = request.SignedBy,
-      signedAt = DateTime.UtcNow.ToString("o"),
+      signedAt = completedStep.CompletedAt?.ToString("o"),
+      notes = completedStep.Notes,
       county,
       taxYear,
     });
+  }
+
+  /// <summary>
+  /// POST api/dais/certification/{county}/{taxYear}/submit-dor — Complete the DOR submission step after levy notice generation.
+  /// </summary>
+  [HttpPost("certification/{county}/{taxYear:int}/submit-dor")]
+  public async Task<IActionResult> SubmitCertificationToDor(string county, int taxYear, [FromBody] CertificationActionRequest? request)
+  {
+    var countyAccess = await RequireCountyAccessAsync(county);
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
+    var levyNotice = await _noticeService.GetLatestLevyCertificationNoticeAsync(effectiveCountyId, taxYear);
+    if (levyNotice is null)
+    {
+      return Conflict(new
+      {
+        error = $"LEVY_RATE notice must be generated before DOR submission for tax year {taxYear}.",
+      });
+    }
+    if (!IsNoticeReadyForDorSubmission(levyNotice.Status))
+    {
+      return Conflict(new
+      {
+        error = $"LEVY_RATE notice {levyNotice.Id} must be queued for mailing or sent before DOR submission for tax year {taxYear}.",
+        levyNoticeId = levyNotice.Id,
+        levyNoticeStatus = levyNotice.Status,
+      });
+    }
+
+    try
+    {
+      var completedStep = await _certificationService.CompleteStepAsync(
+        "DOR_SUBMISSION",
+        request?.SignedBy ?? User.Identity?.Name ?? "system",
+        request?.Notes ?? $"DOR submission anchored to levy notice {levyNotice.Id}.",
+        taxYear,
+        effectiveCountyId);
+
+      Response.Headers["X-Dais-Source"] = "dais-certification-dor-submission";
+
+      await _audit.LogInvocationAsync("submit_certification_to_dor", completedStep.Id.ToString(),
+        User.Identity?.Name ?? "anonymous", "submitted", HttpContext.RequestAborted);
+
+      return Ok(new
+      {
+        source = "dais-certification-service",
+        county,
+        taxYear,
+        stepId = completedStep.Id.ToString(),
+        stepCode = completedStep.StepCode,
+        status = completedStep.Status,
+        submittedBy = completedStep.CompletedBy,
+        submittedAt = completedStep.CompletedAt?.ToString("o"),
+        levyNoticeId = levyNotice.Id,
+        levyNoticeStatus = levyNotice.Status,
+      });
+    }
+    catch (KeyNotFoundException ex)
+    {
+      return NotFound(new { error = ex.Message });
+    }
+    catch (InvalidOperationException ex)
+    {
+      return Conflict(new { error = ex.Message });
+    }
+  }
+
+  /// <summary>
+  /// POST api/dais/certification/{county}/{taxYear}/accept-dor — Complete the DOR acceptance step after submission.
+  /// </summary>
+  [HttpPost("certification/{county}/{taxYear:int}/accept-dor")]
+  public async Task<IActionResult> AcceptCertificationFromDor(string county, int taxYear, [FromBody] CertificationActionRequest? request)
+  {
+    var countyAccess = await RequireCountyAccessAsync(county);
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
+
+    try
+    {
+      var completedStep = await _certificationService.CompleteStepAsync(
+        "DOR_ACCEPTANCE",
+        request?.SignedBy ?? User.Identity?.Name ?? "system",
+        request?.Notes ?? "Department of Revenue acceptance recorded in TerraFusion.",
+        taxYear,
+        effectiveCountyId);
+
+      Response.Headers["X-Dais-Source"] = "dais-certification-dor-acceptance";
+
+      await _audit.LogInvocationAsync("accept_certification_from_dor", completedStep.Id.ToString(),
+        User.Identity?.Name ?? "anonymous", "accepted", HttpContext.RequestAborted);
+
+      return Ok(new
+      {
+        source = "dais-certification-service",
+        county,
+        taxYear,
+        stepId = completedStep.Id.ToString(),
+        stepCode = completedStep.StepCode,
+        status = completedStep.Status,
+        acceptedBy = completedStep.CompletedBy,
+        acceptedAt = completedStep.CompletedAt?.ToString("o"),
+      });
+    }
+    catch (KeyNotFoundException ex)
+    {
+      return NotFound(new { error = ex.Message });
+    }
+    catch (InvalidOperationException ex)
+    {
+      return Conflict(new { error = ex.Message });
+    }
   }
 
   /// <summary>
@@ -1686,29 +1834,134 @@ public class DaisController : ControllerBase
     var effectiveCountyId = countyAccess.CountyId!.Value;
     var deliveryMethod = request.DeliveryMethod ?? "usps_first_class";
     var batchId = $"BATCH-{Guid.NewGuid():N}"[..18];
+    var parsedNoticeIds = request.NoticeIds
+      .Select(id => Guid.TryParse(id, out var parsed) ? parsed : Guid.Empty)
+      .Where(id => id != Guid.Empty)
+      .Distinct()
+      .ToArray();
 
-    // Update each notice status to "queued_for_mailing"
-    foreach (var nid in request.NoticeIds)
+    if (parsedNoticeIds.Length == 0)
+      return BadRequest(new { error = "At least one valid notice ID is required." });
+
+    var notices = await _noticeService.GetByIdsAsync(parsedNoticeIds, effectiveCountyId);
+    if (notices.Count == 0)
+      return NotFound(new { error = "No matching notices were found in your county." });
+
+    var noticeById = notices.ToDictionary(n => n.Id, n => n);
+    var missingNoticeIds = parsedNoticeIds
+      .Where(id => !noticeById.ContainsKey(id))
+      .Select(id => id.ToString())
+      .ToArray();
+    if (missingNoticeIds.Length > 0)
     {
-      if (Guid.TryParse(nid, out var noticeGuid))
+      return NotFound(new
       {
-        try { await _noticeService.UpdateStatusAsync(noticeGuid, "queued_for_mailing", effectiveCountyId); }
-        catch (KeyNotFoundException) { /* notice not found — skip */ }
-      }
+        error = "One or more notices were not found in your county.",
+        missingNoticeIds,
+      });
     }
+
+    var existingQueueKeys = await _db.QueueItems
+      .AsNoTracking()
+      .Where(q => q.CountyId == effectiveCountyId &&
+                  q.TaskType == "NOTICE_MAILING" &&
+                  q.Status != "completed" &&
+                  q.Status != "failed" &&
+                  q.Notes != null)
+      .Select(q => q.Notes!)
+      .ToListAsync();
+
+    var existingQueuedNoticeIds = new HashSet<Guid>(
+      existingQueueKeys
+        .Select(ParseNoticeIdFromQueueNotes)
+        .Where(id => id.HasValue)
+        .Select(id => id!.Value));
+
+    var queuedNotices = new List<Notice>(notices.Count);
+    var createdQueueItems = new List<QueueItem>(notices.Count);
+
+    foreach (var notice in notices)
+    {
+      if (string.Equals(notice.TemplateId, "LEVY_RATE", StringComparison.OrdinalIgnoreCase))
+      {
+        var levyTaxYear = TryParseLevyTaxYear(notice.ParcelId);
+        if (levyTaxYear is null)
+        {
+          return Conflict(new
+          {
+            error = $"LEVY_RATE notice {notice.Id} is missing a canonical county levy parcel lane.",
+            noticeId = notice.Id,
+          });
+        }
+
+        var certificationSteps = await _certificationService.GetByTaxYearAsync(levyTaxYear.Value, effectiveCountyId);
+        var assessorSignoff = certificationSteps.FirstOrDefault(step => string.Equals(step.StepCode, "ASSESSOR_SIGNOFF", StringComparison.OrdinalIgnoreCase));
+        if (assessorSignoff is null || !IsCompletedStatus(assessorSignoff.Status))
+        {
+          return Conflict(new
+          {
+            error = $"ASSESSOR_SIGNOFF must be completed before levy notice {notice.Id} can be queued for mailing.",
+            noticeId = notice.Id,
+            taxYear = levyTaxYear.Value,
+          });
+        }
+      }
+
+      Notice updatedNotice;
+      try
+      {
+        updatedNotice = await _noticeService.UpdateStatusAsync(notice.Id, "queued_for_mailing", effectiveCountyId);
+      }
+      catch (InvalidOperationException ex)
+      {
+        return Conflict(new
+        {
+          error = ex.Message,
+          noticeId = notice.Id,
+          noticeStatus = notice.Status,
+        });
+      }
+
+      updatedNotice.DeliveryMethod = deliveryMethod;
+      updatedNotice.UpdatedAt = DateTime.UtcNow;
+      updatedNotice.UpdatedBy = User.Identity?.Name ?? "system";
+      queuedNotices.Add(updatedNotice);
+
+      if (existingQueuedNoticeIds.Contains(notice.Id))
+        continue;
+
+      var queueItem = await _queueService.CreateAsync(new QueueItem
+      {
+        ParcelId = notice.ParcelId,
+        TaskType = "NOTICE_MAILING",
+        Priority = string.Equals(notice.TemplateId, "LEVY_RATE", StringComparison.OrdinalIgnoreCase) ? "high" : "normal",
+        AssignedTo = "Mail Operations",
+        CountyId = effectiveCountyId,
+        CreatedBy = User.Identity?.Name,
+        UpdatedBy = User.Identity?.Name,
+        Notes = BuildNoticeQueueNotes(notice, deliveryMethod, batchId),
+      });
+      createdQueueItems.Add(queueItem);
+    }
+
+    if (queuedNotices.Count > 0)
+      await _db.SaveChangesAsync();
 
     Response.Headers["X-Dais-Source"] = "dais-notice-queue";
 
-    await _audit.LogInvocationAsync("queue_notice_for_mailing", string.Join(",", request.NoticeIds),
+    await _audit.LogInvocationAsync("queue_notice_for_mailing", string.Join(",", parsedNoticeIds),
       User.Identity?.Name ?? "anonymous", "queued", HttpContext.RequestAborted);
 
     return Ok(new
     {
       source = "dais-notice-service",
-      queued = request.NoticeIds.Length,
+      queued = queuedNotices.Count,
+      queueItemsCreated = createdQueueItems.Count,
       batchId,
       deliveryMethod,
       queuedAt = DateTime.UtcNow.ToString("o"),
+      queuedNoticeIds = queuedNotices.Select(n => n.Id),
+      queueItemIds = createdQueueItems.Select(q => q.Id),
     });
   }
 
@@ -1817,6 +2070,7 @@ public class DaisController : ControllerBase
   public sealed record ExemptionRenewalRequest(string? ExemptionId, int TaxYear);
   public sealed record ScheduleHearingRequest(string? RequestedDate, string[]? PanelMembers);
   public sealed record SignOffRequest(string? StepId, string? SignedBy, string? Notes);
+  public sealed record CertificationActionRequest(string? SignedBy, string? Notes);
   public sealed record QueueNoticesRequest(string[]? NoticeIds, string? DeliveryMethod);
   public sealed record EscalateTaskRequest(string? TaskId, string? Reason, string? EscalateTo);
 
@@ -1825,7 +2079,7 @@ public class DaisController : ControllerBase
   public sealed record SeniorDisabledRequest(decimal HouseholdIncome, decimal AssessedValue, int Age);
   public sealed record CurrentUseRequest(string? Classification, decimal Acreage, decimal MarketValue, string? ParcelId, string? CountyCode);
   public sealed record HistoricPropertyRequest(decimal AssessedValue, decimal RehabilitationCost, int YearsInProgram);
-  public sealed record GenerateNoticeRequest(string? TemplateId, string? ParcelId, string? DeliveryMethod, Dictionary<string, string>? Fields);
+  public sealed record GenerateNoticeRequest(string? TemplateId, string? ParcelId, string? DeliveryMethod, Dictionary<string, string>? Fields, int? TaxYear = null);
   public sealed record QueueAssignRequest(string? TaskType, string? ParcelId, string? AssignedTo, string? Priority);
 
   private static string GetDefaultCertificationAssignee(string stepCode) => stepCode switch
@@ -1838,4 +2092,70 @@ public class DaisController : ControllerBase
     "DOR_ACCEPTANCE" => "WA Dept of Revenue",
     _ => "Unassigned",
   };
+
+  private static List<string> BuildCertificationBlockers(IEnumerable<CertificationStep> steps)
+  {
+    var blockers = new List<string>();
+    foreach (var step in steps)
+    {
+      if (string.Equals(step.Status, "blocked", StringComparison.OrdinalIgnoreCase))
+        blockers.Add($"{step.StepCode} is blocked. {step.Notes}".Trim());
+    }
+
+    var firstPending = steps.FirstOrDefault(s => string.Equals(s.Status, "pending", StringComparison.OrdinalIgnoreCase));
+    if (firstPending is not null && !string.IsNullOrWhiteSpace(firstPending.Notes))
+      blockers.Add($"{firstPending.StepCode} is waiting. {firstPending.Notes}".Trim());
+
+    return blockers.Distinct(StringComparer.Ordinal).ToList();
+  }
+
+  private static string DetermineRollStatus(int totalSteps, int completedCount, int inProgressCount, int blockerCount)
+  {
+    if (totalSteps > 0 && completedCount == totalSteps)
+      return "certified";
+    if (blockerCount > 0 && inProgressCount == 0)
+      return "blocked";
+    if (inProgressCount > 0)
+      return "in_review";
+    return "pending";
+  }
+
+  private static bool IsCompletedStatus(string? status) =>
+    string.Equals(status, "complete", StringComparison.OrdinalIgnoreCase) ||
+    string.Equals(status, "completed", StringComparison.OrdinalIgnoreCase);
+
+  private static bool IsNoticeReadyForDorSubmission(string? status) =>
+    string.Equals(status, "queued_for_mailing", StringComparison.OrdinalIgnoreCase) ||
+    string.Equals(status, "sent", StringComparison.OrdinalIgnoreCase) ||
+    string.Equals(status, "sealed", StringComparison.OrdinalIgnoreCase);
+
+  private static int? TryParseLevyTaxYear(string? parcelId)
+  {
+    const string prefix = "COUNTY-LEVY-";
+    if (string.IsNullOrWhiteSpace(parcelId) || !parcelId.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+      return null;
+
+    return int.TryParse(parcelId[prefix.Length..], out var taxYear) ? taxYear : null;
+  }
+
+  private static Guid? ParseNoticeIdFromQueueNotes(string? notes)
+  {
+    const string prefix = "NoticeId=";
+    if (string.IsNullOrWhiteSpace(notes))
+      return null;
+
+    foreach (var part in notes.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+    {
+      if (part.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) &&
+          Guid.TryParse(part[prefix.Length..], out var noticeId))
+      {
+        return noticeId;
+      }
+    }
+
+    return null;
+  }
+
+  private static string BuildNoticeQueueNotes(Notice notice, string deliveryMethod, string batchId) =>
+    $"NoticeId={notice.Id}; TemplateId={notice.TemplateId}; DeliveryMethod={deliveryMethod}; BatchId={batchId}";
 }

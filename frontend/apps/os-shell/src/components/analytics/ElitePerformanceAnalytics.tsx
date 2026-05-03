@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import EliteProgress from '@/components/ui/EliteProgress';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   EliteActivityIcon,
   EliteBrainIcon,
@@ -23,12 +23,12 @@ import {
 
 interface PerformanceMetrics {
   timestamp: Date;
-  cpu: number;
-  memory: number;
-  network: number;
-  renderTime: number;
-  bundleSize: number;
-  fps: number;
+  cpu: number | null;
+  memory: number | null;
+  network: number | null;
+  renderTime: number | null;
+  bundleSize: number | null;
+  fps: number | null;
 }
 
 interface OptimizationSuggestion {
@@ -42,136 +42,46 @@ interface OptimizationSuggestion {
 }
 
 const ElitePerformanceAnalytics: React.FC = () => {
-  const [metrics, setMetrics] = useState<PerformanceMetrics[]>([]);
   const [currentMetrics, setCurrentMetrics] = useState<PerformanceMetrics>({
     timestamp: new Date(),
-    cpu: 42,
-    memory: 58,
-    network: 23,
-    renderTime: 16.7,
-    bundleSize: 2.1,
-    fps: 60,
+    cpu: null,
+    memory: null,
+    network: null,
+    renderTime: null,
+    bundleSize: null,
+    fps: null,
   });
 
-  const [optimizationSuggestions, setOptimizationSuggestions] = useState<OptimizationSuggestion[]>([
-    {
-      id: '1',
-      category: 'performance',
-      severity: 'medium',
-      title: 'Quantum Animation Optimization',
-      description: 'Optimize quantum pulse and glow effects for better performance',
-      impact: '+15% rendering performance',
-      action: 'Enable GPU acceleration for quantum effects',
-    },
-    {
-      id: '2',
-      category: 'memory',
-      severity: 'low',
-      title: 'Widget Memory Management',
-      description: 'Implement advanced widget lifecycle optimization',
-      impact: '-20% memory usage',
-      action: 'Enable smart widget unloading',
-    },
-    {
-      id: '3',
-      category: 'network',
-      severity: 'high',
-      title: 'Backend Connectivity Enhancement',
-      description: 'Optimize API connection pooling and retry logic',
-      impact: '+40% response time',
-      action: 'Implement intelligent connection management',
-    },
-  ]);
+  const [optimizationSuggestions] = useState<OptimizationSuggestion[]>([]);
 
-  const [autoOptimization, setAutoOptimization] = useState(false);
+  const [autoOptimization] = useState(false);
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const [actionMessage, setActionMessage] = useState<string | null>(null);
 
-  // Real-time performance monitoring
-  useEffect(() => {
-    const collectMetrics = () => {
-      const newMetrics: PerformanceMetrics = {
-        timestamp: new Date(),
-        cpu: Math.max(15, Math.min(80, currentMetrics.cpu + (Math.random() - 0.5) * 8)),
-        memory: Math.max(25, Math.min(85, currentMetrics.memory + (Math.random() - 0.5) * 6)),
-        network: Math.max(10, Math.min(150, currentMetrics.network + (Math.random() - 0.5) * 20)),
-        renderTime: Math.max(
-          8,
-          Math.min(33, currentMetrics.renderTime + (Math.random() - 0.5) * 4)
-        ),
-        bundleSize: Math.max(
-          1.5,
-          Math.min(3.0, currentMetrics.bundleSize + (Math.random() - 0.5) * 0.1)
-        ),
-        fps: Math.max(30, Math.min(60, currentMetrics.fps + (Math.random() - 0.5) * 10)),
-      };
-
-      setCurrentMetrics(newMetrics);
-      setMetrics((prev) => [...prev.slice(-19), newMetrics]); // Keep last 20 measurements
-    };
-
-    collectMetrics(); // Initial collection
-    const interval = setInterval(collectMetrics, 2000); // Every 2 seconds
-
-    return () => clearInterval(interval);
-  }, [currentMetrics]);
-
-  // Auto-optimization
-  useEffect(() => {
-    if (!autoOptimization) return;
-
-    const checkForOptimization = () => {
-      if (currentMetrics.cpu > 70 || currentMetrics.memory > 75 || currentMetrics.renderTime > 25) {
-        runOptimization();
-      }
-    };
-
-    const interval = setInterval(checkForOptimization, 10000); // Check every 10 seconds
-    return () => clearInterval(interval);
-  }, [autoOptimization, currentMetrics]);
-
-  const runOptimization = useCallback(async () => {
+  const runOptimization = async () => {
     setIsOptimizing(true);
-
-    // Simulate optimization process
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    setCurrentMetrics((prev) => ({
-      ...prev,
-      cpu: Math.max(15, prev.cpu * 0.8),
-      memory: Math.max(25, prev.memory * 0.85),
-      renderTime: Math.max(8, prev.renderTime * 0.7),
-      fps: Math.min(60, prev.fps * 1.1),
-    }));
-
+    setCurrentMetrics((prev) => ({ ...prev, timestamp: new Date() }));
+    setActionMessage('Optimization was not run. Performance actions require a governed backend/Pilot execution path.');
     setIsOptimizing(false);
-  }, []);
+  };
 
   const applySuggestion = (suggestionId: string) => {
     const suggestion = optimizationSuggestions.find((s) => s.id === suggestionId);
     if (!suggestion) return;
 
-
-    // Remove applied suggestion
-    setOptimizationSuggestions((prev) => prev.filter((s) => s.id !== suggestionId));
-
-    // Apply performance improvements based on category
-    switch (suggestion.category) {
-      case 'performance':
-        setCurrentMetrics((prev) => ({ ...prev, fps: Math.min(60, prev.fps * 1.15) }));
-        break;
-      case 'memory':
-        setCurrentMetrics((prev) => ({ ...prev, memory: Math.max(20, prev.memory * 0.8) }));
-        break;
-      case 'network':
-        setCurrentMetrics((prev) => ({ ...prev, network: Math.max(8, prev.network * 0.6) }));
-        break;
-      case 'rendering':
-        setCurrentMetrics((prev) => ({ ...prev, renderTime: Math.max(8, prev.renderTime * 0.7) }));
-        break;
-    }
+    setActionMessage(`Suggestion "${suggestion.title}" was not applied. Suggestions require governed evidence and execution.`);
   };
 
   const getPerformanceGrade = () => {
+    if (
+      currentMetrics.cpu == null ||
+      currentMetrics.memory == null ||
+      currentMetrics.network == null ||
+      currentMetrics.fps == null
+    ) {
+      return { grade: '—', color: 'text-gray-400', label: 'Unavailable' };
+    }
+
     const score =
       (100 - currentMetrics.cpu) * 0.25 +
       (100 - currentMetrics.memory) * 0.25 +
@@ -201,6 +111,8 @@ const ElitePerformanceAnalytics: React.FC = () => {
   };
 
   const performanceGrade = getPerformanceGrade();
+  const fmtMetric = (value: number | null, suffix = '') => value == null ? 'Unavailable' : `${value.toFixed(suffix === 'ms' ? 1 : 0)}${suffix}`;
+  const progressValue = (value: number | null) => value ?? 0;
 
   return (
     <Card className='w-full terra-glass border-terra-cyan/20 backdrop-blur-md'>
@@ -226,11 +138,12 @@ const ElitePerformanceAnalytics: React.FC = () => {
           <Button
             variant='outline'
             size='sm'
-            onClick={() => setAutoOptimization(!autoOptimization)}
+            disabled
             className={`border-purple-500/30 ${autoOptimization ? 'text-purple-400 bg-purple-500/10' : 'text-gray-400'} hover:bg-purple-500/10`}
+            title='Auto-optimization requires governed backend execution'
           >
             <EliteBrainIcon className='w-4 h-4 mr-2' />
-            {autoOptimization ? 'Auto-Opt' : 'Manual'}
+            Governed only
           </Button>
 
           <Button
@@ -256,34 +169,40 @@ const ElitePerformanceAnalytics: React.FC = () => {
       </CardHeader>
 
       <CardContent className='space-y-6'>
+        {actionMessage && (
+          <div className='p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-sm text-yellow-300'>
+            {actionMessage}
+          </div>
+        )}
+
         {/* Real-time Performance Metrics */}
         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4'>
           <div className='p-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20'>
             <div className='flex items-center justify-between mb-2'>
               <EliteCpuIcon className='w-5 h-5 text-blue-400' />
-              <span className='text-lg font-bold text-white'>{currentMetrics.cpu}%</span>
+              <span className='text-lg font-bold text-white'>{fmtMetric(currentMetrics.cpu, '%')}</span>
             </div>
             <div className='text-xs text-gray-400 uppercase tracking-wide'>CPU Usage</div>
-            <EliteProgress value={currentMetrics.cpu} className='h-1 mt-2' variant='glow' />
+            <EliteProgress value={progressValue(currentMetrics.cpu)} className='h-1 mt-2' variant='glow' />
           </div>
 
           <div className='p-3 rounded-lg bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20'>
             <div className='flex items-center justify-between mb-2'>
               <EliteMemoryStickIcon className='w-5 h-5 text-purple-400' />
-              <span className='text-lg font-bold text-white'>{currentMetrics.memory}%</span>
+              <span className='text-lg font-bold text-white'>{fmtMetric(currentMetrics.memory, '%')}</span>
             </div>
             <div className='text-xs text-gray-400 uppercase tracking-wide'>Memory</div>
-            <EliteProgress value={currentMetrics.memory} className='h-1 mt-2' variant='quantum' />
+            <EliteProgress value={progressValue(currentMetrics.memory)} className='h-1 mt-2' variant='quantum' />
           </div>
 
           <div className='p-3 rounded-lg bg-gradient-to-br from-green-500/10 to-transparent border border-green-500/20'>
             <div className='flex items-center justify-between mb-2'>
               <EliteNetworkIcon className='w-5 h-5 text-green-400' />
-              <span className='text-lg font-bold text-white'>{currentMetrics.network}ms</span>
+              <span className='text-lg font-bold text-white'>{fmtMetric(currentMetrics.network, 'ms')}</span>
             </div>
             <div className='text-xs text-gray-400 uppercase tracking-wide'>Latency</div>
             <EliteProgress
-              value={Math.min(100, (currentMetrics.network / 200) * 100)}
+              value={currentMetrics.network == null ? 0 : Math.min(100, (currentMetrics.network / 200) * 100)}
               className='h-1 mt-2'
               variant='default'
             />
@@ -293,12 +212,12 @@ const ElitePerformanceAnalytics: React.FC = () => {
             <div className='flex items-center justify-between mb-2'>
               <EliteActivityIcon className='w-5 h-5 text-yellow-400' />
               <span className='text-lg font-bold text-white'>
-                {currentMetrics.renderTime.toFixed(1)}ms
+                {fmtMetric(currentMetrics.renderTime, 'ms')}
               </span>
             </div>
             <div className='text-xs text-gray-400 uppercase tracking-wide'>Render Time</div>
             <EliteProgress
-              value={Math.min(100, (currentMetrics.renderTime / 33) * 100)}
+              value={currentMetrics.renderTime == null ? 0 : Math.min(100, (currentMetrics.renderTime / 33) * 100)}
               className='h-1 mt-2'
               variant='glow'
             />
@@ -308,12 +227,12 @@ const ElitePerformanceAnalytics: React.FC = () => {
             <div className='flex items-center justify-between mb-2'>
               <EliteZapIcon className='w-5 h-5 text-orange-400' />
               <span className='text-lg font-bold text-white'>
-                {currentMetrics.bundleSize.toFixed(1)}MB
+                {currentMetrics.bundleSize == null ? 'Unavailable' : `${currentMetrics.bundleSize.toFixed(1)}MB`}
               </span>
             </div>
             <div className='text-xs text-gray-400 uppercase tracking-wide'>Bundle Size</div>
             <EliteProgress
-              value={Math.min(100, (currentMetrics.bundleSize / 5) * 100)}
+              value={currentMetrics.bundleSize == null ? 0 : Math.min(100, (currentMetrics.bundleSize / 5) * 100)}
               className='h-1 mt-2'
               variant='quantum'
             />
@@ -322,11 +241,11 @@ const ElitePerformanceAnalytics: React.FC = () => {
           <div className='p-3 rounded-lg bg-gradient-to-br from-terra-cyan/10 to-transparent border border-terra-cyan/20'>
             <div className='flex items-center justify-between mb-2'>
               <EliteGaugeIcon className='w-5 h-5 text-terra-cyan' />
-              <span className='text-lg font-bold text-white'>{currentMetrics.fps}</span>
+              <span className='text-lg font-bold text-white'>{fmtMetric(currentMetrics.fps)}</span>
             </div>
             <div className='text-xs text-gray-400 uppercase tracking-wide'>FPS</div>
             <EliteProgress
-              value={(currentMetrics.fps / 60) * 100}
+              value={currentMetrics.fps == null ? 0 : (currentMetrics.fps / 60) * 100}
               className='h-1 mt-2'
               variant='glow'
             />
@@ -334,7 +253,7 @@ const ElitePerformanceAnalytics: React.FC = () => {
         </div>
 
         {/* Optimization Suggestions */}
-        {optimizationSuggestions.length > 0 && (
+        {optimizationSuggestions.length > 0 ? (
           <div className='space-y-3'>
             <h4 className='text-sm font-semibold text-white flex items-center'>
               <EliteBrainIcon className='w-4 h-4 mr-2 text-purple-400' />
@@ -371,6 +290,10 @@ const ElitePerformanceAnalytics: React.FC = () => {
               </div>
             ))}
           </div>
+        ) : (
+          <div className='p-4 rounded-lg bg-terra-slate/30 border border-terra-cyan/10 text-sm text-gray-300'>
+            No optimization suggestions are displayed because no governed performance evidence endpoint has returned recommendations.
+          </div>
         )}
 
         {/* Performance Summary */}
@@ -378,13 +301,13 @@ const ElitePerformanceAnalytics: React.FC = () => {
           <div className='flex items-center justify-between'>
             <div>
               <h4 className='text-sm font-semibold text-white'>Elite Performance Status</h4>
-              <p className='text-xs text-gray-400'>Real-time optimization active</p>
+              <p className='text-xs text-gray-400'>Performance evidence unavailable until a governed telemetry source is connected</p>
             </div>
             <div className='text-right'>
               <div className={`text-xl font-bold ${performanceGrade.color}`}>
                 {performanceGrade.grade} Grade
               </div>
-              <div className='text-xs text-gray-400'>THE TERRAFUSION WAY</div>
+              <div className='text-xs text-gray-400'>Evidence required</div>
             </div>
           </div>
         </div>

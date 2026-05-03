@@ -5,7 +5,7 @@
  * Verifies:
  *   - daisService targets /api/dais with auth, throws on error, no fixture fallback
  *   - queueService targets /api/dais/queue with auth, has throwOnError option
- *   - ManagementDashboard composes both services with isFixture + DemoDataBanner
+ *   - ManagementDashboard composes both services with explicit unavailable states
  *   - Workbench dais route-collapse (PropertyDais tab wired in Router)
  *   - Sealed wave regression (W4A, W4B, W5B contracts still hold)
  */
@@ -112,7 +112,7 @@ describe('Gate 2 — queueService: API + throwOnError provenance', () => {
 });
 
 // ============================================================================
-// Gate 3 — ManagementDashboard API-first composition with disclosure
+// Gate 3 — ManagementDashboard API-first composition with honest disclosure
 // ============================================================================
 
 describe('Gate 3 — ManagementDashboard composes both services honestly', () => {
@@ -130,19 +130,21 @@ describe('Gate 3 — ManagementDashboard composes both services honestly', () =>
     expect(src).toMatch(/from\s+['"]@\/services\/suites\/queueService['"]/);
   });
 
-  it('has isFixture state for fixture disclosure', () => {
-    expect(src).toContain('isFixture');
-    expect(src).toContain('setIsFixture');
-  });
-
-  it('imports DemoDataBanner from governance', () => {
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toMatch(/from\s+['"]@\/components\/governance\/DemoDataBanner['"]/);
+  it('does not import fixture banners or fixture data', () => {
+    expect(src).not.toContain('DemoDataBanner');
+    expect(src).not.toMatch(/Fixture|FIXTURE|fixture/i);
   });
 
   it('passes throwOnError: true to queueService calls', () => {
     expect(src).toContain('getAppraiserProductivity({ throwOnError: true })');
     expect(src).toContain('getQueueMetrics({ throwOnError: true })');
+  });
+
+  it('uses WorkbenchSourceBadge and explicit unavailable language', () => {
+    expect(src).toContain('WorkbenchSourceBadge');
+    expect(src).toContain('Certification deadlines unavailable.');
+    expect(src).toContain('Appeals data unavailable.');
+    expect(src).toContain('Workload data unavailable.');
   });
 
   it('uses useCallback for data fetching', () => {
@@ -198,16 +200,19 @@ describe('Gate 5 — sealed wave regression', () => {
     expect(src).toContain('getHistory');
   });
 
-  it('SegmentDiscoveryDashboard still has DemoDataBanner (W4B)', () => {
+  it('SegmentDiscoveryDashboard keeps explicit unavailable disclosure (W4B)', () => {
     const src = readSrc('pages/forge/calibration/SegmentDiscoveryDashboard.tsx');
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toContain('isFixture');
+    expect(src).toContain('segment-discovery-unavailable');
+    expect(src).toContain('Segment discovery unavailable.');
+    expect(src).not.toContain('DemoDataBanner');
   });
 
-  it('GeoEquityDashboard still has DemoDataBanner (W5B)', () => {
+  it('GeoEquityDashboard keeps explicit unavailable disclosure without DemoDataBanner (W5B)', () => {
     const src = readSrc('pages/atlas/GeoEquityDashboard.tsx');
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toContain('isFixture');
+    expect(src).toContain('geo-equity-unavailable');
+    expect(src).toContain('GeoEquityReadState');
+    expect(src).not.toContain('DemoDataBanner');
+    expect(src).not.toContain('isFixture');
     expect(src).toContain('useAtlasSpatialStore');
   });
 

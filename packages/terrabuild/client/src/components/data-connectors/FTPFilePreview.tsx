@@ -9,20 +9,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface FTPFilePreviewProps {
-  connectionId: number;
+  connectionId?: number;
   filePath: string;
-  filename: string;
-  fileType?: string;
-  onDownload?: () => void;
+  filename?: string;
+  fileName?: string;
+  fileType?: 'file' | 'directory' | string;
+  isOpen?: boolean;
+  onClose?: () => void;
+  onDownload?: () => void | Promise<void>;
 }
 
 const FTPFilePreview: React.FC<FTPFilePreviewProps> = ({
   connectionId,
   filePath,
-  filename,
+  filename: _filename,
+  fileName,
   fileType,
+  isOpen: _isOpen,
+  onClose,
   onDownload
 }) => {
+  const filename = _filename ?? fileName ?? filePath.split('/').pop() ?? '';
   const [fileContent, setFileContent] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

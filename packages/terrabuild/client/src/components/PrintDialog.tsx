@@ -49,14 +49,14 @@ const PrintDialog = ({ calculation, trigger }: PrintDialogProps) => {
     return qualityMap[quality] || quality;
   };
 
-  // Get formatted region display
-  const getRegionLabel = (region: string): string => {
-    if (region.includes('_')) {
-      return region.toLowerCase().split('_').map(word => 
+  // Get formatted reval area display
+  const getRevalAreaLabel = (revalArea: string): string => {
+    if (revalArea.includes('_')) {
+      return revalArea.toLowerCase().split('_').map(word =>
         word.charAt(0).toUpperCase() + word.slice(1)
       ).join(' ');
     }
-    return region.charAt(0).toUpperCase() + region.slice(1).toLowerCase();
+    return revalArea.charAt(0).toUpperCase() + revalArea.slice(1).toLowerCase();
   };
 
   return (
@@ -190,8 +190,8 @@ const PrintDialog = ({ calculation, trigger }: PrintDialogProps) => {
                 <tr>
                   <td><strong>Quality Level:</strong></td>
                   <td>{getQualityLabel(calculation.quality)}</td>
-                  <td><strong>Region:</strong></td>
-                  <td>{getRegionLabel(calculation.region)}</td>
+                  <td><strong>Reval Area:</strong></td>
+                  <td>{getRevalAreaLabel(calculation.revalArea ?? '')}</td>
                 </tr>
                 <tr>
                   <td><strong>Building Age:</strong></td>
@@ -237,13 +237,13 @@ const PrintDialog = ({ calculation, trigger }: PrintDialogProps) => {
                   </td>
                 </tr>
                 <tr>
-                  <td>Regional Multiplier</td>
-                  <td>{calculation.regionalMultiplier.toFixed(2)}</td>
+                  <td>Reval Area Multiplier</td>
+                  <td>{calculation.revalAreaMultiplier.toFixed(2)}</td>
                   <td>
-                    {calculation.regionalMultiplier > 1 
-                      ? `+${((calculation.regionalMultiplier - 1) * 100).toFixed(0)}%` 
-                      : calculation.regionalMultiplier < 1 
-                        ? `-${((1 - calculation.regionalMultiplier) * 100).toFixed(0)}%`
+                    {calculation.revalAreaMultiplier > 1
+                      ? `+${((calculation.revalAreaMultiplier - 1) * 100).toFixed(0)}%`
+                      : calculation.revalAreaMultiplier < 1
+                        ? `-${((1 - calculation.revalAreaMultiplier) * 100).toFixed(0)}%`
                         : 'Neutral'}
                   </td>
                 </tr>

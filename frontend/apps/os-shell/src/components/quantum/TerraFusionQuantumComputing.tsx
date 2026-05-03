@@ -49,7 +49,6 @@ export const TerraFusionQuantumComputing: React.FC<QuantumComputingProps> = ({
 }) => {
   const [quantumCircuits, setQuantumCircuits] = useState<QuantumCircuit[]>([]);
   const [processingNodes, setProcessingNodes] = useState<QuantumProcessingNode[]>([]);
-  const [executingCircuits, setExecutingCircuits] = useState<string[]>([]);
   const [quantumMetrics, setQuantumMetrics] = useState({
     totalQubits: 0,
     averageFidelity: 0,
@@ -57,130 +56,13 @@ export const TerraFusionQuantumComputing: React.FC<QuantumComputingProps> = ({
     activeCircuits: 0,
   });
 
-  useEffect(() => {
-    initializeQuantumSystems();
-    const interval = setInterval(updateQuantumStatus, 2000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const initializeQuantumSystems = useCallback(() => {
-
-    // Initialize quantum processing nodes
-    const nodes: QuantumProcessingNode[] = [
-      {
-        id: 'tf-quantum-1',
-        name: 'TerraFusion Quantum Core',
-        type: 'TERRAFUSION_QUANTUM',
-        availableQubits: 127,
-        quantumVolume: 64,
-        coherenceTime: 100,
-        gateErrorRate: 0.001,
-        status: 'ONLINE',
-        currentLoad: 45,
-      },
-      {
-        id: 'ibm-quantum-1',
-        name: 'IBM Quantum Network',
-        type: 'IBM_QUANTUM',
-        availableQubits: 433,
-        quantumVolume: 128,
-        coherenceTime: 75,
-        gateErrorRate: 0.0015,
-        status: 'ONLINE',
-        currentLoad: 62,
-      },
-      {
-        id: 'google-quantum-1',
-        name: 'Google Quantum AI',
-        type: 'GOOGLE_QUANTUM',
-        availableQubits: 70,
-        quantumVolume: 256,
-        coherenceTime: 120,
-        gateErrorRate: 0.0008,
-        status: 'CALIBRATING',
-        currentLoad: 78,
-      },
-      {
-        id: 'rigetti-quantum-1',
-        name: 'Rigetti Quantum Cloud',
-        type: 'RIGETTI',
-        availableQubits: 80,
-        quantumVolume: 32,
-        coherenceTime: 85,
-        gateErrorRate: 0.002,
-        status: 'ONLINE',
-        currentLoad: 33,
-      },
-    ];
-
-    // Initialize quantum circuits
-    const circuits: QuantumCircuit[] = [
-      {
-        id: 'qc-shor-001',
-        name: "Shor's Factorization Algorithm",
-        algorithm: 'SHOR',
-        qubits: 15,
-        gates: 2847,
-        depth: 1243,
-        fidelity: 98.7,
-        entanglementLevel: 94.2,
-        status: 'READY',
-        executionTime: 0,
-        quantumAdvantage: 2.4e6,
-      },
-      {
-        id: 'qc-grover-001',
-        name: "Grover's Search Algorithm",
-        algorithm: 'GROVER',
-        qubits: 12,
-        gates: 1456,
-        depth: 678,
-        fidelity: 99.1,
-        entanglementLevel: 89.7,
-        status: 'EXECUTING',
-        executionTime: 2.3,
-        quantumAdvantage: 4096,
-      },
-      {
-        id: 'qc-vqe-001',
-        name: 'Variational Quantum Eigensolver',
-        algorithm: 'VARIATIONAL_QUANTUM',
-        qubits: 20,
-        gates: 3245,
-        depth: 1876,
-        fidelity: 97.3,
-        entanglementLevel: 96.8,
-        status: 'READY',
-        executionTime: 0,
-        quantumAdvantage: 1.2e9,
-      },
-      {
-        id: 'qc-qml-001',
-        name: 'Quantum Machine Learning',
-        algorithm: 'QUANTUM_ML',
-        qubits: 32,
-        gates: 5432,
-        depth: 2456,
-        fidelity: 95.8,
-        entanglementLevel: 98.1,
-        status: 'COMPLETED',
-        executionTime: 8.7,
-        quantumAdvantage: 3.7e12,
-      },
-    ];
-
-    setProcessingNodes(nodes);
-    setQuantumCircuits(circuits);
-    setExecutingCircuits(['qc-grover-001']);
-    calculateQuantumMetrics(nodes, circuits);
-
-  }, []);
-
   const calculateQuantumMetrics = useCallback(
     (nodes: QuantumProcessingNode[], circuits: QuantumCircuit[]) => {
       const totalQubits = nodes.reduce((sum, node) => sum + node.availableQubits, 0);
       const averageFidelity =
-        circuits.reduce((sum, circuit) => sum + circuit.fidelity, 0) / circuits.length;
+        circuits.length > 0
+          ? circuits.reduce((sum, circuit) => sum + circuit.fidelity, 0) / circuits.length
+          : 0;
       const totalQuantumVolume = nodes.reduce((sum, node) => sum + node.quantumVolume, 0);
       const activeCircuits = circuits.filter((c) => c.status === 'EXECUTING').length;
 
@@ -194,41 +76,21 @@ export const TerraFusionQuantumComputing: React.FC<QuantumComputingProps> = ({
     []
   );
 
-  const updateQuantumStatus = useCallback(() => {
-    // Simulate dynamic quantum system updates
-    setQuantumCircuits((prev) =>
-      prev.map((circuit) => {
-        if (circuit.status === 'EXECUTING') {
-          const newExecutionTime = circuit.executionTime + 0.1;
-          const isComplete = newExecutionTime > 5;
+  const initializeQuantumSystems = useCallback(() => {
+    const nodes: QuantumProcessingNode[] = [];
+    const circuits: QuantumCircuit[] = [];
 
-          return {
-            ...circuit,
-            executionTime: newExecutionTime,
-            status: isComplete ? 'COMPLETED' : 'EXECUTING',
-            fidelity: Math.min(100, circuit.fidelity + (Math.random() - 0.5) * 0.1),
-          };
-        }
-        return circuit;
-      })
-    );
+    setProcessingNodes(nodes);
+    setQuantumCircuits(circuits);
+    calculateQuantumMetrics(nodes, circuits);
+  }, [calculateQuantumMetrics]);
 
-    setProcessingNodes((prev) =>
-      prev.map((node) => ({
-        ...node,
-        currentLoad: Math.max(0, Math.min(100, node.currentLoad + (Math.random() - 0.5) * 5)),
-      }))
-    );
-  }, []);
+  useEffect(() => {
+    initializeQuantumSystems();
+  }, [initializeQuantumSystems]);
 
   const executeQuantumCircuit = useCallback((circuitId: string) => {
-    setQuantumCircuits((prev) =>
-      prev.map((circuit) =>
-        circuit.id === circuitId ? { ...circuit, status: 'EXECUTING', executionTime: 0 } : circuit
-      )
-    );
-    setExecutingCircuits((prev) => [...prev, circuitId]);
-
+    void circuitId;
   }, []);
 
   const getAlgorithmColor = (algorithm: QuantumCircuit['algorithm']) => {

@@ -2,7 +2,7 @@
  * ═══════════════════════════════════════════════════════════════
  * CONSCIOUSNESS ENGINE INTERFACE
  * TerraFusion.Consciousness - Elite AI Swarm Coordination
- * Government. Transcended.
+* Compatibility consciousness engine contract.
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -79,7 +79,7 @@ namespace TerraFusion.Consciousness.Interfaces
         public string TaskId { get; set; } = Guid.NewGuid().ToString();
         public string OptimizationType { get; set; } = string.Empty;
         public Dictionary<string, object> Parameters { get; set; } = new Dictionary<string, object>();
-        public int QuantumFactor { get; set; } = 949;
+        public int QuantumFactor { get; set; }
     }
 
     #endregion

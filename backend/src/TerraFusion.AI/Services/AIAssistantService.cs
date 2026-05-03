@@ -1,11 +1,3 @@
-/*
- * ═══════════════════════════════════════════════════════════════
- * AI ASSISTANT SERVICE - Backend Consciousness Coordination
- * TerraFusion.AI - Elite Government AI Integration
- * Government. Transcended.
- * ═══════════════════════════════════════════════════════════════
- */
-
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -19,8 +11,7 @@ using TerraFusion.Consciousness.DTOs;
 namespace TerraFusion.AI.Services
 {
     /// <summary>
-    /// AI Assistant Service providing county employee AI superpowers
-    /// Coordinates 50,000+ agent swarm for intelligent assistance
+    /// AI Assistant Service providing county-scoped governed assistance.
     /// </summary>
     public interface IAIAssistantService
     {
@@ -56,53 +47,50 @@ namespace TerraFusion.AI.Services
                 request.CountyId,
                 request.EmployeeRole);
 
-            try
+            await Task.CompletedTask;
+
+            var taskType = DetermineTaskType(request.Message);
+            var suggestions = taskType switch
             {
-                // Coordinate with consciousness engine for multi-agent processing
-                var consciousnessContext = new ConsciousnessContext
+                "property_analysis" => new List<string>
                 {
-                    CountyId = request.CountyId,
-                    UserRole = request.EmployeeRole,
-                    TaskType = DetermineTaskType(request.Message),
-                    QuantumOptimization = true
-                };
-
-                var swarmRequest = new SwarmCoordinationRequest
+                    "Open TerraForge for governed valuation work",
+                    "Open TerraAtlas for parcel and map evidence",
+                },
+                "compliance_check" => new List<string>
                 {
-                    CountyId = request.CountyId ?? "default",
-                    TaskType = "property_analysis",
-                    AgentCount = 10000,
-                    EnableQuantumOptimization = true,
-                    Parameters = new Dictionary<string, object>
-                    {
-                        { "message", request.Message }
-                    }
-                };
+                    "Open TerraDossier for packet and evidence review",
+                    "Use Pilot for governed execution",
+                },
+                "workflow_automation" => new List<string>
+                {
+                    "Open TerraDais for governed queue work",
+                    "Use Pilot for any action that changes county state",
+                },
+                _ => new List<string>
+                {
+                    "Open TerraDais for governed queue work",
+                    "Use Pilot for governed actions",
+                },
+            };
 
-                var swarmResponse = await _consciousnessEngine
-                    .CoordinateSwarmAsync(swarmRequest);
-
-                // Generate intelligent response based on swarm analysis
-                var response = await GenerateResponseAsync(request, swarmResponse);
-
-                _logger.LogInformation(
-                    "AI response generated with confidence {Confidence}",
-                    response.Confidence);
-
-                return response;
-            }
-            catch (Exception ex)
+            return new AIAssistantResponse
             {
-                _logger.LogError(ex, "Error processing AI message");
-                return new AIAssistantResponse
+                MessageId = Guid.NewGuid().ToString(),
+                Content =
+                    $"Assistant automation is not operational on this route. Your request for {request.CountyId} ({request.EmployeeRole}) was received, but no governed AI execution or evidence-backed analysis is available from api/AIAssistant/message.",
+                Confidence = 0.0,
+                Suggestions = suggestions,
+                Metadata = new Dictionary<string, object>
                 {
-                    MessageId = Guid.NewGuid().ToString(),
-                    Content = "I apologize, but I encountered an issue processing your request. Please try again or contact support.",
-                    Confidence = 0.0,
-                    Timestamp = DateTime.UtcNow,
-                    Status = "error"
-                };
-            }
+                    { "mode", "compatibility" },
+                    { "countyId", request.CountyId },
+                    { "employeeRole", request.EmployeeRole },
+                    { "taskType", taskType },
+                },
+                Timestamp = DateTime.UtcNow,
+                Status = "compatibility",
+            };
         }
 
         public async Task<AISwarmHealthStatus> GetSwarmStatusAsync(string countyId)
@@ -114,7 +102,7 @@ namespace TerraFusion.AI.Services
                 CountyId = countyId,
                 ActiveAgents = status.ActiveAgents,
                 SwarmActivity = status.ActivityLevel,
-                QuantumOptimizationFactor = 949,
+                QuantumOptimizationFactor = 0,
                 ResponseTime = status.AvgResponseTimeMs,
                 AccuracyScore = status.AccuracyScore,
                 ConsciousnessLevel = status.ConsciousnessLevel,
@@ -125,209 +113,35 @@ namespace TerraFusion.AI.Services
         public async Task<List<AIRecommendation>> GetRecommendationsAsync(string countyId, string? context)
         {
             _logger.LogInformation("Generating AI recommendations for {CountyId}", countyId);
-
-            var recommendations = new List<AIRecommendation>();
-
-            // Property assessment recommendations
-            var propertyRecommendations = await GetPropertyRecommendationsAsync(countyId);
-            recommendations.AddRange(propertyRecommendations);
-
-            // Compliance recommendations
-            var complianceRecommendations = await GetComplianceRecommendationsAsync(countyId);
-            recommendations.AddRange(complianceRecommendations);
-
-            // Workflow optimization recommendations
-            var workflowRecommendations = await GetWorkflowRecommendationsAsync(countyId);
-            recommendations.AddRange(workflowRecommendations);
-
-            return recommendations
-                .OrderByDescending(r => r.Priority)
-                .ThenByDescending(r => r.Confidence)
-                .Take(10)
-                .ToList();
+            await Task.CompletedTask;
+            return new List<AIRecommendation>();
         }
 
         public async Task<PropertyAnalysisResult> AnalyzePropertyAsync(string parcelId, string countyId)
         {
             await Task.CompletedTask;
-            // Phase 8: Return degraded result instead of crashing at runtime.
-            // TODO: Fix type conversions — parcelId to decimal, comparables to dynamic
-            _logger.LogWarning("AnalyzePropertyAsync({ParcelId}, {CountyId}) — returning stub result; type conversion not yet implemented", parcelId, countyId);
+            _logger.LogWarning(
+                "AnalyzePropertyAsync({ParcelId}, {CountyId}) is running in compatibility mode; no governed assistant property analysis is available on this route",
+                parcelId,
+                countyId);
+
             return new PropertyAnalysisResult
             {
                 ParcelId = parcelId,
                 CountyId = countyId,
                 ValuationConfidence = 0,
                 MarketTrend = "unavailable",
-                ComplianceStatus = "pending",
-                AIRecommendations = new List<string> { "AI property analysis not yet available — type conversion pending" },
+                ComplianceStatus = "unavailable",
+                AIRecommendations = new List<string>
+                {
+                    "Governed property analysis is unavailable on api/AIAssistant/analyze-property.",
+                    "Use TerraForge, TerraAtlas, or Pilot for evidence-backed parcel work.",
+                },
                 ComparablesCount = 0,
                 AccuracyScore = 0,
                 QuantumOptimized = false,
                 AnalysisTimestamp = DateTime.UtcNow
             };
-
-            // _logger.LogInformation("AI analyzing property {ParcelId} for {CountyId}", parcelId, countyId);
-            //
-            // // Coordinate AI swarm for comprehensive property analysis
-            // var valuationTask = _valuationService.GetQuantumValuationAsync(parcelId, countyId);
-            // var complianceTask = _complianceService.ValidateIAAOComplianceAsync(parcelId, countyId);
-            // var comparablesTask = _valuationService.GetComparablesAsync(parcelId, countyId);
-            //
-            // await Task.WhenAll(valuationTask, complianceTask, comparablesTask);
-            //
-            // var valuation = await valuationTask;
-            // var compliance = await complianceTask;
-            // var comparables = await comparablesTask;
-            //
-            // return new PropertyAnalysisResult
-            // {
-            //     ParcelId = parcelId,
-            //     CountyId = countyId,
-            //     ValuationConfidence = (double)valuation.ConfidenceScore,
-            //     MarketTrend = DetermineMarketTrend(valuation, comparables),
-            //     ComplianceStatus = compliance.IsCompliant ? "compliant" : "review",
-            //     AIRecommendations = GeneratePropertyRecommendations(valuation, compliance, comparables),
-            //     ComparablesCount = comparables.Count,
-            //     AccuracyScore = (double)valuation.ConfidenceScore, // Use ConfidenceScore as AccuracyScore
-            //     QuantumOptimized = true,
-            //     AnalysisTimestamp = DateTime.UtcNow
-            // };
-        }
-
-        private async Task<AIAssistantResponse> GenerateResponseAsync(
-            AIAssistantRequest request,
-            SwarmCoordinationResult swarmResponse)
-        {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
-            var messageType = DetermineTaskType(request.Message);
-            string content;
-            var suggestions = new List<string>();
-
-            switch (messageType)
-            {
-                case "property_analysis":
-                    content = GeneratePropertyAnalysisResponse(swarmResponse);
-                    suggestions = new List<string>
-                    {
-                        "Run comprehensive property analysis",
-                        "Generate IAAO compliance report",
-                        "Schedule bulk assessment workflow"
-                    };
-                    break;
-
-                case "compliance_check":
-                    content = GenerateComplianceResponse(swarmResponse);
-                    suggestions = new List<string>
-                    {
-                        "View detailed compliance metrics",
-                        "Generate audit report",
-                        "Schedule compliance review"
-                    };
-                    break;
-
-                case "workflow_automation":
-                    content = GenerateWorkflowResponse(swarmResponse);
-                    suggestions = new List<string>
-                    {
-                        "Execute automated workflow",
-                        "Review workflow suggestions",
-                        "Optimize task sequence"
-                    };
-                    break;
-
-                default:
-                    content = GenerateGeneralResponse(request, swarmResponse);
-                    suggestions = new List<string>
-                    {
-                        "Analyze property data",
-                        "Check system compliance",
-                        "Generate performance report"
-                    };
-                    break;
-            }
-
-            return new AIAssistantResponse
-            {
-                MessageId = Guid.NewGuid().ToString(),
-                Content = content,
-                Confidence = (double)swarmResponse.ConfidenceScore,
-                Suggestions = suggestions,
-                Metadata = swarmResponse.Results,
-                Timestamp = DateTime.UtcNow,
-                Status = "success"
-            };
-        }
-
-        private string GeneratePropertyAnalysisResponse(SwarmCoordinationResult result)
-        {
-            return $@"🏡 **Property Analysis Complete**
-
-I've analyzed {result.Results["propertiesAnalyzed"]} properties using quantum-enhanced valuation algorithms.
-
-**Key Insights:**
-• Market trend: {result.Results["marketTrend"]} ({result.Results["trendPercentage"]})
-• Valuation accuracy: {result.Results["accuracy"]}
-• IAAO compliance: ✓ Certified
-• Outliers detected: {result.Results["outliers"]} properties flagged for review
-
-**Recommended Actions:**
-1. Review flagged properties
-2. Update cost factors based on market analysis
-3. Generate assessment roll with AI validation
-
-Would you like me to execute any of these actions?";
-        }
-
-        private string GenerateComplianceResponse(SwarmCoordinationResult result)
-        {
-            return $@"🛡️ **Compliance Check Complete**
-
-FISMA-High security scan completed across all {result.Results["countyId"]} systems.
-
-**Status: EXCELLENT**
-• Security score: {result.Results["securityScore"]}%
-• Audit trail: Complete
-• Data isolation: Verified
-• Access controls: Optimal
-
-**Zero critical issues detected.** All government standards exceeded.
-
-Next audit scheduled: Auto-monitoring active 24/7";
-        }
-
-        private string GenerateWorkflowResponse(SwarmCoordinationResult result)
-        {
-            return $@"⚡ **Workflow Optimization Ready**
-
-AI has analyzed your current workflows and identified {result.Results["optimizations"]} optimization opportunities.
-
-**Estimated Impact:**
-• Time savings: {result.Results["timeSavings"]} hours/week
-• Accuracy improvement: +{result.Results["accuracyGain"]}%
-• Task automation: {result.Results["automationPotential"]}%
-
-**Top Recommendations:**
-1. {result.Results["topRecommendation1"]}
-2. {result.Results["topRecommendation2"]}
-3. {result.Results["topRecommendation3"]}
-
-Ready to implement these optimizations?";
-        }
-
-        private string GenerateGeneralResponse(AIAssistantRequest request, SwarmCoordinationResult result)
-        {
-            return $@"✨ **AI Analysis Ready**
-
-I've processed your request using the TerraFusion AI swarm. Based on your role as {request.EmployeeRole} in {request.CountyId}, I can provide:
-
-• **Instant Analysis** - Real-time data insights
-• **Smart Suggestions** - AI-powered recommendations
-• **Workflow Automation** - One-click task completion
-• **Predictive Intelligence** - Future trend forecasting
-
-What specific task would you like me to help with?";
         }
 
         private string DetermineTaskType(string message)
@@ -349,61 +163,6 @@ What specific task would you like me to help with?";
             return "general";
         }
 
-        private async Task<List<AIRecommendation>> GetPropertyRecommendationsAsync(string countyId)
-        {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
-            // Implement property-specific recommendations
-            return new List<AIRecommendation>
-            {
-                new AIRecommendation
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Title = "Bulk Assessment Ready",
-                    Description = "847 properties prepared for quarterly assessment",
-                    Priority = 10,
-                    Confidence = 0.95,
-                    Category = "property",
-                    ActionType = "bulk_assessment"
-                }
-            };
-        }
-
-        private async Task<List<AIRecommendation>> GetComplianceRecommendationsAsync(string countyId)
-        {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
-            // Implement compliance recommendations
-            return new List<AIRecommendation>();
-        }
-
-        private async Task<List<AIRecommendation>> GetWorkflowRecommendationsAsync(string countyId)
-        {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
-            // Implement workflow recommendations
-            return new List<AIRecommendation>();
-        }
-
-        private string DetermineMarketTrend(dynamic valuation, List<dynamic> comparables)
-        {
-            // Sophisticated market trend analysis
-            return "up"; // Simplified
-        }
-
-        private List<string> GeneratePropertyRecommendations(
-            dynamic valuation,
-            dynamic compliance,
-            List<dynamic> comparables)
-        {
-            return new List<string>
-            {
-                "Valuation within expected range (+2.3%)",
-                "No comparable sale outliers detected",
-                "IAAO standards exceeded (COD: 8.2%)",
-                "Recommend annual reassessment cycle"
-            };
-        }
     }
 
     #region Models

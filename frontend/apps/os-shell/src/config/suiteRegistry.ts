@@ -580,6 +580,9 @@ export function isValidPrimaryAction(
 /**
  * Valid workbench tab ids (mirrored from PropertyWorkbench).
  * This is the canonical list - PropertyWorkbench should use this.
+ *
+ * Gate 5 of workbench.contractGates locks this list to exactly:
+ *   summary, forge, atlas, dais, clerk, treasury, audit, dossier, pilot
  */
 export const VALID_WORKBENCH_TAB_IDS: readonly WorkbenchTabId[] = [
   'summary',
@@ -686,6 +689,12 @@ export function getWorkbenchFallbackRoute(suite: WorkbenchSuiteDefinition): stri
  * @returns Fallback route, or null if not a workbench suite
  */
 export function getWorkbenchFallbackById(suiteId: SuiteId): string | null {
+  // gpt → pilot workbench tab. TerraGPT is registered as a standalone suite,
+  // but its workbench surface is the parcel-context pilot tab. Anchor that
+  // here so parcel-search fallbacks land on /property/search?openTab=pilot.
+  if (suiteId === 'gpt') {
+    return '/property/search?openTab=pilot';
+  }
   const suite = getSuiteById(suiteId);
   if (!suite || !isWorkbenchSuite(suite)) return null;
   return getWorkbenchFallbackRoute(suite);
@@ -747,6 +756,24 @@ export function getWorkbenchHrefByIdWithContext(
   suiteId: SuiteId,
   parcelId: string | null
 ): WorkbenchHrefResult | null {
+  // gpt → pilot workbench tab. With a parcel context, route to the parcel's
+  // pilot sub-tab; without context, fall back to parcel search anchored on pilot.
+  if (suiteId === 'gpt') {
+    if (parcelId) {
+      return {
+        href: `/property/${parcelId}/pilot`,
+        hasParcelContext: true,
+        parcelId,
+        isFallback: false,
+      };
+    }
+    return {
+      href: '/property/search?openTab=pilot',
+      hasParcelContext: false,
+      parcelId: null,
+      isFallback: true,
+    };
+  }
   const suite = getSuiteById(suiteId);
   if (!suite || !isWorkbenchSuite(suite)) return null;
   return getWorkbenchHrefWithContext(suite, parcelId);

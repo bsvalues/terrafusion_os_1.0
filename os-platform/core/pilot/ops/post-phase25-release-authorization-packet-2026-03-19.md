@@ -135,6 +135,7 @@ Primary sources reconciled in this packet:
 - `.github/workflows/sqlite-dev-adapter-test.yml`
 - `os-platform/core/pilot/ops/DEV-ADAPTER-README.md`
 - `os-platform/core/pilot/ops/dev-adapter-runbook-2026-03-23.md`
+- `os-platform/core/pilot/ops/local-agent-release-proof-2026-04-27.md`
 
 Traceability index:
 

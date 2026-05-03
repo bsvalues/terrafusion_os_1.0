@@ -1,10 +1,9 @@
 /**
  * TerraFusion Consciousness Engine
- * AI-powered interface adaptation for government transcendence
- * Learns user patterns and provides predictive assistance
+ * Evidence-gated interface adaptation.
+ * Local patterns may support UI hints; AI guidance requires a governed provider.
  */
-import { useQuantumPerformance } from '@/hooks/useQuantumPerformance';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 interface UserPattern {
   action: string;
@@ -43,8 +42,6 @@ export function useConsciousnessEngine() {
 
   const [userPatterns, setUserPatterns] = useState<UserPattern[]>([]);
   const [assistance, setAssistance] = useState<PredictiveAssistance[]>([]);
-  const sessionData = useRef<Map<string, any>>(new Map());
-  const { isTranscendent } = useQuantumPerformance();
 
   // Learn from user interactions
   const learnFromAction = useCallback(
@@ -74,12 +71,7 @@ export function useConsciousnessEngine() {
 
       setConsciousness((prev) => ({
         ...prev,
-        level:
-          patternCount > 100 && successRate > 0.8
-            ? 'TRANSCENDENT'
-            : patternCount > 50 && successRate > 0.7
-              ? 'AWARE'
-              : 'AWAKENING',
+        level: patternCount > 50 && successRate > 0.7 ? 'AWARE' : 'AWAKENING',
         confidence: Math.min(100, successRate * 100),
       }));
     },
@@ -108,11 +100,6 @@ export function useConsciousnessEngine() {
   const generateRecommendations = useCallback(() => {
     const recommendations: string[] = [];
 
-    // Performance-based recommendations
-    if (!isTranscendent) {
-      recommendations.push('Optimize interface for better performance');
-    }
-
     // Usage pattern recommendations
     const mostUsedActions = userPatterns
       .sort((a, b) => b.frequency - a.frequency)
@@ -134,58 +121,12 @@ export function useConsciousnessEngine() {
       ...prev,
       adaptiveRecommendations: recommendations,
     }));
-  }, [userPatterns, consciousness.userExperience, isTranscendent]);
+  }, [userPatterns, consciousness.userExperience]);
 
-  // Provide predictive assistance
+  // Provide predictive assistance only when a governed AI guidance provider is connected.
   const providePredictiveAssistance = useCallback(() => {
-    const assistanceItems: PredictiveAssistance[] = [];
-
-    // Government workflow assistance
-    if (consciousness.governmentContext === 'ASSESSMENT') {
-      assistanceItems.push({
-        suggestion: 'Auto-populate property details from county records',
-        confidence: 85,
-        reason: 'Based on your recent assessment patterns',
-        action: () => console.log('Auto-populating property data...'),
-      });
-    }
-
-    // Time-based assistance
-    const currentHour = new Date().getHours();
-    if (currentHour >= 9 && currentHour <= 11) {
-      assistanceItems.push({
-        suggestion: 'Review pending assessments from yesterday',
-        confidence: 75,
-        reason: 'Morning review pattern detected',
-        action: () => console.log('Loading pending assessments...'),
-      });
-    }
-
-    // Efficiency improvements
-    const repeatActions = userPatterns.filter((p) => p.frequency > 10).map((p) => p.action);
-
-    if (repeatActions.length > 0) {
-      assistanceItems.push({
-        suggestion: 'Create macro for repeated workflow',
-        confidence: 90,
-        reason: `You've repeated "${repeatActions[0]}" ${userPatterns.find((p) => p.action === repeatActions[0])?.frequency} times`,
-        action: () => console.log('Creating workflow macro...'),
-      });
-    }
-
-    setAssistance(assistanceItems);
-  }, [consciousness, userPatterns]);
-
-  // Consciousness enhancement based on system performance
-  useEffect(() => {
-    if (isTranscendent) {
-      setConsciousness((prev) => ({
-        ...prev,
-        level: 'TRANSCENDENT',
-        confidence: Math.min(100, prev.confidence + 5),
-      }));
-    }
-  }, [isTranscendent]);
+    setAssistance([]);
+  }, []);
 
   // Periodic consciousness updates
   useEffect(() => {
@@ -221,7 +162,7 @@ export function useConsciousnessEngine() {
     learnFromAction,
     predictNextActions,
     detectGovernmentContext,
-    isTranscendent: consciousness.level === 'TRANSCENDENT',
+    isTranscendent: false,
   };
 }
 

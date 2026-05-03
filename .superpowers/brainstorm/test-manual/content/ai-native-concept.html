@@ -1,0 +1,193 @@
+<h2>The AI-Native Calibration Cockpit</h2>
+<p class="subtitle">Not a wizard. Not a chatbot. Not a dashboard. Something new — the AI has already done the work before you open the tool. You review, override, and sign off.</p>
+
+<div class="section">
+  <div class="label">The Core Paradigm Shift</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;">
+    <div style="background:#1e293b;border:1px solid #ef4444;border-radius:8px;padding:14px;">
+      <div style="color:#ef4444;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">❌ Old Way — Tool-Centric</div>
+      <div style="color:#94a3b8;font-size:12px;line-height:1.6;">
+        Appraiser opens tool → runs report → reads numbers → decides what to investigate → opens another screen → manually identifies problem → figures out fix → applies it → manually writes memo
+      </div>
+      <div style="color:#ef444480;font-size:11px;margin-top:8px;">Hours of work. High error risk. Memo often skipped.</div>
+    </div>
+    <div style="background:#1e293b;border:1px solid #22c55e;border-radius:8px;padding:14px;">
+      <div style="color:#22c55e;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">✓ AI-Native Way — Appraiser-Centric</div>
+      <div style="color:#94a3b8;font-size:12px;line-height:1.6;">
+        Appraiser opens tool → AI has already run full diagnostic stack, identified all issues, classified each as data/rate/outlier/external, proposed specific fixes, drafted the Calibration Memo → Appraiser reviews, overrides anything they disagree with, signs
+      </div>
+      <div style="color:#22c55e80;font-size:11px;margin-top:8px;">Minutes of expert review. Full audit trail. Memo is complete.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">What the AI Does Automatically (Before You Touch Anything)</div>
+  <div style="background:#0f172a;border-radius:8px;padding:16px;margin-top:10px;font-size:12px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+      <div style="border-left:3px solid #38bdf8;padding-left:10px;">
+        <div style="color:#38bdf8;font-weight:600;margin-bottom:6px;">① READS THE MATRIX</div>
+        <div style="color:#94a3b8;line-height:1.5;">Runs full PRD/PRB/COD/COV on every cell. Flags every deviation. Ranks severity. Classifies problem type for each finding.</div>
+      </div>
+      <div style="border-left:3px solid #a78bfa;padding-left:10px;">
+        <div style="color:#a78bfa;font-weight:600;margin-bottom:6px;">② CLASSIFIES EACH ISSUE</div>
+        <div style="color:#94a3b8;line-height:1.5;"><span style="color:#ef4444">Rate Problem</span> → base rate is off, needs schedule adjustment<br><span style="color:#f59e0b">Data Problem</span> → parcel mis-coded, outlier sales<br><span style="color:#38bdf8">External Factor</span> → market shift, new construction wave<br><span style="color:#22c55e">No Action</span> → structural, mathematically expected</div>
+      </div>
+      <div style="border-left:3px solid #22c55e;padding-left:10px;">
+        <div style="color:#22c55e;font-weight:600;margin-bottom:6px;">③ PROPOSES FIXES</div>
+        <div style="color:#94a3b8;line-height:1.5;">For Rate Problems: exact $/sqft adjustment to hit PRD target<br>For Data Problems: which specific records to investigate<br>For External Factors: recommended sales window shift<br>Drafts Calibration Memo for each proposed change</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">The Cockpit Layout — B+C with A enforced automatically</div>
+  <div style="background:#0f172a;border-radius:8px;padding:14px;margin-top:10px;font-family:monospace;font-size:11px;">
+
+    <!-- Header bar -->
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #334155;padding-bottom:8px;margin-bottom:10px;">
+      <div style="color:#38bdf8;font-weight:700;">CostForge Calibration Workbench — Benton County 2025 Working Year Matrix</div>
+      <div style="display:flex;gap:8px;">
+        <div style="background:#22c55e20;color:#22c55e;padding:3px 8px;border-radius:4px;font-size:10px;">PRD 1.000 ✓</div>
+        <div style="background:#f59e0b20;color:#f59e0b;padding:3px 8px;border-radius:4px;font-size:10px;">COD 26.1% ⚠</div>
+        <div style="background:#1e293b;color:#94a3b8;padding:3px 8px;border-radius:4px;font-size:10px;">3 AI findings</div>
+        <div style="background:#a78bfa20;color:#a78bfa;padding:3px 8px;border-radius:4px;font-size:10px;">Memo: Draft</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:12px;">
+
+      <!-- Left: AI Finding Queue -->
+      <div>
+        <div style="color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">AI FINDING QUEUE — ranked by impact</div>
+
+        <!-- Finding 1 -->
+        <div style="background:#1e293b;border:1px solid #f59e0b;border-radius:6px;padding:10px;margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <div style="color:#f59e0b;font-weight:600;">⚠ FINDING 1 — COD 26.1%: Type-Mix Structural Signal</div>
+            <div style="color:#64748b;font-size:9px;">NO ACTION NEEDED</div>
+          </div>
+          <div style="color:#94a3b8;font-size:10px;line-height:1.5;">Within-type COD is 8.2% across all 11 types (IAAO compliant). Overall COD driven by $170/sqft spread between Hospital and Warehouse. This is mathematically expected from type diversity, not a calibration error.</div>
+          <div style="display:flex;gap:6px;margin-top:6px;">
+            <div style="background:#22c55e20;color:#22c55e;padding:2px 6px;border-radius:3px;font-size:9px;cursor:pointer;">✓ Accept AI finding</div>
+            <div style="background:#334155;color:#94a3b8;padding:2px 6px;border-radius:3px;font-size:9px;cursor:pointer;">Override</div>
+            <div style="background:#334155;color:#94a3b8;padding:2px 6px;border-radius:3px;font-size:9px;cursor:pointer;">Drill into data</div>
+          </div>
+        </div>
+
+        <!-- Finding 2 -->
+        <div style="background:#1e293b;border:1px solid #ef4444;border-radius:6px;padding:10px;margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <div style="color:#ef4444;font-weight:600;">⚡ FINDING 2 — Reval 6 factor -15.5%: Needs Sales Validation</div>
+            <div style="color:#ef4444;font-size:9px;">ACTION REQUIRED</div>
+          </div>
+          <div style="color:#94a3b8;font-size:10px;line-height:1.5;">Historic Richland area factor of 0.845 is the largest downward adjustment in the matrix. WAC 458-07 requires market evidence for adjustments >10%. No ratio study on file for this cycle.</div>
+          <div style="color:#f59e0b;font-size:10px;margin-top:4px;">AI Recommendation: Pull TerraFusion arm's-length sales for Reval 6, 2022–2025. If median ratio supports 0.845, document. If not, recalibrate.</div>
+          <div style="display:flex;gap:6px;margin-top:6px;">
+            <div style="background:#38bdf820;color:#38bdf8;padding:2px 6px;border-radius:3px;font-size:9px;cursor:pointer;">▶ Pull sales data</div>
+            <div style="background:#334155;color:#94a3b8;padding:2px 6px;border-radius:3px;font-size:9px;cursor:pointer;">Adjust factor</div>
+            <div style="background:#334155;color:#94a3b8;padding:2px 6px;border-radius:3px;font-size:9px;cursor:pointer;">Add memo note</div>
+          </div>
+        </div>
+
+        <!-- Finding 3 -->
+        <div style="background:#1e293b;border:1px solid #a78bfa;border-radius:6px;padding:10px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <div style="color:#a78bfa;font-weight:600;">🔍 FINDING 3 — Secondary features: Lump-Sum Audit Due</div>
+            <div style="color:#a78bfa;font-size:9px;">BENTON METHOD SOP</div>
+          </div>
+          <div style="color:#94a3b8;font-size:10px;line-height:1.5;">Per Benton Method SOP §2.2: patios, shops, basements, garages must be %-of-base, not flat dollar. Last audit: never recorded. PRB = 0.000 on base rates but secondary lump-sums would not appear here.</div>
+          <div style="color:#a78bfa;font-size:10px;margin-top:4px;">AI Recommendation: Run secondary feature audit across all 89,247 parcels. Flag any lump-sum adjustments. Estimate Scale Effect regressivity introduced.</div>
+          <div style="display:flex;gap:6px;margin-top:6px;">
+            <div style="background:#a78bfa20;color:#a78bfa;padding:2px 6px;border-radius:3px;font-size:9px;cursor:pointer;">▶ Run feature audit</div>
+            <div style="background:#334155;color:#94a3b8;padding:2px 6px;border-radius:3px;font-size:9px;cursor:pointer;">Skip</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Live Matrix + Controls -->
+      <div>
+        <div style="color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">WORKING YEAR MATRIX — click cell to drill</div>
+        <div style="background:#1e293b;border-radius:6px;padding:8px;margin-bottom:8px;">
+          <div style="display:grid;grid-template-columns:2fr repeat(6,1fr);gap:2px;font-size:9px;">
+            <div style="color:#64748b;">Type</div>
+            <div style="color:#94a3b8;text-align:center;">R1</div>
+            <div style="color:#94a3b8;text-align:center;">R2</div>
+            <div style="color:#94a3b8;text-align:center;">R3</div>
+            <div style="color:#94a3b8;text-align:center;">R4</div>
+            <div style="color:#94a3b8;text-align:center;">R5</div>
+            <div style="color:#ef4444;text-align:center;">R6 ⚠</div>
+            <div style="color:#64748b;">Hospital</div>
+            <div style="background:#22c55e15;color:#22c55e;text-align:center;padding:2px;border-radius:2px;">196</div>
+            <div style="background:#22c55e15;color:#22c55e;text-align:center;padding:2px;border-radius:2px;">206</div>
+            <div style="background:#f59e0b15;color:#f59e0b;text-align:center;padding:2px;border-radius:2px;">216</div>
+            <div style="background:#22c55e15;color:#22c55e;text-align:center;padding:2px;border-radius:2px;">187</div>
+            <div style="background:#22c55e15;color:#22c55e;text-align:center;padding:2px;border-radius:2px;">177</div>
+            <div style="background:#ef444415;color:#ef4444;text-align:center;padding:2px;border-radius:2px;">161 ⚠</div>
+            <div style="color:#64748b;">SFR</div>
+            <div style="background:#22c55e15;color:#22c55e;text-align:center;padding:2px;border-radius:2px;">128</div>
+            <div style="background:#22c55e15;color:#22c55e;text-align:center;padding:2px;border-radius:2px;">134</div>
+            <div style="background:#22c55e15;color:#22c55e;text-align:center;padding:2px;border-radius:2px;">140</div>
+            <div style="background:#22c55e15;color:#22c55e;text-align:center;padding:2px;border-radius:2px;">121</div>
+            <div style="background:#22c55e15;color:#22c55e;text-align:center;padding:2px;border-radius:2px;">115</div>
+            <div style="background:#ef444415;color:#ef4444;text-align:center;padding:2px;border-radius:2px;">105 ⚠</div>
+            <div style="color:#64748b;">Warehouse</div>
+            <div style="background:#22c55e15;color:#22c55e;text-align:center;padding:2px;border-radius:2px;">54</div>
+            <div style="background:#22c55e15;color:#22c55e;text-align:center;padding:2px;border-radius:2px;">57</div>
+            <div style="background:#22c55e15;color:#22c55e;text-align:center;padding:2px;border-radius:2px;">60</div>
+            <div style="background:#22c55e15;color:#22c55e;text-align:center;padding:2px;border-radius:2px;">52</div>
+            <div style="background:#22c55e15;color:#22c55e;text-align:center;padding:2px;border-radius:2px;">49</div>
+            <div style="background:#ef444415;color:#ef4444;text-align:center;padding:2px;border-radius:2px;">45 ⚠</div>
+          </div>
+          <div style="color:#64748b;font-size:9px;margin-top:6px;text-align:center;">Proposed changes highlighted yellow · Red = needs validation</div>
+        </div>
+
+        <div style="color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">MASS ADJUSTMENT CONTROLS</div>
+        <div style="background:#1e293b;border-radius:6px;padding:10px;font-size:10px;">
+          <div style="color:#94a3b8;margin-bottom:6px;">Apply to: <span style="color:#38bdf8;">All types</span> / <span style="color:#64748b;">Selected type</span> / <span style="color:#64748b;">Selected area</span></div>
+          <div style="color:#94a3b8;margin-bottom:4px;">Adjustment type: <span style="color:#22c55e">% of current rate</span> / <span style="color:#64748b;">$/sqft flat</span></div>
+          <div style="background:#0f172a;padding:8px;border-radius:4px;margin-top:4px;">
+            <div style="color:#64748b;font-size:9px;margin-bottom:4px;">AI IMPACT PREVIEW</div>
+            <div style="color:#94a3b8;">+5% all types → County AV: <span style="color:#22c55e">+$186M</span></div>
+            <div style="color:#94a3b8;">PRD after: <span style="color:#22c55e">1.000</span> · COD after: <span style="color:#f59e0b">26.1%</span></div>
+            <div style="color:#64748b;font-size:9px;margin-top:4px;">Note: COD unchanged — type-mix structural, not rate-driven</div>
+          </div>
+        </div>
+
+        <div style="margin-top:8px;background:#a78bfa10;border:1px solid #a78bfa30;border-radius:6px;padding:8px;font-size:10px;">
+          <div style="color:#a78bfa;font-weight:600;margin-bottom:4px;">📄 CALIBRATION MEMO — Auto-drafting</div>
+          <div style="color:#64748b;">Triggering event: COD 26.1% review · Data: 2025 matrix</div>
+          <div style="color:#64748b;">Diagnostics: PRD=1.000 ✓ · PRB≈0 ✓ · COD structural</div>
+          <div style="color:#64748b;">Actions taken: [pending appraiser review]</div>
+          <div style="color:#a78bfa;margin-top:4px;cursor:pointer;">▶ Preview full memo draft →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:16px;">
+  <div class="label">The Critical Question — Mass Adjustment vs. Data Problem</div>
+  <div style="background:#1e293b;border-radius:8px;padding:14px;margin-top:10px;">
+    <div style="color:#f8fafc;font-size:13px;margin-bottom:12px;">When AI flags Reval 6 at -15.5%, the appraiser needs to know: is this a <strong style="color:#ef4444">rate problem</strong> (base rate is wrong for Historic Richland) or a <strong style="color:#f59e0b">data problem</strong> (the ratio study has outlier sales from historic renovations skewing the factor)?</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:11px;">
+      <div style="background:#0f172a;border:1px solid #ef4444;border-radius:6px;padding:10px;">
+        <div style="color:#ef4444;font-weight:600;margin-bottom:4px;">RATE PROBLEM</div>
+        <div style="color:#94a3b8;">All Historic Richland parcels are systematically over/under assessed → adjust the area factor</div>
+        <div style="color:#ef4444;font-size:9px;margin-top:6px;">Fix: Recalibrate R6 factor from 0.845 → X</div>
+      </div>
+      <div style="background:#0f172a;border:1px solid #f59e0b;border-radius:6px;padding:10px;">
+        <div style="color:#f59e0b;font-weight:600;margin-bottom:4px;">DATA PROBLEM</div>
+        <div style="color:#94a3b8;">2-3 outlier sales in Historic Richland (renovated Victorians?) are skewing the ratio study → remove them</div>
+        <div style="color:#f59e0b;font-size:9px;margin-top:6px;">Fix: Flag parcels, re-run ratio study without outliers</div>
+      </div>
+      <div style="background:#0f172a;border:1px solid #38bdf8;border-radius:6px;padding:10px;">
+        <div style="color:#38bdf8;font-weight:600;margin-bottom:4px;">EXTERNAL FACTOR</div>
+        <div style="color:#94a3b8;">New construction boom / market shift in Historic Richland in 2024 makes old sales window invalid</div>
+        <div style="color:#38bdf8;font-size:9px;margin-top:6px;">Fix: Shift sales window, weight recent sales heavier</div>
+      </div>
+    </div>
+    <div style="color:#64748b;font-size:11px;margin-top:10px;text-align:center;">The AI-native workbench tells you WHICH one this is — and gives you the data to verify it. The appraiser makes the final call.</div>
+  </div>
+</div>

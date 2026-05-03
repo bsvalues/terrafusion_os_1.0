@@ -31,21 +31,28 @@ vi.mock('react-router-dom', async () => {
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
+// PropertySearch reads from assessmentPropertyService (canonical service);
+// pacsService is a re-export shim. Mock both so the search results render
+// regardless of which import path the component uses.
+const benton_search_results = {
+  items: [
+    {
+      geoId: '1-0001-010-0010-000',
+      address: '123 TULIP LN KENNEWICK WA 99336',
+      assessedValue: 285000,
+      marketValue: 310000,
+      propertyType: 'Residential',
+    },
+  ],
+  totalCount: 89247,
+  page: 1,
+  pageSize: 20,
+};
+vi.mock('../../services/assessmentPropertyService', () => ({
+  getAssessmentProperties: vi.fn().mockResolvedValue(benton_search_results),
+}));
 vi.mock('../../services/pacsService', () => ({
-  getPacsProperties: vi.fn().mockResolvedValue({
-    items: [
-      {
-        geoId: '1-0001-010-0010-000',
-        address: '123 TULIP LN KENNEWICK WA 99336',
-        assessedValue: 285000,
-        marketValue: 310000,
-        propertyType: 'Residential',
-      },
-    ],
-    totalCount: 89247,
-    page: 1,
-    pageSize: 20,
-  }),
+  getPacsProperties: vi.fn().mockResolvedValue(benton_search_results),
 }));
 
 vi.mock('../../context/parcelContext', () => ({

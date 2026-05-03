@@ -1,12 +1,3 @@
-/*
- * ═══════════════════════════════════════════════════════════════
- * TERRAFUSION OS - GOVERNMENT OPERATIONS CONTROLLER
- * Benton County Government Excellence &amp; Property Assessment
- * Real-time County Operations &amp; Citizen Services
- * THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.
- * ═══════════════════════════════════════════════════════════════
- */
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -26,8 +17,6 @@ public class GovernmentController : ControllerBase
     private readonly ILogger<GovernmentController> _logger;
     private readonly ITerrasyncService _terrasyncService;
     private readonly TerraFusionDbContext _db;
-    // CARD-10: static stub — replace with live DB query once CARD-06 Properties seeding is verified.
-    private const int BentonParcelCountStub = 89_247;
 
     public GovernmentController(
         ILogger<GovernmentController> logger,
@@ -38,6 +27,14 @@ public class GovernmentController : ControllerBase
         _terrasyncService = terrasyncService;
         _db = db;
     }
+
+    private static object BentonCountyIdentity(int totalParcels) => new
+    {
+        name = "Benton County",
+        state = "Washington",
+        fips = "53005",
+        totalParcels,
+    };
 
     /// <summary>
     /// Get live parcel count and basic backend stats for Benton County surfaces.
@@ -77,7 +74,7 @@ public class GovernmentController : ControllerBase
 
     /// <summary>
     /// Get government excellence status for Benton County
-    /// Now uses TerraSync for dynamic data instead of hardcoded values
+    /// Returns only evidence-backed local status plus explicit external-system availability.
     /// </summary>
     [HttpGet("excellence")]
     [AllowAnonymous]
@@ -86,59 +83,50 @@ public class GovernmentController : ControllerBase
     {
         try
         {
-            _logger.LogInformation("🏛️ Getting government excellence status from TerraSync");
+            var totalParcels = await _db.Properties.AsNoTracking().CountAsync();
+            var terrasyncHealthy = await _terrasyncService.IsHealthyAsync();
 
-            // Try to get data from TerraSync first
-            var terrasyncData = await _terrasyncService.GetGovernmentExcellenceAsync();
-
-            if (terrasyncData != null)
+            return Ok(new
             {
-                _logger.LogInformation("✅ Using dynamic data from TerraSync");
-                return Ok(terrasyncData);
-            }
-            else
-            {
-                _logger.LogWarning("⚠️ TerraSync unavailable, falling back to static data");
-
-                // Fallback to static data if TerraSync is unavailable
-                return Ok(new
+                status = terrasyncHealthy ? "LOCAL_LIVE_WITH_EXTERNAL_SYNC" : "LOCAL_LIVE",
+                county = BentonCountyIdentity(totalParcels),
+                propertyAssessment = new
                 {
-                    status = "OPERATIONAL",
-                    county = new
+                    status = "LIVE_DB",
+                    totalParcels,
+                    dataSource = "LIVE_DB",
+                    note = "Parcel count is backed by the TerraFusion database for Benton County.",
+                },
+                externalSystems = new
+                {
+                    terrasync = new
                     {
-                        name = "Benton County",
-                        state = "Washington",
-                        fips = "53005",
-                        parcels = BentonParcelCountStub,
-                        assessmentSystem = "Harris PACS 9.0"
+                        status = terrasyncHealthy ? "AVAILABLE" : "UNAVAILABLE",
+                        endpoint = "api/health",
+                        note = terrasyncHealthy
+                            ? "TerraSync health endpoint responded."
+                            : "TerraSync did not respond. This route does not substitute fabricated sync metrics.",
                     },
-                    excellence = new
+                    legacyAssessmentSystem = new
                     {
-                        operationalStatus = "LIVE",
-                        demoMode = false,
-                        compliance = "FISMA-HIGH",
-                        availability = "99.9%",
-                        citizenSatisfaction = "99.8%",
-                        transcendenceLevel = "GOVERNMENT_TRANSCENDED"
+                        status = "REFERENCE_ONLY",
+                        system = "Harris PACS",
+                        note = "Legacy assessment metadata is not asserted as a live telemetry feed on this route.",
                     },
-                    services = new
+                },
+                operatorPosture = new
+                {
+                    governedActions = "PILOT_ONLY",
+                    aiSwarmStatus = "UNAVAILABLE",
+                    complianceStatus = "UNVERIFIED",
+                    warnings = new[]
                     {
-                        propertyAssessment = "ACTIVE",
-                        aiSwarm = "1008_AGENTS_ACTIVE",
-                        quantumOptimization = "ENABLED",
-                        realTimeSync = "DEGRADED" // Indicate TerraSync is down
+                        "This surface reports live parcel totals and external system reachability only.",
+                        "It does not claim live AI swarm, optimization, satisfaction, or SLA metrics.",
                     },
-                    metrics = new
-                    {
-                        responseTime = "< 150ms",
-                        accuracy = "99.9%",
-                        systemHealth = "DEGRADED", // Indicate TerraSync is down
-                        uptime = "99.99%"
-                    },
-                    dataSource = "STATIC_FALLBACK", // Indicate we're using fallback data
-                    timestamp = DateTime.UtcNow
-                });
-            }
+                },
+                timestamp = DateTime.UtcNow,
+            });
         }
         catch (Exception ex)
         {
@@ -149,7 +137,7 @@ public class GovernmentController : ControllerBase
 
     /// <summary>
     /// Get county configuration and operational details
-    /// Now uses TerraSync for dynamic data instead of hardcoded values
+    /// Returns Benton identity plus explicit availability of supporting systems.
     /// </summary>
     [HttpGet("county-config")]
     [AllowAnonymous]
@@ -158,67 +146,51 @@ public class GovernmentController : ControllerBase
     {
         try
         {
-            _logger.LogInformation("🗂️ Getting county configuration from TerraSync");
+            var totalParcels = await _db.Properties.AsNoTracking().CountAsync();
+            var terrasyncHealthy = await _terrasyncService.IsHealthyAsync();
 
-            // Try to get data from TerraSync first
-            var terrasyncData = await _terrasyncService.GetCountyConfigAsync();
-
-            if (terrasyncData != null)
+            return Ok(new
             {
-                _logger.LogInformation("✅ Using dynamic county config from TerraSync");
-                return Ok(terrasyncData);
-            }
-            else
-            {
-                _logger.LogWarning("⚠️ TerraSync unavailable, falling back to static county config");
-
-                // Fallback to static data if TerraSync is unavailable
-                return Ok(new
+                county = new
                 {
-                    county = new
-                    {
-                        id = "benton",
-                        name = "Benton County",
-                        state = "Washington",
-                        fips = "53005",
-                        timezone = "America/Los_Angeles",
-                        parcelCount = BentonParcelCountStub
-                    },
-                    legacySystem = new
-                    {
-                        name = "Harris PACS",
-                        version = "9.0", // ✅ Corrected version
-                        enabled = true,
-                        jurisdiction = "BENTON_WA",
-                        syncInterval = "15 minutes",
-                        lastSync = DateTime.UtcNow.AddMinutes(-5)
-                    },
-                    deployment = new
-                    {
-                        environment = "PRODUCTION",
-                        mode = "BENTON_COUNTY_LIVE",
-                        demoMode = false,
-                        multiCounty = false
-                    },
-                    features = new
-                    {
-                        aiSwarmEnabled = true,
-                        quantumOptimization = true,
-                        realTimeSync = false, // Indicate TerraSync is down
-                        advancedAnalytics = true,
-                        complianceMonitoring = true
-                    },
-                    sla = new
-                    {
-                        availability = 99.9,
-                        p95Latency = 150,
-                        errorRate = 0.1,
-                        accuracy = 99.9
-                    },
-                    dataSource = "STATIC_FALLBACK", // Indicate we're using fallback data
-                    timestamp = DateTime.UtcNow
-                });
-            }
+                    id = "benton",
+                    name = "Benton County",
+                    state = "Washington",
+                    fips = "53005",
+                    timezone = "America/Los_Angeles",
+                    parcelCount = totalParcels,
+                },
+                legacySystem = new
+                {
+                    name = "Harris PACS",
+                    version = (string?)null,
+                    status = "REFERENCE_ONLY",
+                    note = "Legacy-system version and sync cadence are not emitted as live telemetry on this route.",
+                },
+                deployment = new
+                {
+                    environment = "PRODUCTION",
+                    mode = "BENTON_COUNTY",
+                    multiCounty = false,
+                    governedExecution = "PILOT_ONLY",
+                },
+                features = new
+                {
+                    propertyAssessmentData = true,
+                    terrasyncHealth = terrasyncHealthy,
+                    aiSwarm = false,
+                    quantumOptimization = false,
+                    advancedAnalytics = false,
+                    complianceMonitoring = false,
+                },
+                evidence = new
+                {
+                    parcelDataSource = "LIVE_DB",
+                    terrasyncReachable = terrasyncHealthy,
+                    note = "Only live parcel totals and external-system reachability are asserted here.",
+                },
+                timestamp = DateTime.UtcNow,
+            });
         }
         catch (Exception ex)
         {
@@ -233,11 +205,13 @@ public class GovernmentController : ControllerBase
     [HttpGet("status")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
-    public ActionResult GetSystemStatus()
+    public async Task<ActionResult> GetSystemStatus()
     {
         try
         {
-            _logger.LogInformation("📊 Getting system status");
+            _logger.LogInformation("📊 Getting government system status");
+            var totalParcels = await _db.Properties.AsNoTracking().CountAsync();
+            var terrasyncHealthy = await _terrasyncService.IsHealthyAsync();
 
             return Ok(new
             {
@@ -246,26 +220,35 @@ public class GovernmentController : ControllerBase
                     name = "TerraFusion OS",
                     version = "1.0.0",
                     environment = "PRODUCTION",
-                    county = "Benton County, WA"
+                    county = "Benton County, WA",
                 },
                 services = new
                 {
-                    api = new { status = "HEALTHY", responseTime = "45ms" },
-                    consciousness = new { status = "ACTIVE", agents = 1008 },
-                    legacyAssessmentSystem = new { status = "CONNECTED", system = "Harris PACS 9.0" },
-                    database = new { status = "HEALTHY", connections = 25 },
-                    cache = new { status = "OPTIMAL", hitRate = "97.3%" }
+                    api = new { status = "HEALTHY" },
+                    database = new { status = "HEALTHY", totalParcels },
+                    terrasync = new
+                    {
+                        status = terrasyncHealthy ? "AVAILABLE" : "UNAVAILABLE",
+                        note = terrasyncHealthy
+                            ? "TerraSync health endpoint responded."
+                            : "TerraSync did not respond during this request.",
+                    },
+                    agentOperations = new
+                    {
+                        status = "UNAVAILABLE",
+                        note = "No governed agent registry is attached to this route.",
+                    },
                 },
-                metrics = new
+                evidence = new
                 {
-                    uptime = "99.99%",
-                    requests = 125847,
-                    avgResponseTime = "67ms",
-                    memoryUsage = "2.1GB",
-                    cpuUsage = "15.3%"
+                    parcelDataSource = "LIVE_DB",
+                    externalSync = terrasyncHealthy ? "REACHABLE" : "UNREACHABLE",
+                    claimsLimitedToObservedSystems = true,
                 },
-                alerts = new string[0], // No active alerts
-                lastUpdated = DateTime.UtcNow
+                alerts = terrasyncHealthy
+                    ? Array.Empty<string>()
+                    : new[] { "TerraSync health endpoint is unavailable." },
+                lastUpdated = DateTime.UtcNow,
             });
         }
         catch (Exception ex)
@@ -281,21 +264,26 @@ public class GovernmentController : ControllerBase
     [HttpGet("health")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
-    public ActionResult GetGovernmentHealth()
+    public async Task<ActionResult> GetGovernmentHealth()
     {
         try
         {
+            var terrasyncHealthy = await _terrasyncService.IsHealthyAsync();
             return Ok(new
             {
-                status = "healthy",
+                status = terrasyncHealthy ? "healthy" : "degraded",
                 government = new
                 {
-                    operationalStatus = "LIVE",
+                    operationalStatus = terrasyncHealthy ? "LOCAL_LIVE_WITH_EXTERNAL_SYNC" : "LOCAL_LIVE",
                     county = "Benton County, WA",
-                    compliance = "FISMA-HIGH",
-                    transcended = true
+                    parcelData = "LIVE_DB",
+                    terrasync = terrasyncHealthy ? "AVAILABLE" : "UNAVAILABLE",
+                    governedActions = "PILOT_ONLY",
                 },
-                timestamp = DateTime.UtcNow
+                warnings = terrasyncHealthy
+                    ? Array.Empty<string>()
+                    : new[] { "TerraSync health endpoint unavailable. No substitute telemetry is fabricated." },
+                timestamp = DateTime.UtcNow,
             });
         }
         catch (Exception ex)
@@ -308,8 +296,9 @@ public class GovernmentController : ControllerBase
                 {
                     operationalStatus = "DEGRADED",
                     county = "Benton County, WA",
-                    compliance = "FISMA-HIGH",
-                    transcended = false
+                    parcelData = "UNKNOWN",
+                    terrasync = "UNAVAILABLE",
+                    governedActions = "PILOT_ONLY",
                 },
                 timestamp = DateTime.UtcNow,
                 error = ex.Message

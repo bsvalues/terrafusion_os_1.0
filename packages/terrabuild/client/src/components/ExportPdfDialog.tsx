@@ -14,11 +14,11 @@ interface ExportPdfDialogProps {
     squareFootage: number;
     quality: string;
     buildingAge: number;
-    region: string;
+    revalArea: string;
     complexityFactor: number;
     conditionFactor: number;
     baseCost: number;
-    regionalMultiplier: number;
+    revalAreaMultiplier: number;
     ageDepreciation: number;
     totalCost: number;
     materialCosts: {
@@ -64,28 +64,28 @@ const ExportPdfDialog = ({ calculation, trigger }: ExportPdfDialogProps) => {
     return qualityMap[quality] || quality;
   };
 
-  // Get formatted region display
-  const getRegionLabel = (region: string): string => {
+  // Get formatted reval area display
+  const getRevalAreaLabel = (revalArea: string): string => {
     // Convert snake case to readable format
-    if (region.includes('_')) {
-      return region.toLowerCase().split('_').map(word => 
+    if (revalArea.includes('_')) {
+      return revalArea.toLowerCase().split('_').map(word =>
         word.charAt(0).toUpperCase() + word.slice(1)
       ).join(' ');
     }
-    
-    return region.charAt(0).toUpperCase() + region.slice(1).toLowerCase();
+
+    return revalArea.charAt(0).toUpperCase() + revalArea.slice(1).toLowerCase();
   };
 
   const handleExport = async () => {
     try {
       setIsExporting(true);
-      
+
       // Format the calculation data
       const formattedCalculation = {
         ...calculation,
         buildingType: getBuildingTypeLabel(calculation.buildingType),
         quality: getQualityLabel(calculation.quality),
-        region: getRegionLabel(calculation.region)
+        revalArea: getRevalAreaLabel(calculation.revalArea)
       };
       
       // Generate the PDF

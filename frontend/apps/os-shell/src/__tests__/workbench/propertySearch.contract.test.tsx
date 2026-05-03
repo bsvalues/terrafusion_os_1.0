@@ -23,7 +23,9 @@ vi.mock('react-router-dom', async () => {
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
-vi.mock('../../services/pacsService', () => ({ getPacsProperties: vi.fn() }));
+vi.mock('../../services/assessmentPropertyService', () => ({
+  getAssessmentProperties: vi.fn(),
+}));
 
 vi.mock('../../context/parcelContext', () => ({
   useRecentParcels: () => [],
@@ -33,10 +35,10 @@ vi.mock('../../context/parcelContext', () => ({
 // Imports after mocks
 // ---------------------------------------------------------------------------
 
-import { getPacsProperties } from '../../services/pacsService';
+import { getAssessmentProperties } from '../../services/assessmentPropertyService';
 import PropertySearch from '../../pages/PropertySearch';
 
-const mockGetPacsProperties = getPacsProperties as ReturnType<typeof vi.fn>;
+const mockGetPacsProperties = getAssessmentProperties as ReturnType<typeof vi.fn>;
 
 // ---------------------------------------------------------------------------
 // Helpers

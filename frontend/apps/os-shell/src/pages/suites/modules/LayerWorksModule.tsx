@@ -1,315 +1,478 @@
 /**
- * LayerWorks Module -- Advanced Layer Management & Spatial Analysis
+ * LayerWorks Module -- Live layer composition and overlay workflow
  * ===================================================================
  * Constitutional module of TerraAtlas (Article V Section 5.1).
- * Owns: Layer composition, opacity control, spatial analysis overlays.
+ * Owns: layer composition, opacity control, and real overlay workflow assembly.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { invokeTool } from '@/api/pilotApi';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { TactileButton } from '@/ui/materials';
+import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
+import { Layers, Eye, EyeOff, Link2, Network, Radar, ExternalLink } from 'lucide-react';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Layers, Eye, EyeOff, BarChart3, Activity, ChevronUp, ChevronDown, Palette } from 'lucide-react';
-import { atlasService, type MapLayer } from '@/services/atlasService';
+  atlasService,
+  type LayerConfigsResponse,
+  type MapLayer,
+  type ParcelSpatialProfileResponse,
+} from '@/services/atlasService';
 
-/* -------------------------------------------------------------------------- */
-/* Layer group + analysis types                                                */
-/* -------------------------------------------------------------------------- */
+type AuditMetric = 'boundary' | 'uniformity' | 'zoning';
 
-interface LayerGroup {
-  id: string;
-  label: string;
-  layers: MapLayer[];
-  expanded: boolean;
+interface LayerAuditSummary {
+  narrative: string;
+  hotspotCount: number;
+  recommendedAction: string;
 }
-
-interface SpatialAnalysis {
-  id: string;
-  name: string;
-  description: string;
-  status: 'ready' | 'running' | 'complete';
-  layers: string[];
-  result?: string;
-}
-
-const MOCK_ANALYSES: SpatialAnalysis[] = [
-  { id: 'flood-risk', name: 'Flood Risk Overlay', description: 'Intersect parcels with FEMA flood zones', status: 'complete', layers: ['parcels', 'flood'], result: '2,341 parcels in flood zones' },
-  { id: 'zoning-conflict', name: 'Zoning Conflict Detection', description: 'Find parcels with incompatible land use vs zoning', status: 'complete', layers: ['parcels', 'zoning'], result: '87 potential conflicts' },
-  { id: 'fire-proximity', name: 'Wildfire Proximity Analysis', description: 'Buffer wildfire risk zones by 500ft', status: 'ready', layers: ['parcels', 'fire'] },
-  { id: 'slope-build', name: 'Buildable Slope Analysis', description: 'Identify parcels with >15% slope constraints', status: 'ready', layers: ['parcels', 'slope'] },
-  { id: 'wetland-impact', name: 'Wetland Impact Assessment', description: 'Parcels intersecting NWI wetland boundaries', status: 'complete', layers: ['parcels', 'wetlands'], result: '156 parcels with wetland overlap' },
-];
 
 const CATEGORY_LABELS: Record<string, string> = {
-  base: 'Base Layers',
-  overlay: 'Overlays',
-  analysis: 'Analysis Layers',
+  base: 'Base Geometry',
+  overlay: 'Overlay Services',
+  analysis: 'Analysis Services',
 };
-
-/* -------------------------------------------------------------------------- */
-/* Component                                                                   */
-/* -------------------------------------------------------------------------- */
 
 export default function LayerWorksModule() {
   const [layers, setLayers] = useState<MapLayer[]>([]);
-  const [groups, setGroups] = useState<LayerGroup[]>([]);
-  const [analyses, setAnalyses] = useState<SpatialAnalysis[]>(MOCK_ANALYSES);
+  const [layerConfigs, setLayerConfigs] = useState<LayerConfigsResponse | null>(null);
+  const [profileParcelId, setProfileParcelId] = useState('');
+  const [spatialProfile, setSpatialProfile] = useState<ParcelSpatialProfileResponse | null>(null);
+  const [profileState, setProfileState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [auditMetric, setAuditMetric] = useState<AuditMetric>('boundary');
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [layerAudit, setLayerAudit] = useState<{
+    status: 'idle' | 'loading' | 'success' | 'error';
+    result?: LayerAuditSummary;
+    correlationId?: string;
+    error?: string;
+  }>({ status: 'idle' });
 
   useEffect(() => {
     let cancelled = false;
     async function load() {
       setLoading(true);
-      const data = await atlasService.getLayers();
-      if (!cancelled) {
-        setLayers(data);
-        const grouped: Record<string, MapLayer[]> = {};
-        for (const l of data) {
-          (grouped[l.category] ??= []).push(l);
+      setLoadError(null);
+      try {
+        const [layerData, configData] = await Promise.all([
+          atlasService.getLayers(),
+          atlasService.getLayerConfigs(),
+        ]);
+        if (!cancelled) {
+          setLayers(layerData);
+          setLayerConfigs(configData);
         }
-        setGroups(
-          Object.entries(grouped).map(([cat, lrs]) => ({
-            id: cat,
-            label: CATEGORY_LABELS[cat] ?? cat,
-            layers: lrs,
-            expanded: true,
-          }))
-        );
-        setLoading(false);
+      } catch (error) {
+        if (!cancelled) {
+          setLoadError(error instanceof Error ? error.message : 'LayerWorks could not load live Atlas layer services.');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     }
-    load();
-    return () => { cancelled = true; };
+    void load();
+    return () => {
+      cancelled = true;
+    };
   }, []);
+
+  const groupedLayers = useMemo(
+    () => ({
+      base: layers.filter((layer) => layer.category === 'base'),
+      overlay: layers.filter((layer) => layer.category === 'overlay'),
+      analysis: layers.filter((layer) => layer.category === 'analysis'),
+    }),
+    [layers],
+  );
+
+  const enabledCount = layers.filter((layer) => layer.enabled).length;
 
   const toggleLayer = useCallback((id: string) => {
-    setLayers((prev) => prev.map((l) => (l.id === id ? { ...l, enabled: !l.enabled } : l)));
-    setGroups((prev) =>
-      prev.map((g) => ({
-        ...g,
-        layers: g.layers.map((l) => (l.id === id ? { ...l, enabled: !l.enabled } : l)),
-      }))
-    );
-  }, []);
-
-  const toggleGroup = useCallback((groupId: string) => {
-    setGroups((prev) => prev.map((g) => (g.id === groupId ? { ...g, expanded: !g.expanded } : g)));
+    setLayers((current) => current.map((layer) => (layer.id === id ? { ...layer, enabled: !layer.enabled } : layer)));
   }, []);
 
   const setOpacity = useCallback((layerId: string, opacity: number) => {
-    setLayers((prev) => prev.map((l) => (l.id === layerId ? { ...l, opacity } : l)));
-    setGroups((prev) =>
-      prev.map((g) => ({
-        ...g,
-        layers: g.layers.map((l) => (l.id === layerId ? { ...l, opacity } : l)),
-      }))
-    );
+    setLayers((current) => current.map((layer) => (layer.id === layerId ? { ...layer, opacity } : layer)));
   }, []);
 
-  const runAnalysis = useCallback((analysisId: string) => {
-    setAnalyses((prev) =>
-      prev.map((a) =>
-        a.id === analysisId ? { ...a, status: 'running' as const } : a
-      )
-    );
-    setTimeout(() => {
-      setAnalyses((prev) =>
-        prev.map((a) =>
-          a.id === analysisId
-            ? { ...a, status: 'complete' as const, result: `Analysis complete — ${Math.floor(Math.random() * 2000 + 100)} features affected` }
-            : a
-        )
-      );
-    }, 1500);
-  }, []);
+  const runGovernedLayerAudit = useCallback(async () => {
+    setLayerAudit({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'explain_spatial_anomaly',
+        params: {
+          county: 'benton',
+          geographyType: 'layer',
+          anomalyMetric: auditMetric,
+        },
+      });
 
-  const enabledCount = layers.filter((l) => l.enabled).length;
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string'
+          ? JSON.parse(response.result.output) as LayerAuditSummary
+          : response.result.output as LayerAuditSummary;
+        setLayerAudit({ status: 'success', result: parsed, correlationId: response.correlationId });
+      } else {
+        setLayerAudit({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: response.error?.message || 'Failed to explain layer anomaly.',
+        });
+      }
+    } catch (error) {
+      setLayerAudit({
+        status: 'error',
+        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+        error: error instanceof Error ? error.message : 'Failed to explain layer anomaly.',
+      });
+    }
+  }, [auditMetric]);
+
+  const runParcelSpatialProfile = useCallback(async () => {
+    if (!profileParcelId.trim()) return;
+    setProfileState('loading');
+    setProfileError(null);
+    try {
+      const profile = await atlasService.getParcelSpatialProfile(profileParcelId.trim());
+      setSpatialProfile(profile);
+      setProfileState('success');
+    } catch (error) {
+      setSpatialProfile(null);
+      setProfileState('error');
+      setProfileError(error instanceof Error ? error.message : 'Could not load live parcel spatial profile.');
+    }
+  }, [profileParcelId]);
 
   if (loading) {
     return (
       <div className='p-6 flex items-center justify-center min-h-[400px]'>
-        <p style={{ color: 'hsl(var(--tf-muted))' }}>Loading LayerWorks...</p>
+        <p style={{ color: 'hsl(var(--tf-muted))' }}>Loading LayerWorks from live Atlas services...</p>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className='p-6 space-y-4'>
+        <h2 className='text-2xl font-semibold flex items-center gap-3' style={{ color: 'hsl(var(--tf-fg))' }}>
+          <Layers style={{ color: 'hsl(var(--tf-suite-atlas))' }} size={28} />
+          LayerWorks
+        </h2>
+        <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-suite-dossier) / 0.4)' }}>
+          <CardContent className='p-6 text-sm' style={{ color: 'hsl(var(--tf-suite-dossier))' }}>
+            {loadError}
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
     <div className='p-6 space-y-6'>
-      {/* Header */}
       <div>
         <h2 className='text-2xl font-semibold flex items-center gap-3' style={{ color: 'hsl(var(--tf-fg))' }}>
           <Layers style={{ color: 'hsl(var(--tf-suite-atlas))' }} size={28} />
           LayerWorks
         </h2>
         <p style={{ color: 'hsl(var(--tf-muted))' }} className='mt-1'>
-          Advanced layer management &amp; spatial analysis — {enabledCount} of {layers.length} layers active
+          Live Benton ArcGIS layer composition and overlay workflow assembly. This module now uses real layer services and real parcel overlay workflow endpoints only.
         </p>
       </div>
 
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-        {/* Layer Manager */}
-        <div className='lg:col-span-2 space-y-4'>
-          {groups.map((group) => (
-            <Card key={group.id} style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
+      <div className='grid grid-cols-1 lg:grid-cols-[minmax(0,1.6fr)_minmax(20rem,0.9fr)] gap-6'>
+        <div className='space-y-4'>
+          {(['base', 'overlay', 'analysis'] as const).map((category) => (
+            <Card key={category} style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
               <CardHeader className='pb-2'>
-                <button onClick={() => toggleGroup(group.id)} className='flex items-center justify-between w-full'>
-                  <CardTitle className='text-base' style={{ color: 'hsl(var(--tf-fg))' }}>{group.label}</CardTitle>
-                  {group.expanded ? <ChevronUp size={16} style={{ color: 'hsl(var(--tf-muted))' }} /> : <ChevronDown size={16} style={{ color: 'hsl(var(--tf-muted))' }} />}
-                </button>
+                <CardTitle className='text-base' style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {CATEGORY_LABELS[category]}
+                </CardTitle>
                 <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
-                  {group.layers.filter((l) => l.enabled).length} of {group.layers.length} enabled
+                  {groupedLayers[category].filter((layer) => layer.enabled).length} of {groupedLayers[category].length} enabled
                 </CardDescription>
               </CardHeader>
-              {group.expanded && (
-                <CardContent className='space-y-2'>
-                  {group.layers.map((layer) => (
-                    <div
-                      key={layer.id}
-                      className='flex items-center gap-3 p-3 rounded-lg'
-                      style={{ background: 'hsl(var(--tf-bg))', border: '1px solid hsl(var(--tf-border))' }}
-                    >
-                      <Switch checked={layer.enabled} onCheckedChange={() => toggleLayer(layer.id)} />
-                      <div className='flex-1 min-w-0'>
-                        <div className='flex items-center gap-2'>
-                          {layer.enabled ? (
-                            <Eye size={14} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
-                          ) : (
-                            <EyeOff size={14} style={{ color: 'hsl(var(--tf-muted) / 0.5)' }} />
-                          )}
-                          <p className='text-sm font-medium truncate' style={{ color: 'hsl(var(--tf-fg))' }}>{layer.name}</p>
-                          {layer.features && (
-                            <Badge variant='outline' className='text-xs' style={{ borderColor: 'hsl(var(--tf-border))' }}>
-                              {layer.features.toLocaleString()} features
-                            </Badge>
-                          )}
-                        </div>
-                        <p className='text-xs mt-0.5' style={{ color: 'hsl(var(--tf-muted))' }}>Source: {layer.source}</p>
+              <CardContent className='space-y-2'>
+                {groupedLayers[category].map((layer) => (
+                  <div
+                    key={layer.id}
+                    className='flex items-center gap-3 rounded-lg p-3'
+                    style={{ background: 'hsl(var(--tf-bg))', border: '1px solid hsl(var(--tf-border))' }}
+                  >
+                    <Switch checked={layer.enabled} onCheckedChange={() => toggleLayer(layer.id)} />
+                    <div className='min-w-0 flex-1'>
+                      <div className='flex items-center gap-2'>
+                        {layer.enabled ? (
+                          <Eye size={14} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
+                        ) : (
+                          <EyeOff size={14} style={{ color: 'hsl(var(--tf-muted) / 0.5)' }} />
+                        )}
+                        <p className='truncate text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
+                          {layer.name}
+                        </p>
                       </div>
-                      {/* Opacity control */}
-                      <div className='flex items-center gap-2 shrink-0'>
-                        <Palette size={12} style={{ color: 'hsl(var(--tf-muted))' }} />
-                        <input
-                          type='range'
-                          min={0}
-                          max={100}
-                          value={layer.opacity}
-                          onChange={(e) => setOpacity(layer.id, Number(e.target.value))}
-                          className='w-20 accent-current'
+                      <p className='mt-1 text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                        {layer.source}
+                        {layer.type ? ` · ${layer.type}` : ''}
+                      </p>
+                      {layer.url && (
+                        <a
+                          href={layer.url}
+                          target='_blank'
+                          rel='noreferrer'
+                          className='mt-2 inline-flex items-center gap-1 text-xs underline-offset-2 hover:underline'
                           style={{ color: 'hsl(var(--tf-suite-atlas))' }}
-                        />
-                        <span className='text-xs w-8 text-right' style={{ color: 'hsl(var(--tf-muted))' }}>{layer.opacity}%</span>
-                      </div>
+                        >
+                          Open live ArcGIS service
+                          <ExternalLink size={12} />
+                        </a>
+                      )}
                     </div>
-                  ))}
-                </CardContent>
-              )}
+                    <div className='flex items-center gap-2 shrink-0'>
+                      <input
+                        type='range'
+                        min={0}
+                        max={100}
+                        value={Math.round(layer.opacity)}
+                        onChange={(event) => setOpacity(layer.id, Number(event.target.value))}
+                        className='w-20 accent-current'
+                        style={{ color: 'hsl(var(--tf-suite-atlas))' }}
+                      />
+                      <span className='w-8 text-right text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                        {Math.round(layer.opacity)}%
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
             </Card>
           ))}
-        </div>
 
-        {/* Spatial Analysis */}
-        <div className='space-y-4'>
           <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
             <CardHeader>
-              <CardTitle className='text-base flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
-                <BarChart3 size={16} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
-                Spatial Analysis
+              <CardTitle className='flex items-center gap-2 text-base' style={{ color: 'hsl(var(--tf-fg))' }}>
+                <Radar size={16} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
+                Live Overlay Recipes
               </CardTitle>
               <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
-                Run geospatial queries across active layers
+                Real Benton ArcGIS layer configuration endpoints. No simulated analysis queue remains here.
               </CardDescription>
             </CardHeader>
             <CardContent className='space-y-3'>
-              {analyses.map((analysis) => (
+              {layerConfigs?.layers.map((config) => (
                 <div
-                  key={analysis.id}
-                  className='p-3 rounded-lg space-y-2'
+                  key={config.Id ?? config.Name}
+                  className='rounded-lg p-3'
                   style={{ background: 'hsl(var(--tf-bg))', border: '1px solid hsl(var(--tf-border))' }}
                 >
-                  <div className='flex items-center justify-between'>
-                    <p className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>{analysis.name}</p>
-                    <Badge
-                      variant='outline'
-                      style={{
-                        background: analysis.status === 'complete'
-                          ? 'hsl(var(--tf-success-hs) 45% / 0.15)'
-                          : analysis.status === 'running'
-                          ? 'hsl(var(--tf-warning-hs) 50% / 0.15)'
-                          : 'hsl(var(--tf-muted) / 0.1)',
-                        color: analysis.status === 'complete'
-                          ? 'hsl(var(--tf-success-hs) 45%)'
-                          : analysis.status === 'running'
-                          ? 'hsl(var(--tf-warning-hs) 50%)'
-                          : 'hsl(var(--tf-muted))',
-                        borderColor: analysis.status === 'complete'
-                          ? 'hsl(142 71% 45% / 0.3)'
-                          : analysis.status === 'running'
-                          ? 'hsl(38 92% 50% / 0.3)'
-                          : 'hsl(var(--tf-border))',
-                      }}
-                    >
-                      {analysis.status}
-                    </Badge>
+                  <div className='flex items-center justify-between gap-3'>
+                    <div>
+                      <p className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
+                        {config.Name}
+                      </p>
+                      <p className='mt-1 text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                        {config.GeometryType ?? 'unknown'} · {(config.SpatialCapabilities ?? []).join(', ')}
+                      </p>
+                    </div>
+                    {config.queryUrl && (
+                      <a
+                        href={config.queryUrl}
+                        target='_blank'
+                        rel='noreferrer'
+                        className='inline-flex items-center gap-1 text-xs underline-offset-2 hover:underline'
+                        style={{ color: 'hsl(var(--tf-suite-atlas))' }}
+                      >
+                        Query URL
+                        <Link2 size={12} />
+                      </a>
+                    )}
                   </div>
-                  <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>{analysis.description}</p>
-                  <div className='flex items-center gap-1'>
-                    {analysis.layers.map((lid) => (
-                      <Badge key={lid} variant='outline' className='text-xs' style={{ borderColor: 'hsl(var(--tf-border))' }}>
-                        {lid}
-                      </Badge>
-                    ))}
-                  </div>
-                  {analysis.result && (
-                    <p className='text-xs font-medium' style={{ color: 'hsl(var(--tf-suite-atlas))' }}>
-                      {analysis.result}
-                    </p>
-                  )}
-                  {analysis.status === 'ready' && (
-                    <TactileButton size='sm' onClick={() => runAnalysis(analysis.id)} fullWidth leftIcon={<Activity size={14} />}>
-                      Run Analysis
-                    </TactileButton>
-                  )}
-                  {analysis.status === 'running' && (
-                    <div className='flex items-center gap-2'>
-                      <div className='h-1 flex-1 rounded-full overflow-hidden' style={{ background: 'hsl(var(--tf-border))' }}>
-                        <div className='h-full rounded-full animate-pulse' style={{ width: '60%', background: 'hsl(var(--tf-warning-hs) 50%)' }} />
-                      </div>
-                      <span className='text-xs' style={{ color: 'hsl(var(--tf-warning-hs) 50%)' }}>Processing...</span>
+                  {config.Fields && config.Fields.length > 0 && (
+                    <div className='mt-2 flex flex-wrap gap-1'>
+                      {config.Fields.slice(0, 6).map((field) => (
+                        <Badge key={field} variant='outline' className='text-[11px]' style={{ borderColor: 'hsl(var(--tf-border))' }}>
+                          {field}
+                        </Badge>
+                      ))}
+                      {config.Fields.length > 6 && (
+                        <Badge variant='outline' className='text-[11px]' style={{ borderColor: 'hsl(var(--tf-border))' }}>
+                          +{config.Fields.length - 6} more
+                        </Badge>
+                      )}
                     </div>
                   )}
                 </div>
               ))}
             </CardContent>
           </Card>
+        </div>
 
-          {/* Layer Stats */}
+        <div className='space-y-4'>
+          <Card data-testid='layerworks-governed-brief' style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
+            <CardHeader>
+              <CardTitle className='text-base' style={{ color: 'hsl(var(--tf-fg))' }}>
+                Governed Layer Audit
+              </CardTitle>
+              <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+                Use Atlas to explain layer conflicts and geometry drift. Route county calibration to TerraForge and parcel corrections to Workbench.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className='space-y-3'>
+              <label className='space-y-1 text-sm'>
+                <span className='block text-xs font-medium uppercase tracking-wider' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  Audit Metric
+                </span>
+                <select
+                  value={auditMetric}
+                  onChange={(event) => setAuditMetric(event.target.value as AuditMetric)}
+                  className='w-full rounded-md border border-border bg-background px-3 py-2 text-sm'
+                >
+                  <option value='boundary'>Boundary Mismatch</option>
+                  <option value='uniformity'>Uniformity Drift</option>
+                  <option value='zoning'>Zoning Conflict</option>
+                </select>
+              </label>
+              <Button type='button' onClick={runGovernedLayerAudit}>
+                {layerAudit.status === 'loading' ? 'Running Audit…' : 'Explain Layer Anomaly'}
+              </Button>
+
+              {layerAudit.status === 'success' && layerAudit.result && (
+                <div className='rounded-lg border p-3 text-sm' style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg))' }}>
+                  <p style={{ color: 'hsl(var(--tf-fg))' }}>{layerAudit.result.narrative}</p>
+                  <p className='mt-2' style={{ color: 'hsl(var(--tf-muted))' }}>Hotspots: {layerAudit.result.hotspotCount}</p>
+                  <p className='mt-1' style={{ color: 'hsl(var(--tf-muted))' }}>{layerAudit.result.recommendedAction}</p>
+                  {layerAudit.correlationId && (
+                    <p className='mt-2 font-mono text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                      Correlation: {layerAudit.correlationId}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {layerAudit.status === 'error' && (
+                <div className='rounded-lg border p-3 text-sm' style={{ borderColor: 'hsl(var(--tf-suite-dossier) / 0.4)', color: 'hsl(var(--tf-suite-dossier))' }}>
+                  {layerAudit.error}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
+            <CardHeader>
+              <CardTitle className='flex items-center gap-2 text-base' style={{ color: 'hsl(var(--tf-fg))' }}>
+                <Network size={16} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
+                Parcel Spatial Profile
+              </CardTitle>
+              <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+                Real overlay workflow for one parcel. LayerWorks assembles the live intersection steps; Workbench still owns actual parcel repair.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className='space-y-3'>
+              <div className='flex gap-2'>
+                <Input
+                  value={profileParcelId}
+                  onChange={(event) => setProfileParcelId(event.target.value)}
+                  placeholder='Parcel ID'
+                  style={{ background: 'hsl(var(--tf-input-bg))', borderColor: 'hsl(var(--tf-border))' }}
+                />
+                <Button type='button' onClick={runParcelSpatialProfile}>
+                  {profileState === 'loading' ? 'Loading…' : 'Load Workflow'}
+                </Button>
+              </div>
+
+              {profileState === 'error' && profileError && (
+                <div className='rounded-lg border p-3 text-sm' style={{ borderColor: 'hsl(var(--tf-suite-dossier) / 0.4)', color: 'hsl(var(--tf-suite-dossier))' }}>
+                  {profileError}
+                </div>
+              )}
+
+              {spatialProfile && (
+                <div className='space-y-3'>
+                  <div className='rounded-lg border p-3 text-sm' style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg))' }}>
+                    <p style={{ color: 'hsl(var(--tf-fg))' }}>
+                      Workflow: {spatialProfile.workflow} for {spatialProfile.parcelId}
+                    </p>
+                    <p className='mt-1' style={{ color: 'hsl(var(--tf-muted))' }}>
+                      {spatialProfile.source}
+                    </p>
+                  </div>
+
+                  {spatialProfile.steps.map((step) => (
+                    <div
+                      key={step.step}
+                      className='rounded-lg p-3'
+                      style={{ background: 'hsl(var(--tf-bg))', border: '1px solid hsl(var(--tf-border))' }}
+                    >
+                      <p className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
+                        Step {step.step}: {step.action}
+                      </p>
+                      {step.url && (
+                        <a
+                          href={step.url}
+                          target='_blank'
+                          rel='noreferrer'
+                          className='mt-2 inline-flex items-center gap-1 text-xs underline-offset-2 hover:underline'
+                          style={{ color: 'hsl(var(--tf-suite-atlas))' }}
+                        >
+                          Open live query
+                          <ExternalLink size={12} />
+                        </a>
+                      )}
+                      {step.overlayCount && (
+                        <p className='mt-2 text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                          Overlay count: {step.overlayCount}
+                        </p>
+                      )}
+                      {step.overlays && step.overlays.length > 0 && (
+                        <div className='mt-2 space-y-2'>
+                          {step.overlays.slice(0, 6).map((overlay) => (
+                            <div key={overlay.layerId} className='rounded border border-white/10 p-2 text-xs'>
+                              <p style={{ color: 'hsl(var(--tf-fg))' }}>{overlay.layerName}</p>
+                              <p className='mt-1' style={{ color: 'hsl(var(--tf-muted))' }}>{overlay.note}</p>
+                            </div>
+                          ))}
+                          {step.overlays.length > 6 && (
+                            <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                              +{step.overlays.length - 6} more live overlay queries available
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  <div className='rounded-lg border p-3 text-xs' style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-muted))' }}>
+                    Expected outputs: {Object.keys(spatialProfile.expectedResults).join(', ')}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
             <CardHeader className='pb-2'>
-              <CardTitle className='text-base' style={{ color: 'hsl(var(--tf-fg))' }}>Layer Statistics</CardTitle>
+              <CardTitle className='text-base' style={{ color: 'hsl(var(--tf-fg))' }}>
+                Layer Statistics
+              </CardTitle>
             </CardHeader>
             <CardContent className='space-y-2'>
               {[
                 ['Total Layers', layers.length.toString()],
                 ['Active Layers', enabledCount.toString()],
-                ['Total Features', layers.reduce((sum, l) => sum + (l.features ?? 0), 0).toLocaleString()],
-                ['Data Sources', [...new Set(layers.map((l) => l.source))].length.toString()],
+                ['Recipe Count', (layerConfigs?.count ?? 0).toString()],
+                ['Data Sources', [...new Set(layers.map((layer) => layer.source))].length.toString()],
               ].map(([label, value]) => (
                 <div key={label} className='flex justify-between py-1' style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.5)' }}>
                   <span className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>{label}</span>
                   <span className='text-sm font-mono font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>{value}</span>
                 </div>
               ))}
+              <p className='pt-2 text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                LayerWorks now uses live Benton ArcGIS layer metadata and live parcel overlay workflow assembly only. No simulated analysis jobs remain.
+              </p>
             </CardContent>
           </Card>
         </div>

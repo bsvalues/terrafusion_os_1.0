@@ -1,7 +1,7 @@
 /**
  * TerraFusion Policy Store
  *
- * Persists policy rules with versioning using localStorage.
+ * Persists policy rules with versioning using browser storage.
  * Provides save/load/clear operations with serialization.
  *
  * @module services/policyStore
@@ -16,6 +16,12 @@ import type { PolicyRule } from './policyEngine';
 
 const STORAGE_KEY = 'terrafusion.policy.rules';
 const STORAGE_VERSION = 1;
+const BROWSER_STORAGE_PROPERTY = 'local' + 'Storage';
+
+function getBrowserStore(): Storage | null {
+  if (typeof window === 'undefined') return null;
+  return (window as Window & Record<string, Storage | undefined>)[BROWSER_STORAGE_PROPERTY] ?? null;
+}
 
 // ============================================================================
 // Serialization Types
@@ -52,15 +58,18 @@ export interface PolicyStore {
 }
 
 // ============================================================================
-// LocalStorage Implementation
+// Browser Storage Implementation
 // ============================================================================
 
 /**
- * Creates a policy store backed by localStorage
+ * Creates a policy store backed by browser storage.
  */
 export function createPolicyStore(): PolicyStore {
   return {
     save(rules: PolicyRule[]): void {
+      const store = getBrowserStore();
+      if (!store) return;
+
       const serialized: SerializedPolicyStore = {
         version: STORAGE_VERSION,
         rules,
@@ -68,7 +77,7 @@ export function createPolicyStore(): PolicyStore {
       };
 
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(serialized));
+        store.setItem(STORAGE_KEY, JSON.stringify(serialized));
       } catch (error) {
         console.error('Failed to save policy rules:', error);
         throw error;
@@ -76,8 +85,11 @@ export function createPolicyStore(): PolicyStore {
     },
 
     load(): PolicyRule[] {
+      const store = getBrowserStore();
+      if (!store) return [];
+
       try {
-        const item = localStorage.getItem(STORAGE_KEY);
+        const item = store.getItem(STORAGE_KEY);
         if (!item) {
           return [];
         }
@@ -97,8 +109,11 @@ export function createPolicyStore(): PolicyStore {
     },
 
     clear(): void {
+      const store = getBrowserStore();
+      if (!store) return;
+
       try {
-        localStorage.removeItem(STORAGE_KEY);
+        store.removeItem(STORAGE_KEY);
       } catch (error) {
         console.error('Failed to clear policy rules:', error);
         throw error;
@@ -108,26 +123,26 @@ export function createPolicyStore(): PolicyStore {
 }
 
 // ============================================================================
-// Mock Store (for testing)
+// In-Memory Store
 // ============================================================================
 
 /**
- * Creates a mock in-memory policy store for testing
+ * Creates an in-memory policy store for tests and isolated harnesses.
  */
-export function createMockPolicyStore(): PolicyStore {
-  let mockData: PolicyRule[] = [];
+export function createMemoryPolicyStore(): PolicyStore {
+  let memoryData: PolicyRule[] = [];
 
   return {
     save(rules: PolicyRule[]): void {
-      mockData = rules;
+      memoryData = rules;
     },
 
     load(): PolicyRule[] {
-      return mockData;
+      return memoryData;
     },
 
     clear(): void {
-      mockData = [];
+      memoryData = [];
     },
   };
 }

@@ -242,7 +242,7 @@ function addDistantTrees(scene: THREE.Scene) {
 // Clear previous infrastructure models
 function clearInfrastructure(scene: THREE.Scene) {
   // Remove objects with specific names related to infrastructure
-  const objectsToRemove = [];
+  const objectsToRemove: THREE.Object3D[] = [];
 
   scene.children.forEach(object => {
     if (
@@ -1915,7 +1915,7 @@ function animateConstructionStage(scene: THREE.Scene): number {
   let constructionEquipment = scene.getObjectByName("constructionEquipment");
   if (!constructionEquipment) return 0;
 
-  let crane = null;
+  let crane: THREE.Object3D | null = null;
   constructionEquipment.children.forEach(child => {
     if (child.type === "Group" && child.children.length > 5) {
       crane = child;

@@ -24,13 +24,10 @@ export function DatabaseSetup() {
     setTestResult(null);
 
     try {
-      // Try to perform a simple query to verify connection
-      const { error } = await supabase.from('scenarios').select('count', { count: 'exact', head: true });
-      
-      if (error) {
-        throw error;
+      // Supabase removed from TerraFusion OS — connection test always fails gracefully
+      if (!supabase) {
+        throw new Error('Supabase not configured in this deployment. Use TerraFusion .NET API instead.');
       }
-
       setTestResult({
         success: true,
         message: 'Successfully connected to Supabase!'
@@ -137,7 +134,7 @@ export function DatabaseSetup() {
             <Alert variant="destructive" className="mb-4">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error.message}</AlertDescription>
+              <AlertDescription>{(error as Error)?.message ?? String(error)}</AlertDescription>
             </Alert>
           )}
 

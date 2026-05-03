@@ -12,7 +12,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, Loader2, Building2, ArrowRight, Clock } from 'lucide-react';
-import { getPacsProperties, type PacsPropertySummary } from '../services/pacsService';
+import {
+  getAssessmentProperties,
+  type AssessmentPropertySummary,
+} from '../services/assessmentPropertyService';
 import { useRecentParcels } from '../context/parcelContext';
 
 const PAGE_SIZE = 20;
@@ -22,7 +25,7 @@ const PropertySearch: React.FC = () => {
   const recentParcels = useRecentParcels();
 
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<PacsPropertySummary[]>([]);
+  const [results, setResults] = useState<AssessmentPropertySummary[]>([]);
   const [totalCount, setTotalCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [initialLoaded, setInitialLoaded] = useState(false);
@@ -36,7 +39,7 @@ const PropertySearch: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const page = await getPacsProperties(1, PAGE_SIZE, text.trim() || undefined);
+      const page = await getAssessmentProperties(1, PAGE_SIZE, text.trim() || undefined);
       if (!mountedRef.current || requestId !== requestIdRef.current) {
         return;
       }
@@ -50,11 +53,10 @@ const PropertySearch: React.FC = () => {
       setTotalCount(null);
       setError(err instanceof Error ? err : new Error(String(err)));
     } finally {
-      if (!mountedRef.current || requestId !== requestIdRef.current) {
-        return;
+      if (mountedRef.current && requestId === requestIdRef.current) {
+        setLoading(false);
+        setInitialLoaded(true);
       }
-      setLoading(false);
-      setInitialLoaded(true);
     }
   }, []);
 

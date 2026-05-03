@@ -21,6 +21,7 @@ import { activateModule } from '@/orchestration/moduleActivation';
 export function OutlierReviewPanel() {
   const outliers = useForgeStatisticsStore((s) => s.outliers);
   const reviewOutlier = useForgeStatisticsStore((s) => s.reviewOutlier);
+  const error = useForgeStatisticsStore((s) => s.error);
 
   const pendingCount = outliers.filter((o) => o.reviewStatus === 'pending').length;
   const confirmedCount = outliers.filter((o) => o.reviewStatus === 'confirmed').length;
@@ -65,6 +66,16 @@ export function OutlierReviewPanel() {
           <CardTitle>Flagged Parcels</CardTitle>
         </CardHeader>
         <CardContent>
+          {error && (
+            <div className="mb-3 rounded-md border px-3 py-2 text-sm" style={{ borderColor: 'hsl(var(--tf-warning-hs) 55%)', color: 'hsl(var(--tf-warning-hs) 55%)' }}>
+              {error}
+            </div>
+          )}
+          {outliers.length === 0 && (
+            <div className="rounded-md border px-3 py-6 text-center text-sm" style={{ borderColor: 'hsl(var(--tf-border))', color: 'hsl(var(--tf-muted))' }}>
+              No outlier records were returned by the MassAppraisal API.
+            </div>
+          )}
           <div data-testid="outlier-table" className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>

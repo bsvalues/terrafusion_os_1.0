@@ -26,77 +26,10 @@ export interface NeighborhoodStats {
 }
 
 // ---------------------------------------------------------------------------
-// Demo data
+// Source-backed data
 // ---------------------------------------------------------------------------
 
-const NEIGHBORHOODS: NeighborhoodStats[] = [
-  {
-    id: 'n1',
-    name: 'Downtown',
-    parcelCount: 1245,
-    avgSqFt: 2800,
-    avgLotSize: 4200,
-    avgYearBuilt: 1968,
-    predominantZoning: 'C-1',
-    color: '#3B82F6',
-    center: [46.23, -119.2],
-  },
-  {
-    id: 'n2',
-    name: 'Riverside',
-    parcelCount: 3420,
-    avgSqFt: 1950,
-    avgLotSize: 7800,
-    avgYearBuilt: 1998,
-    predominantZoning: 'R-1',
-    color: '#10B981',
-    center: [46.24, -119.21],
-  },
-  {
-    id: 'n3',
-    name: 'West Hills',
-    parcelCount: 2180,
-    avgSqFt: 2400,
-    avgLotSize: 9200,
-    avgYearBuilt: 2005,
-    predominantZoning: 'R-2',
-    color: '#F59E0B',
-    center: [46.25, -119.23],
-  },
-  {
-    id: 'n4',
-    name: 'Eastgate',
-    parcelCount: 890,
-    avgSqFt: 5600,
-    avgLotSize: 15000,
-    avgYearBuilt: 1982,
-    predominantZoning: 'I-1',
-    color: '#EF4444',
-    center: [46.22, -119.18],
-  },
-  {
-    id: 'n5',
-    name: 'Southridge',
-    parcelCount: 4100,
-    avgSqFt: 1780,
-    avgLotSize: 6500,
-    avgYearBuilt: 2012,
-    predominantZoning: 'R-1',
-    color: '#8B5CF6',
-    center: [46.21, -119.22],
-  },
-  {
-    id: 'n6',
-    name: 'Northview',
-    parcelCount: 1560,
-    avgSqFt: 2100,
-    avgLotSize: 8800,
-    avgYearBuilt: 1990,
-    predominantZoning: 'R-2',
-    color: '#EC4899',
-    center: [46.26, -119.19],
-  },
-];
+const NEIGHBORHOODS: NeighborhoodStats[] = [];
 
 const MAX_SELECTIONS = 4;
 

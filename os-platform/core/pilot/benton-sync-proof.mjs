@@ -32,7 +32,7 @@ function assert(condition, message) {
 
 async function main() {
   const { outPath } = parseArgs(process.argv);
-  const apiBaseUrl = process.env.TF_API_BASE_URL || `http://localhost:${process.env.TF_API_PORT || "5000"}`;
+  const apiBaseUrl = process.env.TF_API_BASE_URL || `http://localhost:${process.env.TF_API_PORT || "5046"}`;
   const evidence = {
     generatedAt: new Date().toISOString(),
     apiBaseUrl,

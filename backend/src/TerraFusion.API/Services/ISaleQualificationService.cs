@@ -1,14 +1,16 @@
 namespace TerraFusion.API.Services;
 
 /// <summary>
-/// TerraFusion's sale qualification rule engine — Layer 2 of the 3-layer qualification model.
+/// County-only sale qualification engine — Layer 2 of the 3-layer qualification model.
 ///
 /// ARCHITECTURAL CONTRACT:
+///   County ratio code and DOR ratio type are INDEPENDENT systems for INDEPENDENT purposes.
+///   This service handles county qualification only. DOR ratio type is state-reporting metadata.
+///
 ///   Layer 1 — Raw PACS codes: copied verbatim at sync time. Never judged here.
 ///   Layer 2 — TF Recommendation: this service computes from Layer 1 raw codes.
 ///             Run AFTER ingest, never during sync. Recomputable at any time.
 ///   Layer 3 — Assessor Decision: stored separately; always wins over recommendation.
-///             ValuationService uses: QualificationDecision ?? QualificationRecommendation.
 ///
 /// Raw PACS codes are facts. TerraFusion recommendation is a suggestion.
 /// Assessor decision is law.
@@ -16,9 +18,11 @@ namespace TerraFusion.API.Services;
 public interface ISaleQualificationService
 {
     /// <summary>
-    /// Compute the recommendation string for a single sale from its raw PACS codes.
+    /// Compute the county qualification recommendation for a single sale from its raw codes.
     /// Returns one of: "qualified" | "non-arms-length" | "foreclosure" | "estate"
-    ///                 | "excluded: {code}" | "exempt: {code}"
+    ///               | "land-only" | "omitted" | "dark-sale"
+    ///               | "excluded" | "exempt" | "exempt: {wac}"
+    /// DOR ratio type (sl_ratio_type_cd) is NOT evaluated — state reporting only.
     /// </summary>
     string Qualify(
         string? rawSaleQualifier,

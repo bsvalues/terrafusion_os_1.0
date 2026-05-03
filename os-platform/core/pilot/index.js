@@ -5,9 +5,23 @@
  *
  * Re-exports all pilot module components for clean imports.
  */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.canonFindReferencesHandler = exports.canonCodeActionsHandler = exports.canonEditorThemesHandler = exports.canonCompletionsHandler = exports.canonGotoDefinitionHandler = exports.canonHoverInfoHandler = exports.canonLineMarkersHandler = exports.canonFoldingRangesHandler = exports.registerCanonHandlers = exports.canonHandlers = exports.canonReadFileHandler = exports.canonListDirHandler = exports.canonCorpusStatusHandler = exports.canonGateFastHandler = exports.canonDoctorHandler = exports.canonPingHandler = exports.summarizeSalesCompsHandler = exports.summarizeParcelCasefileHandler = exports.summarizeLevyRateHandler = exports.summarizeDossierHandler = exports.searchTraceByCorrelationHandler = exports.writeGateHandlers = exports.requestTraceRedactionHandler = exports.assembleBoePacketHandler = exports.registerWriteGateHandlers = exports.registerPhase84Handlers = exports.registerPhase83Handlers = exports.registerAllHandlers = exports.phase84Handlers = exports.phase83Handlers = exports.explainSeniorExemptionHandler = exports.explainModelResultsHandler = exports.explainModelInputsHandler = exports.draftValueChangeNoticeHandler = exports.draftBoeAppealResponseHandler = exports.draftAppealResponseHandler = exports.compareAssessedValueHandler = exports.addDossierNoteHandler = exports.toolRunner = exports.ToolRunner = exports.ToolRunnerError = exports.ErrorCodes = exports.createPreflight = exports.toolRegistry = exports.VALID_TRACE_POLICIES = exports.VALID_SUITES = exports.VALID_RISKS = exports.VALID_PII_HANDLING = exports.ToolRegistry = exports.ManifestValidationError = void 0;
-exports.clearPilotToken = exports.acquirePilotToken = exports.unwrapBackend = exports.backendPut = exports.backendGet = exports.backendPost = exports.createRequestTraceRedactionHandler = exports.assembleBoePacketRealHandler = exports.generateCommissionerMemoRealHandler = exports.synthesizeEvidenceRealHandler = exports.draftNoticeRealHandler = exports.draftBoeAppealResponseRealHandler = exports.draftAppealResponseRealHandler = exports.draftValueChangeNoticeRealHandler = exports.explainSeniorExemptionRealHandler = exports.summarizeDossierRealHandler = exports.checkCertStatusRealHandler = exports.assignTaskRealHandler = exports.queryParcelLayersRealHandler = exports.addDossierNoteRealHandler = exports.summarizeParcelCasefileRealHandler = exports.compareAssessedValueHistoryRealHandler = exports.explainModelInputsRealHandler = exports.summarizeLevyRateRealHandler = exports.createSearchTraceHandler = exports.routeToParcelHandler = exports.explainValueChangeHandler = exports.runValuationModelHandler = exports.registerR1Handlers = exports.canonDocumentLinksHandler = exports.canonGitDiffHandler = exports.canonDocumentHighlightsHandler = exports.canonSignatureHelpHandler = exports.canonRenameSymbolHandler = void 0;
+exports.canonGateFastHandler = exports.canonDoctorHandler = exports.canonPingHandler = exports.summarizeSalesCompsHandler = exports.summarizeParcelCasefileHandler = exports.summarizeLevyRateHandler = exports.summarizeDossierHandler = exports.searchTraceByCorrelationHandler = exports.writeGateHandlers = exports.requestTraceRedactionHandler = exports.assembleBoePacketHandler = exports.rerunRatioStudyHandler = exports.registerWriteGateHandlers = exports.registerPhase84Handlers = exports.registerPhase83Handlers = exports.registerAllHandlers = exports.proposeRateAdjustmentHandler = exports.openAppealPacketHandler = exports.generateMorningBriefHandler = exports.generateCalibrationMemoHandler = exports.flagParcelDataIssueHandler = exports.exportEqualizationPackageHandler = exports.exportAuditBundleHandler = exports.explainSpatialAnomalyHandler = exports.phase84Handlers = exports.phase83Handlers = exports.explainSeniorExemptionHandler = exports.explainModelResultsHandler = exports.explainModelInputsHandler = exports.draftValueChangeNoticeHandler = exports.compareMatrixVersionsHandler = exports.draftBoeAppealResponseHandler = exports.draftAppealResponseHandler = exports.compareAssessedValueHandler = exports.classifyCountyFindingHandler = exports.assessorSuperpowerHandlers = exports.applyRateAdjustmentToDraftHandler = exports.addDossierNoteHandler = exports.toolRunner = exports.ToolRunner = exports.ToolRunnerError = exports.ErrorCodes = exports.createPreflight = exports.toolRegistry = exports.VALID_TRACE_POLICIES = exports.VALID_SUITES = exports.VALID_RISKS = exports.VALID_PII_HANDLING = exports.ToolRegistry = exports.ManifestValidationError = void 0;
+exports.clearPilotToken = exports.acquirePilotToken = exports.unwrapBackend = exports.backendPut = exports.backendGet = exports.backendPost = exports.createRequestTraceRedactionHandler = exports.assembleBoePacketRealHandler = exports.generateCommissionerMemoRealHandler = exports.synthesizeEvidenceRealHandler = exports.draftNoticeRealHandler = exports.draftBoeAppealResponseRealHandler = exports.draftAppealResponseRealHandler = exports.draftValueChangeNoticeRealHandler = exports.explainSeniorExemptionRealHandler = exports.summarizeDossierRealHandler = exports.checkCertStatusRealHandler = exports.assignTaskRealHandler = exports.queryParcelLayersRealHandler = exports.addDossierNoteRealHandler = exports.summarizeParcelCasefileRealHandler = exports.compareAssessedValueHistoryRealHandler = exports.explainModelInputsRealHandler = exports.summarizeLevyRateRealHandler = exports.createSearchTraceHandler = exports.routeToParcelHandler = exports.explainValueChangeHandler = exports.runValuationModelHandler = exports.registerR1Handlers = exports.canonDocumentLinksHandler = exports.canonGitDiffHandler = exports.canonDocumentHighlightsHandler = exports.canonSignatureHelpHandler = exports.canonRenameSymbolHandler = exports.canonFindReferencesHandler = exports.canonCodeActionsHandler = exports.canonEditorThemesHandler = exports.canonCompletionsHandler = exports.canonGotoDefinitionHandler = exports.canonHoverInfoHandler = exports.canonLineMarkersHandler = exports.canonFoldingRangesHandler = exports.registerCanonHandlers = exports.canonHandlers = exports.canonReadFileHandler = exports.canonListDirHandler = exports.canonCorpusStatusHandler = void 0;
 var ToolRegistry_js_1 = require("./ToolRegistry.js");
 Object.defineProperty(exports, "ManifestValidationError", { enumerable: true, get: function () { return ToolRegistry_js_1.ManifestValidationError; } });
 Object.defineProperty(exports, "ToolRegistry", { enumerable: true, get: function () { return ToolRegistry_js_1.ToolRegistry; } });
@@ -26,19 +40,32 @@ Object.defineProperty(exports, "toolRunner", { enumerable: true, get: function (
 var handlers_js_1 = require("./handlers.js");
 // Phase 8.4 exports
 Object.defineProperty(exports, "addDossierNoteHandler", { enumerable: true, get: function () { return handlers_js_1.addDossierNoteHandler; } });
+Object.defineProperty(exports, "applyRateAdjustmentToDraftHandler", { enumerable: true, get: function () { return handlers_js_1.applyRateAdjustmentToDraftHandler; } });
+Object.defineProperty(exports, "assessorSuperpowerHandlers", { enumerable: true, get: function () { return handlers_js_1.assessorSuperpowerHandlers; } });
+Object.defineProperty(exports, "classifyCountyFindingHandler", { enumerable: true, get: function () { return handlers_js_1.classifyCountyFindingHandler; } });
 Object.defineProperty(exports, "compareAssessedValueHandler", { enumerable: true, get: function () { return handlers_js_1.compareAssessedValueHandler; } });
 Object.defineProperty(exports, "draftAppealResponseHandler", { enumerable: true, get: function () { return handlers_js_1.draftAppealResponseHandler; } });
 Object.defineProperty(exports, "draftBoeAppealResponseHandler", { enumerable: true, get: function () { return handlers_js_1.draftBoeAppealResponseHandler; } });
+Object.defineProperty(exports, "compareMatrixVersionsHandler", { enumerable: true, get: function () { return handlers_js_1.compareMatrixVersionsHandler; } });
 Object.defineProperty(exports, "draftValueChangeNoticeHandler", { enumerable: true, get: function () { return handlers_js_1.draftValueChangeNoticeHandler; } });
 Object.defineProperty(exports, "explainModelInputsHandler", { enumerable: true, get: function () { return handlers_js_1.explainModelInputsHandler; } });
 Object.defineProperty(exports, "explainModelResultsHandler", { enumerable: true, get: function () { return handlers_js_1.explainModelResultsHandler; } });
 Object.defineProperty(exports, "explainSeniorExemptionHandler", { enumerable: true, get: function () { return handlers_js_1.explainSeniorExemptionHandler; } });
 Object.defineProperty(exports, "phase83Handlers", { enumerable: true, get: function () { return handlers_js_1.phase83Handlers; } });
 Object.defineProperty(exports, "phase84Handlers", { enumerable: true, get: function () { return handlers_js_1.phase84Handlers; } });
+Object.defineProperty(exports, "explainSpatialAnomalyHandler", { enumerable: true, get: function () { return handlers_js_1.explainSpatialAnomalyHandler; } });
+Object.defineProperty(exports, "exportAuditBundleHandler", { enumerable: true, get: function () { return handlers_js_1.exportAuditBundleHandler; } });
+Object.defineProperty(exports, "exportEqualizationPackageHandler", { enumerable: true, get: function () { return handlers_js_1.exportEqualizationPackageHandler; } });
+Object.defineProperty(exports, "flagParcelDataIssueHandler", { enumerable: true, get: function () { return handlers_js_1.flagParcelDataIssueHandler; } });
+Object.defineProperty(exports, "generateCalibrationMemoHandler", { enumerable: true, get: function () { return handlers_js_1.generateCalibrationMemoHandler; } });
+Object.defineProperty(exports, "generateMorningBriefHandler", { enumerable: true, get: function () { return handlers_js_1.generateMorningBriefHandler; } });
+Object.defineProperty(exports, "openAppealPacketHandler", { enumerable: true, get: function () { return handlers_js_1.openAppealPacketHandler; } });
+Object.defineProperty(exports, "proposeRateAdjustmentHandler", { enumerable: true, get: function () { return handlers_js_1.proposeRateAdjustmentHandler; } });
 Object.defineProperty(exports, "registerAllHandlers", { enumerable: true, get: function () { return handlers_js_1.registerAllHandlers; } });
 Object.defineProperty(exports, "registerPhase83Handlers", { enumerable: true, get: function () { return handlers_js_1.registerPhase83Handlers; } });
 Object.defineProperty(exports, "registerPhase84Handlers", { enumerable: true, get: function () { return handlers_js_1.registerPhase84Handlers; } });
 Object.defineProperty(exports, "registerWriteGateHandlers", { enumerable: true, get: function () { return handlers_js_1.registerWriteGateHandlers; } });
+Object.defineProperty(exports, "rerunRatioStudyHandler", { enumerable: true, get: function () { return handlers_js_1.rerunRatioStudyHandler; } });
 Object.defineProperty(exports, "assembleBoePacketHandler", { enumerable: true, get: function () { return handlers_js_1.assembleBoePacketHandler; } });
 Object.defineProperty(exports, "requestTraceRedactionHandler", { enumerable: true, get: function () { return handlers_js_1.requestTraceRedactionHandler; } });
 Object.defineProperty(exports, "writeGateHandlers", { enumerable: true, get: function () { return handlers_js_1.writeGateHandlers; } });
@@ -106,3 +133,4 @@ Object.defineProperty(exports, "unwrapBackend", { enumerable: true, get: functio
 var pilotAuth_js_1 = require("./pilotAuth.js");
 Object.defineProperty(exports, "acquirePilotToken", { enumerable: true, get: function () { return pilotAuth_js_1.acquirePilotToken; } });
 Object.defineProperty(exports, "clearPilotToken", { enumerable: true, get: function () { return pilotAuth_js_1.clearPilotToken; } });
+__exportStar(require("./local-agent/index.js"), exports);

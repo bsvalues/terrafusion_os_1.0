@@ -103,7 +103,7 @@ Input control for selecting numeric values from a continuous or discrete range.
 2. **Range** - Dual-thumb range selection
 3. **Vertical** - Vertical orientation slider
 4. **Steps** - Discrete step values (e.g., every 10)
-5. **Disabled** - Disabled state demonstration
+5. **Disabled** - Disabled state example
 6. **WithLabels** - Min/max/current value labels
 7. **CustomStyling** - Custom thumb and track styling
 8. **RealWorldVolumeControl** - Audio/video volume slider
@@ -256,7 +256,7 @@ Multi-line text input field with auto-resize, character counting, and validation
 
 1. **Default** - Basic textarea with placeholder
 2. **Sizes** - Small, medium, large textarea sizes
-3. **Disabled** - Disabled state demonstration
+3. **Disabled** - Disabled state example
 4. **Resizable** - Horizontal, vertical, both, none resize options
 5. **WithCharacterCount** - Character counter with max length
 6. **WithError** - Error state with validation message

@@ -6,16 +6,16 @@ using TerraFusion.Levy.Models;
 namespace TerraFusion.Levy.Services
 {
     /// <summary>
-    /// Championship-level levy calculation service with quantum optimization.
-    /// Factor 949 quantum enhancement for 99.5%+ accuracy.
-    /// Government. Transcended.
+    /// Deterministic levy calculation service.
+    /// Legacy AI/quantum field names remain for compatibility, but no governed
+    /// optimization model is wired behind this service.
     /// </summary>
     public class LevyCalculationService : ILevyCalculationService
     {
         private readonly LevyDbContext _context;
         private readonly ILogger<LevyCalculationService> _logger;
-        private const int QUANTUM_FACTOR = 949;
-        private const decimal TARGET_ACCURACY = 0.995m;
+        private const decimal BaseCompatibilityConfidence = 0.72m;
+        private const decimal MaxCompatibilityConfidence = 0.84m;
 
         public LevyCalculationService(
             LevyDbContext context,
@@ -25,14 +25,12 @@ namespace TerraFusion.Levy.Services
             _logger = logger;
         }
 
-        public async Task<LevyRateCalculationResult> CalculateOptimalRateAsync(
+        public Task<LevyRateCalculationResult> CalculateOptimalRateAsync(
             LevyMeasure measure,
             bool useQuantumOptimization = true)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             _logger.LogInformation(
-                "Calculating optimal rate for levy measure {MeasureId} ({MeasureName}) with quantum optimization: {QuantumEnabled}",
+                "Calculating recommended rate for levy measure {MeasureId} ({MeasureName}) in deterministic compatibility mode. RequestedQuantumOptimization={QuantumRequested}",
                 measure.Id, measure.Name, useQuantumOptimization);
 
             // Base calculation: target amount / assessed value
@@ -42,53 +40,40 @@ namespace TerraFusion.Levy.Services
 
             var calculatedAmount = baseRate * measure.TotalAssessedValue;
 
-            // Apply quantum optimization if enabled
-            decimal aiOptimalRate = baseRate;
-            decimal confidenceScore = 0.90m; // Base confidence
-
-            if (useQuantumOptimization)
-            {
-                // Quantum-enhanced rate optimization (factor 949)
-                var quantumAdjustment = CalculateQuantumAdjustment(measure);
-                aiOptimalRate = baseRate * (1 + quantumAdjustment);
-                confidenceScore = Math.Min(TARGET_ACCURACY, 0.90m + (quantumAdjustment * 10));
-
-                _logger.LogDebug(
-                    "Quantum optimization applied: Base rate {BaseRate:F6}, AI optimal rate {AiRate:F6}, Confidence {Confidence:P2}",
-                    baseRate, aiOptimalRate, confidenceScore);
-            }
+            var confidenceScore = CalculateRateConfidence(measure, baseRate);
 
             // Check statutory limits
             var exceedsLimit = measure.MaximumRate.HasValue && baseRate > measure.MaximumRate.Value;
             var recommendedRate = exceedsLimit && measure.MaximumRate.HasValue
                 ? measure.MaximumRate.Value
-                : aiOptimalRate;
+                : baseRate;
 
-            return new LevyRateCalculationResult
+            return Task.FromResult(new LevyRateCalculationResult
             {
                 CalculatedRate = baseRate,
                 LevyAmount = calculatedAmount,
                 AiOptimalRate = recommendedRate,
                 ConfidenceScore = confidenceScore,
-                QuantumOptimized = useQuantumOptimization,
+                QuantumOptimized = false,
                 RecommendationReason = exceedsLimit
-                    ? "Rate adjusted to statutory maximum"
-                    : "Quantum-optimized rate with championship accuracy",
+                    ? "Base rate exceeded the statutory cap and was reduced to the maximum allowed rate."
+                    : "Base rate derived from target amount and assessed value; no governed optimization model is wired.",
                 CalculationDetails = new Dictionary<string, object>
                 {
                     ["targetAmount"] = measure.TargetAmount,
                     ["assessedValue"] = measure.TotalAssessedValue,
                     ["baseRate"] = baseRate,
-                    ["quantumFactor"] = QUANTUM_FACTOR,
+                    ["optimizationMode"] = "deterministic_rate_cap_only",
+                    ["requestedQuantumOptimization"] = useQuantumOptimization,
+                    ["governedOptimizationAvailable"] = false,
                     ["exceedsLimit"] = exceedsLimit,
                     ["maximumRate"] = measure.MaximumRate ?? 0m
                 }
-            };
+            });
         }
 
         public async Task<decimal> CalculateLevyAmountAsync(decimal assessedValue, decimal rate)
         {
-            await Task.CompletedTask;
             await Task.CompletedTask;
             return assessedValue * rate;
         }
@@ -120,7 +105,7 @@ namespace TerraFusion.Levy.Services
 
             foreach (var measure in activeMeasures)
             {
-                var calculation = await CalculateOptimalRateAsync(measure, useQuantumOptimization: true);
+                var calculation = await CalculateOptimalRateAsync(measure, useQuantumOptimization: false);
                 var amount = await CalculateLevyAmountAsync(district.TotalAssessedValue, calculation.AiOptimalRate);
 
                 breakdown.Add(new LevyMeasureBreakdown
@@ -143,7 +128,7 @@ namespace TerraFusion.Levy.Services
                 item.PercentageOfTotal = totalAmount > 0 ? (item.Amount / totalAmount) * 100 : 0m;
             }
 
-            // Project collection with 98% default rate (championship standard)
+            // Project collection using a conservative administrative default.
             var collectionRate = 0.98m;
             var projectedRevenue = totalAmount * collectionRate;
 
@@ -165,7 +150,6 @@ namespace TerraFusion.Levy.Services
             LevyMeasure measure,
             decimal proposedRate)
         {
-            await Task.CompletedTask;
             await Task.CompletedTask;
             var result = new LevyComplianceResult
             {
@@ -212,7 +196,6 @@ namespace TerraFusion.Levy.Services
             decimal collectionRate)
         {
             await Task.CompletedTask;
-            await Task.CompletedTask;
             // Ensure collection rate is within valid range
             if (collectionRate < 0 || collectionRate > 1)
             {
@@ -251,8 +234,8 @@ namespace TerraFusion.Levy.Services
                     RiskLevel = riskLevel,
                     AiInsights = new Dictionary<string, object>
                     {
-                        ["quantumFactor"] = QUANTUM_FACTOR,
-                        ["targetAccuracy"] = TARGET_ACCURACY,
+                        ["analysisMode"] = "deterministic_heuristic",
+                        ["governedOptimizationAvailable"] = false,
                         ["complianceStatus"] = rate <= (measure.MaximumRate ?? decimal.MaxValue) ? "COMPLIANT" : "EXCEEDS_LIMIT",
                         ["revenueGap"] = measure.TargetAmount - projectedRevenue,
                         ["revenueGapPercentage"] = measure.TargetAmount > 0 ? ((measure.TargetAmount - projectedRevenue) / measure.TargetAmount) * 100 : 0
@@ -266,27 +249,32 @@ namespace TerraFusion.Levy.Services
         #region Private Helper Methods
 
         /// <summary>
-        /// Calculate quantum adjustment factor (factor 949 optimization).
+        /// Estimate confidence from the available inputs, without implying a governed optimization model.
         /// </summary>
-        private decimal CalculateQuantumAdjustment(LevyMeasure measure)
+        private decimal CalculateRateConfidence(LevyMeasure measure, decimal baseRate)
         {
-            // Quantum factor influences optimal rate calculation
-            // Uses historical data, assessment trends, and AI predictions
-            var baseAdjustment = 0.005m; // 0.5% base quantum enhancement
+            var confidence = BaseCompatibilityConfidence;
 
-            // Adjust based on measure type
-            var typeMultiplier = measure.LevyType switch
+            if (measure.TotalAssessedValue > 0)
             {
-                "General" => 1.0m,
-                "Special" => 1.1m,
-                "Emergency" => 0.95m,
-                _ => 1.0m
-            };
+                confidence += 0.05m;
+            }
 
-            // Quantum factor application (949 / 1000 = 0.949 influence)
-            var quantumInfluence = (decimal)QUANTUM_FACTOR / 1000m;
+            if (measure.TargetAmount > 0 && baseRate > 0)
+            {
+                confidence += 0.03m;
+            }
 
-            return baseAdjustment * typeMultiplier * quantumInfluence;
+            if (measure.MaximumRate.HasValue)
+            {
+                confidence += 0.02m;
+            }
+            else if (measure.SubjectToLimit)
+            {
+                confidence -= 0.05m;
+            }
+
+            return Math.Clamp(confidence, 0.55m, MaxCompatibilityConfidence);
         }
 
         /// <summary>
@@ -295,7 +283,7 @@ namespace TerraFusion.Levy.Services
         private decimal EstimateCollectionRate(decimal rate, LevyMeasure measure)
         {
             // Higher rates typically have slightly lower collection rates
-            var baseCollectionRate = 0.98m; // Championship 98% standard
+            var baseCollectionRate = 0.98m;
 
             if (rate > 0.002m) // Above 0.2% rate
             {
@@ -331,7 +319,7 @@ namespace TerraFusion.Levy.Services
         /// </summary>
         private decimal CalculateScenarioConfidence(decimal rate, LevyMeasure measure)
         {
-            var baseConfidence = 0.90m;
+            var baseConfidence = BaseCompatibilityConfidence;
 
             // Increase confidence if rate is within statutory limits
             if (measure.MaximumRate.HasValue && rate <= measure.MaximumRate.Value)
@@ -339,10 +327,12 @@ namespace TerraFusion.Levy.Services
                 baseConfidence += 0.05m;
             }
 
-            // Quantum enhancement
-            baseConfidence = Math.Min(TARGET_ACCURACY, baseConfidence + 0.005m);
+            if (measure.SubjectToLimit && !measure.MaximumRate.HasValue)
+            {
+                baseConfidence -= 0.05m;
+            }
 
-            return baseConfidence;
+            return Math.Clamp(baseConfidence, 0.55m, MaxCompatibilityConfidence);
         }
 
         /// <summary>

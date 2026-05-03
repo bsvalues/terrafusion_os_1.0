@@ -78,6 +78,7 @@ export default function ImportWizard() {
 
   // Step 3: Preview
   const [previewRows, setPreviewRows] = useState<Record<string, string>[]>([]);
+  const [previewUnavailable, setPreviewUnavailable] = useState(false);
 
   // Step 4: Validation
   const [validationResults, setValidationResults] = useState<ValidationResult[]>([]);
@@ -132,24 +133,28 @@ export default function ImportWizard() {
     setMappings(auto);
   }, [schema, selectedTable]);
 
-  // Generate fake preview from mappings (in a real app, this calls the backend)
   useEffect(() => {
     if (stepIndex !== 2 || mappings.length === 0) return;
-    // Placeholder preview rows; real implementation fetches sample data from the connector
-    const sample: Record<string, string>[] = Array.from({ length: 5 }, (_, i) => {
-      const row: Record<string, string> = {};
-      mappings.forEach((m) => {
-        row[m.sourceField] = `sample-${m.sourceField}-${i + 1}`;
-      });
-      return row;
-    });
-    setPreviewRows(sample);
-  }, [stepIndex, mappings]);
+    setPreviewRows([]);
+    setPreviewUnavailable(true);
+  }, [stepIndex, mappings, selectedSource, selectedTable]);
 
   // Run validation on step 4
   useEffect(() => {
     if (stepIndex !== 3) return;
     setValidating(true);
+    if (previewRows.length === 0) {
+      setValidationResults([
+        {
+          field: 'preview',
+          rule: 'backend_validation_required',
+          severity: 'warning',
+          message: 'No connector preview rows were returned. Backend import validation will run during import.',
+        },
+      ]);
+      setValidating(false);
+      return;
+    }
     // Validate preview rows against mapped target fields
     const results: ValidationResult[] = [];
     previewRows.forEach((row) => {
@@ -205,6 +210,7 @@ export default function ImportWizard() {
     setSchema(null);
     setMappings([]);
     setPreviewRows([]);
+    setPreviewUnavailable(false);
     setValidationResults([]);
     setImportJob(null);
     setImportError(null);
@@ -217,7 +223,7 @@ export default function ImportWizard() {
       case 1:
         return mappings.some((m) => m.targetField);
       case 2:
-        return previewRows.length > 0;
+        return mappings.some((m) => m.targetField) && (previewRows.length > 0 || previewUnavailable);
       case 3:
         return validationResults.filter((v) => v.severity === 'error').length === 0;
       default:
@@ -372,34 +378,43 @@ export default function ImportWizard() {
             {stepIndex === 2 && (
               <div className="space-y-3">
                 <p className="text-sm text-muted-foreground">
-                  Preview of sample data (first 5 rows).
+                  Connector preview.
                 </p>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        {mappings
-                          .filter((m) => m.targetField)
-                          .map((m) => (
-                            <TableHead key={m.id}>{m.targetField}</TableHead>
-                          ))}
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {previewRows.map((row, i) => (
-                        <TableRow key={i}>
+                {previewRows.length === 0 ? (
+                  <Card className="border-amber-500/40">
+                    <CardContent className="py-4 text-sm text-amber-600">
+                      No preview rows are available from the connector API. The import can proceed, but row-level
+                      validation must be performed by the backend import job.
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
                           {mappings
                             .filter((m) => m.targetField)
                             .map((m) => (
-                              <TableCell key={m.id} className="text-xs">
-                                {row[m.sourceField] ?? ''}
-                              </TableCell>
+                              <TableHead key={m.id}>{m.targetField}</TableHead>
                             ))}
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                      </TableHeader>
+                      <TableBody>
+                        {previewRows.map((row, i) => (
+                          <TableRow key={i}>
+                            {mappings
+                              .filter((m) => m.targetField)
+                              .map((m) => (
+                                <TableCell key={m.id} className="text-xs">
+                                  {row[m.sourceField] ?? ''}
+                                </TableCell>
+                              ))}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </div>
             )}
 

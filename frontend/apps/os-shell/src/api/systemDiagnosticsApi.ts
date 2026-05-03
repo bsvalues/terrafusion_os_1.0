@@ -3,7 +3,7 @@
  * TERRAFUSION SYSTEM DIAGNOSTICS API CLIENT
  * Phase 15: SystemGPT Console - AI Control Center
  * Phase 17: Safe Mode & Kill Switch
- * Phase 18: Benton CAMA RAG Readiness Panel
+ * Phase 18: Benton Assessment RAG Readiness Panel
  * Phase 19: AI Incident Timeline
  * Phase 20: Metrics & Telemetry Console
  * Phase 22: Multi-County Federation Layer
@@ -55,7 +55,7 @@ export type SystemHealthStatus = 'Unknown' | 'Healthy' | 'Degraded' | 'Unhealthy
 /** Phase 17: SystemGPT operational mode */
 export type SystemGptMode = 'Normal' | 'SafeMode';
 
-/** Phase 18: Benton CAMA RAG overall status */
+/** Phase 18: Benton Assessment RAG overall status */
 export type BentonRagStatus = 'Ready' | 'Stale' | 'Unindexed' | 'Partial';
 
 export interface GptConfigSummary {
@@ -108,7 +108,7 @@ export interface HeraldMessage {
   source: string;
 }
 
-/** Phase 18: Benton CAMA RAG Readiness */
+/** Phase 18: Benton Assessment RAG Readiness */
 export interface BentonRagReadiness {
   datasetKey: string;
   displayName: string;
@@ -213,7 +213,7 @@ export interface SystemDiagnosticsResponse {
   explainGptStatus: ServiceStatus;
   statistics: UsageStatistics;
   heraldMessages: HeraldMessage[];
-  /** Phase 18: Benton CAMA RAG readiness status */
+  /** Phase 18: Benton Assessment RAG readiness status */
   bentonRag?: BentonRagReadiness | null;
   /** Phase 26: Last guardrail decision for this county */
   lastGuardrailDecision?: LastGuardrailDecision | null;
@@ -380,11 +380,11 @@ export async function getSystemGptModeStatus(): Promise<SetSystemGptModeResponse
 }
 
 /**
- * Download Benton CAMA RAG Snapshot as JSON file.
+ * Download Benton Assessment RAG Snapshot as JSON file.
  * Phase 18: County-specific RAG health export for audits and demos.
  */
 export async function downloadBentonRagSnapshot(): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/api/gpt/rag/benton_cama_basics/export`, {
+  const response = await fetch(`${API_BASE_URL}/api/gpt/rag/benton-assessment-basics/export`, {
     method: 'GET',
   });
 
@@ -396,7 +396,7 @@ export async function downloadBentonRagSnapshot(): Promise<void> {
   // Extract filename from Content-Disposition header or generate default
   const contentDisposition = response.headers.get('Content-Disposition');
   const filenameMatch = contentDisposition?.match(/filename="?([^"]+)"?/);
-  const filename = filenameMatch?.[1] || `benton_cama_rag_snapshot_${Date.now()}.json`;
+  const filename = filenameMatch?.[1] || `benton_assessment_rag_snapshot_${Date.now()}.json`;
 
   // Create blob and trigger download
   const blob = await response.blob();

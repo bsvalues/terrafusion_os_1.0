@@ -74,6 +74,10 @@ vi.mock('../../components/workbench/ParcelContextBanner', () => ({
   ParcelContextBanner: () => null,
 }));
 
+vi.mock('../../api/pilotApi', () => ({
+  invokeTool: vi.fn(),
+}));
+
 // Lucide icons mock
 vi.mock('lucide-react', () => {
   const Icon = (props: any) => <svg data-slot="icon" {...props} />;
@@ -86,6 +90,8 @@ vi.mock('lucide-react', () => {
     Printer: Icon,
     Download: Icon,
     Database: Icon,
+    BarChart2: Icon,
+    Globe: Icon,
   };
 });
 
@@ -222,11 +228,13 @@ describe('SentimentDashboard — contract', () => {
     expect(bentoCards.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('ranking buttons have role="link"', () => {
+  it('renders explicit unavailable disclosure instead of seeded sentiment rows', () => {
     render(<SentimentDashboard />);
-    // Sidebar ranking list items must be keyboard/screen-reader navigable
-    const linkRoles = screen.getAllByRole('link');
-    expect(linkRoles.length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByTestId('sentiment-dashboard-unavailable')).toBeInTheDocument();
+    expect(screen.getByText(/Neighborhood sentiment unavailable\./i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/no seeded Richland ranking or pseudo-heat bubbles are rendered here/i),
+    ).toBeInTheDocument();
   });
 
   it('has no light-mode class violations', () => {
@@ -258,5 +266,16 @@ describe('AtlasSuiteHome — contract', () => {
     expect(screen.getByTestId('atlas-stats')).toBeInTheDocument();
     expect(screen.getByTestId('atlas-modules')).toBeInTheDocument();
     expect(screen.getByTestId('atlas-queue')).toBeInTheDocument();
+  });
+
+  it('renders the county evidence plane without changing the module grid contract', () => {
+    render(
+      <MemoryRouter>
+        <AtlasSuiteHome />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByTestId('atlas-evidence-plane')).toBeInTheDocument();
+    expect(screen.getByText('County Spatial Audit Posture')).toBeInTheDocument();
   });
 });

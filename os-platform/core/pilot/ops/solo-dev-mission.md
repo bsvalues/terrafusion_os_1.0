@@ -16,9 +16,9 @@ Forbidden edits (absolute)
 - Do NOT modify: `backend/**`, `frontend/**` (unless small test mocks), `os-platform/ai-systems/**`, `ARCHIVE/**`, or generated `.js` files that are built artifacts outside the pilot folder.
 
 Constraints & Safety Rules
-- Never hardcode ports — use env vars (e.g., `TF_API_PORT`, `PILOT_PORT`).
+- Never hardcode ports — use env vars (e.g., `TF_API_PORT`, `TF_PILOT_PORT`; `PILOT_PORT` remains a legacy fallback).
 - No PII in trace summaries unless `tracePolicy` permits `payload_ref`; otherwise sanitize.
-- All writes must emit `tool_invoked` and a terminal event (`tool_succeeded` or `tool_failed`) sharing the same `correlationId`.
+- All writes must emit `tool_invoked` and a terminal event sharing the same `correlationId` (`tool_completed`/`tool_failed` for governed ToolRunner flows; some utility surfaces still emit `tool_succeeded`).
 - County isolation: invocations must check `params.county === context.countyId`.
 - Preflight policy: enforce confirmation, reasonCode and supervisorApproval as required by manifest.
 
@@ -32,10 +32,14 @@ Dev runbook (quick commands)
 ```pwsh
 # enable dev audit persistence
 setx TF_DEV_AUDIT 1
-# run pilot runtime (dev)
+# run pilot runtime with backend-backed R1 handlers
+pnpm run dev:pilot:governed
+# run pilot runtime in isolated stub mode
 pnpm run dev:pilot
 # run core pilot tests
 node --test os-platform/core/pilot/dev-pilot-runtime.test.mjs
+# run the governed local proof after the API and pilot are listening on TF_API_PORT / TF_PILOT_PORT
+pnpm run proof:r1:local
 ```
 
 Small rollback plan

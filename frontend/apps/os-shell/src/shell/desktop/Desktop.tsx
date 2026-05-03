@@ -11,7 +11,8 @@
 
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation, UNSAFE_NavigationContext } from 'react-router-dom';
-import { Layers, Search, Settings2, User } from 'lucide-react';
+import { Layers, Moon, Search, Settings2, Sun, User } from 'lucide-react';
+import { useTheme } from '../../hooks/useTheme';
 import { Launcher } from '../../components/launcher';
 import { useContextMenu } from '../../hooks/useContextMenu';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
@@ -81,7 +82,9 @@ const DesktopTopSystemBar: React.FC<{
   onOpenCommandPalette,
   onToggleControlCenter,
   onToggleSceneSelector,
-}) => (
+}) => {
+  const { isNight, toggleTheme } = useTheme();
+  return (
   <div data-testid='desktop-top-system-bar' className='absolute top-0 left-0 right-0 pointer-events-none'
       style={{ zIndex: Z.topbar }}>
     <LiquidPanel
@@ -171,6 +174,16 @@ const DesktopTopSystemBar: React.FC<{
           <Settings2 className='h-3.5 w-3.5' />
         </button>
 
+        {/* Theme toggle: Night ↔ Day */}
+        <button
+          onClick={toggleTheme}
+          className='flex items-center opacity-50 hover:opacity-90 transition-opacity'
+          aria-label={isNight ? 'Switch to day theme' : 'Switch to night theme'}
+          title={isNight ? 'Day theme' : 'Night theme'}
+        >
+          {isNight ? <Sun className='h-3.5 w-3.5' /> : <Moon className='h-3.5 w-3.5' />}
+        </button>
+
         {/* Profile */}
         <button
           className='flex items-center opacity-40 hover:opacity-80 transition-opacity'
@@ -182,7 +195,8 @@ const DesktopTopSystemBar: React.FC<{
       </div>
     </LiquidPanel>
   </div>
-);
+  );
+};
 
 // ============================================================================
 // Desktop Component
@@ -547,6 +561,8 @@ export function Desktop({ className = '', children }: DesktopProps) {
         Skip to desktop content
       </a>
 
+      <h1 className='sr-only'>TerraFusion OS Desktop</h1>
+
       {/* Layer 0: Ambient Background - ALWAYS ON (CSS mode) */}
       <AmbientCompositor forcedMode='css' />
 
@@ -575,6 +591,7 @@ export function Desktop({ className = '', children }: DesktopProps) {
           id='desktop-main-content'
           className='absolute left-0 right-0 top-12 bottom-12 overflow-auto'
           style={{ zIndex: 2 }}
+          tabIndex={0}
           data-testid='shell-routed-content'
         >
           {children ?? <Outlet />}
@@ -589,6 +606,11 @@ export function Desktop({ className = '', children }: DesktopProps) {
 
       {/* Layer 1002: Launcher (unified navigation surface — replaces StartMenu) */}
       <Launcher />
+
+      {/* Layer 1001: StartMenu (legacy mount point — kept conditional so tests
+          and downstream contracts that look for data-testid="start-menu" still
+          have a stable mount surface even after the Launcher migration). */}
+      {isStartMenuOpen && <StartMenu />}
 
       {/* Layer 50: Toast Notifications (bottom-right, above taskbar) */}
       <ToastContainer />

@@ -64,13 +64,10 @@ public sealed class R1Week2Cx8CostForgeRealOutputTests
     public async Task CostForge_PropertyA_ReturnsNonZeroValues()
     {
         using var client = CreateBentonClient();
-        var payload = JsonSerializer.Serialize(new
-        {
-            PropertyId = Cx8CostForgeRealFactory.PropertyAId,
-            CountyCode = "BENTON",
-            Region = "BENTON",
-            BuildingType = "RESIDENTIAL",
-        });
+        var payload = CreatePayload(
+            propertyId: Cx8CostForgeRealFactory.PropertyAId,
+            squareFeet: 2000,
+            yearBuilt: 2000);
 
         var response = await client.PostAsync("/api/CostForge/calculate",
             new StringContent(payload, Encoding.UTF8, "application/json"));
@@ -97,13 +94,10 @@ public sealed class R1Week2Cx8CostForgeRealOutputTests
     public async Task CostForge_PropertyB_ReturnsNonZeroValues()
     {
         using var client = CreateBentonClient();
-        var payload = JsonSerializer.Serialize(new
-        {
-            PropertyId = Cx8CostForgeRealFactory.PropertyBId,
-            CountyCode = "BENTON",
-            Region = "BENTON",
-            BuildingType = "RESIDENTIAL",
-        });
+        var payload = CreatePayload(
+            propertyId: Cx8CostForgeRealFactory.PropertyBId,
+            squareFeet: 3200,
+            yearBuilt: 1995);
 
         var response = await client.PostAsync("/api/CostForge/calculate",
             new StringContent(payload, Encoding.UTF8, "application/json"));
@@ -132,13 +126,10 @@ public sealed class R1Week2Cx8CostForgeRealOutputTests
         using var client = CreateBentonClient();
 
         // Calculate Property A
-        var payloadA = JsonSerializer.Serialize(new
-        {
-            PropertyId = Cx8CostForgeRealFactory.PropertyAId,
-            CountyCode = "BENTON",
-            Region = "BENTON",
-            BuildingType = "RESIDENTIAL",
-        });
+        var payloadA = CreatePayload(
+            propertyId: Cx8CostForgeRealFactory.PropertyAId,
+            squareFeet: 2000,
+            yearBuilt: 2000);
         var responseA = await client.PostAsync("/api/CostForge/calculate",
             new StringContent(payloadA, Encoding.UTF8, "application/json"));
         responseA.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -146,13 +137,10 @@ public sealed class R1Week2Cx8CostForgeRealOutputTests
         var resultA = JsonSerializer.Deserialize<JsonElement>(jsonA);
 
         // Calculate Property B
-        var payloadB = JsonSerializer.Serialize(new
-        {
-            PropertyId = Cx8CostForgeRealFactory.PropertyBId,
-            CountyCode = "BENTON",
-            Region = "BENTON",
-            BuildingType = "RESIDENTIAL",
-        });
+        var payloadB = CreatePayload(
+            propertyId: Cx8CostForgeRealFactory.PropertyBId,
+            squareFeet: 3200,
+            yearBuilt: 1995);
         var responseB = await client.PostAsync("/api/CostForge/calculate",
             new StringContent(payloadB, Encoding.UTF8, "application/json"));
         responseB.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -182,13 +170,10 @@ public sealed class R1Week2Cx8CostForgeRealOutputTests
     public async Task CostForge_ResponsePropertyId_MatchesRequest()
     {
         using var client = CreateBentonClient();
-        var payload = JsonSerializer.Serialize(new
-        {
-            PropertyId = Cx8CostForgeRealFactory.PropertyAId,
-            CountyCode = "BENTON",
-            Region = "BENTON",
-            BuildingType = "RESIDENTIAL",
-        });
+        var payload = CreatePayload(
+            propertyId: Cx8CostForgeRealFactory.PropertyAId,
+            squareFeet: 2000,
+            yearBuilt: 2000);
 
         var response = await client.PostAsync("/api/CostForge/calculate",
             new StringContent(payload, Encoding.UTF8, "application/json"));
@@ -210,14 +195,10 @@ public sealed class R1Week2Cx8CostForgeRealOutputTests
     public async Task CostForge_ByParcelNumber_ReturnsNonZeroValues()
     {
         using var client = CreateBentonClient();
-        var payload = JsonSerializer.Serialize(new
-        {
-            PropertyId = Guid.Empty,
-            ParcelNumber = Cx8CostForgeRealFactory.PropertyAParcelNumber,
-            CountyCode = "BENTON",
-            Region = "BENTON",
-            BuildingType = "RESIDENTIAL",
-        });
+        var payload = CreatePayload(
+            parcelNumber: Cx8CostForgeRealFactory.PropertyAParcelNumber,
+            squareFeet: 2000,
+            yearBuilt: 2000);
 
         var response = await client.PostAsync("/api/CostForge/calculate",
             new StringContent(payload, Encoding.UTF8, "application/json"));
@@ -240,13 +221,10 @@ public sealed class R1Week2Cx8CostForgeRealOutputTests
     public async Task CostForge_ConfidenceScore_IsPositive()
     {
         using var client = CreateBentonClient();
-        var payload = JsonSerializer.Serialize(new
-        {
-            PropertyId = Cx8CostForgeRealFactory.PropertyAId,
-            CountyCode = "BENTON",
-            Region = "BENTON",
-            BuildingType = "RESIDENTIAL",
-        });
+        var payload = CreatePayload(
+            propertyId: Cx8CostForgeRealFactory.PropertyAId,
+            squareFeet: 2000,
+            yearBuilt: 2000);
 
         var response = await client.PostAsync("/api/CostForge/calculate",
             new StringContent(payload, Encoding.UTF8, "application/json"));
@@ -259,6 +237,31 @@ public sealed class R1Week2Cx8CostForgeRealOutputTests
             "ConfidenceScore must be positive for a property with complete data");
         result.GetProperty("confidenceScore").GetDouble().Should().BeLessThanOrEqualTo(1.0,
             "ConfidenceScore must not exceed 1.0");
+    }
+
+    [Fact]
+    public async Task CostForge_MissingRequestInputs_Returns422InsteadOfGeneric500()
+    {
+        using var client = CreateBentonClient();
+        var payload = JsonSerializer.Serialize(new
+        {
+            PropertyId = Cx8CostForgeRealFactory.PropertyAId,
+            CountyCode = "BENTON",
+            Region = "Reval 1",
+            BuildingType = "RESIDENTIAL",
+        });
+
+        var response = await client.PostAsync("/api/CostForge/calculate",
+            new StringContent(payload, Encoding.UTF8, "application/json"));
+
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity,
+            "missing CAMA plus missing request-driven inputs should surface an actionable client error");
+
+        var json = await response.Content.ReadAsStringAsync();
+        var result = JsonSerializer.Deserialize<JsonElement>(json);
+
+        result.GetProperty("title").GetString().Should().Be("Cost calculation input unavailable");
+        result.GetProperty("detail").GetString().Should().Contain("No CAMA characteristics found");
     }
 
     // ════════════════════════════════════════════════════════════════════
@@ -278,6 +281,28 @@ public sealed class R1Week2Cx8CostForgeRealOutputTests
         client.DefaultRequestHeaders.TryAddWithoutValidation("X-Plugin-Id",
             Cx8CostForgeRealFactory.PluginAllPermsId.ToString());
         return client;
+    }
+
+    private static string CreatePayload(
+        Guid? propertyId = null,
+        string? parcelNumber = null,
+        decimal squareFeet = 2000m,
+        int yearBuilt = 2000,
+        string quality = "Average",
+        string condition = "Good")
+    {
+        return JsonSerializer.Serialize(new
+        {
+            PropertyId = propertyId ?? Guid.Empty,
+            ParcelNumber = parcelNumber,
+            CountyCode = "BENTON",
+            Region = "Reval 1",
+            BuildingType = "RESIDENTIAL",
+            SquareFeet = squareFeet,
+            YearBuilt = yearBuilt,
+            Quality = quality,
+            Condition = condition,
+        });
     }
 }
 

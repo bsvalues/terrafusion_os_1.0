@@ -1,9 +1,7 @@
 /**
  * ═══════════════════════════════════════════════════════════════
  * ADVANCED ANALYTICS PIPELINE PLATFORM
- * Elite Real-Time Data Processing & Immersive Visualization
- * AI-Powered Government Operations Insights
- * THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.
+ * Evidence-gated data processing and insight display.
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -80,223 +78,6 @@ export const TerraFusionAdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({
     dataProcessed: 0,
   });
 
-  useEffect(() => {
-    initializeAnalyticsPlatform();
-    const interval = setInterval(updateAnalyticsMetrics, 2500);
-    return () => clearInterval(interval);
-  }, []);
-
-  const initializeAnalyticsPlatform = useCallback(() => {
-
-    // Initialize analytics pipelines
-    const pipelines: AnalyticsPipeline[] = [
-      {
-        id: 'pipeline-property-001',
-        name: 'Real-Time Property Assessment Analytics',
-        type: 'REAL_TIME',
-        status: 'ACTIVE',
-        dataSource: 'County Assessment Systems',
-        processingRate: 15847,
-        totalProcessed: 25847392,
-        accuracy: 99.7,
-        latency: 8.3,
-        throughput: 847.2,
-        cpuUsage: 34.7,
-        memoryUsage: 67.8,
-        lastUpdate: new Date().toISOString(),
-      },
-      {
-        id: 'pipeline-tax-002',
-        name: 'Tax Revenue Forecasting Pipeline',
-        type: 'PREDICTIVE',
-        status: 'ACTIVE',
-        dataSource: 'Multi-County Tax Systems',
-        processingRate: 8924,
-        totalProcessed: 18934756,
-        accuracy: 97.9,
-        latency: 12.7,
-        throughput: 523.8,
-        cpuUsage: 28.4,
-        memoryUsage: 52.1,
-        lastUpdate: new Date().toISOString(),
-      },
-      {
-        id: 'pipeline-operations-003',
-        name: 'Government Operations Optimization',
-        type: 'ML_INFERENCE',
-        status: 'PROCESSING',
-        dataSource: 'Cross-Department Systems',
-        processingRate: 24578,
-        totalProcessed: 94756823,
-        accuracy: 98.4,
-        latency: 6.1,
-        throughput: 1247.9,
-        cpuUsage: 67.9,
-        memoryUsage: 78.3,
-        lastUpdate: new Date().toISOString(),
-      },
-      {
-        id: 'pipeline-citizen-004',
-        name: 'Citizen Services Analytics',
-        type: 'STREAMING',
-        status: 'ACTIVE',
-        dataSource: 'Service Request Systems',
-        processingRate: 5634,
-        totalProcessed: 8475923,
-        accuracy: 96.7,
-        latency: 15.2,
-        throughput: 289.4,
-        cpuUsage: 23.8,
-        memoryUsage: 41.6,
-        lastUpdate: new Date().toISOString(),
-      },
-      {
-        id: 'pipeline-compliance-005',
-        name: 'FISMA Compliance Monitoring',
-        type: 'BATCH',
-        status: 'COMPLETED',
-        dataSource: 'Security & Audit Systems',
-        processingRate: 1847,
-        totalProcessed: 2847592,
-        accuracy: 99.9,
-        latency: 234.7,
-        throughput: 94.7,
-        cpuUsage: 12.3,
-        memoryUsage: 28.9,
-        lastUpdate: new Date(Date.now() - 1800000).toISOString(), // 30 minutes ago
-      },
-    ];
-
-    // Initialize data visualizations
-    const visualizations: DataVisualization[] = [
-      {
-        id: 'viz-dashboard-001',
-        name: 'Executive Government Dashboard',
-        type: 'DASHBOARD',
-        category: 'OPERATIONAL',
-        refreshRate: 5,
-        dataPoints: 847592,
-        interactivity: 'REAL_TIME',
-        complexity: 'ELITE',
-        users: 247,
-        lastAccessed: new Date().toISOString(),
-      },
-      {
-        id: 'viz-map-002',
-        name: 'Statewide Property Value Heatmap',
-        type: 'MAP',
-        category: 'GEOGRAPHIC',
-        refreshRate: 30,
-        dataPoints: 2847593,
-        interactivity: 'INTERACTIVE',
-        complexity: 'ADVANCED',
-        users: 89,
-        lastAccessed: new Date().toISOString(),
-      },
-      {
-        id: 'viz-3d-003',
-        name: 'Immersive Budget Allocation 3D',
-        type: 'IMMERSIVE_3D',
-        category: 'FINANCIAL',
-        refreshRate: 60,
-        dataPoints: 457823,
-        interactivity: 'IMMERSIVE',
-        complexity: 'ELITE',
-        users: 34,
-        lastAccessed: new Date().toISOString(),
-      },
-      {
-        id: 'viz-performance-004',
-        name: 'AI Model Performance Charts',
-        type: 'CHART',
-        category: 'PERFORMANCE',
-        refreshRate: 10,
-        dataPoints: 1547892,
-        interactivity: 'INTERACTIVE',
-        complexity: 'COMPLEX',
-        users: 156,
-        lastAccessed: new Date().toISOString(),
-      },
-      {
-        id: 'viz-ar-005',
-        name: 'AR Government Operations Overlay',
-        type: 'AR_OVERLAY',
-        category: 'OPERATIONAL',
-        refreshRate: 1,
-        dataPoints: 94758,
-        interactivity: 'IMMERSIVE',
-        complexity: 'ELITE',
-        users: 12,
-        lastAccessed: new Date().toISOString(),
-      },
-    ];
-
-    // Initialize government insights
-    const insights: GovernmentInsight[] = [
-      {
-        id: 'insight-001',
-        title: 'Property Tax Revenue Optimization Opportunity',
-        category: 'REVENUE_OPTIMIZATION',
-        priority: 'HIGH',
-        confidence: 97.8,
-        impact: 'SIGNIFICANT',
-        description:
-          'Analysis indicates 15.7% potential increase in property tax revenue through AI-optimized assessment accuracy improvements across King County.',
-        actionItems: [
-          'Implement quantum-enhanced valuation models',
-          'Deploy real-time market data integration',
-          'Upgrade assessment workflows with ML predictions',
-        ],
-        estimatedValue: 847250000,
-        timeframe: '6-12 months',
-        aiGenerated: true,
-      },
-      {
-        id: 'insight-002',
-        title: 'Citizen Service Response Time Enhancement',
-        category: 'OPERATIONAL_EFFICIENCY',
-        priority: 'MEDIUM',
-        confidence: 94.3,
-        impact: 'MODERATE',
-        description:
-          'AI analysis reveals 34% reduction in citizen service response times possible through automated workflow optimization.',
-        actionItems: [
-          'Deploy AI-powered request routing',
-          'Implement predictive resource allocation',
-          'Optimize staff scheduling algorithms',
-        ],
-        estimatedValue: 12500000,
-        timeframe: '3-6 months',
-        aiGenerated: true,
-      },
-      {
-        id: 'insight-003',
-        title: 'FISMA Compliance Risk Mitigation',
-        category: 'COMPLIANCE',
-        priority: 'CRITICAL',
-        confidence: 99.2,
-        impact: 'TRANSFORMATIVE',
-        description:
-          'Quantum security analysis identifies 7 critical vulnerabilities requiring immediate attention to maintain FISMA-High certification.',
-        actionItems: [
-          'Implement quantum encryption protocols',
-          'Deploy advanced threat detection systems',
-          'Enhance access control mechanisms',
-          'Conduct comprehensive security audit',
-        ],
-        estimatedValue: 50000000,
-        timeframe: '1-3 months',
-        aiGenerated: true,
-      },
-    ];
-
-    setAnalyticsPipelines(pipelines);
-    setDataVisualizations(visualizations);
-    setGovernmentInsights(insights);
-    calculatePlatformMetrics(pipelines, visualizations, insights);
-
-  }, []);
-
   const calculatePlatformMetrics = useCallback(
     (
       pipelines: AnalyticsPipeline[],
@@ -307,7 +88,9 @@ export const TerraFusionAdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({
       const activePipelines = pipelines.filter((p) => p.status === 'ACTIVE').length;
       const totalThroughput = pipelines.reduce((sum, pipeline) => sum + pipeline.throughput, 0);
       const averageLatency =
-        pipelines.reduce((sum, pipeline) => sum + pipeline.latency, 0) / pipelines.length;
+        pipelines.length > 0
+          ? pipelines.reduce((sum, pipeline) => sum + pipeline.latency, 0) / pipelines.length
+          : 0;
       const insightsGenerated = insights.length;
       const dataProcessed = pipelines.reduce((sum, pipeline) => sum + pipeline.totalProcessed, 0);
 
@@ -323,30 +106,16 @@ export const TerraFusionAdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({
     []
   );
 
-  const updateAnalyticsMetrics = useCallback(() => {
-    // Simulate real-time analytics updates
-    setAnalyticsPipelines((prev) =>
-      prev.map((pipeline) => {
-        if (pipeline.status === 'ACTIVE' || pipeline.status === 'PROCESSING') {
-          const processingIncrement = Math.floor(Math.random() * 1000) + 100;
-          return {
-            ...pipeline,
-            totalProcessed: pipeline.totalProcessed + processingIncrement,
-            processingRate: Math.max(0, pipeline.processingRate + (Math.random() - 0.5) * 500),
-            latency: Math.max(1, pipeline.latency + (Math.random() - 0.5) * 2),
-            throughput: Math.max(0, pipeline.throughput + (Math.random() - 0.5) * 50),
-            cpuUsage: Math.max(0, Math.min(100, pipeline.cpuUsage + (Math.random() - 0.5) * 5)),
-            memoryUsage: Math.max(
-              0,
-              Math.min(100, pipeline.memoryUsage + (Math.random() - 0.5) * 3)
-            ),
-            lastUpdate: new Date().toISOString(),
-          };
-        }
-        return pipeline;
-      })
-    );
-  }, []);
+  const initializeAnalyticsPlatform = useCallback(() => {
+    setAnalyticsPipelines([]);
+    setDataVisualizations([]);
+    setGovernmentInsights([]);
+    calculatePlatformMetrics([], [], []);
+  }, [calculatePlatformMetrics]);
+
+  useEffect(() => {
+    initializeAnalyticsPlatform();
+  }, [initializeAnalyticsPlatform]);
 
   const getPipelineTypeColor = (type: AnalyticsPipeline['type']) => {
     switch (type) {
@@ -428,7 +197,7 @@ export const TerraFusionAdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({
           </h1>
         </div>
         <p className='text-lg text-terra-blue/80 mb-6'>
-          Elite Real-Time Data Processing & AI-Powered Government Insights
+          Governed data processing and AI insight evidence
         </p>
 
         {/* Platform Metrics Overview */}
@@ -467,7 +236,13 @@ export const TerraFusionAdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({
           Analytics Pipelines
         </h2>
         <div className='grid gap-4'>
-          {analyticsPipelines.map((pipeline) => (
+          {analyticsPipelines.length === 0 ? (
+            <Card className='terra-glass border-terra-cyan/20'>
+              <CardBody className='text-terra-blue/80'>
+                No analytics pipelines are displayed because no governed pipeline registry has returned evidence.
+              </CardBody>
+            </Card>
+          ) : analyticsPipelines.map((pipeline) => (
             <Card key={pipeline.id} className='terra-glass border-terra-cyan/20'>
               <CardBody className='space-y-4'>
                 <div className='flex justify-between items-start'>
@@ -551,7 +326,13 @@ export const TerraFusionAdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({
           Data Visualizations
         </h2>
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
-          {dataVisualizations.map((viz) => (
+          {dataVisualizations.length === 0 ? (
+            <Card className='terra-glass border-terra-cyan/20'>
+              <CardBody className='text-terra-blue/80'>
+                No data visualizations are displayed because no governed visualization registry has returned evidence.
+              </CardBody>
+            </Card>
+          ) : dataVisualizations.map((viz) => (
             <Card key={viz.id} className='terra-glass border-terra-cyan/20'>
               <CardHeader className='pb-3'>
                 <div className='flex justify-between items-start'>
@@ -605,15 +386,19 @@ export const TerraFusionAdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({
         <CardHeader>
           <h2 className='text-2xl font-semibold text-terra-cyan flex items-center gap-3'>
             <TerraSphere size='sm' variant='quantum' />
-            AI-Generated Government Insights
+            Governed Government Insights
           </h2>
           <p className='text-terra-blue/70'>
-            Advanced AI analysis for government operations optimization
+            AI guidance appears only with confidence, uncertainty, provenance, and action evidence.
           </p>
         </CardHeader>
         <CardBody>
           <div className='space-y-4'>
-            {governmentInsights.map((insight) => (
+            {governmentInsights.length === 0 ? (
+              <div className='terra-glass p-4 rounded-lg border border-terra-cyan/10 text-terra-blue/80'>
+                No AI insights are displayed because no governed guidance endpoint has returned evidence.
+              </div>
+            ) : governmentInsights.map((insight) => (
               <div
                 key={insight.id}
                 className='terra-glass p-4 rounded-lg border border-terra-cyan/10'

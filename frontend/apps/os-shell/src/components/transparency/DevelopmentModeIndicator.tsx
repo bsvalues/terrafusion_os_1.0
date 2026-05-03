@@ -14,10 +14,10 @@ interface DevelopmentModeIndicatorProps {
  * DevelopmentModeIndicator - Transparency Component
  *
  * This component addresses audit concerns by clearly indicating:
- * 1. Whether the system is using real backend data or mock data
+ * 1. Whether the system is using backend-verified data or workspace-only data
  * 2. Current development phase and data sources
  * 3. Backend connection status and health
- * 4. Clear labeling of mock vs. real data
+ * 4. Clear labeling of verified vs. unverified data
  *
  * AUDIT TRANSPARENCY: This component ensures users know exactly
  * what type of data they're viewing at all times.
@@ -164,7 +164,7 @@ const DevelopmentModeIndicator: React.FC<DevelopmentModeIndicatorProps> = ({
             </p>
 
             {showingSimulatedData && (
-              <div className='mock-data-warning'>
+              <div className='unverified-data-warning'>
                 ⚠️ <strong>Simulated data active:</strong> Treat any dashboard metrics shown beside
                 this indicator as workspace-only proof until backend health returns and live
                 environment gates are separately completed.

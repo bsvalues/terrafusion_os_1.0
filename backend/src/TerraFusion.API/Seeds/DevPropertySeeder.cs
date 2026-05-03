@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Entities.Pacs;
 using TerraFusion.Data;
 using SystemTask = System.Threading.Tasks.Task;
 
@@ -17,6 +19,8 @@ namespace TerraFusion.API.Seeds;
 /// </summary>
 public sealed class DevPropertySeeder
 {
+    private const string BentonCountyFips = "53005";
+
     private readonly TerraFusionDbContext _db;
     private readonly ILogger<DevPropertySeeder> _logger;
 
@@ -28,15 +32,45 @@ public sealed class DevPropertySeeder
 
     public async SystemTask SeedAsync(CancellationToken ct = default)
     {
-        if (await _db.Properties.AnyAsync(ct))
+        var skipEnvValue = Environment.GetEnvironmentVariable("TF_SKIP_DEV_SEEDERS")?.Trim();
+        var hasSkipArg = Environment.GetCommandLineArgs()
+            .Any(arg => string.Equals(arg, "--skip-dev-seeders", StringComparison.OrdinalIgnoreCase));
+
+        _logger.LogInformation(
+            "[DevPropertySeeder] Skip check: arg={HasSkipArg}, TF_SKIP_DEV_SEEDERS={SkipEnvValue}",
+            hasSkipArg,
+            skipEnvValue ?? "<null>");
+
+        if (ShouldSkipDevSeeders())
         {
-            _logger.LogInformation("[DevPropertySeeder] Properties table already populated — skipping.");
+            _logger.LogInformation("[DevPropertySeeder] Skip signal detected — skipping dev property seeding.");
             return;
         }
 
-        // Ensure Benton County row exists.
+        if (!ShouldRunBulkProjection())
+        {
+            var propertiesPresent = await _db.Properties
+                .AsNoTracking()
+                .AnyAsync(ct);
+            var camaPresent = await _db.CamaCharacteristics
+                .AsNoTracking()
+                .AnyAsync(ct);
+
+            _logger.LogInformation(
+                "[DevPropertySeeder] Bulk PACS projection disabled for normal startup. " +
+                "PropertiesPresent={PropertiesPresent}, CamaPresent={CamaPresent}. " +
+                "Set TF_RUN_DEV_PROPERTY_PROJECTION=true or pass --run-dev-property-projection to rebuild from PACS mirror tables.",
+                propertiesPresent,
+                camaPresent);
+            return;
+        }
+
+        var propertiesPopulated = await _db.Properties.AnyAsync(ct);
+
+        // Ensure Benton County row exists. Look up by FipsCode (stable key);
+        // Name may be "Benton" or "Benton County" depending on seed lineage.
         var bentonCounty = await _db.Counties
-            .FirstOrDefaultAsync(c => c.Name == "Benton" && c.State == "WA", ct);
+            .FirstOrDefaultAsync(c => c.FipsCode == BentonCountyFips, ct);
 
         if (bentonCounty is null)
         {
@@ -45,15 +79,34 @@ public sealed class DevPropertySeeder
                 Id = Guid.NewGuid(),
                 Name = "Benton",
                 State = "WA",
-                FipsCode = "53005",
+                FipsCode = BentonCountyFips,
                 Population = 206873,
                 Area = 1703.0,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
             };
             _db.Counties.Add(bentonCounty);
-            await _db.SaveChangesAsync(ct);
-            _logger.LogInformation("[DevPropertySeeder] Created Benton County row (Id={Id}).", bentonCounty.Id);
+
+            try
+            {
+                await _db.SaveChangesAsync(ct);
+                _logger.LogInformation("[DevPropertySeeder] Created Benton County row (Id={Id}).", bentonCounty.Id);
+            }
+            catch (DbUpdateException ex)
+            {
+                _db.Entry(bentonCounty).State = EntityState.Detached;
+                bentonCounty = await _db.Counties.FirstOrDefaultAsync(c => c.FipsCode == BentonCountyFips, ct);
+
+                if (bentonCounty is null)
+                {
+                    throw;
+                }
+
+                _logger.LogInformation(
+                    "[DevPropertySeeder] Reused existing Benton County row after county insert failed ({Message}) (Id={Id}).",
+                    ex.InnerException?.Message ?? ex.Message,
+                    bentonCounty.Id);
+            }
         }
 
         var countyId = bentonCounty.Id;
@@ -91,14 +144,25 @@ public sealed class DevPropertySeeder
                 g => g.OrderByDescending(s => s.PrimaryFlag == "Y" ? 1 : 0).First(),
                 ct);
 
-        var valuationLookup = await _db.PacsValuations
+        // Two-step projection avoids EF materialising the full PacsValuation entity
+        // (which selects hood_cd — a SQLite column that may be named differently).
+        var rawValuations = await _db.PacsValuations
             .AsNoTracking()
-            .Where(v => parcelIds.Contains(v.ParcelId))
+            .Where(v => v.SupNum == 0 && parcelIds.Contains(v.ParcelId))
+            .Select(v => new
+            {
+                v.ParcelId, v.PropValYear,
+                v.AssessedVal, v.Market, v.AppraisedVal, v.ImprvVal,
+                v.LandHstdVal, v.LandNonHstdVal,
+                v.ImprvHstdVal, v.ImprvNonHstdVal,
+            })
+            .ToListAsync(ct);
+
+        var valuationLookup = rawValuations
             .GroupBy(v => v.ParcelId)
-            .ToDictionaryAsync(
+            .ToDictionary(
                 g => g.Key,
-                g => g.OrderByDescending(v => v.PropValYear).First(),
-                ct);
+                g => g.OrderByDescending(v => v.PropValYear).First());
 
         var profileLookup = await _db.PacsPropertyProfiles
             .AsNoTracking()
@@ -135,7 +199,10 @@ public sealed class DevPropertySeeder
             properties.Add(new Property
             {
                 Id = Guid.NewGuid(),
-                PropertyId = parcelNumber,
+                // PropertyId must hold the PACS integer prop_id (not geo_id) so the
+                // PropertiesController PacsPropertyProfile fallback join works correctly:
+                //   Properties.PropertyId → int.Parse → PacsPropertyProfiles.PacsPropId
+                PropertyId = parcel.PropId.ToString(),
                 ParcelId = parcelNumber,
                 ParcelNumber = parcelNumber,
                 Address = address,
@@ -157,6 +224,9 @@ public sealed class DevPropertySeeder
         // Batch insert in chunks to avoid SQLite parameter limits.
         const int chunkSize = 500;
         var total = 0;
+
+        if (!propertiesPopulated)
+        {
         foreach (var chunk in properties.Chunk(chunkSize))
         {
             _db.Properties.AddRange(chunk);
@@ -168,6 +238,112 @@ public sealed class DevPropertySeeder
 
         _logger.LogInformation("[DevPropertySeeder] Done. {Count} Properties projected from PacsParcel.",
             properties.Count);
+        }
+        else
+        {
+            _logger.LogInformation("[DevPropertySeeder] Properties already populated — skipping insert.");
+
+            // Fix-up: PropertyId was previously set to geo_id instead of PropId.
+            // Any row where PropertyId == ParcelNumber is wrong — correct it.
+            // Use GroupBy to handle parcels where GeoId/SimpleGeoId is not unique.
+            var geoIdToPropId = parcels
+                .GroupBy(p => p.GeoId ?? p.SimpleGeoId ?? p.PropId.ToString())
+                .ToDictionary(g => g.Key, g => g.First().PropId.ToString());
+
+            var badRows = await _db.Properties
+                .Where(p => p.PropertyId == p.ParcelNumber)
+                .ToListAsync(ct);
+
+            if (badRows.Count > 0)
+            {
+                foreach (var row in badRows)
+                {
+                    if (geoIdToPropId.TryGetValue(row.ParcelNumber ?? "", out var correctPropId))
+                        row.PropertyId = correctPropId;
+                }
+                await _db.SaveChangesAsync(ct);
+                _logger.LogInformation("[DevPropertySeeder] Fixed PropertyId on {Count} rows (geo_id → PropId).", badRows.Count);
+            }
+        }
+
+        // ── CamaCharacteristics ─────────────────────────────────────────────
+        // Seed CamaCharacteristics from the local PACS mirror tables so the
+        // PropertiesController CamaCharacteristic path returns GLA, basement,
+        // and garage sqft without any live PACS SQL Server connection.
+        // Source priority: PacsPropertyProfile.LivingArea (above-grade only) →
+        //                  sum of above-grade PacsImprovementDetail segments.
+        if (!await _db.CamaCharacteristics.AnyAsync(ct))
+        {
+            // Load basement/garage detail segments for all parcels in one query.
+            // PacsImprovementDetail → PacsImprovement.ParcelId → PacsParcel.Id
+            var improvementIds = await _db.PacsImprovements
+                .AsNoTracking()
+                .Where(i => parcelIds.Contains(i.ParcelId))
+                .Select(i => new { i.Id, i.ParcelId, i.PacsPropId })
+                .ToListAsync(ct);
+
+            var imprvIdToParcelId = improvementIds.ToDictionary(i => i.Id, i => i.ParcelId);
+            var imprvGuids = imprvIdToParcelId.Keys.ToHashSet();
+
+            var detailsByParcel = (await _db.PacsImprovementDetails
+                .AsNoTracking()
+                .Where(d => imprvGuids.Contains(d.ImprovementId))
+                .ToListAsync(ct))
+                .GroupBy(d => imprvIdToParcelId.TryGetValue(d.ImprovementId, out var pid) ? pid : Guid.Empty)
+                .Where(g => g.Key != Guid.Empty)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            var segsByParcel = detailsByParcel;
+
+            static bool IsBasement(string? cd) => cd is "BSMT" or "BSM" or "BSMT-FIN"
+                or "BSMT-UNFIN" or "BSMT-PART" or "BAS" or "BASEMENT" or "BSMT-GAR";
+            static bool IsGarage(string? cd) => cd is "GAR" or "GARATT" or "GARDET"
+                or "GARACE" or "GARAGE" or "GARATT-FIN" or "CARPORT" or "CAR";
+
+            var camaList = new List<CamaCharacteristic>(parcels.Count);
+            foreach (var parcel in parcels)
+            {
+                profileLookup.TryGetValue(parcel.Id, out var prof);
+                if (prof is null) continue;
+
+                var gla = prof.LivingArea is > 0 ? prof.LivingArea!.Value : 0m;
+                if (gla <= 0) continue;
+
+                segsByParcel.TryGetValue(parcel.Id, out var segs);
+                var basementSqft = segs?
+                    .Where(s => IsBasement(s.ImprvDetTypeCd))
+                    .Sum(s => s.ImprvDetArea ?? 0m) ?? 0m;
+                var garageSqft = segs?
+                    .Where(s => IsGarage(s.ImprvDetTypeCd))
+                    .Sum(s => s.ImprvDetArea ?? 0m) ?? 0m;
+
+                var parcelNumber = parcel.GeoId ?? parcel.SimpleGeoId ?? parcel.PropId.ToString();
+                camaList.Add(new CamaCharacteristic
+                {
+                    Id           = Guid.NewGuid(),
+                    ParcelId     = parcelNumber,
+                    TaxYear      = prof.PropValYear,
+                    BuildingType = "R1",
+                    SquareFeet   = gla,
+                    YearBuilt    = prof.YearBuilt.HasValue ? (int?)((int)prof.YearBuilt.Value) : null,
+                    BasementSqft = basementSqft > 0 ? basementSqft : null,
+                    GarageSqft   = garageSqft > 0 ? garageSqft : null,
+                    CountyId     = countyId,
+                    UpdatedAt    = DateTime.UtcNow,
+                });
+            }
+
+            if (camaList.Count > 0)
+            {
+                foreach (var chunk in camaList.Chunk(chunkSize))
+                {
+                    _db.CamaCharacteristics.AddRange(chunk);
+                    await _db.SaveChangesAsync(ct);
+                }
+                _logger.LogInformation("[DevPropertySeeder] Seeded {Count} CamaCharacteristic rows from PacsPropertyProfile.",
+                    camaList.Count);
+            }
+        }
     }
 
     private static string? BuildAddressFromSitus(TerraFusion.Core.Entities.Pacs.PacsSitus? s)
@@ -191,5 +367,270 @@ public sealed class DevPropertySeeder
             "EX" or "EXEMPT" => "Exempt",
             _ => propertyUseCd?.Trim() ?? "Residential",
         };
+    }
+
+    private static bool ShouldSkipDevSeeders()
+    {
+        var envValue = Environment.GetEnvironmentVariable("TF_SKIP_DEV_SEEDERS")?.Trim();
+        if (string.Equals(envValue, "true", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(envValue, "1", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return Environment.GetCommandLineArgs()
+            .Any(arg => string.Equals(arg, "--skip-dev-seeders", StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static bool ShouldRunBulkProjection()
+    {
+        var envValue = Environment.GetEnvironmentVariable("TF_RUN_DEV_PROPERTY_PROJECTION")?.Trim();
+        if (string.Equals(envValue, "true", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(envValue, "1", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return Environment.GetCommandLineArgs()
+            .Any(arg => string.Equals(arg, "--run-dev-property-projection", StringComparison.OrdinalIgnoreCase));
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Dev fixtures: specific canonical sample parcels that must always exist.
+    // Idempotent — skips if the parcel already exists.
+    // ─────────────────────────────────────────────────────────────────────────
+    public async SystemTask EnsureFixturesAsync(CancellationToken ct = default)
+    {
+        if (ShouldSkipDevSeeders())
+        {
+            _logger.LogInformation("[DevPropertySeeder] Skip signal detected — skipping dev fixtures.");
+            return;
+        }
+
+        var bentonCounty = await _db.Counties
+            .FirstOrDefaultAsync(c =>
+                c.FipsCode == BentonCountyFips ||
+                ((c.Name == "Benton" || c.Name == "Benton County") && c.State == "WA"),
+                ct);
+        if (bentonCounty is null)
+        {
+            _logger.LogWarning("[DevPropertySeeder] Benton County not found — skipping fixtures.");
+            return;
+        }
+
+        await EnsureOakmontCtAsync(bentonCounty.Id, ct);
+    }
+
+    // 106 Oakmont Ct, Richland WA — complete SFR fixture with GLA, lot dims, legal desc.
+    private async SystemTask EnsureOakmontCtAsync(Guid countyId, CancellationToken ct)
+    {
+        const string geoId    = "9990-0106-000";
+        const int    propId   = 9990106;
+        const int    taxYear  = 2025;
+
+        // Idempotent: skip if already seeded.
+        if (await _db.Properties.AnyAsync(p => p.ParcelNumber == geoId, ct))
+        {
+            _logger.LogDebug("[DevPropertySeeder] 106 Oakmont Ct fixture already present.");
+            return;
+        }
+
+        _logger.LogInformation("[DevPropertySeeder] Seeding 106 Oakmont Ct fixture (propId={PropId})...", propId);
+
+        // ── PacsParcel ────────────────────────────────────────────────────────
+        var pacsParcelId = Guid.NewGuid();
+        _db.PacsParcel.Add(new PacsParcel
+        {
+            Id        = pacsParcelId,
+            PropId    = propId,
+            GeoId     = geoId,
+            PropTypeCd = "R",
+            CountyId  = countyId,
+        });
+
+        // ── PacsSitus ─────────────────────────────────────────────────────────
+        _db.PacsSituses.Add(new PacsSitus
+        {
+            Id           = Guid.NewGuid(),
+            ParcelId     = pacsParcelId,
+            PacsPropId   = propId,
+            PacsSitusId  = 1,
+            StreetNum    = "106",
+            StreetName   = "OAKMONT",
+            StreetSuffix = "CT",
+            City         = "RICHLAND",
+            State        = "WA",
+            Zip          = "99352",
+            SitusDisplay = "106 OAKMONT CT, RICHLAND WA 99352",
+            PrimaryFlag  = "Y",
+        });
+
+        // ── PacsValuation ─────────────────────────────────────────────────────
+        _db.PacsValuations.Add(new PacsValuation
+        {
+            Id           = Guid.NewGuid(),
+            ParcelId     = pacsParcelId,
+            PacsPropId   = propId,
+            PropValYear  = taxYear,
+            SupNum       = 0,
+            AppraisedVal = 485000m,
+            AssessedVal  = 485000m,
+            Market       = 485000m,
+            ImprvVal     = 400000m,
+            ImprvHstdVal = 400000m,
+            LandHstdVal  = 85000m,
+            LegalDesc    = "LOT 19 OAKMONT MEADOWS DIV 1 AS PER PLAT RECORDED IN VOLUME 32 OF PLATS PAGE 15 RECORDS OF BENTON COUNTY WASHINGTON",
+        });
+
+        // ── PacsPropertyProfile ───────────────────────────────────────────────
+        _db.PacsPropertyProfiles.Add(new PacsPropertyProfile
+        {
+            Id              = Guid.NewGuid(),
+            ParcelId        = pacsParcelId,
+            PacsPropId      = propId,
+            PropValYear     = taxYear,
+            SupNum          = 0,
+            LivingArea      = 2185m,
+            YearBuilt       = 2004m,
+            PropertyUseCd   = "1101",
+            NeighborhoodCode = "RICH05",
+            LandFrontFeet   = 75m,
+            LandDepth       = 120m,
+        });
+
+        // ── PacsLandDetail ────────────────────────────────────────────────────
+        _db.PacsLandDetails.Add(new PacsLandDetail
+        {
+            Id             = Guid.NewGuid(),
+            ParcelId       = pacsParcelId,
+            PacsPropId     = propId,
+            PropValYear    = taxYear,
+            PacsLandSegId  = 1,
+            SupNum         = 0,
+            LandTypeCode   = "SFR",
+            SizeSquareFeet = 9000m,
+            EffectiveFront = 75m,
+            EffectiveDepth = 120m,
+            WidthFront     = 75m,
+            DepthRight     = 120m,
+        });
+
+        // ── PacsImprovement ───────────────────────────────────────────────────
+        var improvementId = Guid.NewGuid();
+        _db.PacsImprovements.Add(new PacsImprovement
+        {
+            Id              = improvementId,
+            ParcelId        = pacsParcelId,
+            PacsPropId      = propId,
+            PropValYear     = taxYear,
+            PacsImprvId     = 1,
+            SupNum          = 0,
+            ImprvTypeCode   = "R",
+            ImprvVal        = 400000m,
+            ActualYearBuilt = 2004,
+            EffectiveYearBuilt = 2013,
+        });
+
+        // ── PacsImprovementDetail ─────────────────────────────────────────────
+        // Main floor + upper floor = GLA 2185; garage = 480 (not in GLA)
+        var details = new[]
+        {
+            new PacsImprovementDetail
+            {
+                Id = Guid.NewGuid(), ImprovementId = improvementId,
+                PacsPropId = propId, PropValYear = taxYear, PacsImprvId = 1, PacsImprvDetId = 1, SupNum = 0,
+                ImprvDetTypeCd = "1ST", ImprvDetDesc = "First Floor", ImprvDetArea = 1285m,
+                ImprvDetClassCd = "avg",
+            },
+            new PacsImprovementDetail
+            {
+                Id = Guid.NewGuid(), ImprovementId = improvementId,
+                PacsPropId = propId, PropValYear = taxYear, PacsImprvId = 1, PacsImprvDetId = 2, SupNum = 0,
+                ImprvDetTypeCd = "2ND", ImprvDetDesc = "Second Floor", ImprvDetArea = 900m,
+                ImprvDetClassCd = "avg",
+            },
+            new PacsImprovementDetail
+            {
+                Id = Guid.NewGuid(), ImprovementId = improvementId,
+                PacsPropId = propId, PropValYear = taxYear, PacsImprvId = 1, PacsImprvDetId = 3, SupNum = 0,
+                ImprvDetTypeCd = "GARATT", ImprvDetDesc = "Attached Garage", ImprvDetArea = 480m,
+                ImprvDetClassCd = "avg",
+            },
+        };
+        _db.PacsImprovementDetails.AddRange(details);
+
+        // ── PacsImprovementAttribute ──────────────────────────────────────────
+        // AttrCode="Count", AttrUnit=3 → bedrooms; AttrUnit=2 → bathrooms; value = count
+        var attrs = new[]
+        {
+            new PacsImprovementAttribute
+            {
+                Id = Guid.NewGuid(), ImprovementId = improvementId,
+                PacsPropId = propId, PropValYear = taxYear, PacsImprvId = 1, PacsImprvDetId = 1,
+                PacsImprvAttrId = 1, SupNum = 0,
+                AttributeCode = "Count", AttrUnit = 3m, AttributeValue = 4m, // 4 bedrooms
+            },
+            new PacsImprovementAttribute
+            {
+                Id = Guid.NewGuid(), ImprovementId = improvementId,
+                PacsPropId = propId, PropValYear = taxYear, PacsImprvId = 1, PacsImprvDetId = 1,
+                PacsImprvAttrId = 2, SupNum = 0,
+                AttributeCode = "Count", AttrUnit = 2m, AttributeValue = 3m, // 3 bathrooms
+            },
+            new PacsImprovementAttribute
+            {
+                Id = Guid.NewGuid(), ImprovementId = improvementId,
+                PacsPropId = propId, PropValYear = taxYear, PacsImprvId = 1, PacsImprvDetId = 1,
+                PacsImprvAttrId = 3, SupNum = 0,
+                AttributeCode = "Vinyl", AttrUnit = 1m, AttributeValue = 1m,
+            },
+            new PacsImprovementAttribute
+            {
+                Id = Guid.NewGuid(), ImprovementId = improvementId,
+                PacsPropId = propId, PropValYear = taxYear, PacsImprvId = 1, PacsImprvDetId = 1,
+                PacsImprvAttrId = 4, SupNum = 0,
+                AttributeCode = "Comp Shingle", AttrUnit = 1m, AttributeValue = 1m,
+            },
+            new PacsImprovementAttribute
+            {
+                Id = Guid.NewGuid(), ImprovementId = improvementId,
+                PacsPropId = propId, PropValYear = taxYear, PacsImprvId = 1, PacsImprvDetId = 1,
+                PacsImprvAttrId = 5, SupNum = 0,
+                AttributeCode = "Heat pump", AttrUnit = 1m, AttributeValue = 1m,
+            },
+            new PacsImprovementAttribute
+            {
+                Id = Guid.NewGuid(), ImprovementId = improvementId,
+                PacsPropId = propId, PropValYear = taxYear, PacsImprvId = 1, PacsImprvDetId = 1,
+                PacsImprvAttrId = 6, SupNum = 0,
+                AttributeCode = "Crawl/Concrete Perimeter Piers", AttrUnit = 1m, AttributeValue = 1m,
+            },
+        };
+        _db.PacsImprovementAttributes.AddRange(attrs);
+
+        // ── canonical Property ─────────────────────────────────────────────────
+        _db.Properties.Add(new Property
+        {
+            Id               = Guid.NewGuid(),
+            PropertyId       = propId.ToString(),
+            ParcelId         = geoId,
+            ParcelNumber     = geoId,
+            Address          = "106 Oakmont Ct, Richland WA 99352",
+            PropertyType     = "Residential",
+            YearBuilt        = 2004,
+            AssessedValue    = 485000m,
+            LandValue        = 85000m,
+            ImprovementValue = 400000m,
+            MarketValue      = 485000m,
+            AssessmentDate   = DateTime.UtcNow,
+            LastUpdated      = DateTime.UtcNow,
+            TaxYear          = taxYear,
+            CountyId         = countyId,
+            CreatedAt        = DateTime.UtcNow,
+            UpdatedAt        = DateTime.UtcNow,
+        });
+
+        await _db.SaveChangesAsync(ct);
+        _logger.LogInformation("[DevPropertySeeder] 106 Oakmont Ct fixture inserted (parcel={GeoId}).", geoId);
     }
 }

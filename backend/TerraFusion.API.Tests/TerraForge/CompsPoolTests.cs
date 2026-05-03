@@ -56,7 +56,12 @@ public sealed class CompsPoolTests : IDisposable
         _sut = new TerraForgeController(
             _db,
             NullLogger<TerraForgeController>.Instance,
-            Mock.Of<IOlsRegressionService>());
+            Mock.Of<IOlsRegressionService>(),
+            Mock.Of<ISaleQualificationService>(),
+            ControllerTestSetup.CountyResolverFor(BentonId))
+        {
+            ControllerContext = ControllerTestSetup.WithCountyClaim(BentonId),
+        };
     }
 
     public void Dispose() => _db.Dispose();

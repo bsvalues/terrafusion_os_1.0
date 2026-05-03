@@ -1,11 +1,11 @@
 /**
- * W5B — GeoEquityDashboard Fixture Disclosure Contract Tests
+ * W5B — GeoEquityDashboard Honest-State Contract Tests
  *
  * Static source-file inspection (no rendering, no mocking).
- * Verifies that GeoEquityDashboard follows the W4B disclosure pattern:
- *   - API-first via store (useAtlasSpatialStore.fetchSpatialData)
- *   - isFixture state flag tracks data origin
- *   - DemoDataBanner renders when fixture fallback is active
+ * Verifies that GeoEquityDashboard follows the governed live/unavailable pattern:
+ *   - API-first via atlasService.getGeoEquityAreas
+ *   - useAtlasSpatialStore is only used to prime sibling Atlas surfaces
+ *   - explicit unavailable state replaces the old fixture fallback path
  *   - No debug console.log in governed forge pages
  *
  * Also runs regression checks against sealed waves.
@@ -22,7 +22,7 @@ function readSrc(relPath: string): string {
 }
 
 // ============================================================================
-// Gate 1 — GeoEquityDashboard imports store + DemoDataBanner + has useEffect
+// Gate 1 — GeoEquityDashboard live wiring + store priming
 // ============================================================================
 
 describe('Gate 1 — GeoEquityDashboard API-first wiring', () => {
@@ -32,8 +32,9 @@ describe('Gate 1 — GeoEquityDashboard API-first wiring', () => {
     expect(src).toContain('useAtlasSpatialStore');
   });
 
-  it('imports DemoDataBanner from governance', () => {
-    expect(src).toContain("from '@/components/governance/DemoDataBanner'");
+  it('imports atlasService and uses the live GeoEquity endpoint', () => {
+    expect(src).toContain("from '@/services/atlasService'");
+    expect(src).toContain('getGeoEquityAreas(25)');
   });
 
   it('imports useEffect', () => {
@@ -45,40 +46,35 @@ describe('Gate 1 — GeoEquityDashboard API-first wiring', () => {
     expect(src).toContain('useEffect');
   });
 
-  it('reads equityAreas from store', () => {
-    expect(src).toContain('s.equityAreas');
+  it('does not read GeoEquity areas from the store', () => {
+    expect(src).not.toContain('s.equityAreas');
   });
 });
 
 // ============================================================================
-// Gate 2 — isFixture flag + DemoDataBanner conditional + fixture fallback
+// Gate 2 — explicit live/unavailable state instead of fixture fallback
 // ============================================================================
 
-describe('Gate 2 — fixture disclosure contract', () => {
+describe('Gate 2 — explicit unavailable disclosure contract', () => {
   const src = readSrc('pages/atlas/GeoEquityDashboard.tsx');
 
-  it('declares isFixture state', () => {
-    expect(src).toContain('isFixture');
-    expect(src).toMatch(/useState.*false/);
+  it('declares an explicit read state', () => {
+    expect(src).toContain("type GeoEquityReadState = 'loading' | 'live' | 'unavailable'");
+    expect(src).toContain("setReadState('loading')");
+    expect(src).toContain("setReadState('live')");
+    expect(src).toContain("setReadState('unavailable')");
   });
 
-  it('renders DemoDataBanner conditionally on isFixture', () => {
-    expect(src).toMatch(/isFixture\s*&&\s*<DemoDataBanner/);
+  it('renders an explicit unavailable landmark', () => {
+    expect(src).toContain('data-testid="geo-equity-unavailable"');
+    expect(src).toContain('Live GeoEquity unavailable.');
   });
 
-  it('passes module="GeoEquity" to DemoDataBanner', () => {
-    expect(src).toContain('module="GeoEquity"');
-  });
-
-  it('imports fixture fallback from atlasSpatialFixtures', () => {
-    expect(src).toContain('FALLBACK_EQUITY_AREAS');
-    expect(src).toContain('atlasSpatialFixtures');
-  });
-
-  it('uses store-first fallback pattern', () => {
-    // storeAreas.length > 0 ? storeAreas : FALLBACK_EQUITY_AREAS
-    expect(src).toMatch(/storeAreas\.length\s*>\s*0/);
-    expect(src).toContain('FALLBACK_EQUITY_AREAS');
+  it('does not import DemoDataBanner or atlasSpatial fixture fallbacks', () => {
+    expect(src).not.toContain('DemoDataBanner');
+    expect(src).not.toContain('FALLBACK_EQUITY_AREAS');
+    expect(src).not.toContain('atlasSpatialFixtures');
+    expect(src).not.toContain('isFixture');
   });
 });
 
@@ -102,15 +98,16 @@ describe('Gate 3 — no debug console.log in governed pages', () => {
 // Gate 4 — W3 regression: store-driven gate preserved
 // ============================================================================
 
-describe('Gate 4 — W3 regression (store-driven gate)', () => {
+describe('Gate 4 — W3 regression (store-primed live gate)', () => {
   const src = readSrc('pages/atlas/GeoEquityDashboard.tsx');
 
   it('does not define inline EQUITY_AREAS data array', () => {
     expect(src).not.toMatch(/^const EQUITY_AREAS\s*:\s*EquityArea\[\]\s*=\s*\[/m);
   });
 
-  it('still consumes from useAtlasSpatialStore', () => {
+  it('still primes sibling Atlas surfaces through useAtlasSpatialStore', () => {
     expect(src).toContain('useAtlasSpatialStore');
+    expect(src).toContain('fetchSpatialData');
   });
 });
 
@@ -134,9 +131,10 @@ describe('Gate 5 — sealed wave regression', () => {
     expect(src).toContain('statisticsAPI');
   });
 
-  it('SegmentDiscoveryDashboard still has DemoDataBanner', () => {
+  it('SegmentDiscoveryDashboard now uses explicit unavailable disclosure instead of DemoDataBanner', () => {
     const src = readSrc('pages/forge/calibration/SegmentDiscoveryDashboard.tsx');
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toContain('isFixture');
+    expect(src).toContain('segment-discovery-unavailable');
+    expect(src).toContain('Segment discovery unavailable.');
+    expect(src).not.toContain('DemoDataBanner');
   });
 });

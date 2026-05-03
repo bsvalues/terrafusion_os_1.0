@@ -6,16 +6,14 @@ using TerraFusion.Levy.Models;
 namespace TerraFusion.Levy.Services
 {
     /// <summary>
-    /// AI-powered revenue projection service with quantum-enhanced forecasting.
-    /// Factor 949 optimization for championship-level accuracy (99.5%+).
-    /// Government. Transcended.
+    /// Deterministic revenue projection service.
+    /// Legacy AI and quantum fields are populated in compatibility mode only.
     /// </summary>
     public class RevenueProjectionService : IRevenueProjectionService
     {
         private readonly LevyDbContext _context;
         private readonly ILogger<RevenueProjectionService> _logger;
-        private const int QUANTUM_FACTOR = 949;
-        private const decimal TARGET_ACCURACY = 0.995m;
+        private const decimal MaxCompatibilityConfidence = 0.85m;
         private const decimal DEFAULT_GROWTH_RATE = 0.03m; // 3% base growth
 
         public RevenueProjectionService(
@@ -32,7 +30,7 @@ namespace TerraFusion.Levy.Services
             bool useQuantumForecasting = true)
         {
             _logger.LogInformation(
-                "Generating {Years} years of revenue projections for scenario {ScenarioId} with quantum forecasting: {QuantumEnabled}",
+                "Generating {Years} years of revenue projections for scenario {ScenarioId} in deterministic compatibility mode. RequestedQuantumForecasting={QuantumRequested}",
                 yearsToProject, scenario.Id, useQuantumForecasting);
 
             var projections = new List<RevenueProjection>();
@@ -40,22 +38,15 @@ namespace TerraFusion.Levy.Services
             var currentAssessedValue = scenario.AssessedValue;
             var currentLevyRate = scenario.LevyRate;
 
-            // Calculate growth rate with AI enhancement
+            // Calculate growth rate from available historical data only.
             var baseGrowthRate = await CalculateProjectedGrowthRateAsync(scenario.CountyId);
-            var quantumEnhancedGrowth = useQuantumForecasting
-                ? ApplyQuantumForecastingAdjustment(baseGrowthRate)
-                : baseGrowthRate;
-
-            _logger.LogDebug(
-                "Base growth rate: {BaseGrowth:P2}, Quantum-enhanced: {QuantumGrowth:P2}",
-                baseGrowthRate, quantumEnhancedGrowth);
 
             for (int year = 0; year < yearsToProject; year++)
             {
                 var fiscalYear = baseYear + year;
 
                 // Project assessed value growth
-                currentAssessedValue *= (1 + quantumEnhancedGrowth);
+                currentAssessedValue *= (1 + baseGrowthRate);
 
                 // Calculate levy amounts
                 var projectedLevyAmount = currentAssessedValue * currentLevyRate;
@@ -63,12 +54,7 @@ namespace TerraFusion.Levy.Services
                 var projectedRevenue = projectedLevyAmount * collectionRate;
 
                 // Calculate confidence level (decreases with distance from present)
-                var confidenceLevel = CalculateConfidence(year, useQuantumForecasting);
-
-                // AI-enhanced revenue projection
-                var aiProjectedRevenue = useQuantumForecasting
-                    ? projectedRevenue * ApplyAIAdjustment(year, scenario)
-                    : projectedRevenue;
+                var confidenceLevel = CalculateConfidence(year);
 
                 var projection = new RevenueProjection
                 {
@@ -80,11 +66,11 @@ namespace TerraFusion.Levy.Services
                     ProjectedLevyAmount = projectedLevyAmount,
                     ProjectedCollectionRate = collectionRate,
                     ProjectedNetRevenue = projectedRevenue,
-                    GrowthRate = quantumEnhancedGrowth,
+                    GrowthRate = baseGrowthRate,
                     ConfidenceLevel = confidenceLevel,
                     CreatedAt = DateTime.UtcNow,
-                    CreatedBy = "ai-projection-service",
-                    AiProjectedRevenue = aiProjectedRevenue,
+                    CreatedBy = "revenue-projection-service",
+                    AiProjectedRevenue = projectedRevenue,
                     RiskFactors = GenerateRiskFactors(year, scenario)
                 };
 
@@ -163,7 +149,6 @@ namespace TerraFusion.Levy.Services
             LevyScenario scenario)
         {
             await Task.CompletedTask;
-            await Task.CompletedTask;
             _logger.LogInformation(
                 "Assessing risks for revenue projection {ProjectionId}",
                 projection.Id);
@@ -237,7 +222,7 @@ namespace TerraFusion.Levy.Services
 
             foreach (var scenario in scenarios)
             {
-                var projections = await GenerateProjectionsAsync(scenario, projectionYears, useQuantumForecasting: true);
+                var projections = await GenerateProjectionsAsync(scenario, projectionYears, useQuantumForecasting: false);
 
                 var summary = new ScenarioSummary
                 {
@@ -264,11 +249,11 @@ namespace TerraFusion.Levy.Services
                 Scenarios = summaries,
                 RecommendedScenario = recommended,
                 RecommendationReason = GenerateRecommendationReason(recommended, summaries),
-                AiConfidence = TARGET_ACCURACY,
+                AiConfidence = summaries.Count > 0 ? Math.Min(MaxCompatibilityConfidence, summaries.Average(summary => summary.AverageConfidence)) : 0m,
                 ComparisonMetrics = new Dictionary<string, object>
                 {
-                    ["quantumFactor"] = QUANTUM_FACTOR,
-                    ["targetAccuracy"] = TARGET_ACCURACY,
+                    ["comparisonMode"] = "deterministic_heuristic",
+                    ["governedOptimizationAvailable"] = false,
                     ["projectionYears"] = projectionYears,
                     ["scenariosAnalyzed"] = scenarios.Count
                 }
@@ -281,7 +266,6 @@ namespace TerraFusion.Levy.Services
             RevenueProjection projection,
             decimal confidenceLevel = 0.95m)
         {
-            await Task.CompletedTask;
             await Task.CompletedTask;
             // Calculate standard deviation based on historical variance
             var historicalVariance = 0.08m; // 8% standard deviation (typical for government revenue)
@@ -311,14 +295,6 @@ namespace TerraFusion.Levy.Services
 
         #region Private Helper Methods
 
-        private decimal ApplyQuantumForecastingAdjustment(decimal baseGrowthRate)
-        {
-            // Quantum factor enhances growth rate prediction accuracy
-            var quantumInfluence = (decimal)QUANTUM_FACTOR / 1000m;
-            var adjustment = baseGrowthRate * 0.02m * quantumInfluence; // Small quantum enhancement
-            return baseGrowthRate + adjustment;
-        }
-
         private decimal CalculateProjectedCollectionRate(int yearOffset, LevyScenario scenario)
         {
             // Start with scenario's base collection rate
@@ -330,25 +306,13 @@ namespace TerraFusion.Levy.Services
             return Math.Max(0.95m, baseRate - uncertaintyDecrement);
         }
 
-        private decimal CalculateConfidence(int yearOffset, bool quantumEnhanced)
+        private decimal CalculateConfidence(int yearOffset)
         {
-            var baseConfidence = 0.95m;
-            var yearlyDecay = 0.03m; // 3% confidence decrease per year
+            var baseConfidence = 0.82m;
+            var yearlyDecay = 0.04m;
             var confidence = baseConfidence - (yearOffset * yearlyDecay);
 
-            if (quantumEnhanced)
-            {
-                confidence = Math.Min(TARGET_ACCURACY, confidence + 0.01m);
-            }
-
-            return Math.Max(0.70m, confidence); // Minimum 70% confidence
-        }
-
-        private decimal ApplyAIAdjustment(int yearOffset, LevyScenario scenario)
-        {
-            // AI learns from patterns and adjusts projections
-            var adjustment = 1.0m + (0.002m * ((decimal)QUANTUM_FACTOR / 1000m));
-            return adjustment;
+            return Math.Clamp(confidence, 0.60m, MaxCompatibilityConfidence);
         }
 
         private string GenerateRiskFactors(int yearOffset, LevyScenario scenario)

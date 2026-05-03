@@ -78,8 +78,8 @@ export default function ScenarioResults({ scenario }: ScenarioResultsProps) {
     if (params.qualityFactor && params.qualityFactor !== 1.0) {
       return "Quality Analysis";
     }
-    if (params.targetRegion && params.targetRegion !== params.region) {
-      return "Regional Comparison";
+    if (params.targetRevalArea && params.targetRevalArea !== (params.revalArea ?? params.region)) {
+      return "Reval Area Comparison";
     }
     if (params.conditionFactor && params.conditionFactor !== 1.0) {
       return "Condition Analysis";
@@ -99,7 +99,7 @@ export default function ScenarioResults({ scenario }: ScenarioResultsProps) {
         return "default";
       case "Quality Analysis":
         return "secondary";
-      case "Regional Comparison":
+      case "Reval Area Comparison":
         return "destructive";
       case "Condition Analysis":
         return "outline";
@@ -125,8 +125,8 @@ export default function ScenarioResults({ scenario }: ScenarioResultsProps) {
       ];
     }
 
-    // For regional comparison
-    if (scenarioType === "Regional Comparison" && scenario.results.chartData) {
+    // For Reval Area comparison
+    if (scenarioType === "Reval Area Comparison" && scenario.results.chartData) {
       return scenario.results.chartData;
     }
 
@@ -163,12 +163,12 @@ export default function ScenarioResults({ scenario }: ScenarioResultsProps) {
       );
     }
 
-    if (scenarioType === "Regional Comparison") {
+    if (scenarioType === "Reval Area Comparison") {
       return (
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="region" />
+            <XAxis dataKey="revalArea" />
             <YAxis />
             <Tooltip formatter={(value) => formatCurrency(Number(value))} />
             <Legend />
@@ -228,7 +228,7 @@ export default function ScenarioResults({ scenario }: ScenarioResultsProps) {
               {scenarioType}
             </Badge>
             <span className="text-sm text-muted-foreground">
-              {scenario.parameters.buildingType} in {scenario.parameters.region}
+              {scenario.parameters.buildingType} — {scenario.parameters.revalArea ?? scenario.parameters.region ?? 'Benton County'}
             </span>
           </div>
         </div>

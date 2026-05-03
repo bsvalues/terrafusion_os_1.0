@@ -6,7 +6,7 @@
  * Lineage: BCBSCOSTApp → TerraBuild → TerraFusionBuild → CostForge → TerraForge
  *
  * ALL cost data is Benton County's OWN cost approach system.
- * Matrix data extracted from Harris PACS 9.0 production tables.
+ * Matrix data extracted from Benton County assessment production tables.
  *
  * @see useCostForgeAPI.ts for backend API integration
  */
@@ -112,7 +112,7 @@ export interface CostScenario {
 
 // ============================================================================
 // Benton County Cost Matrix — 42 entries (14 types × 3 regions)
-// Source: Harris PACS 9.0 production tables, Matrix Year 2025
+// Source: Benton County assessment production tables, Matrix Year 2025
 // ============================================================================
 
 export const COST_MATRIX: readonly CostMatrixEntry[] = [
@@ -179,7 +179,7 @@ export const COST_MATRIX: readonly CostMatrixEntry[] = [
 ] as const;
 
 // ============================================================================
-// Building Types — 14 Harris PACS codes with categories
+// Building Types — 14 Benton assessment source codes with categories
 // ============================================================================
 
 export const BUILDING_TYPES: readonly BuildingTypeInfo[] = [
@@ -421,7 +421,7 @@ export function calculateCost(inputs: CostCalculationInput): CostCalculationResu
 }
 
 // ============================================================================
-// Scenario Management (localStorage removed in R1)
+// Scenario Management (browser persistence removed in R1)
 // ============================================================================
 
 export function saveScenario(name: string, inputs: CostCalculationInput, result: CostCalculationResult): CostScenario {
@@ -665,8 +665,8 @@ export interface ReconciliationOutput {
 
 type ApproachKey = 'sales' | 'income' | 'cost';
 
-/** Default weight distribution based on property type (Benton County standards) */
-export const DEFAULT_RECONCILIATION_WEIGHTS: Record<PropertyCategory, Record<ApproachKey, number>> = {
+/** Reconciliation weight policy based on property type (Benton County standards) */
+export const RECONCILIATION_WEIGHT_POLICY: Record<PropertyCategory, Record<ApproachKey, number>> = {
   residential: { sales: 0.6, income: 0.1, cost: 0.3 },
   commercial: { sales: 0.3, income: 0.5, cost: 0.2 },
   industrial: { sales: 0.25, income: 0.45, cost: 0.3 },
@@ -683,7 +683,7 @@ export function runReconciliation(input: ReconciliationInput): ReconciliationOut
   if (approachKeys.length === 0) throw new Error('At least one approach value required');
 
   // Calculate weights
-  const defaults = DEFAULT_RECONCILIATION_WEIGHTS[propertyType] ?? DEFAULT_RECONCILIATION_WEIGHTS.residential;
+  const policyWeights = RECONCILIATION_WEIGHT_POLICY[propertyType] ?? RECONCILIATION_WEIGHT_POLICY.residential;
   const weights: Record<ApproachKey, number> = { sales: 0, income: 0, cost: 0 };
 
   if (forcedWeights) {
@@ -696,7 +696,7 @@ export function runReconciliation(input: ReconciliationInput): ReconciliationOut
       const approach = approaches[key];
       if (approach) {
         const mult = CONFIDENCE_MULTIPLIERS[approach.confidenceLevel] ?? 1;
-        weights[key] = (defaults[key] ?? 0) * mult;
+        weights[key] = (policyWeights[key] ?? 0) * mult;
       }
     }
   }
@@ -774,7 +774,7 @@ export function runReconciliation(input: ReconciliationInput): ReconciliationOut
 }
 
 // ============================================================================
-// Value Audit Trail (localStorage removed in R1)
+// Value Audit Trail (browser persistence removed in R1)
 // ============================================================================
 
 export type AuditAction = 'COST_CALCULATED' | 'INCOME_CALCULATED' | 'COMPS_ANALYZED' | 'RECONCILIATION_COMPLETED' | 'APPEAL_FILED' | 'APPEAL_DECIDED' | 'VALUE_CHANGED' | 'MANUAL_OVERRIDE';
@@ -823,15 +823,9 @@ export interface ForgeStats {
   lastUpdated: string;
 }
 
-/** @deprecated Hardcoded stats placeholder. Real stats should come from backend API. */
+/** @deprecated Real stats must come from backend API. */
 export async function getForgeStats(): Promise<ForgeStats> {
-  return {
-    totalParcels: 89247,
-    averageValue: 342800,
-    medianValue: 298500,
-    matrixYear: 2025,
-    lastUpdated: new Date().toISOString(),
-  };
+  throw new Error('Forge stats backend endpoint is not wired for this surface.');
 }
 
 // ============================================================================

@@ -19,7 +19,7 @@ interface CompSale {
   bathrooms: number | null;
   condition: string | null;
   qualityGrade: string | null;
-  pacsComputedRatio: number | null;
+  salesRatio: number | null;
   qualificationSource: 'decision' | 'recommendation';
 }
 
@@ -181,7 +181,7 @@ export default function CompsPage() {
                   <td>{s.condition ?? '—'}</td>
                   <td>{s.qualityGrade ?? '—'}</td>
                   <td>{s.hood ?? '—'}</td>
-                  <td className="tf-right tf-mono">{fmtR(s.pacsComputedRatio)}</td>
+                  <td className="tf-right tf-mono">{fmtR(s.salesRatio)}</td>
                   <td>
                     <span className={`tf-badge ${s.qualificationSource === 'decision' ? 'tf-badge--blue' : 'tf-badge--gray'}`}>
                       {s.qualificationSource}

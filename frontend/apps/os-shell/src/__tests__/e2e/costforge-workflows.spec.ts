@@ -10,7 +10,7 @@ test.describe('TerraFusion CostForge - Government-Grade E2E Testing', () => {
     await page.goto('http://localhost:3000');
 
     // Verify TerraFusion branding loads
-    await expect(page.locator('text=Government. Transcended.')).toBeVisible();
+    await expect(page.locator('text=Governed Operator Desktop')).toBeVisible();
     await expect(page.locator('text=TerraFusion OS')).toBeVisible();
   });
 
@@ -184,7 +184,7 @@ test.describe('TerraFusion CostForge - Government-Grade E2E Testing', () => {
 
     test('implements government transcendence messaging', async () => {
       // Check for brand-consistent language throughout
-      await expect(page.locator('text=Government. Transcended.')).toBeVisible();
+      await expect(page.locator('text=Governed Operator Surface')).toBeVisible();
       await expect(page.locator('text=Championship-Level')).toBeVisible();
       await expect(page.locator('text=Quantum Algorithms')).toBeVisible();
 

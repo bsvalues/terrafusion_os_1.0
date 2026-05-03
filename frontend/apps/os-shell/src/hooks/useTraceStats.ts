@@ -24,7 +24,7 @@ export interface UseTraceStatsResult {
   refresh: () => void;
 }
 
-const DEFAULT_POLL_MS = 0;
+const TRACE_STATS_POLL_MS = 0;
 
 function mapDiagnostics(raw: Awaited<ReturnType<typeof getTraceStats>>): EvidenceRailDiagnostics {
   return {
@@ -37,7 +37,7 @@ function mapDiagnostics(raw: Awaited<ReturnType<typeof getTraceStats>>): Evidenc
 }
 
 export function useTraceStats(options: UseTraceStatsOptions = {}): UseTraceStatsResult {
-  const { enabled = true, pollMs = DEFAULT_POLL_MS } = options;
+  const { enabled = true, pollMs = TRACE_STATS_POLL_MS } = options;
 
   const [diagnostics, setDiagnostics] = useState<EvidenceRailDiagnostics | null>(null);
   const [lastFetchedAt, setLastFetchedAt] = useState<Date | null>(null);
@@ -104,4 +104,3 @@ export function useTraceStats(options: UseTraceStatsOptions = {}): UseTraceStats
     refresh,
   };
 }
-

@@ -34,23 +34,17 @@ function intensityColor(count: number, max: number): string {
 }
 
 // ---------------------------------------------------------------------------
-// Default data
+// Empty data
 // ---------------------------------------------------------------------------
 
-const DEFAULT_POINTS: MarketHeatPointCompact[] = [
-  { id: 'mhw1', name: 'Downtown', saleCount: 45, center: [46.23, -119.2] },
-  { id: 'mhw2', name: 'Riverside', saleCount: 82, center: [46.24, -119.21] },
-  { id: 'mhw3', name: 'West Hills', saleCount: 67, center: [46.25, -119.23] },
-  { id: 'mhw4', name: 'Eastgate', saleCount: 23, center: [46.22, -119.18] },
-  { id: 'mhw5', name: 'Southridge', saleCount: 95, center: [46.21, -119.22] },
-];
+const EMPTY_POINTS: MarketHeatPointCompact[] = [];
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
 export default function MarketHeatMapWidget({
-  points = DEFAULT_POINTS,
+  points = EMPTY_POINTS,
   mapCenter = [46.235, -119.21],
   onPointClick,
   className = '',
@@ -65,6 +59,12 @@ export default function MarketHeatMapWidget({
       role="img"
       aria-label="Market activity heatmap widget"
     >
+      {points.length === 0 && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center px-4 text-center text-xs text-white/50">
+          No governed market activity points loaded.
+        </div>
+      )}
+
       {/* Grid */}
       <div className="absolute inset-0 opacity-10">
         <svg width="100%" height="100%">
@@ -119,11 +119,13 @@ export default function MarketHeatMapWidget({
       })}
 
       {/* Legend */}
+      {points.length > 0 && (
       <div className="absolute bottom-1 right-1 flex gap-1.5 text-[8px] bg-terra-midnight/60 px-1 py-0.5 rounded">
         <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full" style={{ background: 'hsl(var(--tf-error))' }} />High</span>
         <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full" style={{ background: 'hsl(var(--tf-warning))' }} />Med</span>
         <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full" style={{ background: 'hsl(var(--primary))' }} />Low</span>
       </div>
+      )}
     </div>
   );
 }

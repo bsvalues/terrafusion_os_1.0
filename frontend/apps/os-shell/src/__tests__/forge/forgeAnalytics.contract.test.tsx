@@ -18,6 +18,13 @@ import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { vi } from 'vitest';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+/** Wrap a component with QueryClientProvider so useQuery hooks don't throw. */
+function withQueryClient(ui: React.ReactElement): React.ReactElement {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return <QueryClientProvider client={qc}>{ui}</QueryClientProvider>;
+}
 
 // ---------------------------------------------------------------------------
 // Light-mode pattern list (from Phase 9 convention)
@@ -145,6 +152,21 @@ vi.mock('../../pages/forge/statistics/VEIDashboard', () => ({
   default: () => <div data-testid="vei-dashboard-stub">VEIDashboard stub</div>,
 }));
 
+// Stub the county-scope helper so StatisticsStudio treats the test
+// session as isolated. Without this, showCountyScopeRequired flips to
+// true and the studio short-circuits past the per-tab panel renders —
+// hiding the OutlierReviewPanel / ModelComparisonPanel stubs the tab
+// tests are looking for.
+vi.mock('../../pages/forge/statistics/statisticsCountyScope', () => ({
+  getStatisticsCountyScope: () => ({
+    countyId: 'benton',
+    headers: { 'X-County-Id': 'benton' },
+    isolated: true,
+    advancedCertified: true,
+    exportStem: 'benton',
+  }),
+}));
+
 // Phase 16 — OutlierReviewPanel + ModelComparisonPanel stubs
 vi.mock('../../pages/forge/statistics/OutlierReviewPanel', () => ({
   __esModule: true,
@@ -266,7 +288,7 @@ vi.mock('recharts', () => ({
 // Import components under test
 // ---------------------------------------------------------------------------
 
-import { StatisticsStudio } from '../../pages/forge/statistics/StatisticsStudio';
+import { normalizeModuleId } from '../../config/moduleComponents';
 import { RatioStudyPanel } from '../../components/forge/RatioStudyPanel';
 import { RegressionStudio } from '../../pages/forge/regression/RegressionStudio';
 import { DataQualityPage } from '../../pages/forge/quality/DataQualityPage';
@@ -298,44 +320,13 @@ const mockRatioData = {
 
 describe('Phase 10: Forge Analytics Contract', () => {
   // =========================================================================
-  // StatisticsStudio
+  // Retired Statistics Studio shell
   // =========================================================================
-  describe('StatisticsStudio', () => {
-    // WILL FAIL — component does not yet emit data-testid="statistics-studio"
-    it('renders with data-testid="statistics-studio"', () => {
-      render(<StatisticsStudio />);
-      expect(screen.getByTestId('statistics-studio')).toBeInTheDocument();
-    });
-
-    // WILL FAIL — tab buttons do not yet have data-testid attributes
-    it('tab buttons have data-testid attributes', () => {
-      render(<StatisticsStudio />);
-      expect(screen.getByTestId('tab-ratio-study')).toBeInTheDocument();
-      expect(screen.getByTestId('tab-trends')).toBeInTheDocument();
-      expect(screen.getByTestId('tab-equity')).toBeInTheDocument();
-      // Phase 16 tabs
-      expect(screen.getByTestId('tab-outliers')).toBeInTheDocument();
-      expect(screen.getByTestId('tab-comparison')).toBeInTheDocument();
-    });
-
-    it('no light-mode classes in rendered output', () => {
-      const { container } = render(<StatisticsStudio />);
-      const violations = findLightModeViolations(container.innerHTML);
-      expect(violations).toEqual([]);
-    });
-
-    // Phase 16: Outliers tab renders stub
-    it('Outliers tab renders OutlierReviewPanel stub', () => {
-      render(<StatisticsStudio />);
-      fireEvent.click(screen.getByTestId('tab-outliers'));
-      expect(screen.getByTestId('outlier-review-stub')).toBeInTheDocument();
-    });
-
-    // Phase 16: Comparison tab renders stub
-    it('Comparison tab renders ModelComparisonPanel stub', () => {
-      render(<StatisticsStudio />);
-      fireEvent.click(screen.getByTestId('tab-comparison'));
-      expect(screen.getByTestId('model-comparison-stub')).toBeInTheDocument();
+  describe('StatisticsStudio shell retirement', () => {
+    it('routes direct Statistics Studio launches to County Studio', () => {
+      expect(normalizeModuleId('statistics-studio')).toBe('county-studio');
+      expect(normalizeModuleId('statistics')).toBe('county-studio');
+      expect(normalizeModuleId('stats')).toBe('county-studio');
     });
   });
 

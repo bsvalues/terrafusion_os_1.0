@@ -710,7 +710,7 @@ export const BookingExample: Story = {
       const today = new Date();
       const maxDate = addDays(today, 365); // Can book up to 1 year in advance
 
-      // Disable past dates and booked dates (mock)
+      // Disable past dates and booked dates for the example
       const bookedDates = [addDays(today, 5), addDays(today, 6), addDays(today, 12)];
 
       const disableDate = (date: Date) => {
@@ -838,7 +838,7 @@ export const BookingExample: Story = {
             <p className='text-sm font-medium mb-2'>🏨 Booking Features:</p>
             <ul className='text-sm text-muted-foreground space-y-1 list-disc list-inside'>
               <li>Past dates are disabled</li>
-              <li>Booked dates are shown as unavailable (mock)</li>
+            <li>Booked dates are shown as unavailable in this example</li>
               <li>Check-out must be after check-in</li>
               <li>Real-time price calculation</li>
               <li>Clear booking summary</li>

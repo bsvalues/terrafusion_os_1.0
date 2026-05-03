@@ -2,15 +2,10 @@
 // Tabbed administration interface: County Config, Data Quality, Security Audit,
 // Users, Study Periods, Scrape Jobs.
 //
-// DATA POSTURE: ALL tab panels (County Config, Data Quality, Security Audit, Users,
-// Study Periods, Scrape Jobs) use hardcoded sample fixtures scoped to Benton County.
-// No backend connection exists. County selector, security events, user list,
-// study periods, scrape jobs, and data quality metrics are all static sample data.
-// Mutations are in-memory only and do not persist.
+// DATA POSTURE: API-only. Admin data is not fabricated when the backend is
+// unavailable; tabs render loading, empty, or unavailable states.
 
-import React, { useState, useCallback, useMemo } from 'react';
-import { useParcelCount } from '../../hooks/useParcelCount';
-import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -69,6 +64,24 @@ interface ScrapeJob {
 }
 
 type TabId = 'county' | 'quality' | 'security' | 'users' | 'studies' | 'scrape';
+
+async function fetchAdminArray<T>(path: string): Promise<T[]> {
+  const response = await fetch(path, { headers: { Accept: 'application/json' } });
+  if (!response.ok) {
+    throw new Error(`${response.status} ${response.statusText}`);
+  }
+  const payload = (await response.json()) as T[] | { items?: T[]; data?: T[] };
+  if (Array.isArray(payload)) return payload;
+  return payload.items ?? payload.data ?? [];
+}
+
+function EmptyPanel({ message }: { message: string }) {
+  return (
+    <div className="rounded-lg border border-gray-200 bg-white p-6 text-sm text-gray-500">
+      {message}
+    </div>
+  );
+}
 
 // ── Tab definitions ─────────────────────────────────────────────────────────
 
@@ -136,7 +149,11 @@ function MetricCard({ metric }: { metric: DataQualityMetric }) {
 
 // ── Tab panels ──────────────────────────────────────────────────────────────
 
-function CountyConfigPanel({ county }: { county: County }) {
+function CountyConfigPanel({ county }: { county: County | null }) {
+  if (!county) {
+    return <EmptyPanel message="No county configuration was returned by the admin API." />;
+  }
+
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900">County Configuration</h3>
@@ -163,21 +180,37 @@ function CountyConfigPanel({ county }: { county: County }) {
 }
 
 function DataQualityPanel() {
-  const { data: statsData } = useParcelCount();
-  const parcelCount = statsData?.totalParcels ?? 89_247;
+  const [metrics, setMetrics] = useState<DataQualityMetric[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const metrics: DataQualityMetric[] = [
-    { label: 'Parcel Completeness', value: 87432, total: parcelCount, status: 'good' },
-    { label: 'Address Validation', value: 84100, total: parcelCount, status: 'warning' },
-    { label: 'Value Assessment Coverage', value: 88500, total: parcelCount, status: 'good' },
-    { label: 'GIS Spatial Match', value: 82300, total: parcelCount, status: 'warning' },
-    { label: 'Owner Record Linkage', value: 88900, total: parcelCount, status: 'good' },
-    { label: 'Tax Code Validity', value: 89100, total: parcelCount, status: 'good' },
-  ];
+  useEffect(() => {
+    let cancelled = false;
+    fetchAdminArray<DataQualityMetric>('/api/admin/data-quality')
+      .then((data) => {
+        if (cancelled) return;
+        setMetrics(data);
+        setError(null);
+      })
+      .catch((loadError) => {
+        if (cancelled) return;
+        setMetrics([]);
+        setError(loadError instanceof Error ? loadError.message : 'Data quality API unavailable.');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900">Data Quality Overview</h3>
+      {loading && <EmptyPanel message="Loading data quality metrics from the admin API..." />}
+      {!loading && error && <EmptyPanel message={`Data quality API unavailable: ${error}`} />}
+      {!loading && !error && metrics.length === 0 && <EmptyPanel message="No data quality metrics returned." />}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {metrics.map((m) => (
           <MetricCard key={m.label} metric={m} />
@@ -188,17 +221,37 @@ function DataQualityPanel() {
 }
 
 function SecurityAuditPanel() {
-  const events: SecurityEvent[] = [
-    { id: '1', timestamp: '2026-03-15T09:32:00Z', type: 'AUTH', user: 'admin@benton.wa.gov', action: 'LOGIN', resource: '/api/auth/login', outcome: 'success', ipAddress: '10.0.1.45' },
-    { id: '2', timestamp: '2026-03-15T09:28:00Z', type: 'RBAC', user: 'viewer@benton.wa.gov', action: 'ACCESS_DENIED', resource: '/api/admin/users', outcome: 'blocked', ipAddress: '10.0.1.52' },
-    { id: '3', timestamp: '2026-03-15T09:15:00Z', type: 'AUTH', user: 'unknown@external.com', action: 'LOGIN_FAILED', resource: '/api/auth/login', outcome: 'failure', ipAddress: '192.168.1.100' },
-    { id: '4', timestamp: '2026-03-15T08:55:00Z', type: 'DATA', user: 'dev@benton.wa.gov', action: 'EXPORT', resource: '/api/properties/export', outcome: 'success', ipAddress: '10.0.1.60' },
-    { id: '5', timestamp: '2026-03-15T08:30:00Z', type: 'AUTH', user: 'admin@benton.wa.gov', action: 'TOKEN_REFRESH', resource: '/api/auth/refresh', outcome: 'success', ipAddress: '10.0.1.45' },
-  ];
+  const [events, setEvents] = useState<SecurityEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchAdminArray<SecurityEvent>('/api/admin/security-events')
+      .then((data) => {
+        if (cancelled) return;
+        setEvents(data);
+        setError(null);
+      })
+      .catch((loadError) => {
+        if (cancelled) return;
+        setEvents([]);
+        setError(loadError instanceof Error ? loadError.message : 'Security event API unavailable.');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900">Security Event Log</h3>
+      {loading && <EmptyPanel message="Loading security events from the admin API..." />}
+      {!loading && error && <EmptyPanel message={`Security event API unavailable: ${error}`} />}
+      {!loading && !error && events.length === 0 && <EmptyPanel message="No security events returned." />}
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -234,21 +287,42 @@ function SecurityAuditPanel() {
 }
 
 function UsersPanel() {
-  const [users] = useState<AdminUser[]>([
-    { id: '1', email: 'admin@benton.wa.gov', displayName: 'County Admin', role: 'Admin', status: 'active', lastLogin: '2026-03-15T09:32:00Z', countyId: 'benton' },
-    { id: '2', email: 'dev@benton.wa.gov', displayName: 'Dev User', role: 'Developer', status: 'active', lastLogin: '2026-03-14T16:45:00Z', countyId: 'benton' },
-    { id: '3', email: 'viewer@benton.wa.gov', displayName: 'Staff Viewer', role: 'Viewer', status: 'active', lastLogin: '2026-03-15T08:10:00Z', countyId: 'benton' },
-    { id: '4', email: 'suspended@benton.wa.gov', displayName: 'Former Staff', role: 'Viewer', status: 'suspended', lastLogin: '2026-02-28T10:00:00Z', countyId: 'benton' },
-  ]);
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchAdminArray<AdminUser>('/api/admin/users')
+      .then((data) => {
+        if (cancelled) return;
+        setUsers(data);
+        setError(null);
+      })
+      .catch((loadError) => {
+        if (cancelled) return;
+        setUsers([]);
+        setError(loadError instanceof Error ? loadError.message : 'User API unavailable.');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-900">User Management</h3>
-        <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
-          Add User
+        <button disabled className="px-4 py-2 bg-gray-300 text-gray-600 text-sm font-medium rounded-lg cursor-not-allowed">
+          Add User via Admin API
         </button>
       </div>
+      {loading && <EmptyPanel message="Loading users from the admin API..." />}
+      {!loading && error && <EmptyPanel message={`User API unavailable: ${error}`} />}
+      {!loading && !error && users.length === 0 && <EmptyPanel message="No admin users returned." />}
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -287,15 +361,37 @@ function UsersPanel() {
 }
 
 function StudyPeriodsPanel() {
-  const periods: StudyPeriod[] = [
-    { id: '1', name: '2026 Annual Revaluation', startDate: '2026-01-01', endDate: '2026-12-31', status: 'active', propertyCount: 89_247 },
-    { id: '2', name: '2025 Annual Revaluation', startDate: '2025-01-01', endDate: '2025-12-31', status: 'closed', propertyCount: 87500 },
-    { id: '3', name: '2027 Preliminary', startDate: '2027-01-01', endDate: '2027-12-31', status: 'draft', propertyCount: 0 },
-  ];
+  const [periods, setPeriods] = useState<StudyPeriod[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchAdminArray<StudyPeriod>('/api/admin/study-periods')
+      .then((data) => {
+        if (cancelled) return;
+        setPeriods(data);
+        setError(null);
+      })
+      .catch((loadError) => {
+        if (cancelled) return;
+        setPeriods([]);
+        setError(loadError instanceof Error ? loadError.message : 'Study period API unavailable.');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900">Study Periods</h3>
+      {loading && <EmptyPanel message="Loading study periods from the admin API..." />}
+      {!loading && error && <EmptyPanel message={`Study period API unavailable: ${error}`} />}
+      {!loading && !error && periods.length === 0 && <EmptyPanel message="No study periods returned." />}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {periods.map((p) => (
           <div key={p.id} className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
@@ -315,16 +411,37 @@ function StudyPeriodsPanel() {
 }
 
 function ScrapeJobsPanel() {
-  const jobs: ScrapeJob[] = [
-    { id: '1', source: 'County CAMA', status: 'completed', startedAt: '2026-03-15T02:00:00Z', completedAt: '2026-03-15T04:32:00Z', recordsProcessed: 89_247, errors: 3 },
-    { id: '2', source: 'GIS Parcel Layer', status: 'running', startedAt: '2026-03-15T06:00:00Z', completedAt: null, recordsProcessed: 45200, errors: 0 },
-    { id: '3', source: 'Tyler Vision Sync', status: 'queued', startedAt: '2026-03-15T08:00:00Z', completedAt: null, recordsProcessed: 0, errors: 0 },
-    { id: '4', source: 'Aumentum Import', status: 'failed', startedAt: '2026-03-14T22:00:00Z', completedAt: '2026-03-14T22:15:00Z', recordsProcessed: 1200, errors: 48 },
-  ];
+  const [jobs, setJobs] = useState<ScrapeJob[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchAdminArray<ScrapeJob>('/api/admin/scrape-jobs')
+      .then((data) => {
+        if (cancelled) return;
+        setJobs(data);
+        setError(null);
+      })
+      .catch((loadError) => {
+        if (cancelled) return;
+        setJobs([]);
+        setError(loadError instanceof Error ? loadError.message : 'Scrape job API unavailable.');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900">Scrape Jobs</h3>
+      {loading && <EmptyPanel message="Loading scrape jobs from the admin API..." />}
+      {!loading && error && <EmptyPanel message={`Scrape job API unavailable: ${error}`} />}
+      {!loading && !error && jobs.length === 0 && <EmptyPanel message="No scrape jobs returned." />}
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -365,16 +482,31 @@ function ScrapeJobsPanel() {
 
 const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabId>('county');
-  const [selectedCountyId, setSelectedCountyId] = useState('benton');
+  const [selectedCountyId, setSelectedCountyId] = useState('');
+  const [counties, setCounties] = useState<County[]>([]);
+  const [countyError, setCountyError] = useState<string | null>(null);
 
-  const counties: County[] = useMemo(() => [
-    { id: 'benton', name: 'Benton County', state: 'WA', fipsCode: '53005' },
-    { id: 'franklin', name: 'Franklin County', state: 'WA', fipsCode: '53021' },
-    { id: 'yakima', name: 'Yakima County', state: 'WA', fipsCode: '53077' },
-  ], []);
+  useEffect(() => {
+    let cancelled = false;
+    fetchAdminArray<County>('/api/admin/counties')
+      .then((data) => {
+        if (cancelled) return;
+        setCounties(data);
+        setSelectedCountyId((current) => current || data[0]?.id || '');
+        setCountyError(null);
+      })
+      .catch((loadError) => {
+        if (cancelled) return;
+        setCounties([]);
+        setCountyError(loadError instanceof Error ? loadError.message : 'County configuration API unavailable.');
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const selectedCounty = useMemo(
-    () => counties.find((c) => c.id === selectedCountyId) ?? counties[0],
+    () => counties.find((c) => c.id === selectedCountyId) ?? null,
     [counties, selectedCountyId],
   );
 
@@ -403,7 +535,6 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <DemoDataBanner module="Administration" />
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
@@ -414,18 +545,24 @@ const AdminDashboard: React.FC = () => {
             <label htmlFor="county-select" className="text-sm font-medium text-gray-600">
               County:
             </label>
-            <select
-              id="county-select"
-              value={selectedCountyId}
-              onChange={handleCountyChange}
-              className="block w-48 rounded-md border-gray-300 shadow-sm text-sm focus:border-blue-500 focus:ring-blue-500"
-            >
-              {counties.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+            {counties.length > 0 ? (
+              <select
+                id="county-select"
+                value={selectedCountyId}
+                onChange={handleCountyChange}
+                className="block w-48 rounded-md border-gray-300 shadow-sm text-sm focus:border-blue-500 focus:ring-blue-500"
+              >
+                {counties.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <span className="text-sm text-amber-700">
+                {countyError ? 'County API unavailable' : 'Loading counties'}
+              </span>
+            )}
           </div>
         </div>
 

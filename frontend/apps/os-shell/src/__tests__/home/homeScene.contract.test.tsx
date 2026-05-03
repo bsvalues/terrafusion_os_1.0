@@ -65,6 +65,50 @@ vi.mock('../../orchestration/moduleActivation', () => ({
   activateModule: vi.fn(),
 }));
 
+vi.mock('../../api/pilotApi', () => ({
+  __esModule: true,
+  invokeTool: vi.fn(async ({ toolId }: { toolId: string }) => {
+    if (toolId === 'generate_morning_brief') {
+      return {
+        success: true,
+        correlationId: 'corr-brief',
+        result: {
+          toolId,
+          output: JSON.stringify({
+            queueType: 'ranked_worklist',
+            summary: 'County queue posture loaded.',
+            recommendedTool: 'dais',
+          }),
+        },
+      };
+    }
+    if (toolId === 'explain_spatial_anomaly') {
+      return {
+        success: true,
+        correlationId: 'corr-atlas',
+        result: {
+          toolId,
+          output: JSON.stringify({
+            narrative: 'Spatial audit posture loaded.',
+            hotspotCount: 4,
+          }),
+        },
+      };
+    }
+    return {
+      success: true,
+      correlationId: 'corr-dossier',
+      result: {
+        toolId,
+        output: JSON.stringify({
+          packetRef: 'BOE-2026-001',
+          payloadRef: 'Packet readiness loaded.',
+        }),
+      },
+    };
+  }),
+}));
+
 // Mock LiquidPanel material (render a simple div)
 vi.mock('../../ui/materials', () => ({
   __esModule: true,
@@ -88,7 +132,7 @@ vi.mock('../../lib/utils', () => ({
 // Mock useTodaysWork (StageZeroState dependency)
 vi.mock('../../hooks/useTodaysWork', () => ({
   __esModule: true,
-  useTodaysWork: () => ({ tasks: [], loading: false, isSampleData: false }),
+  useTodaysWork: () => ({ tasks: [], loading: false, error: null, readState: 'live' }),
 }));
 
 // Mock useParcelCount — no QueryClientProvider in this test tree
@@ -224,6 +268,7 @@ describe('Phase 7: Home Scene Contract', () => {
 
     // County map SVG — check for the Benton County map elements
     expect(screen.getByLabelText('Open TerraAtlas for full county map')).toBeInTheDocument();
+    expect(screen.getByTestId('executive-command-surface')).toBeInTheDocument();
   });
 
   /**

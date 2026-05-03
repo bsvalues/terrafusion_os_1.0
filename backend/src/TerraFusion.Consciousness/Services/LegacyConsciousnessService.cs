@@ -5,9 +5,9 @@ using TerraFusion.Consciousness.Interfaces;
 namespace TerraFusion.Consciousness.Services
 {
     /// <summary>
-    /// Minimal, stable IConsciousnessService implementation used to satisfy DI
-    /// during API host startup and tests. Provides deterministic, no-op behavior
-    /// with success defaults and basic health reporting.
+    /// Minimal compatibility implementation used to satisfy DI during API host
+    /// startup and tests. It must remain explicit that this is a legacy fallback,
+    /// not a governed operational consciousness runtime.
     /// </summary>
     public class LegacyConsciousnessService : IConsciousnessService
     {
@@ -23,7 +23,7 @@ namespace TerraFusion.Consciousness.Services
         public async Task<ConsciousnessInitializationResult> InitializeAsync(CancellationToken cancellationToken = default)
         {
             _initialized = true;
-            _logger.LogInformation("LegacyConsciousnessService initialized (SystemId: {SystemId})", _systemId);
+            _logger.LogWarning("LegacyConsciousnessService initialized in compatibility mode (SystemId: {SystemId})", _systemId);
 
             return await Task.FromResult(new ConsciousnessInitializationResult
             {
@@ -32,9 +32,10 @@ namespace TerraFusion.Consciousness.Services
                 InitializationTime = DateTime.UtcNow,
                 SystemMetrics = new Dictionary<string, object>
                 {
-                    ["mode"] = "legacy",
+                    ["mode"] = "legacy_fallback",
+                    ["governed_contract_available"] = false,
                     ["uptime_seconds"] = 0,
-                    ["diagnostics"] = "operational"
+                    ["runtime_status"] = "unavailable"
                 }
             });
         }
@@ -49,21 +50,17 @@ namespace TerraFusion.Consciousness.Services
                 await InitializeAsync(cancellationToken);
             }
 
-            _logger.LogDebug("Executing legacy consciousness operation {OperationId} of type {OperationType}",
+            _logger.LogWarning("Blocking legacy consciousness operation {OperationId} of type {OperationType}",
                 request.OperationId, request.OperationType);
 
             sw.Stop();
             return new ConsciousnessOperationResult
             {
-                Success = true,
+                Success = false,
                 OperationId = request.OperationId,
-                Results = new Dictionary<string, object>
-                {
-                    ["mode"] = "legacy",
-                    ["operation_type"] = request.OperationType,
-                    ["accepted_parameters"] = request.Parameters?.Count ?? 0
-                },
-                ProcessingTime = sw.Elapsed
+                Results = new Dictionary<string, object>(),
+                ProcessingTime = sw.Elapsed,
+                ErrorMessage = "Legacy fallback does not execute governed consciousness operations."
             };
         }
 
@@ -71,16 +68,16 @@ namespace TerraFusion.Consciousness.Services
         {
             var health = new ConsciousnessHealthDto
             {
-                OverallHealth = 1.0,
+                OverallHealth = 0.0,
                 ComponentHealth = new Dictionary<string, double>
                 {
-                    ["core"] = 1.0,
-                    ["io"] = 1.0,
-                    ["mesh"] = 1.0
+                    ["core"] = 0.0,
+                    ["io"] = 0.0,
+                    ["mesh"] = 0.0
                 },
-                SystemAlerts = new List<string>(),
+                SystemAlerts = new List<string> { "Legacy fallback only; governed consciousness runtime unavailable." },
                 LastHealthCheck = DateTime.UtcNow,
-                IsOperational = true
+                IsOperational = false
             };
 
             return await Task.FromResult(health);
@@ -97,13 +94,13 @@ namespace TerraFusion.Consciousness.Services
 
             return new LayerOrchestrationResult
             {
-                Success = true,
+                Success = false,
                 RequestId = request.RequestId,
                 LayerResults = request.TargetLayers.ToDictionary(
                     l => l,
-                    l => (object)new { status = "ok", mode = "legacy" }
+                    l => (object)new { status = "unavailable", mode = "legacy_fallback" }
                 ),
-                ConsensusAchieved = request.RequireConsensus
+                ConsensusAchieved = false
             };
         }
 
@@ -114,10 +111,10 @@ namespace TerraFusion.Consciousness.Services
             // No-op scaling with acknowledgement
             return await Task.FromResult(new ScalingResult
             {
-                Success = true,
+                Success = false,
                 ScalingType = request.ScalingType,
-                CurrentCapacity = request.TargetCapacity,
-                ScalingTime = TimeSpan.FromMilliseconds(1)
+                CurrentCapacity = 0,
+                ScalingTime = TimeSpan.Zero
             });
         }
 
@@ -125,15 +122,15 @@ namespace TerraFusion.Consciousness.Services
         {
             return await Task.FromResult(new ConsciousnessValidationResult
             {
-                IsValid = true,
+                IsValid = false,
                 ComponentValidations = new Dictionary<string, bool>
                 {
-                    ["core"] = true,
-                    ["mesh"] = true,
-                    ["security"] = true
+                    ["core"] = false,
+                    ["mesh"] = false,
+                    ["security"] = false
                 },
-                ValidationMessages = new List<string>(),
-                ComplianceScore = 1.0
+                ValidationMessages = new List<string> { "Legacy fallback only; no governed consciousness integrity evidence available." },
+                ComplianceScore = 0.0
             });
         }
     }

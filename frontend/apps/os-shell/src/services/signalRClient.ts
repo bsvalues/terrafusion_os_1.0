@@ -222,15 +222,9 @@ export class SignalRClientFactory {
    * Create client for AI Agent Swarm hub (TerraFusion.Consciousness)
    */
   static createSwarmClient(accessToken?: string): SignalRClient {
-    return new SignalRClient({
-      hubUrl: `${getViteEnv().VITE_CONSCIOUSNESS_URL || ''}/hubs/consciousness`,
-      accessToken,
-      automaticReconnect: true,
-      onConnected: () => undefined,
-      onDisconnected: () => undefined,
-      onReconnecting: () => undefined,
-      onReconnected: () => undefined
-    });
+    throw new Error(
+      'Governed swarm SignalR hub unavailable. Use county-scoped assistant polling instead.',
+    );
   }
 
   /**

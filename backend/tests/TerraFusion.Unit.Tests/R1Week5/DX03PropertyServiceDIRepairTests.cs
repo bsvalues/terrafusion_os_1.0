@@ -85,7 +85,7 @@ public class DX03PropertyServiceDIRepairTests
         var controllerLogger = Mock.Of<ILogger<PropertiesController>>();
 
         // Act
-        var controller = new PropertiesController(service, controllerLogger);
+        var controller = new PropertiesController(service, db, controllerLogger);
 
         // Assert
         controller.Should().NotBeNull("PropertiesController should accept IPropertyService");
@@ -187,7 +187,7 @@ public class DX03PropertyServiceDIRepairTests
         var service = new PropertyService(db, mapper, serviceLogger);
         var controllerLogger = Mock.Of<ILogger<PropertiesController>>();
 
-        var controller = new PropertiesController(service, controllerLogger);
+        var controller = new PropertiesController(service, db, controllerLogger);
 
         // Set up HttpContext with Benton county claims
         var claims = new List<Claim>

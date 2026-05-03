@@ -70,6 +70,12 @@ import Router from '../../Router';
  * The workbench should render (with empty/placeholder data) without crashing.
  */
 const BAD_PARCEL_IDS = [
+  // INVALID_GARBAGE used to flake under sweep saturation. Root cause was a
+  // genuine production bug in PropertyForge.tsx — `parcelYears.data?.
+  // layers.find(...)` only short-circuited on `data === undefined`, so
+  // when the API/hook returned `{ data: {} }` (no layers field) the
+  // workbench threw into the global ErrorBoundary. Fixed with a second
+  // `?.` (`data?.layers?.find`); INVALID_GARBAGE is back in the table.
   { label: 'random string', value: 'INVALID_GARBAGE' },
   { label: 'numeric but fake', value: '0000000000' },
   { label: 'negative number', value: '-1' },
@@ -123,9 +129,26 @@ describe('Phase 28 contract: parcel param robustness — invalid parcelId never 
     await import('../../pages/workbench/tabs/PropertyDais');
     await import('../../pages/workbench/tabs/PropertyDossier');
     await import('../../pages/workbench/tabs/PropertyPilot');
+
+    // Cold-start render warmup. Just importing the modules doesn't pay the
+    // first-render cost (lazy chunks, useSyncExternalStore boot, etc.) —
+    // doing it inside the first it.each iteration consistently raced past
+    // the 25s waitFor budget under sweep saturation. Render once here so
+    // the chunk + render path is warm before the asserting iterations.
+    memoryRouterEntries = ['/property/WARMUP/forge'];
+    const warmup = render(<Router />);
+    await waitFor(
+      () => {
+        expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
+      },
+      { timeout: 30000 },
+    );
+    warmup.unmount();
+    cleanup();
+
     localStorage.clear();
     vi.useFakeTimers({ shouldAdvanceTime: true });
-  }, 60000);
+  }, 90000);
 
   afterEach(() => {
     cleanup();
@@ -145,12 +168,17 @@ describe('Phase 28 contract: parcel param robustness — invalid parcelId never 
 
       render(<Router />);
 
-      // Wait for Suspense to resolve
+      // Wait for Suspense to resolve. The first parcel-id case in the
+      // it.each table hits the cold lazy-import path; under sweep load
+      // the previous 15s budget could race the chunk fetch, leaving
+      // 'Loading TerraFusion OS…' on screen and (after the suspense
+      // resolved) the global ErrorBoundary fallback. Bump to 25s so the
+      // cold-start case has headroom on saturated workers.
       await waitFor(
         () => {
           expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
         },
-        { timeout: 15000 }
+        { timeout: 25000 }
       );
 
       // HARD GUARD: must not be in crash fallback state
@@ -169,9 +197,10 @@ describe('Phase 28 contract: parcel param robustness — invalid parcelId never 
             );
           }
         },
-        { timeout: 5000 }
+        { timeout: 8000 }
       );
-    }
+    },
+    35000,
   );
 
   /**

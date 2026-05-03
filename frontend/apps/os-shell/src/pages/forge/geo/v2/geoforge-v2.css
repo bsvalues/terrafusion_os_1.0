@@ -1,0 +1,40 @@
+/* geoforge-v2.css — layout grid only; colors/type use Tailwind */
+
+.gf2-root {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 220px 1fr 400px;
+  grid-template-rows: 40px 1fr 28px;
+  grid-template-areas:
+    'tabs   tabs   tabs'
+    'left   map    panel'
+    'status status status';
+  overflow: hidden;
+}
+
+/* Area assignments */
+.gf2-tabs   { grid-area: tabs; }
+.gf2-left   { grid-area: left; }
+.gf2-map    { grid-area: map; position: relative; }
+.gf2-panel  { grid-area: panel; }
+.gf2-status { grid-area: status; }
+
+/* Map canvas fills its grid cell */
+.gf2-map > div {
+  position: absolute;
+  inset: 0;
+}
+
+/* Mapbox popup override — keep consistent with OS dark theme */
+.gf2-popup .mapboxgl-popup-content {
+  background: hsl(222 16% 11%);
+  border: 1px solid hsl(220 12% 22%);
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: hsl(220 15% 85%);
+  font-size: 11px;
+  box-shadow: 0 4px 16px hsl(0 0% 0% / 0.6);
+}
+
+.gf2-popup .mapboxgl-popup-tip { display: none; }

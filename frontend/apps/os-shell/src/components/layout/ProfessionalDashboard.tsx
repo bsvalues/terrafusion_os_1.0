@@ -87,14 +87,14 @@ const ProfessionalDashboard: React.FC = () => {
   const [metrics, setMetrics] = useState<any[]>([]);
   const [quantumMetrics, setQuantumMetrics] = useState<any>(null);
   const [systemMetrics, setSystemMetrics] = useState<SystemMetrics>({
-    aiAgentCount: 1008,
-    activeAgents: 987,
-    quantumCoherence: 0.97,
-    systemReliability: 0.9999,
-    performanceIndex: 0.95,
-    neuralSyncRate: 0.98,
-    quantumEntanglement: 0.94,
-    consciousnessLevel: 0.89,
+    aiAgentCount: 0,
+    activeAgents: 0,
+    quantumCoherence: 0,
+    systemReliability: 0,
+    performanceIndex: 0,
+    neuralSyncRate: 0,
+    quantumEntanglement: 0,
+    consciousnessLevel: 0,
   });
 
   // Set CSS custom properties for AI-responsive design
@@ -120,13 +120,6 @@ const ProfessionalDashboard: React.FC = () => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
 
-      // Update quantum metrics with subtle variations for realism
-      setSystemMetrics((prev) => ({
-        ...prev,
-        quantumCoherence: Math.min(1, prev.quantumCoherence + (Math.random() - 0.5) * 0.001),
-        neuralSyncRate: Math.min(1, prev.neuralSyncRate + (Math.random() - 0.5) * 0.002),
-        performanceIndex: Math.min(1, prev.performanceIndex + (Math.random() - 0.5) * 0.001),
-      }));
     }, 1000);
     const getModuleIcon = (moduleName: string): string => {
       const iconMap: {
@@ -192,8 +185,7 @@ const ProfessionalDashboard: React.FC = () => {
                 title: mod.name,
                 description: mod.description,
                 status: mod.enabled ? 'Active' : 'Disabled',
-                usage: Math.floor(Math.random() * (100 - 70 + 1) + 70),
-                // Placeholder usage
+                usage: 0,
                 icon: featureMap[index % 4].icon,
                 color: featureMap[index % 4].color,
                 moduleId: mod.id,
@@ -217,28 +209,28 @@ const ProfessionalDashboard: React.FC = () => {
           const newMetrics = [
             {
               label: 'Active Modules',
-              value: healthInfo.ModuleCount || '32',
+              value: healthInfo.ModuleCount ?? 'Unavailable',
               icon: Business,
               growth: ``,
               color: 'var(--tf-network-blue)',
             },
             {
               label: 'AI Accuracy',
-              value: '99.7%',
+              value: healthInfo.AIAccuracy != null ? `${healthInfo.AIAccuracy}%` : 'Unavailable',
               icon: Analytics,
-              growth: '+0.3%',
+              growth: ``,
               color: 'var(--tf-transcend-cyan)',
             },
             {
               label: 'Database Status',
-              value: healthInfo.Database.Status || 'Operational',
+              value: healthInfo.Database?.Status ?? 'Unavailable',
               icon: AttachMoney,
               growth: ``,
               color: 'var(--tf-accent-success)',
             },
             {
               label: 'API Response',
-              value: `${healthInfo.ApiResponseTime || '6'}ms`,
+              value: healthInfo.ApiResponseTime != null ? `${healthInfo.ApiResponseTime}ms` : 'Unavailable',
               icon: Speed,
               growth: ``,
               color: 'var(--tf-accent-quantum)',
@@ -249,9 +241,12 @@ const ProfessionalDashboard: React.FC = () => {
           // Update system metrics from backend
           setSystemMetrics((prev) => ({
             ...prev,
-            activeAgents: healthInfo.AIAgents || prev.activeAgents,
-            performanceIndex: healthInfo.PerformanceIndex || 0.95,
-            systemReliability: healthInfo.SystemReliability || 0.9999,
+            aiAgentCount: healthInfo.AIAgentCount ?? prev.aiAgentCount,
+            activeAgents: healthInfo.AIAgents ?? prev.activeAgents,
+            performanceIndex: healthInfo.PerformanceIndex ?? prev.performanceIndex,
+            systemReliability: healthInfo.SystemReliability ?? prev.systemReliability,
+            quantumCoherence: healthInfo.QuantumCoherence ?? prev.quantumCoherence,
+            neuralSyncRate: healthInfo.NeuralSyncRate ?? prev.neuralSyncRate,
           }));
         }
 
@@ -400,7 +395,7 @@ const ProfessionalDashboard: React.FC = () => {
                 mb: 1,
               }}
             >
-              Government. Transcended.
+              Governed Operator Surface
             </Typography>
             <Typography
               variant='subtitle1'
@@ -414,7 +409,7 @@ const ProfessionalDashboard: React.FC = () => {
             </Typography>
             <Stack direction='row' spacing={2}>
               <StatusChip
-                label='All Systems Operational'
+              label='Telemetry Required'
                 size='small'
                 className='tf-ultimate-focusable tf-quantum-coherent'
               />
@@ -449,9 +444,18 @@ const ProfessionalDashboard: React.FC = () => {
                 marginTop: '8px',
               }}
             >
-              Quantum Coherence: {(systemMetrics.quantumCoherence * 100).toFixed(1)}% • Neural Sync:{' '}
-              {(systemMetrics.neuralSyncRate * 100).toFixed(1)}% • Performance:{' '}
-              {(systemMetrics.performanceIndex * 100).toFixed(1)}%
+              Quantum Coherence:{' '}
+              {systemMetrics.quantumCoherence > 0
+                ? `${(systemMetrics.quantumCoherence * 100).toFixed(1)}%`
+                : 'Unavailable'}{' '}
+              • Neural Sync:{' '}
+              {systemMetrics.neuralSyncRate > 0
+                ? `${(systemMetrics.neuralSyncRate * 100).toFixed(1)}%`
+                : 'Unavailable'}{' '}
+              • Performance:{' '}
+              {systemMetrics.performanceIndex > 0
+                ? `${(systemMetrics.performanceIndex * 100).toFixed(1)}%`
+                : 'Unavailable'}
             </div>
             <Typography
               variant='h3'
@@ -555,18 +559,20 @@ const ProfessionalDashboard: React.FC = () => {
                       {metric.label}
                     </Typography>
 
-                    <Chip
-                      label={metric.growth}
-                      size='small'
-                      sx={{
-                        mt: 1,
-                        background: metric.growth.startsWith('+')
-                          ? 'hsl(var(--tf-success) / 0.15)'
-                          : 'hsl(var(--tf-error) / 0.15)',
-                        color: metric.growth.startsWith('+') ? 'var(--tf-accent-success)' : 'var(--tf-error-light)',
-                        border: `1px solid ${metric.growth.startsWith('+') ? 'hsl(var(--tf-success) / 0.3)' : 'hsl(var(--tf-error) / 0.3)'}`,
-                      }}
-                    />
+                    {metric.growth && (
+                      <Chip
+                        label={metric.growth}
+                        size='small'
+                        sx={{
+                          mt: 1,
+                          background: metric.growth.startsWith('+')
+                            ? 'hsl(var(--tf-success) / 0.15)'
+                            : 'hsl(var(--tf-error) / 0.15)',
+                          color: metric.growth.startsWith('+') ? 'var(--tf-accent-success)' : 'var(--tf-error-light)',
+                          border: `1px solid ${metric.growth.startsWith('+') ? 'hsl(var(--tf-success) / 0.3)' : 'hsl(var(--tf-error) / 0.3)'}`,
+                        }}
+                      />
+                    )}
                   </Box>
                   <Avatar
                     className='tf-avatar tf-neural-sync'
@@ -663,7 +669,7 @@ const ProfessionalDashboard: React.FC = () => {
                         color: 'hsl(var(--tf-text) / 0.6)',
                       }}
                     >
-                      Usage
+                      Usage telemetry
                     </Typography>
                     <Typography
                       variant='caption'

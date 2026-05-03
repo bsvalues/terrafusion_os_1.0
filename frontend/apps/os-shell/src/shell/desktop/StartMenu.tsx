@@ -600,11 +600,45 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
     [clearSearch, close, addRecentApp]
   );
 
-  // Handle Escape key
+  // Handle Escape key + Tab focus trap (WCAG 2.1 AA — modal menu must trap focus)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (!isOpen) return;
+
+      if (e.key === 'Escape') {
         close();
+        return;
+      }
+
+      if (e.key === 'Tab' && menuRef.current) {
+        const root = menuRef.current;
+        const focusables = Array.from(
+          root.querySelectorAll<HTMLElement>(
+            'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          )
+        ).filter((el) => !el.hasAttribute('disabled') && el.tabIndex !== -1);
+
+        if (focusables.length === 0) return;
+
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        const active = document.activeElement as HTMLElement | null;
+        const insideMenu = !!(active && root.contains(active));
+
+        if (!insideMenu) {
+          // Focus left the menu — pull it back to first/last depending on direction
+          e.preventDefault();
+          (e.shiftKey ? last : first).focus();
+          return;
+        }
+
+        if (e.shiftKey && active === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && active === last) {
+          e.preventDefault();
+          first.focus();
+        }
       }
     };
 
