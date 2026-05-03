@@ -1696,6 +1696,16 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsLandDetail.IPacsLandDetailLandingService,
     TerraFusion.Data.Services.LegacyPacsRaw.PacsLandDetailLandingService>();
 
+// Slice D1: ArcGIS REST FeatureService raw landing. Wraps the
+// existing G1-C IArcGisFeatureServiceClient and writes verbatim
+// to legacy_arcgis_raw.parcel_geom with full provenance. Four
+// R-* gates: source-batch-completed, key-uniqueness,
+// provenance-coverage, aggregate. Per
+// docs/pacs/block-d-execution-plan.md §3.1.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.ArcGisRawLanding.IArcGisRawLandingService,
+    TerraFusion.Data.Services.LegacyArcGisRaw.ArcGisRawLandingService>();
+
 // Slice B2-A: truth_pacs.owner_current promoter — supp-aware
 // owner snapshot with account-link enforcement and HARD pct-
 // completeness gate. Five T-* gates. Idempotent by OwnerLoadBatchId.

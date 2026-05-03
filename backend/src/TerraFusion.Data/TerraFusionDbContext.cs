@@ -322,6 +322,14 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.CanonicalTf.AttributeDefinition>
     AttributeDefinitions { get; set; } = null!;
 
+  // Slice D1: legacy_arcgis_raw.parcel_geom — first stop in the
+  // 5-schema doctrine for ArcGIS-sourced geometry. Per Block-D
+  // execution plan (docs/pacs/block-d-execution-plan.md §3.1).
+  // Verbatim REST-response landing with full provenance; truth
+  // promotion at D2, canonical projection at D3.
+  public DbSet<TerraFusion.Core.Entities.LegacyArcGisRaw.LegacyArcGisRawParcelGeom>
+    LegacyArcGisRawParcelGeoms { get; set; } = null!;
+
   // Slice C41-B: per-county pointer naming the operator-active
   // Mapped workbook. Singleton per county (PK = CountyId). See
   // docs/sync/sync-county-active-workbook-pointer-policy.md for the
@@ -1037,6 +1045,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // mapping spine. Per docs/pacs/block-c-contract-v1.2.md.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.CanonicalTf.AttributeDefinitionConfiguration());
+
+    // Slice D1: legacy_arcgis_raw.parcel_geom — raw FeatureService
+    // landing. Per docs/pacs/block-d-execution-plan.md §3.1.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyArcGisRaw.LegacyArcGisRawParcelGeomConfiguration());
 
     // Sync Bridge v1 — Phase 0 field_authority seed for the parcel
     // domain. Per docs/pacs/pacs-sync-bridge-v1-spec.md §4.
