@@ -118,6 +118,8 @@ public sealed class PacsWashPropOwnerValTruthPromoter : IPacsWashPropOwnerValTru
             var promoted = 0;
             var rejectedNoSupp = 0;
             var rejectedStaleSup = 0;
+            // G4 (v1.13): pre-conversion-share gate counter.
+            var preConversionPromoted = 0;
             decimal assessedSum = 0m;
             decimal marketSum = 0m;
             var now = DateTime.UtcNow;
@@ -136,6 +138,10 @@ public sealed class PacsWashPropOwnerValTruthPromoter : IPacsWashPropOwnerValTru
                     rejectedStaleSup++;
                     continue;
                 }
+
+                // G1 (v1.10): conversion-era marker derived from PropValYr.
+                var era = ConversionEras.FromYear(wpov.PropValYr);
+                if (era == ConversionEras.PreConversion2017) preConversionPromoted++;
 
                 _db.TruthPacsWashPropOwnerVals.Add(new TruthPacsWashPropOwnerVal
                 {
@@ -163,8 +169,7 @@ public sealed class PacsWashPropOwnerValTruthPromoter : IPacsWashPropOwnerValTru
                     WpovLoadBatchId = wpovLoadBatchId,
                     SuppAssocLoadBatchId = suppAssocLoadBatchId,
                     PromotionLoadBatchId = batch.LoadBatchId,
-                    // G1 (v1.10): conversion-era marker derived from PropValYr.
-                    ConversionEra = ConversionEras.FromYear(wpov.PropValYr),
+                    ConversionEra = era,
                     PromotedAt = now,
                 });
                 promoted++;
@@ -173,6 +178,11 @@ public sealed class PacsWashPropOwnerValTruthPromoter : IPacsWashPropOwnerValTru
                 if (wpov.MarketVal.HasValue) marketSum += wpov.MarketVal.Value;
             }
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+            // G4 (v1.13): pre-conversion-share gate.
+            ConversionEraGate.AddShareGate(
+                _db, batch, ConversionEraGate.Lanes.Wpov,
+                promoted, preConversionPromoted);
 
             await WriteRemainingGatesAsync(batch, considered, promoted,
                 rejectedNoSupp, rejectedStaleSup, assessedSum, marketSum,

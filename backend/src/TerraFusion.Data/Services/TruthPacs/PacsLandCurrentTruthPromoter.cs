@@ -118,6 +118,8 @@ public sealed class PacsLandCurrentTruthPromoter : IPacsLandCurrentTruthPromoter
             var promoted = 0;
             var rejectedNoSupp = 0;
             var rejectedStaleSup = 0;
+            // G4 (v1.13): pre-conversion-share gate counter.
+            var preConversionPromoted = 0;
             decimal acresSum = 0m;
             decimal marketValSum = 0m;
             var now = DateTime.UtcNow;
@@ -136,6 +138,10 @@ public sealed class PacsLandCurrentTruthPromoter : IPacsLandCurrentTruthPromoter
                     rejectedStaleSup++;
                     continue;
                 }
+
+                // G1 (v1.10): conversion-era marker derived from PropValYr.
+                var era = ConversionEras.FromYear(land.PropValYr);
+                if (era == ConversionEras.PreConversion2017) preConversionPromoted++;
 
                 _db.TruthPacsLandCurrents.Add(new TruthPacsLandCurrent
                 {
@@ -160,8 +166,7 @@ public sealed class PacsLandCurrentTruthPromoter : IPacsLandCurrentTruthPromoter
                     LandLoadBatchId = landLoadBatchId,
                     SuppAssocLoadBatchId = suppAssocLoadBatchId,
                     PromotionLoadBatchId = batch.LoadBatchId,
-                    // G1 (v1.10): conversion-era marker derived from PropValYr.
-                    ConversionEra = ConversionEras.FromYear(land.PropValYr),
+                    ConversionEra = era,
                     PromotedAt = now,
                 });
                 promoted++;
@@ -170,6 +175,11 @@ public sealed class PacsLandCurrentTruthPromoter : IPacsLandCurrentTruthPromoter
                 if (land.LandSegMarketVal.HasValue) marketValSum += land.LandSegMarketVal.Value;
             }
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+            // G4 (v1.13): pre-conversion-share gate.
+            ConversionEraGate.AddShareGate(
+                _db, batch, ConversionEraGate.Lanes.Land,
+                promoted, preConversionPromoted);
 
             await WriteRemainingGatesAsync(batch, considered, promoted,
                 rejectedNoSupp, rejectedStaleSup, acresSum, marketValSum,
