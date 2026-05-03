@@ -196,6 +196,8 @@ public sealed class PacsSaleTruthPromoter : IPacsSaleTruthPromoter
                     SaleLoadBatchId = saleLoadBatchId,
                     SuppAssocLoadBatchId = suppAssocLoadBatchId,
                     PromotionLoadBatchId = batch.LoadBatchId,
+                    // G1 (v1.10): conversion-era marker derived from PropValYr.
+                    ConversionEra = ConversionEras.FromYear(sale.PropValYr),
                     PromotedAt = now,
                 });
                 promoted++;

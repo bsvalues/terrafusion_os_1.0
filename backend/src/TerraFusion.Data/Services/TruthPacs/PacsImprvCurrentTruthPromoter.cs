@@ -156,6 +156,8 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
                     ImprvLoadBatchId = imprvLoadBatchId,
                     SuppAssocLoadBatchId = suppAssocLoadBatchId,
                     PromotionLoadBatchId = batch.LoadBatchId,
+                    // G1 (v1.10): conversion-era marker derived from PropValYr.
+                    ConversionEra = ConversionEras.FromYear(imprv.PropValYr),
                     PromotedAt = now,
                 });
                 promoted++;

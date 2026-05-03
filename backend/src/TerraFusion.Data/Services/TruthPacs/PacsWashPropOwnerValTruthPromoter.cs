@@ -163,6 +163,8 @@ public sealed class PacsWashPropOwnerValTruthPromoter : IPacsWashPropOwnerValTru
                     WpovLoadBatchId = wpovLoadBatchId,
                     SuppAssocLoadBatchId = suppAssocLoadBatchId,
                     PromotionLoadBatchId = batch.LoadBatchId,
+                    // G1 (v1.10): conversion-era marker derived from PropValYr.
+                    ConversionEra = ConversionEras.FromYear(wpov.PropValYr),
                     PromotedAt = now,
                 });
                 promoted++;
