@@ -345,6 +345,17 @@ jobs:
       # CI test in TerraFusion.sln connects to real Postgres, so this fix is
       # defensive — but a future test that does would have hit auth failures.
       connection_string: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=terrafusion_test'
+      # CI-HYGIENE-4A (#739): explicitly gate Testcontainers-backed tests
+      # whose fixtures (MsSqlContainer / pgvector PostgreSqlContainer) fail
+      # to initialize reliably on the GH-shared runner. The SqlServerFixture's
+      # own author documented this gate:
+      #   "Tests using this fixture require Docker. Tag them with
+      #    [Trait("Category", "DockerRequired")] so CI without Docker can
+      #    filter them out: dotnet test --filter \"Category!=DockerRequired\""
+      # Same pattern applies to VectorQueryIntegrationTests (Trait=Vector).
+      # When the underlying Testcontainers infrastructure is sorted out,
+      # remove this filter; tracked as the next CI-HYGIENE slice.
+      test_filter: 'Category!=DockerRequired&Category!=Vector'
 
   # ═══════════════════════════════════════════════════════════════════════════
   # Vitest Full Suite (REQUIRED — merge gate)
