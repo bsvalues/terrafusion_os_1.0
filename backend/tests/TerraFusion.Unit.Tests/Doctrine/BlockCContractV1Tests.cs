@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Entities.CanonicalTf;
+using TerraFusion.Core.Entities.LegacyPacsRaw;
 using TerraFusion.Core.Entities.LegacyTfUnproven;
 using TerraFusion.Core.Entities.SyncBridge;
 using TerraFusion.Core.Entities.TruthPacs;
@@ -799,6 +800,68 @@ public sealed class BlockCContractV1Tests : IDisposable
             "BOTH_MISSING",       // v1.0 historical (B4) — newly documented in v1.4
             "UNKNOWN_ATTRIBUTE",  // v1.4 NEW (E4b will emit it)
         }, "Block-C contract v1.4 §5.2 freezes the QuarantineReasons vocabulary");
+    }
+
+    // ───────────────────────────────────────────────────────────────
+    // v1.6 addendum — two-layer quarantine vocabulary disjointness
+    // ───────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void Contract_v1_6_LandingQuarantineReasons_AllContainsExpectedValues()
+    {
+        // v1.6 §2: landing-layer vocabulary is currently a
+        // single-value set. Future additions require a v1.x bump.
+        LandingQuarantineReasons.All.Should().BeEquivalentTo(new[]
+        {
+            "UNKNOWN_I_ATTR_VAL_CD",
+        }, "Block-C contract v1.6 §2 freezes the LandingQuarantineReasons vocabulary");
+
+        LandingQuarantineReasons.IsKnown(LandingQuarantineReasons.UnknownIAttrValCd)
+            .Should().BeTrue();
+        LandingQuarantineReasons.IsKnown("not-a-reason").Should().BeFalse();
+        LandingQuarantineReasons.IsKnown(string.Empty).Should().BeFalse();
+    }
+
+    [Fact]
+    public void Contract_v1_6_QuarantineVocabularies_AreDisjoint()
+    {
+        // v1.6 §3: the two vocabularies must never share a string.
+        // This is what makes v1.5 §2.4's filter-by-reason cleanup
+        // strategy safe across layers.
+        var canonicalSet = QuarantineReasons.All;
+        var landingSet = LandingQuarantineReasons.All;
+        canonicalSet.Intersect(landingSet).Should().BeEmpty(
+            "Block-C contract v1.6 §3 freezes vocabulary disjointness");
+    }
+
+    [Fact]
+    public void Contract_v1_6_CanonicalIsKnown_RejectsLandingReason()
+    {
+        // Cross-IsKnown check: QuarantineReasons.IsKnown returns
+        // false for any landing-layer string. Without this, a
+        // canonical-layer cleanup pass could incorrectly recognize
+        // a landing-layer row as one of its own.
+        QuarantineReasons.IsKnown(LandingQuarantineReasons.UnknownIAttrValCd)
+            .Should().BeFalse(
+                "Block-C contract v1.6 §3: canonical-layer vocab " +
+                "MUST NOT recognize landing-layer reasons");
+    }
+
+    [Fact]
+    public void Contract_v1_6_LandingIsKnown_RejectsCanonicalReason()
+    {
+        // Symmetric check: LandingQuarantineReasons.IsKnown returns
+        // false for any canonical-layer string.
+        LandingQuarantineReasons.IsKnown(QuarantineReasons.UnknownAttribute)
+            .Should().BeFalse(
+                "Block-C contract v1.6 §3: landing-layer vocab " +
+                "MUST NOT recognize canonical-layer reasons");
+        LandingQuarantineReasons.IsKnown(QuarantineReasons.NoParcelXref)
+            .Should().BeFalse();
+        LandingQuarantineReasons.IsKnown(QuarantineReasons.NoOwnerXref)
+            .Should().BeFalse();
+        LandingQuarantineReasons.IsKnown(QuarantineReasons.BothMissing)
+            .Should().BeFalse();
     }
 
     [Fact]

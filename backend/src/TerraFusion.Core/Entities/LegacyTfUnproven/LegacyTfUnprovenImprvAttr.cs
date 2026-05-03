@@ -38,9 +38,20 @@ public sealed class LegacyTfUnprovenImprvAttr
     public Guid LandingLoadBatchId { get; set; }
 
     /// <summary>
-    /// Closed vocabulary: <c>"UNKNOWN_I_ATTR_VAL_CD"</c> — the only
-    /// reason emitted today. Reserved for future precision (e.g.
-    /// <c>"DICTIONARY_REFRESH_REQUIRED"</c>).
+    /// Closed vocabulary across two layers per Block-C contract
+    /// v1.6 (<c>docs/pacs/block-c-contract-v1.6.md</c>):
+    /// <list type="bullet">
+    ///   <item>Landing-layer reasons live in
+    ///     <see cref="TerraFusion.Core.Entities.LegacyPacsRaw.LandingQuarantineReasons"/>
+    ///     (e.g. <c>UNKNOWN_I_ATTR_VAL_CD</c> from
+    ///     <c>PacsImprvAttrLandingService</c>).</item>
+    ///   <item>Canonical-layer reasons live in
+    ///     <see cref="TerraFusion.Core.Entities.SyncBridge.QuarantineReasons"/>
+    ///     (e.g. <c>UNKNOWN_ATTRIBUTE</c> from
+    ///     <c>PacsImprvCanonicalProjector</c> v1.5 §2.2).</item>
+    /// </list>
+    /// The two vocabularies are disjoint by doctrine. Cleanup
+    /// passes filter by reason to avoid cross-layer interference.
     /// </summary>
     public string QuarantineReason { get; set; } = string.Empty;
 

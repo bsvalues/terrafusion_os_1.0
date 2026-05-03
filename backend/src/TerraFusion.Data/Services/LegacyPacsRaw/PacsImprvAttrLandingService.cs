@@ -40,7 +40,9 @@ namespace TerraFusion.Data.Services.LegacyPacsRaw;
 public sealed class PacsImprvAttrLandingService : IPacsImprvAttrLandingService
 {
     private const int BatchSize = 1000;
-    private const string QuarantineUnknownCode = "UNKNOWN_I_ATTR_VAL_CD";
+    // v1.6: landing-layer quarantine reasons live in
+    // LandingQuarantineReasons — see
+    // docs/pacs/block-c-contract-v1.6.md.
 
     private readonly TerraFusionDbContext _db;
     private readonly IImprvAttrDictionary _dictionary;
@@ -134,7 +136,7 @@ public sealed class PacsImprvAttrLandingService : IPacsImprvAttrLandingService
                         AttrValueText = src.AttrValueText,
                         AttrValueNumeric = src.AttrValueNumeric,
                         LandingLoadBatchId = batch.LoadBatchId,
-                        QuarantineReason = QuarantineUnknownCode,
+                        QuarantineReason = LandingQuarantineReasons.UnknownIAttrValCd,
                         CreatedAt = DateTime.UtcNow,
                     });
                     quarantined++;
