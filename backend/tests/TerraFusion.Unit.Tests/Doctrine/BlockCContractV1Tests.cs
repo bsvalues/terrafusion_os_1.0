@@ -564,6 +564,68 @@ public sealed class BlockCContractV1Tests : IDisposable
     }
 
     // ───────────────────────────────────────────────────────────────
+    // v1.1 addendum — canonical_tf.dict_neighborhood (Slice E1)
+    // ───────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void Contract_v1_1_DictNeighborhood_HasFrozenShape()
+    {
+        var et = _db.Model.FindEntityType(typeof(DictNeighborhood));
+        et.Should().NotBeNull(
+            "Block-C contract v1.1 §3.7 freezes canonical_tf.dict_neighborhood");
+
+        var pk = et!.FindPrimaryKey();
+        pk.Should().NotBeNull();
+        pk!.Properties.Should().HaveCount(1);
+        pk.Properties[0].Name.Should().Be(
+            nameof(DictNeighborhood.DictNeighborhoodId));
+
+        et.PropertyNames().Should().Contain(new[]
+        {
+            nameof(DictNeighborhood.DictNeighborhoodId),
+            nameof(DictNeighborhood.CountyId),
+            nameof(DictNeighborhood.HoodCd),
+            nameof(DictNeighborhood.HoodName),
+            nameof(DictNeighborhood.HoodDescription),
+            nameof(DictNeighborhood.HoodGroupCd),
+            nameof(DictNeighborhood.IsActive),
+            nameof(DictNeighborhood.LoadBatchId),
+            nameof(DictNeighborhood.SourceQueryHash),
+            nameof(DictNeighborhood.CreatedAt),
+            nameof(DictNeighborhood.UpdatedAt),
+        });
+    }
+
+    [Fact]
+    public void Contract_v1_1_DictNeighborhood_HasUniqueCountyHoodCdIndex()
+    {
+        // Sovereign-county isolation requires that hood_cd is unique
+        // WITHIN a county, but the same code can appear across
+        // counties with different meanings.
+        var et = _db.Model.FindEntityType(typeof(DictNeighborhood));
+        et.Should().NotBeNull();
+
+        var indexes = et!.GetIndexes().ToList();
+        indexes.Should().Contain(idx =>
+            idx.IsUnique
+            && idx.Properties.Count == 2
+            && idx.Properties[0].Name == nameof(DictNeighborhood.CountyId)
+            && idx.Properties[1].Name == nameof(DictNeighborhood.HoodCd),
+            "Block-C contract v1.1 §3.7 freezes (CountyId, HoodCd) as the natural unique key");
+    }
+
+    [Fact]
+    public void Contract_v1_1_DictNeighborhood_DbSetIsRegistered()
+    {
+        var prop = typeof(TerraFusionDbContext).GetProperty(
+            "DictNeighborhoods",
+            BindingFlags.Public | BindingFlags.Instance);
+        prop.Should().NotBeNull(
+            "Block-C contract v1.1 §3.7 names the dict_neighborhood DbSet");
+        prop!.PropertyType.Should().Be(typeof(DbSet<DictNeighborhood>));
+    }
+
+    // ───────────────────────────────────────────────────────────────
     // §6 — migration list (Block A / B / C scaffolding)
     // ───────────────────────────────────────────────────────────────
 
@@ -599,6 +661,10 @@ public sealed class BlockCContractV1Tests : IDisposable
             "AddTruthPacsImprvCurrent",
             "AddTruthPacsLandCurrent",
             "AddTfImprovementAndFeature",
+            // Block-C contract v1.1 — first dictionary table (E1).
+            // Note: this migration also closes the tf_land schema
+            // gap (entities committed pre-H3, migration deferred).
+            "AddDictNeighborhood",
         };
 
         foreach (var fragment in requiredFragments)

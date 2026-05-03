@@ -305,6 +305,14 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.LegacyTfUnproven.LegacyTfUnprovenLandCurrent>
     LegacyTfUnprovenLandCurrents { get; set; } = null!;
 
+  // Slice E1: canonical_tf.dict_neighborhood — first canonical
+  // dictionary table. hood_cd domain (operator's truth). Per
+  // Block-C contract v1.1 (docs/pacs/block-c-contract-v1.1.md).
+  // No projector consumes this yet; E1 is a schema lock, not a
+  // runtime gate.
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.DictNeighborhood>
+    DictNeighborhoods { get; set; } = null!;
+
   // Slice C41-B: per-county pointer naming the operator-active
   // Mapped workbook. Singleton per county (PK = CountyId). See
   // docs/sync/sync-county-active-workbook-pointer-policy.md for the
@@ -1010,6 +1018,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       new TerraFusion.Data.Configurations.CanonicalTf.TfLandConfiguration());
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.LegacyTfUnproven.LegacyTfUnprovenLandCurrentConfiguration());
+
+    // Slice E1: canonical_tf.dict_neighborhood — first canonical
+    // dictionary table. Per docs/pacs/block-c-contract-v1.1.md.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.DictNeighborhoodConfiguration());
 
     // Sync Bridge v1 — Phase 0 field_authority seed for the parcel
     // domain. Per docs/pacs/pacs-sync-bridge-v1-spec.md §4.
