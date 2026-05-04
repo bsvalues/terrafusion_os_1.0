@@ -543,6 +543,8 @@ function artifactBlockers(value) {
 }
 
 function artifactWarnings(value) {
+  const posture =
+    value?.status === 'PASS_WITH_WARNINGS' ? ['Artifact status is PASS_WITH_WARNINGS.'] : [];
   const direct = Array.isArray(value?.warnings) ? value.warnings : [];
   const summary = Array.isArray(value?.summary?.warnings) ? value.summary.warnings : [];
   const rowWarnings = Array.isArray(value?.rows)
@@ -560,8 +562,8 @@ function artifactWarnings(value) {
       )
     : [];
 
-  return [...new Set([...direct, ...summary, ...rowWarnings, ...proofWarnings])].map(item =>
-    String(item)
+  return [...new Set([...posture, ...direct, ...summary, ...rowWarnings, ...proofWarnings])].map(
+    item => String(item)
   );
 }
 

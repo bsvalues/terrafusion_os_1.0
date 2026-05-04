@@ -400,6 +400,43 @@ test('readiness packet surfaces warning-only proof artifacts', () => {
   );
 });
 
+test('readiness packet preserves PASS_WITH_WARNINGS from artifact status', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-identity.json', {
+    status: 'PASS_WITH_WARNINGS',
+    endpointStatus: 200,
+    passed: true,
+    blockers: [],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 0);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'PASS_WITH_WARNINGS');
+  assert.ok(
+    report.warnings.some(
+      item =>
+        item.source === 'dbIdentity' && item.message === 'Artifact status is PASS_WITH_WARNINGS.'
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.warnings.items.includes(
+      'Artifact status is PASS_WITH_WARNINGS.'
+    )
+  );
+  const markdown = fs.readFileSync(
+    path.join(root, 'generated/truth/june10-readiness-packet.md'),
+    'utf8'
+  );
+  assert.match(markdown, /dbIdentity: Artifact status is PASS_WITH_WARNINGS\./);
+});
+
 test('readiness packet blocks candidate set that promotes another county', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-candidate-set.json', {
