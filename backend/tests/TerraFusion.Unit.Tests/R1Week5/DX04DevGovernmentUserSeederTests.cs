@@ -18,6 +18,10 @@ public class DX04DevGovernmentUserSeederTests
     {
         await using var db = CreateTestDbContext();
         await db.Database.EnsureCreatedAsync();
+        // Pre-seed the Benton County row so the GovernmentUser → County FK is satisfied
+        // (CI-HYGIENE-D #739: InMemory ignores FK enforcement, but seeding keeps the
+        // test honest if the provider ever shifts back to a relational fixture).
+        await DatabaseSeeder.SeedDossierRuntimeDataAsync(db);
 
         var seeder = CreateSeeder(db);
 
@@ -37,6 +41,10 @@ public class DX04DevGovernmentUserSeederTests
     {
         await using var db = CreateTestDbContext();
         await db.Database.EnsureCreatedAsync();
+        // Pre-seed the Benton County row so the GovernmentUser → County FK is satisfied
+        // (CI-HYGIENE-D #739: InMemory ignores FK enforcement, but seeding keeps the
+        // test honest if the provider ever shifts back to a relational fixture).
+        await DatabaseSeeder.SeedDossierRuntimeDataAsync(db);
 
         var seeder = CreateSeeder(db);
 
@@ -58,16 +66,18 @@ public class DX04DevGovernmentUserSeederTests
 
     private static TerraFusionDbContext CreateTestDbContext()
     {
+        // CI-HYGIENE-D (#739): pivoted to EF Core InMemory provider per #741/#742 pattern.
+        // The SQLite path collides on imprv_current (TruthPacs + LegacyTfUnproven schemas
+        // both flatten to a single bare table). InMemory ignores schemas → no collision.
+        // When #743 (TerraFusionDbContext schema model cleanup) lands, this can be revisited.
         var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
-            .UseSqlite("Data Source=:memory:")
+            .UseInMemoryDatabase($"dx04-dev-gov-user-seeder-{Guid.NewGuid():N}")
             .Options;
 
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>())
             .Build();
 
-        var db = new TerraFusionDbContext(options, config);
-        db.Database.OpenConnection();
-        return db;
+        return new TerraFusionDbContext(options, config);
     }
 }
