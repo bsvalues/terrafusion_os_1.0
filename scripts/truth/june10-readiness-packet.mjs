@@ -311,10 +311,19 @@ function collectBlockers(loaded) {
 
   if (
     loaded.saleQualification.present &&
-    saleQualification?.passed !== true &&
-    saleQualification?.status !== 'PASS'
+    (saleQualification?.status !== 'PASS' ||
+      Number(saleQualification?.summary?.candidatesChecked ?? 0) !== 1 ||
+      Number(saleQualification?.summary?.passed ?? 0) !== 1 ||
+      Number(saleQualification?.summary?.failed ?? 1) !== 0 ||
+      Number(saleQualification?.summary?.canonicalLandingBacked ?? 0) !== 1 ||
+      Number(saleQualification?.summary?.recommendationBackedCanonicalMissing ?? 0) !== 0 ||
+      !hasExactlyBentonPassingProof(saleQualification))
   ) {
-    blocker(blockers, 'saleQualification', 'Benton sale qualification lineage is not passing.');
+    blocker(
+      blockers,
+      'saleQualification',
+      'Benton canonical sale qualification lineage is not passing.'
+    );
   }
 
   if (
@@ -323,6 +332,23 @@ function collectBlockers(loaded) {
     bentonPilotClosure?.status !== 'PASS_WITH_WARNINGS'
   ) {
     blocker(blockers, 'bentonPilotClosure', 'Benton runtime pilot closure is not passing.');
+  }
+
+  if (
+    loaded.bentonPilotClosure.present &&
+    (Number(bentonPilotClosure?.countyScope?.runtimeProven ?? 0) !== 1 ||
+      Number(bentonPilotClosure?.countyScope?.evidenceBackedLoadCandidates ?? 0) !== 0 ||
+      Number(bentonPilotClosure?.countyScope?.provenanceInventoryOnly ?? 0) !== 38 ||
+      bentonPilotClosure?.countyScope?.prohibit39CountyRuntimeClaim !== true ||
+      bentonPilotClosure?.benton?.saleQualificationClassification !== 'canonical_landing_backed' ||
+      Number(bentonPilotClosure?.benton?.canonicalSaleQualifications ?? 0) <= 0 ||
+      Number(bentonPilotClosure?.benton?.ratioStudyDecisionQualified ?? 0) <= 0)
+  ) {
+    blocker(
+      blockers,
+      'bentonPilotClosure',
+      'Benton runtime pilot closure does not prove canonical sale qualification and Benton-only scope.'
+    );
   }
 
   return { blockers, warnings };

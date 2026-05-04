@@ -132,9 +132,48 @@ function makeRepo({ passing = false } = {}) {
   });
   writeJson(root, `${truth}/runtime-sale-qualification-lineage-proof.json`, {
     status: passing ? 'PASS' : 'FAIL',
+    summary: {
+      candidatesChecked: 1,
+      passed: passing ? 1 : 0,
+      failed: passing ? 0 : 1,
+      canonicalLandingBacked: passing ? 1 : 0,
+      recommendationBackedCanonicalMissing: passing ? 0 : 1,
+    },
+    proofs: passing
+      ? [
+          {
+            county: 'Benton',
+            classification: 'canonical_landing_backed',
+            canonicalSaleQualifications: 10,
+            ratioStudyWindow: {
+              decisionQualified: 5,
+            },
+            passed: true,
+          },
+        ]
+      : [
+          {
+            county: 'Benton',
+            classification: 'recommendation_backed_canonical_landing_missing',
+            passed: false,
+          },
+        ],
   });
   writeJson(root, `${truth}/benton-runtime-pilot-closure.json`, {
     status: passing ? 'PASS' : 'FAIL',
+    benton: {
+      saleQualificationClassification: passing
+        ? 'canonical_landing_backed'
+        : 'recommendation_backed_canonical_landing_missing',
+      canonicalSaleQualifications: passing ? 10 : 0,
+      ratioStudyDecisionQualified: passing ? 5 : 0,
+    },
+    countyScope: {
+      runtimeProven: passing ? 1 : 0,
+      evidenceBackedLoadCandidates: passing ? 0 : 1,
+      provenanceInventoryOnly: passing ? 38 : 37,
+      prohibit39CountyRuntimeClaim: passing,
+    },
   });
 
   return root;
@@ -445,4 +484,66 @@ test('readiness packet blocks source lineage proof that passes a non-Benton coun
   assert.equal(report.status, 'FAIL');
   assert.ok(report.shipBlockers.some(item => item.source === 'sourceLineage'));
   assert.ok(report.shipBlockers.some(item => item.message.includes('not passing for Benton only')));
+});
+
+test('readiness packet blocks sale qualification proof that passes a non-Benton county', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-sale-qualification-lineage-proof.json', {
+    status: 'PASS',
+    summary: {
+      candidatesChecked: 1,
+      passed: 1,
+      failed: 0,
+      canonicalLandingBacked: 1,
+      recommendationBackedCanonicalMissing: 0,
+    },
+    proofs: [
+      {
+        county: 'Pacific',
+        classification: 'canonical_landing_backed',
+        passed: true,
+      },
+    ],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(report.shipBlockers.some(item => item.source === 'saleQualification'));
+  assert.ok(
+    report.shipBlockers.some(item =>
+      item.message.includes('Benton canonical sale qualification lineage')
+    )
+  );
+});
+
+test('readiness packet blocks pilot closure status without Benton proof detail', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/benton-runtime-pilot-closure.json', {
+    status: 'PASS',
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(report.shipBlockers.some(item => item.source === 'bentonPilotClosure'));
+  assert.ok(
+    report.shipBlockers.some(item =>
+      item.message.includes('does not prove canonical sale qualification and Benton-only scope')
+    )
+  );
 });
