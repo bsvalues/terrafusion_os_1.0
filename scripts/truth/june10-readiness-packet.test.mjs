@@ -104,6 +104,7 @@ test('readiness packet fails when required runtime truth artifacts are red', () 
   );
   assert.equal(report.summary.terraFusionDb.dbIdentityEndpointStatus, null);
   assert.equal(report.postDbRefreshQuickCommand, 'pnpm run truth:post-db-refresh-rerun');
+  assert.equal(report.postDbRefreshFullReadinessCommand, 'pnpm run readiness:june10');
   assert.ok(report.artifactDetails.dbIdentity.blockers.items.length > 0);
   assert.ok(
     report.artifactDetails.productLoadLedger.blockers.items.some(blocker =>
@@ -120,7 +121,7 @@ test('readiness packet fails when required runtime truth artifacts are red', () 
       'pnpm run truth:runtime-source-lineage',
       'pnpm run truth:runtime-sale-qualification',
       'pnpm run truth:benton-runtime-pilot-closure',
-      'pnpm run readiness:june10',
+      'pnpm run truth:june10-readiness-packet',
     ]
   );
 });

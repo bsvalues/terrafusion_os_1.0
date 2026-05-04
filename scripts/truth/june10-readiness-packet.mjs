@@ -10,6 +10,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import {
+  postDbRefreshChecklist,
+  postDbRefreshFullReadinessCommand,
+  postDbRefreshQuickCommand,
+} from './post-db-refresh-plan.mjs';
 
 const repoRoot = process.argv[2] ? path.resolve(process.argv[2]) : process.cwd();
 const truthDir = path.join(repoRoot, 'generated', 'truth');
@@ -78,54 +83,7 @@ const blockerRunbook = {
   },
 };
 
-const postDbRefreshRerunChecklist = [
-  {
-    order: 1,
-    command: 'pnpm run truth:runtime-db-identity',
-    proves:
-      'The running API is connected to the intended TerraFusion DB before row counts are trusted.',
-  },
-  {
-    order: 2,
-    command: 'pnpm run truth:runtime-db-content',
-    proves: 'TerraFusion DB product runtime tables are present with expected table-level shape.',
-  },
-  {
-    order: 3,
-    command: 'pnpm run truth:terrafusion-db-product-load-ledger',
-    proves:
-      'Product runtime rows have ProductLoadReceipts evidence for table, county, count, and load timestamp.',
-  },
-  {
-    order: 4,
-    command: 'pnpm run truth:benton-parcel-count-sanity',
-    proves:
-      'Benton parcel endpoint returns active/current distinct parcel semantics, not raw mirror rows.',
-  },
-  {
-    order: 5,
-    command: 'pnpm run truth:runtime-source-lineage',
-    proves: 'Runtime row-path proof remains inside TerraFusion DB/API boundaries.',
-  },
-  {
-    order: 6,
-    command: 'pnpm run truth:runtime-sale-qualification',
-    proves:
-      'Benton sales qualification is canonical-backed or fails closed with explicit blockers.',
-  },
-  {
-    order: 7,
-    command: 'pnpm run truth:benton-runtime-pilot-closure',
-    proves:
-      'Benton pilot can close only after DB identity, load receipts, parcel sanity, and sales pass.',
-  },
-  {
-    order: 8,
-    command: 'pnpm run readiness:june10',
-    proves: 'Final June 10 packet reflects the refreshed TerraFusion DB state.',
-  },
-];
-const postDbRefreshQuickCommand = 'pnpm run truth:post-db-refresh-rerun';
+const postDbRefreshRerunChecklist = postDbRefreshChecklist();
 
 function rel(filePath) {
   return path.relative(repoRoot, filePath).replaceAll(path.sep, '/');
@@ -444,6 +402,7 @@ function renderMarkdown(report) {
     '## Post-DB-Refresh Rerun Checklist',
     '',
     `Fast command: \`${report.postDbRefreshQuickCommand}\``,
+    `Full readiness gate after fast pass: \`${report.postDbRefreshFullReadinessCommand}\``,
     '',
     ...report.postDbRefreshRerunChecklist.map(
       item => `${item.order}. \`${item.command}\` - ${item.proves}`
@@ -498,6 +457,7 @@ function main() {
     shipBlockers: blockers,
     executionQueue,
     postDbRefreshQuickCommand,
+    postDbRefreshFullReadinessCommand,
     postDbRefreshRerunChecklist,
     artifactDetails: buildArtifactDetails(loaded, blockers),
     warnings,

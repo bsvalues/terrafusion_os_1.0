@@ -12,6 +12,7 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { postDbRefreshPlan } from './post-db-refresh-plan.mjs';
 
 const repoRoot = process.argv[2] ? path.resolve(process.argv[2]) : process.cwd();
 const truthDir = path.join(repoRoot, 'generated', 'truth');
@@ -29,81 +30,6 @@ const preflightTimeoutMs = Number.parseInt(
 const continueOnFailure = process.env.TF_POST_DB_REFRESH_CONTINUE_ON_FAILURE === '1';
 const skipPreflight = process.env.TF_POST_DB_REFRESH_SKIP_PREFLIGHT === '1';
 const commandSource = process.env.TF_POST_DB_REFRESH_COMMANDS_JSON ? 'env_override' : 'default';
-
-const defaultCommands = [
-  {
-    name: 'Runtime DB identity',
-    command: 'pnpm',
-    args: ['run', 'truth:runtime-db-identity'],
-    expectedArtifacts: [
-      'generated/truth/runtime-db-identity.json',
-      'generated/truth/runtime-db-identity.md',
-    ],
-  },
-  {
-    name: 'Runtime DB content',
-    command: 'pnpm',
-    args: ['run', 'truth:runtime-db-content'],
-    expectedArtifacts: [
-      'generated/truth/runtime-db-content-audit.json',
-      'generated/truth/runtime-db-content-audit.md',
-    ],
-  },
-  {
-    name: 'Product load ledger',
-    command: 'pnpm',
-    args: ['run', 'truth:terrafusion-db-product-load-ledger'],
-    expectedArtifacts: [
-      'generated/truth/terrafusion-db-product-load-ledger.json',
-      'generated/truth/terrafusion-db-product-load-ledger.md',
-    ],
-  },
-  {
-    name: 'Benton parcel count sanity',
-    command: 'pnpm',
-    args: ['run', 'truth:benton-parcel-count-sanity'],
-    expectedArtifacts: [
-      'generated/truth/benton-parcel-count-sanity.json',
-      'generated/truth/benton-parcel-count-sanity.md',
-    ],
-  },
-  {
-    name: 'Runtime source lineage',
-    command: 'pnpm',
-    args: ['run', 'truth:runtime-source-lineage'],
-    expectedArtifacts: [
-      'generated/truth/runtime-row-source-lineage-proof.json',
-      'generated/truth/runtime-row-source-lineage-proof.md',
-    ],
-  },
-  {
-    name: 'Runtime sale qualification',
-    command: 'pnpm',
-    args: ['run', 'truth:runtime-sale-qualification'],
-    expectedArtifacts: [
-      'generated/truth/runtime-sale-qualification-lineage-proof.json',
-      'generated/truth/runtime-sale-qualification-lineage-proof.md',
-    ],
-  },
-  {
-    name: 'Benton runtime pilot closure',
-    command: 'pnpm',
-    args: ['run', 'truth:benton-runtime-pilot-closure'],
-    expectedArtifacts: [
-      'generated/truth/benton-runtime-pilot-closure.json',
-      'generated/truth/benton-runtime-pilot-closure.md',
-    ],
-  },
-  {
-    name: 'June 10 readiness packet',
-    command: 'pnpm',
-    args: ['run', 'truth:june10-readiness-packet'],
-    expectedArtifacts: [
-      'generated/truth/june10-readiness-packet.json',
-      'generated/truth/june10-readiness-packet.md',
-    ],
-  },
-];
 
 function rel(filePath) {
   return path.relative(repoRoot, filePath).replaceAll(path.sep, '/');
@@ -129,7 +55,7 @@ function commandInvocation(command, args) {
 
 function loadCommands() {
   const override = process.env.TF_POST_DB_REFRESH_COMMANDS_JSON;
-  if (!override) return defaultCommands;
+  if (!override) return postDbRefreshPlan;
 
   const parsed = JSON.parse(override);
   if (!Array.isArray(parsed) || parsed.length === 0) {
