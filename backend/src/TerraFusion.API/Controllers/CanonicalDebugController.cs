@@ -15,6 +15,9 @@ using TerraFusion.Core.Sync.PacsSale;
 using TerraFusion.Core.Sync.PacsSaleCanonical;
 using TerraFusion.Core.Sync.PacsSalePipeline;
 using TerraFusion.Core.Sync.PacsSaleTruth;
+using TerraFusion.Core.Sync.PacsWashPropOwnerVal;
+using TerraFusion.Core.Sync.PacsWashPropOwnerValTruth;
+using TerraFusion.Core.Sync.PacsWsdorCanonical;
 using TerraFusion.Data;
 using TerraFusion.Data.Services.PacsSources;
 
@@ -1285,6 +1288,204 @@ public class CanonicalDebugController : ControllerBase
     /// Default 500. Larger improves the chance of pct-completeness gate
     /// passing; smaller is faster.</param>
     public sealed record OwnPop1Request(
+        string? OperatorName,
+        int? OwnerTopN);
+
+    // ════════════════════════════════════════════════════════════════════
+    // OWN-POP-2: WPOV (B1-C) → B2-B truth → B4 canonical projection.
+    //   Builds on OWN-POP-1: re-runs the owner pipeline so tf_parcel
+    //   + tf_owner xrefs exist, then keys WPOV off the owner truth
+    //   batch and chains B2-B + B4.
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// OWN-POP-2: WSDOR closure proof. Re-runs the OWN-POP-1
+    /// owner-lane pipeline (for fresh tf_parcel + tf_owner xrefs),
+    /// extracts <c>(prop_id, year, owner_id)</c> triples from the
+    /// owner truth batch, runs a keyed WPOV S1 + B2-B truth + B4
+    /// canonical projection.
+    ///
+    /// <para>Goal: prove <c>canonical_tf.tf_assessment_wsdor &gt; 0</c>.
+    /// B4 resolves both parcel and owner xrefs, so this slice's
+    /// success is gated on OWN-POP-1's projections having landed
+    /// matching xrefs in the same call.</para>
+    /// </summary>
+    [HttpPost("own-pop-2/run-wsdor-closure")]
+    public async Task<IActionResult> RunOwnPop2(
+        [FromServices] IPacsAccountLandingService accountSvc,
+        [FromServices] IPacsOwnerLandingService ownerSvc,
+        [FromServices] IPacsPropSuppAssocLandingService assocSvc,
+        [FromServices] IPacsPropertyLandingService propSvc,
+        [FromServices] IPacsParcelSpineTruthPromoter spinePromoter,
+        [FromServices] IPacsParcelCanonicalProjector parcelCanonical,
+        [FromServices] IPacsOwnerCurrentTruthPromoter ownerTruthPromoter,
+        [FromServices] IPacsOwnerCanonicalProjector ownerCanonicalProjector,
+        [FromServices] IPacsWashPropOwnerValLandingService wpovSvc,
+        [FromServices] IPacsWashPropOwnerValTruthPromoter wpovTruthPromoter,
+        [FromServices] IPacsWsdorCanonicalProjector wsdorCanonicalProjector,
+        [FromServices] IConfiguration config,
+        [FromBody] OwnPop2Request? request,
+        CancellationToken cancellationToken = default)
+    {
+        var pacsCs = config.GetConnectionString("PacsConnection");
+        if (string.IsNullOrWhiteSpace(pacsCs))
+            return StatusCode(500, new { error = "ConnectionStrings:PacsConnection is required for OWN-POP-2." });
+
+        var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
+            ? "own-pop-2-wsdor-closure"
+            : request.OperatorName.Trim();
+        var ownerTopN = request?.OwnerTopN ?? 200;
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+
+            // ── Stages A-G: re-run the OWN-POP-1 owner-lane pipeline. ──
+            // (Smaller TopN here; this slice's purpose is the WSDOR closure,
+            // not exercising owner volumes.)
+            _logger.LogInformation("[OwnPop2] A-G. Owner pipeline (TopN={Top})", ownerTopN);
+
+            var ownerSrc = new SqlServerPacsOwnerSource(pacsCs, topN: ownerTopN);
+            var ownerS1 = await ownerSvc.LandOwnersAsync(ownerSrc, operatorName, cancellationToken);
+            if (!string.Equals(ownerS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Owner-S1", error = ownerS1.ErrorSummary, ownerS1 });
+
+            var ownerRows = await _db.LegacyPacsRawOwners
+                .AsNoTracking()
+                .Where(o => o.LoadBatchId == ownerS1.LoadBatchId)
+                .Select(o => new { o.OwnerId, o.PropId, o.OwnerTaxYr })
+                .ToListAsync(cancellationToken);
+            var distinctAcctIds = ownerRows.Select(r => r.OwnerId).Distinct().ToList();
+            var distinctSuppKeys = ownerRows.Select(r => (r.PropId, r.OwnerTaxYr)).Distinct().ToList();
+            var distinctParcelPropIds = ownerRows.Select(r => r.PropId).Distinct().ToList();
+
+            var acctSrc = new KeyedSqlServerPacsAccountSource(pacsCs, distinctAcctIds);
+            var acctS1 = await accountSvc.LandAccountsAsync(acctSrc, operatorName, cancellationToken);
+            if (!string.Equals(acctS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Account-S1", error = acctS1.ErrorSummary, acctS1 });
+
+            var suppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs, distinctSuppKeys);
+            var suppS1 = await assocSvc.LandPropSuppAssocsAsync(suppSrc, operatorName, cancellationToken);
+            if (!string.Equals(suppS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Supp-S1", error = suppS1.ErrorSummary, suppS1 });
+
+            var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs, distinctParcelPropIds);
+            var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
+            if (!string.Equals(parcelS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Parcel-S1", error = parcelS1.ErrorSummary, parcelS1 });
+
+            var parcelSpine = await spinePromoter.PromoteAsync(parcelS1.LoadBatchId, operatorName, cancellationToken);
+            if (!string.Equals(parcelSpine.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Parcel-Spine", error = parcelSpine.ErrorSummary, parcelSpine });
+
+            var parcelCanon = await parcelCanonical.ProjectAsync(
+                parcelSpine.PromotionLoadBatchId, bentonCountyId, operatorName, cancellationToken);
+            if (!string.Equals(parcelCanon.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Parcel-Canonical", error = parcelCanon.ErrorSummary, parcelCanon });
+
+            var ownerTruth = await ownerTruthPromoter.PromoteAsync(
+                ownerS1.LoadBatchId, acctS1.LoadBatchId, suppS1.LoadBatchId, operatorName, cancellationToken);
+            if (!string.Equals(ownerTruth.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Owner-Truth", error = ownerTruth.ErrorSummary, ownerTruth });
+
+            var ownerCanon = await ownerCanonicalProjector.ProjectAsync(
+                ownerTruth.PromotionLoadBatchId, operatorName, cancellationToken);
+            if (!string.Equals(ownerCanon.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Owner-Canonical", error = ownerCanon.ErrorSummary, ownerCanon });
+
+            // ── H. Extract WPOV keys from the owner truth batch. ──
+            // Use OWNER truth (not raw) so we only ask WPOV for rows whose
+            // (prop_id, owner_id) were validated. owner_tax_yr ↔ wpov.year.
+            var wpovKeyRows = await _db.TruthPacsOwnerCurrents
+                .AsNoTracking()
+                .Where(t => t.PromotionLoadBatchId == ownerTruth.PromotionLoadBatchId)
+                .Select(t => new { t.PropId, t.OwnerTaxYr, t.OwnerId })
+                .Distinct()
+                .ToListAsync(cancellationToken);
+            var wpovKeys = wpovKeyRows
+                .Select(k => (k.PropId, k.OwnerTaxYr, k.OwnerId))
+                .ToList();
+
+            _logger.LogInformation("[OwnPop2] H. Keyed WPOV S1 for {N} (prop_id, year, owner_id) triples", wpovKeys.Count);
+
+            // ── I. Keyed WPOV S1 ──
+            var wpovSrc = new KeyedSqlServerPacsWashPropOwnerValSource(pacsCs, wpovKeys);
+            var wpovS1 = await wpovSvc.LandWashPropOwnerValsAsync(wpovSrc, operatorName, cancellationToken);
+            if (!string.Equals(wpovS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "WPOV-S1", error = wpovS1.ErrorSummary, wpovS1 });
+
+            // ── J. WPOV truth (B2-B): needs WPOV batch + supp batch. ──
+            _logger.LogInformation("[OwnPop2] J. Promoting WPOV truth");
+            var wpovTruth = await wpovTruthPromoter.PromoteAsync(
+                wpovS1.LoadBatchId, suppS1.LoadBatchId, operatorName, cancellationToken);
+            if (!string.Equals(wpovTruth.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "WPOV-Truth", error = wpovTruth.ErrorSummary, wpovTruth });
+
+            // ── K. WSDOR canonical (B4): writes tf_assessment_wsdor + xrefs. ──
+            _logger.LogInformation("[OwnPop2] K. Projecting WSDOR canonical");
+            var wsdorCanon = await wsdorCanonicalProjector.ProjectAsync(
+                wpovTruth.PromotionLoadBatchId, operatorName, cancellationToken);
+            if (!string.Equals(wsdorCanon.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "WSDOR-Canonical", error = wsdorCanon.ErrorSummary, wsdorCanon });
+
+            // ── Read-back proof counts. ──
+            var tfAssessmentCount = await _db.TfAssessmentWsdors.CountAsync(cancellationToken);
+            var tfOwnerCount = await _db.TfOwners.CountAsync(cancellationToken);
+            var tfParcelCount = await _db.TfParcels.CountAsync(cancellationToken);
+            var truthWpovCount = await _db.TruthPacsWashPropOwnerVals.CountAsync(cancellationToken);
+
+            return Ok(new
+            {
+                operatorName,
+                bentonCountyId,
+                ownerS1 = new { ownerS1.Status, ownerS1.LoadBatchId, ownerS1.RowsLanded },
+                acctS1 = new { acctS1.Status, acctS1.RowsLanded },
+                suppS1 = new { suppS1.Status, suppS1.RowsLanded },
+                parcelS1 = new { parcelS1.Status, parcelS1.RowsLanded, parcelS1.TypeDistribution },
+                parcelCanon = new { parcelCanon.Status, parcelCanon.ParcelsProjected },
+                ownerTruth = new { ownerTruth.Status, ownerTruth.OwnersConsidered, ownerTruth.OwnersPromoted },
+                ownerCanon = new { ownerCanon.Status, ownerCanon.OwnersProjected, ownerCanon.LinksProjected },
+                wpovKeyExtraction = new { distinctTriples = wpovKeys.Count },
+                wpovS1 = new { wpovS1.Status, wpovS1.LoadBatchId, wpovS1.RowsLanded },
+                wpovTruth = new
+                {
+                    wpovTruth.Status, wpovTruth.PromotionLoadBatchId,
+                    wpovTruth.RowsConsidered, wpovTruth.RowsPromoted,
+                    wpovTruth.RejectedNoSuppPointer, wpovTruth.RejectedStaleSupNum,
+                    wpovTruth.AssessedValSum, wpovTruth.MarketValSum,
+                },
+                wsdorCanon = new
+                {
+                    wsdorCanon.Status, wsdorCanon.PromotionLoadBatchId,
+                    wsdorCanon.TruthRowsConsidered, wsdorCanon.RowsProjected,
+                    wsdorCanon.RowsQuarantined,
+                    wsdorCanon.RejectedNoParcelXref, wsdorCanon.RejectedNoOwnerXref,
+                    wsdorCanon.RejectedBothMissing,
+                },
+                counts = new
+                {
+                    canonicalTfAssessmentWsdor = tfAssessmentCount,
+                    canonicalTfOwners = tfOwnerCount,
+                    canonicalTfParcels = tfParcelCount,
+                    truthPacsWashPropOwnerVals = truthWpovCount,
+                },
+                proofVerdict = wsdorCanon.RowsProjected > 0
+                    ? "PROOF: canonical_tf.tf_assessment_wsdor > 0 — OWN-POP-2 WSDOR closure succeeded."
+                    : "INCONCLUSIVE: 0 wsdor rows projected. Investigate parcel/owner xref resolution or WPOV-truth promotion.",
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[OwnPop2] FAILED");
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name });
+        }
+    }
+
+    /// <param name="OperatorName">Audit anchor across all 11 stages.</param>
+    /// <param name="OwnerTopN">Owner sample size for the seed batch.
+    /// Default 200 (smaller than OWN-POP-1 since this slice's purpose is
+    /// WSDOR closure, not owner volume).</param>
+    public sealed record OwnPop2Request(
         string? OperatorName,
         int? OwnerTopN);
 }
