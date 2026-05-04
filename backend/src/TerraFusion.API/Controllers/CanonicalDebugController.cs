@@ -15,6 +15,11 @@ using TerraFusion.Core.Sync.PacsSale;
 using TerraFusion.Core.Sync.PacsSaleCanonical;
 using TerraFusion.Core.Sync.PacsSalePipeline;
 using TerraFusion.Core.Sync.PacsSaleTruth;
+using TerraFusion.Core.Sync.PacsImprv;
+using TerraFusion.Core.Sync.PacsImprvAttr;
+using TerraFusion.Core.Sync.PacsImprvCanonical;
+using TerraFusion.Core.Sync.PacsImprvDetail;
+using TerraFusion.Core.Sync.PacsImprvTruth;
 using TerraFusion.Core.Sync.PacsWashPropOwnerVal;
 using TerraFusion.Core.Sync.PacsWashPropOwnerValTruth;
 using TerraFusion.Core.Sync.PacsWsdorCanonical;
@@ -1488,4 +1493,204 @@ public class CanonicalDebugController : ControllerBase
     public sealed record OwnPop2Request(
         string? OperatorName,
         int? OwnerTopN);
+
+    // ════════════════════════════════════════════════════════════════════
+    // IMP-POP-1: Improvement-lane end-to-end closure.
+    //   Reuses existing tf_parcel xrefs (or lands fresh ones) and runs
+    //   the improvement chain: imprv + imprv_detail + imprv_attr (S1) →
+    //   prop_supp_assoc S1 (keyed) → imprv truth (C2) → imprv canonical
+    //   (C3, writes tf_improvement + tf_improvement_feature).
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// IMP-POP-1: doctrine end-to-end closure for the improvement lane.
+    /// Lands a property batch + its imprv/imprv_detail/imprv_attr +
+    /// supp pointers, promotes parcels canonical (so xrefs exist),
+    /// promotes imprv truth, then projects canonical
+    /// <c>tf_improvement</c> + <c>tf_improvement_feature</c>.
+    ///
+    /// <para>Goal: prove <c>canonical_tf.tf_improvement &gt; 0</c>
+    /// AND <c>tf_improvement_feature &gt; 0</c>. Defaults to landing
+    /// 200 parcels keyed by recent <c>(prop_id, prop_val_yr)</c> pairs;
+    /// the canonical-improvement projector resolves parcel xrefs from
+    /// the just-projected parcels.</para>
+    /// </summary>
+    [HttpPost("imp-pop-1/run-final-closure")]
+    public async Task<IActionResult> RunImpPop1(
+        [FromServices] IPacsOwnerLandingService ownerSvc,
+        [FromServices] IPacsPropertyLandingService propSvc,
+        [FromServices] IPacsParcelSpineTruthPromoter spinePromoter,
+        [FromServices] IPacsParcelCanonicalProjector parcelCanonical,
+        [FromServices] IPacsPropSuppAssocLandingService assocSvc,
+        [FromServices] IPacsImprvLandingService imprvSvc,
+        [FromServices] IPacsImprvDetailLandingService imprvDetailSvc,
+        [FromServices] IPacsImprvAttrLandingService imprvAttrSvc,
+        [FromServices] IPacsImprvCurrentTruthPromoter imprvTruthPromoter,
+        [FromServices] IPacsImprvCanonicalProjector imprvCanonicalProjector,
+        [FromServices] IConfiguration config,
+        [FromBody] ImpPop1Request? request,
+        CancellationToken cancellationToken = default)
+    {
+        var pacsCs = config.GetConnectionString("PacsConnection");
+        if (string.IsNullOrWhiteSpace(pacsCs))
+            return StatusCode(500, new { error = "ConnectionStrings:PacsConnection is required for IMP-POP-1." });
+
+        var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
+            ? "imp-pop-1-final-closure"
+            : request.OperatorName.Trim();
+        var parcelTopN = request?.ParcelTopN ?? 200;
+        // Use 2026 as the working year for keyed imprv lookups; PACS data is
+        // year-versioned and 2026 is the active assessment year for Benton.
+        short workingYear = (short)(request?.WorkingYear ?? 2026);
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+
+            // ── A0. Owner-anchored seed — guarantees real-property prop_ids. ──
+            // The default SqlServerPacsPropertySource orders by prop_id DESC,
+            // which surfaces personal/mobile-home parcels first (Benton's
+            // recent-prop_id stratum is dominated by P/MH). Owners only attach
+            // to real-property parcels, so seeding from a small owner batch
+            // guarantees R-typed prop_ids reach the imprv chain.
+            _logger.LogInformation("[ImpPop1] A0. Owner-anchored seed (TopN={Top})", parcelTopN);
+            var ownerSeedSrc = new SqlServerPacsOwnerSource(pacsCs, topN: parcelTopN);
+            var ownerSeedS1 = await ownerSvc.LandOwnersAsync(ownerSeedSrc, operatorName, cancellationToken);
+            if (!string.Equals(ownerSeedS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Owner-Seed-S1", error = ownerSeedS1.ErrorSummary, ownerSeedS1 });
+
+            var seedPropIds = await _db.LegacyPacsRawOwners
+                .AsNoTracking()
+                .Where(o => o.LoadBatchId == ownerSeedS1.LoadBatchId)
+                .Select(o => o.PropId)
+                .Distinct()
+                .ToListAsync(cancellationToken);
+
+            // ── A. Parcel S1 (keyed off seed prop_ids). ──
+            _logger.LogInformation("[ImpPop1] A. Landing parcels for {N} seed prop_ids", seedPropIds.Count);
+            var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs, seedPropIds);
+            var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
+            if (!string.Equals(parcelS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Parcel-S1", error = parcelS1.ErrorSummary, parcelS1 });
+
+            // ── B. Parcel spine + canonical → tf_parcel + xrefs. ──
+            var parcelSpine = await spinePromoter.PromoteAsync(parcelS1.LoadBatchId, operatorName, cancellationToken);
+            if (!string.Equals(parcelSpine.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Parcel-Spine", error = parcelSpine.ErrorSummary, parcelSpine });
+
+            var parcelCanon = await parcelCanonical.ProjectAsync(
+                parcelSpine.PromotionLoadBatchId, bentonCountyId, operatorName, cancellationToken);
+            if (!string.Equals(parcelCanon.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Parcel-Canonical", error = parcelCanon.ErrorSummary, parcelCanon });
+
+            // ── C. Extract (prop_id, working_year) from real-property parcels in the spine. ──
+            var spinePropIds = await _db.TruthPacsParcelSpines
+                .AsNoTracking()
+                .Where(t => t.PromotionLoadBatchId == parcelSpine.PromotionLoadBatchId)
+                .Select(t => t.PropId)
+                .ToListAsync(cancellationToken);
+            var imprvKeys = spinePropIds.Select(p => (p, workingYear)).ToList();
+
+            _logger.LogInformation(
+                "[ImpPop1] C. Extracted {N} (prop_id, year={Y}) keys for the imprv chain",
+                imprvKeys.Count, workingYear);
+
+            // ── D. Keyed Supp S1 (needed by imprv truth promoter). ──
+            var suppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs, imprvKeys);
+            var suppS1 = await assocSvc.LandPropSuppAssocsAsync(suppSrc, operatorName, cancellationToken);
+            if (!string.Equals(suppS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Supp-S1", error = suppS1.ErrorSummary, suppS1 });
+
+            // ── E. Keyed Imprv S1. ──
+            var imprvSrc = new KeyedSqlServerPacsImprvSource(pacsCs, imprvKeys);
+            var imprvS1 = await imprvSvc.LandImprvsAsync(imprvSrc, operatorName, cancellationToken);
+            if (!string.Equals(imprvS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Imprv-S1", error = imprvS1.ErrorSummary, imprvS1 });
+
+            // ── F. Keyed ImprvDetail S1. ──
+            var detailSrc = new KeyedSqlServerPacsImprvDetailSource(pacsCs, imprvKeys);
+            var detailS1 = await imprvDetailSvc.LandImprvDetailsAsync(detailSrc, operatorName, cancellationToken);
+            if (!string.Equals(detailS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "ImprvDetail-S1", error = detailS1.ErrorSummary, detailS1 });
+
+            // ── G. Keyed ImprvAttr S1. ──
+            var attrSrc = new KeyedSqlServerPacsImprvAttrSource(pacsCs, imprvKeys);
+            var attrS1 = await imprvAttrSvc.LandImprvAttrsAsync(attrSrc, operatorName, cancellationToken);
+            if (!string.Equals(attrS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "ImprvAttr-S1", error = attrS1.ErrorSummary, attrS1 });
+
+            // ── H. Imprv Truth (C2). ──
+            _logger.LogInformation("[ImpPop1] H. Promoting imprv truth");
+            var imprvTruth = await imprvTruthPromoter.PromoteAsync(
+                imprvS1.LoadBatchId, suppS1.LoadBatchId, operatorName, cancellationToken);
+            if (!string.Equals(imprvTruth.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Imprv-Truth", error = imprvTruth.ErrorSummary, imprvTruth });
+
+            // ── I. Imprv Canonical (C3) → tf_improvement + tf_improvement_feature. ──
+            _logger.LogInformation("[ImpPop1] I. Projecting imprv canonical");
+            var imprvCanon = await imprvCanonicalProjector.ProjectAsync(
+                imprvTruth.PromotionLoadBatchId, operatorName, cancellationToken);
+            if (!string.Equals(imprvCanon.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Imprv-Canonical", error = imprvCanon.ErrorSummary, imprvCanon });
+
+            // ── Read-back proof counts. ──
+            var tfImprovementCount = await _db.TfImprovements.CountAsync(cancellationToken);
+            var tfFeatureCount = await _db.TfImprovementFeatures.CountAsync(cancellationToken);
+            var truthImprvCount = await _db.TruthPacsImprvCurrents.CountAsync(cancellationToken);
+
+            return Ok(new
+            {
+                operatorName,
+                bentonCountyId,
+                workingYear,
+                parcelS1 = new { parcelS1.Status, parcelS1.LoadBatchId, parcelS1.RowsLanded, parcelS1.TypeDistribution },
+                parcelSpine = new { parcelSpine.Status, parcelSpine.ParcelsConsidered, parcelSpine.ParcelsPromoted },
+                parcelCanon = new { parcelCanon.Status, parcelCanon.ParcelsProjected },
+                imprvKeys = imprvKeys.Count,
+                suppS1 = new { suppS1.Status, suppS1.RowsLanded, suppS1.DistinctYears },
+                imprvS1 = new { imprvS1.Status, imprvS1.LoadBatchId, imprvS1.RowsLanded },
+                detailS1 = new { detailS1.Status, detailS1.LoadBatchId, detailS1.RowsLanded },
+                attrS1 = new { attrS1.Status, attrS1.LoadBatchId, attrS1.RowsLanded },
+                imprvTruth = new
+                {
+                    imprvTruth.Status, imprvTruth.PromotionLoadBatchId,
+                    imprvTruth.ImprvsConsidered, imprvTruth.ImprvsPromoted,
+                    imprvTruth.RejectedNoSuppPointer,
+                },
+                imprvCanon = new
+                {
+                    imprvCanon.Status, imprvCanon.PromotionLoadBatchId,
+                    imprvCanon.TruthRowsConsidered, imprvCanon.ImprovementsProjected,
+                    imprvCanon.FeaturesProjected, imprvCanon.RowsQuarantined,
+                    imprvCanon.AttributesConsidered, imprvCanon.AttributesResolved,
+                    imprvCanon.AttributesQuarantined,
+                },
+                counts = new
+                {
+                    canonicalTfImprovements = tfImprovementCount,
+                    canonicalTfImprovementFeatures = tfFeatureCount,
+                    truthPacsImprvCurrents = truthImprvCount,
+                },
+                proofVerdict = imprvCanon.ImprovementsProjected > 0 && imprvCanon.FeaturesProjected > 0
+                    ? "PROOF: canonical_tf.tf_improvement > 0 AND tf_improvement_feature > 0 — IMP-POP-1 closure succeeded."
+                    : imprvCanon.ImprovementsProjected > 0
+                        ? "PARTIAL: tf_improvement landed but tf_improvement_feature is 0. Investigate detail/attr stages."
+                        : "INCONCLUSIVE: investigate stage outputs above.",
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[ImpPop1] FAILED");
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name });
+        }
+    }
+
+    /// <param name="OperatorName">Audit anchor across all 9 stages.</param>
+    /// <param name="ParcelTopN">Parcel sample size for the seed batch. Default 200.</param>
+    /// <param name="WorkingYear">PACS prop_val_yr to filter imprv stages by.
+    /// Default 2026 (Benton's active assessment year).</param>
+    public sealed record ImpPop1Request(
+        string? OperatorName,
+        int? ParcelTopN,
+        int? WorkingYear);
 }
