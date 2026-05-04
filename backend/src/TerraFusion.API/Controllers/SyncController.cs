@@ -61,7 +61,10 @@ public class SyncController : ControllerBase
     ///
     /// Trigger this after PacsDataSeeder completes a new sync.
     /// Uses SaleQualificationService Layer 2 (county_ratio_code FK lookup) as the
-    /// primary driver; Layer 2b (sale_ratio_type), 3, 4, 5 apply in cascade.
+    /// primary driver; Layer 3 (exclude_calc_cd), Layer 4 (wac_cd subtype),
+    /// and Layer 5 (default) apply in cascade. DOR sl_ratio_type is state-reporting
+    /// metadata only and is NOT consulted by this engine — see commit 97f95f0f1
+    /// (April 17, 2026) which removed DOR ratio type from county qualification logic.
     ///
     /// Does NOT overwrite QualificationDecision — that belongs to the appraiser.
     /// Only QualificationRecommendation, RecommendationReason, RecommendationSource,
