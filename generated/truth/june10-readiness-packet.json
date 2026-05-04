@@ -1,0 +1,113 @@
+{
+  "generatedAt": "2026-05-04T16:34:15.966Z",
+  "status": "FAIL",
+  "artifacts": {
+    "crosswalk": {
+      "name": "crosswalk",
+      "path": "generated/truth/washington-39-county-data-crosswalk.json",
+      "present": true,
+      "parseError": null
+    },
+    "countyRuntimeContract": {
+      "name": "countyRuntimeContract",
+      "path": "generated/truth/county-runtime-contract.json",
+      "present": true,
+      "parseError": null
+    },
+    "dbIdentity": {
+      "name": "dbIdentity",
+      "path": "generated/truth/runtime-db-identity.json",
+      "present": false,
+      "parseError": null
+    },
+    "dbContent": {
+      "name": "dbContent",
+      "path": "generated/truth/runtime-db-content-audit.json",
+      "present": false,
+      "parseError": null
+    },
+    "productLoadLedger": {
+      "name": "productLoadLedger",
+      "path": "generated/truth/terrafusion-db-product-load-ledger.json",
+      "present": true,
+      "parseError": null
+    },
+    "bentonParcelSanity": {
+      "name": "bentonParcelSanity",
+      "path": "generated/truth/benton-parcel-count-sanity.json",
+      "present": false,
+      "parseError": null
+    },
+    "saleQualification": {
+      "name": "saleQualification",
+      "path": "generated/truth/runtime-sale-qualification-lineage-proof.json",
+      "present": false,
+      "parseError": null
+    },
+    "bentonPilotClosure": {
+      "name": "bentonPilotClosure",
+      "path": "generated/truth/benton-runtime-pilot-closure.json",
+      "present": false,
+      "parseError": null
+    }
+  },
+  "summary": {
+    "countyScope": {
+      "countiesChecked": 39,
+      "runtimeProven": 0,
+      "publicSourceSeed": 12,
+      "provenanceInventoryOnly": 27,
+      "prohibit39CountyRuntimeClaim": true
+    },
+    "runtimeContract": {
+      "runtimeContractPass": 0,
+      "runtimeContractBlocked": 39,
+      "prohibit39CountyRuntimeClaim": true
+    },
+    "terraFusionDb": {
+      "dbIdentityPassed": false,
+      "dbContentPassed": false,
+      "productLoadLedgerPassed": false,
+      "productTablesChecked": 10,
+      "lineageProven": 0,
+      "rowsExistLineageUnproven": 4,
+      "emptyTables": 6
+    },
+    "bentonPilot": {
+      "parcelSanityPassed": false,
+      "saleQualificationStatus": "UNKNOWN",
+      "pilotClosureStatus": "UNKNOWN"
+    }
+  },
+  "shipBlockers": [
+    {
+      "source": "dbIdentity",
+      "message": "Required artifact is missing: generated/truth/runtime-db-identity.json."
+    },
+    {
+      "source": "dbContent",
+      "message": "Required artifact is missing: generated/truth/runtime-db-content-audit.json."
+    },
+    {
+      "source": "bentonParcelSanity",
+      "message": "Required artifact is missing: generated/truth/benton-parcel-count-sanity.json."
+    },
+    {
+      "source": "saleQualification",
+      "message": "Required artifact is missing: generated/truth/runtime-sale-qualification-lineage-proof.json."
+    },
+    {
+      "source": "bentonPilotClosure",
+      "message": "Required artifact is missing: generated/truth/benton-runtime-pilot-closure.json."
+    },
+    {
+      "source": "countyRuntimeContract",
+      "message": "County-neutral runtime contract is not passing."
+    },
+    {
+      "source": "productLoadLedger",
+      "message": "TerraFusion DB product load ledger is not lineage-proven."
+    }
+  ],
+  "warnings": []
+}

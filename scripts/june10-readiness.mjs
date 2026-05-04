@@ -364,6 +364,10 @@ run('Benton runtime pilot closure', 'pnpm', ['run', 'truth:benton-runtime-pilot-
   timeout: 180_000,
 });
 
+run('June 10 readiness packet', 'pnpm', ['run', 'truth:june10-readiness-packet'], {
+  timeout: 180_000,
+});
+
 failIfPresent(
   'Old County Studio hub path removed',
   String.raw`/api/hubs/county-study`,
