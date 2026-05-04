@@ -1,6 +1,6 @@
 # Runtime TerraFusion DB Identity
 
-Generated: 2026-05-04T17:15:55.832Z
+Generated: 2026-05-04T17:32:33.167Z
 Runtime base URL: `http://localhost:5046`
 
 ## Status
@@ -17,6 +17,14 @@ Runtime base URL: `http://localhost:5046`
 - Expected runtime DB: yes
 - Expected Benton parcel count: 89447
 - Benton parcel count expected: no
+
+## Config Expectation Sources
+
+| Path | Key | Value | Matches Runtime Expectation |
+|---|---|---:|---|
+`backend/src/TerraFusion.API/appsettings.Development.json` | RuntimeTruth.ExpectedJune10Database | terrafusion | yes
+`backend/src/TerraFusion.API/appsettings.Development.json` | BentonCounty.ParcelCount | 89447 | yes
+`backend/src/TerraFusion.API/appsettings.BentonCounty.json` | County.PropertyCount | 89447 | yes
 
 ## Migration State
 

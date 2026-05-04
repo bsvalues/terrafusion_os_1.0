@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-04T17:15:55.832Z",
+  "generatedAt": "2026-05-04T17:32:33.167Z",
   "runtimeBaseUrl": "http://localhost:5046",
   "endpoint": "http://localhost:5046/api/runtime/truth/db-identity",
   "endpointStatus": 200,
@@ -35,5 +35,25 @@
       "Runtime Properties count 128788 does not match configured Benton parcel count 89447."
     ],
     "warnings": []
-  }
+  },
+  "configExpectationSources": [
+    {
+      "path": "backend/src/TerraFusion.API/appsettings.Development.json",
+      "key": "RuntimeTruth.ExpectedJune10Database",
+      "value": "terrafusion",
+      "matchesRuntimeExpectation": true
+    },
+    {
+      "path": "backend/src/TerraFusion.API/appsettings.Development.json",
+      "key": "BentonCounty.ParcelCount",
+      "value": 89447,
+      "matchesRuntimeExpectation": true
+    },
+    {
+      "path": "backend/src/TerraFusion.API/appsettings.BentonCounty.json",
+      "key": "County.PropertyCount",
+      "value": 89447,
+      "matchesRuntimeExpectation": true
+    }
+  ]
 }

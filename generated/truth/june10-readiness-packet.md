@@ -1,6 +1,6 @@
 # June 10 Readiness Packet
 
-Generated: 2026-05-04T17:24:32.550Z
+Generated: 2026-05-04T17:32:32.907Z
 
 ## Status
 
@@ -81,7 +81,9 @@ Generated: 2026-05-04T17:24:32.550Z
 - countyRuntimeContract: Chelan: County runtime class is not_registered.
 - countyRuntimeContract: Chelan: County has no proven runtime rows.
 - countyRuntimeContract: 213 additional blocker(s) omitted
-- dbIdentity: Runtime Properties count 128788 does not match configured Benton parcel count 89447.
+- dbIdentity: Runtime DB identity endpoint did not return 200. Status: null.
+- dbIdentity: Runtime DB identity endpoint failed: fetch failed
+- dbIdentity: Runtime DB identity endpoint did not return JSON payload.
 - dbContent: Configured Benton parcel count 89447 matches neither runtime property rows 128788 nor distinct parcel ids 128788.
 - dbContent: Runtime Benton property rows 128788 do not match configured parcel count 89447.
 - productLoadLedger: Properties: Rows exist but no product load receipt proves lineage.

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-04T17:24:32.550Z",
+  "generatedAt": "2026-05-04T17:32:32.907Z",
   "status": "FAIL",
   "artifacts": {
     "crosswalk": {
@@ -211,7 +211,9 @@
       "present": true,
       "blockers": {
         "items": [
-          "Runtime Properties count 128788 does not match configured Benton parcel count 89447."
+          "Runtime DB identity endpoint did not return 200. Status: null.",
+          "Runtime DB identity endpoint failed: fetch failed",
+          "Runtime DB identity endpoint did not return JSON payload."
         ],
         "omitted": 0
       },
