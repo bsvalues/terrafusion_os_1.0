@@ -108,17 +108,25 @@ public sealed class DaisCertificationServiceTests
             });
             await ctx.SaveChangesAsync();
 
-            await svc.CreateAsync(new CertificationStep { TaxYear = 2025, StepCode = "STEP_A", Status = "pending", CountyId = countyId });
-            await svc.CreateAsync(new CertificationStep { TaxYear = 2025, StepCode = "STEP_B", Status = "pending", CountyId = countyId });
+            // CI-HYGIENE-D (#739): canonical StepCodes per service contract
+            // Pre-seed all 6 canonical Benton codes so reconcile inserts none.
+            // The OTHER county's step also uses a canonical code; isolation
+            // is proven by CountyId filter, not by stepcode uniqueness.
+            await svc.CreateAsync(new CertificationStep { TaxYear = 2025, StepCode = "DATA_VALIDATION",     Status = "pending", CountyId = countyId });
+            await svc.CreateAsync(new CertificationStep { TaxYear = 2025, StepCode = "RATIO_STUDY",         Status = "pending", CountyId = countyId });
+            await svc.CreateAsync(new CertificationStep { TaxYear = 2025, StepCode = "SUPERVISORY_REVIEW",  Status = "pending", CountyId = countyId });
+            await svc.CreateAsync(new CertificationStep { TaxYear = 2025, StepCode = "ASSESSOR_SIGNOFF",    Status = "pending", CountyId = countyId });
+            await svc.CreateAsync(new CertificationStep { TaxYear = 2025, StepCode = "DOR_SUBMISSION",      Status = "pending", CountyId = countyId });
+            await svc.CreateAsync(new CertificationStep { TaxYear = 2025, StepCode = "DOR_ACCEPTANCE",      Status = "pending", CountyId = countyId });
             // Different county — must not appear in query for countyId
-            await svc.CreateAsync(new CertificationStep { TaxYear = 2025, StepCode = "STEP_OTHER", Status = "pending", CountyId = otherId });
+            await svc.CreateAsync(new CertificationStep { TaxYear = 2025, StepCode = "DATA_VALIDATION",     Status = "pending", CountyId = otherId });
 
             var steps = await svc.GetByTaxYearAsync(2025, countyId);
 
-            steps.Should().HaveCount(2, "only the two Benton County steps should be returned");
+            steps.Should().HaveCount(6, "only the six canonical Benton County steps should be returned");
             steps.Should().OnlyContain(s => s.CountyId == countyId,
                 "all returned steps must belong to the queried county");
-            steps.Should().NotContain(s => s.StepCode == "STEP_OTHER",
+            steps.Should().OnlyContain(s => s.CountyId != otherId,
                 "other county's step must not leak into this county's results");
         }
     }
