@@ -1,11 +1,51 @@
 {
-  "generatedAt": "2026-05-04T17:16:35.794Z",
+  "generatedAt": "2026-05-04T17:44:17.616Z",
   "database": {
     "container": "terrafusion-postgres-dev",
     "database": "terrafusion",
     "user": "postgres"
   },
   "globalEtlCompletedAt": "2026-04-19T04:18:21.199Z",
+  "receiptEvidence": {
+    "tableName": "ProductLoadReceipts",
+    "exists": false,
+    "rowCount": null,
+    "tableIdentityColumn": null,
+    "timestampColumns": [],
+    "acceptedTableColumns": [
+      "TableName",
+      "ProductTableName",
+      "TargetTableName",
+      "RuntimeTableName",
+      "ProductTable"
+    ],
+    "acceptedTimestampColumns": [
+      "LoadedAtUtc",
+      "LoadedAt",
+      "LoadCompletedAtUtc",
+      "CompletedAtUtc",
+      "CompletedAt",
+      "ReceiptAtUtc",
+      "ReceiptAt",
+      "CreatedAtUtc",
+      "CreatedAt",
+      "UpdatedAt"
+    ],
+    "recommendedColumns": [
+      "Id",
+      "TargetTableName",
+      "CountyId",
+      "RowCount",
+      "LoadedAtUtc",
+      "SourceSnapshotId",
+      "SourceSystem",
+      "LoadBatchId",
+      "TransformVersion",
+      "InputHash",
+      "OutputHash"
+    ],
+    "blockers": ["ProductLoadReceipts table is missing."]
+  },
   "summary": {
     "productTablesChecked": 10,
     "lineageProven": 0,

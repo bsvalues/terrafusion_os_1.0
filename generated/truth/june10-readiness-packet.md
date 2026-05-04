@@ -1,6 +1,6 @@
 # June 10 Readiness Packet
 
-Generated: 2026-05-04T17:39:11.698Z
+Generated: 2026-05-04T17:44:23.566Z
 
 ## Status
 
@@ -84,6 +84,7 @@ Generated: 2026-05-04T17:39:11.698Z
 - dbIdentity: Runtime Properties count 128788 does not match configured Benton parcel count 89447.
 - dbContent: Configured Benton parcel count 89447 matches neither runtime property rows 128788 nor distinct parcel ids 128788.
 - dbContent: Runtime Benton property rows 128788 do not match configured parcel count 89447.
+- productLoadLedger: receiptEvidence: ProductLoadReceipts table is missing.
 - productLoadLedger: Properties: Rows exist but no product load receipt proves lineage.
 - productLoadLedger: ComparableSales: Rows exist but no product load receipt proves lineage.
 - productLoadLedger: CanonicalSaleQualifications: Table exists but is empty.

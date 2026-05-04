@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-04T17:39:11.698Z",
+  "generatedAt": "2026-05-04T17:44:23.566Z",
   "status": "FAIL",
   "artifacts": {
     "crosswalk": {
@@ -238,6 +238,7 @@
       "present": true,
       "blockers": {
         "items": [
+          "receiptEvidence: ProductLoadReceipts table is missing.",
           "Properties: Rows exist but no product load receipt proves lineage.",
           "ComparableSales: Rows exist but no product load receipt proves lineage.",
           "CanonicalSaleQualifications: Table exists but is empty.",

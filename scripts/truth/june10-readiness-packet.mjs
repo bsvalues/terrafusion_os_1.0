@@ -260,6 +260,9 @@ function buildExecutionQueue(blockers) {
 function artifactBlockers(value) {
   const direct = Array.isArray(value?.blockers) ? value.blockers : [];
   const summary = Array.isArray(value?.summary?.blockers) ? value.summary.blockers : [];
+  const receiptBlockers = Array.isArray(value?.receiptEvidence?.blockers)
+    ? value.receiptEvidence.blockers.map(item => `receiptEvidence: ${item}`)
+    : [];
   const rowBlockers = Array.isArray(value?.rows)
     ? value.rows.flatMap(row =>
         (Array.isArray(row?.blockers) ? row.blockers : []).map(
@@ -275,9 +278,9 @@ function artifactBlockers(value) {
       )
     : [];
 
-  return [...new Set([...direct, ...summary, ...rowBlockers, ...proofBlockers])].map(item =>
-    String(item)
-  );
+  return [
+    ...new Set([...direct, ...summary, ...receiptBlockers, ...rowBlockers, ...proofBlockers]),
+  ].map(item => String(item));
 }
 
 function artifactWarnings(value) {

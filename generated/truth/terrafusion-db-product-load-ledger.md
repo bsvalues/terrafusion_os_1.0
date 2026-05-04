@@ -1,6 +1,6 @@
 # TerraFusion DB Product Load Ledger
 
-Generated: 2026-05-04T17:16:35.794Z
+Generated: 2026-05-04T17:44:17.616Z
 Database: `terrafusion`
 Container: `terrafusion-postgres-dev`
 
@@ -13,6 +13,21 @@ Container: `terrafusion-postgres-dev`
 - Empty tables: 6
 - Missing tables: 0
 - Latest ETL completed at: 2026-04-19T04:18:21.199Z
+- Product load receipt table exists: no
+- Product load receipt rows: -
+
+## Product Load Receipt Contract
+
+- Receipt table: `ProductLoadReceipts`
+- Table identity column detected: -
+- Timestamp columns detected: -
+- Accepted table identity columns: TableName, ProductTableName, TargetTableName, RuntimeTableName, ProductTable
+- Accepted timestamp columns: LoadedAtUtc, LoadedAt, LoadCompletedAtUtc, CompletedAtUtc, CompletedAt, ReceiptAtUtc, ReceiptAt, CreatedAtUtc, CreatedAt, UpdatedAt
+- Recommended columns: Id, TargetTableName, CountyId, RowCount, LoadedAtUtc, SourceSnapshotId, SourceSystem, LoadBatchId, TransformVersion, InputHash, OutputHash
+
+## Receipt Blockers
+
+- ProductLoadReceipts table is missing.
 
 ## Ledger
 

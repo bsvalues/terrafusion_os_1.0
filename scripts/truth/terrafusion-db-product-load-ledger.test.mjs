@@ -59,6 +59,8 @@ test('product load ledger fails when rows exist without a product load receipt',
   assert.equal(report.summary.rowsExistLineageUnproven, 1);
   assert.equal(report.rows[0].lineageStatus, 'rows_exist_lineage_unproven');
   assert.match(report.rows[0].blockers[0], /no product load receipt/i);
+  assert.equal(report.receiptEvidence.exists, false);
+  assert.ok(report.receiptEvidence.blockers.some(blocker => blocker.includes('fixture')));
 });
 
 test('product load ledger passes when rows have a product load receipt', async () => {
@@ -93,6 +95,7 @@ test('product load ledger passes when rows have a product load receipt', async (
   assert.equal(report.passed, true);
   assert.equal(report.summary.lineageProven, 1);
   assert.equal(report.rows[0].lineageStatus, 'lineage_proven');
+  assert.equal(report.receiptEvidence.exists, false);
 });
 
 test('product load ledger resolves table-scoped product load receipts from receipt evidence', async () => {
@@ -136,4 +139,7 @@ test('product load ledger resolves table-scoped product load receipts from recei
   assert.equal(report.passed, true);
   assert.equal(report.rows[0].latestProductLoadReceiptAt, '2026-05-02T12:00:00.000Z');
   assert.equal(report.rows[0].lineageStatus, 'lineage_proven');
+  assert.equal(report.receiptEvidence.exists, true);
+  assert.equal(report.receiptEvidence.rowCount, 2);
+  assert.equal(report.receiptEvidence.tableIdentityColumn, 'TargetTableName');
 });
