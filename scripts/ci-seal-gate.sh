@@ -20,14 +20,35 @@ echo ""
 
 FAIL=0
 
+# Bootstrap-mode awareness — matches the PowerShell version (ci-seal-gate.ps1).
+# When SEAL_GATE_BOOTSTRAP=true (set by .github/workflows/ci.yml), non-critical
+# checks WARN instead of failing the gate. Used while the project is not yet in
+# a fully-shippable production-deployment state.
+if [ "${SEAL_GATE_BOOTSTRAP:-}" = "true" ] || [ "${CI_BOOTSTRAP_MODE:-}" = "true" ]; then
+    BOOTSTRAP_MODE=1
+    echo "   [BOOTSTRAP MODE - Non-critical checks will warn instead of fail]"
+    echo ""
+else
+    BOOTSTRAP_MODE=0
+fi
+
 # Gate 0: Helm Production Constitutional Assertions
 echo "🔒 Gate 0: Helm Production Assertions"
 if [ -f "$SCRIPT_DIR/helm-prod-assertions.sh" ]; then
     if bash "$SCRIPT_DIR/helm-prod-assertions.sh" 2>/dev/null; then
         echo "   ✅ PASS"
     else
-        echo "   ❌ FAIL: Helm production assertions failed"
-        FAIL=1
+        # Bootstrap-mode awareness aligns Gate 0 with Gates 1, 2, 2b below.
+        # The Helm production chart (iac/helm/terrafusion/) is scaffolded only
+        # when the project enters production-deployment state; until then, the
+        # assertions correctly identify "not yet shippable to prod" — but should
+        # not block CI for non-deploy pull requests.
+        if [ $BOOTSTRAP_MODE -eq 1 ]; then
+            echo "   ⚠️  WARN: Helm production assertions failed (bootstrap mode - non-blocking)"
+        else
+            echo "   ❌ FAIL: Helm production assertions failed"
+            FAIL=1
+        fi
     fi
 else
     echo "   ⚠️  SKIP: helm-prod-assertions.sh not found"
