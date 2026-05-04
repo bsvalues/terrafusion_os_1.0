@@ -39,10 +39,12 @@ function makeRepo({ passing = false } = {}) {
   });
 
   writeJson(root, `${truth}/runtime-db-identity.json`, {
+    endpointStatus: passing ? 200 : null,
     passed: passing,
     blockers: passing ? [] : ['Runtime DB identity is not proven.'],
   });
   writeJson(root, `${truth}/runtime-db-content-audit.json`, {
+    endpointStatus: passing ? 200 : null,
     passed: passing,
     blockers: passing ? [] : ['Runtime DB content audit is not passing.'],
   });
@@ -96,6 +98,11 @@ test('readiness packet fails when required runtime truth artifacts are red', () 
   assert.ok(
     report.executionQueue.some(item => item.nextCommand === 'pnpm run truth:runtime-db-identity')
   );
+  assert.equal(
+    report.summary.terraFusionDb.liveRuntimeReachability,
+    'api_unavailable_or_not_probed'
+  );
+  assert.equal(report.summary.terraFusionDb.dbIdentityEndpointStatus, null);
   assert.ok(report.artifactDetails.dbIdentity.blockers.items.length > 0);
   assert.ok(
     report.artifactDetails.productLoadLedger.blockers.items.some(blocker =>
@@ -129,6 +136,8 @@ test('readiness packet passes when all required runtime truth artifacts are gree
     fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
   );
   assert.equal(report.status, 'PASS');
+  assert.equal(report.summary.terraFusionDb.liveRuntimeReachability, 'api_reachable');
+  assert.equal(report.summary.terraFusionDb.dbIdentityEndpointStatus, 200);
   assert.equal(report.shipBlockers.length, 0);
   assert.deepEqual(report.executionQueue, []);
   assert.equal(report.postDbRefreshRerunChecklist.length, 8);

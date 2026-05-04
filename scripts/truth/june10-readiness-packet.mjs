@@ -250,6 +250,15 @@ function buildDomainSummary(loaded) {
   const crosswalkSummary = loaded.crosswalk.value?.summary ?? {};
   const contractSummary = loaded.countyRuntimeContract.value?.summary ?? {};
   const loadSummary = loaded.productLoadLedger.value?.summary ?? {};
+  const identityStatus = loaded.dbIdentity.value?.endpointStatus ?? null;
+  const contentStatus = loaded.dbContent.value?.endpointStatus ?? null;
+  const runtimeStatuses = [identityStatus, contentStatus].filter(status => status !== null);
+  const liveRuntimeReachability =
+    identityStatus === null || contentStatus === null
+      ? 'api_unavailable_or_not_probed'
+      : runtimeStatuses.every(status => status === 200)
+        ? 'api_reachable'
+        : 'api_reachable_with_endpoint_errors';
 
   return {
     countyScope: {
@@ -266,6 +275,9 @@ function buildDomainSummary(loaded) {
       prohibit39CountyRuntimeClaim: contractSummary.prohibit39CountyRuntimeClaim === true,
     },
     terraFusionDb: {
+      liveRuntimeReachability,
+      dbIdentityEndpointStatus: identityStatus,
+      dbContentEndpointStatus: contentStatus,
       dbIdentityPassed: loaded.dbIdentity.value?.passed === true,
       dbContentPassed: loaded.dbContent.value?.passed === true,
       productLoadLedgerPassed: loaded.productLoadLedger.value?.passed === true,
@@ -396,6 +408,9 @@ function renderMarkdown(report) {
     '',
     '## TerraFusion DB',
     '',
+    `- Live runtime reachability: ${report.summary.terraFusionDb.liveRuntimeReachability}`,
+    `- DB identity endpoint status: ${report.summary.terraFusionDb.dbIdentityEndpointStatus ?? 'unreachable/not probed'}`,
+    `- DB content endpoint status: ${report.summary.terraFusionDb.dbContentEndpointStatus ?? 'unreachable/not probed'}`,
     `- DB identity passed: ${report.summary.terraFusionDb.dbIdentityPassed ? 'yes' : 'no'}`,
     `- DB content passed: ${report.summary.terraFusionDb.dbContentPassed ? 'yes' : 'no'}`,
     `- Product load ledger passed: ${report.summary.terraFusionDb.productLoadLedgerPassed ? 'yes' : 'no'}`,
