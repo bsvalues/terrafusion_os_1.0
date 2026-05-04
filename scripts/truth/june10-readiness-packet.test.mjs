@@ -303,6 +303,64 @@ test('readiness packet passes when all required runtime truth artifacts are gree
   assert.equal(report.artifactDetails.dbIdentity, undefined);
 });
 
+test('readiness packet surfaces warning-only proof artifacts', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-sale-qualification-lineage-proof.json', {
+    status: 'PASS',
+    summary: {
+      candidatesChecked: 1,
+      passed: 1,
+      failed: 0,
+      canonicalLandingBacked: 1,
+      recommendationBackedCanonicalMissing: 0,
+    },
+    proofs: [
+      {
+        county: 'Benton',
+        classification: 'canonical_landing_backed',
+        canonicalSaleQualifications: 10,
+        ratioStudyWindow: {
+          decisionQualified: 5,
+        },
+        passed: true,
+        warnings: ['Manual review still recommended before publication.'],
+      },
+    ],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 0);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'PASS_WITH_WARNINGS');
+  assert.ok(
+    report.warnings.some(
+      item =>
+        item.source === 'saleQualification' &&
+        item.message === 'Benton: Manual review still recommended before publication.'
+    )
+  );
+  assert.ok(report.artifactDetails.saleQualification);
+  assert.ok(
+    report.artifactDetails.saleQualification.warnings.items.includes(
+      'Benton: Manual review still recommended before publication.'
+    )
+  );
+  const markdown = fs.readFileSync(
+    path.join(root, 'generated/truth/june10-readiness-packet.md'),
+    'utf8'
+  );
+  assert.match(
+    markdown,
+    /saleQualification: Benton: Manual review still recommended before publication\./
+  );
+});
+
 test('readiness packet blocks candidate set that promotes another county', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-candidate-set.json', {

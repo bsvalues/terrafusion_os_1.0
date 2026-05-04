@@ -143,6 +143,12 @@ function blocker(blockers, source, message) {
   blockers.push({ source, message });
 }
 
+function warning(warnings, source, message) {
+  if (!warnings.some(item => item.source === source && item.message === message)) {
+    warnings.push({ source, message });
+  }
+}
+
 function normalizeCounty(value) {
   const normalized = String(value ?? '')
     .toLowerCase()
@@ -173,6 +179,11 @@ function collectBlockers(loaded) {
     }
     if (artifact.parseError) {
       blocker(blockers, artifact.name, `Artifact could not be parsed: ${artifact.parseError}.`);
+    }
+    if (artifact.present && !artifact.parseError) {
+      for (const artifactWarning of artifactWarnings(artifact.value)) {
+        warning(warnings, artifact.name, artifactWarning);
+      }
     }
   }
 
@@ -224,10 +235,11 @@ function collectBlockers(loaded) {
     Number(crosswalk?.summary?.runtimeProven ?? 0) >
     Number(countyRuntimeContract?.summary?.runtimeContractPass ?? 0)
   ) {
-    warnings.push({
-      source: 'crosswalk',
-      message: `Crosswalk reports ${crosswalk.summary.runtimeProven} runtime-proven counties; confirm county runtime contract also passes them.`,
-    });
+    warning(
+      warnings,
+      'crosswalk',
+      `Crosswalk reports ${crosswalk.summary.runtimeProven} runtime-proven counties; confirm county runtime contract also passes them.`
+    );
   }
 
   if (
@@ -530,8 +542,11 @@ function capList(items, limit = 20) {
   };
 }
 
-function buildArtifactDetails(loaded, blockers) {
-  const sources = new Set(blockers.map(item => item.source));
+function buildArtifactDetails(loaded, blockers, warnings) {
+  const sources = new Set([
+    ...blockers.map(item => item.source),
+    ...warnings.map(item => item.source),
+  ]);
   return Object.fromEntries(
     Object.entries(loaded)
       .filter(([name]) => sources.has(name))
@@ -686,7 +701,7 @@ function main() {
     postDbRefreshQuickCommand,
     postDbRefreshFullReadinessCommand,
     postDbRefreshRerunChecklist,
-    artifactDetails: buildArtifactDetails(loaded, blockers),
+    artifactDetails: buildArtifactDetails(loaded, blockers, warnings),
     warnings,
   };
 
