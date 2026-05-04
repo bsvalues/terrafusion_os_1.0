@@ -184,6 +184,14 @@ function collectBlockers(loaded) {
       for (const artifactWarning of artifactWarnings(artifact.value)) {
         warning(warnings, artifact.name, artifactWarning);
       }
+      const failurePosture = artifactFailurePosture(artifact.value);
+      if (failurePosture) {
+        blocker(
+          blockers,
+          artifact.name,
+          `Artifact reports failed proof posture: ${failurePosture}.`
+        );
+      }
     }
   }
 
@@ -484,6 +492,15 @@ function buildExecutionQueue(blockers) {
         requiredResolution: runbook.requiredResolution,
       };
     });
+}
+
+function artifactFailurePosture(value) {
+  if (value?.passed === false) return 'top-level passed is false';
+  if (value?.status === 'FAIL') return 'top-level status is FAIL';
+  if (typeof value?.status === 'string' && value.status.endsWith('_blocked')) {
+    return `top-level status is ${value.status}`;
+  }
+  return null;
 }
 
 function artifactBlockers(value) {

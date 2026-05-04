@@ -303,6 +303,39 @@ test('readiness packet passes when all required runtime truth artifacts are gree
   assert.equal(report.artifactDetails.dbIdentity, undefined);
 });
 
+test('readiness packet blocks required artifacts with top-level failed proof posture', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-candidate-set.json', {
+    passed: false,
+    summary: {
+      june10RuntimeScope: 'benton_only_runtime_pilot',
+      prohibit39CountyRuntimeClaim: true,
+      runtimeProven: 1,
+      evidenceBackedLoadCandidates: 0,
+      shipBlockers: 0,
+    },
+    rows: [],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'runtimeCandidateSet' && item.message.includes('top-level passed is false')
+    )
+  );
+  assert.ok(report.executionQueue.some(item => item.source === 'runtimeCandidateSet'));
+});
+
 test('readiness packet surfaces warning-only proof artifacts', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-sale-qualification-lineage-proof.json', {
