@@ -538,6 +538,25 @@ function collectionFailurePostures(value, label) {
     const entries = value[key];
     if (Array.isArray(entries) && entries.length > 0) {
       postures.push(`${label}.${key} has ${entries.length} item(s)`);
+    } else {
+      const count = Number(entries);
+      if (Number.isFinite(count) && count > 0) {
+        postures.push(`${label}.${key} is ${count}`);
+      }
+    }
+  }
+  for (const key of [
+    'failed',
+    'failureCount',
+    'errorCount',
+    'blockerCount',
+    'shipBlockers',
+    'artifactFailures',
+    'commandsFailed',
+  ]) {
+    const count = Number(value[key]);
+    if (Number.isFinite(count) && count > 0) {
+      postures.push(`${label}.${key} is ${count}`);
     }
   }
   return postures;

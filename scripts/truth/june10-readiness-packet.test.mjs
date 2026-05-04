@@ -455,10 +455,16 @@ test('readiness packet blocks explicit blocker error and failure collections', (
     blockers: ['Explicit top-level blocker.'],
     errors: ['Top-level error.'],
     failures: ['Top-level failure.'],
+    errorCount: 2,
+    failureCount: 3,
+    blockerCount: 4,
+    failed: 5,
     summary: {
       blockers: ['Summary blocker.'],
       errors: ['Summary error.'],
       failures: ['Summary failure.'],
+      failed: 6,
+      shipBlockers: 7,
     },
     rows: [
       {
@@ -466,6 +472,7 @@ test('readiness packet blocks explicit blocker error and failure collections', (
         blockers: ['Row blocker.'],
         errors: ['Row error.'],
         failures: ['Row failure.'],
+        failed: 8,
       },
     ],
     proofs: [
@@ -474,6 +481,7 @@ test('readiness packet blocks explicit blocker error and failure collections', (
         blockers: ['Proof blocker.'],
         errors: ['Proof error.'],
         failures: ['Proof failure.'],
+        errorCount: 9,
       },
     ],
   });
@@ -510,8 +518,23 @@ test('readiness packet blocks explicit blocker error and failure collections', (
   );
   assert.ok(
     report.shipBlockers.some(
+      item => item.source === 'dbIdentity' && item.message.includes('artifact.failed is 5')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item => item.source === 'dbIdentity' && item.message.includes('artifact.errorCount is 2')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
       item =>
         item.source === 'dbIdentity' && item.message.includes('summary.failures has 1 item(s)')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item => item.source === 'dbIdentity' && item.message.includes('summary.shipBlockers is 7')
     )
   );
   assert.ok(
@@ -522,8 +545,18 @@ test('readiness packet blocks explicit blocker error and failure collections', (
   );
   assert.ok(
     report.shipBlockers.some(
+      item => item.source === 'dbIdentity' && item.message.includes('Benton row.failed is 8')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
       item =>
         item.source === 'dbIdentity' && item.message.includes('Benton proof.failures has 1 item(s)')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item => item.source === 'dbIdentity' && item.message.includes('Benton proof.errorCount is 9')
     )
   );
   assert.ok(
