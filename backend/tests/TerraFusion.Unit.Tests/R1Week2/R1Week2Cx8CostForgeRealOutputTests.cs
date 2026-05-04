@@ -243,9 +243,11 @@ public sealed class R1Week2Cx8CostForgeRealOutputTests
     public async Task CostForge_MissingRequestInputs_Returns422InsteadOfGeneric500()
     {
         using var client = CreateBentonClient();
+        // CI-HYGIENE-D (#739): use PropertyNoCamaId — it has no CamaCharacteristic row,
+        // so AnalyzeCostAsync hits the "No CAMA characteristics found" path that this test asserts.
         var payload = JsonSerializer.Serialize(new
         {
-            PropertyId = Cx8CostForgeRealFactory.PropertyAId,
+            PropertyId = Cx8CostForgeRealFactory.PropertyNoCamaId,
             CountyCode = "BENTON",
             Region = "Reval 1",
             BuildingType = "RESIDENTIAL",
@@ -318,10 +320,13 @@ public sealed class Cx8CostForgeRealFactory : WebApplicationFactory<ApiProgram>
     // ── Property IDs ─────────────────────────────────────────────────────
     public static readonly Guid PropertyAId = Guid.Parse("c8c8c8c8-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     public static readonly Guid PropertyBId = Guid.Parse("c8c8c8c8-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+    // CI-HYGIENE-D (#739): property with no CAMA row, used by the 422 "no CAMA" assertion test
+    public static readonly Guid PropertyNoCamaId = Guid.Parse("c8c8c8c8-cccc-cccc-cccc-cccccccccccc");
 
     // ── Parcel identifiers ──────────────────────────────────────────────
     public const string PropertyAParcelNumber = "CX8-BN-SMALL-001";
     public const string PropertyBParcelNumber = "CX8-BN-LARGE-002";
+    public const string PropertyNoCamaParcelNumber = "CX8-BN-NOCAMA-003";
 
     // ── Plugin for permission pass-through ───────────────────────────────
     public static readonly Guid PluginAllPermsId = Guid.Parse("c8c8c8c8-ffff-ffff-ffff-ffffffffffff");
@@ -469,6 +474,69 @@ public sealed class Cx8CostForgeRealFactory : WebApplicationFactory<ApiProgram>
                     TaxYear = 2026,
                     AssessmentDate = DateTime.UtcNow,
                     LastUpdated = DateTime.UtcNow,
+                });
+
+                // CI-HYGIENE-D (#739): Property with no matching CamaCharacteristic row,
+                // used to prove the 422 "No CAMA characteristics found" error path.
+                db.Properties.Add(new Property
+                {
+                    Id = PropertyNoCamaId,
+                    PropertyId = "CX8-BENTON-NOCAMA",
+                    ParcelId = "CX8-BN-NOCAMA-PID",
+                    ParcelNumber = PropertyNoCamaParcelNumber,
+                    Address = "999 Missing CAMA Ln, Kennewick, WA",
+                    CountyId = BentonCountyId,
+                    AssessedValue = 100000m,
+                    LandValue = 50000m,
+                    ImprovementValue = 50000m,
+                    MarketValue = 100000m,
+                    TaxYear = 2026,
+                    AssessmentDate = DateTime.UtcNow,
+                    LastUpdated = DateTime.UtcNow,
+                });
+
+                await db.SaveChangesAsync();
+            }
+
+            // CI-HYGIENE-D (#739): seed CamaCharacteristics so AnalyzeCostAsync resolves real cost matrix path
+            // CostForgeService.AnalyzeCostAsync queries CamaCharacteristics by ParcelId == Property.ParcelNumber
+            // && CountyId. Without these rows, the service throws InvalidOperationException → 422 → test fails.
+            // SquareFeet differs between A and B so Cx8ProofHarness.Proof_TwoParcels_DifferentOutputs sees
+            // totalA != totalB through the cost matrix path.
+            if (!await db.CamaCharacteristics.AnyAsync(c => c.ParcelId == PropertyAParcelNumber && c.CountyId == BentonCountyId))
+            {
+                db.CamaCharacteristics.Add(new CamaCharacteristic
+                {
+                    Id = Guid.NewGuid(),
+                    ParcelId = PropertyAParcelNumber,
+                    CountyId = BentonCountyId,
+                    TaxYear = 2026,
+                    BuildingType = "R1",
+                    Region = "Reval 1",
+                    SquareFeet = 1800m,
+                    YearBuilt = 2000,
+                    QualityGrade = "STANDARD",
+                    ConditionGrade = "GOOD",
+                    ComplexityGrade = "STANDARD",
+                    UpdatedBy = "cx8-test-seed",
+                    UpdatedAt = DateTime.UtcNow,
+                });
+
+                db.CamaCharacteristics.Add(new CamaCharacteristic
+                {
+                    Id = Guid.NewGuid(),
+                    ParcelId = PropertyBParcelNumber,
+                    CountyId = BentonCountyId,
+                    TaxYear = 2026,
+                    BuildingType = "R1",
+                    Region = "Reval 1",
+                    SquareFeet = 3400m,
+                    YearBuilt = 1995,
+                    QualityGrade = "CUSTOM",
+                    ConditionGrade = "GOOD",
+                    ComplexityGrade = "STANDARD",
+                    UpdatedBy = "cx8-test-seed",
+                    UpdatedAt = DateTime.UtcNow,
                 });
 
                 await db.SaveChangesAsync();
