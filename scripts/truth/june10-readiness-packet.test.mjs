@@ -319,6 +319,35 @@ test('readiness packet blocks candidate set and county runtime contract count di
   );
 });
 
+test('readiness packet blocks county runtime contract without 39-county claim prohibition', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/county-runtime-contract.json', {
+    passed: true,
+    summary: {
+      runtimeContractPass: 1,
+      runtimeContractBlocked: 38,
+      prohibit39CountyRuntimeClaim: false,
+    },
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(report.shipBlockers.some(item => item.source === 'countyRuntimeContract'));
+  assert.ok(
+    report.shipBlockers.some(item =>
+      item.message.includes('does not explicitly prohibit 39-county runtime claim')
+    )
+  );
+});
+
 test('readiness packet blocks source lineage artifact with no checked candidates', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-row-source-lineage-proof.json', {

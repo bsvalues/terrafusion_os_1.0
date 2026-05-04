@@ -223,6 +223,17 @@ function collectBlockers(loaded) {
     );
   }
 
+  if (
+    loaded.countyRuntimeContract.present &&
+    countyRuntimeContract?.summary?.prohibit39CountyRuntimeClaim !== true
+  ) {
+    blocker(
+      blockers,
+      'countyRuntimeContract',
+      'County runtime contract does not explicitly prohibit 39-county runtime claim.'
+    );
+  }
+
   if (loaded.countyRuntimeContract.present && countyRuntimeContract?.passed !== true) {
     blocker(blockers, 'countyRuntimeContract', 'County-neutral runtime contract is not passing.');
   }
