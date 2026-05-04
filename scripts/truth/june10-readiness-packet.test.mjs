@@ -334,6 +334,11 @@ test('readiness packet blocks required artifacts with top-level failed proof pos
         item.message.includes('top-level status is DRY_RUN')
     )
   );
+  assert.ok(
+    report.artifactDetails.runtimeCandidateSet.blockers.items.some(item =>
+      item.includes('top-level status is DRY_RUN')
+    )
+  );
   assert.ok(report.executionQueue.some(item => item.source === 'runtimeCandidateSet'));
 });
 

@@ -506,6 +506,10 @@ function artifactFailurePosture(value) {
 }
 
 function artifactBlockers(value) {
+  const failurePosture = artifactFailurePosture(value);
+  const posture = failurePosture
+    ? [`Artifact reports failed proof posture: ${failurePosture}.`]
+    : [];
   const direct = Array.isArray(value?.blockers) ? value.blockers : [];
   const summary = Array.isArray(value?.summary?.blockers) ? value.summary.blockers : [];
   const receiptBlockers = Array.isArray(value?.receiptEvidence?.blockers)
@@ -527,7 +531,14 @@ function artifactBlockers(value) {
     : [];
 
   return [
-    ...new Set([...direct, ...summary, ...receiptBlockers, ...rowBlockers, ...proofBlockers]),
+    ...new Set([
+      ...posture,
+      ...direct,
+      ...summary,
+      ...receiptBlockers,
+      ...rowBlockers,
+      ...proofBlockers,
+    ]),
   ].map(item => String(item));
 }
 
