@@ -109,28 +109,45 @@ public sealed class CertificationServiceTests
     [Fact]
     public async Task Certification_GetByTaxYearAsync_FiltersCorrectly()
     {
+        // CI-HYGIENE-D (#739): use canonical StepCodes per CertificationService.CanonicalStepCodes; non-canonical codes trigger reconcile-append
         await using var db = CreateDbContext(nameof(Certification_GetByTaxYearAsync_FiltersCorrectly));
         await SeedCounty(db, BentonCountyId);
         var svc = new CertificationService(db, NullLogger<CertificationService>.Instance);
 
+        // Seed a single canonical step for tax year 2025 (different year — must be excluded by filter).
         await svc.CreateAsync(new CertificationStep
         {
             TaxYear = 2025,
-            StepCode = "DATA_FREEZE_2025",
+            StepCode = "DATA_VALIDATION",
             CountyId = BentonCountyId,
         });
 
-        await svc.CreateAsync(new CertificationStep
+        // Seed all 6 canonical steps for tax year 2026 so reconcile finds them all and inserts none.
+        var canonicalCodes = new[]
         {
-            TaxYear = 2026,
-            StepCode = "DATA_FREEZE_2026",
-            CountyId = BentonCountyId,
-        });
+            "DATA_VALIDATION",
+            "RATIO_STUDY",
+            "SUPERVISORY_REVIEW",
+            "ASSESSOR_SIGNOFF",
+            "DOR_SUBMISSION",
+            "DOR_ACCEPTANCE",
+        };
+        foreach (var code in canonicalCodes)
+        {
+            await svc.CreateAsync(new CertificationStep
+            {
+                TaxYear = 2026,
+                StepCode = code,
+                CountyId = BentonCountyId,
+            });
+        }
 
         var results = await svc.GetByTaxYearAsync(2026, BentonCountyId);
 
-        results.Should().HaveCount(1);
-        results[0].StepCode.Should().Be("DATA_FREEZE_2026");
+        // Filter intent holds: only 2026 rows returned, in canonical order, none from 2025.
+        results.Should().HaveCount(6);
+        results.Select(r => r.TaxYear).Should().OnlyContain(y => y == 2026);
+        results.Select(r => r.StepCode).Should().ContainInOrder(canonicalCodes);
     }
 
     [Fact]
