@@ -508,9 +508,23 @@ function artifactFailurePosture(value) {
 function artifactFailurePostures(value) {
   return [
     artifactFailurePosture(value),
+    ...summaryFailurePostures(value?.summary),
     ...nestedRecordFailurePostures(value?.rows, 'row'),
     ...nestedRecordFailurePostures(value?.proofs, 'proof'),
   ].filter(Boolean);
+}
+
+function summaryFailurePostures(summary) {
+  if (!summary || typeof summary !== 'object') return [];
+  const postures = [];
+  if (summary.passed === false) postures.push('summary.passed is false');
+  if (typeof summary.status === 'string') {
+    const allowedStatuses = new Set(['PASS', 'PASS_WITH_WARNINGS']);
+    if (!allowedStatuses.has(summary.status) && !summary.status.endsWith('_pass')) {
+      postures.push(`summary.status is ${summary.status}`);
+    }
+  }
+  return postures;
 }
 
 function nestedRecordFailurePostures(records, label) {
@@ -524,6 +538,9 @@ function nestedRecordFailurePostures(records, label) {
       if (!allowedStatuses.has(record.status) && !record.status.endsWith('_pass')) {
         postures.push(`${subject} status is ${record.status}`);
       }
+    }
+    for (const posture of summaryFailurePostures(record?.summary)) {
+      postures.push(`${subject} ${posture}`);
     }
     return postures;
   });

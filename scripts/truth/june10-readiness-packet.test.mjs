@@ -347,16 +347,26 @@ test('readiness packet blocks nested failed row and proof posture', () => {
   writeJson(root, 'generated/truth/runtime-db-identity.json', {
     endpointStatus: 200,
     passed: true,
+    summary: {
+      passed: false,
+      status: 'FAIL',
+    },
     rows: [
       {
         county: 'Benton',
         passed: false,
+        summary: {
+          passed: false,
+        },
       },
     ],
     proofs: [
       {
         county: 'Benton',
         status: 'FAIL',
+        summary: {
+          status: 'FAIL',
+        },
       },
     ],
     blockers: [],
@@ -374,12 +384,44 @@ test('readiness packet blocks nested failed row and proof posture', () => {
   assert.equal(report.status, 'FAIL');
   assert.ok(
     report.shipBlockers.some(
+      item => item.source === 'dbIdentity' && item.message.includes('summary.passed is false')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item => item.source === 'dbIdentity' && item.message.includes('summary.status is FAIL')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
       item => item.source === 'dbIdentity' && item.message.includes('Benton row passed is false')
     )
   );
   assert.ok(
     report.shipBlockers.some(
       item => item.source === 'dbIdentity' && item.message.includes('Benton proof status is FAIL')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' && item.message.includes('Benton row summary.passed is false')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' && item.message.includes('Benton proof summary.status is FAIL')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('summary.passed is false')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('summary.status is FAIL')
     )
   );
   assert.ok(
@@ -390,6 +432,16 @@ test('readiness packet blocks nested failed row and proof posture', () => {
   assert.ok(
     report.artifactDetails.dbIdentity.blockers.items.some(item =>
       item.includes('Benton proof status is FAIL')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('Benton row summary.passed is false')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('Benton proof summary.status is FAIL')
     )
   );
   assert.ok(report.executionQueue.some(item => item.source === 'dbIdentity'));

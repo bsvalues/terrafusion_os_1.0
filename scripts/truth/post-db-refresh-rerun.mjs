@@ -236,9 +236,23 @@ function artifactFailureReason(artifact) {
 
 function nestedArtifactFailureReasons(value) {
   return [
+    ...summaryFailureReasons(value?.summary),
     ...nestedRecordFailureReasons(value?.rows, 'row'),
     ...nestedRecordFailureReasons(value?.proofs, 'proof'),
   ];
+}
+
+function summaryFailureReasons(summary) {
+  if (!summary || typeof summary !== 'object') return [];
+  const reasons = [];
+  if (summary.passed === false) reasons.push('summary.passed is false');
+  if (typeof summary.status === 'string') {
+    const allowedStatuses = new Set(['PASS', 'PASS_WITH_WARNINGS']);
+    if (!allowedStatuses.has(summary.status) && !summary.status.endsWith('_pass')) {
+      reasons.push(`summary.status is ${summary.status}`);
+    }
+  }
+  return reasons;
 }
 
 function nestedRecordFailureReasons(records, label) {
@@ -252,6 +266,9 @@ function nestedRecordFailureReasons(records, label) {
       if (!allowedStatuses.has(record.status) && !record.status.endsWith('_pass')) {
         reasons.push(`${subject} status is ${record.status}`);
       }
+    }
+    for (const reason of summaryFailureReasons(record?.summary)) {
+      reasons.push(`${subject} ${reason}`);
     }
     return reasons;
   });
