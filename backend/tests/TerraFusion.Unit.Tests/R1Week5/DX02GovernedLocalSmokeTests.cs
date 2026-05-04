@@ -207,17 +207,19 @@ public class DX02GovernedLocalSmokeTests
 
     private static TerraFusionDbContext CreateTestDbContext()
     {
+        // CI-HYGIENE-D (#739): pivoted to EF Core InMemory provider per #741/#742 pattern.
+        // The SQLite path collides on imprv_current (TruthPacs + LegacyTfUnproven schemas
+        // both flatten to a single bare table). InMemory ignores schemas → no collision.
+        // When #743 (TerraFusionDbContext schema model cleanup) lands, this can be revisited.
         var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
-            .UseSqlite("Data Source=:memory:")
+            .UseInMemoryDatabase($"dx02-governed-local-smoke-{Guid.NewGuid():N}")
             .Options;
 
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>())
             .Build();
 
-        var db = new TerraFusionDbContext(options, config);
-        db.Database.OpenConnection();
-        return db;
+        return new TerraFusionDbContext(options, config);
     }
 
     private static IConfiguration CreateJwtConfig()
