@@ -24,6 +24,37 @@ export const postDbRefreshPlan = [
     ],
   },
   {
+    name: 'Data source inventory',
+    command: 'pnpm',
+    args: ['run', 'truth:data-source-inventory'],
+    proves: 'County source evidence is reclassified before runtime candidates are recalculated.',
+    expectedArtifacts: [
+      'generated/truth/data-source-truth-inventory.json',
+      'generated/truth/data-source-truth-inventory.md',
+    ],
+  },
+  {
+    name: 'County runtime registration ledger',
+    command: 'pnpm',
+    args: ['run', 'truth:county-runtime-registration-ledger'],
+    proves: 'All county runtime endpoints are reprobed against the refreshed TerraFusion API.',
+    expectedArtifacts: [
+      'generated/truth/county-runtime-registration-ledger.json',
+      'generated/truth/county-runtime-registration-ledger.md',
+    ],
+  },
+  {
+    name: 'Runtime candidate set',
+    command: 'pnpm',
+    args: ['run', 'truth:runtime-candidate-set'],
+    proves:
+      'June 10 runtime scope is recalculated from refreshed inventory and runtime ledger evidence.',
+    expectedArtifacts: [
+      'generated/truth/runtime-candidate-set.json',
+      'generated/truth/runtime-candidate-set.md',
+    ],
+  },
+  {
     name: 'Runtime row path',
     command: 'pnpm',
     args: ['run', 'truth:runtime-row-path-proof'],
@@ -54,6 +85,28 @@ export const postDbRefreshPlan = [
     expectedArtifacts: [
       'generated/truth/benton-parcel-count-sanity.json',
       'generated/truth/benton-parcel-count-sanity.md',
+    ],
+  },
+  {
+    name: 'Washington 39-county data crosswalk',
+    command: 'pnpm',
+    args: ['run', 'truth:washington-39-county-data-crosswalk'],
+    proves:
+      'County-scope reporting reflects refreshed inventory, runtime candidates, and product-load evidence.',
+    expectedArtifacts: [
+      'generated/truth/washington-39-county-data-crosswalk.json',
+      'generated/truth/washington-39-county-data-crosswalk.md',
+    ],
+  },
+  {
+    name: 'County runtime contract',
+    command: 'pnpm',
+    args: ['run', 'truth:county-runtime-contract'],
+    proves:
+      'Runtime counties satisfy the county-neutral TerraFusion DB contract before readiness can pass.',
+    expectedArtifacts: [
+      'generated/truth/county-runtime-contract.json',
+      'generated/truth/county-runtime-contract.md',
     ],
   },
   {

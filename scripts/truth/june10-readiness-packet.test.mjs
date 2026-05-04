@@ -190,9 +190,14 @@ test('readiness packet fails when required runtime truth artifacts are red', () 
     [
       'pnpm run truth:runtime-db-identity',
       'pnpm run truth:runtime-db-content',
+      'pnpm run truth:data-source-inventory',
+      'pnpm run truth:county-runtime-registration-ledger',
+      'pnpm run truth:runtime-candidate-set',
       'pnpm run truth:runtime-row-path-proof',
       'pnpm run truth:terrafusion-db-product-load-ledger',
       'pnpm run truth:benton-parcel-count-sanity',
+      'pnpm run truth:washington-39-county-data-crosswalk',
+      'pnpm run truth:county-runtime-contract',
       'pnpm run truth:runtime-source-lineage',
       'pnpm run truth:runtime-sale-qualification',
       'pnpm run truth:benton-runtime-pilot-closure',
@@ -222,7 +227,7 @@ test('readiness packet passes when all required runtime truth artifacts are gree
   assert.equal(report.summary.terraFusionDb.sourceLineagePassed, true);
   assert.equal(report.shipBlockers.length, 0);
   assert.deepEqual(report.executionQueue, []);
-  assert.equal(report.postDbRefreshRerunChecklist.length, 9);
+  assert.equal(report.postDbRefreshRerunChecklist.length, 14);
   assert.equal(report.artifactDetails.dbIdentity, undefined);
 });
 
