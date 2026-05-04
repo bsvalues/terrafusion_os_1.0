@@ -8,7 +8,9 @@ using TerraFusion.Core.Sync.PacsParcelTruth;
 using TerraFusion.Core.Sync.PacsPropSuppAssoc;
 using TerraFusion.Core.Sync.PacsProperty;
 using TerraFusion.Core.Sync.PacsSale;
+using TerraFusion.Core.Sync.PacsSaleCanonical;
 using TerraFusion.Core.Sync.PacsSalePipeline;
+using TerraFusion.Core.Sync.PacsSaleTruth;
 using TerraFusion.Data;
 using TerraFusion.Data.Services.PacsSources;
 
@@ -912,4 +914,202 @@ public class CanonicalDebugController : ControllerBase
         string? OperatorName,
         int? TopN,
         Guid? PropertyLoadBatchId);
+
+    // ════════════════════════════════════════════════════════════════════
+    // SYNC-POP-4d: end-to-end doctrine closure.
+    //   sales (S1) → keyed supps (S2-A) → sale truth (S2-B)
+    //              → keyed parcels (S1+S2-B+S3 for parcels)
+    //              → sale canonical (S3) → canonical_tf.tf_sale > 0
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// SYNC-POP-4d: the doctrine end-to-end closure proof. Lands a
+    /// bounded sale batch, runs SYNC-POP-3's targeted-supp chain to
+    /// promote sales into <c>truth_pacs.sale</c>, then extracts
+    /// distinct <c>prop_id</c> values from those promoted truth sales,
+    /// runs the SYNC-POP-4 keyed parcel chain ONLY for those prop_ids,
+    /// and finally re-runs the sale canonical projector.
+    ///
+    /// <para>Goal: prove <c>canonical_tf.tf_sale &gt; 0</c>. This is
+    /// the operative outcome the doctrine has been targeting since
+    /// SYNC-POP-1's empty-canonical observation.</para>
+    /// </summary>
+    [HttpPost("sync-pop-4/run-final-closure")]
+    public async Task<IActionResult> RunSyncPop4d(
+        [FromServices] IPacsSaleLandingService saleSvc,
+        [FromServices] IPacsPropSuppAssocLandingService assocSvc,
+        [FromServices] IPacsSaleTruthPromoter saleTruthPromoter,
+        [FromServices] IPacsPropertyLandingService propSvc,
+        [FromServices] IPacsParcelSpineTruthPromoter spinePromoter,
+        [FromServices] IPacsParcelCanonicalProjector parcelCanonicalProjector,
+        [FromServices] IPacsSaleCanonicalProjector saleCanonicalProjector,
+        [FromServices] IConfiguration config,
+        [FromBody] SyncPop4dRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        var pacsCs = config.GetConnectionString("PacsConnection");
+        if (string.IsNullOrWhiteSpace(pacsCs))
+        {
+            return StatusCode(500, new
+            {
+                error = "ConnectionStrings:PacsConnection is required for SYNC-POP-4d.",
+            });
+        }
+
+        var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
+            ? "sync-pop-4d-final-closure"
+            : request.OperatorName.Trim();
+        var saleTopN = request?.SaleTopN ?? 500;
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+
+            // ── Stage A: Sale S1 ──
+            _logger.LogInformation("[SyncPop4d] A. Landing sales (TopN={Top})", saleTopN);
+            var saleSrc = new SqlServerPacsSaleSource(pacsCs, topN: saleTopN);
+            var saleS1 = await saleSvc.LandSalesAsync(saleSrc, operatorName, cancellationToken);
+            if (!string.Equals(saleS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Sale-S1", error = saleS1.ErrorSummary, saleS1 });
+
+            // ── Stage B: extract sale (PropId, PropValYr) keys → keyed supp S1 ──
+            var saleKeys = await _db.LegacyPacsRawSales
+                .AsNoTracking()
+                .Where(s => s.LoadBatchId == saleS1.LoadBatchId)
+                .Select(s => new { s.PropId, s.PropValYr })
+                .Distinct()
+                .ToListAsync(cancellationToken);
+            var saleKeyTuples = saleKeys.Select(k => (k.PropId, k.PropValYr)).ToList();
+
+            _logger.LogInformation("[SyncPop4d] B. Keyed supp landing for {N} keys", saleKeyTuples.Count);
+            var assocSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs, saleKeyTuples);
+            var assocS1 = await assocSvc.LandPropSuppAssocsAsync(assocSrc, operatorName, cancellationToken);
+            if (!string.Equals(assocS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Supp-S1", error = assocS1.ErrorSummary, assocS1 });
+
+            // ── Stage C: Sale S2-B truth promotion ──
+            _logger.LogInformation("[SyncPop4d] C. Promoting sale truth");
+            var saleTruth = await saleTruthPromoter.PromoteAsync(
+                saleS1.LoadBatchId, assocS1.LoadBatchId, operatorName, cancellationToken);
+            if (!string.Equals(saleTruth.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Sale-S2B", error = saleTruth.ErrorSummary, saleTruth });
+
+            // ── Stage D: extract distinct prop_ids from truth_pacs.sale's
+            //    just-promoted batch → keyed parcel landing ──
+            var promotedPropIds = await _db.TruthPacsSales
+                .AsNoTracking()
+                .Where(t => t.PromotionLoadBatchId == saleTruth.PromotionLoadBatchId)
+                .Select(t => t.PropId)
+                .Distinct()
+                .ToListAsync(cancellationToken);
+
+            _logger.LogInformation(
+                "[SyncPop4d] D. Keyed parcel landing for {N} prop_ids from {P} promoted sales",
+                promotedPropIds.Count, saleTruth.SalesPromoted);
+
+            if (promotedPropIds.Count == 0)
+            {
+                return Ok(new
+                {
+                    operatorName,
+                    saleS1 = new { saleS1.Status, saleS1.LoadBatchId, saleS1.RowsLanded },
+                    assocS1 = new { assocS1.Status, assocS1.LoadBatchId, assocS1.RowsLanded },
+                    saleTruth = new { saleTruth.Status, saleTruth.SalesPromoted, saleTruth.SalesConsidered },
+                    note = "0 sales promoted to truth — no qualified ('100') sales in the keyed-supp overlap. " +
+                           "Increase SaleTopN to widen the chance of overlap.",
+                });
+            }
+
+            var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs, promotedPropIds);
+            var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
+            if (!string.Equals(parcelS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Parcel-S1", error = parcelS1.ErrorSummary, parcelS1 });
+
+            // ── Stage E: parcel S2-B truth spine promotion ──
+            _logger.LogInformation("[SyncPop4d] E. Promoting parcel spine");
+            var parcelSpine = await spinePromoter.PromoteAsync(parcelS1.LoadBatchId, operatorName, cancellationToken);
+            if (!string.Equals(parcelSpine.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Parcel-S2B", error = parcelSpine.ErrorSummary, parcelSpine });
+
+            // ── Stage F: parcel S3 canonical projection ──
+            _logger.LogInformation("[SyncPop4d] F. Projecting parcels to canonical");
+            var parcelCanonical = await parcelCanonicalProjector.ProjectAsync(
+                parcelSpine.PromotionLoadBatchId, bentonCountyId, operatorName, cancellationToken);
+            if (!string.Equals(parcelCanonical.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Parcel-S3", error = parcelCanonical.ErrorSummary, parcelCanonical });
+
+            // ── Stage G: sale S3 canonical projection (THE final step) ──
+            _logger.LogInformation("[SyncPop4d] G. Projecting sales to canonical");
+            var saleCanonical = await saleCanonicalProjector.ProjectAsync(
+                saleTruth.PromotionLoadBatchId, operatorName, cancellationToken);
+            if (!string.Equals(saleCanonical.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Sale-S3", error = saleCanonical.ErrorSummary, saleCanonical });
+
+            // ── Read-back proof counts. ──
+            var tfSaleCount = await _db.TfSales.CountAsync(cancellationToken);
+            var tfParcelCount = await _db.TfParcels.CountAsync(cancellationToken);
+            var truthSaleCount = await _db.TruthPacsSales.CountAsync(cancellationToken);
+
+            return Ok(new
+            {
+                operatorName,
+                bentonCountyId,
+                saleS1 = new { saleS1.Status, saleS1.LoadBatchId, saleS1.RowsLanded, saleS1.Post2018Count },
+                assocS1 = new { assocS1.Status, assocS1.LoadBatchId, assocS1.RowsLanded, assocS1.DistinctYears },
+                saleTruth = new
+                {
+                    saleTruth.Status, saleTruth.PromotionLoadBatchId,
+                    saleTruth.SalesConsidered, saleTruth.SalesPromoted,
+                    saleTruth.RejectedNotQualified, saleTruth.RejectedNoSuppPointer,
+                },
+                keyedParcelExtraction = new { distinctPropIds = promotedPropIds.Count },
+                parcelS1 = new
+                {
+                    parcelS1.Status, parcelS1.LoadBatchId, parcelS1.RowsLanded,
+                    parcelS1.TypeDistribution,
+                },
+                parcelSpine = new
+                {
+                    parcelSpine.Status, parcelSpine.PromotionLoadBatchId,
+                    parcelSpine.ParcelsConsidered, parcelSpine.ParcelsPromoted,
+                    parcelSpine.RejectedNotRealProperty,
+                },
+                parcelCanonical = new
+                {
+                    parcelCanonical.Status, parcelCanonical.PromotionLoadBatchId,
+                    parcelCanonical.TruthParcelsConsidered, parcelCanonical.ParcelsProjected,
+                    parcelCanonical.PriorCanonicalRowsRemoved,
+                },
+                saleCanonical = new
+                {
+                    saleCanonical.Status, saleCanonical.PromotionLoadBatchId,
+                    saleCanonical.TruthSalesConsidered, saleCanonical.SalesProjected,
+                    saleCanonical.SalesQuarantined,
+                },
+                counts = new
+                {
+                    truthPacsSales = truthSaleCount,
+                    canonicalTfParcels = tfParcelCount,
+                    canonicalTfSales = tfSaleCount,
+                },
+                proofVerdict = saleCanonical.SalesProjected > 0
+                    ? "PROOF: canonical_tf.tf_sale > 0 — SYNC-POP-4d closure succeeded. The doctrine end-to-end pipeline is operational."
+                    : "INCONCLUSIVE: canonical_tf.tf_sale = 0 even after keyed parcel closure. Investigate parcel-spine promotion (was prop_type_cd = 'R' for the keyed parcels?) or sale-side parcel-xref resolution.",
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[SyncPop4d] FAILED");
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name });
+        }
+    }
+
+    /// <param name="OperatorName">Audit anchor across all 7 stages.</param>
+    /// <param name="SaleTopN">Sale sample size for the initial S1 stage.
+    /// Default 500. Smaller is faster; larger improves the chance of
+    /// catching qualified ('100') sales whose prop_ids overlap with
+    /// real-property parcels.</param>
+    public sealed record SyncPop4dRequest(
+        string? OperatorName,
+        int? SaleTopN);
 }
