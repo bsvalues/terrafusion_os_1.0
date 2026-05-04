@@ -63,6 +63,39 @@ test('fails fast when runtime API preflight is unavailable', () => {
   assert.match(markdown, /## Planned Command Sequence/);
 });
 
+test('dry run records plan without probing or executing commands', () => {
+  const root = makeTempRepo('tf-post-db-refresh-dry-run-');
+  const result = spawnSync('node', [scriptPath, root, '--dry-run'], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_RUNTIME_BASE_URL: 'http://127.0.0.1:1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'Should not run',
+          command: process.execPath,
+          args: ['-e', 'process.exit(0)'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'DRY_RUN');
+  assert.equal(report.configuration.dryRun, true);
+  assert.equal(report.preflight.skipped, true);
+  assert.equal(report.summary.commandsPlanned, 1);
+  assert.equal(report.summary.commandsSkipped, 1);
+  assert.equal(report.results.length, 0);
+  assert.deepEqual(
+    report.plannedCommands.map(item => item.command),
+    [`${process.execPath} -e process.exit(0)`]
+  );
+});
+
 test('runs configured commands when preflight is skipped for tests', () => {
   const root = makeTempRepo('tf-post-db-refresh-pass-');
   const result = spawnSync('node', [scriptPath, root], {
@@ -87,6 +120,7 @@ test('runs configured commands when preflight is skipped for tests', () => {
   assert.equal(report.status, 'PASS');
   assert.equal(report.configuration.commandSource, 'env_override');
   assert.equal(report.configuration.skipPreflight, true);
+  assert.equal(report.configuration.dryRun, false);
   assert.equal(report.configuration.continueOnFailure, false);
   assert.equal(report.summary.commandsPassed, 1);
   assert.equal(report.summary.commandsFailed, 0);

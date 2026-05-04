@@ -29,6 +29,7 @@ const preflightTimeoutMs = Number.parseInt(
 );
 const continueOnFailure = process.env.TF_POST_DB_REFRESH_CONTINUE_ON_FAILURE === '1';
 const skipPreflight = process.env.TF_POST_DB_REFRESH_SKIP_PREFLIGHT === '1';
+const dryRun = process.env.TF_POST_DB_REFRESH_DRY_RUN === '1' || process.argv.includes('--dry-run');
 const commandSource = process.env.TF_POST_DB_REFRESH_COMMANDS_JSON ? 'env_override' : 'default';
 
 function rel(filePath) {
@@ -195,6 +196,7 @@ function renderMarkdown(report) {
     `- Command timeout: ${report.configuration.commandTimeoutMs}ms`,
     `- Preflight timeout: ${report.configuration.preflightTimeoutMs}ms`,
     `- Skip preflight: ${report.configuration.skipPreflight ? 'yes' : 'no'}`,
+    `- Dry run: ${report.configuration.dryRun ? 'yes' : 'no'}`,
     `- Continue on failure: ${report.configuration.continueOnFailure ? 'yes' : 'no'}`,
     `- Node: ${report.configuration.nodeVersion}`,
     `- Platform: ${report.configuration.platform}`,
@@ -303,11 +305,21 @@ async function main() {
     return;
   }
 
-  const preflight = await preflightRuntime();
+  const preflight = dryRun
+    ? {
+        skipped: true,
+        endpoint: null,
+        status: null,
+        ok: true,
+        error: null,
+      }
+    : await preflightRuntime();
   const blockers = [];
   const results = [];
 
-  if (!preflight.ok) {
+  if (dryRun) {
+    // Dry run intentionally records the plan/configuration without probing or executing.
+  } else if (!preflight.ok) {
     blockers.push(
       `Runtime API preflight failed for ${preflight.endpoint ?? runtimeBaseUrl}; status ${preflight.status ?? 'unreachable'}.`
     );
@@ -345,16 +357,17 @@ async function main() {
 
   const report = buildReport({ preflight, commands, results, blockers });
   writeReport(report);
-  if (report.status === 'FAIL') process.exitCode = 1;
+  if (report.status === 'FAIL' || report.status === 'DRY_RUN') process.exitCode = 1;
 }
 
 function buildReport({ preflight, commands, results, blockers }) {
-  const commandsSkipped = preflight.ok ? commands.length - results.length : commands.length;
+  const commandsSkipped =
+    dryRun || !preflight.ok ? commands.length : commands.length - results.length;
   const artifactOutputs = results.flatMap(result => result.artifactOutputs ?? []);
   return {
     generatedAt: new Date().toISOString(),
     runtimeBaseUrl,
-    status: blockers.length === 0 ? 'PASS' : 'FAIL',
+    status: dryRun ? 'DRY_RUN' : blockers.length === 0 ? 'PASS' : 'FAIL',
     continueOnFailure,
     configuration: {
       repoRoot,
@@ -362,6 +375,7 @@ function buildReport({ preflight, commands, results, blockers }) {
       commandTimeoutMs,
       preflightTimeoutMs,
       skipPreflight,
+      dryRun,
       continueOnFailure,
       nodeVersion: process.version,
       platform: `${process.platform}/${process.arch}`,
