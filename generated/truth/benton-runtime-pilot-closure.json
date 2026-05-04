@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-05-04T16:51:19.497Z",
+  "inputs": {
+    "candidateSetPath": "generated/truth/runtime-candidate-set.json",
+    "rowPathProofPath": "generated/truth/runtime-row-path-proof.json",
+    "saleQualificationPath": "generated/truth/runtime-sale-qualification-lineage-proof.json"
+  },
+  "status": "FAIL",
+  "blockers": [
+    "June 10 runtime scope is runtime_scope_requires_review, expected benton_only_runtime_pilot.",
+    "Expected exactly one runtime-proven county; found 0.",
+    "Expected 38 provenance-only counties; found 0.",
+    "Benton candidate class is endpoint_error.",
+    "Benton runtime row-path proof did not pass.",
+    "Benton parcel endpoint status is null.",
+    "Benton parcel endpoint returned zero runtime rows.",
+    "Benton is missing from sale-qualification lineage proof."
+  ],
+  "warnings": [],
+  "june10RuntimeScope": "runtime_scope_requires_review",
+  "allowedRuntimeClaim": "Runtime scope requires review before any June 10 runtime claim.",
+  "benton": {
+    "runtimeCandidateClass": "endpoint_error",
+    "parcelEndpointStatus": null,
+    "parcelRowsReturned": 0,
+    "saleQualificationClassification": null,
+    "canonicalSaleQualifications": 0,
+    "ratioStudyEffectiveQualified": 0,
+    "ratioStudyDecisionQualified": 0,
+    "ratioStudyRecommendationFallback": 0
+  },
+  "countyScope": {
+    "runtimeProven": 0,
+    "evidenceBackedLoadCandidates": 0,
+    "provenanceInventoryOnly": 0,
+    "prohibit39CountyRuntimeClaim": true
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-04T16:49:34.782Z",
+  "generatedAt": "2026-05-04T16:51:24.781Z",
   "status": "FAIL",
   "artifacts": {
     "crosswalk": {
@@ -47,7 +47,7 @@
     "bentonPilotClosure": {
       "name": "bentonPilotClosure",
       "path": "generated/truth/benton-runtime-pilot-closure.json",
-      "present": false,
+      "present": true,
       "parseError": null
     }
   },
@@ -76,14 +76,10 @@
     "bentonPilot": {
       "parcelSanityPassed": false,
       "saleQualificationStatus": "FAIL",
-      "pilotClosureStatus": "UNKNOWN"
+      "pilotClosureStatus": "FAIL"
     }
   },
   "shipBlockers": [
-    {
-      "source": "bentonPilotClosure",
-      "message": "Required artifact is missing: generated/truth/benton-runtime-pilot-closure.json."
-    },
     {
       "source": "countyRuntimeContract",
       "message": "County-neutral runtime contract is not passing."
@@ -107,15 +103,13 @@
     {
       "source": "saleQualification",
       "message": "Benton sale qualification lineage is not passing."
+    },
+    {
+      "source": "bentonPilotClosure",
+      "message": "Benton runtime pilot closure is not passing."
     }
   ],
   "executionQueue": [
-    {
-      "source": "bentonPilotClosure",
-      "ownerLane": "Codex after all Benton data gates are green",
-      "nextCommand": "pnpm run truth:benton-runtime-pilot-closure",
-      "requiredResolution": "Prove Benton runtime pilot closure only after DB identity, content, load receipts, parcel sanity, and sale qualification pass."
-    },
     {
       "source": "countyRuntimeContract",
       "ownerLane": "Codex after TerraFusion DB receipts",
@@ -151,6 +145,12 @@
       "ownerLane": "Codex after TerraFusion DB sales/qualification tables are refreshed",
       "nextCommand": "pnpm run truth:runtime-sale-qualification",
       "requiredResolution": "Prove Benton sales qualification lineage from TerraFusion DB runtime tables, with no source-system dependency in product runtime."
+    },
+    {
+      "source": "bentonPilotClosure",
+      "ownerLane": "Codex after all Benton data gates are green",
+      "nextCommand": "pnpm run truth:benton-runtime-pilot-closure",
+      "requiredResolution": "Prove Benton runtime pilot closure only after DB identity, content, load receipts, parcel sanity, and sale qualification pass."
     }
   ],
   "warnings": []

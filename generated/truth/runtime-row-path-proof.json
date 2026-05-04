@@ -1,0 +1,134 @@
+{
+  "generatedAt": "2026-05-04T16:51:13.644Z",
+  "repoRoot": "C:\\Users\\bsval\\.codex-worktrees\\june10-readiness-execution",
+  "runtimeBaseUrl": "http://localhost:5046",
+  "runtimeDbIdentity": {
+    "passed": false,
+    "blockers": [
+      "Runtime DB identity endpoint did not return 200. Status: null.",
+      "Runtime DB identity endpoint failed: fetch failed",
+      "Runtime DB identity endpoint did not return JSON payload."
+    ],
+    "database": null,
+    "provider": null,
+    "expectedJune10Database": null,
+    "isExpectedJune10RuntimeDb": false,
+    "expectedBentonParcelCount": null,
+    "isBentonParcelCountExpected": false
+  },
+  "summary": {
+    "candidatesChecked": 1,
+    "passed": 0,
+    "failed": 1,
+    "silentBentonFallbacks": 0,
+    "zeroRowRuntimeResponses": 1,
+    "runtimeDbIdentityPassed": false,
+    "runtimeDbIdentityDatabase": null,
+    "runtimeDbIdentityProvider": null
+  },
+  "proofs": [
+    {
+      "county": "Benton",
+      "candidateReason": "costforge_cf1_or_higher",
+      "expectedInventoryRows": 241,
+      "endpoint": null,
+      "endpointStatus": null,
+      "runtimeRowsReturned": 0,
+      "payloadCounty": null,
+      "selectedCountyEchoed": false,
+      "silentBentonFallbackDetected": false,
+      "uiConsumerPath": "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx",
+      "costForgeTier": "CF1_parcel_public_data",
+      "costForgeMode": "public_data_loaded",
+      "allowedWorkflows": ["open_county", "inspect_public_parcel_data"],
+      "blockedWorkflows": [
+        "claim_official_county_cost_schedule",
+        "claim_county_certified_value",
+        "finalize_official_valuation_without_review"
+      ],
+      "attemptedEndpoints": [
+        {
+          "endpoint": "http://localhost:5046/api/counties/benton/data",
+          "status": null,
+          "runtimeRowsReturned": 0,
+          "payloadCounty": null,
+          "selectedCountyEchoed": false,
+          "silentBentonFallbackDetected": false,
+          "error": "fetch failed"
+        },
+        {
+          "endpoint": "http://localhost:5046/api/counties/benton/rows",
+          "status": null,
+          "runtimeRowsReturned": 0,
+          "payloadCounty": null,
+          "selectedCountyEchoed": false,
+          "silentBentonFallbackDetected": false,
+          "error": "fetch failed"
+        },
+        {
+          "endpoint": "http://localhost:5046/api/counties/benton/parcels",
+          "status": null,
+          "runtimeRowsReturned": 0,
+          "payloadCounty": null,
+          "selectedCountyEchoed": false,
+          "silentBentonFallbackDetected": false,
+          "error": "fetch failed"
+        },
+        {
+          "endpoint": "http://localhost:5046/api/counties/benton/sales",
+          "status": null,
+          "runtimeRowsReturned": 0,
+          "payloadCounty": null,
+          "selectedCountyEchoed": false,
+          "silentBentonFallbackDetected": false,
+          "error": "fetch failed"
+        },
+        {
+          "endpoint": "http://localhost:5046/api/county/benton/data",
+          "status": null,
+          "runtimeRowsReturned": 0,
+          "payloadCounty": null,
+          "selectedCountyEchoed": false,
+          "silentBentonFallbackDetected": false,
+          "error": "fetch failed"
+        },
+        {
+          "endpoint": "http://localhost:5046/api/real-data/benton",
+          "status": null,
+          "runtimeRowsReturned": 0,
+          "payloadCounty": null,
+          "selectedCountyEchoed": false,
+          "silentBentonFallbackDetected": false,
+          "error": "fetch failed"
+        },
+        {
+          "endpoint": "http://localhost:5046/api/terraforge/counties/benton/data",
+          "status": null,
+          "runtimeRowsReturned": 0,
+          "payloadCounty": null,
+          "selectedCountyEchoed": false,
+          "silentBentonFallbackDetected": false,
+          "error": "fetch failed"
+        },
+        {
+          "endpoint": "http://localhost:5046/api/costforge/counties/benton/data",
+          "status": null,
+          "runtimeRowsReturned": 0,
+          "payloadCounty": null,
+          "selectedCountyEchoed": false,
+          "silentBentonFallbackDetected": false,
+          "error": "fetch failed"
+        }
+      ],
+      "runtimeDbIdentityPassed": false,
+      "passed": false,
+      "blockers": [
+        "Runtime DB identity proof is not trusted: Runtime DB identity endpoint did not return 200. Status: null.; Runtime DB identity endpoint failed: fetch failed; Runtime DB identity endpoint did not return JSON payload.",
+        "No runtime endpoint identified.",
+        "Runtime endpoint did not return 200. Status: null",
+        "Runtime returned zero rows.",
+        "Runtime did not echo selected county."
+      ]
+    }
+  ]
+}

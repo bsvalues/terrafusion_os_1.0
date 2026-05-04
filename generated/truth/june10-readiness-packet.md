@@ -1,6 +1,6 @@
 # June 10 Readiness Packet
 
-Generated: 2026-05-04T16:49:34.782Z
+Generated: 2026-05-04T16:51:24.781Z
 
 ## Status
 
@@ -36,27 +36,27 @@ Generated: 2026-05-04T16:49:34.782Z
 
 - Parcel sanity passed: no
 - Sale qualification status: FAIL
-- Pilot closure status: UNKNOWN
+- Pilot closure status: FAIL
 
 ## Ship Blockers
 
-- bentonPilotClosure: Required artifact is missing: generated/truth/benton-runtime-pilot-closure.json.
 - countyRuntimeContract: County-neutral runtime contract is not passing.
 - dbIdentity: Running API TerraFusion DB identity is not proven.
 - dbContent: Runtime TerraFusion DB content audit is not passing.
 - productLoadLedger: TerraFusion DB product load ledger is not lineage-proven.
 - bentonParcelSanity: Benton active/current parcel count sanity is not proven.
 - saleQualification: Benton sale qualification lineage is not passing.
+- bentonPilotClosure: Benton runtime pilot closure is not passing.
 
 ## Next Execution Queue
 
-- bentonPilotClosure: Codex after all Benton data gates are green; run `pnpm run truth:benton-runtime-pilot-closure`; Prove Benton runtime pilot closure only after DB identity, content, load receipts, parcel sanity, and sale qualification pass.
 - countyRuntimeContract: Codex after TerraFusion DB receipts; run `pnpm run truth:county-runtime-contract`; Each runtime county must pass identity, active/current semantics, product-load receipt, no fallback, and no PII projection checks.
 - dbIdentity: Claude Code / Sync DB, audited by Codex; run `pnpm run truth:runtime-db-identity`; Prove the running API is connected to the intended TerraFusion DB before any row count can support readiness.
 - dbContent: Claude Code / Sync DB, audited by Codex; run `pnpm run truth:runtime-db-content`; Prove product runtime tables and row shapes exist inside TerraFusion DB only.
 - productLoadLedger: Claude Code / Sync DB, audited by Codex; run `pnpm run truth:terrafusion-db-product-load-ledger`; Emit/read product-load receipts proving TerraFusion DB table rows were loaded through the approved ingestion path.
 - bentonParcelSanity: Codex after TerraFusion DB content is refreshed; run `pnpm run truth:benton-parcel-count-sanity`; Prove Benton parcel endpoint counts active/current distinct parcels, not raw historical or duplicate property rows.
 - saleQualification: Codex after TerraFusion DB sales/qualification tables are refreshed; run `pnpm run truth:runtime-sale-qualification`; Prove Benton sales qualification lineage from TerraFusion DB runtime tables, with no source-system dependency in product runtime.
+- bentonPilotClosure: Codex after all Benton data gates are green; run `pnpm run truth:benton-runtime-pilot-closure`; Prove Benton runtime pilot closure only after DB identity, content, load receipts, parcel sanity, and sale qualification pass.
 
 ## Warnings
 
@@ -71,4 +71,4 @@ Generated: 2026-05-04T16:49:34.782Z
 - productLoadLedger: generated/truth/terrafusion-db-product-load-ledger.json
 - bentonParcelSanity: generated/truth/benton-parcel-count-sanity.json
 - saleQualification: generated/truth/runtime-sale-qualification-lineage-proof.json
-- bentonPilotClosure: missing (generated/truth/benton-runtime-pilot-closure.json)
+- bentonPilotClosure: generated/truth/benton-runtime-pilot-closure.json
