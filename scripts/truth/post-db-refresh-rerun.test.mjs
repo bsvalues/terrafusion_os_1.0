@@ -351,6 +351,11 @@ test('fails when a proof command writes a failing expected JSON artifact', () =>
   assert.equal(report.results[0].artifactOutputs[1].artifactPassed, false);
   assert.ok(report.blockers.some(item => item.includes('top-level status is FAIL')));
   assert.ok(report.blockers.some(item => item.includes('top-level passed is false')));
+  assert.ok(
+    report.blockers.some(item =>
+      item.includes('after missing, stale, malformed, or failing artifact output')
+    )
+  );
 });
 
 test('fails when a proof command writes a malformed expected JSON artifact', () => {
@@ -397,7 +402,7 @@ test('fails when a proof command writes a malformed expected JSON artifact', () 
   assert.ok(report.blockers.some(item => item.includes('wrote malformed JSON artifact')));
   assert.ok(
     report.blockers.some(item =>
-      item.includes('after missing, stale, or malformed artifact output')
+      item.includes('after missing, stale, malformed, or failing artifact output')
     )
   );
 });
@@ -441,7 +446,7 @@ test('fails when a proof command passes but leaves an expected artifact stale', 
   assert.ok(report.blockers.some(item => item.includes('left expected artifact stale')));
   assert.ok(
     report.blockers.some(item =>
-      item.includes('after missing, stale, or malformed artifact output')
+      item.includes('after missing, stale, malformed, or failing artifact output')
     )
   );
 });

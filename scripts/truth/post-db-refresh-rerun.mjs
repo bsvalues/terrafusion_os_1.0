@@ -446,7 +446,7 @@ async function main() {
       blockers.push(...artifactBlockers);
       if (artifactBlockers.length > 0 && !continueOnFailure) {
         blockers.push(
-          `Skipped ${commands.length - results.length} remaining command(s) after missing, stale, or malformed artifact output. Set TF_POST_DB_REFRESH_CONTINUE_ON_FAILURE=1 to continue.`
+          `Skipped ${commands.length - results.length} remaining command(s) after missing, stale, malformed, or failing artifact output. Set TF_POST_DB_REFRESH_CONTINUE_ON_FAILURE=1 to continue.`
         );
         break;
       }
