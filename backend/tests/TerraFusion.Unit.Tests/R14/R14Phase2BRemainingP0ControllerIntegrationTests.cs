@@ -73,23 +73,49 @@ public sealed class R14Phase2BRemainingP0ControllerIntegrationTests
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
+    // CI-HYGIENE-4C (#739): the original assertion expected a Post-R1
+    // 501 stub. AtlasController.GetLayers was intentionally promoted to
+    // emit the Benton ArcGIS layer catalog (31 verified layers,
+    // X-Atlas-Source header, no fabricated metrics). The test now asserts
+    // that real evidence-only catalog contract — not the deprecated
+    // Post-R1 placeholder. See AtlasController.cs ~line 199.
     [Fact]
-    public async Task Atlas_GetLayers_PostR1Contract_Returns501()
+    public async Task Atlas_GetLayers_ReturnsLayerCatalog_Returns200()
     {
         await using var factory = new R14Phase2BControllerFactory(new R14Phase2BControllerFactoryOptions());
         using var client = factory.CreateAuthenticatedClient("read:parcel");
 
         var response = await client.GetAsync("/api/atlas/layers");
 
-        Assert.Equal(HttpStatusCode.NotImplemented, response.StatusCode);
-        Assert.Equal("Post-R1", response.Headers.GetValues("X-R1-Scope").Single());
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("benton-arcgis-layer-catalog-fy2025", response.Headers.GetValues("X-Atlas-Source").Single());
 
         using var json = await ReadJsonAsync(response);
-        Assert.Equal("Post-R1", json.RootElement.GetProperty("scope").GetString());
+        Assert.Equal(JsonValueKind.Array, json.RootElement.ValueKind);
+        Assert.True(json.RootElement.GetArrayLength() > 0, "Layer catalog should not be empty");
+
+        // The catalog must contain the well-known 'parcels' layer with
+        // the controller's 'enabled = true' default for canonical layers.
+        var parcelsLayer = json.RootElement.EnumerateArray()
+            .FirstOrDefault(l => l.GetProperty("id").GetString() == "parcels");
+        Assert.True(parcelsLayer.ValueKind == JsonValueKind.Object,
+            "Catalog must include the 'parcels' layer");
+        Assert.True(parcelsLayer.GetProperty("enabled").GetBoolean());
+        Assert.Equal("Benton County ArcGIS FeatureServer",
+            parcelsLayer.GetProperty("source").GetString());
     }
 
+    // CI-HYGIENE-4C (#739): the original assertion expected a fabricated
+    // status of "OPERATIONAL" sourced from ITerrasyncService.GetGovernmentExcellenceAsync().
+    // That contract was deliberately retired in favor of an evidence-only
+    // shape: the controller now emits LOCAL_LIVE / LOCAL_LIVE_WITH_EXTERNAL_SYNC
+    // based on actual TerraSync reachability and live parcel counts. See
+    // GovernmentController.GetGovernmentExcellence — the comments explicitly
+    // forbid claiming "live AI swarm, optimization, satisfaction, or SLA
+    // metrics" not backed by observation. With the test factory's
+    // IsHealthyAsync mocked to true, the happy path is LOCAL_LIVE_WITH_EXTERNAL_SYNC.
     [Fact]
-    public async Task Government_Excellence_DynamicHappyPath_Returns200()
+    public async Task Government_Excellence_EvidenceOnlyHappyPath_Returns200()
     {
         await using var factory = new R14Phase2BControllerFactory(new R14Phase2BControllerFactoryOptions());
         using var client = factory.CreateAnonymousClient();
@@ -99,17 +125,30 @@ public sealed class R14Phase2BRemainingP0ControllerIntegrationTests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         using var json = await ReadJsonAsync(response);
-        Assert.Equal("OPERATIONAL", json.RootElement.GetProperty("status").GetString());
-        Assert.Equal("Benton County", json.RootElement.GetProperty("county").GetProperty("name").GetString());
+        Assert.Equal("LOCAL_LIVE_WITH_EXTERNAL_SYNC",
+            json.RootElement.GetProperty("status").GetString());
+        Assert.Equal("Benton County",
+            json.RootElement.GetProperty("county").GetProperty("name").GetString());
+        Assert.Equal("LIVE_DB",
+            json.RootElement.GetProperty("propertyAssessment").GetProperty("dataSource").GetString());
+        Assert.Equal("AVAILABLE",
+            json.RootElement.GetProperty("externalSystems")
+                .GetProperty("terrasync").GetProperty("status").GetString());
     }
 
+    // CI-HYGIENE-4C (#739): the original assertion expected
+    // dataSource = "STATIC_FALLBACK" and a "realTimeSync" feature flag,
+    // both sourced from a NullCountyConfig fallback path through
+    // ITerrasyncService.GetCountyConfigAsync(). The evidence-only
+    // controller does not call GetCountyConfigAsync at all — it builds
+    // the response from live DB parcel counts and observed terrasync
+    // reachability, with explicit "REFERENCE_ONLY" / "PILOT_ONLY" stance
+    // on legacy systems and governed execution. Asserting that real
+    // contract.
     [Fact]
-    public async Task Government_CountyConfig_FallbackContract_Returns200()
+    public async Task Government_CountyConfig_EvidenceContract_Returns200()
     {
-        await using var factory = new R14Phase2BControllerFactory(new R14Phase2BControllerFactoryOptions
-        {
-            NullCountyConfig = true,
-        });
+        await using var factory = new R14Phase2BControllerFactory(new R14Phase2BControllerFactoryOptions());
         using var client = factory.CreateAnonymousClient();
 
         var response = await client.GetAsync("/api/government/county-config");
@@ -117,10 +156,28 @@ public sealed class R14Phase2BRemainingP0ControllerIntegrationTests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         using var json = await ReadJsonAsync(response);
-        Assert.Equal("STATIC_FALLBACK", json.RootElement.GetProperty("dataSource").GetString());
-        Assert.False(json.RootElement.GetProperty("features").GetProperty("realTimeSync").GetBoolean());
+        Assert.Equal("Benton County",
+            json.RootElement.GetProperty("county").GetProperty("name").GetString());
+        Assert.Equal("LIVE_DB",
+            json.RootElement.GetProperty("evidence").GetProperty("parcelDataSource").GetString());
+        Assert.True(
+            json.RootElement.GetProperty("features").GetProperty("terrasyncHealth").GetBoolean(),
+            "IsHealthyAsync mock returns true; terrasyncHealth should reflect that observation");
+        Assert.False(
+            json.RootElement.GetProperty("features").GetProperty("aiSwarm").GetBoolean(),
+            "Evidence-only contract must not claim AI swarm without observation");
+        Assert.Equal("PILOT_ONLY",
+            json.RootElement.GetProperty("deployment").GetProperty("governedExecution").GetString());
+        Assert.Equal("REFERENCE_ONLY",
+            json.RootElement.GetProperty("legacySystem").GetProperty("status").GetString());
     }
 
+    // CI-HYGIENE-4C (#739): the original test set ThrowGovernmentExcellence
+    // to make ITerrasyncService.GetGovernmentExcellenceAsync() throw, but
+    // the evidence-only controller does not call that method — it calls
+    // IsHealthyAsync(). The factory option semantic now routes the throw
+    // to IsHealthyAsync (the real dependency) so the controller's catch
+    // block fires and returns the documented 500 contract.
     [Fact]
     public async Task Government_Excellence_ServiceFailure_Returns500()
     {
@@ -220,10 +277,13 @@ public sealed class R14Phase2BRemainingP0ControllerIntegrationTests
 
 internal sealed class R14Phase2BControllerFactoryOptions
 {
+    /// <summary>
+    /// CI-HYGIENE-4C (#739): the evidence-only Government /excellence
+    /// endpoint depends on <see cref="ITerrasyncService.IsHealthyAsync"/>,
+    /// not GetGovernmentExcellenceAsync. When true, the factory makes
+    /// IsHealthyAsync throw so the controller's catch block fires.
+    /// </summary>
     public bool ThrowGovernmentExcellence { get; init; }
-    public bool NullGovernmentExcellence { get; init; }
-    public bool ThrowCountyConfig { get; init; }
-    public bool NullCountyConfig { get; init; }
     public bool PartialCompliance { get; init; }
     public bool ThrowCompliance { get; init; }
 }
@@ -388,120 +448,22 @@ internal sealed class R14Phase2BControllerFactory : WebApplicationFactory<ApiPro
 
         var terrasync = new Mock<ITerrasyncService>();
 
+        // CI-HYGIENE-4C (#739): the Government controllers no longer call
+        // GetGovernmentExcellenceAsync() or GetCountyConfigAsync(). The
+        // evidence-only refactor sources status from IsHealthyAsync() and
+        // live DB parcel counts. Setups for the deprecated rich-DTO methods
+        // were removed; the only mock surface that matters is IsHealthyAsync.
         if (_options.ThrowGovernmentExcellence)
         {
             terrasync
-                .Setup(service => service.GetGovernmentExcellenceAsync())
+                .Setup(service => service.IsHealthyAsync())
                 .ThrowsAsync(new InvalidOperationException("R14 phase2b government excellence failure"));
         }
-        else if (_options.NullGovernmentExcellence)
-        {
-            terrasync
-                .Setup(service => service.GetGovernmentExcellenceAsync())
-                .ReturnsAsync((TerrasyncGovernmentExcellence?)null);
-        }
         else
         {
             terrasync
-                .Setup(service => service.GetGovernmentExcellenceAsync())
-                .ReturnsAsync(new TerrasyncGovernmentExcellence
-                {
-                    Status = "OPERATIONAL",
-                    County = new TerrasyncCounty
-                    {
-                        Name = "Benton County",
-                        State = "Washington",
-                        Fips = "53005",
-                        Parcels = 89247,
-                        AssessmentSystem = "Harris PACS 9.0",
-                    },
-                    Excellence = new TerrasyncExcellence
-                    {
-                        OperationalStatus = "LIVE",
-                        DemoMode = false,
-                        Compliance = "FISMA-HIGH",
-                        Availability = "99.9%",
-                        CitizenSatisfaction = "99.8%",
-                        TranscendenceLevel = "GOVERNMENT_TRANSCENDED",
-                    },
-                    Services = new TerrasyncServices
-                    {
-                        PropertyAssessment = "ACTIVE",
-                        AiSwarm = "1008_AGENTS_ACTIVE",
-                        QuantumOptimization = "ENABLED",
-                        RealTimeSync = "ACTIVE",
-                    },
-                    Metrics = new TerrasyncMetrics
-                    {
-                        ResponseTime = "< 150ms",
-                        Accuracy = "99.9%",
-                        SystemHealth = "HEALTHY",
-                        Uptime = "99.99%",
-                    },
-                    Timestamp = DateTime.UtcNow,
-                });
-        }
-
-        if (_options.ThrowCountyConfig)
-        {
-            terrasync
-                .Setup(service => service.GetCountyConfigAsync())
-                .ThrowsAsync(new InvalidOperationException("R14 phase2b county config failure"));
-        }
-        else if (_options.NullCountyConfig)
-        {
-            terrasync
-                .Setup(service => service.GetCountyConfigAsync())
-                .ReturnsAsync((TerrasyncCountyConfig?)null);
-        }
-        else
-        {
-            terrasync
-                .Setup(service => service.GetCountyConfigAsync())
-                .ReturnsAsync(new TerrasyncCountyConfig
-                {
-                    County = new TerrasyncCountyInfo
-                    {
-                        Id = "benton",
-                        Name = "Benton County",
-                        State = "Washington",
-                        Fips = "53005",
-                        Timezone = "America/Los_Angeles",
-                        ParcelCount = 89247,
-                    },
-                    LegacySystem = new TerrasyncLegacySystem
-                    {
-                        Name = "Harris PACS",
-                        Version = "9.0",
-                        Enabled = true,
-                        Jurisdiction = "BENTON_WA",
-                        SyncInterval = "15 minutes",
-                        LastSync = DateTime.UtcNow.AddMinutes(-3),
-                    },
-                    Deployment = new TerrasyncDeployment
-                    {
-                        Environment = "PRODUCTION",
-                        Mode = "BENTON_COUNTY_LIVE",
-                        DemoMode = false,
-                        MultiCounty = false,
-                    },
-                    Features = new TerrasyncFeatures
-                    {
-                        AiSwarmEnabled = true,
-                        QuantumOptimization = true,
-                        RealTimeSync = true,
-                        AdvancedAnalytics = true,
-                        ComplianceMonitoring = true,
-                    },
-                    Sla = new TerrasyncSla
-                    {
-                        Availability = 99.9,
-                        P95Latency = 150,
-                        ErrorRate = 0.1,
-                        Accuracy = 99.9,
-                    },
-                    Timestamp = DateTime.UtcNow,
-                });
+                .Setup(service => service.IsHealthyAsync())
+                .ReturnsAsync(true);
         }
 
         terrasync
@@ -510,9 +472,6 @@ internal sealed class R14Phase2BControllerFactory : WebApplicationFactory<ApiPro
         terrasync
             .Setup(service => service.GetBentonCountyStatusAsync())
             .ReturnsAsync((TerrasyncCountyStatus?)null);
-        terrasync
-            .Setup(service => service.IsHealthyAsync())
-            .ReturnsAsync(true);
 
         services.AddScoped(_ => terrasync.Object);
     }
