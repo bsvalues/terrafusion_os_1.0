@@ -187,6 +187,14 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawPropSuppAssoc>
     LegacyPacsRawPropSuppAssocs { get; set; } = null!;
 
+  // Slice S1 (SYNC-POP-4a): property/parcel master landing — the
+  // identity table that anchors every downstream sale, owner,
+  // improvement, land, and value record. Required by the upcoming
+  // truth_pacs.parcel_spine promoter (SYNC-POP-4b) and the
+  // canonical_tf.tf_parcel projector (SYNC-POP-4c).
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawProperty>
+    LegacyPacsRawProperties { get; set; } = null!;
+
   // Slice B1-A: account landing — the global party/entity identity
   // record with the rich PII surface. Block B's first stop.
   public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawAccount>
@@ -953,6 +961,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // Slice S2-A: prop_supp_assoc landing — supp-aware-join pointer.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawPropSuppAssocConfiguration());
+
+    // Slice S1 (SYNC-POP-4a): property/parcel master landing — the
+    // identity table for the doctrine parcel pipeline.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawPropertyConfiguration());
 
     // Slice B1-A: account landing — Block B's PII-rich identity table.
     modelBuilder.ApplyConfiguration(
