@@ -210,6 +210,19 @@ function collectBlockers(loaded) {
     });
   }
 
+  if (
+    loaded.runtimeCandidateSet.present &&
+    loaded.countyRuntimeContract.present &&
+    Number(runtimeCandidateSet?.summary?.runtimeProven ?? -1) !==
+      Number(countyRuntimeContract?.summary?.runtimeContractPass ?? -2)
+  ) {
+    blocker(
+      blockers,
+      'countyRuntimeContract',
+      'County runtime contract pass count does not match runtime candidate set.'
+    );
+  }
+
   if (loaded.countyRuntimeContract.present && countyRuntimeContract?.passed !== true) {
     blocker(blockers, 'countyRuntimeContract', 'County-neutral runtime contract is not passing.');
   }

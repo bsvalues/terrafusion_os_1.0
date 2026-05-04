@@ -292,6 +292,33 @@ test('readiness packet blocks crosswalk and candidate set runtime count disagree
   );
 });
 
+test('readiness packet blocks candidate set and county runtime contract count disagreement', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/county-runtime-contract.json', {
+    passed: true,
+    summary: {
+      runtimeContractPass: 2,
+      runtimeContractBlocked: 37,
+      prohibit39CountyRuntimeClaim: true,
+    },
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(report.shipBlockers.some(item => item.source === 'countyRuntimeContract'));
+  assert.ok(
+    report.shipBlockers.some(item => item.message.includes('does not match runtime candidate set'))
+  );
+});
+
 test('readiness packet blocks source lineage artifact with no checked candidates', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-row-source-lineage-proof.json', {
