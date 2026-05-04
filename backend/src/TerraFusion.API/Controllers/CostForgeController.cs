@@ -23,7 +23,8 @@ namespace TerraFusion.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-[AllowAnonymous]
+[Authorize]
+[RequiresPermission("access:costforge")]
 public class CostForgeController : ControllerBase
 {
   private readonly ICostForgeService _costForgeService;
@@ -333,6 +334,7 @@ public class CostForgeController : ControllerBase
   /// Integrates with frontend EnhancedCostCalculator component
   /// </summary>
   [HttpPost("calculate")]
+  [RequiresPermission("calculate:property-cost")]
   public async Task<ActionResult<CostAnalysisDto>> CalculatePropertyCost([FromBody] PropertyCostCalculationRequest request)
   {
     var startTime = DateTime.UtcNow;
@@ -953,6 +955,7 @@ public class CostForgeController : ControllerBase
   /// Supports Washington State compliance and Harris PACS integration
   /// </summary>
   [HttpPost("batch-calculate")]
+  [RequiresPermission("calculate:batch-valuation")]
   public async Task<ActionResult<BatchValuationResultDto>> BatchCalculateValuations([FromBody] BatchValuationRequestDto request)
   {
     var countyContext = await ResolveCountyContextAsync();
@@ -1143,6 +1146,7 @@ public class CostForgeController : ControllerBase
   /// Powers EnhancedDataVisualization component charts
   /// </summary>
   [HttpGet("{propertyId}/breakdown")]
+  [RequiresPermission("read:cost-breakdown")]
   public async Task<ActionResult<CostBreakdownDto>> GetCostBreakdown(Guid propertyId)
   {
     try
@@ -1179,6 +1183,7 @@ public class CostForgeController : ControllerBase
   /// Enhanced analysis for property assessment validation
   /// </summary>
   [HttpGet("compare/{propertyId1}/{propertyId2}")]
+  [RequiresPermission("read:cost-comparison")]
   public async Task<ActionResult<CostComparisonDto>> CompareCosts(Guid propertyId1, Guid propertyId2)
   {
     try
@@ -1222,6 +1227,7 @@ public class CostForgeController : ControllerBase
   /// Supports multi-year assessment projections
   /// </summary>
   [HttpGet("{propertyId}/forecast")]
+  [RequiresPermission("read:cost-forecast")]
   public async Task<ActionResult<CostForecastDto>> GetCostForecast(Guid propertyId, [FromQuery] int years = 5)
   {
     try
@@ -1263,6 +1269,7 @@ public class CostForgeController : ControllerBase
   /// Washington State county-specific adjustments
   /// </summary>
   [HttpGet("factors/{region}")]
+  [RequiresPermission("read:cost-factors")]
   public async Task<ActionResult<IEnumerable<TerraFusion.Core.DTOs.CostFactorDto>>> GetCostFactors(string region)
   {
     try
@@ -1287,6 +1294,7 @@ public class CostForgeController : ControllerBase
   /// Powers calculation engine accuracy
   /// </summary>
   [HttpGet("matrix")]
+  [RequiresPermission("read:cost-matrix")]
   public async Task<ActionResult<CostMatrixDto>> GetCostMatrix([FromQuery] string buildingType, [FromQuery] string region)
   {
     try
@@ -1317,6 +1325,7 @@ public class CostForgeController : ControllerBase
   /// Powers CostForgeQuantumDashboard monitoring
   /// </summary>
   [HttpGet("status")]
+  [RequiresPermission("read:system-status")]
   public async Task<ActionResult> GetSystemStatus()
   {
     try
@@ -1344,6 +1353,7 @@ public class CostForgeController : ControllerBase
   /// Supports 50,000+ AI agents across 39+ counties
   /// </summary>
   [HttpGet("agents/status")]
+  [RequiresPermission("read:ai-agents")]
   public async Task<ActionResult<AIAgentStatusDto>> GetAIAgentStatus()
   {
     try
@@ -1367,6 +1377,7 @@ public class CostForgeController : ControllerBase
   /// Autonomous self-healing capability
   /// </summary>
   [HttpPost("agents/scale")]
+  [RequiresPermission("manage:ai-agents")]
   public async Task<ActionResult> ScaleAIAgents([FromBody] ScaleAgentsRequest request)
   {
     try
@@ -1400,6 +1411,7 @@ public class CostForgeController : ControllerBase
   /// Championship-level performance analytics
   /// </summary>
   [HttpGet("metrics")]
+  [RequiresPermission("read:performance-metrics")]
   public async Task<ActionResult<CostForgePerformanceMetricsDto>> GetPerformanceMetrics()
   {
     try
@@ -1420,6 +1432,7 @@ public class CostForgeController : ControllerBase
   /// Reports source-ingestion status from TerraFusion runtime tables.
   /// </summary>
   [HttpPost("sync/source-status")]
+  [RequiresPermission("sync:external-systems")]
   public async Task<ActionResult<HarrisSyncResultDto>> SyncWithHarrisPACS([FromBody] HarrisSyncRequestDto request)
   {
     var countyContext = await ResolveCountyContextAsync();
