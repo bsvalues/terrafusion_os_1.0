@@ -305,6 +305,15 @@ run('Runtime candidate set', 'pnpm', ['run', 'truth:runtime-candidate-set'], {
   timeout: 180_000,
 });
 
+run(
+  'Washington 39-county data crosswalk',
+  'pnpm',
+  ['run', 'truth:washington-39-county-data-crosswalk'],
+  {
+    timeout: 180_000,
+  }
+);
+
 run('Runtime TerraFusion DB identity', 'pnpm', ['run', 'truth:runtime-db-identity'], {
   timeout: 180_000,
 });
