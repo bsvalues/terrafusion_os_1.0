@@ -545,6 +545,13 @@ function artifactBlockers(value) {
 function artifactWarnings(value) {
   const posture =
     value?.status === 'PASS_WITH_WARNINGS' ? ['Artifact status is PASS_WITH_WARNINGS.'] : [];
+  const countWarnings = [];
+  if (Number(value?.warningCount ?? 0) > 0) {
+    countWarnings.push(`Artifact warningCount is ${Number(value.warningCount)}.`);
+  }
+  if (Number(value?.summary?.warningCount ?? 0) > 0) {
+    countWarnings.push(`Artifact summary.warningCount is ${Number(value.summary.warningCount)}.`);
+  }
   const direct = Array.isArray(value?.warnings) ? value.warnings : [];
   const summary = Array.isArray(value?.summary?.warnings) ? value.summary.warnings : [];
   const rowWarnings = Array.isArray(value?.rows)
@@ -562,9 +569,16 @@ function artifactWarnings(value) {
       )
     : [];
 
-  return [...new Set([...posture, ...direct, ...summary, ...rowWarnings, ...proofWarnings])].map(
-    item => String(item)
-  );
+  return [
+    ...new Set([
+      ...posture,
+      ...countWarnings,
+      ...direct,
+      ...summary,
+      ...rowWarnings,
+      ...proofWarnings,
+    ]),
+  ].map(item => String(item));
 }
 
 function capList(items, limit = 20) {

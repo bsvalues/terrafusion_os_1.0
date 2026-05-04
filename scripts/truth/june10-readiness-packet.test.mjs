@@ -437,6 +437,52 @@ test('readiness packet preserves PASS_WITH_WARNINGS from artifact status', () =>
   assert.match(markdown, /dbIdentity: Artifact status is PASS_WITH_WARNINGS\./);
 });
 
+test('readiness packet preserves numeric warning counts from artifacts', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-identity.json', {
+    endpointStatus: 200,
+    passed: true,
+    warningCount: 2,
+    summary: {
+      warningCount: 1,
+    },
+    blockers: [],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 0);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'PASS_WITH_WARNINGS');
+  assert.ok(
+    report.warnings.some(
+      item => item.source === 'dbIdentity' && item.message === 'Artifact warningCount is 2.'
+    )
+  );
+  assert.ok(
+    report.warnings.some(
+      item => item.source === 'dbIdentity' && item.message === 'Artifact summary.warningCount is 1.'
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.warnings.items.includes('Artifact warningCount is 2.')
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.warnings.items.includes('Artifact summary.warningCount is 1.')
+  );
+  const markdown = fs.readFileSync(
+    path.join(root, 'generated/truth/june10-readiness-packet.md'),
+    'utf8'
+  );
+  assert.match(markdown, /dbIdentity: Artifact warningCount is 2\./);
+  assert.match(markdown, /dbIdentity: Artifact summary\.warningCount is 1\./);
+});
+
 test('readiness packet blocks candidate set that promotes another county', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-candidate-set.json', {
