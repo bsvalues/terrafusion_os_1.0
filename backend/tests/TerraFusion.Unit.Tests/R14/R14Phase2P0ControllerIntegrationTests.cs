@@ -83,11 +83,28 @@ public sealed class R14Phase2P0ControllerIntegrationTests
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
+    // CI-HYGIENE-D (#758): the original test name asserted the deprecated
+    // "controller allows claims without policy permission, returns 200"
+    // contract — literally the [AllowAnonymous]-style permissive behavior
+    // PR #755 deliberately removed when CostForgeController was hardened
+    // with [Authorize] + [RequiresPermission("access:costforge")] at the
+    // class gate and [RequiresPermission("calculate:property-cost")] at
+    // the action gate. The contract is now: presenting valid claims
+    // WITHOUT the per-action permission must be denied. This rewrite
+    // preserves the test intent (verifying the gate works) and updates
+    // the assertion to the post-#755 evidence-only + per-action contract.
+    // See backend/src/TerraFusion.API/Controllers/CostForgeController.cs
+    // ~line 26 (class gate) and ~line 337 (action gate).
     [Fact]
-    public async Task CostForge_Calculate_ControllerAllowsClaimsWithoutPolicyPermission_Returns200()
+    public async Task CostForge_Calculate_ClaimsWithoutPolicyPermission_Returns403()
     {
         using var factory = await CreateFactoryAsync();
-        using var client = factory.CreateAuthenticatedClient(roles: ["Assessor"]);
+        // Authenticated with the class-level gate (access:costforge) but
+        // WITHOUT the action-level gate (calculate:property-cost) — this
+        // must be denied by the RequiresPermission policy handler.
+        using var client = factory.CreateAuthenticatedClient(
+            roles: ["Assessor"],
+            perms: ["access:costforge"]);
 
         var response = await client.PostAsJsonAsync("/api/costforge/calculate", new
         {
@@ -97,7 +114,7 @@ public sealed class R14Phase2P0ControllerIntegrationTests
             BuildingType = "SFR",
         });
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -203,11 +220,25 @@ public sealed class R14Phase2P0ControllerIntegrationTests
         payload!.ParcelNumber.Should().Be(R14Phase2ControllerFactory.BentonParcelId);
     }
 
+    // CI-HYGIENE-D (#758): pre-#755, the [Authorize] + RequiresPermission
+    // gates on PropertiesController did not intercept this unauthenticated
+    // POST before model validation, so a malformed body reached the model
+    // binder and produced a 400. After #755 hardened the controller, the
+    // auth pipeline returns 401/403 BEFORE validation runs, so the test
+    // never reached the validation path it was asserting against. The fix
+    // is to AUTHENTICATE the client with read:properties (class gate is
+    // [Authorize]; action declares [RequiresPermission("read:properties")]
+    // for the valuations endpoint per controller convention) so the
+    // request reaches model validation, where the malformed body
+    // (EstimatedValue=-1, Confidence=2) still produces the genuine 400
+    // this test was designed to verify.
     [Fact]
     public async Task Properties_CreateValuation_ValidationFailure_Returns400()
     {
         using var factory = await CreateFactoryAsync();
-        using var client = factory.CreateAuthenticatedClient(roles: ["Assessor"]);
+        using var client = factory.CreateAuthenticatedClient(
+            roles: ["Assessor"],
+            perms: ["read:properties"]);
 
         var response = await client.PostAsJsonAsync(
             $"/api/properties/{R14Phase2ControllerFactory.BentonPropertyId}/valuations",
@@ -220,8 +251,18 @@ public sealed class R14Phase2P0ControllerIntegrationTests
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
+    // CI-HYGIENE-D (#758): pre-#755 the missing-countyId path returned
+    // BadRequest(400). After the AUTH hardening (#755), follow-up #757,
+    // and the Sovereign County Model alignment in #759, PropertiesController
+    // .TryResolveCountyId now returns Forbid() (403) when the countyId
+    // claim is missing or unparseable. This is the correct semantics:
+    // the user is authenticated but lacks a valid county scope, so the
+    // request is forbidden, not malformed. See
+    // backend/src/TerraFusion.API/Controllers/PropertiesController.cs
+    // ~lines 76-87 (TryResolveCountyId returns Forbid() on missing/bad
+    // countyId claim).
     [Fact]
-    public async Task Properties_GetById_MissingCountyClaim_Returns400()
+    public async Task Properties_GetById_MissingCountyClaim_Returns403()
     {
         using var factory = await CreateFactoryAsync();
         using var client = factory.CreateAuthenticatedClient(
@@ -231,7 +272,7 @@ public sealed class R14Phase2P0ControllerIntegrationTests
 
         var response = await client.GetAsync($"/api/properties/{R14Phase2ControllerFactory.BentonPropertyId}");
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     [Fact]
