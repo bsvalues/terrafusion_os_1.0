@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-04T16:34:15.966Z",
+  "generatedAt": "2026-05-04T16:37:08.051Z",
   "status": "FAIL",
   "artifacts": {
     "crosswalk": {
@@ -107,6 +107,50 @@
     {
       "source": "productLoadLedger",
       "message": "TerraFusion DB product load ledger is not lineage-proven."
+    }
+  ],
+  "executionQueue": [
+    {
+      "source": "dbIdentity",
+      "ownerLane": "Claude Code / Sync DB, audited by Codex",
+      "nextCommand": "pnpm run truth:runtime-db-identity",
+      "requiredResolution": "Prove the running API is connected to the intended TerraFusion DB before any row count can support readiness."
+    },
+    {
+      "source": "dbContent",
+      "ownerLane": "Claude Code / Sync DB, audited by Codex",
+      "nextCommand": "pnpm run truth:runtime-db-content",
+      "requiredResolution": "Prove product runtime tables and row shapes exist inside TerraFusion DB only."
+    },
+    {
+      "source": "bentonParcelSanity",
+      "ownerLane": "Codex after TerraFusion DB content is refreshed",
+      "nextCommand": "pnpm run truth:benton-parcel-count-sanity",
+      "requiredResolution": "Prove Benton parcel endpoint counts active/current distinct parcels, not raw historical or duplicate property rows."
+    },
+    {
+      "source": "saleQualification",
+      "ownerLane": "Codex after TerraFusion DB sales/qualification tables are refreshed",
+      "nextCommand": "pnpm run truth:runtime-sale-qualification",
+      "requiredResolution": "Prove Benton sales qualification lineage from TerraFusion DB runtime tables, with no source-system dependency in product runtime."
+    },
+    {
+      "source": "bentonPilotClosure",
+      "ownerLane": "Codex after all Benton data gates are green",
+      "nextCommand": "pnpm run truth:benton-runtime-pilot-closure",
+      "requiredResolution": "Prove Benton runtime pilot closure only after DB identity, content, load receipts, parcel sanity, and sale qualification pass."
+    },
+    {
+      "source": "countyRuntimeContract",
+      "ownerLane": "Codex after TerraFusion DB receipts",
+      "nextCommand": "pnpm run truth:county-runtime-contract",
+      "requiredResolution": "Each runtime county must pass identity, active/current semantics, product-load receipt, no fallback, and no PII projection checks."
+    },
+    {
+      "source": "productLoadLedger",
+      "ownerLane": "Claude Code / Sync DB, audited by Codex",
+      "nextCommand": "pnpm run truth:terrafusion-db-product-load-ledger",
+      "requiredResolution": "Emit/read product-load receipts proving TerraFusion DB table rows were loaded through the approved ingestion path."
     }
   ],
   "warnings": []

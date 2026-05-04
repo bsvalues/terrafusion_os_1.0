@@ -60,6 +60,25 @@ Current launch posture is:
 | E. Live County Studio UAT | Codex | Prove the full user workflow with real TerraFusion DB data and screenshots. | browser/screenshots, evidence packet, downstream receipts |
 | F. Deployment Hardening | Codex | Make readiness enforceable and deploy-safe. | `readiness:june10`, CI artifact, Rust kernel smoke, release smoke |
 
+## Parallel Execution Contract
+
+Work can proceed in parallel, but only across these lanes:
+
+| Lane | Allowed Work | Must Not Do |
+|---|---|---|
+| Claude Code / Sync DB | Load TerraFusion DB, emit product-load receipts, prove DB identity/content. | Product UI work, direct product runtime source-system access, readiness claim changes. |
+| Codex / Readiness Gates | Build truth gates, packet blockers, county-neutral runtime contract, UAT proof. | Mutate source data, bypass TerraFusion DB, invent rows, touch ingestion implementation without explicit handoff. |
+| Codex / Product UAT | Run County Studio workflow after data gates pass, capture screenshots and defects. | Start UAT from provisional row counts or unproven DB identity. |
+| Deployment Hardening | Package, smoke, deployment config, CI artifact capture after readiness gates are green. | Add features after the cut line. |
+
+The operator source of truth is:
+
+```bash
+pnpm run truth:june10-readiness-packet
+```
+
+That packet must list every open blocker with an owner lane and next command. If the packet is red, June 10 readiness is red.
+
 ## Ship Blockers
 
 - Running API TerraFusion DB identity is not proven.

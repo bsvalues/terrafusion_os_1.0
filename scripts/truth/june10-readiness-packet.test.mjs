@@ -74,6 +74,10 @@ test('readiness packet fails when required runtime truth artifacts are red', () 
   assert.equal(report.status, 'FAIL');
   assert.ok(report.shipBlockers.length >= 1);
   assert.ok(report.shipBlockers.some(item => item.source === 'dbIdentity'));
+  assert.ok(report.executionQueue.some(item => item.source === 'dbIdentity'));
+  assert.ok(
+    report.executionQueue.some(item => item.nextCommand === 'pnpm run truth:runtime-db-identity')
+  );
 });
 
 test('readiness packet passes when all required runtime truth artifacts are green', () => {
@@ -89,4 +93,5 @@ test('readiness packet passes when all required runtime truth artifacts are gree
   );
   assert.equal(report.status, 'PASS');
   assert.equal(report.shipBlockers.length, 0);
+  assert.deepEqual(report.executionQueue, []);
 });

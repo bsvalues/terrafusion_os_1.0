@@ -1,6 +1,6 @@
 # June 10 Readiness Packet
 
-Generated: 2026-05-04T16:34:15.966Z
+Generated: 2026-05-04T16:37:08.051Z
 
 ## Status
 
@@ -47,6 +47,16 @@ Generated: 2026-05-04T16:34:15.966Z
 - bentonPilotClosure: Required artifact is missing: generated/truth/benton-runtime-pilot-closure.json.
 - countyRuntimeContract: County-neutral runtime contract is not passing.
 - productLoadLedger: TerraFusion DB product load ledger is not lineage-proven.
+
+## Next Execution Queue
+
+- dbIdentity: Claude Code / Sync DB, audited by Codex; run `pnpm run truth:runtime-db-identity`; Prove the running API is connected to the intended TerraFusion DB before any row count can support readiness.
+- dbContent: Claude Code / Sync DB, audited by Codex; run `pnpm run truth:runtime-db-content`; Prove product runtime tables and row shapes exist inside TerraFusion DB only.
+- bentonParcelSanity: Codex after TerraFusion DB content is refreshed; run `pnpm run truth:benton-parcel-count-sanity`; Prove Benton parcel endpoint counts active/current distinct parcels, not raw historical or duplicate property rows.
+- saleQualification: Codex after TerraFusion DB sales/qualification tables are refreshed; run `pnpm run truth:runtime-sale-qualification`; Prove Benton sales qualification lineage from TerraFusion DB runtime tables, with no source-system dependency in product runtime.
+- bentonPilotClosure: Codex after all Benton data gates are green; run `pnpm run truth:benton-runtime-pilot-closure`; Prove Benton runtime pilot closure only after DB identity, content, load receipts, parcel sanity, and sale qualification pass.
+- countyRuntimeContract: Codex after TerraFusion DB receipts; run `pnpm run truth:county-runtime-contract`; Each runtime county must pass identity, active/current semantics, product-load receipt, no fallback, and no PII projection checks.
+- productLoadLedger: Claude Code / Sync DB, audited by Codex; run `pnpm run truth:terrafusion-db-product-load-ledger`; Emit/read product-load receipts proving TerraFusion DB table rows were loaded through the approved ingestion path.
 
 ## Warnings
 

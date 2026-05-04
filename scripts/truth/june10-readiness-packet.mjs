@@ -27,6 +27,57 @@ const artifacts = {
   bentonPilotClosure: 'benton-runtime-pilot-closure.json',
 };
 
+const blockerRunbook = {
+  crosswalk: {
+    ownerLane: 'Codex',
+    nextCommand: 'pnpm run truth:washington-39-county-data-crosswalk',
+    requiredResolution:
+      'Keep 39-county runtime claims prohibited unless every promoted county has TerraFusion DB runtime proof.',
+  },
+  countyRuntimeContract: {
+    ownerLane: 'Codex after TerraFusion DB receipts',
+    nextCommand: 'pnpm run truth:county-runtime-contract',
+    requiredResolution:
+      'Each runtime county must pass identity, active/current semantics, product-load receipt, no fallback, and no PII projection checks.',
+  },
+  dbIdentity: {
+    ownerLane: 'Claude Code / Sync DB, audited by Codex',
+    nextCommand: 'pnpm run truth:runtime-db-identity',
+    requiredResolution:
+      'Prove the running API is connected to the intended TerraFusion DB before any row count can support readiness.',
+  },
+  dbContent: {
+    ownerLane: 'Claude Code / Sync DB, audited by Codex',
+    nextCommand: 'pnpm run truth:runtime-db-content',
+    requiredResolution:
+      'Prove product runtime tables and row shapes exist inside TerraFusion DB only.',
+  },
+  productLoadLedger: {
+    ownerLane: 'Claude Code / Sync DB, audited by Codex',
+    nextCommand: 'pnpm run truth:terrafusion-db-product-load-ledger',
+    requiredResolution:
+      'Emit/read product-load receipts proving TerraFusion DB table rows were loaded through the approved ingestion path.',
+  },
+  bentonParcelSanity: {
+    ownerLane: 'Codex after TerraFusion DB content is refreshed',
+    nextCommand: 'pnpm run truth:benton-parcel-count-sanity',
+    requiredResolution:
+      'Prove Benton parcel endpoint counts active/current distinct parcels, not raw historical or duplicate property rows.',
+  },
+  saleQualification: {
+    ownerLane: 'Codex after TerraFusion DB sales/qualification tables are refreshed',
+    nextCommand: 'pnpm run truth:runtime-sale-qualification',
+    requiredResolution:
+      'Prove Benton sales qualification lineage from TerraFusion DB runtime tables, with no source-system dependency in product runtime.',
+  },
+  bentonPilotClosure: {
+    ownerLane: 'Codex after all Benton data gates are green',
+    nextCommand: 'pnpm run truth:benton-runtime-pilot-closure',
+    requiredResolution:
+      'Prove Benton runtime pilot closure only after DB identity, content, load receipts, parcel sanity, and sale qualification pass.',
+  },
+};
+
 function rel(filePath) {
   return path.relative(repoRoot, filePath).replaceAll(path.sep, '/');
 }
@@ -185,6 +236,27 @@ function buildDomainSummary(loaded) {
   };
 }
 
+function buildExecutionQueue(blockers) {
+  const seen = new Set();
+
+  return blockers
+    .filter(item => !seen.has(item.source) && seen.add(item.source))
+    .map(item => {
+      const runbook = blockerRunbook[item.source] ?? {
+        ownerLane: 'Codex',
+        nextCommand: 'pnpm run readiness:june10',
+        requiredResolution: 'Investigate and clear this readiness blocker.',
+      };
+
+      return {
+        source: item.source,
+        ownerLane: runbook.ownerLane,
+        nextCommand: runbook.nextCommand,
+        requiredResolution: runbook.requiredResolution,
+      };
+    });
+}
+
 function renderMarkdown(report) {
   return [
     '# June 10 Readiness Packet',
@@ -233,6 +305,15 @@ function renderMarkdown(report) {
       ? report.shipBlockers.map(item => `- ${item.source}: ${item.message}`)
       : ['- none']),
     '',
+    '## Next Execution Queue',
+    '',
+    ...(report.executionQueue.length
+      ? report.executionQueue.map(
+          item =>
+            `- ${item.source}: ${item.ownerLane}; run \`${item.nextCommand}\`; ${item.requiredResolution}`
+        )
+      : ['- none']),
+    '',
     '## Warnings',
     '',
     ...(report.warnings.length
@@ -251,6 +332,7 @@ function renderMarkdown(report) {
 function main() {
   const loaded = Object.fromEntries(Object.keys(artifacts).map(name => [name, readArtifact(name)]));
   const { blockers, warnings } = collectBlockers(loaded);
+  const executionQueue = buildExecutionQueue(blockers);
   const report = {
     generatedAt: new Date().toISOString(),
     status: blockers.length === 0 ? (warnings.length ? 'PASS_WITH_WARNINGS' : 'PASS') : 'FAIL',
@@ -267,6 +349,7 @@ function main() {
     ),
     summary: buildDomainSummary(loaded),
     shipBlockers: blockers,
+    executionQueue,
     warnings,
   };
 
