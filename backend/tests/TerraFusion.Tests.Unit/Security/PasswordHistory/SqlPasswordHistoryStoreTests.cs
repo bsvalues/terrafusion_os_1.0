@@ -11,33 +11,61 @@ using Task = System.Threading.Tasks.Task;
 namespace TerraFusion.Tests.Unit.Security.PasswordHistory;
 
 /// <summary>
-/// Phase 4 Sprint 1: SQL password history store tests (TDD - tests first)
-/// Tests password history persistence and retrieval using in-memory SQLite
+/// Phase 4 Sprint 1: SQL password history store tests.
+///
+/// <para>CI-HYGIENE-4B (#741) — these tests now use the EF Core
+/// InMemory provider. The path through SQLite-:memory: was broken
+/// by the multi-schema collision (<c>truth_pacs.imprv_current</c>
+/// AND <c>legacy_pacs_raw.imprv_current</c> both flatten to
+/// <c>imprv_current</c> in SQLite, which has no schema concept).
+/// An attempt to route through Postgres via the CI workflow's
+/// service container surfaced a different blocker — see #743
+/// (CI-HYGIENE-4C): <c>TerraFusionDbContext</c>'s EF model uses
+/// SQL Server-style <c>nvarchar</c> column types in places, and
+/// Postgres rejects them at <c>EnsureCreatedAsync</c> with
+/// <c>42704: type "nvarchar" does not exist</c>.</para>
+///
+/// <para>InMemory is the right pick here because these 9 tests
+/// validate the C# logic of <see cref="SqlPasswordHistoryStore"/>
+/// (write/read ordering, history depth, prune cutoff) — not
+/// provider SQL semantics. InMemory bypasses both bugs by not
+/// physically materializing tables. When #743's nvarchar cleanup
+/// lands and a real Postgres-backed integration test surface is
+/// available, this fixture can be revisited.</para>
 /// </summary>
 public class SqlPasswordHistoryStoreTests : IAsyncLifetime
 {
     private TerraFusionDbContext _context = null!;
     private SqlPasswordHistoryStore _store = null!;
-    
+
     // Seeded test users (deterministic GUIDs for reproducibility)
     private static readonly Guid TestUserId1 = new Guid("11111111-1111-1111-1111-111111111111");
     private static readonly Guid TestUserId2 = new Guid("22222222-2222-2222-2222-222222222222");
 
     public async Task InitializeAsync()
     {
-        // Use in-memory SQLite for tests
+        // CI-HYGIENE-4B (#741): EF Core InMemory provider.
+        //   - Bypasses the SQLite multi-schema collision (no physical
+        //     tables created, so no name flattening).
+        //   - Bypasses the Postgres nvarchar issue tracked under #743
+        //     (no SQL type translation).
+        //   - Per-instance database name (Guid) gives isolation across
+        //     test methods within this class and across test classes.
         var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
-            .UseSqlite("DataSource=:memory:")
+            .UseInMemoryDatabase($"pwhistory-{Guid.NewGuid():N}")
             .Options;
 
-        // Mock IConfiguration (required by TerraFusionDbContext constructor)
+        // Mock IConfiguration (required by TerraFusionDbContext constructor).
         var configMock = new Mock<IConfiguration>();
-        
+
         _context = new TerraFusionDbContext(options, configMock.Object);
-        await _context.Database.OpenConnectionAsync();
+
+        // EnsureCreated is a no-op for the InMemory provider beyond
+        // entity discovery; kept for symmetry with the previous SQLite
+        // path so the fixture's contract is unchanged.
         await _context.Database.EnsureCreatedAsync();
 
-        // Seed test users (satisfies FK constraint)
+        // Seed test users (satisfies FK constraint).
         var testUser1 = new GovernmentUser
         {
             Id = TestUserId1,
@@ -50,7 +78,7 @@ public class SqlPasswordHistoryStoreTests : IAsyncLifetime
             CreatedAt = DateTime.UtcNow,
             LastLoginAt = DateTime.UtcNow
         };
-        
+
         var testUser2 = new GovernmentUser
         {
             Id = TestUserId2,
@@ -63,7 +91,7 @@ public class SqlPasswordHistoryStoreTests : IAsyncLifetime
             CreatedAt = DateTime.UtcNow,
             LastLoginAt = DateTime.UtcNow
         };
-        
+
         _context.GovernmentUsers.Add(testUser1);
         _context.GovernmentUsers.Add(testUser2);
         await _context.SaveChangesAsync();
@@ -73,7 +101,6 @@ public class SqlPasswordHistoryStoreTests : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        await _context.Database.CloseConnectionAsync();
         await _context.DisposeAsync();
     }
 
@@ -91,7 +118,7 @@ public class SqlPasswordHistoryStoreTests : IAsyncLifetime
         var history = await _context.PasswordHistories
             .Where(ph => ph.UserId == userId)
             .ToListAsync();
-        
+
         Assert.Single(history);
         Assert.Equal(passwordHash, history[0].PasswordHash);
     }
@@ -114,7 +141,7 @@ public class SqlPasswordHistoryStoreTests : IAsyncLifetime
     {
         // Arrange
         var userId = TestUserId1;
-        
+
         // Add 7 password hashes with delays to ensure CreatedAt differs
         for (int i = 1; i <= 7; i++)
         {
@@ -139,7 +166,7 @@ public class SqlPasswordHistoryStoreTests : IAsyncLifetime
     {
         // Arrange
         var userId = TestUserId1;
-        
+
         // Add 3 password hashes
         await _store.AddPasswordHashAsync(userId, "oldest");
         await Task.Delay(10);
@@ -177,7 +204,7 @@ public class SqlPasswordHistoryStoreTests : IAsyncLifetime
         // Arrange
         var userId = TestUserId1;
         var existingHash = "existing_hash";
-        
+
         await _store.AddPasswordHashAsync(userId, existingHash);
 
         // Act
@@ -192,7 +219,7 @@ public class SqlPasswordHistoryStoreTests : IAsyncLifetime
     {
         // Arrange
         var userId = TestUserId1;
-        
+
         // Add 6 hashes
         await _store.AddPasswordHashAsync(userId, "hash_1_oldest");
         await Task.Delay(10);
@@ -220,7 +247,7 @@ public class SqlPasswordHistoryStoreTests : IAsyncLifetime
     {
         // Arrange
         var userId = TestUserId1;
-        
+
         // Add old entry (91 days ago) by directly inserting with past CreatedAt
         var oldEntry = new Core.Entities.PasswordHistory
         {
@@ -231,7 +258,7 @@ public class SqlPasswordHistoryStoreTests : IAsyncLifetime
         };
         _context.PasswordHistories.Add(oldEntry);
         await _context.SaveChangesAsync();
-        
+
         // Add recent entry (10 days ago)
         var recentEntry = new Core.Entities.PasswordHistory
         {
@@ -250,7 +277,7 @@ public class SqlPasswordHistoryStoreTests : IAsyncLifetime
         var remaining = await _context.PasswordHistories
             .Where(ph => ph.UserId == userId)
             .ToListAsync();
-        
+
         Assert.Single(remaining);
         Assert.Equal("recent_hash", remaining[0].PasswordHash);
     }
@@ -260,7 +287,7 @@ public class SqlPasswordHistoryStoreTests : IAsyncLifetime
     {
         // Arrange
         var userId = TestUserId1;
-        
+
         // Add entry 100 days ago
         var oldEntry = new Core.Entities.PasswordHistory
         {
@@ -279,7 +306,7 @@ public class SqlPasswordHistoryStoreTests : IAsyncLifetime
         var remaining = await _context.PasswordHistories
             .Where(ph => ph.UserId == userId)
             .ToListAsync();
-        
+
         Assert.Empty(remaining); // Entry older than 90 days should be deleted
     }
 }

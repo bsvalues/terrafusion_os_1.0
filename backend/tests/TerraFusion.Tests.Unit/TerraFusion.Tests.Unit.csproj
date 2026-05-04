@@ -14,6 +14,13 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
+    <!-- CI-HYGIENE-4B (#741): the schema-aware Postgres path uses
+         Npgsql, EF Core's Postgres provider is transitively available
+         via TerraFusion.API; the InMemory fallback for local dev
+         needs an explicit PackageReference, and Moq is now needed
+         for the IConfiguration mock the rewritten fixture uses. -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="Moq" />
   </ItemGroup>
 
   <ItemGroup>
