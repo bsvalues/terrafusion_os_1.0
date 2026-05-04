@@ -21,6 +21,13 @@ function readReport(root) {
   );
 }
 
+function readConsoleSummary(stdout) {
+  const marker = 'post-db-refresh-rerun.md';
+  const markerAt = stdout.lastIndexOf(marker);
+  assert.notEqual(markerAt, -1, stdout);
+  return JSON.parse(stdout.slice(markerAt + marker.length).trim());
+}
+
 test('fails fast when runtime API preflight is unavailable', () => {
   const root = makeTempRepo('tf-post-db-refresh-unavailable-');
   const result = spawnSync('node', [scriptPath, root], {
@@ -90,6 +97,7 @@ test('dry run records plan without probing or executing commands', () => {
   assert.equal(report.status, 'DRY_RUN');
   assert.equal(report.nextAction.code, 'run_live_fast_gate');
   assert.equal(report.nextAction.command, 'pnpm run truth:post-db-refresh-rerun');
+  assert.equal(readConsoleSummary(result.stdout).nextAction.code, 'run_live_fast_gate');
   assert.equal(report.configuration.dryRun, true);
   assert.equal(report.preflight.skipped, true);
   assert.equal(report.summary.commandsPlanned, 1);
@@ -125,6 +133,7 @@ test('runs configured commands when preflight is skipped for tests', () => {
   assert.equal(report.status, 'PASS');
   assert.equal(report.nextAction.code, 'run_full_readiness_gate');
   assert.equal(report.nextAction.command, 'pnpm run readiness:june10');
+  assert.equal(readConsoleSummary(result.stdout).nextAction.code, 'run_full_readiness_gate');
   assert.equal(report.configuration.commandSource, 'env_override');
   assert.equal(report.configuration.skipPreflight, true);
   assert.equal(report.configuration.dryRun, false);

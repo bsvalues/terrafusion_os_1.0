@@ -481,6 +481,7 @@ function writeReport(report) {
         commandsPassed: report.summary.commandsPassed,
         commandsFailed: report.summary.commandsFailed,
         commandsSkipped: report.summary.commandsSkipped,
+        nextAction: report.nextAction,
       },
       null,
       2
