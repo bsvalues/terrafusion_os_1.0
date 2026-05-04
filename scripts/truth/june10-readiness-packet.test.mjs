@@ -276,6 +276,12 @@ test('readiness packet passes when all required runtime truth artifacts are gree
   assert.equal(report.summary.terraFusionDb.sourceLineagePassed, true);
   assert.equal(report.summary.bentonPilot.saleQualificationCanonicalBacked, true);
   assert.equal(report.summary.bentonPilot.pilotClosureProofDetailPassed, true);
+  const markdown = fs.readFileSync(
+    path.join(root, 'generated/truth/june10-readiness-packet.md'),
+    'utf8'
+  );
+  assert.match(markdown, /Sale qualification canonical-backed: yes/);
+  assert.match(markdown, /Pilot closure proof detail passed: yes/);
   assert.equal(report.shipBlockers.length, 0);
   assert.deepEqual(report.executionQueue, []);
   assert.equal(report.postDbRefreshRerunChecklist.length, 14);
