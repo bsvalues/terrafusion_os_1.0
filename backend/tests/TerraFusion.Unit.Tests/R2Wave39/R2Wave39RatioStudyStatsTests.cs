@@ -13,17 +13,34 @@ using Task = System.Threading.Tasks.Task;
 
 namespace TerraFusion.Unit.Tests.R2Wave39;
 
+// CI-HYGIENE-D (#753): tests rewritten to assert the TF-computed ratio
+// contract per Block-C doctrine freeze (commit be7446d8a, May 2, 2026):
+//   "TF computes its own sales ratio: AssessedValue / SalePrice. PACS is the
+//    legacy system being replaced — TF never trusts PACS calculations."
+// The PacsComputedRatio source experiment (commit 4c6239e68, April 4) was
+// deliberately rolled back. Tests previously asserted the deprecated
+// PacsComputedRatio contract; this rewrite aligns to the current TF-computed
+// contract by seeding Property rows with AssessedValue alongside each
+// ComparableSale (AssessedValue = expectedRatio * SalePrice). Same
+// stale-contract pattern as PR #745 / #758. Production reference:
+// backend/src/TerraFusion.API/Services/ValuationService.cs:287-335.
+
 /// <summary>
 /// R2Wave39 — IAAO ratio study statistics in CalculateSalesComparisonAsync.
 ///
+/// Contract (TF-computed, per Block-C doctrine freeze):
+///   ratio = Property.AssessedValue / ComparableSale.AdjustedSalePrice
+///   PACS sl_ratio / PacsComputedRatio is NEVER read for the ratio study.
+///
 /// Fixes verified:
-///   WF39-01: Ratio computation uses PacsComputedRatio (sl_ratio), not SalePrice/SalePrice=1.0
+///   WF39-01: Ratio computation uses TF-computed AssessedValue / SalePrice
 ///   WF39-02: Disqualified sales are excluded from ratio statistics
 ///   WF39-03: COD computed correctly (Mean(|r - median|/median) × 100)
 ///   WF39-04: PRD computed correctly (ArithMean / WeightedMean)
 ///   WF39-05: PRD = 0.0 when fewer than 2 qualified sales with ratios
 ///   WF39-06: QualifiedSaleCount reflects only "qualified" EffectiveQualification
-///   WF39-07: Sales without PacsComputedRatio are excluded from ratio stats (not counted)
+///   WF39-07: Sales without a matching Property row (or AssessedValue ≤ 0)
+///            are excluded from ratio stats but still counted in QualifiedSaleCount
 ///   WF39-08: Single qualified sale → ratioMedian = that ratio, COD = 0, PRD = 0
 /// </summary>
 [Trait("Category", "R2Wave39")]
@@ -64,24 +81,62 @@ public sealed class R2Wave39RatioStudyStatsTests
         await db.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// Seeds one ComparableSale and (optionally) a matching Property row so
+    /// the production ratio = AssessedValue / SalePrice path can resolve a
+    /// real ratio. AssessedValue defaults to expectedRatio * salePrice — so
+    /// existing test math (which used to drive PacsComputedRatio) maps 1:1
+    /// to the new TF-computed contract.
+    ///
+    /// Pass <paramref name="seedProperty"/> = false to simulate a sale with
+    /// no matching Property row (used by WF39_07 to assert exclusion from
+    /// ratio stats while still being counted in QualifiedSaleCount).
+    ///
+    /// PacsComputedRatio is still set on the sale for backward-compat with
+    /// any other downstream readers, but production deliberately ignores it.
+    /// </summary>
     private static async Task<CanonicalComparableSale> SeedSaleAsync(
         DataDbContext db,
         decimal salePrice,
         decimal? pacsRatio,
         string qualification = "qualified",   // EffectiveQualification
         bool hasDecision = false,
-        DateTime? saleDate = null)
+        DateTime? saleDate = null,
+        bool seedProperty = true,
+        decimal? assessedValueOverride = null)
     {
         // Sales must use a parcel DIFFERENT from the subject; the service filters cs.ParcelId != parcelId.
         // Sale date must be within taxYear-2 … taxYear window (2023-2025 for taxYear=2025).
+        var compParcelId = CompParcelId();
+
+        if (seedProperty)
+        {
+            // AssessedValue = pacsRatio × salePrice (so the TF-computed ratio
+            // matches what the old test assumed PACS would have reported).
+            // assessedValueOverride lets a test seed an explicit AV (e.g. 0
+            // to simulate "missing" AV without removing the row).
+            var av = assessedValueOverride
+                     ?? (pacsRatio.HasValue ? pacsRatio.Value * salePrice : 0m);
+            db.Properties.Add(new Property
+            {
+                Id           = Guid.NewGuid(),
+                ParcelId     = compParcelId,
+                ParcelNumber = compParcelId,
+                CountyId     = BentonCountyId,
+                Address      = $"Comp at {compParcelId}",
+                PropertyType = "residential",
+                AssessedValue = av,
+            });
+        }
+
         var sale = new CanonicalComparableSale
         {
             Id                          = Guid.NewGuid(),
-            ParcelId                    = CompParcelId(),               // ← different parcel
+            ParcelId                    = compParcelId,
             SaleDate                    = saleDate ?? new DateTime(2024, 6, 1, 0, 0, 0, DateTimeKind.Utc),
             SalePrice                   = salePrice,
             AdjustedSalePrice           = salePrice,
-            PacsComputedRatio           = pacsRatio,
+            PacsComputedRatio           = pacsRatio,           // legacy field — production ignores it
             PropertyType                = "residential",
             CountyId                    = BentonCountyId,
             IngestedBy                  = "wave39-test",
@@ -95,16 +150,20 @@ public sealed class R2Wave39RatioStudyStatsTests
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // WF39-01: PacsComputedRatio is used (not 1.0 stub)
+    // WF39-01: TF-computed ratio (AssessedValue / SalePrice) is used
     // ═══════════════════════════════════════════════════════════════════════════
 
     [Fact]
-    public async Task WF39_01_SalesRatioMedian_Uses_PacsComputedRatio()
+    public async Task WF39_01_SalesRatioMedian_Uses_TfComputedRatio()
     {
-        using var db = CreateDbContext(nameof(WF39_01_SalesRatioMedian_Uses_PacsComputedRatio));
+        using var db = CreateDbContext(nameof(WF39_01_SalesRatioMedian_Uses_TfComputedRatio));
         await SeedBaseDataAsync(db);
 
         // 3 qualified sales with distinct known ratios: 0.90, 0.95, 1.00
+        // Property.AssessedValue is auto-seeded as ratio × salePrice:
+        //   0.90 × 300_000 = 270_000
+        //   0.95 × 320_000 = 304_000
+        //   1.00 × 350_000 = 350_000
         await SeedSaleAsync(db, 300_000, pacsRatio: 0.90m);
         await SeedSaleAsync(db, 320_000, pacsRatio: 0.95m);
         await SeedSaleAsync(db, 350_000, pacsRatio: 1.00m);
@@ -114,7 +173,7 @@ public sealed class R2Wave39RatioStudyStatsTests
 
         // Median of [0.90, 0.95, 1.00] = 0.95
         result.SalesRatioMedian.Should().BeApproximately(0.95, 0.001,
-            because: "median of [0.90, 0.95, 1.00] is 0.95");
+            because: "median of [0.90, 0.95, 1.00] is 0.95 — TF-computed AV/Price");
         result.SalesRatioMedian.Should().NotBe(1.0,
             because: "1.0 would indicate the stub ratio (price/price) is still used");
     }
@@ -132,13 +191,13 @@ public sealed class R2Wave39RatioStudyStatsTests
         // 2 qualified: ratios 0.90, 0.95
         await SeedSaleAsync(db, 300_000, pacsRatio: 0.90m, qualification: "qualified");
         await SeedSaleAsync(db, 320_000, pacsRatio: 0.95m, qualification: "qualified");
-        // 1 non-arms-length with extreme ratio — MUST NOT pollute stats
+        // 1 non-arms-length with extreme AV → ratio 2.50 — MUST NOT pollute stats
         await SeedSaleAsync(db, 100_000, pacsRatio: 2.50m, qualification: "non-arms-length");
 
         var svc = CreateService(db);
         var result = await svc.CalculateSalesComparisonAsync(SubjectParcelId, 2025, CancellationToken.None);
 
-        // Only 2 qualified; median of [0.90, 0.95] = 0.90 (lower half index)
+        // Only 2 qualified; median of [0.90, 0.95] = 0.95 (sorted[count/2] = sorted[1])
         result.QualifiedSaleCount.Should().Be(2);
         result.SalesRatioMedian.Should().BeLessThan(1.5,
             because: "disqualified 2.50 ratio must not pollute the median");
@@ -304,33 +363,38 @@ public sealed class R2Wave39RatioStudyStatsTests
         await SeedSaleAsync(db, 310_000, pacsRatio: 0.97m, qualification: "qualified");
         await SeedSaleAsync(db, 200_000, pacsRatio: 1.50m, qualification: "non-arms-length");
         await SeedSaleAsync(db, 150_000, pacsRatio: 0.40m, qualification: "foreclosure");
-        await SeedSaleAsync(db, 250_000, null,             qualification: "qualified"); // no ratio
+        // Qualified but no Property row → AssessedValue lookup misses → ratio=0 → excluded
+        // from ratio stats but still counted in QualifiedSaleCount.
+        await SeedSaleAsync(db, 250_000, pacsRatio: null, qualification: "qualified", seedProperty: false);
 
         var svc = CreateService(db);
         var result = await svc.CalculateSalesComparisonAsync(SubjectParcelId, 2025, CancellationToken.None);
 
-        // 3 qualified effective, but only 2 have PacsComputedRatio > 0
+        // 3 effective-qualified sales; only 2 have a matching Property row with AV > 0
         result.QualifiedSaleCount.Should().Be(3,
-            because: "3 sales have EffectiveQualification='qualified', regardless of PacsComputedRatio availability");
-        // Ratio stats use only 2 (the ones with actual ratios)
+            because: "3 sales have EffectiveQualification='qualified', regardless of Property AV availability");
+        // Ratio stats use only 2 (the ones where Property.AssessedValue > 0)
         result.SalesRatioMedian.Should().BeGreaterThan(0.0,
-            because: "2 qualified sales have PacsComputedRatio");
+            because: "2 qualified sales have a Property row with AssessedValue > 0");
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // WF39-07: Sales without PacsComputedRatio excluded from ratio stats
+    // WF39-07: Sales without a matching Property row excluded from ratio stats
+    //          (TF-computed contract: AV missing/0 → ratio=0 → excluded; still
+    //          counted in QualifiedSaleCount since the sale is qualified.)
     // ═══════════════════════════════════════════════════════════════════════════
 
     [Fact]
-    public async Task WF39_07_NullPacsRatio_ExcludedFromStats_NotCounting()
+    public async Task WF39_07_MissingPropertyRow_ExcludedFromStats_NotCounting()
     {
-        using var db = CreateDbContext(nameof(WF39_07_NullPacsRatio_ExcludedFromStats_NotCounting));
+        using var db = CreateDbContext(nameof(WF39_07_MissingPropertyRow_ExcludedFromStats_NotCounting));
         await SeedBaseDataAsync(db);
 
         await SeedSaleAsync(db, 300_000, pacsRatio: 0.90m, qualification: "qualified");
         await SeedSaleAsync(db, 300_000, pacsRatio: 0.95m, qualification: "qualified");
-        // Qualified but no PACS ratio — counted in QualifiedSaleCount but not stats
-        await SeedSaleAsync(db, 300_000, pacsRatio: null,  qualification: "qualified");
+        // Qualified but no matching Property row → no AssessedValue → ratio=0
+        // → excluded from ratio stats. Still counted in QualifiedSaleCount.
+        await SeedSaleAsync(db, 300_000, pacsRatio: null, qualification: "qualified", seedProperty: false);
 
         var svc = CreateService(db);
         var result = await svc.CalculateSalesComparisonAsync(SubjectParcelId, 2025, CancellationToken.None);
@@ -338,7 +402,7 @@ public sealed class R2Wave39RatioStudyStatsTests
         result.QualifiedSaleCount.Should().Be(3);
         // Median only from 2 sales [0.90, 0.95]; sorted[count/2] = sorted[1] = 0.95
         result.SalesRatioMedian.Should().BeApproximately(0.95, 0.001,
-            because: "only 2 ratios available; median of [0.90, 0.95] at index 1 = 0.95; null PacsComputedRatio excluded");
+            because: "only 2 ratios resolvable; median of [0.90, 0.95] at index 1 = 0.95; missing-AV sale excluded");
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
