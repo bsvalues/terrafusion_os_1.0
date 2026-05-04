@@ -534,13 +534,15 @@ function summaryFailurePostures(summary) {
 function collectionFailurePostures(value, label) {
   if (!value || typeof value !== 'object') return [];
   const postures = [];
-  for (const key of ['errors', 'failures']) {
+  for (const key of ['error', 'errors', 'failure', 'failures']) {
     const entries = value[key];
     if (Array.isArray(entries) && entries.length > 0) {
       postures.push(`${label}.${key} has ${entries.length} item(s)`);
     } else if (entries && typeof entries === 'object') {
       const count = Object.keys(entries).length;
       if (count > 0) postures.push(`${label}.${key} has ${count} object key(s)`);
+    } else if (typeof entries === 'string' && entries.trim().length > 0) {
+      postures.push(`${label}.${key} is set`);
     } else {
       const count = Number(entries);
       if (Number.isFinite(count) && count > 0) {
@@ -611,18 +613,22 @@ function artifactBlockerMessages(value) {
 
 function blockerMessages(value, label) {
   if (!value || typeof value !== 'object') return [];
-  if (Array.isArray(value.blockers)) {
-    return value.blockers.map(item =>
-      label === 'artifact' || label === 'summary' ? item : `${label}: ${item}`
-    );
+  const format = item => (label === 'artifact' || label === 'summary' ? item : `${label}: ${item}`);
+  const messages = [];
+  if (typeof value.blocker === 'string' && value.blocker.trim().length > 0) {
+    messages.push(format(value.blocker));
   }
-  if (value.blockers && typeof value.blockers === 'object') {
+  if (Array.isArray(value.blockers)) {
+    messages.push(...value.blockers.map(format));
+  } else if (typeof value.blockers === 'string' && value.blockers.trim().length > 0) {
+    messages.push(format(value.blockers));
+  } else if (value.blockers && typeof value.blockers === 'object') {
     const count = Object.keys(value.blockers).length;
     if (count > 0) {
-      return [`${label}.blockers has ${count} object key(s)`];
+      messages.push(`${label}.blockers has ${count} object key(s)`);
     }
   }
-  return [];
+  return messages;
 }
 
 function artifactWarnings(value) {

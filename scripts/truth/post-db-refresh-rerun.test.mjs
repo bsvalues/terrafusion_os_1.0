@@ -338,6 +338,7 @@ test('fails when a proof command writes a failing expected JSON artifact', () =>
               "fs.writeFileSync('generated/truth/summary-fail.json', JSON.stringify({ summary: { passed: false, status: 'FAIL' }, rows: [{ county: 'Benton', summary: { passed: false } }], proofs: [{ county: 'Benton', summary: { status: 'FAIL' } }] }) + '\\n');",
               "fs.writeFileSync('generated/truth/collection-fail.json', JSON.stringify({ passed: true, blockers: ['explicit blocker'], errors: ['explicit error'], failures: ['explicit failure'], errorCount: 2, failureCount: 3, blockerCount: 4, failed: 5, summary: { errors: ['summary error'], failures: ['summary failure'], failed: 6, shipBlockers: 7 }, rows: [{ county: 'Benton', blockers: ['row blocker'], errors: ['row error'], failures: ['row failure'], failed: 8 }], proofs: [{ county: 'Benton', blockers: ['proof blocker'], errors: ['proof error'], failures: ['proof failure'], errorCount: 9 }] }) + '\\n');",
               "fs.writeFileSync('generated/truth/object-collection-fail.json', JSON.stringify({ blockers: { one: 'blocker' }, errors: { one: 'error', two: 'error' }, failures: { one: 'failure' }, summary: { errors: { one: 'summary error' } }, rows: [{ county: 'Benton', blockers: { one: 'row blocker' }, errors: { one: 'row error' } }], proofs: [{ county: 'Benton', failures: { one: 'proof failure' } }] }) + '\\n');",
+              "fs.writeFileSync('generated/truth/scalar-collection-fail.json', JSON.stringify({ blocker: 'single blocker', blockers: 'plural blocker string', error: 'single error', errors: 'plural error string', failure: 'single failure', failures: 'plural failure string', summary: { error: 'summary error', failure: 'summary failure' }, rows: [{ county: 'Benton', error: 'row error', failure: 'row failure' }], proofs: [{ county: 'Benton', errors: 'proof errors string', failures: 'proof failures string' }] }) + '\\n');",
             ].join(' '),
           ],
           expectedArtifacts: [
@@ -348,6 +349,7 @@ test('fails when a proof command writes a failing expected JSON artifact', () =>
             'generated/truth/summary-fail.json',
             'generated/truth/collection-fail.json',
             'generated/truth/object-collection-fail.json',
+            'generated/truth/scalar-collection-fail.json',
           ],
         },
         {
@@ -364,7 +366,7 @@ test('fails when a proof command writes a failing expected JSON artifact', () =>
   assert.equal(report.status, 'FAIL');
   assert.equal(report.nextAction.code, 'fix_failed_artifact');
   assert.match(report.nextAction.reason, /failing JSON proof artifact/);
-  assert.equal(report.summary.artifactFailures, 7);
+  assert.equal(report.summary.artifactFailures, 8);
   assert.equal(report.summary.commandsSkipped, 1);
   assert.equal(report.results.length, 1);
   assert.equal(report.results[0].artifactOutputs[0].artifactStatus, 'FAIL');
@@ -410,6 +412,20 @@ test('fails when a proof command writes a failing expected JSON artifact', () =>
     'Benton row.errors has 1 object key(s)',
     'Benton proof.failures has 1 object key(s)',
   ]);
+  assert.deepEqual(report.results[0].artifactOutputs[7].artifactFailureReasons, [
+    'artifact.blocker is set',
+    'artifact.blockers is set',
+    'artifact.error is set',
+    'artifact.errors is set',
+    'artifact.failure is set',
+    'artifact.failures is set',
+    'summary.error is set',
+    'summary.failure is set',
+    'Benton row.error is set',
+    'Benton row.failure is set',
+    'Benton proof.errors is set',
+    'Benton proof.failures is set',
+  ]);
   assert.ok(report.blockers.some(item => item.includes('top-level status is FAIL')));
   assert.ok(report.blockers.some(item => item.includes('top-level passed is false')));
   assert.ok(report.blockers.some(item => item.includes('top-level status is DRY_RUN')));
@@ -430,6 +446,11 @@ test('fails when a proof command writes a failing expected JSON artifact', () =>
   assert.ok(report.blockers.some(item => item.includes('artifact.errors has 2 object key')));
   assert.ok(report.blockers.some(item => item.includes('Benton row.errors has 1 object key')));
   assert.ok(report.blockers.some(item => item.includes('Benton proof.failures has 1 object key')));
+  assert.ok(report.blockers.some(item => item.includes('artifact.blocker is set')));
+  assert.ok(report.blockers.some(item => item.includes('artifact.error is set')));
+  assert.ok(report.blockers.some(item => item.includes('summary.failure is set')));
+  assert.ok(report.blockers.some(item => item.includes('Benton row.error is set')));
+  assert.ok(report.blockers.some(item => item.includes('Benton proof.failures is set')));
   assert.ok(
     report.blockers.some(item =>
       item.includes('after missing, stale, malformed, or failing artifact output')

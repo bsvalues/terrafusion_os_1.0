@@ -259,13 +259,15 @@ function summaryFailureReasons(summary) {
 function collectionFailureReasons(value, label) {
   if (!value || typeof value !== 'object') return [];
   const reasons = [];
-  for (const key of ['blockers', 'errors', 'failures']) {
+  for (const key of ['blocker', 'blockers', 'error', 'errors', 'failure', 'failures']) {
     const entries = value[key];
     if (Array.isArray(entries) && entries.length > 0) {
       reasons.push(`${label}.${key} has ${entries.length} item(s)`);
     } else if (entries && typeof entries === 'object') {
       const count = Object.keys(entries).length;
       if (count > 0) reasons.push(`${label}.${key} has ${count} object key(s)`);
+    } else if (typeof entries === 'string' && entries.trim().length > 0) {
+      reasons.push(`${label}.${key} is set`);
     } else {
       const count = Number(entries);
       if (Number.isFinite(count) && count > 0) {
