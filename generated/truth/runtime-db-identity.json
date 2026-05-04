@@ -1,0 +1,14 @@
+{
+  "generatedAt": "2026-05-04T16:48:22.775Z",
+  "runtimeBaseUrl": "http://localhost:5046",
+  "endpoint": "http://localhost:5046/api/runtime/truth/db-identity",
+  "endpointStatus": null,
+  "passed": false,
+  "blockers": [
+    "Runtime DB identity endpoint did not return 200. Status: null.",
+    "Runtime DB identity endpoint failed: fetch failed",
+    "Runtime DB identity endpoint did not return JSON payload."
+  ],
+  "warnings": [],
+  "identity": null
+}

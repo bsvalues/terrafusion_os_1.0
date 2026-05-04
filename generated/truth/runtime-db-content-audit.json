@@ -1,0 +1,14 @@
+{
+  "generatedAt": "2026-05-04T16:48:22.681Z",
+  "runtimeBaseUrl": "http://localhost:5046",
+  "endpoint": "http://localhost:5046/api/runtime/truth/db-content",
+  "endpointStatus": null,
+  "passed": false,
+  "blockers": [
+    "Runtime DB content endpoint did not return 200. Status: null.",
+    "Runtime DB content endpoint failed: fetch failed",
+    "Runtime DB content endpoint did not return JSON payload."
+  ],
+  "warnings": [],
+  "content": null
+}

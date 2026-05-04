@@ -33,6 +33,12 @@ function makeTempRepo(prefix) {
   return root;
 }
 
+function makeEmptyTempRepo(prefix) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
+  fs.mkdirSync(path.join(root, 'generated', 'truth'), { recursive: true });
+  return root;
+}
+
 function writeSourceLineage(root, proof) {
   fs.writeFileSync(
     path.join(root, 'generated', 'truth', 'runtime-row-source-lineage-proof.json'),
@@ -279,4 +285,26 @@ test('runtime sale qualification proof fails when no qualified runtime pool exis
   } finally {
     await server.close();
   }
+});
+
+test('runtime sale qualification proof fails closed when no candidates are available', async () => {
+  const root = makeEmptyTempRepo('tf-sale-qual-no-candidates-');
+  await assert.rejects(
+    execFileAsync('node', [scriptPath, root], {
+      cwd: process.cwd(),
+      env: {
+        ...process.env,
+      },
+    })
+  );
+
+  const report = JSON.parse(
+    fs.readFileSync(
+      path.join(root, 'generated', 'truth', 'runtime-sale-qualification-lineage-proof.json'),
+      'utf8'
+    )
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.equal(report.summary.candidatesChecked, 0);
+  assert.ok(report.summary.blockers.some(blocker => blocker.includes('No runtime sale')));
 });

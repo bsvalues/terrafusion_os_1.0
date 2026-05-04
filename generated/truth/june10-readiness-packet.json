@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-04T16:37:08.051Z",
+  "generatedAt": "2026-05-04T16:49:34.782Z",
   "status": "FAIL",
   "artifacts": {
     "crosswalk": {
@@ -17,13 +17,13 @@
     "dbIdentity": {
       "name": "dbIdentity",
       "path": "generated/truth/runtime-db-identity.json",
-      "present": false,
+      "present": true,
       "parseError": null
     },
     "dbContent": {
       "name": "dbContent",
       "path": "generated/truth/runtime-db-content-audit.json",
-      "present": false,
+      "present": true,
       "parseError": null
     },
     "productLoadLedger": {
@@ -35,13 +35,13 @@
     "bentonParcelSanity": {
       "name": "bentonParcelSanity",
       "path": "generated/truth/benton-parcel-count-sanity.json",
-      "present": false,
+      "present": true,
       "parseError": null
     },
     "saleQualification": {
       "name": "saleQualification",
       "path": "generated/truth/runtime-sale-qualification-lineage-proof.json",
-      "present": false,
+      "present": true,
       "parseError": null
     },
     "bentonPilotClosure": {
@@ -75,27 +75,11 @@
     },
     "bentonPilot": {
       "parcelSanityPassed": false,
-      "saleQualificationStatus": "UNKNOWN",
+      "saleQualificationStatus": "FAIL",
       "pilotClosureStatus": "UNKNOWN"
     }
   },
   "shipBlockers": [
-    {
-      "source": "dbIdentity",
-      "message": "Required artifact is missing: generated/truth/runtime-db-identity.json."
-    },
-    {
-      "source": "dbContent",
-      "message": "Required artifact is missing: generated/truth/runtime-db-content-audit.json."
-    },
-    {
-      "source": "bentonParcelSanity",
-      "message": "Required artifact is missing: generated/truth/benton-parcel-count-sanity.json."
-    },
-    {
-      "source": "saleQualification",
-      "message": "Required artifact is missing: generated/truth/runtime-sale-qualification-lineage-proof.json."
-    },
     {
       "source": "bentonPilotClosure",
       "message": "Required artifact is missing: generated/truth/benton-runtime-pilot-closure.json."
@@ -105,35 +89,27 @@
       "message": "County-neutral runtime contract is not passing."
     },
     {
-      "source": "productLoadLedger",
-      "message": "TerraFusion DB product load ledger is not lineage-proven."
-    }
-  ],
-  "executionQueue": [
-    {
       "source": "dbIdentity",
-      "ownerLane": "Claude Code / Sync DB, audited by Codex",
-      "nextCommand": "pnpm run truth:runtime-db-identity",
-      "requiredResolution": "Prove the running API is connected to the intended TerraFusion DB before any row count can support readiness."
+      "message": "Running API TerraFusion DB identity is not proven."
     },
     {
       "source": "dbContent",
-      "ownerLane": "Claude Code / Sync DB, audited by Codex",
-      "nextCommand": "pnpm run truth:runtime-db-content",
-      "requiredResolution": "Prove product runtime tables and row shapes exist inside TerraFusion DB only."
+      "message": "Runtime TerraFusion DB content audit is not passing."
+    },
+    {
+      "source": "productLoadLedger",
+      "message": "TerraFusion DB product load ledger is not lineage-proven."
     },
     {
       "source": "bentonParcelSanity",
-      "ownerLane": "Codex after TerraFusion DB content is refreshed",
-      "nextCommand": "pnpm run truth:benton-parcel-count-sanity",
-      "requiredResolution": "Prove Benton parcel endpoint counts active/current distinct parcels, not raw historical or duplicate property rows."
+      "message": "Benton active/current parcel count sanity is not proven."
     },
     {
       "source": "saleQualification",
-      "ownerLane": "Codex after TerraFusion DB sales/qualification tables are refreshed",
-      "nextCommand": "pnpm run truth:runtime-sale-qualification",
-      "requiredResolution": "Prove Benton sales qualification lineage from TerraFusion DB runtime tables, with no source-system dependency in product runtime."
-    },
+      "message": "Benton sale qualification lineage is not passing."
+    }
+  ],
+  "executionQueue": [
     {
       "source": "bentonPilotClosure",
       "ownerLane": "Codex after all Benton data gates are green",
@@ -147,10 +123,34 @@
       "requiredResolution": "Each runtime county must pass identity, active/current semantics, product-load receipt, no fallback, and no PII projection checks."
     },
     {
+      "source": "dbIdentity",
+      "ownerLane": "Claude Code / Sync DB, audited by Codex",
+      "nextCommand": "pnpm run truth:runtime-db-identity",
+      "requiredResolution": "Prove the running API is connected to the intended TerraFusion DB before any row count can support readiness."
+    },
+    {
+      "source": "dbContent",
+      "ownerLane": "Claude Code / Sync DB, audited by Codex",
+      "nextCommand": "pnpm run truth:runtime-db-content",
+      "requiredResolution": "Prove product runtime tables and row shapes exist inside TerraFusion DB only."
+    },
+    {
       "source": "productLoadLedger",
       "ownerLane": "Claude Code / Sync DB, audited by Codex",
       "nextCommand": "pnpm run truth:terrafusion-db-product-load-ledger",
       "requiredResolution": "Emit/read product-load receipts proving TerraFusion DB table rows were loaded through the approved ingestion path."
+    },
+    {
+      "source": "bentonParcelSanity",
+      "ownerLane": "Codex after TerraFusion DB content is refreshed",
+      "nextCommand": "pnpm run truth:benton-parcel-count-sanity",
+      "requiredResolution": "Prove Benton parcel endpoint counts active/current distinct parcels, not raw historical or duplicate property rows."
+    },
+    {
+      "source": "saleQualification",
+      "ownerLane": "Codex after TerraFusion DB sales/qualification tables are refreshed",
+      "nextCommand": "pnpm run truth:runtime-sale-qualification",
+      "requiredResolution": "Prove Benton sales qualification lineage from TerraFusion DB runtime tables, with no source-system dependency in product runtime."
     }
   ],
   "warnings": []

@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-05-04T16:49:28.532Z",
+  "repoRoot": "C:\\Users\\bsval\\.codex-worktrees\\june10-readiness-execution",
+  "runtimeBaseUrl": "http://localhost:5046",
+  "status": "FAIL",
+  "summary": {
+    "candidatesChecked": 0,
+    "passed": 0,
+    "failed": 0,
+    "warnings": 0,
+    "canonicalLandingBacked": 0,
+    "recommendationBackedCanonicalMissing": 0,
+    "blockers": [
+      "No runtime sale qualification candidates were found. Run runtime source-lineage proof or set TF_RUNTIME_SALE_QUALIFICATION_CANDIDATES."
+    ],
+    "status": "FAIL"
+  },
+  "proofs": []
+}
