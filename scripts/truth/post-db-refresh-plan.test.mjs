@@ -84,6 +84,12 @@ test('full June 10 readiness gate inspects final packet warning posture', () => 
   assert.ok(readinessScript.includes('stale; it was not refreshed by the current packet command'));
   assert.ok(readinessScript.includes('PASS_WITH_WARNINGS'));
   assert.ok(readinessScript.includes('Readiness packet passed with warnings'));
+  assert.ok(readinessScript.includes('inconsistentBlockers'));
+  assert.ok(
+    readinessScript.includes('packet reports pass posture while ship blockers are present')
+  );
+  assert.ok(readinessScript.includes('inconsistentWarnings'));
+  assert.ok(readinessScript.includes('packet reports PASS while warnings are present'));
 });
 
 test('every executable post DB refresh proof declares artifacts and proof meaning', () => {

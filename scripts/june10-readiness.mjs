@@ -261,8 +261,18 @@ function inspectReadinessPacketArtifact(packetRunCheck = null) {
   const packetStatus = packet?.status ?? 'UNKNOWN';
   const packetWarnings = Number(packet?.warnings?.length ?? 0);
   const packetBlockers = Number(packet?.shipBlockers?.length ?? 0);
-  const status =
-    packetStatus === 'PASS' ? 'PASS' : packetStatus === 'PASS_WITH_WARNINGS' ? 'WARN' : 'FAIL';
+  const inconsistentBlockers =
+    packetBlockers > 0 && (packetStatus === 'PASS' || packetStatus === 'PASS_WITH_WARNINGS');
+  const inconsistentWarnings = packetWarnings > 0 && packetStatus === 'PASS';
+  const status = inconsistentBlockers
+    ? 'FAIL'
+    : packetStatus === 'PASS'
+      ? inconsistentWarnings
+        ? 'WARN'
+        : 'PASS'
+      : packetStatus === 'PASS_WITH_WARNINGS'
+        ? 'WARN'
+        : 'FAIL';
 
   pushCheck({
     name: 'June 10 readiness packet artifact posture',
@@ -275,12 +285,15 @@ function inspectReadinessPacketArtifact(packetRunCheck = null) {
       `Packet warnings: ${packetWarnings}`,
       `Packet artifact modified: ${new Date(stat.mtimeMs).toISOString()}`,
     ].join('\n'),
-    stderr:
-      status === 'PASS'
-        ? ''
-        : packetStatus === 'PASS_WITH_WARNINGS'
-          ? 'Readiness packet passed with warnings; review packet warning details before ship sign-off.'
-          : 'Readiness packet did not pass.',
+    stderr: inconsistentBlockers
+      ? 'Readiness packet status is inconsistent: packet reports pass posture while ship blockers are present.'
+      : inconsistentWarnings
+        ? 'Readiness packet status is inconsistent: packet reports PASS while warnings are present.'
+        : status === 'PASS'
+          ? ''
+          : packetStatus === 'PASS_WITH_WARNINGS'
+            ? 'Readiness packet passed with warnings; review packet warning details before ship sign-off.'
+            : 'Readiness packet did not pass.',
   });
 }
 
