@@ -259,6 +259,50 @@ test('records refreshed expected artifacts for successful proof commands', () =>
   assert.equal(report.results[0].artifactOutputs[0].refreshed, true);
 });
 
+test('preserves PASS_WITH_WARNINGS from refreshed proof artifacts', () => {
+  const root = makeTempRepo('tf-post-db-refresh-artifact-warning-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'Warning writer command',
+          command: process.execPath,
+          args: [
+            '-e',
+            [
+              "const fs = require('fs');",
+              "fs.mkdirSync('generated/truth', { recursive: true });",
+              "fs.writeFileSync('generated/truth/example.json', JSON.stringify({ status: 'PASS_WITH_WARNINGS', warnings: ['review before shipping'] }) + '\\n');",
+            ].join(' '),
+          ],
+          expectedArtifacts: ['generated/truth/example.json'],
+        },
+      ]),
+    },
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const report = readReport(root);
+  assert.equal(report.status, 'PASS_WITH_WARNINGS');
+  assert.equal(report.nextAction.code, 'review_warnings_then_run_full_readiness_gate');
+  assert.equal(report.nextAction.command, 'pnpm run readiness:june10');
+  assert.equal(report.summary.artifactWarnings, 1);
+  assert.equal(report.summary.artifactsPassWithWarnings, 1);
+  assert.equal(report.results[0].artifactOutputs[0].artifactStatus, 'PASS_WITH_WARNINGS');
+  assert.equal(report.results[0].artifactOutputs[0].warningCount, 1);
+  const markdown = fs.readFileSync(
+    path.join(root, 'generated', 'truth', 'post-db-refresh-rerun.md'),
+    'utf8'
+  );
+  assert.match(markdown, /Artifact warnings: 1/);
+  assert.match(markdown, /PASS_WITH_WARNINGS/);
+});
+
 test('fails when a proof command passes but leaves an expected artifact stale', () => {
   const root = makeTempRepo('tf-post-db-refresh-artifact-stale-');
   fs.writeFileSync(path.join(root, 'generated', 'truth', 'stale.json'), '{}\n');

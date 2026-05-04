@@ -157,11 +157,20 @@ function inspectArtifacts(expectedArtifacts, commandStartedMs) {
     const filePath = path.resolve(repoRoot, relativePath);
     let exists = false;
     let mtimeMs = null;
+    let artifactStatus = null;
+    let warningCount = 0;
+    let parseError = null;
 
     try {
       const stat = fs.statSync(filePath);
       exists = stat.isFile();
       mtimeMs = exists ? stat.mtimeMs : null;
+      if (exists && filePath.toLowerCase().endsWith('.json')) {
+        const posture = inspectJsonArtifactPosture(filePath);
+        artifactStatus = posture.status;
+        warningCount = posture.warningCount;
+        parseError = posture.parseError;
+      }
     } catch {
       exists = false;
     }
@@ -171,8 +180,59 @@ function inspectArtifacts(expectedArtifacts, commandStartedMs) {
       exists,
       refreshed: exists && mtimeMs !== null && mtimeMs >= commandStartedMs,
       mtime: mtimeMs === null ? null : new Date(mtimeMs).toISOString(),
+      artifactStatus,
+      warningCount,
+      parseError,
     };
   });
+}
+
+function inspectJsonArtifactPosture(filePath) {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    return {
+      status: typeof parsed?.status === 'string' ? parsed.status : null,
+      warningCount: countArtifactWarnings(parsed),
+      parseError: null,
+    };
+  } catch (error) {
+    return {
+      status: null,
+      warningCount: 0,
+      parseError: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+function countArtifactWarnings(value) {
+  const warningValues = [
+    value?.warnings,
+    value?.summary?.warnings,
+    value?.warningCount,
+    value?.summary?.warningCount,
+  ];
+
+  let count = 0;
+  for (const warningValue of warningValues) {
+    if (Array.isArray(warningValue)) count += warningValue.length;
+    else if (Number.isFinite(Number(warningValue))) count += Number(warningValue);
+  }
+
+  if (Array.isArray(value?.rows)) {
+    count += value.rows.reduce(
+      (sum, row) => sum + (Array.isArray(row?.warnings) ? row.warnings.length : 0),
+      0
+    );
+  }
+
+  if (Array.isArray(value?.proofs)) {
+    count += value.proofs.reduce(
+      (sum, proof) => sum + (Array.isArray(proof?.warnings) ? proof.warnings.length : 0),
+      0
+    );
+  }
+
+  return count;
 }
 
 function tail(value, max = 3000) {
@@ -217,6 +277,9 @@ function renderMarkdown(report) {
     `- Expected artifacts: ${report.summary.expectedArtifacts}`,
     `- Refreshed artifacts: ${report.summary.refreshedArtifacts}`,
     `- Stale or missing artifacts: ${report.summary.staleOrMissingArtifacts}`,
+    `- Artifact warnings: ${report.summary.artifactWarnings}`,
+    `- Artifacts PASS_WITH_WARNINGS: ${report.summary.artifactsPassWithWarnings}`,
+    `- Artifact parse errors: ${report.summary.artifactParseErrors}`,
     '',
     '## Planned Command Sequence',
     '',
@@ -250,13 +313,15 @@ function renderMarkdown(report) {
       ? report.results.flatMap(result => [
           `### ${result.name}`,
           '',
-          '| Artifact | Exists | Refreshed | Modified |',
-          '|---|---|---|---|',
+          '| Artifact | Exists | Refreshed | Status | Warnings | Modified |',
+          '|---|---|---|---|---:|---|',
           ...result.artifactOutputs.map(artifact =>
             [
               `\`${artifact.path}\``,
               artifact.exists ? 'yes' : 'no',
               artifact.refreshed ? 'yes' : 'no',
+              artifact.artifactStatus ?? '-',
+              String(artifact.warningCount ?? 0),
               artifact.mtime ?? '-',
             ].join(' | ')
           ),
@@ -370,10 +435,20 @@ function buildReport({ preflight, commands, results, blockers }) {
   const commandsSkipped =
     dryRun || !preflight.ok ? commands.length : commands.length - results.length;
   const artifactOutputs = results.flatMap(result => result.artifactOutputs ?? []);
+  const artifactWarnings = artifactOutputs.reduce(
+    (sum, artifact) => sum + Number(artifact.warningCount ?? 0),
+    0
+  );
   const report = {
     generatedAt: new Date().toISOString(),
     runtimeBaseUrl,
-    status: dryRun ? 'DRY_RUN' : blockers.length === 0 ? 'PASS' : 'FAIL',
+    status: dryRun
+      ? 'DRY_RUN'
+      : blockers.length === 0
+        ? artifactWarnings > 0
+          ? 'PASS_WITH_WARNINGS'
+          : 'PASS'
+        : 'FAIL',
     continueOnFailure,
     configuration: {
       repoRoot,
@@ -404,6 +479,11 @@ function buildReport({ preflight, commands, results, blockers }) {
       staleOrMissingArtifacts: artifactOutputs.filter(
         artifact => !artifact.exists || !artifact.refreshed
       ).length,
+      artifactWarnings,
+      artifactsPassWithWarnings: artifactOutputs.filter(
+        artifact => artifact.artifactStatus === 'PASS_WITH_WARNINGS'
+      ).length,
+      artifactParseErrors: artifactOutputs.filter(artifact => artifact.parseError).length,
     },
     results,
     blockers,
@@ -457,6 +537,15 @@ function deriveNextAction(report) {
       code: 'run_full_readiness_gate',
       command: 'pnpm run readiness:june10',
       reason: 'Fast DB/data proofs passed; run the full build/test readiness gate next.',
+    };
+  }
+
+  if (report.status === 'PASS_WITH_WARNINGS') {
+    return {
+      code: 'review_warnings_then_run_full_readiness_gate',
+      command: 'pnpm run readiness:june10',
+      reason:
+        'Fast DB/data proofs passed with artifact warnings; review warnings and run the full build/test readiness gate.',
     };
   }
 
