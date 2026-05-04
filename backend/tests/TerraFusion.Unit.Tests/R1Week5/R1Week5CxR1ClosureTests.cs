@@ -2399,10 +2399,10 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_CapRates_Returns5PropertyTypes()
+  public async Task IncomeApproach_CapRates_Returns5PropertyTypes()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_CapRates_Returns5PropertyTypes));
-    var result = controller.GetIncomeCapRates();
+    var result = await controller.GetIncomeCapRates();
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     json.Should().Contain("\"marketCapRate\":5.5");
@@ -2417,10 +2417,10 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_MarketData_ReturnsRealBentonIndicators()
+  public async Task IncomeApproach_MarketData_ReturnsRealBentonIndicators()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_MarketData_ReturnsRealBentonIndicators));
-    var result = controller.GetIncomeMarketData();
+    var result = await controller.GetIncomeMarketData();
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     json.Should().Contain("\"MedianHouseholdIncome\":87500");
@@ -2434,10 +2434,10 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_MarketData_HasEmploymentSectors()
+  public async Task IncomeApproach_MarketData_HasEmploymentSectors()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_MarketData_HasEmploymentSectors));
-    var result = controller.GetIncomeMarketData();
+    var result = await controller.GetIncomeMarketData();
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     json.Should().Contain("Government");
@@ -2450,10 +2450,10 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_ExpenseRatios_Returns4PropertyTypes()
+  public async Task IncomeApproach_ExpenseRatios_Returns4PropertyTypes()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_ExpenseRatios_Returns4PropertyTypes));
-    var result = controller.GetIncomeExpenseRatios();
+    var result = await controller.GetIncomeExpenseRatios();
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     json.Should().Contain("\"PropertyType\":\"residential\"");
@@ -2464,10 +2464,10 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_ExpenseRatios_Has7Categories()
+  public async Task IncomeApproach_ExpenseRatios_Has7Categories()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_ExpenseRatios_Has7Categories));
-    var result = controller.GetIncomeExpenseRatios();
+    var result = await controller.GetIncomeExpenseRatios();
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     json.Should().Contain("propertyTaxes");
@@ -2479,10 +2479,10 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_LocationPremiums_Returns6TriCitiesLocations()
+  public async Task IncomeApproach_LocationPremiums_Returns6TriCitiesLocations()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_LocationPremiums_Returns6TriCitiesLocations));
-    var result = controller.GetIncomeLocationPremiums();
+    var result = await controller.GetIncomeLocationPremiums();
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     json.Should().Contain("Richland");
@@ -2495,10 +2495,10 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_LocationPremiums_WestRichlandHighest()
+  public async Task IncomeApproach_LocationPremiums_WestRichlandHighest()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_LocationPremiums_WestRichlandHighest));
-    var result = controller.GetIncomeLocationPremiums();
+    var result = await controller.GetIncomeLocationPremiums();
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     // West Richland has highest premium (1.20)
@@ -2507,7 +2507,7 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_CalculateNoi_BasicScenario()
+  public async Task IncomeApproach_CalculateNoi_BasicScenario()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_CalculateNoi_BasicScenario));
     var request = new CostForgeController.NoiCalculationRequest
@@ -2523,7 +2523,7 @@ public sealed class R1Week5CxR1ClosureTests
       ReplacementReserves = 2_000m,
       OtherExpenses = 1_500m,
     };
-    var result = controller.CalculateNoi(request);
+    var result = await controller.CalculateNoi(request);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     // EGI = 120000 × 0.95 + 2000 = 116000
@@ -2536,7 +2536,7 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_CalculateNoi_ZeroVacancy()
+  public async Task IncomeApproach_CalculateNoi_ZeroVacancy()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_CalculateNoi_ZeroVacancy));
     var request = new CostForgeController.NoiCalculationRequest
@@ -2545,7 +2545,7 @@ public sealed class R1Week5CxR1ClosureTests
       VacancyRate = 0m,
       OtherIncome = 0m,
     };
-    var result = controller.CalculateNoi(request);
+    var result = await controller.CalculateNoi(request);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     // EGI = 100000 × 1.00 + 0 = 100000
@@ -2557,20 +2557,20 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_CalculateNoi_RejectsNegativeIncome()
+  public async Task IncomeApproach_CalculateNoi_RejectsNegativeIncome()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_CalculateNoi_RejectsNegativeIncome));
     var request = new CostForgeController.NoiCalculationRequest
     {
       AnnualRentalIncome = -1000m,
     };
-    var result = controller.CalculateNoi(request);
+    var result = await controller.CalculateNoi(request);
     result.Should().BeOfType<BadRequestObjectResult>();
   }
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_CalculateNoi_RejectsVacancyOver100()
+  public async Task IncomeApproach_CalculateNoi_RejectsVacancyOver100()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_CalculateNoi_RejectsVacancyOver100));
     var request = new CostForgeController.NoiCalculationRequest
@@ -2578,13 +2578,13 @@ public sealed class R1Week5CxR1ClosureTests
       AnnualRentalIncome = 100_000m,
       VacancyRate = 101m,
     };
-    var result = controller.CalculateNoi(request);
+    var result = await controller.CalculateNoi(request);
     result.Should().BeOfType<BadRequestObjectResult>();
   }
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_CalculateNoi_ExpenseRatioCalculatedCorrectly()
+  public async Task IncomeApproach_CalculateNoi_ExpenseRatioCalculatedCorrectly()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_CalculateNoi_ExpenseRatioCalculatedCorrectly));
     var request = new CostForgeController.NoiCalculationRequest
@@ -2595,7 +2595,7 @@ public sealed class R1Week5CxR1ClosureTests
       Insurance = 5_000m,
       Maintenance = 5_000m,
     };
-    var result = controller.CalculateNoi(request);
+    var result = await controller.CalculateNoi(request);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     // Expenses 20000 / EGI 100000 × 100 = 20 (JSON serializes trailing zeros as 20.0)
@@ -2604,7 +2604,7 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_Valuation_BasicResidentialRichland()
+  public async Task IncomeApproach_Valuation_BasicResidentialRichland()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_Valuation_BasicResidentialRichland));
     var request = new CostForgeController.IncomeValuationRequest
@@ -2623,7 +2623,7 @@ public sealed class R1Week5CxR1ClosureTests
       Location = "Richland",
       PropertyType = "residential",
     };
-    var result = controller.CalculateIncomeValuation(request);
+    var result = await controller.CalculateIncomeValuation(request);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     // EGI: 120000 × 0.95 = 114000, Expenses: 28000, NOI: 86000
@@ -2640,7 +2640,7 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_Valuation_HighCapRate_LowRisk()
+  public async Task IncomeApproach_Valuation_HighCapRate_LowRisk()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_Valuation_HighCapRate_LowRisk));
     var request = new CostForgeController.IncomeValuationRequest
@@ -2650,7 +2650,7 @@ public sealed class R1Week5CxR1ClosureTests
       CapRate = 8.5m,
       PropertyType = "commercial",
     };
-    var result = controller.CalculateIncomeValuation(request);
+    var result = await controller.CalculateIncomeValuation(request);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     // cap 8.5 > 7, cashOnCash = NOI/rawVal × 100 = 8.5% > 8 → low risk
@@ -2659,7 +2659,7 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_Valuation_LowCapRate_HighRisk()
+  public async Task IncomeApproach_Valuation_LowCapRate_HighRisk()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_Valuation_LowCapRate_HighRisk));
     var request = new CostForgeController.IncomeValuationRequest
@@ -2669,7 +2669,7 @@ public sealed class R1Week5CxR1ClosureTests
       CapRate = 3.5m,
       PropertyType = "residential",
     };
-    var result = controller.CalculateIncomeValuation(request);
+    var result = await controller.CalculateIncomeValuation(request);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     // cap 3.5 < 4 → high risk
@@ -2678,7 +2678,7 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_Valuation_UnknownLocation_DefaultMultiplier()
+  public async Task IncomeApproach_Valuation_UnknownLocation_DefaultMultiplier()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_Valuation_UnknownLocation_DefaultMultiplier));
     var request = new CostForgeController.IncomeValuationRequest
@@ -2688,7 +2688,7 @@ public sealed class R1Week5CxR1ClosureTests
       CapRate = 5.5m,
       Location = "Yakima",
     };
-    var result = controller.CalculateIncomeValuation(request);
+    var result = await controller.CalculateIncomeValuation(request);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     // Unknown location gets 1.00 multiplier → raw = adjusted
@@ -2697,7 +2697,7 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_Valuation_RejectsZeroCapRate()
+  public async Task IncomeApproach_Valuation_RejectsZeroCapRate()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_Valuation_RejectsZeroCapRate));
     var request = new CostForgeController.IncomeValuationRequest
@@ -2705,13 +2705,13 @@ public sealed class R1Week5CxR1ClosureTests
       AnnualRentalIncome = 100_000m,
       CapRate = 0m,
     };
-    var result = controller.CalculateIncomeValuation(request);
+    var result = await controller.CalculateIncomeValuation(request);
     result.Should().BeOfType<BadRequestObjectResult>();
   }
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_Valuation_RejectsCapRateOver25()
+  public async Task IncomeApproach_Valuation_RejectsCapRateOver25()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_Valuation_RejectsCapRateOver25));
     var request = new CostForgeController.IncomeValuationRequest
@@ -2719,13 +2719,13 @@ public sealed class R1Week5CxR1ClosureTests
       AnnualRentalIncome = 100_000m,
       CapRate = 26m,
     };
-    var result = controller.CalculateIncomeValuation(request);
+    var result = await controller.CalculateIncomeValuation(request);
     result.Should().BeOfType<BadRequestObjectResult>();
   }
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_Valuation_GIMCalculatedCorrectly()
+  public async Task IncomeApproach_Valuation_GIMCalculatedCorrectly()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_Valuation_GIMCalculatedCorrectly));
     var request = new CostForgeController.IncomeValuationRequest
@@ -2734,7 +2734,7 @@ public sealed class R1Week5CxR1ClosureTests
       VacancyRate = 0m,
       CapRate = 10.0m,
     };
-    var result = controller.CalculateIncomeValuation(request);
+    var result = await controller.CalculateIncomeValuation(request);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     // NOI = 100000, Raw = 100000/0.10 = 1000000, GIM = 1000000/100000 = 10.00
@@ -2767,7 +2767,7 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_Valuation_ProsserLowestPremium()
+  public async Task IncomeApproach_Valuation_ProsserLowestPremium()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_Valuation_ProsserLowestPremium));
     var request = new CostForgeController.IncomeValuationRequest
@@ -2777,7 +2777,7 @@ public sealed class R1Week5CxR1ClosureTests
       CapRate = 5.5m,
       Location = "Prosser",
     };
-    var result = controller.CalculateIncomeValuation(request);
+    var result = await controller.CalculateIncomeValuation(request);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     // Prosser multiplier 0.85
@@ -2786,7 +2786,7 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_CalculateNoi_BankersRoundingApplied()
+  public async Task IncomeApproach_CalculateNoi_BankersRoundingApplied()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_CalculateNoi_BankersRoundingApplied));
     // Create a scenario that triggers banker's rounding
@@ -2798,7 +2798,7 @@ public sealed class R1Week5CxR1ClosureTests
       OtherIncome = 123m,
       PropertyTaxes = 100m,
     };
-    var result = controller.CalculateNoi(request);
+    var result = await controller.CalculateNoi(request);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     // EGI = 123456 × 0.925 + 123 = 114196.80 + 123 = 114319.80
@@ -2809,7 +2809,7 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Income")]
-  public void IncomeApproach_Valuation_NullLocation_DefaultsToUnspecified()
+  public async Task IncomeApproach_Valuation_NullLocation_DefaultsToUnspecified()
   {
     var controller = CreateCostForgeController(nameof(IncomeApproach_Valuation_NullLocation_DefaultsToUnspecified));
     var request = new CostForgeController.IncomeValuationRequest
@@ -2818,7 +2818,7 @@ public sealed class R1Week5CxR1ClosureTests
       VacancyRate = 0m,
       CapRate = 5.5m,
     };
-    var result = controller.CalculateIncomeValuation(request);
+    var result = await controller.CalculateIncomeValuation(request);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     json.Should().Contain("\"Location\":\"unspecified\"");
@@ -2830,10 +2830,10 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Sales")]
-  public void SalesComp_AdjustmentFactors_Returns5Physical()
+  public async Task SalesComp_AdjustmentFactors_Returns5Physical()
   {
     var controller = CreateCostForgeController(nameof(SalesComp_AdjustmentFactors_Returns5Physical));
-    var result = controller.GetSalesAdjustmentFactors();
+    var result = await controller.GetSalesAdjustmentFactors();
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     json.Should().Contain("GLA");
@@ -2847,10 +2847,10 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Sales")]
-  public void SalesComp_AdjustmentFactors_HasConditionScale()
+  public async Task SalesComp_AdjustmentFactors_HasConditionScale()
   {
     var controller = CreateCostForgeController(nameof(SalesComp_AdjustmentFactors_HasConditionScale));
-    var result = controller.GetSalesAdjustmentFactors();
+    var result = await controller.GetSalesAdjustmentFactors();
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     json.Should().Contain("Excellent");
@@ -2862,10 +2862,10 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Sales")]
-  public void SalesComp_MarketAreas_Returns8Neighborhoods()
+  public async Task SalesComp_MarketAreas_Returns8Neighborhoods()
   {
     var controller = CreateCostForgeController(nameof(SalesComp_MarketAreas_Returns8Neighborhoods));
-    var result = controller.GetSalesMarketAreas();
+    var result = await controller.GetSalesMarketAreas();
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     json.Should().Contain("Richland");
@@ -2913,10 +2913,10 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Sales")]
-  public void SalesComp_MarketAreas_Has12SeasonalityFactors()
+  public async Task SalesComp_MarketAreas_Has12SeasonalityFactors()
   {
     var controller = CreateCostForgeController(nameof(SalesComp_MarketAreas_Has12SeasonalityFactors));
-    var result = controller.GetSalesMarketAreas();
+    var result = await controller.GetSalesMarketAreas();
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     json.Should().Contain("January");
@@ -2928,10 +2928,10 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Sales")]
-  public void SalesComp_ConfidenceThresholds_ReturnsLevelsAndFlags()
+  public async Task SalesComp_ConfidenceThresholds_ReturnsLevelsAndFlags()
   {
     var controller = CreateCostForgeController(nameof(SalesComp_ConfidenceThresholds_ReturnsLevelsAndFlags));
-    var result = controller.GetSalesConfidenceThresholds();
+    var result = await controller.GetSalesConfidenceThresholds();
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     json.Should().Contain("high");
@@ -2944,7 +2944,7 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Sales")]
-  public void SalesComp_AdjustComparable_Comp1FromQuarantine()
+  public async Task SalesComp_AdjustComparable_Comp1FromQuarantine()
   {
     // Replicate COMP-001 from quarantine fixture:
     // Subject: 2000 sqft, 10000 lot, 2000, 3bd/2ba, Good, Average
@@ -2968,7 +2968,7 @@ public sealed class R1Week5CxR1ClosureTests
       SubjectLocation = "Average",
       CompLocation = "Average",
     };
-    var result = controller.AdjustComparable(request);
+    var result = await controller.AdjustComparable(request);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     // GLA: (2000-1800)*100 = +20000
@@ -2988,7 +2988,7 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Sales")]
-  public void SalesComp_AdjustComparable_Comp2WithQualitativeAdj()
+  public async Task SalesComp_AdjustComparable_Comp2WithQualitativeAdj()
   {
     // COMP-002: $380k, 2200sqft, 11000lot, 2005, 4bd/2.5ba, Excellent, Good
     var controller = CreateCostForgeController(nameof(SalesComp_AdjustComparable_Comp2WithQualitativeAdj));
@@ -3010,7 +3010,7 @@ public sealed class R1Week5CxR1ClosureTests
       SubjectLocation = "Average",
       CompLocation = "Good",
     };
-    var result = controller.AdjustComparable(request);
+    var result = await controller.AdjustComparable(request);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     // GLA: (2000-2200)*100 = -20000
@@ -3031,17 +3031,17 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Sales")]
-  public void SalesComp_AdjustComparable_RejectsNegativeSalePrice()
+  public async Task SalesComp_AdjustComparable_RejectsNegativeSalePrice()
   {
     var controller = CreateCostForgeController(nameof(SalesComp_AdjustComparable_RejectsNegativeSalePrice));
     var request = new CostForgeController.CompAdjustmentRequest { SalePrice = -1m };
-    var result = controller.AdjustComparable(request);
+    var result = await controller.AdjustComparable(request);
     result.Should().BeOfType<BadRequestObjectResult>();
   }
 
   [Fact]
   [Trait("Category", "CostForge-Sales")]
-  public void SalesComp_AdjustComparable_GrossAdjPctCorrect()
+  public async Task SalesComp_AdjustComparable_GrossAdjPctCorrect()
   {
     var controller = CreateCostForgeController(nameof(SalesComp_AdjustComparable_GrossAdjPctCorrect));
     var request = new CostForgeController.CompAdjustmentRequest
@@ -3054,7 +3054,7 @@ public sealed class R1Week5CxR1ClosureTests
       SubjectYearBuilt = 2000,
       CompYearBuilt = 1998, // -1000
     };
-    var result = controller.AdjustComparable(request);
+    var result = await controller.AdjustComparable(request);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     // Gross = |20000|+|5000|+|1000| = 26000, Gross% = 26000/350000*100 = 7.43%
@@ -3063,7 +3063,7 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Sales")]
-  public void SalesComp_Reconcile_3CompsFromQuarantine()
+  public async Task SalesComp_Reconcile_3CompsFromQuarantine()
   {
     // From quarantine fixture: COMP-001 adj $374000 (6.86%), COMP-002 adj $326250 (14.14%), COMP-003 adj $355000 (4.41%)
     var controller = CreateCostForgeController(nameof(SalesComp_Reconcile_3CompsFromQuarantine));
@@ -3076,7 +3076,7 @@ public sealed class R1Week5CxR1ClosureTests
         new() { AdjustedPrice = 355_000m, GrossAdjustmentPct = 4.41m },
       },
     };
-    var result = controller.ReconcileComparables(request);
+    var result = await controller.ReconcileComparables(request);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     json.Should().Contain("\"ComparableCount\":3");
@@ -3090,37 +3090,37 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Sales")]
-  public void SalesComp_Reconcile_RejectsEmptyList()
+  public async Task SalesComp_Reconcile_RejectsEmptyList()
   {
     var controller = CreateCostForgeController(nameof(SalesComp_Reconcile_RejectsEmptyList));
     var request = new CostForgeController.SalesReconciliationRequest();
-    var result = controller.ReconcileComparables(request);
+    var result = await controller.ReconcileComparables(request);
     result.Should().BeOfType<BadRequestObjectResult>();
   }
 
   [Fact]
   [Trait("Category", "CostForge-Sales")]
-  public void SalesComp_Reconcile_RejectsOver10Comps()
+  public async Task SalesComp_Reconcile_RejectsOver10Comps()
   {
     var controller = CreateCostForgeController(nameof(SalesComp_Reconcile_RejectsOver10Comps));
     var comps = Enumerable.Range(1, 11)
       .Select(i => new CostForgeController.ReconciliationComp { AdjustedPrice = 300_000m + i * 1000m, GrossAdjustmentPct = 5m })
       .ToList();
     var request = new CostForgeController.SalesReconciliationRequest { Comparables = comps };
-    var result = controller.ReconcileComparables(request);
+    var result = await controller.ReconcileComparables(request);
     result.Should().BeOfType<BadRequestObjectResult>();
   }
 
   [Fact]
   [Trait("Category", "CostForge-Sales")]
-  public void SalesComp_Reconcile_LowConfidence_1Comp()
+  public async Task SalesComp_Reconcile_LowConfidence_1Comp()
   {
     var controller = CreateCostForgeController(nameof(SalesComp_Reconcile_LowConfidence_1Comp));
     var request = new CostForgeController.SalesReconciliationRequest
     {
       Comparables = new() { new() { AdjustedPrice = 400_000m, GrossAdjustmentPct = 30m } },
     };
-    var result = controller.ReconcileComparables(request);
+    var result = await controller.ReconcileComparables(request);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     json.Should().Contain("\"Confidence\":\"low\"");
@@ -3128,7 +3128,7 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Sales")]
-  public void SalesComp_Reconcile_ModerateConfidence()
+  public async Task SalesComp_Reconcile_ModerateConfidence()
   {
     var controller = CreateCostForgeController(nameof(SalesComp_Reconcile_ModerateConfidence));
     var request = new CostForgeController.SalesReconciliationRequest
@@ -3139,7 +3139,7 @@ public sealed class R1Week5CxR1ClosureTests
         new() { AdjustedPrice = 410_000m, GrossAdjustmentPct = 20m },
       },
     };
-    var result = controller.ReconcileComparables(request);
+    var result = await controller.ReconcileComparables(request);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     json.Should().Contain("\"Confidence\":\"moderate\"");
@@ -3196,7 +3196,7 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Sales")]
-  public void SalesComp_Reconcile_WeightedHigherForLessAdjusted()
+  public async Task SalesComp_Reconcile_WeightedHigherForLessAdjusted()
   {
     // Comp with lower grossAdj% should get higher weight
     var controller = CreateCostForgeController(nameof(SalesComp_Reconcile_WeightedHigherForLessAdjusted));
@@ -3208,7 +3208,7 @@ public sealed class R1Week5CxR1ClosureTests
         new() { AdjustedPrice = 350_000m, GrossAdjustmentPct = 20m },  // high adj → low weight
       },
     };
-    var result = controller.ReconcileComparables(request);
+    var result = await controller.ReconcileComparables(request);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     // Weighted average should be closer to 400000 (the less-adjusted comp)
@@ -3219,7 +3219,7 @@ public sealed class R1Week5CxR1ClosureTests
 
   [Fact]
   [Trait("Category", "CostForge-Sales")]
-  public void SalesComp_AdjustComparable_NullConditionsDefault()
+  public async Task SalesComp_AdjustComparable_NullConditionsDefault()
   {
     var controller = CreateCostForgeController(nameof(SalesComp_AdjustComparable_NullConditionsDefault));
     var request = new CostForgeController.CompAdjustmentRequest
@@ -3229,7 +3229,7 @@ public sealed class R1Week5CxR1ClosureTests
       CompGla = 1500m,
       // Null condition and location → both default to 0
     };
-    var result = controller.AdjustComparable(request);
+    var result = await controller.AdjustComparable(request);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var json = JsonSerializer.Serialize(ok.Value);
     json.Should().Contain("\"ConditionAdjustment\":0");
