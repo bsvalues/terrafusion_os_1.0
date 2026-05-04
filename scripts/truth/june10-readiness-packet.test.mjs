@@ -102,6 +102,19 @@ test('readiness packet fails when required runtime truth artifacts are red', () 
       blocker.includes('Properties:')
     )
   );
+  assert.deepEqual(
+    report.postDbRefreshRerunChecklist.map(item => item.command),
+    [
+      'pnpm run truth:runtime-db-identity',
+      'pnpm run truth:runtime-db-content',
+      'pnpm run truth:terrafusion-db-product-load-ledger',
+      'pnpm run truth:benton-parcel-count-sanity',
+      'pnpm run truth:runtime-source-lineage',
+      'pnpm run truth:runtime-sale-qualification',
+      'pnpm run truth:benton-runtime-pilot-closure',
+      'pnpm run readiness:june10',
+    ]
+  );
 });
 
 test('readiness packet passes when all required runtime truth artifacts are green', () => {
@@ -118,5 +131,6 @@ test('readiness packet passes when all required runtime truth artifacts are gree
   assert.equal(report.status, 'PASS');
   assert.equal(report.shipBlockers.length, 0);
   assert.deepEqual(report.executionQueue, []);
+  assert.equal(report.postDbRefreshRerunChecklist.length, 8);
   assert.equal(report.artifactDetails.dbIdentity, undefined);
 });

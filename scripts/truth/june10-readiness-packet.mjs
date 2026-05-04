@@ -78,6 +78,54 @@ const blockerRunbook = {
   },
 };
 
+const postDbRefreshRerunChecklist = [
+  {
+    order: 1,
+    command: 'pnpm run truth:runtime-db-identity',
+    proves:
+      'The running API is connected to the intended TerraFusion DB before row counts are trusted.',
+  },
+  {
+    order: 2,
+    command: 'pnpm run truth:runtime-db-content',
+    proves: 'TerraFusion DB product runtime tables are present with expected table-level shape.',
+  },
+  {
+    order: 3,
+    command: 'pnpm run truth:terrafusion-db-product-load-ledger',
+    proves:
+      'Product runtime rows have ProductLoadReceipts evidence for table, county, count, and load timestamp.',
+  },
+  {
+    order: 4,
+    command: 'pnpm run truth:benton-parcel-count-sanity',
+    proves:
+      'Benton parcel endpoint returns active/current distinct parcel semantics, not raw mirror rows.',
+  },
+  {
+    order: 5,
+    command: 'pnpm run truth:runtime-source-lineage',
+    proves: 'Runtime row-path proof remains inside TerraFusion DB/API boundaries.',
+  },
+  {
+    order: 6,
+    command: 'pnpm run truth:runtime-sale-qualification',
+    proves:
+      'Benton sales qualification is canonical-backed or fails closed with explicit blockers.',
+  },
+  {
+    order: 7,
+    command: 'pnpm run truth:benton-runtime-pilot-closure',
+    proves:
+      'Benton pilot can close only after DB identity, load receipts, parcel sanity, and sales pass.',
+  },
+  {
+    order: 8,
+    command: 'pnpm run readiness:june10',
+    proves: 'Final June 10 packet reflects the refreshed TerraFusion DB state.',
+  },
+];
+
 function rel(filePath) {
   return path.relative(repoRoot, filePath).replaceAll(path.sep, '/');
 }
@@ -377,6 +425,12 @@ function renderMarkdown(report) {
         )
       : ['- none']),
     '',
+    '## Post-DB-Refresh Rerun Checklist',
+    '',
+    ...report.postDbRefreshRerunChecklist.map(
+      item => `${item.order}. \`${item.command}\` - ${item.proves}`
+    ),
+    '',
     '## Artifact Blocker Details',
     '',
     ...Object.entries(report.artifactDetails).flatMap(([name, detail]) => {
@@ -425,6 +479,7 @@ function main() {
     summary: buildDomainSummary(loaded),
     shipBlockers: blockers,
     executionQueue,
+    postDbRefreshRerunChecklist,
     artifactDetails: buildArtifactDetails(loaded, blockers),
     warnings,
   };
