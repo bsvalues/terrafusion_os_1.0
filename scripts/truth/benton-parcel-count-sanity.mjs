@@ -64,6 +64,18 @@ function getScalar(sql) {
   return psql(sql).split(/\r?\n/)[0]?.trim() ?? '';
 }
 
+function tryPsql(sql) {
+  try {
+    return psql(sql);
+  } catch {
+    return '';
+  }
+}
+
+function tryScalar(sql) {
+  return tryPsql(sql).split(/\r?\n/)[0]?.trim() ?? '';
+}
+
 function getBentonCountyId() {
   return getScalar(
     `select "Id" from "Counties" where lower("Name") in ('benton county', 'benton') or "FipsCode" = '53005' order by "Name" limit 1;`
@@ -164,6 +176,78 @@ function queryDatabase() {
       )
     : [{ status: null, rows: bentonRowsByCountyId }];
 
+  const pacsParcelRows = number(tryScalar(`select count(*) from "PacsParcel";`));
+  const pacsParcelDistinctRows = number(
+    tryScalar(`select count(distinct "Id"::text) from "PacsParcel";`)
+  );
+  const topPropertyTypes = parseRows(
+    psql(
+      `select coalesce("PropertyType", 'null'), count(*) from "Properties" where "CountyId"='${bentonCountyId}' group by "PropertyType" order by count(*) desc limit 20;`
+    ),
+    parts => ({
+      propertyType: parts[0] === 'null' ? null : parts[0],
+      rows: number(parts[1]),
+    })
+  );
+  const topPropertyUseCodes = parseRows(
+    psql(
+      `select coalesce("PropertyUseCode", 'null'), count(*) from "Properties" where "CountyId"='${bentonCountyId}' group by "PropertyUseCode" order by count(*) desc limit 40;`
+    ),
+    parts => ({
+      propertyUseCode: parts[0] === 'null' ? null : parts[0],
+      rows: number(parts[1]),
+    })
+  );
+  const topSitusCities = parseRows(
+    psql(
+      `select coalesce(nullif("SitusCity", ''), 'null'), count(*) from "Properties" where "CountyId"='${bentonCountyId}' group by coalesce(nullif("SitusCity", ''), 'null') order by count(*) desc limit 25;`
+    ),
+    parts => ({
+      situsCity: parts[0] === 'null' ? null : parts[0],
+      rows: number(parts[1]),
+    })
+  );
+  const completeness = parseRows(
+    psql(
+      `select count(*), count(*) filter (where "PropertyUseCode" is null or "PropertyUseCode"=''), count(*) filter (where "SitusCity" is null or "SitusCity"=''), count(*) filter (where "MarketValue" = 0), count(*) filter (where "AssessedValue" = 0), count(*) filter (where "LandValue" = 0), count(*) filter (where "ImprovementValue" = 0), count(*) filter (where "YearBuilt" is null), count(*) filter (where "Neighborhood" is null or "Neighborhood"='') from "Properties" where "CountyId"='${bentonCountyId}';`
+    ),
+    parts => ({
+      totalRows: number(parts[0]),
+      missingPropertyUseCodeRows: number(parts[1]),
+      missingSitusCityRows: number(parts[2]),
+      zeroMarketValueRows: number(parts[3]),
+      zeroAssessedValueRows: number(parts[4]),
+      zeroLandValueRows: number(parts[5]),
+      zeroImprovementValueRows: number(parts[6]),
+      missingYearBuiltRows: number(parts[7]),
+      missingNeighborhoodRows: number(parts[8]),
+    })
+  )[0] ?? {
+    totalRows: bentonRowsByCountyId,
+    missingPropertyUseCodeRows: 0,
+    missingSitusCityRows: 0,
+    zeroMarketValueRows: 0,
+    zeroAssessedValueRows: 0,
+    zeroLandValueRows: 0,
+    zeroImprovementValueRows: 0,
+    missingYearBuiltRows: 0,
+    missingNeighborhoodRows: 0,
+  };
+  const temporalRange =
+    parseRows(
+      psql(
+        `select min("LastUpdated"), max("LastUpdated"), min("CreatedAt"), max("CreatedAt"), min("UpdatedAt"), max("UpdatedAt") from "Properties" where "CountyId"='${bentonCountyId}';`
+      ),
+      parts => ({
+        earliestLastUpdated: parts[0] || null,
+        latestLastUpdated: parts[1] || null,
+        earliestCreatedAt: parts[2] || null,
+        latestCreatedAt: parts[3] || null,
+        earliestUpdatedAt: parts[4] || null,
+        latestUpdatedAt: parts[5] || null,
+      })
+    )[0] ?? {};
+
   const activeRows = 0;
   const inactiveRows = 0;
   const unknownStatusRows = statusColumns.length ? 0 : bentonRowsByCountyId;
@@ -187,6 +271,19 @@ function queryDatabase() {
     nullCountyRows,
     nonBentonRows,
     propertyStatusColumns: statusColumns,
+    sourceMirror: {
+      pacsParcelRows,
+      pacsParcelDistinctRows,
+      propertyRowsMinusPacsParcelRows:
+        Number.isFinite(pacsParcelRows) && pacsParcelRows > 0
+          ? bentonRowsByCountyId - pacsParcelRows
+          : null,
+    },
+    topPropertyTypes,
+    topPropertyUseCodes,
+    topSitusCities,
+    fieldCompleteness: completeness,
+    temporalRange,
   };
 }
 
@@ -277,6 +374,12 @@ function evaluateBentonParcelSanity(proof) {
     warnings.push('Runtime DB currently contains only Benton county property rows.');
   }
 
+  if (proof.sourceMirror?.pacsParcelRows > 0) {
+    warnings.push(
+      `Properties rows are close to source mirror PacsParcel rows: ${proof.bentonRowsByCountyId} Properties vs ${proof.sourceMirror.pacsParcelRows} PacsParcel.`
+    );
+  }
+
   return {
     passed: blockers.length === 0,
     blockers,
@@ -301,6 +404,8 @@ function renderMarkdown(report) {
     `- Distinct current-year Benton parcel numbers: ${report.distinctCurrentYearParcelNumbers}`,
     `- Current tax year: ${report.currentTaxYear ?? '-'}`,
     `- Expected active parcel range: ${report.expectedActiveParcelRange.min}-${report.expectedActiveParcelRange.max}`,
+    `- Source mirror PacsParcel rows: ${report.sourceMirror?.pacsParcelRows ?? '-'}`,
+    `- Properties minus PacsParcel rows: ${report.sourceMirror?.propertyRowsMinusPacsParcelRows ?? '-'}`,
     '',
     '## Endpoint Behavior',
     '',
@@ -335,6 +440,50 @@ function renderMarkdown(report) {
     ...report.rowsByPropertyStatus.map(row =>
       [row.status ?? 'unknown', String(row.rows)].join(' | ')
     ),
+    '',
+    '## Field Completeness',
+    '',
+    `- Missing property use code rows: ${report.fieldCompleteness?.missingPropertyUseCodeRows ?? '-'}`,
+    `- Missing situs city rows: ${report.fieldCompleteness?.missingSitusCityRows ?? '-'}`,
+    `- Zero market value rows: ${report.fieldCompleteness?.zeroMarketValueRows ?? '-'}`,
+    `- Zero assessed value rows: ${report.fieldCompleteness?.zeroAssessedValueRows ?? '-'}`,
+    `- Zero land value rows: ${report.fieldCompleteness?.zeroLandValueRows ?? '-'}`,
+    `- Zero improvement value rows: ${report.fieldCompleteness?.zeroImprovementValueRows ?? '-'}`,
+    `- Missing year built rows: ${report.fieldCompleteness?.missingYearBuiltRows ?? '-'}`,
+    `- Missing neighborhood rows: ${report.fieldCompleteness?.missingNeighborhoodRows ?? '-'}`,
+    '',
+    '## Top Property Types',
+    '',
+    '| Property Type | Rows |',
+    '|---|---:|',
+    ...(report.topPropertyTypes ?? []).map(row =>
+      [row.propertyType ?? 'null', String(row.rows)].join(' | ')
+    ),
+    '',
+    '## Top Property Use Codes',
+    '',
+    '| Use Code | Rows |',
+    '|---|---:|',
+    ...(report.topPropertyUseCodes ?? [])
+      .slice(0, 20)
+      .map(row => [row.propertyUseCode ?? 'null', String(row.rows)].join(' | ')),
+    '',
+    '## Top Situs Cities',
+    '',
+    '| Situs City | Rows |',
+    '|---|---:|',
+    ...(report.topSitusCities ?? []).map(row =>
+      [row.situsCity ?? 'null', String(row.rows)].join(' | ')
+    ),
+    '',
+    '## Temporal Range',
+    '',
+    `- Earliest LastUpdated: ${report.temporalRange?.earliestLastUpdated ?? '-'}`,
+    `- Latest LastUpdated: ${report.temporalRange?.latestLastUpdated ?? '-'}`,
+    `- Earliest CreatedAt: ${report.temporalRange?.earliestCreatedAt ?? '-'}`,
+    `- Latest CreatedAt: ${report.temporalRange?.latestCreatedAt ?? '-'}`,
+    `- Earliest UpdatedAt: ${report.temporalRange?.earliestUpdatedAt ?? '-'}`,
+    `- Latest UpdatedAt: ${report.temporalRange?.latestUpdatedAt ?? '-'}`,
     '',
     '## Blockers',
     '',

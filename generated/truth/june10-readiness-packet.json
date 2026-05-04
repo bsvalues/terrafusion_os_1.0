@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-04T17:32:32.907Z",
+  "generatedAt": "2026-05-04T17:39:11.698Z",
   "status": "FAIL",
   "artifacts": {
     "crosswalk": {
@@ -211,9 +211,7 @@
       "present": true,
       "blockers": {
         "items": [
-          "Runtime DB identity endpoint did not return 200. Status: null.",
-          "Runtime DB identity endpoint failed: fetch failed",
-          "Runtime DB identity endpoint did not return JSON payload."
+          "Runtime Properties count 128788 does not match configured Benton parcel count 89447."
         ],
         "omitted": 0
       },
@@ -278,7 +276,8 @@
       },
       "warnings": {
         "items": [
-          "Runtime DB currently contains only Benton county property rows."
+          "Runtime DB currently contains only Benton county property rows.",
+          "Properties rows are close to source mirror PacsParcel rows: 128788 Properties vs 128950 PacsParcel."
         ],
         "omitted": 0
       }
