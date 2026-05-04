@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using TerraFusion.Core.Sync.PacsParcelTruth;
 using TerraFusion.Core.Sync.PacsPropSuppAssoc;
 using TerraFusion.Core.Sync.PacsProperty;
 using TerraFusion.Core.Sync.PacsSale;
@@ -601,4 +602,134 @@ public class CanonicalDebugController : ControllerBase
     public sealed record SyncPop4Request(
         string? OperatorName,
         int? TopN);
+
+    // ════════════════════════════════════════════════════════════════════
+    // SYNC-POP-4b: parcel-spine truth promotion (S1 → S2-B chain).
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// SYNC-POP-4b: lands a (TopN-bounded) parcel batch into
+    /// <c>legacy_pacs_raw.property</c>, then promotes it into
+    /// <c>truth_pacs.parcel_spine</c> with the
+    /// <c>prop_type_cd = 'R'</c> filter.
+    ///
+    /// <para>Goal: prove <c>truth_pacs.parcel_spine &gt; 0</c>
+    /// end-to-end on a minimal sample. The output spine is the input
+    /// for SYNC-POP-4c (canonical projection).</para>
+    ///
+    /// <para>If <c>PropertyLoadBatchId</c> is provided, the S1 stage
+    /// is skipped and the named batch is promoted directly. Otherwise
+    /// a fresh S1 landing runs first.</para>
+    /// </summary>
+    [HttpPost("sync-pop-4/run-spine-chain")]
+    public async Task<IActionResult> RunSyncPop4b(
+        [FromServices] IPacsPropertyLandingService propSvc,
+        [FromServices] IPacsParcelSpineTruthPromoter spinePromoter,
+        [FromServices] IConfiguration config,
+        [FromBody] SyncPop4bRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        var pacsCs = config.GetConnectionString("PacsConnection");
+        if (string.IsNullOrWhiteSpace(pacsCs))
+        {
+            return StatusCode(500, new
+            {
+                error = "ConnectionStrings:PacsConnection is required for SYNC-POP-4b.",
+            });
+        }
+
+        var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
+            ? "sync-pop-4b-debug"
+            : request.OperatorName.Trim();
+        var topN = request?.TopN ?? 1000;
+
+        try
+        {
+            // ── S1: only if caller didn't pass an existing batch. ──
+            Guid propertyBatchId;
+            object? s1Result = null;
+            if (request?.PropertyLoadBatchId is { } existing && existing != Guid.Empty)
+            {
+                propertyBatchId = existing;
+                _logger.LogInformation(
+                    "[SyncPop4b] Skipping S1; promoting existing batch={Batch}",
+                    propertyBatchId);
+            }
+            else
+            {
+                _logger.LogInformation(
+                    "[SyncPop4b] Starting fresh S1 property landing. operator={Op} topN={Top}",
+                    operatorName, topN);
+                var src = new SqlServerPacsPropertySource(pacsCs, topN: topN);
+                var s1 = await propSvc.LandPropertiesAsync(src, operatorName, cancellationToken);
+                if (!string.Equals(s1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                {
+                    return StatusCode(500, new { stage = "S1", error = s1.ErrorSummary, s1 });
+                }
+                propertyBatchId = s1.LoadBatchId;
+                s1Result = new
+                {
+                    s1.Status,
+                    s1.LoadBatchId,
+                    s1.RowsLanded,
+                    s1.WithCreateDtCount,
+                    s1.WithoutCreateDtCount,
+                    s1.DuplicatePropIdCount,
+                    s1.TypeDistribution,
+                };
+            }
+
+            // ── S2-B: parcel-spine truth promotion ──
+            var s2b = await spinePromoter.PromoteAsync(propertyBatchId, operatorName, cancellationToken);
+            _logger.LogInformation(
+                "[SyncPop4b] S2-B status={Status} considered={C} promoted={P} notReal={NR} dupPropId={D}",
+                s2b.Status, s2b.ParcelsConsidered, s2b.ParcelsPromoted,
+                s2b.RejectedNotRealProperty, s2b.RejectedDuplicatePropId);
+
+            if (!string.Equals(s2b.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+            {
+                return StatusCode(500, new { stage = "S2-B", error = s2b.ErrorSummary, s1 = s1Result, s2b });
+            }
+
+            // Read-back so the response includes the operative proof number.
+            var truthSpineCount = await _db.TruthPacsParcelSpines.CountAsync(cancellationToken);
+
+            return Ok(new
+            {
+                operatorName,
+                s1 = s1Result,
+                s2b = new
+                {
+                    s2b.Status,
+                    s2b.PromotionLoadBatchId,
+                    s2b.ParcelsConsidered,
+                    s2b.ParcelsPromoted,
+                    s2b.RejectedNotRealProperty,
+                    s2b.RejectedDuplicatePropId,
+                    s2b.PriorRowsRemoved,
+                },
+                counts = new { truthPacsParcelSpine = truthSpineCount },
+                proofVerdict = s2b.ParcelsPromoted > 0
+                    ? "PROOF: truth_pacs.parcel_spine > 0 — SYNC-POP-4b spine promotion succeeded."
+                    : "INCONCLUSIVE: 0 spine rows promoted. Check the S1 type distribution — if R count was zero, the bounded sample missed all real-property parcels.",
+                nextSlice = "SYNC-POP-4c: build canonical_tf.tf_parcel projector (TfParcel + source_xref{prop_id}).",
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[SyncPop4b] FAILED");
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name });
+        }
+    }
+
+    /// <param name="OperatorName">Audit anchor on the load batches.</param>
+    /// <param name="TopN">Property sample size for the S1 stage. Default 1000.
+    /// Ignored if <paramref name="PropertyLoadBatchId"/> is supplied.</param>
+    /// <param name="PropertyLoadBatchId">If non-null and non-empty, skips S1
+    /// and promotes the named existing property batch directly. Use this to
+    /// re-run truth promotion without re-landing.</param>
+    public sealed record SyncPop4bRequest(
+        string? OperatorName,
+        int? TopN,
+        Guid? PropertyLoadBatchId);
 }

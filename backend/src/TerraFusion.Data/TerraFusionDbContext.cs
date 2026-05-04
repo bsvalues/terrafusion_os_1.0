@@ -245,6 +245,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsSale>
     TruthPacsSales { get; set; } = null!;
 
+  // Slice S2-B (SYNC-POP-4b): truth_pacs.parcel_spine — real-property-
+  // filtered projection of the raw property landing tier. Stepping
+  // stone toward canonical_tf.tf_parcel (SYNC-POP-4c).
+  public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsParcelSpine>
+    TruthPacsParcelSpines { get; set; } = null!;
+
   // Slice B2-A: truth_pacs.owner_current — supp-aware-validated
   // current owner snapshot per (prop_id, owner_tax_yr) joined to
   // account. Stepping stone toward canonical_tf.tf_owner (B3).
@@ -1001,6 +1007,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // supp-aware-validated truth layer.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.TruthPacs.TruthPacsSaleConfiguration());
+
+    // Slice S2-B (SYNC-POP-4b): truth_pacs.parcel_spine — real-
+    // property-filtered identity layer for the parcel pipeline.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.TruthPacs.TruthPacsParcelSpineConfiguration());
 
     // Slice S3: canonical_tf.tf_sale + legacy_tf_unproven.sale.
     modelBuilder.ApplyConfiguration(
