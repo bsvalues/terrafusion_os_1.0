@@ -20,6 +20,9 @@ using TerraFusion.Core.Sync.PacsImprvAttr;
 using TerraFusion.Core.Sync.PacsImprvCanonical;
 using TerraFusion.Core.Sync.PacsImprvDetail;
 using TerraFusion.Core.Sync.PacsImprvTruth;
+using TerraFusion.Core.Sync.ArcGisCanonical;
+using TerraFusion.Core.Sync.ArcGisRawLanding;
+using TerraFusion.Core.Sync.ArcGisTruthPromotion;
 using TerraFusion.Core.Sync.PacsLandCanonical;
 using TerraFusion.Core.Sync.PacsLandDetail;
 using TerraFusion.Core.Sync.PacsLandTruth;
@@ -1853,4 +1856,95 @@ public class CanonicalDebugController : ControllerBase
         string? OperatorName,
         int? ParcelTopN,
         int? WorkingYear);
+
+    // ════════════════════════════════════════════════════════════════════
+    // GIS-POP-1: Geometry-lane (ArcGIS) end-to-end closure.
+    //   D1 raw landing (ArcGIS REST FeatureServer) → D2 truth promotion →
+    //   D3 canonical projection (tf_parcel_geom + APN crosswalk to tf_parcel).
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// GIS-POP-1: doctrine end-to-end closure for the geometry lane.
+    /// Pulls Benton parcel polygons from the configured ArcGIS REST
+    /// feature service, lands them into <c>legacy_arcgis_raw.parcel_geom</c>,
+    /// promotes to <c>truth_arcgis.parcel_geom_current</c>, then projects
+    /// to <c>gis_tf.tf_parcel_geom</c> with APN crosswalk against
+    /// <c>canonical_tf.tf_parcel.ParcelNumber</c>.
+    ///
+    /// <para>Goal: prove <c>gis_tf.tf_parcel_geom &gt; 0</c> and
+    /// at least one row resolves its APN crosswalk to a TfParcelId.
+    /// Per the operator's expressed lean: ArcGIS API for GIS rather
+    /// than rolling our own shapefile parser.</para>
+    /// </summary>
+    [HttpPost("gis-pop-1/run-final-closure")]
+    public async Task<IActionResult> RunGisPop1(
+        [FromServices] IArcGisRawLandingService rawLandingSvc,
+        [FromServices] IArcGisTruthPromotionService truthPromotionSvc,
+        [FromServices] IArcGisCanonicalProjector canonicalProjector,
+        [FromBody] GisPop1Request? request,
+        CancellationToken cancellationToken = default)
+    {
+        var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
+            ? "gis-pop-1-final-closure"
+            : request.OperatorName.Trim();
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+
+            // ── A. D1 raw landing (full-county pull from ArcGIS REST). ──
+            _logger.LogInformation("[GisPop1] A. Raw ArcGIS landing for countyId={Cid}", bentonCountyId);
+            var d1 = await rawLandingSvc.LandParcelGeomsAsync(
+                bentonCountyId, operatorName, cancellationToken);
+            if (!string.Equals(d1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "ArcGis-D1", error = d1.ErrorSummary, d1 });
+
+            // ── B. D2 truth promotion (latest-per-tuple + validity). ──
+            _logger.LogInformation("[GisPop1] B. Promoting truth_arcgis.parcel_geom_current");
+            var d2 = await truthPromotionSvc.PromoteCountyAsync(
+                bentonCountyId, operatorName, cancellationToken);
+            if (!string.Equals(d2.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "ArcGis-D2", error = d2.ErrorSummary, d1, d2 });
+
+            // ── C. D3 canonical projection (tf_parcel_geom + APN crosswalk). ──
+            _logger.LogInformation("[GisPop1] C. Projecting gis_tf.tf_parcel_geom");
+            var d3 = await canonicalProjector.ProjectCountyAsync(
+                bentonCountyId, operatorName, cancellationToken);
+            if (!string.Equals(d3.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "ArcGis-D3", error = d3.ErrorSummary, d1, d2, d3 });
+
+            // ── Read-back. ──
+            var tfParcelGeomCount = await _db.TfParcelGeoms.CountAsync(cancellationToken);
+
+            return Ok(new
+            {
+                operatorName,
+                bentonCountyId,
+                d1,
+                d2,
+                d3 = new
+                {
+                    d3.Status, d3.PromotionLoadBatchId,
+                    d3.TruthRowsConsidered, d3.RowsProjected,
+                    d3.ApnCrosswalkResolved, d3.ApnCrosswalkUnresolved,
+                    d3.PriorCanonicalRowsRemoved, d3.AreaSqFtSum,
+                },
+                counts = new { gisTfParcelGeoms = tfParcelGeomCount },
+                proofVerdict = d3.RowsProjected > 0
+                    ? (d3.ApnCrosswalkResolved > 0
+                        ? "PROOF: gis_tf.tf_parcel_geom > 0 AND APN crosswalk resolved — GIS-POP-1 closure succeeded."
+                        : "PARTIAL: tf_parcel_geom landed but APN crosswalk found 0 matches. Check ApnAttributeName config or tf_parcel.ParcelNumber values.")
+                    : "INCONCLUSIVE: 0 rows projected. Check D1/D2 stage outputs.",
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[GisPop1] FAILED");
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name });
+        }
+    }
+
+    /// <param name="OperatorName">Audit anchor across D1+D2+D3.</param>
+    public sealed record GisPop1Request(
+        string? OperatorName);
 }
