@@ -1,0 +1,151 @@
+{
+  "generatedAt": "2026-05-04T16:19:18.569Z",
+  "database": {
+    "container": "terrafusion-postgres-dev",
+    "database": "terrafusion",
+    "user": "postgres"
+  },
+  "globalEtlCompletedAt": "2026-04-19T04:18:21.199Z",
+  "summary": {
+    "productTablesChecked": 10,
+    "lineageProven": 0,
+    "rowsExistLineageUnproven": 4,
+    "emptyTables": 6,
+    "missingTables": 0,
+    "blockers": 10,
+    "warnings": 6
+  },
+  "rows": [
+    {
+      "tableName": "Properties",
+      "productDomain": "parcel",
+      "rowCount": 128788,
+      "latestProductUpdatedAt": "2026-04-28T05:27:22.933Z",
+      "latestSourceSyncAt": "2026-04-17T01:43:32.918Z",
+      "latestEtlCompletedAt": "2026-04-19T04:18:21.199Z",
+      "latestProductLoadReceiptAt": null,
+      "lineageStatus": "rows_exist_lineage_unproven",
+      "blockers": ["Rows exist but no product load receipt proves lineage."],
+      "warnings": [
+        "Source/cache timestamp exists, but it is not a product-load receipt.",
+        "ETL timestamp exists, but it is not linked to this product table load."
+      ]
+    },
+    {
+      "tableName": "ComparableSales",
+      "productDomain": "sales",
+      "rowCount": 259102,
+      "latestProductUpdatedAt": "2026-04-27T17:53:31.310Z",
+      "latestSourceSyncAt": "2026-04-18T08:59:47.183Z",
+      "latestEtlCompletedAt": "2026-04-19T04:18:21.199Z",
+      "latestProductLoadReceiptAt": null,
+      "lineageStatus": "rows_exist_lineage_unproven",
+      "blockers": ["Rows exist but no product load receipt proves lineage."],
+      "warnings": [
+        "Source/cache timestamp exists, but it is not a product-load receipt.",
+        "ETL timestamp exists, but it is not linked to this product table load."
+      ]
+    },
+    {
+      "tableName": "CanonicalSaleQualifications",
+      "productDomain": "qualified_sales",
+      "rowCount": 0,
+      "latestProductUpdatedAt": null,
+      "latestSourceSyncAt": null,
+      "latestEtlCompletedAt": "2026-04-19T04:18:21.199Z",
+      "latestProductLoadReceiptAt": null,
+      "lineageStatus": "empty_table",
+      "blockers": ["Table exists but is empty."],
+      "warnings": []
+    },
+    {
+      "tableName": "CamaCharacteristics",
+      "productDomain": "costforge",
+      "rowCount": 75907,
+      "latestProductUpdatedAt": "2026-04-17T03:41:23.707Z",
+      "latestSourceSyncAt": null,
+      "latestEtlCompletedAt": "2026-04-19T04:18:21.199Z",
+      "latestProductLoadReceiptAt": null,
+      "lineageStatus": "rows_exist_lineage_unproven",
+      "blockers": ["Rows exist but no product load receipt proves lineage."],
+      "warnings": [
+        "ETL timestamp exists, but it is not linked to this product table load."
+      ]
+    },
+    {
+      "tableName": "ImprovementDetails",
+      "productDomain": "costforge",
+      "rowCount": 0,
+      "latestProductUpdatedAt": null,
+      "latestSourceSyncAt": null,
+      "latestEtlCompletedAt": "2026-04-19T04:18:21.199Z",
+      "latestProductLoadReceiptAt": null,
+      "lineageStatus": "empty_table",
+      "blockers": ["Table exists but is empty."],
+      "warnings": []
+    },
+    {
+      "tableName": "LandSegments",
+      "productDomain": "costforge",
+      "rowCount": 0,
+      "latestProductUpdatedAt": null,
+      "latestSourceSyncAt": "2026-04-05T00:51:27.641Z",
+      "latestEtlCompletedAt": "2026-04-19T04:18:21.199Z",
+      "latestProductLoadReceiptAt": null,
+      "lineageStatus": "empty_table",
+      "blockers": ["Table exists but is empty."],
+      "warnings": []
+    },
+    {
+      "tableName": "GisParcelGeometries",
+      "productDomain": "atlas",
+      "rowCount": 76138,
+      "latestProductUpdatedAt": "2026-05-02T01:25:36.552Z",
+      "latestSourceSyncAt": null,
+      "latestEtlCompletedAt": "2026-04-19T04:18:21.199Z",
+      "latestProductLoadReceiptAt": null,
+      "lineageStatus": "rows_exist_lineage_unproven",
+      "blockers": ["Rows exist but no product load receipt proves lineage."],
+      "warnings": [
+        "ETL timestamp exists, but it is not linked to this product table load."
+      ]
+    },
+    {
+      "tableName": "DossierPackets",
+      "productDomain": "dossier",
+      "rowCount": 0,
+      "latestProductUpdatedAt": null,
+      "latestSourceSyncAt": null,
+      "latestEtlCompletedAt": "2026-04-19T04:18:21.199Z",
+      "latestProductLoadReceiptAt": null,
+      "lineageStatus": "empty_table",
+      "blockers": ["Table exists but is empty."],
+      "warnings": []
+    },
+    {
+      "tableName": "CountyDownstreamClosureReceipts",
+      "productDomain": "dais",
+      "rowCount": 0,
+      "latestProductUpdatedAt": null,
+      "latestSourceSyncAt": null,
+      "latestEtlCompletedAt": "2026-04-19T04:18:21.199Z",
+      "latestProductLoadReceiptAt": null,
+      "lineageStatus": "empty_table",
+      "blockers": ["Table exists but is empty."],
+      "warnings": []
+    },
+    {
+      "tableName": "CountyApplyHandoffReceipts",
+      "productDomain": "dossier",
+      "rowCount": 0,
+      "latestProductUpdatedAt": null,
+      "latestSourceSyncAt": null,
+      "latestEtlCompletedAt": "2026-04-19T04:18:21.199Z",
+      "latestProductLoadReceiptAt": null,
+      "lineageStatus": "empty_table",
+      "blockers": ["Table exists but is empty."],
+      "warnings": []
+    }
+  ],
+  "passed": false
+}

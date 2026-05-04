@@ -177,7 +177,70 @@ function latestEtlCompletedAt() {
 
 function latestProductLoadReceiptAtFor(_tableName) {
   if (!tableExists('ProductLoadReceipts')) return null;
-  return null;
+  const columns = existingColumns('ProductLoadReceipts');
+  const tableColumn = [
+    'TableName',
+    'ProductTableName',
+    'TargetTableName',
+    'RuntimeTableName',
+    'ProductTable',
+  ].find(column => columns.has(column));
+  const timestampColumns = [
+    'LoadedAtUtc',
+    'LoadedAt',
+    'LoadCompletedAtUtc',
+    'CompletedAtUtc',
+    'CompletedAt',
+    'ReceiptAtUtc',
+    'ReceiptAt',
+    'CreatedAtUtc',
+    'CreatedAt',
+    'UpdatedAt',
+  ].filter(column => columns.has(column));
+
+  if (!tableColumn || timestampColumns.length === 0) return null;
+
+  const tableName = String(_tableName).replaceAll("'", "''");
+  const predicate = `lower(${quoteIdent(tableColumn)}::text) = lower('${tableName}')`;
+
+  return latest(
+    ...timestampColumns.map(column => {
+      const result = psql(
+        `select max(${quoteIdent(column)}) from "ProductLoadReceipts" where ${predicate};`
+      );
+      return parseIso(result);
+    })
+  );
+}
+
+function latestFixtureProductLoadReceiptAtFor(receipts, tableName) {
+  if (!Array.isArray(receipts)) return null;
+
+  return latest(
+    ...receipts
+      .filter(receipt => {
+        const receiptTable =
+          receipt.tableName ??
+          receipt.productTableName ??
+          receipt.targetTableName ??
+          receipt.runtimeTableName ??
+          receipt.productTable;
+
+        return String(receiptTable ?? '').toLowerCase() === String(tableName).toLowerCase();
+      })
+      .flatMap(receipt => [
+        receipt.loadedAtUtc,
+        receipt.loadedAt,
+        receipt.loadCompletedAtUtc,
+        receipt.completedAtUtc,
+        receipt.completedAt,
+        receipt.receiptAtUtc,
+        receipt.receiptAt,
+        receipt.createdAtUtc,
+        receipt.createdAt,
+        receipt.updatedAt,
+      ])
+  );
 }
 
 function buildRowsFromDatabase() {
@@ -320,7 +383,14 @@ function renderMarkdown(report) {
 function buildReport() {
   if (fixturePath) {
     const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
-    const rows = fixture.rows.map(evaluateProductLoadLineage);
+    const rows = fixture.rows.map(row =>
+      evaluateProductLoadLineage({
+        ...row,
+        latestProductLoadReceiptAt:
+          row.latestProductLoadReceiptAt ??
+          latestFixtureProductLoadReceiptAtFor(fixture.productLoadReceipts, row.tableName),
+      })
+    );
     return {
       rows,
       globalEtlCompletedAt: fixture.globalEtlCompletedAt ?? null,

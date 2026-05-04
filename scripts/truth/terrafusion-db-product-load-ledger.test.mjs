@@ -94,3 +94,46 @@ test('product load ledger passes when rows have a product load receipt', async (
   assert.equal(report.summary.lineageProven, 1);
   assert.equal(report.rows[0].lineageStatus, 'lineage_proven');
 });
+
+test('product load ledger resolves table-scoped product load receipts from receipt evidence', async () => {
+  const root = makeTempRepo('tf-product-ledger-receipt-');
+  const fixturePath = writeFixture(root, {
+    database: { container: 'fixture', database: 'terrafusion', user: 'postgres' },
+    productLoadReceipts: [
+      {
+        targetTableName: 'ComparableSales',
+        completedAtUtc: '2026-05-01T12:00:00.000Z',
+      },
+      {
+        targetTableName: 'Properties',
+        completedAtUtc: '2026-05-02T12:00:00.000Z',
+      },
+    ],
+    rows: [
+      {
+        tableName: 'Properties',
+        productDomain: 'parcel',
+        rowCount: 89447,
+        latestProductUpdatedAt: '2026-04-28T05:27:22.933Z',
+        latestSourceSyncAt: '2026-04-17T01:43:32.918Z',
+        latestEtlCompletedAt: '2026-04-19T04:18:21.199Z',
+      },
+    ],
+  });
+
+  await execFileAsync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    env: { ...process.env, TF_PRODUCT_LOAD_LEDGER_FIXTURE: fixturePath },
+  });
+
+  const report = JSON.parse(
+    fs.readFileSync(
+      path.join(root, 'generated', 'truth', 'terrafusion-db-product-load-ledger.json'),
+      'utf8'
+    )
+  );
+
+  assert.equal(report.passed, true);
+  assert.equal(report.rows[0].latestProductLoadReceiptAt, '2026-05-02T12:00:00.000Z');
+  assert.equal(report.rows[0].lineageStatus, 'lineage_proven');
+});
