@@ -10,7 +10,7 @@ namespace TerraFusion.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[AllowAnonymous]
+[Authorize]
 public class PropertiesController : ControllerBase
 {
     private readonly IPropertyService _propertyService;
@@ -25,6 +25,7 @@ public class PropertiesController : ControllerBase
     }
 
     [HttpGet]
+    [RequiresPermission("read:properties")]
     public async Task<ActionResult<PagedResult<PropertyDto>>> GetProperties(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 50,
@@ -50,6 +51,7 @@ public class PropertiesController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [RequiresPermission("read:properties")]
     public async Task<ActionResult<PropertyDto>> GetProperty(Guid id)
     {
         try
@@ -85,6 +87,7 @@ public class PropertiesController : ControllerBase
     }
 
     [HttpGet("parcel/{parcelNumber}")]
+    [RequiresPermission("read:properties")]
     public async Task<ActionResult<PropertyDto>> GetPropertyByParcel(string parcelNumber)
     {
         try
@@ -157,6 +160,7 @@ public class PropertiesController : ControllerBase
     }
 
     [HttpGet("{id}/valuations")]
+    [RequiresPermission("read:properties")]
     public async Task<ActionResult<IEnumerable<ValuationDto>>> GetPropertyValuations(Guid id)
     {
         try
@@ -180,6 +184,7 @@ public class PropertiesController : ControllerBase
     }
 
     [HttpPost("{id}/valuations")]
+    [RequiresPermission("read:properties")]
     public async Task<ActionResult<ValuationDto>> CreateValuation(Guid id, CreateValuationDto createDto)
     {
         try
@@ -204,6 +209,7 @@ public class PropertiesController : ControllerBase
     }
 
     [HttpGet("stats")]
+    [RequiresPermission("read:properties")]
     public async Task<ActionResult<PropertyStatsDto>> GetPropertyStats()
     {
         try
@@ -227,6 +233,7 @@ public class PropertiesController : ControllerBase
     /// Stub: returns empty list until activity tracking is implemented.
     /// </summary>
     [HttpGet("parcel/{parcelNumber}/activity")]
+    [AllowAnonymous]
     public IActionResult GetParcelActivity(string parcelNumber)
     {
         _logger.LogDebug("Activity requested for parcel {ParcelNumber} — returning stub empty list", parcelNumber);
@@ -240,6 +247,7 @@ public class PropertiesController : ControllerBase
     /// Returns empty buildings array (not 404) when parcel has no PACS improvements.
     /// </summary>
     [HttpGet("parcel/{parcelNumber}/sketch")]
+    [RequiresPermission("read:properties")]
     public async Task<IActionResult> GetParcelSketch(string parcelNumber)
     {
         try
