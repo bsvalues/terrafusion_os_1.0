@@ -264,6 +264,34 @@ test('readiness packet blocks candidate set that promotes another county', () =>
   assert.ok(report.executionQueue.some(item => item.source === 'runtimeCandidateSet'));
 });
 
+test('readiness packet blocks crosswalk and candidate set runtime count disagreement', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/washington-39-county-data-crosswalk.json', {
+    summary: {
+      countiesChecked: 39,
+      runtimeProven: 2,
+      publicSourceSeed: 12,
+      provenanceInventoryOnly: 26,
+      prohibit39CountyRuntimeClaim: true,
+    },
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(report.shipBlockers.some(item => item.source === 'crosswalk'));
+  assert.ok(
+    report.shipBlockers.some(item => item.message.includes('does not match runtime candidate set'))
+  );
+});
+
 test('readiness packet blocks source lineage artifact with no checked candidates', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-row-source-lineage-proof.json', {

@@ -173,6 +173,19 @@ function collectBlockers(loaded) {
   }
 
   if (
+    loaded.crosswalk.present &&
+    loaded.runtimeCandidateSet.present &&
+    Number(crosswalk?.summary?.runtimeProven ?? -1) !==
+      Number(runtimeCandidateSet?.summary?.runtimeProven ?? -2)
+  ) {
+    blocker(
+      blockers,
+      'crosswalk',
+      'Crosswalk runtime-proven count does not match runtime candidate set.'
+    );
+  }
+
+  if (
     loaded.runtimeCandidateSet.present &&
     (runtimeCandidateSet?.summary?.june10RuntimeScope !== 'benton_only_runtime_pilot' ||
       runtimeCandidateSet?.summary?.prohibit39CountyRuntimeClaim !== true ||
