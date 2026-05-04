@@ -194,7 +194,11 @@ function collectBlockers(loaded) {
     );
   }
 
-  if (loaded.sourceLineage.present && Number(sourceLineage?.summary?.failed ?? 1) > 0) {
+  if (
+    loaded.sourceLineage.present &&
+    (Number(sourceLineage?.summary?.candidatesChecked ?? 0) <= 0 ||
+      Number(sourceLineage?.summary?.failed ?? 1) > 0)
+  ) {
     blocker(blockers, 'sourceLineage', 'Runtime source lineage proof is not passing.');
   }
 

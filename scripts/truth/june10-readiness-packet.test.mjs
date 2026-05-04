@@ -170,3 +170,29 @@ test('readiness packet passes when all required runtime truth artifacts are gree
   assert.equal(report.postDbRefreshRerunChecklist.length, 8);
   assert.equal(report.artifactDetails.dbIdentity, undefined);
 });
+
+test('readiness packet blocks source lineage artifact with no checked candidates', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-row-source-lineage-proof.json', {
+    summary: {
+      candidatesChecked: 0,
+      passed: 0,
+      failed: 0,
+    },
+    proofs: [],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.equal(report.summary.terraFusionDb.sourceLineagePassed, false);
+  assert.ok(report.shipBlockers.some(item => item.source === 'sourceLineage'));
+  assert.ok(report.executionQueue.some(item => item.source === 'sourceLineage'));
+});
