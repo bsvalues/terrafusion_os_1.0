@@ -1,3 +1,23 @@
+// CI-HYGIENE-D (#751): tests rewritten to assert the server-side CAMA scan
+// contract established by commit 14a5a969d (April 16, 2026):
+// "AssessDataQuality rewritten to self-query CamaCharacteristics directly
+//  (was: client-supplied records array — broke DataQualityTab which sends
+//  {taxYear})". Tests previously asserted the deprecated client-supplied
+//  records contract; this rewrite aligns to current production doctrine.
+//  Same pattern as PR #745 (R14 evidence-only) and PR #758 (R14Phase2P0).
+//
+// Doctrine summary of the current /api/costforge/analytics/data-quality/assess
+// endpoint (CostForgeController.AssessDataQuality, src line ~6813):
+//   - [AllowAnonymous] — explicit dev-environment doctrine
+//   - Server-side CAMA scan (ignores any client-supplied Records)
+//   - Returns 0-1 float scale: completenessScore, accuracyScore,
+//     consistencyScore, outlierDetection, issues, assessedAt, totalRecords
+//   - Does NOT persist to DataQualityAssessments
+//   - Empty CAMA → returns Ok with zero scores (no BadRequest)
+// The companion read endpoints GetDataQualityAssessment and
+// GetDataQualityHistory still exist and still require county context;
+// tests now seed DataQualityAssessment rows directly to drive them.
+
 using System.Security.Claims;
 using System.Text.Json;
 using FluentAssertions;
@@ -69,47 +89,98 @@ public sealed class R2Wave32DataQualityTests
     }
   }
 
-  private static DataQualityRecord MakeRecord(string parcelId, decimal assessedValue, decimal landArea, DateTime? lastUpdated = null)
-    => new()
+  /// <summary>
+  /// Seed a CAMA characteristic that is "perfect" — populated and consistent —
+  /// so the server-side scan reports clean scores. Tests can override fields
+  /// via the action delegate to inject defects (missing field, bad year,
+  /// effective-age &gt; economic-life, etc).
+  /// </summary>
+  private static async Task SeedCama(
+      DataDbContext db,
+      Guid countyId,
+      string parcelId,
+      int taxYear,
+      Action<CamaCharacteristic>? mutate = null)
+  {
+    var c = new CamaCharacteristic
     {
+      Id = Guid.NewGuid(),
       ParcelId = parcelId,
-      LastUpdated = lastUpdated ?? DateTime.UtcNow,
-      Fields = new Dictionary<string, string?>
-      {
-        ["parcelId"] = parcelId,
-        ["assessedValue"] = assessedValue.ToString(),
-        ["landArea"] = landArea.ToString(),
-      },
+      TaxYear = taxYear,
+      BuildingType = "R1",
+      SquareFeet = 2000m,
+      QualityGrade = "STANDARD",
+      ConditionGrade = "GOOD",
+      NeighborhoodCode = "N01",
+      YearBuilt = 1995,
+      EffectiveAge = 20,
+      EconomicLife = 60,
+      ImprvVal = 250_000m,
+      CountyId = countyId,
     };
+    mutate?.Invoke(c);
+    db.CamaCharacteristics.Add(c);
+    await db.SaveChangesAsync();
+  }
 
-  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
-  // Quality Assessment
-  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  /// <summary>
+  /// Seed a DataQualityAssessment row directly (production AssessDataQuality
+  /// no longer writes; the read endpoints still query this table).
+  /// </summary>
+  private static async Task<DataQualityAssessment> SeedAssessment(
+      DataDbContext db,
+      Guid countyId,
+      string scope = "county",
+      double overallScore = 92,
+      string grade = "A")
+  {
+    var entity = new DataQualityAssessment
+    {
+      CountyId = countyId,
+      Scope = scope,
+      TotalRecords = 10,
+      CompleteRecords = 10,
+      CompletenessScore = 100,
+      ConsistentRecords = 10,
+      ConsistencyScore = 100,
+      TimelyRecords = 10,
+      TimelinessScore = 100,
+      AccurateRecords = 10,
+      AccuracyScore = 100,
+      OverallScore = overallScore,
+      Grade = grade,
+      IssueCount = 0,
+      CreatedBy = "w32-test-user",
+      CreatedAt = DateTime.UtcNow,
+    };
+    db.Set<DataQualityAssessment>().Add(entity);
+    await db.SaveChangesAsync();
+    return entity;
+  }
+
+  // ────────────────────────────────────────────────────────────────────────
+  // Quality Assessment — server-side CAMA scan (0-1 scale, no persistence)
+  // ────────────────────────────────────────────────────────────────────────
 
   [Fact]
-  public async Task Assess_PerfectData_GradeA()
+  public async Task Assess_PerfectData_HighScores()
   {
-    using var db = CreateDbContext(nameof(Assess_PerfectData_GradeA));
+    using var db = CreateDbContext(nameof(Assess_PerfectData_HighScores));
     await SeedCounty(db, BentonCountyId);
+    var taxYear = DateTime.UtcNow.Year;
+    await SeedCama(db, BentonCountyId, "P-001", taxYear);
+    await SeedCama(db, BentonCountyId, "P-002", taxYear);
+    await SeedCama(db, BentonCountyId, "P-003", taxYear);
     var controller = CreateController(db);
 
-    var result = await controller.AssessDataQuality(new DataQualityRequest
-    {
-      Records = new()
-      {
-        MakeRecord("P-001", 250_000m, 5000m),
-        MakeRecord("P-002", 180_000m, 3500m),
-        MakeRecord("P-003", 320_000m, 8000m),
-      },
-    });
+    var result = await controller.AssessDataQuality(new DataQualityRequest { TaxYear = taxYear });
 
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
-    var json = JsonSerializer.Serialize(ok.Value);
-    var doc = JsonDocument.Parse(json);
-
-    doc.RootElement.GetProperty("overallScore").GetDouble().Should().Be(100);
-    doc.RootElement.GetProperty("grade").GetString().Should().Be("A");
-    doc.RootElement.GetProperty("issueCount").GetInt32().Should().Be(0);
+    var doc = JsonDocument.Parse(JsonSerializer.Serialize(ok.Value));
+    doc.RootElement.GetProperty("completenessScore").GetDouble().Should().Be(1.0);
+    doc.RootElement.GetProperty("accuracyScore").GetDouble().Should().Be(1.0);
+    doc.RootElement.GetProperty("consistencyScore").GetDouble().Should().Be(1.0);
+    doc.RootElement.GetProperty("totalRecords").GetInt32().Should().Be(3);
   }
 
   [Fact]
@@ -117,185 +188,165 @@ public sealed class R2Wave32DataQualityTests
   {
     using var db = CreateDbContext(nameof(Assess_MissingFields_LowersCompleteness));
     await SeedCounty(db, BentonCountyId);
+    var taxYear = DateTime.UtcNow.Year;
+    // 1 perfect record + 1 with all three completeness-tracked fields nulled
+    await SeedCama(db, BentonCountyId, "P-001", taxYear);
+    await SeedCama(db, BentonCountyId, "P-002", taxYear, c =>
+    {
+      c.YearBuilt = null;
+      c.SquareFeet = 0m;
+      c.QualityGrade = null;
+    });
+    var controller = CreateController(db);
+
+    var result = await controller.AssessDataQuality(new DataQualityRequest { TaxYear = taxYear });
+
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var doc = JsonDocument.Parse(JsonSerializer.Serialize(ok.Value));
+    // Completeness divisor is total*3 across YearBuilt+SquareFeet+QualityGrade.
+    // 3 missing of 6 cells → 1 - 3/6 = 0.5
+    doc.RootElement.GetProperty("completenessScore").GetDouble().Should().BeApproximately(0.5, 0.01);
+  }
+
+  [Fact]
+  public async Task Assess_NegativeImprvVal_LowersAccuracyAndFlagsIssue()
+  {
+    using var db = CreateDbContext(nameof(Assess_NegativeImprvVal_LowersAccuracyAndFlagsIssue));
+    await SeedCounty(db, BentonCountyId);
+    var taxYear = DateTime.UtcNow.Year;
+    await SeedCama(db, BentonCountyId, "P-001", taxYear, c => c.ImprvVal = -50_000m);
+    var controller = CreateController(db);
+
+    var result = await controller.AssessDataQuality(new DataQualityRequest { TaxYear = taxYear });
+
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var doc = JsonDocument.Parse(JsonSerializer.Serialize(ok.Value));
+    // 1 bad ImprvVal of 3 accuracy cells → 1 - 1/3 ≈ 0.6667
+    doc.RootElement.GetProperty("accuracyScore").GetDouble().Should().BeLessThan(1.0);
+    var issues = doc.RootElement.GetProperty("issues").EnumerateArray().ToList();
+    issues.Should().Contain(i =>
+      i.GetProperty("category").GetString() == "Accuracy" &&
+      i.GetProperty("field").GetString() == "ImprvVal");
+  }
+
+  [Fact]
+  public async Task Assess_EffectiveAgeExceedsEconomicLife_LowersConsistency()
+  {
+    using var db = CreateDbContext(nameof(Assess_EffectiveAgeExceedsEconomicLife_LowersConsistency));
+    await SeedCounty(db, BentonCountyId);
+    var taxYear = DateTime.UtcNow.Year;
+    await SeedCama(db, BentonCountyId, "P-001", taxYear, c =>
+    {
+      c.EffectiveAge = 100;
+      c.EconomicLife = 60;
+    });
+    var controller = CreateController(db);
+
+    var result = await controller.AssessDataQuality(new DataQualityRequest { TaxYear = taxYear });
+
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var doc = JsonDocument.Parse(JsonSerializer.Serialize(ok.Value));
+    doc.RootElement.GetProperty("consistencyScore").GetDouble().Should().BeLessThan(1.0);
+    var issues = doc.RootElement.GetProperty("issues").EnumerateArray().ToList();
+    issues.Should().Contain(i =>
+      i.GetProperty("category").GetString() == "Consistency" &&
+      i.GetProperty("field").GetString() == "EffectiveAge/EconomicLife");
+  }
+
+  [Fact]
+  public async Task Assess_OutOfRangeYearBuilt_LowersAccuracy()
+  {
+    using var db = CreateDbContext(nameof(Assess_OutOfRangeYearBuilt_LowersAccuracy));
+    await SeedCounty(db, BentonCountyId);
+    var taxYear = DateTime.UtcNow.Year;
+    await SeedCama(db, BentonCountyId, "P-001", taxYear, c => c.YearBuilt = 1500); // < 1800
+    var controller = CreateController(db);
+
+    var result = await controller.AssessDataQuality(new DataQualityRequest { TaxYear = taxYear });
+
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var doc = JsonDocument.Parse(JsonSerializer.Serialize(ok.Value));
+    doc.RootElement.GetProperty("accuracyScore").GetDouble().Should().BeLessThan(1.0);
+  }
+
+  [Fact]
+  public async Task Assess_EmptyCama_ReturnsOkWithZeroScores()
+  {
+    // April 16 doctrine: production no longer validates a Records array;
+    // the CAMA scan with no rows returns Ok with zero scores rather than
+    // BadRequest. (Was: BadRequest on empty client-supplied records.)
+    using var db = CreateDbContext(nameof(Assess_EmptyCama_ReturnsOkWithZeroScores));
+    await SeedCounty(db, BentonCountyId);
     var controller = CreateController(db);
 
     var result = await controller.AssessDataQuality(new DataQualityRequest
     {
-      Records = new()
-      {
-        MakeRecord("P-001", 250_000m, 5000m),
-        new() { ParcelId = "P-002", LastUpdated = DateTime.UtcNow, Fields = new() { ["parcelId"] = "P-002" } }, // missing assessedValue & landArea
-      },
+      TaxYear = DateTime.UtcNow.Year,
     });
 
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
-    var json = JsonSerializer.Serialize(ok.Value);
-    var doc = JsonDocument.Parse(json);
-
-    doc.RootElement.GetProperty("completenessScore").GetDouble().Should().Be(50);
-    doc.RootElement.GetProperty("overallScore").GetDouble().Should().BeLessThan(100);
+    var doc = JsonDocument.Parse(JsonSerializer.Serialize(ok.Value));
+    doc.RootElement.GetProperty("completenessScore").GetDouble().Should().Be(0.0);
+    doc.RootElement.GetProperty("accuracyScore").GetDouble().Should().Be(0.0);
+    doc.RootElement.GetProperty("consistencyScore").GetDouble().Should().Be(0.0);
   }
 
   [Fact]
-  public async Task Assess_NegativeAssessedValue_InconsistentRecord()
+  public async Task Assess_DoesNotPersistToDb()
   {
-    using var db = CreateDbContext(nameof(Assess_NegativeAssessedValue_InconsistentRecord));
+    // April 16 doctrine: AssessDataQuality is a read-only CAMA scan and
+    // does NOT write a DataQualityAssessment row. The previous test asserted
+    // persistence; this test now asserts the opposite to lock the contract.
+    using var db = CreateDbContext(nameof(Assess_DoesNotPersistToDb));
     await SeedCounty(db, BentonCountyId);
-    var controller = CreateController(db);
-
-    var result = await controller.AssessDataQuality(new DataQualityRequest
-    {
-      Records = new()
-      {
-        new()
-        {
-          ParcelId = "P-001",
-          LastUpdated = DateTime.UtcNow,
-          Fields = new() { ["parcelId"] = "P-001", ["assessedValue"] = "-50000", ["landArea"] = "5000" },
-        },
-      },
-    });
-
-    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
-    var json = JsonSerializer.Serialize(ok.Value);
-    var doc = JsonDocument.Parse(json);
-
-    doc.RootElement.GetProperty("consistencyScore").GetDouble().Should().Be(0);
-    doc.RootElement.GetProperty("issueCount").GetInt32().Should().BeGreaterThan(0);
-  }
-
-  [Fact]
-  public async Task Assess_OldRecords_LowTimeliness()
-  {
-    using var db = CreateDbContext(nameof(Assess_OldRecords_LowTimeliness));
-    await SeedCounty(db, BentonCountyId);
-    var controller = CreateController(db);
-
-    var staleDate = DateTime.UtcNow.AddDays(-500);
-    var result = await controller.AssessDataQuality(new DataQualityRequest
-    {
-      TimelinessWindowDays = 365,
-      Records = new()
-      {
-        MakeRecord("P-001", 250_000m, 5000m, staleDate),
-        MakeRecord("P-002", 180_000m, 3500m, staleDate),
-      },
-    });
-
-    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
-    var json = JsonSerializer.Serialize(ok.Value);
-    var doc = JsonDocument.Parse(json);
-
-    doc.RootElement.GetProperty("timelinessScore").GetDouble().Should().Be(0);
-  }
-
-  [Fact]
-  public async Task Assess_OutOfRangeValue_LowAccuracy()
-  {
-    using var db = CreateDbContext(nameof(Assess_OutOfRangeValue_LowAccuracy));
-    await SeedCounty(db, BentonCountyId);
-    var controller = CreateController(db);
-
-    var result = await controller.AssessDataQuality(new DataQualityRequest
-    {
-      Records = new()
-      {
-        new()
-        {
-          ParcelId = "P-001",
-          LastUpdated = DateTime.UtcNow,
-          Fields = new() { ["parcelId"] = "P-001", ["assessedValue"] = "999999999999", ["landArea"] = "5000" },
-        },
-      },
-    });
-
-    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
-    var json = JsonSerializer.Serialize(ok.Value);
-    var doc = JsonDocument.Parse(json);
-
-    doc.RootElement.GetProperty("accuracyScore").GetDouble().Should().Be(0);
-  }
-
-  [Fact]
-  public async Task Assess_EmptyRecords_ReturnsBadRequest()
-  {
-    using var db = CreateDbContext(nameof(Assess_EmptyRecords_ReturnsBadRequest));
-    await SeedCounty(db, BentonCountyId);
-    var controller = CreateController(db);
-
-    var result = await controller.AssessDataQuality(new DataQualityRequest { Records = new() });
-
-    result.Should().BeOfType<BadRequestObjectResult>();
-  }
-
-  [Fact]
-  public async Task Assess_GradeD_ScoreBetween60And70()
-  {
-    using var db = CreateDbContext(nameof(Assess_GradeD_ScoreBetween60And70));
-    await SeedCounty(db, BentonCountyId);
-    var controller = CreateController(db);
-
-    // 3 good records, 2 bad (missing fields, stale, inconsistent)
-    var result = await controller.AssessDataQuality(new DataQualityRequest
-    {
-      TimelinessWindowDays = 30,
-      Records = new()
-      {
-        MakeRecord("P-001", 250_000m, 5000m, DateTime.UtcNow),
-        MakeRecord("P-002", 180_000m, 3500m, DateTime.UtcNow),
-        MakeRecord("P-003", 320_000m, 8000m, DateTime.UtcNow),
-        new() { ParcelId = "P-004", LastUpdated = DateTime.UtcNow.AddDays(-60), Fields = new() { ["parcelId"] = "P-004" } },
-        new() { ParcelId = "P-005", Fields = new() { ["parcelId"] = "P-005", ["assessedValue"] = "-1", ["landArea"] = "0" } },
-      },
-    });
-
-    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
-    var json = JsonSerializer.Serialize(ok.Value);
-    var doc = JsonDocument.Parse(json);
-
-    var score = doc.RootElement.GetProperty("overallScore").GetDouble();
-    score.Should().BeGreaterThanOrEqualTo(40).And.BeLessThan(90);
-  }
-
-  [Fact]
-  public async Task Assess_PersistsToDb()
-  {
-    using var db = CreateDbContext(nameof(Assess_PersistsToDb));
-    await SeedCounty(db, BentonCountyId);
+    var taxYear = DateTime.UtcNow.Year;
+    await SeedCama(db, BentonCountyId, "P-001", taxYear);
     var controller = CreateController(db);
 
     await controller.AssessDataQuality(new DataQualityRequest
     {
       Scope = "district",
-      Records = new() { MakeRecord("P-001", 250_000m, 5000m) },
+      TaxYear = taxYear,
     });
 
     var entities = await db.Set<DataQualityAssessment>().ToListAsync();
-    entities.Should().HaveCount(1);
-    entities[0].Scope.Should().Be("district");
+    entities.Should().BeEmpty(
+      "AssessDataQuality is a stateless CAMA scan per April 16, 2026 commit 14a5a969d");
   }
 
-  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
-  // Retrieval & County Isolation
-  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  [Fact]
+  public async Task Assess_AnonymousPrincipal_StillSucceeds()
+  {
+    // April 16 doctrine: the endpoint is explicitly [AllowAnonymous] for
+    // dev-environment use. Anonymous callers must not be rejected.
+    using var db = CreateDbContext(nameof(Assess_AnonymousPrincipal_StillSucceeds));
+    await SeedCounty(db, BentonCountyId);
+    var taxYear = DateTime.UtcNow.Year;
+    await SeedCama(db, BentonCountyId, "P-001", taxYear);
+    var controller = CreateController(db, new ClaimsPrincipal(new ClaimsIdentity()));
+
+    var result = await controller.AssessDataQuality(new DataQualityRequest { TaxYear = taxYear });
+
+    result.Should().BeOfType<OkObjectResult>(
+      "AssessDataQuality is [AllowAnonymous] — anonymous principals must succeed");
+  }
+
+  // ────────────────────────────────────────────────────────────────────────
+  // Retrieval & County Isolation — read endpoints still require county ctx
+  // ────────────────────────────────────────────────────────────────────────
 
   [Fact]
   public async Task GetAssessment_RetrievesById()
   {
     using var db = CreateDbContext(nameof(GetAssessment_RetrievesById));
     await SeedCounty(db, BentonCountyId);
+    var saved = await SeedAssessment(db, BentonCountyId);
     var controller = CreateController(db);
 
-    await controller.AssessDataQuality(new DataQualityRequest
-    {
-      Records = new() { MakeRecord("P-001", 250_000m, 5000m) },
-    });
-    var saved = await db.Set<DataQualityAssessment>().FirstAsync();
-
     var result = await controller.GetDataQualityAssessment(saved.Id);
+
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
-    var json = JsonSerializer.Serialize(ok.Value);
-    var doc = JsonDocument.Parse(json);
+    var doc = JsonDocument.Parse(JsonSerializer.Serialize(ok.Value));
     doc.RootElement.GetProperty("id").GetInt32().Should().Be(saved.Id);
   }
 
@@ -305,16 +356,11 @@ public sealed class R2Wave32DataQualityTests
     using var db = CreateDbContext(nameof(GetAssessment_WrongCounty_ReturnsNotFound));
     await SeedCounty(db, BentonCountyId);
     await SeedCounty(db, OtherCountyId, "Other", "999");
-
-    var bentonController = CreateController(db, CreatePrincipal(BentonCountyId));
-    await bentonController.AssessDataQuality(new DataQualityRequest
-    {
-      Records = new() { MakeRecord("P-001", 250_000m, 5000m) },
-    });
-    var saved = await db.Set<DataQualityAssessment>().FirstAsync();
+    var saved = await SeedAssessment(db, BentonCountyId);
 
     var otherController = CreateController(db, CreatePrincipal(OtherCountyId, "OTHER"));
     var result = await otherController.GetDataQualityAssessment(saved.Id);
+
     result.Should().BeOfType<NotFoundObjectResult>();
   }
 
@@ -323,36 +369,29 @@ public sealed class R2Wave32DataQualityTests
   {
     using var db = CreateDbContext(nameof(GetHistory_FiltersByScope));
     await SeedCounty(db, BentonCountyId);
+    await SeedAssessment(db, BentonCountyId, scope: "county");
+    await SeedAssessment(db, BentonCountyId, scope: "district");
     var controller = CreateController(db);
 
-    await controller.AssessDataQuality(new DataQualityRequest
-    {
-      Scope = "county",
-      Records = new() { MakeRecord("P-001", 250_000m, 5000m) },
-    });
-    await controller.AssessDataQuality(new DataQualityRequest
-    {
-      Scope = "district",
-      Records = new() { MakeRecord("P-002", 180_000m, 3500m) },
-    });
-
     var result = await controller.GetDataQualityHistory(scope: "district");
+
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
-    var json = JsonSerializer.Serialize(ok.Value);
-    var doc = JsonDocument.Parse(json);
+    var doc = JsonDocument.Parse(JsonSerializer.Serialize(ok.Value));
     doc.RootElement.GetProperty("count").GetInt32().Should().Be(1);
   }
 
   [Fact]
-  public async Task RequiresCountyContext()
+  public async Task GetAssessment_RequiresCountyContext()
   {
-    using var db = CreateDbContext(nameof(RequiresCountyContext));
+    // Read endpoints (Get*) still require county context, even though
+    // AssessDataQuality is now [AllowAnonymous]. Anonymous principals on
+    // GetDataQualityAssessment must be Unauthorized.
+    using var db = CreateDbContext(nameof(GetAssessment_RequiresCountyContext));
+    await SeedCounty(db, BentonCountyId);
+    var saved = await SeedAssessment(db, BentonCountyId);
     var controller = CreateController(db, new ClaimsPrincipal(new ClaimsIdentity()));
 
-    var result = await controller.AssessDataQuality(new DataQualityRequest
-    {
-      Records = new() { MakeRecord("P-001", 250_000m, 5000m) },
-    });
+    var result = await controller.GetDataQualityAssessment(saved.Id);
 
     result.Should().BeOfType<UnauthorizedObjectResult>();
   }
