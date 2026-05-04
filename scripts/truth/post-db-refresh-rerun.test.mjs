@@ -259,7 +259,7 @@ test('records refreshed expected artifacts for successful proof commands', () =>
   assert.equal(report.results[0].artifactOutputs[0].refreshed, true);
 });
 
-test('preserves PASS_WITH_WARNINGS from refreshed proof artifacts', () => {
+test('preserves PASS_WITH_WARNINGS from refreshed proof artifact status', () => {
   const root = makeTempRepo('tf-post-db-refresh-artifact-warning-');
   const result = spawnSync('node', [scriptPath, root], {
     cwd: process.cwd(),
@@ -278,9 +278,10 @@ test('preserves PASS_WITH_WARNINGS from refreshed proof artifacts', () => {
               "const fs = require('fs');",
               "fs.mkdirSync('generated/truth', { recursive: true });",
               "fs.writeFileSync('generated/truth/example.json', JSON.stringify({ status: 'PASS_WITH_WARNINGS', warnings: ['review before shipping'] }) + '\\n');",
+              "fs.writeFileSync('generated/truth/status-only.json', JSON.stringify({ status: 'PASS_WITH_WARNINGS' }) + '\\n');",
             ].join(' '),
           ],
-          expectedArtifacts: ['generated/truth/example.json'],
+          expectedArtifacts: ['generated/truth/example.json', 'generated/truth/status-only.json'],
         },
       ]),
     },
@@ -292,14 +293,17 @@ test('preserves PASS_WITH_WARNINGS from refreshed proof artifacts', () => {
   assert.equal(report.nextAction.code, 'review_warnings_then_run_full_readiness_gate');
   assert.equal(report.nextAction.command, 'pnpm run readiness:june10');
   assert.equal(report.summary.artifactWarnings, 1);
-  assert.equal(report.summary.artifactsPassWithWarnings, 1);
+  assert.equal(report.summary.artifactsPassWithWarnings, 2);
   assert.equal(report.results[0].artifactOutputs[0].artifactStatus, 'PASS_WITH_WARNINGS');
   assert.equal(report.results[0].artifactOutputs[0].warningCount, 1);
+  assert.equal(report.results[0].artifactOutputs[1].artifactStatus, 'PASS_WITH_WARNINGS');
+  assert.equal(report.results[0].artifactOutputs[1].warningCount, 0);
   const markdown = fs.readFileSync(
     path.join(root, 'generated', 'truth', 'post-db-refresh-rerun.md'),
     'utf8'
   );
   assert.match(markdown, /Artifact warnings: 1/);
+  assert.match(markdown, /Artifacts PASS_WITH_WARNINGS: 2/);
   assert.match(markdown, /PASS_WITH_WARNINGS/);
 });
 

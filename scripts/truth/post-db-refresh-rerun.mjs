@@ -471,13 +471,17 @@ function buildReport({ preflight, commands, results, blockers }) {
     (sum, artifact) => sum + Number(artifact.warningCount ?? 0),
     0
   );
+  const artifactsPassWithWarnings = artifactOutputs.filter(
+    artifact => artifact.artifactStatus === 'PASS_WITH_WARNINGS'
+  ).length;
+  const hasWarningPosture = artifactWarnings > 0 || artifactsPassWithWarnings > 0;
   const report = {
     generatedAt: new Date().toISOString(),
     runtimeBaseUrl,
     status: dryRun
       ? 'DRY_RUN'
       : blockers.length === 0
-        ? artifactWarnings > 0
+        ? hasWarningPosture
           ? 'PASS_WITH_WARNINGS'
           : 'PASS'
         : 'FAIL',
@@ -512,9 +516,7 @@ function buildReport({ preflight, commands, results, blockers }) {
         artifact => !artifact.exists || !artifact.refreshed
       ).length,
       artifactWarnings,
-      artifactsPassWithWarnings: artifactOutputs.filter(
-        artifact => artifact.artifactStatus === 'PASS_WITH_WARNINGS'
-      ).length,
+      artifactsPassWithWarnings,
       artifactParseErrors: artifactOutputs.filter(artifact => artifact.parseError).length,
       artifactFailures: artifactOutputs.filter(artifact => artifactFailureReason(artifact)).length,
     },
