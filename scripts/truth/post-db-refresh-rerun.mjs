@@ -414,12 +414,16 @@ async function main() {
           artifactBlockers.push(`${result.name} did not write expected artifact ${artifact.path}.`);
         } else if (!artifact.refreshed) {
           artifactBlockers.push(`${result.name} left expected artifact stale: ${artifact.path}.`);
+        } else if (artifact.parseError) {
+          artifactBlockers.push(
+            `${result.name} wrote malformed JSON artifact ${artifact.path}: ${artifact.parseError}.`
+          );
         }
       }
       blockers.push(...artifactBlockers);
       if (artifactBlockers.length > 0 && !continueOnFailure) {
         blockers.push(
-          `Skipped ${commands.length - results.length} remaining command(s) after stale or missing artifact output. Set TF_POST_DB_REFRESH_CONTINUE_ON_FAILURE=1 to continue.`
+          `Skipped ${commands.length - results.length} remaining command(s) after missing, stale, or malformed artifact output. Set TF_POST_DB_REFRESH_CONTINUE_ON_FAILURE=1 to continue.`
         );
         break;
       }
@@ -518,6 +522,17 @@ function deriveNextAction(report) {
       code: 'fix_failed_proof',
       command: failedCommand.command,
       reason: `${failedCommand.name} failed before the post-DB-refresh sequence could complete.`,
+    };
+  }
+
+  const malformedResult = report.results.find(result =>
+    (result.artifactOutputs ?? []).some(artifact => artifact.parseError)
+  );
+  if (malformedResult) {
+    return {
+      code: 'fix_malformed_artifact',
+      command: malformedResult.command,
+      reason: `${malformedResult.name} wrote at least one malformed JSON proof artifact.`,
     };
   }
 
