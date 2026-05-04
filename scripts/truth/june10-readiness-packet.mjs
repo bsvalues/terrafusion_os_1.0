@@ -192,6 +192,9 @@ function collectBlockers(loaded) {
           `Artifact reports failed proof posture: ${failurePosture}.`
         );
       }
+      for (const artifactBlocker of artifactBlockerMessages(artifact.value)) {
+        blocker(blockers, artifact.name, artifactBlocker);
+      }
     }
   }
 
@@ -508,6 +511,7 @@ function artifactFailurePosture(value) {
 function artifactFailurePostures(value) {
   return [
     artifactFailurePosture(value),
+    ...collectionFailurePostures(value, 'artifact'),
     ...summaryFailurePostures(value?.summary),
     ...nestedRecordFailurePostures(value?.rows, 'row'),
     ...nestedRecordFailurePostures(value?.proofs, 'proof'),
@@ -516,7 +520,7 @@ function artifactFailurePostures(value) {
 
 function summaryFailurePostures(summary) {
   if (!summary || typeof summary !== 'object') return [];
-  const postures = [];
+  const postures = collectionFailurePostures(summary, 'summary');
   if (summary.passed === false) postures.push('summary.passed is false');
   if (typeof summary.status === 'string') {
     const allowedStatuses = new Set(['PASS', 'PASS_WITH_WARNINGS']);
@@ -527,11 +531,23 @@ function summaryFailurePostures(summary) {
   return postures;
 }
 
+function collectionFailurePostures(value, label) {
+  if (!value || typeof value !== 'object') return [];
+  const postures = [];
+  for (const key of ['errors', 'failures']) {
+    const entries = value[key];
+    if (Array.isArray(entries) && entries.length > 0) {
+      postures.push(`${label}.${key} has ${entries.length} item(s)`);
+    }
+  }
+  return postures;
+}
+
 function nestedRecordFailurePostures(records, label) {
   if (!Array.isArray(records)) return [];
   return records.flatMap(record => {
     const subject = `${record?.tableName ?? record?.county ?? label} ${label}`;
-    const postures = [];
+    const postures = collectionFailurePostures(record, subject);
     if (record?.passed === false) postures.push(`${subject} passed is false`);
     if (typeof record?.status === 'string') {
       const allowedStatuses = new Set(['PASS', 'PASS_WITH_WARNINGS']);
@@ -550,6 +566,10 @@ function artifactBlockers(value) {
   const posture = artifactFailurePostures(value).map(
     failurePosture => `Artifact reports failed proof posture: ${failurePosture}.`
   );
+  return [...new Set([...posture, ...artifactBlockerMessages(value)])].map(item => String(item));
+}
+
+function artifactBlockerMessages(value) {
   const direct = Array.isArray(value?.blockers) ? value.blockers : [];
   const summary = Array.isArray(value?.summary?.blockers) ? value.summary.blockers : [];
   const receiptBlockers = Array.isArray(value?.receiptEvidence?.blockers)
@@ -571,14 +591,7 @@ function artifactBlockers(value) {
     : [];
 
   return [
-    ...new Set([
-      ...posture,
-      ...direct,
-      ...summary,
-      ...receiptBlockers,
-      ...rowBlockers,
-      ...proofBlockers,
-    ]),
+    ...new Set([...direct, ...summary, ...receiptBlockers, ...rowBlockers, ...proofBlockers]),
   ].map(item => String(item));
 }
 

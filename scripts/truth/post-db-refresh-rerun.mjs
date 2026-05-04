@@ -236,6 +236,7 @@ function artifactFailureReason(artifact) {
 
 function nestedArtifactFailureReasons(value) {
   return [
+    ...collectionFailureReasons(value, 'artifact'),
     ...summaryFailureReasons(value?.summary),
     ...nestedRecordFailureReasons(value?.rows, 'row'),
     ...nestedRecordFailureReasons(value?.proofs, 'proof'),
@@ -244,7 +245,7 @@ function nestedArtifactFailureReasons(value) {
 
 function summaryFailureReasons(summary) {
   if (!summary || typeof summary !== 'object') return [];
-  const reasons = [];
+  const reasons = collectionFailureReasons(summary, 'summary');
   if (summary.passed === false) reasons.push('summary.passed is false');
   if (typeof summary.status === 'string') {
     const allowedStatuses = new Set(['PASS', 'PASS_WITH_WARNINGS']);
@@ -255,11 +256,23 @@ function summaryFailureReasons(summary) {
   return reasons;
 }
 
+function collectionFailureReasons(value, label) {
+  if (!value || typeof value !== 'object') return [];
+  const reasons = [];
+  for (const key of ['blockers', 'errors', 'failures']) {
+    const entries = value[key];
+    if (Array.isArray(entries) && entries.length > 0) {
+      reasons.push(`${label}.${key} has ${entries.length} item(s)`);
+    }
+  }
+  return reasons;
+}
+
 function nestedRecordFailureReasons(records, label) {
   if (!Array.isArray(records)) return [];
   return records.flatMap(record => {
     const subject = `${record?.tableName ?? record?.county ?? label} ${label}`;
-    const reasons = [];
+    const reasons = collectionFailureReasons(record, subject);
     if (record?.passed === false) reasons.push(`${subject} passed is false`);
     if (typeof record?.status === 'string') {
       const allowedStatuses = new Set(['PASS', 'PASS_WITH_WARNINGS']);

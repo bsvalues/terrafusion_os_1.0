@@ -447,6 +447,94 @@ test('readiness packet blocks nested failed row and proof posture', () => {
   assert.ok(report.executionQueue.some(item => item.source === 'dbIdentity'));
 });
 
+test('readiness packet blocks explicit blocker error and failure collections', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-identity.json', {
+    endpointStatus: 200,
+    passed: true,
+    blockers: ['Explicit top-level blocker.'],
+    errors: ['Top-level error.'],
+    failures: ['Top-level failure.'],
+    summary: {
+      blockers: ['Summary blocker.'],
+      errors: ['Summary error.'],
+      failures: ['Summary failure.'],
+    },
+    rows: [
+      {
+        county: 'Benton',
+        blockers: ['Row blocker.'],
+        errors: ['Row error.'],
+        failures: ['Row failure.'],
+      },
+    ],
+    proofs: [
+      {
+        county: 'Benton',
+        blockers: ['Proof blocker.'],
+        errors: ['Proof error.'],
+        failures: ['Proof failure.'],
+      },
+    ],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.shipBlockers.some(
+      item => item.source === 'dbIdentity' && item.message === 'Explicit top-level blocker.'
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item => item.source === 'dbIdentity' && item.message === 'Benton: Row blocker.'
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item => item.source === 'dbIdentity' && item.message === 'Benton: Proof blocker.'
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item => item.source === 'dbIdentity' && item.message.includes('artifact.errors has 1 item(s)')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' && item.message.includes('summary.failures has 1 item(s)')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' && item.message.includes('Benton row.errors has 1 item(s)')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' && item.message.includes('Benton proof.failures has 1 item(s)')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.includes('Explicit top-level blocker.')
+  );
+  assert.ok(report.artifactDetails.dbIdentity.blockers.items.includes('Summary blocker.'));
+  assert.ok(report.artifactDetails.dbIdentity.blockers.items.includes('Benton: Row blocker.'));
+  assert.ok(report.artifactDetails.dbIdentity.blockers.items.includes('Benton: Proof blocker.'));
+  assert.ok(report.executionQueue.some(item => item.source === 'dbIdentity'));
+});
+
 test('readiness packet surfaces warning-only proof artifacts', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-sale-qualification-lineage-proof.json', {
