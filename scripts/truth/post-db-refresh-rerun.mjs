@@ -161,6 +161,7 @@ function inspectArtifacts(expectedArtifacts, commandStartedMs) {
     let artifactPassed = null;
     let warningCount = 0;
     let parseError = null;
+    let artifactFailureReasons = [];
 
     try {
       const stat = fs.statSync(filePath);
@@ -172,6 +173,7 @@ function inspectArtifacts(expectedArtifacts, commandStartedMs) {
         artifactPassed = posture.passed;
         warningCount = posture.warningCount;
         parseError = posture.parseError;
+        artifactFailureReasons = posture.failureReasons;
       }
     } catch {
       exists = false;
@@ -186,6 +188,7 @@ function inspectArtifacts(expectedArtifacts, commandStartedMs) {
       artifactPassed,
       warningCount,
       parseError,
+      artifactFailureReasons,
     };
   });
 }
@@ -198,6 +201,7 @@ function inspectJsonArtifactPosture(filePath) {
       passed: typeof parsed?.passed === 'boolean' ? parsed.passed : null,
       warningCount: countArtifactWarnings(parsed),
       parseError: null,
+      failureReasons: nestedArtifactFailureReasons(parsed),
     };
   } catch (error) {
     return {
@@ -205,6 +209,7 @@ function inspectJsonArtifactPosture(filePath) {
       passed: null,
       warningCount: 0,
       parseError: error instanceof Error ? error.message : String(error),
+      failureReasons: [],
     };
   }
 }
@@ -220,7 +225,36 @@ function artifactFailureReason(artifact) {
       return `top-level status is ${artifact.artifactStatus}`;
     }
   }
+  if (
+    Array.isArray(artifact.artifactFailureReasons) &&
+    artifact.artifactFailureReasons.length > 0
+  ) {
+    return artifact.artifactFailureReasons.join('; ');
+  }
   return null;
+}
+
+function nestedArtifactFailureReasons(value) {
+  return [
+    ...nestedRecordFailureReasons(value?.rows, 'row'),
+    ...nestedRecordFailureReasons(value?.proofs, 'proof'),
+  ];
+}
+
+function nestedRecordFailureReasons(records, label) {
+  if (!Array.isArray(records)) return [];
+  return records.flatMap(record => {
+    const subject = `${record?.tableName ?? record?.county ?? label} ${label}`;
+    const reasons = [];
+    if (record?.passed === false) reasons.push(`${subject} passed is false`);
+    if (typeof record?.status === 'string') {
+      const allowedStatuses = new Set(['PASS', 'PASS_WITH_WARNINGS']);
+      if (!allowedStatuses.has(record.status) && !record.status.endsWith('_pass')) {
+        reasons.push(`${subject} status is ${record.status}`);
+      }
+    }
+    return reasons;
+  });
 }
 
 function countArtifactWarnings(value) {

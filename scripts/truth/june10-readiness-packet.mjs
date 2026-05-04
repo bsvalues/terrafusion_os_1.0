@@ -184,8 +184,8 @@ function collectBlockers(loaded) {
       for (const artifactWarning of artifactWarnings(artifact.value)) {
         warning(warnings, artifact.name, artifactWarning);
       }
-      const failurePosture = artifactFailurePosture(artifact.value);
-      if (failurePosture) {
+      const failurePostures = artifactFailurePostures(artifact.value);
+      for (const failurePosture of failurePostures) {
         blocker(
           blockers,
           artifact.name,
@@ -505,11 +505,34 @@ function artifactFailurePosture(value) {
   return null;
 }
 
+function artifactFailurePostures(value) {
+  return [
+    artifactFailurePosture(value),
+    ...nestedRecordFailurePostures(value?.rows, 'row'),
+    ...nestedRecordFailurePostures(value?.proofs, 'proof'),
+  ].filter(Boolean);
+}
+
+function nestedRecordFailurePostures(records, label) {
+  if (!Array.isArray(records)) return [];
+  return records.flatMap(record => {
+    const subject = `${record?.tableName ?? record?.county ?? label} ${label}`;
+    const postures = [];
+    if (record?.passed === false) postures.push(`${subject} passed is false`);
+    if (typeof record?.status === 'string') {
+      const allowedStatuses = new Set(['PASS', 'PASS_WITH_WARNINGS']);
+      if (!allowedStatuses.has(record.status) && !record.status.endsWith('_pass')) {
+        postures.push(`${subject} status is ${record.status}`);
+      }
+    }
+    return postures;
+  });
+}
+
 function artifactBlockers(value) {
-  const failurePosture = artifactFailurePosture(value);
-  const posture = failurePosture
-    ? [`Artifact reports failed proof posture: ${failurePosture}.`]
-    : [];
+  const posture = artifactFailurePostures(value).map(
+    failurePosture => `Artifact reports failed proof posture: ${failurePosture}.`
+  );
   const direct = Array.isArray(value?.blockers) ? value.blockers : [];
   const summary = Array.isArray(value?.summary?.blockers) ? value.summary.blockers : [];
   const receiptBlockers = Array.isArray(value?.receiptEvidence?.blockers)

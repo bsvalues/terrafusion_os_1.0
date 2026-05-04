@@ -334,12 +334,14 @@ test('fails when a proof command writes a failing expected JSON artifact', () =>
               "fs.writeFileSync('generated/truth/status-fail.json', JSON.stringify({ status: 'FAIL', blockers: ['red'] }) + '\\n');",
               "fs.writeFileSync('generated/truth/passed-false.json', JSON.stringify({ passed: false, blockers: ['red'] }) + '\\n');",
               "fs.writeFileSync('generated/truth/status-dry-run.json', JSON.stringify({ status: 'DRY_RUN' }) + '\\n');",
+              "fs.writeFileSync('generated/truth/nested-fail.json', JSON.stringify({ rows: [{ county: 'Benton', passed: false }], proofs: [{ county: 'Benton', status: 'FAIL' }] }) + '\\n');",
             ].join(' '),
           ],
           expectedArtifacts: [
             'generated/truth/status-fail.json',
             'generated/truth/passed-false.json',
             'generated/truth/status-dry-run.json',
+            'generated/truth/nested-fail.json',
           ],
         },
         {
@@ -356,15 +358,21 @@ test('fails when a proof command writes a failing expected JSON artifact', () =>
   assert.equal(report.status, 'FAIL');
   assert.equal(report.nextAction.code, 'fix_failed_artifact');
   assert.match(report.nextAction.reason, /failing JSON proof artifact/);
-  assert.equal(report.summary.artifactFailures, 3);
+  assert.equal(report.summary.artifactFailures, 4);
   assert.equal(report.summary.commandsSkipped, 1);
   assert.equal(report.results.length, 1);
   assert.equal(report.results[0].artifactOutputs[0].artifactStatus, 'FAIL');
   assert.equal(report.results[0].artifactOutputs[1].artifactPassed, false);
   assert.equal(report.results[0].artifactOutputs[2].artifactStatus, 'DRY_RUN');
+  assert.deepEqual(report.results[0].artifactOutputs[3].artifactFailureReasons, [
+    'Benton row passed is false',
+    'Benton proof status is FAIL',
+  ]);
   assert.ok(report.blockers.some(item => item.includes('top-level status is FAIL')));
   assert.ok(report.blockers.some(item => item.includes('top-level passed is false')));
   assert.ok(report.blockers.some(item => item.includes('top-level status is DRY_RUN')));
+  assert.ok(report.blockers.some(item => item.includes('Benton row passed is false')));
+  assert.ok(report.blockers.some(item => item.includes('Benton proof status is FAIL')));
   assert.ok(
     report.blockers.some(item =>
       item.includes('after missing, stale, malformed, or failing artifact output')
