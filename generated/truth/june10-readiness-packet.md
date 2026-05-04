@@ -1,6 +1,6 @@
 # June 10 Readiness Packet
 
-Generated: 2026-05-04T17:17:57.792Z
+Generated: 2026-05-04T17:24:32.550Z
 
 ## Status
 
@@ -57,6 +57,53 @@ Generated: 2026-05-04T17:17:57.792Z
 - bentonParcelSanity: Codex after TerraFusion DB content is refreshed; run `pnpm run truth:benton-parcel-count-sanity`; Prove Benton parcel endpoint counts active/current distinct parcels, not raw historical or duplicate property rows.
 - saleQualification: Codex after TerraFusion DB sales/qualification tables are refreshed; run `pnpm run truth:runtime-sale-qualification`; Prove Benton sales qualification lineage from TerraFusion DB runtime tables, with no source-system dependency in product runtime.
 - bentonPilotClosure: Codex after all Benton data gates are green; run `pnpm run truth:benton-runtime-pilot-closure`; Prove Benton runtime pilot closure only after DB identity, content, load receipts, parcel sanity, and sale qualification pass.
+
+## Artifact Blocker Details
+
+- countyRuntimeContract: Adams: Runtime DB identity proof did not pass.
+- countyRuntimeContract: Adams: County runtime class is not_registered.
+- countyRuntimeContract: Adams: County has no proven runtime rows.
+- countyRuntimeContract: Adams: Product-load receipt is not lineage-proven for parcel.
+- countyRuntimeContract: Adams: Product-load receipt is not lineage-proven for sales.
+- countyRuntimeContract: Adams: Product-load receipt is not lineage-proven for qualified_sales.
+- countyRuntimeContract: Asotin: Runtime DB identity proof did not pass.
+- countyRuntimeContract: Asotin: County runtime class is not_registered.
+- countyRuntimeContract: Asotin: County has no proven runtime rows.
+- countyRuntimeContract: Asotin: Product-load receipt is not lineage-proven for parcel.
+- countyRuntimeContract: Asotin: Product-load receipt is not lineage-proven for sales.
+- countyRuntimeContract: Asotin: Product-load receipt is not lineage-proven for qualified_sales.
+- countyRuntimeContract: Benton: Runtime DB identity proof did not pass.
+- countyRuntimeContract: Benton: Product-load receipt is not lineage-proven for parcel.
+- countyRuntimeContract: Benton: Product-load receipt is not lineage-proven for sales.
+- countyRuntimeContract: Benton: Product-load receipt is not lineage-proven for qualified_sales.
+- countyRuntimeContract: Benton: Benton parcel count sanity proof did not pass.
+- countyRuntimeContract: Chelan: Runtime DB identity proof did not pass.
+- countyRuntimeContract: Chelan: County runtime class is not_registered.
+- countyRuntimeContract: Chelan: County has no proven runtime rows.
+- countyRuntimeContract: 213 additional blocker(s) omitted
+- dbIdentity: Runtime Properties count 128788 does not match configured Benton parcel count 89447.
+- dbContent: Configured Benton parcel count 89447 matches neither runtime property rows 128788 nor distinct parcel ids 128788.
+- dbContent: Runtime Benton property rows 128788 do not match configured parcel count 89447.
+- productLoadLedger: Properties: Rows exist but no product load receipt proves lineage.
+- productLoadLedger: ComparableSales: Rows exist but no product load receipt proves lineage.
+- productLoadLedger: CanonicalSaleQualifications: Table exists but is empty.
+- productLoadLedger: CamaCharacteristics: Rows exist but no product load receipt proves lineage.
+- productLoadLedger: ImprovementDetails: Table exists but is empty.
+- productLoadLedger: LandSegments: Table exists but is empty.
+- productLoadLedger: GisParcelGeometries: Rows exist but no product load receipt proves lineage.
+- productLoadLedger: DossierPackets: Table exists but is empty.
+- productLoadLedger: CountyDownstreamClosureReceipts: Table exists but is empty.
+- productLoadLedger: CountyApplyHandoffReceipts: Table exists but is empty.
+- bentonParcelSanity: Benton parcel endpoint does not apply active/current parcel filtering.
+- bentonParcelSanity: Properties table has 128788 Benton rows with unknown active/inactive status.
+- bentonParcelSanity: Distinct active Benton parcel count 0 is outside expected range 1-100000.
+- bentonParcelSanity: Distinct current-year Benton parcel count 128784 is outside expected maximum 100000.
+- saleQualification: Benton: Runtime source-lineage proof is not trusted: Runtime DB identity proof is not trusted: Runtime Properties count 128788 does not match configured Benton parcel count 89447.
+- bentonPilotClosure: Benton runtime row-path proof did not pass.
+- bentonPilotClosure: Benton sale-qualification lineage proof did not pass.
+- bentonPilotClosure: Benton sale-qualification lineage is recommendation_backed_canonical_landing_missing, expected canonical_landing_backed.
+- bentonPilotClosure: Benton CanonicalSaleQualifications landing table is empty.
+- bentonPilotClosure: Benton ratio-study window has no final-decision qualified sales.
 
 ## Warnings
 

@@ -38,8 +38,14 @@ function makeRepo({ passing = false } = {}) {
     },
   });
 
-  writeJson(root, `${truth}/runtime-db-identity.json`, { passed: passing });
-  writeJson(root, `${truth}/runtime-db-content-audit.json`, { passed: passing });
+  writeJson(root, `${truth}/runtime-db-identity.json`, {
+    passed: passing,
+    blockers: passing ? [] : ['Runtime DB identity is not proven.'],
+  });
+  writeJson(root, `${truth}/runtime-db-content-audit.json`, {
+    passed: passing,
+    blockers: passing ? [] : ['Runtime DB content audit is not passing.'],
+  });
   writeJson(root, `${truth}/terrafusion-db-product-load-ledger.json`, {
     passed: passing,
     summary: {
@@ -48,8 +54,20 @@ function makeRepo({ passing = false } = {}) {
       rowsExistLineageUnproven: passing ? 0 : 4,
       emptyTables: passing ? 0 : 6,
     },
+    blockers: passing ? [] : ['Rows exist but no product load receipt proves lineage.'],
+    rows: passing
+      ? []
+      : [
+          {
+            tableName: 'Properties',
+            blockers: ['Rows exist but no product load receipt proves lineage.'],
+          },
+        ],
   });
-  writeJson(root, `${truth}/benton-parcel-count-sanity.json`, { passed: passing });
+  writeJson(root, `${truth}/benton-parcel-count-sanity.json`, {
+    passed: passing,
+    blockers: passing ? [] : ['Benton parcel count sanity is not proven.'],
+  });
   writeJson(root, `${truth}/runtime-sale-qualification-lineage-proof.json`, {
     status: passing ? 'PASS' : 'FAIL',
   });
@@ -78,6 +96,12 @@ test('readiness packet fails when required runtime truth artifacts are red', () 
   assert.ok(
     report.executionQueue.some(item => item.nextCommand === 'pnpm run truth:runtime-db-identity')
   );
+  assert.ok(report.artifactDetails.dbIdentity.blockers.items.length > 0);
+  assert.ok(
+    report.artifactDetails.productLoadLedger.blockers.items.some(blocker =>
+      blocker.includes('Properties:')
+    )
+  );
 });
 
 test('readiness packet passes when all required runtime truth artifacts are green', () => {
@@ -94,4 +118,5 @@ test('readiness packet passes when all required runtime truth artifacts are gree
   assert.equal(report.status, 'PASS');
   assert.equal(report.shipBlockers.length, 0);
   assert.deepEqual(report.executionQueue, []);
+  assert.equal(report.artifactDetails.dbIdentity, undefined);
 });

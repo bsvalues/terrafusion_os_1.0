@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-04T17:17:57.792Z",
+  "generatedAt": "2026-05-04T17:24:32.550Z",
   "status": "FAIL",
   "artifacts": {
     "crosswalk": {
@@ -153,5 +153,167 @@
       "requiredResolution": "Prove Benton runtime pilot closure only after DB identity, content, load receipts, parcel sanity, and sale qualification pass."
     }
   ],
+  "artifactDetails": {
+    "countyRuntimeContract": {
+      "present": true,
+      "blockers": {
+        "items": [
+          "Adams: Runtime DB identity proof did not pass.",
+          "Adams: County runtime class is not_registered.",
+          "Adams: County has no proven runtime rows.",
+          "Adams: Product-load receipt is not lineage-proven for parcel.",
+          "Adams: Product-load receipt is not lineage-proven for sales.",
+          "Adams: Product-load receipt is not lineage-proven for qualified_sales.",
+          "Asotin: Runtime DB identity proof did not pass.",
+          "Asotin: County runtime class is not_registered.",
+          "Asotin: County has no proven runtime rows.",
+          "Asotin: Product-load receipt is not lineage-proven for parcel.",
+          "Asotin: Product-load receipt is not lineage-proven for sales.",
+          "Asotin: Product-load receipt is not lineage-proven for qualified_sales.",
+          "Benton: Runtime DB identity proof did not pass.",
+          "Benton: Product-load receipt is not lineage-proven for parcel.",
+          "Benton: Product-load receipt is not lineage-proven for sales.",
+          "Benton: Product-load receipt is not lineage-proven for qualified_sales.",
+          "Benton: Benton parcel count sanity proof did not pass.",
+          "Chelan: Runtime DB identity proof did not pass.",
+          "Chelan: County runtime class is not_registered.",
+          "Chelan: County has no proven runtime rows."
+        ],
+        "omitted": 213
+      },
+      "warnings": {
+        "items": [
+          "Adams: County is provenance inventory only.",
+          "Asotin: County is provenance inventory only.",
+          "Benton: County has public-source seed evidence but not runtime promotion proof.",
+          "Chelan: County has public-source seed evidence but not runtime promotion proof.",
+          "Clallam: County is provenance inventory only.",
+          "Clark: County has public-source seed evidence but not runtime promotion proof.",
+          "Columbia: County is provenance inventory only.",
+          "Cowlitz: County has public-source seed evidence but not runtime promotion proof.",
+          "Douglas: County is provenance inventory only.",
+          "Ferry: County is provenance inventory only.",
+          "Franklin: County is provenance inventory only.",
+          "Garfield: County is provenance inventory only.",
+          "Grant: County has public-source seed evidence but not runtime promotion proof.",
+          "Grays Harbor: County is provenance inventory only.",
+          "Island: County has public-source seed evidence but not runtime promotion proof.",
+          "Jefferson: County is provenance inventory only.",
+          "King: County is provenance inventory only.",
+          "Kitsap: County is provenance inventory only.",
+          "Kittitas: County is provenance inventory only.",
+          "Klickitat: County is provenance inventory only."
+        ],
+        "omitted": 19
+      }
+    },
+    "dbIdentity": {
+      "present": true,
+      "blockers": {
+        "items": [
+          "Runtime Properties count 128788 does not match configured Benton parcel count 89447."
+        ],
+        "omitted": 0
+      },
+      "warnings": {
+        "items": [],
+        "omitted": 0
+      }
+    },
+    "dbContent": {
+      "present": true,
+      "blockers": {
+        "items": [
+          "Configured Benton parcel count 89447 matches neither runtime property rows 128788 nor distinct parcel ids 128788.",
+          "Runtime Benton property rows 128788 do not match configured parcel count 89447."
+        ],
+        "omitted": 0
+      },
+      "warnings": {
+        "items": [],
+        "omitted": 0
+      }
+    },
+    "productLoadLedger": {
+      "present": true,
+      "blockers": {
+        "items": [
+          "Properties: Rows exist but no product load receipt proves lineage.",
+          "ComparableSales: Rows exist but no product load receipt proves lineage.",
+          "CanonicalSaleQualifications: Table exists but is empty.",
+          "CamaCharacteristics: Rows exist but no product load receipt proves lineage.",
+          "ImprovementDetails: Table exists but is empty.",
+          "LandSegments: Table exists but is empty.",
+          "GisParcelGeometries: Rows exist but no product load receipt proves lineage.",
+          "DossierPackets: Table exists but is empty.",
+          "CountyDownstreamClosureReceipts: Table exists but is empty.",
+          "CountyApplyHandoffReceipts: Table exists but is empty."
+        ],
+        "omitted": 0
+      },
+      "warnings": {
+        "items": [
+          "Properties: Source/cache timestamp exists, but it is not a product-load receipt.",
+          "Properties: ETL timestamp exists, but it is not linked to this product table load.",
+          "ComparableSales: Source/cache timestamp exists, but it is not a product-load receipt.",
+          "ComparableSales: ETL timestamp exists, but it is not linked to this product table load.",
+          "CamaCharacteristics: ETL timestamp exists, but it is not linked to this product table load.",
+          "GisParcelGeometries: ETL timestamp exists, but it is not linked to this product table load."
+        ],
+        "omitted": 0
+      }
+    },
+    "bentonParcelSanity": {
+      "present": true,
+      "blockers": {
+        "items": [
+          "Benton parcel endpoint does not apply active/current parcel filtering.",
+          "Properties table has 128788 Benton rows with unknown active/inactive status.",
+          "Distinct active Benton parcel count 0 is outside expected range 1-100000.",
+          "Distinct current-year Benton parcel count 128784 is outside expected maximum 100000."
+        ],
+        "omitted": 0
+      },
+      "warnings": {
+        "items": [
+          "Runtime DB currently contains only Benton county property rows."
+        ],
+        "omitted": 0
+      }
+    },
+    "saleQualification": {
+      "present": true,
+      "blockers": {
+        "items": [
+          "Benton: Runtime source-lineage proof is not trusted: Runtime DB identity proof is not trusted: Runtime Properties count 128788 does not match configured Benton parcel count 89447."
+        ],
+        "omitted": 0
+      },
+      "warnings": {
+        "items": [],
+        "omitted": 0
+      }
+    },
+    "bentonPilotClosure": {
+      "present": true,
+      "blockers": {
+        "items": [
+          "Benton runtime row-path proof did not pass.",
+          "Benton sale-qualification lineage proof did not pass.",
+          "Benton sale-qualification lineage is recommendation_backed_canonical_landing_missing, expected canonical_landing_backed.",
+          "Benton CanonicalSaleQualifications landing table is empty.",
+          "Benton ratio-study window has no final-decision qualified sales."
+        ],
+        "omitted": 0
+      },
+      "warnings": {
+        "items": [
+          "Benton ratio-study pool still depends on recommendation fallback.",
+          "Elite Operations mock flag is enabled; county runtime mock flag is false."
+        ],
+        "omitted": 0
+      }
+    }
+  },
   "warnings": []
 }

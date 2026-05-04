@@ -257,6 +257,66 @@ function buildExecutionQueue(blockers) {
     });
 }
 
+function artifactBlockers(value) {
+  const direct = Array.isArray(value?.blockers) ? value.blockers : [];
+  const summary = Array.isArray(value?.summary?.blockers) ? value.summary.blockers : [];
+  const rowBlockers = Array.isArray(value?.rows)
+    ? value.rows.flatMap(row =>
+        (Array.isArray(row?.blockers) ? row.blockers : []).map(
+          item => `${row?.tableName ?? row?.county ?? 'row'}: ${item}`
+        )
+      )
+    : [];
+  const proofBlockers = Array.isArray(value?.proofs)
+    ? value.proofs.flatMap(proof =>
+        (Array.isArray(proof?.blockers) ? proof.blockers : []).map(
+          item => `${proof?.county ?? 'proof'}: ${item}`
+        )
+      )
+    : [];
+
+  return [...new Set([...direct, ...summary, ...rowBlockers, ...proofBlockers])].map(item =>
+    String(item)
+  );
+}
+
+function artifactWarnings(value) {
+  const direct = Array.isArray(value?.warnings) ? value.warnings : [];
+  const summary = Array.isArray(value?.summary?.warnings) ? value.summary.warnings : [];
+  const rowWarnings = Array.isArray(value?.rows)
+    ? value.rows.flatMap(row =>
+        (Array.isArray(row?.warnings) ? row.warnings : []).map(
+          item => `${row?.tableName ?? row?.county ?? 'row'}: ${item}`
+        )
+      )
+    : [];
+
+  return [...new Set([...direct, ...summary, ...rowWarnings])].map(item => String(item));
+}
+
+function capList(items, limit = 20) {
+  return {
+    items: items.slice(0, limit),
+    omitted: Math.max(0, items.length - limit),
+  };
+}
+
+function buildArtifactDetails(loaded, blockers) {
+  const sources = new Set(blockers.map(item => item.source));
+  return Object.fromEntries(
+    Object.entries(loaded)
+      .filter(([name]) => sources.has(name))
+      .map(([name, artifact]) => [
+        name,
+        {
+          present: artifact.present,
+          blockers: capList(artifactBlockers(artifact.value)),
+          warnings: capList(artifactWarnings(artifact.value)),
+        },
+      ])
+  );
+}
+
 function renderMarkdown(report) {
   return [
     '# June 10 Readiness Packet',
@@ -314,6 +374,18 @@ function renderMarkdown(report) {
         )
       : ['- none']),
     '',
+    '## Artifact Blocker Details',
+    '',
+    ...Object.entries(report.artifactDetails).flatMap(([name, detail]) => {
+      if (!detail.present) return [`- ${name}: artifact missing`];
+      if (detail.blockers.items.length === 0) return [`- ${name}: none`];
+      const lines = detail.blockers.items.map(blocker => `- ${name}: ${blocker}`);
+      if (detail.blockers.omitted > 0) {
+        lines.push(`- ${name}: ${detail.blockers.omitted} additional blocker(s) omitted`);
+      }
+      return lines;
+    }),
+    '',
     '## Warnings',
     '',
     ...(report.warnings.length
@@ -350,6 +422,7 @@ function main() {
     summary: buildDomainSummary(loaded),
     shipBlockers: blockers,
     executionQueue,
+    artifactDetails: buildArtifactDetails(loaded, blockers),
     warnings,
   };
 
