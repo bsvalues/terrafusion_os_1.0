@@ -1432,6 +1432,7 @@ public class CostForgeController : ControllerBase
   /// Reports source-ingestion status from TerraFusion runtime tables.
   /// </summary>
   [HttpPost("sync/source-status")]
+  [HttpPost("sync/harris-pacs")]
   [RequiresPermission("sync:external-systems")]
   public async Task<ActionResult<HarrisSyncResultDto>> SyncWithHarrisPACS([FromBody] HarrisSyncRequestDto request)
   {

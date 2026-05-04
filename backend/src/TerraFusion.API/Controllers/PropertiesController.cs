@@ -78,7 +78,7 @@ public class PropertiesController : ControllerBase
         countyId = Guid.Empty;
         var claim = User.FindFirst("countyId")?.Value?.Trim();
         if (string.IsNullOrWhiteSpace(claim) || !Guid.TryParse(claim, out countyId))
-            return BadRequest("County authentication required — include a valid countyId claim.");
+            return Forbid();
 
         if (requestedCountyId.HasValue && requestedCountyId.Value != countyId)
             return Forbid();
