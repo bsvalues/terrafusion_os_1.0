@@ -634,51 +634,46 @@ function blockerMessages(value, label) {
 function artifactWarnings(value) {
   const posture =
     value?.status === 'PASS_WITH_WARNINGS' ? ['Artifact status is PASS_WITH_WARNINGS.'] : [];
-  const countWarnings = [];
-  if (Number(value?.warningCount ?? 0) > 0) {
-    countWarnings.push(`Artifact warningCount is ${Number(value.warningCount)}.`);
-  }
-  if (Number(value?.summary?.warningCount ?? 0) > 0) {
-    countWarnings.push(`Artifact summary.warningCount is ${Number(value.summary.warningCount)}.`);
-  }
-  const direct = Array.isArray(value?.warnings) ? value.warnings : [];
-  const summary = Array.isArray(value?.summary?.warnings) ? value.summary.warnings : [];
+  const direct = warningMessages(value, 'Artifact');
+  const summary = warningMessages(value?.summary, 'Artifact summary');
   const rowWarnings = Array.isArray(value?.rows)
     ? value.rows.flatMap(row =>
-        [
-          ...(Array.isArray(row?.warnings) ? row.warnings : []),
-          ...warningCountMessages(row, 'row'),
-        ].map(item => `${row?.tableName ?? row?.county ?? 'row'}: ${item}`)
+        [...warningMessages(row, 'row'), ...warningMessages(row?.summary, 'row summary')].map(
+          item => `${row?.tableName ?? row?.county ?? 'row'}: ${item}`
+        )
       )
     : [];
   const proofWarnings = Array.isArray(value?.proofs)
     ? value.proofs.flatMap(proof =>
         [
-          ...(Array.isArray(proof?.warnings) ? proof.warnings : []),
-          ...warningCountMessages(proof, 'proof'),
+          ...warningMessages(proof, 'proof'),
+          ...warningMessages(proof?.summary, 'proof summary'),
         ].map(item => `${proof?.county ?? 'proof'}: ${item}`)
       )
     : [];
 
-  return [
-    ...new Set([
-      ...posture,
-      ...countWarnings,
-      ...direct,
-      ...summary,
-      ...rowWarnings,
-      ...proofWarnings,
-    ]),
-  ].map(item => String(item));
+  return [...new Set([...posture, ...direct, ...summary, ...rowWarnings, ...proofWarnings])].map(
+    item => String(item)
+  );
 }
 
-function warningCountMessages(value, label) {
+function warningMessages(value, label) {
+  if (!value || typeof value !== 'object') return [];
   const messages = [];
-  if (Number(value?.warningCount ?? 0) > 0) {
-    messages.push(`${label} warningCount is ${Number(value.warningCount)}.`);
+  if (typeof value.warning === 'string' && value.warning.trim().length > 0) {
+    messages.push(value.warning);
   }
-  if (Number(value?.summary?.warningCount ?? 0) > 0) {
-    messages.push(`${label} summary.warningCount is ${Number(value.summary.warningCount)}.`);
+  if (Array.isArray(value.warnings)) {
+    messages.push(...value.warnings);
+  } else if (typeof value.warnings === 'string' && value.warnings.trim().length > 0) {
+    messages.push(value.warnings);
+  } else if (value.warnings && typeof value.warnings === 'object') {
+    const count = Object.keys(value.warnings).length;
+    if (count > 0) messages.push(`${label}.warnings has ${count} object key(s).`);
+  }
+  if (Number(value?.warningCount ?? 0) > 0) {
+    const field = label.endsWith('summary') ? `${label}.warningCount` : `${label} warningCount`;
+    messages.push(`${field} is ${Number(value.warningCount)}.`);
   }
   return messages;
 }

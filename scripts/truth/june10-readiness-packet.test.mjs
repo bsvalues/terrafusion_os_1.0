@@ -836,6 +836,120 @@ test('readiness packet surfaces warning-only proof artifacts', () => {
   );
 });
 
+test('readiness packet surfaces scalar and object-shaped warning fields', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-identity.json', {
+    endpointStatus: 200,
+    passed: true,
+    warning: 'Top warning.',
+    warnings: {
+      one: 'Top warning one.',
+      two: 'Top warning two.',
+    },
+    summary: {
+      warning: 'Summary warning.',
+      warnings: 'Summary warning string.',
+    },
+    rows: [
+      {
+        county: 'Benton',
+        warning: 'Row warning.',
+        warnings: 'Row warning string.',
+        summary: {
+          warning: 'Row summary warning.',
+        },
+      },
+    ],
+    proofs: [
+      {
+        county: 'Benton',
+        warning: 'Proof warning.',
+        warnings: {
+          one: 'Proof warning one.',
+        },
+        summary: {
+          warning: 'Proof summary warning.',
+        },
+      },
+    ],
+    blockers: [],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 0);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'PASS_WITH_WARNINGS');
+  assert.ok(
+    report.warnings.some(item => item.source === 'dbIdentity' && item.message === 'Top warning.')
+  );
+  assert.ok(
+    report.warnings.some(
+      item =>
+        item.source === 'dbIdentity' && item.message === 'Artifact.warnings has 2 object key(s).'
+    )
+  );
+  assert.ok(
+    report.warnings.some(
+      item => item.source === 'dbIdentity' && item.message === 'Summary warning.'
+    )
+  );
+  assert.ok(
+    report.warnings.some(
+      item => item.source === 'dbIdentity' && item.message === 'Summary warning string.'
+    )
+  );
+  assert.ok(
+    report.warnings.some(
+      item => item.source === 'dbIdentity' && item.message === 'Benton: Row warning.'
+    )
+  );
+  assert.ok(
+    report.warnings.some(
+      item => item.source === 'dbIdentity' && item.message === 'Benton: Row warning string.'
+    )
+  );
+  assert.ok(
+    report.warnings.some(
+      item => item.source === 'dbIdentity' && item.message === 'Benton: Row summary warning.'
+    )
+  );
+  assert.ok(
+    report.warnings.some(
+      item => item.source === 'dbIdentity' && item.message === 'Benton: Proof warning.'
+    )
+  );
+  assert.ok(
+    report.warnings.some(
+      item =>
+        item.source === 'dbIdentity' &&
+        item.message === 'Benton: proof.warnings has 1 object key(s).'
+    )
+  );
+  assert.ok(
+    report.warnings.some(
+      item => item.source === 'dbIdentity' && item.message === 'Benton: Proof summary warning.'
+    )
+  );
+  assert.ok(report.artifactDetails.dbIdentity.warnings.items.includes('Top warning.'));
+  assert.ok(
+    report.artifactDetails.dbIdentity.warnings.items.includes(
+      'Artifact.warnings has 2 object key(s).'
+    )
+  );
+  assert.ok(report.artifactDetails.dbIdentity.warnings.items.includes('Benton: Row warning.'));
+  assert.ok(
+    report.artifactDetails.dbIdentity.warnings.items.includes(
+      'Benton: proof.warnings has 1 object key(s).'
+    )
+  );
+});
+
 test('readiness packet preserves PASS_WITH_WARNINGS from artifact status', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-db-identity.json', {

@@ -313,7 +313,9 @@ function nestedRecordFailureReasons(records, label) {
 
 function countArtifactWarnings(value) {
   const warningValues = [
+    value?.warning,
     value?.warnings,
+    value?.summary?.warning,
     value?.summary?.warnings,
     value?.warningCount,
     value?.summary?.warningCount,
@@ -328,8 +330,10 @@ function countArtifactWarnings(value) {
     count += value.rows.reduce(
       (sum, row) =>
         sum +
+        countWarningValue(row?.warning) +
         countWarningValue(row?.warnings) +
         countWarningValue(row?.warningCount) +
+        countWarningValue(row?.summary?.warning) +
         countWarningValue(row?.summary?.warningCount),
       0
     );
@@ -339,8 +343,10 @@ function countArtifactWarnings(value) {
     count += value.proofs.reduce(
       (sum, proof) =>
         sum +
+        countWarningValue(proof?.warning) +
         countWarningValue(proof?.warnings) +
         countWarningValue(proof?.warningCount) +
+        countWarningValue(proof?.summary?.warning) +
         countWarningValue(proof?.summary?.warningCount),
       0
     );
@@ -351,6 +357,8 @@ function countArtifactWarnings(value) {
 
 function countWarningValue(value) {
   if (Array.isArray(value)) return value.length;
+  if (typeof value === 'string') return value.trim().length > 0 ? 1 : 0;
+  if (value && typeof value === 'object') return Object.keys(value).length;
   const count = Number(value);
   return Number.isFinite(count) && count > 0 ? count : 0;
 }
