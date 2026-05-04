@@ -74,6 +74,15 @@ test('full June 10 readiness gate includes every post DB refresh proof', () => {
   }
 });
 
+test('full June 10 readiness gate inspects final packet warning posture', () => {
+  const readinessScript = fs.readFileSync(path.resolve('scripts/june10-readiness.mjs'), 'utf8');
+
+  assert.ok(readinessScript.includes('inspectReadinessPacketArtifact'));
+  assert.ok(readinessScript.includes('generated/truth/june10-readiness-packet.json'));
+  assert.ok(readinessScript.includes('PASS_WITH_WARNINGS'));
+  assert.ok(readinessScript.includes('Readiness packet passed with warnings'));
+});
+
 test('every executable post DB refresh proof declares artifacts and proof meaning', () => {
   for (const entry of postDbRefreshPlan) {
     assert.ok(entry.name);

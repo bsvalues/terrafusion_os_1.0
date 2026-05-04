@@ -118,6 +118,22 @@ function readText(file) {
   }
 }
 
+function readJsonFile(file) {
+  try {
+    return {
+      ok: true,
+      value: JSON.parse(readFileSync(file, 'utf8')),
+      error: null,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      value: null,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
 function scanPattern(name, pattern, targets, options = {}) {
   const regex = new RegExp(pattern, options.flags ?? 'i');
   const files = listFiles(targets);
@@ -188,6 +204,62 @@ function warnIfMissingFile(name, targets, detail) {
     stdout:
       existing.length === 0 ? 'No matching evidence file found.' : `Found: ${existing.join(', ')}`,
     stderr: existing.length === 0 ? detail : '',
+  });
+}
+
+function inspectReadinessPacketArtifact() {
+  const target = 'generated/truth/june10-readiness-packet.json';
+  const filePath = resolveRepoPath(target);
+
+  if (!existsSync(filePath)) {
+    pushCheck({
+      name: 'June 10 readiness packet artifact posture',
+      status: 'FAIL',
+      kind: 'artifact_status',
+      command: `inspect ${target}`,
+      stdout: 'Readiness packet artifact is missing.',
+      stderr:
+        'The full readiness gate cannot trust packet posture without the generated JSON artifact.',
+    });
+    return;
+  }
+
+  const parsed = readJsonFile(filePath);
+  if (!parsed.ok) {
+    pushCheck({
+      name: 'June 10 readiness packet artifact posture',
+      status: 'FAIL',
+      kind: 'artifact_status',
+      command: `inspect ${target}`,
+      stdout: '',
+      stderr: `Readiness packet artifact could not be parsed: ${parsed.error}`,
+    });
+    return;
+  }
+
+  const packet = parsed.value;
+  const packetStatus = packet?.status ?? 'UNKNOWN';
+  const packetWarnings = Number(packet?.warnings?.length ?? 0);
+  const packetBlockers = Number(packet?.shipBlockers?.length ?? 0);
+  const status =
+    packetStatus === 'PASS' ? 'PASS' : packetStatus === 'PASS_WITH_WARNINGS' ? 'WARN' : 'FAIL';
+
+  pushCheck({
+    name: 'June 10 readiness packet artifact posture',
+    status,
+    kind: 'artifact_status',
+    command: `inspect ${target}`,
+    stdout: [
+      `Packet status: ${packetStatus}`,
+      `Packet ship blockers: ${packetBlockers}`,
+      `Packet warnings: ${packetWarnings}`,
+    ].join('\n'),
+    stderr:
+      status === 'PASS'
+        ? ''
+        : packetStatus === 'PASS_WITH_WARNINGS'
+          ? 'Readiness packet passed with warnings; review packet warning details before ship sign-off.'
+          : 'Readiness packet did not pass.',
   });
 }
 
@@ -371,6 +443,8 @@ run('Benton runtime pilot closure', 'pnpm', ['run', 'truth:benton-runtime-pilot-
 run('June 10 readiness packet', 'pnpm', ['run', 'truth:june10-readiness-packet'], {
   timeout: 180_000,
 });
+
+inspectReadinessPacketArtifact();
 
 failIfPresent(
   'Old County Studio hub path removed',
