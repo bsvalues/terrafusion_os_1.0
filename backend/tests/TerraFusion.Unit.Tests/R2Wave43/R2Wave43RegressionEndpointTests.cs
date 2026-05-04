@@ -1,9 +1,11 @@
 using FluentAssertions;
 using Moq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using System.Security.Claims;
 using TerraFusion.API.Controllers;
 using TerraFusion.API.Services;
 using TerraFusion.Core.Entities;
@@ -49,6 +51,13 @@ public sealed class R2Wave43RegressionEndpointTests
         return new DataDbContext(options, config);
     }
 
+    private static ClaimsPrincipal CreatePrincipal() =>
+        new ClaimsPrincipal(new ClaimsIdentity(
+        [
+            new Claim("countyId", BentonCountyId.ToString()),
+            new Claim("sub", "w43-test-user"),
+        ], "TestAuth"));
+
     // Real OlsRegressionService — pure math, no dependencies.
     private static TerraForgeController CreateController(DataDbContext db)
     {
@@ -60,12 +69,20 @@ public sealed class R2Wave43RegressionEndpointTests
             .Setup(x => x.TryResolveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(BentonCountyId);
 
-        return new TerraForgeController(
+        var ctrl = new TerraForgeController(
             db,
             NullLogger<TerraForgeController>.Instance,
             new OlsRegressionService(),
             Mock.Of<ISaleQualificationService>(),
             countyResolver.Object);
+
+        // CI-HYGIENE-D (#739): provide ControllerContext.HttpContext so ResolveCountyScopeToken's Request.Headers access does not throw
+        ctrl.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = CreatePrincipal() },
+        };
+
+        return ctrl;
     }
 
     private static async Task SeedCountyAsync(DataDbContext db)
