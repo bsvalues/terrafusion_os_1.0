@@ -23,8 +23,16 @@ public sealed class LegacyPacsRawSaleConfiguration : IEntityTypeConfiguration<Le
         builder.Property(x => x.PropValYr).IsRequired();
         builder.Property(x => x.SupNum).IsRequired();
 
-        builder.Property(x => x.SlCountyRatioCd).HasMaxLength(8);
-        builder.Property(x => x.WacCd).HasMaxLength(8);
+        // SYNC-POP-2 finding #6: original fixture caps were 8/8/8, but real
+        // Harris PACS column widths (per PacsSale entity attributes) are:
+        //   sl_county_ratio_cd → 10
+        //   wac_cd             → 32
+        //   sl_ratio_type_cd   → 5  (kept at 8 here for headroom)
+        // Widened to match source-system reality. The legacy_pacs_raw.sale
+        // table is the raw landing zone and must accept whatever PACS emits;
+        // truncation here would corrupt the audit anchor.
+        builder.Property(x => x.SlCountyRatioCd).HasMaxLength(10);
+        builder.Property(x => x.WacCd).HasMaxLength(32);
         builder.Property(x => x.SlRatioTypeCd).HasMaxLength(8);
 
         builder.Property(x => x.SlPrice).HasPrecision(18, 2);
