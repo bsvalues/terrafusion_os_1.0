@@ -46,8 +46,17 @@ test('fails fast when runtime API preflight is unavailable', () => {
   assert.equal(report.status, 'FAIL');
   assert.equal(report.summary.commandsPlanned, 1);
   assert.equal(report.summary.commandsSkipped, 1);
+  assert.deepEqual(
+    report.plannedCommands.map(item => item.command),
+    [`${process.execPath} -e process.exit(0)`]
+  );
   assert.equal(report.results.length, 0);
   assert.ok(report.blockers.some(item => item.includes('Runtime API preflight failed')));
+  const markdown = fs.readFileSync(
+    path.join(root, 'generated', 'truth', 'post-db-refresh-rerun.md'),
+    'utf8'
+  );
+  assert.match(markdown, /## Planned Command Sequence/);
 });
 
 test('runs configured commands when preflight is skipped for tests', () => {
@@ -110,6 +119,12 @@ test('records command failures without running the full readiness gate', () => {
   assert.equal(report.results[0].exitCode, 7);
   assert.ok(report.blockers.some(item => item.includes('Failing command failed')));
   assert.ok(report.blockers.some(item => item.includes('Skipped 1 remaining command')));
+  const markdown = fs.readFileSync(
+    path.join(root, 'generated', 'truth', 'post-db-refresh-rerun.md'),
+    'utf8'
+  );
+  assert.match(markdown, /## Failed Command Output/);
+  assert.match(markdown, /Failing command/);
 });
 
 test('can continue after command failures when explicitly requested', () => {

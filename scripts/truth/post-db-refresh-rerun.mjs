@@ -196,6 +196,7 @@ function tail(value, max = 3000) {
 }
 
 function renderMarkdown(report) {
+  const failedResults = report.results.filter(result => result.status === 'FAIL');
   return [
     '# Post-DB-Refresh Rerun',
     '',
@@ -209,6 +210,14 @@ function renderMarkdown(report) {
     `- Commands passed: ${report.summary.commandsPassed}`,
     `- Commands failed: ${report.summary.commandsFailed}`,
     `- Commands skipped: ${report.summary.commandsSkipped}`,
+    '',
+    '## Planned Command Sequence',
+    '',
+    '| Step | Name | Command |',
+    '|---|---|---|',
+    ...report.plannedCommands.map(item =>
+      [String(item.order), item.name, `\`${item.command}\``].join(' | ')
+    ),
     '',
     '## Runtime Preflight',
     '',
@@ -231,6 +240,23 @@ function renderMarkdown(report) {
     '## Blockers',
     '',
     ...(report.blockers.length ? report.blockers.map(item => `- ${item}`) : ['- none']),
+    '',
+    '## Failed Command Output',
+    '',
+    ...(failedResults.length
+      ? failedResults.flatMap(result => [
+          `### ${result.name}`,
+          '',
+          `- Command: \`${result.command}\``,
+          `- Exit code: ${result.exitCode}`,
+          `- Timed out: ${result.timedOut ? 'yes' : 'no'}`,
+          '',
+          '```text',
+          result.stderrTail || result.stdoutTail || 'No output captured.',
+          '```',
+          '',
+        ])
+      : ['- none']),
   ].join('\n');
 }
 
@@ -295,6 +321,12 @@ function buildReport({ preflight, commands, results, blockers }) {
     runtimeBaseUrl,
     status: blockers.length === 0 ? 'PASS' : 'FAIL',
     continueOnFailure,
+    plannedCommands: commands.map((command, index) => ({
+      order: index + 1,
+      name: command.name,
+      command: [command.command, ...command.args].join(' '),
+      cwd: command.cwd ? rel(path.resolve(repoRoot, command.cwd)) : '.',
+    })),
     preflight,
     summary: {
       commandsPlanned: commands.length,
