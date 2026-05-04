@@ -556,16 +556,18 @@ function artifactWarnings(value) {
   const summary = Array.isArray(value?.summary?.warnings) ? value.summary.warnings : [];
   const rowWarnings = Array.isArray(value?.rows)
     ? value.rows.flatMap(row =>
-        (Array.isArray(row?.warnings) ? row.warnings : []).map(
-          item => `${row?.tableName ?? row?.county ?? 'row'}: ${item}`
-        )
+        [
+          ...(Array.isArray(row?.warnings) ? row.warnings : []),
+          ...warningCountMessages(row, 'row'),
+        ].map(item => `${row?.tableName ?? row?.county ?? 'row'}: ${item}`)
       )
     : [];
   const proofWarnings = Array.isArray(value?.proofs)
     ? value.proofs.flatMap(proof =>
-        (Array.isArray(proof?.warnings) ? proof.warnings : []).map(
-          item => `${proof?.county ?? 'proof'}: ${item}`
-        )
+        [
+          ...(Array.isArray(proof?.warnings) ? proof.warnings : []),
+          ...warningCountMessages(proof, 'proof'),
+        ].map(item => `${proof?.county ?? 'proof'}: ${item}`)
       )
     : [];
 
@@ -579,6 +581,17 @@ function artifactWarnings(value) {
       ...proofWarnings,
     ]),
   ].map(item => String(item));
+}
+
+function warningCountMessages(value, label) {
+  const messages = [];
+  if (Number(value?.warningCount ?? 0) > 0) {
+    messages.push(`${label} warningCount is ${Number(value.warningCount)}.`);
+  }
+  if (Number(value?.summary?.warningCount ?? 0) > 0) {
+    messages.push(`${label} summary.warningCount is ${Number(value.summary.warningCount)}.`);
+  }
+  return messages;
 }
 
 function capList(items, limit = 20) {

@@ -279,9 +279,14 @@ test('preserves PASS_WITH_WARNINGS from refreshed proof artifact status', () => 
               "fs.mkdirSync('generated/truth', { recursive: true });",
               "fs.writeFileSync('generated/truth/example.json', JSON.stringify({ status: 'PASS_WITH_WARNINGS', warnings: ['review before shipping'] }) + '\\n');",
               "fs.writeFileSync('generated/truth/status-only.json', JSON.stringify({ status: 'PASS_WITH_WARNINGS' }) + '\\n');",
+              "fs.writeFileSync('generated/truth/nested-counts.json', JSON.stringify({ rows: [{ county: 'Benton', warningCount: 2, summary: { warningCount: 1 } }], proofs: [{ county: 'Benton', warningCount: 3 }] }) + '\\n');",
             ].join(' '),
           ],
-          expectedArtifacts: ['generated/truth/example.json', 'generated/truth/status-only.json'],
+          expectedArtifacts: [
+            'generated/truth/example.json',
+            'generated/truth/status-only.json',
+            'generated/truth/nested-counts.json',
+          ],
         },
       ]),
     },
@@ -292,17 +297,18 @@ test('preserves PASS_WITH_WARNINGS from refreshed proof artifact status', () => 
   assert.equal(report.status, 'PASS_WITH_WARNINGS');
   assert.equal(report.nextAction.code, 'review_warnings_then_run_full_readiness_gate');
   assert.equal(report.nextAction.command, 'pnpm run readiness:june10');
-  assert.equal(report.summary.artifactWarnings, 1);
+  assert.equal(report.summary.artifactWarnings, 7);
   assert.equal(report.summary.artifactsPassWithWarnings, 2);
   assert.equal(report.results[0].artifactOutputs[0].artifactStatus, 'PASS_WITH_WARNINGS');
   assert.equal(report.results[0].artifactOutputs[0].warningCount, 1);
   assert.equal(report.results[0].artifactOutputs[1].artifactStatus, 'PASS_WITH_WARNINGS');
   assert.equal(report.results[0].artifactOutputs[1].warningCount, 0);
+  assert.equal(report.results[0].artifactOutputs[2].warningCount, 6);
   const markdown = fs.readFileSync(
     path.join(root, 'generated', 'truth', 'post-db-refresh-rerun.md'),
     'utf8'
   );
-  assert.match(markdown, /Artifact warnings: 1/);
+  assert.match(markdown, /Artifact warnings: 7/);
   assert.match(markdown, /Artifacts PASS_WITH_WARNINGS: 2/);
   assert.match(markdown, /PASS_WITH_WARNINGS/);
 });

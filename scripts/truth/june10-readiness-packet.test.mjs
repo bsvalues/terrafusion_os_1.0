@@ -446,6 +446,21 @@ test('readiness packet preserves numeric warning counts from artifacts', () => {
     summary: {
       warningCount: 1,
     },
+    rows: [
+      {
+        county: 'Benton',
+        warningCount: 3,
+      },
+    ],
+    proofs: [
+      {
+        county: 'Benton',
+        warningCount: 4,
+        summary: {
+          warningCount: 5,
+        },
+      },
+    ],
     blockers: [],
   });
 
@@ -470,10 +485,37 @@ test('readiness packet preserves numeric warning counts from artifacts', () => {
     )
   );
   assert.ok(
+    report.warnings.some(
+      item => item.source === 'dbIdentity' && item.message === 'Benton: row warningCount is 3.'
+    )
+  );
+  assert.ok(
+    report.warnings.some(
+      item => item.source === 'dbIdentity' && item.message === 'Benton: proof warningCount is 4.'
+    )
+  );
+  assert.ok(
+    report.warnings.some(
+      item =>
+        item.source === 'dbIdentity' && item.message === 'Benton: proof summary.warningCount is 5.'
+    )
+  );
+  assert.ok(
     report.artifactDetails.dbIdentity.warnings.items.includes('Artifact warningCount is 2.')
   );
   assert.ok(
     report.artifactDetails.dbIdentity.warnings.items.includes('Artifact summary.warningCount is 1.')
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.warnings.items.includes('Benton: row warningCount is 3.')
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.warnings.items.includes('Benton: proof warningCount is 4.')
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.warnings.items.includes(
+      'Benton: proof summary.warningCount is 5.'
+    )
   );
   const markdown = fs.readFileSync(
     path.join(root, 'generated/truth/june10-readiness-packet.md'),
@@ -481,6 +523,9 @@ test('readiness packet preserves numeric warning counts from artifacts', () => {
   );
   assert.match(markdown, /dbIdentity: Artifact warningCount is 2\./);
   assert.match(markdown, /dbIdentity: Artifact summary\.warningCount is 1\./);
+  assert.match(markdown, /dbIdentity: Benton: row warningCount is 3\./);
+  assert.match(markdown, /dbIdentity: Benton: proof warningCount is 4\./);
+  assert.match(markdown, /dbIdentity: Benton: proof summary\.warningCount is 5\./);
 });
 
 test('readiness packet blocks candidate set that promotes another county', () => {

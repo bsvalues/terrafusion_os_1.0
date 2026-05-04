@@ -233,25 +233,38 @@ function countArtifactWarnings(value) {
 
   let count = 0;
   for (const warningValue of warningValues) {
-    if (Array.isArray(warningValue)) count += warningValue.length;
-    else if (Number.isFinite(Number(warningValue))) count += Number(warningValue);
+    count += countWarningValue(warningValue);
   }
 
   if (Array.isArray(value?.rows)) {
     count += value.rows.reduce(
-      (sum, row) => sum + (Array.isArray(row?.warnings) ? row.warnings.length : 0),
+      (sum, row) =>
+        sum +
+        countWarningValue(row?.warnings) +
+        countWarningValue(row?.warningCount) +
+        countWarningValue(row?.summary?.warningCount),
       0
     );
   }
 
   if (Array.isArray(value?.proofs)) {
     count += value.proofs.reduce(
-      (sum, proof) => sum + (Array.isArray(proof?.warnings) ? proof.warnings.length : 0),
+      (sum, proof) =>
+        sum +
+        countWarningValue(proof?.warnings) +
+        countWarningValue(proof?.warningCount) +
+        countWarningValue(proof?.summary?.warningCount),
       0
     );
   }
 
   return count;
+}
+
+function countWarningValue(value) {
+  if (Array.isArray(value)) return value.length;
+  const count = Number(value);
+  return Number.isFinite(count) && count > 0 ? count : 0;
 }
 
 function tail(value, max = 3000) {
