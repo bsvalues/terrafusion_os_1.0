@@ -70,6 +70,21 @@ function makeRepo({ passing = false } = {}) {
     passed: passing,
     blockers: passing ? [] : ['Benton parcel count sanity is not proven.'],
   });
+  writeJson(root, `${truth}/runtime-row-source-lineage-proof.json`, {
+    summary: {
+      candidatesChecked: 1,
+      passed: passing ? 1 : 0,
+      failed: passing ? 0 : 1,
+    },
+    proofs: passing
+      ? []
+      : [
+          {
+            county: 'Benton',
+            blockers: ['Runtime lineage endpoint did not return 200. Status: 500'],
+          },
+        ],
+  });
   writeJson(root, `${truth}/runtime-sale-qualification-lineage-proof.json`, {
     status: passing ? 'PASS' : 'FAIL',
   });
@@ -94,15 +109,21 @@ test('readiness packet fails when required runtime truth artifacts are red', () 
   assert.equal(report.status, 'FAIL');
   assert.ok(report.shipBlockers.length >= 1);
   assert.ok(report.shipBlockers.some(item => item.source === 'dbIdentity'));
+  assert.ok(report.shipBlockers.some(item => item.source === 'sourceLineage'));
   assert.ok(report.executionQueue.some(item => item.source === 'dbIdentity'));
+  assert.ok(report.executionQueue.some(item => item.source === 'sourceLineage'));
   assert.ok(
     report.executionQueue.some(item => item.nextCommand === 'pnpm run truth:runtime-db-identity')
+  );
+  assert.ok(
+    report.executionQueue.some(item => item.nextCommand === 'pnpm run truth:runtime-source-lineage')
   );
   assert.equal(
     report.summary.terraFusionDb.liveRuntimeReachability,
     'api_unavailable_or_not_probed'
   );
   assert.equal(report.summary.terraFusionDb.dbIdentityEndpointStatus, null);
+  assert.equal(report.summary.terraFusionDb.sourceLineagePassed, false);
   assert.equal(report.postDbRefreshQuickCommand, 'pnpm run truth:post-db-refresh-rerun');
   assert.equal(report.postDbRefreshFullReadinessCommand, 'pnpm run readiness:june10');
   assert.ok(report.artifactDetails.dbIdentity.blockers.items.length > 0);
@@ -110,6 +131,9 @@ test('readiness packet fails when required runtime truth artifacts are red', () 
     report.artifactDetails.productLoadLedger.blockers.items.some(blocker =>
       blocker.includes('Properties:')
     )
+  );
+  assert.ok(
+    report.artifactDetails.sourceLineage.blockers.items.some(blocker => blocker.includes('Benton:'))
   );
   assert.deepEqual(
     report.postDbRefreshRerunChecklist.map(item => item.command),
@@ -140,6 +164,7 @@ test('readiness packet passes when all required runtime truth artifacts are gree
   assert.equal(report.status, 'PASS');
   assert.equal(report.summary.terraFusionDb.liveRuntimeReachability, 'api_reachable');
   assert.equal(report.summary.terraFusionDb.dbIdentityEndpointStatus, 200);
+  assert.equal(report.summary.terraFusionDb.sourceLineagePassed, true);
   assert.equal(report.shipBlockers.length, 0);
   assert.deepEqual(report.executionQueue, []);
   assert.equal(report.postDbRefreshRerunChecklist.length, 8);

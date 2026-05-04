@@ -28,6 +28,7 @@ const artifacts = {
   dbContent: 'runtime-db-content-audit.json',
   productLoadLedger: 'terrafusion-db-product-load-ledger.json',
   bentonParcelSanity: 'benton-parcel-count-sanity.json',
+  sourceLineage: 'runtime-row-source-lineage-proof.json',
   saleQualification: 'runtime-sale-qualification-lineage-proof.json',
   bentonPilotClosure: 'benton-runtime-pilot-closure.json',
 };
@@ -68,6 +69,12 @@ const blockerRunbook = {
     nextCommand: 'pnpm run truth:benton-parcel-count-sanity',
     requiredResolution:
       'Prove Benton parcel endpoint counts active/current distinct parcels, not raw historical or duplicate property rows.',
+  },
+  sourceLineage: {
+    ownerLane: 'Codex after TerraFusion DB content is refreshed',
+    nextCommand: 'pnpm run truth:runtime-source-lineage',
+    requiredResolution:
+      'Prove runtime row lineage stays inside TerraFusion DB/API boundaries and exposes counts-only, no-fallback posture.',
   },
   saleQualification: {
     ownerLane: 'Codex after TerraFusion DB sales/qualification tables are refreshed',
@@ -141,6 +148,7 @@ function collectBlockers(loaded) {
   const dbContent = loaded.dbContent.value;
   const productLoadLedger = loaded.productLoadLedger.value;
   const bentonParcelSanity = loaded.bentonParcelSanity.value;
+  const sourceLineage = loaded.sourceLineage.value;
   const saleQualification = loaded.saleQualification.value;
   const bentonPilotClosure = loaded.bentonPilotClosure.value;
 
@@ -184,6 +192,10 @@ function collectBlockers(loaded) {
       'bentonParcelSanity',
       'Benton active/current parcel count sanity is not proven.'
     );
+  }
+
+  if (loaded.sourceLineage.present && Number(sourceLineage?.summary?.failed ?? 1) > 0) {
+    blocker(blockers, 'sourceLineage', 'Runtime source lineage proof is not passing.');
   }
 
   if (
@@ -240,6 +252,9 @@ function buildDomainSummary(loaded) {
       dbIdentityPassed: loaded.dbIdentity.value?.passed === true,
       dbContentPassed: loaded.dbContent.value?.passed === true,
       productLoadLedgerPassed: loaded.productLoadLedger.value?.passed === true,
+      sourceLineagePassed:
+        Number(loaded.sourceLineage.value?.summary?.candidatesChecked ?? 0) > 0 &&
+        Number(loaded.sourceLineage.value?.summary?.failed ?? 1) === 0,
       productTablesChecked: loadSummary.productTablesChecked ?? 0,
       lineageProven: loadSummary.lineageProven ?? 0,
       rowsExistLineageUnproven: loadSummary.rowsExistLineageUnproven ?? 0,
@@ -373,6 +388,7 @@ function renderMarkdown(report) {
     `- DB identity passed: ${report.summary.terraFusionDb.dbIdentityPassed ? 'yes' : 'no'}`,
     `- DB content passed: ${report.summary.terraFusionDb.dbContentPassed ? 'yes' : 'no'}`,
     `- Product load ledger passed: ${report.summary.terraFusionDb.productLoadLedgerPassed ? 'yes' : 'no'}`,
+    `- Runtime source lineage passed: ${report.summary.terraFusionDb.sourceLineagePassed ? 'yes' : 'no'}`,
     `- Product tables checked: ${report.summary.terraFusionDb.productTablesChecked}`,
     `- Lineage proven tables: ${report.summary.terraFusionDb.lineageProven}`,
     `- Rows exist with lineage unproven: ${report.summary.terraFusionDb.rowsExistLineageUnproven}`,
