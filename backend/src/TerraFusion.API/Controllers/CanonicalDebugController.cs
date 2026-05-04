@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using TerraFusion.Core.Entities;
+using TerraFusion.Core.Sync.PacsParcelCanonical;
 using TerraFusion.Core.Sync.PacsParcelTruth;
 using TerraFusion.Core.Sync.PacsPropSuppAssoc;
 using TerraFusion.Core.Sync.PacsProperty;
@@ -729,6 +731,184 @@ public class CanonicalDebugController : ControllerBase
     /// and promotes the named existing property batch directly. Use this to
     /// re-run truth promotion without re-landing.</param>
     public sealed record SyncPop4bRequest(
+        string? OperatorName,
+        int? TopN,
+        Guid? PropertyLoadBatchId);
+
+    // ════════════════════════════════════════════════════════════════════
+    // SYNC-POP-4c: parcel canonical projection (S1 → S2-B → S3 chain).
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// SYNC-POP-4c: full doctrine parcel pipeline in one call.
+    /// Lands raw → promotes truth → projects canonical with
+    /// <c>tf_parcel</c> + <c>source_xref(TfEntityType="parcel")</c>.
+    ///
+    /// <para>Goal: prove <c>canonical_tf.tf_parcel &gt; 0</c>.
+    /// This is the slice that unblocks <c>canonical_tf.tf_sale &gt; 0</c>
+    /// — the existing sale projector resolves <c>source_xref</c> via
+    /// <c>tf_parcel.tf_parcel_id</c>, and has been quarantining sales
+    /// because no parcel xrefs existed.</para>
+    ///
+    /// <para>Resolves Benton county id from the <c>Counties</c> table
+    /// (creating it if missing) so the operator does not need to know
+    /// the GUID.</para>
+    /// </summary>
+    [HttpPost("sync-pop-4/run-canonical-chain")]
+    public async Task<IActionResult> RunSyncPop4c(
+        [FromServices] IPacsPropertyLandingService propSvc,
+        [FromServices] IPacsParcelSpineTruthPromoter spinePromoter,
+        [FromServices] IPacsParcelCanonicalProjector canonicalProjector,
+        [FromServices] IConfiguration config,
+        [FromBody] SyncPop4cRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        var pacsCs = config.GetConnectionString("PacsConnection");
+        if (string.IsNullOrWhiteSpace(pacsCs))
+        {
+            return StatusCode(500, new
+            {
+                error = "ConnectionStrings:PacsConnection is required for SYNC-POP-4c.",
+            });
+        }
+
+        var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
+            ? "sync-pop-4c-debug"
+            : request.OperatorName.Trim();
+        var topN = request?.TopN ?? 1000;
+
+        try
+        {
+            // ── Resolve Benton county id (create if missing). ──
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            _logger.LogInformation("[SyncPop4c] Resolved Benton countyId={CountyId}", bentonCountyId);
+
+            // ── S1: property landing ──
+            Guid propertyBatchId;
+            object? s1Result = null;
+            if (request?.PropertyLoadBatchId is { } existing && existing != Guid.Empty)
+            {
+                propertyBatchId = existing;
+            }
+            else
+            {
+                var src = new SqlServerPacsPropertySource(pacsCs, topN: topN);
+                var s1 = await propSvc.LandPropertiesAsync(src, operatorName, cancellationToken);
+                if (!string.Equals(s1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                {
+                    return StatusCode(500, new { stage = "S1", error = s1.ErrorSummary, s1 });
+                }
+                propertyBatchId = s1.LoadBatchId;
+                s1Result = new
+                {
+                    s1.Status, s1.LoadBatchId, s1.RowsLanded,
+                    s1.WithCreateDtCount, s1.WithoutCreateDtCount,
+                    s1.DuplicatePropIdCount, s1.TypeDistribution,
+                };
+            }
+
+            // ── S2-B: spine promotion ──
+            var s2b = await spinePromoter.PromoteAsync(propertyBatchId, operatorName, cancellationToken);
+            if (!string.Equals(s2b.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+            {
+                return StatusCode(500, new { stage = "S2-B", error = s2b.ErrorSummary, s1 = s1Result, s2b });
+            }
+
+            // ── S3: canonical projection ──
+            var s3 = await canonicalProjector.ProjectAsync(
+                s2b.PromotionLoadBatchId, bentonCountyId, operatorName, cancellationToken);
+            if (!string.Equals(s3.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+            {
+                return StatusCode(500, new { stage = "S3", error = s3.ErrorSummary, s1 = s1Result, s2b, s3 });
+            }
+
+            // ── Read-back proof counts. ──
+            var tfParcelCount = await _db.TfParcels.CountAsync(cancellationToken);
+            var parcelXrefCount = await _db.SyncBridgeSourceXrefs
+                .Where(x => x.TfEntityType == "parcel" && x.IsActive)
+                .CountAsync(cancellationToken);
+
+            return Ok(new
+            {
+                operatorName,
+                bentonCountyId,
+                s1 = s1Result,
+                s2b = new
+                {
+                    s2b.Status, s2b.PromotionLoadBatchId,
+                    s2b.ParcelsConsidered, s2b.ParcelsPromoted,
+                    s2b.RejectedNotRealProperty, s2b.RejectedDuplicatePropId,
+                    s2b.PriorRowsRemoved,
+                },
+                s3 = new
+                {
+                    s3.Status, s3.PromotionLoadBatchId,
+                    s3.TruthParcelsConsidered, s3.ParcelsProjected,
+                    s3.PriorCanonicalRowsRemoved, s3.PriorXrefRowsRemoved,
+                },
+                counts = new
+                {
+                    canonicalTfParcels = tfParcelCount,
+                    parcelSourceXrefs = parcelXrefCount,
+                },
+                proofVerdict = s3.ParcelsProjected > 0
+                    ? "PROOF: canonical_tf.tf_parcel > 0 — SYNC-POP-4c canonical projection succeeded. The sale-side source_xref resolution is now unblocked."
+                    : "INCONCLUSIVE: 0 tf_parcel rows projected. Check S2-B output — if 0 spine rows, no real-property parcels in this sample.",
+                nextSlice = "SYNC-POP-4d: re-run SYNC-POP-3 chain with RunCanonicalProjection=true to prove canonical_tf.tf_sale > 0.",
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[SyncPop4c] FAILED");
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name });
+        }
+    }
+
+    /// <summary>
+    /// Resolve Benton (WA) county id. Look up by FipsCode '53005' first
+    /// (it's the canonical unique identifier per the IX_Counties_FipsCode
+    /// constraint), then by Name+State, then create if none exists.
+    /// Single-county dev posture.
+    /// </summary>
+    private async Task<Guid> ResolveOrCreateBentonCountyAsync(CancellationToken cancellationToken)
+    {
+        // 1. By FIPS (the unique-indexed natural key).
+        var byFips = await _db.Counties
+            .FirstOrDefaultAsync(c => c.FipsCode == "53005", cancellationToken)
+            .ConfigureAwait(false);
+        if (byFips is not null) return byFips.Id;
+
+        // 2. By Name+State (case-insensitive).
+        var byName = await _db.Counties
+            .FirstOrDefaultAsync(c =>
+                EF.Functions.ILike(c.Name, "Benton") &&
+                EF.Functions.ILike(c.State, "WA"),
+                cancellationToken)
+            .ConfigureAwait(false);
+        if (byName is not null) return byName.Id;
+
+        // 3. Create.
+        var county = new County
+        {
+            Name = "Benton",
+            State = "WA",
+            FipsCode = "53005",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+        };
+        _db.Counties.Add(county);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        _logger.LogInformation("[SyncPop4c] Created Benton county row id={Id}", county.Id);
+        return county.Id;
+    }
+
+    /// <param name="OperatorName">Audit anchor on the load batches.</param>
+    /// <param name="TopN">Property sample size for the S1 stage. Default 1000.
+    /// Ignored if <paramref name="PropertyLoadBatchId"/> is supplied.</param>
+    /// <param name="PropertyLoadBatchId">If non-null, skip S1 and start from
+    /// the named existing property batch. The S2-B + S3 stages still run
+    /// fresh.</param>
+    public sealed record SyncPop4cRequest(
         string? OperatorName,
         int? TopN,
         Guid? PropertyLoadBatchId);

@@ -1678,6 +1678,14 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsParcelTruth.IPacsParcelSpineTruthPromoter,
     TerraFusion.Data.Services.TruthPacs.PacsParcelSpineTruthPromoter>();
 
+// Slice S3 (SYNC-POP-4c): PACS parcel canonical projector — writes
+// canonical_tf.tf_parcel + source_xref(TfEntityType="parcel") from
+// the truth spine. Unblocks canonical_tf.tf_sale > 0 (S3 sale
+// projection resolves source_xref via tf_parcel.tf_parcel_id).
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsParcelCanonical.IPacsParcelCanonicalProjector,
+    TerraFusion.Data.Services.CanonicalTf.PacsParcelCanonicalProjector>();
+
 // Slice B1-A: PACS account raw landing — Block B's PII-rich
 // identity table. Four gates: distribution, acct_id-uniqueness,
 // provenance-coverage, pii-flags-recorded.
