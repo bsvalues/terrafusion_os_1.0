@@ -189,6 +189,12 @@ function renderMarkdown(report) {
     `Generated: ${report.generatedAt}`,
     `Runtime base URL: \`${report.runtimeBaseUrl}\``,
     '',
+    '## Next Action',
+    '',
+    `- Code: ${report.nextAction.code}`,
+    `- Command: ${report.nextAction.command ? `\`${report.nextAction.command}\`` : '-'}`,
+    `- Reason: ${report.nextAction.reason}`,
+    '',
     '## Configuration',
     '',
     `- Repository root: \`${report.configuration.repoRoot}\``,
@@ -364,7 +370,7 @@ function buildReport({ preflight, commands, results, blockers }) {
   const commandsSkipped =
     dryRun || !preflight.ok ? commands.length : commands.length - results.length;
   const artifactOutputs = results.flatMap(result => result.artifactOutputs ?? []);
-  return {
+  const report = {
     generatedAt: new Date().toISOString(),
     runtimeBaseUrl,
     status: dryRun ? 'DRY_RUN' : blockers.length === 0 ? 'PASS' : 'FAIL',
@@ -401,6 +407,63 @@ function buildReport({ preflight, commands, results, blockers }) {
     },
     results,
     blockers,
+  };
+
+  return {
+    ...report,
+    nextAction: deriveNextAction(report),
+  };
+}
+
+function deriveNextAction(report) {
+  if (report.status === 'DRY_RUN') {
+    return {
+      code: 'run_live_fast_gate',
+      command: 'pnpm run truth:post-db-refresh-rerun',
+      reason: 'Dry run only recorded the plan; run the fast gate against the live TerraFusion API.',
+    };
+  }
+
+  if (!report.preflight.ok) {
+    return {
+      code: 'start_or_fix_runtime_api',
+      command: 'pnpm run truth:post-db-refresh-rerun',
+      reason: 'Runtime API preflight failed before DB/data proofs could run.',
+    };
+  }
+
+  const failedCommand = report.results.find(result => result.status === 'FAIL');
+  if (failedCommand) {
+    return {
+      code: 'fix_failed_proof',
+      command: failedCommand.command,
+      reason: `${failedCommand.name} failed before the post-DB-refresh sequence could complete.`,
+    };
+  }
+
+  const staleResult = report.results.find(result =>
+    (result.artifactOutputs ?? []).some(artifact => !artifact.exists || !artifact.refreshed)
+  );
+  if (staleResult) {
+    return {
+      code: 'fix_stale_or_missing_artifact',
+      command: staleResult.command,
+      reason: `${staleResult.name} did not refresh every expected proof artifact.`,
+    };
+  }
+
+  if (report.status === 'PASS') {
+    return {
+      code: 'run_full_readiness_gate',
+      command: 'pnpm run readiness:june10',
+      reason: 'Fast DB/data proofs passed; run the full build/test readiness gate next.',
+    };
+  }
+
+  return {
+    code: 'investigate_blockers',
+    command: null,
+    reason: 'The report failed without a more specific next action classification.',
   };
 }
 

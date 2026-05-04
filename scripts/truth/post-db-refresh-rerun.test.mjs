@@ -44,6 +44,8 @@ test('fails fast when runtime API preflight is unavailable', () => {
   assert.notEqual(result.status, 0);
   const report = readReport(root);
   assert.equal(report.status, 'FAIL');
+  assert.equal(report.nextAction.code, 'start_or_fix_runtime_api');
+  assert.equal(report.nextAction.command, 'pnpm run truth:post-db-refresh-rerun');
   assert.equal(report.configuration.commandSource, 'env_override');
   assert.equal(report.configuration.skipPreflight, false);
   assert.equal(report.configuration.preflightTimeoutMs, 1000);
@@ -59,6 +61,7 @@ test('fails fast when runtime API preflight is unavailable', () => {
     path.join(root, 'generated', 'truth', 'post-db-refresh-rerun.md'),
     'utf8'
   );
+  assert.match(markdown, /## Next Action/);
   assert.match(markdown, /## Configuration/);
   assert.match(markdown, /## Planned Command Sequence/);
 });
@@ -85,6 +88,8 @@ test('dry run records plan without probing or executing commands', () => {
   assert.notEqual(result.status, 0);
   const report = readReport(root);
   assert.equal(report.status, 'DRY_RUN');
+  assert.equal(report.nextAction.code, 'run_live_fast_gate');
+  assert.equal(report.nextAction.command, 'pnpm run truth:post-db-refresh-rerun');
   assert.equal(report.configuration.dryRun, true);
   assert.equal(report.preflight.skipped, true);
   assert.equal(report.summary.commandsPlanned, 1);
@@ -118,6 +123,8 @@ test('runs configured commands when preflight is skipped for tests', () => {
   assert.equal(result.status, 0, result.stderr || result.stdout);
   const report = readReport(root);
   assert.equal(report.status, 'PASS');
+  assert.equal(report.nextAction.code, 'run_full_readiness_gate');
+  assert.equal(report.nextAction.command, 'pnpm run readiness:june10');
   assert.equal(report.configuration.commandSource, 'env_override');
   assert.equal(report.configuration.skipPreflight, true);
   assert.equal(report.configuration.dryRun, false);
@@ -154,6 +161,8 @@ test('records command failures without running the full readiness gate', () => {
   assert.notEqual(result.status, 0);
   const report = readReport(root);
   assert.equal(report.status, 'FAIL');
+  assert.equal(report.nextAction.code, 'fix_failed_proof');
+  assert.equal(report.nextAction.command, `${process.execPath} -e process.exit(7)`);
   assert.equal(report.summary.commandsFailed, 1);
   assert.equal(report.summary.commandsSkipped, 1);
   assert.equal(report.results.length, 1);
@@ -196,6 +205,7 @@ test('can continue after command failures when explicitly requested', () => {
   assert.notEqual(result.status, 0);
   const report = readReport(root);
   assert.equal(report.status, 'FAIL');
+  assert.equal(report.nextAction.code, 'fix_failed_proof');
   assert.equal(report.continueOnFailure, true);
   assert.equal(report.configuration.continueOnFailure, true);
   assert.equal(report.summary.commandsFailed, 1);
@@ -269,6 +279,8 @@ test('fails when a proof command passes but leaves an expected artifact stale', 
   assert.notEqual(result.status, 0);
   const report = readReport(root);
   assert.equal(report.status, 'FAIL');
+  assert.equal(report.nextAction.code, 'fix_stale_or_missing_artifact');
+  assert.equal(report.nextAction.command, `${process.execPath} -e process.exit(0)`);
   assert.equal(report.summary.expectedArtifacts, 1);
   assert.equal(report.summary.refreshedArtifacts, 0);
   assert.equal(report.summary.staleOrMissingArtifacts, 1);
