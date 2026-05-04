@@ -23,6 +23,7 @@ const outMd = path.join(truthDir, 'june10-readiness-packet.md');
 
 const artifacts = {
   crosswalk: 'washington-39-county-data-crosswalk.json',
+  runtimeCandidateSet: 'runtime-candidate-set.json',
   countyRuntimeContract: 'county-runtime-contract.json',
   dbIdentity: 'runtime-db-identity.json',
   dbContent: 'runtime-db-content-audit.json',
@@ -40,6 +41,12 @@ const blockerRunbook = {
     nextCommand: 'pnpm run truth:washington-39-county-data-crosswalk',
     requiredResolution:
       'Keep 39-county runtime claims prohibited unless every promoted county has TerraFusion DB runtime proof.',
+  },
+  runtimeCandidateSet: {
+    ownerLane: 'Codex after runtime registration ledger refresh',
+    nextCommand: 'pnpm run truth:runtime-candidate-set',
+    requiredResolution:
+      'Keep June 10 scope locked to Benton runtime pilot unless evidence-backed county promotion is deliberately completed.',
   },
   countyRuntimeContract: {
     ownerLane: 'Codex after TerraFusion DB receipts',
@@ -150,6 +157,7 @@ function collectBlockers(loaded) {
   }
 
   const crosswalk = loaded.crosswalk.value;
+  const runtimeCandidateSet = loaded.runtimeCandidateSet.value;
   const countyRuntimeContract = loaded.countyRuntimeContract.value;
   const dbIdentity = loaded.dbIdentity.value;
   const dbContent = loaded.dbContent.value;
@@ -162,6 +170,21 @@ function collectBlockers(loaded) {
 
   if (crosswalk?.summary?.prohibit39CountyRuntimeClaim !== true) {
     blocker(blockers, 'crosswalk', '39-county runtime claim is not explicitly prohibited.');
+  }
+
+  if (
+    loaded.runtimeCandidateSet.present &&
+    (runtimeCandidateSet?.summary?.june10RuntimeScope !== 'benton_only_runtime_pilot' ||
+      runtimeCandidateSet?.summary?.prohibit39CountyRuntimeClaim !== true ||
+      Number(runtimeCandidateSet?.summary?.runtimeProven ?? 0) !== 1 ||
+      Number(runtimeCandidateSet?.summary?.evidenceBackedLoadCandidates ?? 0) !== 0 ||
+      Number(runtimeCandidateSet?.summary?.shipBlockers ?? 0) !== 0)
+  ) {
+    blocker(
+      blockers,
+      'runtimeCandidateSet',
+      'Runtime candidate set does not prove Benton-only June 10 scope.'
+    );
   }
 
   if (
@@ -242,6 +265,7 @@ function collectBlockers(loaded) {
 
 function buildDomainSummary(loaded) {
   const crosswalkSummary = loaded.crosswalk.value?.summary ?? {};
+  const runtimeCandidateSummary = loaded.runtimeCandidateSet.value?.summary ?? {};
   const contractSummary = loaded.countyRuntimeContract.value?.summary ?? {};
   const loadSummary = loaded.productLoadLedger.value?.summary ?? {};
   const identityStatus = loaded.dbIdentity.value?.endpointStatus ?? null;
@@ -262,6 +286,16 @@ function buildDomainSummary(loaded) {
       provenanceInventoryOnly:
         crosswalkSummary.provenanceInventoryOnly ?? crosswalkSummary.referenceDemo ?? 0,
       prohibit39CountyRuntimeClaim: crosswalkSummary.prohibit39CountyRuntimeClaim === true,
+      runtimeCandidateScope: runtimeCandidateSummary.june10RuntimeScope ?? 'unknown',
+      runtimeCandidateProven: runtimeCandidateSummary.runtimeProven ?? 0,
+      evidenceBackedLoadCandidates: runtimeCandidateSummary.evidenceBackedLoadCandidates ?? 0,
+      runtimeCandidateShipBlockers: runtimeCandidateSummary.shipBlockers ?? 0,
+      runtimeCandidateSetPassed:
+        runtimeCandidateSummary.june10RuntimeScope === 'benton_only_runtime_pilot' &&
+        runtimeCandidateSummary.prohibit39CountyRuntimeClaim === true &&
+        Number(runtimeCandidateSummary.runtimeProven ?? 0) === 1 &&
+        Number(runtimeCandidateSummary.evidenceBackedLoadCandidates ?? 0) === 0 &&
+        Number(runtimeCandidateSummary.shipBlockers ?? 0) === 0,
     },
     runtimeContract: {
       runtimeContractPass: contractSummary.runtimeContractPass ?? 0,
@@ -408,6 +442,11 @@ function renderMarkdown(report) {
     `- Public-source seed: ${report.summary.countyScope.publicSourceSeed}`,
     `- Provenance inventory only: ${report.summary.countyScope.provenanceInventoryOnly}`,
     `- 39-county runtime claim prohibited: ${report.summary.countyScope.prohibit39CountyRuntimeClaim ? 'yes' : 'no'}`,
+    `- Runtime candidate scope: ${report.summary.countyScope.runtimeCandidateScope}`,
+    `- Runtime candidate set passed: ${report.summary.countyScope.runtimeCandidateSetPassed ? 'yes' : 'no'}`,
+    `- Runtime candidate proven counties: ${report.summary.countyScope.runtimeCandidateProven}`,
+    `- Evidence-backed load candidates: ${report.summary.countyScope.evidenceBackedLoadCandidates}`,
+    `- Runtime candidate ship blockers: ${report.summary.countyScope.runtimeCandidateShipBlockers}`,
     '',
     '## TerraFusion DB',
     '',

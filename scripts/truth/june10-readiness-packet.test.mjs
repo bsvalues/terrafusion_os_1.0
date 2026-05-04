@@ -28,6 +28,23 @@ function makeRepo({ passing = false } = {}) {
       prohibit39CountyRuntimeClaim: true,
     },
   });
+  writeJson(root, `${truth}/runtime-candidate-set.json`, {
+    summary: {
+      june10RuntimeScope: passing ? 'benton_only_runtime_pilot' : 'runtime_scope_requires_review',
+      prohibit39CountyRuntimeClaim: passing,
+      runtimeProven: passing ? 1 : 0,
+      evidenceBackedLoadCandidates: passing ? 0 : 1,
+      shipBlockers: passing ? 0 : 1,
+    },
+    rows: passing
+      ? []
+      : [
+          {
+            county: 'Pacific',
+            blockers: ['County has inventory evidence but is not registered in runtime.'],
+          },
+        ],
+  });
 
   writeJson(root, `${truth}/county-runtime-contract.json`, {
     passed: passing,
@@ -126,7 +143,9 @@ test('readiness packet fails when required runtime truth artifacts are red', () 
   );
   assert.equal(report.status, 'FAIL');
   assert.ok(report.shipBlockers.length >= 1);
+  assert.ok(report.shipBlockers.some(item => item.source === 'runtimeCandidateSet'));
   assert.ok(report.shipBlockers.some(item => item.source === 'dbIdentity'));
+  assert.ok(report.executionQueue.some(item => item.source === 'runtimeCandidateSet'));
   assert.ok(report.shipBlockers.some(item => item.source === 'runtimeRowPath'));
   assert.ok(report.shipBlockers.some(item => item.source === 'sourceLineage'));
   assert.ok(report.executionQueue.some(item => item.source === 'dbIdentity'));
@@ -146,6 +165,8 @@ test('readiness packet fails when required runtime truth artifacts are red', () 
     'api_unavailable_or_not_probed'
   );
   assert.equal(report.summary.terraFusionDb.dbIdentityEndpointStatus, null);
+  assert.equal(report.summary.countyScope.runtimeCandidateSetPassed, false);
+  assert.equal(report.summary.countyScope.runtimeCandidateScope, 'runtime_scope_requires_review');
   assert.equal(report.summary.terraFusionDb.runtimeRowPathPassed, false);
   assert.equal(report.summary.terraFusionDb.sourceLineagePassed, false);
   assert.equal(report.postDbRefreshQuickCommand, 'pnpm run truth:post-db-refresh-rerun');
@@ -192,6 +213,9 @@ test('readiness packet passes when all required runtime truth artifacts are gree
     fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
   );
   assert.equal(report.status, 'PASS');
+  assert.equal(report.summary.countyScope.runtimeCandidateSetPassed, true);
+  assert.equal(report.summary.countyScope.runtimeCandidateScope, 'benton_only_runtime_pilot');
+  assert.equal(report.summary.countyScope.evidenceBackedLoadCandidates, 0);
   assert.equal(report.summary.terraFusionDb.liveRuntimeReachability, 'api_reachable');
   assert.equal(report.summary.terraFusionDb.dbIdentityEndpointStatus, 200);
   assert.equal(report.summary.terraFusionDb.runtimeRowPathPassed, true);
@@ -200,6 +224,39 @@ test('readiness packet passes when all required runtime truth artifacts are gree
   assert.deepEqual(report.executionQueue, []);
   assert.equal(report.postDbRefreshRerunChecklist.length, 9);
   assert.equal(report.artifactDetails.dbIdentity, undefined);
+});
+
+test('readiness packet blocks candidate set that promotes another county', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-candidate-set.json', {
+    summary: {
+      june10RuntimeScope: 'runtime_scope_requires_review',
+      prohibit39CountyRuntimeClaim: true,
+      runtimeProven: 1,
+      evidenceBackedLoadCandidates: 1,
+      shipBlockers: 0,
+    },
+    rows: [
+      {
+        county: 'Pacific',
+        blockers: ['County has inventory evidence but is not registered in runtime.'],
+      },
+    ],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.equal(report.summary.countyScope.runtimeCandidateSetPassed, false);
+  assert.ok(report.shipBlockers.some(item => item.source === 'runtimeCandidateSet'));
+  assert.ok(report.executionQueue.some(item => item.source === 'runtimeCandidateSet'));
 });
 
 test('readiness packet blocks source lineage artifact with no checked candidates', () => {
