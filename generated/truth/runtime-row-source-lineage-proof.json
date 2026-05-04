@@ -1,0 +1,65 @@
+{
+  "generatedAt": "2026-05-04T17:17:02.380Z",
+  "repoRoot": "C:\\Users\\bsval\\.codex-worktrees\\june10-readiness-execution",
+  "runtimeBaseUrl": "http://localhost:5046",
+  "runtimeDbIdentity": {
+    "passed": false,
+    "blockers": [
+      "Runtime Properties count 128788 does not match configured Benton parcel count 89447."
+    ],
+    "database": "terrafusion",
+    "provider": "Npgsql.EntityFrameworkCore.PostgreSQL",
+    "expectedJune10Database": "terrafusion",
+    "isExpectedJune10RuntimeDb": true
+  },
+  "summary": {
+    "candidatesChecked": 1,
+    "passed": 0,
+    "failed": 1,
+    "totalCanonicalRows": 387890,
+    "totalSourceRows": 569224,
+    "mockRuntimeEnabled": 0,
+    "eliteOperationsMockEnabled": 1,
+    "silentBentonFallbacks": 0,
+    "runtimeDbIdentityPassed": false,
+    "runtimeDbIdentityDatabase": "terrafusion",
+    "runtimeDbIdentityProvider": "Npgsql.EntityFrameworkCore.PostgreSQL"
+  },
+  "proofs": [
+    {
+      "county": "Benton",
+      "endpoint": "http://localhost:5046/api/counties/benton/runtime-lineage",
+      "endpointStatus": 200,
+      "payloadCounty": "Benton County",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "runtimeLineageClassification": "pacs_mirror_projected_runtime_partial",
+      "databaseProvider": "Npgsql.EntityFrameworkCore.PostgreSQL",
+      "developmentSeedersSkipped": true,
+      "runtimeMockDataEnabled": false,
+      "eliteOperationsMockDataEnabled": true,
+      "canonicalRuntime": {
+        "properties": 128788,
+        "comparableSales": 259102,
+        "canonicalSaleQualifications": 0
+      },
+      "sourceMirror": {
+        "pacsParcels": 128950,
+        "pacsSales": 440274
+      },
+      "posture": {
+        "noSilentFallback": true,
+        "exposesCountsOnly": true,
+        "containsOwnerOrPartyPii": false
+      },
+      "error": null,
+      "canonicalRows": 387890,
+      "sourceRows": 569224,
+      "runtimeDbIdentityPassed": false,
+      "passed": false,
+      "blockers": [
+        "Runtime DB identity proof is not trusted: Runtime Properties count 128788 does not match configured Benton parcel count 89447."
+      ]
+    }
+  ]
+}

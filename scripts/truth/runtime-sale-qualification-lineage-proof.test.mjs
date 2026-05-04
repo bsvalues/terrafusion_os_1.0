@@ -215,6 +215,11 @@ test('runtime sale qualification proof fails when source-lineage proof is not tr
         blocker.includes('Runtime source-lineage proof is not trusted')
       )
     );
+    assert.ok(
+      report.summary.blockers.some(blocker =>
+        blocker.includes('Runtime source-lineage proof is not trusted')
+      )
+    );
   } finally {
     await server.close();
   }

@@ -1,65 +1,65 @@
 # Runtime Candidate Set
 
-Generated: 2026-05-04T16:51:13.619Z
+Generated: 2026-05-04T17:16:51.591Z
 Inventory: `generated/truth/data-source-truth-inventory.json`
 Ledger: `generated/truth/county-runtime-registration-ledger.json`
 
 ## Summary
 
 - Counties checked: 39
-- Runtime proven: 0
+- Runtime proven: 1
 - Evidence-backed load candidates: 0
 - Registered empty: 0
-- Endpoint errors: 39
+- Endpoint errors: 0
 - Fallback violations: 0
-- Downgraded no-runtime-evidence: 0
-- June 10 runtime scope: runtime_scope_requires_review
+- Downgraded no-runtime-evidence: 38
+- June 10 runtime scope: benton_only_runtime_pilot
 - 39-county runtime claim prohibited: yes
-- Allowed runtime claim: Runtime scope requires review before any June 10 runtime claim.
+- Allowed runtime claim: Benton runtime pilot only; 39-county data remains provenance/inventory, not runtime readiness.
 
 ## Candidate Ledger
 
 | County | Parcel Status | Parcel Rows | Inventory Rows | DB Target | Runtime API Evidence | Inventory Class | CostForge Tier | Runtime Candidate Class | June 10 Action | Blockers |
 |---|---:|---:|---:|---|---|---|---|---|---|---|
-Adams | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Asotin | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Benton | - | 0 | 241 | yes | yes | public_data_seed | CF1_parcel_public_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Chelan | - | 0 | 35 | yes | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Clallam | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Clark | - | 0 | 8 | yes | no | public_data_seed | CF2_property_characteristics_available | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Columbia | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Cowlitz | - | 0 | 8 | yes | no | public_data_seed | CF2_property_characteristics_available | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Douglas | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Ferry | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Franklin | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Garfield | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Grant | - | 0 | 8 | yes | no | public_data_seed | CF2_property_characteristics_available | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Grays Harbor | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Island | - | 0 | 8 | yes | no | public_data_seed | CF2_property_characteristics_available | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Jefferson | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-King | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Kitsap | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Kittitas | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Klickitat | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Lewis | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Lincoln | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Mason | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Okanogan | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Pacific | - | 0 | 0 | no | no | unknown_untrusted | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Pend Oreille | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Pierce | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-San Juan | - | 0 | 8 | yes | no | public_data_seed | CF2_property_characteristics_available | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Skagit | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Skamania | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Snohomish | - | 0 | 8 | yes | no | public_data_seed | CF2_property_characteristics_available | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Spokane | - | 0 | 0 | yes | no | public_data_seed | CF2_property_characteristics_available | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Stevens | - | 0 | 8 | yes | no | public_data_seed | CF2_property_characteristics_available | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Thurston | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Wahkiakum | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Walla Walla | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Whatcom | - | 0 | 8 | yes | no | public_data_seed | CF2_property_characteristics_available | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Whitman | - | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | endpoint_error | ship_blocker | County runtime endpoint returned an error.
-Yakima | - | 0 | 8 | yes | no | public_data_seed | CF2_property_characteristics_available | endpoint_error | ship_blocker | County runtime endpoint returned an error.
+Adams | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Asotin | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Benton | 200 | 5 | 241 | yes | yes | public_data_seed | CF1_parcel_public_data | runtime_proven | ship_runtime_scope | -
+Chelan | 404 | 0 | 35 | yes | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Clallam | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Clark | 404 | 0 | 8 | yes | no | public_data_seed | CF2_property_characteristics_available | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Columbia | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Cowlitz | 404 | 0 | 8 | yes | no | public_data_seed | CF2_property_characteristics_available | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Douglas | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Ferry | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Franklin | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Garfield | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Grant | 404 | 0 | 8 | yes | no | public_data_seed | CF2_property_characteristics_available | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Grays Harbor | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Island | 404 | 0 | 8 | yes | no | public_data_seed | CF2_property_characteristics_available | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Jefferson | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+King | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Kitsap | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Kittitas | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Klickitat | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Lewis | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Lincoln | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Mason | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Okanogan | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Pacific | 404 | 0 | 0 | no | no | unknown_untrusted | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Pend Oreille | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Pierce | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+San Juan | 404 | 0 | 8 | yes | no | public_data_seed | CF2_property_characteristics_available | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Skagit | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Skamania | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Snohomish | 404 | 0 | 8 | yes | no | public_data_seed | CF2_property_characteristics_available | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Spokane | 404 | 0 | 0 | yes | no | public_data_seed | CF2_property_characteristics_available | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Stevens | 404 | 0 | 8 | yes | no | public_data_seed | CF2_property_characteristics_available | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Thurston | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Wahkiakum | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Walla Walla | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Whatcom | 404 | 0 | 8 | yes | no | public_data_seed | CF2_property_characteristics_available | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Whitman | 404 | 0 | 0 | no | no | public_data_seed | CF0_no_runtime_data | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
+Yakima | 404 | 0 | 8 | yes | no | public_data_seed | CF2_property_characteristics_available | downgraded_no_runtime_evidence | provenance_inventory_only | County lacks the inventory evidence required for runtime promotion.
 
 ## Scope Rule
 

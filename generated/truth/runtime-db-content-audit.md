@@ -1,14 +1,14 @@
 # Runtime TerraFusion DB Content Audit
 
-Generated: 2026-05-04T16:48:22.681Z
+Generated: 2026-05-04T17:15:54.593Z
 Runtime base URL: `http://localhost:5046`
 
 ## Status
 
 - Result: FAIL
-- Endpoint status: unreachable
-- Expected Benton parcel count: -
-- Benton classification: -
+- Endpoint status: 200
+- Expected Benton parcel count: 89447
+- Benton classification: configured_count_matches_neither_rows_nor_distinct_parcels
 - Property rows match expected: no
 - Distinct ParcelIds match expected: no
 - Distinct ParcelNumbers match expected: no
@@ -17,12 +17,12 @@ Runtime base URL: `http://localhost:5046`
 
 | County | FIPS | Property Rows | Distinct ParcelIds | Distinct ParcelNumbers | Distinct PropertyIds | Duplicate ParcelId Groups | Duplicate ParcelNumber Groups | Max Rows Per ParcelId |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
+Benton County | 53005 | 128788 | 128788 | 128788 | 128788 | 0 | 0 | 1
 
 ## Blockers
 
-- Runtime DB content endpoint did not return 200. Status: null.
-- Runtime DB content endpoint failed: fetch failed
-- Runtime DB content endpoint did not return JSON payload.
+- Configured Benton parcel count 89447 matches neither runtime property rows 128788 nor distinct parcel ids 128788.
+- Runtime Benton property rows 128788 do not match configured parcel count 89447.
 
 ## Warnings
 

@@ -1,45 +1,43 @@
 # Benton Runtime Pilot Closure
 
-Generated: 2026-05-04T16:51:19.497Z
+Generated: 2026-05-04T17:17:57.762Z
 
 ## Status
 
 - Result: FAIL
-- June 10 runtime scope: runtime_scope_requires_review
-- Allowed runtime claim: Runtime scope requires review before any June 10 runtime claim.
+- June 10 runtime scope: benton_only_runtime_pilot
+- Allowed runtime claim: Benton runtime pilot only; 39-county data remains provenance/inventory, not runtime readiness.
 - 39-county runtime claim prohibited: yes
 
 ## Benton Proof
 
-- Runtime candidate class: endpoint_error
-- Parcel endpoint status: null
-- Parcel rows returned: 0
-- Sale qualification classification: null
+- Runtime candidate class: runtime_proven
+- Parcel endpoint status: 200
+- Parcel rows returned: 50
+- Sale qualification classification: recommendation_backed_canonical_landing_missing
 - Canonical sale qualifications: 0
-- Ratio-study effective qualified: 0
+- Ratio-study effective qualified: 36
 - Ratio-study decision qualified: 0
-- Ratio-study recommendation fallback: 0
+- Ratio-study recommendation fallback: 36
 
 ## County Scope
 
-- Runtime proven counties: 0
+- Runtime proven counties: 1
 - Evidence-backed load candidates: 0
-- Provenance/inventory-only counties: 0
+- Provenance/inventory-only counties: 38
 
 ## Blockers
 
-- June 10 runtime scope is runtime_scope_requires_review, expected benton_only_runtime_pilot.
-- Expected exactly one runtime-proven county; found 0.
-- Expected 38 provenance-only counties; found 0.
-- Benton candidate class is endpoint_error.
 - Benton runtime row-path proof did not pass.
-- Benton parcel endpoint status is null.
-- Benton parcel endpoint returned zero runtime rows.
-- Benton is missing from sale-qualification lineage proof.
+- Benton sale-qualification lineage proof did not pass.
+- Benton sale-qualification lineage is recommendation_backed_canonical_landing_missing, expected canonical_landing_backed.
+- Benton CanonicalSaleQualifications landing table is empty.
+- Benton ratio-study window has no final-decision qualified sales.
 
 ## Warnings
 
-- none
+- Benton ratio-study pool still depends on recommendation fallback.
+- Elite Operations mock flag is enabled; county runtime mock flag is false.
 
 ## Closure Rule
 

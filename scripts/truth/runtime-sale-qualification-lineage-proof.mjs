@@ -244,6 +244,11 @@ function summarize(proofs) {
       'No runtime sale qualification candidates were found. Run runtime source-lineage proof or set TF_RUNTIME_SALE_QUALIFICATION_CANDIDATES.'
     );
   }
+  for (const proof of proofs) {
+    for (const proofBlocker of proof.blockers ?? []) {
+      blockers.push(`${proof.county}: ${proofBlocker}`);
+    }
+  }
 
   return {
     candidatesChecked: proofs.length,

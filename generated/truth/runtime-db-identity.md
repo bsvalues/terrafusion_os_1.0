@@ -1,41 +1,39 @@
 # Runtime TerraFusion DB Identity
 
-Generated: 2026-05-04T16:48:22.775Z
+Generated: 2026-05-04T17:15:55.832Z
 Runtime base URL: `http://localhost:5046`
 
 ## Status
 
 - Result: FAIL
-- Endpoint status: unreachable
-- API base URL: -
-- Environment: -
-- Provider: -
-- Connection string name: -
-- Server/host: -
-- Database: -
-- Expected June 10 DB: -
-- Expected runtime DB: no
-- Expected Benton parcel count: -
+- Endpoint status: 200
+- API base URL: http://localhost:5046
+- Environment: Development
+- Provider: Npgsql.EntityFrameworkCore.PostgreSQL
+- Connection string name: DefaultConnection
+- Server/host: configured-host-redacted
+- Database: terrafusion
+- Expected June 10 DB: terrafusion
+- Expected runtime DB: yes
+- Expected Benton parcel count: 89447
 - Benton parcel count expected: no
 
 ## Migration State
 
-- Applied migrations: -
-- Pending migrations: -
-- Latest applied: -
+- Applied migrations: 82
+- Pending migrations: 0
+- Latest applied: 20260503153646_AddConversionEraToCanonicalTf
 
 ## Row Counts
 
-- Counties: -
-- Properties: -
-- ComparableSales: -
-- CanonicalSaleQualifications: -
+- Counties: 1
+- Properties: 128788
+- ComparableSales: 259102
+- CanonicalSaleQualifications: 0
 
 ## Blockers
 
-- Runtime DB identity endpoint did not return 200. Status: null.
-- Runtime DB identity endpoint failed: fetch failed
-- Runtime DB identity endpoint did not return JSON payload.
+- Runtime Properties count 128788 does not match configured Benton parcel count 89447.
 
 ## Warnings
 

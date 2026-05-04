@@ -1,6 +1,6 @@
 # Benton Parcel Count Sanity
 
-Generated: 2026-05-04T16:48:27.235Z
+Generated: 2026-05-04T17:16:21.379Z
 Runtime base URL: `http://localhost:5046`
 
 ## Status
@@ -17,12 +17,12 @@ Runtime base URL: `http://localhost:5046`
 ## Endpoint Behavior
 
 - Endpoint: `/api/counties/benton/parcels`
-- Status: unreachable
-- Returned total: 0
-- Applies county filter: no
+- Status: 200
+- Returned total: 128788
+- Applies county filter: yes
 - Applies active filter: no
 - Applies current-year filter: no
-- Collapses parcel versions: no
+- Collapses parcel versions: yes
 
 ## Tax Years
 
@@ -45,10 +45,7 @@ unknown | 128788
 
 ## Blockers
 
-- Benton parcel endpoint did not echo Benton county identity.
-- Benton parcel endpoint does not prove county filtering.
 - Benton parcel endpoint does not apply active/current parcel filtering.
-- Benton parcel endpoint does not collapse duplicate parcel versions.
 - Properties table has 128788 Benton rows with unknown active/inactive status.
 - Distinct active Benton parcel count 0 is outside expected range 1-100000.
 - Distinct current-year Benton parcel count 128784 is outside expected maximum 100000.

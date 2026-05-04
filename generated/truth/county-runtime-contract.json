@@ -1,18 +1,18 @@
 {
-  "generatedAt": "2026-05-04T16:17:49.551Z",
+  "generatedAt": "2026-05-04T17:16:51.622Z",
   "inputs": {
     "crosswalkPath": "generated/truth/washington-39-county-data-crosswalk.json",
-    "runtimeLedgerPath": null,
-    "dbIdentityPath": null,
-    "productLoadLedgerPath": null,
-    "bentonParcelSanityPath": null
+    "runtimeLedgerPath": "generated/truth/county-runtime-registration-ledger.json",
+    "dbIdentityPath": "generated/truth/runtime-db-identity.json",
+    "productLoadLedgerPath": "generated/truth/terrafusion-db-product-load-ledger.json",
+    "bentonParcelSanityPath": "generated/truth/benton-parcel-count-sanity.json"
   },
   "requiredProductDomains": ["parcel", "sales", "qualified_sales"],
   "summary": {
     "countiesChecked": 39,
     "runtimeContractPass": 0,
     "runtimeContractBlocked": 39,
-    "runtimeProvenInput": 0,
+    "runtimeProvenInput": 1,
     "publicSourceSeed": 12,
     "provenanceInventoryOnly": 27,
     "prohibit39CountyRuntimeClaim": true
@@ -22,41 +22,40 @@
       "county": "Adams",
       "registryStatus": "researched",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -67,41 +66,40 @@
       "county": "Asotin",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -112,45 +110,42 @@
       "county": "Benton",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "public_source_seed",
-      "runtimeClass": "unknown",
-      "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "runtimeClass": "runtime_proven",
+      "runtimeRows": 5,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": false,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
-        "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
+        "Runtime DB identity proof did not pass.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales.",
-        "Benton parcel count sanity proof is missing."
+        "Benton parcel count sanity proof did not pass."
       ],
       "warnings": [
         "County has public-source seed evidence but not runtime promotion proof."
@@ -160,41 +155,40 @@
       "county": "Chelan",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "public_source_seed",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -207,41 +201,40 @@
       "county": "Clallam",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -252,41 +245,40 @@
       "county": "Clark",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "public_source_seed",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -299,41 +291,40 @@
       "county": "Columbia",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -344,41 +335,40 @@
       "county": "Cowlitz",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "public_source_seed",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -391,41 +381,40 @@
       "county": "Douglas",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -436,41 +425,40 @@
       "county": "Ferry",
       "registryStatus": "researched",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -481,41 +469,40 @@
       "county": "Franklin",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -526,41 +513,40 @@
       "county": "Garfield",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -571,41 +557,40 @@
       "county": "Grant",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "public_source_seed",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -618,41 +603,40 @@
       "county": "Grays Harbor",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -663,41 +647,40 @@
       "county": "Island",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "public_source_seed",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -710,41 +693,40 @@
       "county": "Jefferson",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -755,41 +737,40 @@
       "county": "King",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -800,41 +781,40 @@
       "county": "Kitsap",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -845,41 +825,40 @@
       "county": "Kittitas",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -890,41 +869,40 @@
       "county": "Klickitat",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -935,41 +913,40 @@
       "county": "Lewis",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -980,41 +957,40 @@
       "county": "Lincoln",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -1025,41 +1001,40 @@
       "county": "Mason",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -1070,41 +1045,40 @@
       "county": "Okanogan",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -1115,41 +1089,40 @@
       "county": "Pacific",
       "registryStatus": "researched",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -1160,41 +1133,40 @@
       "county": "Pend Oreille",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -1205,41 +1177,40 @@
       "county": "Pierce",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -1250,41 +1221,40 @@
       "county": "San Juan",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "public_source_seed",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -1297,41 +1267,40 @@
       "county": "Skagit",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -1342,41 +1311,40 @@
       "county": "Skamania",
       "registryStatus": "not-started",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -1387,41 +1355,40 @@
       "county": "Snohomish",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "public_source_seed",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -1434,41 +1401,40 @@
       "county": "Spokane",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "public_source_seed",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -1481,41 +1447,40 @@
       "county": "Stevens",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "public_source_seed",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -1528,41 +1493,40 @@
       "county": "Thurston",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -1573,41 +1537,40 @@
       "county": "Wahkiakum",
       "registryStatus": "researched",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -1618,41 +1581,40 @@
       "county": "Walla Walla",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -1663,41 +1625,40 @@
       "county": "Whatcom",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "public_source_seed",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -1710,41 +1671,40 @@
       "county": "Whitman",
       "registryStatus": "not-started",
       "crosswalkClassification": "provenance_inventory_only",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."
@@ -1755,41 +1715,40 @@
       "county": "Yakima",
       "registryStatus": "adapter-ready",
       "crosswalkClassification": "public_source_seed",
-      "runtimeClass": "unknown",
+      "runtimeClass": "not_registered",
       "runtimeRows": 0,
-      "selectedCountyEchoed": false,
+      "selectedCountyEchoed": true,
       "fallbackDetected": false,
       "dbIdentityPassed": false,
       "productDomains": [
         {
           "domain": "parcel",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["Properties"],
+          "rowCount": 128788,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "sales",
-          "tables": [],
-          "rowCount": 0,
+          "tables": ["ComparableSales"],
+          "rowCount": 259102,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Rows exist but no product load receipt proves lineage."]
         },
         {
           "domain": "qualified_sales",
-          "tables": [],
+          "tables": ["CanonicalSaleQualifications"],
           "rowCount": 0,
           "lineageProven": false,
-          "blockers": []
+          "blockers": ["Table exists but is empty."]
         }
       ],
       "parcelSanityPassed": null,
       "status": "runtime_contract_blocked",
       "blockers": [
-        "Runtime DB identity proof is missing.",
-        "County runtime class is unknown.",
+        "Runtime DB identity proof did not pass.",
+        "County runtime class is not_registered.",
         "County has no proven runtime rows.",
-        "Runtime did not prove selected county identity echo.",
         "Product-load receipt is not lineage-proven for parcel.",
         "Product-load receipt is not lineage-proven for sales.",
         "Product-load receipt is not lineage-proven for qualified_sales."

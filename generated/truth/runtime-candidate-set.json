@@ -1,34 +1,34 @@
 {
-  "generatedAt": "2026-05-04T16:51:13.619Z",
+  "generatedAt": "2026-05-04T17:16:51.591Z",
   "inputs": {
     "inventoryPath": "generated/truth/data-source-truth-inventory.json",
     "ledgerPath": "generated/truth/county-runtime-registration-ledger.json"
   },
   "summary": {
     "countiesChecked": 39,
-    "runtimeProven": 0,
+    "runtimeProven": 1,
     "evidenceBackedLoadCandidates": 0,
     "registeredEmpty": 0,
-    "endpointErrors": 39,
+    "endpointErrors": 0,
     "fallbackViolations": 0,
-    "downgradedNoRuntimeEvidence": 0,
-    "shipRuntimeScope": 0,
+    "downgradedNoRuntimeEvidence": 38,
+    "shipRuntimeScope": 1,
     "mayPromoteAfterRegistration": 0,
-    "provenanceInventoryOnly": 0,
+    "provenanceInventoryOnly": 38,
     "needsDataLoadBeforeRuntimeClaim": 0,
-    "shipBlockers": 39,
-    "june10RuntimeScope": "runtime_scope_requires_review",
+    "shipBlockers": 0,
+    "june10RuntimeScope": "benton_only_runtime_pilot",
     "prohibit39CountyRuntimeClaim": true,
-    "allowedRuntimeClaim": "Runtime scope requires review before any June 10 runtime claim."
+    "allowedRuntimeClaim": "Benton runtime pilot only; 39-county data remains provenance/inventory, not runtime readiness."
   },
   "rows": [
     {
       "county": "Adams",
       "countyToken": "adams",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -41,17 +41,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Asotin",
       "countyToken": "asotin",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -64,17 +66,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Benton",
       "countyToken": "benton",
-      "parcelStatus": null,
-      "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "parcelStatus": 200,
+      "parcelRows": 5,
+      "readinessClass": "runtime_proven",
+      "ledgerRecommendedAction": "keep_runtime_candidate",
       "inventory": {
         "rowsLanded": 241,
         "evidenceCount": 81,
@@ -87,17 +91,17 @@
         "costForgeCountyMode": "public_data_loaded"
       },
       "evidenceBackedPromotionPath": true,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "runtime_proven",
+      "june10Action": "ship_runtime_scope",
+      "blockers": []
     },
     {
       "county": "Chelan",
       "countyToken": "chelan",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 35,
         "evidenceCount": 6,
@@ -110,17 +114,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Clallam",
       "countyToken": "clallam",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -133,17 +139,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Clark",
       "countyToken": "clark",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 8,
         "evidenceCount": 12,
@@ -156,17 +164,19 @@
         "costForgeCountyMode": "derived_estimate_mode"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Columbia",
       "countyToken": "columbia",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 6,
@@ -179,17 +189,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Cowlitz",
       "countyToken": "cowlitz",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 8,
         "evidenceCount": 12,
@@ -202,17 +214,19 @@
         "costForgeCountyMode": "derived_estimate_mode"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Douglas",
       "countyToken": "douglas",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -225,17 +239,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Ferry",
       "countyToken": "ferry",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -248,17 +264,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Franklin",
       "countyToken": "franklin",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 7,
@@ -271,17 +289,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Garfield",
       "countyToken": "garfield",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -294,17 +314,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Grant",
       "countyToken": "grant",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 8,
         "evidenceCount": 14,
@@ -317,17 +339,19 @@
         "costForgeCountyMode": "derived_estimate_mode"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Grays Harbor",
       "countyToken": "grays-harbor",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -340,17 +364,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Island",
       "countyToken": "island",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 8,
         "evidenceCount": 13,
@@ -363,17 +389,19 @@
         "costForgeCountyMode": "derived_estimate_mode"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Jefferson",
       "countyToken": "jefferson",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -386,17 +414,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "King",
       "countyToken": "king",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 7,
@@ -409,17 +439,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Kitsap",
       "countyToken": "kitsap",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -432,17 +464,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Kittitas",
       "countyToken": "kittitas",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -455,17 +489,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Klickitat",
       "countyToken": "klickitat",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -478,17 +514,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Lewis",
       "countyToken": "lewis",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -501,17 +539,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Lincoln",
       "countyToken": "lincoln",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -524,17 +564,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Mason",
       "countyToken": "mason",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -547,17 +589,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Okanogan",
       "countyToken": "okanogan",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -570,17 +614,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Pacific",
       "countyToken": "pacific",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 0,
@@ -593,17 +639,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Pend Oreille",
       "countyToken": "pend-oreille",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -616,17 +664,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Pierce",
       "countyToken": "pierce",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 7,
@@ -639,17 +689,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "San Juan",
       "countyToken": "san-juan",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 8,
         "evidenceCount": 12,
@@ -662,17 +714,19 @@
         "costForgeCountyMode": "derived_estimate_mode"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Skagit",
       "countyToken": "skagit",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -685,17 +739,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Skamania",
       "countyToken": "skamania",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -708,17 +764,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Snohomish",
       "countyToken": "snohomish",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 8,
         "evidenceCount": 13,
@@ -731,17 +789,19 @@
         "costForgeCountyMode": "derived_estimate_mode"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Spokane",
       "countyToken": "spokane",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 14,
@@ -754,17 +814,19 @@
         "costForgeCountyMode": "derived_estimate_mode"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Stevens",
       "countyToken": "stevens",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 8,
         "evidenceCount": 12,
@@ -777,17 +839,19 @@
         "costForgeCountyMode": "derived_estimate_mode"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Thurston",
       "countyToken": "thurston",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 5,
@@ -800,17 +864,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Wahkiakum",
       "countyToken": "wahkiakum",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -823,17 +889,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Walla Walla",
       "countyToken": "walla-walla",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -846,17 +914,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Whatcom",
       "countyToken": "whatcom",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 8,
         "evidenceCount": 12,
@@ -869,17 +939,19 @@
         "costForgeCountyMode": "derived_estimate_mode"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Whitman",
       "countyToken": "whitman",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 0,
         "evidenceCount": 4,
@@ -892,17 +964,19 @@
         "costForgeCountyMode": "not_available"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     },
     {
       "county": "Yakima",
       "countyToken": "yakima",
-      "parcelStatus": null,
+      "parcelStatus": 404,
       "parcelRows": 0,
-      "readinessClass": "endpoint_error",
-      "ledgerRecommendedAction": "investigate_endpoint_error",
+      "readinessClass": "not_registered",
+      "ledgerRecommendedAction": "downgrade_from_runtime_candidate",
       "inventory": {
         "rowsLanded": 8,
         "evidenceCount": 13,
@@ -915,9 +989,11 @@
         "costForgeCountyMode": "derived_estimate_mode"
       },
       "evidenceBackedPromotionPath": false,
-      "runtimeCandidateClass": "endpoint_error",
-      "june10Action": "ship_blocker",
-      "blockers": ["County runtime endpoint returned an error."]
+      "runtimeCandidateClass": "downgraded_no_runtime_evidence",
+      "june10Action": "provenance_inventory_only",
+      "blockers": [
+        "County lacks the inventory evidence required for runtime promotion."
+      ]
     }
   ]
 }

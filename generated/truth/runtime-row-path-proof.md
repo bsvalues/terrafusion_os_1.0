@@ -1,11 +1,11 @@
 # Runtime Row Path Proof
 
-Generated: 2026-05-04T16:51:13.646Z
+Generated: 2026-05-04T17:16:17.727Z
 Runtime base URL: `http://localhost:5046`
 
 | County | Candidate Reason | Inventory Rows | Endpoint | Status | Runtime Rows | Payload County | County Echo | Benton Fallback | CostForge Tier | CostForge Mode | DB Identity Trusted | Result | Blockers |
 |---|---|---:|---|---:|---:|---|---|---|---|---|---|---|---|
-Benton | costforge_cf1_or_higher | 241 | - | null | 0 | - | no | no | CF1_parcel_public_data | public_data_loaded | no | FAIL | Runtime DB identity proof is not trusted: Runtime DB identity endpoint did not return 200. Status: null.; Runtime DB identity endpoint failed: fetch failed; Runtime DB identity endpoint did not return JSON payload.<br>No runtime endpoint identified.<br>Runtime endpoint did not return 200. Status: null<br>Runtime returned zero rows.<br>Runtime did not echo selected county.
+Benton | costforge_cf1_or_higher | 241 | `http://localhost:5046/api/counties/benton/parcels` | 200 | 50 | Benton County | yes | no | CF1_parcel_public_data | public_data_loaded | no | FAIL | Runtime DB identity proof is not trusted: Runtime Properties count 128788 does not match configured Benton parcel count 89447.
 
 ## Summary
 
@@ -13,16 +13,14 @@ Benton | costforge_cf1_or_higher | 241 | - | null | 0 | - | no | no | CF1_parcel
 - Passed: 0
 - Failed: 1
 - Silent Benton fallbacks: 0
-- Zero-row runtime responses: 1
+- Zero-row runtime responses: 0
 - Runtime DB identity trusted: no
-- Runtime DB: -
-- Runtime provider: -
+- Runtime DB: terrafusion
+- Runtime provider: Npgsql.EntityFrameworkCore.PostgreSQL
 
 ## Runtime DB Identity Blockers
 
-- Runtime DB identity endpoint did not return 200. Status: null.
-- Runtime DB identity endpoint failed: fetch failed
-- Runtime DB identity endpoint did not return JSON payload.
+- Runtime Properties count 128788 does not match configured Benton parcel count 89447.
 
 ## Scope Note
 

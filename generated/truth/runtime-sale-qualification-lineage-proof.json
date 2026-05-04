@@ -1,19 +1,70 @@
 {
-  "generatedAt": "2026-05-04T16:49:28.532Z",
+  "generatedAt": "2026-05-04T17:17:48.814Z",
   "repoRoot": "C:\\Users\\bsval\\.codex-worktrees\\june10-readiness-execution",
   "runtimeBaseUrl": "http://localhost:5046",
   "status": "FAIL",
   "summary": {
-    "candidatesChecked": 0,
+    "candidatesChecked": 1,
     "passed": 0,
-    "failed": 0,
-    "warnings": 0,
+    "failed": 1,
+    "warnings": 3,
     "canonicalLandingBacked": 0,
-    "recommendationBackedCanonicalMissing": 0,
+    "recommendationBackedCanonicalMissing": 1,
     "blockers": [
-      "No runtime sale qualification candidates were found. Run runtime source-lineage proof or set TF_RUNTIME_SALE_QUALIFICATION_CANDIDATES."
+      "Benton: Runtime source-lineage proof is not trusted: Runtime DB identity proof is not trusted: Runtime Properties count 128788 does not match configured Benton parcel count 89447."
     ],
     "status": "FAIL"
   },
-  "proofs": []
+  "proofs": [
+    {
+      "county": "Benton",
+      "lineageEndpoint": "http://localhost:5046/api/counties/benton/runtime-lineage",
+      "lineageStatus": 200,
+      "qualificationEndpoint": "http://localhost:5046/api/sync/qualification-status/19190019-1919-1919-1919-191919191919?taxYear=2026",
+      "qualificationStatus": 200,
+      "payloadCounty": "Benton County",
+      "selectedCountyEchoed": true,
+      "silentBentonFallbackDetected": false,
+      "countyId": "19190019-1919-1919-1919-191919191919",
+      "runtimeLineageClassification": "pacs_mirror_projected_runtime_partial",
+      "sourceLineagePassed": false,
+      "sourceLineageBlockers": [
+        "Runtime DB identity proof is not trusted: Runtime Properties count 128788 does not match configured Benton parcel count 89447."
+      ],
+      "runtimeMockDataEnabled": false,
+      "eliteOperationsMockDataEnabled": true,
+      "comparableSales": 259102,
+      "canonicalSaleQualifications": 0,
+      "sourceSales": 440274,
+      "allTime": {
+        "totalSales": 259102,
+        "hasRecommendation": 259102,
+        "pendingDecision": 258721,
+        "staffConfirmed": 344,
+        "appraiserFinal": 37,
+        "decisionQualified": 266,
+        "recQualified": 243544,
+        "recommendationCoverage": 100
+      },
+      "ratioStudyWindow": {
+        "totalSales": 52,
+        "hasRecommendation": 52,
+        "pendingDecision": 36,
+        "effectiveQualified": 36,
+        "decisionQualified": 0,
+        "recQualifiedFallback": 36
+      },
+      "errors": [],
+      "classification": "recommendation_backed_canonical_landing_missing",
+      "passed": false,
+      "blockers": [
+        "Runtime source-lineage proof is not trusted: Runtime DB identity proof is not trusted: Runtime Properties count 128788 does not match configured Benton parcel count 89447."
+      ],
+      "warnings": [
+        "CanonicalSaleQualifications landing table is empty for this county.",
+        "Ratio-study qualified pool is recommendation-backed, not final-decision-backed.",
+        "Elite Operations mock flag is enabled; county runtime mock flag is false."
+      ]
+    }
+  ]
 }
