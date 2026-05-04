@@ -27,6 +27,8 @@ const preflightTimeoutMs = Number.parseInt(
   10
 );
 const continueOnFailure = process.env.TF_POST_DB_REFRESH_CONTINUE_ON_FAILURE === '1';
+const skipPreflight = process.env.TF_POST_DB_REFRESH_SKIP_PREFLIGHT === '1';
+const commandSource = process.env.TF_POST_DB_REFRESH_COMMANDS_JSON ? 'env_override' : 'default';
 
 const defaultCommands = [
   {
@@ -152,7 +154,7 @@ function loadCommands() {
 }
 
 async function preflightRuntime() {
-  if (process.env.TF_POST_DB_REFRESH_SKIP_PREFLIGHT === '1') {
+  if (skipPreflight) {
     return {
       skipped: true,
       endpoint: null,
@@ -259,6 +261,17 @@ function renderMarkdown(report) {
     '',
     `Generated: ${report.generatedAt}`,
     `Runtime base URL: \`${report.runtimeBaseUrl}\``,
+    '',
+    '## Configuration',
+    '',
+    `- Repository root: \`${report.configuration.repoRoot}\``,
+    `- Command source: ${report.configuration.commandSource}`,
+    `- Command timeout: ${report.configuration.commandTimeoutMs}ms`,
+    `- Preflight timeout: ${report.configuration.preflightTimeoutMs}ms`,
+    `- Skip preflight: ${report.configuration.skipPreflight ? 'yes' : 'no'}`,
+    `- Continue on failure: ${report.configuration.continueOnFailure ? 'yes' : 'no'}`,
+    `- Node: ${report.configuration.nodeVersion}`,
+    `- Platform: ${report.configuration.platform}`,
     '',
     '## Status',
     '',
@@ -417,6 +430,16 @@ function buildReport({ preflight, commands, results, blockers }) {
     runtimeBaseUrl,
     status: blockers.length === 0 ? 'PASS' : 'FAIL',
     continueOnFailure,
+    configuration: {
+      repoRoot,
+      commandSource,
+      commandTimeoutMs,
+      preflightTimeoutMs,
+      skipPreflight,
+      continueOnFailure,
+      nodeVersion: process.version,
+      platform: `${process.platform}/${process.arch}`,
+    },
     plannedCommands: commands.map((command, index) => ({
       order: index + 1,
       name: command.name,

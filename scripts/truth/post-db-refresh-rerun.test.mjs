@@ -44,6 +44,9 @@ test('fails fast when runtime API preflight is unavailable', () => {
   assert.notEqual(result.status, 0);
   const report = readReport(root);
   assert.equal(report.status, 'FAIL');
+  assert.equal(report.configuration.commandSource, 'env_override');
+  assert.equal(report.configuration.skipPreflight, false);
+  assert.equal(report.configuration.preflightTimeoutMs, 1000);
   assert.equal(report.summary.commandsPlanned, 1);
   assert.equal(report.summary.commandsSkipped, 1);
   assert.deepEqual(
@@ -56,6 +59,7 @@ test('fails fast when runtime API preflight is unavailable', () => {
     path.join(root, 'generated', 'truth', 'post-db-refresh-rerun.md'),
     'utf8'
   );
+  assert.match(markdown, /## Configuration/);
   assert.match(markdown, /## Planned Command Sequence/);
 });
 
@@ -81,6 +85,9 @@ test('runs configured commands when preflight is skipped for tests', () => {
   assert.equal(result.status, 0, result.stderr || result.stdout);
   const report = readReport(root);
   assert.equal(report.status, 'PASS');
+  assert.equal(report.configuration.commandSource, 'env_override');
+  assert.equal(report.configuration.skipPreflight, true);
+  assert.equal(report.configuration.continueOnFailure, false);
   assert.equal(report.summary.commandsPassed, 1);
   assert.equal(report.summary.commandsFailed, 0);
   assert.equal(report.results[0].stdoutTail, 'ok');
@@ -156,6 +163,7 @@ test('can continue after command failures when explicitly requested', () => {
   const report = readReport(root);
   assert.equal(report.status, 'FAIL');
   assert.equal(report.continueOnFailure, true);
+  assert.equal(report.configuration.continueOnFailure, true);
   assert.equal(report.summary.commandsFailed, 1);
   assert.equal(report.summary.commandsSkipped, 0);
   assert.equal(report.results.length, 2);
