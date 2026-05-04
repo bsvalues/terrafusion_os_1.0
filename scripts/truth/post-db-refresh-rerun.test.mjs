@@ -92,6 +92,11 @@ test('records command failures without running the full readiness gate', () => {
           command: process.execPath,
           args: ['-e', 'process.exit(7)'],
         },
+        {
+          name: 'Dependent command',
+          command: process.execPath,
+          args: ['-e', 'console.log("should-not-run")'],
+        },
       ]),
     },
   });
@@ -100,6 +105,44 @@ test('records command failures without running the full readiness gate', () => {
   const report = readReport(root);
   assert.equal(report.status, 'FAIL');
   assert.equal(report.summary.commandsFailed, 1);
+  assert.equal(report.summary.commandsSkipped, 1);
+  assert.equal(report.results.length, 1);
   assert.equal(report.results[0].exitCode, 7);
   assert.ok(report.blockers.some(item => item.includes('Failing command failed')));
+  assert.ok(report.blockers.some(item => item.includes('Skipped 1 remaining command')));
+});
+
+test('can continue after command failures when explicitly requested', () => {
+  const root = makeTempRepo('tf-post-db-refresh-command-continue-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_CONTINUE_ON_FAILURE: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'Failing command',
+          command: process.execPath,
+          args: ['-e', 'process.exit(7)'],
+        },
+        {
+          name: 'Follow-up command',
+          command: process.execPath,
+          args: ['-e', 'console.log("ran")'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'FAIL');
+  assert.equal(report.continueOnFailure, true);
+  assert.equal(report.summary.commandsFailed, 1);
+  assert.equal(report.summary.commandsSkipped, 0);
+  assert.equal(report.results.length, 2);
+  assert.equal(report.results[1].stdoutTail, 'ran');
 });

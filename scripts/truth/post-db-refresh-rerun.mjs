@@ -26,6 +26,7 @@ const preflightTimeoutMs = Number.parseInt(
   process.env.TF_POST_DB_REFRESH_PREFLIGHT_TIMEOUT_MS ?? '8000',
   10
 );
+const continueOnFailure = process.env.TF_POST_DB_REFRESH_CONTINUE_ON_FAILURE === '1';
 
 const defaultCommands = [
   {
@@ -204,6 +205,7 @@ function renderMarkdown(report) {
     '## Status',
     '',
     `- Result: ${report.status}`,
+    `- Continue on failure: ${report.continueOnFailure ? 'yes' : 'no'}`,
     `- Commands passed: ${report.summary.commandsPassed}`,
     `- Commands failed: ${report.summary.commandsFailed}`,
     `- Commands skipped: ${report.summary.commandsSkipped}`,
@@ -271,6 +273,12 @@ async function main() {
       results.push(result);
       if (result.status !== 'PASS') {
         blockers.push(`${result.name} failed with exit code ${result.exitCode}.`);
+        if (!continueOnFailure) {
+          blockers.push(
+            `Skipped ${commands.length - results.length} remaining command(s) after first failure. Set TF_POST_DB_REFRESH_CONTINUE_ON_FAILURE=1 to continue.`
+          );
+          break;
+        }
       }
     }
   }
@@ -281,11 +289,12 @@ async function main() {
 }
 
 function buildReport({ preflight, commands, results, blockers }) {
-  const commandsSkipped = preflight.ok ? 0 : commands.length;
+  const commandsSkipped = preflight.ok ? commands.length - results.length : commands.length;
   return {
     generatedAt: new Date().toISOString(),
     runtimeBaseUrl,
     status: blockers.length === 0 ? 'PASS' : 'FAIL',
+    continueOnFailure,
     preflight,
     summary: {
       commandsPlanned: commands.length,
