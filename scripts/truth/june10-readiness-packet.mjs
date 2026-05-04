@@ -510,8 +510,17 @@ function artifactWarnings(value) {
         )
       )
     : [];
+  const proofWarnings = Array.isArray(value?.proofs)
+    ? value.proofs.flatMap(proof =>
+        (Array.isArray(proof?.warnings) ? proof.warnings : []).map(
+          item => `${proof?.county ?? 'proof'}: ${item}`
+        )
+      )
+    : [];
 
-  return [...new Set([...direct, ...summary, ...rowWarnings])].map(item => String(item));
+  return [...new Set([...direct, ...summary, ...rowWarnings, ...proofWarnings])].map(item =>
+    String(item)
+  );
 }
 
 function capList(items, limit = 20) {
@@ -623,6 +632,17 @@ function renderMarkdown(report) {
       const lines = detail.blockers.items.map(blocker => `- ${name}: ${blocker}`);
       if (detail.blockers.omitted > 0) {
         lines.push(`- ${name}: ${detail.blockers.omitted} additional blocker(s) omitted`);
+      }
+      return lines;
+    }),
+    '',
+    '## Artifact Warning Details',
+    '',
+    ...Object.entries(report.artifactDetails).flatMap(([name, detail]) => {
+      if (!detail.present || detail.warnings.items.length === 0) return [`- ${name}: none`];
+      const lines = detail.warnings.items.map(warning => `- ${name}: ${warning}`);
+      if (detail.warnings.omitted > 0) {
+        lines.push(`- ${name}: ${detail.warnings.omitted} additional warning(s) omitted`);
       }
       return lines;
     }),

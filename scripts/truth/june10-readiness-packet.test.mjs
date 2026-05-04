@@ -156,6 +156,7 @@ function makeRepo({ passing = false } = {}) {
             county: 'Benton',
             classification: 'recommendation_backed_canonical_landing_missing',
             passed: false,
+            warnings: ['Ratio-study qualified pool is recommendation-backed.'],
           },
         ],
   });
@@ -233,6 +234,20 @@ test('readiness packet fails when required runtime truth artifacts are red', () 
   );
   assert.ok(
     report.artifactDetails.sourceLineage.blockers.items.some(blocker => blocker.includes('Benton:'))
+  );
+  assert.ok(
+    report.artifactDetails.saleQualification.warnings.items.some(warning =>
+      warning.includes('Benton: Ratio-study qualified pool is recommendation-backed.')
+    )
+  );
+  const markdown = fs.readFileSync(
+    path.join(root, 'generated/truth/june10-readiness-packet.md'),
+    'utf8'
+  );
+  assert.match(markdown, /## Artifact Warning Details/);
+  assert.match(
+    markdown,
+    /saleQualification: Benton: Ratio-study qualified pool is recommendation-backed\./
   );
   assert.deepEqual(
     report.postDbRefreshRerunChecklist.map(item => item.command),
