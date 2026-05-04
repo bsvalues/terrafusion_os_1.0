@@ -303,6 +303,56 @@ test('preserves PASS_WITH_WARNINGS from refreshed proof artifacts', () => {
   assert.match(markdown, /PASS_WITH_WARNINGS/);
 });
 
+test('fails when a proof command writes a failing expected JSON artifact', () => {
+  const root = makeTempRepo('tf-post-db-refresh-artifact-fail-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'Failing artifact writer command',
+          command: process.execPath,
+          args: [
+            '-e',
+            [
+              "const fs = require('fs');",
+              "fs.mkdirSync('generated/truth', { recursive: true });",
+              "fs.writeFileSync('generated/truth/status-fail.json', JSON.stringify({ status: 'FAIL', blockers: ['red'] }) + '\\n');",
+              "fs.writeFileSync('generated/truth/passed-false.json', JSON.stringify({ passed: false, blockers: ['red'] }) + '\\n');",
+            ].join(' '),
+          ],
+          expectedArtifacts: [
+            'generated/truth/status-fail.json',
+            'generated/truth/passed-false.json',
+          ],
+        },
+        {
+          name: 'Dependent command',
+          command: process.execPath,
+          args: ['-e', 'console.log("should-not-run")'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'FAIL');
+  assert.equal(report.nextAction.code, 'fix_failed_artifact');
+  assert.match(report.nextAction.reason, /failing JSON proof artifact/);
+  assert.equal(report.summary.artifactFailures, 2);
+  assert.equal(report.summary.commandsSkipped, 1);
+  assert.equal(report.results.length, 1);
+  assert.equal(report.results[0].artifactOutputs[0].artifactStatus, 'FAIL');
+  assert.equal(report.results[0].artifactOutputs[1].artifactPassed, false);
+  assert.ok(report.blockers.some(item => item.includes('top-level status is FAIL')));
+  assert.ok(report.blockers.some(item => item.includes('top-level passed is false')));
+});
+
 test('fails when a proof command writes a malformed expected JSON artifact', () => {
   const root = makeTempRepo('tf-post-db-refresh-artifact-malformed-');
   const result = spawnSync('node', [scriptPath, root], {

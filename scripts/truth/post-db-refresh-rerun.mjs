@@ -158,6 +158,7 @@ function inspectArtifacts(expectedArtifacts, commandStartedMs) {
     let exists = false;
     let mtimeMs = null;
     let artifactStatus = null;
+    let artifactPassed = null;
     let warningCount = 0;
     let parseError = null;
 
@@ -168,6 +169,7 @@ function inspectArtifacts(expectedArtifacts, commandStartedMs) {
       if (exists && filePath.toLowerCase().endsWith('.json')) {
         const posture = inspectJsonArtifactPosture(filePath);
         artifactStatus = posture.status;
+        artifactPassed = posture.passed;
         warningCount = posture.warningCount;
         parseError = posture.parseError;
       }
@@ -181,6 +183,7 @@ function inspectArtifacts(expectedArtifacts, commandStartedMs) {
       refreshed: exists && mtimeMs !== null && mtimeMs >= commandStartedMs,
       mtime: mtimeMs === null ? null : new Date(mtimeMs).toISOString(),
       artifactStatus,
+      artifactPassed,
       warningCount,
       parseError,
     };
@@ -192,16 +195,27 @@ function inspectJsonArtifactPosture(filePath) {
     const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     return {
       status: typeof parsed?.status === 'string' ? parsed.status : null,
+      passed: typeof parsed?.passed === 'boolean' ? parsed.passed : null,
       warningCount: countArtifactWarnings(parsed),
       parseError: null,
     };
   } catch (error) {
     return {
       status: null,
+      passed: null,
       warningCount: 0,
       parseError: error instanceof Error ? error.message : String(error),
     };
   }
+}
+
+function artifactFailureReason(artifact) {
+  if (artifact.artifactPassed === false) return 'top-level passed is false';
+  if (artifact.artifactStatus === 'FAIL') return 'top-level status is FAIL';
+  if (typeof artifact.artifactStatus === 'string' && artifact.artifactStatus.endsWith('_blocked')) {
+    return `top-level status is ${artifact.artifactStatus}`;
+  }
+  return null;
 }
 
 function countArtifactWarnings(value) {
@@ -280,6 +294,7 @@ function renderMarkdown(report) {
     `- Artifact warnings: ${report.summary.artifactWarnings}`,
     `- Artifacts PASS_WITH_WARNINGS: ${report.summary.artifactsPassWithWarnings}`,
     `- Artifact parse errors: ${report.summary.artifactParseErrors}`,
+    `- Artifact failures: ${report.summary.artifactFailures}`,
     '',
     '## Planned Command Sequence',
     '',
@@ -313,14 +328,15 @@ function renderMarkdown(report) {
       ? report.results.flatMap(result => [
           `### ${result.name}`,
           '',
-          '| Artifact | Exists | Refreshed | Status | Warnings | Modified |',
-          '|---|---|---|---|---:|---|',
+          '| Artifact | Exists | Refreshed | Status | Passed | Warnings | Modified |',
+          '|---|---|---|---|---|---:|---|',
           ...result.artifactOutputs.map(artifact =>
             [
               `\`${artifact.path}\``,
               artifact.exists ? 'yes' : 'no',
               artifact.refreshed ? 'yes' : 'no',
               artifact.artifactStatus ?? '-',
+              artifact.artifactPassed == null ? '-' : String(artifact.artifactPassed),
               String(artifact.warningCount ?? 0),
               artifact.mtime ?? '-',
             ].join(' | ')
@@ -418,6 +434,13 @@ async function main() {
           artifactBlockers.push(
             `${result.name} wrote malformed JSON artifact ${artifact.path}: ${artifact.parseError}.`
           );
+        } else {
+          const failureReason = artifactFailureReason(artifact);
+          if (failureReason) {
+            artifactBlockers.push(
+              `${result.name} wrote failing JSON proof artifact ${artifact.path}: ${failureReason}.`
+            );
+          }
         }
       }
       blockers.push(...artifactBlockers);
@@ -488,6 +511,7 @@ function buildReport({ preflight, commands, results, blockers }) {
         artifact => artifact.artifactStatus === 'PASS_WITH_WARNINGS'
       ).length,
       artifactParseErrors: artifactOutputs.filter(artifact => artifact.parseError).length,
+      artifactFailures: artifactOutputs.filter(artifact => artifactFailureReason(artifact)).length,
     },
     results,
     blockers,
@@ -533,6 +557,17 @@ function deriveNextAction(report) {
       code: 'fix_malformed_artifact',
       command: malformedResult.command,
       reason: `${malformedResult.name} wrote at least one malformed JSON proof artifact.`,
+    };
+  }
+
+  const failedArtifactResult = report.results.find(result =>
+    (result.artifactOutputs ?? []).some(artifact => artifactFailureReason(artifact))
+  );
+  if (failedArtifactResult) {
+    return {
+      code: 'fix_failed_artifact',
+      command: failedArtifactResult.command,
+      reason: `${failedArtifactResult.name} wrote at least one failing JSON proof artifact.`,
     };
   }
 
