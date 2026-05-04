@@ -161,3 +161,77 @@ test('can continue after command failures when explicitly requested', () => {
   assert.equal(report.results.length, 2);
   assert.equal(report.results[1].stdoutTail, 'ran');
 });
+
+test('records refreshed expected artifacts for successful proof commands', () => {
+  const root = makeTempRepo('tf-post-db-refresh-artifact-pass-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'Writer command',
+          command: process.execPath,
+          args: [
+            '-e',
+            [
+              "const fs = require('fs');",
+              "fs.mkdirSync('generated/truth', { recursive: true });",
+              "fs.writeFileSync('generated/truth/example.json', '{}\\n');",
+            ].join(' '),
+          ],
+          expectedArtifacts: ['generated/truth/example.json'],
+        },
+      ]),
+    },
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const report = readReport(root);
+  assert.equal(report.status, 'PASS');
+  assert.equal(report.summary.expectedArtifacts, 1);
+  assert.equal(report.summary.refreshedArtifacts, 1);
+  assert.equal(report.summary.staleOrMissingArtifacts, 0);
+  assert.equal(report.results[0].artifactOutputs[0].refreshed, true);
+});
+
+test('fails when a proof command passes but leaves an expected artifact stale', () => {
+  const root = makeTempRepo('tf-post-db-refresh-artifact-stale-');
+  fs.writeFileSync(path.join(root, 'generated', 'truth', 'stale.json'), '{}\n');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'No-op command',
+          command: process.execPath,
+          args: ['-e', 'process.exit(0)'],
+          expectedArtifacts: ['generated/truth/stale.json'],
+        },
+        {
+          name: 'Dependent command',
+          command: process.execPath,
+          args: ['-e', 'console.log("should-not-run")'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'FAIL');
+  assert.equal(report.summary.expectedArtifacts, 1);
+  assert.equal(report.summary.refreshedArtifacts, 0);
+  assert.equal(report.summary.staleOrMissingArtifacts, 1);
+  assert.equal(report.summary.commandsSkipped, 1);
+  assert.equal(report.results.length, 1);
+  assert.ok(report.blockers.some(item => item.includes('left expected artifact stale')));
+  assert.ok(report.blockers.some(item => item.includes('after stale or missing artifact output')));
+});

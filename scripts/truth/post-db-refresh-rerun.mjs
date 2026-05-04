@@ -33,41 +33,73 @@ const defaultCommands = [
     name: 'Runtime DB identity',
     command: 'pnpm',
     args: ['run', 'truth:runtime-db-identity'],
+    expectedArtifacts: [
+      'generated/truth/runtime-db-identity.json',
+      'generated/truth/runtime-db-identity.md',
+    ],
   },
   {
     name: 'Runtime DB content',
     command: 'pnpm',
     args: ['run', 'truth:runtime-db-content'],
+    expectedArtifacts: [
+      'generated/truth/runtime-db-content-audit.json',
+      'generated/truth/runtime-db-content-audit.md',
+    ],
   },
   {
     name: 'Product load ledger',
     command: 'pnpm',
     args: ['run', 'truth:terrafusion-db-product-load-ledger'],
+    expectedArtifacts: [
+      'generated/truth/terrafusion-db-product-load-ledger.json',
+      'generated/truth/terrafusion-db-product-load-ledger.md',
+    ],
   },
   {
     name: 'Benton parcel count sanity',
     command: 'pnpm',
     args: ['run', 'truth:benton-parcel-count-sanity'],
+    expectedArtifacts: [
+      'generated/truth/benton-parcel-count-sanity.json',
+      'generated/truth/benton-parcel-count-sanity.md',
+    ],
   },
   {
     name: 'Runtime source lineage',
     command: 'pnpm',
     args: ['run', 'truth:runtime-source-lineage'],
+    expectedArtifacts: [
+      'generated/truth/runtime-row-source-lineage-proof.json',
+      'generated/truth/runtime-row-source-lineage-proof.md',
+    ],
   },
   {
     name: 'Runtime sale qualification',
     command: 'pnpm',
     args: ['run', 'truth:runtime-sale-qualification'],
+    expectedArtifacts: [
+      'generated/truth/runtime-sale-qualification-lineage-proof.json',
+      'generated/truth/runtime-sale-qualification-lineage-proof.md',
+    ],
   },
   {
     name: 'Benton runtime pilot closure',
     command: 'pnpm',
     args: ['run', 'truth:benton-runtime-pilot-closure'],
+    expectedArtifacts: [
+      'generated/truth/benton-runtime-pilot-closure.json',
+      'generated/truth/benton-runtime-pilot-closure.md',
+    ],
   },
   {
     name: 'June 10 readiness packet',
     command: 'pnpm',
     args: ['run', 'truth:june10-readiness-packet'],
+    expectedArtifacts: [
+      'generated/truth/june10-readiness-packet.json',
+      'generated/truth/june10-readiness-packet.md',
+    ],
   },
 ];
 
@@ -114,6 +146,7 @@ function loadCommands() {
       command: entry.command,
       args: entry.args,
       cwd: entry.cwd,
+      expectedArtifacts: Array.isArray(entry.expectedArtifacts) ? entry.expectedArtifacts : [],
     };
   });
 }
@@ -184,9 +217,33 @@ function runCommand(entry) {
     exitCode,
     status: exitCode === 0 && !timedOut ? 'PASS' : 'FAIL',
     timedOut,
+    artifactOutputs: inspectArtifacts(entry.expectedArtifacts ?? [], started),
     stdoutTail: tail(result.stdout),
     stderrTail: tail(result.error ? String(result.error.message ?? result.error) : result.stderr),
   };
+}
+
+function inspectArtifacts(expectedArtifacts, commandStartedMs) {
+  return expectedArtifacts.map(relativePath => {
+    const filePath = path.resolve(repoRoot, relativePath);
+    let exists = false;
+    let mtimeMs = null;
+
+    try {
+      const stat = fs.statSync(filePath);
+      exists = stat.isFile();
+      mtimeMs = exists ? stat.mtimeMs : null;
+    } catch {
+      exists = false;
+    }
+
+    return {
+      path: rel(filePath),
+      exists,
+      refreshed: exists && mtimeMs !== null && mtimeMs >= commandStartedMs,
+      mtime: mtimeMs === null ? null : new Date(mtimeMs).toISOString(),
+    };
+  });
 }
 
 function tail(value, max = 3000) {
@@ -210,6 +267,9 @@ function renderMarkdown(report) {
     `- Commands passed: ${report.summary.commandsPassed}`,
     `- Commands failed: ${report.summary.commandsFailed}`,
     `- Commands skipped: ${report.summary.commandsSkipped}`,
+    `- Expected artifacts: ${report.summary.expectedArtifacts}`,
+    `- Refreshed artifacts: ${report.summary.refreshedArtifacts}`,
+    `- Stale or missing artifacts: ${report.summary.staleOrMissingArtifacts}`,
     '',
     '## Planned Command Sequence',
     '',
@@ -236,6 +296,26 @@ function renderMarkdown(report) {
         ' | '
       )
     ),
+    '',
+    '## Artifact Outputs',
+    '',
+    ...(report.results.some(result => result.artifactOutputs.length > 0)
+      ? report.results.flatMap(result => [
+          `### ${result.name}`,
+          '',
+          '| Artifact | Exists | Refreshed | Modified |',
+          '|---|---|---|---|',
+          ...result.artifactOutputs.map(artifact =>
+            [
+              `\`${artifact.path}\``,
+              artifact.exists ? 'yes' : 'no',
+              artifact.refreshed ? 'yes' : 'no',
+              artifact.mtime ?? '-',
+            ].join(' | ')
+          ),
+          '',
+        ])
+      : ['- none']),
     '',
     '## Blockers',
     '',
@@ -306,6 +386,21 @@ async function main() {
           break;
         }
       }
+      const artifactBlockers = [];
+      for (const artifact of result.artifactOutputs ?? []) {
+        if (!artifact.exists) {
+          artifactBlockers.push(`${result.name} did not write expected artifact ${artifact.path}.`);
+        } else if (!artifact.refreshed) {
+          artifactBlockers.push(`${result.name} left expected artifact stale: ${artifact.path}.`);
+        }
+      }
+      blockers.push(...artifactBlockers);
+      if (artifactBlockers.length > 0 && !continueOnFailure) {
+        blockers.push(
+          `Skipped ${commands.length - results.length} remaining command(s) after stale or missing artifact output. Set TF_POST_DB_REFRESH_CONTINUE_ON_FAILURE=1 to continue.`
+        );
+        break;
+      }
     }
   }
 
@@ -316,6 +411,7 @@ async function main() {
 
 function buildReport({ preflight, commands, results, blockers }) {
   const commandsSkipped = preflight.ok ? commands.length - results.length : commands.length;
+  const artifactOutputs = results.flatMap(result => result.artifactOutputs ?? []);
   return {
     generatedAt: new Date().toISOString(),
     runtimeBaseUrl,
@@ -326,6 +422,7 @@ function buildReport({ preflight, commands, results, blockers }) {
       name: command.name,
       command: [command.command, ...command.args].join(' '),
       cwd: command.cwd ? rel(path.resolve(repoRoot, command.cwd)) : '.',
+      expectedArtifacts: command.expectedArtifacts ?? [],
     })),
     preflight,
     summary: {
@@ -333,6 +430,11 @@ function buildReport({ preflight, commands, results, blockers }) {
       commandsPassed: results.filter(result => result.status === 'PASS').length,
       commandsFailed: results.filter(result => result.status === 'FAIL').length,
       commandsSkipped,
+      expectedArtifacts: artifactOutputs.length,
+      refreshedArtifacts: artifactOutputs.filter(artifact => artifact.refreshed).length,
+      staleOrMissingArtifacts: artifactOutputs.filter(
+        artifact => !artifact.exists || !artifact.refreshed
+      ).length,
     },
     results,
     blockers,
