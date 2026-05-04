@@ -274,6 +274,8 @@ test('readiness packet passes when all required runtime truth artifacts are gree
   assert.equal(report.summary.terraFusionDb.dbIdentityEndpointStatus, 200);
   assert.equal(report.summary.terraFusionDb.runtimeRowPathPassed, true);
   assert.equal(report.summary.terraFusionDb.sourceLineagePassed, true);
+  assert.equal(report.summary.bentonPilot.saleQualificationCanonicalBacked, true);
+  assert.equal(report.summary.bentonPilot.pilotClosureProofDetailPassed, true);
   assert.equal(report.shipBlockers.length, 0);
   assert.deepEqual(report.executionQueue, []);
   assert.equal(report.postDbRefreshRerunChecklist.length, 14);
@@ -452,6 +454,7 @@ test('readiness packet blocks runtime row path proof that passes a non-Benton co
     fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
   );
   assert.equal(report.status, 'FAIL');
+  assert.equal(report.summary.terraFusionDb.runtimeRowPathPassed, false);
   assert.ok(report.shipBlockers.some(item => item.source === 'runtimeRowPath'));
   assert.ok(report.shipBlockers.some(item => item.message.includes('not passing for Benton only')));
 });
@@ -482,6 +485,7 @@ test('readiness packet blocks source lineage proof that passes a non-Benton coun
     fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
   );
   assert.equal(report.status, 'FAIL');
+  assert.equal(report.summary.terraFusionDb.sourceLineagePassed, false);
   assert.ok(report.shipBlockers.some(item => item.source === 'sourceLineage'));
   assert.ok(report.shipBlockers.some(item => item.message.includes('not passing for Benton only')));
 });
@@ -516,6 +520,7 @@ test('readiness packet blocks sale qualification proof that passes a non-Benton 
     fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
   );
   assert.equal(report.status, 'FAIL');
+  assert.equal(report.summary.bentonPilot.saleQualificationCanonicalBacked, false);
   assert.ok(report.shipBlockers.some(item => item.source === 'saleQualification'));
   assert.ok(
     report.shipBlockers.some(item =>
@@ -540,6 +545,7 @@ test('readiness packet blocks pilot closure status without Benton proof detail',
     fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
   );
   assert.equal(report.status, 'FAIL');
+  assert.equal(report.summary.bentonPilot.pilotClosureProofDetailPassed, false);
   assert.ok(report.shipBlockers.some(item => item.source === 'bentonPilotClosure'));
   assert.ok(
     report.shipBlockers.some(item =>

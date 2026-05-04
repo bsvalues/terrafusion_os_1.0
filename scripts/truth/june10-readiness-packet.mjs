@@ -358,6 +358,13 @@ function buildDomainSummary(loaded) {
   const crosswalkSummary = loaded.crosswalk.value?.summary ?? {};
   const runtimeCandidateSummary = loaded.runtimeCandidateSet.value?.summary ?? {};
   const contractSummary = loaded.countyRuntimeContract.value?.summary ?? {};
+  const runtimeRowPath = loaded.runtimeRowPath.value;
+  const runtimeRowPathSummary = runtimeRowPath?.summary ?? {};
+  const sourceLineage = loaded.sourceLineage.value;
+  const sourceLineageSummary = sourceLineage?.summary ?? {};
+  const saleQualification = loaded.saleQualification.value;
+  const saleQualificationSummary = saleQualification?.summary ?? {};
+  const bentonPilotClosure = loaded.bentonPilotClosure.value;
   const loadSummary = loaded.productLoadLedger.value?.summary ?? {};
   const identityStatus = loaded.dbIdentity.value?.endpointStatus ?? null;
   const contentStatus = loaded.dbContent.value?.endpointStatus ?? null;
@@ -400,15 +407,19 @@ function buildDomainSummary(loaded) {
       dbIdentityPassed: loaded.dbIdentity.value?.passed === true,
       dbContentPassed: loaded.dbContent.value?.passed === true,
       runtimeRowPathPassed:
-        Number(loaded.runtimeRowPath.value?.summary?.candidatesChecked ?? 0) > 0 &&
-        Number(loaded.runtimeRowPath.value?.summary?.failed ?? 1) === 0 &&
-        Number(loaded.runtimeRowPath.value?.summary?.silentBentonFallbacks ?? 1) === 0 &&
-        Number(loaded.runtimeRowPath.value?.summary?.zeroRowRuntimeResponses ?? 1) === 0 &&
-        loaded.runtimeRowPath.value?.summary?.runtimeDbIdentityPassed === true,
+        Number(runtimeRowPathSummary.candidatesChecked ?? 0) > 0 &&
+        Number(runtimeRowPathSummary.passed ?? 0) === 1 &&
+        Number(runtimeRowPathSummary.failed ?? 1) === 0 &&
+        Number(runtimeRowPathSummary.silentBentonFallbacks ?? 1) === 0 &&
+        Number(runtimeRowPathSummary.zeroRowRuntimeResponses ?? 1) === 0 &&
+        runtimeRowPathSummary.runtimeDbIdentityPassed === true &&
+        hasExactlyBentonPassingProof(runtimeRowPath),
       productLoadLedgerPassed: loaded.productLoadLedger.value?.passed === true,
       sourceLineagePassed:
-        Number(loaded.sourceLineage.value?.summary?.candidatesChecked ?? 0) > 0 &&
-        Number(loaded.sourceLineage.value?.summary?.failed ?? 1) === 0,
+        Number(sourceLineageSummary.candidatesChecked ?? 0) > 0 &&
+        Number(sourceLineageSummary.passed ?? 0) === 1 &&
+        Number(sourceLineageSummary.failed ?? 1) === 0 &&
+        hasExactlyBentonPassingProof(sourceLineage),
       productTablesChecked: loadSummary.productTablesChecked ?? 0,
       lineageProven: loadSummary.lineageProven ?? 0,
       rowsExistLineageUnproven: loadSummary.rowsExistLineageUnproven ?? 0,
@@ -417,9 +428,27 @@ function buildDomainSummary(loaded) {
     bentonPilot: {
       parcelSanityPassed: loaded.bentonParcelSanity.value?.passed === true,
       saleQualificationStatus:
-        loaded.saleQualification.value?.status ??
-        (loaded.saleQualification.value?.passed === true ? 'PASS' : 'UNKNOWN'),
-      pilotClosureStatus: loaded.bentonPilotClosure.value?.status ?? 'UNKNOWN',
+        saleQualification?.status ?? (saleQualification?.passed === true ? 'PASS' : 'UNKNOWN'),
+      saleQualificationCanonicalBacked:
+        saleQualification?.status === 'PASS' &&
+        Number(saleQualificationSummary.candidatesChecked ?? 0) === 1 &&
+        Number(saleQualificationSummary.passed ?? 0) === 1 &&
+        Number(saleQualificationSummary.failed ?? 1) === 0 &&
+        Number(saleQualificationSummary.canonicalLandingBacked ?? 0) === 1 &&
+        Number(saleQualificationSummary.recommendationBackedCanonicalMissing ?? 0) === 0 &&
+        hasExactlyBentonPassingProof(saleQualification),
+      pilotClosureStatus: bentonPilotClosure?.status ?? 'UNKNOWN',
+      pilotClosureProofDetailPassed:
+        (bentonPilotClosure?.status === 'PASS' ||
+          bentonPilotClosure?.status === 'PASS_WITH_WARNINGS') &&
+        Number(bentonPilotClosure?.countyScope?.runtimeProven ?? 0) === 1 &&
+        Number(bentonPilotClosure?.countyScope?.evidenceBackedLoadCandidates ?? 0) === 0 &&
+        Number(bentonPilotClosure?.countyScope?.provenanceInventoryOnly ?? 0) === 38 &&
+        bentonPilotClosure?.countyScope?.prohibit39CountyRuntimeClaim === true &&
+        bentonPilotClosure?.benton?.saleQualificationClassification ===
+          'canonical_landing_backed' &&
+        Number(bentonPilotClosure?.benton?.canonicalSaleQualifications ?? 0) > 0 &&
+        Number(bentonPilotClosure?.benton?.ratioStudyDecisionQualified ?? 0) > 0,
     },
   };
 }
