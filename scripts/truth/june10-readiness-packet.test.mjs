@@ -306,7 +306,7 @@ test('readiness packet passes when all required runtime truth artifacts are gree
 test('readiness packet blocks required artifacts with top-level failed proof posture', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-candidate-set.json', {
-    passed: false,
+    status: 'DRY_RUN',
     summary: {
       june10RuntimeScope: 'benton_only_runtime_pilot',
       prohibit39CountyRuntimeClaim: true,
@@ -330,7 +330,8 @@ test('readiness packet blocks required artifacts with top-level failed proof pos
   assert.ok(
     report.shipBlockers.some(
       item =>
-        item.source === 'runtimeCandidateSet' && item.message.includes('top-level passed is false')
+        item.source === 'runtimeCandidateSet' &&
+        item.message.includes('top-level status is DRY_RUN')
     )
   );
   assert.ok(report.executionQueue.some(item => item.source === 'runtimeCandidateSet'));

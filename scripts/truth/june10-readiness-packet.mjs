@@ -496,9 +496,11 @@ function buildExecutionQueue(blockers) {
 
 function artifactFailurePosture(value) {
   if (value?.passed === false) return 'top-level passed is false';
-  if (value?.status === 'FAIL') return 'top-level status is FAIL';
-  if (typeof value?.status === 'string' && value.status.endsWith('_blocked')) {
-    return `top-level status is ${value.status}`;
+  if (typeof value?.status === 'string') {
+    const allowedStatuses = new Set(['PASS', 'PASS_WITH_WARNINGS']);
+    if (!allowedStatuses.has(value.status) && !value.status.endsWith('_pass')) {
+      return `top-level status is ${value.status}`;
+    }
   }
   return null;
 }

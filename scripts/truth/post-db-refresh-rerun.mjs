@@ -211,9 +211,14 @@ function inspectJsonArtifactPosture(filePath) {
 
 function artifactFailureReason(artifact) {
   if (artifact.artifactPassed === false) return 'top-level passed is false';
-  if (artifact.artifactStatus === 'FAIL') return 'top-level status is FAIL';
-  if (typeof artifact.artifactStatus === 'string' && artifact.artifactStatus.endsWith('_blocked')) {
-    return `top-level status is ${artifact.artifactStatus}`;
+  if (typeof artifact.artifactStatus === 'string') {
+    const allowedStatuses = new Set(['PASS', 'PASS_WITH_WARNINGS']);
+    if (
+      !allowedStatuses.has(artifact.artifactStatus) &&
+      !artifact.artifactStatus.endsWith('_pass')
+    ) {
+      return `top-level status is ${artifact.artifactStatus}`;
+    }
   }
   return null;
 }

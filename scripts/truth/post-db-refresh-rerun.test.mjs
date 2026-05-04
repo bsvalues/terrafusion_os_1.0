@@ -323,11 +323,13 @@ test('fails when a proof command writes a failing expected JSON artifact', () =>
               "fs.mkdirSync('generated/truth', { recursive: true });",
               "fs.writeFileSync('generated/truth/status-fail.json', JSON.stringify({ status: 'FAIL', blockers: ['red'] }) + '\\n');",
               "fs.writeFileSync('generated/truth/passed-false.json', JSON.stringify({ passed: false, blockers: ['red'] }) + '\\n');",
+              "fs.writeFileSync('generated/truth/status-dry-run.json', JSON.stringify({ status: 'DRY_RUN' }) + '\\n');",
             ].join(' '),
           ],
           expectedArtifacts: [
             'generated/truth/status-fail.json',
             'generated/truth/passed-false.json',
+            'generated/truth/status-dry-run.json',
           ],
         },
         {
@@ -344,13 +346,15 @@ test('fails when a proof command writes a failing expected JSON artifact', () =>
   assert.equal(report.status, 'FAIL');
   assert.equal(report.nextAction.code, 'fix_failed_artifact');
   assert.match(report.nextAction.reason, /failing JSON proof artifact/);
-  assert.equal(report.summary.artifactFailures, 2);
+  assert.equal(report.summary.artifactFailures, 3);
   assert.equal(report.summary.commandsSkipped, 1);
   assert.equal(report.results.length, 1);
   assert.equal(report.results[0].artifactOutputs[0].artifactStatus, 'FAIL');
   assert.equal(report.results[0].artifactOutputs[1].artifactPassed, false);
+  assert.equal(report.results[0].artifactOutputs[2].artifactStatus, 'DRY_RUN');
   assert.ok(report.blockers.some(item => item.includes('top-level status is FAIL')));
   assert.ok(report.blockers.some(item => item.includes('top-level passed is false')));
+  assert.ok(report.blockers.some(item => item.includes('top-level status is DRY_RUN')));
   assert.ok(
     report.blockers.some(item =>
       item.includes('after missing, stale, malformed, or failing artifact output')
