@@ -1,0 +1,1803 @@
+{
+  "generatedAt": "2026-05-04T16:17:49.551Z",
+  "inputs": {
+    "crosswalkPath": "generated/truth/washington-39-county-data-crosswalk.json",
+    "runtimeLedgerPath": null,
+    "dbIdentityPath": null,
+    "productLoadLedgerPath": null,
+    "bentonParcelSanityPath": null
+  },
+  "requiredProductDomains": ["parcel", "sales", "qualified_sales"],
+  "summary": {
+    "countiesChecked": 39,
+    "runtimeContractPass": 0,
+    "runtimeContractBlocked": 39,
+    "runtimeProvenInput": 0,
+    "publicSourceSeed": 12,
+    "provenanceInventoryOnly": 27,
+    "prohibit39CountyRuntimeClaim": true
+  },
+  "rows": [
+    {
+      "county": "Adams",
+      "registryStatus": "researched",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Asotin",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Benton",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "public_source_seed",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": false,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales.",
+        "Benton parcel count sanity proof is missing."
+      ],
+      "warnings": [
+        "County has public-source seed evidence but not runtime promotion proof."
+      ]
+    },
+    {
+      "county": "Chelan",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "public_source_seed",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": [
+        "County has public-source seed evidence but not runtime promotion proof."
+      ]
+    },
+    {
+      "county": "Clallam",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Clark",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "public_source_seed",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": [
+        "County has public-source seed evidence but not runtime promotion proof."
+      ]
+    },
+    {
+      "county": "Columbia",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Cowlitz",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "public_source_seed",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": [
+        "County has public-source seed evidence but not runtime promotion proof."
+      ]
+    },
+    {
+      "county": "Douglas",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Ferry",
+      "registryStatus": "researched",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Franklin",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Garfield",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Grant",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "public_source_seed",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": [
+        "County has public-source seed evidence but not runtime promotion proof."
+      ]
+    },
+    {
+      "county": "Grays Harbor",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Island",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "public_source_seed",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": [
+        "County has public-source seed evidence but not runtime promotion proof."
+      ]
+    },
+    {
+      "county": "Jefferson",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "King",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Kitsap",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Kittitas",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Klickitat",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Lewis",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Lincoln",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Mason",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Okanogan",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Pacific",
+      "registryStatus": "researched",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Pend Oreille",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Pierce",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "San Juan",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "public_source_seed",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": [
+        "County has public-source seed evidence but not runtime promotion proof."
+      ]
+    },
+    {
+      "county": "Skagit",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Skamania",
+      "registryStatus": "not-started",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Snohomish",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "public_source_seed",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": [
+        "County has public-source seed evidence but not runtime promotion proof."
+      ]
+    },
+    {
+      "county": "Spokane",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "public_source_seed",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": [
+        "County has public-source seed evidence but not runtime promotion proof."
+      ]
+    },
+    {
+      "county": "Stevens",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "public_source_seed",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": [
+        "County has public-source seed evidence but not runtime promotion proof."
+      ]
+    },
+    {
+      "county": "Thurston",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Wahkiakum",
+      "registryStatus": "researched",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Walla Walla",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Whatcom",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "public_source_seed",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": [
+        "County has public-source seed evidence but not runtime promotion proof."
+      ]
+    },
+    {
+      "county": "Whitman",
+      "registryStatus": "not-started",
+      "crosswalkClassification": "provenance_inventory_only",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": ["County is provenance inventory only."]
+    },
+    {
+      "county": "Yakima",
+      "registryStatus": "adapter-ready",
+      "crosswalkClassification": "public_source_seed",
+      "runtimeClass": "unknown",
+      "runtimeRows": 0,
+      "selectedCountyEchoed": false,
+      "fallbackDetected": false,
+      "dbIdentityPassed": false,
+      "productDomains": [
+        {
+          "domain": "parcel",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        },
+        {
+          "domain": "qualified_sales",
+          "tables": [],
+          "rowCount": 0,
+          "lineageProven": false,
+          "blockers": []
+        }
+      ],
+      "parcelSanityPassed": null,
+      "status": "runtime_contract_blocked",
+      "blockers": [
+        "Runtime DB identity proof is missing.",
+        "County runtime class is unknown.",
+        "County has no proven runtime rows.",
+        "Runtime did not prove selected county identity echo.",
+        "Product-load receipt is not lineage-proven for parcel.",
+        "Product-load receipt is not lineage-proven for sales.",
+        "Product-load receipt is not lineage-proven for qualified_sales."
+      ],
+      "warnings": [
+        "County has public-source seed evidence but not runtime promotion proof."
+      ]
+    }
+  ],
+  "passed": false
+}

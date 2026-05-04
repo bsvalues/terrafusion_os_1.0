@@ -314,6 +314,10 @@ run(
   }
 );
 
+run('County runtime contract', 'pnpm', ['run', 'truth:county-runtime-contract'], {
+  timeout: 180_000,
+});
+
 run('Runtime TerraFusion DB identity', 'pnpm', ['run', 'truth:runtime-db-identity'], {
   timeout: 180_000,
 });
