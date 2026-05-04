@@ -343,6 +343,10 @@ run('Benton parcel count sanity', 'pnpm', ['run', 'truth:benton-parcel-count-san
   timeout: 180_000,
 });
 
+run('Runtime source lineage', 'pnpm', ['run', 'truth:runtime-source-lineage'], {
+  timeout: 180_000,
+});
+
 run(
   'Washington 39-county data crosswalk',
   'pnpm',

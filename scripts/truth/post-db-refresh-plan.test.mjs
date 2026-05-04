@@ -56,6 +56,18 @@ test('post DB refresh package script references exist', () => {
   }
 });
 
+test('full June 10 readiness gate includes every post DB refresh proof', () => {
+  const readinessScript = fs.readFileSync(path.resolve('scripts/june10-readiness.mjs'), 'utf8');
+
+  for (const entry of postDbRefreshPlan) {
+    const scriptName = entry.args.at(-1);
+    assert.ok(
+      readinessScript.includes(scriptName),
+      `Missing ${scriptName} from scripts/june10-readiness.mjs`
+    );
+  }
+});
+
 test('every executable post DB refresh proof declares artifacts and proof meaning', () => {
   for (const entry of postDbRefreshPlan) {
     assert.ok(entry.name);
