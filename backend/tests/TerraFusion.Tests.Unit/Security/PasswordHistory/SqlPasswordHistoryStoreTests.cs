@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Moq;
-using Npgsql;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Security.PasswordHistory;
 using TerraFusion.Data;
@@ -14,39 +13,28 @@ namespace TerraFusion.Tests.Unit.Security.PasswordHistory;
 /// <summary>
 /// Phase 4 Sprint 1: SQL password history store tests.
 ///
-/// <para>CI-HYGIENE-4B (#741) — switched from in-memory SQLite to a
-/// schema-aware provider. Rationale:
-/// <list type="bullet">
-///   <item><see cref="TerraFusionDbContext"/>'s entity model declares
-///   tables across multiple PostgreSQL schemas (e.g.
-///   <c>truth_pacs.imprv_current</c> AND
-///   <c>legacy_pacs_raw.imprv_current</c>). PostgreSQL respects the
-///   schema prefix; SQLite has no schema concept and flattens both to
-///   the same physical table name, which crashes
-///   <c>EnsureCreatedAsync</c> with
-///   <c>SQLite Error 1: 'table "imprv_current" already exists'</c>.</item>
-///   <item>The CI workflow (<c>.github/workflows/dotnet-test.yml</c>)
-///   already provisions a Postgres service container; this fixture
-///   consumes it via the standard
-///   <c>ConnectionStrings__DefaultConnection</c> environment variable
-///   that the workflow sets on the test step.</item>
-///   <item>For local developers without that env var the fixture
-///   transparently falls back to the EF Core InMemory provider, which
-///   bypasses the SQLite schema-flattening problem because it does not
-///   physically create tables.</item>
-/// </list>
-/// </para>
+/// <para>CI-HYGIENE-4B (#741) — these tests now use the EF Core
+/// InMemory provider. The path through SQLite-:memory: was broken
+/// by the multi-schema collision (<c>truth_pacs.imprv_current</c>
+/// AND <c>legacy_pacs_raw.imprv_current</c> both flatten to
+/// <c>imprv_current</c> in SQLite, which has no schema concept).
+/// An attempt to route through Postgres via the CI workflow's
+/// service container surfaced a different blocker — see #743
+/// (CI-HYGIENE-4C): <c>TerraFusionDbContext</c>'s EF model uses
+/// SQL Server-style <c>nvarchar</c> column types in places, and
+/// Postgres rejects them at <c>EnsureCreatedAsync</c> with
+/// <c>42704: type "nvarchar" does not exist</c>.</para>
+///
+/// <para>InMemory is the right pick here because these 9 tests
+/// validate the C# logic of <see cref="SqlPasswordHistoryStore"/>
+/// (write/read ordering, history depth, prune cutoff) — not
+/// provider SQL semantics. InMemory bypasses both bugs by not
+/// physically materializing tables. When #743's nvarchar cleanup
+/// lands and a real Postgres-backed integration test surface is
+/// available, this fixture can be revisited.</para>
 /// </summary>
 public class SqlPasswordHistoryStoreTests : IAsyncLifetime
 {
-    /// <summary>
-    /// CI-side database name. Each test run delete-recreates this DB
-    /// for isolation between test methods. The xunit class-internal
-    /// runner is sequential by default, so within this class no two
-    /// test methods race on the database.
-    /// </summary>
-    private const string PostgresTestDatabaseName = "pwhistory_test";
-
     private TerraFusionDbContext _context = null!;
     private SqlPasswordHistoryStore _store = null!;
 
@@ -56,19 +44,25 @@ public class SqlPasswordHistoryStoreTests : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        var optionsBuilder = new DbContextOptionsBuilder<TerraFusionDbContext>();
-        ConfigureProviderForCurrentEnvironment(optionsBuilder);
+        // CI-HYGIENE-4B (#741): EF Core InMemory provider.
+        //   - Bypasses the SQLite multi-schema collision (no physical
+        //     tables created, so no name flattening).
+        //   - Bypasses the Postgres nvarchar issue tracked under #743
+        //     (no SQL type translation).
+        //   - Per-instance database name (Guid) gives isolation across
+        //     test methods within this class and across test classes.
+        var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
+            .UseInMemoryDatabase($"pwhistory-{Guid.NewGuid():N}")
+            .Options;
 
         // Mock IConfiguration (required by TerraFusionDbContext constructor).
         var configMock = new Mock<IConfiguration>();
 
-        _context = new TerraFusionDbContext(optionsBuilder.Options, configMock.Object);
+        _context = new TerraFusionDbContext(options, configMock.Object);
 
-        // Reset state for both providers. On Postgres, EnsureDeletedAsync
-        // drops the per-test database; EnsureCreatedAsync recreates it.
-        // On InMemory, both are effectively no-ops scoped to the unique
-        // database name (per-instance Guid).
-        await _context.Database.EnsureDeletedAsync();
+        // EnsureCreated is a no-op for the InMemory provider beyond
+        // entity discovery; kept for symmetry with the previous SQLite
+        // path so the fixture's contract is unchanged.
         await _context.Database.EnsureCreatedAsync();
 
         // Seed test users (satisfies FK constraint).
@@ -108,46 +102,6 @@ public class SqlPasswordHistoryStoreTests : IAsyncLifetime
     public async Task DisposeAsync()
     {
         await _context.DisposeAsync();
-    }
-
-    /// <summary>
-    /// CI-HYGIENE-4B (#741): selects the EF Core provider based on the
-    /// <c>ConnectionStrings__DefaultConnection</c> environment variable
-    /// that the CI workflow sets.
-    /// <list type="bullet">
-    ///   <item>Empty / unset / literal <c>"InMemory"</c> → EF Core
-    ///   InMemory provider (used by local developer runs without
-    ///   Postgres). Each test instance gets a fresh database name, so
-    ///   tests are isolated.</item>
-    ///   <item>Anything else → treated as a Postgres connection string;
-    ///   the database name is overridden to a fixed
-    ///   <see cref="PostgresTestDatabaseName"/> so we can clean-and-
-    ///   recreate it deterministically per test instance.</item>
-    /// </list>
-    /// </summary>
-    private static void ConfigureProviderForCurrentEnvironment(
-        DbContextOptionsBuilder<TerraFusionDbContext> optionsBuilder)
-    {
-        var connStr = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
-
-        if (string.IsNullOrWhiteSpace(connStr)
-            || string.Equals(connStr, "InMemory", StringComparison.OrdinalIgnoreCase))
-        {
-            // Local fallback: EF Core InMemory. Does not physically create
-            // tables, so bypasses the SQLite schema-flattening collision
-            // entirely. Behavior under unit-test load is equivalent for
-            // these tests because they exercise C# logic, not SQL semantics.
-            optionsBuilder.UseInMemoryDatabase($"pwhistory-{Guid.NewGuid():N}");
-            return;
-        }
-
-        // CI / Postgres-enabled local: use the workflow's Postgres
-        // service container, scoped to a per-test database name.
-        var npgsqlBuilder = new NpgsqlConnectionStringBuilder(connStr)
-        {
-            Database = PostgresTestDatabaseName,
-        };
-        optionsBuilder.UseNpgsql(npgsqlBuilder.ConnectionString);
     }
 
     [Fact]
