@@ -143,6 +143,26 @@ function blocker(blockers, source, message) {
   blockers.push({ source, message });
 }
 
+function normalizeCounty(value) {
+  const normalized = String(value ?? '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '');
+
+  return normalized.endsWith('county') ? normalized.slice(0, -'county'.length) : normalized;
+}
+
+function passingProofCounties(artifact) {
+  return (artifact?.proofs ?? [])
+    .filter(proof => proof?.passed === true)
+    .map(proof => normalizeCounty(proof.county))
+    .filter(Boolean);
+}
+
+function hasExactlyBentonPassingProof(artifact) {
+  const counties = passingProofCounties(artifact);
+  return counties.length === 1 && counties[0] === 'benton';
+}
+
 function collectBlockers(loaded) {
   const blockers = [];
   const warnings = [];
@@ -249,12 +269,14 @@ function collectBlockers(loaded) {
   if (
     loaded.runtimeRowPath.present &&
     (Number(runtimeRowPath?.summary?.candidatesChecked ?? 0) <= 0 ||
+      Number(runtimeRowPath?.summary?.passed ?? 0) !== 1 ||
       Number(runtimeRowPath?.summary?.failed ?? 1) > 0 ||
       Number(runtimeRowPath?.summary?.silentBentonFallbacks ?? 0) > 0 ||
       Number(runtimeRowPath?.summary?.zeroRowRuntimeResponses ?? 0) > 0 ||
-      runtimeRowPath?.summary?.runtimeDbIdentityPassed !== true)
+      runtimeRowPath?.summary?.runtimeDbIdentityPassed !== true ||
+      !hasExactlyBentonPassingProof(runtimeRowPath))
   ) {
-    blocker(blockers, 'runtimeRowPath', 'Runtime row path proof is not passing.');
+    blocker(blockers, 'runtimeRowPath', 'Runtime row path proof is not passing for Benton only.');
   }
 
   if (loaded.productLoadLedger.present && productLoadLedger?.passed !== true) {
@@ -276,9 +298,15 @@ function collectBlockers(loaded) {
   if (
     loaded.sourceLineage.present &&
     (Number(sourceLineage?.summary?.candidatesChecked ?? 0) <= 0 ||
-      Number(sourceLineage?.summary?.failed ?? 1) > 0)
+      Number(sourceLineage?.summary?.passed ?? 0) !== 1 ||
+      Number(sourceLineage?.summary?.failed ?? 1) > 0 ||
+      !hasExactlyBentonPassingProof(sourceLineage))
   ) {
-    blocker(blockers, 'sourceLineage', 'Runtime source lineage proof is not passing.');
+    blocker(
+      blockers,
+      'sourceLineage',
+      'Runtime source lineage proof is not passing for Benton only.'
+    );
   }
 
   if (

@@ -75,7 +75,12 @@ function makeRepo({ passing = false } = {}) {
       runtimeDbIdentityPassed: passing,
     },
     proofs: passing
-      ? []
+      ? [
+          {
+            county: 'Benton',
+            passed: true,
+          },
+        ]
       : [
           {
             county: 'Benton',
@@ -112,7 +117,12 @@ function makeRepo({ passing = false } = {}) {
       failed: passing ? 0 : 1,
     },
     proofs: passing
-      ? []
+      ? [
+          {
+            county: 'Benton',
+            passed: true,
+          },
+        ]
       : [
           {
             county: 'Benton',
@@ -372,4 +382,67 @@ test('readiness packet blocks source lineage artifact with no checked candidates
   assert.equal(report.summary.terraFusionDb.sourceLineagePassed, false);
   assert.ok(report.shipBlockers.some(item => item.source === 'sourceLineage'));
   assert.ok(report.executionQueue.some(item => item.source === 'sourceLineage'));
+});
+
+test('readiness packet blocks runtime row path proof that passes a non-Benton county', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-row-path-proof.json', {
+    summary: {
+      candidatesChecked: 1,
+      passed: 1,
+      failed: 0,
+      silentBentonFallbacks: 0,
+      zeroRowRuntimeResponses: 0,
+      runtimeDbIdentityPassed: true,
+    },
+    proofs: [
+      {
+        county: 'Pacific',
+        passed: true,
+      },
+    ],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(report.shipBlockers.some(item => item.source === 'runtimeRowPath'));
+  assert.ok(report.shipBlockers.some(item => item.message.includes('not passing for Benton only')));
+});
+
+test('readiness packet blocks source lineage proof that passes a non-Benton county', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-row-source-lineage-proof.json', {
+    summary: {
+      candidatesChecked: 1,
+      passed: 1,
+      failed: 0,
+    },
+    proofs: [
+      {
+        county: 'Pacific',
+        passed: true,
+      },
+    ],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(report.shipBlockers.some(item => item.source === 'sourceLineage'));
+  assert.ok(report.shipBlockers.some(item => item.message.includes('not passing for Benton only')));
 });
