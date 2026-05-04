@@ -26,6 +26,7 @@ const artifacts = {
   countyRuntimeContract: 'county-runtime-contract.json',
   dbIdentity: 'runtime-db-identity.json',
   dbContent: 'runtime-db-content-audit.json',
+  runtimeRowPath: 'runtime-row-path-proof.json',
   productLoadLedger: 'terrafusion-db-product-load-ledger.json',
   bentonParcelSanity: 'benton-parcel-count-sanity.json',
   sourceLineage: 'runtime-row-source-lineage-proof.json',
@@ -57,6 +58,12 @@ const blockerRunbook = {
     nextCommand: 'pnpm run truth:runtime-db-content',
     requiredResolution:
       'Prove product runtime tables and row shapes exist inside TerraFusion DB only.',
+  },
+  runtimeRowPath: {
+    ownerLane: 'Codex after TerraFusion DB content is refreshed',
+    nextCommand: 'pnpm run truth:runtime-row-path-proof',
+    requiredResolution:
+      'Prove county runtime endpoints return rows, echo county identity, and have no Benton fallback.',
   },
   productLoadLedger: {
     ownerLane: 'Claude Code / Sync DB, audited by Codex',
@@ -146,6 +153,7 @@ function collectBlockers(loaded) {
   const countyRuntimeContract = loaded.countyRuntimeContract.value;
   const dbIdentity = loaded.dbIdentity.value;
   const dbContent = loaded.dbContent.value;
+  const runtimeRowPath = loaded.runtimeRowPath.value;
   const productLoadLedger = loaded.productLoadLedger.value;
   const bentonParcelSanity = loaded.bentonParcelSanity.value;
   const sourceLineage = loaded.sourceLineage.value;
@@ -176,6 +184,17 @@ function collectBlockers(loaded) {
 
   if (loaded.dbContent.present && dbContent?.passed !== true) {
     blocker(blockers, 'dbContent', 'Runtime TerraFusion DB content audit is not passing.');
+  }
+
+  if (
+    loaded.runtimeRowPath.present &&
+    (Number(runtimeRowPath?.summary?.candidatesChecked ?? 0) <= 0 ||
+      Number(runtimeRowPath?.summary?.failed ?? 1) > 0 ||
+      Number(runtimeRowPath?.summary?.silentBentonFallbacks ?? 0) > 0 ||
+      Number(runtimeRowPath?.summary?.zeroRowRuntimeResponses ?? 0) > 0 ||
+      runtimeRowPath?.summary?.runtimeDbIdentityPassed !== true)
+  ) {
+    blocker(blockers, 'runtimeRowPath', 'Runtime row path proof is not passing.');
   }
 
   if (loaded.productLoadLedger.present && productLoadLedger?.passed !== true) {
@@ -255,6 +274,12 @@ function buildDomainSummary(loaded) {
       dbContentEndpointStatus: contentStatus,
       dbIdentityPassed: loaded.dbIdentity.value?.passed === true,
       dbContentPassed: loaded.dbContent.value?.passed === true,
+      runtimeRowPathPassed:
+        Number(loaded.runtimeRowPath.value?.summary?.candidatesChecked ?? 0) > 0 &&
+        Number(loaded.runtimeRowPath.value?.summary?.failed ?? 1) === 0 &&
+        Number(loaded.runtimeRowPath.value?.summary?.silentBentonFallbacks ?? 1) === 0 &&
+        Number(loaded.runtimeRowPath.value?.summary?.zeroRowRuntimeResponses ?? 1) === 0 &&
+        loaded.runtimeRowPath.value?.summary?.runtimeDbIdentityPassed === true,
       productLoadLedgerPassed: loaded.productLoadLedger.value?.passed === true,
       sourceLineagePassed:
         Number(loaded.sourceLineage.value?.summary?.candidatesChecked ?? 0) > 0 &&
@@ -391,6 +416,7 @@ function renderMarkdown(report) {
     `- DB content endpoint status: ${report.summary.terraFusionDb.dbContentEndpointStatus ?? 'unreachable/not probed'}`,
     `- DB identity passed: ${report.summary.terraFusionDb.dbIdentityPassed ? 'yes' : 'no'}`,
     `- DB content passed: ${report.summary.terraFusionDb.dbContentPassed ? 'yes' : 'no'}`,
+    `- Runtime row path passed: ${report.summary.terraFusionDb.runtimeRowPathPassed ? 'yes' : 'no'}`,
     `- Product load ledger passed: ${report.summary.terraFusionDb.productLoadLedgerPassed ? 'yes' : 'no'}`,
     `- Runtime source lineage passed: ${report.summary.terraFusionDb.sourceLineagePassed ? 'yes' : 'no'}`,
     `- Product tables checked: ${report.summary.terraFusionDb.productTablesChecked}`,

@@ -48,6 +48,24 @@ function makeRepo({ passing = false } = {}) {
     passed: passing,
     blockers: passing ? [] : ['Runtime DB content audit is not passing.'],
   });
+  writeJson(root, `${truth}/runtime-row-path-proof.json`, {
+    summary: {
+      candidatesChecked: 1,
+      passed: passing ? 1 : 0,
+      failed: passing ? 0 : 1,
+      silentBentonFallbacks: 0,
+      zeroRowRuntimeResponses: passing ? 0 : 1,
+      runtimeDbIdentityPassed: passing,
+    },
+    proofs: passing
+      ? []
+      : [
+          {
+            county: 'Benton',
+            blockers: ['Runtime returned zero rows.'],
+          },
+        ],
+  });
   writeJson(root, `${truth}/terrafusion-db-product-load-ledger.json`, {
     passed: passing,
     summary: {
@@ -109,11 +127,16 @@ test('readiness packet fails when required runtime truth artifacts are red', () 
   assert.equal(report.status, 'FAIL');
   assert.ok(report.shipBlockers.length >= 1);
   assert.ok(report.shipBlockers.some(item => item.source === 'dbIdentity'));
+  assert.ok(report.shipBlockers.some(item => item.source === 'runtimeRowPath'));
   assert.ok(report.shipBlockers.some(item => item.source === 'sourceLineage'));
   assert.ok(report.executionQueue.some(item => item.source === 'dbIdentity'));
+  assert.ok(report.executionQueue.some(item => item.source === 'runtimeRowPath'));
   assert.ok(report.executionQueue.some(item => item.source === 'sourceLineage'));
   assert.ok(
     report.executionQueue.some(item => item.nextCommand === 'pnpm run truth:runtime-db-identity')
+  );
+  assert.ok(
+    report.executionQueue.some(item => item.nextCommand === 'pnpm run truth:runtime-row-path-proof')
   );
   assert.ok(
     report.executionQueue.some(item => item.nextCommand === 'pnpm run truth:runtime-source-lineage')
@@ -123,6 +146,7 @@ test('readiness packet fails when required runtime truth artifacts are red', () 
     'api_unavailable_or_not_probed'
   );
   assert.equal(report.summary.terraFusionDb.dbIdentityEndpointStatus, null);
+  assert.equal(report.summary.terraFusionDb.runtimeRowPathPassed, false);
   assert.equal(report.summary.terraFusionDb.sourceLineagePassed, false);
   assert.equal(report.postDbRefreshQuickCommand, 'pnpm run truth:post-db-refresh-rerun');
   assert.equal(report.postDbRefreshFullReadinessCommand, 'pnpm run readiness:june10');
@@ -133,6 +157,11 @@ test('readiness packet fails when required runtime truth artifacts are red', () 
     )
   );
   assert.ok(
+    report.artifactDetails.runtimeRowPath.blockers.items.some(blocker =>
+      blocker.includes('Benton:')
+    )
+  );
+  assert.ok(
     report.artifactDetails.sourceLineage.blockers.items.some(blocker => blocker.includes('Benton:'))
   );
   assert.deepEqual(
@@ -140,6 +169,7 @@ test('readiness packet fails when required runtime truth artifacts are red', () 
     [
       'pnpm run truth:runtime-db-identity',
       'pnpm run truth:runtime-db-content',
+      'pnpm run truth:runtime-row-path-proof',
       'pnpm run truth:terrafusion-db-product-load-ledger',
       'pnpm run truth:benton-parcel-count-sanity',
       'pnpm run truth:runtime-source-lineage',
@@ -164,10 +194,11 @@ test('readiness packet passes when all required runtime truth artifacts are gree
   assert.equal(report.status, 'PASS');
   assert.equal(report.summary.terraFusionDb.liveRuntimeReachability, 'api_reachable');
   assert.equal(report.summary.terraFusionDb.dbIdentityEndpointStatus, 200);
+  assert.equal(report.summary.terraFusionDb.runtimeRowPathPassed, true);
   assert.equal(report.summary.terraFusionDb.sourceLineagePassed, true);
   assert.equal(report.shipBlockers.length, 0);
   assert.deepEqual(report.executionQueue, []);
-  assert.equal(report.postDbRefreshRerunChecklist.length, 8);
+  assert.equal(report.postDbRefreshRerunChecklist.length, 9);
   assert.equal(report.artifactDetails.dbIdentity, undefined);
 });
 

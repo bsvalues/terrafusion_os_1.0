@@ -28,6 +28,7 @@ test('post DB refresh plan is the single source for packet checklist and executa
   assert.deepEqual(postDbRefreshPlan.map(commandText), [
     'pnpm run truth:runtime-db-identity',
     'pnpm run truth:runtime-db-content',
+    'pnpm run truth:runtime-row-path-proof',
     'pnpm run truth:terrafusion-db-product-load-ledger',
     'pnpm run truth:benton-parcel-count-sanity',
     'pnpm run truth:runtime-source-lineage',

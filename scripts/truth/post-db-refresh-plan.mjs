@@ -24,6 +24,17 @@ export const postDbRefreshPlan = [
     ],
   },
   {
+    name: 'Runtime row path',
+    command: 'pnpm',
+    args: ['run', 'truth:runtime-row-path-proof'],
+    proves:
+      'County runtime endpoints return rows, echo county identity, and do not fallback silently.',
+    expectedArtifacts: [
+      'generated/truth/runtime-row-path-proof.json',
+      'generated/truth/runtime-row-path-proof.md',
+    ],
+  },
+  {
     name: 'Product load ledger',
     command: 'pnpm',
     args: ['run', 'truth:terrafusion-db-product-load-ledger'],
