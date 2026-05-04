@@ -538,6 +538,9 @@ function collectionFailurePostures(value, label) {
     const entries = value[key];
     if (Array.isArray(entries) && entries.length > 0) {
       postures.push(`${label}.${key} has ${entries.length} item(s)`);
+    } else if (entries && typeof entries === 'object') {
+      const count = Object.keys(entries).length;
+      if (count > 0) postures.push(`${label}.${key} has ${count} object key(s)`);
     } else {
       const count = Number(entries);
       if (Number.isFinite(count) && count > 0) {
@@ -589,29 +592,37 @@ function artifactBlockers(value) {
 }
 
 function artifactBlockerMessages(value) {
-  const direct = Array.isArray(value?.blockers) ? value.blockers : [];
-  const summary = Array.isArray(value?.summary?.blockers) ? value.summary.blockers : [];
+  const direct = blockerMessages(value, 'artifact');
+  const summary = blockerMessages(value?.summary, 'summary');
   const receiptBlockers = Array.isArray(value?.receiptEvidence?.blockers)
     ? value.receiptEvidence.blockers.map(item => `receiptEvidence: ${item}`)
     : [];
   const rowBlockers = Array.isArray(value?.rows)
-    ? value.rows.flatMap(row =>
-        (Array.isArray(row?.blockers) ? row.blockers : []).map(
-          item => `${row?.tableName ?? row?.county ?? 'row'}: ${item}`
-        )
-      )
+    ? value.rows.flatMap(row => blockerMessages(row, `${row?.tableName ?? row?.county ?? 'row'}`))
     : [];
   const proofBlockers = Array.isArray(value?.proofs)
-    ? value.proofs.flatMap(proof =>
-        (Array.isArray(proof?.blockers) ? proof.blockers : []).map(
-          item => `${proof?.county ?? 'proof'}: ${item}`
-        )
-      )
+    ? value.proofs.flatMap(proof => blockerMessages(proof, `${proof?.county ?? 'proof'}`))
     : [];
 
   return [
     ...new Set([...direct, ...summary, ...receiptBlockers, ...rowBlockers, ...proofBlockers]),
   ].map(item => String(item));
+}
+
+function blockerMessages(value, label) {
+  if (!value || typeof value !== 'object') return [];
+  if (Array.isArray(value.blockers)) {
+    return value.blockers.map(item =>
+      label === 'artifact' || label === 'summary' ? item : `${label}: ${item}`
+    );
+  }
+  if (value.blockers && typeof value.blockers === 'object') {
+    const count = Object.keys(value.blockers).length;
+    if (count > 0) {
+      return [`${label}.blockers has ${count} object key(s)`];
+    }
+  }
+  return [];
 }
 
 function artifactWarnings(value) {

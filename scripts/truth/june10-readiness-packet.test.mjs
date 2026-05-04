@@ -455,6 +455,9 @@ test('readiness packet blocks explicit blocker error and failure collections', (
     blockers: ['Explicit top-level blocker.'],
     errors: ['Top-level error.'],
     failures: ['Top-level failure.'],
+    receiptEvidence: {
+      blockers: ['Receipt blocker.'],
+    },
     errorCount: 2,
     failureCount: 3,
     blockerCount: 4,
@@ -513,6 +516,11 @@ test('readiness packet blocks explicit blocker error and failure collections', (
   );
   assert.ok(
     report.shipBlockers.some(
+      item => item.source === 'dbIdentity' && item.message === 'receiptEvidence: Receipt blocker.'
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
       item => item.source === 'dbIdentity' && item.message.includes('artifact.errors has 1 item(s)')
     )
   );
@@ -564,8 +572,102 @@ test('readiness packet blocks explicit blocker error and failure collections', (
   );
   assert.ok(report.artifactDetails.dbIdentity.blockers.items.includes('Summary blocker.'));
   assert.ok(report.artifactDetails.dbIdentity.blockers.items.includes('Benton: Row blocker.'));
-  assert.ok(report.artifactDetails.dbIdentity.blockers.items.includes('Benton: Proof blocker.'));
+  assert.ok(report.artifactDetails.dbIdentity.blockers.omitted > 0);
   assert.ok(report.executionQueue.some(item => item.source === 'dbIdentity'));
+});
+
+test('readiness packet blocks object-shaped blocker error and failure collections', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-identity.json', {
+    endpointStatus: 200,
+    passed: true,
+    blockers: {
+      top: 'Top blocker',
+    },
+    errors: {
+      one: 'Top error',
+      two: 'Top error',
+    },
+    failures: {
+      one: 'Top failure',
+    },
+    summary: {
+      blockers: {
+        one: 'Summary blocker',
+      },
+      errors: {
+        one: 'Summary error',
+      },
+    },
+    rows: [
+      {
+        county: 'Benton',
+        blockers: {
+          one: 'Row blocker',
+        },
+        errors: {
+          one: 'Row error',
+        },
+      },
+    ],
+    proofs: [
+      {
+        county: 'Benton',
+        failures: {
+          one: 'Proof failure',
+        },
+      },
+    ],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' && item.message.includes('artifact.errors has 2 object key')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' && item.message.includes('summary.errors has 1 object key')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' && item.message.includes('Benton row.errors has 1 object key')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' &&
+        item.message.includes('Benton proof.failures has 1 object key')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.includes(
+      'artifact.blockers has 1 object key(s)'
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.includes(
+      'summary.blockers has 1 object key(s)'
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.includes('Benton.blockers has 1 object key(s)')
+  );
 });
 
 test('readiness packet surfaces warning-only proof artifacts', () => {
