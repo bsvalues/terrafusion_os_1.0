@@ -301,24 +301,28 @@ run(
   { timeout: 180_000 }
 );
 
-run('Runtime candidate set', 'pnpm', ['run', 'truth:runtime-candidate-set'], {
+run('Data source truth inventory', 'pnpm', ['run', 'truth:data-source-inventory'], {
   timeout: 180_000,
 });
 
 run(
-  'Washington 39-county data crosswalk',
+  'County runtime registration ledger',
   'pnpm',
-  ['run', 'truth:washington-39-county-data-crosswalk'],
+  ['run', 'truth:county-runtime-registration-ledger'],
   {
     timeout: 180_000,
   }
 );
 
-run('County runtime contract', 'pnpm', ['run', 'truth:county-runtime-contract'], {
+run('Runtime candidate set', 'pnpm', ['run', 'truth:runtime-candidate-set'], {
   timeout: 180_000,
 });
 
 run('Runtime TerraFusion DB identity', 'pnpm', ['run', 'truth:runtime-db-identity'], {
+  timeout: 180_000,
+});
+
+run('Runtime row path proof', 'pnpm', ['run', 'truth:runtime-row-path-proof'], {
   timeout: 180_000,
 });
 
@@ -336,6 +340,23 @@ run(
 );
 
 run('Benton parcel count sanity', 'pnpm', ['run', 'truth:benton-parcel-count-sanity'], {
+  timeout: 180_000,
+});
+
+run(
+  'Washington 39-county data crosswalk',
+  'pnpm',
+  ['run', 'truth:washington-39-county-data-crosswalk'],
+  {
+    timeout: 180_000,
+  }
+);
+
+run('County runtime contract', 'pnpm', ['run', 'truth:county-runtime-contract'], {
+  timeout: 180_000,
+});
+
+run('Runtime sale qualification lineage', 'pnpm', ['run', 'truth:runtime-sale-qualification'], {
   timeout: 180_000,
 });
 
