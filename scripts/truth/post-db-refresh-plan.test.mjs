@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import test from 'node:test';
 import {
   commandText,
@@ -9,6 +11,16 @@ import {
   postDbRefreshPlan,
   postDbRefreshQuickCommand,
 } from './post-db-refresh-plan.mjs';
+
+function readPackageScripts() {
+  const packageJson = JSON.parse(fs.readFileSync(path.resolve('package.json'), 'utf8'));
+  return packageJson.scripts ?? {};
+}
+
+function scriptNameFromPnpmRun(command) {
+  const match = command.match(/^pnpm run ([^\s]+)$/);
+  return match?.[1] ?? null;
+}
 
 test('post DB refresh plan is the single source for packet checklist and executable gate', () => {
   assert.equal(postDbRefreshQuickCommand, 'pnpm run truth:post-db-refresh-rerun');
@@ -27,6 +39,21 @@ test('post DB refresh plan is the single source for packet checklist and executa
     postDbRefreshChecklist().map(item => item.command),
     postDbRefreshPlan.map(commandText)
   );
+});
+
+test('post DB refresh package script references exist', () => {
+  const scripts = readPackageScripts();
+  const commands = [
+    postDbRefreshQuickCommand,
+    postDbRefreshFullReadinessCommand,
+    ...postDbRefreshPlan.map(commandText),
+  ];
+
+  for (const command of commands) {
+    const scriptName = scriptNameFromPnpmRun(command);
+    assert.ok(scriptName, `Expected pnpm run command, got ${command}`);
+    assert.ok(scripts[scriptName], `Missing package.json script for ${command}`);
+  }
 });
 
 test('every executable post DB refresh proof declares artifacts and proof meaning', () => {
