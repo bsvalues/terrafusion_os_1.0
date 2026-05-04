@@ -25,11 +25,13 @@ function truncate(value) {
 }
 
 function pushCheck(check) {
-  checks.push({
+  const pushed = {
     ...check,
     stdout: truncate(check.stdout),
     stderr: truncate(check.stderr),
-  });
+  };
+  checks.push(pushed);
+  return pushed;
 }
 
 function quoteForCmd(value) {
@@ -66,7 +68,7 @@ function run(name, command, args, options = {}) {
   });
 
   const status = result.error || result.status !== 0 ? 'FAIL' : 'PASS';
-  pushCheck({
+  return pushCheck({
     name,
     status,
     kind: 'command',
@@ -207,9 +209,10 @@ function warnIfMissingFile(name, targets, detail) {
   });
 }
 
-function inspectReadinessPacketArtifact() {
+function inspectReadinessPacketArtifact(packetRunCheck = null) {
   const target = 'generated/truth/june10-readiness-packet.json';
   const filePath = resolveRepoPath(target);
+  const minimumMtimeMs = Date.parse(packetRunCheck?.startedAt ?? '');
 
   if (!existsSync(filePath)) {
     pushCheck({
@@ -220,6 +223,23 @@ function inspectReadinessPacketArtifact() {
       stdout: 'Readiness packet artifact is missing.',
       stderr:
         'The full readiness gate cannot trust packet posture without the generated JSON artifact.',
+    });
+    return;
+  }
+
+  const stat = statSync(filePath);
+  if (Number.isFinite(minimumMtimeMs) && stat.mtimeMs < minimumMtimeMs) {
+    pushCheck({
+      name: 'June 10 readiness packet artifact posture',
+      status: 'FAIL',
+      kind: 'artifact_status',
+      command: `inspect ${target}`,
+      stdout: [
+        `Packet artifact modified: ${new Date(stat.mtimeMs).toISOString()}`,
+        `Packet command started: ${packetRunCheck.startedAt}`,
+      ].join('\n'),
+      stderr:
+        'Readiness packet artifact is stale; it was not refreshed by the current packet command.',
     });
     return;
   }
@@ -253,6 +273,7 @@ function inspectReadinessPacketArtifact() {
       `Packet status: ${packetStatus}`,
       `Packet ship blockers: ${packetBlockers}`,
       `Packet warnings: ${packetWarnings}`,
+      `Packet artifact modified: ${new Date(stat.mtimeMs).toISOString()}`,
     ].join('\n'),
     stderr:
       status === 'PASS'
@@ -440,11 +461,16 @@ run('Benton runtime pilot closure', 'pnpm', ['run', 'truth:benton-runtime-pilot-
   timeout: 180_000,
 });
 
-run('June 10 readiness packet', 'pnpm', ['run', 'truth:june10-readiness-packet'], {
-  timeout: 180_000,
-});
+const readinessPacketRun = run(
+  'June 10 readiness packet',
+  'pnpm',
+  ['run', 'truth:june10-readiness-packet'],
+  {
+    timeout: 180_000,
+  }
+);
 
-inspectReadinessPacketArtifact();
+inspectReadinessPacketArtifact(readinessPacketRun);
 
 failIfPresent(
   'Old County Studio hub path removed',

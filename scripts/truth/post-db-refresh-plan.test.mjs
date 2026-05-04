@@ -78,7 +78,10 @@ test('full June 10 readiness gate inspects final packet warning posture', () => 
   const readinessScript = fs.readFileSync(path.resolve('scripts/june10-readiness.mjs'), 'utf8');
 
   assert.ok(readinessScript.includes('inspectReadinessPacketArtifact'));
+  assert.ok(readinessScript.includes('const readinessPacketRun = run'));
+  assert.ok(readinessScript.includes('inspectReadinessPacketArtifact(readinessPacketRun)'));
   assert.ok(readinessScript.includes('generated/truth/june10-readiness-packet.json'));
+  assert.ok(readinessScript.includes('stale; it was not refreshed by the current packet command'));
   assert.ok(readinessScript.includes('PASS_WITH_WARNINGS'));
   assert.ok(readinessScript.includes('Readiness packet passed with warnings'));
 });
