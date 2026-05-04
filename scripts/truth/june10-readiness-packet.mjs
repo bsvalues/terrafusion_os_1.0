@@ -125,6 +125,7 @@ const postDbRefreshRerunChecklist = [
     proves: 'Final June 10 packet reflects the refreshed TerraFusion DB state.',
   },
 ];
+const postDbRefreshQuickCommand = 'pnpm run truth:post-db-refresh-rerun';
 
 function rel(filePath) {
   return path.relative(repoRoot, filePath).replaceAll(path.sep, '/');
@@ -442,6 +443,8 @@ function renderMarkdown(report) {
     '',
     '## Post-DB-Refresh Rerun Checklist',
     '',
+    `Fast command: \`${report.postDbRefreshQuickCommand}\``,
+    '',
     ...report.postDbRefreshRerunChecklist.map(
       item => `${item.order}. \`${item.command}\` - ${item.proves}`
     ),
@@ -494,6 +497,7 @@ function main() {
     summary: buildDomainSummary(loaded),
     shipBlockers: blockers,
     executionQueue,
+    postDbRefreshQuickCommand,
     postDbRefreshRerunChecklist,
     artifactDetails: buildArtifactDetails(loaded, blockers),
     warnings,

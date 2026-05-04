@@ -103,6 +103,7 @@ test('readiness packet fails when required runtime truth artifacts are red', () 
     'api_unavailable_or_not_probed'
   );
   assert.equal(report.summary.terraFusionDb.dbIdentityEndpointStatus, null);
+  assert.equal(report.postDbRefreshQuickCommand, 'pnpm run truth:post-db-refresh-rerun');
   assert.ok(report.artifactDetails.dbIdentity.blockers.items.length > 0);
   assert.ok(
     report.artifactDetails.productLoadLedger.blockers.items.some(blocker =>

@@ -103,6 +103,7 @@
     "truth:washington-39-county-data-crosswalk": "node scripts/truth/washington-39-county-data-crosswalk.mjs",
     "truth:county-runtime-contract": "node scripts/truth/county-runtime-contract.mjs",
     "truth:june10-readiness-packet": "node scripts/truth/june10-readiness-packet.mjs",
+    "truth:post-db-refresh-rerun": "node scripts/truth/post-db-refresh-rerun.mjs",
     "truth:direct-source": "node os-platform/core/pilot/direct-source-recompute.mjs",
     "truth:statistics-parity-scope": "node os-platform/core/pilot/statistics-parity-scope-alignment.mjs",
     "truth:statistics-shared-contract": "node os-platform/core/pilot/statistics-shared-population-contract.mjs",
