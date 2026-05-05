@@ -172,7 +172,7 @@ export async function getDoctrineState(
   recentGateLimit = 25,
   signal?: AbortSignal,
 ): Promise<DoctrineState> {
-  const url = `${API_BASE_URL}/api/sync/doctrine/state?recentGateLimit=${recentGateLimit}`;
+  const url = `${API_BASE_URL}/sync/doctrine/state?recentGateLimit=${recentGateLimit}`;
   const res = await fetch(url, { signal });
   if (!res.ok) {
     throw new Error(`getDoctrineState failed: HTTP ${res.status} ${res.statusText}`);
@@ -185,7 +185,7 @@ export async function getDoctrineState(
  * the dashboard only needs lane health (not the full state).
  */
 export async function getDoctrineLanes(signal?: AbortSignal): Promise<DoctrineLanes> {
-  const url = `${API_BASE_URL}/api/sync/doctrine/lanes`;
+  const url = `${API_BASE_URL}/sync/doctrine/lanes`;
   const res = await fetch(url, { signal });
   if (!res.ok) {
     throw new Error(`getDoctrineLanes failed: HTTP ${res.status} ${res.statusText}`);
@@ -201,7 +201,7 @@ export async function getDoctrineBatch(
   loadBatchId: string,
   signal?: AbortSignal,
 ): Promise<DoctrineBatchDetail> {
-  const url = `${API_BASE_URL}/api/sync/doctrine/batch/${encodeURIComponent(loadBatchId)}`;
+  const url = `${API_BASE_URL}/sync/doctrine/batch/${encodeURIComponent(loadBatchId)}`;
   const res = await fetch(url, { signal });
   if (!res.ok) {
     throw new Error(`getDoctrineBatch failed: HTTP ${res.status} ${res.statusText}`);
