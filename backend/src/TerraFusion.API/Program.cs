@@ -1662,6 +1662,14 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsPropSuppAssoc.IPacsPropSuppAssocLandingService,
     TerraFusion.Data.Services.LegacyPacsRaw.PacsPropSuppAssocLandingService>();
 
+// Slice S1 (SYNC-POP-4a): PACS property/parcel raw landing — the
+// master identity table for the doctrine parcel pipeline. Required
+// by the upcoming truth_pacs.parcel_spine promoter (SYNC-POP-4b)
+// and the canonical_tf.tf_parcel projector (SYNC-POP-4c).
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsProperty.IPacsPropertyLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsPropertyLandingService>();
+
 // Slice B1-A: PACS account raw landing — Block B's PII-rich
 // identity table. Four gates: distribution, acct_id-uniqueness,
 // provenance-coverage, pii-flags-recorded.

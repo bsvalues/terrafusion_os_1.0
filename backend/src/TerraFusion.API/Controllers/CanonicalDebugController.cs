@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Sync.PacsPropSuppAssoc;
+using TerraFusion.Core.Sync.PacsProperty;
 using TerraFusion.Core.Sync.PacsSale;
 using TerraFusion.Core.Sync.PacsSalePipeline;
 using TerraFusion.Data;
@@ -504,4 +505,100 @@ public class CanonicalDebugController : ControllerBase
         string? OperatorName,
         int? TopN,
         bool? RunCanonicalProjection);
+
+    // ════════════════════════════════════════════════════════════════════
+    // SYNC-POP-4a: Property/parcel raw landing (S1 only).
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// SYNC-POP-4a: lands a (TopN-bounded) parcel batch into
+    /// <c>legacy_pacs_raw.property</c> using
+    /// <see cref="SqlServerPacsPropertySource"/>. No truth promotion or
+    /// canonical projection — those are SYNC-POP-4b and SYNC-POP-4c.
+    ///
+    /// <para>Goal: prove <c>legacy_pacs_raw.property &gt; 0</c> end-to-end
+    /// against live Harris PACS, capture the type-distribution histogram
+    /// and the active/inactive split, and confirm <c>prop_id</c> uniqueness.
+    /// This is the foundation slice for the doctrine parcel pipeline that
+    /// will eventually populate <c>canonical_tf.tf_parcel</c>.</para>
+    /// </summary>
+    [HttpPost("sync-pop-4/run-property-landing")]
+    public async Task<IActionResult> RunSyncPop4a(
+        [FromServices] IPacsPropertyLandingService propSvc,
+        [FromServices] IConfiguration config,
+        [FromBody] SyncPop4Request? request,
+        CancellationToken cancellationToken = default)
+    {
+        var pacsCs = config.GetConnectionString("PacsConnection");
+        if (string.IsNullOrWhiteSpace(pacsCs))
+        {
+            return StatusCode(500, new
+            {
+                error = "ConnectionStrings:PacsConnection is required for SYNC-POP-4a.",
+            });
+        }
+
+        var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
+            ? "sync-pop-4a-debug"
+            : request.OperatorName.Trim();
+
+        // Default to a small bounded sample for proof. Production drains
+        // the full corpus by passing TopN=null explicitly.
+        var topN = request?.TopN ?? 1000;
+
+        try
+        {
+            _logger.LogInformation(
+                "[SyncPop4a] Starting property landing. operator={Op} topN={Top}",
+                operatorName, topN);
+
+            var src = new SqlServerPacsPropertySource(pacsCs, topN: topN);
+            var s1 = await propSvc.LandPropertiesAsync(src, operatorName, cancellationToken);
+            _logger.LogInformation(
+                "[SyncPop4a] S1 status={Status} rows={Rows} batchId={Batch} withCreateDt={W} withoutCreateDt={WO} dupPropId={Dup}",
+                s1.Status, s1.RowsLanded, s1.LoadBatchId,
+                s1.WithCreateDtCount, s1.WithoutCreateDtCount, s1.DuplicatePropIdCount);
+
+            if (!string.Equals(s1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+            {
+                return StatusCode(500, new { stage = "S1", error = s1.ErrorSummary, s1 });
+            }
+
+            // Read-back so the response includes the operative proof number.
+            var legacyRawCount = await _db.LegacyPacsRawProperties.CountAsync(cancellationToken);
+
+            return Ok(new
+            {
+                operatorName,
+                s1 = new
+                {
+                    s1.Status,
+                    s1.LoadBatchId,
+                    s1.RowsLanded,
+                    s1.WithCreateDtCount,
+                    s1.WithoutCreateDtCount,
+                    s1.DuplicatePropIdCount,
+                    s1.TypeDistribution,
+                },
+                counts = new { legacyPacsRawProperties = legacyRawCount },
+                proofVerdict = legacyRawCount > 0
+                    ? "PROOF: legacy_pacs_raw.property > 0 — SYNC-POP-4a foundation slice succeeded."
+                    : "INCONCLUSIVE: legacy_pacs_raw.property = 0. Source returned no rows; check PACS connection and dbo.property contents.",
+                nextSlice = "SYNC-POP-4b: build truth_pacs.parcel_spine promoter (filter prop_type='R', resolve identity).",
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[SyncPop4a] FAILED");
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name });
+        }
+    }
+
+    /// <param name="OperatorName">Audit anchor on the load batch.</param>
+    /// <param name="TopN">Property sample size. Default 1000. Smaller is
+    /// faster for proof; null drains the full Benton parcel corpus
+    /// (~89k rows) — only use null for production landing, not proof.</param>
+    public sealed record SyncPop4Request(
+        string? OperatorName,
+        int? TopN);
 }
