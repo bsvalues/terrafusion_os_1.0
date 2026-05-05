@@ -640,6 +640,52 @@ test('readiness packet blocks ship blocker collections in required artifacts', (
   assert.ok(report.executionQueue.some(item => item.source === 'dbIdentity'));
 });
 
+test('readiness packet blocks failing receipt evidence summary posture', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-identity.json', {
+    endpointStatus: 200,
+    passed: true,
+    receiptEvidence: {
+      summary: {
+        passed: false,
+        status: 'FAIL',
+        blockers: ['Receipt summary blocker.'],
+      },
+    },
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' &&
+        item.message.includes('receiptEvidence.summary.passed is false')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' &&
+        item.message.includes('receiptEvidence.summary.status is FAIL')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('receiptEvidence.summary: Receipt summary blocker.')
+    )
+  );
+  assert.ok(report.executionQueue.some(item => item.source === 'dbIdentity'));
+});
+
 test('readiness packet blocks object-shaped blocker error and failure collections', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-db-identity.json', {

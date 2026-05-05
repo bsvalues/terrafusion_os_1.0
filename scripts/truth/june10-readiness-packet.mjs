@@ -530,7 +530,10 @@ function artifactFailurePostures(value) {
 
 function receiptEvidenceFailurePostures(receiptEvidence) {
   if (!receiptEvidence || typeof receiptEvidence !== 'object') return [];
-  const postures = collectionFailurePostures(receiptEvidence, 'receiptEvidence');
+  const postures = [
+    ...collectionFailurePostures(receiptEvidence, 'receiptEvidence'),
+    ...summaryFailurePostures(receiptEvidence.summary, 'receiptEvidence.summary'),
+  ];
   if (receiptEvidence.passed === false) postures.push('receiptEvidence.passed is false');
   if (typeof receiptEvidence.status === 'string') {
     if (!isAllowedPassingStatus(receiptEvidence.status)) {
@@ -540,13 +543,13 @@ function receiptEvidenceFailurePostures(receiptEvidence) {
   return postures;
 }
 
-function summaryFailurePostures(summary) {
+function summaryFailurePostures(summary, label = 'summary') {
   if (!summary || typeof summary !== 'object') return [];
-  const postures = collectionFailurePostures(summary, 'summary');
-  if (summary.passed === false) postures.push('summary.passed is false');
+  const postures = collectionFailurePostures(summary, label);
+  if (summary.passed === false) postures.push(`${label}.passed is false`);
   if (typeof summary.status === 'string') {
     if (!isAllowedPassingStatus(summary.status)) {
-      postures.push(`summary.status is ${summary.status}`);
+      postures.push(`${label}.status is ${summary.status}`);
     }
   }
   return postures;
@@ -620,6 +623,10 @@ function artifactBlockerMessages(value) {
   const direct = blockerMessages(value, 'artifact');
   const summary = blockerMessages(value?.summary, 'summary');
   const receiptBlockers = blockerMessages(value?.receiptEvidence, 'receiptEvidence');
+  const receiptSummaryBlockers = blockerMessages(
+    value?.receiptEvidence?.summary,
+    'receiptEvidence.summary'
+  );
   const rowBlockers = Array.isArray(value?.rows)
     ? value.rows.flatMap(row => blockerMessages(row, `${row?.tableName ?? row?.county ?? 'row'}`))
     : [];
@@ -628,7 +635,14 @@ function artifactBlockerMessages(value) {
     : [];
 
   return [
-    ...new Set([...direct, ...summary, ...receiptBlockers, ...rowBlockers, ...proofBlockers]),
+    ...new Set([
+      ...direct,
+      ...summary,
+      ...receiptBlockers,
+      ...receiptSummaryBlockers,
+      ...rowBlockers,
+      ...proofBlockers,
+    ]),
   ].map(item => String(item));
 }
 

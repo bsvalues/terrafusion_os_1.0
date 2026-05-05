@@ -255,7 +255,10 @@ function nestedArtifactFailureReasons(value) {
 
 function receiptEvidenceFailureReasons(receiptEvidence) {
   if (!receiptEvidence || typeof receiptEvidence !== 'object') return [];
-  const reasons = collectionFailureReasons(receiptEvidence, 'receiptEvidence');
+  const reasons = [
+    ...collectionFailureReasons(receiptEvidence, 'receiptEvidence'),
+    ...summaryFailureReasons(receiptEvidence.summary, 'receiptEvidence.summary'),
+  ];
   if (receiptEvidence.passed === false) reasons.push('receiptEvidence.passed is false');
   if (typeof receiptEvidence.status === 'string') {
     if (!isAllowedPassingStatus(receiptEvidence.status)) {
@@ -265,13 +268,13 @@ function receiptEvidenceFailureReasons(receiptEvidence) {
   return reasons;
 }
 
-function summaryFailureReasons(summary) {
+function summaryFailureReasons(summary, label = 'summary') {
   if (!summary || typeof summary !== 'object') return [];
-  const reasons = collectionFailureReasons(summary, 'summary');
-  if (summary.passed === false) reasons.push('summary.passed is false');
+  const reasons = collectionFailureReasons(summary, label);
+  if (summary.passed === false) reasons.push(`${label}.passed is false`);
   if (typeof summary.status === 'string') {
     if (!isAllowedPassingStatus(summary.status)) {
-      reasons.push(`summary.status is ${summary.status}`);
+      reasons.push(`${label}.status is ${summary.status}`);
     }
   }
   return reasons;
