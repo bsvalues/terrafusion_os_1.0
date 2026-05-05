@@ -508,6 +508,9 @@ function buildExecutionQueue(blockers) {
 }
 
 function artifactFailurePosture(value) {
+  if (hasNonBooleanPassed(value) && !isFalseLike(value.passed)) {
+    return 'top-level passed is not boolean';
+  }
   if (isFalseLike(value?.passed)) return 'top-level passed is false';
   if (typeof value?.status === 'string') {
     if (!isAllowedPassingStatus(value.status)) {
@@ -536,6 +539,7 @@ function artifactFailurePostures(value) {
 function receiptEvidenceFailurePostures(receiptEvidence) {
   if (!receiptEvidence || typeof receiptEvidence !== 'object') return [];
   const postures = [
+    ...passedPostureTypeFailures(receiptEvidence, 'receiptEvidence'),
     ...booleanFailurePostures(receiptEvidence, 'receiptEvidence'),
     ...collectionFailurePostures(receiptEvidence, 'receiptEvidence'),
     ...summaryFailurePostures(receiptEvidence.summary, 'receiptEvidence.summary'),
@@ -768,6 +772,7 @@ function nestedRecordFailurePostures(records, label) {
   return records.flatMap(record => {
     const subject = `${record?.tableName ?? record?.county ?? label} ${label}`;
     const postures = [
+      ...passedPostureTypeFailures(record, subject),
       ...booleanFailurePostures(record, subject),
       ...collectionFailurePostures(record, subject),
     ];
@@ -782,6 +787,21 @@ function nestedRecordFailurePostures(records, label) {
     }
     return postures;
   });
+}
+
+function passedPostureTypeFailures(value, label) {
+  return hasNonBooleanPassed(value) && !isFalseLike(value.passed)
+    ? [`${label} passed is not boolean`]
+    : [];
+}
+
+function hasNonBooleanPassed(value) {
+  return (
+    value &&
+    typeof value === 'object' &&
+    Object.prototype.hasOwnProperty.call(value, 'passed') &&
+    typeof value.passed !== 'boolean'
+  );
 }
 
 function isAllowedPassingStatus(status) {

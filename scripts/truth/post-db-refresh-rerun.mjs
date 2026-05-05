@@ -233,6 +233,13 @@ function isJsonProofObject(value) {
 }
 
 function artifactFailureReason(artifact) {
+  if (
+    artifact.artifactPassed !== null &&
+    typeof artifact.artifactPassed !== 'boolean' &&
+    !isFalseLike(artifact.artifactPassed)
+  ) {
+    return 'top-level passed is not boolean';
+  }
   if (isFalseLike(artifact.artifactPassed)) return 'top-level passed is false';
   if (typeof artifact.artifactStatus === 'string') {
     if (!isAllowedPassingStatus(artifact.artifactStatus)) {
@@ -250,6 +257,7 @@ function artifactFailureReason(artifact) {
 
 function nestedArtifactFailureReasons(value) {
   return [
+    ...passedPostureTypeFailures(value, 'artifact'),
     ...booleanFailureReasons(value, 'artifact'),
     ...expectedMatchFailureReasons(value, 'artifact'),
     ...nestedStatusFailureReasons(value, 'artifact'),
@@ -266,6 +274,7 @@ function nestedArtifactFailureReasons(value) {
 function receiptEvidenceFailureReasons(receiptEvidence) {
   if (!receiptEvidence || typeof receiptEvidence !== 'object') return [];
   const reasons = [
+    ...passedPostureTypeFailures(receiptEvidence, 'receiptEvidence'),
     ...booleanFailureReasons(receiptEvidence, 'receiptEvidence'),
     ...collectionFailureReasons(receiptEvidence, 'receiptEvidence'),
     ...summaryFailureReasons(receiptEvidence.summary, 'receiptEvidence.summary'),
@@ -522,6 +531,7 @@ function nestedRecordFailureReasons(records, label) {
   return records.flatMap(record => {
     const subject = `${record?.tableName ?? record?.county ?? label} ${label}`;
     const reasons = [
+      ...passedPostureTypeFailures(record, subject),
       ...booleanFailureReasons(record, subject),
       ...collectionFailureReasons(record, subject),
     ];
@@ -536,6 +546,21 @@ function nestedRecordFailureReasons(records, label) {
     }
     return reasons;
   });
+}
+
+function passedPostureTypeFailures(value, label) {
+  return hasNonBooleanPassed(value) && !isFalseLike(value.passed)
+    ? [`${label} passed is not boolean`]
+    : [];
+}
+
+function hasNonBooleanPassed(value) {
+  return (
+    value &&
+    typeof value === 'object' &&
+    Object.prototype.hasOwnProperty.call(value, 'passed') &&
+    typeof value.passed !== 'boolean'
+  );
 }
 
 function isAllowedPassingStatus(status) {

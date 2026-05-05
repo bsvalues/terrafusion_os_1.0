@@ -475,6 +475,59 @@ test('readiness packet blocks numeric zero proof posture fields', () => {
   );
 });
 
+test('readiness packet blocks non-boolean passed proof posture fields', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-content-audit.json', {
+    endpointStatus: 200,
+    passed: 'true',
+    summary: {
+      passed: 1,
+    },
+    receiptEvidence: {
+      passed: 1,
+    },
+    rows: [{ county: 'Benton', passed: 'true' }],
+    proofs: [{ county: 'Benton', passed: 1 }],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbContent' && item.message.includes('top-level passed is not boolean')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('receiptEvidence passed is not boolean')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('Benton row passed is not boolean')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('Benton proof passed is not boolean')
+    )
+  );
+  assert.ok(
+    !report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('summary passed is not boolean')
+    )
+  );
+});
+
 test('readiness packet blocks false explicit passed-derived fields', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-db-identity.json', {

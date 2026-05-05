@@ -593,6 +593,45 @@ test('fails when a proof command writes numeric zero proof posture fields', () =
   assert.ok(report.blockers.some(item => item.includes('top-level passed is false')));
 });
 
+test('fails when a proof command writes non-boolean passed proof posture fields', () => {
+  const root = makeTempRepo('tf-post-db-refresh-non-boolean-passed-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'Non-boolean passed artifact writer command',
+          command: process.execPath,
+          args: [
+            '-e',
+            [
+              "const fs = require('fs');",
+              "fs.mkdirSync('generated/truth', { recursive: true });",
+              "fs.writeFileSync('generated/truth/non-boolean-passed.json', JSON.stringify({ passed: 'true', summary: { passed: 1 }, receiptEvidence: { passed: 1 }, rows: [{ county: 'Benton', passed: 'true' }], proofs: [{ county: 'Benton', passed: 1 }] }) + '\\n');",
+            ].join(' '),
+          ],
+          expectedArtifacts: ['generated/truth/non-boolean-passed.json'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'FAIL');
+  assert.deepEqual(report.results[0].artifactOutputs[0].artifactFailureReasons, [
+    'artifact passed is not boolean',
+    'receiptEvidence passed is not boolean',
+    'Benton row passed is not boolean',
+    'Benton proof passed is not boolean',
+  ]);
+  assert.ok(report.blockers.some(item => item.includes('top-level passed is not boolean')));
+});
+
 test('fails when a proof command writes false explicit passed-derived fields', () => {
   const root = makeTempRepo('tf-post-db-refresh-artifact-derived-passed-false-');
   const result = spawnSync('node', [scriptPath, root], {
