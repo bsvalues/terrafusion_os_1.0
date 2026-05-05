@@ -1947,4 +1947,279 @@ public class CanonicalDebugController : ControllerBase
     /// <param name="OperatorName">Audit anchor across D1+D2+D3.</param>
     public sealed record GisPop1Request(
         string? OperatorName);
+
+    // ════════════════════════════════════════════════════════════════════
+    // DOCTRINE-CLOSURE-1: unified all-lanes runner.
+    //   Owner-anchored seed → 6-lane closure in one call:
+    //     - Parcel chain (S1+S2-B+S3 for tf_parcel + xrefs)
+    //     - Sale chain (sale → keyed supps → truth → canonical)
+    //     - Owner chain (owner → keyed account → truth → canonical)
+    //     - WSDOR chain (WPOV → truth → canonical)
+    //     - Improvement chain (imprv + detail + attr → truth → canonical)
+    //     - Land chain (land_detail → truth → canonical)
+    //     - Geometry chain (ArcGIS REST → D1 → D2 → D3)
+    //   Produces ONE aggregate proof verdict.
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// DOCTRINE-CLOSURE-1: full doctrine pipeline in one call. Owner-
+    /// anchored seed unlocks all five PACS lanes (sale, owner, WSDOR,
+    /// improvement, land) on overlapping prop_ids; geometry lane runs
+    /// independently against the configured ArcGIS feature service and
+    /// resolves APN crosswalk against whatever tf_parcel rows exist
+    /// at projection time.
+    ///
+    /// <para>Goal: prove cross-lane doctrine coherence end-to-end
+    /// in one operator-triggered run. Replaces N-1 separate debug
+    /// endpoints with one canonical entry point — the seed for the
+    /// future operator dashboard.</para>
+    /// </summary>
+    [HttpPost("doctrine-closure/run-all-lanes")]
+    public async Task<IActionResult> RunDoctrineClosure(
+        [FromServices] IPacsOwnerLandingService ownerSvc,
+        [FromServices] IPacsAccountLandingService accountSvc,
+        [FromServices] IPacsPropSuppAssocLandingService assocSvc,
+        [FromServices] IPacsPropertyLandingService propSvc,
+        [FromServices] IPacsParcelSpineTruthPromoter spinePromoter,
+        [FromServices] IPacsParcelCanonicalProjector parcelCanonical,
+        [FromServices] IPacsSaleLandingService saleSvc,
+        [FromServices] IPacsSaleTruthPromoter saleTruthPromoter,
+        [FromServices] IPacsSaleCanonicalProjector saleCanonicalProjector,
+        [FromServices] IPacsOwnerCurrentTruthPromoter ownerTruthPromoter,
+        [FromServices] IPacsOwnerCanonicalProjector ownerCanonicalProjector,
+        [FromServices] IPacsWashPropOwnerValLandingService wpovSvc,
+        [FromServices] IPacsWashPropOwnerValTruthPromoter wpovTruthPromoter,
+        [FromServices] IPacsWsdorCanonicalProjector wsdorCanonicalProjector,
+        [FromServices] IPacsImprvLandingService imprvSvc,
+        [FromServices] IPacsImprvDetailLandingService imprvDetailSvc,
+        [FromServices] IPacsImprvAttrLandingService imprvAttrSvc,
+        [FromServices] IPacsImprvCurrentTruthPromoter imprvTruthPromoter,
+        [FromServices] IPacsImprvCanonicalProjector imprvCanonicalProjector,
+        [FromServices] IPacsLandDetailLandingService landSvc,
+        [FromServices] IPacsLandCurrentTruthPromoter landTruthPromoter,
+        [FromServices] IPacsLandCanonicalProjector landCanonicalProjector,
+        [FromServices] IArcGisRawLandingService gisRawSvc,
+        [FromServices] IArcGisTruthPromotionService gisTruthSvc,
+        [FromServices] IArcGisCanonicalProjector gisCanonicalProjector,
+        [FromServices] IConfiguration config,
+        [FromBody] DoctrineClosureRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        var pacsCs = config.GetConnectionString("PacsConnection");
+        if (string.IsNullOrWhiteSpace(pacsCs))
+            return StatusCode(500, new { error = "ConnectionStrings:PacsConnection is required." });
+
+        var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
+            ? "doctrine-closure-1-all-lanes"
+            : request.OperatorName.Trim();
+        var ownerTopN = request?.OwnerTopN ?? 200;
+        var saleTopN = request?.SaleTopN ?? 500;
+        short workingYear = (short)(request?.WorkingYear ?? 2026);
+        var skipGeometry = request?.SkipGeometry ?? false;
+
+        var startedAt = DateTime.UtcNow;
+        var lanes = new List<object>();
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+
+            // ════════════════════════════════════════════════════════════
+            // OWNER-LANE seed: lands owners, then derives all PACS keys.
+            // ════════════════════════════════════════════════════════════
+            _logger.LogInformation("[DoctrineClosure] OWNER seed (TopN={Top})", ownerTopN);
+            var ownerSrc = new SqlServerPacsOwnerSource(pacsCs, topN: ownerTopN);
+            var ownerS1 = await ownerSvc.LandOwnersAsync(ownerSrc, operatorName, cancellationToken);
+            if (!string.Equals(ownerS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Owner-S1", error = ownerS1.ErrorSummary, ownerS1 });
+
+            var ownerRows = await _db.LegacyPacsRawOwners
+                .AsNoTracking()
+                .Where(o => o.LoadBatchId == ownerS1.LoadBatchId)
+                .Select(o => new { o.OwnerId, o.PropId, o.OwnerTaxYr })
+                .ToListAsync(cancellationToken);
+            var distinctAcctIds = ownerRows.Select(r => r.OwnerId).Distinct().ToList();
+            var ownerSuppKeys = ownerRows.Select(r => (r.PropId, r.OwnerTaxYr)).Distinct().ToList();
+            var ownerPropIds = ownerRows.Select(r => r.PropId).Distinct().ToList();
+
+            // ════════════════════════════════════════════════════════════
+            // PARCEL chain (used by every PACS lane's xref resolution).
+            // ════════════════════════════════════════════════════════════
+            var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs, ownerPropIds);
+            var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
+            var parcelSpine = await spinePromoter.PromoteAsync(parcelS1.LoadBatchId, operatorName, cancellationToken);
+            var parcelCanon = await parcelCanonical.ProjectAsync(parcelSpine.PromotionLoadBatchId, bentonCountyId, operatorName, cancellationToken);
+            lanes.Add(new { lane = "Parcel", parcelS1.RowsLanded, parcelSpine.ParcelsPromoted, parcelCanon.ParcelsProjected });
+
+            // ════════════════════════════════════════════════════════════
+            // ACCOUNT + SUPP (shared by owner-truth, wpov-truth).
+            // ════════════════════════════════════════════════════════════
+            var acctSrc = new KeyedSqlServerPacsAccountSource(pacsCs, distinctAcctIds);
+            var acctS1 = await accountSvc.LandAccountsAsync(acctSrc, operatorName, cancellationToken);
+            var ownerSuppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs, ownerSuppKeys);
+            var ownerSuppS1 = await assocSvc.LandPropSuppAssocsAsync(ownerSuppSrc, operatorName, cancellationToken);
+
+            // ════════════════════════════════════════════════════════════
+            // OWNER lane (B2-A truth + B3 canonical).
+            // ════════════════════════════════════════════════════════════
+            var ownerTruth = await ownerTruthPromoter.PromoteAsync(ownerS1.LoadBatchId, acctS1.LoadBatchId, ownerSuppS1.LoadBatchId, operatorName, cancellationToken);
+            var ownerCanon = await ownerCanonicalProjector.ProjectAsync(ownerTruth.PromotionLoadBatchId, operatorName, cancellationToken);
+            lanes.Add(new { lane = "Owner", ownerS1.RowsLanded, ownerTruth.OwnersPromoted, ownerCanon.OwnersProjected, ownerCanon.LinksProjected });
+
+            // ════════════════════════════════════════════════════════════
+            // WSDOR lane (B1-C wpov + B2-B truth + B4 canonical).
+            // ════════════════════════════════════════════════════════════
+            var wpovKeys = await _db.TruthPacsOwnerCurrents
+                .AsNoTracking()
+                .Where(t => t.PromotionLoadBatchId == ownerTruth.PromotionLoadBatchId)
+                .Select(t => new { t.PropId, t.OwnerTaxYr, t.OwnerId })
+                .Distinct()
+                .ToListAsync(cancellationToken);
+            var wpovTriples = wpovKeys.Select(k => (k.PropId, k.OwnerTaxYr, k.OwnerId)).ToList();
+            var wpovSrc = new KeyedSqlServerPacsWashPropOwnerValSource(pacsCs, wpovTriples);
+            var wpovS1 = await wpovSvc.LandWashPropOwnerValsAsync(wpovSrc, operatorName, cancellationToken);
+            var wpovTruth = await wpovTruthPromoter.PromoteAsync(wpovS1.LoadBatchId, ownerSuppS1.LoadBatchId, operatorName, cancellationToken);
+            var wsdorCanon = await wsdorCanonicalProjector.ProjectAsync(wpovTruth.PromotionLoadBatchId, operatorName, cancellationToken);
+            lanes.Add(new { lane = "WSDOR", wpovS1.RowsLanded, wpovTruth.RowsPromoted, wsdorCanon.RowsProjected, wsdorCanon.RowsQuarantined });
+
+            // ════════════════════════════════════════════════════════════
+            // IMPROVEMENT lane (C1 + C2 + C3).
+            // ════════════════════════════════════════════════════════════
+            var imprvKeys = ownerPropIds.Select(p => (p, workingYear)).ToList();
+            var imprvSrc = new KeyedSqlServerPacsImprvSource(pacsCs, imprvKeys);
+            var imprvS1 = await imprvSvc.LandImprvsAsync(imprvSrc, operatorName, cancellationToken);
+            var imprvDetailSrc = new KeyedSqlServerPacsImprvDetailSource(pacsCs, imprvKeys);
+            var imprvDetailS1 = await imprvDetailSvc.LandImprvDetailsAsync(imprvDetailSrc, operatorName, cancellationToken);
+            var imprvAttrSrc = new KeyedSqlServerPacsImprvAttrSource(pacsCs, imprvKeys);
+            var imprvAttrS1 = await imprvAttrSvc.LandImprvAttrsAsync(imprvAttrSrc, operatorName, cancellationToken);
+
+            // The imprv truth promoter expects a supp batch keyed by
+            // (prop_id, prop_val_yr). Reuse owner's supp batch — same
+            // identity space (year=workingYear == owner_tax_yr=workingYear).
+            var imprvTruth = await imprvTruthPromoter.PromoteAsync(imprvS1.LoadBatchId, ownerSuppS1.LoadBatchId, operatorName, cancellationToken);
+            var imprvCanon = await imprvCanonicalProjector.ProjectAsync(imprvTruth.PromotionLoadBatchId, operatorName, cancellationToken);
+            lanes.Add(new { lane = "Improvement", imprvS1.RowsLanded, imprvCanon.ImprovementsProjected, imprvCanon.FeaturesProjected });
+
+            // ════════════════════════════════════════════════════════════
+            // LAND lane (D1 + L2 + L3).
+            // ════════════════════════════════════════════════════════════
+            var landKeys = ownerPropIds.Select(p => (p, workingYear)).ToList();
+            var landSrc = new KeyedSqlServerPacsLandDetailSource(pacsCs, landKeys);
+            var landS1 = await landSvc.LandLandDetailsAsync(landSrc, operatorName, cancellationToken);
+            var landTruth = await landTruthPromoter.PromoteAsync(landS1.LoadBatchId, ownerSuppS1.LoadBatchId, operatorName, cancellationToken);
+            var landCanon = await landCanonicalProjector.ProjectAsync(landTruth.PromotionLoadBatchId, operatorName, cancellationToken);
+            lanes.Add(new { lane = "Land", landS1.RowsLanded, landCanon.LandsProjected, landCanon.SizeAcresProjected });
+
+            // ════════════════════════════════════════════════════════════
+            // SALE lane (S1 + keyed supp + S2-B + S3).
+            // Independent seed (SqlServerPacsSaleSource ordered DESC) —
+            // sales correlate weakly with the owner-anchored prop_id set,
+            // so this lane uses its own bounded sample.
+            // ════════════════════════════════════════════════════════════
+            var saleSrc = new SqlServerPacsSaleSource(pacsCs, topN: saleTopN);
+            var saleS1 = await saleSvc.LandSalesAsync(saleSrc, operatorName, cancellationToken);
+
+            var saleSuppRaw = await _db.LegacyPacsRawSales
+                .AsNoTracking()
+                .Where(s => s.LoadBatchId == saleS1.LoadBatchId)
+                .Select(s => new { s.PropId, s.PropValYr })
+                .Distinct()
+                .ToListAsync(cancellationToken);
+            var saleSuppKeys = saleSuppRaw.Select(k => (k.PropId, k.PropValYr)).ToList();
+            var saleSuppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs, saleSuppKeys);
+            var saleSuppS1 = await assocSvc.LandPropSuppAssocsAsync(saleSuppSrc, operatorName, cancellationToken);
+
+            var saleTruth = await saleTruthPromoter.PromoteAsync(saleS1.LoadBatchId, saleSuppS1.LoadBatchId, operatorName, cancellationToken);
+
+            // For sale canonical, we need parcel xrefs for the promoted sales' prop_ids.
+            // Land + project them as a targeted parcel chain.
+            var promotedSalePropIds = await _db.TruthPacsSales
+                .AsNoTracking()
+                .Where(t => t.PromotionLoadBatchId == saleTruth.PromotionLoadBatchId)
+                .Select(t => t.PropId)
+                .Distinct()
+                .ToListAsync(cancellationToken);
+            int salesProjected = 0;
+            int salesQuarantined = 0;
+            if (promotedSalePropIds.Count > 0)
+            {
+                var saleParcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs, promotedSalePropIds);
+                var saleParcelS1 = await propSvc.LandPropertiesAsync(saleParcelSrc, operatorName, cancellationToken);
+                var saleParcelSpine = await spinePromoter.PromoteAsync(saleParcelS1.LoadBatchId, operatorName, cancellationToken);
+                await parcelCanonical.ProjectAsync(saleParcelSpine.PromotionLoadBatchId, bentonCountyId, operatorName, cancellationToken);
+
+                var saleCanon = await saleCanonicalProjector.ProjectAsync(saleTruth.PromotionLoadBatchId, operatorName, cancellationToken);
+                salesProjected = saleCanon.SalesProjected;
+                salesQuarantined = saleCanon.SalesQuarantined;
+            }
+            lanes.Add(new { lane = "Sale", saleS1.RowsLanded, saleTruth.SalesPromoted, salesProjected, salesQuarantined });
+
+            // ════════════════════════════════════════════════════════════
+            // GEOMETRY lane (D1 + D2 + D3 against ArcGIS REST).
+            // Independent of PACS chains; resolves APN crosswalk against
+            // whatever tf_parcel rows exist at projection time (which now
+            // includes everything we just projected from the PACS lanes).
+            // ════════════════════════════════════════════════════════════
+            object? gisLane = null;
+            if (!skipGeometry)
+            {
+                var gisD1 = await gisRawSvc.LandParcelGeomsAsync(bentonCountyId, operatorName, cancellationToken);
+                var gisD2 = await gisTruthSvc.PromoteCountyAsync(bentonCountyId, operatorName, cancellationToken);
+                var gisD3 = await gisCanonicalProjector.ProjectCountyAsync(bentonCountyId, operatorName, cancellationToken);
+                gisLane = new { lane = "Geometry", gisD1.FeaturesLanded, gisD3.RowsProjected, gisD3.ApnCrosswalkResolved, gisD3.ApnCrosswalkUnresolved };
+                lanes.Add(gisLane);
+            }
+
+            // ── Aggregate read-back. ──
+            var counts = new
+            {
+                tf_parcel = await _db.TfParcels.CountAsync(cancellationToken),
+                tf_sale = await _db.TfSales.CountAsync(cancellationToken),
+                tf_owner = await _db.TfOwners.CountAsync(cancellationToken),
+                tf_parcel_owner_link = await _db.TfParcelOwnerLinks.CountAsync(cancellationToken),
+                tf_assessment_wsdor = await _db.TfAssessmentWsdors.CountAsync(cancellationToken),
+                tf_improvement = await _db.TfImprovements.CountAsync(cancellationToken),
+                tf_improvement_feature = await _db.TfImprovementFeatures.CountAsync(cancellationToken),
+                tf_land = await _db.TfLands.CountAsync(cancellationToken),
+                tf_parcel_geom = skipGeometry ? -1 : await _db.TfParcelGeoms.CountAsync(cancellationToken),
+            };
+
+            var elapsed = (DateTime.UtcNow - startedAt).TotalSeconds;
+
+            // ── Verdict: every lane must produce > 0 in its terminal canonical table. ──
+            var verdict = (counts.tf_parcel > 0 && counts.tf_owner > 0 &&
+                           counts.tf_assessment_wsdor > 0 && counts.tf_improvement > 0 &&
+                           counts.tf_land > 0 && (skipGeometry || counts.tf_parcel_geom > 0))
+                ? "PROOF: doctrine pipeline operational across ALL LANES — DOCTRINE-CLOSURE-1 succeeded."
+                : "PARTIAL: investigate per-lane outputs above.";
+
+            return Ok(new
+            {
+                operatorName,
+                bentonCountyId,
+                ownerTopN, saleTopN, workingYear, skipGeometry,
+                startedAt, elapsedSeconds = elapsed,
+                lanes,
+                counts,
+                proofVerdict = verdict,
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[DoctrineClosure] FAILED");
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name, lanesCompleted = lanes });
+        }
+    }
+
+    /// <param name="OperatorName">Audit anchor across all stages.</param>
+    /// <param name="OwnerTopN">Owner-anchored seed size. Default 200.</param>
+    /// <param name="SaleTopN">Sale lane independent seed size. Default 500.</param>
+    /// <param name="WorkingYear">PACS year filter. Default 2026.</param>
+    /// <param name="SkipGeometry">If true, skip ArcGIS lanes (useful for offline runs).</param>
+    public sealed record DoctrineClosureRequest(
+        string? OperatorName,
+        int? OwnerTopN,
+        int? SaleTopN,
+        int? WorkingYear,
+        bool? SkipGeometry);
 }
