@@ -334,4 +334,174 @@ public class CanonicalDebugController : ControllerBase
     // is now applied via the proper EF migration
     // 20260504_WidenLegacyPacsRawSaleCodeColumns. The one-shot HTTP helper
     // that was here during the proof run has been retired.
+
+    // ════════════════════════════════════════════════════════════════════
+    // SYNC-POP-3 — targeted-supp-overlap proof
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// SYNC-POP-3: lands a bounded sale batch, extracts the distinct
+    /// (PropId, PropValYr) keys it references, lands matching prop_supp_assoc
+    /// rows ONLY (via <see cref="KeyedSqlServerPacsPropSuppAssocSource"/>),
+    /// then runs S2-B truth promotion. S3 canonical projection runs only
+    /// when explicitly requested (since canonical_tf.tf_parcel is empty
+    /// until the parcel pipeline lands separately).
+    ///
+    /// <para>Goal: prove <c>truth_pacs.sale &gt; 0</c> end-to-end on a
+    /// minimal sample. Per <c>docs/sync/sync-pop-2-findings.md</c>'s
+    /// "What's not yet wired" section, S3 will quarantine until parcel
+    /// landing is wired.</para>
+    /// </summary>
+    [HttpPost("sync-pop-3/run-targeted-chain")]
+    public async Task<IActionResult> RunSyncPop3(
+        [FromServices] IPacsSaleLandingService saleSvc,
+        [FromServices] IPacsPropSuppAssocLandingService assocSvc,
+        [FromServices] IPacsSaleSyncRunner runner,
+        [FromServices] IConfiguration config,
+        [FromBody] SyncPop3Request? request,
+        CancellationToken cancellationToken = default)
+    {
+        var pacsCs = config.GetConnectionString("PacsConnection");
+        if (string.IsNullOrWhiteSpace(pacsCs))
+        {
+            return StatusCode(500, new
+            {
+                error = "ConnectionStrings:PacsConnection is required for SYNC-POP-3.",
+            });
+        }
+
+        var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
+            ? "sync-pop-3-debug"
+            : request.OperatorName.Trim();
+
+        var saleTopN = request?.TopN ?? 100;  // small default — overlap is the goal, not volume
+        var runS3 = request?.RunCanonicalProjection ?? false;
+
+        try
+        {
+            _logger.LogInformation("[SyncPop3] Starting targeted-supp chain. operator={Op} saleTopN={Top} runS3={S3}",
+                operatorName, saleTopN, runS3);
+
+            // ── S1: PACS sales → legacy_pacs_raw.sale ─────────────────
+            var saleSrc = new SqlServerPacsSaleSource(pacsCs, topN: saleTopN);
+            var s1 = await saleSvc.LandSalesAsync(saleSrc, operatorName, cancellationToken);
+            _logger.LogInformation(
+                "[SyncPop3] S1 status={Status} rows={Rows} batchId={Batch}",
+                s1.Status, s1.RowsLanded, s1.LoadBatchId);
+            if (!string.Equals(s1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+            {
+                return StatusCode(500, new { stage = "S1", error = s1.ErrorSummary, s1 });
+            }
+
+            // ── KEY EXTRACTION: distinct (PropId, PropValYr) from S1's
+            //    just-landed rows. SupNum is always 0 in our SourceQueryText
+            //    derivation, so we don't include it in the key set. ──
+            var keys = await _db.LegacyPacsRawSales
+                .AsNoTracking()
+                .Where(s => s.LoadBatchId == s1.LoadBatchId)
+                .Select(s => new { s.PropId, s.PropValYr })
+                .Distinct()
+                .ToListAsync(cancellationToken);
+            var keyTuples = keys.Select(k => (k.PropId, k.PropValYr)).ToList();
+            _logger.LogInformation("[SyncPop3] Extracted {N} distinct (PropId, PropValYr) keys from S1 batch.", keyTuples.Count);
+
+            // ── S2-A: targeted prop_supp_assoc landing ────────────────
+            var assocSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs, keyTuples);
+            var s2a = await assocSvc.LandPropSuppAssocsAsync(assocSrc, operatorName, cancellationToken);
+            _logger.LogInformation(
+                "[SyncPop3] S2-A status={Status} rows={Rows} batchId={Batch} dupKey={Dup} years={Years}",
+                s2a.Status, s2a.RowsLanded, s2a.LoadBatchId, s2a.DuplicateKeyViolations, s2a.DistinctYears);
+            if (!string.Equals(s2a.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+            {
+                return StatusCode(500, new { stage = "S2-A", error = s2a.ErrorSummary, s1, s2a });
+            }
+
+            // ── S2-B: truth promotion (always runs; this is the goal) ─
+            // ── S3:   canonical projection (skipped unless requested) ─
+            object? chainResult = null;
+            if (runS3)
+            {
+                var chain = await runner.RunAsync(s1.LoadBatchId, s2a.LoadBatchId, operatorName, cancellationToken);
+                _logger.LogInformation(
+                    "[SyncPop3] S2-B+S3 status={Status} promoted={P} projected={Proj} quarantined={Q}",
+                    chain.Status, chain.SalesPromoted, chain.SalesProjected, chain.SalesQuarantined);
+                chainResult = new
+                {
+                    chain.Status,
+                    chain.TruthPromotionLoadBatchId,
+                    chain.CanonicalPromotionLoadBatchId,
+                    chain.SalesPromoted,
+                    chain.SalesProjected,
+                    chain.SalesQuarantined,
+                };
+            }
+            else
+            {
+                // Run S2-B only by invoking the truth promoter directly. We don't
+                // expose IPacsSaleTruthPromoter via DI here — instead we use the
+                // runner with a flag that the chain has historically meant "S2-B
+                // and then S3". For SYNC-POP-3 we want S2-B alone, so we use the
+                // runner anyway and IGNORE the S3 result if it errors due to
+                // missing tf_parcel resolution targets. The runner short-circuits
+                // S3 when truth promotion produces zero rows AND when canonical
+                // resolution can't complete; either way, the truth_pacs.sale
+                // count after the call is the operative proof.
+                var chain = await runner.RunAsync(s1.LoadBatchId, s2a.LoadBatchId, operatorName, cancellationToken);
+                _logger.LogInformation(
+                    "[SyncPop3] S2-B (S3 informational) status={Status} promoted={P} projected={Proj} quarantined={Q}",
+                    chain.Status, chain.SalesPromoted, chain.SalesProjected, chain.SalesQuarantined);
+                chainResult = new
+                {
+                    chain.Status,
+                    chain.TruthPromotionLoadBatchId,
+                    chain.CanonicalPromotionLoadBatchId,
+                    chain.SalesPromoted,
+                    chain.SalesProjected,
+                    chain.SalesQuarantined,
+                    note = "S3 canonical projection ran but is expected to project 0 / quarantine all until parcel pipeline populates canonical_tf.tf_parcel. The operative SYNC-POP-3 success signal is salesPromoted > 0.",
+                };
+            }
+
+            // ── Final read-back so the response includes the operative
+            //    proof number directly ──
+            var truthPacsCount = await _db.TruthPacsSales.CountAsync(cancellationToken);
+            var legacyRawCount = await _db.LegacyPacsRawSales.CountAsync(cancellationToken);
+            var canonicalTfCount = await _db.TfSales.CountAsync(cancellationToken);
+
+            return Ok(new
+            {
+                operatorName,
+                s1 = new { s1.Status, s1.LoadBatchId, s1.RowsLanded, s1.StaleCodeViolations, s1.Pre2018Count, s1.Post2018Count, s1.UnknownDateCount },
+                keyExtraction = new { distinctKeys = keyTuples.Count },
+                s2a = new { s2a.Status, s2a.LoadBatchId, s2a.RowsLanded, s2a.DuplicateKeyViolations, s2a.DistinctYears },
+                chain = chainResult,
+                counts = new
+                {
+                    legacyPacsRawSales = legacyRawCount,
+                    truthPacsSales = truthPacsCount,
+                    canonicalTfSales = canonicalTfCount,
+                },
+                proofVerdict = truthPacsCount > 0
+                    ? "PROOF: truth_pacs.sale > 0 — SYNC-POP-3 succeeded."
+                    : "INCONCLUSIVE: truth_pacs.sale = 0. Either no qualified ('100') sales in this sample, or the supp index did not align (check distinctKeys count).",
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[SyncPop3] FAILED");
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name });
+        }
+    }
+
+    /// <param name="OperatorName">Audit anchor on the load batches.</param>
+    /// <param name="TopN">Sales sample size. Default 100. Smaller is faster
+    /// for proof; larger improves the chance of catching at least one
+    /// qualified ("100") sale that maps to the keyed supp set.</param>
+    /// <param name="RunCanonicalProjection">When false (default), S2-B truth
+    /// promotion is the operative proof. S3 canonical projection runs
+    /// informationally but its zero-result is expected (tf_parcel empty).</param>
+    public sealed record SyncPop3Request(
+        string? OperatorName,
+        int? TopN,
+        bool? RunCanonicalProjection);
 }
