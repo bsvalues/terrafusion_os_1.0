@@ -25,11 +25,13 @@ function truncate(value) {
 }
 
 function pushCheck(check) {
-  checks.push({
+  const pushed = {
     ...check,
     stdout: truncate(check.stdout),
     stderr: truncate(check.stderr),
-  });
+  };
+  checks.push(pushed);
+  return pushed;
 }
 
 function quoteForCmd(value) {
@@ -66,7 +68,7 @@ function run(name, command, args, options = {}) {
   });
 
   const status = result.error || result.status !== 0 ? 'FAIL' : 'PASS';
-  pushCheck({
+  return pushCheck({
     name,
     status,
     kind: 'command',
@@ -115,6 +117,22 @@ function readText(file) {
     return readFileSync(file, 'utf8');
   } catch {
     return '';
+  }
+}
+
+function readJsonFile(file) {
+  try {
+    return {
+      ok: true,
+      value: JSON.parse(readFileSync(file, 'utf8')),
+      error: null,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      value: null,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }
 
@@ -188,6 +206,94 @@ function warnIfMissingFile(name, targets, detail) {
     stdout:
       existing.length === 0 ? 'No matching evidence file found.' : `Found: ${existing.join(', ')}`,
     stderr: existing.length === 0 ? detail : '',
+  });
+}
+
+function inspectReadinessPacketArtifact(packetRunCheck = null) {
+  const target = 'generated/truth/june10-readiness-packet.json';
+  const filePath = resolveRepoPath(target);
+  const minimumMtimeMs = Date.parse(packetRunCheck?.startedAt ?? '');
+
+  if (!existsSync(filePath)) {
+    pushCheck({
+      name: 'June 10 readiness packet artifact posture',
+      status: 'FAIL',
+      kind: 'artifact_status',
+      command: `inspect ${target}`,
+      stdout: 'Readiness packet artifact is missing.',
+      stderr:
+        'The full readiness gate cannot trust packet posture without the generated JSON artifact.',
+    });
+    return;
+  }
+
+  const stat = statSync(filePath);
+  if (Number.isFinite(minimumMtimeMs) && stat.mtimeMs < minimumMtimeMs) {
+    pushCheck({
+      name: 'June 10 readiness packet artifact posture',
+      status: 'FAIL',
+      kind: 'artifact_status',
+      command: `inspect ${target}`,
+      stdout: [
+        `Packet artifact modified: ${new Date(stat.mtimeMs).toISOString()}`,
+        `Packet command started: ${packetRunCheck.startedAt}`,
+      ].join('\n'),
+      stderr:
+        'Readiness packet artifact is stale; it was not refreshed by the current packet command.',
+    });
+    return;
+  }
+
+  const parsed = readJsonFile(filePath);
+  if (!parsed.ok) {
+    pushCheck({
+      name: 'June 10 readiness packet artifact posture',
+      status: 'FAIL',
+      kind: 'artifact_status',
+      command: `inspect ${target}`,
+      stdout: '',
+      stderr: `Readiness packet artifact could not be parsed: ${parsed.error}`,
+    });
+    return;
+  }
+
+  const packet = parsed.value;
+  const packetStatus = packet?.status ?? 'UNKNOWN';
+  const packetWarnings = Number(packet?.warnings?.length ?? 0);
+  const packetBlockers = Number(packet?.shipBlockers?.length ?? 0);
+  const inconsistentBlockers =
+    packetBlockers > 0 && (packetStatus === 'PASS' || packetStatus === 'PASS_WITH_WARNINGS');
+  const inconsistentWarnings = packetWarnings > 0 && packetStatus === 'PASS';
+  const status = inconsistentBlockers
+    ? 'FAIL'
+    : packetStatus === 'PASS'
+      ? inconsistentWarnings
+        ? 'WARN'
+        : 'PASS'
+      : packetStatus === 'PASS_WITH_WARNINGS'
+        ? 'WARN'
+        : 'FAIL';
+
+  pushCheck({
+    name: 'June 10 readiness packet artifact posture',
+    status,
+    kind: 'artifact_status',
+    command: `inspect ${target}`,
+    stdout: [
+      `Packet status: ${packetStatus}`,
+      `Packet ship blockers: ${packetBlockers}`,
+      `Packet warnings: ${packetWarnings}`,
+      `Packet artifact modified: ${new Date(stat.mtimeMs).toISOString()}`,
+    ].join('\n'),
+    stderr: inconsistentBlockers
+      ? 'Readiness packet status is inconsistent: packet reports pass posture while ship blockers are present.'
+      : inconsistentWarnings
+        ? 'Readiness packet status is inconsistent: packet reports PASS while warnings are present.'
+        : status === 'PASS'
+          ? ''
+          : packetStatus === 'PASS_WITH_WARNINGS'
+            ? 'Readiness packet passed with warnings; review packet warning details before ship sign-off.'
+            : 'Readiness packet did not pass.',
   });
 }
 
@@ -301,11 +407,28 @@ run(
   { timeout: 180_000 }
 );
 
+run('Data source truth inventory', 'pnpm', ['run', 'truth:data-source-inventory'], {
+  timeout: 180_000,
+});
+
+run(
+  'County runtime registration ledger',
+  'pnpm',
+  ['run', 'truth:county-runtime-registration-ledger'],
+  {
+    timeout: 180_000,
+  }
+);
+
 run('Runtime candidate set', 'pnpm', ['run', 'truth:runtime-candidate-set'], {
   timeout: 180_000,
 });
 
 run('Runtime TerraFusion DB identity', 'pnpm', ['run', 'truth:runtime-db-identity'], {
+  timeout: 180_000,
+});
+
+run('Runtime row path proof', 'pnpm', ['run', 'truth:runtime-row-path-proof'], {
   timeout: 180_000,
 });
 
@@ -326,9 +449,41 @@ run('Benton parcel count sanity', 'pnpm', ['run', 'truth:benton-parcel-count-san
   timeout: 180_000,
 });
 
+run('Runtime source lineage', 'pnpm', ['run', 'truth:runtime-source-lineage'], {
+  timeout: 180_000,
+});
+
+run(
+  'Washington 39-county data crosswalk',
+  'pnpm',
+  ['run', 'truth:washington-39-county-data-crosswalk'],
+  {
+    timeout: 180_000,
+  }
+);
+
+run('County runtime contract', 'pnpm', ['run', 'truth:county-runtime-contract'], {
+  timeout: 180_000,
+});
+
+run('Runtime sale qualification lineage', 'pnpm', ['run', 'truth:runtime-sale-qualification'], {
+  timeout: 180_000,
+});
+
 run('Benton runtime pilot closure', 'pnpm', ['run', 'truth:benton-runtime-pilot-closure'], {
   timeout: 180_000,
 });
+
+const readinessPacketRun = run(
+  'June 10 readiness packet',
+  'pnpm',
+  ['run', 'truth:june10-readiness-packet'],
+  {
+    timeout: 180_000,
+  }
+);
+
+inspectReadinessPacketArtifact(readinessPacketRun);
 
 failIfPresent(
   'Old County Studio hub path removed',

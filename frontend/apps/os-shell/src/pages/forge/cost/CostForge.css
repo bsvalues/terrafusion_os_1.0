@@ -2,17 +2,17 @@
 /* Mirrors SalesForge.css (sf-*) structure exactly.              */
 
 .cf-workspace {
-  --cf-bg:      hsl(222 20% 9%);
-  --cf-surface: hsl(222 16% 12%);
-  --cf-border:  hsl(222 16% 20%);
-  --cf-text:    hsl(210 20% 94%);
-  --cf-muted:   hsl(215 15% 62%);
-  --cf-subtle:  hsl(215 10% 42%);
-  --cf-accent:  hsl(28 82% 58%);
-  --cf-info:    hsl(210 80% 60%);
-  --cf-success: hsl(142 70% 50%);
-  --cf-warn:    hsl(38 95% 55%);
-  --cf-danger:  hsl(0 72% 55%);
+  --cf-bg:      hsl(var(--tf-bg));
+  --cf-surface: hsl(var(--tf-surface));
+  --cf-border:  hsl(var(--tf-border));
+  --cf-text:    hsl(var(--tf-text));
+  --cf-muted:   hsl(var(--tf-text) / 0.55);
+  --cf-subtle:  hsl(var(--tf-text) / 0.38);
+  --cf-accent:  hsl(var(--tf-suite-forge));
+  --cf-info:    hsl(var(--tf-info-hs) var(--tf-l-60));
+  --cf-success: hsl(var(--tf-success-hs) var(--tf-l-50));
+  --cf-warn:    hsl(var(--tf-warning-hs) var(--tf-l-50));
+  --cf-danger:  hsl(var(--tf-error-hs) var(--tf-l-60));
 
   display: flex;
   flex-direction: column;
@@ -134,7 +134,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 5px 0;
-  border-bottom: 1px solid hsl(222 16% 17%);
+  border-bottom: 1px solid color-mix(in srgb, var(--cf-border) 80%, var(--cf-bg));
 }
 .cf-stats-kpi:last-child { border-bottom: none; }
 .cf-stats-kpi__label { font-size: 0.75rem; color: var(--cf-muted); }
@@ -189,9 +189,9 @@
   font-size: 0.75rem;
   font-weight: 700;
 }
-.cf-priority-badge--critical { background: hsl(0 60% 22%);  color: var(--cf-danger); }
-.cf-priority-badge--warn     { background: hsl(38 60% 16%); color: var(--cf-warn); }
-.cf-priority-badge--ok       { background: hsl(142 40% 12%);color: var(--cf-success); }
+.cf-priority-badge--critical { background: color-mix(in srgb, var(--cf-danger) 24%, var(--cf-bg)); color: var(--cf-danger); }
+.cf-priority-badge--warn     { background: color-mix(in srgb, var(--cf-warn) 18%, var(--cf-bg)); color: var(--cf-warn); }
+.cf-priority-badge--ok       { background: color-mix(in srgb, var(--cf-success) 14%, var(--cf-bg)); color: var(--cf-success); }
 
 /* ── Triage list ─────────────────────────────────────── */
 .cf-triage-row {
@@ -204,9 +204,9 @@
   cursor: pointer;
   transition: background 0.1s;
 }
-.cf-triage-row:hover { background: hsl(222 16% 14%); }
+.cf-triage-row:hover { background: color-mix(in srgb, var(--cf-surface) 85%, var(--cf-text) 6%); }
 .cf-triage-row--selected {
-  background: hsl(28 20% 11%);
+  background: color-mix(in srgb, var(--cf-accent) 12%, var(--cf-bg));
   border-left: 2px solid var(--cf-accent);
 }
 .cf-triage-row--head {
@@ -227,17 +227,17 @@
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
-.cf-ratio-badge--ok      { background: hsl(142 40% 14%); color: var(--cf-success); }
-.cf-ratio-badge--low     { background: hsl(38 60% 14%);  color: var(--cf-warn); }
-.cf-ratio-badge--high    { background: hsl(0 50% 16%);   color: var(--cf-danger); }
-.cf-ratio-badge--missing { background: hsl(222 16% 17%); color: var(--cf-subtle); }
+.cf-ratio-badge--ok      { background: color-mix(in srgb, var(--cf-success) 14%, var(--cf-bg)); color: var(--cf-success); }
+.cf-ratio-badge--low     { background: color-mix(in srgb, var(--cf-warn) 14%, var(--cf-bg)); color: var(--cf-warn); }
+.cf-ratio-badge--high    { background: color-mix(in srgb, var(--cf-danger) 16%, var(--cf-bg)); color: var(--cf-danger); }
+.cf-ratio-badge--missing { background: color-mix(in srgb, var(--cf-border) 80%, var(--cf-bg)); color: var(--cf-subtle); }
 
 /* ── BIV section (Benton Method) ─────────────────────── */
 .cf-biv-section {
   margin: 14px 0;
   padding: 14px;
-  background: hsl(28 30% 10%);
-  border: 1px solid hsl(28 50% 22%);
+  background: color-mix(in srgb, var(--cf-accent) 10%, var(--cf-bg));
+  border: 1px solid color-mix(in srgb, var(--cf-accent) 36%, var(--cf-border));
   border-radius: 8px;
 }
 .cf-biv-section__heading {
@@ -253,7 +253,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 4px 0;
-  border-bottom: 1px solid hsl(28 20% 18%);
+  border-bottom: 1px solid color-mix(in srgb, var(--cf-accent) 18%, var(--cf-border));
   font-size: 0.8125rem;
 }
 .cf-biv-row:last-child { border-bottom: none; }
@@ -289,21 +289,21 @@
 /* ── Impact preview panel ────────────────────────────── */
 .cf-impact-panel {
   padding: 14px;
-  background: hsl(142 20% 9%);
-  border: 1px solid hsl(142 30% 18%);
+  background: color-mix(in srgb, var(--cf-success) 8%, var(--cf-bg));
+  border: 1px solid color-mix(in srgb, var(--cf-success) 24%, var(--cf-border));
   border-radius: 8px;
   margin-top: 12px;
 }
 .cf-impact-panel--warn {
-  background: hsl(38 30% 9%);
-  border-color: hsl(38 50% 22%);
+  background: color-mix(in srgb, var(--cf-warn) 8%, var(--cf-bg));
+  border-color: color-mix(in srgb, var(--cf-warn) 32%, var(--cf-border));
 }
 .cf-impact-row {
   display: flex;
   justify-content: space-between;
   padding: 3px 0;
   font-size: 0.8125rem;
-  border-bottom: 1px solid hsl(222 16% 17%);
+  border-bottom: 1px solid color-mix(in srgb, var(--cf-border) 80%, var(--cf-bg));
 }
 .cf-impact-row:last-child { border-bottom: none; }
 .cf-impact-row__label { color: var(--cf-muted); }
@@ -328,7 +328,7 @@
 .cf-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .cf-btn--primary {
   background: var(--cf-accent);
-  color: hsl(222 20% 9%);
+  color: var(--cf-bg);
   border-color: var(--cf-accent);
 }
 .cf-btn--primary:hover:not(:disabled) { opacity: 0.88; }
@@ -338,7 +338,7 @@
   border-color: var(--cf-border);
 }
 .cf-btn--ghost:hover:not(:disabled) {
-  background: hsl(222 16% 16%);
+  background: color-mix(in srgb, var(--cf-surface) 85%, var(--cf-text) 6%);
   color: var(--cf-text);
 }
 .cf-btn--danger {
@@ -346,10 +346,10 @@
   color: var(--cf-danger);
   border-color: var(--cf-danger);
 }
-.cf-btn--danger:hover:not(:disabled) { background: hsl(0 72% 20%); }
+.cf-btn--danger:hover:not(:disabled) { background: color-mix(in srgb, var(--cf-danger) 22%, var(--cf-bg)); }
 .cf-btn--commit {
   background: var(--cf-success);
-  color: hsl(222 20% 9%);
+  color: var(--cf-bg);
   border-color: var(--cf-success);
 }
 .cf-btn--commit:hover:not(:disabled) { opacity: 0.88; }
@@ -385,9 +385,9 @@
   border-bottom: 2px solid var(--cf-border);
   position: sticky; top: 0; z-index: 1;
 }
-.cf-row--data:hover { background: hsl(222 16% 14%); }
+.cf-row--data:hover { background: color-mix(in srgb, var(--cf-surface) 85%, var(--cf-text) 6%); }
 .cf-row--selected {
-  background: hsl(28 30% 12%);
+  background: color-mix(in srgb, var(--cf-accent) 14%, var(--cf-bg));
   border-left: 2px solid var(--cf-accent);
 }
 .cf-cell {
@@ -449,8 +449,8 @@
 .cf-ai-callout {
   margin-bottom: 12px;
   padding: 10px 14px;
-  background: hsl(210 40% 10%);
-  border: 1px solid hsl(210 50% 22%);
+  background: color-mix(in srgb, var(--cf-info) 10%, var(--cf-bg));
+  border: 1px solid color-mix(in srgb, var(--cf-info) 32%, var(--cf-border));
   border-left: 3px solid var(--cf-info);
   border-radius: 6px;
   font-size: 0.8125rem;
