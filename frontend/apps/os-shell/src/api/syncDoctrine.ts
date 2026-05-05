@@ -208,3 +208,107 @@ export async function getDoctrineBatch(
   }
   return (await res.json()) as DoctrineBatchDetail;
 }
+
+// ───────────────────────────────────────────────────────────────
+// SYNC-COMPLETE-2 — single-lane drain endpoints. The full-corpus
+// run-all-lanes call exceeds curl's 6h timeout in production; these
+// per-lane drains let the operator checkpoint after each lane.
+// ───────────────────────────────────────────────────────────────
+
+/** Lane keys exposed by the backend's DoctrineDrainController. */
+export type DrainLaneName =
+  | 'parcel'
+  | 'owner-wsdor'
+  | 'improvement'
+  | 'land'
+  | 'sales'
+  | 'geometry';
+
+export interface DoctrineDrainRequest {
+  /** Audit anchor written on every batch this lane creates. */
+  operatorName: string;
+  /** PACS prop_val_yr filter. Default 2026 (Benton's active year). */
+  workingYear?: number;
+  /** When true (default), seed source TopN is null = full corpus. */
+  fullCorpus?: boolean;
+  /** Override per-lane safe defaults (200/500). Effective only when fullCorpus=false. */
+  topN?: number | null;
+}
+
+/** Shape returned by every drain endpoint, success or failure. */
+export interface DoctrineDrainResponse {
+  lane: DrainLaneName;
+  status: 'Succeeded' | 'Failed';
+  /** Set on Failed responses; identifies which stage tripped. */
+  failedStage?: string;
+  /** Set on Failed responses; raw error summary string. */
+  error?: string | null;
+  batchIds: string[];
+  counts: {
+    rowsLanded: number;
+    rowsPromotedToTruth: number;
+    rowsCanonicalized: number;
+    rowsQuarantinedThisLane: number;
+  };
+  durationSec: number;
+  gateSummary: {
+    totals: Array<{ status: string; count: number }>;
+    recentFailures: Array<{
+      loadBatchId: string;
+      gateName: string;
+      gateStage: string;
+      status: string;
+      expected: string | null;
+      actual: string | null;
+      detail: string | null;
+      executedAt: string;
+    }>;
+  };
+  quarantineDelta: {
+    before: number;
+    after: number;
+    delta: number;
+  };
+  nextRecommendedLane: DrainLaneName | null;
+}
+
+/**
+ * Trigger a single-lane doctrine drain. The request blocks until the
+ * lane finishes (or fails) — wall-clock can be many minutes; for
+ * full-corpus runs the operator should still use curl with
+ * <c>-m 21600</c>. The browser fetch will time out before then.
+ *
+ * Failed responses come back as HTTP 500 with the same envelope
+ * shape; this fn parses both and returns a typed object either way.
+ * It throws only on transport-level failures (network down, abort).
+ */
+export async function postDoctrineDrain(
+  lane: DrainLaneName,
+  request: DoctrineDrainRequest,
+  signal?: AbortSignal,
+): Promise<DoctrineDrainResponse> {
+  const url = `${API_BASE_URL}/sync/doctrine/drain/${lane}`;
+  const body = JSON.stringify({
+    OperatorName: request.operatorName,
+    WorkingYear: request.workingYear ?? 2026,
+    FullCorpus: request.fullCorpus ?? true,
+    TopN: request.topN ?? null,
+  });
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body,
+    signal,
+  });
+  // Both Succeeded (200) and Failed (500) carry the envelope.
+  const text = await res.text();
+  let parsed: DoctrineDrainResponse;
+  try {
+    parsed = JSON.parse(text) as DoctrineDrainResponse;
+  } catch (e) {
+    throw new Error(
+      `postDoctrineDrain(${lane}) HTTP ${res.status} returned non-JSON: ${text.slice(0, 200)}`,
+    );
+  }
+  return parsed;
+}
