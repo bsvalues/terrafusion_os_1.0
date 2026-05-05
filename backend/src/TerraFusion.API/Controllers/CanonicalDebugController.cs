@@ -2014,8 +2014,13 @@ public class CanonicalDebugController : ControllerBase
         var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
             ? "doctrine-closure-1-all-lanes"
             : request.OperatorName.Trim();
-        var ownerTopN = request?.OwnerTopN ?? 200;
-        var saleTopN = request?.SaleTopN ?? 500;
+        // SYNC-COMPLETE-1: support full-corpus drains. The caller distinguishes
+        // "default safe sample size" (omit the field → 200/500) from "explicit
+        // full corpus" (pass FullCorpus=true → topN passes through as null).
+        // FullCorpus=true takes precedence over any TopN value.
+        var fullCorpus = request?.FullCorpus ?? false;
+        int? ownerTopN = fullCorpus ? null : (request?.OwnerTopN ?? 200);
+        int? saleTopN = fullCorpus ? null : (request?.SaleTopN ?? 500);
         short workingYear = (short)(request?.WorkingYear ?? 2026);
         var skipGeometry = request?.SkipGeometry ?? false;
 
@@ -2218,12 +2223,17 @@ public class CanonicalDebugController : ControllerBase
     /// <param name="SaleTopN">Sale lane independent seed size. Default 500.</param>
     /// <param name="WorkingYear">PACS year filter. Default 2026.</param>
     /// <param name="SkipGeometry">If true, skip ArcGIS lanes (useful for offline runs).</param>
+    /// <param name="FullCorpus">SYNC-COMPLETE-1: when true, ignores OwnerTopN/SaleTopN
+    /// and drains the full PACS corpus. Wall-clock ~60-150 minutes. Use for
+    /// production drains; the default proof-mode TopN values are safe for
+    /// dev iteration.</param>
     public sealed record DoctrineClosureRequest(
         string? OperatorName,
         int? OwnerTopN,
         int? SaleTopN,
         int? WorkingYear,
-        bool? SkipGeometry);
+        bool? SkipGeometry,
+        bool? FullCorpus);
 
     // ════════════════════════════════════════════════════════════════════
     // ATTR-POP-1: populate canonical_tf.attribute_definition from PACS
@@ -3002,4 +3012,82 @@ public class CanonicalDebugController : ControllerBase
     public sealed record SaleDrain1Request(
         string? OperatorName,
         bool? DryRun);
+
+    // ════════════════════════════════════════════════════════════════════
+    // SYNC-COMPLETE-1: PACS source-side row counts for post-drain validation.
+    //   Whitelisted SELECT COUNT(*) queries with named filters; never
+    //   accepts arbitrary SQL.
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Returns SELECT COUNT(*) against a whitelisted set of PACS tables
+    /// + named filters. Used to validate post-drain canonical row counts
+    /// against source-side expected sizes. Read-only by construction —
+    /// the SQL is hardcoded per (table, filter) combination, never built
+    /// from caller input.
+    /// </summary>
+    [HttpGet("pacs-counts")]
+    public async Task<IActionResult> GetPacsCounts(
+        [FromServices] IConfiguration config,
+        CancellationToken cancellationToken = default)
+    {
+        var pacsCs = config.GetConnectionString("PacsConnection");
+        if (string.IsNullOrWhiteSpace(pacsCs))
+            return StatusCode(500, new { error = "ConnectionStrings:PacsConnection is required." });
+
+        // Hardcoded queries — never accept user SQL. Each entry is
+        // (label, query). Adding new entries is a code change.
+        var queries = new (string Label, string Sql)[]
+        {
+            ("property_total",          "SELECT COUNT(*) FROM dbo.property"),
+            ("property_real",           "SELECT COUNT(*) FROM dbo.property WHERE prop_type_cd = 'R'"),
+            ("property_mh",             "SELECT COUNT(*) FROM dbo.property WHERE prop_type_cd = 'MH'"),
+            ("property_personal",       "SELECT COUNT(*) FROM dbo.property WHERE prop_type_cd = 'P'"),
+            ("account_total",           "SELECT COUNT(*) FROM dbo.account"),
+            ("owner_active_post2018",   "SELECT COUNT(*) FROM dbo.owner WHERE sup_num = 0 AND owner_tax_yr >= 2018"),
+            ("wpov_active_post2018",    "SELECT COUNT(*) FROM dbo.wash_prop_owner_val WHERE sup_num = 0 AND year >= 2018"),
+            ("imprv_2026_active",       "SELECT COUNT(*) FROM dbo.imprv WHERE sup_num = 0 AND prop_val_yr = 2026"),
+            ("imprv_detail_2026_active","SELECT COUNT(*) FROM dbo.imprv_detail WHERE sup_num = 0 AND prop_val_yr = 2026"),
+            ("imprv_attr_2026_active",  "SELECT COUNT(*) FROM dbo.imprv_attr WHERE sup_num = 0 AND prop_val_yr = 2026"),
+            ("land_detail_2026_active", "SELECT COUNT(*) FROM dbo.land_detail WHERE sup_num = 0 AND prop_val_yr = 2026"),
+            ("sale_post2018",           "SELECT COUNT(*) FROM dbo.sale WHERE sl_dt >= '2018-01-01'"),
+        };
+
+        var results = new System.Collections.Generic.Dictionary<string, long>();
+        var errors = new System.Collections.Generic.List<object>();
+
+        try
+        {
+            await using var conn = new Microsoft.Data.SqlClient.SqlConnection(pacsCs);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            foreach (var (label, sql) in queries)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                try
+                {
+                    await using var cmd = new Microsoft.Data.SqlClient.SqlCommand(sql, conn) { CommandTimeout = 120 };
+                    var count = (await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false)) ?? 0L;
+                    results[label] = Convert.ToInt64(count);
+                }
+                catch (Exception ex)
+                {
+                    errors.Add(new { label, error = ex.Message });
+                    results[label] = -1; // sentinel for failure
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, partialResults = results, errors });
+        }
+
+        return Ok(new
+        {
+            snapshotAt = DateTime.UtcNow,
+            counts = results,
+            errors,
+            note = "All counts are SELECT COUNT(*) at the time of this call against live pacs_oltp. -1 sentinel indicates per-query failure (see errors block).",
+        });
+    }
 }
