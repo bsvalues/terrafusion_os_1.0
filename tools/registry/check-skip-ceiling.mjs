@@ -55,6 +55,7 @@ const FILE_BASELINES = {
   'src/components/ui/tooltip.test.tsx':      { count: 3,  category: 'jsdom' },
   // ── Form / switch ────────────────────────────────────────────────────────
   'src/tests/switch.test.tsx':               { count: 3,  category: 'jsdom,radix' },
+  'tests/frontend.test.ts':                  { count: 6,  category: 'legacy-harness' },
   // ── Shell / desktop ──────────────────────────────────────────────────────
   'src/shell/desktop/Desktop.altTab.test.tsx':           { count: 2, category: 'jsdom,async' },
   'src/shell/desktop/__tests__/DesktopErrorBoundary.test.tsx': { count: 0, category: '' },
@@ -136,8 +137,11 @@ let totalSkipped = 0;
 for (const fileResult of raw.testResults ?? []) {
   const fullPath = fileResult.testFilePath ?? fileResult.name ?? '';
 
-  // Normalise to relative path (src/...)
-  const rel = fullPath.replace(/^.*?[/\\](src[/\\])/, 'src/').replace(/\\/g, '/');
+  // Normalise to stable repo-relative paths for frontend suite outputs.
+  const normalizedPath = fullPath.replace(/\\/g, '/');
+  const srcMatch = normalizedPath.match(/(?:^|\/)(src\/.*)$/);
+  const testsMatch = normalizedPath.match(/(?:^|\/)(tests\/.*)$/);
+  const rel = srcMatch?.[1] ?? testsMatch?.[1] ?? normalizedPath;
 
   const skipped = (fileResult.assertionResults ?? []).filter(
     (t) => t.status === 'pending' || t.status === 'skipped'
