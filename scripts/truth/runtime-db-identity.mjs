@@ -19,6 +19,11 @@ const runtimeBaseUrl =
   process.env.TF_RUNTIME_BASE_URL ??
   process.env.TERRAFUSION_RUNTIME_BASE_URL ??
   'http://localhost:5046';
+const configSearchFiles = [
+  'backend/src/TerraFusion.API/appsettings.Development.json',
+  'backend/src/TerraFusion.API/appsettings.BentonCounty.json',
+  'backend/src/TerraFusion.API/appsettings.json',
+];
 
 function rel(filePath) {
   return path.relative(repoRoot, filePath).replaceAll(path.sep, '/');
@@ -95,6 +100,61 @@ function normalizePayload(payload) {
   };
 }
 
+function readConfigExpectationSources(identity) {
+  const expectedCount = identity?.expectedBentonParcelCount;
+  const expectedDb = identity?.expectedJune10Database;
+  const sources = [];
+
+  for (const relativePath of configSearchFiles) {
+    const filePath = path.join(repoRoot, relativePath);
+    if (!fs.existsSync(filePath)) continue;
+
+    let parsed;
+    try {
+      parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    } catch {
+      continue;
+    }
+
+    const values = [
+      {
+        key: 'RuntimeTruth.ExpectedJune10Database',
+        value: parsed.RuntimeTruth?.ExpectedJune10Database,
+      },
+      {
+        key: 'RuntimeTruth.ExpectedBentonParcelCount',
+        value: parsed.RuntimeTruth?.ExpectedBentonParcelCount,
+      },
+      {
+        key: 'BentonCounty.ParcelCount',
+        value: parsed.BentonCounty?.ParcelCount,
+      },
+      {
+        key: 'County.PropertyCount',
+        value: parsed.County?.PropertyCount,
+      },
+    ];
+
+    for (const entry of values) {
+      if (entry.value === undefined || entry.value === null) continue;
+      const valueText = String(entry.value);
+      const matchesExpected =
+        (expectedCount !== null &&
+          expectedCount !== undefined &&
+          valueText === String(expectedCount)) ||
+        (expectedDb && valueText.toLowerCase() === String(expectedDb).toLowerCase());
+      sources.push({
+        path: rel(filePath),
+        key: entry.key,
+        value: entry.value,
+        matchesRuntimeExpectation: Boolean(matchesExpected),
+      });
+    }
+  }
+
+  return sources;
+}
+
 function evaluate(probe) {
   const blockers = [];
   const warnings = [];
@@ -119,6 +179,7 @@ function evaluate(probe) {
     blockers: [...new Set(blockers)],
     warnings: [...new Set(warnings)],
     identity,
+    configExpectationSources: readConfigExpectationSources(identity),
   };
 }
 
@@ -146,6 +207,21 @@ function renderMarkdown(report) {
     `- Expected runtime DB: ${identity.isExpectedJune10RuntimeDb ? 'yes' : 'no'}`,
     `- Expected Benton parcel count: ${identity.expectedBentonParcelCount ?? '-'}`,
     `- Benton parcel count expected: ${identity.isBentonParcelCountExpected ? 'yes' : 'no'}`,
+    '',
+    '## Config Expectation Sources',
+    '',
+    '| Path | Key | Value | Matches Runtime Expectation |',
+    '|---|---|---:|---|',
+    ...(report.configExpectationSources?.length
+      ? report.configExpectationSources.map(source =>
+          [
+            `\`${source.path}\``,
+            source.key,
+            String(source.value),
+            source.matchesRuntimeExpectation ? 'yes' : 'no',
+          ].join(' | ')
+        )
+      : ['| - | - | - | - |']),
     '',
     '## Migration State',
     '',
