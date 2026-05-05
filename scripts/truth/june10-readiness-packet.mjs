@@ -648,6 +648,10 @@ function artifactWarnings(value) {
     value?.status === 'PASS_WITH_WARNINGS' ? ['Artifact status is PASS_WITH_WARNINGS.'] : [];
   const direct = warningMessages(value, 'Artifact');
   const summary = warningMessages(value?.summary, 'Artifact summary');
+  const receiptWarnings = [
+    ...warningMessages(value?.receiptEvidence, 'receiptEvidence'),
+    ...warningMessages(value?.receiptEvidence?.summary, 'receiptEvidence summary'),
+  ];
   const rowWarnings = Array.isArray(value?.rows)
     ? value.rows.flatMap(row =>
         [...warningMessages(row, 'row'), ...warningMessages(row?.summary, 'row summary')].map(
@@ -664,9 +668,16 @@ function artifactWarnings(value) {
       )
     : [];
 
-  return [...new Set([...posture, ...direct, ...summary, ...rowWarnings, ...proofWarnings])].map(
-    item => String(item)
-  );
+  return [
+    ...new Set([
+      ...posture,
+      ...direct,
+      ...summary,
+      ...receiptWarnings,
+      ...rowWarnings,
+      ...proofWarnings,
+    ]),
+  ].map(item => String(item));
 }
 
 function warningMessages(value, label) {

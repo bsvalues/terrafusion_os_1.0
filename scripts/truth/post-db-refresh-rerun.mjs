@@ -333,6 +333,12 @@ function countArtifactWarnings(value) {
     value?.summary?.warnings,
     value?.warningCount,
     value?.summary?.warningCount,
+    value?.receiptEvidence?.warning,
+    value?.receiptEvidence?.warnings,
+    value?.receiptEvidence?.warningCount,
+    value?.receiptEvidence?.summary?.warning,
+    value?.receiptEvidence?.summary?.warnings,
+    value?.receiptEvidence?.summary?.warningCount,
   ];
 
   let count = 0;

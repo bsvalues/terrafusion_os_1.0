@@ -885,6 +885,15 @@ test('readiness packet surfaces scalar and object-shaped warning fields', () => 
       warning: 'Summary warning.',
       warnings: 'Summary warning string.',
     },
+    receiptEvidence: {
+      warning: 'Receipt warning.',
+      warnings: {
+        one: 'Receipt warning one.',
+      },
+      summary: {
+        warning: 'Receipt summary warning.',
+      },
+    },
     rows: [
       {
         county: 'Benton',
@@ -941,6 +950,23 @@ test('readiness packet surfaces scalar and object-shaped warning fields', () => 
   );
   assert.ok(
     report.warnings.some(
+      item => item.source === 'dbIdentity' && item.message === 'Receipt warning.'
+    )
+  );
+  assert.ok(
+    report.warnings.some(
+      item =>
+        item.source === 'dbIdentity' &&
+        item.message === 'receiptEvidence.warnings has 1 object key(s).'
+    )
+  );
+  assert.ok(
+    report.warnings.some(
+      item => item.source === 'dbIdentity' && item.message === 'Receipt summary warning.'
+    )
+  );
+  assert.ok(
+    report.warnings.some(
       item => item.source === 'dbIdentity' && item.message === 'Benton: Row warning.'
     )
   );
@@ -972,6 +998,7 @@ test('readiness packet surfaces scalar and object-shaped warning fields', () => 
     )
   );
   assert.ok(report.artifactDetails.dbIdentity.warnings.items.includes('Top warning.'));
+  assert.ok(report.artifactDetails.dbIdentity.warnings.items.includes('Receipt warning.'));
   assert.ok(
     report.artifactDetails.dbIdentity.warnings.items.includes(
       'Artifact.warnings has 2 object key(s).'
