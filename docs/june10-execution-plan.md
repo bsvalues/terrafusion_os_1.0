@@ -131,7 +131,7 @@ Status values:
 | DONE | No 39-county runtime claim unless every county has TerraFusion DB runtime proof. | Codex | `generated/truth/runtime-candidate-set.*`, `generated/truth/washington-39-county-data-crosswalk.*` |
 | ACTIVE | Keep readiness work in the June 10 Codex worktree, separate from Claude Sync/DB work. | Codex | `git status --short --branch` before edits. |
 | ACTIVE | Do not duplicate existing ledgers. Extend existing truth gates only when they are missing a required decision. | Codex | Existing script/artifact checked before creating new script. |
-| BLOCKED | Settle generated truth artifact governance before committing refreshed `generated/truth/**` outputs. | Codex | PR checks / repo-shape gate. |
+| DONE | Settle generated truth artifact governance: `generated/truth/**` is local/CI output, not tracked source. | Codex | `node scripts/repo-shape-guard.mjs` |
 
 ### Track A - TerraFusion DB / Sync Closure
 
@@ -146,7 +146,7 @@ Status values:
 | Status | Item | Owner | Proof / Exit Gate | Notes |
 |---|---|---|---|---|
 | DONE | Create 39-county evidence crosswalk. | Codex | `scripts/truth/washington-39-county-data-crosswalk.mjs` and test exist. | Do not rebuild as a duplicate ledger. |
-| DONE | Generate current 39-county crosswalk artifact. | Codex | `generated/truth/washington-39-county-data-crosswalk.json/.md` | Current result: `0` runtime-proven; 12 public-source seed; 27 provenance inventory only. |
+| DONE | Generate current 39-county crosswalk artifact locally. | Codex | `pnpm run truth:washington-39-county-data-crosswalk` | Generated reports are local/CI artifacts under ignored `generated/truth/**`. |
 | NEXT | Re-run crosswalk after Claude DB work lands. | Codex | `pnpm run truth:washington-39-county-data-crosswalk` | Only promote counties with TerraFusion DB runtime proof and receipts. |
 | DONE | Add per-county activation status, next action, and owner inside the existing crosswalk. | Codex | `node --test scripts/truth/washington-39-county-data-crosswalk.test.mjs` | Use existing crosswalk, not a second ledger. |
 
@@ -180,14 +180,14 @@ Status values:
 | Status | Item | Owner | Proof / Exit Gate | Notes |
 |---|---|---|---|---|
 | BLOCKED | Final June 10 readiness packet. | Codex | `pnpm run truth:june10-readiness-packet` passes. | Must include DB identity, content, load receipts, crosswalk, contract, Benton pilot closure, and UAT. |
-| BLOCKED | CI/governance mergeability. | Codex | Required PR checks green. | Current risk: generated truth artifacts under root may violate repo-shape governance. |
+| NEXT | CI/governance mergeability. | Codex | Required PR checks green. | Root generated truth artifacts are no longer tracked; remaining CI must be rechecked after push. |
 | BLOCKED | Deployment smoke. | Codex | Runtime smoke against packaged app. | No feature work after readiness packet is green. |
 
 ## Next Work Queue
 
 Do these in order, unless Claude's DB work lands and changes the blockers:
 
-1. `BLOCKED`: Decide whether generated truth artifacts remain committed under root `generated/truth/**` or move to an approved evidence-artifact path.
+1. `NEXT`: Recheck PR CI/governance after removing tracked generated truth artifacts.
 2. `WAITING`: After Claude DB work lands, rerun DB identity/content/load-ledger/parcel sanity/sales qualification gates.
 3. `WAITING`: Rerun 39-county crosswalk and runtime contract against the updated TerraFusion DB.
 4. `WAITING`: Run Benton UAT only after data gates are green.
