@@ -1,5 +1,15 @@
 # SYNC-COMPLETE-1 — Production Drain Runbook
 
+> **Update — SYNC-COMPLETE-2:** for new full-corpus work, see
+> [sync-complete-2-runbook.md](./sync-complete-2-runbook.md). The
+> single-call `run-all-lanes` pattern documented below has been
+> superseded by single-lane drain endpoints under
+> `/api/sync/doctrine/drain/{lane}` (parcel, owner-wsdor,
+> improvement, land, sales, geometry) plus dashboard buttons for
+> short lanes. The validation tables, expected counts, and
+> baseline-capture procedure in this file remain authoritative —
+> what changes is *how* the drain is driven.
+
 **Audience:** the operator (Benton County assessor) running the
 full-corpus TerraFusion Sync drain. The doctrine pipeline is
 production-ready as of this slice; this runbook is the operational
