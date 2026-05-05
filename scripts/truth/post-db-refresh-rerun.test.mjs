@@ -280,7 +280,7 @@ test('preserves PASS_WITH_WARNINGS from refreshed proof artifact status', () => 
               "fs.writeFileSync('generated/truth/example.json', JSON.stringify({ status: 'PASS_WITH_WARNINGS', warnings: ['review before shipping'] }) + '\\n');",
               "fs.writeFileSync('generated/truth/status-only.json', JSON.stringify({ status: 'PASS_WITH_WARNINGS' }) + '\\n');",
               "fs.writeFileSync('generated/truth/nested-counts.json', JSON.stringify({ rows: [{ county: 'Benton', warningCount: 2, summary: { warningCount: 1 } }], proofs: [{ county: 'Benton', warningCount: 3 }] }) + '\\n');",
-              "fs.writeFileSync('generated/truth/scalar-warnings.json', JSON.stringify({ warning: 'top warning', warnings: 'top warnings string', summary: { warning: 'summary warning', warnings: { one: 'summary warning', two: 'summary warning' } }, receiptEvidence: { warning: 'receipt warning', warnings: { one: 'receipt warning', two: 'receipt warning' }, summary: { warning: 'receipt summary warning' } }, rows: [{ county: 'Benton', warning: 'row warning', warnings: 'row warnings string' }], proofs: [{ county: 'Benton', warning: 'proof warning', warnings: { one: 'proof warning' } }] }) + '\\n');",
+              "fs.writeFileSync('generated/truth/scalar-warnings.json', JSON.stringify({ warning: 'top warning', warnings: 'top warnings string', summary: { status: 'PASS_WITH_WARNINGS', warning: 'summary warning', warnings: { one: 'summary warning', two: 'summary warning' } }, receiptEvidence: { status: 'PASS_WITH_WARNINGS', warning: 'receipt warning', warnings: { one: 'receipt warning', two: 'receipt warning' }, summary: { status: 'PASS_WITH_WARNINGS', warning: 'receipt summary warning' } }, rows: [{ county: 'Benton', status: 'PASS_WITH_WARNINGS', warning: 'row warning', warnings: 'row warnings string', summary: { status: 'PASS_WITH_WARNINGS' } }], proofs: [{ county: 'Benton', status: 'PASS_WITH_WARNINGS', warning: 'proof warning', warnings: { one: 'proof warning' }, summary: { status: 'PASS_WITH_WARNINGS' } }] }) + '\\n');",
             ].join(' '),
           ],
           expectedArtifacts: [
@@ -299,19 +299,19 @@ test('preserves PASS_WITH_WARNINGS from refreshed proof artifact status', () => 
   assert.equal(report.status, 'PASS_WITH_WARNINGS');
   assert.equal(report.nextAction.code, 'review_warnings_then_run_full_readiness_gate');
   assert.equal(report.nextAction.command, 'pnpm run readiness:june10');
-  assert.equal(report.summary.artifactWarnings, 20);
+  assert.equal(report.summary.artifactWarnings, 27);
   assert.equal(report.summary.artifactsPassWithWarnings, 2);
   assert.equal(report.results[0].artifactOutputs[0].artifactStatus, 'PASS_WITH_WARNINGS');
   assert.equal(report.results[0].artifactOutputs[0].warningCount, 1);
   assert.equal(report.results[0].artifactOutputs[1].artifactStatus, 'PASS_WITH_WARNINGS');
   assert.equal(report.results[0].artifactOutputs[1].warningCount, 0);
   assert.equal(report.results[0].artifactOutputs[2].warningCount, 6);
-  assert.equal(report.results[0].artifactOutputs[3].warningCount, 13);
+  assert.equal(report.results[0].artifactOutputs[3].warningCount, 20);
   const markdown = fs.readFileSync(
     path.join(root, 'generated', 'truth', 'post-db-refresh-rerun.md'),
     'utf8'
   );
-  assert.match(markdown, /Artifact warnings: 20/);
+  assert.match(markdown, /Artifact warnings: 27/);
   assert.match(markdown, /Artifacts PASS_WITH_WARNINGS: 2/);
   assert.match(markdown, /PASS_WITH_WARNINGS/);
 });

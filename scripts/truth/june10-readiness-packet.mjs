@@ -644,25 +644,34 @@ function blockerMessages(value, label) {
 }
 
 function artifactWarnings(value) {
-  const posture =
-    value?.status === 'PASS_WITH_WARNINGS' ? ['Artifact status is PASS_WITH_WARNINGS.'] : [];
+  const posture = statusWarningMessages(value, 'Artifact');
   const direct = warningMessages(value, 'Artifact');
-  const summary = warningMessages(value?.summary, 'Artifact summary');
+  const summary = [
+    ...statusWarningMessages(value?.summary, 'Artifact summary'),
+    ...warningMessages(value?.summary, 'Artifact summary'),
+  ];
   const receiptWarnings = [
+    ...statusWarningMessages(value?.receiptEvidence, 'receiptEvidence'),
     ...warningMessages(value?.receiptEvidence, 'receiptEvidence'),
+    ...statusWarningMessages(value?.receiptEvidence?.summary, 'receiptEvidence summary'),
     ...warningMessages(value?.receiptEvidence?.summary, 'receiptEvidence summary'),
   ];
   const rowWarnings = Array.isArray(value?.rows)
     ? value.rows.flatMap(row =>
-        [...warningMessages(row, 'row'), ...warningMessages(row?.summary, 'row summary')].map(
-          item => `${row?.tableName ?? row?.county ?? 'row'}: ${item}`
-        )
+        [
+          ...statusWarningMessages(row, 'row'),
+          ...warningMessages(row, 'row'),
+          ...statusWarningMessages(row?.summary, 'row summary'),
+          ...warningMessages(row?.summary, 'row summary'),
+        ].map(item => `${row?.tableName ?? row?.county ?? 'row'}: ${item}`)
       )
     : [];
   const proofWarnings = Array.isArray(value?.proofs)
     ? value.proofs.flatMap(proof =>
         [
+          ...statusWarningMessages(proof, 'proof'),
           ...warningMessages(proof, 'proof'),
+          ...statusWarningMessages(proof?.summary, 'proof summary'),
           ...warningMessages(proof?.summary, 'proof summary'),
         ].map(item => `${proof?.county ?? 'proof'}: ${item}`)
       )
@@ -678,6 +687,10 @@ function artifactWarnings(value) {
       ...proofWarnings,
     ]),
   ].map(item => String(item));
+}
+
+function statusWarningMessages(value, label) {
+  return value?.status === 'PASS_WITH_WARNINGS' ? [`${label} status is PASS_WITH_WARNINGS.`] : [];
 }
 
 function warningMessages(value, label) {

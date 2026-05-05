@@ -345,14 +345,19 @@ function countArtifactWarnings(value) {
   for (const warningValue of warningValues) {
     count += countWarningValue(warningValue);
   }
+  count += countStatusWarning(value?.summary?.status);
+  count += countStatusWarning(value?.receiptEvidence?.status);
+  count += countStatusWarning(value?.receiptEvidence?.summary?.status);
 
   if (Array.isArray(value?.rows)) {
     count += value.rows.reduce(
       (sum, row) =>
         sum +
+        countStatusWarning(row?.status) +
         countWarningValue(row?.warning) +
         countWarningValue(row?.warnings) +
         countWarningValue(row?.warningCount) +
+        countStatusWarning(row?.summary?.status) +
         countWarningValue(row?.summary?.warning) +
         countWarningValue(row?.summary?.warningCount),
       0
@@ -363,9 +368,11 @@ function countArtifactWarnings(value) {
     count += value.proofs.reduce(
       (sum, proof) =>
         sum +
+        countStatusWarning(proof?.status) +
         countWarningValue(proof?.warning) +
         countWarningValue(proof?.warnings) +
         countWarningValue(proof?.warningCount) +
+        countStatusWarning(proof?.summary?.status) +
         countWarningValue(proof?.summary?.warning) +
         countWarningValue(proof?.summary?.warningCount),
       0
@@ -373,6 +380,10 @@ function countArtifactWarnings(value) {
   }
 
   return count;
+}
+
+function countStatusWarning(status) {
+  return status === 'PASS_WITH_WARNINGS' ? 1 : 0;
 }
 
 function countWarningValue(value) {

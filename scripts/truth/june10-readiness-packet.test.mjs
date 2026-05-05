@@ -882,24 +882,29 @@ test('readiness packet surfaces scalar and object-shaped warning fields', () => 
       two: 'Top warning two.',
     },
     summary: {
+      status: 'PASS_WITH_WARNINGS',
       warning: 'Summary warning.',
       warnings: 'Summary warning string.',
     },
     receiptEvidence: {
+      status: 'PASS_WITH_WARNINGS',
       warning: 'Receipt warning.',
       warnings: {
         one: 'Receipt warning one.',
       },
       summary: {
+        status: 'PASS_WITH_WARNINGS',
         warning: 'Receipt summary warning.',
       },
     },
     rows: [
       {
         county: 'Benton',
+        status: 'PASS_WITH_WARNINGS',
         warning: 'Row warning.',
         warnings: 'Row warning string.',
         summary: {
+          status: 'PASS_WITH_WARNINGS',
           warning: 'Row summary warning.',
         },
       },
@@ -907,11 +912,13 @@ test('readiness packet surfaces scalar and object-shaped warning fields', () => 
     proofs: [
       {
         county: 'Benton',
+        status: 'PASS_WITH_WARNINGS',
         warning: 'Proof warning.',
         warnings: {
           one: 'Proof warning one.',
         },
         summary: {
+          status: 'PASS_WITH_WARNINGS',
           warning: 'Proof summary warning.',
         },
       },
@@ -945,12 +952,26 @@ test('readiness packet surfaces scalar and object-shaped warning fields', () => 
   );
   assert.ok(
     report.warnings.some(
+      item =>
+        item.source === 'dbIdentity' &&
+        item.message === 'Artifact summary status is PASS_WITH_WARNINGS.'
+    )
+  );
+  assert.ok(
+    report.warnings.some(
       item => item.source === 'dbIdentity' && item.message === 'Summary warning string.'
     )
   );
   assert.ok(
     report.warnings.some(
       item => item.source === 'dbIdentity' && item.message === 'Receipt warning.'
+    )
+  );
+  assert.ok(
+    report.warnings.some(
+      item =>
+        item.source === 'dbIdentity' &&
+        item.message === 'receiptEvidence status is PASS_WITH_WARNINGS.'
     )
   );
   assert.ok(
@@ -967,7 +988,20 @@ test('readiness packet surfaces scalar and object-shaped warning fields', () => 
   );
   assert.ok(
     report.warnings.some(
+      item =>
+        item.source === 'dbIdentity' &&
+        item.message === 'receiptEvidence summary status is PASS_WITH_WARNINGS.'
+    )
+  );
+  assert.ok(
+    report.warnings.some(
       item => item.source === 'dbIdentity' && item.message === 'Benton: Row warning.'
+    )
+  );
+  assert.ok(
+    report.warnings.some(
+      item =>
+        item.source === 'dbIdentity' && item.message === 'Benton: row status is PASS_WITH_WARNINGS.'
     )
   );
   assert.ok(
@@ -983,6 +1017,13 @@ test('readiness packet surfaces scalar and object-shaped warning fields', () => 
   assert.ok(
     report.warnings.some(
       item => item.source === 'dbIdentity' && item.message === 'Benton: Proof warning.'
+    )
+  );
+  assert.ok(
+    report.warnings.some(
+      item =>
+        item.source === 'dbIdentity' &&
+        item.message === 'Benton: proof status is PASS_WITH_WARNINGS.'
     )
   );
   assert.ok(
