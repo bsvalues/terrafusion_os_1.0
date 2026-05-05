@@ -423,6 +423,38 @@ function countArtifactWarnings(value) {
     );
   }
 
+  if (Array.isArray(value?.receiptEvidence?.rows)) {
+    count += value.receiptEvidence.rows.reduce(
+      (sum, row) =>
+        sum +
+        countStatusWarning(row?.status) +
+        countWarningValue(row?.warning) +
+        countWarningValue(row?.warnings) +
+        countWarningValue(row?.warningCount) +
+        countStatusWarning(row?.summary?.status) +
+        countWarningValue(row?.summary?.warning) +
+        countWarningValue(row?.summary?.warnings) +
+        countWarningValue(row?.summary?.warningCount),
+      0
+    );
+  }
+
+  if (Array.isArray(value?.receiptEvidence?.proofs)) {
+    count += value.receiptEvidence.proofs.reduce(
+      (sum, proof) =>
+        sum +
+        countStatusWarning(proof?.status) +
+        countWarningValue(proof?.warning) +
+        countWarningValue(proof?.warnings) +
+        countWarningValue(proof?.warningCount) +
+        countStatusWarning(proof?.summary?.status) +
+        countWarningValue(proof?.summary?.warning) +
+        countWarningValue(proof?.summary?.warnings) +
+        countWarningValue(proof?.summary?.warningCount),
+      0
+    );
+  }
+
   return count;
 }
 

@@ -715,6 +715,26 @@ function artifactWarnings(value) {
     ...statusWarningMessages(value?.receiptEvidence?.summary, 'receiptEvidence summary'),
     ...warningMessages(value?.receiptEvidence?.summary, 'receiptEvidence summary'),
   ];
+  const receiptRowWarnings = Array.isArray(value?.receiptEvidence?.rows)
+    ? value.receiptEvidence.rows.flatMap(row =>
+        [
+          ...statusWarningMessages(row, 'receiptEvidence row'),
+          ...warningMessages(row, 'receiptEvidence row'),
+          ...statusWarningMessages(row?.summary, 'receiptEvidence row summary'),
+          ...warningMessages(row?.summary, 'receiptEvidence row summary'),
+        ].map(item => `${row?.tableName ?? row?.county ?? 'receiptEvidence row'}: ${item}`)
+      )
+    : [];
+  const receiptProofWarnings = Array.isArray(value?.receiptEvidence?.proofs)
+    ? value.receiptEvidence.proofs.flatMap(proof =>
+        [
+          ...statusWarningMessages(proof, 'receiptEvidence proof'),
+          ...warningMessages(proof, 'receiptEvidence proof'),
+          ...statusWarningMessages(proof?.summary, 'receiptEvidence proof summary'),
+          ...warningMessages(proof?.summary, 'receiptEvidence proof summary'),
+        ].map(item => `${proof?.county ?? 'receiptEvidence proof'}: ${item}`)
+      )
+    : [];
   const rowWarnings = Array.isArray(value?.rows)
     ? value.rows.flatMap(row =>
         [
@@ -742,6 +762,8 @@ function artifactWarnings(value) {
       ...direct,
       ...summary,
       ...receiptWarnings,
+      ...receiptRowWarnings,
+      ...receiptProofWarnings,
       ...rowWarnings,
       ...proofWarnings,
     ]),

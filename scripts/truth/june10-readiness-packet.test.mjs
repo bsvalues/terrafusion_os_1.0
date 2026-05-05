@@ -1119,6 +1119,58 @@ test('readiness packet surfaces warning-only proof artifacts', () => {
   );
 });
 
+test('readiness packet surfaces receipt evidence row and proof warnings', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-identity.json', {
+    endpointStatus: 200,
+    passed: true,
+    receiptEvidence: {
+      rows: [
+        {
+          county: 'Benton',
+          status: 'PASS_WITH_WARNINGS',
+          warning: 'Receipt row warning.',
+          summary: { status: 'PASS_WITH_WARNINGS', warningCount: 2 },
+        },
+      ],
+      proofs: [
+        {
+          county: 'Benton',
+          status: 'PASS_WITH_WARNINGS',
+          warnings: ['Receipt proof warning.'],
+          summary: { status: 'PASS_WITH_WARNINGS', warning: 'Receipt proof summary warning.' },
+        },
+      ],
+    },
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 0);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'PASS_WITH_WARNINGS');
+  assert.ok(
+    report.warnings.some(
+      item => item.source === 'dbIdentity' && item.message.includes('Receipt row warning.')
+    )
+  );
+  assert.ok(
+    report.warnings.some(
+      item => item.source === 'dbIdentity' && item.message.includes('Receipt proof warning.')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.warnings.items.some(item =>
+      item.includes('Benton: receiptEvidence proof summary status is PASS_WITH_WARNINGS')
+    )
+  );
+});
+
 test('readiness packet surfaces scalar and object-shaped warning fields', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-db-identity.json', {
