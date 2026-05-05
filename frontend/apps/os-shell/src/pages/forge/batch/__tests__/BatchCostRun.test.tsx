@@ -26,7 +26,7 @@ describe('BatchCostRun', () => {
     expect(screen.getByText('Apply Endpoint')).toBeInTheDocument();
     expect(screen.getByText('Run History')).toBeInTheDocument();
     expect(
-      screen.getByText(/Use Cost Manual for governed Benton schedule review/i)
+      screen.getByText(/Use Cost Manual for certified county schedule review where available/i)
     ).toBeInTheDocument();
   });
 });
