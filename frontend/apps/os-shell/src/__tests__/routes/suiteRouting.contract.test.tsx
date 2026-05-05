@@ -4,7 +4,7 @@
  * Phase 14 — Operator Journey Proofing: Suite Routing Contract
  * ============================================================
  *
- * Source-inspection contract: proves router.tsx maps /forge, /atlas, /dais,
+ * Source-inspection contract: proves Router.tsx maps /forge, /atlas, /dais,
  * /canon to the correct lazy-imported Suite home components.
  *
  * Uses file-read inspection (like keyboardSuiteSwitch.contract.test.ts) rather
@@ -12,12 +12,12 @@
  * crashes the jsdom worker. The routing contract is equally valid via source proof.
  *
  * Contract:
- *   router.tsx lazy-imports ForgeSuiteHome  → assigns to variable used at <Route path='forge'>
- *   router.tsx lazy-imports AtlasSuiteHome  → assigns to variable used at <Route path='atlas'>
- *   router.tsx lazy-imports DaisSuiteHome   → assigns to variable used at <Route path='dais'>
- *   router.tsx lazy-imports CanonSuiteHome  → assigns to variable used at <Route path='canon'>
+ *   Router.tsx lazy-imports ForgeSuiteHome  → assigns to variable used at <Route path='forge'>
+ *   Router.tsx lazy-imports AtlasSuiteHome  → assigns to variable used at <Route path='atlas'>
+ *   Router.tsx lazy-imports DaisSuiteHome   → assigns to variable used at <Route path='dais'>
+ *   Router.tsx lazy-imports CanonSuiteHome  → assigns to variable used at <Route path='canon'>
  *
- * @see src/router.tsx — suite route definitions
+ * @see src/Router.tsx — suite route definitions
  */
 import { describe, it, expect, beforeAll } from 'vitest';
 import { readFileSync } from 'fs';
@@ -27,12 +27,12 @@ let routerSource: string;
 
 beforeAll(() => {
   routerSource = readFileSync(
-    resolve(import.meta.dirname, '../../router.tsx'),
+    resolve(import.meta.dirname, '../../Router.tsx'),
     'utf-8',
   );
 });
 
-describe('Suite routing source contract — router.tsx', () => {
+describe('Suite routing source contract — Router.tsx', () => {
   describe('ForgeSuiteHome', () => {
     it('is lazy-imported from pages/suites/ForgeSuiteHome', () => {
       expect(routerSource).toMatch(

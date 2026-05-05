@@ -17,15 +17,15 @@ import {
 
 /** Centralized chart palette */
 const FORGE_CHART_COLORS = {
-  residential:  '#3b82f6',
-  commercial:   '#10b981',
-  industrial:   '#f59e0b',
-  agricultural: '#8b5cf6',
-  multiFamily:  '#ef4444',
-  manufactured: '#06b6d4',
-  apartment:    '#f97316',
-  barAvg:       '#3b82f6',
-  barMax:       '#64748b',
+  residential:  'hsl(var(--tf-info-hs) var(--tf-l-50))',
+  commercial:   'hsl(var(--tf-success-hs) var(--tf-l-50))',
+  industrial:   'hsl(var(--tf-warning-hs) var(--tf-l-50))',
+  agricultural: 'hsl(var(--tf-suite-forge))',
+  multiFamily:  'hsl(var(--tf-error-hs) var(--tf-l-60))',
+  manufactured: 'hsl(var(--tf-info-hs) var(--tf-l-60))',
+  apartment:    'hsl(var(--tf-suite-forge))',
+  barAvg:       'hsl(var(--tf-info-hs) var(--tf-l-50))',
+  barMax:       'hsl(var(--tf-text) / 0.48)',
 };
 
 const TYPE_COLOR_MAP: Record<string, string> = {
@@ -87,7 +87,7 @@ export function CostForgeDashboard() {
 
   const propertyTypeDist = (stats?.propertyTypeDistribution ?? []).map((d) => ({
     ...d,
-    color: TYPE_COLOR_MAP[d.name] ?? '#64748b',
+    color: TYPE_COLOR_MAP[d.name] ?? 'hsl(var(--tf-text) / 0.48)',
   }));
 
   const depreciationSummary = stats?.depreciationSummary ?? [];

@@ -10,8 +10,8 @@ describe('TerraForge module boundaries contract', () => {
   it('freezes County Studio as the superset workbench and Statistics Studio as temporary parity source', () => {
     const suiteHome = read('../../pages/suites/ForgeSuiteHome.tsx');
 
-    expect(suiteHome).toContain('Temporary full-statistics parity source');
-    expect(suiteHome).toContain('The countywide operating workspace for valuation analysis, statistics, embedded spatial review');
+    expect(suiteHome).toContain('Temporary shells outside County Studio');
+    expect(suiteHome).toContain('The countywide operating workspace for valuation analysis, Operational Health, Statistics Compat');
     expect(suiteHome).toContain('County-wide cost approach');
     expect(suiteHome).toContain('County-wide sales comparison');
     expect(suiteHome).toContain('Sale qualification & ratio audit');
