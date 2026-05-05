@@ -28,13 +28,13 @@
 
 /* Mapbox popup override — keep consistent with OS dark theme */
 .gf2-popup .mapboxgl-popup-content {
-  background: hsl(222 16% 11%);
-  border: 1px solid hsl(220 12% 22%);
+  background: hsl(var(--tf-surface));
+  border: 1px solid hsl(var(--tf-border));
   border-radius: 6px;
   padding: 8px 10px;
-  color: hsl(220 15% 85%);
+  color: hsl(var(--tf-text));
   font-size: 11px;
-  box-shadow: 0 4px 16px hsl(0 0% 0% / 0.6);
+  box-shadow: 0 4px 16px hsl(var(--tf-bg) / 0.6);
 }
 
 .gf2-popup .mapboxgl-popup-tip { display: none; }

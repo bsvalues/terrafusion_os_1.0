@@ -55,7 +55,7 @@
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createCanonFile, deleteCanonFile, diffCanonFiles, renameCanonFile, fetchReadFile, writeCanonFile, fetchGitStatus, fetchRecentFiles, fetchFormatFile, fetchEditorLayout, type GitStatusEntry, type EditorLayoutMode } from '../api/canonFs';
 import type { CursorPosition, CanonEditorHandle } from '../canon/CanonEditor';
-import { detectLanguage } from '../canon/CanonEditor';
+import { detectLanguage } from '../canon/canonLanguage';
 import { BreadcrumbBar } from '../canon/BreadcrumbBar';
 import { CanonNotificationHost, useCanonNotifications } from '../canon/CanonNotification';
 import { ConfirmDialog } from '../canon/ConfirmDialog';

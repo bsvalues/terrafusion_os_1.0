@@ -44,7 +44,7 @@ beforeAll(() => {
     'utf-8',
   );
   routerSource = readFileSync(
-    resolve(import.meta.dirname, '../../router.tsx'),
+    resolve(import.meta.dirname, '../../Router.tsx'),
     'utf-8',
   );
 });
