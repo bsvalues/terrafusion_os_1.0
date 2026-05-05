@@ -68,6 +68,14 @@ const SyncReadinessConsole = lazy(
   () => import('./pages/workbench/sync-readiness/SyncReadinessConsole'),
 );
 
+// DASHBOARD-1: Sync Doctrine Console — read-only status board for
+// the doctrine pipeline. Sibling to sync-readiness; renders the
+// snapshot from /api/sync/doctrine/state across canonical/truth/
+// raw/quarantine layers. Polls every 30s.
+const SyncDoctrineConsole = lazy(
+  () => import('./pages/workbench/sync-doctrine/SyncDoctrineConsole'),
+);
+
 const Monitoring = lazy(() => import('./pages/Monitoring'));
 const TerraFusionMarketplace = lazy(
   () => import('./components/marketplace/TerraFusionMarketplace')
@@ -205,6 +213,12 @@ const Router: React.FC = () => {
                   <Route
                     path='workbench/sync-readiness'
                     element={<SyncReadinessConsole />}
+                  />
+
+                  {/* DASHBOARD-1: Sync Doctrine Console (sibling) */}
+                  <Route
+                    path='workbench/sync-doctrine'
+                    element={<SyncDoctrineConsole />}
                   />
 
                   <Route path='monitoring' element={<Monitoring />} />
