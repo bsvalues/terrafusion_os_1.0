@@ -1487,6 +1487,87 @@ test('readiness packet blocks scalar blocker error and failure fields', () => {
   );
 });
 
+test('readiness packet blocks variant blocker and failure collection fields', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-identity.json', {
+    endpointStatus: 200,
+    passed: true,
+    ship_blockers: ['Variant ship blocker.'],
+    Error_Count: 2,
+    summary: {
+      FailureCount: 3,
+      blocker_count: 4,
+    },
+    rows: [
+      {
+        county: 'Benton',
+        Blockers: ['Variant row blocker.'],
+        Errors: ['Variant row error.'],
+      },
+    ],
+    proofs: [
+      {
+        county: 'Benton',
+        commands_failed: 5,
+        artifact_failures: 6,
+      },
+    ],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' &&
+        item.message.includes('artifact.ship_blockers has 1 item(s)')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item => item.source === 'dbIdentity' && item.message.includes('artifact.Error_Count is 2')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item => item.source === 'dbIdentity' && item.message.includes('summary.FailureCount is 3')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item => item.source === 'dbIdentity' && item.message.includes('summary.blocker_count is 4')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item => item.source === 'dbIdentity' && item.message === 'Benton: Variant row blocker.'
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' && item.message.includes('Benton row.Errors has 1 item(s)')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' && item.message.includes('Benton proof.commands_failed is 5')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.includes('Benton: Variant row blocker.')
+  );
+});
+
 test('readiness packet surfaces warning-only proof artifacts', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-sale-qualification-lineage-proof.json', {

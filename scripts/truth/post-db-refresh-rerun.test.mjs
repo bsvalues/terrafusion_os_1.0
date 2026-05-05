@@ -1067,6 +1067,52 @@ test('fails when a proof command writes ship blocker collections in an expected 
   );
 });
 
+test('fails when a proof command writes variant blocker and failure collection fields', () => {
+  const root = makeTempRepo('tf-post-db-refresh-variant-collections-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'Variant collection artifact writer command',
+          command: process.execPath,
+          args: [
+            '-e',
+            [
+              "const fs = require('fs');",
+              "fs.mkdirSync('generated/truth', { recursive: true });",
+              "fs.writeFileSync('generated/truth/variant-collections.json', JSON.stringify({ passed: true, ship_blockers: ['blocked'], Error_Count: 2, summary: { FailureCount: 3 }, rows: [{ county: 'Benton', Blockers: ['row blocker'] }], proofs: [{ county: 'Benton', commands_failed: 4 }] }) + '\\n');",
+            ].join(' '),
+          ],
+          expectedArtifacts: ['generated/truth/variant-collections.json'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'FAIL');
+  assert.equal(report.summary.artifactFailures, 1);
+  assert.deepEqual(report.results[0].artifactOutputs[0].artifactFailureReasons, [
+    'artifact.ship_blockers has 1 item(s)',
+    'artifact.Error_Count is 2',
+    'summary.FailureCount is 3',
+    'Benton row.Blockers has 1 item(s)',
+    'Benton proof.commands_failed is 4',
+  ]);
+  assert.ok(
+    report.blockers.some(item =>
+      item.includes('generated/truth/variant-collections.json: artifact.ship_blockers has 1 item')
+    )
+  );
+  assert.ok(report.blockers.some(item => item.includes('Benton proof.commands_failed is 4')));
+});
+
 test('fails when a proof command writes failing receipt evidence summary posture', () => {
   const root = makeTempRepo('tf-post-db-refresh-receipt-summary-fail-');
   const result = spawnSync('node', [scriptPath, root], {

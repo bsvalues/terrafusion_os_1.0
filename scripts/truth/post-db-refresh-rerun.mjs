@@ -428,16 +428,7 @@ function normalizeProofFieldKey(key) {
 function collectionFailureReasons(value, label) {
   if (!value || typeof value !== 'object') return [];
   const reasons = [];
-  for (const key of [
-    'blocker',
-    'blockers',
-    'shipBlockers',
-    'error',
-    'errors',
-    'failure',
-    'failures',
-  ]) {
-    const entries = value[key];
+  for (const [key, entries] of collectionFailureFields(value)) {
     if (Array.isArray(entries) && entries.length > 0) {
       reasons.push(`${label}.${key} has ${entries.length} item(s)`);
     } else if (entries && typeof entries === 'object') {
@@ -452,15 +443,8 @@ function collectionFailureReasons(value, label) {
       }
     }
   }
-  for (const key of [
-    'failed',
-    'failureCount',
-    'errorCount',
-    'blockerCount',
-    'artifactFailures',
-    'commandsFailed',
-  ]) {
-    const count = Number(value[key]);
+  for (const [key, entries] of collectionFailureCountFields(value)) {
+    const count = Number(entries);
     if (Number.isFinite(count) && count > 0) {
       reasons.push(`${label}.${key} is ${count}`);
     }
@@ -496,6 +480,36 @@ function isKnownCollectionPath(pathParts) {
     'receiptEvidence.rows.[]',
     'receiptEvidence.proofs.[]',
   ]).has(pathKey);
+}
+
+function collectionFailureFields(value) {
+  return orderedNormalizedFields(value, [
+    'blocker',
+    'blockers',
+    'shipblockers',
+    'error',
+    'errors',
+    'failure',
+    'failures',
+  ]);
+}
+
+function collectionFailureCountFields(value) {
+  return orderedNormalizedFields(value, [
+    'failed',
+    'failurecount',
+    'errorcount',
+    'blockercount',
+    'artifactfailures',
+    'commandsfailed',
+  ]);
+}
+
+function orderedNormalizedFields(value, normalizedOrder) {
+  const entries = Object.entries(value);
+  return normalizedOrder.flatMap(normalized =>
+    entries.filter(([key]) => normalizeProofFieldKey(key) === normalized)
+  );
 }
 
 function nestedRecordFailureReasons(records, label) {

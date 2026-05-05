@@ -698,11 +698,7 @@ function normalizeProofFieldKey(key) {
 function collectionFailurePostures(value, label, { includeBlockers = false } = {}) {
   if (!value || typeof value !== 'object') return [];
   const postures = [];
-  const keys = includeBlockers
-    ? ['blocker', 'blockers', 'shipBlockers', 'error', 'errors', 'failure', 'failures']
-    : ['shipBlockers', 'error', 'errors', 'failure', 'failures'];
-  for (const key of keys) {
-    const entries = value[key];
+  for (const [key, entries] of collectionFailureFields(value, { includeBlockers })) {
     if (Array.isArray(entries) && entries.length > 0) {
       postures.push(`${label}.${key} has ${entries.length} item(s)`);
     } else if (entries && typeof entries === 'object') {
@@ -717,15 +713,8 @@ function collectionFailurePostures(value, label, { includeBlockers = false } = {
       }
     }
   }
-  for (const key of [
-    'failed',
-    'failureCount',
-    'errorCount',
-    'blockerCount',
-    'artifactFailures',
-    'commandsFailed',
-  ]) {
-    const count = Number(value[key]);
+  for (const [key, entries] of collectionFailureCountFields(value)) {
+    const count = Number(entries);
     if (Number.isFinite(count) && count > 0) {
       postures.push(`${label}.${key} is ${count}`);
     }
@@ -844,20 +833,49 @@ function blockerMessages(value, label) {
   if (!value || typeof value !== 'object') return [];
   const format = item => (label === 'artifact' || label === 'summary' ? item : `${label}: ${item}`);
   const messages = [];
-  if (typeof value.blocker === 'string' && value.blocker.trim().length > 0) {
-    messages.push(format(value.blocker));
-  }
-  if (Array.isArray(value.blockers)) {
-    messages.push(...value.blockers.map(format));
-  } else if (typeof value.blockers === 'string' && value.blockers.trim().length > 0) {
-    messages.push(format(value.blockers));
-  } else if (value.blockers && typeof value.blockers === 'object') {
-    const count = Object.keys(value.blockers).length;
-    if (count > 0) {
-      messages.push(`${label}.blockers has ${count} object key(s)`);
+  for (const [key, entries] of blockerMessageFields(value)) {
+    if (typeof entries === 'string' && entries.trim().length > 0) {
+      messages.push(format(entries));
+    } else if (Array.isArray(entries)) {
+      messages.push(...entries.map(format));
+    } else if (entries && typeof entries === 'object') {
+      const count = Object.keys(entries).length;
+      if (count > 0) {
+        messages.push(`${label}.${key} has ${count} object key(s)`);
+      }
     }
   }
   return messages;
+}
+
+function collectionFailureFields(value, { includeBlockers = false } = {}) {
+  const normalizedOrder = includeBlockers
+    ? ['blocker', 'blockers', 'shipblockers', 'error', 'errors', 'failure', 'failures']
+    : ['shipblockers', 'error', 'errors', 'failure', 'failures'];
+
+  return orderedNormalizedFields(value, normalizedOrder);
+}
+
+function collectionFailureCountFields(value) {
+  return orderedNormalizedFields(value, [
+    'failed',
+    'failurecount',
+    'errorcount',
+    'blockercount',
+    'artifactfailures',
+    'commandsfailed',
+  ]);
+}
+
+function blockerMessageFields(value) {
+  return orderedNormalizedFields(value, ['blocker', 'blockers']);
+}
+
+function orderedNormalizedFields(value, normalizedOrder) {
+  const entries = Object.entries(value);
+  return normalizedOrder.flatMap(normalized =>
+    entries.filter(([key]) => normalizeProofFieldKey(key) === normalized)
+  );
 }
 
 function artifactWarnings(value) {
