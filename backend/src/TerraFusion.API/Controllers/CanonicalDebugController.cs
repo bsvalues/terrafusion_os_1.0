@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Sync.PacsAccount;
+using TerraFusion.Core.Sync.PacsOwner;
+using TerraFusion.Core.Sync.PacsOwnerCanonical;
+using TerraFusion.Core.Sync.PacsOwnerTruth;
 using TerraFusion.Core.Sync.PacsParcelCanonical;
 using TerraFusion.Core.Sync.PacsParcelTruth;
 using TerraFusion.Core.Sync.PacsPropSuppAssoc;
@@ -1112,4 +1116,175 @@ public class CanonicalDebugController : ControllerBase
     public sealed record SyncPop4dRequest(
         string? OperatorName,
         int? SaleTopN);
+
+    // ════════════════════════════════════════════════════════════════════
+    // OWN-POP-1: Owner-lane end-to-end closure.
+    //   owner (S1) → keyed accounts + keyed supps + keyed parcels
+    //              → parcel S2-B + S3 (xrefs for owner canonical)
+    //              → owner truth (B2-A) → owner canonical (B3)
+    //              → canonical_tf.tf_owner > 0
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// OWN-POP-1: doctrine end-to-end closure for the owner lane.
+    /// Mirrors SYNC-POP-4d's keyed-source pattern but starts from
+    /// <c>dbo.owner</c> as the seed batch and aligns four downstream
+    /// PACS tables (account, prop_supp_assoc, property, plus the
+    /// parcel canonical chain) on the owner batch's identity keys.
+    ///
+    /// <para>Goal: prove <c>canonical_tf.tf_owner &gt; 0</c> and
+    /// <c>tf_parcel_owner_link &gt; 0</c>. PII redaction is the
+    /// load-bearing invariant; the canonical projector's
+    /// <c>canonical-owner-pii-redaction-policy</c> gate verifies
+    /// it from the database itself.</para>
+    /// </summary>
+    [HttpPost("own-pop-1/run-final-closure")]
+    public async Task<IActionResult> RunOwnPop1(
+        [FromServices] IPacsAccountLandingService accountSvc,
+        [FromServices] IPacsOwnerLandingService ownerSvc,
+        [FromServices] IPacsPropSuppAssocLandingService assocSvc,
+        [FromServices] IPacsPropertyLandingService propSvc,
+        [FromServices] IPacsParcelSpineTruthPromoter spinePromoter,
+        [FromServices] IPacsParcelCanonicalProjector parcelCanonical,
+        [FromServices] IPacsOwnerCurrentTruthPromoter ownerTruthPromoter,
+        [FromServices] IPacsOwnerCanonicalProjector ownerCanonicalProjector,
+        [FromServices] IConfiguration config,
+        [FromBody] OwnPop1Request? request,
+        CancellationToken cancellationToken = default)
+    {
+        var pacsCs = config.GetConnectionString("PacsConnection");
+        if (string.IsNullOrWhiteSpace(pacsCs))
+            return StatusCode(500, new { error = "ConnectionStrings:PacsConnection is required for OWN-POP-1." });
+
+        var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
+            ? "own-pop-1-final-closure"
+            : request.OperatorName.Trim();
+        var ownerTopN = request?.OwnerTopN ?? 500;
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+
+            // ── A. Owner S1 (the seed batch). ──
+            _logger.LogInformation("[OwnPop1] A. Landing owners (TopN={Top})", ownerTopN);
+            var ownerSrc = new SqlServerPacsOwnerSource(pacsCs, topN: ownerTopN);
+            var ownerS1 = await ownerSvc.LandOwnersAsync(ownerSrc, operatorName, cancellationToken);
+            if (!string.Equals(ownerS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Owner-S1", error = ownerS1.ErrorSummary, ownerS1 });
+
+            // ── B. Extract keys from the owner batch. ──
+            var ownerRows = await _db.LegacyPacsRawOwners
+                .AsNoTracking()
+                .Where(o => o.LoadBatchId == ownerS1.LoadBatchId)
+                .Select(o => new { o.OwnerId, o.PropId, o.OwnerTaxYr })
+                .ToListAsync(cancellationToken);
+
+            var distinctAcctIds = ownerRows.Select(r => r.OwnerId).Distinct().ToList();
+            var distinctSuppKeys = ownerRows.Select(r => (r.PropId, r.OwnerTaxYr)).Distinct().ToList();
+            var distinctParcelPropIds = ownerRows.Select(r => r.PropId).Distinct().ToList();
+
+            _logger.LogInformation(
+                "[OwnPop1] B. Extracted keys: accts={A} suppKeys={S} parcelIds={P}",
+                distinctAcctIds.Count, distinctSuppKeys.Count, distinctParcelPropIds.Count);
+
+            // ── C. Keyed account S1. ──
+            var acctSrc = new KeyedSqlServerPacsAccountSource(pacsCs, distinctAcctIds);
+            var acctS1 = await accountSvc.LandAccountsAsync(acctSrc, operatorName, cancellationToken);
+            if (!string.Equals(acctS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Account-S1", error = acctS1.ErrorSummary, acctS1 });
+
+            // ── D. Keyed supp S1 (uses sale-style keying). ──
+            var suppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs, distinctSuppKeys);
+            var suppS1 = await assocSvc.LandPropSuppAssocsAsync(suppSrc, operatorName, cancellationToken);
+            if (!string.Equals(suppS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Supp-S1", error = suppS1.ErrorSummary, suppS1 });
+
+            // ── E. Keyed parcel S1 + spine + canonical (so owner B3 can resolve parcel xrefs). ──
+            var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs, distinctParcelPropIds);
+            var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
+            if (!string.Equals(parcelS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Parcel-S1", error = parcelS1.ErrorSummary, parcelS1 });
+
+            var parcelSpine = await spinePromoter.PromoteAsync(parcelS1.LoadBatchId, operatorName, cancellationToken);
+            if (!string.Equals(parcelSpine.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Parcel-Spine", error = parcelSpine.ErrorSummary, parcelSpine });
+
+            var parcelCanon = await parcelCanonical.ProjectAsync(
+                parcelSpine.PromotionLoadBatchId, bentonCountyId, operatorName, cancellationToken);
+            if (!string.Equals(parcelCanon.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Parcel-Canonical", error = parcelCanon.ErrorSummary, parcelCanon });
+
+            // ── F. Owner truth (B2-A): needs owner + account + supp batches. ──
+            _logger.LogInformation("[OwnPop1] F. Promoting owner truth");
+            var ownerTruth = await ownerTruthPromoter.PromoteAsync(
+                ownerS1.LoadBatchId, acctS1.LoadBatchId, suppS1.LoadBatchId, operatorName, cancellationToken);
+            if (!string.Equals(ownerTruth.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Owner-Truth", error = ownerTruth.ErrorSummary, ownerTruth });
+
+            // ── G. Owner canonical (B3): writes tf_owner + tf_parcel_owner_link + xrefs. ──
+            _logger.LogInformation("[OwnPop1] G. Projecting owner canonical");
+            var ownerCanon = await ownerCanonicalProjector.ProjectAsync(
+                ownerTruth.PromotionLoadBatchId, operatorName, cancellationToken);
+            if (!string.Equals(ownerCanon.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Owner-Canonical", error = ownerCanon.ErrorSummary, ownerCanon });
+
+            // ── Read-back. ──
+            var tfOwnerCount = await _db.TfOwners.CountAsync(cancellationToken);
+            var tfLinkCount = await _db.TfParcelOwnerLinks.CountAsync(cancellationToken);
+            var tfParcelCount = await _db.TfParcels.CountAsync(cancellationToken);
+            var truthOwnerCount = await _db.TruthPacsOwnerCurrents.CountAsync(cancellationToken);
+
+            return Ok(new
+            {
+                operatorName,
+                bentonCountyId,
+                ownerS1 = new { ownerS1.Status, ownerS1.LoadBatchId, ownerS1.RowsLanded },
+                keyExtraction = new
+                {
+                    distinctAcctIds = distinctAcctIds.Count,
+                    distinctSuppKeys = distinctSuppKeys.Count,
+                    distinctParcelPropIds = distinctParcelPropIds.Count,
+                },
+                acctS1 = new { acctS1.Status, acctS1.LoadBatchId, acctS1.RowsLanded },
+                suppS1 = new { suppS1.Status, suppS1.LoadBatchId, suppS1.RowsLanded },
+                parcelS1 = new { parcelS1.Status, parcelS1.LoadBatchId, parcelS1.RowsLanded, parcelS1.TypeDistribution },
+                parcelSpine = new { parcelSpine.Status, parcelSpine.PromotionLoadBatchId, parcelSpine.ParcelsConsidered, parcelSpine.ParcelsPromoted },
+                parcelCanon = new { parcelCanon.Status, parcelCanon.PromotionLoadBatchId, parcelCanon.ParcelsProjected },
+                ownerTruth = new
+                {
+                    ownerTruth.Status, ownerTruth.PromotionLoadBatchId,
+                    ownerTruth.OwnersConsidered, ownerTruth.OwnersPromoted,
+                },
+                ownerCanon = new
+                {
+                    ownerCanon.Status, ownerCanon.PromotionLoadBatchId,
+                    ownerCanon.TruthRowsConsidered, ownerCanon.OwnersProjected,
+                    ownerCanon.LinksProjected, ownerCanon.RowsQuarantined,
+                },
+                counts = new
+                {
+                    canonicalTfOwners = tfOwnerCount,
+                    canonicalTfParcelOwnerLinks = tfLinkCount,
+                    canonicalTfParcels = tfParcelCount,
+                    truthPacsOwnerCurrents = truthOwnerCount,
+                },
+                proofVerdict = ownerCanon.OwnersProjected > 0 && ownerCanon.LinksProjected > 0
+                    ? "PROOF: canonical_tf.tf_owner > 0 AND tf_parcel_owner_link > 0 — OWN-POP-1 closure succeeded."
+                    : "INCONCLUSIVE: investigate stage outputs above.",
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[OwnPop1] FAILED");
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name });
+        }
+    }
+
+    /// <param name="OperatorName">Audit anchor across all 7 stages.</param>
+    /// <param name="OwnerTopN">Owner sample size for the seed batch.
+    /// Default 500. Larger improves the chance of pct-completeness gate
+    /// passing; smaller is faster.</param>
+    public sealed record OwnPop1Request(
+        string? OperatorName,
+        int? OwnerTopN);
 }
