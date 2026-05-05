@@ -522,6 +522,7 @@ function artifactFailurePostures(value) {
     artifactFailurePosture(value),
     ...booleanFailurePostures(value, 'artifact'),
     ...expectedMatchFailurePostures(value, 'artifact'),
+    ...explicitStatusFailurePostures(value, 'artifact'),
     ...collectionFailurePostures(value, 'artifact'),
     ...summaryFailurePostures(value?.summary),
     ...receiptEvidenceFailurePostures(value?.receiptEvidence),
@@ -592,6 +593,35 @@ function expectedMatchFailurePostures(value, label, pathParts = []) {
     postures.push(...expectedMatchFailurePostures(fieldValue, label, fieldPath));
   }
   return postures;
+}
+
+function explicitStatusFailurePostures(value, label, pathParts = []) {
+  if (!value || typeof value !== 'object') return [];
+  if (Array.isArray(value)) {
+    return value.flatMap(item => explicitStatusFailurePostures(item, label, [...pathParts, '[]']));
+  }
+
+  const postures = [];
+  for (const [key, fieldValue] of Object.entries(value)) {
+    const fieldPath = [...pathParts, key];
+    if (
+      isStatusLikeField(key) &&
+      isExplicitFailingStatus(fieldValue) &&
+      !(pathParts.length === 0 && key === 'status')
+    ) {
+      postures.push(`${label}.${fieldPath.join('.')} is ${fieldValue}`);
+    }
+    postures.push(...explicitStatusFailurePostures(fieldValue, label, fieldPath));
+  }
+  return postures;
+}
+
+function isStatusLikeField(key) {
+  return key.endsWith('Status');
+}
+
+function isExplicitFailingStatus(value) {
+  return ['FAIL', 'FAILED', 'ERROR', 'DRY_RUN'].includes(String(value));
 }
 
 function isExpectedMatchProofField(key) {

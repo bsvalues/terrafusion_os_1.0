@@ -606,6 +606,46 @@ test('fails when a proof command writes nested expected-match proof fields as fa
   );
 });
 
+test('fails when a proof command writes nested explicit failing status fields', () => {
+  const root = makeTempRepo('tf-post-db-refresh-nested-status-fail-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'Nested failing status artifact writer command',
+          command: process.execPath,
+          args: [
+            '-e',
+            [
+              "const fs = require('fs');",
+              "fs.mkdirSync('generated/truth', { recursive: true });",
+              "fs.writeFileSync('generated/truth/nested-status-fail.json', JSON.stringify({ passed: true, summary: { saleQualificationStatus: 'FAIL', pilotClosureStatus: 'ERROR' }, receiptEvidence: { loadStatus: 'FAILED' }, details: [{ validationStatus: 'DRY_RUN' }] }) + '\\n');",
+            ].join(' '),
+          ],
+          expectedArtifacts: ['generated/truth/nested-status-fail.json'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'FAIL');
+  assert.deepEqual(report.results[0].artifactOutputs[0].artifactFailureReasons, [
+    'artifact.summary.saleQualificationStatus is FAIL',
+    'artifact.summary.pilotClosureStatus is ERROR',
+    'artifact.receiptEvidence.loadStatus is FAILED',
+    'artifact.details.[].validationStatus is DRY_RUN',
+  ]);
+  assert.ok(report.blockers.some(item => item.includes('saleQualificationStatus is FAIL')));
+  assert.ok(report.blockers.some(item => item.includes('validationStatus is DRY_RUN')));
+});
+
 test('fails when a proof command writes a malformed expected JSON artifact', () => {
   const root = makeTempRepo('tf-post-db-refresh-artifact-malformed-');
   const result = spawnSync('node', [scriptPath, root], {

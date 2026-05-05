@@ -247,6 +247,7 @@ function nestedArtifactFailureReasons(value) {
   return [
     ...booleanFailureReasons(value, 'artifact'),
     ...expectedMatchFailureReasons(value, 'artifact'),
+    ...explicitStatusFailureReasons(value, 'artifact'),
     ...collectionFailureReasons(value, 'artifact'),
     ...summaryFailureReasons(value?.summary),
     ...receiptEvidenceFailureReasons(value?.receiptEvidence),
@@ -317,6 +318,35 @@ function expectedMatchFailureReasons(value, label, pathParts = []) {
     reasons.push(...expectedMatchFailureReasons(fieldValue, label, fieldPath));
   }
   return reasons;
+}
+
+function explicitStatusFailureReasons(value, label, pathParts = []) {
+  if (!value || typeof value !== 'object') return [];
+  if (Array.isArray(value)) {
+    return value.flatMap(item => explicitStatusFailureReasons(item, label, [...pathParts, '[]']));
+  }
+
+  const reasons = [];
+  for (const [key, fieldValue] of Object.entries(value)) {
+    const fieldPath = [...pathParts, key];
+    if (
+      isStatusLikeField(key) &&
+      isExplicitFailingStatus(fieldValue) &&
+      !(pathParts.length === 0 && key === 'status')
+    ) {
+      reasons.push(`${label}.${fieldPath.join('.')} is ${fieldValue}`);
+    }
+    reasons.push(...explicitStatusFailureReasons(fieldValue, label, fieldPath));
+  }
+  return reasons;
+}
+
+function isStatusLikeField(key) {
+  return key.endsWith('Status');
+}
+
+function isExplicitFailingStatus(value) {
+  return ['FAIL', 'FAILED', 'ERROR', 'DRY_RUN'].includes(String(value));
 }
 
 function isExpectedMatchProofField(key) {
