@@ -646,6 +646,44 @@ test('fails when a proof command writes nested explicit failing status fields', 
   assert.ok(report.blockers.some(item => item.includes('validationStatus is DRY_RUN')));
 });
 
+test('fails when a proof command writes nested arbitrary failing status fields', () => {
+  const root = makeTempRepo('tf-post-db-refresh-nested-plain-status-fail-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'Nested arbitrary status artifact writer command',
+          command: process.execPath,
+          args: [
+            '-e',
+            [
+              "const fs = require('fs');",
+              "fs.mkdirSync('generated/truth', { recursive: true });",
+              "fs.writeFileSync('generated/truth/nested-plain-status-fail.json', JSON.stringify({ passed: true, checks: [{ status: 'FAIL', nested: { status: 'ERROR' } }] }) + '\\n');",
+            ].join(' '),
+          ],
+          expectedArtifacts: ['generated/truth/nested-plain-status-fail.json'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'FAIL');
+  assert.deepEqual(report.results[0].artifactOutputs[0].artifactFailureReasons, [
+    'artifact.checks.[].status is FAIL',
+    'artifact.checks.[].nested.status is ERROR',
+  ]);
+  assert.ok(report.blockers.some(item => item.includes('checks.[].status is FAIL')));
+  assert.ok(report.blockers.some(item => item.includes('checks.[].nested.status is ERROR')));
+});
+
 test('fails when a proof command writes nested arbitrary blocker and failure collections', () => {
   const root = makeTempRepo('tf-post-db-refresh-nested-collection-fail-');
   const result = spawnSync('node', [scriptPath, root], {

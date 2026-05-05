@@ -522,6 +522,7 @@ function artifactFailurePostures(value) {
     artifactFailurePosture(value),
     ...booleanFailurePostures(value, 'artifact'),
     ...expectedMatchFailurePostures(value, 'artifact'),
+    ...nestedStatusFailurePostures(value, 'artifact'),
     ...explicitStatusFailurePostures(value, 'artifact'),
     ...collectionFailurePostures(value, 'artifact'),
     ...nestedCollectionFailurePostures(value, 'artifact'),
@@ -596,6 +597,27 @@ function expectedMatchFailurePostures(value, label, pathParts = []) {
   return postures;
 }
 
+function nestedStatusFailurePostures(value, label, pathParts = []) {
+  if (!value || typeof value !== 'object') return [];
+  if (Array.isArray(value)) {
+    return value.flatMap(item => nestedStatusFailurePostures(item, label, [...pathParts, '[]']));
+  }
+
+  const postures = [];
+  for (const [key, fieldValue] of Object.entries(value)) {
+    const fieldPath = [...pathParts, key];
+    if (
+      key === 'status' &&
+      isExplicitFailingStatus(fieldValue) &&
+      !isKnownStatusFieldPath(fieldPath)
+    ) {
+      postures.push(`${label}.${fieldPath.join('.')} is ${fieldValue}`);
+    }
+    postures.push(...nestedStatusFailurePostures(fieldValue, label, fieldPath));
+  }
+  return postures;
+}
+
 function explicitStatusFailurePostures(value, label, pathParts = []) {
   if (!value || typeof value !== 'object') return [];
   if (Array.isArray(value)) {
@@ -623,6 +645,24 @@ function isStatusLikeField(key) {
 
 function isExplicitFailingStatus(value) {
   return ['FAIL', 'FAILED', 'ERROR', 'DRY_RUN'].includes(String(value));
+}
+
+function isKnownStatusFieldPath(pathParts) {
+  const pathKey = pathParts.join('.');
+  return new Set([
+    'status',
+    'summary.status',
+    'receiptEvidence.status',
+    'receiptEvidence.summary.status',
+    'rows.[].status',
+    'rows.[].summary.status',
+    'proofs.[].status',
+    'proofs.[].summary.status',
+    'receiptEvidence.rows.[].status',
+    'receiptEvidence.rows.[].summary.status',
+    'receiptEvidence.proofs.[].status',
+    'receiptEvidence.proofs.[].summary.status',
+  ]).has(pathKey);
 }
 
 function isExpectedMatchProofField(key) {

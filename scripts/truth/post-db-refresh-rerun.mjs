@@ -247,6 +247,7 @@ function nestedArtifactFailureReasons(value) {
   return [
     ...booleanFailureReasons(value, 'artifact'),
     ...expectedMatchFailureReasons(value, 'artifact'),
+    ...nestedStatusFailureReasons(value, 'artifact'),
     ...explicitStatusFailureReasons(value, 'artifact'),
     ...collectionFailureReasons(value, 'artifact'),
     ...nestedCollectionFailureReasons(value, 'artifact'),
@@ -321,6 +322,27 @@ function expectedMatchFailureReasons(value, label, pathParts = []) {
   return reasons;
 }
 
+function nestedStatusFailureReasons(value, label, pathParts = []) {
+  if (!value || typeof value !== 'object') return [];
+  if (Array.isArray(value)) {
+    return value.flatMap(item => nestedStatusFailureReasons(item, label, [...pathParts, '[]']));
+  }
+
+  const reasons = [];
+  for (const [key, fieldValue] of Object.entries(value)) {
+    const fieldPath = [...pathParts, key];
+    if (
+      key === 'status' &&
+      isExplicitFailingStatus(fieldValue) &&
+      !isKnownStatusFieldPath(fieldPath)
+    ) {
+      reasons.push(`${label}.${fieldPath.join('.')} is ${fieldValue}`);
+    }
+    reasons.push(...nestedStatusFailureReasons(fieldValue, label, fieldPath));
+  }
+  return reasons;
+}
+
 function explicitStatusFailureReasons(value, label, pathParts = []) {
   if (!value || typeof value !== 'object') return [];
   if (Array.isArray(value)) {
@@ -348,6 +370,24 @@ function isStatusLikeField(key) {
 
 function isExplicitFailingStatus(value) {
   return ['FAIL', 'FAILED', 'ERROR', 'DRY_RUN'].includes(String(value));
+}
+
+function isKnownStatusFieldPath(pathParts) {
+  const pathKey = pathParts.join('.');
+  return new Set([
+    'status',
+    'summary.status',
+    'receiptEvidence.status',
+    'receiptEvidence.summary.status',
+    'rows.[].status',
+    'rows.[].summary.status',
+    'proofs.[].status',
+    'proofs.[].summary.status',
+    'receiptEvidence.rows.[].status',
+    'receiptEvidence.rows.[].summary.status',
+    'receiptEvidence.proofs.[].status',
+    'receiptEvidence.proofs.[].summary.status',
+  ]).has(pathKey);
 }
 
 function isExpectedMatchProofField(key) {
