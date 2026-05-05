@@ -21,6 +21,12 @@ function writeFixture(root, payload) {
   return fixturePath;
 }
 
+function writeConfig(root, relativePath, value) {
+  const filePath = path.join(root, relativePath);
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`);
+}
+
 function runScript(root, fixturePath) {
   return spawnSync('node', [scriptPath, root], {
     cwd: process.cwd(),
@@ -42,6 +48,14 @@ function readReport(root) {
 
 test('passes when runtime endpoint confirms expected TerraFusion DB', () => {
   const root = makeTempRepo('tf-runtime-db-identity-pass-');
+  writeConfig(root, 'backend/src/TerraFusion.API/appsettings.Development.json', {
+    RuntimeTruth: {
+      ExpectedJune10Database: 'terrafusion_june10',
+    },
+    BentonCounty: {
+      ParcelCount: 10,
+    },
+  });
   const fixturePath = writeFixture(root, {
     apiBaseUrl: 'http://127.0.0.1',
     environment: 'Development',
@@ -70,6 +84,11 @@ test('passes when runtime endpoint confirms expected TerraFusion DB', () => {
   assert.equal(report.passed, true);
   assert.equal(report.identity.database, 'terrafusion_june10');
   assert.equal(report.identity.rowCounts.properties, 10);
+  assert.ok(
+    report.configExpectationSources.some(
+      source => source.key === 'BentonCounty.ParcelCount' && source.value === 10
+    )
+  );
 });
 
 test('fails closed when runtime endpoint cannot confirm expected DB', () => {
