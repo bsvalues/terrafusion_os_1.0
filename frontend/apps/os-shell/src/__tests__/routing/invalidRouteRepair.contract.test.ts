@@ -16,12 +16,12 @@
  *   county header survives → repair never touches session/auth
  *
  * Strategy:
- *   - Source-inspect router.tsx to prove the modules/* catch-all redirects to '/'
- *   - Source-inspect router.tsx to prove property/:parcelId/* nests sub-routes
+ *   - Source-inspect Router.tsx to prove the modules/* catch-all redirects to '/'
+ *   - Source-inspect Router.tsx to prove property/:parcelId/* nests sub-routes
  *     (invalid sub-route → React renders nothing in <Outlet>, not a crash)
  *   - Prove LegacyRedirect component redirects, not loops
  *
- * @see src/router.tsx — modules/* catch-all, LegacyRedirect
+ * @see src/Router.tsx — modules/* catch-all, LegacyRedirect
  * @see src/pages/workbench/PropertyWorkbench.tsx — unknown sub-route behavior
  */
 import { describe, it, expect, beforeAll } from 'vitest';
@@ -33,7 +33,7 @@ let workbenchSource: string;
 
 beforeAll(() => {
   routerSource = readFileSync(
-    resolve(import.meta.dirname, '../../router.tsx'),
+    resolve(import.meta.dirname, '../../Router.tsx'),
     'utf-8',
   );
   workbenchSource = readFileSync(
@@ -67,7 +67,7 @@ describe('invalidRouteRepair', () => {
   // ── Standalone unknown module slugs ────────────────────────────────────────
 
   it("repairs unknown standalone module slug to a safe fallback route", () => {
-    // router.tsx has: <Route path='modules/*' element={<LegacyRedirect to='/' ... />} />
+    // Router.tsx has: <Route path='modules/*' element={<LegacyRedirect to='/' ... />} />
     // Unknown top-level slugs (/not-a-real-module) don't match any route —
     // React Router renders nothing inside AuthGuard. The catch-all for modules/* redirects.
     expect(routerSource).toContain("path='modules/*'");
@@ -103,7 +103,7 @@ describe('invalidRouteRepair', () => {
   it('preserves county header propagation through fallback repair', () => {
     // Route repair is a URL navigation — it does not touch session or auth.
     // Structural: getCurrentTabFromPath has no session/auth access (proven in Brick 1).
-    // LegacyRedirect in router.tsx does not import useSession or countyIsolation.
+    // LegacyRedirect in Router.tsx does not import useSession or countyIsolation.
     const fnStart = workbenchSource.indexOf('function getCurrentTabFromPath');
     const fnBody = workbenchSource.slice(fnStart, fnStart + 400);
     expect(fnBody).not.toContain('session');

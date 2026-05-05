@@ -238,6 +238,18 @@ function evaluate(proof) {
 }
 
 function summarize(proofs) {
+  const blockers = [];
+  if (proofs.length === 0) {
+    blockers.push(
+      'No runtime sale qualification candidates were found. Run runtime source-lineage proof or set TF_RUNTIME_SALE_QUALIFICATION_CANDIDATES.'
+    );
+  }
+  for (const proof of proofs) {
+    for (const proofBlocker of proof.blockers ?? []) {
+      blockers.push(`${proof.county}: ${proofBlocker}`);
+    }
+  }
+
   return {
     candidatesChecked: proofs.length,
     passed: proofs.filter(proof => proof.passed).length,
@@ -249,6 +261,8 @@ function summarize(proofs) {
     recommendationBackedCanonicalMissing: proofs.filter(
       proof => proof.classification === 'recommendation_backed_canonical_landing_missing'
     ).length,
+    blockers,
+    status: blockers.length === 0 && proofs.every(proof => proof.passed) ? 'PASS' : 'FAIL',
   };
 }
 
@@ -292,6 +306,11 @@ function renderMarkdown(proofs, summary) {
     `- Warnings: ${summary.warnings}`,
     `- Canonical landing backed: ${summary.canonicalLandingBacked}`,
     `- Recommendation-backed with canonical landing missing: ${summary.recommendationBackedCanonicalMissing}`,
+    `- Result: ${summary.status}`,
+    '',
+    '## Blockers',
+    '',
+    ...(summary.blockers.length ? summary.blockers.map(item => `- ${item}`) : ['- none']),
     '',
     '## Interpretation',
     '',
@@ -307,6 +326,7 @@ async function main() {
   }
 
   const summary = summarize(proofs);
+  const status = summary.status;
   fs.mkdirSync(truthDir, { recursive: true });
   fs.writeFileSync(
     outJson,
@@ -315,6 +335,7 @@ async function main() {
         generatedAt: new Date().toISOString(),
         repoRoot,
         runtimeBaseUrl,
+        status,
         summary,
         proofs,
       },
@@ -328,7 +349,7 @@ async function main() {
   console.log(`Wrote ${rel(outMd)}`);
   console.log(JSON.stringify(summary, null, 2));
 
-  if (strict && summary.failed > 0) {
+  if (strict && (summary.failed > 0 || summary.blockers.length > 0)) {
     process.exitCode = 1;
     return;
   }
