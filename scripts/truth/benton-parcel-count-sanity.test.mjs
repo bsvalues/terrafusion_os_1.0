@@ -45,6 +45,29 @@ test('Benton parcel sanity fails when endpoint returns unfiltered raw rows', asy
     nullCountyRows: 0,
     nonBentonRows: 0,
     propertyStatusColumns: [],
+    sourceMirror: {
+      pacsParcelRows: 128950,
+      pacsParcelDistinctRows: 128950,
+      propertyRowsMinusPacsParcelRows: -162,
+    },
+    topPropertyTypes: [{ propertyType: 'R', rows: 96716 }],
+    topPropertyUseCodes: [{ propertyUseCode: '11', rows: 56312 }],
+    topSitusCities: [{ situsCity: 'KENNEWICK', rows: 43846 }],
+    fieldCompleteness: {
+      totalRows: 128788,
+      missingPropertyUseCodeRows: 33948,
+      missingSitusCityRows: 28766,
+      zeroMarketValueRows: 36840,
+      zeroAssessedValueRows: 36840,
+      zeroLandValueRows: 52084,
+      zeroImprovementValueRows: 53349,
+      missingYearBuiltRows: 33026,
+      missingNeighborhoodRows: 41204,
+    },
+    temporalRange: {
+      earliestLastUpdated: '2026-04-18T04:09:37Z',
+      latestLastUpdated: '2026-04-28T05:27:22Z',
+    },
     endpointBehavior: {
       endpoint: '/api/counties/benton/parcels',
       endpointStatus: 200,
@@ -76,6 +99,8 @@ test('Benton parcel sanity fails when endpoint returns unfiltered raw rows', asy
   assert.ok(report.blockers.some(blocker => blocker.includes('active/current parcel filtering')));
   assert.ok(report.blockers.some(blocker => blocker.includes('unknown active/inactive status')));
   assert.ok(report.blockers.some(blocker => blocker.includes('current-year Benton parcel count')));
+  assert.equal(report.sourceMirror.pacsParcelRows, 128950);
+  assert.equal(report.fieldCompleteness.missingPropertyUseCodeRows, 33948);
 });
 
 test('Benton parcel sanity passes for sane active parcel shape', async () => {
@@ -100,6 +125,29 @@ test('Benton parcel sanity passes for sane active parcel shape', async () => {
     nullCountyRows: 0,
     nonBentonRows: 0,
     propertyStatusColumns: ['Status'],
+    sourceMirror: {
+      pacsParcelRows: 89447,
+      pacsParcelDistinctRows: 89447,
+      propertyRowsMinusPacsParcelRows: 0,
+    },
+    topPropertyTypes: [{ propertyType: 'R', rows: 89447 }],
+    topPropertyUseCodes: [{ propertyUseCode: '11', rows: 89447 }],
+    topSitusCities: [{ situsCity: 'KENNEWICK', rows: 89447 }],
+    fieldCompleteness: {
+      totalRows: 89447,
+      missingPropertyUseCodeRows: 0,
+      missingSitusCityRows: 0,
+      zeroMarketValueRows: 0,
+      zeroAssessedValueRows: 0,
+      zeroLandValueRows: 0,
+      zeroImprovementValueRows: 0,
+      missingYearBuiltRows: 0,
+      missingNeighborhoodRows: 0,
+    },
+    temporalRange: {
+      earliestLastUpdated: '2026-05-04T00:00:00Z',
+      latestLastUpdated: '2026-05-04T00:00:00Z',
+    },
     endpointBehavior: {
       endpoint: '/api/counties/benton/parcels',
       endpointStatus: 200,

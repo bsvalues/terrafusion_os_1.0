@@ -14,18 +14,18 @@
  * Proofs:
  *   1. Router structure — /property/:parcelId/* nests all tab sub-routes
  *   2. tabPathMap completeness — every WorkbenchTabSlug (except 'summary')
- *      has a corresponding sub-route in router.tsx
+ *      has a corresponding sub-route in Router.tsx
  *   3. getCurrentTabFromPath source — fallback to 'summary' for unknown paths
  *   4. Summary tab (index route) — empty sub-path → 'summary'
  *   5. Each named tab slug maps to a unique non-overlapping path
- *   6. All 9 WORKBENCH_TABS exist as sub-routes in router.tsx
+ *   6. All 9 WORKBENCH_TABS exist as sub-routes in Router.tsx
  *
  * Source-inspection is used (not component rendering) because PropertyWorkbench
  * imports LiquidPanel/materialServices that crash the jsdom worker via WebGL.
  * The routing contract is proven structurally — URL drives state.
  *
  * @see src/pages/workbench/PropertyWorkbench.tsx — getCurrentTabFromPath, tabPathMap
- * @see src/router.tsx — property/:parcelId/* sub-route tree
+ * @see src/Router.tsx — property/:parcelId/* sub-route tree
  * @see src/contracts/workbench.ts — WorkbenchTabSlug
  */
 import { describe, it, expect, beforeAll } from 'vitest';
@@ -41,7 +41,7 @@ beforeAll(() => {
     'utf-8',
   );
   routerSource = readFileSync(
-    resolve(import.meta.dirname, '../../router.tsx'),
+    resolve(import.meta.dirname, '../../Router.tsx'),
     'utf-8',
   );
 });
@@ -52,7 +52,7 @@ describe('Phase 15 Brick 3 — Valuation route resume contract', () => {
 
   // ── 1. Router structure — wildcard route enables sub-tab URLs ──────────────
 
-  describe('router.tsx — workbench route structure', () => {
+  describe('Router.tsx — workbench route structure', () => {
     it('property/:parcelId is a wildcard route (nests sub-routes)', () => {
       expect(routerSource).toContain("path='property/:parcelId'");
     });
@@ -79,7 +79,7 @@ describe('Phase 15 Brick 3 — Valuation route resume contract', () => {
     ];
 
     for (const { slug, routePath } of tabsWithPaths) {
-      it(`'${slug}' tab has a matching <Route> in router.tsx`, () => {
+      it(`'${slug}' tab has a matching <Route> in Router.tsx`, () => {
         expect(routerSource).toContain(routePath);
       });
     }

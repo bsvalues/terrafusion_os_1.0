@@ -137,7 +137,7 @@ describe('Gate 4 — BatchCostRun: explicit governed unavailable state', () => {
   });
 
   it('makes operator guidance explicit instead of rendering fake preview/apply flow', () => {
-    expect(src).toContain('Use Cost Manual for governed Benton schedule review.');
+    expect(src).toContain('Use Cost Manual for certified county schedule review where available.');
     expect(src).toContain('Use Coefficient Preview for controlled coefficient what-if work');
     expect(src).toContain('Do not treat batch preview, apply, or history output from this lane as production evidence');
   });
