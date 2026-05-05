@@ -607,7 +607,7 @@ function nestedStatusFailurePostures(value, label, pathParts = []) {
   for (const [key, fieldValue] of Object.entries(value)) {
     const fieldPath = [...pathParts, key];
     if (
-      key === 'status' &&
+      isPlainStatusField(key) &&
       isExplicitFailingStatus(fieldValue) &&
       !isKnownStatusFieldPath(fieldPath)
     ) {
@@ -627,11 +627,7 @@ function explicitStatusFailurePostures(value, label, pathParts = []) {
   const postures = [];
   for (const [key, fieldValue] of Object.entries(value)) {
     const fieldPath = [...pathParts, key];
-    if (
-      isStatusLikeField(key) &&
-      isExplicitFailingStatus(fieldValue) &&
-      !(pathParts.length === 0 && key === 'status')
-    ) {
+    if (isStatusLikeField(key) && isExplicitFailingStatus(fieldValue)) {
       postures.push(`${label}.${fieldPath.join('.')} is ${fieldValue}`);
     }
     postures.push(...explicitStatusFailurePostures(fieldValue, label, fieldPath));
@@ -640,7 +636,18 @@ function explicitStatusFailurePostures(value, label, pathParts = []) {
 }
 
 function isStatusLikeField(key) {
-  return key.endsWith('Status');
+  const normalized = normalizeStatusFieldKey(key);
+  return normalized.endsWith('status') && normalized !== 'status';
+}
+
+function isPlainStatusField(key) {
+  return normalizeStatusFieldKey(key) === 'status';
+}
+
+function normalizeStatusFieldKey(key) {
+  return String(key)
+    .replace(/[^a-z0-9]+/gi, '')
+    .toLowerCase();
 }
 
 function isExplicitFailingStatus(value) {

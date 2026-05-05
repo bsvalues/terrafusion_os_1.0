@@ -337,7 +337,7 @@ function nestedStatusFailureReasons(value, label, pathParts = []) {
   for (const [key, fieldValue] of Object.entries(value)) {
     const fieldPath = [...pathParts, key];
     if (
-      key === 'status' &&
+      isPlainStatusField(key) &&
       isExplicitFailingStatus(fieldValue) &&
       !isKnownStatusFieldPath(fieldPath)
     ) {
@@ -357,11 +357,7 @@ function explicitStatusFailureReasons(value, label, pathParts = []) {
   const reasons = [];
   for (const [key, fieldValue] of Object.entries(value)) {
     const fieldPath = [...pathParts, key];
-    if (
-      isStatusLikeField(key) &&
-      isExplicitFailingStatus(fieldValue) &&
-      !(pathParts.length === 0 && key === 'status')
-    ) {
+    if (isStatusLikeField(key) && isExplicitFailingStatus(fieldValue)) {
       reasons.push(`${label}.${fieldPath.join('.')} is ${fieldValue}`);
     }
     reasons.push(...explicitStatusFailureReasons(fieldValue, label, fieldPath));
@@ -370,7 +366,18 @@ function explicitStatusFailureReasons(value, label, pathParts = []) {
 }
 
 function isStatusLikeField(key) {
-  return key.endsWith('Status');
+  const normalized = normalizeStatusFieldKey(key);
+  return normalized.endsWith('status') && normalized !== 'status';
+}
+
+function isPlainStatusField(key) {
+  return normalizeStatusFieldKey(key) === 'status';
+}
+
+function normalizeStatusFieldKey(key) {
+  return String(key)
+    .replace(/[^a-z0-9]+/gi, '')
+    .toLowerCase();
 }
 
 function isExplicitFailingStatus(value) {

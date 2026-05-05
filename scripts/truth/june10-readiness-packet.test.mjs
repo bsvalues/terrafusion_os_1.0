@@ -698,6 +698,58 @@ test('readiness packet blocks lowercase nested failing status fields', () => {
   );
 });
 
+test('readiness packet blocks alternate status field casing and separators', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-content-audit.json', {
+    endpointStatus: 200,
+    passed: true,
+    checks: [
+      {
+        STATUS: 'fail',
+        nested: {
+          validation_status: 'error',
+          pipelinestatus: 'dry_run',
+        },
+      },
+    ],
+    summary: {
+      closure_status: 'failed',
+    },
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbContent' && item.message.includes('artifact.checks.[].STATUS is fail')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('artifact.checks.[].nested.validation_status is error')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('artifact.checks.[].nested.pipelinestatus is dry_run')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('artifact.summary.closure_status is failed')
+    )
+  );
+});
+
 test('readiness packet blocks nested arbitrary blocker and failure collections', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-db-content-audit.json', {
