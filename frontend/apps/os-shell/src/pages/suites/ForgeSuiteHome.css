@@ -10,7 +10,7 @@
   --forge-muted: hsl(var(--tf-text) / 0.55);
   --forge-subtle: hsl(var(--tf-text) / 0.38);
   --forge-info: hsl(var(--tf-suite-forge));
-  --forge-success: hsl(135 50% 40%);
+  --forge-success: hsl(var(--tf-success-hs) var(--tf-l-50));
   --forge-warn: hsl(var(--tf-warning-amber));
   --forge-shadow: 0 8px 24px hsl(var(--tf-text) / 0.06);
   min-height: 100%;
@@ -94,7 +94,7 @@
 .forge-workspace__notice--error {
   border-color: hsla(0, 72%, 60%, 0.22);
   background: hsla(0, 72%, 60%, 0.08);
-  color: hsl(0 72% 68%);
+  color: hsl(var(--tf-error-hs) var(--tf-l-70));
 }
 
 .forge-kpi-grid {
@@ -422,7 +422,7 @@
 .forge-chip--neutral {
   border: 1px solid hsla(190, 100%, 60%, 0.20);
   background: hsla(190, 100%, 60%, 0.09);
-  color: hsl(190, 100%, 60%);
+  color: hsl(var(--tf-info-hs) var(--tf-l-60));
 }
 
 .forge-chip--warn {

@@ -8,7 +8,7 @@
  * - Responsive sizing via CSS container
  */
 import Editor, { loader, type OnMount } from '@monaco-editor/react';
-import * as monaco from 'monaco-editor';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
 import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker';
 import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
@@ -16,6 +16,7 @@ import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { fetchCodeActions, fetchCompletions, fetchDocumentHighlights, fetchDocumentLinks, fetchFindReferences, fetchFoldingRanges, fetchGitDiff, fetchGotoDefinition, fetchHoverInfo, fetchInlayHints, fetchRenameSymbol, fetchSignatureHelp, type CodeActionKind, type CompletionKind, type LineMarker } from '../api/canonFs';
+import { detectLanguage } from './canonLanguage';
 import { CANON_THEME_NAME, CANON_THEMES, type CanonThemeId } from './canonEditorTheme';
 
 // Configure Monaco workers for local (non-CDN) operation
@@ -32,40 +33,7 @@ self.MonacoEnvironment = {
 // Use the locally installed monaco-editor package instead of CDN
 loader.config({ monaco });
 
-/** Map file extension → Monaco language id */
-export function detectLanguage(fileName: string): string {
-  const ext = fileName.split('.').pop()?.toLowerCase() ?? '';
-  const map: Record<string, string> = {
-    ts: 'typescript',
-    tsx: 'typescript',
-    js: 'javascript',
-    jsx: 'javascript',
-    mjs: 'javascript',
-    cjs: 'javascript',
-    json: 'json',
-    css: 'css',
-    scss: 'scss',
-    html: 'html',
-    xml: 'xml',
-    md: 'markdown',
-    yml: 'yaml',
-    yaml: 'yaml',
-    sh: 'shell',
-    bash: 'shell',
-    ps1: 'powershell',
-    sql: 'sql',
-    py: 'python',
-    cs: 'csharp',
-    csproj: 'xml',
-    sln: 'plaintext',
-    dockerfile: 'dockerfile',
-    toml: 'ini',
-    env: 'ini',
-    lock: 'plaintext',
-    txt: 'plaintext',
-  };
-  return map[ext] ?? 'plaintext';
-}
+export { detectLanguage } from './canonLanguage';
 
 export interface CursorPosition {
   line: number;
