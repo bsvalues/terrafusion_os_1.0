@@ -15,6 +15,7 @@ using TerraFusion.Core.Sync.PacsSale;
 using TerraFusion.Core.Sync.PacsSaleCanonical;
 using TerraFusion.Core.Sync.PacsSalePipeline;
 using TerraFusion.Core.Sync.PacsSaleTruth;
+using TerraFusion.Core.Sync.PacsAttribute;
 using TerraFusion.Core.Sync.PacsImprv;
 using TerraFusion.Core.Sync.PacsImprvAttr;
 using TerraFusion.Core.Sync.PacsImprvCanonical;
@@ -2222,4 +2223,148 @@ public class CanonicalDebugController : ControllerBase
         int? SaleTopN,
         int? WorkingYear,
         bool? SkipGeometry);
+
+    // ════════════════════════════════════════════════════════════════════
+    // ATTR-POP-1: populate canonical_tf.attribute_definition from PACS
+    //   dbo.attribute. Drains the imprv_attr UnknownAttribute quarantine
+    //   when followed by a re-run of the imprv canonical projector.
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// ATTR-POP-1: populate the attribute-definition dictionary for
+    /// the resolved Benton county. Reads PACS <c>dbo.attribute</c>
+    /// (family-grain), upserts <c>canonical_tf.attribute_definition</c>
+    /// rows keyed <c>(CountyId, IAttrId)</c>, and (optionally)
+    /// re-runs the imprv canonical projector against the latest
+    /// imprv truth batch so quarantined imprv_attr rows lift back
+    /// into <c>tf_improvement_feature.AttributeId</c> resolved.
+    /// </summary>
+    [HttpPost("attr-pop-1/run-populate")]
+    public async Task<IActionResult> RunAttrPop1(
+        [FromServices] IPacsAttributePopulator populator,
+        [FromServices] IPacsImprvCanonicalProjector imprvCanonicalProjector,
+        [FromServices] IConfiguration config,
+        [FromBody] AttrPop1Request? request,
+        CancellationToken cancellationToken = default)
+    {
+        var pacsCs = config.GetConnectionString("PacsConnection");
+        if (string.IsNullOrWhiteSpace(pacsCs))
+            return StatusCode(500, new { error = "ConnectionStrings:PacsConnection is required for ATTR-POP-1." });
+
+        var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
+            ? "attr-pop-1-populate"
+            : request.OperatorName.Trim();
+        var rerunImprvCanonical = request?.RerunImprvCanonical ?? true;
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+
+            // ── A. Populate attribute_definition. ──
+            _logger.LogInformation("[AttrPop1] A. Populating attribute_definition for countyId={Cid}", bentonCountyId);
+            var src = new SqlServerPacsAttributeSource(pacsCs);
+            var pop = await populator.PopulateAsync(src, bentonCountyId, operatorName, cancellationToken);
+            if (!string.Equals(pop.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Attr-Populate", error = pop.ErrorSummary, pop });
+
+            // Read-back: how many definitions does Benton now have?
+            var attrDefCount = await _db.AttributeDefinitions
+                .Where(a => a.CountyId == bentonCountyId)
+                .CountAsync(cancellationToken);
+            var activeAttrDefCount = await _db.AttributeDefinitions
+                .Where(a => a.CountyId == bentonCountyId && a.IsActive)
+                .CountAsync(cancellationToken);
+
+            // ── B. Optional: re-run imprv canonical against the most-
+            // recent imprv truth batch so quarantine drains. ──
+            object? reprojectionResult = null;
+            int? quarantineDelta = null;
+            int? featuresAttributedDelta = null;
+            if (rerunImprvCanonical)
+            {
+                var preQuarantineCount = await _db.LegacyTfUnprovenImprvAttrs.CountAsync(cancellationToken);
+                var preFeaturesAttributed = await _db.TfImprovementFeatures
+                    .Where(f => f.AttributeId != null)
+                    .CountAsync(cancellationToken);
+
+                var latestImprvTruth = await _db.SyncBridgeLoadBatches
+                    .Where(b => b.SourceSystem == "truth-pacs-imprv-promoter" && b.Status == "COMPLETED")
+                    .OrderByDescending(b => b.CompletedAt)
+                    .Select(b => b.LoadBatchId)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (latestImprvTruth == Guid.Empty)
+                {
+                    reprojectionResult = new { note = "No completed imprv truth batch found; skipping reprojection." };
+                }
+                else
+                {
+                    _logger.LogInformation("[AttrPop1] B. Re-running imprv canonical for batch={BatchId}", latestImprvTruth);
+                    var reproject = await imprvCanonicalProjector.ProjectAsync(latestImprvTruth, operatorName, cancellationToken);
+                    reprojectionResult = new
+                    {
+                        reproject.Status,
+                        reproject.PromotionLoadBatchId,
+                        reproject.TruthRowsConsidered,
+                        reproject.ImprovementsProjected,
+                        reproject.FeaturesProjected,
+                        reproject.AttributesConsidered,
+                        reproject.AttributesResolved,
+                        reproject.AttributesQuarantined,
+                        reproject.PriorAttrQuarantineRowsRemoved,
+                    };
+
+                    var postQuarantineCount = await _db.LegacyTfUnprovenImprvAttrs.CountAsync(cancellationToken);
+                    var postFeaturesAttributed = await _db.TfImprovementFeatures
+                        .Where(f => f.AttributeId != null)
+                        .CountAsync(cancellationToken);
+                    quarantineDelta = postQuarantineCount - preQuarantineCount;
+                    featuresAttributedDelta = postFeaturesAttributed - preFeaturesAttributed;
+                }
+            }
+
+            return Ok(new
+            {
+                operatorName,
+                bentonCountyId,
+                populator = new
+                {
+                    pop.Status,
+                    pop.PromotionLoadBatchId,
+                    pop.RowsConsidered,
+                    pop.RowsInserted,
+                    pop.RowsUpdated,
+                    pop.RowsSoftRetired,
+                    pop.InactiveSkipped,
+                },
+                counts = new
+                {
+                    attribute_definition_total = attrDefCount,
+                    attribute_definition_active = activeAttrDefCount,
+                },
+                reprojection = reprojectionResult,
+                quarantineDelta,
+                featuresAttributedDelta,
+                proofVerdict = pop.RowsConsidered > 0 && (pop.RowsInserted + pop.RowsUpdated) > 0
+                    ? (featuresAttributedDelta is int delta && delta > 0
+                        ? $"PROOF: attribute_definition populated AND {delta} additional tf_improvement_feature rows now carry AttributeId — ATTR-POP-1 succeeded."
+                        : "PARTIAL: attribute_definition populated. Re-projection ran but no AttributeId resolution improvement (likely value-grain vs family-grain mismatch — see Block-C v1.5 contract).")
+                    : "INCONCLUSIVE: PACS dbo.attribute returned no rows. Investigate.",
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[AttrPop1] FAILED");
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name });
+        }
+    }
+
+    /// <param name="OperatorName">Audit anchor.</param>
+    /// <param name="RerunImprvCanonical">If true (default), automatically
+    /// re-runs the imprv canonical projector against the latest imprv
+    /// truth batch so quarantine rows lift back. Set false to populate
+    /// the dictionary only.</param>
+    public sealed record AttrPop1Request(
+        string? OperatorName,
+        bool? RerunImprvCanonical);
 }
