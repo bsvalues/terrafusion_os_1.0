@@ -20,6 +20,9 @@ using TerraFusion.Core.Sync.PacsImprvAttr;
 using TerraFusion.Core.Sync.PacsImprvCanonical;
 using TerraFusion.Core.Sync.PacsImprvDetail;
 using TerraFusion.Core.Sync.PacsImprvTruth;
+using TerraFusion.Core.Sync.PacsLandCanonical;
+using TerraFusion.Core.Sync.PacsLandDetail;
+using TerraFusion.Core.Sync.PacsLandTruth;
 using TerraFusion.Core.Sync.PacsWashPropOwnerVal;
 using TerraFusion.Core.Sync.PacsWashPropOwnerValTruth;
 using TerraFusion.Core.Sync.PacsWsdorCanonical;
@@ -1690,6 +1693,163 @@ public class CanonicalDebugController : ControllerBase
     /// <param name="WorkingYear">PACS prop_val_yr to filter imprv stages by.
     /// Default 2026 (Benton's active assessment year).</param>
     public sealed record ImpPop1Request(
+        string? OperatorName,
+        int? ParcelTopN,
+        int? WorkingYear);
+
+    // ════════════════════════════════════════════════════════════════════
+    // LAND-POP-1: Land-lane end-to-end closure.
+    //   Owner-anchored seed → parcel chain → keyed land_detail S1 →
+    //   land truth (L2) → land canonical (L3, writes tf_land).
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// LAND-POP-1: doctrine end-to-end closure for the land lane.
+    /// Mirrors IMP-POP-1's owner-anchored seeding pattern (real-property
+    /// guarantee), then chains land_detail (L1) → L2 truth → L3
+    /// canonical projection.
+    ///
+    /// <para>Goal: prove <c>canonical_tf.tf_land &gt; 0</c>.</para>
+    /// </summary>
+    [HttpPost("land-pop-1/run-final-closure")]
+    public async Task<IActionResult> RunLandPop1(
+        [FromServices] IPacsOwnerLandingService ownerSvc,
+        [FromServices] IPacsPropertyLandingService propSvc,
+        [FromServices] IPacsParcelSpineTruthPromoter spinePromoter,
+        [FromServices] IPacsParcelCanonicalProjector parcelCanonical,
+        [FromServices] IPacsPropSuppAssocLandingService assocSvc,
+        [FromServices] IPacsLandDetailLandingService landSvc,
+        [FromServices] IPacsLandCurrentTruthPromoter landTruthPromoter,
+        [FromServices] IPacsLandCanonicalProjector landCanonicalProjector,
+        [FromServices] IConfiguration config,
+        [FromBody] LandPop1Request? request,
+        CancellationToken cancellationToken = default)
+    {
+        var pacsCs = config.GetConnectionString("PacsConnection");
+        if (string.IsNullOrWhiteSpace(pacsCs))
+            return StatusCode(500, new { error = "ConnectionStrings:PacsConnection is required for LAND-POP-1." });
+
+        var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
+            ? "land-pop-1-final-closure"
+            : request.OperatorName.Trim();
+        var parcelTopN = request?.ParcelTopN ?? 200;
+        short workingYear = (short)(request?.WorkingYear ?? 2026);
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+
+            // ── A0. Owner seed → R-anchored prop_ids. ──
+            var ownerSeedSrc = new SqlServerPacsOwnerSource(pacsCs, topN: parcelTopN);
+            var ownerSeedS1 = await ownerSvc.LandOwnersAsync(ownerSeedSrc, operatorName, cancellationToken);
+            if (!string.Equals(ownerSeedS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Owner-Seed-S1", error = ownerSeedS1.ErrorSummary, ownerSeedS1 });
+
+            var seedPropIds = await _db.LegacyPacsRawOwners
+                .AsNoTracking()
+                .Where(o => o.LoadBatchId == ownerSeedS1.LoadBatchId)
+                .Select(o => o.PropId)
+                .Distinct()
+                .ToListAsync(cancellationToken);
+
+            // ── A. Keyed parcel S1 → spine → canonical. ──
+            var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs, seedPropIds);
+            var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
+            if (!string.Equals(parcelS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Parcel-S1", error = parcelS1.ErrorSummary, parcelS1 });
+
+            var parcelSpine = await spinePromoter.PromoteAsync(parcelS1.LoadBatchId, operatorName, cancellationToken);
+            if (!string.Equals(parcelSpine.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Parcel-Spine", error = parcelSpine.ErrorSummary, parcelSpine });
+
+            var parcelCanon = await parcelCanonical.ProjectAsync(
+                parcelSpine.PromotionLoadBatchId, bentonCountyId, operatorName, cancellationToken);
+            if (!string.Equals(parcelCanon.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Parcel-Canonical", error = parcelCanon.ErrorSummary, parcelCanon });
+
+            // ── B. Build land keys: (prop_id, working_year) for each spine parcel. ──
+            var spinePropIds = await _db.TruthPacsParcelSpines
+                .AsNoTracking()
+                .Where(t => t.PromotionLoadBatchId == parcelSpine.PromotionLoadBatchId)
+                .Select(t => t.PropId)
+                .ToListAsync(cancellationToken);
+            var landKeys = spinePropIds.Select(p => (p, workingYear)).ToList();
+
+            // ── C. Keyed Supp S1. ──
+            var suppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs, landKeys);
+            var suppS1 = await assocSvc.LandPropSuppAssocsAsync(suppSrc, operatorName, cancellationToken);
+            if (!string.Equals(suppS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Supp-S1", error = suppS1.ErrorSummary, suppS1 });
+
+            // ── D. Keyed land_detail S1. ──
+            _logger.LogInformation("[LandPop1] D. Keyed land_detail S1 for {N} keys", landKeys.Count);
+            var landSrc = new KeyedSqlServerPacsLandDetailSource(pacsCs, landKeys);
+            var landS1 = await landSvc.LandLandDetailsAsync(landSrc, operatorName, cancellationToken);
+            if (!string.Equals(landS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Land-S1", error = landS1.ErrorSummary, landS1 });
+
+            // ── E. Land truth (L2). ──
+            var landTruth = await landTruthPromoter.PromoteAsync(
+                landS1.LoadBatchId, suppS1.LoadBatchId, operatorName, cancellationToken);
+            if (!string.Equals(landTruth.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Land-Truth", error = landTruth.ErrorSummary, landTruth });
+
+            // ── F. Land canonical (L3) → tf_land. ──
+            var landCanon = await landCanonicalProjector.ProjectAsync(
+                landTruth.PromotionLoadBatchId, operatorName, cancellationToken);
+            if (!string.Equals(landCanon.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Land-Canonical", error = landCanon.ErrorSummary, landCanon });
+
+            // ── Read-back. ──
+            var tfLandCount = await _db.TfLands.CountAsync(cancellationToken);
+            var truthLandCount = await _db.TruthPacsLandCurrents.CountAsync(cancellationToken);
+
+            return Ok(new
+            {
+                operatorName,
+                bentonCountyId,
+                workingYear,
+                ownerSeedS1 = new { ownerSeedS1.Status, ownerSeedS1.RowsLanded },
+                parcelS1 = new { parcelS1.Status, parcelS1.RowsLanded, parcelS1.TypeDistribution },
+                parcelCanon = new { parcelCanon.Status, parcelCanon.ParcelsProjected },
+                landKeys = landKeys.Count,
+                suppS1 = new { suppS1.Status, suppS1.RowsLanded },
+                landS1 = new { landS1.Status, landS1.LoadBatchId, landS1.RowsLanded },
+                landTruth = new
+                {
+                    landTruth.Status, landTruth.PromotionLoadBatchId,
+                    landTruth.LandSegsConsidered, landTruth.LandSegsPromoted,
+                    landTruth.RejectedNoSuppPointer, landTruth.RejectedStaleSupNum,
+                    landTruth.SizeAcresSum, landTruth.LandSegMarketValSum,
+                },
+                landCanon = new
+                {
+                    landCanon.Status, landCanon.PromotionLoadBatchId,
+                    landCanon.TruthRowsConsidered, landCanon.LandsProjected,
+                    landCanon.RowsQuarantined,
+                    landCanon.SizeAcresProjected, landCanon.LandSegMarketValProjected,
+                },
+                counts = new
+                {
+                    canonicalTfLands = tfLandCount,
+                    truthPacsLandCurrents = truthLandCount,
+                },
+                proofVerdict = landCanon.LandsProjected > 0
+                    ? "PROOF: canonical_tf.tf_land > 0 — LAND-POP-1 closure succeeded."
+                    : "INCONCLUSIVE: 0 land rows projected.",
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[LandPop1] FAILED");
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name });
+        }
+    }
+
+    /// <param name="OperatorName">Audit anchor across all 8 stages.</param>
+    /// <param name="ParcelTopN">Parcel sample size for the seed batch. Default 200.</param>
+    /// <param name="WorkingYear">PACS prop_val_yr to filter land stages by. Default 2026.</param>
+    public sealed record LandPop1Request(
         string? OperatorName,
         int? ParcelTopN,
         int? WorkingYear);
