@@ -238,9 +238,23 @@ function nestedArtifactFailureReasons(value) {
   return [
     ...collectionFailureReasons(value, 'artifact'),
     ...summaryFailureReasons(value?.summary),
+    ...receiptEvidenceFailureReasons(value?.receiptEvidence),
     ...nestedRecordFailureReasons(value?.rows, 'row'),
     ...nestedRecordFailureReasons(value?.proofs, 'proof'),
   ];
+}
+
+function receiptEvidenceFailureReasons(receiptEvidence) {
+  if (!receiptEvidence || typeof receiptEvidence !== 'object') return [];
+  const reasons = collectionFailureReasons(receiptEvidence, 'receiptEvidence');
+  if (receiptEvidence.passed === false) reasons.push('receiptEvidence.passed is false');
+  if (typeof receiptEvidence.status === 'string') {
+    const allowedStatuses = new Set(['PASS', 'PASS_WITH_WARNINGS']);
+    if (!allowedStatuses.has(receiptEvidence.status) && !receiptEvidence.status.endsWith('_pass')) {
+      reasons.push(`receiptEvidence.status is ${receiptEvidence.status}`);
+    }
+  }
+  return reasons;
 }
 
 function summaryFailureReasons(summary) {

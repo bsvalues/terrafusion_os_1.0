@@ -341,7 +341,7 @@ test('fails when a proof command writes a failing expected JSON artifact', () =>
               "fs.writeFileSync('generated/truth/summary-fail.json', JSON.stringify({ summary: { passed: false, status: 'FAIL' }, rows: [{ county: 'Benton', summary: { passed: false } }], proofs: [{ county: 'Benton', summary: { status: 'FAIL' } }] }) + '\\n');",
               "fs.writeFileSync('generated/truth/collection-fail.json', JSON.stringify({ passed: true, blockers: ['explicit blocker'], errors: ['explicit error'], failures: ['explicit failure'], errorCount: 2, failureCount: 3, blockerCount: 4, failed: 5, summary: { errors: ['summary error'], failures: ['summary failure'], failed: 6, shipBlockers: 7 }, rows: [{ county: 'Benton', blockers: ['row blocker'], errors: ['row error'], failures: ['row failure'], failed: 8 }], proofs: [{ county: 'Benton', blockers: ['proof blocker'], errors: ['proof error'], failures: ['proof failure'], errorCount: 9 }] }) + '\\n');",
               "fs.writeFileSync('generated/truth/object-collection-fail.json', JSON.stringify({ blockers: { one: 'blocker' }, errors: { one: 'error', two: 'error' }, failures: { one: 'failure' }, summary: { errors: { one: 'summary error' } }, rows: [{ county: 'Benton', blockers: { one: 'row blocker' }, errors: { one: 'row error' } }], proofs: [{ county: 'Benton', failures: { one: 'proof failure' } }] }) + '\\n');",
-              "fs.writeFileSync('generated/truth/scalar-collection-fail.json', JSON.stringify({ blocker: 'single blocker', blockers: 'plural blocker string', error: 'single error', errors: 'plural error string', failure: 'single failure', failures: 'plural failure string', summary: { error: 'summary error', failure: 'summary failure' }, rows: [{ county: 'Benton', error: 'row error', failure: 'row failure' }], proofs: [{ county: 'Benton', errors: 'proof errors string', failures: 'proof failures string' }] }) + '\\n');",
+              "fs.writeFileSync('generated/truth/scalar-collection-fail.json', JSON.stringify({ blocker: 'single blocker', blockers: 'plural blocker string', error: 'single error', errors: 'plural error string', failure: 'single failure', failures: 'plural failure string', receiptEvidence: { blocker: 'receipt blocker', error: 'receipt error', failures: { one: 'receipt failure' }, passed: false, status: 'FAIL' }, summary: { error: 'summary error', failure: 'summary failure' }, rows: [{ county: 'Benton', error: 'row error', failure: 'row failure' }], proofs: [{ county: 'Benton', errors: 'proof errors string', failures: 'proof failures string' }] }) + '\\n');",
             ].join(' '),
           ],
           expectedArtifacts: [
@@ -424,6 +424,11 @@ test('fails when a proof command writes a failing expected JSON artifact', () =>
     'artifact.failures is set',
     'summary.error is set',
     'summary.failure is set',
+    'receiptEvidence.blocker is set',
+    'receiptEvidence.error is set',
+    'receiptEvidence.failures has 1 object key(s)',
+    'receiptEvidence.passed is false',
+    'receiptEvidence.status is FAIL',
     'Benton row.error is set',
     'Benton row.failure is set',
     'Benton proof.errors is set',
@@ -451,6 +456,8 @@ test('fails when a proof command writes a failing expected JSON artifact', () =>
   assert.ok(report.blockers.some(item => item.includes('Benton proof.failures has 1 object key')));
   assert.ok(report.blockers.some(item => item.includes('artifact.blocker is set')));
   assert.ok(report.blockers.some(item => item.includes('artifact.error is set')));
+  assert.ok(report.blockers.some(item => item.includes('receiptEvidence.error is set')));
+  assert.ok(report.blockers.some(item => item.includes('receiptEvidence.status is FAIL')));
   assert.ok(report.blockers.some(item => item.includes('summary.failure is set')));
   assert.ok(report.blockers.some(item => item.includes('Benton row.error is set')));
   assert.ok(report.blockers.some(item => item.includes('Benton proof.failures is set')));

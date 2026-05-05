@@ -686,6 +686,15 @@ test('readiness packet blocks scalar blocker error and failure fields', () => {
       error: 'Summary error.',
       failure: 'Summary failure.',
     },
+    receiptEvidence: {
+      blocker: 'Receipt blocker.',
+      blockers: {
+        one: 'Receipt blocker one.',
+      },
+      error: 'Receipt error.',
+      failures: 'Receipt failure string.',
+      status: 'FAIL',
+    },
     rows: [
       {
         county: 'Benton',
@@ -736,6 +745,18 @@ test('readiness packet blocks scalar blocker error and failure fields', () => {
   );
   assert.ok(
     report.shipBlockers.some(
+      item => item.source === 'dbIdentity' && item.message === 'receiptEvidence: Receipt blocker.'
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' &&
+        item.message.includes('receiptEvidence.blockers has 1 object key')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
       item => item.source === 'dbIdentity' && item.message.includes('artifact.error is set')
     )
   );
@@ -751,6 +772,17 @@ test('readiness packet blocks scalar blocker error and failure fields', () => {
   );
   assert.ok(
     report.shipBlockers.some(
+      item => item.source === 'dbIdentity' && item.message.includes('receiptEvidence.error is set')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' && item.message.includes('receiptEvidence.status is FAIL')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
       item => item.source === 'dbIdentity' && item.message.includes('Benton row.error is set')
     )
   );
@@ -762,6 +794,9 @@ test('readiness packet blocks scalar blocker error and failure fields', () => {
   assert.ok(report.artifactDetails.dbIdentity.blockers.items.includes('Top blocker.'));
   assert.ok(report.artifactDetails.dbIdentity.blockers.items.includes('Top blockers string.'));
   assert.ok(report.artifactDetails.dbIdentity.blockers.items.includes('Summary blocker.'));
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.includes('receiptEvidence: Receipt blocker.')
+  );
   assert.ok(report.artifactDetails.dbIdentity.blockers.items.includes('Benton: Row blocker.'));
   assert.ok(
     report.artifactDetails.dbIdentity.blockers.items.includes('Benton: Proof blocker string.')

@@ -513,9 +513,23 @@ function artifactFailurePostures(value) {
     artifactFailurePosture(value),
     ...collectionFailurePostures(value, 'artifact'),
     ...summaryFailurePostures(value?.summary),
+    ...receiptEvidenceFailurePostures(value?.receiptEvidence),
     ...nestedRecordFailurePostures(value?.rows, 'row'),
     ...nestedRecordFailurePostures(value?.proofs, 'proof'),
   ].filter(Boolean);
+}
+
+function receiptEvidenceFailurePostures(receiptEvidence) {
+  if (!receiptEvidence || typeof receiptEvidence !== 'object') return [];
+  const postures = collectionFailurePostures(receiptEvidence, 'receiptEvidence');
+  if (receiptEvidence.passed === false) postures.push('receiptEvidence.passed is false');
+  if (typeof receiptEvidence.status === 'string') {
+    const allowedStatuses = new Set(['PASS', 'PASS_WITH_WARNINGS']);
+    if (!allowedStatuses.has(receiptEvidence.status) && !receiptEvidence.status.endsWith('_pass')) {
+      postures.push(`receiptEvidence.status is ${receiptEvidence.status}`);
+    }
+  }
+  return postures;
 }
 
 function summaryFailurePostures(summary) {
@@ -596,9 +610,7 @@ function artifactBlockers(value) {
 function artifactBlockerMessages(value) {
   const direct = blockerMessages(value, 'artifact');
   const summary = blockerMessages(value?.summary, 'summary');
-  const receiptBlockers = Array.isArray(value?.receiptEvidence?.blockers)
-    ? value.receiptEvidence.blockers.map(item => `receiptEvidence: ${item}`)
-    : [];
+  const receiptBlockers = blockerMessages(value?.receiptEvidence, 'receiptEvidence');
   const rowBlockers = Array.isArray(value?.rows)
     ? value.rows.flatMap(row => blockerMessages(row, `${row?.tableName ?? row?.county ?? 'row'}`))
     : [];
