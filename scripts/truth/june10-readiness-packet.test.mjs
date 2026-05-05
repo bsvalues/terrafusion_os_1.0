@@ -385,6 +385,54 @@ test('readiness packet blocks false success or ok posture fields', () => {
   );
 });
 
+test('readiness packet blocks false explicit passed-derived fields', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-identity.json', {
+    endpointStatus: 200,
+    passed: true,
+    dbIdentityPassed: false,
+    summary: {
+      sourceLineagePassed: false,
+    },
+    rows: [{ county: 'Benton', parcelSanityPassed: false }],
+    proofs: [{ county: 'Benton', runtimeDbIdentityPassed: false }],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' && item.message.includes('artifact.dbIdentityPassed is false')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' &&
+        item.message.includes('summary.sourceLineagePassed is false')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('Benton row.parcelSanityPassed is false')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('Benton proof.runtimeDbIdentityPassed is false')
+    )
+  );
+});
+
 test('readiness packet blocks required artifacts whose JSON root is not an object', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-candidate-set.json', []);

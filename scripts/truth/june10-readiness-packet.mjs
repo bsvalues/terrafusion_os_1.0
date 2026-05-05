@@ -566,6 +566,11 @@ function booleanFailurePostures(value, label) {
   for (const key of ['success', 'ok']) {
     if (value[key] === false) postures.push(`${label}.${key} is false`);
   }
+  for (const [key, fieldValue] of Object.entries(value)) {
+    if (key !== 'passed' && key.endsWith('Passed') && fieldValue === false) {
+      postures.push(`${label}.${key} is false`);
+    }
+  }
   return postures;
 }
 
