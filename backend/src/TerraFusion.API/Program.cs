@@ -925,6 +925,11 @@ if (args.Contains("--seed-pacs"))
     }
 }
 
+// SYNC-POP-2 — entry point lives at POST /api/debug/sync-pop-2/run-chain
+// (see CanonicalDebugController). The full DI tree is already wired in
+// the running API; using HTTP avoids re-registering the entire sale
+// promoter/projector chain in a CLI host.
+
 var apiContentRoot = ResolveApiContentRoot();
 var runtimeEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
     ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")

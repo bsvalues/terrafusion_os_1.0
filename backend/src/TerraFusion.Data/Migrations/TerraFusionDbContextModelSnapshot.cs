@@ -6351,8 +6351,8 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("smallint");
 
                     b.Property<string>("SlCountyRatioCd")
-                        .HasMaxLength(8)
-                        .HasColumnType("character varying(8)");
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<DateTime?>("SlDt")
                         .HasColumnType("timestamp with time zone");
@@ -6379,8 +6379,8 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("smallint");
 
                     b.Property<string>("WacCd")
-                        .HasMaxLength(8)
-                        .HasColumnType("character varying(8)");
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.HasKey("LandedRowId");
 
