@@ -1670,6 +1670,14 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsProperty.IPacsPropertyLandingService,
     TerraFusion.Data.Services.LegacyPacsRaw.PacsPropertyLandingService>();
 
+// Slice S2-B (SYNC-POP-4b): PACS parcel-spine truth promoter —
+// real-property-filtered, identity-stable spine of the parcel
+// pipeline. Required by the canonical_tf.tf_parcel projector
+// (SYNC-POP-4c).
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsParcelTruth.IPacsParcelSpineTruthPromoter,
+    TerraFusion.Data.Services.TruthPacs.PacsParcelSpineTruthPromoter>();
+
 // Slice B1-A: PACS account raw landing — Block B's PII-rich
 // identity table. Four gates: distribution, acct_id-uniqueness,
 // provenance-coverage, pii-flags-recorded.
