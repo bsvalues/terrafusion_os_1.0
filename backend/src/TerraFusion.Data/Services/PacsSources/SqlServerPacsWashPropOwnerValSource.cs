@@ -35,16 +35,22 @@ public sealed class SqlServerPacsWashPropOwnerValSource : IPacsWashPropOwnerValS
     public string SourceSystem => "JCHARRISPACS";
     public string SourceFileOrDatabase => "pacs_oltp";
 
+    // OWN-POP-2 fixture-vs-real divergence: see KeyedSqlServerPacsWashPropOwnerValSource
+    // for the full mapping doc-comment. Real Benton dbo.wash_prop_owner_val uses
+    // appraised/market/hstd/non_hstd column names; the original source class assumed
+    // assessed_val/market_val/taxable_classified/land_taxable_classified etc.
     public string SourceQueryText =>
         "SELECT CAST(year AS smallint) AS prop_val_yr, " +
         "CAST(sup_num AS smallint) AS sup_num, " +
         "prop_id, owner_id, " +
-        "assessed_val, market_val, appraised_val, " +
+        "appraised AS assessed_val, market AS market_val, appraised AS appraised_val, " +
         "taxable_classified, taxable_non_classified, " +
-        "land_taxable_classified, land_taxable_non_classified, " +
-        "imprv_taxable_classified, imprv_taxable_non_classified, " +
-        "state_value_classified, state_value_non_classified, " +
-        "boe_status, disaster_proration_pct, " +
+        "land_hstd_val AS land_taxable_classified, land_non_hstd_val AS land_taxable_non_classified, " +
+        "imprv_hstd_val AS imprv_taxable_classified, imprv_non_hstd_val AS imprv_taxable_non_classified, " +
+        "appraised_classified AS state_value_classified, appraised_non_classified AS state_value_non_classified, " +
+        // boe_status is a bit in real Benton; cast to 'Y'/'N' for the entity.
+        "CASE WHEN boe_status = 1 THEN 'Y' WHEN boe_status = 0 THEN 'N' END AS boe_status, " +
+        "destroyed_prorate_pct AS disaster_proration_pct, " +
         "snr_frz_imprv_hs, snr_frz_land_hs " +
         "FROM dbo.wash_prop_owner_val " +
         "WHERE sup_num = 0 AND year >= 2018 " +
@@ -59,19 +65,19 @@ public sealed class SqlServerPacsWashPropOwnerValSource : IPacsWashPropOwnerValS
                    CAST(sup_num AS smallint) AS sup_num,
                    prop_id,
                    owner_id,
-                   assessed_val,
-                   market_val,
-                   appraised_val,
+                   appraised AS assessed_val,
+                   market AS market_val,
+                   appraised AS appraised_val,
                    taxable_classified,
                    taxable_non_classified,
-                   land_taxable_classified,
-                   land_taxable_non_classified,
-                   imprv_taxable_classified,
-                   imprv_taxable_non_classified,
-                   state_value_classified,
-                   state_value_non_classified,
-                   boe_status,
-                   disaster_proration_pct,
+                   land_hstd_val AS land_taxable_classified,
+                   land_non_hstd_val AS land_taxable_non_classified,
+                   imprv_hstd_val AS imprv_taxable_classified,
+                   imprv_non_hstd_val AS imprv_taxable_non_classified,
+                   appraised_classified AS state_value_classified,
+                   appraised_non_classified AS state_value_non_classified,
+                   CASE WHEN boe_status = 1 THEN 'Y' WHEN boe_status = 0 THEN 'N' END AS boe_status,
+                   destroyed_prorate_pct AS disaster_proration_pct,
                    snr_frz_imprv_hs,
                    snr_frz_land_hs
             FROM dbo.wash_prop_owner_val
