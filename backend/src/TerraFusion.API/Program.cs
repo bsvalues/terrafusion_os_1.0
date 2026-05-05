@@ -1686,6 +1686,15 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsParcelCanonical.IPacsParcelCanonicalProjector,
     TerraFusion.Data.Services.CanonicalTf.PacsParcelCanonicalProjector>();
 
+// Slice E2-A (ATTR-POP-1): canonical_tf.attribute_definition populator.
+// Single-tier (canonical-only) populator that reads PACS dbo.attribute
+// and upserts attribute_definition rows keyed (CountyId, IAttrId).
+// Unblocks the imprv_attr quarantine path — UnknownAttribute rows
+// resolve once their dictionary entries exist.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsAttribute.IPacsAttributePopulator,
+    TerraFusion.Data.Services.CanonicalTf.PacsAttributePopulatorService>();
+
 // Slice B1-A: PACS account raw landing — Block B's PII-rich
 // identity table. Four gates: distribution, acct_id-uniqueness,
 // provenance-coverage, pii-flags-recorded.
