@@ -1328,6 +1328,52 @@ test('fails when a proof command writes non-boolean success and passed-derived f
   );
 });
 
+test('fails when a proof command writes false proven and ready proof fields', () => {
+  const root = makeTempRepo('tf-post-db-refresh-false-proven-ready-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'False proven ready artifact writer command',
+          command: process.execPath,
+          args: [
+            '-e',
+            [
+              "const fs = require('fs');",
+              "fs.mkdirSync('generated/truth', { recursive: true });",
+              "fs.writeFileSync('generated/truth/false-proven-ready.json', JSON.stringify({ passed: true, dbIdentityProven: false, runtimeReady: 0, summary: { lineageProven: 1, countyIdentityProven: false }, rows: [{ county: 'Benton', parcelRowsReady: 'false' }], proofs: [{ county: 'Benton', sourceLineageProven: 0 }] }) + '\\n');",
+            ].join(' '),
+          ],
+          expectedArtifacts: ['generated/truth/false-proven-ready.json'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'FAIL');
+  assert.equal(report.summary.artifactFailures, 1);
+  assert.deepEqual(report.results[0].artifactOutputs[0].artifactFailureReasons, [
+    'artifact.dbIdentityProven is false',
+    'artifact.runtimeReady is false',
+    'summary.countyIdentityProven is false',
+    'Benton row.parcelRowsReady is false',
+    'Benton proof.sourceLineageProven is false',
+  ]);
+  assert.ok(
+    report.blockers.some(item =>
+      item.includes('generated/truth/false-proven-ready.json: artifact.dbIdentityProven is false')
+    )
+  );
+  assert.ok(report.blockers.some(item => item.includes('Benton proof.sourceLineageProven')));
+});
+
 test('fails when a proof command writes failing receipt evidence summary posture', () => {
   const root = makeTempRepo('tf-post-db-refresh-receipt-summary-fail-');
   const result = spawnSync('node', [scriptPath, root], {

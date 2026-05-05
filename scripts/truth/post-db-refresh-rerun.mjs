@@ -325,6 +325,11 @@ function booleanFailureReasons(value, label) {
         reasons.push(`${label}.${key} is not boolean`);
       }
     }
+    if (isPositiveReadinessProofField(normalized)) {
+      if (isFalseLike(fieldValue)) {
+        reasons.push(`${label}.${key} is false`);
+      }
+    }
   }
   return reasons;
 }
@@ -344,6 +349,12 @@ function expectedMatchFailureReasons(value, label, pathParts = []) {
     reasons.push(...expectedMatchFailureReasons(fieldValue, label, fieldPath));
   }
   return reasons;
+}
+
+function isPositiveReadinessProofField(normalized) {
+  if (normalized.endsWith('notproven') || normalized.endsWith('unproven')) return false;
+  if (normalized.endsWith('notready')) return false;
+  return normalized.endsWith('proven') || normalized.endsWith('ready');
 }
 
 function nestedPassedFailureReasons(value, label, pathParts = []) {

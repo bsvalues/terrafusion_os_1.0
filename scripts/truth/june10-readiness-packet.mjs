@@ -590,6 +590,11 @@ function booleanFailurePostures(value, label) {
         postures.push(`${label}.${key} is not boolean`);
       }
     }
+    if (isPositiveReadinessProofField(normalized)) {
+      if (isFalseLike(fieldValue)) {
+        postures.push(`${label}.${key} is false`);
+      }
+    }
   }
   return postures;
 }
@@ -609,6 +614,12 @@ function expectedMatchFailurePostures(value, label, pathParts = []) {
     postures.push(...expectedMatchFailurePostures(fieldValue, label, fieldPath));
   }
   return postures;
+}
+
+function isPositiveReadinessProofField(normalized) {
+  if (normalized.endsWith('notproven') || normalized.endsWith('unproven')) return false;
+  if (normalized.endsWith('notready')) return false;
+  return normalized.endsWith('proven') || normalized.endsWith('ready');
 }
 
 function nestedPassedFailurePostures(value, label, pathParts = []) {

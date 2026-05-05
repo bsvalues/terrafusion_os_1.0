@@ -680,6 +680,63 @@ test('readiness packet blocks non-boolean success and passed-derived proof field
   );
 });
 
+test('readiness packet blocks false proven and ready proof fields', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-identity.json', {
+    endpointStatus: 200,
+    passed: true,
+    dbIdentityProven: false,
+    runtimeReady: 0,
+    summary: {
+      lineageProven: 1,
+      countyIdentityProven: false,
+    },
+    rows: [{ county: 'Benton', parcelRowsReady: 'false' }],
+    proofs: [{ county: 'Benton', sourceLineageProven: 0 }],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('artifact.dbIdentityProven is false')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('artifact.runtimeReady is false')
+    )
+  );
+  assert.ok(
+    !report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('summary.lineageProven is')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('summary.countyIdentityProven is false')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('Benton row.parcelRowsReady is false')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('Benton proof.sourceLineageProven is false')
+    )
+  );
+});
+
 test('readiness packet blocks nested expected-match proof fields as false', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-db-content-audit.json', {
