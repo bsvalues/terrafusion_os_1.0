@@ -686,6 +686,54 @@ test('fails when a proof command writes nested expected-match proof fields as fa
   );
 });
 
+test('fails when a proof command writes variant boolean and expected-match proof fields', () => {
+  const root = makeTempRepo('tf-post-db-refresh-variant-boolean-false-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'Variant boolean artifact writer command',
+          command: process.execPath,
+          args: [
+            '-e',
+            [
+              "const fs = require('fs');",
+              "fs.mkdirSync('generated/truth', { recursive: true });",
+              "fs.writeFileSync('generated/truth/variant-boolean-false.json', JSON.stringify({ passed: true, Success: false, summary: { OK: 'false' }, identity: { is_expected_june10_runtime_db: false, is_benton_parcel_count_expected: false }, content: { bentonDecision: { property_rows_match_expected: false } }, rows: [{ county: 'Benton', proof_passed: false }], configExpectationSources: [{ matches_runtime_expectation: false }] }) + '\\n');",
+            ].join(' '),
+          ],
+          expectedArtifacts: ['generated/truth/variant-boolean-false.json'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'FAIL');
+  assert.ok(report.blockers.some(item => item.includes('artifact.Success is false')));
+  assert.ok(report.blockers.some(item => item.includes('summary.OK is false')));
+  assert.ok(
+    report.blockers.some(item => item.includes('identity.is_expected_june10_runtime_db is false'))
+  );
+  assert.ok(
+    report.blockers.some(item =>
+      item.includes('content.bentonDecision.property_rows_match_expected is false')
+    )
+  );
+  assert.ok(report.blockers.some(item => item.includes('Benton row.proof_passed is false')));
+  assert.ok(
+    report.blockers.some(item =>
+      item.includes('configExpectationSources.[].matches_runtime_expectation is false')
+    )
+  );
+});
+
 test('fails when a proof command writes nested explicit failing status fields', () => {
   const root = makeTempRepo('tf-post-db-refresh-nested-status-fail-');
   const result = spawnSync('node', [scriptPath, root], {

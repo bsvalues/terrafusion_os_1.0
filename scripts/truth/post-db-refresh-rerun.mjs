@@ -299,11 +299,12 @@ function summaryFailureReasons(summary, label = 'summary') {
 function booleanFailureReasons(value, label) {
   if (!value || typeof value !== 'object') return [];
   const reasons = [];
-  for (const key of ['success', 'ok']) {
-    if (isFalseLike(value[key])) reasons.push(`${label}.${key} is false`);
-  }
   for (const [key, fieldValue] of Object.entries(value)) {
-    if (key !== 'passed' && key.endsWith('Passed') && isFalseLike(fieldValue)) {
+    const normalized = normalizeProofFieldKey(key);
+    if (['success', 'ok'].includes(normalized) && isFalseLike(fieldValue)) {
+      reasons.push(`${label}.${key} is false`);
+    }
+    if (normalized !== 'passed' && normalized.endsWith('passed') && isFalseLike(fieldValue)) {
       reasons.push(`${label}.${key} is false`);
     }
   }
@@ -375,9 +376,7 @@ function isPlainStatusField(key) {
 }
 
 function normalizeStatusFieldKey(key) {
-  return String(key)
-    .replace(/[^a-z0-9]+/gi, '')
-    .toLowerCase();
+  return normalizeProofFieldKey(key);
 }
 
 function isExplicitFailingStatus(value) {
@@ -411,12 +410,19 @@ function isKnownStatusFieldPath(pathParts) {
 }
 
 function isExpectedMatchProofField(key) {
+  const normalized = normalizeProofFieldKey(key);
   return (
-    key.endsWith('MatchExpected') ||
-    key === 'isExpectedJune10RuntimeDb' ||
-    key === 'isBentonParcelCountExpected' ||
-    key === 'matchesRuntimeExpectation'
+    normalized.endsWith('matchexpected') ||
+    normalized === 'isexpectedjune10runtimedb' ||
+    normalized === 'isbentonparcelcountexpected' ||
+    normalized === 'matchesruntimeexpectation'
   );
+}
+
+function normalizeProofFieldKey(key) {
+  return String(key)
+    .replace(/[^a-z0-9]+/gi, '')
+    .toLowerCase();
 }
 
 function collectionFailureReasons(value, label) {

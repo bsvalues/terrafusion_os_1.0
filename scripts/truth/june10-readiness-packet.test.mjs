@@ -570,6 +570,70 @@ test('readiness packet blocks nested expected-match proof fields as false', () =
   );
 });
 
+test('readiness packet blocks variant boolean and expected-match proof fields', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-content-audit.json', {
+    endpointStatus: 200,
+    passed: true,
+    Success: false,
+    summary: {
+      OK: 'false',
+    },
+    identity: {
+      is_expected_june10_runtime_db: false,
+      is_benton_parcel_count_expected: false,
+    },
+    content: {
+      bentonDecision: {
+        property_rows_match_expected: false,
+      },
+    },
+    rows: [{ county: 'Benton', proof_passed: false }],
+    configExpectationSources: [{ matches_runtime_expectation: false }],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.shipBlockers.some(
+      item => item.source === 'dbContent' && item.message.includes('artifact.Success is false')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('summary.OK is false')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('artifact.identity.is_expected_june10_runtime_db is false')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('artifact.content.bentonDecision.property_rows_match_expected is false')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('Benton row.proof_passed is false')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('artifact.configExpectationSources.[].matches_runtime_expectation is false')
+    )
+  );
+});
+
 test('readiness packet blocks nested explicit failing status fields', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-db-content-audit.json', {
