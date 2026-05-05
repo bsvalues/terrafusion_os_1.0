@@ -245,6 +245,7 @@ function artifactFailureReason(artifact) {
 
 function nestedArtifactFailureReasons(value) {
   return [
+    ...booleanFailureReasons(value, 'artifact'),
     ...collectionFailureReasons(value, 'artifact'),
     ...summaryFailureReasons(value?.summary),
     ...receiptEvidenceFailureReasons(value?.receiptEvidence),
@@ -256,6 +257,7 @@ function nestedArtifactFailureReasons(value) {
 function receiptEvidenceFailureReasons(receiptEvidence) {
   if (!receiptEvidence || typeof receiptEvidence !== 'object') return [];
   const reasons = [
+    ...booleanFailureReasons(receiptEvidence, 'receiptEvidence'),
     ...collectionFailureReasons(receiptEvidence, 'receiptEvidence'),
     ...summaryFailureReasons(receiptEvidence.summary, 'receiptEvidence.summary'),
   ];
@@ -270,12 +272,24 @@ function receiptEvidenceFailureReasons(receiptEvidence) {
 
 function summaryFailureReasons(summary, label = 'summary') {
   if (!summary || typeof summary !== 'object') return [];
-  const reasons = collectionFailureReasons(summary, label);
+  const reasons = [
+    ...booleanFailureReasons(summary, label),
+    ...collectionFailureReasons(summary, label),
+  ];
   if (summary.passed === false) reasons.push(`${label}.passed is false`);
   if (typeof summary.status === 'string') {
     if (!isAllowedPassingStatus(summary.status)) {
       reasons.push(`${label}.status is ${summary.status}`);
     }
+  }
+  return reasons;
+}
+
+function booleanFailureReasons(value, label) {
+  if (!value || typeof value !== 'object') return [];
+  const reasons = [];
+  for (const key of ['success', 'ok']) {
+    if (value[key] === false) reasons.push(`${label}.${key} is false`);
   }
   return reasons;
 }
@@ -327,7 +341,10 @@ function nestedRecordFailureReasons(records, label) {
   if (!Array.isArray(records)) return [];
   return records.flatMap(record => {
     const subject = `${record?.tableName ?? record?.county ?? label} ${label}`;
-    const reasons = collectionFailureReasons(record, subject);
+    const reasons = [
+      ...booleanFailureReasons(record, subject),
+      ...collectionFailureReasons(record, subject),
+    ];
     if (record?.passed === false) reasons.push(`${subject} passed is false`);
     if (typeof record?.status === 'string') {
       if (!isAllowedPassingStatus(record.status)) {

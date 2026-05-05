@@ -471,6 +471,48 @@ test('fails when a proof command writes a failing expected JSON artifact', () =>
   );
 });
 
+test('fails when a proof command writes false success or ok posture fields', () => {
+  const root = makeTempRepo('tf-post-db-refresh-artifact-success-false-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'False success artifact writer command',
+          command: process.execPath,
+          args: [
+            '-e',
+            [
+              "const fs = require('fs');",
+              "fs.mkdirSync('generated/truth', { recursive: true });",
+              "fs.writeFileSync('generated/truth/success-false.json', JSON.stringify({ passed: true, success: false, summary: { ok: false }, rows: [{ county: 'Benton', success: false }], proofs: [{ county: 'Benton', ok: false }] }) + '\\n');",
+            ].join(' '),
+          ],
+          expectedArtifacts: ['generated/truth/success-false.json'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'FAIL');
+  assert.deepEqual(report.results[0].artifactOutputs[0].artifactFailureReasons, [
+    'artifact.success is false',
+    'summary.ok is false',
+    'Benton row.success is false',
+    'Benton proof.ok is false',
+  ]);
+  assert.ok(report.blockers.some(item => item.includes('artifact.success is false')));
+  assert.ok(report.blockers.some(item => item.includes('summary.ok is false')));
+  assert.ok(report.blockers.some(item => item.includes('Benton row.success is false')));
+  assert.ok(report.blockers.some(item => item.includes('Benton proof.ok is false')));
+});
+
 test('fails when a proof command writes a malformed expected JSON artifact', () => {
   const root = makeTempRepo('tf-post-db-refresh-artifact-malformed-');
   const result = spawnSync('node', [scriptPath, root], {

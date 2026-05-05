@@ -342,6 +342,49 @@ test('readiness packet blocks required artifacts with top-level failed proof pos
   assert.ok(report.executionQueue.some(item => item.source === 'runtimeCandidateSet'));
 });
 
+test('readiness packet blocks false success or ok posture fields', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-candidate-set.json', {
+    success: false,
+    summary: {
+      june10RuntimeScope: 'benton_only_runtime_pilot',
+      prohibit39CountyRuntimeClaim: true,
+      runtimeProven: 1,
+      evidenceBackedLoadCandidates: 0,
+      shipBlockers: 0,
+      ok: false,
+    },
+    rows: [{ county: 'Benton', runtimeCandidateClass: 'runtime_proven', success: false }],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'runtimeCandidateSet' && item.message.includes('artifact.success is false')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item => item.source === 'runtimeCandidateSet' && item.message.includes('summary.ok is false')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.runtimeCandidateSet.blockers.items.some(item =>
+      item.includes('Benton row.success is false')
+    )
+  );
+});
+
 test('readiness packet blocks required artifacts whose JSON root is not an object', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-candidate-set.json', []);

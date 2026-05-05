@@ -520,6 +520,7 @@ function artifactFailurePosture(value) {
 function artifactFailurePostures(value) {
   return [
     artifactFailurePosture(value),
+    ...booleanFailurePostures(value, 'artifact'),
     ...collectionFailurePostures(value, 'artifact'),
     ...summaryFailurePostures(value?.summary),
     ...receiptEvidenceFailurePostures(value?.receiptEvidence),
@@ -531,6 +532,7 @@ function artifactFailurePostures(value) {
 function receiptEvidenceFailurePostures(receiptEvidence) {
   if (!receiptEvidence || typeof receiptEvidence !== 'object') return [];
   const postures = [
+    ...booleanFailurePostures(receiptEvidence, 'receiptEvidence'),
     ...collectionFailurePostures(receiptEvidence, 'receiptEvidence'),
     ...summaryFailurePostures(receiptEvidence.summary, 'receiptEvidence.summary'),
   ];
@@ -545,12 +547,24 @@ function receiptEvidenceFailurePostures(receiptEvidence) {
 
 function summaryFailurePostures(summary, label = 'summary') {
   if (!summary || typeof summary !== 'object') return [];
-  const postures = collectionFailurePostures(summary, label);
+  const postures = [
+    ...booleanFailurePostures(summary, label),
+    ...collectionFailurePostures(summary, label),
+  ];
   if (summary.passed === false) postures.push(`${label}.passed is false`);
   if (typeof summary.status === 'string') {
     if (!isAllowedPassingStatus(summary.status)) {
       postures.push(`${label}.status is ${summary.status}`);
     }
+  }
+  return postures;
+}
+
+function booleanFailurePostures(value, label) {
+  if (!value || typeof value !== 'object') return [];
+  const postures = [];
+  for (const key of ['success', 'ok']) {
+    if (value[key] === false) postures.push(`${label}.${key} is false`);
   }
   return postures;
 }
@@ -594,7 +608,10 @@ function nestedRecordFailurePostures(records, label) {
   if (!Array.isArray(records)) return [];
   return records.flatMap(record => {
     const subject = `${record?.tableName ?? record?.county ?? label} ${label}`;
-    const postures = collectionFailurePostures(record, subject);
+    const postures = [
+      ...booleanFailurePostures(record, subject),
+      ...collectionFailurePostures(record, subject),
+    ];
     if (record?.passed === false) postures.push(`${subject} passed is false`);
     if (typeof record?.status === 'string') {
       if (!isAllowedPassingStatus(record.status)) {
