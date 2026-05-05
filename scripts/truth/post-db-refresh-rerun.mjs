@@ -196,6 +196,15 @@ function inspectArtifacts(expectedArtifacts, commandStartedMs) {
 function inspectJsonArtifactPosture(filePath) {
   try {
     const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    if (!isJsonProofObject(parsed)) {
+      return {
+        status: null,
+        passed: null,
+        warningCount: 0,
+        parseError: null,
+        failureReasons: ['JSON artifact root must be an object'],
+      };
+    }
     return {
       status: typeof parsed?.status === 'string' ? parsed.status : null,
       passed: typeof parsed?.passed === 'boolean' ? parsed.passed : null,
@@ -212,6 +221,10 @@ function inspectJsonArtifactPosture(filePath) {
       failureReasons: [],
     };
   }
+}
+
+function isJsonProofObject(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
 function artifactFailureReason(artifact) {

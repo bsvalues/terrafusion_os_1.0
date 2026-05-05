@@ -342,6 +342,38 @@ test('readiness packet blocks required artifacts with top-level failed proof pos
   assert.ok(report.executionQueue.some(item => item.source === 'runtimeCandidateSet'));
 });
 
+test('readiness packet blocks required artifacts whose JSON root is not an object', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-candidate-set.json', []);
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'runtimeCandidateSet' &&
+        item.message === 'Artifact JSON root must be an object.'
+    )
+  );
+  assert.equal(
+    report.artifacts.runtimeCandidateSet.shapeError,
+    'Artifact JSON root must be an object.'
+  );
+  assert.ok(
+    report.artifactDetails.runtimeCandidateSet.blockers.items.includes(
+      'Artifact JSON root must be an object.'
+    )
+  );
+});
+
 test('readiness packet blocks nested failed row and proof posture', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-db-identity.json', {

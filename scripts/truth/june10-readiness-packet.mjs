@@ -122,11 +122,14 @@ function readArtifact(name) {
   }
 
   try {
+    const value = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    const shapeError = isJsonProofObject(value) ? null : 'Artifact JSON root must be an object.';
     return {
       name,
       path: rel(filePath),
       present: true,
-      value: JSON.parse(fs.readFileSync(filePath, 'utf8')),
+      value,
+      shapeError,
     };
   } catch (error) {
     return {
@@ -137,6 +140,10 @@ function readArtifact(name) {
       parseError: error instanceof Error ? error.message : String(error),
     };
   }
+}
+
+function isJsonProofObject(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
 function blocker(blockers, source, message) {
@@ -180,7 +187,10 @@ function collectBlockers(loaded) {
     if (artifact.parseError) {
       blocker(blockers, artifact.name, `Artifact could not be parsed: ${artifact.parseError}.`);
     }
-    if (artifact.present && !artifact.parseError) {
+    if (artifact.shapeError) {
+      blocker(blockers, artifact.name, artifact.shapeError);
+    }
+    if (artifact.present && !artifact.parseError && !artifact.shapeError) {
       for (const artifactWarning of artifactWarnings(artifact.value)) {
         warning(warnings, artifact.name, artifactWarning);
       }
@@ -733,7 +743,13 @@ function buildArtifactDetails(loaded, blockers, warnings) {
         name,
         {
           present: artifact.present,
-          blockers: capList(artifactBlockers(artifact.value)),
+          blockers: capList([
+            ...(artifact.parseError
+              ? [`Artifact could not be parsed: ${artifact.parseError}.`]
+              : []),
+            ...(artifact.shapeError ? [artifact.shapeError] : []),
+            ...artifactBlockers(artifact.value),
+          ]),
           warnings: capList(artifactWarnings(artifact.value)),
         },
       ])
@@ -871,6 +887,7 @@ function main() {
           path: artifact.path,
           present: artifact.present,
           parseError: artifact.parseError ?? null,
+          shapeError: artifact.shapeError ?? null,
         },
       ])
     ),

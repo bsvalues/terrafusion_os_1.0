@@ -520,6 +520,51 @@ test('fails when a proof command writes a malformed expected JSON artifact', () 
   );
 });
 
+test('fails when a proof command writes a non-object expected JSON artifact', () => {
+  const root = makeTempRepo('tf-post-db-refresh-artifact-shape-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'Array artifact writer command',
+          command: process.execPath,
+          args: [
+            '-e',
+            [
+              "const fs = require('fs');",
+              "fs.mkdirSync('generated/truth', { recursive: true });",
+              "fs.writeFileSync('generated/truth/array-proof.json', JSON.stringify([]) + '\\n');",
+            ].join(' '),
+          ],
+          expectedArtifacts: ['generated/truth/array-proof.json'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'FAIL');
+  assert.equal(report.nextAction.code, 'fix_failed_artifact');
+  assert.equal(report.summary.artifactParseErrors, 0);
+  assert.equal(report.summary.artifactFailures, 1);
+  assert.deepEqual(report.results[0].artifactOutputs[0].artifactFailureReasons, [
+    'JSON artifact root must be an object',
+  ]);
+  assert.ok(
+    report.blockers.some(item =>
+      item.includes(
+        'wrote failing JSON proof artifact generated/truth/array-proof.json: JSON artifact root must be an object'
+      )
+    )
+  );
+});
+
 test('fails when a proof command passes but leaves an expected artifact stale', () => {
   const root = makeTempRepo('tf-post-db-refresh-artifact-stale-');
   fs.writeFileSync(path.join(root, 'generated', 'truth', 'stale.json'), '{}\n');
