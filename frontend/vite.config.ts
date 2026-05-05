@@ -109,8 +109,9 @@ export default defineConfig(({ mode }) => {
       outDir: path.resolve(__dirname, '../native-shell/ui/dist'),
       emptyOutDir: true,
 
-      // Optimize for production
-      minify: 'terser',
+      // Vite's esbuild minifier keeps the guarded shell build inside hosted
+      // runner memory while still producing a production bundle.
+      minify: 'esbuild',
       // Full sourcemaps make the guarded CI build exceed the hosted runner heap.
       // Keep them opt-in for diagnostics without making every production gate pay
       // the memory cost.
