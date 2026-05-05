@@ -764,6 +764,45 @@ test('fails when a proof command writes nested arbitrary failing status fields',
   assert.ok(report.blockers.some(item => item.includes('checks.[].nested.status is ERROR')));
 });
 
+test('fails when a proof command writes lowercase nested failing status fields', () => {
+  const root = makeTempRepo('tf-post-db-refresh-lowercase-status-fail-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'Lowercase nested status artifact writer command',
+          command: process.execPath,
+          args: [
+            '-e',
+            [
+              "const fs = require('fs');",
+              "fs.mkdirSync('generated/truth', { recursive: true });",
+              "fs.writeFileSync('generated/truth/lowercase-status-fail.json', JSON.stringify({ passed: true, checks: [{ status: 'fail', nested: { status: 'error' } }], summary: { validationStatus: 'dry_run' } }) + '\\n');",
+            ].join(' '),
+          ],
+          expectedArtifacts: ['generated/truth/lowercase-status-fail.json'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'FAIL');
+  assert.deepEqual(report.results[0].artifactOutputs[0].artifactFailureReasons, [
+    'artifact.checks.[].status is fail',
+    'artifact.checks.[].nested.status is error',
+    'artifact.summary.validationStatus is dry_run',
+  ]);
+  assert.ok(report.blockers.some(item => item.includes('checks.[].status is fail')));
+  assert.ok(report.blockers.some(item => item.includes('validationStatus is dry_run')));
+});
+
 test('fails when a proof command writes nested arbitrary blocker and failure collections', () => {
   const root = makeTempRepo('tf-post-db-refresh-nested-collection-fail-');
   const result = spawnSync('node', [scriptPath, root], {

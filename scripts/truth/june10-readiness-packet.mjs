@@ -644,7 +644,7 @@ function isStatusLikeField(key) {
 }
 
 function isExplicitFailingStatus(value) {
-  return ['FAIL', 'FAILED', 'ERROR', 'DRY_RUN'].includes(String(value));
+  return ['FAIL', 'FAILED', 'ERROR', 'DRY_RUN'].includes(String(value).trim().toUpperCase());
 }
 
 function isFalseLike(value) {
