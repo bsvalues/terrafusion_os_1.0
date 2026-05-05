@@ -500,8 +500,7 @@ function buildExecutionQueue(blockers) {
 function artifactFailurePosture(value) {
   if (value?.passed === false) return 'top-level passed is false';
   if (typeof value?.status === 'string') {
-    const allowedStatuses = new Set(['PASS', 'PASS_WITH_WARNINGS']);
-    if (!allowedStatuses.has(value.status) && !value.status.endsWith('_pass')) {
+    if (!isAllowedPassingStatus(value.status)) {
       return `top-level status is ${value.status}`;
     }
   }
@@ -524,8 +523,7 @@ function receiptEvidenceFailurePostures(receiptEvidence) {
   const postures = collectionFailurePostures(receiptEvidence, 'receiptEvidence');
   if (receiptEvidence.passed === false) postures.push('receiptEvidence.passed is false');
   if (typeof receiptEvidence.status === 'string') {
-    const allowedStatuses = new Set(['PASS', 'PASS_WITH_WARNINGS']);
-    if (!allowedStatuses.has(receiptEvidence.status) && !receiptEvidence.status.endsWith('_pass')) {
+    if (!isAllowedPassingStatus(receiptEvidence.status)) {
       postures.push(`receiptEvidence.status is ${receiptEvidence.status}`);
     }
   }
@@ -537,8 +535,7 @@ function summaryFailurePostures(summary) {
   const postures = collectionFailurePostures(summary, 'summary');
   if (summary.passed === false) postures.push('summary.passed is false');
   if (typeof summary.status === 'string') {
-    const allowedStatuses = new Set(['PASS', 'PASS_WITH_WARNINGS']);
-    if (!allowedStatuses.has(summary.status) && !summary.status.endsWith('_pass')) {
+    if (!isAllowedPassingStatus(summary.status)) {
       postures.push(`summary.status is ${summary.status}`);
     }
   }
@@ -588,8 +585,7 @@ function nestedRecordFailurePostures(records, label) {
     const postures = collectionFailurePostures(record, subject);
     if (record?.passed === false) postures.push(`${subject} passed is false`);
     if (typeof record?.status === 'string') {
-      const allowedStatuses = new Set(['PASS', 'PASS_WITH_WARNINGS']);
-      if (!allowedStatuses.has(record.status) && !record.status.endsWith('_pass')) {
+      if (!isAllowedPassingStatus(record.status)) {
         postures.push(`${subject} status is ${record.status}`);
       }
     }
@@ -598,6 +594,10 @@ function nestedRecordFailurePostures(records, label) {
     }
     return postures;
   });
+}
+
+function isAllowedPassingStatus(status) {
+  return new Set(['PASS', 'PASS_WITH_WARNINGS', 'runtime_contract_pass']).has(status);
 }
 
 function artifactBlockers(value) {
