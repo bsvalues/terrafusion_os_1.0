@@ -508,7 +508,7 @@ function buildExecutionQueue(blockers) {
 }
 
 function artifactFailurePosture(value) {
-  if (value?.passed === false) return 'top-level passed is false';
+  if (isFalseLike(value?.passed)) return 'top-level passed is false';
   if (typeof value?.status === 'string') {
     if (!isAllowedPassingStatus(value.status)) {
       return `top-level status is ${value.status}`;
@@ -542,7 +542,7 @@ function receiptEvidenceFailurePostures(receiptEvidence) {
     ...nestedRecordFailurePostures(receiptEvidence.rows, 'receiptEvidence.row'),
     ...nestedRecordFailurePostures(receiptEvidence.proofs, 'receiptEvidence.proof'),
   ];
-  if (receiptEvidence.passed === false) postures.push('receiptEvidence.passed is false');
+  if (isFalseLike(receiptEvidence.passed)) postures.push('receiptEvidence.passed is false');
   if (typeof receiptEvidence.status === 'string') {
     if (!isAllowedPassingStatus(receiptEvidence.status)) {
       postures.push(`receiptEvidence.status is ${receiptEvidence.status}`);
@@ -557,7 +557,7 @@ function summaryFailurePostures(summary, label = 'summary') {
     ...booleanFailurePostures(summary, label),
     ...collectionFailurePostures(summary, label),
   ];
-  if (summary.passed === false) postures.push(`${label}.passed is false`);
+  if (isFalseLike(summary.passed)) postures.push(`${label}.passed is false`);
   if (typeof summary.status === 'string') {
     if (!isAllowedPassingStatus(summary.status)) {
       postures.push(`${label}.status is ${summary.status}`);
@@ -570,10 +570,10 @@ function booleanFailurePostures(value, label) {
   if (!value || typeof value !== 'object') return [];
   const postures = [];
   for (const key of ['success', 'ok']) {
-    if (value[key] === false) postures.push(`${label}.${key} is false`);
+    if (isFalseLike(value[key])) postures.push(`${label}.${key} is false`);
   }
   for (const [key, fieldValue] of Object.entries(value)) {
-    if (key !== 'passed' && key.endsWith('Passed') && fieldValue === false) {
+    if (key !== 'passed' && key.endsWith('Passed') && isFalseLike(fieldValue)) {
       postures.push(`${label}.${key} is false`);
     }
   }
@@ -589,7 +589,7 @@ function expectedMatchFailurePostures(value, label, pathParts = []) {
   const postures = [];
   for (const [key, fieldValue] of Object.entries(value)) {
     const fieldPath = [...pathParts, key];
-    if (isExpectedMatchProofField(key) && fieldValue === false) {
+    if (isExpectedMatchProofField(key) && isFalseLike(fieldValue)) {
       postures.push(`${label}.${fieldPath.join('.')} is false`);
     }
     postures.push(...expectedMatchFailurePostures(fieldValue, label, fieldPath));
@@ -645,6 +645,10 @@ function isStatusLikeField(key) {
 
 function isExplicitFailingStatus(value) {
   return ['FAIL', 'FAILED', 'ERROR', 'DRY_RUN'].includes(String(value));
+}
+
+function isFalseLike(value) {
+  return value === false || (typeof value === 'string' && value.trim().toLowerCase() === 'false');
 }
 
 function isKnownStatusFieldPath(pathParts) {
@@ -756,7 +760,7 @@ function nestedRecordFailurePostures(records, label) {
       ...booleanFailurePostures(record, subject),
       ...collectionFailurePostures(record, subject),
     ];
-    if (record?.passed === false) postures.push(`${subject} passed is false`);
+    if (isFalseLike(record?.passed)) postures.push(`${subject} passed is false`);
     if (typeof record?.status === 'string') {
       if (!isAllowedPassingStatus(record.status)) {
         postures.push(`${subject} status is ${record.status}`);

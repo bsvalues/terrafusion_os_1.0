@@ -513,6 +513,46 @@ test('fails when a proof command writes false success or ok posture fields', () 
   assert.ok(report.blockers.some(item => item.includes('Benton proof.ok is false')));
 });
 
+test('fails when a proof command writes string false proof posture fields', () => {
+  const root = makeTempRepo('tf-post-db-refresh-string-false-fail-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'String false artifact writer command',
+          command: process.execPath,
+          args: [
+            '-e',
+            [
+              "const fs = require('fs');",
+              "fs.mkdirSync('generated/truth', { recursive: true });",
+              "fs.writeFileSync('generated/truth/string-false-fail.json', JSON.stringify({ passed: 'false', summary: { passed: 'false', dbIdentityPassed: 'false' }, rows: [{ county: 'Benton', passed: 'false' }], checks: [{ propertyRowsMatchExpected: 'false' }] }) + '\\n');",
+            ].join(' '),
+          ],
+          expectedArtifacts: ['generated/truth/string-false-fail.json'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'FAIL');
+  assert.equal(report.results[0].artifactOutputs[0].artifactPassed, 'false');
+  assert.deepEqual(report.results[0].artifactOutputs[0].artifactFailureReasons, [
+    'artifact.checks.[].propertyRowsMatchExpected is false',
+    'summary.dbIdentityPassed is false',
+    'summary.passed is false',
+    'Benton row passed is false',
+  ]);
+  assert.ok(report.blockers.some(item => item.includes('top-level passed is false')));
+});
+
 test('fails when a proof command writes false explicit passed-derived fields', () => {
   const root = makeTempRepo('tf-post-db-refresh-artifact-derived-passed-false-');
   const result = spawnSync('node', [scriptPath, root], {

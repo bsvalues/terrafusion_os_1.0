@@ -207,7 +207,10 @@ function inspectJsonArtifactPosture(filePath) {
     }
     return {
       status: typeof parsed?.status === 'string' ? parsed.status : null,
-      passed: typeof parsed?.passed === 'boolean' ? parsed.passed : null,
+      passed:
+        typeof parsed?.passed === 'boolean' || typeof parsed?.passed === 'string'
+          ? parsed.passed
+          : null,
       warningCount: countArtifactWarnings(parsed),
       parseError: null,
       failureReasons: nestedArtifactFailureReasons(parsed),
@@ -228,7 +231,7 @@ function isJsonProofObject(value) {
 }
 
 function artifactFailureReason(artifact) {
-  if (artifact.artifactPassed === false) return 'top-level passed is false';
+  if (isFalseLike(artifact.artifactPassed)) return 'top-level passed is false';
   if (typeof artifact.artifactStatus === 'string') {
     if (!isAllowedPassingStatus(artifact.artifactStatus)) {
       return `top-level status is ${artifact.artifactStatus}`;
@@ -267,7 +270,7 @@ function receiptEvidenceFailureReasons(receiptEvidence) {
     ...nestedRecordFailureReasons(receiptEvidence.rows, 'receiptEvidence.row'),
     ...nestedRecordFailureReasons(receiptEvidence.proofs, 'receiptEvidence.proof'),
   ];
-  if (receiptEvidence.passed === false) reasons.push('receiptEvidence.passed is false');
+  if (isFalseLike(receiptEvidence.passed)) reasons.push('receiptEvidence.passed is false');
   if (typeof receiptEvidence.status === 'string') {
     if (!isAllowedPassingStatus(receiptEvidence.status)) {
       reasons.push(`receiptEvidence.status is ${receiptEvidence.status}`);
@@ -282,7 +285,7 @@ function summaryFailureReasons(summary, label = 'summary') {
     ...booleanFailureReasons(summary, label),
     ...collectionFailureReasons(summary, label),
   ];
-  if (summary.passed === false) reasons.push(`${label}.passed is false`);
+  if (isFalseLike(summary.passed)) reasons.push(`${label}.passed is false`);
   if (typeof summary.status === 'string') {
     if (!isAllowedPassingStatus(summary.status)) {
       reasons.push(`${label}.status is ${summary.status}`);
@@ -295,10 +298,10 @@ function booleanFailureReasons(value, label) {
   if (!value || typeof value !== 'object') return [];
   const reasons = [];
   for (const key of ['success', 'ok']) {
-    if (value[key] === false) reasons.push(`${label}.${key} is false`);
+    if (isFalseLike(value[key])) reasons.push(`${label}.${key} is false`);
   }
   for (const [key, fieldValue] of Object.entries(value)) {
-    if (key !== 'passed' && key.endsWith('Passed') && fieldValue === false) {
+    if (key !== 'passed' && key.endsWith('Passed') && isFalseLike(fieldValue)) {
       reasons.push(`${label}.${key} is false`);
     }
   }
@@ -314,7 +317,7 @@ function expectedMatchFailureReasons(value, label, pathParts = []) {
   const reasons = [];
   for (const [key, fieldValue] of Object.entries(value)) {
     const fieldPath = [...pathParts, key];
-    if (isExpectedMatchProofField(key) && fieldValue === false) {
+    if (isExpectedMatchProofField(key) && isFalseLike(fieldValue)) {
       reasons.push(`${label}.${fieldPath.join('.')} is false`);
     }
     reasons.push(...expectedMatchFailureReasons(fieldValue, label, fieldPath));
@@ -370,6 +373,10 @@ function isStatusLikeField(key) {
 
 function isExplicitFailingStatus(value) {
   return ['FAIL', 'FAILED', 'ERROR', 'DRY_RUN'].includes(String(value));
+}
+
+function isFalseLike(value) {
+  return value === false || (typeof value === 'string' && value.trim().toLowerCase() === 'false');
 }
 
 function isKnownStatusFieldPath(pathParts) {
@@ -480,7 +487,7 @@ function nestedRecordFailureReasons(records, label) {
       ...booleanFailureReasons(record, subject),
       ...collectionFailureReasons(record, subject),
     ];
-    if (record?.passed === false) reasons.push(`${subject} passed is false`);
+    if (isFalseLike(record?.passed)) reasons.push(`${subject} passed is false`);
     if (typeof record?.status === 'string') {
       if (!isAllowedPassingStatus(record.status)) {
         reasons.push(`${subject} status is ${record.status}`);
