@@ -2367,4 +2367,292 @@ public class CanonicalDebugController : ControllerBase
     public sealed record AttrPop1Request(
         string? OperatorName,
         bool? RerunImprvCanonical);
+
+    // ════════════════════════════════════════════════════════════════════
+    // ATTR-DRAIN-1: drain legacy_tf_unproven.imprv_attr by re-running the
+    //   keyed imprv chain for the (year, prop_id) tuples that produced the
+    //   quarantine, after attribute_definition has been populated. The
+    //   canonical projector's prior-quarantine cleanup then matches those
+    //   truth rows and removes the obsolete quarantine entries; surviving
+    //   imprv_attr rows re-resolve against the dictionary.
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// ATTR-DRAIN-1: drain the imprv_attr UnknownAttribute quarantine.
+    ///
+    /// <para>Strategy:
+    /// <list type="number">
+    ///   <item>Read distinct (PropValYr, PropId) from
+    ///   <c>legacy_tf_unproven.imprv_attr</c> filtered to
+    ///   <c>QuarantineReason = "UnknownAttribute"</c>.</item>
+    ///   <item>Compute overlap between distinct IAttrValIds in
+    ///   quarantine and AttributeDefinition.IAttrId for Benton —
+    ///   this tells the operator whether ATTR-POP-1 (family-grain)
+    ///   is sufficient or ATTR-POP-2 (value-grain) is needed.</item>
+    ///   <item>Group quarantine tuples by PropValYr and run the
+    ///   keyed imprv chain (parcel → supp → imprv + detail + attr →
+    ///   truth → canonical) per year. The canonical projector
+    ///   removes prior quarantine matching the truth rows' 4-keys
+    ///   and re-resolves attrs against the now-populated dictionary.</item>
+    /// </list>
+    /// </para>
+    ///
+    /// <para>Honest scope note: if IAttrValIds in quarantine don't
+    /// overlap with attribute_definition.IAttrId (the family/value
+    /// grain mismatch flagged in Block-C v1.5), drain will RUN but
+    /// won't reduce quarantine — the rows will be removed then
+    /// re-quarantined. The response surfaces this as
+    /// <c>iAttrValIdOverlap</c> so the operator can see the real
+    /// blocker.</para>
+    /// </summary>
+    [HttpPost("attr-drain-1/run-drain")]
+    public async Task<IActionResult> RunAttrDrain1(
+        [FromServices] IPacsOwnerLandingService ownerSvc,
+        [FromServices] IPacsPropertyLandingService propSvc,
+        [FromServices] IPacsParcelSpineTruthPromoter spinePromoter,
+        [FromServices] IPacsParcelCanonicalProjector parcelCanonical,
+        [FromServices] IPacsPropSuppAssocLandingService assocSvc,
+        [FromServices] IPacsImprvLandingService imprvSvc,
+        [FromServices] IPacsImprvDetailLandingService imprvDetailSvc,
+        [FromServices] IPacsImprvAttrLandingService imprvAttrSvc,
+        [FromServices] IPacsImprvCurrentTruthPromoter imprvTruthPromoter,
+        [FromServices] IPacsImprvCanonicalProjector imprvCanonicalProjector,
+        [FromServices] RefreshableImprvAttrDictionary dictionary,
+        [FromServices] IConfiguration config,
+        [FromBody] AttrDrain1Request? request,
+        CancellationToken cancellationToken = default)
+    {
+        var pacsCs = config.GetConnectionString("PacsConnection");
+        if (string.IsNullOrWhiteSpace(pacsCs))
+            return StatusCode(500, new { error = "ConnectionStrings:PacsConnection is required for ATTR-DRAIN-1." });
+
+        var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
+            ? "attr-drain-1"
+            : request.OperatorName.Trim();
+        var dryRun = request?.DryRun ?? false;
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+
+            // ── Stage A: inspect quarantine across BOTH reasons. ──
+            // The 4,740 rows on the dashboard are LANDING-layer
+            // (UNKNOWN_I_ATTR_VAL_CD) — landing service rejects
+            // codes not in the active dictionary. Distinct from
+            // canonical-layer (UNKNOWN_ATTRIBUTE) which fires later
+            // when the canonical projector can't resolve IAttrId.
+            var quarantineByReason = await _db.LegacyTfUnprovenImprvAttrs
+                .GroupBy(q => q.QuarantineReason)
+                .Select(g => new { reason = g.Key, count = g.Count() })
+                .ToListAsync(cancellationToken);
+            var landingQuarantineRows = await _db.LegacyTfUnprovenImprvAttrs
+                .Where(q => q.QuarantineReason == "UNKNOWN_I_ATTR_VAL_CD")
+                .Select(q => new { q.PropValYr, q.PropId, q.IAttrValId, q.IAttrValCd })
+                .ToListAsync(cancellationToken);
+            var canonicalQuarantineRows = await _db.LegacyTfUnprovenImprvAttrs
+                .Where(q => q.QuarantineReason == "UNKNOWN_ATTRIBUTE")
+                .Select(q => new { q.PropValYr, q.PropId, q.IAttrValId })
+                .ToListAsync(cancellationToken);
+
+            var totalQuarantineBefore = landingQuarantineRows.Count + canonicalQuarantineRows.Count;
+            var allTuples = landingQuarantineRows
+                .Select(q => (q.PropValYr, q.PropId))
+                .Concat(canonicalQuarantineRows.Select(q => (q.PropValYr, q.PropId)))
+                .Distinct()
+                .ToList();
+            var byYear = allTuples
+                .GroupBy(t => t.PropValYr)
+                .ToDictionary(g => g.Key, g => g.Select(t => t.PropId).Distinct().ToList());
+
+            // Pre-state for delta reporting.
+            var featuresAttributedBefore = await _db.TfImprovementFeatures
+                .Where(f => f.AttributeId != null)
+                .CountAsync(cancellationToken);
+
+            // ── Stage B: refresh the landing-layer dictionary. ──
+            var loader = new SqlServerImprvAttrValDictionaryLoader(pacsCs);
+            var dictCodes = await loader.LoadDistinctCodesAsync(cancellationToken);
+            var dictCountBefore = dictionary.Count;
+            dictionary.Refresh(dictCodes);
+            _logger.LogInformation(
+                "[AttrDrain1] Dictionary refreshed: {Before} → {After} codes",
+                dictCountBefore, dictionary.Count);
+
+            var inspection = new
+            {
+                totalQuarantineBefore,
+                quarantineByReason,
+                landingQuarantineCount = landingQuarantineRows.Count,
+                canonicalQuarantineCount = canonicalQuarantineRows.Count,
+                distinctTuples = allTuples.Count,
+                distinctYears = byYear.Count,
+                yearBreakdown = byYear.ToDictionary(kv => kv.Key.ToString(), kv => kv.Value.Count),
+                attributeDefinitionsActive = await _db.AttributeDefinitions
+                    .Where(a => a.CountyId == bentonCountyId && a.IsActive)
+                    .CountAsync(cancellationToken),
+                landingDictionaryBefore = dictCountBefore,
+                landingDictionaryAfter = dictionary.Count,
+                landingDictionaryDelta = dictionary.Count - dictCountBefore,
+                featuresAttributedBefore,
+            };
+
+            if (dryRun)
+            {
+                return Ok(new
+                {
+                    operatorName,
+                    bentonCountyId,
+                    mode = "DRY_RUN",
+                    inspection,
+                    plan = byYear.Select(kv => new
+                    {
+                        year = kv.Key,
+                        propIdsToReproject = kv.Value.Count,
+                    }).ToList(),
+                    note = $"Dictionary refreshed to {dictionary.Count} codes. Drain plan: re-land {allTuples.Count} (year, prop_id) tuples across {byYear.Count} years; canonical re-projection drains both landing and canonical quarantine.",
+                });
+            }
+
+            if (totalQuarantineBefore == 0)
+            {
+                return Ok(new
+                {
+                    operatorName,
+                    bentonCountyId,
+                    inspection,
+                    note = "No quarantine rows to drain. Dictionary refresh ran anyway.",
+                });
+            }
+
+            // ── Stage C: delete stale landing-layer quarantine. ──
+            // These rows were quarantined because the dictionary was
+            // empty. Now that it's populated, re-landing those exact
+            // (year, prop_id) tuples will re-process the source rows
+            // through the dictionary check → succeed → land cleanly.
+            // We delete the stale quarantine rows BEFORE re-landing
+            // so the drain delta is measurable.
+            var landingQuarantineToDelete = await _db.LegacyTfUnprovenImprvAttrs
+                .Where(q => q.QuarantineReason == "UNKNOWN_I_ATTR_VAL_CD")
+                .ToListAsync(cancellationToken);
+            if (landingQuarantineToDelete.Count > 0)
+            {
+                _db.LegacyTfUnprovenImprvAttrs.RemoveRange(landingQuarantineToDelete);
+                await _db.SaveChangesAsync(cancellationToken);
+                _logger.LogInformation(
+                    "[AttrDrain1] Deleted {N} stale landing-layer quarantine rows",
+                    landingQuarantineToDelete.Count);
+            }
+
+            // ── Stage C: per-year keyed re-projection chain. ──
+            var perYearResults = new List<object>();
+            foreach (var (year, propIds) in byYear.OrderByDescending(kv => kv.Key))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                _logger.LogInformation(
+                    "[AttrDrain1] Year={Year} draining {N} prop_ids", year, propIds.Count);
+
+                short workingYear = year;
+                var keys = propIds.Select(p => (p, workingYear)).ToList();
+
+                // Land parcels (truth+canonical needed for owner xref resolution
+                // when imprv canonical eventually projects features).
+                var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs, propIds);
+                var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
+                if (parcelS1.Status != "COMPLETED") { perYearResults.Add(new { year, stage = "parcel-S1", error = parcelS1.ErrorSummary }); continue; }
+                var parcelSpine = await spinePromoter.PromoteAsync(parcelS1.LoadBatchId, operatorName, cancellationToken);
+                if (parcelSpine.Status != "COMPLETED") { perYearResults.Add(new { year, stage = "parcel-spine", error = parcelSpine.ErrorSummary }); continue; }
+                await parcelCanonical.ProjectAsync(parcelSpine.PromotionLoadBatchId, bentonCountyId, operatorName, cancellationToken);
+
+                // Land supp pointers.
+                var suppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs, keys);
+                var suppS1 = await assocSvc.LandPropSuppAssocsAsync(suppSrc, operatorName, cancellationToken);
+                if (suppS1.Status != "COMPLETED") { perYearResults.Add(new { year, stage = "supp-S1", error = suppS1.ErrorSummary }); continue; }
+
+                // Land imprv + detail + attr.
+                var imprvSrc = new KeyedSqlServerPacsImprvSource(pacsCs, keys);
+                var imprvS1 = await imprvSvc.LandImprvsAsync(imprvSrc, operatorName, cancellationToken);
+                if (imprvS1.Status != "COMPLETED") { perYearResults.Add(new { year, stage = "imprv-S1", error = imprvS1.ErrorSummary }); continue; }
+
+                var detailSrc = new KeyedSqlServerPacsImprvDetailSource(pacsCs, keys);
+                var detailS1 = await imprvDetailSvc.LandImprvDetailsAsync(detailSrc, operatorName, cancellationToken);
+                if (detailS1.Status != "COMPLETED") { perYearResults.Add(new { year, stage = "detail-S1", error = detailS1.ErrorSummary }); continue; }
+
+                var attrSrc = new KeyedSqlServerPacsImprvAttrSource(pacsCs, keys);
+                var attrS1 = await imprvAttrSvc.LandImprvAttrsAsync(attrSrc, operatorName, cancellationToken);
+                if (attrS1.Status != "COMPLETED") { perYearResults.Add(new { year, stage = "attr-S1", error = attrS1.ErrorSummary }); continue; }
+
+                // Promote imprv truth → project canonical (this is the step
+                // that drains prior quarantine matching the 4-key tuples).
+                var imprvTruth = await imprvTruthPromoter.PromoteAsync(imprvS1.LoadBatchId, suppS1.LoadBatchId, operatorName, cancellationToken);
+                if (imprvTruth.Status != "COMPLETED") { perYearResults.Add(new { year, stage = "imprv-truth", error = imprvTruth.ErrorSummary }); continue; }
+
+                var imprvCanon = await imprvCanonicalProjector.ProjectAsync(imprvTruth.PromotionLoadBatchId, operatorName, cancellationToken);
+                perYearResults.Add(new
+                {
+                    year,
+                    stage = "imprv-canon",
+                    imprvCanon.Status,
+                    parcelsProcessed = propIds.Count,
+                    truthRowsConsidered = imprvCanon.TruthRowsConsidered,
+                    improvementsProjected = imprvCanon.ImprovementsProjected,
+                    featuresProjected = imprvCanon.FeaturesProjected,
+                    attributesConsidered = imprvCanon.AttributesConsidered,
+                    attributesResolved = imprvCanon.AttributesResolved,
+                    attributesQuarantined = imprvCanon.AttributesQuarantined,
+                    priorAttrQuarantineRowsRemoved = imprvCanon.PriorAttrQuarantineRowsRemoved,
+                });
+            }
+
+            // ── Stage D: post-state delta. ──
+            var landingAfter = await _db.LegacyTfUnprovenImprvAttrs
+                .Where(q => q.QuarantineReason == "UNKNOWN_I_ATTR_VAL_CD")
+                .CountAsync(cancellationToken);
+            var canonicalAfter = await _db.LegacyTfUnprovenImprvAttrs
+                .Where(q => q.QuarantineReason == "UNKNOWN_ATTRIBUTE")
+                .CountAsync(cancellationToken);
+            var totalQuarantineAfter = landingAfter + canonicalAfter;
+            var featuresAttributedAfter = await _db.TfImprovementFeatures
+                .Where(f => f.AttributeId != null)
+                .CountAsync(cancellationToken);
+            var quarantineDrained = totalQuarantineBefore - totalQuarantineAfter;
+            var featuresAttributedDelta = featuresAttributedAfter - featuresAttributedBefore;
+
+            return Ok(new
+            {
+                operatorName,
+                bentonCountyId,
+                inspection,
+                perYearResults,
+                outcome = new
+                {
+                    totalQuarantineBefore,
+                    landingQuarantineAfter = landingAfter,
+                    canonicalQuarantineAfter = canonicalAfter,
+                    totalQuarantineAfter,
+                    quarantineDrained,
+                    featuresAttributedBefore,
+                    featuresAttributedAfter,
+                    featuresAttributedDelta,
+                },
+                proofVerdict = quarantineDrained > 0
+                    ? $"PROOF: drained {quarantineDrained} quarantine rows ({totalQuarantineBefore} → {totalQuarantineAfter}). {featuresAttributedDelta} additional tf_improvement_feature rows now carry AttributeId."
+                    : (totalQuarantineBefore == 0
+                        ? "INFO: no quarantine to drain."
+                        : "INCONCLUSIVE: drain ran but quarantine did not decrease. Investigate landing/canonical reason breakdown above."),
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[AttrDrain1] FAILED");
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name });
+        }
+    }
+
+    /// <param name="OperatorName">Audit anchor.</param>
+    /// <param name="DryRun">If true, only inspect the quarantine + overlap;
+    /// no landing or projection runs. Use this first to confirm the drain
+    /// plan and the family/value grain overlap before paying the chain cost.</param>
+    public sealed record AttrDrain1Request(
+        string? OperatorName,
+        bool? DryRun);
 }

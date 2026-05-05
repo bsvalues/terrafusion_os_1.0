@@ -1734,13 +1734,19 @@ builder.Services.AddScoped<
 
 // Slice C1-C: PACS imprv_attr raw landing with dictionary
 // cross-check. Five gates: distribution, 6-key-uniqueness,
-// provenance-coverage, aggregate, dictionary-coverage. Dictionary
-// itself is registered as an empty in-memory default; production
-// configuration overrides via a future D1 dictionary loader.
+// provenance-coverage, aggregate, dictionary-coverage.
+//
+// ATTR-DRAIN-1: registered as a RefreshableImprvAttrDictionary so
+// the operator can refresh codes from PACS dbo.imprv_attr_val at
+// runtime without a process bounce. Initial state is empty; the
+// drain endpoint or a future hosted service refreshes it.
 builder.Services.AddSingleton<
-    TerraFusion.Core.Sync.PacsImprvAttr.IImprvAttrDictionary>(_ =>
-    new TerraFusion.Core.Sync.PacsImprvAttr.InMemoryImprvAttrDictionary(
-        Array.Empty<string>()));
+    TerraFusion.Core.Sync.PacsImprvAttr.RefreshableImprvAttrDictionary>(
+    _ => new TerraFusion.Core.Sync.PacsImprvAttr.RefreshableImprvAttrDictionary());
+builder.Services.AddSingleton<
+    TerraFusion.Core.Sync.PacsImprvAttr.IImprvAttrDictionary>(
+    sp => sp.GetRequiredService<
+        TerraFusion.Core.Sync.PacsImprvAttr.RefreshableImprvAttrDictionary>());
 builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsImprvAttr.IPacsImprvAttrLandingService,
     TerraFusion.Data.Services.LegacyPacsRaw.PacsImprvAttrLandingService>();
