@@ -249,6 +249,7 @@ function nestedArtifactFailureReasons(value) {
     ...expectedMatchFailureReasons(value, 'artifact'),
     ...explicitStatusFailureReasons(value, 'artifact'),
     ...collectionFailureReasons(value, 'artifact'),
+    ...nestedCollectionFailureReasons(value, 'artifact'),
     ...summaryFailureReasons(value?.summary),
     ...receiptEvidenceFailureReasons(value?.receiptEvidence),
     ...nestedRecordFailureReasons(value?.rows, 'row'),
@@ -399,6 +400,36 @@ function collectionFailureReasons(value, label) {
     }
   }
   return reasons;
+}
+
+function nestedCollectionFailureReasons(value, label, pathParts = []) {
+  if (!value || typeof value !== 'object') return [];
+  if (Array.isArray(value)) {
+    return value.flatMap(item => nestedCollectionFailureReasons(item, label, [...pathParts, '[]']));
+  }
+
+  const reasons = [];
+  if (pathParts.length > 0 && !isKnownCollectionPath(pathParts)) {
+    reasons.push(...collectionFailureReasons(value, `${label}.${pathParts.join('.')}`));
+  }
+
+  for (const [key, fieldValue] of Object.entries(value)) {
+    reasons.push(...nestedCollectionFailureReasons(fieldValue, label, [...pathParts, key]));
+  }
+  return reasons;
+}
+
+function isKnownCollectionPath(pathParts) {
+  const pathKey = pathParts.join('.');
+  return new Set([
+    'summary',
+    'receiptEvidence',
+    'receiptEvidence.summary',
+    'rows.[]',
+    'proofs.[]',
+    'receiptEvidence.rows.[]',
+    'receiptEvidence.proofs.[]',
+  ]).has(pathKey);
 }
 
 function nestedRecordFailureReasons(records, label) {

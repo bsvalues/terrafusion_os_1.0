@@ -524,6 +524,7 @@ function artifactFailurePostures(value) {
     ...expectedMatchFailurePostures(value, 'artifact'),
     ...explicitStatusFailurePostures(value, 'artifact'),
     ...collectionFailurePostures(value, 'artifact'),
+    ...nestedCollectionFailurePostures(value, 'artifact'),
     ...summaryFailurePostures(value?.summary),
     ...receiptEvidenceFailurePostures(value?.receiptEvidence),
     ...nestedRecordFailurePostures(value?.rows, 'row'),
@@ -633,10 +634,13 @@ function isExpectedMatchProofField(key) {
   );
 }
 
-function collectionFailurePostures(value, label) {
+function collectionFailurePostures(value, label, { includeBlockers = false } = {}) {
   if (!value || typeof value !== 'object') return [];
   const postures = [];
-  for (const key of ['shipBlockers', 'error', 'errors', 'failure', 'failures']) {
+  const keys = includeBlockers
+    ? ['blocker', 'blockers', 'shipBlockers', 'error', 'errors', 'failure', 'failures']
+    : ['shipBlockers', 'error', 'errors', 'failure', 'failures'];
+  for (const key of keys) {
     const entries = value[key];
     if (Array.isArray(entries) && entries.length > 0) {
       postures.push(`${label}.${key} has ${entries.length} item(s)`);
@@ -666,6 +670,42 @@ function collectionFailurePostures(value, label) {
     }
   }
   return postures;
+}
+
+function nestedCollectionFailurePostures(value, label, pathParts = []) {
+  if (!value || typeof value !== 'object') return [];
+  if (Array.isArray(value)) {
+    return value.flatMap(item =>
+      nestedCollectionFailurePostures(item, label, [...pathParts, '[]'])
+    );
+  }
+
+  const postures = [];
+  if (pathParts.length > 0 && !isKnownCollectionPath(pathParts)) {
+    postures.push(
+      ...collectionFailurePostures(value, `${label}.${pathParts.join('.')}`, {
+        includeBlockers: true,
+      })
+    );
+  }
+
+  for (const [key, fieldValue] of Object.entries(value)) {
+    postures.push(...nestedCollectionFailurePostures(fieldValue, label, [...pathParts, key]));
+  }
+  return postures;
+}
+
+function isKnownCollectionPath(pathParts) {
+  const pathKey = pathParts.join('.');
+  return new Set([
+    'summary',
+    'receiptEvidence',
+    'receiptEvidence.summary',
+    'rows.[]',
+    'proofs.[]',
+    'receiptEvidence.rows.[]',
+    'receiptEvidence.proofs.[]',
+  ]).has(pathKey);
 }
 
 function nestedRecordFailurePostures(records, label) {

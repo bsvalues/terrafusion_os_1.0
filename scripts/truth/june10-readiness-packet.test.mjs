@@ -524,6 +524,51 @@ test('readiness packet blocks nested explicit failing status fields', () => {
   );
 });
 
+test('readiness packet blocks nested arbitrary blocker and failure collections', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-content-audit.json', {
+    endpointStatus: 200,
+    passed: true,
+    checks: [
+      {
+        blockers: ['Nested readiness blocker.'],
+        errors: ['Nested readiness error.'],
+        metrics: {
+          failureCount: 1,
+        },
+      },
+    ],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbContent' &&
+        item.message.includes('artifact.checks.[].blockers has 1 item(s)')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('artifact.checks.[].errors has 1 item(s)')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('artifact.checks.[].metrics.failureCount is 1')
+    )
+  );
+});
+
 test('readiness packet blocks required artifacts whose JSON root is not an object', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-candidate-set.json', []);
