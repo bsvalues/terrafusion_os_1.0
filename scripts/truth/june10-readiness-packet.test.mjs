@@ -622,6 +622,64 @@ test('readiness packet blocks false explicit passed-derived fields', () => {
   );
 });
 
+test('readiness packet blocks non-boolean success and passed-derived proof fields', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-identity.json', {
+    endpointStatus: 200,
+    passed: true,
+    success: 'true',
+    dbIdentityPassed: 1,
+    summary: {
+      ok: 'true',
+      sourceLineagePassed: 'true',
+    },
+    rows: [{ county: 'Benton', parcelSanityPassed: 1 }],
+    proofs: [{ county: 'Benton', runtimeDbIdentityPassed: 'true' }],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' && item.message.includes('artifact.success is not boolean')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('artifact.dbIdentityPassed is not boolean')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('summary.ok is not boolean')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('summary.sourceLineagePassed is not boolean')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('Benton row.parcelSanityPassed is not boolean')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('Benton proof.runtimeDbIdentityPassed is not boolean')
+    )
+  );
+});
+
 test('readiness packet blocks nested expected-match proof fields as false', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-db-content-audit.json', {

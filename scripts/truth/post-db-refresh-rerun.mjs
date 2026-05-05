@@ -311,11 +311,19 @@ function booleanFailureReasons(value, label) {
   const reasons = [];
   for (const [key, fieldValue] of Object.entries(value)) {
     const normalized = normalizeProofFieldKey(key);
-    if (['success', 'ok'].includes(normalized) && isFalseLike(fieldValue)) {
-      reasons.push(`${label}.${key} is false`);
+    if (['success', 'ok'].includes(normalized)) {
+      if (isFalseLike(fieldValue)) {
+        reasons.push(`${label}.${key} is false`);
+      } else if (typeof fieldValue !== 'boolean') {
+        reasons.push(`${label}.${key} is not boolean`);
+      }
     }
-    if (normalized !== 'passed' && normalized.endsWith('passed') && isFalseLike(fieldValue)) {
-      reasons.push(`${label}.${key} is false`);
+    if (normalized !== 'passed' && normalized.endsWith('passed')) {
+      if (isFalseLike(fieldValue)) {
+        reasons.push(`${label}.${key} is false`);
+      } else if (typeof fieldValue !== 'boolean') {
+        reasons.push(`${label}.${key} is not boolean`);
+      }
     }
   }
   return reasons;

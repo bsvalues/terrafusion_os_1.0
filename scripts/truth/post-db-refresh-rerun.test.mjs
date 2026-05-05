@@ -1230,6 +1230,57 @@ test('fails when a proof command writes variant blocker and failure collection f
   assert.ok(report.blockers.some(item => item.includes('Benton proof.commands_failed is 4')));
 });
 
+test('fails when a proof command writes non-boolean success and passed-derived fields', () => {
+  const root = makeTempRepo('tf-post-db-refresh-nonboolean-success-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'Non-boolean success artifact writer command',
+          command: process.execPath,
+          args: [
+            '-e',
+            [
+              "const fs = require('fs');",
+              "fs.mkdirSync('generated/truth', { recursive: true });",
+              "fs.writeFileSync('generated/truth/nonboolean-success.json', JSON.stringify({ passed: true, success: 'true', dbIdentityPassed: 1, summary: { ok: 'true', sourceLineagePassed: 'true' }, rows: [{ county: 'Benton', parcelSanityPassed: 1 }], proofs: [{ county: 'Benton', runtimeDbIdentityPassed: 'true' }] }) + '\\n');",
+            ].join(' '),
+          ],
+          expectedArtifacts: ['generated/truth/nonboolean-success.json'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'FAIL');
+  assert.equal(report.summary.artifactFailures, 1);
+  assert.deepEqual(report.results[0].artifactOutputs[0].artifactFailureReasons, [
+    'artifact.success is not boolean',
+    'artifact.dbIdentityPassed is not boolean',
+    'summary.ok is not boolean',
+    'summary.sourceLineagePassed is not boolean',
+    'Benton row.parcelSanityPassed is not boolean',
+    'Benton proof.runtimeDbIdentityPassed is not boolean',
+  ]);
+  assert.ok(
+    report.blockers.some(item =>
+      item.includes('generated/truth/nonboolean-success.json: artifact.success is not boolean')
+    )
+  );
+  assert.ok(
+    report.blockers.some(item =>
+      item.includes('Benton proof.runtimeDbIdentityPassed is not boolean')
+    )
+  );
+});
+
 test('fails when a proof command writes failing receipt evidence summary posture', () => {
   const root = makeTempRepo('tf-post-db-refresh-receipt-summary-fail-');
   const result = spawnSync('node', [scriptPath, root], {
