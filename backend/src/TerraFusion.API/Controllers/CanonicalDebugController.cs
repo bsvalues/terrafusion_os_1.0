@@ -3090,4 +3090,126 @@ public class CanonicalDebugController : ControllerBase
             note = "All counts are SELECT COUNT(*) at the time of this call against live pacs_oltp. -1 sentinel indicates per-query failure (see errors block).",
         });
     }
+
+    // ════════════════════════════════════════════════════════════════════
+    // SYNC-COMPLETE-2 — perf-test endpoints. Used to validate scoped
+    //   hypotheses (e.g. ChangeTracker bulk-insert overhead) at controlled
+    //   sample sizes without running a full closure. Reports duration
+    //   in ms + rows-per-second so before/after comparisons are precise.
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// SYNC-COMPLETE-2 perf-test: synthetic bulk-insert benchmark.
+    /// Inserts N synthetic <c>LegacyPacsRawOwner</c> rows in batches
+    /// of <paramref name="BatchSize"/>, with toggleable
+    /// <c>ChangeTracker.AutoDetectChangesEnabled</c>. Cleans up after
+    /// itself via <c>ExecuteDeleteAsync</c>. Returns wall-clock duration
+    /// + rows-per-second.
+    ///
+    /// <para>This endpoint isolates the EXACT hypothesis: at scale N,
+    /// does keeping AutoDetectChanges on cost meaningful time per
+    /// row? PACS network reads are out of scope; this measures only
+    /// the EF Core → Postgres write path with the change tracker
+    /// gradually filling up across batches.</para>
+    ///
+    /// <para>Use case: run twice back-to-back with the same N + BatchSize,
+    /// once with <c>DisableAutoDetectChanges=false</c> (default EF behavior)
+    /// and once with <c>true</c>. Compare durationMs.</para>
+    /// </summary>
+    [HttpPost("perf-test/bulk-insert-synthetic")]
+    public async Task<IActionResult> PerfTestBulkInsertSynthetic(
+        [FromBody] PerfTestBulkInsertRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        var n = request?.Rows ?? 20000;
+        var batchSize = request?.BatchSize ?? 1000;
+        var disableAutoDetect = request?.DisableAutoDetectChanges ?? false;
+        var label = request?.Label ?? "untagged";
+
+        // Clear any prior tracker state for fair comparison.
+        _db.ChangeTracker.Clear();
+
+        var prevAutoDetect = _db.ChangeTracker.AutoDetectChangesEnabled;
+        if (disableAutoDetect) _db.ChangeTracker.AutoDetectChangesEnabled = false;
+
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        var batchId = Guid.NewGuid();
+        var pending = 0;
+        var totalSaveChanges = 0;
+        try
+        {
+            for (var i = 0; i < n; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                _db.LegacyPacsRawOwners.Add(new TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawOwner
+                {
+                    OwnerTaxYr = 2024,
+                    SupNum = 0,
+                    PropId = 9_000_000 + i,                    // out of real PACS range
+                    OwnerId = 9_000_000_000L + i,              // out of real PACS range
+                    PctOwnership = 100m,
+                    LoadBatchId = batchId,
+                    SourceQueryHash = "perftest",
+                    SourceRowHash = $"row-{i:D8}",
+                    LandedAt = DateTime.UtcNow,
+                });
+                pending++;
+                if (pending >= batchSize)
+                {
+                    await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                    totalSaveChanges++;
+                    pending = 0;
+                }
+            }
+            if (pending > 0)
+            {
+                await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                totalSaveChanges++;
+            }
+            sw.Stop();
+
+            // Cleanup synthetic rows.
+            var deleted = await _db.LegacyPacsRawOwners
+                .Where(o => o.LoadBatchId == batchId)
+                .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
+
+            var elapsedSec = sw.Elapsed.TotalSeconds;
+            var rowsPerSec = elapsedSec > 0 ? Math.Round(n / elapsedSec, 0) : 0;
+
+            return Ok(new
+            {
+                label,
+                rows = n,
+                batchSize,
+                disableAutoDetect,
+                durationMs = sw.ElapsedMilliseconds,
+                durationSec = Math.Round(elapsedSec, 2),
+                rowsPerSec,
+                totalSaveChangesCalls = totalSaveChanges,
+                msPerBatch = totalSaveChanges > 0
+                    ? Math.Round((double)sw.ElapsedMilliseconds / totalSaveChanges, 1)
+                    : 0,
+                cleanupRowsDeleted = deleted,
+            });
+        }
+        finally
+        {
+            _db.ChangeTracker.AutoDetectChangesEnabled = prevAutoDetect;
+            _db.ChangeTracker.Clear();
+        }
+    }
+
+    /// <param name="Rows">Total synthetic rows to insert. Default 20000.</param>
+    /// <param name="BatchSize">SaveChanges every N rows. Default 1000
+    /// (matches real landing services).</param>
+    /// <param name="DisableAutoDetectChanges">Toggle the EF Core
+    /// optimization. Run once with false (default behavior) and once
+    /// with true to A/B the hypothesis.</param>
+    /// <param name="Label">Tag for the run.</param>
+    public sealed record PerfTestBulkInsertRequest(
+        int? Rows,
+        int? BatchSize,
+        bool? DisableAutoDetectChanges,
+        string? Label);
 }

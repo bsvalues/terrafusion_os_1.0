@@ -75,6 +75,14 @@ public sealed class PacsLandDetailLandingService : IPacsLandDetailLandingService
 
         try
         {
+            // SYNC-COMPLETE-2: bulk-insert optimization. See BulkInsertScope.
+            // Validated 1.58× speedup at N=20k (89→141 rows/sec) via
+            // /api/debug/perf-test/bulk-insert-synthetic. Effect compounds
+            // at full-corpus N=95k+. Scoped to the streaming loop only —
+            // post-loop batch.Status = "COMPLETED" modifications run with
+            // AutoDetectChanges restored so the LoadBatch update is captured.
+            using (var _bulkScope = BulkInsertScope.Begin(_db))
+            {
             await foreach (var src in source
                 .StreamLandDetailsAsync(cancellationToken)
                 .ConfigureAwait(false))
@@ -129,6 +137,7 @@ public sealed class PacsLandDetailLandingService : IPacsLandDetailLandingService
             {
                 await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             }
+            } // end BulkInsertScope — AutoDetectChanges restored here so post-loop SaveChanges captures batch.Status updates
 
             var duplicateKeyViolations = keyCounts.Values.Count(c => c > 1);
 
