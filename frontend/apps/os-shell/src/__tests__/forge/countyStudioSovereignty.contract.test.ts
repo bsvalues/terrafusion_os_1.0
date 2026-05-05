@@ -26,15 +26,20 @@ describe('County Studio sovereignty contract', () => {
     const studyDialog = read('../../pages/forge/county-studio/components/OpenStudyDialog.tsx');
     const cohortDialog = read('../../pages/forge/county-studio/components/CohortCreationDialog.tsx');
     const worksheet = read('../../pages/forge/county-studio/components/ScenarioWorksheet.tsx');
+    const support = read('../../pages/forge/county-studio/countyStudioCreationSupport.ts');
 
     expect(api).toContain('function mapStudyType');
     expect(api).toContain('function mapSelectionType');
     expect(api).toContain('function mapScenarioAdjustment');
-    expect(api).toContain('Manual parcel-list cohorts are not yet wired on this surface.');
-    expect(api).toContain('Custom formula scenarios are not wired to the governed County Studio backend.');
+    expect(api).toContain("case 'Manual':");
+    expect(api).toContain("return 'Manual';");
+    expect(support).toContain('UNSUPPORTED_ADJUSTMENT_TYPES');
+    expect(support).toContain("'CustomFormula'");
+    expect(support).toContain('Custom formula scenarios are intentionally hidden until a governed formula contract exists.');
     expect(studyDialog).not.toContain('EquityStudy');
     expect(studyDialog).not.toContain('CustomStudy');
-    expect(cohortDialog).not.toContain('Manual (parcel list)');
+    expect(cohortDialog).toContain('Manual parcel list');
+    expect(cohortDialog).toContain("source: 'manual-parcel-list'");
     expect(worksheet).not.toContain('CustomFormula');
   });
 
@@ -57,7 +62,10 @@ describe('County Studio sovereignty contract', () => {
     const page = read('../../pages/forge/county-studio/CountyStudyPage.tsx');
     const inspector = read('../../pages/forge/county-studio/components/ObjectInspector.tsx');
 
-    expect(page).toContain('atlas-live?studyId=${activeStudy.studyId}&countyId=${activeStudy.countyId}');
+    expect(page).toContain('new URLSearchParams');
+    expect(page).toContain('studyId: activeStudy.studyId');
+    expect(page).toContain('countyId: activeStudy.countyId');
+    expect(page).toContain('navigate(`/forge/atlas-live?${params.toString()}`)');
     expect(inspector).toContain("activateModule('property-workbench'");
     expect(inspector).toContain('metadata: { segmentId: seg.segmentId, countyId: activeStudy?.countyId }');
     expect(inspector).toContain('countyId:      context.countyId');
