@@ -777,6 +777,53 @@ test('readiness packet blocks failing receipt evidence summary posture', () => {
   assert.ok(report.executionQueue.some(item => item.source === 'dbIdentity'));
 });
 
+test('readiness packet blocks failing receipt evidence row and proof posture', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-identity.json', {
+    endpointStatus: 200,
+    passed: true,
+    receiptEvidence: {
+      rows: [{ county: 'Benton', passed: false, blockers: ['Receipt row blocker.'] }],
+      proofs: [{ county: 'Benton', status: 'FAIL', errors: ['Receipt proof error.'] }],
+    },
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' &&
+        item.message.includes('Benton receiptEvidence.row passed is false')
+    )
+  );
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' &&
+        item.message.includes('Benton receiptEvidence.proof status is FAIL')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('Benton: Receipt row blocker.')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('Benton receiptEvidence.proof.errors has 1 item')
+    )
+  );
+});
+
 test('readiness packet blocks object-shaped blocker error and failure collections', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-db-identity.json', {

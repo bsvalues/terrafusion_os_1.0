@@ -535,6 +535,8 @@ function receiptEvidenceFailurePostures(receiptEvidence) {
     ...booleanFailurePostures(receiptEvidence, 'receiptEvidence'),
     ...collectionFailurePostures(receiptEvidence, 'receiptEvidence'),
     ...summaryFailurePostures(receiptEvidence.summary, 'receiptEvidence.summary'),
+    ...nestedRecordFailurePostures(receiptEvidence.rows, 'receiptEvidence.row'),
+    ...nestedRecordFailurePostures(receiptEvidence.proofs, 'receiptEvidence.proof'),
   ];
   if (receiptEvidence.passed === false) postures.push('receiptEvidence.passed is false');
   if (typeof receiptEvidence.status === 'string') {
@@ -649,6 +651,16 @@ function artifactBlockerMessages(value) {
     value?.receiptEvidence?.summary,
     'receiptEvidence.summary'
   );
+  const receiptRowBlockers = Array.isArray(value?.receiptEvidence?.rows)
+    ? value.receiptEvidence.rows.flatMap(row =>
+        blockerMessages(row, `${row?.tableName ?? row?.county ?? 'receiptEvidence.row'}`)
+      )
+    : [];
+  const receiptProofBlockers = Array.isArray(value?.receiptEvidence?.proofs)
+    ? value.receiptEvidence.proofs.flatMap(proof =>
+        blockerMessages(proof, `${proof?.county ?? 'receiptEvidence.proof'}`)
+      )
+    : [];
   const rowBlockers = Array.isArray(value?.rows)
     ? value.rows.flatMap(row => blockerMessages(row, `${row?.tableName ?? row?.county ?? 'row'}`))
     : [];
@@ -662,6 +674,8 @@ function artifactBlockerMessages(value) {
       ...summary,
       ...receiptBlockers,
       ...receiptSummaryBlockers,
+      ...receiptRowBlockers,
+      ...receiptProofBlockers,
       ...rowBlockers,
       ...proofBlockers,
     ]),

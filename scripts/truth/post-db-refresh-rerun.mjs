@@ -260,6 +260,8 @@ function receiptEvidenceFailureReasons(receiptEvidence) {
     ...booleanFailureReasons(receiptEvidence, 'receiptEvidence'),
     ...collectionFailureReasons(receiptEvidence, 'receiptEvidence'),
     ...summaryFailureReasons(receiptEvidence.summary, 'receiptEvidence.summary'),
+    ...nestedRecordFailureReasons(receiptEvidence.rows, 'receiptEvidence.row'),
+    ...nestedRecordFailureReasons(receiptEvidence.proofs, 'receiptEvidence.proof'),
   ];
   if (receiptEvidence.passed === false) reasons.push('receiptEvidence.passed is false');
   if (typeof receiptEvidence.status === 'string') {

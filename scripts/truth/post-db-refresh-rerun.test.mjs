@@ -739,6 +739,52 @@ test('fails when a proof command writes failing receipt evidence summary posture
   );
 });
 
+test('fails when a proof command writes failing receipt evidence row and proof posture', () => {
+  const root = makeTempRepo('tf-post-db-refresh-receipt-detail-fail-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'Receipt detail writer command',
+          command: process.execPath,
+          args: [
+            '-e',
+            [
+              "const fs = require('fs');",
+              "fs.mkdirSync('generated/truth', { recursive: true });",
+              "fs.writeFileSync('generated/truth/receipt-detail-fail.json', JSON.stringify({ passed: true, receiptEvidence: { rows: [{ county: 'Benton', passed: false, blockers: ['receipt row blocker'] }], proofs: [{ county: 'Benton', status: 'FAIL', errors: ['receipt proof error'] }] } }) + '\\n');",
+            ].join(' '),
+          ],
+          expectedArtifacts: ['generated/truth/receipt-detail-fail.json'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'FAIL');
+  assert.equal(report.summary.artifactFailures, 1);
+  assert.deepEqual(report.results[0].artifactOutputs[0].artifactFailureReasons, [
+    'Benton receiptEvidence.row.blockers has 1 item(s)',
+    'Benton receiptEvidence.row passed is false',
+    'Benton receiptEvidence.proof.errors has 1 item(s)',
+    'Benton receiptEvidence.proof status is FAIL',
+  ]);
+  assert.ok(
+    report.blockers.some(item =>
+      item.includes(
+        'Benton receiptEvidence.row.blockers has 1 item(s); Benton receiptEvidence.row passed is false; Benton receiptEvidence.proof.errors has 1 item(s); Benton receiptEvidence.proof status is FAIL'
+      )
+    )
+  );
+});
+
 test('fails when a proof command passes but leaves an expected artifact stale', () => {
   const root = makeTempRepo('tf-post-db-refresh-artifact-stale-');
   fs.writeFileSync(path.join(root, 'generated', 'truth', 'stale.json'), '{}\n');
