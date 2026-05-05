@@ -608,6 +608,38 @@ test('readiness packet blocks explicit blocker error and failure collections', (
   assert.ok(report.executionQueue.some(item => item.source === 'dbIdentity'));
 });
 
+test('readiness packet blocks ship blocker collections in required artifacts', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-identity.json', {
+    endpointStatus: 200,
+    passed: true,
+    shipBlockers: ['Ship blocker from nested artifact.'],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbIdentity' && item.message.includes('artifact.shipBlockers has 1 item')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('artifact.shipBlockers has 1 item')
+    )
+  );
+  assert.ok(report.executionQueue.some(item => item.source === 'dbIdentity'));
+});
+
 test('readiness packet blocks object-shaped blocker error and failure collections', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-db-identity.json', {

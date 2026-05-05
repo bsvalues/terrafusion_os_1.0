@@ -555,7 +555,7 @@ function summaryFailurePostures(summary) {
 function collectionFailurePostures(value, label) {
   if (!value || typeof value !== 'object') return [];
   const postures = [];
-  for (const key of ['error', 'errors', 'failure', 'failures']) {
+  for (const key of ['shipBlockers', 'error', 'errors', 'failure', 'failures']) {
     const entries = value[key];
     if (Array.isArray(entries) && entries.length > 0) {
       postures.push(`${label}.${key} has ${entries.length} item(s)`);
@@ -576,7 +576,6 @@ function collectionFailurePostures(value, label) {
     'failureCount',
     'errorCount',
     'blockerCount',
-    'shipBlockers',
     'artifactFailures',
     'commandsFailed',
   ]) {

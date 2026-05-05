@@ -395,10 +395,10 @@ test('fails when a proof command writes a failing expected JSON artifact', () =>
     'artifact.failureCount is 3',
     'artifact.errorCount is 2',
     'artifact.blockerCount is 4',
+    'summary.shipBlockers is 7',
     'summary.errors has 1 item(s)',
     'summary.failures has 1 item(s)',
     'summary.failed is 6',
-    'summary.shipBlockers is 7',
     'Benton row.blockers has 1 item(s)',
     'Benton row.errors has 1 item(s)',
     'Benton row.failures has 1 item(s)',
@@ -560,6 +560,49 @@ test('fails when a proof command writes a non-object expected JSON artifact', ()
     report.blockers.some(item =>
       item.includes(
         'wrote failing JSON proof artifact generated/truth/array-proof.json: JSON artifact root must be an object'
+      )
+    )
+  );
+});
+
+test('fails when a proof command writes ship blocker collections in an expected JSON artifact', () => {
+  const root = makeTempRepo('tf-post-db-refresh-artifact-ship-blockers-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'Ship blocker artifact writer command',
+          command: process.execPath,
+          args: [
+            '-e',
+            [
+              "const fs = require('fs');",
+              "fs.mkdirSync('generated/truth', { recursive: true });",
+              "fs.writeFileSync('generated/truth/ship-blockers.json', JSON.stringify({ passed: true, shipBlockers: ['blocked'] }) + '\\n');",
+            ].join(' '),
+          ],
+          expectedArtifacts: ['generated/truth/ship-blockers.json'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'FAIL');
+  assert.equal(report.summary.artifactFailures, 1);
+  assert.deepEqual(report.results[0].artifactOutputs[0].artifactFailureReasons, [
+    'artifact.shipBlockers has 1 item(s)',
+  ]);
+  assert.ok(
+    report.blockers.some(item =>
+      item.includes(
+        'wrote failing JSON proof artifact generated/truth/ship-blockers.json: artifact.shipBlockers has 1 item(s)'
       )
     )
   );

@@ -280,7 +280,15 @@ function summaryFailureReasons(summary) {
 function collectionFailureReasons(value, label) {
   if (!value || typeof value !== 'object') return [];
   const reasons = [];
-  for (const key of ['blocker', 'blockers', 'error', 'errors', 'failure', 'failures']) {
+  for (const key of [
+    'blocker',
+    'blockers',
+    'shipBlockers',
+    'error',
+    'errors',
+    'failure',
+    'failures',
+  ]) {
     const entries = value[key];
     if (Array.isArray(entries) && entries.length > 0) {
       reasons.push(`${label}.${key} has ${entries.length} item(s)`);
@@ -301,7 +309,6 @@ function collectionFailureReasons(value, label) {
     'failureCount',
     'errorCount',
     'blockerCount',
-    'shipBlockers',
     'artifactFailures',
     'commandsFailed',
   ]) {
