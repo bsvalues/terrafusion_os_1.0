@@ -814,6 +814,57 @@ test('readiness packet blocks alternate status field casing and separators', () 
   );
 });
 
+test('readiness packet blocks blocked and not-ready nested status values', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-content-audit.json', {
+    endpointStatus: 200,
+    passed: true,
+    checks: [
+      {
+        status: 'runtime_contract_blocked',
+        nested: {
+          readiness_status: 'not_ready',
+          lineageStatus: 'unproven',
+          loadStatus: 'missing',
+        },
+      },
+    ],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbContent' &&
+        item.message.includes('artifact.checks.[].status is runtime_contract_blocked')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('artifact.checks.[].nested.readiness_status is not_ready')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('artifact.checks.[].nested.lineageStatus is unproven')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('artifact.checks.[].nested.loadStatus is missing')
+    )
+  );
+});
+
 test('readiness packet blocks nested arbitrary blocker and failure collections', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-db-content-audit.json', {

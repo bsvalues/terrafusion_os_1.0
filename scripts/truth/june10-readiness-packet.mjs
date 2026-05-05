@@ -650,7 +650,12 @@ function normalizeStatusFieldKey(key) {
 }
 
 function isExplicitFailingStatus(value) {
-  return ['FAIL', 'FAILED', 'ERROR', 'DRY_RUN'].includes(String(value).trim().toUpperCase());
+  const normalized = normalizeProofFieldKey(value);
+  return (
+    ['fail', 'failed', 'error', 'dryrun', 'notready', 'notproven', 'unproven', 'missing'].includes(
+      normalized
+    ) || normalized.endsWith('blocked')
+  );
 }
 
 function isFalseLike(value) {

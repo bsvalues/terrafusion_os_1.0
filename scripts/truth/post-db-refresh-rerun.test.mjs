@@ -891,6 +891,46 @@ test('fails when a proof command writes alternate status field casing and separa
   assert.ok(report.blockers.some(item => item.includes('closure_status is failed')));
 });
 
+test('fails when a proof command writes blocked and not-ready nested status values', () => {
+  const root = makeTempRepo('tf-post-db-refresh-blocked-status-fail-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'Blocked status artifact writer command',
+          command: process.execPath,
+          args: [
+            '-e',
+            [
+              "const fs = require('fs');",
+              "fs.mkdirSync('generated/truth', { recursive: true });",
+              "fs.writeFileSync('generated/truth/blocked-status-fail.json', JSON.stringify({ passed: true, checks: [{ status: 'runtime_contract_blocked', nested: { readiness_status: 'not_ready', lineageStatus: 'unproven', loadStatus: 'missing' } }] }) + '\\n');",
+            ].join(' '),
+          ],
+          expectedArtifacts: ['generated/truth/blocked-status-fail.json'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'FAIL');
+  assert.deepEqual(report.results[0].artifactOutputs[0].artifactFailureReasons, [
+    'artifact.checks.[].status is runtime_contract_blocked',
+    'artifact.checks.[].nested.readiness_status is not_ready',
+    'artifact.checks.[].nested.lineageStatus is unproven',
+    'artifact.checks.[].nested.loadStatus is missing',
+  ]);
+  assert.ok(report.blockers.some(item => item.includes('runtime_contract_blocked')));
+  assert.ok(report.blockers.some(item => item.includes('lineageStatus is unproven')));
+});
+
 test('fails when a proof command writes nested arbitrary blocker and failure collections', () => {
   const root = makeTempRepo('tf-post-db-refresh-nested-collection-fail-');
   const result = spawnSync('node', [scriptPath, root], {
