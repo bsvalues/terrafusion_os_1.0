@@ -13,9 +13,9 @@
   --sf-muted:       hsl(var(--tf-text) / 0.55);
   --sf-subtle:      hsl(var(--tf-text) / 0.38);
   --sf-info:        hsl(var(--tf-suite-forge));          /* copper */
-  --sf-success:     hsl(135 60% 45%);
+  --sf-success:     hsl(var(--tf-success-hs) var(--tf-l-50));
   --sf-warn:        hsl(var(--tf-warning-hs, 32 86%) 60%);
-  --sf-danger:      hsl(0 72% 55%);
+  --sf-danger:      hsl(var(--tf-error-hs) var(--tf-l-60));
 
   display: flex;
   flex-direction: column;
