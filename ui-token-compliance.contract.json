@@ -2,8 +2,8 @@
   "contract": "ui-token-compliance.contract.json",
   "version": "v1",
   "ok": false,
-  "scannedFileCount": 1386,
-  "violationCount": 1582,
+  "scannedFileCount": 1410,
+  "violationCount": 1580,
   "violations": [
     {
       "kind": "RAW_HEX",
@@ -329,136 +329,10 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\companion\\CompanionPanel.tsx",
-      "line": 42,
-      "column": 20,
-      "excerpt": "hsl(226 58% 55% / 0.85)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\companion\\CompanionPanel.tsx",
-      "line": 44,
-      "column": 26,
-      "excerpt": "hsl(226 58% 70% / 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\companion\\CompanionPanel.tsx",
-      "line": 56,
-      "column": 17,
-      "excerpt": "hsl(226 80% 92%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\companion\\CompanionPanel.tsx",
-      "line": 193,
-      "column": 44,
-      "excerpt": "hsl(226 58% 10% / 0.4)' : 'none',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\dashboard\\AISwarmDashboard.tsx",
-      "line": 130,
-      "column": 23,
-      "excerpt": "#8fd4ff',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\dashboard\\AISwarmDashboard.tsx",
-      "line": 131,
-      "column": 29,
-      "excerpt": "#8fd4ff',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\dashboard\\AISwarmDashboard.tsx",
-      "line": 133,
-      "column": 25,
-      "excerpt": "#8fd4ff',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\components\\errors\\ErrorDisplay.tsx",
       "line": 83,
       "column": 63,
       "excerpt": "hsl() values. */"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\sketch\\PlanTracePanel.tsx",
-      "line": 107,
-      "column": 51,
-      "excerpt": "hsl(142, 76%, 36%)\");"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\sketch\\PlanTracePanel.tsx",
-      "line": 108,
-      "column": 51,
-      "excerpt": "hsl(142, 76%, 36%)\");"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\sketch\\PlanTracePanel.tsx",
-      "line": 113,
-      "column": 26,
-      "excerpt": "hsl(142, 76%, 36%)\";"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\WorkbenchSourceBadge.tsx",
-      "line": 16,
-      "column": 26,
-      "excerpt": "hsl(142 76% 36%)', borderColor: 'hsl(142 76% 36% / 0.4)' },"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\WorkbenchSourceBadge.tsx",
-      "line": 16,
-      "column": 59,
-      "excerpt": "hsl(142 76% 36% / 0.4)' },"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\WorkbenchSourceBadge.tsx",
-      "line": 17,
-      "column": 26,
-      "excerpt": "hsl(38 92% 50%)',  borderColor: 'hsl(38 92% 50% / 0.4)' },"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\WorkbenchSourceBadge.tsx",
-      "line": 17,
-      "column": 59,
-      "excerpt": "hsl(38 92% 50% / 0.4)' },"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\WorkbenchSourceBadge.tsx",
-      "line": 18,
-      "column": 26,
-      "excerpt": "hsl(38 92% 50%)',  borderColor: 'hsl(38 92% 50% / 0.4)' },"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\WorkbenchSourceBadge.tsx",
-      "line": 18,
-      "column": 59,
-      "excerpt": "hsl(38 92% 50% / 0.4)' },"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\WorkbenchSourceBadge.tsx",
-      "line": 19,
-      "column": 26,
-      "excerpt": "hsl(215 16% 47%)', borderColor: 'hsl(215 16% 47% / 0.4)' },"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\WorkbenchSourceBadge.tsx",
-      "line": 19,
-      "column": 59,
-      "excerpt": "hsl(215 16% 47% / 0.4)' },"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -529,20 +403,6 @@
       "line": 66,
       "column": 31,
       "excerpt": "#0A0E1A',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\modules\\pilt\\components\\DistributionPieChart.tsx",
-      "line": 69,
-      "column": 21,
-      "excerpt": "#fff',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\modules\\pilt\\components\\DistributionPieChart.tsx",
-      "line": 67,
-      "column": 32,
-      "excerpt": "rgba(255,255,255,0.1)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -1429,128 +1289,261 @@
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
-      "line": 65,
+      "line": 157,
       "column": 22,
       "excerpt": "#0a0e1a',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
-      "line": 124,
+      "line": 248,
+      "column": 36,
+      "excerpt": "#93c5fd', fontWeight: 700 }}>{countyContext.trustLabel}</span>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
+      "line": 294,
+      "column": 18,
+      "excerpt": "#fbbf24'"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
+      "line": 295,
+      "column": 18,
+      "excerpt": "#93c5fd',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
+      "line": 318,
       "column": 21,
       "excerpt": "#8fd4ff',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
-      "line": 145,
+      "line": 339,
       "column": 21,
       "excerpt": "#ffb3b3',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
-      "line": 206,
+      "line": 404,
       "column": 100,
       "excerpt": "#0a0e1a' }} />;"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
-      "line": 81,
+      "line": 172,
       "column": 24,
       "excerpt": "rgba(10,14,26,0.80)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
-      "line": 86,
-      "column": 63,
-      "excerpt": "rgba(255,255,255,0.9)' }}>"
+      "line": 179,
+      "column": 61,
+      "excerpt": "rgba(255,255,255,0.9)' }}"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
-      "line": 90,
-      "column": 48,
-      "excerpt": "rgba(255,255,255,0.4)' }}>"
+      "line": 190,
+      "column": 21,
+      "excerpt": "rgba(255,255,255,0.5)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
-      "line": 123,
+      "line": 225,
+      "column": 26,
+      "excerpt": "rgba(10,14,26,0.84)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
+      "line": 227,
+      "column": 32,
+      "excerpt": "rgba(255,255,255,0.08)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
+      "line": 228,
+      "column": 21,
+      "excerpt": "rgba(255,255,255,0.82)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
+      "line": 236,
+      "column": 47,
+      "excerpt": "rgba(255,255,255,0.6)', marginTop: 4 }}>"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
+      "line": 239,
+      "column": 47,
+      "excerpt": "rgba(255,255,255,0.6)', marginTop: 2 }}>"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
+      "line": 246,
+      "column": 44,
+      "excerpt": "rgba(255,255,255,0.6)', marginTop: 6 }}"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
+      "line": 259,
+      "column": 38,
+      "excerpt": "rgba(147,197,253,0.28)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
+      "line": 260,
+      "column": 27,
+      "excerpt": "rgba(191,219,254,0.92)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
+      "line": 269,
+      "column": 47,
+      "excerpt": "rgba(255,255,255,0.5)', marginTop: 4 }}>"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
+      "line": 273,
+      "column": 49,
+      "excerpt": "rgba(255,255,255,0.5)', marginTop: 2 }}>"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
+      "line": 291,
+      "column": 18,
+      "excerpt": "rgba(245,158,11,0.16)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
+      "line": 292,
+      "column": 18,
+      "excerpt": "rgba(59,130,246,0.16)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
+      "line": 317,
       "column": 26,
       "excerpt": "rgba(0,153,255,0.18)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\AtlasLivePage.tsx",
-      "line": 144,
+      "line": 338,
       "column": 26,
       "excerpt": "rgba(239,68,68,0.18)',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\components\\AtlasOverlayManager.tsx",
-      "line": 10,
+      "line": 6,
       "column": 29,
       "excerpt": "#ef4444';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\components\\AtlasOverlayManager.tsx",
-      "line": 11,
+      "line": 7,
       "column": 29,
       "excerpt": "#f59e0b';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\components\\AtlasOverlayManager.tsx",
-      "line": 12,
+      "line": 8,
       "column": 29,
       "excerpt": "#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\components\\AtlasOverlayManager.tsx",
-      "line": 13,
+      "line": 9,
       "column": 29,
       "excerpt": "#3b82f6';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\components\\AtlasOverlayManager.tsx",
-      "line": 14,
+      "line": 10,
       "column": 11,
       "excerpt": "#7c3aed';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\components\\AtlasOverlayManager.tsx",
-      "line": 18,
+      "line": 14,
       "column": 34,
       "excerpt": "#ef4444';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\components\\AtlasOverlayManager.tsx",
-      "line": 19,
+      "line": 15,
       "column": 33,
       "excerpt": "#f97316';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\components\\AtlasOverlayManager.tsx",
-      "line": 20,
+      "line": 16,
       "column": 33,
       "excerpt": "#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\components\\AtlasOverlayManager.tsx",
-      "line": 21,
+      "line": 17,
       "column": 11,
       "excerpt": "#3b82f6';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\components\\AtlasOverlayManager.tsx",
+      "line": 42,
+      "column": 81,
+      "excerpt": "#22c55e';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\components\\AtlasOverlayManager.tsx",
+      "line": 44,
+      "column": 28,
+      "excerpt": "#ef4444' : value >= 2 ? '#f59e0b' : '#facc15';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\components\\AtlasOverlayManager.tsx",
+      "line": 44,
+      "column": 53,
+      "excerpt": "#f59e0b' : '#facc15';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\atlas-live\\components\\AtlasOverlayManager.tsx",
+      "line": 44,
+      "column": 65,
+      "excerpt": "#facc15';"
     },
     {
       "kind": "RAW_HEX",
@@ -1842,42 +1835,42 @@
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\cost\\CostForge.css",
-      "line": 209,
+      "line": 239,
       "column": 15,
       "excerpt": "hsl(28 30% 10%);"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\cost\\CostForge.css",
-      "line": 262,
+      "line": 292,
       "column": 15,
       "excerpt": "hsl(142 20% 9%);"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\cost\\CostForge.css",
-      "line": 263,
+      "line": 293,
       "column": 21,
       "excerpt": "hsl(142 30% 18%);"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\cost\\CostForge.css",
-      "line": 268,
+      "line": 298,
       "column": 15,
       "excerpt": "hsl(38 30% 9%);"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\cost\\CostForge.css",
-      "line": 269,
+      "line": 299,
       "column": 17,
       "excerpt": "hsl(38 50% 22%);"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\cost\\CostForge.tsx",
-      "line": 240,
+      "line": 258,
       "column": 44,
       "excerpt": "hsl(199 89% 48%))',"
     },
@@ -1982,112 +1975,84 @@
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\cost\\DepreciationCalculator.tsx",
-      "line": 243,
+      "line": 266,
       "column": 99,
       "excerpt": "hsl(28 50% 22%)' }}"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\cost\\DepreciationCalculator.tsx",
-      "line": 414,
+      "line": 437,
       "column": 26,
       "excerpt": "hsl(28 30% 10%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\cost\\DepreciationCalculator.tsx",
-      "line": 415,
+      "line": 438,
       "column": 32,
       "excerpt": "hsl(28 50% 22%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\cost\\tabs\\CalibrationWorkbenchTab.tsx",
-      "line": 779,
+      "line": 826,
       "column": 146,
       "excerpt": "hsl(142 40% 12%)' }}>"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\cost\\tabs\\CalibrationWorkbenchTab.tsx",
-      "line": 804,
+      "line": 851,
       "column": 145,
       "excerpt": "hsl(222 16% 12%)', borderRadius: 4 }}>"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\cost\\tabs\\TriageTab.tsx",
-      "line": 243,
+      "line": 291,
       "column": 34,
       "excerpt": "hsl(222 16% 18%)',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\AdjustmentSetPanel.tsx",
-      "line": 16,
+      "line": 19,
       "column": 22,
       "excerpt": "#6b7280',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\AdjustmentSetPanel.tsx",
-      "line": 17,
+      "line": 20,
       "column": 22,
       "excerpt": "#f59e0b',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\AdjustmentSetPanel.tsx",
-      "line": 18,
+      "line": 21,
       "column": 22,
       "excerpt": "#3b82f6',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\AdjustmentSetPanel.tsx",
-      "line": 19,
+      "line": 24,
       "column": 22,
       "excerpt": "#22c55e',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\AdjustmentSetPanel.tsx",
-      "line": 20,
+      "line": 25,
       "column": 22,
       "excerpt": "#ef4444',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\AdjustmentSetPanel.tsx",
-      "line": 230,
-      "column": 47,
-      "excerpt": "#ef444422' :"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\AdjustmentSetPanel.tsx",
-      "line": 231,
-      "column": 47,
-      "excerpt": "#22c55e22' :"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\AdjustmentSetPanel.tsx",
-      "line": 234,
-      "column": 47,
-      "excerpt": "#ef4444' :"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\AdjustmentSetPanel.tsx",
-      "line": 235,
-      "column": 47,
-      "excerpt": "#22c55e' :"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\AdjustmentSetPanel.tsx",
-      "line": 329,
+      "line": 378,
       "column": 39,
       "excerpt": "#ef4444', fontSize: 12 }}"
     },
@@ -2283,21 +2248,21 @@
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\AiDiagnosisPanel.tsx",
-      "line": 438,
+      "line": 445,
       "column": 46,
       "excerpt": "#ef4444',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\AiDiagnosisPanel.tsx",
-      "line": 519,
+      "line": 557,
       "column": 36,
       "excerpt": "#22c55e',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\AiDiagnosisPanel.tsx",
-      "line": 522,
+      "line": 560,
       "column": 35,
       "excerpt": "#22c55e', fontWeight: 600,"
     },
@@ -2360,616 +2325,623 @@
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityInspector.tsx",
-      "line": 24,
+      "line": 52,
       "column": 49,
       "excerpt": "#22c55e', label: 'IAAO Compliant' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityInspector.tsx",
-      "line": 25,
+      "line": 53,
       "column": 49,
       "excerpt": "#f59e0b', label: 'Marginal Compliance' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityInspector.tsx",
-      "line": 26,
+      "line": 54,
       "column": 49,
       "excerpt": "#ef4444', label: 'Non-compliant' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityInspector.tsx",
-      "line": 47,
+      "line": 76,
       "column": 10,
       "excerpt": "#ef4444'"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityInspector.tsx",
-      "line": 49,
+      "line": 78,
       "column": 12,
       "excerpt": "#f59e0b'"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityInspector.tsx",
-      "line": 50,
+      "line": 79,
       "column": 12,
       "excerpt": "#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityInspector.tsx",
-      "line": 51,
+      "line": 80,
       "column": 80,
       "excerpt": "#ef4444' : row.cod > 15 ? '#f59e0b' : '#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityInspector.tsx",
-      "line": 51,
+      "line": 80,
       "column": 107,
       "excerpt": "#f59e0b' : '#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityInspector.tsx",
-      "line": 51,
+      "line": 80,
       "column": 119,
       "excerpt": "#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityInspector.tsx",
-      "line": 52,
+      "line": 81,
       "column": 102,
       "excerpt": "#22c55e' : '#f59e0b';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityInspector.tsx",
-      "line": 52,
+      "line": 81,
       "column": 114,
       "excerpt": "#f59e0b';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityRollupTable.tsx",
-      "line": 24,
+      "line": 28,
       "column": 28,
       "excerpt": "#ef4444';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityRollupTable.tsx",
-      "line": 25,
+      "line": 29,
       "column": 29,
       "excerpt": "#f59e0b';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityRollupTable.tsx",
-      "line": 31,
+      "line": 35,
       "column": 25,
       "excerpt": "#ef4444';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityRollupTable.tsx",
-      "line": 32,
+      "line": 36,
       "column": 25,
       "excerpt": "#f59e0b';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityRollupTable.tsx",
-      "line": 33,
+      "line": 37,
       "column": 11,
       "excerpt": "#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityRollupTable.tsx",
-      "line": 38,
+      "line": 42,
       "column": 46,
       "excerpt": "#22c55e33', color: '#22c55e', label: 'IAAO' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityRollupTable.tsx",
-      "line": 38,
+      "line": 42,
       "column": 66,
       "excerpt": "#22c55e', label: 'IAAO' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityRollupTable.tsx",
-      "line": 39,
+      "line": 43,
       "column": 46,
       "excerpt": "#f59e0b33', color: '#f59e0b', label: 'Marginal' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityRollupTable.tsx",
-      "line": 39,
+      "line": 43,
       "column": 66,
       "excerpt": "#f59e0b', label: 'Marginal' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityRollupTable.tsx",
-      "line": 40,
+      "line": 44,
       "column": 46,
       "excerpt": "#ef444433', color: '#ef4444', label: 'Non-compliant' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityRollupTable.tsx",
-      "line": 40,
+      "line": 44,
       "column": 66,
       "excerpt": "#ef4444', label: 'Non-compliant' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityRollupTable.tsx",
-      "line": 127,
+      "line": 131,
       "column": 35,
       "excerpt": "#ef4444', fontSize: 13, padding: 16, textAlign: 'center', gap: 8,"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CityRollupTable.tsx",
-      "line": 255,
+      "line": 268,
       "column": 85,
       "excerpt": "#f59e0b' : 'hsl(var(--tf-muted))' }}>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CohortCreationDialog.tsx",
-      "line": 144,
+      "line": 200,
       "column": 33,
       "excerpt": "#ef4444', fontSize: 11, marginBottom: 12 }}>{error}</div>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CohortCreationDialog.tsx",
-      "line": 172,
+      "line": 228,
       "column": 35,
       "excerpt": "#000' : 'hsl(var(--tf-muted))',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CohortCreationDialog.tsx",
-      "line": 55,
+      "line": 79,
       "column": 24,
       "excerpt": "rgba(0,0,0,0.5)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CohortCreationDialog.tsx",
-      "line": 76,
+      "line": 100,
       "column": 35,
       "excerpt": "rgba(0,0,0,0.4)',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyDiagnosisModal.tsx",
-      "line": 28,
+      "line": 29,
       "column": 14,
       "excerpt": "#ef4444',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyDiagnosisModal.tsx",
-      "line": 29,
+      "line": 30,
       "column": 14,
       "excerpt": "#f97316',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyDiagnosisModal.tsx",
-      "line": 30,
+      "line": 31,
       "column": 14,
       "excerpt": "#a855f7',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyDiagnosisModal.tsx",
-      "line": 31,
+      "line": 32,
       "column": 14,
       "excerpt": "#f59e0b',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyDiagnosisModal.tsx",
-      "line": 32,
+      "line": 33,
       "column": 14,
       "excerpt": "#22c55e',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyDiagnosisModal.tsx",
-      "line": 86,
+      "line": 87,
       "column": 46,
       "excerpt": "#ef4444',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyDiagnosisModal.tsx",
-      "line": 259,
+      "line": 260,
       "column": 46,
       "excerpt": "#ef4444' }}"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyDiagnosisModal.tsx",
-      "line": 203,
+      "line": 204,
       "column": 22,
       "excerpt": "hsla(0, 0%, 0%, 0.5)',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 30,
+      "line": 35,
       "column": 28,
       "excerpt": "#ef4444';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 31,
+      "line": 36,
       "column": 29,
       "excerpt": "#f59e0b';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 32,
+      "line": 37,
       "column": 11,
       "excerpt": "#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 37,
+      "line": 42,
       "column": 25,
       "excerpt": "#ef4444';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 38,
+      "line": 43,
       "column": 25,
       "excerpt": "#f59e0b';"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 39,
-      "column": 11,
-      "excerpt": "#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
       "line": 44,
-      "column": 41,
-      "excerpt": "#ef4444';"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 45,
-      "column": 41,
-      "excerpt": "#f59e0b';"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 46,
       "column": 11,
       "excerpt": "#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 52,
+      "line": 49,
+      "column": 41,
+      "excerpt": "#ef4444';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
+      "line": 50,
+      "column": 41,
+      "excerpt": "#f59e0b';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
+      "line": 51,
+      "column": 11,
+      "excerpt": "#22c55e';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
+      "line": 57,
       "column": 46,
       "excerpt": "#22c55e', label: 'IAAO Compliant' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 53,
+      "line": 58,
       "column": 46,
       "excerpt": "#f59e0b', label: 'Marginal' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 54,
+      "line": 59,
       "column": 46,
       "excerpt": "#ef4444', label: 'Non-compliant' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 55,
+      "line": 60,
       "column": 46,
       "excerpt": "#6b7280', label: 'Insufficient Data' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 61,
+      "line": 66,
       "column": 33,
       "excerpt": "#ef444433', color: '#ef4444', label: 'high' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 61,
+      "line": 66,
       "column": 53,
       "excerpt": "#ef4444', label: 'high' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 62,
+      "line": 67,
       "column": 33,
       "excerpt": "#f59e0b33', color: '#f59e0b', label: 'medium' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 62,
+      "line": 67,
       "column": 53,
       "excerpt": "#f59e0b', label: 'medium' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 63,
+      "line": 68,
       "column": 17,
       "excerpt": "#22c55e33', color: '#22c55e', label: 'low' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 63,
+      "line": 68,
       "column": 37,
       "excerpt": "#22c55e', label: 'low' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 135,
+      "line": 144,
       "column": 43,
       "excerpt": "#22c55e33',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 314,
+      "line": 331,
       "column": 24,
       "excerpt": "#6b7280', display: 'inline-block',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 333,
+      "line": 350,
       "column": 19,
       "excerpt": "#ef4444', fontSize: 13,"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 540,
+      "line": 574,
       "column": 20,
       "excerpt": "#ef4444\" testId=\"severity-bar-critical\" onClick={onCriticalClick}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 544,
+      "line": 578,
       "column": 20,
       "excerpt": "#f59e0b\" testId=\"severity-bar-warning\""
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 548,
+      "line": 582,
       "column": 20,
       "excerpt": "#22c55e\" testId=\"severity-bar-healthy\""
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 595,
+      "line": 629,
       "column": 26,
       "excerpt": "#3b82f622', color: '#3b82f6',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyHealthPanel.tsx",
-      "line": 595,
+      "line": 629,
       "column": 46,
       "excerpt": "#3b82f6',"
     },
     {
       "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyStatisticsWorkbenchPanel.tsx",
+      "line": 547,
+      "column": 15,
+      "excerpt": "#22c55e',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyStatisticsWorkbenchPanel.tsx",
+      "line": 548,
+      "column": 15,
+      "excerpt": "#f59e0b',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\CountyStatisticsWorkbenchPanel.tsx",
+      "line": 549,
+      "column": 14,
+      "excerpt": "#ef4444',"
+    },
+    {
+      "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExceptionQueuePanel.tsx",
-      "line": 25,
+      "line": 73,
       "column": 70,
       "excerpt": "#f59e0b';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExceptionQueuePanel.tsx",
-      "line": 26,
+      "line": 74,
       "column": 60,
       "excerpt": "#ef4444';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExceptionQueuePanel.tsx",
-      "line": 27,
+      "line": 75,
       "column": 11,
       "excerpt": "#6366f1';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExceptionQueuePanel.tsx",
-      "line": 31,
+      "line": 79,
       "column": 38,
       "excerpt": "#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExceptionQueuePanel.tsx",
-      "line": 32,
+      "line": 80,
       "column": 40,
       "excerpt": "#3b82f6';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExceptionQueuePanel.tsx",
-      "line": 33,
+      "line": 81,
       "column": 11,
       "excerpt": "#6b7280';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExceptionQueuePanel.tsx",
-      "line": 37,
+      "line": 85,
       "column": 32,
       "excerpt": "#8b5cf6';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExceptionQueuePanel.tsx",
-      "line": 38,
+      "line": 86,
       "column": 35,
       "excerpt": "#06b6d4';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExceptionQueuePanel.tsx",
-      "line": 39,
+      "line": 87,
       "column": 11,
       "excerpt": "#6b7280';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExceptionQueuePanel.tsx",
-      "line": 158,
+      "line": 457,
       "column": 35,
-      "excerpt": "#3b82f6', busy || exc.status === 'Dispatched')}"
+      "excerpt": "#3b82f6', busy || !hasRoute)}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExceptionQueuePanel.tsx",
-      "line": 164,
+      "line": 463,
       "column": 35,
       "excerpt": "#22c55e', busy)}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExceptionQueuePanel.tsx",
-      "line": 181,
+      "line": 480,
       "column": 102,
       "excerpt": "#6366f1', busy || !assignName.trim())}>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExceptionQueuePanel.tsx",
-      "line": 196,
+      "line": 495,
       "column": 96,
       "excerpt": "#6b7280', busy || !noteText.trim())}>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExceptionQueuePanel.tsx",
-      "line": 220,
-      "column": 27,
-      "excerpt": "#2a2a2a' : `${color}33`,"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExceptionQueuePanel.tsx",
-      "line": 221,
-      "column": 22,
-      "excerpt": "#555' : color,"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExportPacketModal.tsx",
-      "line": 67,
-      "column": 104,
-      "excerpt": "#3b82f6')}>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExportPacketModal.tsx",
       "line": 70,
       "column": 104,
+      "excerpt": "#3b82f6')}>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExportPacketModal.tsx",
+      "line": 73,
+      "column": 104,
       "excerpt": "#22c55e')}>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExportPacketModal.tsx",
-      "line": 75,
+      "line": 78,
       "column": 86,
       "excerpt": "#6b7280'), padding: '3px 8px' }}>✕</button>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExportPacketModal.tsx",
-      "line": 81,
+      "line": 84,
       "column": 70,
       "excerpt": "#ef4444' }}>{error}</div>}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExportPacketModal.tsx",
-      "line": 223,
+      "line": 269,
       "column": 26,
       "excerpt": "#22c55e',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExportPacketModal.tsx",
-      "line": 224,
+      "line": 270,
       "column": 26,
       "excerpt": "#f59e0b',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExportPacketModal.tsx",
-      "line": 225,
+      "line": 271,
       "column": 26,
       "excerpt": "#ef4444',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExportPacketModal.tsx",
-      "line": 226,
+      "line": 272,
       "column": 26,
       "excerpt": "#6b7280',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExportPacketModal.tsx",
-      "line": 228,
+      "line": 274,
       "column": 32,
       "excerpt": "#6b7280';"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ExportPacketModal.tsx",
-      "line": 56,
+      "line": 59,
       "column": 28,
       "excerpt": "rgba(0,0,0,0.5)',"
     },
@@ -3046,98 +3018,98 @@
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\NeighborhoodInspector.tsx",
-      "line": 22,
+      "line": 45,
       "column": 49,
       "excerpt": "#22c55e', label: 'IAAO Compliant' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\NeighborhoodInspector.tsx",
-      "line": 23,
+      "line": 46,
       "column": 49,
       "excerpt": "#f59e0b', label: 'Marginal Compliance' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\NeighborhoodInspector.tsx",
-      "line": 24,
+      "line": 47,
       "column": 49,
       "excerpt": "#ef4444', label: 'Non-compliant' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\NeighborhoodInspector.tsx",
-      "line": 47,
+      "line": 78,
       "column": 10,
       "excerpt": "#ef4444'"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\NeighborhoodInspector.tsx",
-      "line": 49,
+      "line": 80,
       "column": 12,
       "excerpt": "#f59e0b'"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\NeighborhoodInspector.tsx",
-      "line": 50,
+      "line": 81,
       "column": 12,
       "excerpt": "#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\NeighborhoodInspector.tsx",
-      "line": 51,
+      "line": 82,
       "column": 80,
       "excerpt": "#ef4444' : row.cod > 15 ? '#f59e0b' : '#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\NeighborhoodInspector.tsx",
-      "line": 51,
+      "line": 82,
       "column": 107,
       "excerpt": "#f59e0b' : '#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\NeighborhoodInspector.tsx",
-      "line": 51,
+      "line": 82,
       "column": 119,
       "excerpt": "#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\NeighborhoodInspector.tsx",
-      "line": 52,
+      "line": 83,
       "column": 102,
       "excerpt": "#22c55e' : '#f59e0b';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\NeighborhoodInspector.tsx",
-      "line": 52,
+      "line": 83,
       "column": 114,
       "excerpt": "#f59e0b';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\NeighborhoodInspector.tsx",
-      "line": 53,
+      "line": 84,
       "column": 48,
       "excerpt": "#ef4444' : row.stabilityScore < 80 ? '#f59e0b' : '#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\NeighborhoodInspector.tsx",
-      "line": 53,
+      "line": 84,
       "column": 86,
       "excerpt": "#f59e0b' : '#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\NeighborhoodInspector.tsx",
-      "line": 53,
+      "line": 84,
       "column": 98,
       "excerpt": "#22c55e';"
     },
@@ -3249,504 +3221,595 @@
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\NeighborhoodRollupTable.tsx",
-      "line": 282,
+      "line": 289,
       "column": 59,
       "excerpt": "#ef444433' : '#6b728033',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\NeighborhoodRollupTable.tsx",
-      "line": 282,
+      "line": 289,
       "column": 73,
       "excerpt": "#6b728033',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\NeighborhoodRollupTable.tsx",
-      "line": 283,
+      "line": 290,
       "column": 54,
       "excerpt": "#ef4444' : 'hsl(var(--tf-muted))',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\NeighborhoodRollupTable.tsx",
-      "line": 290,
+      "line": 297,
       "column": 85,
       "excerpt": "#f59e0b' : 'hsl(var(--tf-muted))' }}>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 67,
+      "line": 72,
       "column": 25,
       "excerpt": "#ef4444';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 68,
+      "line": 73,
       "column": 25,
       "excerpt": "#f59e0b';"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 69,
-      "column": 11,
-      "excerpt": "#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
       "line": 74,
-      "column": 41,
-      "excerpt": "#ef4444';"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 75,
-      "column": 41,
-      "excerpt": "#f59e0b';"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 76,
       "column": 11,
       "excerpt": "#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 82,
+      "line": 79,
+      "column": 41,
+      "excerpt": "#ef4444';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
+      "line": 80,
+      "column": 41,
+      "excerpt": "#f59e0b';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
+      "line": 81,
+      "column": 11,
+      "excerpt": "#22c55e';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
+      "line": 87,
       "column": 24,
       "excerpt": "#ef4444';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 83,
+      "line": 88,
       "column": 25,
       "excerpt": "#f59e0b';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 84,
+      "line": 89,
       "column": 11,
       "excerpt": "#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 94,
+      "line": 99,
       "column": 28,
       "excerpt": "#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 95,
+      "line": 100,
       "column": 28,
       "excerpt": "#f59e0b';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 96,
+      "line": 101,
       "column": 11,
       "excerpt": "#ef4444';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 102,
+      "line": 107,
       "column": 44,
       "excerpt": "#22c55e22', color: '#22c55e' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 102,
+      "line": 107,
       "column": 64,
       "excerpt": "#22c55e' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 103,
+      "line": 108,
       "column": 44,
       "excerpt": "#f59e0b22', color: '#f59e0b' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 103,
+      "line": 108,
       "column": 64,
       "excerpt": "#f59e0b' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 104,
+      "line": 109,
       "column": 44,
       "excerpt": "#ef444422', color: '#ef4444' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 104,
+      "line": 109,
       "column": 64,
       "excerpt": "#ef4444' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 180,
+      "line": 185,
       "column": 43,
       "excerpt": "#22c55e' : veiPct >= 60 ? '#f59e0b' : '#ef4444',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 180,
+      "line": 185,
       "column": 70,
       "excerpt": "#f59e0b' : '#ef4444',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 180,
+      "line": 185,
       "column": 82,
       "excerpt": "#ef4444',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 287,
+      "line": 292,
       "column": 32,
       "excerpt": "#22c55e' : 'hsl(var(--tf-fg))'}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 360,
+      "line": 392,
       "column": 53,
       "excerpt": "#ef4444' }}>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 417,
+      "line": 451,
       "column": 32,
       "excerpt": "#f59e0b22', color: '#f59e0b',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 417,
+      "line": 451,
       "column": 52,
       "excerpt": "#f59e0b',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 448,
+      "line": 482,
       "column": 53,
       "excerpt": "#ef4444' }}>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
-      "line": 572,
+      "line": 623,
       "column": 55,
       "excerpt": "#ef4444' }}>"
     },
     {
       "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
+      "line": 701,
+      "column": 32,
+      "excerpt": "#ef444455',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
+      "line": 702,
+      "column": 26,
+      "excerpt": "#ef444422',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ObjectInspector.tsx",
+      "line": 703,
+      "column": 21,
+      "excerpt": "#ef4444',"
+    },
+    {
+      "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\OpenStudyDialog.tsx",
-      "line": 34,
+      "line": 36,
       "column": 21,
       "excerpt": "#000' : 'hsl(var(--tf-muted, 220 13% 50%))',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\OpenStudyDialog.tsx",
-      "line": 100,
+      "line": 113,
       "column": 59,
       "excerpt": "#ef4444' }}>{error}</div>}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\OpenStudyDialog.tsx",
-      "line": 149,
+      "line": 162,
       "column": 59,
       "excerpt": "#ef4444' }}>{error}</div>}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioCompareGrid.tsx",
-      "line": 17,
+      "line": 18,
       "column": 48,
       "excerpt": "#3b82f6', B: '#8b5cf6', Tie: '#6b7280' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioCompareGrid.tsx",
-      "line": 17,
+      "line": 18,
       "column": 62,
       "excerpt": "#8b5cf6', Tie: '#6b7280' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioCompareGrid.tsx",
-      "line": 17,
+      "line": 18,
       "column": 78,
       "excerpt": "#6b7280' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioCompareGrid.tsx",
-      "line": 30,
+      "line": 31,
       "column": 32,
       "excerpt": "#22c55e' : '#ef4444';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioCompareGrid.tsx",
-      "line": 30,
+      "line": 31,
       "column": 44,
       "excerpt": "#ef4444';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioCompareGrid.tsx",
-      "line": 111,
+      "line": 267,
       "column": 32,
       "excerpt": "#000' : 'hsl(var(--tf-muted))',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioCompareGrid.tsx",
-      "line": 119,
+      "line": 275,
       "column": 45,
       "excerpt": "#ef4444' }}>{error}</div>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioCompareGrid.tsx",
-      "line": 126,
+      "line": 338,
       "column": 61,
       "excerpt": "#3b82f622', borderRadius: 10, color: '#3b82f6', fontWeight: 700 }}>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioCompareGrid.tsx",
-      "line": 126,
+      "line": 338,
       "column": 99,
       "excerpt": "#3b82f6', fontWeight: 700 }}>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioCompareGrid.tsx",
-      "line": 129,
+      "line": 341,
       "column": 61,
       "excerpt": "#8b5cf622', borderRadius: 10, color: '#8b5cf6', fontWeight: 700 }}>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioCompareGrid.tsx",
-      "line": 129,
+      "line": 341,
       "column": 99,
       "excerpt": "#8b5cf6', fontWeight: 700 }}>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioCompareGrid.tsx",
-      "line": 140,
+      "line": 352,
       "column": 67,
       "excerpt": "#3b82f6' }}>After A</th>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioCompareGrid.tsx",
-      "line": 141,
+      "line": 353,
       "column": 67,
       "excerpt": "#8b5cf6' }}>After B</th>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioWorksheet.tsx",
-      "line": 44,
+      "line": 46,
       "column": 26,
       "excerpt": "#22c55e22', color: '#22c55e',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioWorksheet.tsx",
-      "line": 44,
+      "line": 46,
       "column": 46,
       "excerpt": "#22c55e',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioWorksheet.tsx",
-      "line": 232,
+      "line": 287,
+      "column": 57,
+      "excerpt": "#3b82f6' : 'hsl(var(--tf-muted))' }}>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioWorksheet.tsx",
+      "line": 427,
       "column": 39,
       "excerpt": "#ef4444', fontSize: 11 }} data-testid=\"sw-error\">{error}</div>}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioWorksheet.tsx",
-      "line": 234,
+      "line": 429,
       "column": 64,
       "excerpt": "#22c55e', fontSize: 11 }}>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioWorksheet.tsx",
-      "line": 255,
+      "line": 450,
       "column": 41,
       "excerpt": "#3b82f6' : 'hsl(var(--tf-surface))',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioWorksheet.tsx",
-      "line": 256,
+      "line": 451,
       "column": 36,
       "excerpt": "#fff' : 'hsl(var(--tf-muted))',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\ScenarioWorksheet.tsx",
-      "line": 272,
+      "line": 467,
       "column": 31,
       "excerpt": "#000' : 'hsl(var(--tf-muted))',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
-      "line": 13,
+      "line": 29,
       "column": 33,
       "excerpt": "#ef4444', severity: 'critical' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
-      "line": 14,
+      "line": 30,
       "column": 33,
       "excerpt": "#f59e0b', severity: 'warning' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
-      "line": 15,
+      "line": 31,
       "column": 17,
       "excerpt": "#22c55e', severity: 'ok' };"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
-      "line": 20,
+      "line": 36,
       "column": 25,
       "excerpt": "#ef4444';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
-      "line": 21,
+      "line": 37,
       "column": 25,
       "excerpt": "#f59e0b';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
-      "line": 22,
+      "line": 38,
       "column": 11,
       "excerpt": "#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
-      "line": 28,
+      "line": 44,
       "column": 28,
       "excerpt": "#ef4444';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
-      "line": 29,
+      "line": 45,
       "column": 29,
       "excerpt": "#f59e0b';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
-      "line": 115,
+      "line": 52,
+      "column": 26,
+      "excerpt": "#ef4444';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
+      "line": 53,
+      "column": 27,
+      "excerpt": "#f59e0b';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
+      "line": 54,
+      "column": 11,
+      "excerpt": "#22c55e';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
+      "line": 60,
+      "column": 27,
+      "excerpt": "#ef4444';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
+      "line": 61,
+      "column": 27,
+      "excerpt": "#f59e0b';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
+      "line": 62,
+      "column": 11,
+      "excerpt": "#22c55e';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
+      "line": 161,
       "column": 35,
       "excerpt": "#ef4444', fontSize: 13, padding: 16, textAlign: 'center', gap: 8,"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
-      "line": 241,
+      "line": 267,
+      "column": 43,
+      "excerpt": "#22c55e' :"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
+      "line": 268,
+      "column": 45,
+      "excerpt": "#f59e0b' :"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
+      "line": 269,
+      "column": 16,
+      "excerpt": "#ef4444';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
+      "line": 351,
       "column": 83,
       "excerpt": "#f59e0b' : 'hsl(var(--tf-muted))' }}>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
-      "line": 250,
+      "line": 360,
       "column": 57,
       "excerpt": "#ef444433' : '#6b728033',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
-      "line": 250,
+      "line": 360,
       "column": 71,
       "excerpt": "#6b728033',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\components\\SegmentTable.tsx",
-      "line": 251,
+      "line": 361,
       "column": 52,
       "excerpt": "#ef4444' : 'hsl(var(--tf-muted))',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\CountyStudyPage.tsx",
-      "line": 67,
+      "line": 69,
       "column": 10,
       "excerpt": "#22c55e', STAGED: '#f59e0b', SNAPSHOT: '#3b82f6', DISCONNECTED: '#6b7280',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\CountyStudyPage.tsx",
-      "line": 67,
+      "line": 69,
       "column": 29,
       "excerpt": "#f59e0b', SNAPSHOT: '#3b82f6', DISCONNECTED: '#6b7280',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\CountyStudyPage.tsx",
-      "line": 67,
+      "line": 69,
       "column": 50,
       "excerpt": "#3b82f6', DISCONNECTED: '#6b7280',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\CountyStudyPage.tsx",
-      "line": 67,
+      "line": 69,
       "column": 75,
       "excerpt": "#6b7280',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\county-studio\\CountyStudyPage.tsx",
-      "line": 81,
+      "line": 91,
       "column": 42,
       "excerpt": "#6b7280';"
     },
@@ -5174,273 +5237,224 @@
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 124,
-      "column": 46,
-      "excerpt": "#4ade80' : county.passRate >= 75 ? '#fbbf24' : '#f87171';"
+      "line": 99,
+      "column": 39,
+      "excerpt": "#4ade80' : passRate >= 75 ? '#fbbf24' : '#f87171';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 124,
-      "column": 82,
+      "line": 99,
+      "column": 68,
       "excerpt": "#fbbf24' : '#f87171';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 124,
-      "column": 94,
+      "line": 99,
+      "column": 80,
       "excerpt": "#f87171';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 125,
-      "column": 82,
+      "line": 100,
+      "column": 64,
+      "excerpt": "#64748b'"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
+      "line": 101,
+      "column": 89,
       "excerpt": "#4ade80'"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 126,
-      "column": 67,
-      "excerpt": "#fbbf24' : '#f87171';"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 126,
-      "column": 79,
-      "excerpt": "#f87171';"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 127,
-      "column": 40,
-      "excerpt": "#4ade80' : county.cod <= 20 ? '#fbbf24' : '#f87171';"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 127,
-      "column": 71,
-      "excerpt": "#fbbf24' : '#f87171';"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 127,
-      "column": 83,
-      "excerpt": "#f87171';"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 169,
-      "column": 56,
-      "excerpt": "#4ade80' : pts >= weight * 0.60 ? '#fbbf24' : '#f87171';"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 169,
+      "line": 102,
       "column": 91,
       "excerpt": "#fbbf24' : '#f87171';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 169,
+      "line": 102,
       "column": 103,
       "excerpt": "#f87171';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 214,
-      "column": 133,
-      "excerpt": "#4ade80' : '#fbbf24'} />"
+      "line": 103,
+      "column": 54,
+      "excerpt": "#64748b'"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 214,
-      "column": 145,
-      "excerpt": "#fbbf24'} />"
+      "line": 104,
+      "column": 38,
+      "excerpt": "#4ade80' : operationalHealth.cod <= 20 ? '#fbbf24' : '#f87171';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 227,
-      "column": 63,
-      "excerpt": "#64748b' }} interval={0} />"
+      "line": 104,
+      "column": 80,
+      "excerpt": "#fbbf24' : '#f87171';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 228,
-      "column": 48,
-      "excerpt": "#64748b' }} />"
+      "line": 104,
+      "column": 92,
+      "excerpt": "#f87171';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 230,
-      "column": 44,
-      "excerpt": "#0f172a', border: '1px solid #334155', fontSize: 10 }}"
+      "line": 105,
+      "column": 120,
+      "excerpt": "#4ade80' : '#fbbf24';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 230,
-      "column": 73,
-      "excerpt": "#334155', fontSize: 10 }}"
+      "line": 105,
+      "column": 132,
+      "excerpt": "#fbbf24';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 233,
-      "column": 50,
-      "excerpt": "#4ade80\" strokeOpacity={0.4} />"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 234,
-      "column": 40,
-      "excerpt": "#06b6d4\" radius={[2, 2, 0, 0]} />"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 244,
+      "line": 166,
       "column": 63,
       "excerpt": "#64748b' }} />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 245,
+      "line": 167,
       "column": 48,
       "excerpt": "#64748b' }} />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 247,
+      "line": 169,
       "column": 44,
       "excerpt": "#0f172a', border: '1px solid #334155', fontSize: 10 }}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 247,
+      "line": 169,
       "column": 73,
       "excerpt": "#334155', fontSize: 10 }}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 250,
+      "line": 172,
       "column": 40,
       "excerpt": "#a855f7\" radius={[2, 2, 0, 0]} />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 263,
+      "line": 186,
       "column": 68,
       "excerpt": "#64748b' }} />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 266,
+      "line": 189,
       "column": 45,
       "excerpt": "#64748b' }}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 270,
+      "line": 193,
       "column": 46,
       "excerpt": "#0f172a', border: '1px solid #334155', fontSize: 9 }}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 270,
+      "line": 193,
       "column": 75,
       "excerpt": "#334155', fontSize: 9 }}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 281,
+      "line": 204,
       "column": 23,
       "excerpt": "#4ade80\""
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 284,
+      "line": 207,
       "column": 46,
       "excerpt": "#4ade80\" strokeOpacity={0.5} strokeDasharray=\"4 2\" />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 285,
+      "line": 208,
       "column": 47,
       "excerpt": "#4ade80\" strokeOpacity={0.25} strokeDasharray=\"2 4\" />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 286,
+      "line": 209,
       "column": 47,
       "excerpt": "#4ade80\" strokeOpacity={0.25} strokeDasharray=\"2 4\" />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 290,
+      "line": 213,
       "column": 25,
       "excerpt": "#00FFFF\""
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 292,
+      "line": 215,
       "column": 31,
       "excerpt": "#00FFFF', r: 2.5 }}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 298,
+      "line": 221,
       "column": 25,
       "excerpt": "#a855f7\""
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 367,
+      "line": 290,
       "column": 41,
       "excerpt": "#4ade80' : dev < 0.10 ? '#fbbf24' : '#f87171';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 367,
+      "line": 290,
       "column": 66,
       "excerpt": "#fbbf24' : '#f87171';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\panels\\CountyHealthPanel.tsx",
-      "line": 367,
+      "line": 290,
       "column": 78,
       "excerpt": "#f87171';"
     },
@@ -7260,238 +7274,238 @@
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 93,
+      "line": 103,
       "column": 19,
       "excerpt": "hsl(140, 22%, 56%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 94,
+      "line": 104,
       "column": 19,
       "excerpt": "hsl(140, 28%, 60%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 95,
+      "line": 105,
       "column": 19,
       "excerpt": "hsl(32, 58%, 55%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 96,
+      "line": 106,
       "column": 19,
       "excerpt": "hsl(16, 55%, 56%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 97,
+      "line": 107,
       "column": 19,
       "excerpt": "hsl(16, 62%, 48%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 98,
+      "line": 108,
       "column": 28,
       "excerpt": "hsl(38, 18%, 78%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 118,
+      "line": 128,
       "column": 19,
       "excerpt": "hsl(140, 22%, 38%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 119,
+      "line": 129,
       "column": 19,
       "excerpt": "hsl(140, 28%, 42%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 120,
+      "line": 130,
       "column": 19,
       "excerpt": "hsl(32, 58%, 40%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 121,
+      "line": 131,
       "column": 19,
       "excerpt": "hsl(16, 55%, 40%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 122,
+      "line": 132,
       "column": 19,
       "excerpt": "hsl(16, 62%, 32%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 123,
+      "line": 133,
       "column": 28,
       "excerpt": "hsl(38, 18%, 55%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 142,
+      "line": 152,
       "column": 26,
       "excerpt": "hsl(16, 55%, 50%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 159,
-      "column": 14,
+      "line": 172,
+      "column": 16,
       "excerpt": "hsl(42, 18%, 88%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 160,
-      "column": 56,
+      "line": 173,
+      "column": 58,
       "excerpt": "hsl(140, 22%, 42%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 161,
-      "column": 56,
+      "line": 174,
+      "column": 58,
       "excerpt": "hsl(140, 28%, 58%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 162,
-      "column": 56,
+      "line": 175,
+      "column": 58,
       "excerpt": "hsl(44, 16%, 92%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 163,
-      "column": 56,
+      "line": 176,
+      "column": 58,
       "excerpt": "hsl(16, 55%, 66%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 164,
-      "column": 14,
+      "line": 177,
+      "column": 16,
       "excerpt": "hsl(16, 62%, 48%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 167,
+      "line": 186,
       "column": 34,
       "excerpt": "hsla(30, 20%, 25%, 0.25)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 179,
+      "line": 198,
       "column": 26,
       "excerpt": "hsl(32, 90%, 45%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 343,
+      "line": 381,
       "column": 50,
       "excerpt": "hsl(32, 90%, 50%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 344,
+      "line": 382,
       "column": 14,
       "excerpt": "hsla(42, 18%, 88%, 0.2)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 357,
+      "line": 395,
       "column": 14,
       "excerpt": "hsl(210, 70%, 55%)',   // pre-cut: blue"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 358,
+      "line": 396,
       "column": 14,
       "excerpt": "hsl(16, 62%, 52%)',    // post-cut: terracotta"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 371,
+      "line": 409,
       "column": 46,
       "excerpt": "hsl(42, 18%, 88%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 372,
+      "line": 410,
       "column": 51,
       "excerpt": "hsl(16, 62%, 52%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 373,
+      "line": 411,
       "column": 14,
       "excerpt": "hsl(140, 22%, 42%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 391,
+      "line": 429,
       "column": 46,
       "excerpt": "hsl(42, 18%, 88%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 392,
+      "line": 430,
       "column": 56,
       "excerpt": "hsl(140, 22%, 42%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 393,
+      "line": 431,
       "column": 56,
       "excerpt": "hsl(140, 28%, 58%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 394,
+      "line": 432,
       "column": 56,
       "excerpt": "hsl(44, 16%, 92%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 395,
+      "line": 433,
       "column": 56,
       "excerpt": "hsl(16, 55%, 66%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\geo\\v2\\GeoForgeV2Map.tsx",
-      "line": 396,
+      "line": 434,
       "column": 14,
       "excerpt": "hsl(16, 62%, 48%)',"
     },
@@ -9794,56 +9808,63 @@
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 267,
+      "line": 393,
       "column": 64,
       "excerpt": "#128339;</span>} title=\"Recent Parcels\" />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 271,
+      "line": 397,
       "column": 45,
       "excerpt": "#127970;</span>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 284,
+      "line": 410,
       "column": 54,
       "excerpt": "#127970;</span>}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 300,
+      "line": 426,
       "column": 52,
       "excerpt": "#127970;</span>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 408,
+      "line": 535,
+      "column": 66,
+      "excerpt": "#128203;</span>} title=\"County Studio Context\" />"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
+      "line": 559,
       "column": 64,
       "excerpt": "#9889;</span>} title=\"Quick Actions\" />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 411,
+      "line": 562,
       "column": 48,
       "excerpt": "#128269;</span>}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 418,
+      "line": 569,
       "column": 50,
       "excerpt": "#9654;</span>}"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 348,
+      "line": 474,
       "column": 44,
       "excerpt": "hsl(0 0% 0% / 0.3)',"
     },
@@ -9955,77 +9976,77 @@
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\SalesComparison.tsx",
-      "line": 128,
+      "line": 145,
       "column": 17,
       "excerpt": "#127968;&#65039; Sales Comparison Summary\""
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\SalesComparison.tsx",
-      "line": 128,
+      "line": 145,
       "column": 26,
       "excerpt": "#65039; Sales Comparison Summary\""
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\SalesComparison.tsx",
-      "line": 442,
+      "line": 459,
       "column": 26,
       "excerpt": "#127960; Sales Comps Rationale\" variant=\"default\">"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\SalesComparison.tsx",
-      "line": 204,
+      "line": 221,
       "column": 119,
       "excerpt": "hsl(0 84% 60%)' : salesAPI.data.salesRatioMedian > 1.05 || salesAPI.data.salesRatioMedian < 0.95 ? 'hsl(38 92% 50%)' : undefined }}"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\SalesComparison.tsx",
-      "line": 204,
+      "line": 221,
       "column": 219,
       "excerpt": "hsl(38 92% 50%)' : undefined }}"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\SalesComparison.tsx",
-      "line": 212,
+      "line": 229,
       "column": 83,
       "excerpt": "hsl(0 84% 60%)' : salesAPI.data.coefficientOfDispersion > 15 ? 'hsl(38 92% 50%)' : undefined }}"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\SalesComparison.tsx",
-      "line": 212,
+      "line": 229,
       "column": 147,
       "excerpt": "hsl(38 92% 50%)' : undefined }}"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\SalesComparison.tsx",
-      "line": 220,
+      "line": 237,
       "column": 183,
       "excerpt": "hsl(0 84% 60%)' : salesAPI.data.priceRelatedDifferential > 1.03 || (salesAPI.data.priceRelatedDifferential > 0 && salesAPI.data.priceRelated"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\SalesComparison.tsx",
-      "line": 220,
+      "line": 237,
       "column": 347,
       "excerpt": "hsl(38 92% 50%)' : undefined }}"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\SalesComparison.tsx",
-      "line": 284,
+      "line": 301,
       "column": 93,
       "excerpt": "hsl(0 84% 60%)' : c.salesRatio < 0.80 || c.salesRatio > 1.20 ? 'hsl(38 92% 50%)' : undefined }}>Ratio: {c.salesRatio.toFixed(3)}{(c.salesRat"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\SalesComparison.tsx",
-      "line": 284,
+      "line": 301,
       "column": 157,
       "excerpt": "hsl(38 92% 50%)' : undefined }}>Ratio: {c.salesRatio.toFixed(3)}{(c.salesRatio < 0.80 || c.salesRatio > 1.20) ? ' ⚠' : ''}</span>"
     },
@@ -11043,42 +11064,7 @@
       "line": 3686,
       "column": 15,
       "excerpt": "hsl(150 50% 50%); /* tf-allow-raw-color */"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-tokens.css",
-      "line": 329,
-      "column": 28,
-      "excerpt": "hsl(16 28% 28% / 0.10); /* terracotta shadow                */"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-tokens.css",
-      "line": 430,
-      "column": 15,
-      "excerpt": "hsl(220 18% 16% / 0.72);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-tokens.css",
-      "line": 431,
-      "column": 21,
-      "excerpt": "hsl(220 18% 16% / 0.45);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-tokens.css",
-      "line": 432,
-      "column": 21,
-      "excerpt": "hsl(220 18% 16% / 0.88);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-tokens.css",
-      "line": 433,
-      "column": 19,
-      "excerpt": "hsl(220 24% 35% / 0.45);"
     }
   ],
-  "generatedAtIso": "2026-04-26T18:20:17.974Z"
+  "generatedAtIso": "2026-05-05T16:59:03.981Z"
 }
