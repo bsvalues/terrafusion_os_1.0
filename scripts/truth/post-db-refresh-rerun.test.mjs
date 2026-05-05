@@ -557,6 +557,55 @@ test('fails when a proof command writes false explicit passed-derived fields', (
   );
 });
 
+test('fails when a proof command writes nested expected-match proof fields as false', () => {
+  const root = makeTempRepo('tf-post-db-refresh-expected-match-false-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'Expected match artifact writer command',
+          command: process.execPath,
+          args: [
+            '-e',
+            [
+              "const fs = require('fs');",
+              "fs.mkdirSync('generated/truth', { recursive: true });",
+              "fs.writeFileSync('generated/truth/expected-match-false.json', JSON.stringify({ passed: true, identity: { isExpectedJune10RuntimeDb: false, isBentonParcelCountExpected: false }, content: { bentonDecision: { propertyRowsMatchExpected: false, distinctParcelIdsMatchExpected: false } }, configExpectationSources: [{ matchesRuntimeExpectation: false }] }) + '\\n');",
+            ].join(' '),
+          ],
+          expectedArtifacts: ['generated/truth/expected-match-false.json'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'FAIL');
+  assert.deepEqual(report.results[0].artifactOutputs[0].artifactFailureReasons, [
+    'artifact.identity.isExpectedJune10RuntimeDb is false',
+    'artifact.identity.isBentonParcelCountExpected is false',
+    'artifact.content.bentonDecision.propertyRowsMatchExpected is false',
+    'artifact.content.bentonDecision.distinctParcelIdsMatchExpected is false',
+    'artifact.configExpectationSources.[].matchesRuntimeExpectation is false',
+  ]);
+  assert.ok(
+    report.blockers.some(item =>
+      item.includes('artifact.content.bentonDecision.propertyRowsMatchExpected is false')
+    )
+  );
+  assert.ok(
+    report.blockers.some(item =>
+      item.includes('artifact.configExpectationSources.[].matchesRuntimeExpectation is false')
+    )
+  );
+});
+
 test('fails when a proof command writes a malformed expected JSON artifact', () => {
   const root = makeTempRepo('tf-post-db-refresh-artifact-malformed-');
   const result = spawnSync('node', [scriptPath, root], {

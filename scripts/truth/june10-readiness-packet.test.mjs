@@ -433,6 +433,53 @@ test('readiness packet blocks false explicit passed-derived fields', () => {
   );
 });
 
+test('readiness packet blocks nested expected-match proof fields as false', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-content-audit.json', {
+    endpointStatus: 200,
+    passed: true,
+    identity: {
+      isExpectedJune10RuntimeDb: false,
+      isBentonParcelCountExpected: false,
+    },
+    content: {
+      bentonDecision: {
+        propertyRowsMatchExpected: false,
+        distinctParcelIdsMatchExpected: false,
+      },
+    },
+    configExpectationSources: [{ matchesRuntimeExpectation: false }],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.shipBlockers.some(
+      item =>
+        item.source === 'dbContent' &&
+        item.message.includes('artifact.identity.isExpectedJune10RuntimeDb is false')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('artifact.content.bentonDecision.propertyRowsMatchExpected is false')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('artifact.configExpectationSources.[].matchesRuntimeExpectation is false')
+    )
+  );
+});
+
 test('readiness packet blocks required artifacts whose JSON root is not an object', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-candidate-set.json', []);

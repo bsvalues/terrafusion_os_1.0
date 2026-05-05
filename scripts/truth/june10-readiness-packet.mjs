@@ -521,6 +521,7 @@ function artifactFailurePostures(value) {
   return [
     artifactFailurePosture(value),
     ...booleanFailurePostures(value, 'artifact'),
+    ...expectedMatchFailurePostures(value, 'artifact'),
     ...collectionFailurePostures(value, 'artifact'),
     ...summaryFailurePostures(value?.summary),
     ...receiptEvidenceFailurePostures(value?.receiptEvidence),
@@ -574,6 +575,32 @@ function booleanFailurePostures(value, label) {
     }
   }
   return postures;
+}
+
+function expectedMatchFailurePostures(value, label, pathParts = []) {
+  if (!value || typeof value !== 'object') return [];
+  if (Array.isArray(value)) {
+    return value.flatMap(item => expectedMatchFailurePostures(item, label, [...pathParts, '[]']));
+  }
+
+  const postures = [];
+  for (const [key, fieldValue] of Object.entries(value)) {
+    const fieldPath = [...pathParts, key];
+    if (isExpectedMatchProofField(key) && fieldValue === false) {
+      postures.push(`${label}.${fieldPath.join('.')} is false`);
+    }
+    postures.push(...expectedMatchFailurePostures(fieldValue, label, fieldPath));
+  }
+  return postures;
+}
+
+function isExpectedMatchProofField(key) {
+  return (
+    key.endsWith('MatchExpected') ||
+    key === 'isExpectedJune10RuntimeDb' ||
+    key === 'isBentonParcelCountExpected' ||
+    key === 'matchesRuntimeExpectation'
+  );
 }
 
 function collectionFailurePostures(value, label) {

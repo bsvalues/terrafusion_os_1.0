@@ -246,6 +246,7 @@ function artifactFailureReason(artifact) {
 function nestedArtifactFailureReasons(value) {
   return [
     ...booleanFailureReasons(value, 'artifact'),
+    ...expectedMatchFailureReasons(value, 'artifact'),
     ...collectionFailureReasons(value, 'artifact'),
     ...summaryFailureReasons(value?.summary),
     ...receiptEvidenceFailureReasons(value?.receiptEvidence),
@@ -299,6 +300,32 @@ function booleanFailureReasons(value, label) {
     }
   }
   return reasons;
+}
+
+function expectedMatchFailureReasons(value, label, pathParts = []) {
+  if (!value || typeof value !== 'object') return [];
+  if (Array.isArray(value)) {
+    return value.flatMap(item => expectedMatchFailureReasons(item, label, [...pathParts, '[]']));
+  }
+
+  const reasons = [];
+  for (const [key, fieldValue] of Object.entries(value)) {
+    const fieldPath = [...pathParts, key];
+    if (isExpectedMatchProofField(key) && fieldValue === false) {
+      reasons.push(`${label}.${fieldPath.join('.')} is false`);
+    }
+    reasons.push(...expectedMatchFailureReasons(fieldValue, label, fieldPath));
+  }
+  return reasons;
+}
+
+function isExpectedMatchProofField(key) {
+  return (
+    key.endsWith('MatchExpected') ||
+    key === 'isExpectedJune10RuntimeDb' ||
+    key === 'isBentonParcelCountExpected' ||
+    key === 'matchesRuntimeExpectation'
+  );
 }
 
 function collectionFailureReasons(value, label) {
