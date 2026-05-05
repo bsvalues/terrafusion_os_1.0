@@ -524,6 +524,7 @@ function artifactFailurePostures(value) {
   return [
     artifactFailurePosture(value),
     ...booleanFailurePostures(value, 'artifact'),
+    ...nestedPassedFailurePostures(value, 'artifact'),
     ...expectedMatchFailurePostures(value, 'artifact'),
     ...nestedStatusFailurePostures(value, 'artifact'),
     ...explicitStatusFailurePostures(value, 'artifact'),
@@ -598,6 +599,27 @@ function expectedMatchFailurePostures(value, label, pathParts = []) {
       postures.push(`${label}.${fieldPath.join('.')} is false`);
     }
     postures.push(...expectedMatchFailurePostures(fieldValue, label, fieldPath));
+  }
+  return postures;
+}
+
+function nestedPassedFailurePostures(value, label, pathParts = []) {
+  if (!value || typeof value !== 'object') return [];
+  if (Array.isArray(value)) {
+    return value.flatMap(item => nestedPassedFailurePostures(item, label, [...pathParts, '[]']));
+  }
+
+  const postures = [];
+  for (const [key, fieldValue] of Object.entries(value)) {
+    const fieldPath = [...pathParts, key];
+    if (normalizeProofFieldKey(key) === 'passed' && !isKnownPassedFieldPath(fieldPath)) {
+      if (isFalseLike(fieldValue)) {
+        postures.push(`${label}.${fieldPath.join('.')} is false`);
+      } else if (typeof fieldValue !== 'boolean') {
+        postures.push(`${label}.${fieldPath.join('.')} is not boolean`);
+      }
+    }
+    postures.push(...nestedPassedFailurePostures(fieldValue, label, fieldPath));
   }
   return postures;
 }
@@ -685,6 +707,32 @@ function isKnownStatusFieldPath(pathParts) {
     'receiptEvidence.rows.[].summary.status',
     'receiptEvidence.proofs.[].status',
     'receiptEvidence.proofs.[].summary.status',
+  ]).has(pathKey);
+}
+
+function isKnownPassedFieldPath(pathParts) {
+  if (
+    pathParts.length >= 2 &&
+    normalizeProofFieldKey(pathParts.at(-2)) === 'summary' &&
+    normalizeProofFieldKey(pathParts.at(-1)) === 'passed'
+  ) {
+    return true;
+  }
+
+  const pathKey = pathParts.join('.');
+  return new Set([
+    'passed',
+    'summary.passed',
+    'receiptEvidence.passed',
+    'receiptEvidence.summary.passed',
+    'rows.[].passed',
+    'rows.[].summary.passed',
+    'proofs.[].passed',
+    'proofs.[].summary.passed',
+    'receiptEvidence.rows.[].passed',
+    'receiptEvidence.rows.[].summary.passed',
+    'receiptEvidence.proofs.[].passed',
+    'receiptEvidence.proofs.[].summary.passed',
   ]).has(pathKey);
 }
 
