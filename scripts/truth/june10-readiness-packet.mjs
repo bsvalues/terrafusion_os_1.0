@@ -933,6 +933,7 @@ function collectionFailureFields(value, { includeBlockers = false } = {}) {
   const normalizedOrder = includeBlockers
     ? ['blocker', 'blockers', 'shipblockers', 'error', 'errors', 'failure', 'failures']
     : ['shipblockers', 'error', 'errors', 'failure', 'failures'];
+  normalizedOrder.push('violation', 'violations');
 
   return orderedNormalizedFields(value, normalizedOrder);
 }
@@ -943,6 +944,10 @@ function collectionFailureCountFields(value) {
     'failurecount',
     'errorcount',
     'blockercount',
+    'violationcount',
+    'fallbackviolations',
+    'productlegacyviolations',
+    'frontendlegacyviolations',
     'artifactfailures',
     'commandsfailed',
   ]);

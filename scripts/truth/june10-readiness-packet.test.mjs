@@ -1776,6 +1776,63 @@ test('readiness packet blocks variant blocker and failure collection fields', ()
   );
 });
 
+test('readiness packet blocks violation collections and counts', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-identity.json', {
+    endpointStatus: 200,
+    passed: true,
+    violations: ['Direct product runtime violation.'],
+    productLegacyViolations: 2,
+    summary: {
+      fallbackViolations: 3,
+      frontendLegacyViolations: 4,
+    },
+    rows: [{ county: 'Benton', violations: ['Row violation.'] }],
+    proofs: [{ county: 'Benton', violationCount: 5 }],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.shipBlockers.some(
+      item => item.source === 'dbIdentity' && item.message.includes('artifact.violations has 1')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('artifact.productLegacyViolations is 2')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('summary.fallbackViolations is 3')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('summary.frontendLegacyViolations is 4')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('Benton row.violations has 1 item(s)')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbIdentity.blockers.items.some(item =>
+      item.includes('Benton proof.violationCount is 5')
+    )
+  );
+});
+
 test('readiness packet surfaces warning-only proof artifacts', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-sale-qualification-lineage-proof.json', {

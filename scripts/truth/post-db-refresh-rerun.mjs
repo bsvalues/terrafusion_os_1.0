@@ -561,6 +561,8 @@ function collectionFailureFields(value) {
     'errors',
     'failure',
     'failures',
+    'violation',
+    'violations',
   ]);
 }
 
@@ -570,6 +572,10 @@ function collectionFailureCountFields(value) {
     'failurecount',
     'errorcount',
     'blockercount',
+    'violationcount',
+    'fallbackviolations',
+    'productlegacyviolations',
+    'frontendlegacyviolations',
     'artifactfailures',
     'commandsfailed',
   ]);
