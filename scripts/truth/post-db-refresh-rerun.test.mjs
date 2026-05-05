@@ -553,6 +553,46 @@ test('fails when a proof command writes string false proof posture fields', () =
   assert.ok(report.blockers.some(item => item.includes('top-level passed is false')));
 });
 
+test('fails when a proof command writes numeric zero proof posture fields', () => {
+  const root = makeTempRepo('tf-post-db-refresh-zero-false-fail-');
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: {
+      ...process.env,
+      TF_POST_DB_REFRESH_SKIP_PREFLIGHT: '1',
+      TF_POST_DB_REFRESH_COMMANDS_JSON: JSON.stringify([
+        {
+          name: 'Numeric zero artifact writer command',
+          command: process.execPath,
+          args: [
+            '-e',
+            [
+              "const fs = require('fs');",
+              "fs.mkdirSync('generated/truth', { recursive: true });",
+              "fs.writeFileSync('generated/truth/zero-false-fail.json', JSON.stringify({ passed: 0, summary: { ok: 0, dbIdentityPassed: '0' }, rows: [{ county: 'Benton', passed: 0 }], checks: [{ propertyRowsMatchExpected: 0 }] }) + '\\n');",
+            ].join(' '),
+          ],
+          expectedArtifacts: ['generated/truth/zero-false-fail.json'],
+        },
+      ]),
+    },
+  });
+
+  assert.notEqual(result.status, 0);
+  const report = readReport(root);
+  assert.equal(report.status, 'FAIL');
+  assert.equal(report.results[0].artifactOutputs[0].artifactPassed, 0);
+  assert.deepEqual(report.results[0].artifactOutputs[0].artifactFailureReasons, [
+    'artifact.checks.[].propertyRowsMatchExpected is false',
+    'summary.ok is false',
+    'summary.dbIdentityPassed is false',
+    'Benton row passed is false',
+  ]);
+  assert.ok(report.blockers.some(item => item.includes('top-level passed is false')));
+});
+
 test('fails when a proof command writes false explicit passed-derived fields', () => {
   const root = makeTempRepo('tf-post-db-refresh-artifact-derived-passed-false-');
   const result = spawnSync('node', [scriptPath, root], {

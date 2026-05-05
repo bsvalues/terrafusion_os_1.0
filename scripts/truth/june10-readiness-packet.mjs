@@ -648,7 +648,11 @@ function isExplicitFailingStatus(value) {
 }
 
 function isFalseLike(value) {
-  return value === false || (typeof value === 'string' && value.trim().toLowerCase() === 'false');
+  return (
+    value === false ||
+    value === 0 ||
+    (typeof value === 'string' && ['false', '0'].includes(value.trim().toLowerCase()))
+  );
 }
 
 function isKnownStatusFieldPath(pathParts) {

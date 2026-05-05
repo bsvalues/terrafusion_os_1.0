@@ -208,7 +208,9 @@ function inspectJsonArtifactPosture(filePath) {
     return {
       status: typeof parsed?.status === 'string' ? parsed.status : null,
       passed:
-        typeof parsed?.passed === 'boolean' || typeof parsed?.passed === 'string'
+        typeof parsed?.passed === 'boolean' ||
+        typeof parsed?.passed === 'string' ||
+        typeof parsed?.passed === 'number'
           ? parsed.passed
           : null,
       warningCount: countArtifactWarnings(parsed),
@@ -376,7 +378,11 @@ function isExplicitFailingStatus(value) {
 }
 
 function isFalseLike(value) {
-  return value === false || (typeof value === 'string' && value.trim().toLowerCase() === 'false');
+  return (
+    value === false ||
+    value === 0 ||
+    (typeof value === 'string' && ['false', '0'].includes(value.trim().toLowerCase()))
+  );
 }
 
 function isKnownStatusFieldPath(pathParts) {

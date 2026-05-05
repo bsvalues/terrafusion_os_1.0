@@ -430,6 +430,51 @@ test('readiness packet blocks string false proof posture fields', () => {
   );
 });
 
+test('readiness packet blocks numeric zero proof posture fields', () => {
+  const root = makeRepo({ passing: true });
+  writeJson(root, 'generated/truth/runtime-db-content-audit.json', {
+    endpointStatus: 200,
+    passed: 0,
+    summary: {
+      ok: 0,
+      dbIdentityPassed: '0',
+    },
+    rows: [{ county: 'Benton', passed: 0 }],
+    checks: [{ propertyRowsMatchExpected: 0 }],
+  });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 1);
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/june10-readiness-packet.json'), 'utf8')
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.ok(
+    report.shipBlockers.some(
+      item => item.source === 'dbContent' && item.message.includes('top-level passed is false')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('summary.ok is false')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('summary.dbIdentityPassed is false')
+    )
+  );
+  assert.ok(
+    report.artifactDetails.dbContent.blockers.items.some(item =>
+      item.includes('artifact.checks.[].propertyRowsMatchExpected is false')
+    )
+  );
+});
+
 test('readiness packet blocks false explicit passed-derived fields', () => {
   const root = makeRepo({ passing: true });
   writeJson(root, 'generated/truth/runtime-db-identity.json', {
