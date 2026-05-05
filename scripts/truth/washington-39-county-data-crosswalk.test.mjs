@@ -99,6 +99,15 @@ function makeRepo() {
     })
   );
 
+  fs.writeFileSync(
+    path.join(root, 'generated/truth/terrafusion-db-product-load-ledger.json'),
+    JSON.stringify({
+      summary: {
+        lineageProven: 3,
+      },
+    })
+  );
+
   return root;
 }
 
@@ -119,8 +128,35 @@ test('crosswalk emits all 39 counties and keeps runtime proof separate from regi
 
   assert.equal(report.rows.length, 39);
   assert.equal(benton.classification, 'runtime_proven');
+  assert.equal(benton.activationStatus, 'runtime_proven');
+  assert.equal(benton.activationNextAction, 'keep_runtime_candidate');
   assert.equal(kitsap.classification, 'public_source_seed');
+  assert.equal(kitsap.activationStatus, 'seed_data_needs_adapter_or_db_load');
+  assert.equal(kitsap.activationOwner, 'Claude Code');
   assert.equal(whitman.classification, 'provenance_inventory_only');
+  assert.equal(whitman.activationStatus, 'needs_source_decision');
   assert.ok(whitman.blockers.includes('Registry status is not-started.'));
+  assert.equal(report.summary.byActivationStatus.runtime_proven, 1);
+  assert.equal(report.summary.activationNeedsSourceDecision, 2);
   assert.equal(report.summary.prohibit39CountyRuntimeClaim, true);
+});
+
+test('crosswalk downgrades endpoint-proven rows without product-load receipts', () => {
+  const root = makeRepo();
+  fs.rmSync(path.join(root, 'generated/truth/terrafusion-db-product-load-ledger.json'));
+
+  execFileSync('node', [scriptPath, root], { cwd: process.cwd(), stdio: 'pipe' });
+
+  const report = JSON.parse(
+    fs.readFileSync(
+      path.join(root, 'generated/truth/washington-39-county-data-crosswalk.json'),
+      'utf8'
+    )
+  );
+  const benton = report.rows.find(row => row.county === 'Benton');
+
+  assert.equal(benton.classification, 'runtime_unproven');
+  assert.equal(benton.activationStatus, 'loaded_needs_runtime_contract');
+  assert.equal(report.summary.runtimeProven, 0);
+  assert.equal(report.summary.runtimeUnproven, 1);
 });

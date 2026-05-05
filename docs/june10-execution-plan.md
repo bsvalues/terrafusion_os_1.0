@@ -131,7 +131,7 @@ Status values:
 | DONE | No 39-county runtime claim unless every county has TerraFusion DB runtime proof. | Codex | `generated/truth/runtime-candidate-set.*`, `generated/truth/washington-39-county-data-crosswalk.*` |
 | ACTIVE | Keep readiness work in the June 10 Codex worktree, separate from Claude Sync/DB work. | Codex | `git status --short --branch` before edits. |
 | ACTIVE | Do not duplicate existing ledgers. Extend existing truth gates only when they are missing a required decision. | Codex | Existing script/artifact checked before creating new script. |
-| ACTIVE | Do not commit generated truth artifacts until governance path for generated outputs is settled. | Codex | PR checks / repo-shape gate. |
+| BLOCKED | Settle generated truth artifact governance before committing refreshed `generated/truth/**` outputs. | Codex | PR checks / repo-shape gate. |
 
 ### Track A - TerraFusion DB / Sync Closure
 
@@ -148,7 +148,7 @@ Status values:
 | DONE | Create 39-county evidence crosswalk. | Codex | `scripts/truth/washington-39-county-data-crosswalk.mjs` and test exist. | Do not rebuild as a duplicate ledger. |
 | DONE | Generate current 39-county crosswalk artifact. | Codex | `generated/truth/washington-39-county-data-crosswalk.json/.md` | Current result: `0` runtime-proven; 12 public-source seed; 27 provenance inventory only. |
 | NEXT | Re-run crosswalk after Claude DB work lands. | Codex | `pnpm run truth:washington-39-county-data-crosswalk` | Only promote counties with TerraFusion DB runtime proof and receipts. |
-| NEXT | Add per-county activation status if not already represented clearly enough. | Codex | Crosswalk rows show blocker and next action per county. | Use existing crosswalk, not a second ledger. |
+| DONE | Add per-county activation status, next action, and owner inside the existing crosswalk. | Codex | `node --test scripts/truth/washington-39-county-data-crosswalk.test.mjs` | Use existing crosswalk, not a second ledger. |
 
 ### Track C - County-Neutral Runtime Contract
 
@@ -156,8 +156,8 @@ Status values:
 |---|---|---|---|---|
 | DONE | Runtime candidate set blocks 39-county claim. | Codex | `pnpm run truth:runtime-candidate-set` | Current scope is not a 39-county runtime claim. |
 | DONE | County runtime contract gate exists. | Codex | `scripts/truth/county-runtime-contract.mjs` and test exist. | Validate current behavior before extending. |
-| NEXT | Verify contract is county-neutral and not Benton-special. | Codex | Contract test includes at least one non-Benton fixture/case. | No county name hardcoding for promotion. |
-| NEXT | Ensure contract requires TerraFusion DB load receipt, county identity echo, active/current semantics, no fallback, and product API consumption. | Codex | `pnpm run truth:county-runtime-contract` | This becomes promotion law for all counties. |
+| DONE | Verify contract is county-neutral and not Benton-special. | Codex | Contract test includes non-Benton runtime-proven fixture/case. | No county name hardcoding for promotion. |
+| DONE | Ensure contract requires TerraFusion DB load receipt, county identity echo, active/current semantics, no fallback, and product API consumption. | Codex | `node --test scripts/truth/county-runtime-contract.test.mjs` | This becomes promotion law for all counties; live gate remains red until DB proofs exist. |
 
 ### Track D - Benton Runtime Pilot Closure
 
@@ -187,9 +187,7 @@ Status values:
 
 Do these in order, unless Claude's DB work lands and changes the blockers:
 
-1. `ACTIVE`: Audit PR/worktree hygiene for June 10 readiness lane and decide how generated truth artifacts are handled.
-2. `NEXT`: Validate the existing 39-county crosswalk and add missing activation status only inside that existing gate.
-3. `NEXT`: Validate county runtime contract is county-neutral and promotion-safe.
-4. `WAITING`: After Claude DB work lands, rerun DB identity/content/load-ledger/parcel sanity/sales qualification gates.
-5. `WAITING`: Rerun 39-county crosswalk and runtime contract against the updated TerraFusion DB.
-6. `WAITING`: Run Benton UAT only after data gates are green.
+1. `BLOCKED`: Decide whether generated truth artifacts remain committed under root `generated/truth/**` or move to an approved evidence-artifact path.
+2. `WAITING`: After Claude DB work lands, rerun DB identity/content/load-ledger/parcel sanity/sales qualification gates.
+3. `WAITING`: Rerun 39-county crosswalk and runtime contract against the updated TerraFusion DB.
+4. `WAITING`: Run Benton UAT only after data gates are green.

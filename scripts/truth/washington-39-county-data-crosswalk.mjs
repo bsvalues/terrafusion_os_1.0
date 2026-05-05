@@ -311,7 +311,7 @@ function runtimeInfo(county, runtimeLedger, candidateSet) {
   };
 }
 
-function classifyCounty({ registry, assets, runtime }) {
+function classifyCounty({ assets, runtime, productLoadReceiptsProven }) {
   const hasRuntimeRows = Number(runtime.runtimeRows) > 0;
   const hasRuntimeProven = runtime.runtimeClass === 'runtime_proven';
   const hasPayload = assets.some(asset => asset.categories.includes('public_payload'));
@@ -320,10 +320,63 @@ function classifyCounty({ registry, assets, runtime }) {
   const demoOnly =
     assets.length > 0 && assets.every(asset => asset.categories.includes('demo_or_sample'));
 
-  if (hasRuntimeProven && hasRuntimeRows) return 'runtime_proven';
+  if (hasRuntimeProven && hasRuntimeRows && productLoadReceiptsProven) return 'runtime_proven';
   if (hasRuntimeRows || runtime.runtimeClass === 'registered_empty') return 'runtime_unproven';
   if ((hasPayload || hasLocalData || hasAdapter) && !demoOnly) return 'public_source_seed';
   return 'provenance_inventory_only';
+}
+
+function activationPosture({ registry, assets, runtime, classification, rowEstimate }) {
+  const hasPayload = assets.some(asset => asset.categories.includes('public_payload'));
+  const hasLocalData = assets.some(asset => asset.categories.includes('local_data'));
+  const hasAdapter = assets.some(asset => asset.categories.includes('scraper_or_adapter'));
+  const hasRuntimeRows = Number(runtime.runtimeRows) > 0;
+
+  if (classification === 'runtime_proven') {
+    return {
+      activationStatus: 'runtime_proven',
+      activationNextAction: 'keep_runtime_candidate',
+      activationOwner: 'Codex',
+    };
+  }
+
+  if (hasRuntimeRows || runtime.runtimeClass === 'registered_empty') {
+    return {
+      activationStatus: 'loaded_needs_runtime_contract',
+      activationNextAction: 'prove_county_identity_receipts_and_semantics',
+      activationOwner: 'Codex',
+    };
+  }
+
+  if (hasAdapter) {
+    return {
+      activationStatus: 'adapter_ready_needs_terrafusion_db_load',
+      activationNextAction: 'run_sync_load_and_emit_product_receipt',
+      activationOwner: 'Claude Code',
+    };
+  }
+
+  if (hasPayload || hasLocalData || rowEstimate > 0) {
+    return {
+      activationStatus: 'seed_data_needs_adapter_or_db_load',
+      activationNextAction: 'decide_load_path_and_product_receipt_contract',
+      activationOwner: 'Claude Code',
+    };
+  }
+
+  if (registry.status === 'not-started' || registry.acquisitionFamily === 'Unknown') {
+    return {
+      activationStatus: 'needs_source_decision',
+      activationNextAction: 'identify_public_source_and_acquisition_family',
+      activationOwner: 'Codex',
+    };
+  }
+
+  return {
+    activationStatus: 'provenance_only_needs_data_acquisition',
+    activationNextAction: 'acquire_or_verify_county_public_data_source',
+    activationOwner: 'Codex',
+  };
 }
 
 function buildRows() {
@@ -343,11 +396,19 @@ function buildRows() {
     const inventoryRow = inventoryRows.get(county) ?? {};
     const assets = byCounty.get(county) ?? [];
     const runtime = runtimeInfo(county, runtimeLedger, candidateSet);
+    const productLoadReceiptsProven = Number(productLoadLedger?.summary?.lineageProven ?? 0) > 0;
     const rowEstimate = assets.reduce(
       (sum, asset) => sum + (Number.isFinite(asset.rowEstimate) ? asset.rowEstimate : 0),
       0
     );
-    const classification = classifyCounty({ registry, assets, runtime });
+    const classification = classifyCounty({ assets, runtime, productLoadReceiptsProven });
+    const activation = activationPosture({
+      registry,
+      assets,
+      runtime,
+      classification,
+      rowEstimate,
+    });
     const blockers = [];
 
     if (registry.status === 'not-started') blockers.push('Registry status is not-started.');
@@ -396,6 +457,7 @@ function buildRows() {
       runtimeRows: runtime.runtimeRows,
       runtimeAction: runtime.runtimeAction,
       classification,
+      ...activation,
       blockers: [...new Set(blockers)],
     };
   });
@@ -410,10 +472,16 @@ function summarize(rows) {
     byRegistryStatus[row.registryStatus] = (byRegistryStatus[row.registryStatus] ?? 0) + 1;
   }
 
+  const byActivationStatus = {};
+  for (const row of rows) {
+    byActivationStatus[row.activationStatus] = (byActivationStatus[row.activationStatus] ?? 0) + 1;
+  }
+
   return {
     countiesChecked: rows.length,
     byClassification,
     byRegistryStatus,
+    byActivationStatus,
     runtimeProven: rows.filter(row => row.classification === 'runtime_proven').length,
     publicSourceSeed: rows.filter(row => row.classification === 'public_source_seed').length,
     runtimeUnproven: rows.filter(row => row.classification === 'runtime_unproven').length,
@@ -422,6 +490,15 @@ function summarize(rows) {
     countiesWithPayloadFiles: rows.filter(row => row.payloadFiles.length > 0).length,
     countiesWithLocalDataFiles: rows.filter(row => row.localDataFiles.length > 0).length,
     countiesWithAdapterEvidence: rows.filter(row => row.adapterEvidenceFiles.length > 0).length,
+    activationReadyForSyncLoad: rows.filter(
+      row => row.activationStatus === 'adapter_ready_needs_terrafusion_db_load'
+    ).length,
+    activationNeedsSourceDecision: rows.filter(
+      row => row.activationStatus === 'needs_source_decision'
+    ).length,
+    activationNeedsDataAcquisition: rows.filter(
+      row => row.activationStatus === 'provenance_only_needs_data_acquisition'
+    ).length,
     prohibit39CountyRuntimeClaim: rows.some(row => row.classification !== 'runtime_proven'),
   };
 }
@@ -439,6 +516,9 @@ function renderMd(rows, summary) {
       String(row.rowEstimate),
       row.runtimeClass,
       String(row.runtimeRows),
+      row.activationStatus,
+      row.activationNextAction,
+      row.activationOwner,
       row.classification,
       blockers,
     ].join(' | ');
@@ -461,12 +541,15 @@ function renderMd(rows, summary) {
     `- Counties with payload files: ${summary.countiesWithPayloadFiles}`,
     `- Counties with local data files: ${summary.countiesWithLocalDataFiles}`,
     `- Counties with adapter evidence: ${summary.countiesWithAdapterEvidence}`,
+    `- Adapter-ready for TerraFusion DB load: ${summary.activationReadyForSyncLoad}`,
+    `- Needs source decision: ${summary.activationNeedsSourceDecision}`,
+    `- Needs data acquisition: ${summary.activationNeedsDataAcquisition}`,
     `- Prohibit 39-county runtime claim: ${summary.prohibit39CountyRuntimeClaim}`,
     '',
     '## County Matrix',
     '',
-    '| County | Registry | Family | Payload Files | Local Files | Adapter Files | Row Estimate | Runtime Class | Runtime Rows | Classification | Blockers |',
-    '|---|---|---|---:|---:|---:|---:|---|---:|---|---|',
+    '| County | Registry | Family | Payload Files | Local Files | Adapter Files | Row Estimate | Runtime Class | Runtime Rows | Activation Status | Next Action | Owner | Classification | Blockers |',
+    '|---|---|---|---:|---:|---:|---:|---|---:|---|---|---|---|---|',
     ...table,
     '',
     '## Rule',

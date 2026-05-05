@@ -15,7 +15,7 @@ function writeJson(root, relativePath, value) {
   fs.writeFileSync(fullPath, `${JSON.stringify(value, null, 2)}\n`);
 }
 
-function makeRepo({ runtimeProven = true } = {}) {
+function makeRepo({ runtimeProven = true, yakimaRuntimeProven = false } = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'tf-county-contract-'));
   const truthDir = 'generated/truth';
 
@@ -31,9 +31,9 @@ function makeRepo({ runtimeProven = true } = {}) {
       {
         county: 'Yakima',
         registryStatus: 'adapter-ready',
-        classification: 'provenance_inventory_only',
-        runtimeClass: 'unknown',
-        runtimeRows: 0,
+        classification: yakimaRuntimeProven ? 'runtime_proven' : 'provenance_inventory_only',
+        runtimeClass: yakimaRuntimeProven ? 'runtime_proven' : 'unknown',
+        runtimeRows: yakimaRuntimeProven ? 22 : 0,
       },
     ],
   });
@@ -47,6 +47,18 @@ function makeRepo({ runtimeProven = true } = {}) {
         selectedCountyEchoed: runtimeProven,
         silentBentonFallbackDetected: false,
       },
+      ...(yakimaRuntimeProven
+        ? [
+            {
+              county: 'Yakima',
+              readinessClass: 'runtime_proven',
+              runtimeRows: 22,
+              selectedCountyEchoed: true,
+              silentBentonFallbackDetected: false,
+              activeCurrentSemanticsProven: true,
+            },
+          ]
+        : []),
     ],
   });
 
@@ -105,8 +117,31 @@ test('passes a county only when runtime identity, receipts, rows, and parcel san
 
   assert.equal(benton.status, 'runtime_contract_pass');
   assert.equal(yakima.status, 'runtime_contract_blocked');
+  assert.equal(benton.parcelSemanticsProven, true);
+  assert.equal(yakima.parcelSemanticsProven, false);
   assert.equal(report.summary.runtimeContractPass, 1);
   assert.equal(report.summary.prohibit39CountyRuntimeClaim, true);
+});
+
+test('passes a non-Benton county when county-specific active/current semantics are proven', () => {
+  const root = makeRepo({ yakimaRuntimeProven: true });
+
+  const result = spawnSync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+
+  assert.equal(result.status, 0);
+
+  const report = JSON.parse(
+    fs.readFileSync(path.join(root, 'generated/truth/county-runtime-contract.json'), 'utf8')
+  );
+  const yakima = report.rows.find(row => row.county === 'Yakima');
+
+  assert.equal(yakima.status, 'runtime_contract_pass');
+  assert.equal(yakima.parcelSemanticsProven, true);
+  assert.equal(report.summary.runtimeContractPass, 2);
+  assert.equal(report.summary.prohibit39CountyRuntimeClaim, false);
 });
 
 test('blocks a county when runtime rows and county identity are not proven', () => {

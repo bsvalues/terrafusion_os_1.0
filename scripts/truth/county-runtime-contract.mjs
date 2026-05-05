@@ -65,6 +65,22 @@ function productDomainStatus(productLoadLedger, domain) {
   };
 }
 
+function countyParcelSemanticsPassed({ county, runtimeRow, parcelSanity }) {
+  if (
+    runtimeRow?.activeCurrentSemanticsProven === true ||
+    runtimeRow?.activeCurrentParcelSemanticsProven === true ||
+    runtimeRow?.parcelSemanticsPassed === true
+  ) {
+    return true;
+  }
+
+  if (normalizeCounty(county) === 'benton') {
+    return Boolean(parcelSanity?.passed);
+  }
+
+  return false;
+}
+
 function evaluateCounty({
   county,
   crosswalkRow,
@@ -79,11 +95,14 @@ function evaluateCounty({
     productDomainStatus(productLoadLedger, domain)
   );
   const runtimeClass = runtimeRow?.readinessClass ?? crosswalkRow?.runtimeClass ?? 'unknown';
-  const runtimeRows = Number(runtimeRow?.runtimeRows ?? crosswalkRow?.runtimeRows ?? 0);
+  const runtimeRows = Number(
+    runtimeRow?.runtimeRows ?? runtimeRow?.parcelRows ?? crosswalkRow?.runtimeRows ?? 0
+  );
   const selectedCountyEchoed =
     runtimeRow?.selectedCountyEchoed ??
     (crosswalkRow?.runtimeClass === 'runtime_proven' ? true : false);
   const fallbackDetected = Boolean(runtimeRow?.silentBentonFallbackDetected);
+  const parcelSemanticsProven = countyParcelSemanticsPassed({ county, runtimeRow, parcelSanity });
 
   if (!dbIdentity) {
     blockers.push('Runtime DB identity proof is missing.');
@@ -113,14 +132,16 @@ function evaluateCounty({
     }
   }
 
-  if (normalizeCounty(county) === 'benton') {
-    if (!parcelSanity) {
-      blockers.push('Benton parcel count sanity proof is missing.');
-    } else if (!parcelSanity.passed) {
-      blockers.push('Benton parcel count sanity proof did not pass.');
+  if (!parcelSemanticsProven) {
+    if (normalizeCounty(county) === 'benton') {
+      if (!parcelSanity) {
+        blockers.push('Benton parcel count sanity proof is missing.');
+      } else {
+        blockers.push('Benton parcel count sanity proof did not pass.');
+      }
+    } else if (runtimeClass === 'runtime_proven') {
+      blockers.push('County-specific active/current parcel semantics proof is missing.');
     }
-  } else if (runtimeClass === 'runtime_proven') {
-    blockers.push('No county-specific active/current parcel sanity proof exists.');
   }
 
   if (crosswalkRow?.classification === 'public_source_seed') {
@@ -141,6 +162,7 @@ function evaluateCounty({
     fallbackDetected,
     dbIdentityPassed: Boolean(dbIdentity?.passed),
     productDomains: domains,
+    parcelSemanticsProven,
     parcelSanityPassed: normalizeCounty(county) === 'benton' ? Boolean(parcelSanity?.passed) : null,
     status: blockers.length === 0 ? 'runtime_contract_pass' : 'runtime_contract_blocked',
     blockers: [...new Set(blockers)],
@@ -172,7 +194,7 @@ function renderMarkdown(report) {
       row.runtimeClass,
       String(row.runtimeRows),
       row.dbIdentityPassed ? 'yes' : 'no',
-      row.parcelSanityPassed === null ? '-' : row.parcelSanityPassed ? 'yes' : 'no',
+      row.parcelSemanticsProven ? 'yes' : 'no',
       row.status,
       row.blockers.length ? row.blockers.join('<br>') : '-',
     ].join(' | ')
@@ -195,7 +217,7 @@ function renderMarkdown(report) {
     '',
     '## County Matrix',
     '',
-    '| County | Registry | Crosswalk | Runtime Class | Runtime Rows | DB Identity | Parcel Sanity | Contract Status | Blockers |',
+    '| County | Registry | Crosswalk | Runtime Class | Runtime Rows | DB Identity | Parcel Semantics | Contract Status | Blockers |',
     '|---|---|---|---|---:|---|---|---|---|',
     ...rows,
     '',
