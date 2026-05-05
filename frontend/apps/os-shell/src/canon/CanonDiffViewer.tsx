@@ -9,7 +9,7 @@
 import { DiffEditor, type DiffOnMount } from '@monaco-editor/react';
 import React, { useCallback, useRef, useState } from 'react';
 import { CANON_THEME_NAME, canonEditorTheme } from './canonEditorTheme';
-import { detectLanguage } from './CanonEditor';
+import { detectLanguage } from './canonLanguage';
 
 export interface DiffViewerProps {
   leftPath: string;
