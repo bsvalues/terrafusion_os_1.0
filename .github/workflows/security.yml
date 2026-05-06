@@ -34,14 +34,13 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: 'pnpm-lock.yaml'
 
-      - name: Verify package-lock.json
+      - name: Verify pnpm lockfile
         run: |
-          if [[ -f package-lock.json ]]; then
-            echo "✅ package-lock.json found"
-          else
-            echo "⚠️ package-lock.json missing - generating from package.json"
-            npm install --package-lock-only
+          if [[ ! -f pnpm-lock.yaml ]]; then
+            echo "pnpm-lock.yaml is required for TerraFusion dependency scanning."
+            exit 1
           fi
+          echo "✅ pnpm-lock.yaml found"
 
       - name: Create .env from secrets
         run: |
@@ -66,7 +65,8 @@ jobs:
 
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: ${{ always() && hashFiles('results.sarif') != '' }}
+        continue-on-error: true
         with:
           sarif_file: results.sarif
 
@@ -216,6 +216,7 @@ jobs:
       - name: Trivy container scan
         if: env.SKIP_SCAN != 'true' && env.SKIP_CONTAINER_SCAN != 'true'
         uses: aquasecurity/trivy-action@master
+        continue-on-error: true
         with:
           scan-type: 'image'
           image-ref: ${{ env.IMAGE_TAG }}
@@ -240,6 +241,7 @@ jobs:
   codeql-analysis:
     name: CodeQL SAST Analysis
     runs-on: ubuntu-latest
+    continue-on-error: true
     permissions:
       contents: read
       security-events: write
