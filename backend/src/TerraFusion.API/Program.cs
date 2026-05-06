@@ -1695,6 +1695,15 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsAttribute.IPacsAttributePopulator,
     TerraFusion.Data.Services.CanonicalTf.PacsAttributePopulatorService>();
 
+// Slice E2-B (ATTR-POP-2): value-grain populator. Companion to
+// ATTR-POP-1; reads (i_attr_val_id, i_attr_val_cd) pairs from PACS
+// (dbo.imprv_attr_val preferred, dbo.imprv_attr-derived fallback)
+// and upserts attribute_definition keyed by IAttrId = i_attr_val_id —
+// the grain the imprv canonical projector keys on.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsAttributeVal.IPacsAttributeValPopulator,
+    TerraFusion.Data.Services.CanonicalTf.PacsAttributeValPopulatorService>();
+
 // Slice B1-A: PACS account raw landing — Block B's PII-rich
 // identity table. Four gates: distribution, acct_id-uniqueness,
 // provenance-coverage, pii-flags-recorded.
