@@ -3101,7 +3101,7 @@ public class CanonicalDebugController : ControllerBase
     /// <summary>
     /// SYNC-COMPLETE-2 perf-test: synthetic bulk-insert benchmark.
     /// Inserts N synthetic <c>LegacyPacsRawOwner</c> rows in batches
-    /// of <paramref name="BatchSize"/>, with toggleable
+    /// of <c>BatchSize</c>, with toggleable
     /// <c>ChangeTracker.AutoDetectChangesEnabled</c>. Cleans up after
     /// itself via <c>ExecuteDeleteAsync</c>. Returns wall-clock duration
     /// + rows-per-second.

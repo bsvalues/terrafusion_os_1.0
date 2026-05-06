@@ -439,6 +439,8 @@ jobs:
 
       - name: Upload Trivy Results
         uses: github/codeql-action/upload-sarif@v3
+        if: ${{ always() && hashFiles('trivy-results.sarif') != '' }}
+        continue-on-error: true
         with:
           sarif_file: 'trivy-results.sarif'
 
@@ -463,26 +465,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Install Dependencies
+      - name: Free runner disk for packaging
         run: |
-          npm install
-          dotnet restore backend/TerraFusion.sln || echo "Backend restore skipped"
+          df -h
+          sudo rm -rf /usr/local/lib/android /opt/ghc /usr/share/swift /usr/local/.ghcup /opt/hostedtoolcache/CodeQL || true
+          docker system prune -af || true
+          df -h
 
-      - name: Build Application
+      - name: Publish Backend API
         run: |
-          npm run build:production || echo "Frontend build complete"
-          cd backend && dotnet build TerraFusion.sln -c Release && dotnet publish src/TerraFusion.API/TerraFusion.API.csproj -c Release -o ../publish --no-build || echo "Backend publish complete"
-        continue-on-error: true
+          dotnet restore backend/TerraFusion.sln
+          dotnet publish backend/src/TerraFusion.API/TerraFusion.API.csproj -c Release -o publish
 
       - name: Build Docker Images
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
           docker build -f backend/Dockerfile.api -t terrafusion-api:${{ github.sha }} -t terrafusion-api:latest backend/
           docker build -f frontend/Dockerfile -t terrafusion-frontend:${{ github.sha }} -t terrafusion-frontend:latest .
