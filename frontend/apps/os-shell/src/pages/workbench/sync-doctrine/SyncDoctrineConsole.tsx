@@ -27,6 +27,7 @@
 
 import React from 'react';
 import { useDoctrineState } from './useDoctrineState';
+import DrainLanePanel from './DrainLanePanel';
 import type {
   DoctrineState,
   DoctrineCanonicalCounts,
@@ -97,6 +98,8 @@ export default function SyncDoctrineConsole(): React.ReactElement {
           {query.data.recentGateFailures.length > 0 && (
             <RecentGateFailuresPanel rows={query.data.recentGateFailures} />
           )}
+
+          <DrainLanePanel />
         </div>
       )}
     </main>

@@ -66,7 +66,7 @@ export function DistributionPieChart({ data }: DistributionPieChartProps) {
             backgroundColor: '#0A0E1A',
             border: '1px solid rgba(255,255,255,0.1)',
             borderRadius: '6px',
-            color: '#fff',
+            color: 'hsl(var(--tf-text))',
           }}
         />
         <Legend
