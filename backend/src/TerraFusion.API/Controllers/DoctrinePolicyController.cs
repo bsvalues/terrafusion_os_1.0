@@ -314,4 +314,29 @@ public class DoctrinePolicyController : ControllerBase
         bool? DryRun,
         int? MaxRows,
         bool? OnlyNullUniverse);
+
+    /// <summary>
+    /// SYNC-DOCTRINE-4-IMPL-V6: forward backfilled universe values
+    /// from <c>truth_pacs.imprv_current</c> onto matching
+    /// <c>canonical_tf.tf_improvement</c> rows. Use after
+    /// <c>POST .../universe/backfill</c> brings truth current.
+    /// </summary>
+    [HttpPost("universe/backfill-canonical")]
+    public async Task<IActionResult> BackfillCanonicalUniverse(
+        [FromServices] IPacsImprvUniverseBackfillService svc,
+        [FromBody] CanonicalBackfillRequestDto? body,
+        CancellationToken cancellationToken = default)
+    {
+        var dryRun = body?.DryRun ?? false;
+        var maxRows = body?.MaxRows;
+
+        var result = await svc.BackfillCanonicalAsync(
+            new CanonicalUniverseBackfillRequest(dryRun, maxRows),
+            cancellationToken);
+        return Ok(result);
+    }
+
+    public sealed record CanonicalBackfillRequestDto(
+        bool? DryRun,
+        int? MaxRows);
 }
