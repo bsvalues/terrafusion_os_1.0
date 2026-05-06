@@ -284,4 +284,34 @@ public class DoctrinePolicyController : ControllerBase
             note = "Caches invalidated; classifier reads next call rebuild from DB.",
         });
     }
+
+    /// <summary>
+    /// SYNC-DOCTRINE-4-IMPL-V5: backfill universe classification onto
+    /// existing <c>truth_pacs.imprv_current</c> rows that were
+    /// promoted before the current rule set fired correctly. Use
+    /// dryRun=true first to inspect transition counts before
+    /// committing.
+    /// </summary>
+    [HttpPost("universe/backfill")]
+    public async Task<IActionResult> BackfillUniverse(
+        [FromServices] IPacsImprvUniverseBackfillService svc,
+        [FromBody] BackfillRequestDto? body,
+        CancellationToken cancellationToken = default)
+    {
+        var county = string.IsNullOrWhiteSpace(body?.County) ? "benton-wa" : body!.County!;
+        var dryRun = body?.DryRun ?? false;
+        var maxRows = body?.MaxRows;
+        var onlyNullUniverse = body?.OnlyNullUniverse ?? false;
+
+        var result = await svc.BackfillAsync(
+            new ImprvUniverseBackfillRequest(county, dryRun, maxRows, onlyNullUniverse),
+            cancellationToken);
+        return Ok(result);
+    }
+
+    public sealed record BackfillRequestDto(
+        string? County,
+        bool? DryRun,
+        int? MaxRows,
+        bool? OnlyNullUniverse);
 }
