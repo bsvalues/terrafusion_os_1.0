@@ -11,17 +11,27 @@ namespace TerraFusion.Core.Entities.DoctrineTf;
 /// boolean — it is the evaluation of one or more rules drawn from
 /// this table, scoped by county + study + sale-year window.</para>
 ///
-/// <para>Two studies are modeled in Benton (per the operator):</para>
+/// <para>Three named studies are modeled for Benton (per the operator's
+/// 2026-05-06 review):</para>
 /// <list type="bullet">
-///   <item><c>StudyName = "DOR"</c> — Washington Department of
+///   <item><c>StudyName = "DOR_RATIO"</c> — Washington Department of
 ///   Revenue ratio study. <c>SourceField = "sale.sl_ratio_type_cd"</c>;
-///   <c>QualifiedCodesCsv = "00"</c>; effective always (no end year).</item>
-///   <item><c>StudyName = "BENTON_INTERNAL"</c> — Benton County's
-///   own internal ratio study, started ~2018.
+///   <c>QualifiedCodesCsv = "00"</c>; effective always (no end year).
+///   This is the state-mandated study that runs continuously.</item>
+///   <item><c>StudyName = "LEGACY_CODEBOOK_VALID"</c> — pre-2018 '0'
+///   = "VALID SALE" per <c>dbo.county_ratio_code</c>. Documents the
+///   historical codebook semantic. Explicitly NOT an active Benton
+///   internal ratio-study program — the county's internal study did
+///   not exist as a formal program before ~2018.
 ///   <c>SourceField = "sale.sl_county_ratio_cd"</c>;
-///   <c>QualifiedCodesCsv = "100"</c> for the post-2017 modern era
-///   (and <c>"0"</c> for pre-2017 legacy "VALID SALE" entries
-///   per <c>dbo.county_ratio_code</c>).</item>
+///   <c>QualifiedCodesCsv = "0"</c>; effective 1990-2017.</item>
+///   <item><c>StudyName = "COUNTY_INTERNAL_RATIO"</c> — Benton's
+///   internal ratio study (started ~2018, alongside-not-replacing
+///   DOR_RATIO). <c>SourceField = "sale.sl_county_ratio_cd"</c>;
+///   <c>QualifiedCodesCsv = "100"</c>;
+///   <c>ExcludedCodesCsv = "200,300,400,500"</c>;
+///   effective 2018+. Boundary year is operator-estimated; subject
+///   to audit by year distribution.</item>
 /// </list>
 ///
 /// <para>Lookup contract (see

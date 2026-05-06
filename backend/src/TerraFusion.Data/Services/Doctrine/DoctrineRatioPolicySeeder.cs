@@ -94,14 +94,15 @@ public sealed class DoctrineRatioPolicySeeder
 
         return new[]
         {
-            // ── DOR ratio study (always-on, single qualifier '00') ──
+            // ── DOR_RATIO study: always-on, single qualifier '00' ──
+            // meaning: valid for DOR ratio study (Washington Department of Revenue)
             new TfDoctrineRatioPolicy
             {
                 RuleId = ruleDor,
                 County = "benton-wa",
                 EffectiveStartYear = 1990,
                 EffectiveEndYear = null,
-                StudyName = "DOR",
+                StudyName = "DOR_RATIO",
                 SourceField = "sale.sl_ratio_type_cd",
                 QualifiedCodesCsv = "00",
                 ExcludedCodesCsv = string.Empty,
@@ -119,40 +120,48 @@ public sealed class DoctrineRatioPolicySeeder
                         "with sl_county_ratio_cd."
             },
 
-            // ── BENTON_INTERNAL pre-2018: legacy '0' = "VALID SALE" ──
+            // ── LEGACY_CODEBOOK_VALID: pre-2018 '0' = "VALID SALE" ──
+            // meaning: legacy valid-sale codebook semantics
+            // NOT an active Benton internal ratio-study program.
             new TfDoctrineRatioPolicy
             {
                 RuleId = ruleCntyPre,
                 County = "benton-wa",
                 EffectiveStartYear = 1990,
                 EffectiveEndYear = 2017,
-                StudyName = "BENTON_INTERNAL",
+                StudyName = "LEGACY_CODEBOOK_VALID",
                 SourceField = "sale.sl_county_ratio_cd",
                 QualifiedCodesCsv = "0",
                 ExcludedCodesCsv = string.Empty,
                 SqlFragment = "s.sl_county_ratio_cd = '0'",
-                Reason = "Pre-2017-conversion legacy 'VALID SALE' label per " +
-                         "dbo.county_ratio_code. Distribution shows '0' codes " +
-                         "concentrated 2014-2017, dropping to ~0 post-2018.",
+                Reason = "Legacy valid-sale codebook semantics. The pre-2018 '0' " +
+                         "code in dbo.county_ratio_code is labeled 'VALID SALE' " +
+                         "(ALL CAPS). This rule documents that semantic for " +
+                         "historical lookback. It does NOT represent an active " +
+                         "Benton internal ratio-study program — the county's " +
+                         "internal ratio study did not exist as a formal program " +
+                         "before ~2018. Distribution shows '0' codes concentrated " +
+                         "2014-2017, dropping to ~0 post-2018.",
                 EvidenceSource = "dbo.county_ratio_code['0'] = 'VALID SALE' (ALL CAPS legacy)",
                 Confidence = "MED",
                 ApprovedBy = approver,
                 ApprovedAt = approvedAt,
-                Notes = "Pre-2018 the county did not run a separate internal " +
-                        "ratio study; '0' codes here represent conversion-era " +
-                        "data labeled with the legacy code book. Treat as " +
-                        "qualified for historical lookback but NOT for forward " +
-                        "operational ratio work."
+                Notes = "Confidence MED reflects the operator's careful framing: " +
+                        "the codebook label is well-evidenced; the institutional " +
+                        "claim that pre-2018 '0' codes were 'qualified by an " +
+                        "active program' is not. Treat this rule as evidence " +
+                        "of historical labeling, not of a county study."
             },
 
-            // ── BENTON_INTERNAL 2018+: modern '100' = "Valid Sale" ──
+            // ── COUNTY_INTERNAL_RATIO: 2018+ '100' = "Valid Sale" ──
+            // meaning: valid for Benton internal ratio study (started ~2018)
             new TfDoctrineRatioPolicy
             {
                 RuleId = ruleCntyPost,
                 County = "benton-wa",
                 EffectiveStartYear = 2018,
                 EffectiveEndYear = null,
-                StudyName = "BENTON_INTERNAL",
+                StudyName = "COUNTY_INTERNAL_RATIO",
                 SourceField = "sale.sl_county_ratio_cd",
                 QualifiedCodesCsv = "100",
                 ExcludedCodesCsv = "200,300,400,500",
@@ -169,11 +178,13 @@ public sealed class DoctrineRatioPolicySeeder
                 Confidence = "HIGH",
                 ApprovedBy = approver,
                 ApprovedAt = approvedAt,
-                Notes = "DOR study and BENTON_INTERNAL study are independent. A " +
-                        "sale can be qualified for DOR and not BENTON_INTERNAL " +
-                        "(DOR-qualified, no county review yet → ~7,731 such sales " +
-                        "post-2018 per cross-tab). canonical_tf.tf_sale must " +
-                        "carry both booleans separately."
+                Notes = "operator-estimated transition; subject to audit by year " +
+                        "distribution. The DOR_RATIO study and COUNTY_INTERNAL_RATIO " +
+                        "study are independent. A sale can be qualified for DOR " +
+                        "and not COUNTY_INTERNAL (DOR-qualified, no county review " +
+                        "yet → ~7,731 such sales post-2018 per cross-tab). " +
+                        "canonical_tf.tf_sale must carry both qualification " +
+                        "booleans separately."
             },
         };
     }

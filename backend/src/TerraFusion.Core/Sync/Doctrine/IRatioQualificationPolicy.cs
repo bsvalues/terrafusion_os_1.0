@@ -15,11 +15,20 @@ namespace TerraFusion.Core.Sync.Doctrine;
 /// <c>truth_pacs.sale.county_ratio_qualified</c> instead of a
 /// hardcoded constant.</para>
 ///
-/// <para>Both studies expose the same evaluation contract.
-/// The promoter calls <see cref="EvaluateAsync"/> twice per
-/// sale: once for <c>StudyName="DOR"</c> and once for
-/// <c>StudyName="BENTON_INTERNAL"</c>, then writes both booleans.
-/// canonical_tf.tf_sale carries both verbatim.</para>
+/// <para>The active studies are modeled in
+/// <see cref="TerraFusion.Core.Entities.DoctrineTf.TfDoctrineRatioPolicy"/>:</para>
+/// <list type="bullet">
+///   <item><c>"DOR_RATIO"</c> — Washington DoR ratio study (always-on).</item>
+///   <item><c>"LEGACY_CODEBOOK_VALID"</c> — pre-2018 codebook semantic;
+///   not an active program (documents historical labeling only).</item>
+///   <item><c>"COUNTY_INTERNAL_RATIO"</c> — Benton internal ratio study
+///   (started ~2018; operator-estimated transition).</item>
+/// </list>
+/// <para>The promoter (B2) calls <see cref="EvaluateAsync"/> twice per
+/// sale — once for <c>"DOR_RATIO"</c>, once for <c>"COUNTY_INTERNAL_RATIO"</c> —
+/// and writes both qualification booleans onto canonical_tf.tf_sale.
+/// LEGACY_CODEBOOK_VALID is a historical-reference rule; the promoter
+/// does not consult it for canonical output.</para>
 /// </summary>
 public interface IRatioQualificationPolicy
 {
@@ -28,7 +37,8 @@ public interface IRatioQualificationPolicy
     /// county / sale-year, then evaluate the input code against it.
     /// </summary>
     /// <param name="county">Lowercase-hyphenated county slug.</param>
-    /// <param name="studyName">Closed vocab: 'DOR' | 'BENTON_INTERNAL'.</param>
+    /// <param name="studyName">Closed vocab: 'DOR_RATIO' |
+    /// 'LEGACY_CODEBOOK_VALID' | 'COUNTY_INTERNAL_RATIO'.</param>
     /// <param name="saleYear">YEAR(sale.sl_dt). 0 → "no rule applies".</param>
     /// <param name="code">PACS code value being evaluated. NULL allowed.</param>
     Task<RatioPolicyEvaluation> EvaluateAsync(
