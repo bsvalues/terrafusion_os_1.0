@@ -67,5 +67,30 @@ public sealed class TruthPacsImprvCurrent
     /// </summary>
     public string? ConversionEra { get; set; }
 
+    // ── SYNC-DOCTRINE-4: universe classification surface ─────────
+    /// <summary>
+    /// Closed vocabulary from
+    /// <see cref="TerraFusion.Core.Sync.Doctrine.UniverseCodes"/>.
+    /// Written by the truth promoter via
+    /// <see cref="TerraFusion.Core.Sync.Doctrine.IPropertyUniverseClassifier"/>.
+    /// Nullable for back-compat with rows promoted before
+    /// SYNC-DOCTRINE-4-IMPL.
+    /// </summary>
+    public string? UniverseCode { get; set; }
+
+    /// <summary>
+    /// FK to <c>doctrine_tf.tf_doctrine_property_universe.rule_id</c>
+    /// — the rule that classified this row. NULL when
+    /// <see cref="UniverseCode"/> is <c>UNKNOWN</c> (sentinel) or
+    /// when the row was promoted before SYNC-DOCTRINE-4-IMPL.
+    /// </summary>
+    public Guid? UniverseRuleId { get; set; }
+
+    /// <summary>HIGH | MED | LOW. Mirrors the matching rule's confidence.</summary>
+    public string? UniverseConfidence { get; set; }
+
+    /// <summary>Operator-readable explanation: matching rule's reason or "no rule matched (...)".</summary>
+    public string? UniverseReason { get; set; }
+
     public DateTime PromotedAt { get; set; } = DateTime.UtcNow;
 }

@@ -132,4 +132,156 @@ public class DoctrinePolicyController : ControllerBase
                 : $"Inserted {added} new rule(s); cache invalidated.",
         });
     }
+
+    // ────────────────────────────────────────────────────────────────
+    // SYNC-DOCTRINE-4: property-universe doctrine endpoints.
+    // ────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// List property-universe rules. Optional filters by county and
+    /// universe code. Mirrors the ratio endpoint shape.
+    /// </summary>
+    [HttpGet("universe")]
+    public async Task<IActionResult> ListUniverseRules(
+        [FromQuery] string? county,
+        [FromQuery] string? universe,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _db.TfDoctrinePropertyUniverses.AsNoTracking().AsQueryable();
+        if (!string.IsNullOrWhiteSpace(county))
+            query = query.Where(r => r.County == county);
+        if (!string.IsNullOrWhiteSpace(universe))
+            query = query.Where(r => r.UniverseCode == universe);
+
+        var rules = await query
+            .OrderBy(r => r.County)
+            .ThenBy(r => r.Precedence)
+            .Select(r => new
+            {
+                r.RuleId,
+                r.County,
+                r.EffectiveStartYear,
+                r.EffectiveEndYear,
+                r.Precedence,
+                r.UniverseCode,
+                r.PropTypeCdCsv,
+                r.PropertyUseCdCsv,
+                r.PropertyUseMode,
+                r.AgApplyValue,
+                r.AgUseCdCsv,
+                r.RequiresLegacyMarker,
+                r.LegacyMarkerType,
+                r.LegacyMarkerValue,
+                r.Reason,
+                r.EvidenceSource,
+                r.Confidence,
+                r.ActiveFlag,
+                r.ApprovedBy,
+                r.ApprovedAt,
+                r.Notes,
+            })
+            .ToListAsync(cancellationToken);
+
+        return Ok(new { count = rules.Count, rules });
+    }
+
+    /// <summary>
+    /// Spot-check the universe classifier. Pass the same property-
+    /// level signals the truth promoter would consult and observe
+    /// which rule fires.
+    /// </summary>
+    [HttpGet("universe/classify")]
+    public async Task<IActionResult> ClassifyUniverse(
+        [FromServices] IPropertyUniverseClassifier classifier,
+        [FromQuery] string county,
+        [FromQuery] int year,
+        [FromQuery(Name = "prop_type_cd")] string? propTypeCd,
+        [FromQuery(Name = "property_use_cd")] string? propertyUseCd,
+        [FromQuery(Name = "ag_apply")] string? agApply,
+        [FromQuery(Name = "ag_use_cd")] string? agUseCd,
+        [FromQuery(Name = "has_legacy_marker")] bool hasLegacyMarker = false,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(county))
+            return BadRequest(new { error = "Query parameter 'county' is required." });
+        if (year <= 0)
+            return BadRequest(new { error = "Query parameter 'year' must be positive." });
+
+        var input = new UniverseClassifierInput(
+            county, year, propTypeCd, propertyUseCd, agApply, agUseCd, hasLegacyMarker);
+        var result = await classifier.ClassifyAsync(input, cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// List per-universe attribute-dictionary entries. Optional
+    /// filters by county and universe.
+    /// </summary>
+    [HttpGet("universe/attribute-dictionary")]
+    public async Task<IActionResult> ListAttributeDictionary(
+        [FromQuery] string? county,
+        [FromQuery] string? universe,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _db.TfDoctrineAttributeDictionaries.AsNoTracking().AsQueryable();
+        if (!string.IsNullOrWhiteSpace(county))
+            query = query.Where(e => e.County == county);
+        if (!string.IsNullOrWhiteSpace(universe))
+            query = query.Where(e => e.UniverseCode == universe);
+
+        var entries = await query
+            .OrderBy(e => e.County)
+            .ThenBy(e => e.UniverseCode)
+            .ThenBy(e => e.ImprvAttrId)
+            .ThenBy(e => e.IAttrValCd)
+            .Select(e => new
+            {
+                e.DictionaryRowId,
+                e.County,
+                e.UniverseCode,
+                e.EffectiveStartYear,
+                e.EffectiveEndYear,
+                e.ImprvAttrId,
+                e.IAttrValCd,
+                e.AttributeDescription,
+                e.AttributeGroup,
+                e.SourceTable,
+                e.SourceKey,
+                e.Reason,
+                e.EvidenceSource,
+                e.Confidence,
+                e.ActiveFlag,
+                e.ApprovedBy,
+                e.ApprovedAt,
+            })
+            .ToListAsync(cancellationToken);
+
+        return Ok(new { count = entries.Count, entries });
+    }
+
+    /// <summary>
+    /// Re-run the idempotent universe + attribute-dictionary seeders.
+    /// Invalidates the classifier and per-universe dictionary caches.
+    /// </summary>
+    [HttpPost("universe/seed")]
+    public async Task<IActionResult> SeedUniverse(
+        [FromServices] DoctrinePropertyUniverseSeeder universeSeeder,
+        [FromServices] DoctrineAttributeDictionarySeeder dictSeeder,
+        [FromServices] IPropertyUniverseClassifier classifier,
+        [FromServices] IPerUniverseAttributeDictionary dictionary,
+        CancellationToken cancellationToken = default)
+    {
+        var universeAdded = await universeSeeder.SeedAsync(cancellationToken);
+        var dictAdded = await dictSeeder.SeedAsync(cancellationToken);
+
+        if (classifier is PropertyUniverseClassifier puc) puc.InvalidateCache();
+        if (dictionary is PerUniverseAttributeDictionary pad) pad.InvalidateCache();
+
+        return Ok(new
+        {
+            universeRulesInserted = universeAdded,
+            attributeDictionaryEntriesInserted = dictAdded,
+            note = "Caches invalidated; classifier reads next call rebuild from DB.",
+        });
+    }
 }

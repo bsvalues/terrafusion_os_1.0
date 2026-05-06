@@ -5,9 +5,11 @@ using Microsoft.Extensions.Logging.Abstractions;
 using TerraFusion.Core.Entities.LegacyPacsRaw;
 using TerraFusion.Core.Entities.SyncBridge;
 using TerraFusion.Core.Entities.TruthPacs;
+using TerraFusion.Core.Sync.Doctrine;
 using TerraFusion.Core.Sync.PacsImprvTruth;
 using TerraFusion.Data;
 using TerraFusion.Data.Services.TruthPacs;
+using TerraFusion.Unit.Tests.Doctrine;
 using Xunit;
 
 namespace TerraFusion.Unit.Tests.TruthPacs;
@@ -39,7 +41,9 @@ public sealed class PacsImprvCurrentTruthPromoterTests : IDisposable
     public void Dispose() => _db.Dispose();
 
     private PacsImprvCurrentTruthPromoter BuildPromoter()
-        => new(_db, NullLogger<PacsImprvCurrentTruthPromoter>.Instance);
+        => new(_db,
+               new NullPropertyUniverseClassifier(),
+               NullLogger<PacsImprvCurrentTruthPromoter>.Instance);
 
     private async Task<Guid> SeedBatchAsync(string label, string status = "COMPLETED")
     {
@@ -248,6 +252,8 @@ public sealed class PacsImprvCurrentTruthPromoterTests : IDisposable
             "truth-pacs-imprv-aggregate",
             // G4 (v1.13): pre-conversion-share gate.
             "truth-pacs-imprv-pre-conversion-share",
+            // SYNC-DOCTRINE-4: per-batch universe distribution gate.
+            "truth-pacs-imprv-universe-distribution",
         });
     }
 
@@ -289,7 +295,9 @@ public sealed class PacsImprvCurrentTruthPromoterTests : IDisposable
             .ToListAsync();
         // G4 (v1.13): the new pre-conversion-share gate brings the
         // imprv lane's gate count to 5.
-        gates.Should().HaveCount(5);
+        // SYNC-DOCTRINE-4: per-batch universe distribution gate brings
+        // the imprv lane's gate count to 6.
+        gates.Should().HaveCount(6);
         gates.Should().OnlyContain(g => g.Status != "FAIL");
     }
 

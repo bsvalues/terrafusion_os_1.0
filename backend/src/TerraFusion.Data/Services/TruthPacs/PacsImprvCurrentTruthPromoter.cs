@@ -1,12 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using TerraFusion.Core.Entities.LegacyPacsRaw;
 using TerraFusion.Core.Entities.SyncBridge;
 using TerraFusion.Core.Entities.TruthPacs;
+using TerraFusion.Core.Sync.Doctrine;
 using TerraFusion.Core.Sync.PacsImprvTruth;
 
 namespace TerraFusion.Data.Services.TruthPacs;
@@ -29,14 +32,30 @@ namespace TerraFusion.Data.Services.TruthPacs;
 /// </summary>
 public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromoter
 {
+    /// <summary>
+    /// Default county tag used by the universe classifier when the
+    /// promoter has no explicit county context. Matches the seed
+    /// rules' County field. Multi-county hosts will need to surface
+    /// a county tag through the orchestrator (out of scope for
+    /// SYNC-DOCTRINE-4-IMPL).
+    /// </summary>
+    private const string DefaultCountyTag = "benton-wa";
+
+    /// <summary>Year boundary for CONVERSION_LEGACY's CREATED_DT_PRE_2017 marker.</summary>
+    private static readonly DateTime LegacyMarkerCutoff =
+        new(2017, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
     private readonly TerraFusionDbContext _db;
+    private readonly IPropertyUniverseClassifier _universeClassifier;
     private readonly ILogger<PacsImprvCurrentTruthPromoter> _logger;
 
     public PacsImprvCurrentTruthPromoter(
         TerraFusionDbContext db,
+        IPropertyUniverseClassifier universeClassifier,
         ILogger<PacsImprvCurrentTruthPromoter> logger)
     {
         _db = db;
+        _universeClassifier = universeClassifier;
         _logger = logger;
     }
 
@@ -114,12 +133,31 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
                 .Where(i => i.LoadBatchId == imprvLoadBatchId)
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
 
+            // SYNC-DOCTRINE-4: build a property-row index for universe
+            // classification. Latest LandedAt per prop_id wins. Property
+            // rows live in legacy_pacs_raw.property and are populated by
+            // the SYNC-POP-4a property landing slice; rows arriving here
+            // without a matching property row classify as UNKNOWN /
+            // UniverseNotEvaluated, which the operator can use as a
+            // signal to run the property landing first.
+            var imprvPropIds = imprvRows.Select(i => i.PropId).Distinct().ToList();
+            var propertyIndex = await _db.LegacyPacsRawProperties
+                .Where(p => imprvPropIds.Contains(p.PropId))
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+            var latestPropertyByPropId = propertyIndex
+                .GroupBy(p => p.PropId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.OrderByDescending(p => p.LandedAt).First());
+
             var considered = imprvRows.Count;
             var promoted = 0;
             var rejectedNoSupp = 0;
             var rejectedStaleSup = 0;
             // G4 (v1.13): pre-conversion-share gate counter.
             var preConversionPromoted = 0;
+            // SYNC-DOCTRINE-4: per-batch universe distribution counter.
+            var universeCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             decimal imprvValSum = 0m;
             var now = DateTime.UtcNow;
 
@@ -142,6 +180,12 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
                 var era = ConversionEras.FromYear(imprv.PropValYr);
                 if (era == ConversionEras.PreConversion2017) preConversionPromoted++;
 
+                // SYNC-DOCTRINE-4: classify universe.
+                var universe = await ClassifyUniverseAsync(
+                    imprv, latestPropertyByPropId, cancellationToken).ConfigureAwait(false);
+                if (!universeCounts.TryAdd(universe.UniverseCode, 1))
+                    universeCounts[universe.UniverseCode]++;
+
                 _db.TruthPacsImprvCurrents.Add(new TruthPacsImprvCurrent
                 {
                     PropValYr = imprv.PropValYr,
@@ -163,6 +207,10 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
                     SuppAssocLoadBatchId = suppAssocLoadBatchId,
                     PromotionLoadBatchId = batch.LoadBatchId,
                     ConversionEra = era,
+                    UniverseCode = universe.UniverseCode,
+                    UniverseRuleId = universe.RuleId,
+                    UniverseConfidence = universe.Confidence,
+                    UniverseReason = universe.Reason,
                     PromotedAt = now,
                 });
                 promoted++;
@@ -180,6 +228,10 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
             await WriteRemainingGatesAsync(batch, considered, promoted,
                 rejectedNoSupp, rejectedStaleSup, imprvValSum,
                 cancellationToken).ConfigureAwait(false);
+
+            // SYNC-DOCTRINE-4: informational per-batch universe distribution gate.
+            await WriteUniverseDistributionGateAsync(batch, universeCounts, cancellationToken)
+                .ConfigureAwait(false);
 
             batch.Status = "COMPLETED";
             batch.CompletedAt = DateTime.UtcNow;
@@ -324,6 +376,77 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
             ExecutedAt = now,
         });
 
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// SYNC-DOCTRINE-4: classify a single improvement row's universe.
+    /// Looks up the latest property row for the prop_id; if missing,
+    /// returns UNKNOWN with reason UniverseNotEvaluated. land_detail
+    /// signals (ag_apply, ag_use_cd) and per-year property_use_cd are
+    /// not consulted in this slice — they require additional joins
+    /// outside the current promoter contract. Future enhancement.
+    /// </summary>
+    private async Task<UniverseClassification> ClassifyUniverseAsync(
+        LegacyPacsRawImprv imprv,
+        IReadOnlyDictionary<int, LegacyPacsRawProperty> propertyIndex,
+        CancellationToken cancellationToken)
+    {
+        if (!propertyIndex.TryGetValue(imprv.PropId, out var property))
+        {
+            return new UniverseClassification(
+                UniverseCode: UniverseCodes.Unknown,
+                RuleId: null,
+                Confidence: "LOW",
+                Reason: $"property row not landed for prop_id={imprv.PropId}; cannot classify universe",
+                QuarantineReasonHint: UniverseQuarantineReasons.UniverseNotEvaluated);
+        }
+
+        var hasLegacyMarker = property.PropCreateDt.HasValue
+                              && property.PropCreateDt.Value < LegacyMarkerCutoff;
+
+        var input = new UniverseClassifierInput(
+            County: DefaultCountyTag,
+            PropValYr: imprv.PropValYr,
+            PropTypeCd: property.PropTypeCd,
+            PropertyUseCd: null,   // future: join dbo.property_val per (prop_id, prop_val_yr, sup_num)
+            AgApply: null,         // future: join dbo.land_detail per prop_id
+            AgUseCd: null,
+            HasLegacyMarker: hasLegacyMarker);
+
+        return await _universeClassifier.ClassifyAsync(input, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// SYNC-DOCTRINE-4: per-batch universe distribution gate.
+    /// Informational; never FAIL (the universe column itself is the
+    /// signal an operator inspects).
+    /// </summary>
+    private async Task WriteUniverseDistributionGateAsync(
+        LoadBatch batch,
+        IReadOnlyDictionary<string, int> counts,
+        CancellationToken cancellationToken)
+    {
+        var detail = counts.Count == 0
+            ? "no rows promoted"
+            : string.Join(" ", counts
+                .OrderBy(kv => kv.Key, StringComparer.Ordinal)
+                .Select(kv => $"{kv.Key}={kv.Value}"));
+
+        var totalRows = counts.Values.Sum();
+
+        _db.SyncBridgePromotionGateResults.Add(new PromotionGateResult
+        {
+            LoadBatchId = batch.LoadBatchId,
+            GateName = "truth-pacs-imprv-universe-distribution",
+            GateStage = "RAW_TO_TRUTH",
+            Status = "PASS",
+            Expected = "informational",
+            Actual = totalRows.ToString(CultureInfo.InvariantCulture),
+            Detail = detail,
+            ExecutedAt = DateTime.UtcNow,
+        });
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 }

@@ -198,7 +198,9 @@ public sealed class BlockCReplayHarnessTests : IDisposable
         await SeedRawDetailAsync(propId: 100, imprvId: 1, imprvDetId: 11, typeCd: "BSMT");
 
         var projector = new PacsImprvCanonicalProjector(
-            _db, NullLogger<PacsImprvCanonicalProjector>.Instance);
+            _db,
+            new NullPerUniverseAttributeDictionary(),
+            NullLogger<PacsImprvCanonicalProjector>.Instance);
 
         var run1 = await projector.ProjectAsync(truthBatch, "h3-run1");
         run1.Status.Should().Be("COMPLETED");
@@ -240,7 +242,9 @@ public sealed class BlockCReplayHarnessTests : IDisposable
         // No parcel xref for prop 100 → row goes to quarantine.
 
         var projector = new PacsImprvCanonicalProjector(
-            _db, NullLogger<PacsImprvCanonicalProjector>.Instance);
+            _db,
+            new NullPerUniverseAttributeDictionary(),
+            NullLogger<PacsImprvCanonicalProjector>.Instance);
 
         var run1 = await projector.ProjectAsync(truthBatch, "h3-quar-run1");
         run1.ImprovementsProjected.Should().Be(0);

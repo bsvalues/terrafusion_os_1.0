@@ -11,6 +11,7 @@ using TerraFusion.Core.Entities.TruthPacs;
 using TerraFusion.Core.Sync.PacsImprvCanonical;
 using TerraFusion.Data;
 using TerraFusion.Data.Services.CanonicalTf;
+using TerraFusion.Unit.Tests.Doctrine;
 using Xunit;
 
 namespace TerraFusion.Unit.Tests.CanonicalTf;
@@ -48,7 +49,9 @@ public sealed class PacsImprvCanonicalProjectorTests : IDisposable
     public void Dispose() => _db.Dispose();
 
     private PacsImprvCanonicalProjector BuildProjector()
-        => new(_db, NullLogger<PacsImprvCanonicalProjector>.Instance);
+        => new(_db,
+               new NullPerUniverseAttributeDictionary(),
+               NullLogger<PacsImprvCanonicalProjector>.Instance);
 
     private async Task<Guid> SeedCompletedBatchAsync(string label)
     {
