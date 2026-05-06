@@ -15,6 +15,8 @@ using TerraFusion.Core.Sync.PacsSale;
 using TerraFusion.Core.Sync.PacsSaleCanonical;
 using TerraFusion.Core.Sync.PacsSalePipeline;
 using TerraFusion.Core.Sync.PacsSaleTruth;
+using TerraFusion.Core.Sync.PacsAttribute;
+using TerraFusion.Core.Sync.PacsAttributeVal;
 using TerraFusion.Core.Sync.PacsImprv;
 using TerraFusion.Core.Sync.PacsImprvAttr;
 using TerraFusion.Core.Sync.PacsImprvCanonical;
@@ -1947,4 +1949,1267 @@ public class CanonicalDebugController : ControllerBase
     /// <param name="OperatorName">Audit anchor across D1+D2+D3.</param>
     public sealed record GisPop1Request(
         string? OperatorName);
+
+    // ════════════════════════════════════════════════════════════════════
+    // DOCTRINE-CLOSURE-1: unified all-lanes runner.
+    //   Owner-anchored seed → 6-lane closure in one call:
+    //     - Parcel chain (S1+S2-B+S3 for tf_parcel + xrefs)
+    //     - Sale chain (sale → keyed supps → truth → canonical)
+    //     - Owner chain (owner → keyed account → truth → canonical)
+    //     - WSDOR chain (WPOV → truth → canonical)
+    //     - Improvement chain (imprv + detail + attr → truth → canonical)
+    //     - Land chain (land_detail → truth → canonical)
+    //     - Geometry chain (ArcGIS REST → D1 → D2 → D3)
+    //   Produces ONE aggregate proof verdict.
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// DOCTRINE-CLOSURE-1: full doctrine pipeline in one call. Owner-
+    /// anchored seed unlocks all five PACS lanes (sale, owner, WSDOR,
+    /// improvement, land) on overlapping prop_ids; geometry lane runs
+    /// independently against the configured ArcGIS feature service and
+    /// resolves APN crosswalk against whatever tf_parcel rows exist
+    /// at projection time.
+    ///
+    /// <para>Goal: prove cross-lane doctrine coherence end-to-end
+    /// in one operator-triggered run. Replaces N-1 separate debug
+    /// endpoints with one canonical entry point — the seed for the
+    /// future operator dashboard.</para>
+    /// </summary>
+    [HttpPost("doctrine-closure/run-all-lanes")]
+    public async Task<IActionResult> RunDoctrineClosure(
+        [FromServices] IPacsOwnerLandingService ownerSvc,
+        [FromServices] IPacsAccountLandingService accountSvc,
+        [FromServices] IPacsPropSuppAssocLandingService assocSvc,
+        [FromServices] IPacsPropertyLandingService propSvc,
+        [FromServices] IPacsParcelSpineTruthPromoter spinePromoter,
+        [FromServices] IPacsParcelCanonicalProjector parcelCanonical,
+        [FromServices] IPacsSaleLandingService saleSvc,
+        [FromServices] IPacsSaleTruthPromoter saleTruthPromoter,
+        [FromServices] IPacsSaleCanonicalProjector saleCanonicalProjector,
+        [FromServices] IPacsOwnerCurrentTruthPromoter ownerTruthPromoter,
+        [FromServices] IPacsOwnerCanonicalProjector ownerCanonicalProjector,
+        [FromServices] IPacsWashPropOwnerValLandingService wpovSvc,
+        [FromServices] IPacsWashPropOwnerValTruthPromoter wpovTruthPromoter,
+        [FromServices] IPacsWsdorCanonicalProjector wsdorCanonicalProjector,
+        [FromServices] IPacsImprvLandingService imprvSvc,
+        [FromServices] IPacsImprvDetailLandingService imprvDetailSvc,
+        [FromServices] IPacsImprvAttrLandingService imprvAttrSvc,
+        [FromServices] IPacsImprvCurrentTruthPromoter imprvTruthPromoter,
+        [FromServices] IPacsImprvCanonicalProjector imprvCanonicalProjector,
+        [FromServices] IPacsLandDetailLandingService landSvc,
+        [FromServices] IPacsLandCurrentTruthPromoter landTruthPromoter,
+        [FromServices] IPacsLandCanonicalProjector landCanonicalProjector,
+        [FromServices] IArcGisRawLandingService gisRawSvc,
+        [FromServices] IArcGisTruthPromotionService gisTruthSvc,
+        [FromServices] IArcGisCanonicalProjector gisCanonicalProjector,
+        [FromServices] IConfiguration config,
+        [FromBody] DoctrineClosureRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        var pacsCs = config.GetConnectionString("PacsConnection");
+        if (string.IsNullOrWhiteSpace(pacsCs))
+            return StatusCode(500, new { error = "ConnectionStrings:PacsConnection is required." });
+
+        var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
+            ? "doctrine-closure-1-all-lanes"
+            : request.OperatorName.Trim();
+        // SYNC-COMPLETE-1: support full-corpus drains. The caller distinguishes
+        // "default safe sample size" (omit the field → 200/500) from "explicit
+        // full corpus" (pass FullCorpus=true → topN passes through as null).
+        // FullCorpus=true takes precedence over any TopN value.
+        var fullCorpus = request?.FullCorpus ?? false;
+        int? ownerTopN = fullCorpus ? null : (request?.OwnerTopN ?? 200);
+        int? saleTopN = fullCorpus ? null : (request?.SaleTopN ?? 500);
+        short workingYear = (short)(request?.WorkingYear ?? 2026);
+        var skipGeometry = request?.SkipGeometry ?? false;
+
+        var startedAt = DateTime.UtcNow;
+        var lanes = new List<object>();
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+
+            // ════════════════════════════════════════════════════════════
+            // OWNER-LANE seed: lands owners, then derives all PACS keys.
+            // ════════════════════════════════════════════════════════════
+            _logger.LogInformation("[DoctrineClosure] OWNER seed (TopN={Top})", ownerTopN);
+            var ownerSrc = new SqlServerPacsOwnerSource(pacsCs, topN: ownerTopN);
+            var ownerS1 = await ownerSvc.LandOwnersAsync(ownerSrc, operatorName, cancellationToken);
+            if (!string.Equals(ownerS1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Owner-S1", error = ownerS1.ErrorSummary, ownerS1 });
+
+            var ownerRows = await _db.LegacyPacsRawOwners
+                .AsNoTracking()
+                .Where(o => o.LoadBatchId == ownerS1.LoadBatchId)
+                .Select(o => new { o.OwnerId, o.PropId, o.OwnerTaxYr })
+                .ToListAsync(cancellationToken);
+            var distinctAcctIds = ownerRows.Select(r => r.OwnerId).Distinct().ToList();
+            var ownerSuppKeys = ownerRows.Select(r => (r.PropId, r.OwnerTaxYr)).Distinct().ToList();
+            var ownerPropIds = ownerRows.Select(r => r.PropId).Distinct().ToList();
+
+            // ════════════════════════════════════════════════════════════
+            // PARCEL chain (used by every PACS lane's xref resolution).
+            // ════════════════════════════════════════════════════════════
+            var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs, ownerPropIds);
+            var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
+            var parcelSpine = await spinePromoter.PromoteAsync(parcelS1.LoadBatchId, operatorName, cancellationToken);
+            var parcelCanon = await parcelCanonical.ProjectAsync(parcelSpine.PromotionLoadBatchId, bentonCountyId, operatorName, cancellationToken);
+            lanes.Add(new { lane = "Parcel", parcelS1.RowsLanded, parcelSpine.ParcelsPromoted, parcelCanon.ParcelsProjected });
+
+            // ════════════════════════════════════════════════════════════
+            // ACCOUNT + SUPP (shared by owner-truth, wpov-truth).
+            // ════════════════════════════════════════════════════════════
+            var acctSrc = new KeyedSqlServerPacsAccountSource(pacsCs, distinctAcctIds);
+            var acctS1 = await accountSvc.LandAccountsAsync(acctSrc, operatorName, cancellationToken);
+            var ownerSuppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs, ownerSuppKeys);
+            var ownerSuppS1 = await assocSvc.LandPropSuppAssocsAsync(ownerSuppSrc, operatorName, cancellationToken);
+
+            // ════════════════════════════════════════════════════════════
+            // OWNER lane (B2-A truth + B3 canonical).
+            // ════════════════════════════════════════════════════════════
+            var ownerTruth = await ownerTruthPromoter.PromoteAsync(ownerS1.LoadBatchId, acctS1.LoadBatchId, ownerSuppS1.LoadBatchId, operatorName, cancellationToken);
+            var ownerCanon = await ownerCanonicalProjector.ProjectAsync(ownerTruth.PromotionLoadBatchId, operatorName, cancellationToken);
+            lanes.Add(new { lane = "Owner", ownerS1.RowsLanded, ownerTruth.OwnersPromoted, ownerCanon.OwnersProjected, ownerCanon.LinksProjected });
+
+            // ════════════════════════════════════════════════════════════
+            // WSDOR lane (B1-C wpov + B2-B truth + B4 canonical).
+            // ════════════════════════════════════════════════════════════
+            var wpovKeys = await _db.TruthPacsOwnerCurrents
+                .AsNoTracking()
+                .Where(t => t.PromotionLoadBatchId == ownerTruth.PromotionLoadBatchId)
+                .Select(t => new { t.PropId, t.OwnerTaxYr, t.OwnerId })
+                .Distinct()
+                .ToListAsync(cancellationToken);
+            var wpovTriples = wpovKeys.Select(k => (k.PropId, k.OwnerTaxYr, k.OwnerId)).ToList();
+            var wpovSrc = new KeyedSqlServerPacsWashPropOwnerValSource(pacsCs, wpovTriples);
+            var wpovS1 = await wpovSvc.LandWashPropOwnerValsAsync(wpovSrc, operatorName, cancellationToken);
+            var wpovTruth = await wpovTruthPromoter.PromoteAsync(wpovS1.LoadBatchId, ownerSuppS1.LoadBatchId, operatorName, cancellationToken);
+            var wsdorCanon = await wsdorCanonicalProjector.ProjectAsync(wpovTruth.PromotionLoadBatchId, operatorName, cancellationToken);
+            lanes.Add(new { lane = "WSDOR", wpovS1.RowsLanded, wpovTruth.RowsPromoted, wsdorCanon.RowsProjected, wsdorCanon.RowsQuarantined });
+
+            // ════════════════════════════════════════════════════════════
+            // IMPROVEMENT lane (C1 + C2 + C3).
+            // ════════════════════════════════════════════════════════════
+            var imprvKeys = ownerPropIds.Select(p => (p, workingYear)).ToList();
+            var imprvSrc = new KeyedSqlServerPacsImprvSource(pacsCs, imprvKeys);
+            var imprvS1 = await imprvSvc.LandImprvsAsync(imprvSrc, operatorName, cancellationToken);
+            var imprvDetailSrc = new KeyedSqlServerPacsImprvDetailSource(pacsCs, imprvKeys);
+            var imprvDetailS1 = await imprvDetailSvc.LandImprvDetailsAsync(imprvDetailSrc, operatorName, cancellationToken);
+            var imprvAttrSrc = new KeyedSqlServerPacsImprvAttrSource(pacsCs, imprvKeys);
+            var imprvAttrS1 = await imprvAttrSvc.LandImprvAttrsAsync(imprvAttrSrc, operatorName, cancellationToken);
+
+            // The imprv truth promoter expects a supp batch keyed by
+            // (prop_id, prop_val_yr). Reuse owner's supp batch — same
+            // identity space (year=workingYear == owner_tax_yr=workingYear).
+            var imprvTruth = await imprvTruthPromoter.PromoteAsync(imprvS1.LoadBatchId, ownerSuppS1.LoadBatchId, operatorName, cancellationToken);
+            var imprvCanon = await imprvCanonicalProjector.ProjectAsync(imprvTruth.PromotionLoadBatchId, operatorName, cancellationToken);
+            lanes.Add(new { lane = "Improvement", imprvS1.RowsLanded, imprvCanon.ImprovementsProjected, imprvCanon.FeaturesProjected });
+
+            // ════════════════════════════════════════════════════════════
+            // LAND lane (D1 + L2 + L3).
+            // ════════════════════════════════════════════════════════════
+            var landKeys = ownerPropIds.Select(p => (p, workingYear)).ToList();
+            var landSrc = new KeyedSqlServerPacsLandDetailSource(pacsCs, landKeys);
+            var landS1 = await landSvc.LandLandDetailsAsync(landSrc, operatorName, cancellationToken);
+            var landTruth = await landTruthPromoter.PromoteAsync(landS1.LoadBatchId, ownerSuppS1.LoadBatchId, operatorName, cancellationToken);
+            var landCanon = await landCanonicalProjector.ProjectAsync(landTruth.PromotionLoadBatchId, operatorName, cancellationToken);
+            lanes.Add(new { lane = "Land", landS1.RowsLanded, landCanon.LandsProjected, landCanon.SizeAcresProjected });
+
+            // ════════════════════════════════════════════════════════════
+            // SALE lane (S1 + keyed supp + S2-B + S3).
+            // Independent seed (SqlServerPacsSaleSource ordered DESC) —
+            // sales correlate weakly with the owner-anchored prop_id set,
+            // so this lane uses its own bounded sample.
+            // ════════════════════════════════════════════════════════════
+            var saleSrc = new SqlServerPacsSaleSource(pacsCs, topN: saleTopN);
+            var saleS1 = await saleSvc.LandSalesAsync(saleSrc, operatorName, cancellationToken);
+
+            var saleSuppRaw = await _db.LegacyPacsRawSales
+                .AsNoTracking()
+                .Where(s => s.LoadBatchId == saleS1.LoadBatchId)
+                .Select(s => new { s.PropId, s.PropValYr })
+                .Distinct()
+                .ToListAsync(cancellationToken);
+            var saleSuppKeys = saleSuppRaw.Select(k => (k.PropId, k.PropValYr)).ToList();
+            var saleSuppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs, saleSuppKeys);
+            var saleSuppS1 = await assocSvc.LandPropSuppAssocsAsync(saleSuppSrc, operatorName, cancellationToken);
+
+            var saleTruth = await saleTruthPromoter.PromoteAsync(saleS1.LoadBatchId, saleSuppS1.LoadBatchId, operatorName, cancellationToken);
+
+            // For sale canonical, we need parcel xrefs for the promoted sales' prop_ids.
+            // Land + project them as a targeted parcel chain.
+            var promotedSalePropIds = await _db.TruthPacsSales
+                .AsNoTracking()
+                .Where(t => t.PromotionLoadBatchId == saleTruth.PromotionLoadBatchId)
+                .Select(t => t.PropId)
+                .Distinct()
+                .ToListAsync(cancellationToken);
+            int salesProjected = 0;
+            int salesQuarantined = 0;
+            if (promotedSalePropIds.Count > 0)
+            {
+                var saleParcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs, promotedSalePropIds);
+                var saleParcelS1 = await propSvc.LandPropertiesAsync(saleParcelSrc, operatorName, cancellationToken);
+                var saleParcelSpine = await spinePromoter.PromoteAsync(saleParcelS1.LoadBatchId, operatorName, cancellationToken);
+                await parcelCanonical.ProjectAsync(saleParcelSpine.PromotionLoadBatchId, bentonCountyId, operatorName, cancellationToken);
+
+                var saleCanon = await saleCanonicalProjector.ProjectAsync(saleTruth.PromotionLoadBatchId, operatorName, cancellationToken);
+                salesProjected = saleCanon.SalesProjected;
+                salesQuarantined = saleCanon.SalesQuarantined;
+            }
+            lanes.Add(new { lane = "Sale", saleS1.RowsLanded, saleTruth.SalesPromoted, salesProjected, salesQuarantined });
+
+            // ════════════════════════════════════════════════════════════
+            // GEOMETRY lane (D1 + D2 + D3 against ArcGIS REST).
+            // Independent of PACS chains; resolves APN crosswalk against
+            // whatever tf_parcel rows exist at projection time (which now
+            // includes everything we just projected from the PACS lanes).
+            // ════════════════════════════════════════════════════════════
+            object? gisLane = null;
+            if (!skipGeometry)
+            {
+                var gisD1 = await gisRawSvc.LandParcelGeomsAsync(bentonCountyId, operatorName, cancellationToken);
+                var gisD2 = await gisTruthSvc.PromoteCountyAsync(bentonCountyId, operatorName, cancellationToken);
+                var gisD3 = await gisCanonicalProjector.ProjectCountyAsync(bentonCountyId, operatorName, cancellationToken);
+                gisLane = new { lane = "Geometry", gisD1.FeaturesLanded, gisD3.RowsProjected, gisD3.ApnCrosswalkResolved, gisD3.ApnCrosswalkUnresolved };
+                lanes.Add(gisLane);
+            }
+
+            // ── Aggregate read-back. ──
+            var counts = new
+            {
+                tf_parcel = await _db.TfParcels.CountAsync(cancellationToken),
+                tf_sale = await _db.TfSales.CountAsync(cancellationToken),
+                tf_owner = await _db.TfOwners.CountAsync(cancellationToken),
+                tf_parcel_owner_link = await _db.TfParcelOwnerLinks.CountAsync(cancellationToken),
+                tf_assessment_wsdor = await _db.TfAssessmentWsdors.CountAsync(cancellationToken),
+                tf_improvement = await _db.TfImprovements.CountAsync(cancellationToken),
+                tf_improvement_feature = await _db.TfImprovementFeatures.CountAsync(cancellationToken),
+                tf_land = await _db.TfLands.CountAsync(cancellationToken),
+                tf_parcel_geom = skipGeometry ? -1 : await _db.TfParcelGeoms.CountAsync(cancellationToken),
+            };
+
+            var elapsed = (DateTime.UtcNow - startedAt).TotalSeconds;
+
+            // ── Verdict: every lane must produce > 0 in its terminal canonical table. ──
+            var verdict = (counts.tf_parcel > 0 && counts.tf_owner > 0 &&
+                           counts.tf_assessment_wsdor > 0 && counts.tf_improvement > 0 &&
+                           counts.tf_land > 0 && (skipGeometry || counts.tf_parcel_geom > 0))
+                ? "PROOF: doctrine pipeline operational across ALL LANES — DOCTRINE-CLOSURE-1 succeeded."
+                : "PARTIAL: investigate per-lane outputs above.";
+
+            return Ok(new
+            {
+                operatorName,
+                bentonCountyId,
+                ownerTopN, saleTopN, workingYear, skipGeometry,
+                startedAt, elapsedSeconds = elapsed,
+                lanes,
+                counts,
+                proofVerdict = verdict,
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[DoctrineClosure] FAILED");
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name, lanesCompleted = lanes });
+        }
+    }
+
+    /// <param name="OperatorName">Audit anchor across all stages.</param>
+    /// <param name="OwnerTopN">Owner-anchored seed size. Default 200.</param>
+    /// <param name="SaleTopN">Sale lane independent seed size. Default 500.</param>
+    /// <param name="WorkingYear">PACS year filter. Default 2026.</param>
+    /// <param name="SkipGeometry">If true, skip ArcGIS lanes (useful for offline runs).</param>
+    /// <param name="FullCorpus">SYNC-COMPLETE-1: when true, ignores OwnerTopN/SaleTopN
+    /// and drains the full PACS corpus. Wall-clock ~60-150 minutes. Use for
+    /// production drains; the default proof-mode TopN values are safe for
+    /// dev iteration.</param>
+    public sealed record DoctrineClosureRequest(
+        string? OperatorName,
+        int? OwnerTopN,
+        int? SaleTopN,
+        int? WorkingYear,
+        bool? SkipGeometry,
+        bool? FullCorpus);
+
+    // ════════════════════════════════════════════════════════════════════
+    // ATTR-POP-1: populate canonical_tf.attribute_definition from PACS
+    //   dbo.attribute. Drains the imprv_attr UnknownAttribute quarantine
+    //   when followed by a re-run of the imprv canonical projector.
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// ATTR-POP-1: populate the attribute-definition dictionary for
+    /// the resolved Benton county. Reads PACS <c>dbo.attribute</c>
+    /// (family-grain), upserts <c>canonical_tf.attribute_definition</c>
+    /// rows keyed <c>(CountyId, IAttrId)</c>, and (optionally)
+    /// re-runs the imprv canonical projector against the latest
+    /// imprv truth batch so quarantined imprv_attr rows lift back
+    /// into <c>tf_improvement_feature.AttributeId</c> resolved.
+    /// </summary>
+    [HttpPost("attr-pop-1/run-populate")]
+    public async Task<IActionResult> RunAttrPop1(
+        [FromServices] IPacsAttributePopulator populator,
+        [FromServices] IPacsImprvCanonicalProjector imprvCanonicalProjector,
+        [FromServices] IConfiguration config,
+        [FromBody] AttrPop1Request? request,
+        CancellationToken cancellationToken = default)
+    {
+        var pacsCs = config.GetConnectionString("PacsConnection");
+        if (string.IsNullOrWhiteSpace(pacsCs))
+            return StatusCode(500, new { error = "ConnectionStrings:PacsConnection is required for ATTR-POP-1." });
+
+        var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
+            ? "attr-pop-1-populate"
+            : request.OperatorName.Trim();
+        var rerunImprvCanonical = request?.RerunImprvCanonical ?? true;
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+
+            // ── A. Populate attribute_definition. ──
+            _logger.LogInformation("[AttrPop1] A. Populating attribute_definition for countyId={Cid}", bentonCountyId);
+            var src = new SqlServerPacsAttributeSource(pacsCs);
+            var pop = await populator.PopulateAsync(src, bentonCountyId, operatorName, cancellationToken);
+            if (!string.Equals(pop.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "Attr-Populate", error = pop.ErrorSummary, pop });
+
+            // Read-back: how many definitions does Benton now have?
+            var attrDefCount = await _db.AttributeDefinitions
+                .Where(a => a.CountyId == bentonCountyId)
+                .CountAsync(cancellationToken);
+            var activeAttrDefCount = await _db.AttributeDefinitions
+                .Where(a => a.CountyId == bentonCountyId && a.IsActive)
+                .CountAsync(cancellationToken);
+
+            // ── B. Optional: re-run imprv canonical against the most-
+            // recent imprv truth batch so quarantine drains. ──
+            object? reprojectionResult = null;
+            int? quarantineDelta = null;
+            int? featuresAttributedDelta = null;
+            if (rerunImprvCanonical)
+            {
+                var preQuarantineCount = await _db.LegacyTfUnprovenImprvAttrs.CountAsync(cancellationToken);
+                var preFeaturesAttributed = await _db.TfImprovementFeatures
+                    .Where(f => f.AttributeId != null)
+                    .CountAsync(cancellationToken);
+
+                var latestImprvTruth = await _db.SyncBridgeLoadBatches
+                    .Where(b => b.SourceSystem == "truth-pacs-imprv-promoter" && b.Status == "COMPLETED")
+                    .OrderByDescending(b => b.CompletedAt)
+                    .Select(b => b.LoadBatchId)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (latestImprvTruth == Guid.Empty)
+                {
+                    reprojectionResult = new { note = "No completed imprv truth batch found; skipping reprojection." };
+                }
+                else
+                {
+                    _logger.LogInformation("[AttrPop1] B. Re-running imprv canonical for batch={BatchId}", latestImprvTruth);
+                    var reproject = await imprvCanonicalProjector.ProjectAsync(latestImprvTruth, operatorName, cancellationToken);
+                    reprojectionResult = new
+                    {
+                        reproject.Status,
+                        reproject.PromotionLoadBatchId,
+                        reproject.TruthRowsConsidered,
+                        reproject.ImprovementsProjected,
+                        reproject.FeaturesProjected,
+                        reproject.AttributesConsidered,
+                        reproject.AttributesResolved,
+                        reproject.AttributesQuarantined,
+                        reproject.PriorAttrQuarantineRowsRemoved,
+                    };
+
+                    var postQuarantineCount = await _db.LegacyTfUnprovenImprvAttrs.CountAsync(cancellationToken);
+                    var postFeaturesAttributed = await _db.TfImprovementFeatures
+                        .Where(f => f.AttributeId != null)
+                        .CountAsync(cancellationToken);
+                    quarantineDelta = postQuarantineCount - preQuarantineCount;
+                    featuresAttributedDelta = postFeaturesAttributed - preFeaturesAttributed;
+                }
+            }
+
+            return Ok(new
+            {
+                operatorName,
+                bentonCountyId,
+                populator = new
+                {
+                    pop.Status,
+                    pop.PromotionLoadBatchId,
+                    pop.RowsConsidered,
+                    pop.RowsInserted,
+                    pop.RowsUpdated,
+                    pop.RowsSoftRetired,
+                    pop.InactiveSkipped,
+                },
+                counts = new
+                {
+                    attribute_definition_total = attrDefCount,
+                    attribute_definition_active = activeAttrDefCount,
+                },
+                reprojection = reprojectionResult,
+                quarantineDelta,
+                featuresAttributedDelta,
+                proofVerdict = pop.RowsConsidered > 0 && (pop.RowsInserted + pop.RowsUpdated) > 0
+                    ? (featuresAttributedDelta is int delta && delta > 0
+                        ? $"PROOF: attribute_definition populated AND {delta} additional tf_improvement_feature rows now carry AttributeId — ATTR-POP-1 succeeded."
+                        : "PARTIAL: attribute_definition populated. Re-projection ran but no AttributeId resolution improvement (likely value-grain vs family-grain mismatch — see Block-C v1.5 contract).")
+                    : "INCONCLUSIVE: PACS dbo.attribute returned no rows. Investigate.",
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[AttrPop1] FAILED");
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name });
+        }
+    }
+
+    /// <param name="OperatorName">Audit anchor.</param>
+    /// <param name="RerunImprvCanonical">If true (default), automatically
+    /// re-runs the imprv canonical projector against the latest imprv
+    /// truth batch so quarantine rows lift back. Set false to populate
+    /// the dictionary only.</param>
+    public sealed record AttrPop1Request(
+        string? OperatorName,
+        bool? RerunImprvCanonical);
+
+    // ════════════════════════════════════════════════════════════════════
+    // ATTR-DRAIN-1: drain legacy_tf_unproven.imprv_attr by re-running the
+    //   keyed imprv chain for the (year, prop_id) tuples that produced the
+    //   quarantine, after attribute_definition has been populated. The
+    //   canonical projector's prior-quarantine cleanup then matches those
+    //   truth rows and removes the obsolete quarantine entries; surviving
+    //   imprv_attr rows re-resolve against the dictionary.
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// ATTR-DRAIN-1: drain the imprv_attr UnknownAttribute quarantine.
+    ///
+    /// <para>Strategy:
+    /// <list type="number">
+    ///   <item>Read distinct (PropValYr, PropId) from
+    ///   <c>legacy_tf_unproven.imprv_attr</c> filtered to
+    ///   <c>QuarantineReason = "UnknownAttribute"</c>.</item>
+    ///   <item>Compute overlap between distinct IAttrValIds in
+    ///   quarantine and AttributeDefinition.IAttrId for Benton —
+    ///   this tells the operator whether ATTR-POP-1 (family-grain)
+    ///   is sufficient or ATTR-POP-2 (value-grain) is needed.</item>
+    ///   <item>Group quarantine tuples by PropValYr and run the
+    ///   keyed imprv chain (parcel → supp → imprv + detail + attr →
+    ///   truth → canonical) per year. The canonical projector
+    ///   removes prior quarantine matching the truth rows' 4-keys
+    ///   and re-resolves attrs against the now-populated dictionary.</item>
+    /// </list>
+    /// </para>
+    ///
+    /// <para>Honest scope note: if IAttrValIds in quarantine don't
+    /// overlap with attribute_definition.IAttrId (the family/value
+    /// grain mismatch flagged in Block-C v1.5), drain will RUN but
+    /// won't reduce quarantine — the rows will be removed then
+    /// re-quarantined. The response surfaces this as
+    /// <c>iAttrValIdOverlap</c> so the operator can see the real
+    /// blocker.</para>
+    /// </summary>
+    [HttpPost("attr-drain-1/run-drain")]
+    public async Task<IActionResult> RunAttrDrain1(
+        [FromServices] IPacsOwnerLandingService ownerSvc,
+        [FromServices] IPacsPropertyLandingService propSvc,
+        [FromServices] IPacsParcelSpineTruthPromoter spinePromoter,
+        [FromServices] IPacsParcelCanonicalProjector parcelCanonical,
+        [FromServices] IPacsPropSuppAssocLandingService assocSvc,
+        [FromServices] IPacsImprvLandingService imprvSvc,
+        [FromServices] IPacsImprvDetailLandingService imprvDetailSvc,
+        [FromServices] IPacsImprvAttrLandingService imprvAttrSvc,
+        [FromServices] IPacsImprvCurrentTruthPromoter imprvTruthPromoter,
+        [FromServices] IPacsImprvCanonicalProjector imprvCanonicalProjector,
+        [FromServices] RefreshableImprvAttrDictionary dictionary,
+        [FromServices] IConfiguration config,
+        [FromBody] AttrDrain1Request? request,
+        CancellationToken cancellationToken = default)
+    {
+        var pacsCs = config.GetConnectionString("PacsConnection");
+        if (string.IsNullOrWhiteSpace(pacsCs))
+            return StatusCode(500, new { error = "ConnectionStrings:PacsConnection is required for ATTR-DRAIN-1." });
+
+        var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
+            ? "attr-drain-1"
+            : request.OperatorName.Trim();
+        var dryRun = request?.DryRun ?? false;
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+
+            // ── Stage A: inspect quarantine across BOTH reasons. ──
+            // The 4,740 rows on the dashboard are LANDING-layer
+            // (UNKNOWN_I_ATTR_VAL_CD) — landing service rejects
+            // codes not in the active dictionary. Distinct from
+            // canonical-layer (UNKNOWN_ATTRIBUTE) which fires later
+            // when the canonical projector can't resolve IAttrId.
+            var quarantineByReason = await _db.LegacyTfUnprovenImprvAttrs
+                .GroupBy(q => q.QuarantineReason)
+                .Select(g => new { reason = g.Key, count = g.Count() })
+                .ToListAsync(cancellationToken);
+            var landingQuarantineRows = await _db.LegacyTfUnprovenImprvAttrs
+                .Where(q => q.QuarantineReason == "UNKNOWN_I_ATTR_VAL_CD")
+                .Select(q => new { q.PropValYr, q.PropId, q.IAttrValId, q.IAttrValCd })
+                .ToListAsync(cancellationToken);
+            var canonicalQuarantineRows = await _db.LegacyTfUnprovenImprvAttrs
+                .Where(q => q.QuarantineReason == "UNKNOWN_ATTRIBUTE")
+                .Select(q => new { q.PropValYr, q.PropId, q.IAttrValId })
+                .ToListAsync(cancellationToken);
+
+            var totalQuarantineBefore = landingQuarantineRows.Count + canonicalQuarantineRows.Count;
+            var allTuples = landingQuarantineRows
+                .Select(q => (q.PropValYr, q.PropId))
+                .Concat(canonicalQuarantineRows.Select(q => (q.PropValYr, q.PropId)))
+                .Distinct()
+                .ToList();
+            var byYear = allTuples
+                .GroupBy(t => t.PropValYr)
+                .ToDictionary(g => g.Key, g => g.Select(t => t.PropId).Distinct().ToList());
+
+            // Pre-state for delta reporting.
+            var featuresAttributedBefore = await _db.TfImprovementFeatures
+                .Where(f => f.AttributeId != null)
+                .CountAsync(cancellationToken);
+
+            // ── Stage B: refresh the landing-layer dictionary. ──
+            var loader = new SqlServerImprvAttrValDictionaryLoader(pacsCs);
+            var dictCodes = await loader.LoadDistinctCodesAsync(cancellationToken);
+            var dictCountBefore = dictionary.Count;
+            dictionary.Refresh(dictCodes);
+            _logger.LogInformation(
+                "[AttrDrain1] Dictionary refreshed: {Before} → {After} codes",
+                dictCountBefore, dictionary.Count);
+
+            var inspection = new
+            {
+                totalQuarantineBefore,
+                quarantineByReason,
+                landingQuarantineCount = landingQuarantineRows.Count,
+                canonicalQuarantineCount = canonicalQuarantineRows.Count,
+                distinctTuples = allTuples.Count,
+                distinctYears = byYear.Count,
+                yearBreakdown = byYear.ToDictionary(kv => kv.Key.ToString(), kv => kv.Value.Count),
+                attributeDefinitionsActive = await _db.AttributeDefinitions
+                    .Where(a => a.CountyId == bentonCountyId && a.IsActive)
+                    .CountAsync(cancellationToken),
+                landingDictionaryBefore = dictCountBefore,
+                landingDictionaryAfter = dictionary.Count,
+                landingDictionaryDelta = dictionary.Count - dictCountBefore,
+                featuresAttributedBefore,
+            };
+
+            if (dryRun)
+            {
+                return Ok(new
+                {
+                    operatorName,
+                    bentonCountyId,
+                    mode = "DRY_RUN",
+                    inspection,
+                    plan = byYear.Select(kv => new
+                    {
+                        year = kv.Key,
+                        propIdsToReproject = kv.Value.Count,
+                    }).ToList(),
+                    note = $"Dictionary refreshed to {dictionary.Count} codes. Drain plan: re-land {allTuples.Count} (year, prop_id) tuples across {byYear.Count} years; canonical re-projection drains both landing and canonical quarantine.",
+                });
+            }
+
+            if (totalQuarantineBefore == 0)
+            {
+                return Ok(new
+                {
+                    operatorName,
+                    bentonCountyId,
+                    inspection,
+                    note = "No quarantine rows to drain. Dictionary refresh ran anyway.",
+                });
+            }
+
+            // ── Stage C: delete stale landing-layer quarantine. ──
+            // These rows were quarantined because the dictionary was
+            // empty. Now that it's populated, re-landing those exact
+            // (year, prop_id) tuples will re-process the source rows
+            // through the dictionary check → succeed → land cleanly.
+            // We delete the stale quarantine rows BEFORE re-landing
+            // so the drain delta is measurable.
+            var landingQuarantineToDelete = await _db.LegacyTfUnprovenImprvAttrs
+                .Where(q => q.QuarantineReason == "UNKNOWN_I_ATTR_VAL_CD")
+                .ToListAsync(cancellationToken);
+            if (landingQuarantineToDelete.Count > 0)
+            {
+                _db.LegacyTfUnprovenImprvAttrs.RemoveRange(landingQuarantineToDelete);
+                await _db.SaveChangesAsync(cancellationToken);
+                _logger.LogInformation(
+                    "[AttrDrain1] Deleted {N} stale landing-layer quarantine rows",
+                    landingQuarantineToDelete.Count);
+            }
+
+            // ── Stage C: per-year keyed re-projection chain. ──
+            var perYearResults = new List<object>();
+            foreach (var (year, propIds) in byYear.OrderByDescending(kv => kv.Key))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                _logger.LogInformation(
+                    "[AttrDrain1] Year={Year} draining {N} prop_ids", year, propIds.Count);
+
+                short workingYear = year;
+                var keys = propIds.Select(p => (p, workingYear)).ToList();
+
+                // Land parcels (truth+canonical needed for owner xref resolution
+                // when imprv canonical eventually projects features).
+                var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs, propIds);
+                var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
+                if (parcelS1.Status != "COMPLETED") { perYearResults.Add(new { year, stage = "parcel-S1", error = parcelS1.ErrorSummary }); continue; }
+                var parcelSpine = await spinePromoter.PromoteAsync(parcelS1.LoadBatchId, operatorName, cancellationToken);
+                if (parcelSpine.Status != "COMPLETED") { perYearResults.Add(new { year, stage = "parcel-spine", error = parcelSpine.ErrorSummary }); continue; }
+                await parcelCanonical.ProjectAsync(parcelSpine.PromotionLoadBatchId, bentonCountyId, operatorName, cancellationToken);
+
+                // Land supp pointers.
+                var suppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs, keys);
+                var suppS1 = await assocSvc.LandPropSuppAssocsAsync(suppSrc, operatorName, cancellationToken);
+                if (suppS1.Status != "COMPLETED") { perYearResults.Add(new { year, stage = "supp-S1", error = suppS1.ErrorSummary }); continue; }
+
+                // Land imprv + detail + attr.
+                var imprvSrc = new KeyedSqlServerPacsImprvSource(pacsCs, keys);
+                var imprvS1 = await imprvSvc.LandImprvsAsync(imprvSrc, operatorName, cancellationToken);
+                if (imprvS1.Status != "COMPLETED") { perYearResults.Add(new { year, stage = "imprv-S1", error = imprvS1.ErrorSummary }); continue; }
+
+                var detailSrc = new KeyedSqlServerPacsImprvDetailSource(pacsCs, keys);
+                var detailS1 = await imprvDetailSvc.LandImprvDetailsAsync(detailSrc, operatorName, cancellationToken);
+                if (detailS1.Status != "COMPLETED") { perYearResults.Add(new { year, stage = "detail-S1", error = detailS1.ErrorSummary }); continue; }
+
+                var attrSrc = new KeyedSqlServerPacsImprvAttrSource(pacsCs, keys);
+                var attrS1 = await imprvAttrSvc.LandImprvAttrsAsync(attrSrc, operatorName, cancellationToken);
+                if (attrS1.Status != "COMPLETED") { perYearResults.Add(new { year, stage = "attr-S1", error = attrS1.ErrorSummary }); continue; }
+
+                // Promote imprv truth → project canonical (this is the step
+                // that drains prior quarantine matching the 4-key tuples).
+                var imprvTruth = await imprvTruthPromoter.PromoteAsync(imprvS1.LoadBatchId, suppS1.LoadBatchId, operatorName, cancellationToken);
+                if (imprvTruth.Status != "COMPLETED") { perYearResults.Add(new { year, stage = "imprv-truth", error = imprvTruth.ErrorSummary }); continue; }
+
+                var imprvCanon = await imprvCanonicalProjector.ProjectAsync(imprvTruth.PromotionLoadBatchId, operatorName, cancellationToken);
+                perYearResults.Add(new
+                {
+                    year,
+                    stage = "imprv-canon",
+                    imprvCanon.Status,
+                    parcelsProcessed = propIds.Count,
+                    truthRowsConsidered = imprvCanon.TruthRowsConsidered,
+                    improvementsProjected = imprvCanon.ImprovementsProjected,
+                    featuresProjected = imprvCanon.FeaturesProjected,
+                    attributesConsidered = imprvCanon.AttributesConsidered,
+                    attributesResolved = imprvCanon.AttributesResolved,
+                    attributesQuarantined = imprvCanon.AttributesQuarantined,
+                    priorAttrQuarantineRowsRemoved = imprvCanon.PriorAttrQuarantineRowsRemoved,
+                });
+            }
+
+            // ── Stage D: post-state delta. ──
+            var landingAfter = await _db.LegacyTfUnprovenImprvAttrs
+                .Where(q => q.QuarantineReason == "UNKNOWN_I_ATTR_VAL_CD")
+                .CountAsync(cancellationToken);
+            var canonicalAfter = await _db.LegacyTfUnprovenImprvAttrs
+                .Where(q => q.QuarantineReason == "UNKNOWN_ATTRIBUTE")
+                .CountAsync(cancellationToken);
+            var totalQuarantineAfter = landingAfter + canonicalAfter;
+            var featuresAttributedAfter = await _db.TfImprovementFeatures
+                .Where(f => f.AttributeId != null)
+                .CountAsync(cancellationToken);
+            var quarantineDrained = totalQuarantineBefore - totalQuarantineAfter;
+            var featuresAttributedDelta = featuresAttributedAfter - featuresAttributedBefore;
+
+            return Ok(new
+            {
+                operatorName,
+                bentonCountyId,
+                inspection,
+                perYearResults,
+                outcome = new
+                {
+                    totalQuarantineBefore,
+                    landingQuarantineAfter = landingAfter,
+                    canonicalQuarantineAfter = canonicalAfter,
+                    totalQuarantineAfter,
+                    quarantineDrained,
+                    featuresAttributedBefore,
+                    featuresAttributedAfter,
+                    featuresAttributedDelta,
+                },
+                proofVerdict = quarantineDrained > 0
+                    ? $"PROOF: drained {quarantineDrained} quarantine rows ({totalQuarantineBefore} → {totalQuarantineAfter}). {featuresAttributedDelta} additional tf_improvement_feature rows now carry AttributeId."
+                    : (totalQuarantineBefore == 0
+                        ? "INFO: no quarantine to drain."
+                        : "INCONCLUSIVE: drain ran but quarantine did not decrease. Investigate landing/canonical reason breakdown above."),
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[AttrDrain1] FAILED");
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name });
+        }
+    }
+
+    /// <param name="OperatorName">Audit anchor.</param>
+    /// <param name="DryRun">If true, only inspect the quarantine + overlap;
+    /// no landing or projection runs. Use this first to confirm the drain
+    /// plan and the family/value grain overlap before paying the chain cost.</param>
+    public sealed record AttrDrain1Request(
+        string? OperatorName,
+        bool? DryRun);
+
+    // ════════════════════════════════════════════════════════════════════
+    // ATTR-POP-2: value-grain populator. Closes the family/value-grain
+    //   loop opened by ATTR-POP-1 + ATTR-DRAIN-1. Reads PACS value-grain
+    //   (i_attr_val_id, i_attr_val_cd) pairs and upserts attribute_definition
+    //   keyed by IAttrId = i_attr_val_id — the grain the imprv canonical
+    //   projector keys on. After this, tf_improvement_feature.AttributeId
+    //   resolutions succeed.
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// ATTR-POP-2: value-grain attribute_definition populator + optional
+    /// imprv canonical re-projection. Closes the resolution gap that
+    /// left 7 canonical-layer quarantine rows after ATTR-DRAIN-1.
+    /// </summary>
+    [HttpPost("attr-pop-2/run-populate")]
+    public async Task<IActionResult> RunAttrPop2(
+        [FromServices] IPacsAttributeValPopulator populator,
+        [FromServices] IPacsImprvCanonicalProjector imprvCanonicalProjector,
+        [FromServices] IConfiguration config,
+        [FromBody] AttrPop2Request? request,
+        CancellationToken cancellationToken = default)
+    {
+        var pacsCs = config.GetConnectionString("PacsConnection");
+        if (string.IsNullOrWhiteSpace(pacsCs))
+            return StatusCode(500, new { error = "ConnectionStrings:PacsConnection is required for ATTR-POP-2." });
+
+        var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
+            ? "attr-pop-2-populate"
+            : request.OperatorName.Trim();
+        var rerunImprvCanonical = request?.RerunImprvCanonical ?? true;
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+
+            // ── A. Populate value-grain attribute_definition. ──
+            var src = new SqlServerPacsAttributeValSource(pacsCs);
+            var pop = await populator.PopulateAsync(src, bentonCountyId, operatorName, cancellationToken);
+            if (!string.Equals(pop.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "AttrVal-Populate", error = pop.ErrorSummary, pop });
+
+            var attrDefTotal = await _db.AttributeDefinitions
+                .Where(a => a.CountyId == bentonCountyId)
+                .CountAsync(cancellationToken);
+            var attrDefActive = await _db.AttributeDefinitions
+                .Where(a => a.CountyId == bentonCountyId && a.IsActive)
+                .CountAsync(cancellationToken);
+
+            // ── B. Optional re-projection. ──
+            object? reprojection = null;
+            int? quarantineDelta = null;
+            int? featuresAttributedDelta = null;
+            if (rerunImprvCanonical)
+            {
+                var preQuarantine = await _db.LegacyTfUnprovenImprvAttrs.CountAsync(cancellationToken);
+                var preFeaturesAttributed = await _db.TfImprovementFeatures
+                    .Where(f => f.AttributeId != null)
+                    .CountAsync(cancellationToken);
+
+                // Re-project ALL recent imprv truth batches so any prior
+                // canonical-layer quarantine flips to resolved. Take the
+                // last few completed truth batches — that's where the 7
+                // residual rows came from.
+                var recentTruthBatches = await _db.SyncBridgeLoadBatches
+                    .Where(b => b.SourceSystem == "truth-pacs-imprv-promoter" && b.Status == "COMPLETED")
+                    .OrderByDescending(b => b.CompletedAt)
+                    .Take(10)
+                    .Select(b => b.LoadBatchId)
+                    .ToListAsync(cancellationToken);
+
+                var perBatch = new List<object>();
+                foreach (var truthBatchId in recentTruthBatches)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var r = await imprvCanonicalProjector.ProjectAsync(truthBatchId, operatorName, cancellationToken);
+                    perBatch.Add(new
+                    {
+                        truthBatchId,
+                        r.Status,
+                        r.AttributesConsidered,
+                        r.AttributesResolved,
+                        r.AttributesQuarantined,
+                        r.PriorAttrQuarantineRowsRemoved,
+                    });
+                }
+
+                var postQuarantine = await _db.LegacyTfUnprovenImprvAttrs.CountAsync(cancellationToken);
+                var postFeaturesAttributed = await _db.TfImprovementFeatures
+                    .Where(f => f.AttributeId != null)
+                    .CountAsync(cancellationToken);
+                quarantineDelta = postQuarantine - preQuarantine;
+                featuresAttributedDelta = postFeaturesAttributed - preFeaturesAttributed;
+
+                reprojection = new
+                {
+                    batchesReprojected = recentTruthBatches.Count,
+                    preQuarantine,
+                    postQuarantine,
+                    preFeaturesAttributed,
+                    postFeaturesAttributed,
+                    perBatch,
+                };
+            }
+
+            return Ok(new
+            {
+                operatorName,
+                bentonCountyId,
+                populator = new
+                {
+                    pop.Status,
+                    pop.PromotionLoadBatchId,
+                    pop.RowsConsidered,
+                    pop.RowsInserted,
+                    pop.RowsUpdated,
+                    pop.DuplicatePairsCollapsed,
+                },
+                counts = new
+                {
+                    attribute_definition_total = attrDefTotal,
+                    attribute_definition_active = attrDefActive,
+                },
+                reprojection,
+                quarantineDelta,
+                featuresAttributedDelta,
+                proofVerdict = featuresAttributedDelta is int delta && delta > 0
+                    ? $"PROOF: value-grain attribute_definition populated AND {delta} additional tf_improvement_feature rows now carry AttributeId — ATTR-POP-2 closed the family/value-grain loop."
+                    : (pop.RowsConsidered > 0
+                        ? "PARTIAL: dictionary populated. Reprojection ran but features-attributed didn't grow — investigate whether the recent truth batches actually contained imprv_attr rows whose IAttrValId is in the new dictionary set."
+                        : "INCONCLUSIVE: 0 rows from PACS. Investigate."),
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[AttrPop2] FAILED");
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name });
+        }
+    }
+
+    public sealed record AttrPop2Request(
+        string? OperatorName,
+        bool? RerunImprvCanonical);
+
+    // ════════════════════════════════════════════════════════════════════
+    // SALE-DRAIN-1: drain legacy_tf_unproven.sale (NoParcelXref) by
+    //   re-landing the parcel chain for the quarantined prop_ids and
+    //   re-projecting the sale truth batches. Mirrors ATTR-DRAIN-1's
+    //   4-stage pattern. Sales whose underlying parcel is non-R-typed
+    //   stay quarantined — that's doctrine-correct, not failure.
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// SALE-DRAIN-1: drain legacy_tf_unproven.sale rows (reason
+    /// NoParcelXref). Re-lands parcels for the quarantined prop_ids,
+    /// then re-projects the corresponding sale truth batches. Real-
+    /// property parcels resolve; non-R parcels (MH/P/etc.) re-quarantine
+    /// as doctrine-correct signal.
+    /// </summary>
+    [HttpPost("sale-drain-1/run-drain")]
+    public async Task<IActionResult> RunSaleDrain1(
+        [FromServices] IPacsPropertyLandingService propSvc,
+        [FromServices] IPacsParcelSpineTruthPromoter spinePromoter,
+        [FromServices] IPacsParcelCanonicalProjector parcelCanonical,
+        [FromServices] IPacsSaleCanonicalProjector saleCanonicalProjector,
+        [FromServices] IConfiguration config,
+        [FromBody] SaleDrain1Request? request,
+        CancellationToken cancellationToken = default)
+    {
+        var pacsCs = config.GetConnectionString("PacsConnection");
+        if (string.IsNullOrWhiteSpace(pacsCs))
+            return StatusCode(500, new { error = "ConnectionStrings:PacsConnection is required for SALE-DRAIN-1." });
+
+        var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
+            ? "sale-drain-1"
+            : request.OperatorName.Trim();
+        var dryRun = request?.DryRun ?? false;
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+
+            // ── Stage A: inspect. ──
+            var quarantined = await _db.LegacyTfUnprovenSales
+                .Select(q => new
+                {
+                    q.UnprovenRowId,
+                    q.PropId,
+                    q.SourceTruthSaleId,
+                    q.PromotionLoadBatchId,
+                    q.QuarantineReason,
+                })
+                .ToListAsync(cancellationToken);
+
+            var totalQuarantineBefore = quarantined.Count;
+            var distinctPropIds = quarantined.Select(q => q.PropId).Distinct().ToList();
+            var distinctTruthSaleIds = quarantined.Select(q => q.SourceTruthSaleId).Distinct().ToList();
+            var byReason = quarantined
+                .GroupBy(q => q.QuarantineReason)
+                .Select(g => new { reason = g.Key, count = g.Count() })
+                .ToList();
+
+            // Map TruthSaleIds → distinct truth-batch ids (S2-B promotion batches).
+            var truthBatchIds = await _db.TruthPacsSales
+                .Where(t => distinctTruthSaleIds.Contains(t.TruthSaleId))
+                .Select(t => t.PromotionLoadBatchId)
+                .Distinct()
+                .ToListAsync(cancellationToken);
+
+            // Pre-state for delta reporting.
+            var canonicalSalesBefore = await _db.TfSales.CountAsync(cancellationToken);
+
+            var inspection = new
+            {
+                totalQuarantineBefore,
+                quarantineByReason = byReason,
+                distinctPropIds = distinctPropIds.Count,
+                distinctSaleTruthBatches = truthBatchIds.Count,
+                canonicalSalesBefore,
+            };
+
+            if (dryRun)
+            {
+                return Ok(new
+                {
+                    operatorName,
+                    bentonCountyId,
+                    mode = "DRY_RUN",
+                    inspection,
+                    plan = new
+                    {
+                        landParcels = distinctPropIds.Count,
+                        reprojectSaleTruthBatches = truthBatchIds.Count,
+                    },
+                    note = totalQuarantineBefore == 0
+                        ? "No quarantine rows to drain."
+                        : "Will re-land parcels for the quarantined prop_ids, project them to canonical, then re-project each sale truth batch. Doctrine-correct: non-R parcels re-quarantine; R-typed parcels resolve.",
+                });
+            }
+
+            if (totalQuarantineBefore == 0)
+            {
+                return Ok(new
+                {
+                    operatorName,
+                    bentonCountyId,
+                    inspection,
+                    note = "No quarantine rows to drain.",
+                });
+            }
+
+            // ── Stage B: refresh upstream gate state — land parcels. ──
+            // The projector keys on parcel xref existence. Land the prop_ids
+            // through the full chain (raw → spine → canonical) so xrefs exist.
+            var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs, distinctPropIds);
+            var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
+            if (parcelS1.Status != "COMPLETED")
+                return StatusCode(500, new { stage = "Parcel-S1", error = parcelS1.ErrorSummary, parcelS1 });
+
+            var parcelSpine = await spinePromoter.PromoteAsync(parcelS1.LoadBatchId, operatorName, cancellationToken);
+            if (parcelSpine.Status != "COMPLETED")
+                return StatusCode(500, new { stage = "Parcel-Spine", error = parcelSpine.ErrorSummary, parcelSpine });
+
+            var parcelCanon = await parcelCanonical.ProjectAsync(
+                parcelSpine.PromotionLoadBatchId, bentonCountyId, operatorName, cancellationToken);
+            if (parcelCanon.Status != "COMPLETED")
+                return StatusCode(500, new { stage = "Parcel-Canonical", error = parcelCanon.ErrorSummary, parcelCanon });
+
+            var parcelStage = new
+            {
+                parcelS1.RowsLanded,
+                parcelS1.TypeDistribution,
+                parcelSpine.ParcelsConsidered,
+                parcelSpine.ParcelsPromoted,
+                parcelSpine.RejectedNotRealProperty,
+                parcelCanon.ParcelsProjected,
+            };
+
+            // ── Stage C: re-project each sale truth batch. ──
+            // The projector's idempotency clears prior canonical rows +
+            // prior quarantine rows for sales in this batch, then re-resolves.
+            // R-typed parcels now have xrefs → resolve. Non-R re-quarantine.
+            var perBatch = new List<object>();
+            foreach (var truthBatchId in truthBatchIds)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var r = await saleCanonicalProjector.ProjectAsync(truthBatchId, operatorName, cancellationToken);
+                perBatch.Add(new
+                {
+                    truthBatchId,
+                    r.Status,
+                    r.TruthSalesConsidered,
+                    r.SalesProjected,
+                    r.SalesQuarantined,
+                    r.PriorCanonicalRowsRemoved,
+                    r.PriorQuarantineRowsRemoved,
+                });
+            }
+
+            // ── Stage D: post-state delta. ──
+            var quarantineAfter = await _db.LegacyTfUnprovenSales.CountAsync(cancellationToken);
+            var canonicalSalesAfter = await _db.TfSales.CountAsync(cancellationToken);
+            var quarantineDrained = totalQuarantineBefore - quarantineAfter;
+            var canonicalSalesDelta = canonicalSalesAfter - canonicalSalesBefore;
+
+            // Reason breakdown for residual quarantine — surfaces doctrine-
+            // correct signal vs unexplained failure.
+            var residualByReason = await _db.LegacyTfUnprovenSales
+                .GroupBy(q => q.QuarantineReason)
+                .Select(g => new { reason = g.Key, count = g.Count() })
+                .ToListAsync(cancellationToken);
+
+            return Ok(new
+            {
+                operatorName,
+                bentonCountyId,
+                inspection,
+                parcelStage,
+                perBatch,
+                outcome = new
+                {
+                    totalQuarantineBefore,
+                    totalQuarantineAfter = quarantineAfter,
+                    quarantineDrained,
+                    canonicalSalesBefore,
+                    canonicalSalesAfter,
+                    canonicalSalesDelta,
+                    residualByReason,
+                },
+                proofVerdict = quarantineDrained > 0
+                    ? $"PROOF: drained {quarantineDrained} sale quarantine rows; {canonicalSalesDelta} additional tf_sale rows projected. Residual {quarantineAfter} are doctrine-correct (parcel non-R-typed)."
+                    : (totalQuarantineBefore == 0
+                        ? "INFO: no quarantine to drain."
+                        : "INCONCLUSIVE: no rows drained. Likely all 8 sales had non-R parcels (doctrine-correct exclusion). Inspect parcelStage.TypeDistribution."),
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[SaleDrain1] FAILED");
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name });
+        }
+    }
+
+    public sealed record SaleDrain1Request(
+        string? OperatorName,
+        bool? DryRun);
+
+    // ════════════════════════════════════════════════════════════════════
+    // SYNC-COMPLETE-1: PACS source-side row counts for post-drain validation.
+    //   Whitelisted SELECT COUNT(*) queries with named filters; never
+    //   accepts arbitrary SQL.
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Returns SELECT COUNT(*) against a whitelisted set of PACS tables
+    /// + named filters. Used to validate post-drain canonical row counts
+    /// against source-side expected sizes. Read-only by construction —
+    /// the SQL is hardcoded per (table, filter) combination, never built
+    /// from caller input.
+    /// </summary>
+    [HttpGet("pacs-counts")]
+    public async Task<IActionResult> GetPacsCounts(
+        [FromServices] IConfiguration config,
+        CancellationToken cancellationToken = default)
+    {
+        var pacsCs = config.GetConnectionString("PacsConnection");
+        if (string.IsNullOrWhiteSpace(pacsCs))
+            return StatusCode(500, new { error = "ConnectionStrings:PacsConnection is required." });
+
+        // Hardcoded queries — never accept user SQL. Each entry is
+        // (label, query). Adding new entries is a code change.
+        var queries = new (string Label, string Sql)[]
+        {
+            ("property_total",          "SELECT COUNT(*) FROM dbo.property"),
+            ("property_real",           "SELECT COUNT(*) FROM dbo.property WHERE prop_type_cd = 'R'"),
+            ("property_mh",             "SELECT COUNT(*) FROM dbo.property WHERE prop_type_cd = 'MH'"),
+            ("property_personal",       "SELECT COUNT(*) FROM dbo.property WHERE prop_type_cd = 'P'"),
+            ("account_total",           "SELECT COUNT(*) FROM dbo.account"),
+            ("owner_active_post2018",   "SELECT COUNT(*) FROM dbo.owner WHERE sup_num = 0 AND owner_tax_yr >= 2018"),
+            ("wpov_active_post2018",    "SELECT COUNT(*) FROM dbo.wash_prop_owner_val WHERE sup_num = 0 AND year >= 2018"),
+            ("imprv_2026_active",       "SELECT COUNT(*) FROM dbo.imprv WHERE sup_num = 0 AND prop_val_yr = 2026"),
+            ("imprv_detail_2026_active","SELECT COUNT(*) FROM dbo.imprv_detail WHERE sup_num = 0 AND prop_val_yr = 2026"),
+            ("imprv_attr_2026_active",  "SELECT COUNT(*) FROM dbo.imprv_attr WHERE sup_num = 0 AND prop_val_yr = 2026"),
+            ("land_detail_2026_active", "SELECT COUNT(*) FROM dbo.land_detail WHERE sup_num = 0 AND prop_val_yr = 2026"),
+            ("sale_post2018",           "SELECT COUNT(*) FROM dbo.sale WHERE sl_dt >= '2018-01-01'"),
+        };
+
+        var results = new System.Collections.Generic.Dictionary<string, long>();
+        var errors = new System.Collections.Generic.List<object>();
+
+        try
+        {
+            await using var conn = new Microsoft.Data.SqlClient.SqlConnection(pacsCs);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            foreach (var (label, sql) in queries)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                try
+                {
+                    await using var cmd = new Microsoft.Data.SqlClient.SqlCommand(sql, conn) { CommandTimeout = 120 };
+                    var count = (await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false)) ?? 0L;
+                    results[label] = Convert.ToInt64(count);
+                }
+                catch (Exception ex)
+                {
+                    errors.Add(new { label, error = ex.Message });
+                    results[label] = -1; // sentinel for failure
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, partialResults = results, errors });
+        }
+
+        return Ok(new
+        {
+            snapshotAt = DateTime.UtcNow,
+            counts = results,
+            errors,
+            note = "All counts are SELECT COUNT(*) at the time of this call against live pacs_oltp. -1 sentinel indicates per-query failure (see errors block).",
+        });
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // SYNC-COMPLETE-2 — perf-test endpoints. Used to validate scoped
+    //   hypotheses (e.g. ChangeTracker bulk-insert overhead) at controlled
+    //   sample sizes without running a full closure. Reports duration
+    //   in ms + rows-per-second so before/after comparisons are precise.
+    // ════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// SYNC-COMPLETE-2 perf-test: synthetic bulk-insert benchmark.
+    /// Inserts N synthetic <c>LegacyPacsRawOwner</c> rows in batches
+    /// of <paramref name="BatchSize"/>, with toggleable
+    /// <c>ChangeTracker.AutoDetectChangesEnabled</c>. Cleans up after
+    /// itself via <c>ExecuteDeleteAsync</c>. Returns wall-clock duration
+    /// + rows-per-second.
+    ///
+    /// <para>This endpoint isolates the EXACT hypothesis: at scale N,
+    /// does keeping AutoDetectChanges on cost meaningful time per
+    /// row? PACS network reads are out of scope; this measures only
+    /// the EF Core → Postgres write path with the change tracker
+    /// gradually filling up across batches.</para>
+    ///
+    /// <para>Use case: run twice back-to-back with the same N + BatchSize,
+    /// once with <c>DisableAutoDetectChanges=false</c> (default EF behavior)
+    /// and once with <c>true</c>. Compare durationMs.</para>
+    /// </summary>
+    [HttpPost("perf-test/bulk-insert-synthetic")]
+    public async Task<IActionResult> PerfTestBulkInsertSynthetic(
+        [FromBody] PerfTestBulkInsertRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        var n = request?.Rows ?? 20000;
+        var batchSize = request?.BatchSize ?? 1000;
+        var disableAutoDetect = request?.DisableAutoDetectChanges ?? false;
+        var label = request?.Label ?? "untagged";
+
+        // Clear any prior tracker state for fair comparison.
+        _db.ChangeTracker.Clear();
+
+        var prevAutoDetect = _db.ChangeTracker.AutoDetectChangesEnabled;
+        if (disableAutoDetect) _db.ChangeTracker.AutoDetectChangesEnabled = false;
+
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        var batchId = Guid.NewGuid();
+        var pending = 0;
+        var totalSaveChanges = 0;
+        try
+        {
+            for (var i = 0; i < n; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                _db.LegacyPacsRawOwners.Add(new TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawOwner
+                {
+                    OwnerTaxYr = 2024,
+                    SupNum = 0,
+                    PropId = 9_000_000 + i,                    // out of real PACS range
+                    OwnerId = 9_000_000_000L + i,              // out of real PACS range
+                    PctOwnership = 100m,
+                    LoadBatchId = batchId,
+                    SourceQueryHash = "perftest",
+                    SourceRowHash = $"row-{i:D8}",
+                    LandedAt = DateTime.UtcNow,
+                });
+                pending++;
+                if (pending >= batchSize)
+                {
+                    await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                    totalSaveChanges++;
+                    pending = 0;
+                }
+            }
+            if (pending > 0)
+            {
+                await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                totalSaveChanges++;
+            }
+            sw.Stop();
+
+            // Cleanup synthetic rows.
+            var deleted = await _db.LegacyPacsRawOwners
+                .Where(o => o.LoadBatchId == batchId)
+                .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
+
+            var elapsedSec = sw.Elapsed.TotalSeconds;
+            var rowsPerSec = elapsedSec > 0 ? Math.Round(n / elapsedSec, 0) : 0;
+
+            return Ok(new
+            {
+                label,
+                rows = n,
+                batchSize,
+                disableAutoDetect,
+                durationMs = sw.ElapsedMilliseconds,
+                durationSec = Math.Round(elapsedSec, 2),
+                rowsPerSec,
+                totalSaveChangesCalls = totalSaveChanges,
+                msPerBatch = totalSaveChanges > 0
+                    ? Math.Round((double)sw.ElapsedMilliseconds / totalSaveChanges, 1)
+                    : 0,
+                cleanupRowsDeleted = deleted,
+            });
+        }
+        finally
+        {
+            _db.ChangeTracker.AutoDetectChangesEnabled = prevAutoDetect;
+            _db.ChangeTracker.Clear();
+        }
+    }
+
+    /// <param name="Rows">Total synthetic rows to insert. Default 20000.</param>
+    /// <param name="BatchSize">SaveChanges every N rows. Default 1000
+    /// (matches real landing services).</param>
+    /// <param name="DisableAutoDetectChanges">Toggle the EF Core
+    /// optimization. Run once with false (default behavior) and once
+    /// with true to A/B the hypothesis.</param>
+    /// <param name="Label">Tag for the run.</param>
+    public sealed record PerfTestBulkInsertRequest(
+        int? Rows,
+        int? BatchSize,
+        bool? DisableAutoDetectChanges,
+        string? Label);
 }

@@ -1686,6 +1686,24 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsParcelCanonical.IPacsParcelCanonicalProjector,
     TerraFusion.Data.Services.CanonicalTf.PacsParcelCanonicalProjector>();
 
+// Slice E2-A (ATTR-POP-1): canonical_tf.attribute_definition populator.
+// Single-tier (canonical-only) populator that reads PACS dbo.attribute
+// and upserts attribute_definition rows keyed (CountyId, IAttrId).
+// Unblocks the imprv_attr quarantine path — UnknownAttribute rows
+// resolve once their dictionary entries exist.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsAttribute.IPacsAttributePopulator,
+    TerraFusion.Data.Services.CanonicalTf.PacsAttributePopulatorService>();
+
+// Slice E2-B (ATTR-POP-2): value-grain populator. Companion to
+// ATTR-POP-1; reads (i_attr_val_id, i_attr_val_cd) pairs from PACS
+// (dbo.imprv_attr_val preferred, dbo.imprv_attr-derived fallback)
+// and upserts attribute_definition keyed by IAttrId = i_attr_val_id —
+// the grain the imprv canonical projector keys on.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsAttributeVal.IPacsAttributeValPopulator,
+    TerraFusion.Data.Services.CanonicalTf.PacsAttributeValPopulatorService>();
+
 // Slice B1-A: PACS account raw landing — Block B's PII-rich
 // identity table. Four gates: distribution, acct_id-uniqueness,
 // provenance-coverage, pii-flags-recorded.
@@ -1725,13 +1743,19 @@ builder.Services.AddScoped<
 
 // Slice C1-C: PACS imprv_attr raw landing with dictionary
 // cross-check. Five gates: distribution, 6-key-uniqueness,
-// provenance-coverage, aggregate, dictionary-coverage. Dictionary
-// itself is registered as an empty in-memory default; production
-// configuration overrides via a future D1 dictionary loader.
+// provenance-coverage, aggregate, dictionary-coverage.
+//
+// ATTR-DRAIN-1: registered as a RefreshableImprvAttrDictionary so
+// the operator can refresh codes from PACS dbo.imprv_attr_val at
+// runtime without a process bounce. Initial state is empty; the
+// drain endpoint or a future hosted service refreshes it.
 builder.Services.AddSingleton<
-    TerraFusion.Core.Sync.PacsImprvAttr.IImprvAttrDictionary>(_ =>
-    new TerraFusion.Core.Sync.PacsImprvAttr.InMemoryImprvAttrDictionary(
-        Array.Empty<string>()));
+    TerraFusion.Core.Sync.PacsImprvAttr.RefreshableImprvAttrDictionary>(
+    _ => new TerraFusion.Core.Sync.PacsImprvAttr.RefreshableImprvAttrDictionary());
+builder.Services.AddSingleton<
+    TerraFusion.Core.Sync.PacsImprvAttr.IImprvAttrDictionary>(
+    sp => sp.GetRequiredService<
+        TerraFusion.Core.Sync.PacsImprvAttr.RefreshableImprvAttrDictionary>());
 builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsImprvAttr.IPacsImprvAttrLandingService,
     TerraFusion.Data.Services.LegacyPacsRaw.PacsImprvAttrLandingService>();
