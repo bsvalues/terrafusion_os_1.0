@@ -20,10 +20,15 @@ public sealed class TfImprovementFeatureConfiguration
         builder.Property(x => x.TfImprovementFeatureId).IsRequired();
         builder.Property(x => x.TfImprovementId).IsRequired();
 
-        builder.Property(x => x.FeatureCode).HasMaxLength(16).IsRequired();
-        builder.Property(x => x.MethodCd).HasMaxLength(16);
-        builder.Property(x => x.ClassCd).HasMaxLength(16);
-        builder.Property(x => x.SubClassCd).HasMaxLength(16);
+        // ATTR-DRAIN-1: widened from 16 → 32 chars to match the
+        // legacy_pacs_raw.imprv_attr.IAttrValCd width (PACS source
+        // i_attr_val_cd is varchar(75); landing tier truncates to
+        // 32 per its own configuration, which is the actual upper
+        // bound that reaches this column).
+        builder.Property(x => x.FeatureCode).HasMaxLength(32).IsRequired();
+        builder.Property(x => x.MethodCd).HasMaxLength(32);
+        builder.Property(x => x.ClassCd).HasMaxLength(32);
+        builder.Property(x => x.SubClassCd).HasMaxLength(32);
         builder.Property(x => x.ConditionCd).HasMaxLength(8);
 
         builder.Property(x => x.Area).HasPrecision(18, 2);
