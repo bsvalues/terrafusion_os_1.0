@@ -336,6 +336,14 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.CanonicalTf.AttributeDefinition>
     AttributeDefinitions { get; set; } = null!;
 
+  // SYNC-DOCTRINE-1 (B1): doctrine_tf.tf_doctrine_ratio_policy.
+  // Year-aware, source-aware, evidence-backed sales-ratio
+  // qualification rules. Replaces hardcoded ratio constants in
+  // promoters with rows scoped by county + study + sale-year window.
+  // Per the operator-pushback corrections of 2026-05-06.
+  public DbSet<TerraFusion.Core.Entities.DoctrineTf.TfDoctrineRatioPolicy>
+    TfDoctrineRatioPolicies { get; set; } = null!;
+
   // Slice D1: legacy_arcgis_raw.parcel_geom — first stop in the
   // 5-schema doctrine for ArcGIS-sourced geometry. Per Block-D
   // execution plan (docs/pacs/block-d-execution-plan.md §3.1).
@@ -1077,6 +1085,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // mapping spine. Per docs/pacs/block-c-contract-v1.2.md.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.CanonicalTf.AttributeDefinitionConfiguration());
+
+    // SYNC-DOCTRINE-1 (B1): doctrine_tf.tf_doctrine_ratio_policy.
+    // Year-aware sales-ratio qualification rule rows.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.DoctrineTf.TfDoctrineRatioPolicyConfiguration());
 
     // Slice D1: legacy_arcgis_raw.parcel_geom — raw FeatureService
     // landing. Per docs/pacs/block-d-execution-plan.md §3.1.
