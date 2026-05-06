@@ -1763,6 +1763,16 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsImprvAttr.IPacsImprvAttrLandingService,
     TerraFusion.Data.Services.LegacyPacsRaw.PacsImprvAttrLandingService>();
 
+// SYNC-DOCTRINE-1 (B1): year-aware sales-ratio qualification policy.
+// Singleton service caches doctrine_tf.tf_doctrine_ratio_policy rows
+// in-memory after first read. Replaces the hardcoded ValidSaleCode='100'
+// constant in PacsSaleTruthPromoter (B2 will consume this service).
+builder.Services.AddSingleton<
+    TerraFusion.Core.Sync.Doctrine.IRatioQualificationPolicy,
+    TerraFusion.Data.Services.Doctrine.RatioQualificationPolicy>();
+builder.Services.AddScoped<
+    TerraFusion.Data.Services.Doctrine.DoctrineRatioPolicySeeder>();
+
 // Slice L1: PACS land_detail raw landing — Block C's land lane
 // per-segment table. Four gates: distribution, 4-key-uniqueness,
 // provenance-coverage, aggregate.
