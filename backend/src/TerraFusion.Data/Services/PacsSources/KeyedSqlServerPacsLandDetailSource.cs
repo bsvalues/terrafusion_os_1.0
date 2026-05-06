@@ -45,6 +45,9 @@ public sealed class KeyedSqlServerPacsLandDetailSource : IPacsLandDetailSource
     //   land_seg_ag_value          | ag_val
     //   land_seg_assessed_val      | (no equivalent — project NULL)
     //   land_seg_eff_age           | (no equivalent — project NULL)
+    // SYNC-DOCTRINE-4-IMPL-V3: ag_apply + ag_use_cd projected
+    // verbatim from dbo.land_detail. Both columns are nullable on
+    // the source side so the projection is a straight pass-through.
     public string SourceQueryText =>
         $"SELECT CAST(prop_val_yr AS smallint) AS prop_val_yr, CAST(sup_num AS smallint) AS sup_num, " +
         $"prop_id, land_seg_id, " +
@@ -54,7 +57,8 @@ public sealed class KeyedSqlServerPacsLandDetailSource : IPacsLandDetailSource
         $"land_seg_homesite, size_acres, size_square_feet, " +
         $"land_seg_mkt_val AS land_seg_market_val, ag_val AS land_seg_ag_value, " +
         $"CAST(NULL AS decimal(18,2)) AS land_seg_assessed_val, " +
-        $"CAST(NULL AS smallint) AS land_seg_eff_age " +
+        $"CAST(NULL AS smallint) AS land_seg_eff_age, " +
+        $"ag_apply, ag_use_cd " +
         $"FROM dbo.land_detail " +
         $"WHERE sup_num = 0 AND (prop_id, prop_val_yr) IN ({_keys.Count} keyed pairs)";
 
@@ -83,7 +87,8 @@ public sealed class KeyedSqlServerPacsLandDetailSource : IPacsLandDetailSource
             sb.AppendLine("       land_seg_mkt_val AS land_seg_market_val,");
             sb.AppendLine("       ag_val AS land_seg_ag_value,");
             sb.AppendLine("       CAST(NULL AS decimal(18,2)) AS land_seg_assessed_val,");
-            sb.AppendLine("       CAST(NULL AS smallint) AS land_seg_eff_age");
+            sb.AppendLine("       CAST(NULL AS smallint) AS land_seg_eff_age,");
+            sb.AppendLine("       ag_apply, ag_use_cd");
             sb.AppendLine("FROM dbo.land_detail");
             sb.AppendLine("WHERE sup_num = 0 AND (");
 
@@ -115,6 +120,8 @@ public sealed class KeyedSqlServerPacsLandDetailSource : IPacsLandDetailSource
             var oAgValue    = rdr.GetOrdinal("land_seg_ag_value");
             var oAssessedVal= rdr.GetOrdinal("land_seg_assessed_val");
             var oEffAge     = rdr.GetOrdinal("land_seg_eff_age");
+            var oAgApply    = rdr.GetOrdinal("ag_apply");
+            var oAgUseCd    = rdr.GetOrdinal("ag_use_cd");
 
             while (await rdr.ReadAsync(cancellationToken).ConfigureAwait(false))
             {
@@ -135,7 +142,9 @@ public sealed class KeyedSqlServerPacsLandDetailSource : IPacsLandDetailSource
                     LandSegMarketVal:   ReadDecimalOrNull(rdr, oMarketVal),
                     LandSegAgValue:     ReadDecimalOrNull(rdr, oAgValue),
                     LandSegAssessedVal: ReadDecimalOrNull(rdr, oAssessedVal),
-                    LandSegEffAge:      ReadInt16OrNull(rdr, oEffAge));
+                    LandSegEffAge:      ReadInt16OrNull(rdr, oEffAge),
+                    AgApply:            TrimOrNull(rdr, oAgApply),
+                    AgUseCd:            TrimOrNull(rdr, oAgUseCd));
             }
         }
     }

@@ -107,6 +107,8 @@ public sealed class PacsLandDetailLandingService : IPacsLandDetailLandingService
                     LandSegAgValue = src.LandSegAgValue,
                     LandSegAssessedVal = src.LandSegAssessedVal,
                     LandSegEffAge = src.LandSegEffAge,
+                    AgApply = src.AgApply,
+                    AgUseCd = src.AgUseCd,
                     LoadBatchId = batch.LoadBatchId,
                     SourceQueryHash = queryHash,
                     SourceRowHash = ComputeRowHash(src),
@@ -299,7 +301,9 @@ public sealed class PacsLandDetailLandingService : IPacsLandDetailLandingService
             src.LandSegMarketVal?.ToString(CultureInfo.InvariantCulture) ?? "",
             src.LandSegAgValue?.ToString(CultureInfo.InvariantCulture) ?? "",
             src.LandSegAssessedVal?.ToString(CultureInfo.InvariantCulture) ?? "",
-            src.LandSegEffAge?.ToString(CultureInfo.InvariantCulture) ?? "");
+            src.LandSegEffAge?.ToString(CultureInfo.InvariantCulture) ?? "",
+            src.AgApply ?? "",
+            src.AgUseCd ?? "");
         return ComputeStableHash(seed);
     }
 }

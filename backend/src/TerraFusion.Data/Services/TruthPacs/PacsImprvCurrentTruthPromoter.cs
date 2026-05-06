@@ -150,6 +150,58 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
                     g => g.Key,
                     g => g.OrderByDescending(p => p.LandedAt).First());
 
+            // SYNC-DOCTRINE-4-IMPL-V3: build a (prop_id, prop_val_yr)
+            // → ag-program signal index from legacy_pacs_raw.land_detail.
+            // Aggregate semantics:
+            //   AgApply = 'T'  if ANY land segment has ag_apply='T'
+            //                  (under PACS char coding 'Y'/'T' both
+            //                   indicate participation; we accept either)
+            //   AgApply = 'F'  if NO segment has ag_apply='T' AND
+            //                  at least one has ag_apply='F' / 'N'
+            //   AgApply = NULL otherwise (no land_detail rows landed)
+            //
+            //   AgUseCd       = first non-null ag_use_cd from a segment
+            //                   that has ag_apply='T' (most-relevant);
+            //                   else first non-null overall; else NULL.
+            //
+            // The classifier only checks AgApply='T' for AG_CURRENT_USE
+            // today, so the OR-aggregate is safe: any single ag-segment
+            // routes the parcel to AG_CURRENT_USE regardless of how
+            // many residential segments it also has.
+            var imprvKeys = imprvRows
+                .Select(i => (i.PropId, i.PropValYr))
+                .Distinct()
+                .ToList();
+            var landDetailRows = await _db.LegacyPacsRawLandDetails
+                .Where(l => imprvPropIds.Contains(l.PropId))
+                .Select(l => new { l.PropId, l.PropValYr, l.AgApply, l.AgUseCd, l.LandedAt })
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+            var agSignalByKey = new Dictionary<(int PropId, short PropValYr),
+                (string? AgApply, string? AgUseCd)>();
+            foreach (var grp in landDetailRows.GroupBy(l => (l.PropId, l.PropValYr)))
+            {
+                var rows = grp.OrderByDescending(l => l.LandedAt).ToList();
+                var anyT = rows.Any(r =>
+                    !string.IsNullOrEmpty(r.AgApply) &&
+                    (r.AgApply.Equals("T", StringComparison.OrdinalIgnoreCase) ||
+                     r.AgApply.Equals("Y", StringComparison.OrdinalIgnoreCase)));
+                var anyF = rows.Any(r =>
+                    !string.IsNullOrEmpty(r.AgApply) &&
+                    (r.AgApply.Equals("F", StringComparison.OrdinalIgnoreCase) ||
+                     r.AgApply.Equals("N", StringComparison.OrdinalIgnoreCase)));
+                var agApply = anyT ? "T" : (anyF ? "F" : (string?)null);
+                var agUseCd = rows
+                    .Where(r =>
+                        !string.IsNullOrEmpty(r.AgApply) &&
+                        (r.AgApply.Equals("T", StringComparison.OrdinalIgnoreCase) ||
+                         r.AgApply.Equals("Y", StringComparison.OrdinalIgnoreCase)) &&
+                        !string.IsNullOrEmpty(r.AgUseCd))
+                    .Select(r => r.AgUseCd)
+                    .FirstOrDefault()
+                    ?? rows.Select(r => r.AgUseCd).FirstOrDefault(c => !string.IsNullOrEmpty(c));
+                agSignalByKey[grp.Key] = (agApply, agUseCd);
+            }
+
             var considered = imprvRows.Count;
             var promoted = 0;
             var rejectedNoSupp = 0;
@@ -182,7 +234,7 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
 
                 // SYNC-DOCTRINE-4: classify universe.
                 var universe = await ClassifyUniverseAsync(
-                    imprv, latestPropertyByPropId, cancellationToken).ConfigureAwait(false);
+                    imprv, latestPropertyByPropId, agSignalByKey, cancellationToken).ConfigureAwait(false);
                 if (!universeCounts.TryAdd(universe.UniverseCode, 1))
                     universeCounts[universe.UniverseCode]++;
 
@@ -390,6 +442,7 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
     private async Task<UniverseClassification> ClassifyUniverseAsync(
         LegacyPacsRawImprv imprv,
         IReadOnlyDictionary<int, LegacyPacsRawProperty> propertyIndex,
+        IReadOnlyDictionary<(int PropId, short PropValYr), (string? AgApply, string? AgUseCd)> agSignalIndex,
         CancellationToken cancellationToken)
     {
         if (!propertyIndex.TryGetValue(imprv.PropId, out var property))
@@ -405,13 +458,20 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
         var hasLegacyMarker = property.PropCreateDt.HasValue
                               && property.PropCreateDt.Value < LegacyMarkerCutoff;
 
+        // SYNC-DOCTRINE-4-IMPL-V3: pass real ag-program signals from
+        // legacy_pacs_raw.land_detail when available. NULL (no land_detail
+        // rows landed for this prop_id+yr) is still possible and is
+        // accepted by the V2 classifier — modern rules with wildcard
+        // ag_apply guards will still match.
+        agSignalIndex.TryGetValue((imprv.PropId, imprv.PropValYr), out var agSignal);
+
         var input = new UniverseClassifierInput(
             County: DefaultCountyTag,
             PropValYr: imprv.PropValYr,
             PropTypeCd: property.PropTypeCd,
             PropertyUseCd: null,   // future: join dbo.property_val per (prop_id, prop_val_yr, sup_num)
-            AgApply: null,         // future: join dbo.land_detail per prop_id
-            AgUseCd: null,
+            AgApply: agSignal.AgApply,
+            AgUseCd: agSignal.AgUseCd,
             HasLegacyMarker: hasLegacyMarker);
 
         return await _universeClassifier.ClassifyAsync(input, cancellationToken)

@@ -31,6 +31,11 @@ public sealed class LegacyPacsRawLandDetailConfiguration
         builder.Property(x => x.SoilCd).HasMaxLength(16);
         builder.Property(x => x.LandSegHomesite).HasMaxLength(2);
 
+        // SYNC-DOCTRINE-4-IMPL-V3: ag-program signals.
+        // Width 4 covers PACS Y/T/F/N variants plus headroom.
+        builder.Property(x => x.AgApply).HasMaxLength(4);
+        builder.Property(x => x.AgUseCd).HasMaxLength(16);
+
         builder.Property(x => x.SizeAcres).HasPrecision(18, 4);
         builder.Property(x => x.SizeSquareFeet).HasPrecision(18, 2);
         builder.Property(x => x.LandSegMarketVal).HasPrecision(18, 2);
@@ -58,5 +63,12 @@ public sealed class LegacyPacsRawLandDetailConfiguration
         // Re-runs / rollback.
         builder.HasIndex(x => x.LoadBatchId)
             .HasDatabaseName("ix_legacy_pacs_raw_land_detail_loadbatch");
+
+        // SYNC-DOCTRINE-4-IMPL-V3: hot read path for the truth-promoter
+        // join — given a (prop_id, prop_val_yr) the promoter aggregates
+        // ag_apply across all land segments to feed the universe
+        // classifier.
+        builder.HasIndex(x => new { x.PropId, x.PropValYr, x.AgApply })
+            .HasDatabaseName("ix_legacy_pacs_raw_land_detail_prop_year_agapply");
     }
 }
