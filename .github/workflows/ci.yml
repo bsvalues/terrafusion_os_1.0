@@ -484,7 +484,7 @@ jobs:
       - name: Build Docker Images
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
-          docker build -f backend/Dockerfile.api -t terrafusion-api:${{ github.sha }} -t terrafusion-api:latest backend/
+          docker build -f backend/Dockerfile.API -t terrafusion-api:${{ github.sha }} -t terrafusion-api:latest backend/
           docker build -f frontend/Dockerfile -t terrafusion-frontend:${{ github.sha }} -t terrafusion-frontend:latest .
           docker build -f backend/Dockerfile.agents -t terrafusion-agents:${{ github.sha }} -t terrafusion-agents:latest backend/
           docker build -f backend/Dockerfile.spatial -t terrafusion-spatial:${{ github.sha }} -t terrafusion-spatial:latest backend/
