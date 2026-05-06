@@ -95,20 +95,36 @@ public class PropertyUniverseClassifierTests
     public async Task CONVERSION_LEGACY_does_not_fire_without_explicit_legacy_marker()
     {
         var classifier = BuildClassifier();
-        // R / F / no legacy marker → REAL_RESIDENTIAL (precedence 6).
+        // R / F / no legacy marker → REAL_RESIDENTIAL (precedence 5
+        // under V2, after AG/PP/MH/COMMERCIAL).
         var result = await classifier.ClassifyAsync(
             Input(propTypeCd: "R", agApply: "F", hasLegacyMarker: false));
         Assert.Equal(UniverseCodes.RealResidential, result.UniverseCode);
     }
 
     [Fact]
-    public async Task CONVERSION_LEGACY_beats_other_buckets_when_marker_is_present()
+    public async Task CONVERSION_LEGACY_does_not_beat_REAL_RESIDENTIAL_under_V2_escape_hatch_ordering()
     {
+        // V2 reordering: CONVERSION_LEGACY moves from precedence 1
+        // (V1) to precedence 7 (V2 last). A row with prop_type_cd='R'
+        // that ALSO carries the legacy marker classifies as
+        // REAL_RESIDENTIAL — modern rule wins, marker is observed but
+        // not used because the row already fits a modern bucket. This
+        // is the design doc's stated intent finally realized.
         var classifier = BuildClassifier();
-        // Same R / F shape as above, but legacy marker is present.
-        // CONVERSION_LEGACY (precedence 1) wins.
         var result = await classifier.ClassifyAsync(
             Input(propTypeCd: "R", agApply: "F", hasLegacyMarker: true));
+        Assert.Equal(UniverseCodes.RealResidential, result.UniverseCode);
+    }
+
+    [Fact]
+    public async Task CONVERSION_LEGACY_fires_when_no_modern_rule_matches_AND_marker_present()
+    {
+        // V2 escape hatch semantic: a row with no prop_type match AND
+        // a legacy marker drops to CONVERSION_LEGACY at precedence 7.
+        var classifier = BuildClassifier();
+        var result = await classifier.ClassifyAsync(
+            Input(propTypeCd: "X", agApply: null, hasLegacyMarker: true));
         Assert.Equal(UniverseCodes.ConversionLegacy, result.UniverseCode);
     }
 
