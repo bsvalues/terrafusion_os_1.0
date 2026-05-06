@@ -91,7 +91,7 @@ public sealed class R1Week5Cx18PermissionPolicyIntegrationTests
         yield return new object?[] { "CostForge_manage:ai-agents", "POST", "/api/CostForge/agents/scale",
             JsonSerializer.Serialize(new { TargetCount = 1 }) };
         yield return new object?[] { "CostForge_read:performance-metrics", "GET", "/api/CostForge/metrics", null };
-        yield return new object?[] { "CostForge_sync:external-systems", "POST", "/api/CostForge/sync/harris-pacs",
+        yield return new object?[] { "CostForge_sync:external-systems", "POST", "/api/CostForge/sync/source-status",
             JsonSerializer.Serialize(new { CountyId = "BENTON", FullSync = false }) };
 
         // ── DossierController (3) ────────────────────────────────────
