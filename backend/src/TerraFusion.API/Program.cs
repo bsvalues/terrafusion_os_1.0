@@ -1814,6 +1814,13 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsPropertyVal.IPacsPropertyValLandingService,
     TerraFusion.Data.Services.LegacyPacsRaw.PacsPropertyValLandingService>();
 
+// SYNC-DOCTRINE-4-IMPL-V5: imprv universe backfill service — re-runs
+// the V4 classifier on existing truth_pacs.imprv_current rows so
+// pre-D4 rows + V1/V2 cohort stale labels can be brought forward.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.Doctrine.IPacsImprvUniverseBackfillService,
+    TerraFusion.Data.Services.Doctrine.PacsImprvUniverseBackfillService>();
+
 // Slice D1: ArcGIS REST FeatureService raw landing. Wraps the
 // existing G1-C IArcGisFeatureServiceClient and writes verbatim
 // to legacy_arcgis_raw.parcel_geom with full provenance. Four
