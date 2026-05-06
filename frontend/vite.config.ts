@@ -7,6 +7,8 @@ import { securityPlugin } from './apps/os-shell/src/middleware/security-plugin';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const appRoot = path.resolve(__dirname, 'apps/os-shell');
+  const emitBuildSourcemaps =
+    mode === 'analyze' || process.env.VITE_BUILD_SOURCEMAP === '1';
   const configuredApiUrl = process.env.VITE_API_URL;
   const backendUrl =
     configuredApiUrl && /^https?:\/\//i.test(configuredApiUrl)
@@ -107,9 +109,13 @@ export default defineConfig(({ mode }) => {
       outDir: path.resolve(__dirname, '../native-shell/ui/dist'),
       emptyOutDir: true,
 
-      // Optimize for production
-      minify: 'terser',
-      sourcemap: true,
+      // Vite's esbuild minifier keeps the guarded shell build inside hosted
+      // runner memory while still producing a production bundle.
+      minify: 'esbuild',
+      // Full sourcemaps make the guarded CI build exceed the hosted runner heap.
+      // Keep them opt-in for diagnostics without making every production gate pay
+      // the memory cost.
+      sourcemap: emitBuildSourcemaps,
 
       rollupOptions: {
         output: {
