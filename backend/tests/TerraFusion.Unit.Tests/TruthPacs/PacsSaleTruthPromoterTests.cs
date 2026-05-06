@@ -5,12 +5,45 @@ using Microsoft.Extensions.Logging.Abstractions;
 using TerraFusion.Core.Entities.LegacyPacsRaw;
 using TerraFusion.Core.Entities.SyncBridge;
 using TerraFusion.Core.Entities.TruthPacs;
+using TerraFusion.Core.Sync.Doctrine;
 using TerraFusion.Core.Sync.PacsSaleTruth;
 using TerraFusion.Data;
 using TerraFusion.Data.Services.TruthPacs;
 using Xunit;
 
 namespace TerraFusion.Unit.Tests.TruthPacs;
+
+/// <summary>
+/// SYNC-DOCTRINE-2 (B2): test-double IRatioQualificationPolicy that
+/// mirrors the pre-B2 single-code filter behavior so the legacy
+/// PacsSaleTruthPromoter tests continue to assert their original
+/// invariants without rewriting them. Returns Qualified=true on
+/// COUNTY_INTERNAL_RATIO code='100' across all years; false
+/// otherwise. DOR_RATIO always returns false here — these tests
+/// cover the county-side filter only.
+/// </summary>
+internal sealed class CountyOnly100QualifierPolicy : IRatioQualificationPolicy
+{
+    public Task<RatioPolicyEvaluation> EvaluateAsync(
+        string county, string studyName, int saleYear, string? code,
+        CancellationToken cancellationToken = default)
+    {
+        if (studyName == "COUNTY_INTERNAL_RATIO")
+        {
+            var qualified = string.Equals(code, "100", StringComparison.Ordinal);
+            return Task.FromResult(new RatioPolicyEvaluation(
+                Reviewed: !string.IsNullOrEmpty(code),
+                Qualified: qualified,
+                Code: code,
+                StudyName: studyName,
+                RuleId: Guid.Empty,
+                EvidenceSource: "test-double"));
+        }
+        return Task.FromResult(new RatioPolicyEvaluation(
+            Reviewed: false, Qualified: false, Code: code,
+            StudyName: studyName, RuleId: null, EvidenceSource: null));
+    }
+}
 
 /// <summary>
 /// Slice S2-B acceptance tests. Proves the five T-* gates and the
@@ -48,7 +81,8 @@ public sealed class PacsSaleTruthPromoterTests : IDisposable
     public void Dispose() => _db.Dispose();
 
     private PacsSaleTruthPromoter BuildPromoter()
-        => new(_db, NullLogger<PacsSaleTruthPromoter>.Instance);
+        => new(_db, new CountyOnly100QualifierPolicy(),
+               NullLogger<PacsSaleTruthPromoter>.Instance);
 
     /// <summary>Helper: seed a COMPLETED LoadBatch and return its id.</summary>
     private async Task<Guid> SeedCompletedBatchAsync(string label)
@@ -301,6 +335,8 @@ public sealed class PacsSaleTruthPromoterTests : IDisposable
             "truth-pacs-promotion-coverage",
             // G4 (v1.13): pre-conversion-share gate.
             "truth-pacs-sale-pre-conversion-share",
+            // SYNC-DOCTRINE-2 (B2): dual-surface telemetry gate.
+            "truth-pacs-dual-surface-summary",
         });
         gates.Where(g => g.GateName == "truth-pacs-source-batch-completed")
             .Single().Status.Should().Be("PASS");
@@ -349,9 +385,9 @@ public sealed class PacsSaleTruthPromoterTests : IDisposable
         var gates = await _db.SyncBridgePromotionGateResults
             .Where(g => g.LoadBatchId == result.PromotionLoadBatchId)
             .ToListAsync();
-        // G4 (v1.13): the new pre-conversion-share gate brings the
-        // sale lane's gate count to 6.
-        gates.Should().HaveCount(6);
+        // G4 (v1.13): pre-conversion-share gate → 6.
+        // SYNC-DOCTRINE-2 (B2): dual-surface summary gate → 7.
+        gates.Should().HaveCount(7);
         gates.Where(g => g.GateName == "truth-pacs-stale-axis-rejected")
             .Single().Status.Should().Be("PASS");
     }
