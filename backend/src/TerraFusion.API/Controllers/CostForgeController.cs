@@ -1432,7 +1432,6 @@ public class CostForgeController : ControllerBase
   /// Reports source-ingestion status from TerraFusion runtime tables.
   /// </summary>
   [HttpPost("sync/source-status")]
-  [HttpPost("sync/harris-pacs")]
   [RequiresPermission("sync:external-systems")]
   public async Task<ActionResult<HarrisSyncResultDto>> SyncWithHarrisPACS([FromBody] HarrisSyncRequestDto request)
   {
@@ -1440,7 +1439,7 @@ public class CostForgeController : ControllerBase
     if (countyContext is null)
       return Forbid();
 
-    _logger.LogInformation("Harris PACS sync initiated for county {CountyId} by {UserId}",
+    _logger.LogInformation("Source ingestion status requested for county {CountyId} by {UserId}",
         countyContext.CountyId, User.FindFirst("sub")?.Value);
 
     var startTime = DateTime.UtcNow;
@@ -1451,9 +1450,9 @@ public class CostForgeController : ControllerBase
 
     var endTime = DateTime.UtcNow;
 
-    await _auditLogger.LogUserActionAsync("CostForge:HarrisPACSSync",
+    await _auditLogger.LogUserActionAsync("CostForge:SourceIngestionStatus",
         User.FindFirst("sub")?.Value ?? "anonymous",
-        $"Harris PACS sync status retrieved for county {countyContext.CountyName}. Properties: {propertyCount}");
+        $"Source ingestion status retrieved for county {countyContext.CountyName}. Properties: {propertyCount}");
 
     return Ok(new HarrisSyncResultDto
     {
