@@ -172,6 +172,22 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
                 .Select(i => (i.PropId, i.PropValYr))
                 .Distinct()
                 .ToList();
+
+            // SYNC-DOCTRINE-4-IMPL-V4: build a (prop_id, prop_val_yr,
+            // sup_num) → property_use_cd index from
+            // legacy_pacs_raw.property_val. Latest LandedAt wins. The
+            // classifier reads property_use_cd to discriminate
+            // residential vs commercial among prop_type_cd='R' rows.
+            var propertyValRows = await _db.LegacyPacsRawPropertyVals
+                .Where(pv => imprvPropIds.Contains(pv.PropId))
+                .Select(pv => new { pv.PropId, pv.PropValYr, pv.SupNum, pv.PropertyUseCd, pv.LandedAt })
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+            var propertyUseCdByKey = propertyValRows
+                .GroupBy(pv => (pv.PropId, pv.PropValYr, pv.SupNum))
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.OrderByDescending(pv => pv.LandedAt).First().PropertyUseCd);
+
             var landDetailRows = await _db.LegacyPacsRawLandDetails
                 .Where(l => imprvPropIds.Contains(l.PropId))
                 .Select(l => new { l.PropId, l.PropValYr, l.AgApply, l.AgUseCd, l.LandedAt })
@@ -234,7 +250,8 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
 
                 // SYNC-DOCTRINE-4: classify universe.
                 var universe = await ClassifyUniverseAsync(
-                    imprv, latestPropertyByPropId, agSignalByKey, cancellationToken).ConfigureAwait(false);
+                    imprv, latestPropertyByPropId, propertyUseCdByKey, agSignalByKey,
+                    cancellationToken).ConfigureAwait(false);
                 if (!universeCounts.TryAdd(universe.UniverseCode, 1))
                     universeCounts[universe.UniverseCode]++;
 
@@ -442,6 +459,7 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
     private async Task<UniverseClassification> ClassifyUniverseAsync(
         LegacyPacsRawImprv imprv,
         IReadOnlyDictionary<int, LegacyPacsRawProperty> propertyIndex,
+        IReadOnlyDictionary<(int PropId, short PropValYr, short SupNum), string?> propertyUseCdIndex,
         IReadOnlyDictionary<(int PropId, short PropValYr), (string? AgApply, string? AgUseCd)> agSignalIndex,
         CancellationToken cancellationToken)
     {
@@ -465,11 +483,20 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
         // ag_apply guards will still match.
         agSignalIndex.TryGetValue((imprv.PropId, imprv.PropValYr), out var agSignal);
 
+        // SYNC-DOCTRINE-4-IMPL-V4: pass real property_use_cd from
+        // legacy_pacs_raw.property_val when available. Looked up by
+        // the imprv row's full (PropId, PropValYr, SupNum) key. NULL
+        // is still possible and the V2 classifier semantics handle
+        // it correctly (EXCLUDE rule short-circuits to false on NULL,
+        // falls through to RESIDENTIAL).
+        propertyUseCdIndex.TryGetValue(
+            (imprv.PropId, imprv.PropValYr, imprv.SupNum), out var propertyUseCd);
+
         var input = new UniverseClassifierInput(
             County: DefaultCountyTag,
             PropValYr: imprv.PropValYr,
             PropTypeCd: property.PropTypeCd,
-            PropertyUseCd: null,   // future: join dbo.property_val per (prop_id, prop_val_yr, sup_num)
+            PropertyUseCd: propertyUseCd,
             AgApply: agSignal.AgApply,
             AgUseCd: agSignal.AgUseCd,
             HasLegacyMarker: hasLegacyMarker);

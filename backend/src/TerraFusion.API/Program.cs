@@ -1808,6 +1808,12 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsLandDetail.IPacsLandDetailLandingService,
     TerraFusion.Data.Services.LegacyPacsRaw.PacsLandDetailLandingService>();
 
+// SYNC-DOCTRINE-4-IMPL-V4: PACS property_val raw landing — provides
+// property_use_cd for the universe classifier.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsPropertyVal.IPacsPropertyValLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsPropertyValLandingService>();
+
 // Slice D1: ArcGIS REST FeatureService raw landing. Wraps the
 // existing G1-C IArcGisFeatureServiceClient and writes verbatim
 // to legacy_arcgis_raw.parcel_geom with full provenance. Four

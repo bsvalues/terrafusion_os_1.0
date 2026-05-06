@@ -195,6 +195,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawProperty>
     LegacyPacsRawProperties { get; set; } = null!;
 
+  // SYNC-DOCTRINE-4-IMPL-V4: legacy_pacs_raw.property_val. Per-year
+  // per-supplement valuation rows; carries property_use_cd that
+  // SYNC-DOCTRINE-4 REAL_COMMERCIAL EXCLUDE rule reads.
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawPropertyVal>
+    LegacyPacsRawPropertyVals { get; set; } = null!;
+
   // Slice B1-A: account landing — the global party/entity identity
   // record with the rich PII surface. Block B's first stop.
   public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawAccount>
@@ -992,6 +998,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // identity table for the doctrine parcel pipeline.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawPropertyConfiguration());
+
+    // SYNC-DOCTRINE-4-IMPL-V4: per-year property_val landing. Provides
+    // property_use_cd to the universe classifier.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawPropertyValConfiguration());
 
     // Slice B1-A: account landing — Block B's PII-rich identity table.
     modelBuilder.ApplyConfiguration(

@@ -24,6 +24,7 @@ using TerraFusion.Core.Sync.ArcGisTruthPromotion;
 using TerraFusion.Core.Sync.PacsLandCanonical;
 using TerraFusion.Core.Sync.PacsLandDetail;
 using TerraFusion.Core.Sync.PacsLandTruth;
+using TerraFusion.Core.Sync.PacsPropertyVal;
 using TerraFusion.Core.Sync.PacsWashPropOwnerVal;
 using TerraFusion.Core.Sync.PacsWashPropOwnerValTruth;
 using TerraFusion.Core.Sync.PacsWsdorCanonical;
@@ -344,6 +345,8 @@ public class DoctrineDrainController : ControllerBase
         [FromServices] IPacsImprvAttrLandingService imprvAttrSvc,
         [FromServices] IPacsImprvCurrentTruthPromoter imprvTruthPromoter,
         [FromServices] IPacsImprvCanonicalProjector imprvCanonicalProjector,
+        [FromServices] IPacsLandDetailLandingService landDetailSvc,
+        [FromServices] IPacsPropertyValLandingService propertyValSvc,
         [FromServices] IConfiguration config,
         [FromBody] DoctrineDrainRequest? request,
         CancellationToken cancellationToken = default)
@@ -414,6 +417,38 @@ public class DoctrineDrainController : ControllerBase
             if (!IsCompleted(suppS1.Status))
                 return await FailLaneAsync(LaneName, "Supp-S1", suppS1.ErrorSummary,
                     batchIds, startedAt, quarantineBefore, cancellationToken);
+
+            // SYNC-DOCTRINE-4-IMPL-V4: PropertyVal S1 (universe classifier
+            // reads property_use_cd from these rows). Non-blocking on
+            // failure — the truth promoter falls through to NULL
+            // property_use_cd which the V2 classifier handles by
+            // routing prop_type_cd='R' rows to REAL_RESIDENTIAL.
+            var propertyValSrc = new KeyedSqlServerPacsPropertyValSource(pacsCs!, imprvKeys);
+            var propertyValS1 = await propertyValSvc.LandPropertyValsAsync(
+                propertyValSrc, operatorName, cancellationToken);
+            batchIds.Add(propertyValS1.LoadBatchId);
+            if (!IsCompleted(propertyValS1.Status))
+            {
+                _logger.LogWarning(
+                    "[Drain:improvement] PropertyVal-S1 failed (non-blocking): {Err}. " +
+                    "Promoter will pass NULL property_use_cd to classifier.",
+                    propertyValS1.ErrorSummary);
+            }
+
+            // SYNC-DOCTRINE-4-IMPL-V4: LandDetail S1 (universe classifier
+            // reads ag_apply / ag_use_cd from these rows). Same
+            // non-blocking semantics as PropertyVal-S1.
+            var landDetailSrc = new KeyedSqlServerPacsLandDetailSource(pacsCs!, imprvKeys);
+            var landDetailS1 = await landDetailSvc.LandLandDetailsAsync(
+                landDetailSrc, operatorName, cancellationToken);
+            batchIds.Add(landDetailS1.LoadBatchId);
+            if (!IsCompleted(landDetailS1.Status))
+            {
+                _logger.LogWarning(
+                    "[Drain:improvement] LandDetail-S1 failed (non-blocking): {Err}. " +
+                    "Promoter will pass NULL ag_apply to classifier.",
+                    landDetailS1.ErrorSummary);
+            }
 
             // Imprv S1.
             var imprvSrc = new KeyedSqlServerPacsImprvSource(pacsCs!, imprvKeys);
