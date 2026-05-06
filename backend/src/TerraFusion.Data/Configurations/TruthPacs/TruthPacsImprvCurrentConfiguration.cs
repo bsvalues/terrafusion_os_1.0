@@ -58,5 +58,13 @@ public sealed class TruthPacsImprvCurrentConfiguration
         builder.Property(x => x.ConversionEra).HasMaxLength(20);
         builder.HasIndex(x => x.ConversionEra)
             .HasDatabaseName("ix_truth_pacs_imprv_conversion_era");
+
+        // SYNC-DOCTRINE-4: universe classification surface.
+        builder.Property(x => x.UniverseCode).HasMaxLength(50);
+        builder.Property(x => x.UniverseRuleId);
+        builder.Property(x => x.UniverseConfidence).HasMaxLength(8);
+        builder.Property(x => x.UniverseReason).HasMaxLength(1024);
+        builder.HasIndex(x => x.UniverseCode)
+            .HasDatabaseName("ix_truth_pacs_imprv_universe");
     }
 }

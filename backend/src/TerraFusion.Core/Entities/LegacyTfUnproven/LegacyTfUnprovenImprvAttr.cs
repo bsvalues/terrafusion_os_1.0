@@ -55,5 +55,33 @@ public sealed class LegacyTfUnprovenImprvAttr
     /// </summary>
     public string QuarantineReason { get; set; } = string.Empty;
 
+    // ── SYNC-DOCTRINE-4: universe-aware quarantine context ──────────
+    /// <summary>
+    /// The universe classification for the parent improvement at the
+    /// time this row was quarantined. One of
+    /// <see cref="TerraFusion.Core.Sync.Doctrine.UniverseCodes"/>.
+    /// Nullable for back-compat with rows quarantined before
+    /// SYNC-DOCTRINE-4-IMPL.
+    /// </summary>
+    public string? UniverseCode { get; set; }
+
+    /// <summary>
+    /// FK to <c>doctrine_tf.tf_doctrine_property_universe.rule_id</c>
+    /// — the rule that produced <see cref="UniverseCode"/>. NULL when
+    /// the universe is <c>UNKNOWN</c> or unclassified.
+    /// </summary>
+    public Guid? UniverseRuleId { get; set; }
+
+    /// <summary>
+    /// One of
+    /// <see cref="TerraFusion.Core.Sync.Doctrine.UniverseQuarantineReasons"/>.
+    /// Replaces the muddier
+    /// <see cref="QuarantineReason"/> = <c>UNKNOWN_ATTRIBUTE</c> with
+    /// a five-named-reason taxonomy that distinguishes classification
+    /// failure from dictionary-load failure from genuine unknown
+    /// code-within-known-universe.
+    /// </summary>
+    public string? QuarantineReasonDetail { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

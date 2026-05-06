@@ -1778,6 +1778,29 @@ builder.Services.AddScoped<
 builder.Services.AddHostedService<
     TerraFusion.Data.Services.Doctrine.DoctrineRatioPolicySeederHostedService>();
 
+// SYNC-DOCTRINE-4: property-universe classifier. Singleton with
+// ConcurrentDictionary cache; loads rules from
+// doctrine_tf.tf_doctrine_property_universe via IServiceScopeFactory.
+// Mirrors B1's RatioQualificationPolicy lifetime/cache pattern.
+builder.Services.AddSingleton<
+    TerraFusion.Core.Sync.Doctrine.IPropertyUniverseClassifier,
+    TerraFusion.Data.Services.Doctrine.PropertyUniverseClassifier>();
+// SYNC-DOCTRINE-4: per-universe imprv_attr dictionary. Singleton
+// keyed by (county, universe). Replaces the global
+// RefreshableImprvAttrDictionary for universe-aware lookups.
+builder.Services.AddSingleton<
+    TerraFusion.Core.Sync.Doctrine.IPerUniverseAttributeDictionary,
+    TerraFusion.Data.Services.Doctrine.PerUniverseAttributeDictionary>();
+builder.Services.AddScoped<
+    TerraFusion.Data.Services.Doctrine.DoctrinePropertyUniverseSeeder>();
+builder.Services.AddScoped<
+    TerraFusion.Data.Services.Doctrine.DoctrineAttributeDictionarySeeder>();
+// SYNC-DOCTRINE-4: hosted service runs both seeders at startup.
+// Idempotent; non-fatal on failure (classifier emits UNKNOWN until
+// successful seed).
+builder.Services.AddHostedService<
+    TerraFusion.Data.Services.Doctrine.DoctrinePropertyUniverseSeederHostedService>();
+
 // Slice L1: PACS land_detail raw landing — Block C's land lane
 // per-segment table. Four gates: distribution, 4-key-uniqueness,
 // provenance-coverage, aggregate.

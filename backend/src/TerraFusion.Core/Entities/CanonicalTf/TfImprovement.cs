@@ -66,6 +66,28 @@ public sealed class TfImprovement
     /// </summary>
     public string? ConversionEra { get; set; }
 
+    // ── SYNC-DOCTRINE-4: universe classification (forwarded from truth) ─
+    /// <summary>
+    /// Forwarded verbatim from <c>truth_pacs.imprv_current.UniverseCode</c>
+    /// at projection time. One of
+    /// <see cref="TerraFusion.Core.Sync.Doctrine.UniverseCodes"/>.
+    /// Nullable for back-compat with rows projected before
+    /// SYNC-DOCTRINE-4-IMPL.
+    /// </summary>
+    public string? UniverseCode { get; set; }
+
+    /// <summary>
+    /// FK to <c>doctrine_tf.tf_doctrine_property_universe.rule_id</c>,
+    /// forwarded from truth.
+    /// </summary>
+    public Guid? UniverseRuleId { get; set; }
+
+    /// <summary>HIGH | MED | LOW. Forwarded from truth.</summary>
+    public string? UniverseConfidence { get; set; }
+
+    /// <summary>Forwarded from truth.</summary>
+    public string? UniverseReason { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

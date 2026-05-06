@@ -12,6 +12,7 @@ using TerraFusion.Core.Entities.LegacyPacsRaw;
 using TerraFusion.Core.Entities.LegacyTfUnproven;
 using TerraFusion.Core.Entities.SyncBridge;
 using TerraFusion.Core.Entities.TruthPacs;
+using TerraFusion.Core.Sync.Doctrine;
 using TerraFusion.Core.Sync.PacsImprvCanonical;
 
 namespace TerraFusion.Data.Services.CanonicalTf;
@@ -42,17 +43,21 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
 {
     private const string EntityType = "improvement";
     private const string ParcelEntityType = "parcel";
+    private const string DefaultCountyTag = "benton-wa";
     // E4a (v1.4): quarantine reasons live in QuarantineReasons —
     // see docs/pacs/block-c-contract-v1.4.md.
 
     private readonly TerraFusionDbContext _db;
+    private readonly IPerUniverseAttributeDictionary _universeAttributeDictionary;
     private readonly ILogger<PacsImprvCanonicalProjector> _logger;
 
     public PacsImprvCanonicalProjector(
         TerraFusionDbContext db,
+        IPerUniverseAttributeDictionary universeAttributeDictionary,
         ILogger<PacsImprvCanonicalProjector> logger)
     {
         _db = db;
+        _universeAttributeDictionary = universeAttributeDictionary;
         _logger = logger;
     }
 
@@ -287,6 +292,11 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
                     // G2 (v1.11): era resolved via majority-of-truth.
                     // Single contributor → verbatim copy.
                     ConversionEra = ConversionEras.MajorityOfTruth(new[] { truth.ConversionEra }),
+                    // SYNC-DOCTRINE-4: forward universe classification verbatim.
+                    UniverseCode = truth.UniverseCode,
+                    UniverseRuleId = truth.UniverseRuleId,
+                    UniverseConfidence = truth.UniverseConfidence,
+                    UniverseReason = truth.UniverseReason,
                     CreatedAt = now,
                     UpdatedAt = now,
                 };
@@ -387,6 +397,15 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
                             // (distinct from landing-layer quarantine
                             // which uses UNKNOWN_I_ATTR_VAL_CD). See
                             // v1.5 §2.2 step 4.
+                            //
+                            // SYNC-DOCTRINE-4: enrich the quarantine row
+                            // with universe context so the operator can
+                            // distinguish classification failure from
+                            // dictionary-not-loaded from genuine
+                            // unknown-code-within-known-universe.
+                            var detailReason = await ResolveQuarantineReasonDetailAsync(
+                                truth, attr, cancellationToken).ConfigureAwait(false);
+
                             _db.LegacyTfUnprovenImprvAttrs.Add(new LegacyTfUnprovenImprvAttr
                             {
                                 PropValYr = attr.PropValYr,
@@ -404,6 +423,9 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
                                 // awkwardness flagged for v1.6+ cleanup.
                                 LandingLoadBatchId = batch.LoadBatchId,
                                 QuarantineReason = QuarantineReasons.UnknownAttribute,
+                                UniverseCode = truth.UniverseCode,
+                                UniverseRuleId = truth.UniverseRuleId,
+                                QuarantineReasonDetail = detailReason,
                                 CreatedAt = now,
                             });
                             attributesQuarantined++;
@@ -476,6 +498,42 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
                 ErrorSummary = summary,
             };
         }
+    }
+
+    /// <summary>
+    /// SYNC-DOCTRINE-4: derive a universe-aware quarantine-reason
+    /// detail for an attribute that the global AttributeDefinition
+    /// lookup couldn't resolve.
+    ///
+    /// <para>Five possible reasons (closed vocabulary in
+    /// <see cref="UniverseQuarantineReasons"/>): UniverseNotEvaluated
+    /// (truth row's universe is unclassified or UNKNOWN), then any of
+    /// DictionaryNotLoadedForUniverse / UnknownForUniverseDictionary
+    /// returned by the per-universe dictionary lookup. The
+    /// LegacyClassificationUncertain reason is reserved for the
+    /// classifier's hint surface and is not produced from the
+    /// quarantine path.</para>
+    /// </summary>
+    private async Task<string> ResolveQuarantineReasonDetailAsync(
+        TruthPacsImprvCurrent truth,
+        LegacyPacsRawImprvAttr attr,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(truth.UniverseCode)
+            || string.Equals(truth.UniverseCode, UniverseCodes.Unknown, StringComparison.OrdinalIgnoreCase))
+        {
+            return UniverseQuarantineReasons.UniverseNotEvaluated;
+        }
+
+        var lookup = await _universeAttributeDictionary.LookupAsync(
+            DefaultCountyTag,
+            truth.UniverseCode,
+            truth.PropValYr,
+            attr.IAttrValId.ToString(CultureInfo.InvariantCulture),
+            attr.IAttrValCd,
+            cancellationToken).ConfigureAwait(false);
+
+        return lookup.QuarantineReason ?? UniverseQuarantineReasons.UnknownForUniverseDictionary;
     }
 
     private async Task<IReadOnlyDictionary<int, ParcelLookup>> BuildParcelIndexAsync(

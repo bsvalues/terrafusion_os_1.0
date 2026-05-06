@@ -344,6 +344,18 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.DoctrineTf.TfDoctrineRatioPolicy>
     TfDoctrineRatioPolicies { get; set; } = null!;
 
+  // SYNC-DOCTRINE-4: doctrine_tf.tf_doctrine_property_universe.
+  // Year-aware, evidence-backed property-universe classification
+  // rules. Six universes + UNKNOWN sentinel.
+  public DbSet<TerraFusion.Core.Entities.DoctrineTf.TfDoctrinePropertyUniverse>
+    TfDoctrinePropertyUniverses { get; set; } = null!;
+
+  // SYNC-DOCTRINE-4: doctrine_tf.tf_doctrine_attribute_dictionary.
+  // Per-universe imprv_attr code dictionary. Replaces the global
+  // RefreshableImprvAttrDictionary for universe-aware lookups.
+  public DbSet<TerraFusion.Core.Entities.DoctrineTf.TfDoctrineAttributeDictionary>
+    TfDoctrineAttributeDictionaries { get; set; } = null!;
+
   // Slice D1: legacy_arcgis_raw.parcel_geom — first stop in the
   // 5-schema doctrine for ArcGIS-sourced geometry. Per Block-D
   // execution plan (docs/pacs/block-d-execution-plan.md §3.1).
@@ -1090,6 +1102,14 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // Year-aware sales-ratio qualification rule rows.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.DoctrineTf.TfDoctrineRatioPolicyConfiguration());
+
+    // SYNC-DOCTRINE-4: doctrine_tf.tf_doctrine_property_universe and
+    // doctrine_tf.tf_doctrine_attribute_dictionary. Six-universe
+    // classification + per-universe code dictionary.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.DoctrineTf.TfDoctrinePropertyUniverseConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.DoctrineTf.TfDoctrineAttributeDictionaryConfiguration());
 
     // Slice D1: legacy_arcgis_raw.parcel_geom — raw FeatureService
     // landing. Per docs/pacs/block-d-execution-plan.md §3.1.
