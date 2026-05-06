@@ -120,6 +120,15 @@ function safeRead(filePath) {
   }
 }
 
+function hasDevelopmentOnlyCanonicalDebugGate() {
+  const program = safeRead(path.join(repoRoot, 'backend', 'src', 'TerraFusion.API', 'Program.cs'));
+  return (
+    /\bCanonicalDebugController\b/.test(program) &&
+    /\.IsDevelopment\s*\(/.test(program) &&
+    /new\[\]\s*\{\s*"CanonicalDebugController"\s*\}/.test(program)
+  );
+}
+
 function matches(patterns, value) {
   return patterns.filter(pattern => pattern.test(value)).map(pattern => pattern.source);
 }
@@ -233,6 +242,11 @@ function zoneFor(filePath, content) {
   if (relative.includes('/tests/') || relative.startsWith('backend/tests/')) return 'allowed_tests';
   if (/#if\s+DEBUG/i.test(content) && /TestController\.cs$/i.test(relative)) return 'allowed_tests';
   if (/WorkbenchSyncReadinessController\.cs$/i.test(relative)) return 'allowed_admin_proof';
+  if (/CanonicalDebugController\.cs$/i.test(relative)) {
+    return hasDevelopmentOnlyCanonicalDebugGate()
+      ? 'allowed_admin_proof'
+      : 'forbidden_product_runtime';
+  }
 
   if (
     /(^|\/)(sync|etl|scrapers?|datamining)(\/|$)/i.test(relative) ||

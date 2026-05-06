@@ -1112,7 +1112,10 @@ builder.Services.AddControllers()
       manager.FeatureProviders.Add(
           new TerraFusion.API.Controllers.NamespaceExcludingControllerFeatureProvider(
               "TerraFusion.AI.Controllers",
-              "Codex369Controller"));
+              new[] { "Codex369Controller" },
+              builder.Environment.IsDevelopment()
+                  ? Array.Empty<string>()
+                  : new[] { "CanonicalDebugController" }));
     })
     .AddJsonOptions(options =>
     {
