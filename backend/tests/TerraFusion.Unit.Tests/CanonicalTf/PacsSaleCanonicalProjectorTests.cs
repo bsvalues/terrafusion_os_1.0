@@ -100,6 +100,18 @@ public sealed class PacsSaleCanonicalProjectorTests : IDisposable
             PropValYr = year,
             SupNum = sup,
             SlCountyRatioCd = "100",
+            // SYNC-DOCTRINE-2 (B2): the truth row carries the dual-surface
+            // qualification booleans the promoter computed. Happy-path
+            // helper marks the sale as county-qualified per the post-B2
+            // doctrine (sl_county_ratio_cd='100' on a 2018+ year matches
+            // the COUNTY_INTERNAL_RATIO rule). The canonical projector
+            // forwards these verbatim and derives SaleQualified =
+            // DorRatioQualified || CountyRatioQualified.
+            DorRatioQualified = false,
+            CountyRatioReviewed = true,
+            CountyRatioQualified = true,
+            CountyRatioCode = "100",
+            CountyRatioDescription = "Valid Sale",
             SlDt = saleDt ?? new DateTime(2026, 4, 1, 0, 0, 0, DateTimeKind.Utc),
             SlPrice = price,
             AdjSlPrice = price,

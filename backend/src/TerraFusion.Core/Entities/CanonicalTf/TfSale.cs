@@ -45,11 +45,56 @@ public sealed class TfSale
     public decimal? AdjSlPrice { get; set; }
 
     /// <summary>
-    /// True by construction: only sales that survived the truth-pacs
-    /// '100' filter reach <c>canonical_tf.tf_sale</c>. Surfaced as a
-    /// column for client-side invariant checks.
+    /// SYNC-DOCTRINE-2 (B2): legacy column. Pre-DOCTRINE-2 this was
+    /// "true by construction" because only county-ratio-100 sales
+    /// reached canonical. With dual-surface qualification it's now
+    /// derived from the new fields per a documented policy:
+    /// <c>SaleQualified = DorRatioQualified || CountyRatioQualified</c>
+    /// (a sale is qualified if EITHER study qualifies it). Kept for
+    /// back-compat with existing canonical consumers; new consumers
+    /// should read the two surface fields directly.
     /// </summary>
-    public bool SaleQualified { get; set; } = true;
+    public bool SaleQualified { get; set; }
+
+    // ── SYNC-DOCTRINE-2 (B2): dual-surface qualification ──────────
+    /// <summary>
+    /// Qualified for the Washington DoR ratio study per
+    /// <c>tf_doctrine_ratio_policy[StudyName='DOR_RATIO']</c>.
+    /// Source: <c>sale.sl_ratio_type_cd='00'</c> always-on rule.
+    /// </summary>
+    public bool DorRatioQualified { get; set; }
+
+    /// <summary>
+    /// True if the county has assigned ANY <c>sl_county_ratio_cd</c>
+    /// for this sale (the COUNTY_INTERNAL_RATIO study has reviewed
+    /// the sale). NULL codes = "not yet reviewed". A reviewed sale
+    /// can still be NOT-qualified (codes 200/300/400/500).
+    /// </summary>
+    public bool CountyRatioReviewed { get; set; }
+
+    /// <summary>
+    /// Qualified for the Benton internal ratio study per
+    /// <c>tf_doctrine_ratio_policy[StudyName='COUNTY_INTERNAL_RATIO']</c>.
+    /// Effective 2018+; pre-2018 sales always have this false (the
+    /// study did not exist as a formal program before then; legacy
+    /// codebook semantics live in LEGACY_CODEBOOK_VALID, which the
+    /// promoter does not consult for canonical output).
+    /// </summary>
+    public bool CountyRatioQualified { get; set; }
+
+    /// <summary>
+    /// Raw <c>sl_county_ratio_cd</c> verbatim from PACS. Preserved
+    /// so canonical consumers can apply ad-hoc policies without
+    /// re-querying PACS or the truth layer.
+    /// </summary>
+    public string? CountyRatioCode { get; set; }
+
+    /// <summary>
+    /// Human-readable description from <c>dbo.county_ratio_code</c>
+    /// (snapshot 2026-05-06 in <c>CountyRatioCodebook</c>). e.g.
+    /// "Valid Sale", "Invalid Sale", "Land Only Sale".
+    /// </summary>
+    public string? CountyRatioDescription { get; set; }
 
     /// <summary>The S3 promotion batch that created this row.</summary>
     public Guid PromotionLoadBatchId { get; set; }

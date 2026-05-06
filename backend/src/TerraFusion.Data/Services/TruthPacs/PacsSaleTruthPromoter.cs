@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TerraFusion.Core.Entities.SyncBridge;
 using TerraFusion.Core.Entities.TruthPacs;
+using TerraFusion.Core.Sync.Doctrine;
 using TerraFusion.Core.Sync.PacsSaleTruth;
 
 namespace TerraFusion.Data.Services.TruthPacs;
@@ -33,18 +34,29 @@ namespace TerraFusion.Data.Services.TruthPacs;
 /// </summary>
 public sealed class PacsSaleTruthPromoter : IPacsSaleTruthPromoter
 {
-    private const string ValidSaleCode = "100";
+    // SYNC-DOCTRINE-2 (B2): the hardcoded ValidSaleCode = "100" filter
+    // is REMOVED. Qualification is now per-sale evaluation against
+    // tf_doctrine_ratio_policy via IRatioQualificationPolicy. A sale
+    // is promoted to truth_pacs.sale if it qualifies for AT LEAST ONE
+    // of the two ratio studies (DOR_RATIO or COUNTY_INTERNAL_RATIO).
     private static readonly HashSet<string> StaleValidSaleCodes =
         new(StringComparer.OrdinalIgnoreCase) { "01", "02" };
 
+    // SYNC-DOCTRINE-2 (B2): single-county Benton hardcode. Multi-county
+    // future will inject this via an IOperatorContext or similar.
+    private const string CountySlug = "benton-wa";
+
     private readonly TerraFusionDbContext _db;
+    private readonly IRatioQualificationPolicy _policy;
     private readonly ILogger<PacsSaleTruthPromoter> _logger;
 
     public PacsSaleTruthPromoter(
         TerraFusionDbContext db,
+        IRatioQualificationPolicy policy,
         ILogger<PacsSaleTruthPromoter> logger)
     {
         _db = db;
+        _policy = policy;
         _logger = logger;
     }
 
@@ -151,13 +163,18 @@ public sealed class PacsSaleTruthPromoter : IPacsSaleTruthPromoter
             var rejectedStaleAxis = 0;
             // G4 (v1.13): pre-conversion-share gate counter.
             var preConversionPromoted = 0;
+            // SYNC-DOCTRINE-2 (B2): dual-surface telemetry counters.
+            var promotedDorOnly = 0;
+            var promotedCountyOnly = 0;
+            var promotedBothStudies = 0;
 
             var now = DateTime.UtcNow;
             foreach (var sale in sales)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                // Defense-in-depth stale-axis rejection.
+                // Defense-in-depth stale-axis rejection (pre-conversion
+                // legacy '01'/'02' codes are unconditionally dropped).
                 if (sale.SlCountyRatioCd is not null
                     && StaleValidSaleCodes.Contains(sale.SlCountyRatioCd))
                 {
@@ -165,12 +182,8 @@ public sealed class PacsSaleTruthPromoter : IPacsSaleTruthPromoter
                     continue;
                 }
 
-                if (!string.Equals(sale.SlCountyRatioCd, ValidSaleCode, StringComparison.Ordinal))
-                {
-                    rejectedNotQualified++;
-                    continue;
-                }
-
+                // FK gates (sup-aware-validated identity) MUST hold
+                // regardless of qualification.
                 if (!suppIndex.TryGetValue((sale.PropId, sale.PropValYr), out var suppPtr))
                 {
                     rejectedNoSuppPointer++;
@@ -183,6 +196,38 @@ public sealed class PacsSaleTruthPromoter : IPacsSaleTruthPromoter
                     continue;
                 }
 
+                // SYNC-DOCTRINE-2 (B2): dual-surface qualification
+                // evaluation. Replaces the hardcoded sl_county_ratio_cd='100'
+                // filter. The promoter evaluates BOTH studies and writes
+                // both booleans to truth_pacs.sale; promotion happens iff
+                // at least one study qualifies the sale.
+                var saleYear = sale.SlDt?.Year
+                    ?? (sale.PropValYr > 0 ? (int)sale.PropValYr : 0);
+
+                var dorEval = await _policy.EvaluateAsync(
+                    CountySlug,
+                    "DOR_RATIO",
+                    saleYear,
+                    sale.SlRatioTypeCd,
+                    cancellationToken).ConfigureAwait(false);
+
+                var countyEval = await _policy.EvaluateAsync(
+                    CountySlug,
+                    "COUNTY_INTERNAL_RATIO",
+                    saleYear,
+                    sale.SlCountyRatioCd,
+                    cancellationToken).ConfigureAwait(false);
+
+                if (!dorEval.Qualified && !countyEval.Qualified)
+                {
+                    rejectedNotQualified++;
+                    continue;
+                }
+
+                if (dorEval.Qualified && countyEval.Qualified) promotedBothStudies++;
+                else if (dorEval.Qualified) promotedDorOnly++;
+                else promotedCountyOnly++;
+
                 // G1 (v1.10): conversion-era marker derived from PropValYr.
                 var era = ConversionEras.FromYear(sale.PropValYr);
                 if (era == ConversionEras.PreConversion2017) preConversionPromoted++;
@@ -193,7 +238,15 @@ public sealed class PacsSaleTruthPromoter : IPacsSaleTruthPromoter
                     PropId = sale.PropId,
                     PropValYr = sale.PropValYr,
                     SupNum = sale.SupNum,
-                    SlCountyRatioCd = ValidSaleCode,
+                    // Verbatim: pre-DOCTRINE-2 this was forced to '100';
+                    // now it's the raw value (may be NULL or any code).
+                    SlCountyRatioCd = sale.SlCountyRatioCd,
+                    DorRatioQualified = dorEval.Qualified,
+                    CountyRatioReviewed = countyEval.Reviewed,
+                    CountyRatioQualified = countyEval.Qualified,
+                    CountyRatioCode = sale.SlCountyRatioCd,
+                    CountyRatioDescription =
+                        CountyRatioCodebook.Describe(sale.SlCountyRatioCd),
                     SlDt = sale.SlDt,
                     SlPrice = sale.SlPrice,
                     AdjSlPrice = sale.AdjSlPrice,
@@ -208,6 +261,11 @@ public sealed class PacsSaleTruthPromoter : IPacsSaleTruthPromoter
                 promoted++;
             }
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+            // SYNC-DOCTRINE-2 (B2): dual-surface summary gate.
+            await RecordDualSurfaceGateAsync(
+                batch, promoted, promotedDorOnly, promotedCountyOnly,
+                promotedBothStudies, cancellationToken).ConfigureAwait(false);
 
             // G4 (v1.13): pre-conversion-share gate.
             ConversionEraGate.AddShareGate(
@@ -284,6 +342,35 @@ public sealed class PacsSaleTruthPromoter : IPacsSaleTruthPromoter
             Expected = "both COMPLETED",
             Actual = status,
             Detail = detail,
+            ExecutedAt = DateTime.UtcNow,
+        });
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// SYNC-DOCTRINE-2 (B2): informational gate recording how many
+    /// promoted truth rows qualified for DOR only, county only, or
+    /// both studies. Always PASS (data observation, not pass/fail).
+    /// </summary>
+    private async Task RecordDualSurfaceGateAsync(
+        LoadBatch batch,
+        int promoted,
+        int dorOnly,
+        int countyOnly,
+        int bothStudies,
+        CancellationToken cancellationToken)
+    {
+        _db.SyncBridgePromotionGateResults.Add(new PromotionGateResult
+        {
+            LoadBatchId = batch.LoadBatchId,
+            GateName = "truth-pacs-dual-surface-summary",
+            GateStage = "RAW_TO_TRUTH",
+            Status = "PASS",
+            Expected = "informational",
+            Actual = promoted.ToString(CultureInfo.InvariantCulture),
+            Detail =
+                $"promoted={promoted} dorOnly={dorOnly} " +
+                $"countyOnly={countyOnly} bothStudies={bothStudies}",
             ExecutedAt = DateTime.UtcNow,
         });
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

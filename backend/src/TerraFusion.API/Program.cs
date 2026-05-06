@@ -1772,6 +1772,11 @@ builder.Services.AddSingleton<
     TerraFusion.Data.Services.Doctrine.RatioQualificationPolicy>();
 builder.Services.AddScoped<
     TerraFusion.Data.Services.Doctrine.DoctrineRatioPolicySeeder>();
+// SYNC-DOCTRINE-2 (B2): hosted service runs the seeder once at
+// startup so the doctrine table is populated before the first sale
+// truth-promotion call. Idempotent + non-fatal on failure.
+builder.Services.AddHostedService<
+    TerraFusion.Data.Services.Doctrine.DoctrineRatioPolicySeederHostedService>();
 
 // Slice L1: PACS land_detail raw landing — Block C's land lane
 // per-segment table. Four gates: distribution, 4-key-uniqueness,

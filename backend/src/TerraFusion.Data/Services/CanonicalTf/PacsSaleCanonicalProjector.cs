@@ -191,7 +191,19 @@ public sealed class PacsSaleCanonicalProjector : IPacsSaleCanonicalProjector
                     SlDt = truth.SlDt,
                     SlPrice = truth.SlPrice,
                     AdjSlPrice = truth.AdjSlPrice,
-                    SaleQualified = true,
+                    // SYNC-DOCTRINE-2 (B2): forward the dual-surface
+                    // qualification fields verbatim from truth.
+                    DorRatioQualified = truth.DorRatioQualified,
+                    CountyRatioReviewed = truth.CountyRatioReviewed,
+                    CountyRatioQualified = truth.CountyRatioQualified,
+                    CountyRatioCode = truth.CountyRatioCode,
+                    CountyRatioDescription = truth.CountyRatioDescription,
+                    // Legacy single-bool: derived as
+                    // DorRatioQualified || CountyRatioQualified.
+                    // Existing canonical consumers can keep reading
+                    // SaleQualified; new consumers should read the
+                    // two surface booleans directly.
+                    SaleQualified = truth.DorRatioQualified || truth.CountyRatioQualified,
                     PromotionLoadBatchId = batch.LoadBatchId,
                     // G2 (v1.11): era resolved via majority-of-truth.
                     // Single contributor → verbatim copy.
