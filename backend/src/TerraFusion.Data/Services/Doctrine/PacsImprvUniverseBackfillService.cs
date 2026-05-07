@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -261,6 +262,189 @@ public sealed class PacsImprvUniverseBackfillService : IPacsImprvUniverseBackfil
                 ErrorSummary = $"{ex.GetType().Name}: {ex.Message}",
             };
         }
+    }
+
+    public async Task<CanonicalUniverseBackfillResult> BackfillCanonicalAsync(
+        CanonicalUniverseBackfillRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        try
+        {
+            // Load all canonical improvement rows. Bound by MaxRows.
+            var canonicalQuery = _db.TfImprovements.AsQueryable();
+            if (request.MaxRows.HasValue)
+                canonicalQuery = canonicalQuery.Take(request.MaxRows.Value);
+            var canonicals = await canonicalQuery.ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            if (canonicals.Count == 0)
+            {
+                return new CanonicalUniverseBackfillResult
+                {
+                    Status = "COMPLETED",
+                    DryRun = request.DryRun,
+                    CanonicalRowsScanned = 0,
+                    CanonicalRowsUpdated = 0,
+                    CanonicalRowsAlreadyMatched = 0,
+                    CanonicalRowsWithoutTruth = 0,
+                    Transitions = new Dictionary<string, int>(),
+                };
+            }
+
+            var canonicalIds = canonicals.Select(c => c.TfImprovementId).ToList();
+
+            // Pre-fetch SourceXrefs for all canonical rows in one query.
+            var xrefs = await _db.SyncBridgeSourceXrefs
+                .Where(x => x.TfEntityType == "improvement"
+                            && canonicalIds.Contains(x.TfEntityId))
+                .Select(x => new { x.TfEntityId, x.SourceKeyJson })
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+
+            // Parse SourceKeyJson into 4-keys, indexed by canonical id.
+            var keyByCanonical = new Dictionary<Guid, (int PropId, short PropValYr, short SupNum, long ImprvId)>();
+            foreach (var x in xrefs)
+            {
+                if (TryParseImprvKey(x.SourceKeyJson, out var key))
+                    keyByCanonical[x.TfEntityId] = key;
+            }
+
+            // Pre-fetch all truth rows for the relevant prop_ids in one query,
+            // then index by 4-key (latest PromotedAt wins on duplicates).
+            var imprvPropIds = keyByCanonical.Values.Select(k => k.PropId).Distinct().ToList();
+            var truthRows = await _db.TruthPacsImprvCurrents
+                .Where(t => imprvPropIds.Contains(t.PropId))
+                .Select(t => new
+                {
+                    t.PropId, t.PropValYr, t.SupNum, t.ImprvId,
+                    t.UniverseCode, t.UniverseRuleId,
+                    t.UniverseConfidence, t.UniverseReason,
+                    t.PromotedAt,
+                })
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+            var truthByKey = truthRows
+                .GroupBy(t => (t.PropId, t.PropValYr, t.SupNum, t.ImprvId))
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.OrderByDescending(t => t.PromotedAt).First());
+
+            var scanned = 0;
+            var updated = 0;
+            var alreadyMatched = 0;
+            var withoutTruth = 0;
+            var transitions = new Dictionary<string, int>(StringComparer.Ordinal);
+
+            foreach (var canonical in canonicals)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                scanned++;
+
+                if (!keyByCanonical.TryGetValue(canonical.TfImprovementId, out var key))
+                {
+                    // No SourceXref for this canonical row — should not
+                    // happen per the canonical-imprv-source-xref-coverage
+                    // gate, but be defensive.
+                    withoutTruth++;
+                    continue;
+                }
+
+                if (!truthByKey.TryGetValue(key, out var truth))
+                {
+                    // SourceXref points to a truth row that no longer
+                    // exists (e.g. the prop_id was removed from PACS).
+                    // Treat as orphan; don't touch the canonical row.
+                    withoutTruth++;
+                    continue;
+                }
+
+                // Already matched?
+                if (string.Equals(canonical.UniverseCode, truth.UniverseCode, StringComparison.Ordinal)
+                    && canonical.UniverseRuleId == truth.UniverseRuleId)
+                {
+                    alreadyMatched++;
+                    continue;
+                }
+
+                var oldU = canonical.UniverseCode ?? "(null)";
+                var newU = truth.UniverseCode ?? "(null)";
+                Bump(transitions, $"{oldU} → {newU}");
+
+                if (!request.DryRun)
+                {
+                    canonical.UniverseCode = truth.UniverseCode;
+                    canonical.UniverseRuleId = truth.UniverseRuleId;
+                    canonical.UniverseConfidence = truth.UniverseConfidence;
+                    canonical.UniverseReason = truth.UniverseReason;
+                    canonical.UpdatedAt = DateTime.UtcNow;
+                }
+                updated++;
+            }
+
+            if (!request.DryRun)
+                await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+            _logger.LogInformation(
+                "[Backfill:imprv-universe-canonical] dryRun={DryRun} scanned={Scanned} updated={Updated} alreadyMatched={Matched} withoutTruth={NoTruth}",
+                request.DryRun, scanned, updated, alreadyMatched, withoutTruth);
+
+            return new CanonicalUniverseBackfillResult
+            {
+                Status = "COMPLETED",
+                DryRun = request.DryRun,
+                CanonicalRowsScanned = scanned,
+                CanonicalRowsUpdated = updated,
+                CanonicalRowsAlreadyMatched = alreadyMatched,
+                CanonicalRowsWithoutTruth = withoutTruth,
+                Transitions = transitions,
+            };
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            _logger.LogError(ex, "[Backfill:imprv-universe-canonical] FAILED");
+            return new CanonicalUniverseBackfillResult
+            {
+                Status = "FAILED",
+                DryRun = request.DryRun,
+                CanonicalRowsScanned = 0,
+                CanonicalRowsUpdated = 0,
+                CanonicalRowsAlreadyMatched = 0,
+                CanonicalRowsWithoutTruth = 0,
+                Transitions = new Dictionary<string, int>(),
+                ErrorSummary = $"{ex.GetType().Name}: {ex.Message}",
+            };
+        }
+    }
+
+    /// <summary>
+    /// Parse the canonical projector's SourceKeyJson shape — emitted as
+    /// `{"prop_id":..., "prop_val_yr":..., "sup_num":..., "imprv_id":...}`
+    /// per <c>PacsImprvCanonicalProjector</c>.
+    /// </summary>
+    private static bool TryParseImprvKey(
+        string sourceKeyJson,
+        out (int PropId, short PropValYr, short SupNum, long ImprvId) key)
+    {
+        key = default;
+        if (string.IsNullOrEmpty(sourceKeyJson)) return false;
+
+        try
+        {
+            using var doc = JsonDocument.Parse(sourceKeyJson);
+            var root = doc.RootElement;
+            if (!root.TryGetProperty("prop_id", out var pidEl)) return false;
+            if (!root.TryGetProperty("prop_val_yr", out var yrEl)) return false;
+            if (!root.TryGetProperty("sup_num", out var supEl)) return false;
+            if (!root.TryGetProperty("imprv_id", out var imprvEl)) return false;
+
+            key = (
+                pidEl.GetInt32(),
+                (short)yrEl.GetInt32(),
+                (short)supEl.GetInt32(),
+                imprvEl.GetInt64());
+            return true;
+        }
+        catch (JsonException) { return false; }
     }
 
     private static void Bump(Dictionary<string, int> map, string key) =>

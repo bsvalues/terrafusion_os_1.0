@@ -38,6 +38,37 @@ public interface IPacsImprvUniverseBackfillService
     Task<ImprvUniverseBackfillResult> BackfillAsync(
         ImprvUniverseBackfillRequest request,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// SYNC-DOCTRINE-4-IMPL-V6: forward backfilled universe values
+    /// from <c>truth_pacs.imprv_current</c> onto matching
+    /// <c>canonical_tf.tf_improvement</c> rows.
+    ///
+    /// <para>The canonical projector creates canonical rows from truth
+    /// rows at promotion time and bakes the truth row's UniverseCode
+    /// into them. After V5 backfilled truth in place, canonical rows
+    /// projected before V5 still carry the OLD universe (or NULL).
+    /// V6 reconciles them.</para>
+    ///
+    /// <para>Lookup: for each canonical row, find its matching truth
+    /// row via <c>sync_bridge.source_xref</c>:</para>
+    /// <list type="number">
+    ///   <item>SourceXref where TfEntityType='improvement' and
+    ///   TfEntityId = canonical.TfImprovementId.</item>
+    ///   <item>Parse SourceKeyJson for the 4-key (prop_id,
+    ///   prop_val_yr, sup_num, imprv_id).</item>
+    ///   <item>Find truth_pacs.imprv_current rows with that 4-key,
+    ///   pick the most recent by PromotedAt.</item>
+    ///   <item>If canonical.UniverseCode != truth.UniverseCode,
+    ///   UPDATE canonical to match.</item>
+    /// </list>
+    ///
+    /// <para>Idempotent — re-running on already-matched rows is a
+    /// no-op.</para>
+    /// </summary>
+    Task<CanonicalUniverseBackfillResult> BackfillCanonicalAsync(
+        CanonicalUniverseBackfillRequest request,
+        CancellationToken cancellationToken = default);
 }
 
 /// <summary>SYNC-DOCTRINE-4-IMPL-V5: backfill input.</summary>
@@ -77,6 +108,27 @@ public sealed record ImprvUniverseBackfillResult
     /// to audit shift in classification. NULL old / new are
     /// rendered as "(null)".
     /// </summary>
+    public required IReadOnlyDictionary<string, int> Transitions { get; init; }
+
+    public string? ErrorSummary { get; init; }
+}
+
+/// <summary>SYNC-DOCTRINE-4-IMPL-V6: canonical-side backfill input.</summary>
+public sealed record CanonicalUniverseBackfillRequest(
+    bool DryRun,
+    int? MaxRows = null);
+
+/// <summary>SYNC-DOCTRINE-4-IMPL-V6: canonical-side backfill outcome.</summary>
+public sealed record CanonicalUniverseBackfillResult
+{
+    public required string Status { get; init; }
+    public required bool DryRun { get; init; }
+    public required int CanonicalRowsScanned { get; init; }
+    public required int CanonicalRowsUpdated { get; init; }
+    public required int CanonicalRowsAlreadyMatched { get; init; }
+    public required int CanonicalRowsWithoutTruth { get; init; }
+
+    /// <summary>"OldUniverse → NewUniverse" → count.</summary>
     public required IReadOnlyDictionary<string, int> Transitions { get; init; }
 
     public string? ErrorSummary { get; init; }
