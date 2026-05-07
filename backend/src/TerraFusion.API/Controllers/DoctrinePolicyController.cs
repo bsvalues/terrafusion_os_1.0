@@ -339,4 +339,26 @@ public class DoctrinePolicyController : ControllerBase
     public sealed record CanonicalBackfillRequestDto(
         bool? DryRun,
         int? MaxRows);
+
+    /// <summary>
+    /// SYNC-DOCTRINE-4-IMPL-V7: read-only profile of the canonical-
+    /// layer imprv_attr quarantine cohort. Returns a
+    /// (UniverseCode, ImprvAttrId, IAttrValCd) histogram so the
+    /// operator can decide which codes are real (add to
+    /// attribute_definition) vs noise. Does NOT auto-seed any
+    /// dictionary — pure evidence production.
+    /// </summary>
+    [HttpGet("quarantine/imprv-attr/profile")]
+    public async Task<IActionResult> ProfileImprvAttrQuarantine(
+        [FromServices] IImprvAttrQuarantineProfiler profiler,
+        [FromQuery(Name = "universe")] string? universeFilter = null,
+        [FromQuery(Name = "reason")] string? reasonFilter = null,
+        [FromQuery(Name = "max_cells")] int? maxCells = null,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await profiler.ProfileAsync(
+            new ImprvAttrQuarantineProfileRequest(universeFilter, reasonFilter, maxCells),
+            cancellationToken);
+        return Ok(result);
+    }
 }
