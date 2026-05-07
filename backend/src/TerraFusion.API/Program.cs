@@ -1829,6 +1829,15 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.Doctrine.IImprvAttrQuarantineProfiler,
     TerraFusion.Data.Services.Doctrine.ImprvAttrQuarantineProfiler>();
 
+// SYNC-DOCTRINE-4-IMPL-V8: hosted service that refreshes the
+// landing-layer imprv_attr dictionary from PACS at backend startup.
+// Without this, RefreshableImprvAttrDictionary boots empty and all
+// imprv_attr rows quarantine with UNKNOWN_I_ATTR_VAL_CD until an
+// operator manually runs /api/debug/attr-drain-1/run-drain. Idempotent
+// + non-fatal on failure.
+builder.Services.AddHostedService<
+    TerraFusion.Data.Services.PacsImprvAttr.ImprvAttrDictionaryRefreshHostedService>();
+
 // Slice D1: ArcGIS REST FeatureService raw landing. Wraps the
 // existing G1-C IArcGisFeatureServiceClient and writes verbatim
 // to legacy_arcgis_raw.parcel_geom with full provenance. Four
