@@ -1821,6 +1821,14 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.Doctrine.IPacsImprvUniverseBackfillService,
     TerraFusion.Data.Services.Doctrine.PacsImprvUniverseBackfillService>();
 
+// SYNC-DOCTRINE-4-IMPL-V7: read-only profiler for the canonical-layer
+// imprv_attr quarantine cohort. Returns a (UniverseCode, ImprvAttrId,
+// IAttrValCd) histogram so the operator can decide which codes are
+// real (add to attribute_definition) vs noise.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.Doctrine.IImprvAttrQuarantineProfiler,
+    TerraFusion.Data.Services.Doctrine.ImprvAttrQuarantineProfiler>();
+
 // Slice D1: ArcGIS REST FeatureService raw landing. Wraps the
 // existing G1-C IArcGisFeatureServiceClient and writes verbatim
 // to legacy_arcgis_raw.parcel_geom with full provenance. Four
