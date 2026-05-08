@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using TerraFusion.API.Helpers;
 using TerraFusion.Core.Sync.PacsWsdorCanonical;
 
 namespace TerraFusion.API.Controllers;
@@ -12,18 +13,24 @@ namespace TerraFusion.API.Controllers;
 /// Slice B5': read-only endpoint for canonical WSDOR-grade
 /// per-owner assessments.
 ///
-/// <para><c>GET /api/parcels/{tfParcelId}/wsdor-roll?taxYear=...</c></para>
+/// <para><c>GET /api/parcels/{tfParcelId}/wsdor-roll?taxYear=...&amp;era=...</c></para>
 ///
 /// <para>Contract:
 /// <list type="bullet">
 ///   <item>401 if unauthenticated (handled by <c>[Authorize]</c>).</item>
-///   <item>400 on missing / empty <c>tfParcelId</c> or non-positive <c>taxYear</c>.</item>
+///   <item>400 on missing / empty <c>tfParcelId</c>, non-positive
+///   <c>taxYear</c>, or unrecognized <c>era</c> token.</item>
 ///   <item>403 when the caller has no <c>countyId</c> claim.</item>
 ///   <item>404 when no parcel matches OR the parcel exists but has no WSDOR rows for the year.</item>
 ///   <item>404 (NOT 403) on cross-county access — existence must not leak.</item>
 ///   <item>200 with <see cref="TerraFusion.Core.DTOs.CanonicalTf.ParcelWsdorRollResponse"/> when found.</item>
 /// </list>
 /// </para>
+///
+/// <para>Slice G3 (v1.12): the optional <c>era</c> query parameter
+/// constrains the projected <c>tf_assessment_wsdor</c> rows to a
+/// single conversion era. Null defaults to <c>POST_CONVERSION</c>;
+/// <c>era=ALL</c> bypasses the filter for audit sweeps.</para>
 ///
 /// <para>Each entry's <c>OwnerDisplayName</c> reflects the canonical
 /// PII redaction policy already applied at B3; the reader does NOT
@@ -50,6 +57,7 @@ public sealed class ParcelWsdorController : ControllerBase
     public async Task<IActionResult> GetWsdorRoll(
         Guid tfParcelId,
         [FromQuery] short taxYear,
+        [FromQuery] string? era = null,
         CancellationToken ct = default)
     {
         if (tfParcelId == Guid.Empty)
@@ -69,6 +77,14 @@ public sealed class ParcelWsdorController : ControllerBase
             });
         }
 
+        // G3 (v1.12): normalize era query param. Null → POST_CONVERSION;
+        // unknown tokens → 400 with the valid-values list.
+        if (!EraQueryHelper.TryNormalizeEra(era, out var resolvedEra, out var eraFail))
+        {
+            _logger.LogWarning("[ParcelWsdor] invalid era token: {Era}", era);
+            return eraFail!;
+        }
+
         var principalCountyId = ResolveCountyClaim();
         if (principalCountyId is null)
         {
@@ -78,15 +94,15 @@ public sealed class ParcelWsdorController : ControllerBase
         }
 
         var lookup = await _reader
-            .GetWsdorRollAsync(tfParcelId, taxYear, ct)
+            .GetWsdorRollAsync(tfParcelId, taxYear, resolvedEra, ct)
             .ConfigureAwait(false);
 
         switch (lookup.Kind)
         {
             case ParcelWsdorLookupKind.NotFound:
                 _logger.LogInformation(
-                    "[ParcelWsdor] tfParcelId={ParcelId} taxYear={TaxYear} not found.",
-                    tfParcelId, taxYear);
+                    "[ParcelWsdor] tfParcelId={ParcelId} taxYear={TaxYear} era={Era} not found.",
+                    tfParcelId, taxYear, resolvedEra);
                 return NotFound();
 
             case ParcelWsdorLookupKind.NoEntries:
@@ -98,8 +114,8 @@ public sealed class ParcelWsdorController : ControllerBase
                     return NotFound();
                 }
                 _logger.LogInformation(
-                    "[ParcelWsdor] tfParcelId={ParcelId} taxYear={TaxYear} has no WSDOR entries.",
-                    tfParcelId, taxYear);
+                    "[ParcelWsdor] tfParcelId={ParcelId} taxYear={TaxYear} era={Era} has no WSDOR entries.",
+                    tfParcelId, taxYear, resolvedEra);
                 return NotFound();
 
             case ParcelWsdorLookupKind.Found:

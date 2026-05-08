@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using TerraFusion.API.Helpers;
 using TerraFusion.Core.Entities.TruthPacs;
 using TerraFusion.Core.Sync.SalesRatioStudy;
 
@@ -53,19 +54,6 @@ public sealed class SalesRatioStudyController : ControllerBase
         _reader = reader;
         _logger = logger;
     }
-
-    /// <summary>
-    /// G3 (v1.12): valid era tokens accepted on the <c>era</c> query
-    /// parameter. Doctrine-frozen set; unrecognized values are 400.
-    /// </summary>
-    private static readonly IReadOnlySet<string> ValidEraValues =
-        new HashSet<string>
-        {
-            ConversionEras.PostConversion,
-            ConversionEras.PreConversion2017,
-            ConversionEras.Unknown,
-            ISalesRatioStudyReader.EraAll,
-        };
 
     /// <summary>
     /// Q1: count of valid sales for the county.
@@ -154,38 +142,20 @@ public sealed class SalesRatioStudyController : ControllerBase
 
     /// <summary>
     /// G3 (v1.12): normalizes the <c>era</c> query parameter.
-    /// Null/whitespace resolves to <see cref="ConversionEras.PostConversion"/>
-    /// (the documented default). Unrecognized values produce 400 with
-    /// the valid value list. Returns the resolved string for echo.
+    /// Delegates to <see cref="EraQueryHelper"/> so the doctrine
+    /// vocabulary stays single-sourced across all G3 read endpoints.
     /// </summary>
     private bool TryNormalizeEra(
         string? era,
         out string resolvedEra,
         out IActionResult? failureResult)
     {
-        if (string.IsNullOrWhiteSpace(era))
-        {
-            resolvedEra = ConversionEras.PostConversion;
-            failureResult = null;
-            return true;
-        }
-
-        var trimmed = era.Trim();
-        if (!ValidEraValues.Contains(trimmed))
+        if (!EraQueryHelper.TryNormalizeEra(era, out resolvedEra, out failureResult))
         {
             _logger.LogWarning(
-                "[SalesRatioStudy] invalid era token: {Era}", trimmed);
-            resolvedEra = string.Empty;
-            failureResult = BadRequest(new
-            {
-                error = "invalid era",
-                validValues = ValidEraValues,
-            });
+                "[SalesRatioStudy] invalid era token: {Era}", era);
             return false;
         }
-
-        resolvedEra = trimmed;
-        failureResult = null;
         return true;
     }
 
