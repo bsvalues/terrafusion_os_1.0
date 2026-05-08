@@ -409,6 +409,15 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.DoctrineTf.TfDoctrineAttributeDictionary>
     TfDoctrineAttributeDictionaries { get; set; } = null!;
 
+  // SYNC-DOCTRINE-5: doctrine_tf.tf_doctrine_sales_qualification_codes.
+  // Year-aware, evidence-backed sales qualification codes indexed by
+  // doctrine vocabulary surface (DOR_RATIO | COUNTY_RATIO) and the
+  // underlying PACS column (sl_county_ratio_cd | sl_ratio_type_cd).
+  // Companion to tf_doctrine_ratio_policy; powers the audit endpoint
+  // that compares promoter behavior against doctrine.
+  public DbSet<TerraFusion.Core.Entities.DoctrineTf.TfDoctrineSalesQualificationCode>
+    TfDoctrineSalesQualificationCodes { get; set; } = null!;
+
   // Slice D1: legacy_arcgis_raw.parcel_geom — first stop in the
   // 5-schema doctrine for ArcGIS-sourced geometry. Per Block-D
   // execution plan (docs/pacs/block-d-execution-plan.md §3.1).
@@ -1202,6 +1211,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       new TerraFusion.Data.Configurations.DoctrineTf.TfDoctrinePropertyUniverseConfiguration());
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.DoctrineTf.TfDoctrineAttributeDictionaryConfiguration());
+
+    // SYNC-DOCTRINE-5: doctrine_tf.tf_doctrine_sales_qualification_codes.
+    // Year-aware sales qualification codes by surface + source column.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.DoctrineTf.TfDoctrineSalesQualificationCodeConfiguration());
 
     // Slice D1: legacy_arcgis_raw.parcel_geom — raw FeatureService
     // landing. Per docs/pacs/block-d-execution-plan.md §3.1.

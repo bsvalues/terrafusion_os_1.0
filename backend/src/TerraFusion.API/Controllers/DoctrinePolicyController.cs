@@ -361,4 +361,79 @@ public class DoctrinePolicyController : ControllerBase
             cancellationToken);
         return Ok(result);
     }
+
+    // ────────────────────────────────────────────────────────────────
+    // SYNC-DOCTRINE-5: sales qualification codes doctrine endpoints.
+    // ────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// List sales-qualification doctrine rules. Optional filters by
+    /// surface and source field. Mirrors the ratio/universe endpoint
+    /// shapes.
+    /// </summary>
+    [HttpGet("sales-qualification")]
+    public async Task<IActionResult> ListSalesQualificationRules(
+        [FromQuery] string? surface,
+        [FromQuery(Name = "source_field")] string? sourceField,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _db.TfDoctrineSalesQualificationCodes.AsNoTracking().AsQueryable();
+        if (!string.IsNullOrWhiteSpace(surface))
+            query = query.Where(r => r.SurfaceCode == surface);
+        if (!string.IsNullOrWhiteSpace(sourceField))
+            query = query.Where(r => r.SourceField == sourceField);
+
+        var rules = await query
+            .OrderBy(r => r.SurfaceCode)
+            .ThenBy(r => r.EffectiveStartYear)
+            .Select(r => new
+            {
+                r.RuleId,
+                r.SurfaceCode,
+                r.SourceField,
+                r.EffectiveStartYear,
+                r.EffectiveEndYear,
+                r.QualifiedCodesJson,
+                r.EvidenceSource,
+                r.Confidence,
+                r.ActiveFlag,
+            })
+            .ToListAsync(cancellationToken);
+
+        return Ok(new { count = rules.Count, rules });
+    }
+
+    /// <summary>
+    /// SYNC-DOCTRINE-5: audit report comparing the doctrine rows
+    /// against the PacsSaleTruthPromoter snapshot. Read-only.
+    /// </summary>
+    [HttpGet("sales-qualification/audit")]
+    public async Task<IActionResult> AuditSalesQualification(
+        [FromServices] IDoctrineSalesAuditService audit,
+        CancellationToken cancellationToken = default)
+    {
+        var report = await audit.AuditAsync(cancellationToken);
+        return Ok(report);
+    }
+
+    /// <summary>
+    /// SYNC-DOCTRINE-5: re-run the idempotent sales-qualification
+    /// seeder. Existing rows with matching deterministic RuleIds are
+    /// no-ops; new rows are inserted. Deactivated rules are NOT
+    /// reactivated (soft-disable is sticky).
+    /// </summary>
+    [HttpPost("sales-qualification/seed")]
+    public async Task<IActionResult> SeedSalesQualification(
+        [FromServices] SalesQualificationCodesSeeder seeder,
+        CancellationToken cancellationToken = default)
+    {
+        var added = await seeder.SeedAsync(cancellationToken);
+        return Ok(new
+        {
+            inserted = added,
+            note = added == 0
+                ? "All seed rules already present."
+                : $"Inserted {added} new rule(s).",
+        });
+    }
 }
