@@ -76,6 +76,14 @@ const SyncDoctrineConsole = lazy(
   () => import('./pages/workbench/sync-doctrine/SyncDoctrineConsole'),
 );
 
+// SYNC-UX-1A: Sync Quarantine Triage — read-write operator surface
+// for the imprv-attr quarantine cohort. Lives at /workbench/sync/*
+// (new namespace, sibling to sync-doctrine). Wraps the
+// SYNC-WORKBENCH-F triage controller (route + dismiss decisions).
+const SyncQuarantinePage = lazy(
+  () => import('./pages/workbench/sync-quarantine/SyncQuarantinePage'),
+);
+
 // SYNC-UX-1B: Sync Commits page — operator surface for the
 // SYNC-WORKBENCH-G/H spine. Lists recent decision-commits, drills
 // into a single commit's snapshot, and downloads the signed
@@ -234,6 +242,12 @@ const Router: React.FC = () => {
                   <Route
                     path='workbench/sync-doctrine'
                     element={<SyncDoctrineConsole />}
+                  />
+
+                  {/* SYNC-UX-1A: Sync Quarantine Triage (read-write) */}
+                  <Route
+                    path='workbench/sync/quarantine'
+                    element={<SyncQuarantinePage />}
                   />
 
                   {/* SYNC-UX-1B: Workbench commits + evidence UI */}
