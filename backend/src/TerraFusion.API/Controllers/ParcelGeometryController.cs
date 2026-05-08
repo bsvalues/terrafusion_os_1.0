@@ -109,6 +109,127 @@ public sealed class ParcelGeometryController : ControllerBase
         }
     }
 
+    // ────────────────────────────────────────────────────────────
+    // Slice D4-Neighbors:
+    //   GET /api/parcels/{tfParcelId}/neighbors
+    //   ?radiusFeet=<float, default 500.0, max 50000>
+    //   &maxResults=<int,   default 50,     max 500>
+    //
+    // Contract:
+    //   - 401 if unauthenticated (handled by [Authorize])
+    //   - 403 if no countyId claim is present
+    //   - 400 on Guid.Empty or invalid radiusFeet/maxResults
+    //   - 404 if anchor parcel not found OR has no active geometry
+    //   - 404 (NOT 403) on cross-county anchor — existence MUST NOT
+    //     leak across county boundaries
+    //   - 200 with ParcelNeighborResponse otherwise (Neighbors may
+    //     be empty when radiusFeet=0 or no candidate qualifies)
+    //
+    // Implementation: in-memory haversine over centroids stored on
+    // tf_parcel_geom rows in the SAME CountyId as the anchor. PostGIS
+    // not required.
+    // ────────────────────────────────────────────────────────────
+    private const double DefaultRadiusFeet = 500.0;
+    private const double MaxRadiusFeet = 50_000.0;
+    private const int DefaultMaxResults = 50;
+    private const int MaxMaxResults = 500;
+
+    [HttpGet("{tfParcelId:guid}/neighbors")]
+    [Authorize]
+    public async Task<IActionResult> GetNeighbors(
+        Guid tfParcelId,
+        [FromQuery] double? radiusFeet = null,
+        [FromQuery] int? maxResults = null,
+        CancellationToken ct = default)
+    {
+        if (tfParcelId == Guid.Empty)
+        {
+            return BadRequest(new
+            {
+                error = "tfParcelId must be a non-empty Guid.",
+            });
+        }
+
+        // Validate query params before consulting principal/db so
+        // misuse never leaks county-existence timing.
+        var effectiveRadius = radiusFeet ?? DefaultRadiusFeet;
+        if (double.IsNaN(effectiveRadius) || double.IsInfinity(effectiveRadius) || effectiveRadius < 0d)
+        {
+            return BadRequest(new
+            {
+                error = "radiusFeet must be a finite, non-negative number.",
+            });
+        }
+        if (effectiveRadius > MaxRadiusFeet)
+        {
+            effectiveRadius = MaxRadiusFeet;
+        }
+
+        var effectiveMax = maxResults ?? DefaultMaxResults;
+        if (effectiveMax < 0)
+        {
+            return BadRequest(new
+            {
+                error = "maxResults must be a non-negative integer.",
+            });
+        }
+        if (effectiveMax > MaxMaxResults)
+        {
+            effectiveMax = MaxMaxResults;
+        }
+
+        var principalCountyId = ResolveCountyClaim();
+        if (principalCountyId is null)
+        {
+            _logger.LogWarning(
+                "[ParcelGeometry/Neighbors] missing countyId claim on principal; refusing.");
+            return Forbid();
+        }
+
+        var lookup = await _reader
+            .GetNeighborsAsync(tfParcelId, effectiveRadius, effectiveMax, ct)
+            .ConfigureAwait(false);
+
+        switch (lookup.Kind)
+        {
+            case ParcelGeometryLookupKind.NotFound:
+                _logger.LogInformation(
+                    "[ParcelGeometry/Neighbors] anchor tfParcelId={ParcelId} not found.",
+                    tfParcelId);
+                return NotFound();
+
+            case ParcelGeometryLookupKind.NoGeometry:
+                // County isolation FIRST — same doctrine as the
+                // /geometry endpoint: do not distinguish "exists in
+                // another county" from "missing".
+                if (lookup.CountyId != principalCountyId.Value)
+                {
+                    _logger.LogWarning(
+                        "[ParcelGeometry/Neighbors] cross-county refused: principal={Principal} parcel={ParcelId} parcelCounty={County}",
+                        principalCountyId, tfParcelId, lookup.CountyId);
+                    return NotFound();
+                }
+                _logger.LogInformation(
+                    "[ParcelGeometry/Neighbors] anchor tfParcelId={ParcelId} has no active geometry.",
+                    tfParcelId);
+                return NotFound();
+
+            case ParcelGeometryLookupKind.Found:
+                if (lookup.CountyId != principalCountyId.Value)
+                {
+                    _logger.LogWarning(
+                        "[ParcelGeometry/Neighbors] cross-county refused: principal={Principal} parcel={ParcelId} parcelCounty={County}",
+                        principalCountyId, tfParcelId, lookup.CountyId);
+                    return NotFound();
+                }
+                return Ok(lookup.Payload);
+
+            default:
+                throw new InvalidOperationException(
+                    $"Unrecognized lookup kind: {lookup.Kind}");
+        }
+    }
+
     /// <summary>
     /// Mirrors <c>SyncController.ResolveCountyClaim</c> — same
     /// contract, narrow trust surface (Guid claim only, no
