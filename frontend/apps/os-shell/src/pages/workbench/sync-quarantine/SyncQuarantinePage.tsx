@@ -227,7 +227,7 @@ export default function SyncQuarantinePage(): React.ReactElement {
         </span>
       </div>
 
-      <QuarantineFilterBar value={filter} onChange={onFilterChange} disabled={query.isFetching} />
+      <QuarantineFilterBar value={filter} onChange={onFilterChange} />
 
       {selectedIds.size > 0 && (
         <div
@@ -326,23 +326,22 @@ export default function SyncQuarantinePage(): React.ReactElement {
         </p>
       )}
 
-      {(query.data || !query.isLoading) && (
-        <QuarantineTable
-          rows={visibleRows}
-          selectedIds={selectedIds}
-          onToggleRow={onToggleRow}
-          onToggleAll={onToggleAll}
-          onRouteRow={onRouteRow}
-          onDismissRow={onDismissRow}
-          page={page}
-          pageSize={pageSize}
-          hasNextPage={hasNextPage}
-          onPrevPage={() => setPage((p) => Math.max(1, p - 1))}
-          onNextPage={() => setPage((p) => p + 1)}
-          onPageSizeChange={onPageSizeChange}
-          isFetching={query.isFetching}
-        />
-      )}
+      {/* table renders unconditionally so pagination + empty states stay visible during loading + refetch */}
+      <QuarantineTable
+        rows={visibleRows}
+        selectedIds={selectedIds}
+        onToggleRow={onToggleRow}
+        onToggleAll={onToggleAll}
+        onRouteRow={onRouteRow}
+        onDismissRow={onDismissRow}
+        page={page}
+        pageSize={pageSize}
+        hasNextPage={hasNextPage}
+        onPrevPage={() => setPage((p) => Math.max(1, p - 1))}
+        onNextPage={() => setPage((p) => p + 1)}
+        onPageSizeChange={onPageSizeChange}
+        isFetching={query.isFetching}
+      />
 
       <QuarantineRouteModal
         open={routeTargetIds !== null}

@@ -46,6 +46,9 @@ export function useQuarantineList(
       ),
     staleTime: QUARANTINE_LIST_STALE_MS,
     refetchOnWindowFocus: true,
-    retry: 1,
+    // Surface fetch failures to the operator immediately. The page renders an
+    // error panel with a retry button; silently retrying once would mask
+    // network failures and skip the UI's intentional retry surface.
+    retry: false,
   });
 }
