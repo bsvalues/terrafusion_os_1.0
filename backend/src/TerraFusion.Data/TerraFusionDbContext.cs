@@ -246,6 +246,16 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.LegacyTfUnproven.UnprovenImprvAttrTriage>
     UnprovenImprvAttrTriages { get; set; } = null!;
 
+  // SYNC-WORKBENCH-G: atomic decision-commit ledger. One row per
+  // operator-issued commit (workbench_commit) plus a link table
+  // (workbench_commit_decision_link) binding each Routed/Dismissed
+  // triage row to its committing snapshot. Decision-log + gate-
+  // snapshot only; DOES NOT mutate truth_pacs.* or canonical_tf.*.
+  public DbSet<TerraFusion.Core.Entities.Workbench.WorkbenchCommit>
+    WorkbenchCommits { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.Workbench.WorkbenchCommitDecisionLink>
+    WorkbenchCommitDecisionLinks { get; set; } = null!;
+
   // Slice L1: land_detail landing — per-segment land breakdown
   // (homesite, ag, pasture, timber, etc). 4-key composite. Required
   // by the truth_pacs.land_current promoter (future).
@@ -1058,6 +1068,13 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // SYNC-WORKBENCH-F: triage sibling table.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.LegacyTfUnproven.UnprovenImprvAttrTriageConfiguration());
+
+    // SYNC-WORKBENCH-G: atomic decision-commit ledger (commit row +
+    // per-decision link rows). Schema tf_workbench.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.Workbench.WorkbenchCommitConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.Workbench.WorkbenchCommitDecisionLinkConfiguration());
 
     // Slice L1: land_detail landing — per-segment land breakdown.
     modelBuilder.ApplyConfiguration(

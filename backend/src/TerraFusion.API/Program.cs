@@ -1912,6 +1912,14 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.Workbench.IQuarantineTriageService,
     TerraFusion.Data.Services.Workbench.QuarantineTriageService>();
 
+// SYNC-WORKBENCH-G: atomic decision-commit. One transaction wraps
+// idempotency probe → pending-decision load → gate snapshot reads
+// → link inserts → commit row. Decision-log + gate-snapshot only;
+// does NOT mutate truth_pacs.* or canonical_tf.*.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.Workbench.IWorkbenchCommitService,
+    TerraFusion.Data.Services.Workbench.WorkbenchCommitService>();
+
 // Slice B2-A: truth_pacs.owner_current promoter — supp-aware
 // owner snapshot with account-link enforcement and HARD pct-
 // completeness gate. Five T-* gates. Idempotent by OwnerLoadBatchId.
