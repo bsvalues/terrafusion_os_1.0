@@ -1877,6 +1877,14 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.SalesRatioStudy.ISalesRatioStudyReader,
     TerraFusion.Data.Services.CanonicalTf.SalesRatioStudyReader>();
 
+// Block F3: improvement field-check queue read-model. Surfaces
+// canonical_tf.tf_improvement rows that need a physical re-look —
+// principally those with no AttributeId-resolved features. Per
+// docs/pacs/blocks-d-through-h-design.md §"F3". Read-only.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.ImprovementFieldCheck.IImprovementFieldCheckReader,
+    TerraFusion.Data.Services.CanonicalTf.ImprovementFieldCheckReader>();
+
 // Slice F4: land-segment exception list read-model. Surfaces
 // canonical_tf.tf_land rows whose data carries doctrine-frozen
 // anomalies (missing market val, missing/zero acreage, missing
