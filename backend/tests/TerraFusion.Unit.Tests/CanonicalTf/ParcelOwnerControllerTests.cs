@@ -86,7 +86,8 @@ public sealed class ParcelOwnerControllerTests : IDisposable
 
     private async Task<TfOwner> SeedOwnerAsync(
         Guid countyId, long acctId, string displayName,
-        bool confidential = false, bool webSupp = false)
+        bool confidential = false, bool webSupp = false,
+        string? era = null)
     {
         var o = new TfOwner
         {
@@ -96,6 +97,9 @@ public sealed class ParcelOwnerControllerTests : IDisposable
             ConfidentialFlag = confidential,
             WebSuppression = webSupp,
             PromotionLoadBatchId = Guid.NewGuid(),
+            // G3 (v1.12): default seed era to POST_CONVERSION so the new
+            // default era filter on the read endpoint surfaces these rows.
+            ConversionEra = era ?? TerraFusion.Core.Entities.TruthPacs.ConversionEras.PostConversion,
         };
         _db.TfOwners.Add(o);
         await _db.SaveChangesAsync();

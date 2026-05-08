@@ -333,6 +333,25 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.CanonicalTf.DictNeighborhood>
     DictNeighborhoods { get; set; } = null!;
 
+  // Slice E1 (Phase 2 closure): the remaining six canonical
+  // dictionary tables called out in
+  // docs/pacs/blocks-d-through-h-design.md §E. All six mirror
+  // dict_neighborhood exactly. No projector consumes any of them
+  // yet; this is schema lock, not a runtime gate. Operator-driven
+  // seeding is a separate slice.
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.DictLandUse>
+    DictLandUses { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.DictLandState>
+    DictLandStates { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.DictImprvType>
+    DictImprvTypes { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.DictImprvState>
+    DictImprvStates { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.DictExemptionType>
+    DictExemptionTypes { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.DictSitusLegal>
+    DictSitusLegals { get; set; } = null!;
+
   // Slice E2: canonical_tf.attribute_definition — i_attr_id
   // mapping spine. Per Block-C contract v1.2
   // (docs/pacs/block-c-contract-v1.2.md). E3 wires
@@ -1103,6 +1122,21 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // dictionary table. Per docs/pacs/block-c-contract-v1.1.md.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.CanonicalTf.DictNeighborhoodConfiguration());
+
+    // Slice E1 (Phase 2 closure): the remaining six dict_*
+    // tables. Per docs/pacs/blocks-d-through-h-design.md §E.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.DictLandUseConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.DictLandStateConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.DictImprvTypeConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.DictImprvStateConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.DictExemptionTypeConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.DictSitusLegalConfiguration());
 
     // Slice E2: canonical_tf.attribute_definition — i_attr_id
     // mapping spine. Per docs/pacs/block-c-contract-v1.2.md.

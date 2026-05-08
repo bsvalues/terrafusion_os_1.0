@@ -32,5 +32,12 @@ public sealed class TfParcelConfiguration : IEntityTypeConfiguration<TfParcel>
 
         builder.HasIndex(x => new { x.CountyId, x.ParcelNumber });
         builder.HasIndex(x => new { x.CountyId, x.ParcelStatus });
+
+        // G2 (Phase 2 closure): conversion-era marker. Mirrors the
+        // shape of the same column on TfImprovement/TfSale/TfLand/
+        // TfOwner/TfAssessmentWsdor/TfImprovementFeature.
+        builder.Property(x => x.ConversionEra).HasMaxLength(20);
+        builder.HasIndex(x => x.ConversionEra)
+            .HasDatabaseName("ix_tf_parcel_conversion_era");
     }
 }
