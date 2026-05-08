@@ -1877,6 +1877,15 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.SalesRatioStudy.ISalesRatioStudyReader,
     TerraFusion.Data.Services.CanonicalTf.SalesRatioStudyReader>();
 
+// Slice F4: land-segment exception list read-model. Surfaces
+// canonical_tf.tf_land rows whose data carries doctrine-frozen
+// anomalies (missing market val, missing/zero acreage, missing
+// type/state codes). Per docs/pacs/blocks-d-through-h-design.md
+// §F.4. Read-only by contract (AsNoTracking); no writes.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.LandSegmentException.ILandSegmentExceptionReader,
+    TerraFusion.Data.Services.CanonicalTf.LandSegmentExceptionReader>();
+
 // Slice B2-A: truth_pacs.owner_current promoter — supp-aware
 // owner snapshot with account-link enforcement and HARD pct-
 // completeness gate. Five T-* gates. Idempotent by OwnerLoadBatchId.
