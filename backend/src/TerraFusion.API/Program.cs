@@ -1877,6 +1877,15 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.SalesRatioStudy.ISalesRatioStudyReader,
     TerraFusion.Data.Services.CanonicalTf.SalesRatioStudyReader>();
 
+// Slice F2: sales-review queue read-model. Surfaces canonical
+// tf_sale rows whose dual-surface qualification reviews
+// (DorRatioReviewed / CountyRatioReviewed) are still outstanding.
+// Per docs/pacs/blocks-d-through-h-design.md §F2. Read-only;
+// AsNoTracking; no writes.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.SalesReview.ISalesReviewReader,
+    TerraFusion.Data.Services.CanonicalTf.SalesReviewReader>();
+
 // Block F3: improvement field-check queue read-model. Surfaces
 // canonical_tf.tf_improvement rows that need a physical re-look —
 // principally those with no AttributeId-resolved features. Per
