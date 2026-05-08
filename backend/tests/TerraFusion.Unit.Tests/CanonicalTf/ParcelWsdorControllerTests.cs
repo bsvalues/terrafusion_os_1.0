@@ -106,7 +106,8 @@ public sealed class ParcelWsdorControllerTests : IDisposable
         decimal? assessed = 250_000m,
         decimal? market = 300_000m,
         string? boe = "F",
-        decimal? snrFrz = null)
+        decimal? snrFrz = null,
+        string? era = null)
     {
         _db.TfAssessmentWsdors.Add(new TfAssessmentWsdor
         {
@@ -122,6 +123,9 @@ public sealed class ParcelWsdorControllerTests : IDisposable
             BoeStatus = boe,
             SnrFrzImprvHs = snrFrz,
             PromotionLoadBatchId = Guid.NewGuid(),
+            // G3 (v1.12): default seed era to POST_CONVERSION so the new
+            // default era filter on the read endpoint surfaces these rows.
+            ConversionEra = era ?? TerraFusion.Core.Entities.TruthPacs.ConversionEras.PostConversion,
         });
         await _db.SaveChangesAsync();
     }

@@ -10,7 +10,7 @@ namespace TerraFusion.Core.Sync.PacsOwnerCanonical;
 /// joined to <c>canonical_tf.tf_owner</c> for the parcel-owner HTTP
 /// endpoint.
 ///
-/// <para>Returns a three-state lookup (mirrors G1-E-2's pattern):
+/// <para>Returns a three-state lookup:
 /// <c>NotFound</c> when no parcel matches; <c>NoOwners</c> when the
 /// parcel exists but has no link rows for the requested tax year;
 /// <c>Found</c> with the projection otherwise. The controller maps
@@ -21,16 +21,25 @@ namespace TerraFusion.Core.Sync.PacsOwnerCanonical;
 /// </summary>
 public interface ITfParcelOwnerReader
 {
+    /// <summary>
+    /// Slice G3 (v1.12): the <paramref name="era"/> filter constrains
+    /// the joined <c>tf_owner</c> rows to a single conversion era.
+    /// Null resolves to <c>POST_CONVERSION</c>. The special
+    /// <c>ISalesRatioStudyReader.EraAll</c> token bypasses the era
+    /// filter entirely. Unknown values throw
+    /// <see cref="System.ArgumentException"/>.
+    /// </summary>
     Task<ParcelOwnerLookup> GetOwnersAsync(
         Guid tfParcelId,
         short taxYear,
+        string? era = null,
         CancellationToken cancellationToken = default);
 }
 
 /// <summary>
 /// Three-state result. The controller distinguishes "no parcel" from
 /// "no link rows" for accurate logging without changing the HTTP
-/// contract (both → 404).
+/// contract (both -> 404).
 /// </summary>
 public sealed record ParcelOwnerLookup
 {
