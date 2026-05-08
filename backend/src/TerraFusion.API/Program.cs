@@ -1903,6 +1903,15 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.LandSegmentException.ILandSegmentExceptionReader,
     TerraFusion.Data.Services.CanonicalTf.LandSegmentExceptionReader>();
 
+// SYNC-WORKBENCH-F: improvement-attr quarantine triage. Reads
+// legacy_tf_unproven.unresolved_imprv_attr (doctrine-immutable)
+// LEFT-JOIN unproven_imprv_attr_triage; writes only the triage
+// sibling. Mirrors V7 controller pattern (no [Authorize], no
+// CountyId column).
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.Workbench.IQuarantineTriageService,
+    TerraFusion.Data.Services.Workbench.QuarantineTriageService>();
+
 // Slice B2-A: truth_pacs.owner_current promoter — supp-aware
 // owner snapshot with account-link enforcement and HARD pct-
 // completeness gate. Five T-* gates. Idempotent by OwnerLoadBatchId.

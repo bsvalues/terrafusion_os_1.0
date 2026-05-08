@@ -239,6 +239,13 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.LegacyTfUnproven.LegacyTfUnprovenImprvAttr>
     LegacyTfUnprovenImprvAttrs { get; set; } = null!;
 
+  // SYNC-WORKBENCH-F: operator-decision sibling for
+  // legacy_tf_unproven.unresolved_imprv_attr. One row per triage
+  // decision (route or dismiss); doctrine-immutable quarantine row
+  // remains untouched.
+  public DbSet<TerraFusion.Core.Entities.LegacyTfUnproven.UnprovenImprvAttrTriage>
+    UnprovenImprvAttrTriages { get; set; } = null!;
+
   // Slice L1: land_detail landing — per-segment land breakdown
   // (homesite, ag, pasture, timber, etc). 4-key composite. Required
   // by the truth_pacs.land_current promoter (future).
@@ -1048,6 +1055,9 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawImprvAttrConfiguration());
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.LegacyTfUnproven.LegacyTfUnprovenImprvAttrConfiguration());
+    // SYNC-WORKBENCH-F: triage sibling table.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyTfUnproven.UnprovenImprvAttrTriageConfiguration());
 
     // Slice L1: land_detail landing — per-segment land breakdown.
     modelBuilder.ApplyConfiguration(
