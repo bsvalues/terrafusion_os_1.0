@@ -1975,6 +1975,15 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsWsdorCanonical.ITfParcelWsdorReader,
     TerraFusion.Data.Services.CanonicalTf.TfParcelWsdorReader>();
 
+// Slice F1: open-work / pending-appraisal queue read-model. Surfaces
+// parcels missing a canonical_tf.tf_assessment_wsdor row for the
+// requested year — the morning-dashboard signal for "still needs
+// assessor attention before the roll closes." Read-only by contract,
+// county-isolated, bounded by maxResults.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.OpenWork.IOpenWorkReader,
+    TerraFusion.Data.Services.CanonicalTf.OpenWorkReader>();
+
 // Slice S2-B: truth_pacs.sale promoter — supp-aware join + '100'
 // qualification filter, with five T-* gates. Idempotent by SaleLoadBatchId.
 builder.Services.AddScoped<
