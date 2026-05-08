@@ -10,20 +10,25 @@ namespace TerraFusion.Core.Sync.PacsWsdorCanonical;
 /// <c>canonical_tf.tf_assessment_wsdor</c> joined to
 /// <c>canonical_tf.tf_owner</c> for the parcel-WSDOR HTTP endpoint.
 ///
-/// <para>Returns a three-state lookup (mirrors B5's pattern):
-/// <c>NotFound</c> when no parcel matches; <c>NoEntries</c> when
-/// the parcel exists but has no WSDOR rows for the requested year;
-/// <c>Found</c> with the projection otherwise. The controller maps
-/// both <c>NotFound</c> and <c>NoEntries</c> to 404 in v1.</para>
+/// <para>Returns a three-state lookup. The controller maps both
+/// <c>NotFound</c> and <c>NoEntries</c> to 404 in v1.</para>
 ///
-/// <para>Read-only by contract: <c>AsNoTracking</c>; no
-/// <c>SaveChangesAsync</c>; no audit-table writes.</para>
+/// <para>Read-only by contract.</para>
 /// </summary>
 public interface ITfParcelWsdorReader
 {
+    /// <summary>
+    /// Slice G3 (v1.12): the <paramref name="era"/> filter constrains
+    /// the projected <c>tf_assessment_wsdor</c> rows to a single
+    /// conversion era. Null resolves to <c>POST_CONVERSION</c>. The
+    /// special <c>ISalesRatioStudyReader.EraAll</c> token bypasses the
+    /// era filter entirely. Unknown values throw
+    /// <see cref="System.ArgumentException"/>.
+    /// </summary>
     Task<ParcelWsdorLookup> GetWsdorRollAsync(
         Guid tfParcelId,
         short taxYear,
+        string? era = null,
         CancellationToken cancellationToken = default);
 }
 
