@@ -1928,6 +1928,31 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.Workbench.IEvidencePacketService,
     TerraFusion.Data.Services.Workbench.EvidencePacketService>();
 
+// SYNC-COMPLETE-2: durable full-corpus runner. Orchestrator owns
+// the FullCorpusRun state machine (Queued → Running → Completed |
+// Failed | Interrupted | Resumed); HTTP-loopback lane runner calls
+// the existing /api/sync/doctrine/drain/{lane} endpoints; PACS
+// baseline reconciler queries source counts vs. canonical for the
+// post-drain reconciliation pass; corpus evidence packet service
+// builds an HMAC-signed ZIP at run scope; hosted background worker
+// polls for queued runs every 5 seconds and stays alive across the
+// host's lifetime.
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.Corpus.IFullCorpusOrchestrator,
+    TerraFusion.Data.Services.Workbench.Corpus.FullCorpusOrchestrator>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.Corpus.ICorpusLaneRunner,
+    TerraFusion.Data.Services.Workbench.Corpus.HttpCorpusLaneRunner>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.Corpus.IPacsBaselineReconciler,
+    TerraFusion.Data.Services.Workbench.Corpus.PacsBaselineReconciler>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.Corpus.ICorpusEvidencePacketService,
+    TerraFusion.Data.Services.Workbench.Corpus.CorpusEvidencePacketService>();
+builder.Services.AddHostedService<
+    TerraFusion.Data.Services.Workbench.Corpus.FullCorpusOrchestratorHostedService>();
+
 // Slice B2-A: truth_pacs.owner_current promoter — supp-aware
 // owner snapshot with account-link enforcement and HARD pct-
 // completeness gate. Five T-* gates. Idempotent by OwnerLoadBatchId.

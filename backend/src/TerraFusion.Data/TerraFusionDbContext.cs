@@ -256,6 +256,17 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.Workbench.WorkbenchCommitDecisionLink>
     WorkbenchCommitDecisionLinks { get; set; } = null!;
 
+  // SYNC-COMPLETE-2: durable full-corpus sync runner. One row per
+  // operator-issued run + 6 pre-created lane-result rows + 6
+  // reconciliation rows after the run completes. Hosted background
+  // worker advances queued runs through the lane sequence.
+  public DbSet<TerraFusion.Core.Entities.Workbench.FullCorpusRun>
+    FullCorpusRuns { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.Workbench.FullCorpusLaneResult>
+    FullCorpusLaneResults { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.Workbench.FullCorpusReconciliation>
+    FullCorpusReconciliations { get; set; } = null!;
+
   // Slice L1: land_detail landing — per-segment land breakdown
   // (homesite, ag, pasture, timber, etc). 4-key composite. Required
   // by the truth_pacs.land_current promoter (future).
@@ -1075,6 +1086,15 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       new TerraFusion.Data.Configurations.Workbench.WorkbenchCommitConfiguration());
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.Workbench.WorkbenchCommitDecisionLinkConfiguration());
+
+    // SYNC-COMPLETE-2: durable full-corpus runner (run + per-lane
+    // result + per-lane reconciliation). Schema tf_workbench.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.Workbench.FullCorpusRunConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.Workbench.FullCorpusLaneResultConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.Workbench.FullCorpusReconciliationConfiguration());
 
     // Slice L1: land_detail landing — per-segment land breakdown.
     modelBuilder.ApplyConfiguration(
