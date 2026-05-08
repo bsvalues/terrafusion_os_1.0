@@ -76,6 +76,14 @@ const SyncDoctrineConsole = lazy(
   () => import('./pages/workbench/sync-doctrine/SyncDoctrineConsole'),
 );
 
+// SYNC-UX-1B: Sync Commits page — operator surface for the
+// SYNC-WORKBENCH-G/H spine. Lists recent decision-commits, drills
+// into a single commit's snapshot, and downloads the signed
+// evidence ZIP / inspects the manifest.
+const SyncCommitsPage = lazy(
+  () => import('./pages/workbench/sync-commits/SyncCommitsPage'),
+);
+
 const Monitoring = lazy(() => import('./pages/Monitoring'));
 const TerraFusionMarketplace = lazy(
   () => import('./components/marketplace/TerraFusionMarketplace')
@@ -219,6 +227,16 @@ const Router: React.FC = () => {
                   <Route
                     path='workbench/sync-doctrine'
                     element={<SyncDoctrineConsole />}
+                  />
+
+                  {/* SYNC-UX-1B: Workbench commits + evidence UI */}
+                  <Route
+                    path='workbench/sync/commits'
+                    element={<SyncCommitsPage />}
+                  />
+                  <Route
+                    path='workbench/sync/commits/:commitId'
+                    element={<SyncCommitsPage />}
                   />
 
                   <Route path='monitoring' element={<Monitoring />} />
