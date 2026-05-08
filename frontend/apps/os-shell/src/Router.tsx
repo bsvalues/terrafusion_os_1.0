@@ -76,6 +76,14 @@ const SyncDoctrineConsole = lazy(
   () => import('./pages/workbench/sync-doctrine/SyncDoctrineConsole'),
 );
 
+// SYNC-UX-1A: Sync Quarantine Triage — read-write operator surface
+// for the imprv-attr quarantine cohort. Lives at /workbench/sync/*
+// (new namespace, sibling to sync-doctrine). Wraps the
+// SYNC-WORKBENCH-F triage controller (route + dismiss decisions).
+const SyncQuarantinePage = lazy(
+  () => import('./pages/workbench/sync-quarantine/SyncQuarantinePage'),
+);
+
 const Monitoring = lazy(() => import('./pages/Monitoring'));
 const TerraFusionMarketplace = lazy(
   () => import('./components/marketplace/TerraFusionMarketplace')
@@ -219,6 +227,12 @@ const Router: React.FC = () => {
                   <Route
                     path='workbench/sync-doctrine'
                     element={<SyncDoctrineConsole />}
+                  />
+
+                  {/* SYNC-UX-1A: Sync Quarantine Triage (read-write) */}
+                  <Route
+                    path='workbench/sync/quarantine'
+                    element={<SyncQuarantinePage />}
                   />
 
                   <Route path='monitoring' element={<Monitoring />} />
