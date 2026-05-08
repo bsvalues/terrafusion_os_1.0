@@ -1801,6 +1801,17 @@ builder.Services.AddScoped<
 builder.Services.AddHostedService<
     TerraFusion.Data.Services.Doctrine.DoctrinePropertyUniverseSeederHostedService>();
 
+// SYNC-DOCTRINE-5: sales qualification codes doctrine table + audit.
+// Read-only audit service compares promoter snapshot against doctrine
+// rules; seeder + hosted-service mirror the D1/D4 patterns.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.Doctrine.IDoctrineSalesAuditService,
+    TerraFusion.Data.Services.Doctrine.DoctrineSalesAuditService>();
+builder.Services.AddScoped<
+    TerraFusion.Data.Services.Doctrine.SalesQualificationCodesSeeder>();
+builder.Services.AddHostedService<
+    TerraFusion.Data.Services.Doctrine.SalesQualificationCodesSeederHostedService>();
+
 // Slice L1: PACS land_detail raw landing — Block C's land lane
 // per-segment table. Four gates: distribution, 4-key-uniqueness,
 // provenance-coverage, aggregate.
