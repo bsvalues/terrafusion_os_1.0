@@ -1920,6 +1920,14 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.Workbench.IWorkbenchCommitService,
     TerraFusion.Data.Services.Workbench.WorkbenchCommitService>();
 
+// SYNC-WORKBENCH-H: evidence-packet exporter. Read-only. Builds a
+// deterministic, HMAC-signed ZIP per committed decision row from
+// tf_workbench.WorkbenchCommit + WorkbenchCommitDecisionLink. Reads
+// HMAC key from Workbench:Evidence:HmacKey config path.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.Workbench.IEvidencePacketService,
+    TerraFusion.Data.Services.Workbench.EvidencePacketService>();
+
 // Slice B2-A: truth_pacs.owner_current promoter — supp-aware
 // owner snapshot with account-link enforcement and HARD pct-
 // completeness gate. Five T-* gates. Idempotent by OwnerLoadBatchId.
