@@ -1263,6 +1263,12 @@ public sealed class BlockCContractV1Tests : IDisposable
             // Block-C contract v1.11 — ConversionEra column + index
             // on six canonical_tf lanes (G2).
             "AddConversionEraToCanonicalTf",
+            // Phase 2 closure — six remaining canonical dict_*
+            // tables (E1) + TfParcel.ConversionEra column (G2 gap
+            // closure). Per docs/pacs/blocks-d-through-h-design.md §E
+            // and the cross-canonical-entity ConversionEra parity
+            // requirement.
+            "SyncE1G2DictsAndTfParcelConversionEra",
         };
 
         foreach (var fragment in requiredFragments)
