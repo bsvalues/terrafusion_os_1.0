@@ -76,6 +76,13 @@ const SyncDoctrineConsole = lazy(
   () => import('./pages/workbench/sync-doctrine/SyncDoctrineConsole'),
 );
 
+// SYNC-UX-1C: Full-Corpus Sync Runner — launcher + detail page
+// for durable 6+ hour PACS drains. Sibling to sync-readiness and
+// sync-doctrine; consumes /api/sync/corpus/* (FullCorpusController).
+const SyncCorpusPage = lazy(
+  () => import('./pages/workbench/sync-corpus/SyncCorpusPage'),
+);
+
 const Monitoring = lazy(() => import('./pages/Monitoring'));
 const TerraFusionMarketplace = lazy(
   () => import('./components/marketplace/TerraFusionMarketplace')
@@ -219,6 +226,16 @@ const Router: React.FC = () => {
                   <Route
                     path='workbench/sync-doctrine'
                     element={<SyncDoctrineConsole />}
+                  />
+
+                  {/* SYNC-UX-1C: Full-Corpus Sync Runner */}
+                  <Route
+                    path='workbench/sync/corpus'
+                    element={<SyncCorpusPage />}
+                  />
+                  <Route
+                    path='workbench/sync/corpus/:runId'
+                    element={<SyncCorpusPage />}
                   />
 
                   <Route path='monitoring' element={<Monitoring />} />
