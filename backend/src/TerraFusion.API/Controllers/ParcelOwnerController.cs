@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using TerraFusion.API.Helpers;
 using TerraFusion.Core.Sync.PacsOwnerCanonical;
 
 namespace TerraFusion.API.Controllers;
@@ -11,18 +12,24 @@ namespace TerraFusion.API.Controllers;
 /// <summary>
 /// Slice B5: read-only endpoint for canonical parcel ownership.
 ///
-/// <para><c>GET /api/parcels/{tfParcelId}/owner-current?taxYear=...</c></para>
+/// <para><c>GET /api/parcels/{tfParcelId}/owner-current?taxYear=...&amp;era=...</c></para>
 ///
 /// <para>Contract:
 /// <list type="bullet">
 ///   <item>401 if unauthenticated (handled by <c>[Authorize]</c>).</item>
-///   <item>400 on missing / empty <c>tfParcelId</c> or non-positive <c>taxYear</c>.</item>
+///   <item>400 on missing / empty <c>tfParcelId</c>, non-positive
+///   <c>taxYear</c>, or unrecognized <c>era</c> token.</item>
 ///   <item>403 when the caller has no <c>countyId</c> claim (cannot enforce isolation).</item>
 ///   <item>404 when no parcel matches OR the parcel exists but has no link rows for the year.</item>
 ///   <item>404 (NOT 403) on cross-county access — existence must not leak.</item>
 ///   <item>200 with <see cref="TerraFusion.Core.DTOs.CanonicalTf.ParcelOwnerCurrentResponse"/> when found.</item>
 /// </list>
 /// </para>
+///
+/// <para>Slice G3 (v1.12): the optional <c>era</c> query parameter
+/// constrains the joined <c>tf_owner</c> rows to a single conversion
+/// era. Null defaults to <c>POST_CONVERSION</c>; <c>era=ALL</c>
+/// bypasses the filter for audit sweeps.</para>
 ///
 /// <para>The payload's <c>DisplayName</c> already reflects the
 /// canonical PII redaction (confidential rows show
@@ -50,6 +57,7 @@ public sealed class ParcelOwnerController : ControllerBase
     public async Task<IActionResult> GetOwnerCurrent(
         Guid tfParcelId,
         [FromQuery] short taxYear,
+        [FromQuery] string? era = null,
         CancellationToken ct = default)
     {
         if (tfParcelId == Guid.Empty)
@@ -69,6 +77,14 @@ public sealed class ParcelOwnerController : ControllerBase
             });
         }
 
+        // G3 (v1.12): normalize era query param. Null → POST_CONVERSION;
+        // unknown tokens → 400 with the valid-values list.
+        if (!EraQueryHelper.TryNormalizeEra(era, out var resolvedEra, out var eraFail))
+        {
+            _logger.LogWarning("[ParcelOwner] invalid era token: {Era}", era);
+            return eraFail!;
+        }
+
         var principalCountyId = ResolveCountyClaim();
         if (principalCountyId is null)
         {
@@ -78,15 +94,15 @@ public sealed class ParcelOwnerController : ControllerBase
         }
 
         var lookup = await _reader
-            .GetOwnersAsync(tfParcelId, taxYear, ct)
+            .GetOwnersAsync(tfParcelId, taxYear, resolvedEra, ct)
             .ConfigureAwait(false);
 
         switch (lookup.Kind)
         {
             case ParcelOwnerLookupKind.NotFound:
                 _logger.LogInformation(
-                    "[ParcelOwner] tfParcelId={ParcelId} taxYear={TaxYear} not found.",
-                    tfParcelId, taxYear);
+                    "[ParcelOwner] tfParcelId={ParcelId} taxYear={TaxYear} era={Era} not found.",
+                    tfParcelId, taxYear, resolvedEra);
                 return NotFound();
 
             case ParcelOwnerLookupKind.NoOwners:
@@ -98,8 +114,8 @@ public sealed class ParcelOwnerController : ControllerBase
                     return NotFound();
                 }
                 _logger.LogInformation(
-                    "[ParcelOwner] tfParcelId={ParcelId} taxYear={TaxYear} has no canonical owners.",
-                    tfParcelId, taxYear);
+                    "[ParcelOwner] tfParcelId={ParcelId} taxYear={TaxYear} era={Era} has no canonical owners.",
+                    tfParcelId, taxYear, resolvedEra);
                 return NotFound();
 
             case ParcelOwnerLookupKind.Found:
