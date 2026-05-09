@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pgvector;
@@ -13,9 +14,11 @@ using TerraFusion.Data;
 namespace TerraFusion.Data.Migrations
 {
     [DbContext(typeof(TerraFusionDbContext))]
-    partial class TerraFusionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260509184340_SyncComplete2V2StageLevelResume")]
+    partial class SyncComplete2V2StageLevelResume
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

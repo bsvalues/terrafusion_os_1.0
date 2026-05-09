@@ -29,6 +29,27 @@ public interface ICorpusLaneRunner
         bool fullCorpus,
         int? topN,
         CancellationToken cancellationToken);
+
+    /// <summary>
+    /// SYNC-COMPLETE-2-V2: stage-level-resume-aware overload. Forwards
+    /// <paramref name="laneResultId"/> (always) and
+    /// <paramref name="resumeFromStage"/> (when non-null) to the lane
+    /// endpoint so it can write per-stage checkpoints back to the
+    /// lane-result row and skip already-completed stages on retry.
+    /// <para>The default implementation delegates to the no-arg overload
+    /// so existing fakes/runners stay compatible — only implementations
+    /// that need to thread stage-resume metadata override this.</para>
+    /// </summary>
+    Task<CorpusLaneRunResult> RunLaneAsync(
+        string lane,
+        string operatorName,
+        short workingYear,
+        bool fullCorpus,
+        int? topN,
+        Guid? laneResultId,
+        string? resumeFromStage,
+        CancellationToken cancellationToken)
+        => RunLaneAsync(lane, operatorName, workingYear, fullCorpus, topN, cancellationToken);
 }
 
 public enum CorpusLaneRunOutcome

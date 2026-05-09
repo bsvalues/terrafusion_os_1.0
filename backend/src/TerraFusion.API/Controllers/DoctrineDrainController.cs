@@ -1,7 +1,9 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Sync.Corpus;
 using TerraFusion.Core.Sync.PacsAccount;
 using TerraFusion.Core.Sync.PacsOwner;
 using TerraFusion.Core.Sync.PacsOwnerCanonical;
@@ -73,6 +75,150 @@ public class DoctrineDrainController : ControllerBase
         _logger = logger;
     }
 
+    /// <summary>
+    /// SYNC-COMPLETE-2-V2: per-lane invocation context for stage-level
+    /// resume. Wraps the (LaneResultId, ResumeFromStage, prior BatchIds)
+    /// triple and provides:
+    /// <list type="bullet">
+    ///   <item><see cref="ShouldSkip"/> — true when this stage's index
+    ///   in the lane's order is ≤ the resume stage's index.</item>
+    ///   <item><see cref="GetPriorBatchId"/> — returns the persisted
+    ///   batch id for a skipped stage (by stage-index lookup into the
+    ///   prior <c>BatchIdsJson</c>).</item>
+    ///   <item><see cref="CheckpointAsync"/> — after a non-skipped
+    ///   stage succeeds, persists <c>LastCompletedStage</c> +
+    ///   <c>BatchIdsJson</c> back to the lane row. Best-effort: a
+    ///   checkpoint failure does NOT fail the lane.</item>
+    /// </list>
+    /// When <see cref="LaneResultId"/> is null (manual operator curl
+    /// without orchestrator threading), every stage runs and no
+    /// checkpoints are persisted — same behavior as before V2.
+    /// </summary>
+    private sealed class StageResumeContext
+    {
+        private readonly TerraFusionDbContext _db;
+        private readonly ILogger _logger;
+        public string Lane { get; }
+        public Guid? LaneResultId { get; }
+        public string? ResumeFromStage { get; }
+        private readonly IReadOnlyList<Guid> _priorBatchIds;
+
+        public StageResumeContext(
+            TerraFusionDbContext db,
+            ILogger logger,
+            string lane,
+            Guid? laneResultId,
+            string? resumeFromStage,
+            IReadOnlyList<Guid> priorBatchIds)
+        {
+            _db = db;
+            _logger = logger;
+            Lane = lane;
+            LaneResultId = laneResultId;
+            ResumeFromStage = resumeFromStage;
+            _priorBatchIds = priorBatchIds;
+        }
+
+        public bool ShouldSkip(string stageName)
+            => LaneStageOrder.ShouldSkip(Lane, stageName, ResumeFromStage);
+
+        /// <summary>
+        /// Look up the persisted batch id for <paramref name="stageName"/> by
+        /// its index in the lane's order. Returns null when the stage is
+        /// outside the persisted prefix (e.g., earlier crash didn't get
+        /// that far).
+        /// </summary>
+        public Guid? GetPriorBatchId(string stageName)
+        {
+            if (!LaneStageOrder.Stages.TryGetValue(Lane, out var order))
+                return null;
+            var idx = -1;
+            for (var i = 0; i < order.Count; i++)
+            {
+                if (string.Equals(order[i], stageName, StringComparison.OrdinalIgnoreCase))
+                {
+                    idx = i;
+                    break;
+                }
+            }
+            if (idx < 0 || idx >= _priorBatchIds.Count) return null;
+            return _priorBatchIds[idx];
+        }
+
+        public async System.Threading.Tasks.Task CheckpointAsync(
+            string stageName,
+            IReadOnlyList<Guid> batchIds,
+            CancellationToken ct)
+        {
+            if (!LaneResultId.HasValue) return;
+            try
+            {
+                var laneRow = await _db.FullCorpusLaneResults
+                    .FirstOrDefaultAsync(x => x.LaneResultId == LaneResultId.Value, ct)
+                    .ConfigureAwait(false);
+                if (laneRow is null) return;
+                laneRow.LastCompletedStage = stageName;
+                laneRow.BatchIdsJson = JsonSerializer.Serialize(batchIds);
+                await _db.SaveChangesAsync(ct).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                // Persistence is a hint, not a critical path. Log and
+                // continue so the lane itself still completes naturally.
+                _logger.LogWarning(ex,
+                    "[Drain:{Lane}] Stage checkpoint persist failed for stage={Stage}; continuing without resume hint.",
+                    Lane, stageName);
+            }
+        }
+    }
+
+    /// <summary>
+    /// SYNC-COMPLETE-2-V2: build the stage-resume context once per lane
+    /// invocation. If <paramref name="request"/> supplies a LaneResultId,
+    /// loads the prior <c>BatchIdsJson</c> so already-completed stages'
+    /// batch ids are available to downstream skipped-stage lookups.
+    /// </summary>
+    private async Task<StageResumeContext> BuildResumeContextAsync(
+        string laneName,
+        DoctrineDrainRequest? request,
+        CancellationToken ct)
+    {
+        var laneResultId = request?.LaneResultId;
+        var resumeFromStage = request?.ResumeFromStage;
+        IReadOnlyList<Guid> priorBatchIds = Array.Empty<Guid>();
+
+        if (laneResultId.HasValue)
+        {
+            try
+            {
+                var laneRow = await _db.FullCorpusLaneResults
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.LaneResultId == laneResultId.Value, ct)
+                    .ConfigureAwait(false);
+                if (laneRow is not null && !string.IsNullOrEmpty(laneRow.BatchIdsJson))
+                {
+                    var parsed = JsonSerializer.Deserialize<List<Guid>>(laneRow.BatchIdsJson);
+                    if (parsed is not null) priorBatchIds = parsed;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex,
+                    "[Drain:{Lane}] Failed to load prior BatchIdsJson for laneResultId={Lid}; running lane from start.",
+                    laneName, laneResultId);
+                resumeFromStage = null;
+            }
+        }
+        else
+        {
+            // Without a LaneResultId, we have nowhere to load from —
+            // resume hint is meaningless. Run from start.
+            resumeFromStage = null;
+        }
+
+        return new StageResumeContext(_db, _logger, laneName, laneResultId, resumeFromStage, priorBatchIds);
+    }
+
     // ════════════════════════════════════════════════════════════════════
     // PARCEL drain — property landing → parcel truth → tf_parcel canonical.
     // ════════════════════════════════════════════════════════════════════
@@ -98,59 +244,132 @@ public class DoctrineDrainController : ControllerBase
 
         var (operatorName, _, fullCorpus, topN) = NormalizeRequest(request, LaneName);
         var startedAt = DateTime.UtcNow;
-        var batchIds = new List<Guid>();
         var quarantineBefore = await CountQuarantineAsync(cancellationToken);
+        // SYNC-COMPLETE-2-V2: build resume context. Initial batchIds
+        // start as the persisted prefix when resuming so the final
+        // response reports the full lane batch set.
+        var resume = await BuildResumeContextAsync(LaneName, request, cancellationToken);
+        var batchIds = new List<Guid>();
+        for (var i = 0; i < LaneStageOrder.Stages[LaneName].Count; i++)
+        {
+            var prior = resume.GetPriorBatchId(LaneStageOrder.Stages[LaneName][i]);
+            if (prior is null) break;
+            batchIds.Add(prior.Value);
+        }
+        // Track per-stage RowsLanded / counts so the final OkLane
+        // response is accurate even if we partially skipped.
+        int rowsLanded = 0, rowsPromotedToTruth = 0, rowsCanonicalized = 0;
 
         try
         {
             var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
             var seedTopN = fullCorpus ? (int?)null : (topN ?? 200);
 
-            // Owner-anchored seed (real-property prop_ids).
-            _logger.LogInformation("[Drain:parcel] Owner seed (TopN={Top}, FullCorpus={Full})", seedTopN, fullCorpus);
-            var ownerSeedSrc = new SqlServerPacsOwnerSource(pacsCs!, topN: seedTopN);
-            var ownerSeedS1 = await ownerSvc.LandOwnersAsync(ownerSeedSrc, operatorName, cancellationToken);
-            batchIds.Add(ownerSeedS1.LoadBatchId);
-            if (!IsCompleted(ownerSeedS1.Status))
-                return await FailLaneAsync(LaneName, "Owner-Seed-S1", ownerSeedS1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 1: Owner-Seed-S1.
+            Guid ownerSeedBatchId;
+            List<int> seedPropIds;
+            if (resume.ShouldSkip("Owner-Seed-S1"))
+            {
+                ownerSeedBatchId = resume.GetPriorBatchId("Owner-Seed-S1")
+                    ?? throw new InvalidOperationException("Owner-Seed-S1 batch id missing from prior checkpoint.");
+                _logger.LogInformation("[Drain:parcel] SKIP Owner-Seed-S1 (resume from {Stage}); batchId={Bid}",
+                    resume.ResumeFromStage, ownerSeedBatchId);
+                seedPropIds = await _db.LegacyPacsRawOwners
+                    .AsNoTracking()
+                    .Where(o => o.LoadBatchId == ownerSeedBatchId)
+                    .Select(o => o.PropId)
+                    .Distinct()
+                    .ToListAsync(cancellationToken);
+            }
+            else
+            {
+                _logger.LogInformation("[Drain:parcel] Owner seed (TopN={Top}, FullCorpus={Full})", seedTopN, fullCorpus);
+                var ownerSeedSrc = new SqlServerPacsOwnerSource(pacsCs!, topN: seedTopN);
+                var ownerSeedS1 = await ownerSvc.LandOwnersAsync(ownerSeedSrc, operatorName, cancellationToken);
+                batchIds.Add(ownerSeedS1.LoadBatchId);
+                if (!IsCompleted(ownerSeedS1.Status))
+                    return await FailLaneAsync(LaneName, "Owner-Seed-S1", ownerSeedS1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                ownerSeedBatchId = ownerSeedS1.LoadBatchId;
+                await resume.CheckpointAsync("Owner-Seed-S1", batchIds, cancellationToken);
+                seedPropIds = await _db.LegacyPacsRawOwners
+                    .AsNoTracking()
+                    .Where(o => o.LoadBatchId == ownerSeedBatchId)
+                    .Select(o => o.PropId)
+                    .Distinct()
+                    .ToListAsync(cancellationToken);
+            }
 
-            var seedPropIds = await _db.LegacyPacsRawOwners
-                .AsNoTracking()
-                .Where(o => o.LoadBatchId == ownerSeedS1.LoadBatchId)
-                .Select(o => o.PropId)
-                .Distinct()
-                .ToListAsync(cancellationToken);
+            // Stage 2: Parcel-S1.
+            Guid parcelS1BatchId;
+            int parcelS1RowsLanded = 0;
+            if (resume.ShouldSkip("Parcel-S1"))
+            {
+                parcelS1BatchId = resume.GetPriorBatchId("Parcel-S1")
+                    ?? throw new InvalidOperationException("Parcel-S1 batch id missing from prior checkpoint.");
+                _logger.LogInformation("[Drain:parcel] SKIP Parcel-S1; batchId={Bid}", parcelS1BatchId);
+            }
+            else
+            {
+                var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs!, seedPropIds);
+                var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
+                batchIds.Add(parcelS1.LoadBatchId);
+                if (!IsCompleted(parcelS1.Status))
+                    return await FailLaneAsync(LaneName, "Parcel-S1", parcelS1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                parcelS1BatchId = parcelS1.LoadBatchId;
+                parcelS1RowsLanded = parcelS1.RowsLanded;
+                await resume.CheckpointAsync("Parcel-S1", batchIds, cancellationToken);
+            }
+            rowsLanded = parcelS1RowsLanded;
 
-            // Keyed parcel S1.
-            var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs!, seedPropIds);
-            var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
-            batchIds.Add(parcelS1.LoadBatchId);
-            if (!IsCompleted(parcelS1.Status))
-                return await FailLaneAsync(LaneName, "Parcel-S1", parcelS1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 3: Parcel-Spine.
+            Guid spineBatchId;
+            int spineRowsPromoted = 0;
+            if (resume.ShouldSkip("Parcel-Spine"))
+            {
+                spineBatchId = resume.GetPriorBatchId("Parcel-Spine")
+                    ?? throw new InvalidOperationException("Parcel-Spine batch id missing from prior checkpoint.");
+                _logger.LogInformation("[Drain:parcel] SKIP Parcel-Spine; batchId={Bid}", spineBatchId);
+            }
+            else
+            {
+                var parcelSpine = await spinePromoter.PromoteAsync(parcelS1BatchId, operatorName, cancellationToken);
+                batchIds.Add(parcelSpine.PromotionLoadBatchId);
+                if (!IsCompleted(parcelSpine.Status))
+                    return await FailLaneAsync(LaneName, "Parcel-Spine", parcelSpine.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                spineBatchId = parcelSpine.PromotionLoadBatchId;
+                spineRowsPromoted = parcelSpine.ParcelsPromoted;
+                await resume.CheckpointAsync("Parcel-Spine", batchIds, cancellationToken);
+            }
+            rowsPromotedToTruth = spineRowsPromoted;
 
-            // Parcel spine truth.
-            var parcelSpine = await spinePromoter.PromoteAsync(parcelS1.LoadBatchId, operatorName, cancellationToken);
-            batchIds.Add(parcelSpine.PromotionLoadBatchId);
-            if (!IsCompleted(parcelSpine.Status))
-                return await FailLaneAsync(LaneName, "Parcel-Spine", parcelSpine.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
-
-            // Parcel canonical → tf_parcel.
-            var parcelCanon = await parcelCanonical.ProjectAsync(
-                parcelSpine.PromotionLoadBatchId, bentonCountyId, operatorName, cancellationToken);
-            batchIds.Add(parcelCanon.PromotionLoadBatchId);
-            if (!IsCompleted(parcelCanon.Status))
-                return await FailLaneAsync(LaneName, "Parcel-Canonical", parcelCanon.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 4: Parcel-Canonical.
+            int canonProjected = 0;
+            if (resume.ShouldSkip("Parcel-Canonical"))
+            {
+                _logger.LogInformation("[Drain:parcel] SKIP Parcel-Canonical");
+            }
+            else
+            {
+                var parcelCanon = await parcelCanonical.ProjectAsync(
+                    spineBatchId, bentonCountyId, operatorName, cancellationToken);
+                batchIds.Add(parcelCanon.PromotionLoadBatchId);
+                if (!IsCompleted(parcelCanon.Status))
+                    return await FailLaneAsync(LaneName, "Parcel-Canonical", parcelCanon.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                canonProjected = parcelCanon.ParcelsProjected;
+                await resume.CheckpointAsync("Parcel-Canonical", batchIds, cancellationToken);
+            }
+            rowsCanonicalized = canonProjected;
 
             return await OkLaneAsync(
                 LaneName,
                 batchIds,
-                rowsLanded: parcelS1.RowsLanded,
-                rowsPromotedToTruth: parcelSpine.ParcelsPromoted,
-                rowsCanonicalized: parcelCanon.ParcelsProjected,
+                rowsLanded: rowsLanded,
+                rowsPromotedToTruth: rowsPromotedToTruth,
+                rowsCanonicalized: rowsCanonicalized,
                 startedAt,
                 quarantineBefore,
                 cancellationToken);
@@ -196,121 +415,268 @@ public class DoctrineDrainController : ControllerBase
 
         var (operatorName, _, fullCorpus, topN) = NormalizeRequest(request, LaneName);
         var startedAt = DateTime.UtcNow;
-        var batchIds = new List<Guid>();
         var quarantineBefore = await CountQuarantineAsync(cancellationToken);
+        // SYNC-COMPLETE-2-V2.
+        var resume = await BuildResumeContextAsync(LaneName, request, cancellationToken);
+        var batchIds = new List<Guid>();
+        for (var i = 0; i < LaneStageOrder.Stages[LaneName].Count; i++)
+        {
+            var prior = resume.GetPriorBatchId(LaneStageOrder.Stages[LaneName][i]);
+            if (prior is null) break;
+            batchIds.Add(prior.Value);
+        }
+        int rowsLanded = 0, rowsPromotedToTruth = 0, rowsCanonicalized = 0;
 
         try
         {
             var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
             var ownerTopN = fullCorpus ? (int?)null : (topN ?? 200);
 
-            // Owner S1 seed.
-            _logger.LogInformation("[Drain:owner-wsdor] Owner S1 (TopN={Top}, FullCorpus={Full})", ownerTopN, fullCorpus);
-            var ownerSrc = new SqlServerPacsOwnerSource(pacsCs!, topN: ownerTopN);
-            var ownerS1 = await ownerSvc.LandOwnersAsync(ownerSrc, operatorName, cancellationToken);
-            batchIds.Add(ownerS1.LoadBatchId);
-            if (!IsCompleted(ownerS1.Status))
-                return await FailLaneAsync(LaneName, "Owner-S1", ownerS1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 1: Owner-S1.
+            Guid ownerS1BatchId;
+            int ownerS1RowsLanded = 0;
+            if (resume.ShouldSkip("Owner-S1"))
+            {
+                ownerS1BatchId = resume.GetPriorBatchId("Owner-S1") ?? throw new InvalidOperationException("Owner-S1 batch id missing.");
+                _logger.LogInformation("[Drain:owner-wsdor] SKIP Owner-S1; batchId={Bid}", ownerS1BatchId);
+            }
+            else
+            {
+                _logger.LogInformation("[Drain:owner-wsdor] Owner S1 (TopN={Top}, FullCorpus={Full})", ownerTopN, fullCorpus);
+                var ownerSrc = new SqlServerPacsOwnerSource(pacsCs!, topN: ownerTopN);
+                var ownerS1 = await ownerSvc.LandOwnersAsync(ownerSrc, operatorName, cancellationToken);
+                batchIds.Add(ownerS1.LoadBatchId);
+                if (!IsCompleted(ownerS1.Status))
+                    return await FailLaneAsync(LaneName, "Owner-S1", ownerS1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                ownerS1BatchId = ownerS1.LoadBatchId;
+                ownerS1RowsLanded = ownerS1.RowsLanded;
+                await resume.CheckpointAsync("Owner-S1", batchIds, cancellationToken);
+            }
 
+            // Reload owner rows from the (always-present) Owner-S1 batch
+            // for downstream key derivation. This works whether we ran or
+            // skipped Owner-S1 since the underlying landing rows persist.
             var ownerRows = await _db.LegacyPacsRawOwners
                 .AsNoTracking()
-                .Where(o => o.LoadBatchId == ownerS1.LoadBatchId)
+                .Where(o => o.LoadBatchId == ownerS1BatchId)
                 .Select(o => new { o.OwnerId, o.PropId, o.OwnerTaxYr })
                 .ToListAsync(cancellationToken);
             var distinctAcctIds = ownerRows.Select(r => r.OwnerId).Distinct().ToList();
             var distinctSuppKeys = ownerRows.Select(r => (r.PropId, r.OwnerTaxYr)).Distinct().ToList();
             var distinctParcelPropIds = ownerRows.Select(r => r.PropId).Distinct().ToList();
 
-            // Account + supp + parcel chain (xrefs).
-            var acctSrc = new KeyedSqlServerPacsAccountSource(pacsCs!, distinctAcctIds);
-            var acctS1 = await accountSvc.LandAccountsAsync(acctSrc, operatorName, cancellationToken);
-            batchIds.Add(acctS1.LoadBatchId);
-            if (!IsCompleted(acctS1.Status))
-                return await FailLaneAsync(LaneName, "Account-S1", acctS1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 2: Account-S1.
+            Guid acctS1BatchId;
+            if (resume.ShouldSkip("Account-S1"))
+            {
+                acctS1BatchId = resume.GetPriorBatchId("Account-S1") ?? throw new InvalidOperationException("Account-S1 batch id missing.");
+                _logger.LogInformation("[Drain:owner-wsdor] SKIP Account-S1; batchId={Bid}", acctS1BatchId);
+            }
+            else
+            {
+                var acctSrc = new KeyedSqlServerPacsAccountSource(pacsCs!, distinctAcctIds);
+                var acctS1 = await accountSvc.LandAccountsAsync(acctSrc, operatorName, cancellationToken);
+                batchIds.Add(acctS1.LoadBatchId);
+                if (!IsCompleted(acctS1.Status))
+                    return await FailLaneAsync(LaneName, "Account-S1", acctS1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                acctS1BatchId = acctS1.LoadBatchId;
+                await resume.CheckpointAsync("Account-S1", batchIds, cancellationToken);
+            }
 
-            var suppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs!, distinctSuppKeys);
-            var suppS1 = await assocSvc.LandPropSuppAssocsAsync(suppSrc, operatorName, cancellationToken);
-            batchIds.Add(suppS1.LoadBatchId);
-            if (!IsCompleted(suppS1.Status))
-                return await FailLaneAsync(LaneName, "Supp-S1", suppS1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 3: Supp-S1.
+            Guid suppS1BatchId;
+            if (resume.ShouldSkip("Supp-S1"))
+            {
+                suppS1BatchId = resume.GetPriorBatchId("Supp-S1") ?? throw new InvalidOperationException("Supp-S1 batch id missing.");
+                _logger.LogInformation("[Drain:owner-wsdor] SKIP Supp-S1; batchId={Bid}", suppS1BatchId);
+            }
+            else
+            {
+                var suppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs!, distinctSuppKeys);
+                var suppS1 = await assocSvc.LandPropSuppAssocsAsync(suppSrc, operatorName, cancellationToken);
+                batchIds.Add(suppS1.LoadBatchId);
+                if (!IsCompleted(suppS1.Status))
+                    return await FailLaneAsync(LaneName, "Supp-S1", suppS1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                suppS1BatchId = suppS1.LoadBatchId;
+                await resume.CheckpointAsync("Supp-S1", batchIds, cancellationToken);
+            }
 
-            var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs!, distinctParcelPropIds);
-            var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
-            batchIds.Add(parcelS1.LoadBatchId);
-            if (!IsCompleted(parcelS1.Status))
-                return await FailLaneAsync(LaneName, "Parcel-S1", parcelS1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 4: Parcel-S1.
+            Guid parcelS1BatchId;
+            if (resume.ShouldSkip("Parcel-S1"))
+            {
+                parcelS1BatchId = resume.GetPriorBatchId("Parcel-S1") ?? throw new InvalidOperationException("Parcel-S1 batch id missing.");
+                _logger.LogInformation("[Drain:owner-wsdor] SKIP Parcel-S1; batchId={Bid}", parcelS1BatchId);
+            }
+            else
+            {
+                var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs!, distinctParcelPropIds);
+                var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
+                batchIds.Add(parcelS1.LoadBatchId);
+                if (!IsCompleted(parcelS1.Status))
+                    return await FailLaneAsync(LaneName, "Parcel-S1", parcelS1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                parcelS1BatchId = parcelS1.LoadBatchId;
+                await resume.CheckpointAsync("Parcel-S1", batchIds, cancellationToken);
+            }
 
-            var parcelSpine = await spinePromoter.PromoteAsync(parcelS1.LoadBatchId, operatorName, cancellationToken);
-            batchIds.Add(parcelSpine.PromotionLoadBatchId);
-            if (!IsCompleted(parcelSpine.Status))
-                return await FailLaneAsync(LaneName, "Parcel-Spine", parcelSpine.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 5: Parcel-Spine.
+            Guid parcelSpineBatchId;
+            if (resume.ShouldSkip("Parcel-Spine"))
+            {
+                parcelSpineBatchId = resume.GetPriorBatchId("Parcel-Spine") ?? throw new InvalidOperationException("Parcel-Spine batch id missing.");
+                _logger.LogInformation("[Drain:owner-wsdor] SKIP Parcel-Spine; batchId={Bid}", parcelSpineBatchId);
+            }
+            else
+            {
+                var parcelSpine = await spinePromoter.PromoteAsync(parcelS1BatchId, operatorName, cancellationToken);
+                batchIds.Add(parcelSpine.PromotionLoadBatchId);
+                if (!IsCompleted(parcelSpine.Status))
+                    return await FailLaneAsync(LaneName, "Parcel-Spine", parcelSpine.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                parcelSpineBatchId = parcelSpine.PromotionLoadBatchId;
+                await resume.CheckpointAsync("Parcel-Spine", batchIds, cancellationToken);
+            }
 
-            var parcelCanon = await parcelCanonical.ProjectAsync(
-                parcelSpine.PromotionLoadBatchId, bentonCountyId, operatorName, cancellationToken);
-            batchIds.Add(parcelCanon.PromotionLoadBatchId);
-            if (!IsCompleted(parcelCanon.Status))
-                return await FailLaneAsync(LaneName, "Parcel-Canonical", parcelCanon.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 6: Parcel-Canonical.
+            if (resume.ShouldSkip("Parcel-Canonical"))
+            {
+                _logger.LogInformation("[Drain:owner-wsdor] SKIP Parcel-Canonical");
+            }
+            else
+            {
+                var parcelCanon = await parcelCanonical.ProjectAsync(
+                    parcelSpineBatchId, bentonCountyId, operatorName, cancellationToken);
+                batchIds.Add(parcelCanon.PromotionLoadBatchId);
+                if (!IsCompleted(parcelCanon.Status))
+                    return await FailLaneAsync(LaneName, "Parcel-Canonical", parcelCanon.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                await resume.CheckpointAsync("Parcel-Canonical", batchIds, cancellationToken);
+            }
 
-            // Owner truth + canonical.
-            var ownerTruth = await ownerTruthPromoter.PromoteAsync(
-                ownerS1.LoadBatchId, acctS1.LoadBatchId, suppS1.LoadBatchId, operatorName, cancellationToken);
-            batchIds.Add(ownerTruth.PromotionLoadBatchId);
-            if (!IsCompleted(ownerTruth.Status))
-                return await FailLaneAsync(LaneName, "Owner-Truth", ownerTruth.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 7: Owner-Truth.
+            Guid ownerTruthBatchId;
+            int ownerTruthOwnersPromoted = 0;
+            if (resume.ShouldSkip("Owner-Truth"))
+            {
+                ownerTruthBatchId = resume.GetPriorBatchId("Owner-Truth") ?? throw new InvalidOperationException("Owner-Truth batch id missing.");
+                _logger.LogInformation("[Drain:owner-wsdor] SKIP Owner-Truth; batchId={Bid}", ownerTruthBatchId);
+            }
+            else
+            {
+                var ownerTruth = await ownerTruthPromoter.PromoteAsync(
+                    ownerS1BatchId, acctS1BatchId, suppS1BatchId, operatorName, cancellationToken);
+                batchIds.Add(ownerTruth.PromotionLoadBatchId);
+                if (!IsCompleted(ownerTruth.Status))
+                    return await FailLaneAsync(LaneName, "Owner-Truth", ownerTruth.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                ownerTruthBatchId = ownerTruth.PromotionLoadBatchId;
+                ownerTruthOwnersPromoted = ownerTruth.OwnersPromoted;
+                await resume.CheckpointAsync("Owner-Truth", batchIds, cancellationToken);
+            }
 
-            var ownerCanon = await ownerCanonicalProjector.ProjectAsync(
-                ownerTruth.PromotionLoadBatchId, operatorName, cancellationToken);
-            batchIds.Add(ownerCanon.PromotionLoadBatchId);
-            if (!IsCompleted(ownerCanon.Status))
-                return await FailLaneAsync(LaneName, "Owner-Canonical", ownerCanon.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 8: Owner-Canonical.
+            int ownerCanonOwnersProjected = 0;
+            int ownerCanonLinksProjected = 0;
+            if (resume.ShouldSkip("Owner-Canonical"))
+            {
+                _logger.LogInformation("[Drain:owner-wsdor] SKIP Owner-Canonical");
+            }
+            else
+            {
+                var ownerCanon = await ownerCanonicalProjector.ProjectAsync(
+                    ownerTruthBatchId, operatorName, cancellationToken);
+                batchIds.Add(ownerCanon.PromotionLoadBatchId);
+                if (!IsCompleted(ownerCanon.Status))
+                    return await FailLaneAsync(LaneName, "Owner-Canonical", ownerCanon.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                ownerCanonOwnersProjected = ownerCanon.OwnersProjected;
+                ownerCanonLinksProjected = ownerCanon.LinksProjected;
+                await resume.CheckpointAsync("Owner-Canonical", batchIds, cancellationToken);
+            }
 
-            // WPOV → WSDOR.
+            // Build WPOV keys from the truth row set (independent of skip).
             var wpovKeys = await _db.TruthPacsOwnerCurrents
                 .AsNoTracking()
-                .Where(t => t.PromotionLoadBatchId == ownerTruth.PromotionLoadBatchId)
+                .Where(t => t.PromotionLoadBatchId == ownerTruthBatchId)
                 .Select(t => new { t.PropId, t.OwnerTaxYr, t.OwnerId })
                 .Distinct()
                 .ToListAsync(cancellationToken);
             var wpovTriples = wpovKeys.Select(k => (k.PropId, k.OwnerTaxYr, k.OwnerId)).ToList();
 
-            var wpovSrc = new KeyedSqlServerPacsWashPropOwnerValSource(pacsCs!, wpovTriples);
-            var wpovS1 = await wpovSvc.LandWashPropOwnerValsAsync(wpovSrc, operatorName, cancellationToken);
-            batchIds.Add(wpovS1.LoadBatchId);
-            if (!IsCompleted(wpovS1.Status))
-                return await FailLaneAsync(LaneName, "WPOV-S1", wpovS1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 9: WPOV-S1.
+            Guid wpovS1BatchId;
+            int wpovS1RowsLanded = 0;
+            if (resume.ShouldSkip("WPOV-S1"))
+            {
+                wpovS1BatchId = resume.GetPriorBatchId("WPOV-S1") ?? throw new InvalidOperationException("WPOV-S1 batch id missing.");
+                _logger.LogInformation("[Drain:owner-wsdor] SKIP WPOV-S1; batchId={Bid}", wpovS1BatchId);
+            }
+            else
+            {
+                var wpovSrc = new KeyedSqlServerPacsWashPropOwnerValSource(pacsCs!, wpovTriples);
+                var wpovS1 = await wpovSvc.LandWashPropOwnerValsAsync(wpovSrc, operatorName, cancellationToken);
+                batchIds.Add(wpovS1.LoadBatchId);
+                if (!IsCompleted(wpovS1.Status))
+                    return await FailLaneAsync(LaneName, "WPOV-S1", wpovS1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                wpovS1BatchId = wpovS1.LoadBatchId;
+                wpovS1RowsLanded = wpovS1.RowsLanded;
+                await resume.CheckpointAsync("WPOV-S1", batchIds, cancellationToken);
+            }
 
-            var wpovTruth = await wpovTruthPromoter.PromoteAsync(
-                wpovS1.LoadBatchId, suppS1.LoadBatchId, operatorName, cancellationToken);
-            batchIds.Add(wpovTruth.PromotionLoadBatchId);
-            if (!IsCompleted(wpovTruth.Status))
-                return await FailLaneAsync(LaneName, "WPOV-Truth", wpovTruth.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 10: WPOV-Truth.
+            Guid wpovTruthBatchId;
+            int wpovTruthRowsPromoted = 0;
+            if (resume.ShouldSkip("WPOV-Truth"))
+            {
+                wpovTruthBatchId = resume.GetPriorBatchId("WPOV-Truth") ?? throw new InvalidOperationException("WPOV-Truth batch id missing.");
+                _logger.LogInformation("[Drain:owner-wsdor] SKIP WPOV-Truth; batchId={Bid}", wpovTruthBatchId);
+            }
+            else
+            {
+                var wpovTruth = await wpovTruthPromoter.PromoteAsync(
+                    wpovS1BatchId, suppS1BatchId, operatorName, cancellationToken);
+                batchIds.Add(wpovTruth.PromotionLoadBatchId);
+                if (!IsCompleted(wpovTruth.Status))
+                    return await FailLaneAsync(LaneName, "WPOV-Truth", wpovTruth.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                wpovTruthBatchId = wpovTruth.PromotionLoadBatchId;
+                wpovTruthRowsPromoted = wpovTruth.RowsPromoted;
+                await resume.CheckpointAsync("WPOV-Truth", batchIds, cancellationToken);
+            }
 
-            var wsdorCanon = await wsdorCanonicalProjector.ProjectAsync(
-                wpovTruth.PromotionLoadBatchId, operatorName, cancellationToken);
-            batchIds.Add(wsdorCanon.PromotionLoadBatchId);
-            if (!IsCompleted(wsdorCanon.Status))
-                return await FailLaneAsync(LaneName, "WSDOR-Canonical", wsdorCanon.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 11: WSDOR-Canonical.
+            int wsdorCanonRowsProjected = 0;
+            if (resume.ShouldSkip("WSDOR-Canonical"))
+            {
+                _logger.LogInformation("[Drain:owner-wsdor] SKIP WSDOR-Canonical");
+            }
+            else
+            {
+                var wsdorCanon = await wsdorCanonicalProjector.ProjectAsync(
+                    wpovTruthBatchId, operatorName, cancellationToken);
+                batchIds.Add(wsdorCanon.PromotionLoadBatchId);
+                if (!IsCompleted(wsdorCanon.Status))
+                    return await FailLaneAsync(LaneName, "WSDOR-Canonical", wsdorCanon.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                wsdorCanonRowsProjected = wsdorCanon.RowsProjected;
+                await resume.CheckpointAsync("WSDOR-Canonical", batchIds, cancellationToken);
+            }
 
-            // RowsLanded counts the lane's primary landing (owner). RowsPromotedToTruth
-            // sums the two truth promotions (owner + WPOV). RowsCanonicalized sums
-            // tf_owner + tf_parcel_owner_link + tf_assessment_wsdor projections.
+            rowsLanded = ownerS1RowsLanded + wpovS1RowsLanded;
+            rowsPromotedToTruth = ownerTruthOwnersPromoted + wpovTruthRowsPromoted;
+            rowsCanonicalized = ownerCanonOwnersProjected + ownerCanonLinksProjected + wsdorCanonRowsProjected;
+
             return await OkLaneAsync(
                 LaneName,
                 batchIds,
-                rowsLanded: ownerS1.RowsLanded + wpovS1.RowsLanded,
-                rowsPromotedToTruth: ownerTruth.OwnersPromoted + wpovTruth.RowsPromoted,
-                rowsCanonicalized: ownerCanon.OwnersProjected + ownerCanon.LinksProjected + wsdorCanon.RowsProjected,
+                rowsLanded: rowsLanded,
+                rowsPromotedToTruth: rowsPromotedToTruth,
+                rowsCanonicalized: rowsCanonicalized,
                 startedAt,
                 quarantineBefore,
                 cancellationToken);
@@ -357,145 +723,280 @@ public class DoctrineDrainController : ControllerBase
 
         var (operatorName, workingYear, fullCorpus, topN) = NormalizeRequest(request, LaneName);
         var startedAt = DateTime.UtcNow;
-        var batchIds = new List<Guid>();
         var quarantineBefore = await CountQuarantineAsync(cancellationToken);
+        // SYNC-COMPLETE-2-V2.
+        var resume = await BuildResumeContextAsync(LaneName, request, cancellationToken);
+        var batchIds = new List<Guid>();
+        for (var i = 0; i < LaneStageOrder.Stages[LaneName].Count; i++)
+        {
+            var prior = resume.GetPriorBatchId(LaneStageOrder.Stages[LaneName][i]);
+            if (prior is null) break;
+            batchIds.Add(prior.Value);
+        }
+        int rowsLanded = 0, rowsPromotedToTruth = 0, rowsCanonicalized = 0;
 
         try
         {
             var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
             var seedTopN = fullCorpus ? (int?)null : (topN ?? 200);
 
-            // Owner-anchored seed.
-            _logger.LogInformation("[Drain:improvement] Owner seed (TopN={Top}, FullCorpus={Full})", seedTopN, fullCorpus);
-            var ownerSeedSrc = new SqlServerPacsOwnerSource(pacsCs!, topN: seedTopN);
-            var ownerSeedS1 = await ownerSvc.LandOwnersAsync(ownerSeedSrc, operatorName, cancellationToken);
-            batchIds.Add(ownerSeedS1.LoadBatchId);
-            if (!IsCompleted(ownerSeedS1.Status))
-                return await FailLaneAsync(LaneName, "Owner-Seed-S1", ownerSeedS1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 1: Owner-Seed-S1.
+            Guid ownerSeedBatchId;
+            if (resume.ShouldSkip("Owner-Seed-S1"))
+            {
+                ownerSeedBatchId = resume.GetPriorBatchId("Owner-Seed-S1") ?? throw new InvalidOperationException("Owner-Seed-S1 missing.");
+                _logger.LogInformation("[Drain:improvement] SKIP Owner-Seed-S1; batchId={Bid}", ownerSeedBatchId);
+            }
+            else
+            {
+                _logger.LogInformation("[Drain:improvement] Owner seed (TopN={Top}, FullCorpus={Full})", seedTopN, fullCorpus);
+                var ownerSeedSrc = new SqlServerPacsOwnerSource(pacsCs!, topN: seedTopN);
+                var ownerSeedS1 = await ownerSvc.LandOwnersAsync(ownerSeedSrc, operatorName, cancellationToken);
+                batchIds.Add(ownerSeedS1.LoadBatchId);
+                if (!IsCompleted(ownerSeedS1.Status))
+                    return await FailLaneAsync(LaneName, "Owner-Seed-S1", ownerSeedS1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                ownerSeedBatchId = ownerSeedS1.LoadBatchId;
+                await resume.CheckpointAsync("Owner-Seed-S1", batchIds, cancellationToken);
+            }
 
             var seedPropIds = await _db.LegacyPacsRawOwners
                 .AsNoTracking()
-                .Where(o => o.LoadBatchId == ownerSeedS1.LoadBatchId)
+                .Where(o => o.LoadBatchId == ownerSeedBatchId)
                 .Select(o => o.PropId)
                 .Distinct()
                 .ToListAsync(cancellationToken);
 
-            // Parcel chain (xrefs).
-            var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs!, seedPropIds);
-            var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
-            batchIds.Add(parcelS1.LoadBatchId);
-            if (!IsCompleted(parcelS1.Status))
-                return await FailLaneAsync(LaneName, "Parcel-S1", parcelS1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 2: Parcel-S1.
+            Guid parcelS1BatchId;
+            if (resume.ShouldSkip("Parcel-S1"))
+            {
+                parcelS1BatchId = resume.GetPriorBatchId("Parcel-S1") ?? throw new InvalidOperationException("Parcel-S1 missing.");
+                _logger.LogInformation("[Drain:improvement] SKIP Parcel-S1; batchId={Bid}", parcelS1BatchId);
+            }
+            else
+            {
+                var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs!, seedPropIds);
+                var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
+                batchIds.Add(parcelS1.LoadBatchId);
+                if (!IsCompleted(parcelS1.Status))
+                    return await FailLaneAsync(LaneName, "Parcel-S1", parcelS1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                parcelS1BatchId = parcelS1.LoadBatchId;
+                await resume.CheckpointAsync("Parcel-S1", batchIds, cancellationToken);
+            }
 
-            var parcelSpine = await spinePromoter.PromoteAsync(parcelS1.LoadBatchId, operatorName, cancellationToken);
-            batchIds.Add(parcelSpine.PromotionLoadBatchId);
-            if (!IsCompleted(parcelSpine.Status))
-                return await FailLaneAsync(LaneName, "Parcel-Spine", parcelSpine.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 3: Parcel-Spine.
+            Guid parcelSpineBatchId;
+            if (resume.ShouldSkip("Parcel-Spine"))
+            {
+                parcelSpineBatchId = resume.GetPriorBatchId("Parcel-Spine") ?? throw new InvalidOperationException("Parcel-Spine missing.");
+                _logger.LogInformation("[Drain:improvement] SKIP Parcel-Spine; batchId={Bid}", parcelSpineBatchId);
+            }
+            else
+            {
+                var parcelSpine = await spinePromoter.PromoteAsync(parcelS1BatchId, operatorName, cancellationToken);
+                batchIds.Add(parcelSpine.PromotionLoadBatchId);
+                if (!IsCompleted(parcelSpine.Status))
+                    return await FailLaneAsync(LaneName, "Parcel-Spine", parcelSpine.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                parcelSpineBatchId = parcelSpine.PromotionLoadBatchId;
+                await resume.CheckpointAsync("Parcel-Spine", batchIds, cancellationToken);
+            }
 
-            var parcelCanon = await parcelCanonical.ProjectAsync(
-                parcelSpine.PromotionLoadBatchId, bentonCountyId, operatorName, cancellationToken);
-            batchIds.Add(parcelCanon.PromotionLoadBatchId);
-            if (!IsCompleted(parcelCanon.Status))
-                return await FailLaneAsync(LaneName, "Parcel-Canonical", parcelCanon.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 4: Parcel-Canonical.
+            if (resume.ShouldSkip("Parcel-Canonical"))
+            {
+                _logger.LogInformation("[Drain:improvement] SKIP Parcel-Canonical");
+            }
+            else
+            {
+                var parcelCanon = await parcelCanonical.ProjectAsync(
+                    parcelSpineBatchId, bentonCountyId, operatorName, cancellationToken);
+                batchIds.Add(parcelCanon.PromotionLoadBatchId);
+                if (!IsCompleted(parcelCanon.Status))
+                    return await FailLaneAsync(LaneName, "Parcel-Canonical", parcelCanon.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                await resume.CheckpointAsync("Parcel-Canonical", batchIds, cancellationToken);
+            }
 
-            // Build imprv keys from spine.
+            // Build imprv keys from spine (independent of skip).
             var spinePropIds = await _db.TruthPacsParcelSpines
                 .AsNoTracking()
-                .Where(t => t.PromotionLoadBatchId == parcelSpine.PromotionLoadBatchId)
+                .Where(t => t.PromotionLoadBatchId == parcelSpineBatchId)
                 .Select(t => t.PropId)
                 .ToListAsync(cancellationToken);
             var imprvKeys = spinePropIds.Select(p => (p, workingYear)).ToList();
 
-            // Supp S1 (truth needs it).
-            var suppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs!, imprvKeys);
-            var suppS1 = await assocSvc.LandPropSuppAssocsAsync(suppSrc, operatorName, cancellationToken);
-            batchIds.Add(suppS1.LoadBatchId);
-            if (!IsCompleted(suppS1.Status))
-                return await FailLaneAsync(LaneName, "Supp-S1", suppS1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
-
-            // SYNC-DOCTRINE-4-IMPL-V4: PropertyVal S1 (universe classifier
-            // reads property_use_cd from these rows). Non-blocking on
-            // failure — the truth promoter falls through to NULL
-            // property_use_cd which the V2 classifier handles by
-            // routing prop_type_cd='R' rows to REAL_RESIDENTIAL.
-            var propertyValSrc = new KeyedSqlServerPacsPropertyValSource(pacsCs!, imprvKeys);
-            var propertyValS1 = await propertyValSvc.LandPropertyValsAsync(
-                propertyValSrc, operatorName, cancellationToken);
-            batchIds.Add(propertyValS1.LoadBatchId);
-            if (!IsCompleted(propertyValS1.Status))
+            // Stage 5: Supp-S1.
+            Guid suppS1BatchId;
+            if (resume.ShouldSkip("Supp-S1"))
             {
-                _logger.LogWarning(
-                    "[Drain:improvement] PropertyVal-S1 failed (non-blocking): {Err}. " +
-                    "Promoter will pass NULL property_use_cd to classifier.",
-                    propertyValS1.ErrorSummary);
+                suppS1BatchId = resume.GetPriorBatchId("Supp-S1") ?? throw new InvalidOperationException("Supp-S1 missing.");
+                _logger.LogInformation("[Drain:improvement] SKIP Supp-S1; batchId={Bid}", suppS1BatchId);
+            }
+            else
+            {
+                var suppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs!, imprvKeys);
+                var suppS1 = await assocSvc.LandPropSuppAssocsAsync(suppSrc, operatorName, cancellationToken);
+                batchIds.Add(suppS1.LoadBatchId);
+                if (!IsCompleted(suppS1.Status))
+                    return await FailLaneAsync(LaneName, "Supp-S1", suppS1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                suppS1BatchId = suppS1.LoadBatchId;
+                await resume.CheckpointAsync("Supp-S1", batchIds, cancellationToken);
             }
 
-            // SYNC-DOCTRINE-4-IMPL-V4: LandDetail S1 (universe classifier
-            // reads ag_apply / ag_use_cd from these rows). Same
-            // non-blocking semantics as PropertyVal-S1.
-            var landDetailSrc = new KeyedSqlServerPacsLandDetailSource(pacsCs!, imprvKeys);
-            var landDetailS1 = await landDetailSvc.LandLandDetailsAsync(
-                landDetailSrc, operatorName, cancellationToken);
-            batchIds.Add(landDetailS1.LoadBatchId);
-            if (!IsCompleted(landDetailS1.Status))
+            // Stage 6: PropertyVal-S1 (non-blocking).
+            if (resume.ShouldSkip("PropertyVal-S1"))
             {
-                _logger.LogWarning(
-                    "[Drain:improvement] LandDetail-S1 failed (non-blocking): {Err}. " +
-                    "Promoter will pass NULL ag_apply to classifier.",
-                    landDetailS1.ErrorSummary);
+                _logger.LogInformation("[Drain:improvement] SKIP PropertyVal-S1");
+            }
+            else
+            {
+                var propertyValSrc = new KeyedSqlServerPacsPropertyValSource(pacsCs!, imprvKeys);
+                var propertyValS1 = await propertyValSvc.LandPropertyValsAsync(
+                    propertyValSrc, operatorName, cancellationToken);
+                batchIds.Add(propertyValS1.LoadBatchId);
+                if (!IsCompleted(propertyValS1.Status))
+                {
+                    _logger.LogWarning(
+                        "[Drain:improvement] PropertyVal-S1 failed (non-blocking): {Err}. " +
+                        "Promoter will pass NULL property_use_cd to classifier.",
+                        propertyValS1.ErrorSummary);
+                }
+                await resume.CheckpointAsync("PropertyVal-S1", batchIds, cancellationToken);
             }
 
-            // Imprv S1.
-            var imprvSrc = new KeyedSqlServerPacsImprvSource(pacsCs!, imprvKeys);
-            var imprvS1 = await imprvSvc.LandImprvsAsync(imprvSrc, operatorName, cancellationToken);
-            batchIds.Add(imprvS1.LoadBatchId);
-            if (!IsCompleted(imprvS1.Status))
-                return await FailLaneAsync(LaneName, "Imprv-S1", imprvS1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 7: LandDetail-S1 (non-blocking).
+            if (resume.ShouldSkip("LandDetail-S1"))
+            {
+                _logger.LogInformation("[Drain:improvement] SKIP LandDetail-S1");
+            }
+            else
+            {
+                var landDetailSrc = new KeyedSqlServerPacsLandDetailSource(pacsCs!, imprvKeys);
+                var landDetailS1 = await landDetailSvc.LandLandDetailsAsync(
+                    landDetailSrc, operatorName, cancellationToken);
+                batchIds.Add(landDetailS1.LoadBatchId);
+                if (!IsCompleted(landDetailS1.Status))
+                {
+                    _logger.LogWarning(
+                        "[Drain:improvement] LandDetail-S1 failed (non-blocking): {Err}. " +
+                        "Promoter will pass NULL ag_apply to classifier.",
+                        landDetailS1.ErrorSummary);
+                }
+                await resume.CheckpointAsync("LandDetail-S1", batchIds, cancellationToken);
+            }
 
-            // ImprvDetail S1.
-            var detailSrc = new KeyedSqlServerPacsImprvDetailSource(pacsCs!, imprvKeys);
-            var detailS1 = await imprvDetailSvc.LandImprvDetailsAsync(detailSrc, operatorName, cancellationToken);
-            batchIds.Add(detailS1.LoadBatchId);
-            if (!IsCompleted(detailS1.Status))
-                return await FailLaneAsync(LaneName, "ImprvDetail-S1", detailS1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 8: Imprv-S1.
+            Guid imprvS1BatchId;
+            int imprvS1RowsLanded = 0;
+            if (resume.ShouldSkip("Imprv-S1"))
+            {
+                imprvS1BatchId = resume.GetPriorBatchId("Imprv-S1") ?? throw new InvalidOperationException("Imprv-S1 missing.");
+                _logger.LogInformation("[Drain:improvement] SKIP Imprv-S1; batchId={Bid}", imprvS1BatchId);
+            }
+            else
+            {
+                var imprvSrc = new KeyedSqlServerPacsImprvSource(pacsCs!, imprvKeys);
+                var imprvS1 = await imprvSvc.LandImprvsAsync(imprvSrc, operatorName, cancellationToken);
+                batchIds.Add(imprvS1.LoadBatchId);
+                if (!IsCompleted(imprvS1.Status))
+                    return await FailLaneAsync(LaneName, "Imprv-S1", imprvS1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                imprvS1BatchId = imprvS1.LoadBatchId;
+                imprvS1RowsLanded = imprvS1.RowsLanded;
+                await resume.CheckpointAsync("Imprv-S1", batchIds, cancellationToken);
+            }
 
-            // ImprvAttr S1.
-            var attrSrc = new KeyedSqlServerPacsImprvAttrSource(pacsCs!, imprvKeys);
-            var attrS1 = await imprvAttrSvc.LandImprvAttrsAsync(attrSrc, operatorName, cancellationToken);
-            batchIds.Add(attrS1.LoadBatchId);
-            if (!IsCompleted(attrS1.Status))
-                return await FailLaneAsync(LaneName, "ImprvAttr-S1", attrS1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 9: ImprvDetail-S1.
+            int detailS1RowsLanded = 0;
+            if (resume.ShouldSkip("ImprvDetail-S1"))
+            {
+                _logger.LogInformation("[Drain:improvement] SKIP ImprvDetail-S1");
+            }
+            else
+            {
+                var detailSrc = new KeyedSqlServerPacsImprvDetailSource(pacsCs!, imprvKeys);
+                var detailS1 = await imprvDetailSvc.LandImprvDetailsAsync(detailSrc, operatorName, cancellationToken);
+                batchIds.Add(detailS1.LoadBatchId);
+                if (!IsCompleted(detailS1.Status))
+                    return await FailLaneAsync(LaneName, "ImprvDetail-S1", detailS1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                detailS1RowsLanded = detailS1.RowsLanded;
+                await resume.CheckpointAsync("ImprvDetail-S1", batchIds, cancellationToken);
+            }
 
-            // Imprv truth.
-            var imprvTruth = await imprvTruthPromoter.PromoteAsync(
-                imprvS1.LoadBatchId, suppS1.LoadBatchId, operatorName, cancellationToken);
-            batchIds.Add(imprvTruth.PromotionLoadBatchId);
-            if (!IsCompleted(imprvTruth.Status))
-                return await FailLaneAsync(LaneName, "Imprv-Truth", imprvTruth.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 10: ImprvAttr-S1.
+            int attrS1RowsLanded = 0;
+            if (resume.ShouldSkip("ImprvAttr-S1"))
+            {
+                _logger.LogInformation("[Drain:improvement] SKIP ImprvAttr-S1");
+            }
+            else
+            {
+                var attrSrc = new KeyedSqlServerPacsImprvAttrSource(pacsCs!, imprvKeys);
+                var attrS1 = await imprvAttrSvc.LandImprvAttrsAsync(attrSrc, operatorName, cancellationToken);
+                batchIds.Add(attrS1.LoadBatchId);
+                if (!IsCompleted(attrS1.Status))
+                    return await FailLaneAsync(LaneName, "ImprvAttr-S1", attrS1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                attrS1RowsLanded = attrS1.RowsLanded;
+                await resume.CheckpointAsync("ImprvAttr-S1", batchIds, cancellationToken);
+            }
 
-            // Imprv canonical.
-            var imprvCanon = await imprvCanonicalProjector.ProjectAsync(
-                imprvTruth.PromotionLoadBatchId, operatorName, cancellationToken);
-            batchIds.Add(imprvCanon.PromotionLoadBatchId);
-            if (!IsCompleted(imprvCanon.Status))
-                return await FailLaneAsync(LaneName, "Imprv-Canonical", imprvCanon.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 11: Imprv-Truth.
+            Guid imprvTruthBatchId;
+            int imprvTruthImprvsPromoted = 0;
+            if (resume.ShouldSkip("Imprv-Truth"))
+            {
+                imprvTruthBatchId = resume.GetPriorBatchId("Imprv-Truth") ?? throw new InvalidOperationException("Imprv-Truth missing.");
+                _logger.LogInformation("[Drain:improvement] SKIP Imprv-Truth; batchId={Bid}", imprvTruthBatchId);
+            }
+            else
+            {
+                var imprvTruth = await imprvTruthPromoter.PromoteAsync(
+                    imprvS1BatchId, suppS1BatchId, operatorName, cancellationToken);
+                batchIds.Add(imprvTruth.PromotionLoadBatchId);
+                if (!IsCompleted(imprvTruth.Status))
+                    return await FailLaneAsync(LaneName, "Imprv-Truth", imprvTruth.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                imprvTruthBatchId = imprvTruth.PromotionLoadBatchId;
+                imprvTruthImprvsPromoted = imprvTruth.ImprvsPromoted;
+                await resume.CheckpointAsync("Imprv-Truth", batchIds, cancellationToken);
+            }
+
+            // Stage 12: Imprv-Canonical.
+            int imprvCanonImprovementsProjected = 0;
+            int imprvCanonFeaturesProjected = 0;
+            if (resume.ShouldSkip("Imprv-Canonical"))
+            {
+                _logger.LogInformation("[Drain:improvement] SKIP Imprv-Canonical");
+            }
+            else
+            {
+                var imprvCanon = await imprvCanonicalProjector.ProjectAsync(
+                    imprvTruthBatchId, operatorName, cancellationToken);
+                batchIds.Add(imprvCanon.PromotionLoadBatchId);
+                if (!IsCompleted(imprvCanon.Status))
+                    return await FailLaneAsync(LaneName, "Imprv-Canonical", imprvCanon.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                imprvCanonImprovementsProjected = imprvCanon.ImprovementsProjected;
+                imprvCanonFeaturesProjected = imprvCanon.FeaturesProjected;
+                await resume.CheckpointAsync("Imprv-Canonical", batchIds, cancellationToken);
+            }
+
+            rowsLanded = imprvS1RowsLanded + detailS1RowsLanded + attrS1RowsLanded;
+            rowsPromotedToTruth = imprvTruthImprvsPromoted;
+            rowsCanonicalized = imprvCanonImprovementsProjected + imprvCanonFeaturesProjected;
 
             return await OkLaneAsync(
                 LaneName,
                 batchIds,
-                rowsLanded: imprvS1.RowsLanded + detailS1.RowsLanded + attrS1.RowsLanded,
-                rowsPromotedToTruth: imprvTruth.ImprvsPromoted,
-                rowsCanonicalized: imprvCanon.ImprovementsProjected + imprvCanon.FeaturesProjected,
+                rowsLanded: rowsLanded,
+                rowsPromotedToTruth: rowsPromotedToTruth,
+                rowsCanonicalized: rowsCanonicalized,
                 startedAt,
                 quarantineBefore,
                 cancellationToken);
@@ -536,97 +1037,200 @@ public class DoctrineDrainController : ControllerBase
 
         var (operatorName, workingYear, fullCorpus, topN) = NormalizeRequest(request, LaneName);
         var startedAt = DateTime.UtcNow;
-        var batchIds = new List<Guid>();
         var quarantineBefore = await CountQuarantineAsync(cancellationToken);
+        // SYNC-COMPLETE-2-V2.
+        var resume = await BuildResumeContextAsync(LaneName, request, cancellationToken);
+        var batchIds = new List<Guid>();
+        for (var i = 0; i < LaneStageOrder.Stages[LaneName].Count; i++)
+        {
+            var prior = resume.GetPriorBatchId(LaneStageOrder.Stages[LaneName][i]);
+            if (prior is null) break;
+            batchIds.Add(prior.Value);
+        }
+        int rowsLanded = 0, rowsPromotedToTruth = 0, rowsCanonicalized = 0;
 
         try
         {
             var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
             var seedTopN = fullCorpus ? (int?)null : (topN ?? 200);
 
-            // Owner-anchored seed.
-            _logger.LogInformation("[Drain:land] Owner seed (TopN={Top}, FullCorpus={Full})", seedTopN, fullCorpus);
-            var ownerSeedSrc = new SqlServerPacsOwnerSource(pacsCs!, topN: seedTopN);
-            var ownerSeedS1 = await ownerSvc.LandOwnersAsync(ownerSeedSrc, operatorName, cancellationToken);
-            batchIds.Add(ownerSeedS1.LoadBatchId);
-            if (!IsCompleted(ownerSeedS1.Status))
-                return await FailLaneAsync(LaneName, "Owner-Seed-S1", ownerSeedS1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 1: Owner-Seed-S1.
+            Guid ownerSeedBatchId;
+            if (resume.ShouldSkip("Owner-Seed-S1"))
+            {
+                ownerSeedBatchId = resume.GetPriorBatchId("Owner-Seed-S1") ?? throw new InvalidOperationException("Owner-Seed-S1 missing.");
+                _logger.LogInformation("[Drain:land] SKIP Owner-Seed-S1; batchId={Bid}", ownerSeedBatchId);
+            }
+            else
+            {
+                _logger.LogInformation("[Drain:land] Owner seed (TopN={Top}, FullCorpus={Full})", seedTopN, fullCorpus);
+                var ownerSeedSrc = new SqlServerPacsOwnerSource(pacsCs!, topN: seedTopN);
+                var ownerSeedS1 = await ownerSvc.LandOwnersAsync(ownerSeedSrc, operatorName, cancellationToken);
+                batchIds.Add(ownerSeedS1.LoadBatchId);
+                if (!IsCompleted(ownerSeedS1.Status))
+                    return await FailLaneAsync(LaneName, "Owner-Seed-S1", ownerSeedS1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                ownerSeedBatchId = ownerSeedS1.LoadBatchId;
+                await resume.CheckpointAsync("Owner-Seed-S1", batchIds, cancellationToken);
+            }
 
             var seedPropIds = await _db.LegacyPacsRawOwners
                 .AsNoTracking()
-                .Where(o => o.LoadBatchId == ownerSeedS1.LoadBatchId)
+                .Where(o => o.LoadBatchId == ownerSeedBatchId)
                 .Select(o => o.PropId)
                 .Distinct()
                 .ToListAsync(cancellationToken);
 
-            // Parcel chain.
-            var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs!, seedPropIds);
-            var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
-            batchIds.Add(parcelS1.LoadBatchId);
-            if (!IsCompleted(parcelS1.Status))
-                return await FailLaneAsync(LaneName, "Parcel-S1", parcelS1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 2: Parcel-S1.
+            Guid parcelS1BatchId;
+            if (resume.ShouldSkip("Parcel-S1"))
+            {
+                parcelS1BatchId = resume.GetPriorBatchId("Parcel-S1") ?? throw new InvalidOperationException("Parcel-S1 missing.");
+                _logger.LogInformation("[Drain:land] SKIP Parcel-S1; batchId={Bid}", parcelS1BatchId);
+            }
+            else
+            {
+                var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs!, seedPropIds);
+                var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
+                batchIds.Add(parcelS1.LoadBatchId);
+                if (!IsCompleted(parcelS1.Status))
+                    return await FailLaneAsync(LaneName, "Parcel-S1", parcelS1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                parcelS1BatchId = parcelS1.LoadBatchId;
+                await resume.CheckpointAsync("Parcel-S1", batchIds, cancellationToken);
+            }
 
-            var parcelSpine = await spinePromoter.PromoteAsync(parcelS1.LoadBatchId, operatorName, cancellationToken);
-            batchIds.Add(parcelSpine.PromotionLoadBatchId);
-            if (!IsCompleted(parcelSpine.Status))
-                return await FailLaneAsync(LaneName, "Parcel-Spine", parcelSpine.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 3: Parcel-Spine.
+            Guid parcelSpineBatchId;
+            if (resume.ShouldSkip("Parcel-Spine"))
+            {
+                parcelSpineBatchId = resume.GetPriorBatchId("Parcel-Spine") ?? throw new InvalidOperationException("Parcel-Spine missing.");
+                _logger.LogInformation("[Drain:land] SKIP Parcel-Spine; batchId={Bid}", parcelSpineBatchId);
+            }
+            else
+            {
+                var parcelSpine = await spinePromoter.PromoteAsync(parcelS1BatchId, operatorName, cancellationToken);
+                batchIds.Add(parcelSpine.PromotionLoadBatchId);
+                if (!IsCompleted(parcelSpine.Status))
+                    return await FailLaneAsync(LaneName, "Parcel-Spine", parcelSpine.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                parcelSpineBatchId = parcelSpine.PromotionLoadBatchId;
+                await resume.CheckpointAsync("Parcel-Spine", batchIds, cancellationToken);
+            }
 
-            var parcelCanon = await parcelCanonical.ProjectAsync(
-                parcelSpine.PromotionLoadBatchId, bentonCountyId, operatorName, cancellationToken);
-            batchIds.Add(parcelCanon.PromotionLoadBatchId);
-            if (!IsCompleted(parcelCanon.Status))
-                return await FailLaneAsync(LaneName, "Parcel-Canonical", parcelCanon.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 4: Parcel-Canonical.
+            if (resume.ShouldSkip("Parcel-Canonical"))
+            {
+                _logger.LogInformation("[Drain:land] SKIP Parcel-Canonical");
+            }
+            else
+            {
+                var parcelCanon = await parcelCanonical.ProjectAsync(
+                    parcelSpineBatchId, bentonCountyId, operatorName, cancellationToken);
+                batchIds.Add(parcelCanon.PromotionLoadBatchId);
+                if (!IsCompleted(parcelCanon.Status))
+                    return await FailLaneAsync(LaneName, "Parcel-Canonical", parcelCanon.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                await resume.CheckpointAsync("Parcel-Canonical", batchIds, cancellationToken);
+            }
 
             // Land keys.
             var spinePropIds = await _db.TruthPacsParcelSpines
                 .AsNoTracking()
-                .Where(t => t.PromotionLoadBatchId == parcelSpine.PromotionLoadBatchId)
+                .Where(t => t.PromotionLoadBatchId == parcelSpineBatchId)
                 .Select(t => t.PropId)
                 .ToListAsync(cancellationToken);
             var landKeys = spinePropIds.Select(p => (p, workingYear)).ToList();
 
-            // Supp S1.
-            var suppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs!, landKeys);
-            var suppS1 = await assocSvc.LandPropSuppAssocsAsync(suppSrc, operatorName, cancellationToken);
-            batchIds.Add(suppS1.LoadBatchId);
-            if (!IsCompleted(suppS1.Status))
-                return await FailLaneAsync(LaneName, "Supp-S1", suppS1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 5: Supp-S1.
+            Guid suppS1BatchId;
+            if (resume.ShouldSkip("Supp-S1"))
+            {
+                suppS1BatchId = resume.GetPriorBatchId("Supp-S1") ?? throw new InvalidOperationException("Supp-S1 missing.");
+                _logger.LogInformation("[Drain:land] SKIP Supp-S1; batchId={Bid}", suppS1BatchId);
+            }
+            else
+            {
+                var suppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs!, landKeys);
+                var suppS1 = await assocSvc.LandPropSuppAssocsAsync(suppSrc, operatorName, cancellationToken);
+                batchIds.Add(suppS1.LoadBatchId);
+                if (!IsCompleted(suppS1.Status))
+                    return await FailLaneAsync(LaneName, "Supp-S1", suppS1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                suppS1BatchId = suppS1.LoadBatchId;
+                await resume.CheckpointAsync("Supp-S1", batchIds, cancellationToken);
+            }
 
-            // Land S1.
-            var landSrc = new KeyedSqlServerPacsLandDetailSource(pacsCs!, landKeys);
-            var landS1 = await landSvc.LandLandDetailsAsync(landSrc, operatorName, cancellationToken);
-            batchIds.Add(landS1.LoadBatchId);
-            if (!IsCompleted(landS1.Status))
-                return await FailLaneAsync(LaneName, "Land-S1", landS1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 6: Land-S1.
+            Guid landS1BatchId;
+            int landS1RowsLanded = 0;
+            if (resume.ShouldSkip("Land-S1"))
+            {
+                landS1BatchId = resume.GetPriorBatchId("Land-S1") ?? throw new InvalidOperationException("Land-S1 missing.");
+                _logger.LogInformation("[Drain:land] SKIP Land-S1; batchId={Bid}", landS1BatchId);
+            }
+            else
+            {
+                var landSrc = new KeyedSqlServerPacsLandDetailSource(pacsCs!, landKeys);
+                var landS1 = await landSvc.LandLandDetailsAsync(landSrc, operatorName, cancellationToken);
+                batchIds.Add(landS1.LoadBatchId);
+                if (!IsCompleted(landS1.Status))
+                    return await FailLaneAsync(LaneName, "Land-S1", landS1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                landS1BatchId = landS1.LoadBatchId;
+                landS1RowsLanded = landS1.RowsLanded;
+                await resume.CheckpointAsync("Land-S1", batchIds, cancellationToken);
+            }
 
-            // Land truth.
-            var landTruth = await landTruthPromoter.PromoteAsync(
-                landS1.LoadBatchId, suppS1.LoadBatchId, operatorName, cancellationToken);
-            batchIds.Add(landTruth.PromotionLoadBatchId);
-            if (!IsCompleted(landTruth.Status))
-                return await FailLaneAsync(LaneName, "Land-Truth", landTruth.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 7: Land-Truth.
+            Guid landTruthBatchId;
+            int landTruthLandSegsPromoted = 0;
+            if (resume.ShouldSkip("Land-Truth"))
+            {
+                landTruthBatchId = resume.GetPriorBatchId("Land-Truth") ?? throw new InvalidOperationException("Land-Truth missing.");
+                _logger.LogInformation("[Drain:land] SKIP Land-Truth; batchId={Bid}", landTruthBatchId);
+            }
+            else
+            {
+                var landTruth = await landTruthPromoter.PromoteAsync(
+                    landS1BatchId, suppS1BatchId, operatorName, cancellationToken);
+                batchIds.Add(landTruth.PromotionLoadBatchId);
+                if (!IsCompleted(landTruth.Status))
+                    return await FailLaneAsync(LaneName, "Land-Truth", landTruth.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                landTruthBatchId = landTruth.PromotionLoadBatchId;
+                landTruthLandSegsPromoted = landTruth.LandSegsPromoted;
+                await resume.CheckpointAsync("Land-Truth", batchIds, cancellationToken);
+            }
 
-            // Land canonical.
-            var landCanon = await landCanonicalProjector.ProjectAsync(
-                landTruth.PromotionLoadBatchId, operatorName, cancellationToken);
-            batchIds.Add(landCanon.PromotionLoadBatchId);
-            if (!IsCompleted(landCanon.Status))
-                return await FailLaneAsync(LaneName, "Land-Canonical", landCanon.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 8: Land-Canonical.
+            int landCanonLandsProjected = 0;
+            if (resume.ShouldSkip("Land-Canonical"))
+            {
+                _logger.LogInformation("[Drain:land] SKIP Land-Canonical");
+            }
+            else
+            {
+                var landCanon = await landCanonicalProjector.ProjectAsync(
+                    landTruthBatchId, operatorName, cancellationToken);
+                batchIds.Add(landCanon.PromotionLoadBatchId);
+                if (!IsCompleted(landCanon.Status))
+                    return await FailLaneAsync(LaneName, "Land-Canonical", landCanon.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                landCanonLandsProjected = landCanon.LandsProjected;
+                await resume.CheckpointAsync("Land-Canonical", batchIds, cancellationToken);
+            }
+
+            rowsLanded = landS1RowsLanded;
+            rowsPromotedToTruth = landTruthLandSegsPromoted;
+            rowsCanonicalized = landCanonLandsProjected;
 
             return await OkLaneAsync(
                 LaneName,
                 batchIds,
-                rowsLanded: landS1.RowsLanded,
-                rowsPromotedToTruth: landTruth.LandSegsPromoted,
-                rowsCanonicalized: landCanon.LandsProjected,
+                rowsLanded: rowsLanded,
+                rowsPromotedToTruth: rowsPromotedToTruth,
+                rowsCanonicalized: rowsCanonicalized,
                 startedAt,
                 quarantineBefore,
                 cancellationToken);
@@ -669,52 +1273,98 @@ public class DoctrineDrainController : ControllerBase
 
         var (operatorName, _, fullCorpus, topN) = NormalizeRequest(request, LaneName);
         var startedAt = DateTime.UtcNow;
-        var batchIds = new List<Guid>();
         var quarantineBefore = await CountQuarantineAsync(cancellationToken);
+        // SYNC-COMPLETE-2-V2.
+        var resume = await BuildResumeContextAsync(LaneName, request, cancellationToken);
+        var batchIds = new List<Guid>();
+        for (var i = 0; i < LaneStageOrder.Stages[LaneName].Count; i++)
+        {
+            var prior = resume.GetPriorBatchId(LaneStageOrder.Stages[LaneName][i]);
+            if (prior is null) break;
+            batchIds.Add(prior.Value);
+        }
+        int rowsLanded = 0, rowsPromotedToTruth = 0, rowsCanonicalized = 0;
 
         try
         {
             var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
             var saleTopN = fullCorpus ? (int?)null : (topN ?? 500);
 
-            // Sale S1 (independent seed; sales correlate weakly with the
-            // parcel-anchored owner set, so we don't seed off owners).
-            _logger.LogInformation("[Drain:sales] Sale S1 (TopN={Top}, FullCorpus={Full})", saleTopN, fullCorpus);
-            var saleSrc = new SqlServerPacsSaleSource(pacsCs!, topN: saleTopN);
-            var saleS1 = await saleSvc.LandSalesAsync(saleSrc, operatorName, cancellationToken);
-            batchIds.Add(saleS1.LoadBatchId);
-            if (!IsCompleted(saleS1.Status))
-                return await FailLaneAsync(LaneName, "Sale-S1", saleS1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 1: Sale-S1.
+            Guid saleS1BatchId;
+            int saleS1RowsLanded = 0;
+            if (resume.ShouldSkip("Sale-S1"))
+            {
+                saleS1BatchId = resume.GetPriorBatchId("Sale-S1") ?? throw new InvalidOperationException("Sale-S1 missing.");
+                _logger.LogInformation("[Drain:sales] SKIP Sale-S1; batchId={Bid}", saleS1BatchId);
+            }
+            else
+            {
+                _logger.LogInformation("[Drain:sales] Sale S1 (TopN={Top}, FullCorpus={Full})", saleTopN, fullCorpus);
+                var saleSrc = new SqlServerPacsSaleSource(pacsCs!, topN: saleTopN);
+                var saleS1 = await saleSvc.LandSalesAsync(saleSrc, operatorName, cancellationToken);
+                batchIds.Add(saleS1.LoadBatchId);
+                if (!IsCompleted(saleS1.Status))
+                    return await FailLaneAsync(LaneName, "Sale-S1", saleS1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                saleS1BatchId = saleS1.LoadBatchId;
+                saleS1RowsLanded = saleS1.RowsLanded;
+                await resume.CheckpointAsync("Sale-S1", batchIds, cancellationToken);
+            }
 
-            // Keyed supp S1 from the sale batch's (prop_id, prop_val_yr).
+            // Build supp keys from sale batch (independent of skip).
             var saleSuppRaw = await _db.LegacyPacsRawSales
                 .AsNoTracking()
-                .Where(s => s.LoadBatchId == saleS1.LoadBatchId)
+                .Where(s => s.LoadBatchId == saleS1BatchId)
                 .Select(s => new { s.PropId, s.PropValYr })
                 .Distinct()
                 .ToListAsync(cancellationToken);
             var saleSuppKeys = saleSuppRaw.Select(k => (k.PropId, k.PropValYr)).ToList();
-            var saleSuppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs!, saleSuppKeys);
-            var saleSuppS1 = await assocSvc.LandPropSuppAssocsAsync(saleSuppSrc, operatorName, cancellationToken);
-            batchIds.Add(saleSuppS1.LoadBatchId);
-            if (!IsCompleted(saleSuppS1.Status))
-                return await FailLaneAsync(LaneName, "Sale-Supp-S1", saleSuppS1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
 
-            // Sale truth.
-            var saleTruth = await saleTruthPromoter.PromoteAsync(
-                saleS1.LoadBatchId, saleSuppS1.LoadBatchId, operatorName, cancellationToken);
-            batchIds.Add(saleTruth.PromotionLoadBatchId);
-            if (!IsCompleted(saleTruth.Status))
-                return await FailLaneAsync(LaneName, "Sale-Truth", saleTruth.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 2: Sale-Supp-S1.
+            Guid saleSuppS1BatchId;
+            if (resume.ShouldSkip("Sale-Supp-S1"))
+            {
+                saleSuppS1BatchId = resume.GetPriorBatchId("Sale-Supp-S1") ?? throw new InvalidOperationException("Sale-Supp-S1 missing.");
+                _logger.LogInformation("[Drain:sales] SKIP Sale-Supp-S1; batchId={Bid}", saleSuppS1BatchId);
+            }
+            else
+            {
+                var saleSuppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs!, saleSuppKeys);
+                var saleSuppS1 = await assocSvc.LandPropSuppAssocsAsync(saleSuppSrc, operatorName, cancellationToken);
+                batchIds.Add(saleSuppS1.LoadBatchId);
+                if (!IsCompleted(saleSuppS1.Status))
+                    return await FailLaneAsync(LaneName, "Sale-Supp-S1", saleSuppS1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                saleSuppS1BatchId = saleSuppS1.LoadBatchId;
+                await resume.CheckpointAsync("Sale-Supp-S1", batchIds, cancellationToken);
+            }
 
-            // Targeted parcel chain for the promoted sales' prop_ids
-            // (sale canonical needs parcel xrefs).
+            // Stage 3: Sale-Truth.
+            Guid saleTruthBatchId;
+            int saleTruthSalesPromoted = 0;
+            if (resume.ShouldSkip("Sale-Truth"))
+            {
+                saleTruthBatchId = resume.GetPriorBatchId("Sale-Truth") ?? throw new InvalidOperationException("Sale-Truth missing.");
+                _logger.LogInformation("[Drain:sales] SKIP Sale-Truth; batchId={Bid}", saleTruthBatchId);
+            }
+            else
+            {
+                var saleTruth = await saleTruthPromoter.PromoteAsync(
+                    saleS1BatchId, saleSuppS1BatchId, operatorName, cancellationToken);
+                batchIds.Add(saleTruth.PromotionLoadBatchId);
+                if (!IsCompleted(saleTruth.Status))
+                    return await FailLaneAsync(LaneName, "Sale-Truth", saleTruth.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                saleTruthBatchId = saleTruth.PromotionLoadBatchId;
+                saleTruthSalesPromoted = saleTruth.SalesPromoted;
+                await resume.CheckpointAsync("Sale-Truth", batchIds, cancellationToken);
+            }
+
+            // Targeted parcel chain only when there are promoted sales.
             var promotedSalePropIds = await _db.TruthPacsSales
                 .AsNoTracking()
-                .Where(t => t.PromotionLoadBatchId == saleTruth.PromotionLoadBatchId)
+                .Where(t => t.PromotionLoadBatchId == saleTruthBatchId)
                 .Select(t => t.PropId)
                 .Distinct()
                 .ToListAsync(cancellationToken);
@@ -722,41 +1372,87 @@ public class DoctrineDrainController : ControllerBase
             int salesProjected = 0;
             if (promotedSalePropIds.Count > 0)
             {
-                var saleParcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs!, promotedSalePropIds);
-                var saleParcelS1 = await propSvc.LandPropertiesAsync(saleParcelSrc, operatorName, cancellationToken);
-                batchIds.Add(saleParcelS1.LoadBatchId);
-                if (!IsCompleted(saleParcelS1.Status))
-                    return await FailLaneAsync(LaneName, "Sale-Parcel-S1", saleParcelS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                // Stage 4: Sale-Parcel-S1.
+                Guid saleParcelS1BatchId;
+                if (resume.ShouldSkip("Sale-Parcel-S1"))
+                {
+                    saleParcelS1BatchId = resume.GetPriorBatchId("Sale-Parcel-S1") ?? throw new InvalidOperationException("Sale-Parcel-S1 missing.");
+                    _logger.LogInformation("[Drain:sales] SKIP Sale-Parcel-S1; batchId={Bid}", saleParcelS1BatchId);
+                }
+                else
+                {
+                    var saleParcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs!, promotedSalePropIds);
+                    var saleParcelS1 = await propSvc.LandPropertiesAsync(saleParcelSrc, operatorName, cancellationToken);
+                    batchIds.Add(saleParcelS1.LoadBatchId);
+                    if (!IsCompleted(saleParcelS1.Status))
+                        return await FailLaneAsync(LaneName, "Sale-Parcel-S1", saleParcelS1.ErrorSummary,
+                            batchIds, startedAt, quarantineBefore, cancellationToken);
+                    saleParcelS1BatchId = saleParcelS1.LoadBatchId;
+                    await resume.CheckpointAsync("Sale-Parcel-S1", batchIds, cancellationToken);
+                }
 
-                var saleParcelSpine = await spinePromoter.PromoteAsync(saleParcelS1.LoadBatchId, operatorName, cancellationToken);
-                batchIds.Add(saleParcelSpine.PromotionLoadBatchId);
-                if (!IsCompleted(saleParcelSpine.Status))
-                    return await FailLaneAsync(LaneName, "Sale-Parcel-Spine", saleParcelSpine.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                // Stage 5: Sale-Parcel-Spine.
+                Guid saleParcelSpineBatchId;
+                if (resume.ShouldSkip("Sale-Parcel-Spine"))
+                {
+                    saleParcelSpineBatchId = resume.GetPriorBatchId("Sale-Parcel-Spine") ?? throw new InvalidOperationException("Sale-Parcel-Spine missing.");
+                    _logger.LogInformation("[Drain:sales] SKIP Sale-Parcel-Spine; batchId={Bid}", saleParcelSpineBatchId);
+                }
+                else
+                {
+                    var saleParcelSpine = await spinePromoter.PromoteAsync(saleParcelS1BatchId, operatorName, cancellationToken);
+                    batchIds.Add(saleParcelSpine.PromotionLoadBatchId);
+                    if (!IsCompleted(saleParcelSpine.Status))
+                        return await FailLaneAsync(LaneName, "Sale-Parcel-Spine", saleParcelSpine.ErrorSummary,
+                            batchIds, startedAt, quarantineBefore, cancellationToken);
+                    saleParcelSpineBatchId = saleParcelSpine.PromotionLoadBatchId;
+                    await resume.CheckpointAsync("Sale-Parcel-Spine", batchIds, cancellationToken);
+                }
 
-                var saleParcelCanon = await parcelCanonical.ProjectAsync(
-                    saleParcelSpine.PromotionLoadBatchId, bentonCountyId, operatorName, cancellationToken);
-                batchIds.Add(saleParcelCanon.PromotionLoadBatchId);
-                if (!IsCompleted(saleParcelCanon.Status))
-                    return await FailLaneAsync(LaneName, "Sale-Parcel-Canonical", saleParcelCanon.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                // Stage 6: Sale-Parcel-Canonical.
+                if (resume.ShouldSkip("Sale-Parcel-Canonical"))
+                {
+                    _logger.LogInformation("[Drain:sales] SKIP Sale-Parcel-Canonical");
+                }
+                else
+                {
+                    var saleParcelCanon = await parcelCanonical.ProjectAsync(
+                        saleParcelSpineBatchId, bentonCountyId, operatorName, cancellationToken);
+                    batchIds.Add(saleParcelCanon.PromotionLoadBatchId);
+                    if (!IsCompleted(saleParcelCanon.Status))
+                        return await FailLaneAsync(LaneName, "Sale-Parcel-Canonical", saleParcelCanon.ErrorSummary,
+                            batchIds, startedAt, quarantineBefore, cancellationToken);
+                    await resume.CheckpointAsync("Sale-Parcel-Canonical", batchIds, cancellationToken);
+                }
 
-                var saleCanon = await saleCanonicalProjector.ProjectAsync(
-                    saleTruth.PromotionLoadBatchId, operatorName, cancellationToken);
-                batchIds.Add(saleCanon.PromotionLoadBatchId);
-                if (!IsCompleted(saleCanon.Status))
-                    return await FailLaneAsync(LaneName, "Sale-Canonical", saleCanon.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
-                salesProjected = saleCanon.SalesProjected;
+                // Stage 7: Sale-Canonical.
+                if (resume.ShouldSkip("Sale-Canonical"))
+                {
+                    _logger.LogInformation("[Drain:sales] SKIP Sale-Canonical");
+                }
+                else
+                {
+                    var saleCanon = await saleCanonicalProjector.ProjectAsync(
+                        saleTruthBatchId, operatorName, cancellationToken);
+                    batchIds.Add(saleCanon.PromotionLoadBatchId);
+                    if (!IsCompleted(saleCanon.Status))
+                        return await FailLaneAsync(LaneName, "Sale-Canonical", saleCanon.ErrorSummary,
+                            batchIds, startedAt, quarantineBefore, cancellationToken);
+                    salesProjected = saleCanon.SalesProjected;
+                    await resume.CheckpointAsync("Sale-Canonical", batchIds, cancellationToken);
+                }
             }
+
+            rowsLanded = saleS1RowsLanded;
+            rowsPromotedToTruth = saleTruthSalesPromoted;
+            rowsCanonicalized = salesProjected;
 
             return await OkLaneAsync(
                 LaneName,
                 batchIds,
-                rowsLanded: saleS1.RowsLanded,
-                rowsPromotedToTruth: saleTruth.SalesPromoted,
-                rowsCanonicalized: salesProjected,
+                rowsLanded: rowsLanded,
+                rowsPromotedToTruth: rowsPromotedToTruth,
+                rowsCanonicalized: rowsCanonicalized,
                 startedAt,
                 quarantineBefore,
                 cancellationToken);
@@ -791,42 +1487,84 @@ public class DoctrineDrainController : ControllerBase
         const string LaneName = "geometry";
         var (operatorName, _, _, _) = NormalizeRequest(request, LaneName);
         var startedAt = DateTime.UtcNow;
-        var batchIds = new List<Guid>();
         var quarantineBefore = await CountQuarantineAsync(cancellationToken);
+        // SYNC-COMPLETE-2-V2.
+        var resume = await BuildResumeContextAsync(LaneName, request, cancellationToken);
+        var batchIds = new List<Guid>();
+        for (var i = 0; i < LaneStageOrder.Stages[LaneName].Count; i++)
+        {
+            var prior = resume.GetPriorBatchId(LaneStageOrder.Stages[LaneName][i]);
+            if (prior is null) break;
+            batchIds.Add(prior.Value);
+        }
+        int rowsLanded = 0, rowsPromotedToTruth = 0, rowsCanonicalized = 0;
 
         try
         {
             var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
 
-            // D1 raw landing.
-            _logger.LogInformation("[Drain:geometry] D1 ArcGIS landing for county={Cid}", bentonCountyId);
-            var d1 = await rawLandingSvc.LandParcelGeomsAsync(bentonCountyId, operatorName, cancellationToken);
-            // ArcGisRawLandingResult exposes a LoadBatchId; record it for audit.
-            batchIds.Add(d1.LoadBatchId);
-            if (!IsCompleted(d1.Status))
-                return await FailLaneAsync(LaneName, "ArcGis-D1", d1.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 1: ArcGis-D1.
+            int d1FeaturesLanded = 0;
+            if (resume.ShouldSkip("ArcGis-D1"))
+            {
+                _logger.LogInformation("[Drain:geometry] SKIP ArcGis-D1");
+            }
+            else
+            {
+                _logger.LogInformation("[Drain:geometry] D1 ArcGIS landing for county={Cid}", bentonCountyId);
+                var d1 = await rawLandingSvc.LandParcelGeomsAsync(bentonCountyId, operatorName, cancellationToken);
+                batchIds.Add(d1.LoadBatchId);
+                if (!IsCompleted(d1.Status))
+                    return await FailLaneAsync(LaneName, "ArcGis-D1", d1.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                d1FeaturesLanded = d1.FeaturesLanded;
+                await resume.CheckpointAsync("ArcGis-D1", batchIds, cancellationToken);
+            }
 
-            // D2 truth promotion.
-            var d2 = await truthPromotionSvc.PromoteCountyAsync(bentonCountyId, operatorName, cancellationToken);
-            batchIds.Add(d2.PromotionLoadBatchId);
-            if (!IsCompleted(d2.Status))
-                return await FailLaneAsync(LaneName, "ArcGis-D2", d2.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 2: ArcGis-D2.
+            int d2RowsPromoted = 0;
+            if (resume.ShouldSkip("ArcGis-D2"))
+            {
+                _logger.LogInformation("[Drain:geometry] SKIP ArcGis-D2");
+            }
+            else
+            {
+                var d2 = await truthPromotionSvc.PromoteCountyAsync(bentonCountyId, operatorName, cancellationToken);
+                batchIds.Add(d2.PromotionLoadBatchId);
+                if (!IsCompleted(d2.Status))
+                    return await FailLaneAsync(LaneName, "ArcGis-D2", d2.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                d2RowsPromoted = d2.RowsPromoted;
+                await resume.CheckpointAsync("ArcGis-D2", batchIds, cancellationToken);
+            }
 
-            // D3 canonical projection.
-            var d3 = await canonicalProjector.ProjectCountyAsync(bentonCountyId, operatorName, cancellationToken);
-            batchIds.Add(d3.PromotionLoadBatchId);
-            if (!IsCompleted(d3.Status))
-                return await FailLaneAsync(LaneName, "ArcGis-D3", d3.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+            // Stage 3: ArcGis-D3.
+            int d3RowsProjected = 0;
+            if (resume.ShouldSkip("ArcGis-D3"))
+            {
+                _logger.LogInformation("[Drain:geometry] SKIP ArcGis-D3");
+            }
+            else
+            {
+                var d3 = await canonicalProjector.ProjectCountyAsync(bentonCountyId, operatorName, cancellationToken);
+                batchIds.Add(d3.PromotionLoadBatchId);
+                if (!IsCompleted(d3.Status))
+                    return await FailLaneAsync(LaneName, "ArcGis-D3", d3.ErrorSummary,
+                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                d3RowsProjected = d3.RowsProjected;
+                await resume.CheckpointAsync("ArcGis-D3", batchIds, cancellationToken);
+            }
+
+            rowsLanded = d1FeaturesLanded;
+            rowsPromotedToTruth = d2RowsPromoted;
+            rowsCanonicalized = d3RowsProjected;
 
             return await OkLaneAsync(
                 LaneName,
                 batchIds,
-                rowsLanded: d1.FeaturesLanded,
-                rowsPromotedToTruth: d2.RowsPromoted,
-                rowsCanonicalized: d3.RowsProjected,
+                rowsLanded: rowsLanded,
+                rowsPromotedToTruth: rowsPromotedToTruth,
+                rowsCanonicalized: rowsCanonicalized,
                 startedAt,
                 quarantineBefore,
                 cancellationToken);
@@ -1064,9 +1802,24 @@ public class DoctrineDrainController : ControllerBase
     /// (or a per-lane safe default if TopN is also null).</param>
     /// <param name="TopN">Override the per-lane safe-default sample size. Only
     /// effective when <paramref name="FullCorpus"/> is false.</param>
+    /// <param name="LaneResultId">SYNC-COMPLETE-2-V2: when supplied (typically by
+    /// the orchestrator's <c>HttpCorpusLaneRunner</c>), the lane endpoint
+    /// writes a per-stage checkpoint to the matching
+    /// <c>tf_workbench.full_corpus_lane_result</c> row after each successful
+    /// stage so a crash mid-lane can resume from the next stage. Manual
+    /// operator curls leave this null and get the same behavior as today.</param>
+    /// <param name="ResumeFromStage">SYNC-COMPLETE-2-V2: when supplied, the lane
+    /// endpoint skips every stage at-or-before this one in the lane's canonical
+    /// stage order (see <see cref="TerraFusion.Core.Sync.Corpus.LaneStageOrder"/>),
+    /// loading downstream-needed batch ids from the existing lane row's
+    /// persisted <c>BatchIdsJson</c>. Ignored when <see cref="LaneResultId"/>
+    /// is null (no row to load from). Unknown stage names → no skip
+    /// (full lane rerun, which is safe).</param>
     public sealed record DoctrineDrainRequest(
         string? OperatorName,
         int? WorkingYear,
         bool? FullCorpus,
-        int? TopN);
+        int? TopN,
+        Guid? LaneResultId = null,
+        string? ResumeFromStage = null);
 }
