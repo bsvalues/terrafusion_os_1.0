@@ -57,12 +57,31 @@ public sealed class HttpCorpusLaneRunner : ICorpusLaneRunner
         _logger = logger;
     }
 
+    public Task<CorpusLaneRunResult> RunLaneAsync(
+        string lane,
+        string operatorName,
+        short workingYear,
+        bool fullCorpus,
+        int? topN,
+        CancellationToken cancellationToken)
+        => RunLaneAsync(lane, operatorName, workingYear, fullCorpus, topN,
+            laneResultId: null, resumeFromStage: null, cancellationToken);
+
+    /// <summary>
+    /// SYNC-COMPLETE-2-V2: stage-level resume-aware lane invocation.
+    /// Always forwards <paramref name="laneResultId"/> when supplied
+    /// (so the lane endpoint can write per-stage checkpoints back),
+    /// and forwards <paramref name="resumeFromStage"/> only when
+    /// non-null. Backwards-compatible with the no-arg overload above.
+    /// </summary>
     public async Task<CorpusLaneRunResult> RunLaneAsync(
         string lane,
         string operatorName,
         short workingYear,
         bool fullCorpus,
         int? topN,
+        Guid? laneResultId,
+        string? resumeFromStage,
         CancellationToken cancellationToken)
     {
         if (!CorpusReconciliationPolicy.LaneOrder.Contains(lane, StringComparer.OrdinalIgnoreCase))
@@ -81,17 +100,24 @@ public sealed class HttpCorpusLaneRunner : ICorpusLaneRunner
             // Lane drains can take hours on a full corpus run.
             http.Timeout = Timeout.InfiniteTimeSpan;
 
+            // Body shape mirrors DoctrineDrainController.DoctrineDrainRequest.
+            // We always include LaneResultId when known so the endpoint can
+            // checkpoint per-stage; ResumeFromStage is only included on
+            // retries where a prior LastCompletedStage was persisted.
             var body = new
             {
                 operatorName,
                 workingYear = (int)workingYear,
                 fullCorpus,
                 topN,
+                laneResultId,
+                resumeFromStage,
             };
 
             _logger.LogInformation(
-                "[CorpusRunner] Invoking lane={Lane} operator={Op} year={Yr} fullCorpus={Full} topN={Top}",
-                lane, operatorName, workingYear, fullCorpus, topN);
+                "[CorpusRunner] Invoking lane={Lane} operator={Op} year={Yr} fullCorpus={Full} topN={Top} laneResultId={Lid} resumeFromStage={Resume}",
+                lane, operatorName, workingYear, fullCorpus, topN,
+                laneResultId, resumeFromStage ?? "(none)");
 
             var response = await http.PostAsJsonAsync(url, body, cancellationToken).ConfigureAwait(false);
             var responseText = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);

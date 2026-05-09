@@ -272,8 +272,13 @@ public sealed class FullCorpusOrchestratorHostedService : IHostedService, IDispo
     private async Task<bool> ExecuteLaneAsync(
         Guid runId, string lane, string operatorName, short workingYear, CancellationToken ct)
     {
-        // Mark lane Running.
+        // SYNC-COMPLETE-2-V2: read the lane row's prior status +
+        // LastCompletedStage BEFORE flipping to Running. We pass
+        // ResumeFromStage to the runner only when the prior status was
+        // Failed AND a checkpoint was persisted; otherwise the lane
+        // endpoint runs from the start (today's behavior).
         Guid laneResultId;
+        string? resumeFromStage = null;
         await using (var scope = _scopeFactory.CreateAsyncScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<TerraFusionDbContext>();
@@ -281,20 +286,33 @@ public sealed class FullCorpusOrchestratorHostedService : IHostedService, IDispo
                 .FirstOrDefaultAsync(l => l.RunId == runId && l.Lane == lane, ct)
                 .ConfigureAwait(false);
             if (laneRow is null) return false;
+
+            if (string.Equals(laneRow.Status, "Failed", StringComparison.OrdinalIgnoreCase) &&
+                !string.IsNullOrEmpty(laneRow.LastCompletedStage))
+            {
+                resumeFromStage = laneRow.LastCompletedStage;
+                _logger.LogInformation(
+                    "FullCorpusOrchestratorHostedService: lane={Lane} resuming after stage={Stage}.",
+                    lane, resumeFromStage);
+            }
+
             laneRow.Status = "Running";
             laneRow.StartedAt = DateTime.UtcNow;
             await db.SaveChangesAsync(ct).ConfigureAwait(false);
             laneResultId = laneRow.LaneResultId;
         }
 
-        // Run the lane.
+        // Run the lane (stage-resume-aware overload).
         CorpusLaneRunResult laneResult;
         await using (var scope = _scopeFactory.CreateAsyncScope())
         {
             var runner = scope.ServiceProvider.GetRequiredService<ICorpusLaneRunner>();
             laneResult = await runner.RunLaneAsync(
                 lane, operatorName, workingYear,
-                fullCorpus: true, topN: null, ct).ConfigureAwait(false);
+                fullCorpus: true, topN: null,
+                laneResultId: laneResultId,
+                resumeFromStage: resumeFromStage,
+                cancellationToken: ct).ConfigureAwait(false);
         }
 
         // Persist lane result.

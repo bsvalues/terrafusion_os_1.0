@@ -29,6 +29,8 @@ public sealed class FullCorpusLaneResultConfiguration
         builder.Property(x => x.GateSummaryJson);
         builder.Property(x => x.QuarantineDeltaJson);
         builder.Property(x => x.ErrorMessage).HasMaxLength(4000);
+        // SYNC-COMPLETE-2-V2: stage-level resume checkpoint.
+        builder.Property(x => x.LastCompletedStage).HasMaxLength(64);
 
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.UpdatedAt).IsRequired();

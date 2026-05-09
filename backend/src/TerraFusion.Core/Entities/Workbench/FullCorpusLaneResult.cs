@@ -49,6 +49,17 @@ public sealed class FullCorpusLaneResult
     /// <summary>Lane error summary on <c>Status="Failed"</c>.</summary>
     public string? ErrorMessage { get; set; }
 
+    /// <summary>
+    /// SYNC-COMPLETE-2-V2: stage-level resume checkpoint. The lane
+    /// endpoint persists this after each stage completes successfully
+    /// so a crash mid-lane can resume from the next stage rather than
+    /// re-burning hours of completed work. NULL means "no stage has
+    /// completed yet" (fresh start). The value is one of the lane's
+    /// canonical stage names from
+    /// <see cref="TerraFusion.Core.Sync.Corpus.LaneStageOrder"/>.
+    /// </summary>
+    public string? LastCompletedStage { get; set; }
+
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public string? CreatedBy { get; set; }
