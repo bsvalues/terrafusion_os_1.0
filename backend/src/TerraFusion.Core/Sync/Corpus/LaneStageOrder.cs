@@ -24,9 +24,37 @@ namespace TerraFusion.Core.Sync.Corpus;
 /// <para>Unknown lanes / unknown stage names → no skip (fail-safe).
 /// A typo in <c>ResumeFromStage</c> means we re-run the lane from
 /// the start, which is equivalent to today's behavior.</para>
+///
+/// <para>SYNC-COMPLETE-2-V3: the improvement lane's <c>ImprvAttr-S1</c>
+/// stage is year-sliced internally to fix ChangeTracker bloat on
+/// full-corpus drains. The substages are named
+/// <c>ImprvAttr-S1-Y{year}</c> and are NOT enumerated in
+/// <see cref="Stages"/> because the year list is determined at runtime
+/// from the seed corpus. The substages slot logically between
+/// <c>ImprvDetail-S1</c> and <c>Imprv-Truth</c>, ordered ascending by
+/// numeric year (NOT lexically — <c>Y1995</c> &lt; <c>Y2010</c> &lt;
+/// <c>Y2026</c>). <see cref="ShouldSkip"/> recognizes the substage
+/// pattern and applies chronological ordering rules; cross-comparisons
+/// with named stages place the substages in the same logical position
+/// as the parent <c>ImprvAttr-S1</c> entry.</para>
 /// </summary>
 public static class LaneStageOrder
 {
+    /// <summary>
+    /// SYNC-COMPLETE-2-V3 substage name prefix for the year-sliced
+    /// <c>ImprvAttr-S1</c> stage of the improvement lane. Substage
+    /// names are <c>ImprvAttr-S1-Y{year}</c> (e.g.
+    /// <c>ImprvAttr-S1-Y2026</c>).
+    /// </summary>
+    public const string ImprvAttrYearSubstagePrefix = "ImprvAttr-S1-Y";
+
+    /// <summary>
+    /// Parent stage name for the year-sliced substages. Used as the
+    /// logical anchor when comparing a year-substage with a named
+    /// stage in <see cref="ShouldSkip"/>.
+    /// </summary>
+    public const string ImprvAttrParentStage = "ImprvAttr-S1";
+
     /// <summary>
     /// Per-lane ordered list of stage names. Ordering matters: skip
     /// is "stage index ≤ resume index" so stages that have already
@@ -66,6 +94,14 @@ public static class LaneStageOrder
             // improvement: owner-anchored seed → parcel chain → supp +
             // (non-blocking) propertyVal + landDetail → imprv landings
             // → imprv truth → imprv canonical.
+            //
+            // SYNC-COMPLETE-2-V3 note: ImprvAttr-S1 is the static
+            // parent slot in this list, but the controller runs it as
+            // a dynamic sequence of ImprvAttr-S1-Y{year} substages
+            // internally. The substages are NOT listed here because
+            // the year list is determined at runtime from
+            // legacy_pacs_raw.imprv. ShouldSkip handles substage names
+            // specially via chronological year comparison.
             ["improvement"] = new[]
             {
                 "Owner-Seed-S1",
@@ -130,6 +166,16 @@ public static class LaneStageOrder
     ///   <item>Otherwise: skip iff <c>stageIndex ≤ resumeIndex</c> (stages
     ///   at or before the last-completed checkpoint are already done).</item>
     /// </list>
+    ///
+    /// <para>SYNC-COMPLETE-2-V3: when either argument is a year-substage
+    /// of the form <c>ImprvAttr-S1-Y{year}</c>, the substage is anchored
+    /// at the same logical position as <c>ImprvAttr-S1</c> for
+    /// cross-comparisons with named stages. Substage-vs-substage uses
+    /// chronological year comparison (numeric, not lexical: Y2010 &lt;
+    /// Y2026, NOT "Y10" &lt; "Y2"). The legacy monolithic LCS value
+    /// <c>"ImprvAttr-S1"</c> (no year suffix) is treated as "before all
+    /// year-substages" so every year runs from the start of the stage on
+    /// resume.</para>
     /// </summary>
     public static bool ShouldSkip(string laneName, string stageName, string? resumeFromStage)
     {
@@ -137,11 +183,75 @@ public static class LaneStageOrder
         if (string.IsNullOrEmpty(laneName) || string.IsNullOrEmpty(stageName)) return false;
         if (!Stages.TryGetValue(laneName, out var order)) return false;
 
-        var stageIdx = IndexOf(order, stageName);
-        var resumeIdx = IndexOf(order, resumeFromStage);
-        if (stageIdx < 0 || resumeIdx < 0) return false;
-        return stageIdx <= resumeIdx;
+        var stageIsSubstage = IsImprvAttrYearSubstage(stageName, out var stageYear);
+        var resumeIsSubstage = IsImprvAttrYearSubstage(resumeFromStage, out var resumeYear);
+
+        // Both year-substages → chronological year compare. The
+        // substage range is "open" — Y{lower} ≤ Y{higher} → skip.
+        if (stageIsSubstage && resumeIsSubstage)
+        {
+            return stageYear <= resumeYear;
+        }
+
+        // Resume is a named stage AND the stageName is a year-substage:
+        // the substage lives at the ImprvAttr-S1 anchor index. Skip iff
+        // the named resume stage is at-or-after that anchor index.
+        // Special case: legacy LCS "ImprvAttr-S1" (no year) means
+        // "before any year ran" → year-substages do NOT skip.
+        if (stageIsSubstage)
+        {
+            if (string.Equals(resumeFromStage, ImprvAttrParentStage, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+            var anchorIdx = IndexOf(order, ImprvAttrParentStage);
+            var resumeIdx = IndexOf(order, resumeFromStage);
+            if (anchorIdx < 0 || resumeIdx < 0) return false;
+            return anchorIdx <= resumeIdx;
+        }
+
+        // stageName is a named stage AND resume is a year-substage:
+        // any named stage at-or-before the ImprvAttr-S1 anchor index
+        // is "already done"; named stages AFTER the anchor are NOT
+        // skipped (they haven't run yet — Imprv-Truth hasn't fired).
+        if (resumeIsSubstage)
+        {
+            var anchorIdx = IndexOf(order, ImprvAttrParentStage);
+            var stageIdx = IndexOf(order, stageName);
+            if (anchorIdx < 0 || stageIdx < 0) return false;
+            return stageIdx < anchorIdx;
+        }
+
+        // Both are named stages → original position-based skip math.
+        var sIdx = IndexOf(order, stageName);
+        var rIdx = IndexOf(order, resumeFromStage);
+        if (sIdx < 0 || rIdx < 0) return false;
+        return sIdx <= rIdx;
     }
+
+    /// <summary>
+    /// Parses a stage name as an <c>ImprvAttr-S1-Y{year}</c> substage.
+    /// Returns true when the name matches the prefix and the suffix
+    /// parses as a valid integer year; the parsed year is returned via
+    /// <paramref name="year"/>. Case-insensitive on the prefix.
+    /// </summary>
+    public static bool IsImprvAttrYearSubstage(string? stageName, out int year)
+    {
+        year = 0;
+        if (string.IsNullOrEmpty(stageName)) return false;
+        if (!stageName.StartsWith(ImprvAttrYearSubstagePrefix, StringComparison.OrdinalIgnoreCase))
+            return false;
+        var suffix = stageName.Substring(ImprvAttrYearSubstagePrefix.Length);
+        return int.TryParse(suffix, System.Globalization.NumberStyles.Integer,
+            System.Globalization.CultureInfo.InvariantCulture, out year);
+    }
+
+    /// <summary>
+    /// Build a year-substage name from a numeric year. Inverse of
+    /// <see cref="IsImprvAttrYearSubstage"/>.
+    /// </summary>
+    public static string FormatImprvAttrYearSubstage(int year)
+        => ImprvAttrYearSubstagePrefix + year.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
     private static int IndexOf(IReadOnlyList<string> list, string value)
     {
