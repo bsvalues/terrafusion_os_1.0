@@ -197,7 +197,8 @@ public sealed class FullCorpusOrchestrator : IFullCorpusOrchestrator
         l.CountsJson,
         l.GateSummaryJson,
         l.QuarantineDeltaJson,
-        l.ErrorMessage);
+        l.ErrorMessage,
+        l.LastCompletedStage);
 
     private static CorpusReconciliationSnapshot ToSnapshot(FullCorpusReconciliation r) => new(
         r.ReconciliationId,

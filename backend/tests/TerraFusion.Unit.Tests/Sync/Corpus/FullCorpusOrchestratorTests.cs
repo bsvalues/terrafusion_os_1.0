@@ -174,6 +174,35 @@ public sealed class FullCorpusOrchestratorTests : IDisposable
     }
 
     [Fact]
+    public async Task GetStatusAsync_surfaces_LastCompletedStage_from_db_row()
+    {
+        // SYNC-COMPLETE-2-V2: stage-resume persists LastCompletedStage on
+        // the lane row; the API status projection must expose it so
+        // operators querying GET /api/sync/corpus/{runId} see the
+        // checkpoint, not null.
+        var svc = Build();
+        var start = await svc.StartAsync("op", 2026, CancellationToken.None);
+
+        var improvementLane = await _db.FullCorpusLaneResults
+            .SingleAsync(l => l.RunId == start.RunId && l.Lane == "improvement");
+        improvementLane.LastCompletedStage = "promote-truth";
+        await _db.SaveChangesAsync();
+
+        var status = await svc.GetStatusAsync(start.RunId, CancellationToken.None);
+
+        status.Outcome.Should().Be(CorpusOutcome.Ok);
+        status.Lanes.Should().NotBeNull();
+        var snapshot = status.Lanes!.Single(s => s.Lane == "improvement");
+        snapshot.LastCompletedStage.Should().Be("promote-truth");
+
+        // Other lanes still report null — fresh-start sentinel preserved.
+        status.Lanes!
+            .Where(s => s.Lane != "improvement")
+            .Should()
+            .OnlyContain(s => s.LastCompletedStage == null);
+    }
+
+    [Fact]
     public async Task GetReconciliationAsync_returns_empty_when_not_yet_run()
     {
         var run = await SeedRunAsync(FullCorpusOrchestrator.StatusRunning);

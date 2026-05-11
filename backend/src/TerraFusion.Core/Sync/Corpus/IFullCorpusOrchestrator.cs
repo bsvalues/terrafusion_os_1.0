@@ -91,7 +91,8 @@ public sealed record CorpusLaneSnapshot(
     string? CountsJson,
     string? GateSummaryJson,
     string? QuarantineDeltaJson,
-    string? ErrorMessage);
+    string? ErrorMessage,
+    string? LastCompletedStage);
 
 public sealed record CorpusReconciliationSnapshot(
     Guid ReconciliationId,
