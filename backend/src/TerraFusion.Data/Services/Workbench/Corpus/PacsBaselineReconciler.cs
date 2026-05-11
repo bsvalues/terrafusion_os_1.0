@@ -20,15 +20,24 @@ namespace TerraFusion.Data.Services.Workbench.Corpus;
 /// lane drains:</para>
 /// <list type="bullet">
 ///   <item><b>parcel</b>: distinct <c>prop_id</c> from
-///   <c>dbo.owner</c> with <c>sup_num=0 AND owner_tax_yr&gt;=2018</c>
-///   — the owner-anchored seed each parcel drain uses.</item>
+///   <c>dbo.property</c> joined to <c>dbo.property_val</c> at the
+///   working year, filtered <c>prop_type_cd='R'</c>. The truth
+///   promoter only keeps R-typed parcels with a working-year
+///   <c>property_val</c> row, so the baseline must mirror that
+///   doctrine (a historical R-typed prop_id without a working-year
+///   property_val row is not a spine candidate).</item>
 ///   <item><b>owner-wsdor</b>: distinct <c>owner_id</c> from
 ///   <c>dbo.owner</c> + WPOV count for the working year. We aggregate
 ///   into one count: <c>distinct owner_id + wash_prop_owner_val(@yr)</c>
 ///   to reconcile against canonical <c>tf_owner + tf_assessment_wsdor</c>.</item>
 ///   <item><b>improvement</b>: <c>dbo.imprv</c> filtered by
 ///   <c>prop_val_yr=@yr</c>.</item>
-///   <item><b>land</b>: <c>dbo.land_detail</c> filtered by
+///   <item><b>land</b>: <c>dbo.land_detail</c> joined to
+///   <c>dbo.property</c> and <c>dbo.property_val</c>, filtered
+///   <c>prop_type_cd='R' AND ld.sup_num=0 AND pv.prop_val_yr=@yr</c>.
+///   The land drain only lands sup_num=0 segments tied to working-year
+///   R-typed spine parcels, so the baseline mirrors that population
+///   rather than counting every <c>land_detail</c> row at
 ///   <c>prop_val_yr=@yr</c>.</item>
 ///   <item><b>sales</b>: <c>dbo.sale</c> doctrine-qualified count
 ///   (<c>sl_county_ratio_cd IN ('100','0') OR sl_ratio_type_cd='00'</c>)
@@ -42,6 +51,11 @@ namespace TerraFusion.Data.Services.Workbench.Corpus;
 /// or ArcGIS misconfigured returns <c>Outcome=Unreachable</c> with
 /// <c>Notes</c>; the orchestrator records that as <c>Investigate</c>
 /// instead of throwing.</para>
+///
+/// <para>SYNC-COMPLETE-2-RECONCILIATION-POLICY-FIX (2026-05-11):
+/// parcel + land queries swapped to the doctrine-filtered joined form.
+/// See <see cref="CorpusReconciliationPolicy"/> for the policy-side
+/// rationale.</para>
 /// </summary>
 public sealed class PacsBaselineReconciler : IPacsBaselineReconciler
 {
@@ -90,7 +104,7 @@ public sealed class PacsBaselineReconciler : IPacsBaselineReconciler
             return lane switch
             {
                 CorpusReconciliationPolicy.LaneParcel =>
-                    await QueryParcelAsync(pacsCs, cancellationToken).ConfigureAwait(false),
+                    await QueryParcelAsync(pacsCs, workingYear, cancellationToken).ConfigureAwait(false),
                 CorpusReconciliationPolicy.LaneOwnerWsdor =>
                     await QueryOwnerWsdorAsync(pacsCs, workingYear, cancellationToken).ConfigureAwait(false),
                 CorpusReconciliationPolicy.LaneImprovement =>
@@ -152,18 +166,26 @@ public sealed class PacsBaselineReconciler : IPacsBaselineReconciler
     // ── PACS queries (per lane) ─────────────────────────────────────
 
     /// <summary>
-    /// Parcel lane reconciles against the owner-anchored seed
-    /// population: distinct prop_id across <c>dbo.owner</c> at
-    /// <c>sup_num=0 AND owner_tax_yr&gt;=2018</c>. This matches the
-    /// row population the parcel drain actually lands.
+    /// Parcel lane reconciles against the doctrine-filtered spine
+    /// population: distinct <c>prop_id</c> across <c>dbo.property</c>
+    /// inner-joined to <c>dbo.property_val</c> at the working year,
+    /// filtered <c>prop_type_cd='R'</c>. This matches the row
+    /// population the parcel-spine truth promoter actually lands —
+    /// historical R-typed prop_ids without a working-year property_val
+    /// row are correctly excluded by the promoter.
     /// </summary>
-    private async Task<PacsBaselineResult> QueryParcelAsync(string cs, CancellationToken ct)
+    private async Task<PacsBaselineResult> QueryParcelAsync(string cs, short yr, CancellationToken ct)
     {
         const string sql =
-            "SELECT COUNT(DISTINCT prop_id) FROM dbo.owner " +
-            "WHERE sup_num = 0 AND owner_tax_yr >= 2018";
-        var count = await ExecuteScalarLongAsync(cs, sql, ct).ConfigureAwait(false);
-        return new PacsBaselineResult(PacsBaselineOutcome.Ok, count, null);
+            "SELECT COUNT(DISTINCT p.prop_id) FROM dbo.property p " +
+            "INNER JOIN dbo.property_val pv ON p.prop_id = pv.prop_id " +
+            "WHERE p.prop_type_cd = 'R' AND pv.prop_val_yr = @yr";
+        var count = await ExecuteScalarLongAsync(
+            cs, sql, ct, ("@yr", (object)(int)yr)).ConfigureAwait(false);
+        return new PacsBaselineResult(
+            PacsBaselineOutcome.Ok, count,
+            $"Doctrine-filtered: distinct prop_id where prop_type_cd='R' AND " +
+            $"property_val(@yr={yr}) exists. Compared against tf_parcel.");
     }
 
     /// <summary>
@@ -197,11 +219,30 @@ public sealed class PacsBaselineReconciler : IPacsBaselineReconciler
         return new PacsBaselineResult(PacsBaselineOutcome.Ok, count, null);
     }
 
+    /// <summary>
+    /// Land lane reconciles against the doctrine-filtered land
+    /// population: <c>dbo.land_detail</c> joined to <c>dbo.property</c>
+    /// + <c>dbo.property_val</c>, filtered
+    /// <c>p.prop_type_cd='R' AND ld.sup_num=0 AND pv.prop_val_yr=@yr</c>.
+    /// The land drain only lands sup_num=0 segments tied to working-year
+    /// R-typed spine parcels, so the baseline mirrors that population
+    /// rather than counting every <c>land_detail</c> row at
+    /// <c>prop_val_yr=@yr</c>.
+    /// </summary>
     private async Task<PacsBaselineResult> QueryLandAsync(string cs, short yr, CancellationToken ct)
     {
-        const string sql = "SELECT COUNT(*) FROM dbo.land_detail WHERE prop_val_yr = @yr";
-        var count = await ExecuteScalarLongAsync(cs, sql, ct, ("@yr", (object)(int)yr)).ConfigureAwait(false);
-        return new PacsBaselineResult(PacsBaselineOutcome.Ok, count, null);
+        const string sql =
+            "SELECT COUNT(*) FROM dbo.land_detail ld " +
+            "INNER JOIN dbo.property p ON p.prop_id = ld.prop_id " +
+            "INNER JOIN dbo.property_val pv " +
+            "  ON pv.prop_id = ld.prop_id AND pv.prop_val_yr = ld.prop_val_yr " +
+            "WHERE p.prop_type_cd = 'R' AND ld.sup_num = 0 AND pv.prop_val_yr = @yr";
+        var count = await ExecuteScalarLongAsync(
+            cs, sql, ct, ("@yr", (object)(int)yr)).ConfigureAwait(false);
+        return new PacsBaselineResult(
+            PacsBaselineOutcome.Ok, count,
+            $"Doctrine-filtered: land_detail rows where prop_type_cd='R' AND " +
+            $"sup_num=0 AND prop_val_yr={yr}. Compared against tf_land.");
     }
 
     /// <summary>
