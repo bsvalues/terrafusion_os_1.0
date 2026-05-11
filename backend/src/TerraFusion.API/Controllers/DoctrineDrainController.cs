@@ -928,7 +928,26 @@ public class DoctrineDrainController : ControllerBase
                 await resume.CheckpointAsync("ImprvDetail-S1", batchIds, cancellationToken);
             }
 
-            // Stage 10: ImprvAttr-S1.
+            // Stage 10: ImprvAttr-S1 (SYNC-COMPLETE-2-V3 year-sliced).
+            //
+            // Empirically, draining all years of imprv_attr in a single
+            // EF-buffered landing call exhausts ChangeTracker memory
+            // (~1.9 GB) and saturates postgres I/O before completion at
+            // full-corpus scale (~6M imprv_attr rows). Year-slice the
+            // stage so each commit covers a single prop_val_yr, keeping
+            // the working set bounded and allowing mid-stage resume.
+            //
+            // Substages are named ImprvAttr-S1-Y{year}. Year list is
+            // queried from legacy_pacs_raw.imprv after Imprv-S1 lands
+            // (so we only iterate years that actually have improvement
+            // rows). The substages slot logically between ImprvDetail-S1
+            // and Imprv-Truth — see LaneStageOrder.ShouldSkip.
+            //
+            // batchIds gets exactly ONE entry appended for the entire
+            // ImprvAttr-S1 stage at completion (the last year's batch id,
+            // occupying the static ImprvAttr-S1 slot for position-mapping
+            // of downstream stages). Per-year batch ids are observable
+            // via LoadBatch rows + structured logs.
             int attrS1RowsLanded = 0;
             if (resume.ShouldSkip("ImprvAttr-S1"))
             {
@@ -936,13 +955,25 @@ public class DoctrineDrainController : ControllerBase
             }
             else
             {
-                var attrSrc = new KeyedSqlServerPacsImprvAttrSource(pacsCs!, imprvKeys);
-                var attrS1 = await imprvAttrSvc.LandImprvAttrsAsync(attrSrc, operatorName, cancellationToken);
-                batchIds.Add(attrS1.LoadBatchId);
-                if (!IsCompleted(attrS1.Status))
-                    return await FailLaneAsync(LaneName, "ImprvAttr-S1", attrS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
-                attrS1RowsLanded = attrS1.RowsLanded;
+                var yearSliced = await RunYearSlicedImprvAttrStageAsync(
+                    imprvAttrSvc, pacsCs!, spinePropIds, resume, batchIds,
+                    operatorName, startedAt, quarantineBefore,
+                    cancellationToken);
+                attrS1RowsLanded = yearSliced.TotalRowsLanded;
+                if (yearSliced.FailureResponse is not null)
+                {
+                    return yearSliced.FailureResponse;
+                }
+                if (yearSliced.LastBatchId is { } finalBatchId)
+                {
+                    // Year-sliced stage completed successfully → record
+                    // the parent-stage checkpoint with the final batch
+                    // id appended to batchIds. (Per-year batch ids are
+                    // intentionally NOT in batchIds; position-mapping
+                    // for downstream stages depends on ImprvAttr-S1
+                    // occupying exactly one slot.)
+                    batchIds.Add(finalBatchId);
+                }
                 await resume.CheckpointAsync("ImprvAttr-S1", batchIds, cancellationToken);
             }
 
@@ -1642,6 +1673,141 @@ public class DoctrineDrainController : ControllerBase
 
     private static bool IsCompleted(string? status) =>
         string.Equals(status, "COMPLETED", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// SYNC-COMPLETE-2-V3: outcome of a year-sliced ImprvAttr-S1 stage.
+    /// Exactly one of <see cref="FailureResponse"/> / <see cref="LastBatchId"/>
+    /// will be set (mutually exclusive). <see cref="TotalRowsLanded"/> is
+    /// the cumulative landed-row count across every year-substage that
+    /// ran (skipped years do not contribute).
+    /// </summary>
+    private sealed class YearSlicedImprvAttrResult
+    {
+        public Guid? LastBatchId { get; init; }
+        public int TotalRowsLanded { get; init; }
+        public IActionResult? FailureResponse { get; init; }
+    }
+
+    /// <summary>
+    /// SYNC-COMPLETE-2-V3: year-slice the <c>ImprvAttr-S1</c> stage of
+    /// the improvement lane. Runs one landing batch per distinct
+    /// <c>prop_val_yr</c> in <c>legacy_pacs_raw.imprv</c> for the seed
+    /// prop_ids, ascending. After each year completes, persists
+    /// <c>LastCompletedStage = "ImprvAttr-S1-Y{year}"</c> so a crash
+    /// resumes at the next un-completed year.
+    ///
+    /// <para>Returns a result object whose <c>LastBatchId</c> (the last
+    /// year's batch id) is the single representative slot to append to
+    /// <c>batchIds</c> for the parent <c>ImprvAttr-S1</c> stage position.
+    /// On any year-substage failure, <c>FailureResponse</c> holds the
+    /// pre-built <c>FailLaneAsync</c> result and the caller should
+    /// propagate it directly.</para>
+    ///
+    /// <para>Function-preserving: same landing service, same hashing,
+    /// same gates, same quarantine semantics. Only the per-call working
+    /// set is smaller and resume granularity is finer.</para>
+    /// </summary>
+    private async Task<YearSlicedImprvAttrResult> RunYearSlicedImprvAttrStageAsync(
+        IPacsImprvAttrLandingService imprvAttrSvc,
+        string pacsConnectionString,
+        IReadOnlyList<int> seedPropIds,
+        StageResumeContext resume,
+        List<Guid> batchIds,
+        string operatorName,
+        DateTime startedAt,
+        int quarantineBefore,
+        CancellationToken cancellationToken)
+    {
+        const string LaneName = "improvement";
+
+        // Year list: from legacy_pacs_raw.imprv for the seed prop_ids,
+        // ascending. Querying the post-Imprv-S1 landing table (rather
+        // than PACS directly) is faster and avoids round-tripping to
+        // MSSQL just to enumerate years. It guarantees we only iterate
+        // years that actually have improvement rows — and therefore
+        // potentially imprv_attr rows.
+        var years = await _db.LegacyPacsRawImprvs
+            .AsNoTracking()
+            .Where(i => seedPropIds.Contains(i.PropId))
+            .Select(i => i.PropValYr)
+            .Distinct()
+            .OrderBy(y => y)
+            .ToListAsync(cancellationToken);
+
+        if (years.Count == 0)
+        {
+            // No imprv rows for the seed → nothing to land.
+            // Functionally equivalent to the legacy single-call path
+            // with an empty key list (zero rows landed, one batch).
+            _logger.LogInformation(
+                "[Drain:improvement] ImprvAttr-S1 year-list is empty; nothing to land.");
+            return new YearSlicedImprvAttrResult
+            {
+                LastBatchId = null,
+                TotalRowsLanded = 0,
+                FailureResponse = null,
+            };
+        }
+
+        _logger.LogInformation(
+            "[Drain:improvement] ImprvAttr-S1 year-sliced; years={Count} (range {Min}..{Max})",
+            years.Count, years[0], years[^1]);
+
+        Guid? lastBatchId = null;
+        var totalRowsLanded = 0;
+
+        foreach (var year in years)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var stageName = LaneStageOrder.FormatImprvAttrYearSubstage(year);
+            if (resume.ShouldSkip(stageName))
+            {
+                _logger.LogInformation(
+                    "[Drain:improvement] SKIP {Stage} (resume past it)",
+                    stageName);
+                continue;
+            }
+
+            var yearKeys = seedPropIds.Select(p => (p, (short)year)).ToList();
+            var attrSrc = new KeyedSqlServerPacsImprvAttrSource(pacsConnectionString, yearKeys);
+            var attrSlice = await imprvAttrSvc.LandImprvAttrsAsync(attrSrc, operatorName, cancellationToken);
+            if (!IsCompleted(attrSlice.Status))
+            {
+                // Per-year failure → fail the lane at this substage so
+                // the persisted LastCompletedStage reflects the exact
+                // year that failed and resume picks up there.
+                var failResponse = await FailLaneAsync(LaneName, stageName, attrSlice.ErrorSummary,
+                    batchIds, startedAt, quarantineBefore, cancellationToken);
+                return new YearSlicedImprvAttrResult
+                {
+                    LastBatchId = null,
+                    TotalRowsLanded = totalRowsLanded,
+                    FailureResponse = failResponse,
+                };
+            }
+
+            totalRowsLanded += attrSlice.RowsLanded;
+            lastBatchId = attrSlice.LoadBatchId;
+
+            _logger.LogInformation(
+                "[Drain:improvement] {Stage} OK; batchId={Bid} rowsLanded={Rows}",
+                stageName, attrSlice.LoadBatchId, attrSlice.RowsLanded);
+
+            // Persist substage checkpoint without appending the per-year
+            // batch id to batchIds — the parent ImprvAttr-S1 slot stays
+            // empty until the entire year loop completes, preserving
+            // position-mapping for downstream named stages.
+            await resume.CheckpointAsync(stageName, batchIds, cancellationToken);
+        }
+
+        return new YearSlicedImprvAttrResult
+        {
+            LastBatchId = lastBatchId,
+            TotalRowsLanded = totalRowsLanded,
+            FailureResponse = null,
+        };
+    }
 
     /// <summary>
     /// Sum of the six quarantine tables exposed by <c>/api/sync/doctrine/state</c>.
