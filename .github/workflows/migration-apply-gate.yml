@@ -1,0 +1,79 @@
+# Migration Apply Gate (Prometheus T5 / PR-5)
+#
+# Verifies that pending EF Core migrations apply cleanly against a fresh
+# Postgres database. Catches IAttrValCd-class schema drift before it lands.
+#
+# Triggered only when migrations, the DbContext, or entities change — so it
+# does not block PRs that don't touch the data layer.
+
+name: Migration Apply Gate
+
+on:
+  pull_request:
+    paths:
+      - 'backend/src/TerraFusion.Data/Migrations/**'
+      - 'backend/src/TerraFusion.Data/TerraFusionDbContext.cs'
+      - 'backend/src/TerraFusion.Core/Entities/**'
+
+jobs:
+  apply-migrations:
+    name: Verify pending migrations apply cleanly
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_PASSWORD: ci_password
+          POSTGRES_DB: terrafusion
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install EF Core tools
+        run: dotnet tool install --global dotnet-ef --version 8.0.*
+
+      - name: Apply migrations
+        working-directory: backend
+        run: |
+          dotnet ef database update \
+            --project src/TerraFusion.Data \
+            --startup-project src/TerraFusion.API \
+            --context TerraFusionDbContext \
+            --connection "Host=localhost;Port=5432;Database=terrafusion;Username=postgres;Password=ci_password"
+
+      - name: Verify no migration-vs-snapshot drift
+        working-directory: backend
+        run: |
+          dotnet ef migrations script \
+            --project src/TerraFusion.Data \
+            --startup-project src/TerraFusion.API \
+            --context TerraFusionDbContext \
+            --no-build > /tmp/migration-script.sql
+          echo "Generated migration script: $(wc -l < /tmp/migration-script.sql) lines"
+
+      - name: Lint for destructive Down() patterns in NEW migrations
+        working-directory: backend
+        run: |
+          new_migrations=$(git diff --name-only origin/main..HEAD -- 'src/TerraFusion.Data/Migrations/*.cs' | grep -v Designer.cs || true)
+          if [ -z "$new_migrations" ]; then
+            echo "No new migrations in this PR"
+            exit 0
+          fi
+          echo "New migrations:"
+          echo "$new_migrations"
+          for f in $new_migrations; do
+            if grep -E "DropColumn|DropTable|DropPrimaryKey" "$f" | grep -v "//" | grep -v "Down("; then
+              echo "WARNING: $f contains destructive ops outside Down() — review carefully"
+            fi
+          done

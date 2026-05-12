@@ -440,7 +440,6 @@ jobs:
       - name: Upload Trivy Results
         uses: github/codeql-action/upload-sarif@v3
         if: ${{ always() && hashFiles('trivy-results.sarif') != '' }}
-        continue-on-error: true
         with:
           sarif_file: 'trivy-results.sarif'
 
@@ -449,11 +448,9 @@ jobs:
         with:
           languages: 'csharp,javascript'
           config-file: ./.github/codeql/codeql-config.yml
-        continue-on-error: true
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
-        continue-on-error: true
 
   # ═══════════════════════════════════════════════════════════════════════════
   # Docker Build & Artifact Upload

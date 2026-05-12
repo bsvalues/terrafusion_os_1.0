@@ -1,0 +1,93 @@
+# Branch Protection Snapshot (Prometheus T5 / PR-5)
+#
+# This workflow exists to **document the desired required-checks list as code**.
+# It does NOT mutate branch protection. The actual mutation is a one-time
+# operator action via `scripts/governance/branch-protection.sh`.
+#
+# Purpose:
+#   - Make the canonical list of required checks reviewable in PR diffs.
+#   - Provide a single source of truth that can be diffed against the live
+#     branch protection API response during audits.
+#   - Fail loudly if a maintainer edits this file in a way that drifts from
+#     the script — caught at PR review, not at deploy time.
+#
+# When the required-checks list changes:
+#   1. Edit the `canonical_required_checks` block below.
+#   2. Edit `scripts/governance/branch-protection.sh` to match.
+#   3. After merge, an operator runs the script (one-time, manual).
+#   4. Verify with: gh api repos/<owner>/<repo>/branches/main/protection
+
+name: Branch Protection Snapshot
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/branch-protection-snapshot.yml'
+      - 'scripts/governance/branch-protection.sh'
+      - 'docs/governance/branch-protection.md'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/branch-protection-snapshot.yml'
+      - 'scripts/governance/branch-protection.sh'
+
+jobs:
+  snapshot:
+    name: Document required-checks list
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Print canonical required-checks list
+        run: |
+          cat <<'EOF'
+          ════════════════════════════════════════════════════════════════
+          Canonical required-checks for main (PR-5 target state):
+          ════════════════════════════════════════════════════════════════
+            🔒 TerraFusion Seal Gate
+            Backend Gate (.NET 8) / Canonical .NET Test Run
+            🧪 Tier-1 UI Harness Validation
+            phase85-tools
+            phase86-toolrunner
+            governed-spine
+            Vitest Full Suite (merge gate)
+            Migration Apply Check
+          ════════════════════════════════════════════════════════════════
+
+          To apply: bash scripts/governance/branch-protection.sh
+          To verify: gh api repos/$GITHUB_REPOSITORY/branches/main/protection
+          EOF
+
+      - name: Verify script exists and is executable contract
+        run: |
+          test -f scripts/governance/branch-protection.sh \
+            || { echo "::error::scripts/governance/branch-protection.sh missing"; exit 1; }
+          test -f docs/governance/branch-protection.md \
+            || { echo "::error::docs/governance/branch-protection.md missing"; exit 1; }
+          echo "OK: branch-protection script and doc present."
+
+      - name: Drift guard — script must list the same checks as this workflow
+        run: |
+          set -euo pipefail
+          required=(
+            "🔒 TerraFusion Seal Gate"
+            "Backend Gate (.NET 8) / Canonical .NET Test Run"
+            "🧪 Tier-1 UI Harness Validation"
+            "phase85-tools"
+            "phase86-toolrunner"
+            "governed-spine"
+            "Vitest Full Suite (merge gate)"
+            "Migration Apply Check"
+          )
+          missing=0
+          for r in "${required[@]}"; do
+            if ! grep -qF "$r" scripts/governance/branch-protection.sh; then
+              echo "::error::Required check missing from branch-protection.sh: $r"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "Workflow and script have drifted. Reconcile them."
+            exit 1
+          fi
+          echo "OK: branch-protection.sh covers every canonical required check."
