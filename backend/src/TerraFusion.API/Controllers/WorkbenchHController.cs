@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using TerraFusion.Core.Sync.Workbench;
@@ -23,9 +24,16 @@ namespace TerraFusion.API.Controllers;
 ///   <item><c>GET /api/sync/workbench/h/evidence/{commitId}/manifest</c> —
 ///   return only the <c>manifest.json</c> bytes for verification.</item>
 /// </list>
+///
+/// <para>PR-2 (Prometheus T3): explicitly tagged <c>[AllowAnonymous]</c>.
+/// Single-county-per-deployment doctrine; operator-driven via curl. The
+/// global <c>FallbackPolicy.RequireAuthenticatedUser()</c> now requires
+/// every controller to declare its auth posture; this controller's
+/// "no [Authorize]" intent is now explicit instead of implicit.</para>
 /// </summary>
 [ApiController]
 [Route("api/sync/workbench/h")]
+[AllowAnonymous]
 public sealed class WorkbenchHController : ControllerBase
 {
     private const string ZipMediaType = "application/zip";
