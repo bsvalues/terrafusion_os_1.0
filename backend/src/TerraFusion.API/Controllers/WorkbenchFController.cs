@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using TerraFusion.Core.Sync.Workbench;
@@ -24,9 +25,16 @@ namespace TerraFusion.API.Controllers;
 ///   <item><c>POST /api/sync/workbench/f/quarantine/imprv-attr/{id}/dismiss</c> —
 ///   record a dismissal decision.</item>
 /// </list>
+///
+/// <para>PR-2 (Prometheus T3): explicitly tagged <c>[AllowAnonymous]</c>.
+/// Single-county-per-deployment doctrine; operator-driven via curl. The
+/// global <c>FallbackPolicy.RequireAuthenticatedUser()</c> now requires
+/// every controller to declare its auth posture; this controller's
+/// "no [Authorize]" intent is now explicit instead of implicit.</para>
 /// </summary>
 [ApiController]
 [Route("api/sync/workbench/f")]
+[AllowAnonymous]
 public sealed class WorkbenchFController : ControllerBase
 {
     private readonly IQuarantineTriageService _service;

@@ -19,16 +19,34 @@ namespace TerraFusion.API.Security
 {
     public static class AuthenticationConfiguration
     {
-        public static IServiceCollection AddTerraFusionAuthentication(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddTerraFusionAuthentication(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            IHostEnvironment? environment = null)
         {
             var jwtSettings = configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings["SecretKey"] ?? GenerateDefaultKey();
+            var secretKey = jwtSettings["SecretKey"];
             var issuer = jwtSettings["Issuer"] ?? "TerraFusion";
             var audience = jwtSettings["Audience"] ?? "TerraFusionAPI";
 
-            if (secretKey == GenerateDefaultKey())
+            // PR-2 (Prometheus T3 #5): fail-fast in non-Development when JWT key is missing.
+            // Previously a random "TerraFusion-Default-Key-..." key was synthesized at
+            // startup with only a Console.WriteLine warning — producing a working-but-
+            // forgeable JWT signer in any environment that hadn't been explicitly
+            // configured. Production must throw; Development gets a long, fixed
+            // padding key so local dev keeps working without env vars.
+            var isDevelopment = environment?.IsDevelopment() ?? false;
+            if (string.IsNullOrWhiteSpace(secretKey) && !isDevelopment)
             {
-                Console.WriteLine("⚠️  WARNING: Using default JWT key. Configure Jwt:SecretKey in appsettings.json for production!");
+                throw new InvalidOperationException(
+                    "JwtSettings:SecretKey is required in non-Development environments. " +
+                    "Configure via env var JwtSettings__SecretKey or appsettings.{Env}.local.json.");
+            }
+            if (string.IsNullOrWhiteSpace(secretKey))
+            {
+                // Dev-only fallback. 64+ chars to satisfy HS256 minimum.
+                secretKey = "TerraFusion-Dev-Secret-Key-DEV-ONLY-NEVER-USE-IN-PROD-PADDING-XXXXXXXXXXXXXXXXXXXX";
+                Console.WriteLine("⚠️  WARNING: Using Development JWT fallback key. NEVER use this in production.");
             }
 
             services.AddAuthentication(options =>
@@ -91,6 +109,15 @@ namespace TerraFusion.API.Security
 
             services.AddAuthorization(options =>
             {
+                // PR-2 (Prometheus T3 #1): require authentication by default.
+                // Any controller without an explicit [Authorize] or [AllowAnonymous]
+                // attribute now gets 401 instead of silently defaulting to anonymous.
+                // Controllers that intentionally run anonymously (Workbench F/G/H,
+                // FullCorpus, Doctrine*) must be tagged with [AllowAnonymous] explicitly.
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+
                 options.AddPolicy("RequireAdmin", policy =>
                     policy.RequireRole("Admin", "SystemAdmin"));
 
@@ -120,15 +147,14 @@ namespace TerraFusion.API.Security
             return services;
         }
 
-        private static string GenerateDefaultKey()
-        {
-            return "TerraFusion-Default-Key-CHANGE-IN-PRODUCTION-2025-" + Guid.NewGuid().ToString().Substring(0, 8);
-        }
-
         /// <summary>
         /// Registers MFA, Session Management, and LDAP security services.
         /// Phase 5: Security Service Runtime Completeness.
         /// Phase 9: DevelopmentLdapService is now guarded by environment check.
+        /// PR-2 (Prometheus T3 #4): non-Development now registers
+        /// <see cref="FailClosedLdapService"/> (throws on every method) instead
+        /// of the in-memory dev stub, which previously was registered in BOTH
+        /// branches despite a comment claiming "rejects all logins".
         /// </summary>
         public static IServiceCollection AddTerraFusionSecurityServices(
             this IServiceCollection services,
@@ -145,10 +171,11 @@ namespace TerraFusion.API.Security
             }
             else
             {
-                // Production: register a no-op LDAP that rejects all logins
-                // until a real LDAP/AD provider is configured.
-                services.AddSingleton<ILdapService, DevelopmentLdapService>();
-                // TODO: Replace with ProductionLdapService backed by AD/OAuth2
+                // PR-2 (Prometheus T3 #4): fail-closed in non-Development. Every method
+                // throws NotImplementedException so any code path that reaches LDAP in
+                // prod surfaces loud instead of silently succeeding via dev stub.
+                // TODO: Replace with ProductionLdapService backed by AD/OAuth2.
+                services.AddSingleton<ILdapService, FailClosedLdapService>();
             }
 
             return services;
@@ -239,8 +266,16 @@ namespace TerraFusion.API.Security
 
         public Task<bool> ValidateUserCredentialsAsync(string email, string password)
         {
-            var valid = !string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(password);
-            return Task.FromResult(valid);
+            // PR-2 (Prometheus T3 #3): fail-closed default. Previously accepted any
+            // non-empty email + password (silent allow-all). InMemorySecurityService
+            // is the fallback registration (services.TryAddSingleton); a real
+            // credential validator should replace it before any reliance is placed
+            // on this method. Until then, every call is denied + warns.
+            _logger.LogWarning(
+                "InMemorySecurityService.ValidateUserCredentialsAsync called for email-hash {EmailHash}; " +
+                "fail-closed default returning false. Register a real ISecurityService implementation.",
+                email?.GetHashCode());
+            return Task.FromResult(false);
         }
 
         public Task<IEnumerable<string>> GetUserRolesAsync(string email)
@@ -302,12 +337,28 @@ namespace TerraFusion.API.Security
 
         public Task<bool> HasPermissionAsync(string userId, string permission)
         {
-            return Task.FromResult(true);
+            // PR-2 (Prometheus T3 #2): fail-closed default. Previously returned true
+            // for every (userId, permission) tuple — silent allow-all that defeated
+            // any caller that relied on this method as a real authorization check.
+            // A real ISecurityService implementation should replace this before any
+            // permission decision relies on it; until then, every call is denied.
+            _logger.LogWarning(
+                "InMemorySecurityService.HasPermissionAsync called for permission '{Permission}'; " +
+                "fail-closed default returning false. Register a real ISecurityService implementation.",
+                permission);
+            return Task.FromResult(false);
         }
 
         public Task<bool> HasModuleAccessAsync(string userId, string moduleId)
         {
-            return Task.FromResult(true);
+            // PR-2 (Prometheus T3 #2 sibling): same fail-closed treatment as
+            // HasPermissionAsync. Module-access checks should go through a real
+            // ISecurityService; the in-memory fallback denies and warns.
+            _logger.LogWarning(
+                "InMemorySecurityService.HasModuleAccessAsync called for module '{ModuleId}'; " +
+                "fail-closed default returning false. Register a real ISecurityService implementation.",
+                moduleId);
+            return Task.FromResult(false);
         }
     }
 }

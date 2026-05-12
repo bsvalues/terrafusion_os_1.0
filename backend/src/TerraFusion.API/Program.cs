@@ -1171,7 +1171,7 @@ builder.Services.AddSignalR();
 // Register authentication services
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<TerraFusion.Core.Auth.IRequestUserContextAccessor, TerraFusion.API.Auth.HttpContextRequestUserContextAccessor>();
-builder.Services.AddTerraFusionAuthentication(builder.Configuration);
+builder.Services.AddTerraFusionAuthentication(builder.Configuration, builder.Environment);
 builder.Services.AddTerraFusionSecurityServices(builder.Configuration, builder.Environment);
 
 // 🎯 SERVICE REGISTRY & DISCOVERY - No more hardcoded ports!
@@ -2379,6 +2379,14 @@ builder.Services.AddSingleton<TerraFusion.AI.Infrastructure.IServerSentEventsWri
 builder.Services.AddScoped<IDatabaseInitializationService, DatabaseInitializationService>();
 // TEMPORARILY DISABLED - StartAsync completes immediately, causing shutdown
 // builder.Services.AddHostedService<DatabaseInitializationHostedService>();
+
+// SYNC-INFRA-1: Idempotent migration runner — applies pending migrations on startup
+// unless explicitly disabled. Set TF_SKIP_AUTO_MIGRATE=true to opt out (e.g. for production
+// where migrations are applied by a separate operator step).
+if (!builder.Configuration.GetValue<bool>("TF_SKIP_AUTO_MIGRATE", defaultValue: false))
+{
+    builder.Services.AddHostedService<TerraFusion.API.HostedServices.AutoMigrateHostedService>();
+}
 
 // Register TerraLevy DbContext (PostgreSQL with SQLite fallback for dev)
 builder.Services.AddDbContext<LevyDbContext>(options =>
