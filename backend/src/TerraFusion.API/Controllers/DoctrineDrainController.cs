@@ -1,8 +1,10 @@
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TerraFusion.API.Monitoring;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Sync.Corpus;
 using TerraFusion.Core.Sync.PacsAccount;
@@ -1869,6 +1871,107 @@ public class DoctrineDrainController : ControllerBase
         _ => null,
     };
 
+    // ── PR-8 Prometheus H22: metrics instrumentation ─────────────────────
+    //
+    // PrometheusConfig defines a meter ("TerraFusion.API") with named
+    // counters / histograms but had zero call sites. The lane endpoints
+    // converge through OkLaneAsync / FailLaneAsync, so emitting once here
+    // covers all 6 lanes (parcel, owner-wsdor, improvement, land, sales,
+    // geometry) without touching individual stage services. Per-gate
+    // FAIL counts are emitted from the gate summary so dashboards can
+    // alert on which gate is firing.
+
+    /// <summary>
+    /// Emit lane-completion metrics. Called from <see cref="OkLaneAsync"/>
+    /// and <see cref="FailLaneAsync"/>. Status is "success" or "failure"
+    /// to match <c>PrometheusConfig.RecordSyncOperation</c> labeling.
+    /// </summary>
+    internal static void EmitLaneCompletionMetrics(
+        string lane,
+        bool success,
+        double durationSeconds,
+        long rowsLanded,
+        string? failedStage)
+    {
+        // Sync surface — connector_name = lane.
+        var syncTags = new TagList
+        {
+            { "connector_name", lane },
+            { "status", success ? "success" : "failure" },
+        };
+        PrometheusConfig.SyncOperationsTotal.Add(1, syncTags);
+        PrometheusConfig.SyncDurationSeconds.Record(durationSeconds, syncTags);
+        if (rowsLanded > 0)
+            PrometheusConfig.SyncRecordsProcessed.Add(rowsLanded, syncTags);
+
+        // ETL surface — source_system = lane (Benton PACS for these 6
+        // lanes today; future county sources will overload this label).
+        var etlTags = new TagList
+        {
+            { "source_system", lane },
+            { "status", success ? "success" : "failure" },
+        };
+        PrometheusConfig.EtlRunsTotal.Add(1, etlTags);
+        PrometheusConfig.EtlRunDurationSeconds.Record(durationSeconds, etlTags);
+        if (rowsLanded > 0)
+        {
+            var landTags = new TagList
+            {
+                { "step_id", "land" },
+                { "source_system", lane },
+            };
+            PrometheusConfig.EtlRecordsTotal.Add(rowsLanded, landTags);
+        }
+        if (!success)
+        {
+            var failTags = new TagList
+            {
+                { "step_id", failedStage ?? "Unknown" },
+                { "source_system", lane },
+            };
+            PrometheusConfig.EtlStepFailures.Add(1, failTags);
+        }
+    }
+
+    /// <summary>
+    /// Emit one <c>EtlStepFailures</c> counter increment per FAIL gate so
+    /// dashboards can break down by gate name (e.g. WSDOR taxable-min,
+    /// truth-pacs-imprv-universe-distribution). PASS gates intentionally
+    /// don't emit — no PrometheusConfig metric maps to gate-pass; see PR
+    /// body for the divergence note.
+    /// </summary>
+    private async System.Threading.Tasks.Task EmitGateMetricsAsync(
+        string lane,
+        IReadOnlyList<Guid> batchIds,
+        CancellationToken cancellationToken)
+    {
+        if (batchIds.Count == 0) return;
+        try
+        {
+            var failedByName = await _db.SyncBridgePromotionGateResults
+                .Where(g => batchIds.Contains(g.LoadBatchId) && g.Status == "FAIL")
+                .GroupBy(g => g.GateName)
+                .Select(g => new { name = g.Key, count = g.Count() })
+                .ToListAsync(cancellationToken);
+
+            foreach (var row in failedByName)
+            {
+                var tags = new TagList
+                {
+                    { "step_id", row.name },
+                    { "source_system", lane },
+                };
+                PrometheusConfig.EtlStepFailures.Add(row.count, tags);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Metrics emission is best-effort — never fail a lane because
+            // the gate aggregation query blew up.
+            _logger.LogWarning(ex, "[Drain:{Lane}] gate-metrics emission failed", lane);
+        }
+    }
+
     private async Task<IActionResult> OkLaneAsync(
         string lane,
         List<Guid> batchIds,
@@ -1883,6 +1986,10 @@ public class DoctrineDrainController : ControllerBase
         var rowsQuarantinedThisLane = Math.Max(0, quarantineAfter - quarantineBefore);
         var gateSummary = await BuildGateSummaryAsync(batchIds, cancellationToken);
         var durationSec = (DateTime.UtcNow - startedAt).TotalSeconds;
+
+        // PR-8 Prometheus H22: emit metrics before the HTTP response.
+        EmitLaneCompletionMetrics(lane, success: true, durationSec, rowsLanded, failedStage: null);
+        await EmitGateMetricsAsync(lane, batchIds, cancellationToken);
 
         return Ok(new
         {
@@ -1966,6 +2073,14 @@ public class DoctrineDrainController : ControllerBase
         }
 
         var durationSec = (DateTime.UtcNow - startedAt).TotalSeconds;
+
+        // PR-8 Prometheus H22: emit metrics before the HTTP response.
+        // rowsLanded=0 on lane failure (failure can occur before any
+        // landing succeeds; finer-grained per-stage rowsLanded is out
+        // of scope for this PR since lane locals aren't passed in).
+        EmitLaneCompletionMetrics(lane, success: false, durationSec, rowsLanded: 0, failedStage: failedStage);
+        await EmitGateMetricsAsync(lane, batchIds, cancellationToken);
+
         return new ObjectResult(new
         {
             lane,
