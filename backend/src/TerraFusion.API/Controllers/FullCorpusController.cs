@@ -11,11 +11,13 @@ namespace TerraFusion.API.Controllers;
 /// <summary>
 /// SYNC-COMPLETE-2: durable full-corpus sync runner endpoints.
 ///
-/// <para>Mirrors the workbench controller pattern: no
-/// <c>[Authorize]</c>, single-county-per-deployment doctrine, all
-/// state mutations go through the orchestrator service (status
-/// transitions are the orchestrator's responsibility, not the
-/// controller's).</para>
+/// <para>Mirrors the workbench controller pattern: explicitly tagged
+/// <c>[AllowAnonymous]</c> (PR-2 / Prometheus T3 — the global
+/// <c>FallbackPolicy.RequireAuthenticatedUser()</c> requires every
+/// controller to declare its auth posture). Single-county-per-deployment
+/// doctrine; operator-driven via curl. All state mutations go through
+/// the orchestrator service (status transitions are the orchestrator's
+/// responsibility, not the controller's).</para>
 ///
 /// <para>Endpoints:</para>
 /// <list type="bullet">

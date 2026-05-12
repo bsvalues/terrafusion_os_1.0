@@ -9,10 +9,18 @@ namespace TerraFusion.API.Controllers
   /// <summary>
   /// Government compliance API.
   /// Compliance and certification claims must be backed by governed evidence.
+  ///
+  /// <para>PR-2 (Prometheus T3): explicitly tagged <c>[AllowAnonymous]</c>.
+  /// Compliance status is operator-readable surface; the global
+  /// <c>FallbackPolicy.RequireAuthenticatedUser()</c> now requires every
+  /// controller to declare its auth posture explicitly. Pre-PR-2 this
+  /// controller was untagged and silently anonymous — exactly the audit
+  /// surface that motivated the FallbackPolicy fix.</para>
   /// </summary>
   [ApiController]
   [Route("api/compliance")]
   [Produces("application/json")]
+  [AllowAnonymous]
   public class GovernmentComplianceController : ControllerBase
   {
     private readonly IGovernmentComplianceService _complianceService;
