@@ -1161,7 +1161,7 @@ builder.Services.AddSignalR();
 // Register authentication services
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<TerraFusion.Core.Auth.IRequestUserContextAccessor, TerraFusion.API.Auth.HttpContextRequestUserContextAccessor>();
-builder.Services.AddTerraFusionAuthentication(builder.Configuration);
+builder.Services.AddTerraFusionAuthentication(builder.Configuration, builder.Environment);
 builder.Services.AddTerraFusionSecurityServices(builder.Configuration, builder.Environment);
 
 // 🎯 SERVICE REGISTRY & DISCOVERY - No more hardcoded ports!

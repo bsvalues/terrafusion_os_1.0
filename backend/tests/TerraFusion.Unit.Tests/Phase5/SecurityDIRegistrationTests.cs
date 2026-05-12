@@ -51,10 +51,15 @@ public sealed class SecurityDIRegistrationTests
     [Fact]
     public void AddTerraFusionSecurityServices_RegistersILdapService()
     {
+        // PR-2 (Prometheus T3 #4): with no IHostEnvironment passed,
+        // AddTerraFusionSecurityServices treats the environment as non-Development
+        // and registers FailClosedLdapService (fail-closed). Pre-PR-2 this
+        // test asserted DevelopmentLdapService for the same input — that was
+        // the silent prod-misregistration the PR fixed.
         using var provider = BuildServiceProvider();
         var service = provider.GetService<ILdapService>();
         service.Should().NotBeNull();
-        service.Should().BeOfType<TerraFusion.API.Security.Services.DevelopmentLdapService>();
+        service.Should().BeOfType<TerraFusion.API.Security.Services.FailClosedLdapService>();
     }
 
     [Fact]
