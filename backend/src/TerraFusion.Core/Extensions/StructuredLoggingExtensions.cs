@@ -5,6 +5,7 @@ using Serilog.Events;
 using Serilog.Formatting.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
@@ -24,6 +25,24 @@ public static class StructuredLoggingExtensions
     {
         // Configure Serilog
         Log.Logger = CreateLogger(configuration, environment);
+
+        // PR-3: also register Serilog.ILogger in DI so StructuredLogger's
+        // constructor (which depends on Serilog.ILogger directly) can be
+        // activated. Pre-PR-3, AddStructuredLogging() had zero call sites so
+        // this latent ordering bug was dormant; once Program.cs started
+        // calling AddStructuredLogging(), every existing IStructuredLogger
+        // consumer would have failed to activate without this registration.
+        services.AddSingleton<Serilog.ILogger>(_ => Log.Logger);
+
+        // PR-3: provide a no-op ITelemetryService fallback so LoggingBackgroundService
+        // (and any other IStructuredLogger consumer) can activate without a hard
+        // Application Insights dependency. The TerraFusion.API kernel never
+        // registers ITelemetryService; before PR-3 this was invisible because
+        // IStructuredLogger had no live consumers in the startup graph. Now
+        // that the hosted LoggingBackgroundService is wired, it would block
+        // host start without this fallback. TryAddSingleton means a real
+        // AppInsights binding (if/when added later) still wins.
+        services.TryAddSingleton<ITelemetryService, NullTelemetryService>();
 
         services.AddSingleton<IStructuredLogger, StructuredLogger>();
         services.AddSingleton<ILogEnricher, LogEnricher>();
@@ -80,6 +99,44 @@ public static class StructuredLoggingExtensions
                    .MinimumLevel.Override("System", LogEventLevel.Warning);
 
         return loggerConfig.CreateLogger();
+    }
+}
+
+/// <summary>
+/// PR-3: minimal no-op <see cref="ITelemetryService"/> used as a fallback when
+/// no Application Insights or other telemetry binding has been registered.
+/// Lets <see cref="StructuredLogger"/> (and downstream consumers like the
+/// hosted <see cref="LoggingBackgroundService"/>) activate without forcing a
+/// hard ApplicationInsights dependency on every host. Real bindings registered
+/// elsewhere will preempt this via <c>TryAddSingleton</c>.
+/// </summary>
+internal sealed class NullTelemetryService : ITelemetryService
+{
+    public void TrackEvent(string eventName, Dictionary<string, string>? properties = null, Dictionary<string, double>? metrics = null) { }
+    public void TrackUserAction(string userId, string action, Dictionary<string, string>? properties = null) { }
+    public void TrackBusinessMetric(string metricName, double value, Dictionary<string, string>? properties = null) { }
+    public void TrackPageView(string pageName, TimeSpan duration, Dictionary<string, string>? properties = null) { }
+    public void TrackDependency(string dependencyType, string target, string dependencyName, string data, DateTimeOffset startTime, TimeSpan duration, bool success) { }
+    public void TrackRequest(string name, DateTimeOffset startTime, TimeSpan duration, string responseCode, bool success) { }
+    public void TrackException(Exception exception, Dictionary<string, string>? properties = null) { }
+    public void TrackError(string error, Dictionary<string, string>? properties = null) { }
+    public void TrackMetric(string metricName, double value, Dictionary<string, string>? properties = null) { }
+    public void TrackAvailability(string testName, DateTimeOffset timeStamp, TimeSpan duration, string location, bool success, string? message = null) { }
+    public Microsoft.ApplicationInsights.Extensibility.IOperationHolder<Microsoft.ApplicationInsights.DataContracts.RequestTelemetry> StartOperation(string operationName)
+        => new NullOperationHolder<Microsoft.ApplicationInsights.DataContracts.RequestTelemetry>();
+    public Microsoft.ApplicationInsights.Extensibility.IOperationHolder<Microsoft.ApplicationInsights.DataContracts.DependencyTelemetry> StartDependencyOperation(string operationName, string target)
+        => new NullOperationHolder<Microsoft.ApplicationInsights.DataContracts.DependencyTelemetry>();
+    public void StopOperation<T>(Microsoft.ApplicationInsights.Extensibility.IOperationHolder<T> operation) where T : Microsoft.ApplicationInsights.Extensibility.Implementation.OperationTelemetry { operation?.Dispose(); }
+    public void SetUser(string userId, string? accountId = null) { }
+    public void SetContext(string key, string value) { }
+    public void AddGlobalProperty(string key, string value) { }
+    public void Flush() { }
+
+    private sealed class NullOperationHolder<T> : Microsoft.ApplicationInsights.Extensibility.IOperationHolder<T>
+        where T : Microsoft.ApplicationInsights.Extensibility.Implementation.OperationTelemetry, new()
+    {
+        public T Telemetry { get; } = new T();
+        public void Dispose() { }
     }
 }
 

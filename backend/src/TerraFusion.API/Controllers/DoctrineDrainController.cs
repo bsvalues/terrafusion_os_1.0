@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -377,7 +378,7 @@ public class DoctrineDrainController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "[Drain:parcel] FAILED");
-            return await FailLaneAsync(LaneName, "Exception", $"{ex.GetType().Name}: {ex.Message}",
+            return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
                 batchIds, startedAt, quarantineBefore, cancellationToken);
         }
     }
@@ -684,7 +685,7 @@ public class DoctrineDrainController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "[Drain:owner-wsdor] FAILED");
-            return await FailLaneAsync(LaneName, "Exception", $"{ex.GetType().Name}: {ex.Message}",
+            return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
                 batchIds, startedAt, quarantineBefore, cancellationToken);
         }
     }
@@ -1035,7 +1036,7 @@ public class DoctrineDrainController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "[Drain:improvement] FAILED");
-            return await FailLaneAsync(LaneName, "Exception", $"{ex.GetType().Name}: {ex.Message}",
+            return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
                 batchIds, startedAt, quarantineBefore, cancellationToken);
         }
     }
@@ -1269,7 +1270,7 @@ public class DoctrineDrainController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "[Drain:land] FAILED");
-            return await FailLaneAsync(LaneName, "Exception", $"{ex.GetType().Name}: {ex.Message}",
+            return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
                 batchIds, startedAt, quarantineBefore, cancellationToken);
         }
     }
@@ -1491,7 +1492,7 @@ public class DoctrineDrainController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "[Drain:sales] FAILED");
-            return await FailLaneAsync(LaneName, "Exception", $"{ex.GetType().Name}: {ex.Message}",
+            return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
                 batchIds, startedAt, quarantineBefore, cancellationToken);
         }
     }
@@ -1603,7 +1604,7 @@ public class DoctrineDrainController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "[Drain:geometry] FAILED");
-            return await FailLaneAsync(LaneName, "Exception", $"{ex.GetType().Name}: {ex.Message}",
+            return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
                 batchIds, startedAt, quarantineBefore, cancellationToken);
         }
     }
@@ -1905,6 +1906,38 @@ public class DoctrineDrainController : ControllerBase
             },
             nextRecommendedLane = NextRecommendedLane(lane),
         });
+    }
+
+    /// <summary>
+    /// PR-3 observability fix #3: walk the full inner-exception chain so
+    /// DbUpdateException → SqlException (constraint name, conflicting key)
+    /// survives serialization into the lane error summary. The previous
+    /// <c>$"{ex.GetType().Name}: {ex.Message}"</c> pattern lost 100% of inner
+    /// context — exactly the bug that burned 3 days on the improvement-lane
+    /// drain triage.
+    /// </summary>
+    /// <param name="ex">Exception to serialize.</param>
+    /// <param name="maxDepth">Defensive cap on InnerException walks (cycles
+    /// shouldn't happen but the bound makes the worst case bounded).</param>
+    internal static string SerializeExceptionChain(Exception ex, int maxDepth = 5)
+    {
+        if (ex is null) return string.Empty;
+        var sb = new StringBuilder();
+        var current = ex;
+        var depth = 0;
+        while (current != null && depth < maxDepth)
+        {
+            if (depth > 0) sb.Append(" || INNER: ");
+            sb.Append(current.GetType().Name).Append(": ").Append(current.Message);
+            current = current.InnerException;
+            depth++;
+        }
+        // Also include first 4KB of full ToString() so the stack trace is
+        // recoverable from the lane row without a separate log lookup.
+        var fullDump = ex.ToString();
+        if (fullDump.Length > 4096) fullDump = fullDump[..4096] + "... [truncated]";
+        sb.Append(" || STACK: ").Append(fullDump);
+        return sb.ToString();
     }
 
     private async Task<IActionResult> FailLaneAsync(
