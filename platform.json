@@ -46,7 +46,8 @@
       "sqlite-dev-adapter-test.yml",
       "frontend-build-guarded.yml",
       "frontend-data-mode-guard.yml",
-      "terraforge-kernels.yml"
+      "terraforge-kernels.yml",
+      "migration-apply-gate.yml"
     ],
     "eventReactive": [
       "autonomy-break-glass-guard.yml",

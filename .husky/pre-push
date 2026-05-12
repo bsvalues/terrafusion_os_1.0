@@ -11,15 +11,20 @@ fi
 #       frontend/pnpm-lock.yaml was removed — do NOT recreate it.
 #
 # Environment Variables:
-#   TF_STRICT_PUSH=1  - Fail on ANY test/lint error (CI mode)
-#   TF_STRICT_PUSH=0  - Warn but allow push (default, development mode)
+#   TF_STRICT_PUSH=1  - Fail on ANY test/lint error (default, CI-equivalent)
+#   TF_STRICT_PUSH=0  - Warn but allow push (explicit opt-out for dev hot-paths)
+#
+# Prometheus T5 / PR-5 (2026-05-12): default flipped 0 -> 1. Strict is now the
+# default; bypass requires explicit `TF_STRICT_PUSH=0 git push`. The escape
+# hatch is intentionally loud, not silent.
 # ============================================================================
 
 echo "🏛️ TerraFusion OS Pre-Push Quality Gate Validation"
 echo "================================================="
 
-# Strictness mode: TF_STRICT_PUSH=1 fails on errors, default warns
-STRICT_MODE="${TF_STRICT_PUSH:-0}"
+# Strictness mode: TF_STRICT_PUSH=1 fails on errors (default).
+# Set TF_STRICT_PUSH=0 explicitly to downgrade to warn-only.
+STRICT_MODE="${TF_STRICT_PUSH:-1}"
 if [ "$STRICT_MODE" = "1" ]; then
   echo "🔒 STRICT MODE ENABLED (TF_STRICT_PUSH=1)"
 fi
@@ -120,5 +125,6 @@ fi
 echo ""
 echo "✅ Core quality gates passed! Government. Transcended."
 if [ "$STRICT_MODE" != "1" ]; then
-  echo "💡 Tip: Set TF_STRICT_PUSH=1 to enable strict mode (CI behavior)"
+  echo "⚠️  TF_STRICT_PUSH=0 was set explicitly — gates ran in warn-only mode."
+  echo "    Default is strict; unset TF_STRICT_PUSH to restore default behavior."
 fi
