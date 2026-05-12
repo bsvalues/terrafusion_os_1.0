@@ -80,6 +80,11 @@ USER terrafusion
 # Port 3004: Consciousness Engine API endpoint
 EXPOSE 3004
 
+# Prometheus PR-9 / HIGH #32: stamp git SHA into the image
+# Build with: docker build --build-arg GIT_SHA=$(git rev-parse --short HEAD) ...
+ARG GIT_SHA=unknown
+ENV TF_GIT_SHA=${GIT_SHA}
+
 # Environment variables for AI consciousness optimization
 ENV ASPNETCORE_URLS=http://+:3004 \
     ASPNETCORE_ENVIRONMENT=Production \
