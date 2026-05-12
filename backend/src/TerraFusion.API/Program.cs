@@ -29,6 +29,8 @@ using TerraFusion.Levy.Services;
 using System.Data;
 using TerraFusion.Core.Services;
 using TerraFusion.Core.PACS;
+using TerraFusion.Core.Extensions;
+using TerraFusion.API.Health;
 using TerraFusion.Sync.Workbench.Atlas;
 using TerraFusion.Sync.Workbench.Mapping;
 using TerraFusion.Sync.Workbench.Schema;
@@ -1097,6 +1099,14 @@ catch (Exception ex)
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
+
+// PR-3 observability fix #1: wire Serilog structured logging.
+// The AddStructuredLogging() extension was previously defined in
+// TerraFusion.Core but had zero call sites — the daily-rolling JSON file
+// sink at logs/terrafusion-.log was never producing output. This call is
+// additive to the Console+Debug providers above (Serilog binds its own
+// sinks; it does not displace Microsoft.Extensions.Logging providers).
+builder.Services.AddStructuredLogging(builder.Configuration, builder.Environment);
 
 // Add basic services with JSON serialization configuration
 builder.Services.AddControllers()
@@ -2418,6 +2428,12 @@ builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyRiskScoringService, Te
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<TerraFusion.Data.TerraFusionDbContext>("database")
     .AddCheck<TerraFusion.API.Health.ModuleConsistencyHealthCheck>("modules_consistency")
+    // PR-3 observability fix #2: register PacsReadinessHealthCheck. The check
+    // existed with full IPacsAdapter wiring + PACS_REQUIRED gating + unit tests
+    // but the AddPacsReadiness extension was never called. Result: PACS down →
+    // /healthz/ready returned 200. Now it returns 503 when PACS_REQUIRED=true
+    // and the contract fails to validate.
+    .AddPacsReadiness("ready", "pacs")
     .AddSpecLockCheck();
 
 // 🔒 SpecLock Runtime Guard (MACHINE MODE)
@@ -2593,6 +2609,32 @@ if (app.Environment.IsDevelopment())
 if (app.Environment.IsDevelopment())
 {
   app.UseDeveloperExceptionPage();
+}
+else
+{
+  // PR-3 observability fix #4: production exception handler. Previously,
+  // when ASPNETCORE_ENVIRONMENT != Development, NOTHING replaced the dev
+  // exception page — unhandled middleware exceptions returned a generic 500
+  // with no logged context. This handler logs the exception with the request
+  // correlation id and returns a structured JSON body that operators can
+  // cross-reference to the Serilog file sink.
+  app.UseExceptionHandler(errApp => errApp.Run(async ctx =>
+  {
+    var feature = ctx.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
+    var correlationId = ctx.Items["CorrelationId"]?.ToString() ?? ctx.TraceIdentifier;
+    var logger = ctx.RequestServices.GetRequiredService<ILogger<Program>>();
+    logger.LogError(feature?.Error, "Unhandled exception. CorrelationId={CorrelationId} Path={Path}",
+        correlationId, ctx.Request.Path);
+    ctx.Response.StatusCode = StatusCodes.Status500InternalServerError;
+    ctx.Response.ContentType = "application/json";
+    await ctx.Response.WriteAsJsonAsync(new
+    {
+      error = "Internal server error",
+      correlationId,
+      message = "An unexpected error occurred. Reference the correlationId when reporting."
+    });
+  }));
+  app.UseHsts();
 }
 
 app.UseCors();
