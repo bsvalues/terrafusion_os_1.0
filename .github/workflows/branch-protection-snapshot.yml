@@ -19,17 +19,17 @@
 
 name: Branch Protection Snapshot
 
+# Push-only per platform.json — this workflow documents required-checks list
+# as code (drift-guard against scripts/governance/branch-protection.sh). It is
+# NOT a merge gate, so it does not need a pull_request trigger. PR-time drift
+# is caught when the file diff renders in review.
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/branch-protection-snapshot.yml'
-      - 'scripts/governance/branch-protection.sh'
-      - 'docs/governance/branch-protection.md'
   push:
     branches: [main]
     paths:
       - '.github/workflows/branch-protection-snapshot.yml'
       - 'scripts/governance/branch-protection.sh'
+      - 'docs/governance/branch-protection.md'
 
 jobs:
   snapshot:
