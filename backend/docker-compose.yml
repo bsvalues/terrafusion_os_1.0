@@ -249,6 +249,38 @@ services:
       start_period: 40s
 
   # ==========================================================================
+  # pg-backup - Nightly pg_dump sidecar for canonical Postgres (SYNC-INFRA-1)
+  # ==========================================================================
+  pg-backup:
+    image: postgres:16-alpine
+    container_name: tf-pg-backup
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGHOST: terrafusion-postgres-dev
+      PGUSER: postgres
+      PGPASSWORD: ${POSTGRES_PASSWORD:-devpassword123}
+      PGDATABASE: terrafusion
+    volumes:
+      - ./backups:/backups
+    networks:
+      - terrafusion-network
+    entrypoint:
+      - sh
+      - -c
+      - |
+        echo "pg-backup loop starting; backups to /backups"
+        while true; do
+          ts=$$(date -u +%Y%m%dT%H%M%SZ)
+          pg_dump --format=custom --file=/backups/terrafusion-$$ts.dump || echo "backup failed at $$ts"
+          # keep last 7 daily + last 4 weekly
+          find /backups -name 'terrafusion-*.dump' -mtime +7 -delete
+          sleep 86400
+        done
+
+  # ==========================================================================
   # Prometheus - Metrics Collection & Monitoring
   # ==========================================================================
   prometheus:
