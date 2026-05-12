@@ -1,6 +1,6 @@
 # TerraFusion OS 1.0
 
-**Government property-assessment operating system** — .NET 8 backend, React 18 frontend, AI swarm coordination, FISMA-HIGH compliance.
+**Government property-assessment operating system** — .NET 8 backend, React 18 frontend, AI swarm coordination. FISMA-HIGH is a **posture target**, not a current accreditation — see [`docs/security/baseline.md`](docs/security/baseline.md) for the honest current-vs-target table.
 
 [![Seal Gate](https://img.shields.io/badge/CI-Seal%20Gate-green?logo=githubactions)](https://github.com/bsvalues/terrafusion_os_1.0/actions)
 [![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
@@ -179,11 +179,11 @@ See [AGENTS.md](./AGENTS.md) for full governance rules.
 
 ## Security & Compliance
 
-- **FISMA-HIGH** compliance target (NIST 800-53)
-- **Sovereign County model** — data isolation per county
-- **Audit fields** auto-populated on all entities (CreatedAt, UpdatedAt, CreatedBy, UpdatedBy)
-- **PII redaction** in TerraTrace feed (SSN, email, phone patterns)
-- **Snyk** scanning on every PR (594 security tests)
+- **FISMA-HIGH** is a **posture target** (NIST 800-53) — controls in progress; current open gaps are itemised in [`docs/security/baseline.md`](docs/security/baseline.md).
+- **Sovereign County model** — per-deployment data isolation; defense-in-depth EF query filters are partial (AC-4 open).
+- **Audit fields** exist as a forward contract on entities; the `AuditableEntityInterceptor` that would auto-populate them is **not yet implemented** (AU-2 open).
+- **PII redaction** at canonical write-time for confidential owners (`PacsOwnerCanonicalProjector` blanks FirstName/LastName/BirthDt when ConfidentialFlag=true) — implemented.
+- **Snyk** scanning on every PR.
 
 ---
 

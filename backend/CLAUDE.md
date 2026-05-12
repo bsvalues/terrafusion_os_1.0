@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-**TerraFusion OS Backend** is the .NET 8 microservices architecture for a government operating system with AI-powered property assessment, tax processing, and public sector management. This is NOT a simple web application - it's a complete operating system with 1,008 AI agents, real Harris PACS integration, and FISMA-HIGH compliance.
+**TerraFusion OS Backend** is the .NET 8 microservices architecture for a government operating system with AI-powered property assessment, tax processing, and public sector management. AI swarm coordination, real Harris PACS integration, FISMA-HIGH **posture target** (NOT a current accreditation — see [`../docs/security/baseline.md`](../docs/security/baseline.md) for the open-gap table).
 
 **Critical Context**: Read `.github/copilot-instructions.md` first - it contains essential government compliance requirements and AI swarm coordination rules.
 
@@ -167,7 +167,7 @@ public class Entity
 }
 ```
 
-These are automatically populated by `AuditableEntityInterceptor` in `TerraFusionDbContext.SaveChangesAsync()`.
+**Planned**: these fields will be automatically populated by an `AuditableEntityInterceptor` registered on `TerraFusionDbContext.SaveChangesAsync()`. **Current state**: the interceptor is NOT yet implemented (Prometheus audit AU-2; tracked for PR-2 of the immediate-week tranche). Today these fields are stamped inconsistently across services — `AuditLogs` writes hardcoded `UserId="System"`. Do not treat existing audit columns as proof of attribution; see [`../docs/security/baseline.md`](../docs/security/baseline.md).
 
 ### 2. Service Registration Pattern
 
@@ -286,7 +286,7 @@ app.MapHub<MyHub>("/hubs/my-hub");
 2. **Authorization**: Role-based access control (RBAC)
 3. **Audit Logging**: All operations logged to `AuditLogs` table
 4. **Encryption**: Data at rest and in transit
-5. **Compliance**: FISMA-HIGH, NIST 800-53
+5. **Compliance posture target** (NOT current accreditation): FISMA-HIGH, NIST 800-53 — see [`../docs/security/baseline.md`](../docs/security/baseline.md) for open gaps
 
 ### County Data Isolation
 
