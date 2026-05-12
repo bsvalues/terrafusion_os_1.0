@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-**TerraFusion OS 1.0** is a complete government operating system - NOT a web application. It's a production platform with 1,008 operational AI agents, real county property data (89,247 Benton County parcels), and FISMA-HIGH compliance serving 39+ Washington State counties.
+**TerraFusion OS 1.0** is a government operating system targeting Washington State counties — .NET 8 backend, React 18 frontend, AI swarm coordination, real Benton County property data (89,247 parcels). FISMA-HIGH is a **posture target, not a current accreditation** — controls are in progress; see [`docs/security/baseline.md`](docs/security/baseline.md) for the honest current-vs-target table.
 
 **CRITICAL**: Read `.github/copilot-instructions.md` FIRST - contains essential government compliance requirements, AI swarm coordination rules, and testing architecture.
 
@@ -175,16 +175,22 @@ npm run gates                  # Verify coverage (97%+), LCP (<2500ms), a11y (0 
 
 ## Critical Development Rules
 
-### 1. Government Compliance (FISMA-HIGH)
+### 1. Government Compliance (FISMA-HIGH posture target)
 
-**NEVER modify audit fields** - Auto-populated for FISMA compliance:
+> **Status:** FISMA-HIGH is the destination, not the current state. See [`docs/security/baseline.md`](docs/security/baseline.md) for open gaps (AC-3, AU-2, SC-12, IA-2, AC-4). Treat the rules below as **forward contracts** for new code — do not interpret them as proof that today's runtime is compliant.
+
+**NEVER modify audit fields** — they exist on entities as the contract surface for the planned audit-stamping interceptor:
 
 ```csharp
-// Backend entities - automatically set by AuditableEntityInterceptor
-public DateTime CreatedAt { get; set; }  // Auto-set on insert
-public DateTime UpdatedAt { get; set; }  // Auto-set on update
-public string CreatedBy { get; set; }    // Auto-set from HttpContext
-public string UpdatedBy { get; set; }    // Auto-set from HttpContext
+// Backend entities - audit fields are the forward contract.
+// NOTE: An `AuditableEntityInterceptor` is referenced in older docs but is
+// NOT currently implemented (Prometheus audit, AU-2). Today these fields
+// are stamped inconsistently or left at defaults. Do not rely on them for
+// real attribution until PR-2 (auth criticals) lands the interceptor.
+public DateTime CreatedAt { get; set; }  // Target: auto-set on insert
+public DateTime UpdatedAt { get; set; }  // Target: auto-set on update
+public string CreatedBy { get; set; }    // Target: auto-set from HttpContext
+public string UpdatedBy { get; set; }    // Target: auto-set from HttpContext
 ```
 
 **County data isolation** - Sovereign County model (multi-county operations require approval):
@@ -488,7 +494,7 @@ npm run ai-agent-briefing
 
 **THE TERRAFUSION WAY**: Execute with excellence. This is production government infrastructure serving real citizens with real property data. Quality, compliance, and reliability are non-negotiable. Every decision must consider:
 
-1. **Government compliance** (FISMA-HIGH, NIST 800-53)
+1. **Government compliance posture** (FISMA-HIGH / NIST 800-53 as target — current gaps tracked in [`docs/security/baseline.md`](docs/security/baseline.md))
 2. **Citizen data protection** (Sovereign County isolation)
 3. **AI swarm coordination** (1,008 agents in production)
 4. **Real-world integration** (Harris PACS as the legacy source database; Aumentum and other county-specific systems where applicable; Tyler Vision is NOT in Benton's stack)
@@ -499,4 +505,4 @@ npm run ai-agent-briefing
 **Last Updated**: February 2026
 **Version**: TerraFusion OS 1.0
 **Classification**: Government Operating System Platform
-**Compliance**: FISMA-HIGH, NIST 800-53, WCAG 2.1 AA
+**Compliance posture target** (not current accreditation): FISMA-HIGH, NIST 800-53, WCAG 2.1 AA — see [`docs/security/baseline.md`](docs/security/baseline.md)
