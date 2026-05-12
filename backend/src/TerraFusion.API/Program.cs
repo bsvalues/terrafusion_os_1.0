@@ -2370,6 +2370,14 @@ builder.Services.AddScoped<IDatabaseInitializationService, DatabaseInitializatio
 // TEMPORARILY DISABLED - StartAsync completes immediately, causing shutdown
 // builder.Services.AddHostedService<DatabaseInitializationHostedService>();
 
+// SYNC-INFRA-1: Idempotent migration runner — applies pending migrations on startup
+// unless explicitly disabled. Set TF_SKIP_AUTO_MIGRATE=true to opt out (e.g. for production
+// where migrations are applied by a separate operator step).
+if (!builder.Configuration.GetValue<bool>("TF_SKIP_AUTO_MIGRATE", defaultValue: false))
+{
+    builder.Services.AddHostedService<TerraFusion.API.HostedServices.AutoMigrateHostedService>();
+}
+
 // Register TerraLevy DbContext (PostgreSQL with SQLite fallback for dev)
 builder.Services.AddDbContext<LevyDbContext>(options =>
 {
