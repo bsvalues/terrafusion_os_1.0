@@ -27,6 +27,10 @@ function writeConfig(root, relativePath, value) {
   fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`);
 }
 
+function expectedApiContentRoot(root) {
+  return path.join(root, 'backend', 'src', 'TerraFusion.API');
+}
+
 function runScript(root, fixturePath) {
   return spawnSync('node', [scriptPath, root], {
     cwd: process.cwd(),
@@ -64,12 +68,17 @@ test('passes when runtime endpoint confirms expected TerraFusion DB', () => {
     serverRedacted: 'localhost',
     database: 'terrafusion_june10',
     expectedJune10Database: 'terrafusion_june10',
+    contentRootPath: expectedApiContentRoot(root),
+    expectedBentonParcelCount: 10,
+    isBentonParcelCountExpected: true,
     isExpectedJune10RuntimeDb: true,
     migrationState: { appliedCount: 10, pendingCount: 0, latestApplied: '20260502000000_Runtime' },
     rowCounts: {
       counties: 1,
       properties: 10,
+      tfParcels: 10,
       comparableSales: 5,
+      tfSales: 5,
       canonicalSaleQualifications: 3,
     },
     passed: true,
@@ -83,12 +92,66 @@ test('passes when runtime endpoint confirms expected TerraFusion DB', () => {
   const report = readReport(root);
   assert.equal(report.passed, true);
   assert.equal(report.identity.database, 'terrafusion_june10');
+  assert.equal(report.identity.isExpectedWorkspace, true);
   assert.equal(report.identity.rowCounts.properties, 10);
+  assert.equal(report.identity.rowCounts.tfParcels, 10);
   assert.ok(
     report.configExpectationSources.some(
       source => source.key === 'BentonCounty.ParcelCount' && source.value === 10
     )
   );
+});
+
+test('ignores stale non-RuntimeTruth parcel count configs when runtime expected count is unset', () => {
+  const root = makeTempRepo('tf-runtime-db-identity-stale-count-');
+  writeConfig(root, 'backend/src/TerraFusion.API/appsettings.Development.json', {
+    RuntimeTruth: {
+      ExpectedJune10Database: 'terrafusion',
+    },
+    BentonCounty: {
+      ParcelCount: 89447,
+    },
+  });
+  writeConfig(root, 'backend/src/TerraFusion.API/appsettings.BentonCounty.json', {
+    County: {
+      PropertyCount: 89447,
+    },
+  });
+  const fixturePath = writeFixture(root, {
+    apiBaseUrl: 'http://127.0.0.1',
+    environment: 'Development',
+    provider: 'Npgsql.EntityFrameworkCore.PostgreSQL',
+    connectionStringName: 'DefaultConnection',
+    serverRedacted: 'localhost',
+    database: 'terrafusion',
+    expectedJune10Database: 'terrafusion',
+    contentRootPath: expectedApiContentRoot(root),
+    expectedBentonParcelCount: null,
+    isExpectedJune10RuntimeDb: true,
+    isBentonParcelCountExpected: false,
+    migrationState: { appliedCount: 10, pendingCount: 0, latestApplied: '20260502000000_Runtime' },
+    rowCounts: {
+      counties: 1,
+      properties: 128788,
+      tfParcels: 83326,
+      comparableSales: 5,
+      canonicalSaleQualifications: 0,
+    },
+    passed: true,
+    blockers: [],
+    warnings: [],
+  });
+
+  const result = runScript(root, fixturePath);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+
+  const report = readReport(root);
+  assert.equal(report.passed, true);
+  assert.deepEqual(
+    report.configExpectationSources.map(source => source.key),
+    ['RuntimeTruth.ExpectedJune10Database']
+  );
+  assert.equal(report.configExpectationSources[0].matchesRuntimeExpectation, true);
 });
 
 test('fails closed when runtime endpoint cannot confirm expected DB', () => {
@@ -101,6 +164,7 @@ test('fails closed when runtime endpoint cannot confirm expected DB', () => {
     serverRedacted: null,
     database: null,
     expectedJune10Database: null,
+    contentRootPath: expectedApiContentRoot(root),
     isExpectedJune10RuntimeDb: false,
     migrationState: { appliedCount: null, pendingCount: null, latestApplied: null },
     rowCounts: {
@@ -120,4 +184,51 @@ test('fails closed when runtime endpoint cannot confirm expected DB', () => {
   const report = readReport(root);
   assert.equal(report.passed, false);
   assert.ok(report.blockers.some(item => item.includes('Expected June 10 TerraFusion DB')));
+});
+
+test('fails closed when runtime API content root belongs to a different checkout', () => {
+  const root = makeTempRepo('tf-runtime-db-identity-worktree-mismatch-');
+  writeConfig(root, 'backend/src/TerraFusion.API/appsettings.Development.json', {
+    RuntimeTruth: {
+      ExpectedJune10Database: 'terrafusion',
+    },
+  });
+  const fixturePath = writeFixture(root, {
+    apiBaseUrl: 'http://127.0.0.1',
+    environment: 'Development',
+    provider: 'Npgsql.EntityFrameworkCore.PostgreSQL',
+    connectionStringName: 'DefaultConnection',
+    serverRedacted: 'localhost',
+    database: 'terrafusion',
+    expectedJune10Database: 'terrafusion',
+    contentRootPath: path.join(
+      os.tmpdir(),
+      'different-worktree',
+      'backend',
+      'src',
+      'TerraFusion.API'
+    ),
+    expectedBentonParcelCount: null,
+    isExpectedJune10RuntimeDb: true,
+    isBentonParcelCountExpected: false,
+    migrationState: { appliedCount: 10, pendingCount: 0, latestApplied: '20260502000000_Runtime' },
+    rowCounts: {
+      counties: 39,
+      tfParcels: 3197521,
+      tfSales: 98,
+      comparableSales: 259102,
+      canonicalSaleQualifications: 251484,
+    },
+    passed: true,
+    blockers: [],
+    warnings: [],
+  });
+
+  const result = runScript(root, fixturePath);
+  assert.notEqual(result.status, 0);
+
+  const report = readReport(root);
+  assert.equal(report.passed, false);
+  assert.equal(report.identity.isExpectedWorkspace, false);
+  assert.ok(report.blockers.some(item => item.includes('different workspace')));
 });

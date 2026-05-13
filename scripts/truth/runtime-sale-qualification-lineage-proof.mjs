@@ -4,7 +4,7 @@
  * Track 1E - Runtime Sale Qualification Lineage Proof
  *
  * Proves whether a county has a usable runtime qualified-sale pool and whether
- * that pool is backed by canonical landing rows or by ComparableSales runtime
+ * that pool is backed by canonical landing rows or by TerraFusion runtime
  * recommendations. This script does not mutate qualification data.
  */
 
@@ -97,7 +97,9 @@ async function probeCounty(candidate) {
     sourceLineageBlockers: candidate.sourceLineageBlockers ?? [],
     runtimeMockDataEnabled: lineage.payload?.runtimeMockDataEnabled ?? null,
     eliteOperationsMockDataEnabled: lineage.payload?.eliteOperationsMockDataEnabled ?? null,
-    comparableSales: numberAt(lineage.payload, ['canonicalRuntime', 'comparableSales']),
+    tfSales:
+      numberAt(lineage.payload, ['canonicalRuntime', 'tfSales']) ||
+      numberAt(lineage.payload, ['canonicalRuntime', 'comparableSales']),
     canonicalSaleQualifications: numberAt(lineage.payload, [
       'canonicalRuntime',
       'canonicalSaleQualifications',
@@ -192,8 +194,7 @@ function evaluate(proof) {
   if (!proof.selectedCountyEchoed) blockers.push('Runtime lineage did not echo selected county.');
   if (proof.silentBentonFallbackDetected) blockers.push('Silent Benton fallback detected.');
   if (proof.runtimeMockDataEnabled) blockers.push('County runtime mock data is enabled.');
-  if (proof.comparableSales <= 0) blockers.push('No ComparableSales runtime rows counted.');
-  if (proof.sourceSales <= 0) blockers.push('No source sales rows counted.');
+  if (proof.tfSales <= 0) blockers.push('No TerraFusion canonical sale rows counted.');
   if (proof.allTime.totalSales <= 0) blockers.push('No sales found in qualification status.');
   if (proof.allTime.hasRecommendation <= 0) {
     blockers.push('No runtime qualification recommendations found.');
@@ -273,7 +274,7 @@ function renderMarkdown(proofs, summary) {
       proof.county,
       proof.classification,
       proof.sourceLineagePassed ? 'yes' : 'no',
-      String(proof.comparableSales),
+      String(proof.tfSales),
       String(proof.sourceSales),
       String(proof.canonicalSaleQualifications),
       String(proof.allTime.totalSales),
@@ -295,7 +296,7 @@ function renderMarkdown(proofs, summary) {
     `Generated: ${new Date().toISOString()}`,
     `Runtime base URL: \`${runtimeBaseUrl}\``,
     '',
-    '| County | Classification | Source Lineage Trusted | Comparable Sales | Source Sales | Canonical Qualifications | All Sales | Recommendations | Recommendation Coverage % | Window Sales | Effective Qualified | Decision Qualified | Recommendation Fallback | Result | Blockers | Warnings |',
+    '| County | Classification | Source Lineage Trusted | TF Sales | Source Sales | Canonical Qualifications | All Sales | Recommendations | Recommendation Coverage % | Window Sales | Effective Qualified | Decision Qualified | Recommendation Fallback | Result | Blockers | Warnings |',
     '|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---|---|',
     ...rows,
     '',
@@ -315,7 +316,7 @@ function renderMarkdown(proofs, summary) {
     '',
     '## Interpretation',
     '',
-    'A PASS means the live runtime has a usable qualified-sale pool without silent fallback or county-row mock data. Warnings identify weaker lineage, especially when the pool is backed by ComparableSales recommendations instead of CanonicalSaleQualifications landing rows.',
+    'A PASS means the live runtime has a usable qualified-sale pool without silent fallback or county-row mock data. Warnings identify weaker lineage, especially when the pool is backed by runtime recommendations instead of CanonicalSaleQualifications landing rows.',
     '',
   ].join('\n');
 }

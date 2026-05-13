@@ -70,15 +70,11 @@ function normalizePayload(payload) {
       countyName: pick(summary, 'countyName', 'CountyName') ?? null,
       fipsCode: pick(summary, 'fipsCode', 'FipsCode') ?? null,
       propertyRows: pick(summary, 'propertyRows', 'PropertyRows') ?? 0,
-      distinctParcelIds: pick(summary, 'distinctParcelIds', 'DistinctParcelIds') ?? 0,
       distinctParcelNumbers: pick(summary, 'distinctParcelNumbers', 'DistinctParcelNumbers') ?? 0,
-      distinctPropertyIds: pick(summary, 'distinctPropertyIds', 'DistinctPropertyIds') ?? 0,
-      duplicateParcelIdGroups:
-        pick(summary, 'duplicateParcelIdGroups', 'DuplicateParcelIdGroups') ?? 0,
       duplicateParcelNumberGroups:
         pick(summary, 'duplicateParcelNumberGroups', 'DuplicateParcelNumberGroups') ?? 0,
-      maxRowsPerParcelId: pick(summary, 'maxRowsPerParcelId', 'MaxRowsPerParcelId') ?? 0,
-      taxYears: pick(summary, 'taxYears', 'TaxYears') ?? [],
+      maxRowsPerParcelNumber:
+        pick(summary, 'maxRowsPerParcelNumber', 'MaxRowsPerParcelNumber') ?? 0,
     })),
     bentonDecision: pick(payload, 'bentonDecision', 'BentonDecision') ?? null,
     passed: pick(payload, 'passed', 'Passed') === true,
@@ -119,12 +115,9 @@ function renderMarkdown(report) {
       summary.countyName ?? '-',
       summary.fipsCode ?? '-',
       String(summary.propertyRows),
-      String(summary.distinctParcelIds),
       String(summary.distinctParcelNumbers),
-      String(summary.distinctPropertyIds),
-      String(summary.duplicateParcelIdGroups),
       String(summary.duplicateParcelNumberGroups),
-      String(summary.maxRowsPerParcelId),
+      String(summary.maxRowsPerParcelNumber),
     ].join(' | ')
   );
   const decision = content.bentonDecision ?? {};
@@ -142,13 +135,12 @@ function renderMarkdown(report) {
     `- Expected Benton parcel count: ${content.expectedBentonParcelCount ?? '-'}`,
     `- Benton classification: ${decision.classification ?? '-'}`,
     `- Property rows match expected: ${decision.propertyRowsMatchExpected ? 'yes' : 'no'}`,
-    `- Distinct ParcelIds match expected: ${decision.distinctParcelIdsMatchExpected ? 'yes' : 'no'}`,
     `- Distinct ParcelNumbers match expected: ${decision.distinctParcelNumbersMatchExpected ? 'yes' : 'no'}`,
     '',
-    '## County Property Shape',
+    '## County Canonical Parcel Shape',
     '',
-    '| County | FIPS | Property Rows | Distinct ParcelIds | Distinct ParcelNumbers | Distinct PropertyIds | Duplicate ParcelId Groups | Duplicate ParcelNumber Groups | Max Rows Per ParcelId |',
-    '|---|---|---:|---:|---:|---:|---:|---:|---:|',
+    '| County | FIPS | Active TF Parcel Rows | Distinct ParcelNumbers | Duplicate ParcelNumber Groups | Max Rows Per ParcelNumber |',
+    '|---|---|---:|---:|---:|---:|',
     ...rows,
     '',
     '## Blockers',
@@ -161,7 +153,7 @@ function renderMarkdown(report) {
     '',
     '## Trust Rule',
     '',
-    'This audit reads TerraFusion DB runtime tables only. It does not inspect upstream source systems or bridge credentials.',
+    'This audit reads TerraFusion DB canonical runtime tables only. It does not inspect upstream source systems or bridge credentials.',
   ].join('\n');
 }
 

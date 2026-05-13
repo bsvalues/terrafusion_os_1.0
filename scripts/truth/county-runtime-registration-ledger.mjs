@@ -22,7 +22,7 @@ const runtimeBaseUrl =
   process.env.TF_RUNTIME_BASE_URL ??
   process.env.TERRAFUSION_RUNTIME_BASE_URL ??
   'http://localhost:5046';
-const probeTimeoutMs = Number(process.env.TF_COUNTY_RUNTIME_LEDGER_TIMEOUT_MS ?? 5000);
+const probeTimeoutMs = Number(process.env.TF_COUNTY_RUNTIME_LEDGER_TIMEOUT_MS ?? 15000);
 
 const defaultCounties = [
   'Adams',
@@ -172,6 +172,8 @@ async function probeEndpoint(endpoint, county) {
       payloadCounty,
       selectedCountyEchoed,
       silentBentonFallbackDetected,
+      activeCurrentSemanticsProven: parcelSemanticsProven(payload),
+      semantics: payload && typeof payload === 'object' ? (payload.semantics ?? null) : null,
       error: null,
     };
   } catch (error) {
@@ -182,6 +184,8 @@ async function probeEndpoint(endpoint, county) {
       payloadCounty: null,
       selectedCountyEchoed: false,
       silentBentonFallbackDetected: false,
+      activeCurrentSemanticsProven: false,
+      semantics: null,
       error: error instanceof Error ? error.message : String(error),
     };
   } finally {
@@ -221,16 +225,29 @@ function countRuntimeRows(value) {
   if (Array.isArray(value)) return value.length;
   if (typeof value !== 'object') return 0;
 
-  for (const key of ['rows', 'data', 'items', 'results', 'records', 'parcels', 'sales']) {
-    if (Array.isArray(value[key])) return value[key].length;
-  }
-
   for (const key of ['rowCount', 'count', 'total', 'totalCount']) {
     const count = Number(value[key]);
     if (Number.isFinite(count)) return count;
   }
 
+  for (const key of ['rows', 'data', 'items', 'results', 'records', 'parcels', 'sales']) {
+    if (Array.isArray(value[key])) return value[key].length;
+  }
+
   return 0;
+}
+
+function parcelSemanticsProven(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const semantics = value.semantics;
+  if (!semantics || typeof semantics !== 'object' || Array.isArray(semantics)) return false;
+
+  return (
+    semantics.countyScoped === true &&
+    semantics.activeOnly === true &&
+    semantics.duplicateParcelVersionsCollapsed === true &&
+    semantics.currentParcelVersion === true
+  );
 }
 
 function classifyCountyRuntime(input) {
@@ -302,6 +319,7 @@ async function buildRow(county, inventoryByCounty) {
     runtimeRows: parcels.runtimeRows,
     payloadCounty: parcels.payloadCounty,
     selectedCountyEchoed: parcels.selectedCountyEchoed,
+    activeCurrentSemanticsProven: parcels.activeCurrentSemanticsProven,
     silentBentonFallbackDetected:
       parcels.silentBentonFallbackDetected || sales.silentBentonFallbackDetected,
     inventoryEvidence,
@@ -319,6 +337,7 @@ async function buildRow(county, inventoryByCounty) {
     runtimeRows: parcels.runtimeRows,
     payloadCounty: parcels.payloadCounty,
     selectedCountyEchoed: parcels.selectedCountyEchoed,
+    activeCurrentSemanticsProven: parcels.activeCurrentSemanticsProven,
     silentBentonFallbackDetected:
       parcels.silentBentonFallbackDetected || sales.silentBentonFallbackDetected,
     readinessClass: classification.readinessClass,

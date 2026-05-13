@@ -66,9 +66,19 @@ function pick(object, ...names) {
 function normalizePayload(payload) {
   const rowCounts = pick(payload, 'rowCounts', 'RowCounts') ?? {};
   const migrationState = pick(payload, 'migrationState', 'MigrationState') ?? {};
+  const contentRootPath = pick(payload, 'contentRootPath', 'ContentRootPath') ?? null;
+  const expectedContentRootPath = path.join(repoRoot, 'backend', 'src', 'TerraFusion.API');
+  const isExpectedWorkspace =
+    typeof contentRootPath === 'string' &&
+    path.resolve(contentRootPath).toLowerCase() ===
+      path.resolve(expectedContentRootPath).toLowerCase();
+
   return {
     apiBaseUrl: pick(payload, 'apiBaseUrl', 'ApiBaseUrl') ?? null,
     environment: pick(payload, 'environment', 'Environment') ?? null,
+    contentRootPath,
+    expectedContentRootPath,
+    isExpectedWorkspace,
     provider: pick(payload, 'provider', 'Provider') ?? null,
     connectionStringName: pick(payload, 'connectionStringName', 'ConnectionStringName') ?? null,
     serverRedacted: pick(payload, 'serverRedacted', 'ServerRedacted') ?? null,
@@ -92,6 +102,8 @@ function normalizePayload(payload) {
       counties: pick(rowCounts, 'counties', 'Counties') ?? null,
       properties: pick(rowCounts, 'properties', 'Properties') ?? null,
       comparableSales: pick(rowCounts, 'comparableSales', 'ComparableSales') ?? null,
+      tfParcels: pick(rowCounts, 'tfParcels', 'TfParcels') ?? null,
+      tfSales: pick(rowCounts, 'tfSales', 'TfSales') ?? null,
       canonicalSaleQualifications:
         pick(rowCounts, 'canonicalSaleQualifications', 'CanonicalSaleQualifications') ?? null,
     },
@@ -126,15 +138,20 @@ function readConfigExpectationSources(identity) {
         key: 'RuntimeTruth.ExpectedBentonParcelCount',
         value: parsed.RuntimeTruth?.ExpectedBentonParcelCount,
       },
-      {
-        key: 'BentonCounty.ParcelCount',
-        value: parsed.BentonCounty?.ParcelCount,
-      },
-      {
-        key: 'County.PropertyCount',
-        value: parsed.County?.PropertyCount,
-      },
     ];
+
+    if (expectedCount !== null && expectedCount !== undefined) {
+      values.push(
+        {
+          key: 'BentonCounty.ParcelCount',
+          value: parsed.BentonCounty?.ParcelCount,
+        },
+        {
+          key: 'County.PropertyCount',
+          value: parsed.County?.PropertyCount,
+        }
+      );
+    }
 
     for (const entry of values) {
       if (entry.value === undefined || entry.value === null) continue;
@@ -171,6 +188,13 @@ function evaluate(probe) {
     if (!identity.passed) {
       blockers.push(...identity.blockers);
     }
+    if (!identity.contentRootPath) {
+      blockers.push('Runtime API did not report a content root path.');
+    } else if (!identity.isExpectedWorkspace) {
+      blockers.push(
+        `Runtime API content root belongs to a different workspace: ${identity.contentRootPath}.`
+      );
+    }
     warnings.push(...identity.warnings);
   }
 
@@ -200,6 +224,9 @@ function renderMarkdown(report) {
     `- Endpoint status: ${report.endpointStatus ?? 'unreachable'}`,
     `- API base URL: ${identity.apiBaseUrl ?? '-'}`,
     `- Environment: ${identity.environment ?? '-'}`,
+    `- Content root: ${identity.contentRootPath ?? '-'}`,
+    `- Expected content root: ${identity.expectedContentRootPath ?? '-'}`,
+    `- Expected workspace: ${identity.isExpectedWorkspace ? 'yes' : 'no'}`,
     `- Provider: ${identity.provider ?? '-'}`,
     `- Connection string name: ${identity.connectionStringName ?? '-'}`,
     `- Server/host: ${identity.serverRedacted ?? '-'}`,
@@ -235,6 +262,8 @@ function renderMarkdown(report) {
     `- Counties: ${rowCounts.counties ?? '-'}`,
     `- Properties: ${rowCounts.properties ?? '-'}`,
     `- ComparableSales: ${rowCounts.comparableSales ?? '-'}`,
+    `- canonical_tf.tf_parcel: ${rowCounts.tfParcels ?? '-'}`,
+    `- canonical_tf.tf_sale: ${rowCounts.tfSales ?? '-'}`,
     `- CanonicalSaleQualifications: ${rowCounts.canonicalSaleQualifications ?? '-'}`,
     '',
     '## Blockers',

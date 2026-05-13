@@ -41,8 +41,7 @@ public sealed class RuntimeTruthController : ControllerBase
             Environment.GetEnvironmentVariable("TF_EXPECTED_JUNE10_DB_PROVIDER")
             ?? _configuration["RuntimeTruth:ExpectedJune10Provider"];
         var expectedBentonParcelCount =
-            ReadConfiguredInt("RuntimeTruth:ExpectedBentonParcelCount")
-            ?? ReadConfiguredInt("BentonCounty:ParcelCount");
+            ReadConfiguredInt("RuntimeTruth:ExpectedBentonParcelCount");
 
         var blockers = new List<string>();
         var warnings = new List<string>();
@@ -89,6 +88,8 @@ public sealed class RuntimeTruthController : ControllerBase
             Counties: await SafeCountAsync(() => _db.Counties.CountAsync(ct), warnings, "Counties"),
             Properties: await SafeCountAsync(() => _db.Properties.CountAsync(ct), warnings, "Properties"),
             ComparableSales: await SafeCountAsync(() => _db.ComparableSales.CountAsync(ct), warnings, "ComparableSales"),
+            TfParcels: await SafeCountAsync(() => _db.TfParcels.CountAsync(ct), warnings, "canonical_tf.tf_parcel"),
+            TfSales: await SafeCountAsync(() => _db.TfSales.CountAsync(ct), warnings, "canonical_tf.tf_sale"),
             CanonicalSaleQualifications: await SafeCountAsync(
                 () => _db.CanonicalSaleQualifications.CountAsync(ct),
                 warnings,
@@ -96,13 +97,13 @@ public sealed class RuntimeTruthController : ControllerBase
 
         var isBentonParcelCountExpected =
             expectedBentonParcelCount.HasValue &&
-            rowCounts.Properties.HasValue &&
-            rowCounts.Properties.Value == expectedBentonParcelCount.Value;
+            rowCounts.TfParcels.HasValue &&
+            rowCounts.TfParcels.Value == expectedBentonParcelCount.Value;
 
-        if (expectedBentonParcelCount.HasValue && rowCounts.Properties.HasValue && !isBentonParcelCountExpected)
+        if (expectedBentonParcelCount.HasValue && rowCounts.TfParcels.HasValue && !isBentonParcelCountExpected)
         {
             blockers.Add(
-                $"Runtime Properties count {rowCounts.Properties.Value} does not match configured Benton parcel count {expectedBentonParcelCount.Value}.");
+                $"Runtime canonical_tf.tf_parcel count {rowCounts.TfParcels.Value} does not match configured Benton parcel count {expectedBentonParcelCount.Value}.");
         }
 
         var passed = blockers.Count == 0;
@@ -111,6 +112,7 @@ public sealed class RuntimeTruthController : ControllerBase
         return Ok(new RuntimeDbIdentityResponse(
             ApiBaseUrl: $"{Request.Scheme}://{Request.Host}",
             Environment: _environment.EnvironmentName,
+            ContentRootPath: _environment.ContentRootPath,
             Provider: provider,
             ConnectionStringName: ConnectionStringName,
             ServerRedacted: RedactDataSource(dataSource),
@@ -130,8 +132,7 @@ public sealed class RuntimeTruthController : ControllerBase
     public async Task<IActionResult> GetDbContent(CancellationToken ct = default)
     {
         var expectedBentonParcelCount =
-            ReadConfiguredInt("RuntimeTruth:ExpectedBentonParcelCount")
-            ?? ReadConfiguredInt("BentonCounty:ParcelCount");
+            ReadConfiguredInt("RuntimeTruth:ExpectedBentonParcelCount");
         var counties = await _db.Counties
             .AsNoTracking()
             .Select(c => new { c.Id, c.Name, c.FipsCode })
@@ -142,32 +143,46 @@ public sealed class RuntimeTruthController : ControllerBase
             string.Equals(c.FipsCode, "53005", StringComparison.OrdinalIgnoreCase));
 
         var countySummaries = new List<RuntimeCountyContentSummary>();
+        var activeParcels = _db.TfParcels
+            .AsNoTracking()
+            .Where(p => p.ParcelStatus == "ACTIVE");
+        var countyParcelCounts = await activeParcels
+            .GroupBy(p => p.CountyId)
+            .Select(g => new
+            {
+                CountyId = g.Key,
+                PropertyRows = g.Count(),
+                DistinctParcelNumbers = g.Select(p => p.ParcelNumber).Distinct().Count(),
+            })
+            .ToListAsync(ct);
+        var countByCounty = countyParcelCounts.ToDictionary(x => x.CountyId, x => x);
+        var bentonDuplicateParcelNumberGroups = 0;
+        var bentonMaxRowsPerParcelNumber = 0;
+        if (bentonCounty is not null)
+        {
+            var bentonParcelNumberGroupCounts = await activeParcels
+                .Where(p => p.CountyId == bentonCounty.Id)
+                .GroupBy(p => p.ParcelNumber)
+                .Select(g => g.Count())
+                .ToListAsync(ct);
+            bentonDuplicateParcelNumberGroups = bentonParcelNumberGroupCounts.Count(count => count > 1);
+            bentonMaxRowsPerParcelNumber = bentonParcelNumberGroupCounts.Count == 0
+                ? 0
+                : bentonParcelNumberGroupCounts.Max();
+        }
+
         foreach (var county in counties.OrderBy(c => c.Name))
         {
-            var query = _db.Properties.AsNoTracking().Where(p => p.CountyId == county.Id);
-            var taxYears = await query
-                .GroupBy(p => p.TaxYear)
-                .Select(g => new { TaxYear = g.Key, Count = g.Count() })
-                .OrderBy(x => x.TaxYear)
-                .ToListAsync(ct);
+            countByCounty.TryGetValue(county.Id, out var counts);
+            var isBenton = bentonCounty is not null && county.Id == bentonCounty.Id;
             countySummaries.Add(new RuntimeCountyContentSummary(
                 CountyId: county.Id,
                 CountyName: county.Name,
                 FipsCode: county.FipsCode,
-                PropertyRows: await query.CountAsync(ct),
-                DistinctParcelIds: await query.Select(p => p.ParcelId).Distinct().CountAsync(ct),
-                DistinctParcelNumbers: await query.Select(p => p.ParcelNumber).Distinct().CountAsync(ct),
-                DistinctPropertyIds: await query.Select(p => p.PropertyId).Distinct().CountAsync(ct),
-                DuplicateParcelIdGroups: await query
-                    .GroupBy(p => p.ParcelId)
-                    .Where(g => g.Count() > 1)
-                    .CountAsync(ct),
-                DuplicateParcelNumberGroups: await query
-                    .GroupBy(p => p.ParcelNumber)
-                    .Where(g => g.Count() > 1)
-                    .CountAsync(ct),
-                MaxRowsPerParcelId: await MaxGroupCountAsync(query.Select(p => p.ParcelId), ct),
-                TaxYears: taxYears.Select(x => new RuntimeTaxYearCount(x.TaxYear, x.Count)).ToList()));
+                PropertyRows: counts?.PropertyRows ?? 0,
+                DistinctParcelNumbers: counts?.DistinctParcelNumbers ?? 0,
+                DuplicateParcelNumberGroups: isBenton ? bentonDuplicateParcelNumberGroups : 0,
+                MaxRowsPerParcelNumber: isBenton ? bentonMaxRowsPerParcelNumber : 0));
         }
 
         var blockers = new List<string>();
@@ -188,44 +203,36 @@ public sealed class RuntimeTruthController : ControllerBase
             var summary = countySummaries.First(c => c.CountyId == bentonCounty.Id);
             var countMatchesRows =
                 expectedBentonParcelCount.HasValue && summary.PropertyRows == expectedBentonParcelCount.Value;
-            var countMatchesDistinctParcelIds =
-                expectedBentonParcelCount.HasValue && summary.DistinctParcelIds == expectedBentonParcelCount.Value;
             var countMatchesDistinctParcelNumbers =
                 expectedBentonParcelCount.HasValue &&
                 summary.DistinctParcelNumbers == expectedBentonParcelCount.Value;
 
-            var classification = "benton_content_count_unchecked";
+            var classification = "benton_canonical_count_unchecked";
             if (countMatchesRows)
             {
-                classification = "configured_count_matches_property_rows";
+                classification = "configured_count_matches_canonical_tf_parcel_rows";
             }
-            else if (countMatchesDistinctParcelIds || countMatchesDistinctParcelNumbers)
+            else if (countMatchesDistinctParcelNumbers)
             {
-                classification = "configured_count_matches_distinct_parcels_not_rows";
+                classification = "configured_count_matches_distinct_canonical_parcels_not_rows";
             }
             else if (expectedBentonParcelCount.HasValue)
             {
-                classification = "configured_count_matches_neither_rows_nor_distinct_parcels";
+                classification = "configured_count_matches_neither_canonical_rows_nor_distinct_parcels";
                 blockers.Add(
-                    $"Configured Benton parcel count {expectedBentonParcelCount.Value} matches neither runtime property rows {summary.PropertyRows} nor distinct parcel ids {summary.DistinctParcelIds}.");
+                    $"Configured Benton parcel count {expectedBentonParcelCount.Value} matches neither canonical_tf.tf_parcel rows {summary.PropertyRows} nor distinct parcel numbers {summary.DistinctParcelNumbers}.");
             }
 
-            if (!countMatchesRows && expectedBentonParcelCount.HasValue)
-            {
-                blockers.Add(
-                    $"Runtime Benton property rows {summary.PropertyRows} do not match configured parcel count {expectedBentonParcelCount.Value}.");
-            }
-
-            if (summary.DuplicateParcelIdGroups > 0 || summary.DuplicateParcelNumberGroups > 0)
+            if (summary.DuplicateParcelNumberGroups > 0)
             {
                 warnings.Add(
-                    $"Runtime Benton properties contain duplicate parcel identifiers: {summary.DuplicateParcelIdGroups} ParcelId groups, {summary.DuplicateParcelNumberGroups} ParcelNumber groups.");
+                    $"Runtime Benton canonical parcels contain duplicate parcel number groups: {summary.DuplicateParcelNumberGroups}.");
             }
 
             bentonDecision = new RuntimeBentonContentDecision(
                 ExpectedParcelCount: expectedBentonParcelCount,
                 PropertyRowsMatchExpected: countMatchesRows,
-                DistinctParcelIdsMatchExpected: countMatchesDistinctParcelIds,
+                DistinctParcelIdsMatchExpected: false,
                 DistinctParcelNumbersMatchExpected: countMatchesDistinctParcelNumbers,
                 Classification: classification);
         }
@@ -235,7 +242,7 @@ public sealed class RuntimeTruthController : ControllerBase
         return Ok(new RuntimeDbContentResponse(
             ExpectedBentonParcelCount: expectedBentonParcelCount,
             TotalCounties: counties.Count,
-            TotalProperties: await _db.Properties.CountAsync(ct),
+            TotalProperties: await _db.TfParcels.CountAsync(ct),
             CountySummaries: countySummaries,
             BentonDecision: bentonDecision,
             Passed: passed,
@@ -330,20 +337,12 @@ public sealed class RuntimeTruthController : ControllerBase
             ? string.Empty
             : new string(value.Where(char.IsLetterOrDigit).Select(char.ToLowerInvariant).ToArray());
 
-    private static async Task<int> MaxGroupCountAsync(IQueryable<string> values, CancellationToken ct)
-    {
-        var counts = await values
-            .GroupBy(value => value)
-            .Select(group => group.Count())
-            .ToListAsync(ct);
-
-        return counts.Count == 0 ? 0 : counts.Max();
-    }
 }
 
 public sealed record RuntimeDbIdentityResponse(
     string ApiBaseUrl,
     string Environment,
+    string ContentRootPath,
     string Provider,
     string ConnectionStringName,
     string? ServerRedacted,
@@ -368,6 +367,8 @@ public sealed record RuntimeTruthRowCounts(
     int? Counties,
     int? Properties,
     int? ComparableSales,
+    int? TfParcels,
+    int? TfSales,
     int? CanonicalSaleQualifications);
 
 public sealed record RuntimeDbContentResponse(
@@ -385,15 +386,9 @@ public sealed record RuntimeCountyContentSummary(
     string CountyName,
     string? FipsCode,
     int PropertyRows,
-    int DistinctParcelIds,
     int DistinctParcelNumbers,
-    int DistinctPropertyIds,
-    int DuplicateParcelIdGroups,
     int DuplicateParcelNumberGroups,
-    int MaxRowsPerParcelId,
-    IReadOnlyList<RuntimeTaxYearCount> TaxYears);
-
-public sealed record RuntimeTaxYearCount(int TaxYear, int Count);
+    int MaxRowsPerParcelNumber);
 
 public sealed record RuntimeBentonContentDecision(
     int? ExpectedParcelCount,

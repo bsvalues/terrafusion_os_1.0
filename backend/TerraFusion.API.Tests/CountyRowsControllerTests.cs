@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using TerraFusion.API.Controllers;
 using TerraFusion.API.Tests.TestHelpers;
 using TerraFusion.Core.Entities.Canonical;
+using TerraFusion.Core.Entities.CanonicalTf;
 using TerraFusion.Core.Entities.Pacs;
 using TerraFusion.Core.Entities;
 using TerraFusion.Data;
@@ -17,6 +18,8 @@ public sealed class CountyRowsControllerTests : IDisposable
     private readonly CountyRowsController _sut;
     private readonly Guid _bentonId = Guid.NewGuid();
     private readonly Guid _pacificId = Guid.NewGuid();
+    private readonly Guid _bentonTfParcelId = Guid.NewGuid();
+    private readonly Guid _pacificTfParcelId = Guid.NewGuid();
 
     public CountyRowsControllerTests()
     {
@@ -28,12 +31,21 @@ public sealed class CountyRowsControllerTests : IDisposable
             new County { Id = _pacificId, Name = "Pacific County", State = "WA", FipsCode = "53049" });
 
         _db.Properties.AddRange(
-            MakeProperty(_bentonId, "BENTON-001"),
-            MakeProperty(_pacificId, "PACIFIC-001"));
+            MakeProperty(_bentonId, "BENTON-LEGACY-001"),
+            MakeProperty(_pacificId, "PACIFIC-LEGACY-001"));
 
         _db.ComparableSales.AddRange(
-            MakeSale(_bentonId, "BENTON-001"),
-            MakeSale(_pacificId, "PACIFIC-001"));
+            MakeLegacySale(_bentonId, "BENTON-LEGACY-001"),
+            MakeLegacySale(_pacificId, "PACIFIC-LEGACY-001"));
+
+        _db.TfParcels.AddRange(
+            MakeTfParcel(_bentonId, _bentonTfParcelId, "BENTON-001"),
+            MakeTfParcel(_pacificId, _pacificTfParcelId, "PACIFIC-001"),
+            MakeTfParcel(_pacificId, Guid.NewGuid(), "PACIFIC-INACTIVE", "INACTIVE"));
+
+        _db.TfSales.AddRange(
+            MakeTfSale(_bentonId, _bentonTfParcelId, 42),
+            MakeTfSale(_pacificId, _pacificTfParcelId, 43));
 
         var bentonPacsParcelId = Guid.NewGuid();
         _db.PacsParcel.Add(new PacsParcel
@@ -79,7 +91,12 @@ public sealed class CountyRowsControllerTests : IDisposable
 
         Assert.Contains("Pacific County", text);
         Assert.Contains("PACIFIC-001", text);
+        Assert.Contains("canonical_tf.tf_parcel", text);
+        Assert.Contains("\"activeOnly\":true", text);
+        Assert.Contains("\"duplicateParcelVersionsCollapsed\":true", text);
         Assert.DoesNotContain("BENTON-001", text);
+        Assert.DoesNotContain("PACIFIC-LEGACY-001", text);
+        Assert.DoesNotContain("PACIFIC-INACTIVE", text);
     }
 
     [Fact]
@@ -91,8 +108,10 @@ public sealed class CountyRowsControllerTests : IDisposable
         var text = System.Text.Json.JsonSerializer.Serialize(ok.Value);
 
         Assert.Contains("Benton County", text);
+        Assert.Contains("canonical_tf.tf_sale", text);
         Assert.Contains("BENTON-001", text);
         Assert.DoesNotContain("PACIFIC-001", text);
+        Assert.DoesNotContain("BENTON-LEGACY-001", text);
     }
 
     [Fact]
@@ -104,7 +123,7 @@ public sealed class CountyRowsControllerTests : IDisposable
     }
 
     [Fact]
-    public async SystemTask GetRuntimeLineage_ReturnsSourceMirrorAndCanonicalCounts()
+    public async SystemTask GetRuntimeLineage_ReturnsTerraFusionCanonicalCountsOnly()
     {
         var result = await _sut.GetRuntimeLineage("benton");
 
@@ -112,13 +131,12 @@ public sealed class CountyRowsControllerTests : IDisposable
         var text = System.Text.Json.JsonSerializer.Serialize(ok.Value);
 
         Assert.Contains("Benton County", text);
-        Assert.Contains("pacs_mirror_canonicalized_runtime", text);
-        Assert.Contains("\"properties\":1", text);
-        Assert.Contains("\"comparableSales\":1", text);
+        Assert.Contains("terrafusion_canonical_runtime_complete", text);
+        Assert.Contains("\"tfParcels\":1", text);
+        Assert.Contains("\"tfSales\":1", text);
         Assert.Contains("\"canonicalSaleQualifications\":1", text);
-        Assert.Contains("\"pacsParcels\":1", text);
-        Assert.Contains("\"pacsSales\":1", text);
         Assert.Contains("\"containsOwnerOrPartyPii\":false", text);
+        Assert.DoesNotContain("pacs_mirror", text);
     }
 
     private static Property MakeProperty(Guid countyId, string parcelId) => new()
@@ -141,7 +159,7 @@ public sealed class CountyRowsControllerTests : IDisposable
         CountyId = countyId,
     };
 
-    private static ComparableSale MakeSale(Guid countyId, string parcelId) => new()
+    private static ComparableSale MakeLegacySale(Guid countyId, string parcelId) => new()
     {
         Id = Guid.NewGuid(),
         CountyId = countyId,
@@ -153,5 +171,34 @@ public sealed class CountyRowsControllerTests : IDisposable
         QualificationDecision = "qualified",
         IngestedBy = "test",
         IngestedAt = DateTime.UtcNow,
+    };
+
+    private static TfParcel MakeTfParcel(
+        Guid countyId,
+        Guid tfParcelId,
+        string parcelNumber,
+        string parcelStatus = "ACTIVE") => new()
+    {
+        TfParcelId = tfParcelId,
+        CountyId = countyId,
+        ParcelNumber = parcelNumber,
+        SitusAddress = $"{parcelNumber} Canonical Way",
+        PropertyType = "R",
+        ParcelStatus = parcelStatus,
+        ConversionEra = "WA_INITIAL_SEED",
+        UpdatedAt = DateTime.UtcNow,
+    };
+
+    private static TfSale MakeTfSale(Guid countyId, Guid tfParcelId, long chgOfOwnerId) => new()
+    {
+        TfSaleId = Guid.NewGuid(),
+        CountyId = countyId,
+        TfParcelId = tfParcelId,
+        ChgOfOwnerId = chgOfOwnerId,
+        SlDt = DateTime.UtcNow,
+        SlPrice = 300_000m,
+        SaleQualified = true,
+        PromotionLoadBatchId = Guid.NewGuid(),
+        ConversionEra = "WA_INITIAL_SEED",
     };
 }

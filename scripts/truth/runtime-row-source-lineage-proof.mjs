@@ -117,8 +117,12 @@ async function probeCounty(candidate) {
     runtimeMockDataEnabled: probe.payload?.runtimeMockDataEnabled ?? null,
     eliteOperationsMockDataEnabled: probe.payload?.eliteOperationsMockDataEnabled ?? null,
     canonicalRuntime: {
-      properties: numberAt(probe.payload, ['canonicalRuntime', 'properties']),
-      comparableSales: numberAt(probe.payload, ['canonicalRuntime', 'comparableSales']),
+      tfParcels:
+        numberAt(probe.payload, ['canonicalRuntime', 'tfParcels']) ||
+        numberAt(probe.payload, ['canonicalRuntime', 'properties']),
+      tfSales:
+        numberAt(probe.payload, ['canonicalRuntime', 'tfSales']) ||
+        numberAt(probe.payload, ['canonicalRuntime', 'comparableSales']),
       canonicalSaleQualifications: numberAt(probe.payload, [
         'canonicalRuntime',
         'canonicalSaleQualifications',
@@ -178,8 +182,8 @@ function numberAt(value, pathParts) {
 function evaluateRuntimeSourceLineageProof(proof, dbIdentity) {
   const blockers = [];
   const canonicalRows =
-    proof.canonicalRuntime.properties +
-    proof.canonicalRuntime.comparableSales +
+    proof.canonicalRuntime.tfParcels +
+    proof.canonicalRuntime.tfSales +
     proof.canonicalRuntime.canonicalSaleQualifications;
   const sourceRows = proof.sourceMirror.pacsParcels + proof.sourceMirror.pacsSales;
 
@@ -194,7 +198,9 @@ function evaluateRuntimeSourceLineageProof(proof, dbIdentity) {
   if (!proof.selectedCountyEchoed) blockers.push('Runtime lineage did not echo selected county.');
   if (proof.silentBentonFallbackDetected) blockers.push('Silent Benton fallback detected.');
   if (canonicalRows <= 0) blockers.push('No canonical runtime rows counted.');
-  if (sourceRows <= 0) blockers.push('No source mirror rows counted.');
+  if ((proof.runtimeLineageClassification ?? '').startsWith('pacs_')) {
+    blockers.push('Runtime lineage classification still uses legacy source-mirror terminology.');
+  }
   if (proof.runtimeMockDataEnabled) blockers.push('Runtime mock data is enabled.');
   if (!proof.posture.noSilentFallback)
     blockers.push('Endpoint did not declare no-silent-fallback posture.');
@@ -237,8 +243,8 @@ function renderMarkdown(proofs, summary, dbIdentity) {
       String(proof.endpointStatus),
       proof.payloadCounty ?? '-',
       proof.runtimeLineageClassification ?? '-',
-      String(proof.canonicalRuntime.properties),
-      String(proof.canonicalRuntime.comparableSales),
+      String(proof.canonicalRuntime.tfParcels),
+      String(proof.canonicalRuntime.tfSales),
       String(proof.canonicalRuntime.canonicalSaleQualifications),
       String(proof.sourceMirror.pacsParcels),
       String(proof.sourceMirror.pacsSales),
@@ -256,7 +262,7 @@ function renderMarkdown(proofs, summary, dbIdentity) {
     `Generated: ${new Date().toISOString()}`,
     `Runtime base URL: \`${runtimeBaseUrl}\``,
     '',
-    '| County | Endpoint | Status | Payload County | Classification | Properties | Comparable Sales | Canonical Sale Qualifications | Source Parcels | Source Sales | County Runtime Mock | Elite Ops Mock | DB Identity Trusted | Result | Blockers |',
+    '| County | Endpoint | Status | Payload County | Classification | TF Parcels | TF Sales | Canonical Sale Qualifications | Source Parcels | Source Sales | County Runtime Mock | Elite Ops Mock | DB Identity Trusted | Result | Blockers |',
     '|---|---|---:|---|---|---:|---:|---:|---:|---:|---|---|---|---|---|',
     ...rows,
     '',
@@ -282,7 +288,7 @@ function renderMarkdown(proofs, summary, dbIdentity) {
     '',
     '## Scope Note',
     '',
-    'This proof only verifies runtime lineage counts and endpoint posture. It does not certify scraper completeness, official county calibration, or June 10 readiness by itself.',
+    'This proof verifies TerraFusion DB canonical runtime counts and endpoint posture. Legacy/source-system counts are optional diagnostics only and are not required or trusted as product runtime truth.',
     '',
   ].join('\n');
 }
