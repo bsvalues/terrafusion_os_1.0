@@ -3,6 +3,10 @@
 Status: locked execution plan
 Updated: 2026-05-04
 
+## Operations Prompt Layer
+
+Use `.github/ai-prompts/june10-command-pack.md` as the June 10 launch-control prompt suite. Its `/j10-war-room`, `/j10-truth-gate`, `/j10-ship-blocker`, `/j10-benton-uat`, `/j10-executive-reality`, `/j10-cut-line`, and `/j10-final-readiness` prompts are the operator prompt layer for applying this execution doctrine without feature drift.
+
 ## Source-Of-Truth Vocabulary
 
 This plan uses these terms exactly:
