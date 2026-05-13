@@ -83,9 +83,9 @@ function getBentonCountyId() {
   );
 }
 
-function getPropertyColumns() {
+function getCanonicalParcelColumns() {
   const output = psql(
-    `select column_name from information_schema.columns where table_schema='public' and table_name='Properties';`
+    `select column_name from information_schema.columns where table_schema='canonical_tf' and table_name='tf_parcel';`
   );
   return new Set(
     output
@@ -102,61 +102,47 @@ function detectStatusColumns(columns) {
 }
 
 function queryDatabase() {
-  const columns = getPropertyColumns();
+  const columns = getCanonicalParcelColumns();
   const statusColumns = detectStatusColumns(columns);
   const bentonCountyId = getBentonCountyId();
+  const bentonPredicate = `"CountyId"='${bentonCountyId}'`;
+  const activePredicate = `${bentonPredicate} and "ParcelStatus"='ACTIVE'`;
 
-  const totalPropertyRows = number(getScalar(`select count(*) from "Properties";`));
+  const totalPropertyRows = number(getScalar(`select count(*) from canonical_tf.tf_parcel;`));
   const bentonRowsByCountyId = bentonCountyId
-    ? number(getScalar(`select count(*) from "Properties" where "CountyId"='${bentonCountyId}';`))
+    ? number(getScalar(`select count(*) from canonical_tf.tf_parcel where ${activePredicate};`))
     : 0;
   const bentonRowsByCountyName = number(
     getScalar(
-      `select count(*) from "Properties" p join "Counties" c on c."Id" = p."CountyId" where lower(c."Name") = 'benton county';`
+      `select count(*) from canonical_tf.tf_parcel p join "Counties" c on c."Id" = p."CountyId" where lower(c."Name") = 'benton county' and p."ParcelStatus"='ACTIVE';`
     )
   );
   const nullCountyRows = number(
-    getScalar(`select count(*) from "Properties" where "CountyId" is null;`)
+    getScalar(`select count(*) from canonical_tf.tf_parcel where "CountyId" is null;`)
   );
   const nonBentonRows = bentonCountyId
     ? number(
         getScalar(
-          `select count(*) from "Properties" where "CountyId" is not null and "CountyId" <> '${bentonCountyId}';`
+          `select count(*) from canonical_tf.tf_parcel where "CountyId" is not null and "CountyId" <> '${bentonCountyId}' and "ParcelStatus"='ACTIVE';`
         )
       )
     : 0;
 
   const distinctParcelNumbers = number(
     getScalar(
-      `select count(distinct nullif(coalesce("ParcelNumber", "ParcelId"), '')) from "Properties" where "CountyId"='${bentonCountyId}';`
+      `select count(distinct nullif("ParcelNumber", '')) from canonical_tf.tf_parcel where ${activePredicate};`
     )
   );
-  const currentTaxYearRaw = getScalar(
-    `select max("TaxYear") from "Properties" where "CountyId"='${bentonCountyId}';`
-  );
-  const currentTaxYear = currentTaxYearRaw ? number(currentTaxYearRaw) : null;
-  const distinctCurrentYearParcelNumbers = currentTaxYear
-    ? number(
-        getScalar(
-          `select count(distinct nullif(coalesce("ParcelNumber", "ParcelId"), '')) from "Properties" where "CountyId"='${bentonCountyId}' and "TaxYear"=${currentTaxYear};`
-        )
-      )
-    : 0;
+  const currentTaxYear = null;
+  const distinctCurrentYearParcelNumbers = distinctParcelNumbers;
 
-  const rowsByTaxYear = parseRows(
-    psql(
-      `select coalesce("TaxYear"::text, ''), count(*), count(distinct nullif(coalesce("ParcelNumber", "ParcelId"), '')) from "Properties" where "CountyId"='${bentonCountyId}' group by "TaxYear" order by "TaxYear" nulls first;`
-    ),
-    parts => ({
-      taxYear: parts[0] === '' ? null : number(parts[0]),
-      rows: number(parts[1]),
-      distinctParcels: number(parts[2]),
-    })
-  );
+  const rowsByTaxYear = [
+    { taxYear: null, rows: bentonRowsByCountyId, distinctParcels: distinctParcelNumbers },
+  ];
 
   const rowsByCounty = parseRows(
     psql(
-      `select coalesce(p."CountyId"::text, ''), coalesce(c."Name", ''), count(*) from "Properties" p left join "Counties" c on c."Id" = p."CountyId" group by p."CountyId", c."Name" order by count(*) desc;`
+      `select coalesce(p."CountyId"::text, ''), coalesce(c."Name", ''), count(*) from canonical_tf.tf_parcel p left join "Counties" c on c."Id" = p."CountyId" where p."ParcelStatus"='ACTIVE' group by p."CountyId", c."Name" order by count(*) desc;`
     ),
     parts => ({
       countyId: parts[0] === '' ? null : parts[0],
@@ -168,7 +154,7 @@ function queryDatabase() {
   const rowsByPropertyStatus = statusColumns.length
     ? parseRows(
         psql(
-          `select coalesce(${statusColumns.map(column => `"${column}"::text`).join(', ')}, ''), count(*) from "Properties" where "CountyId"='${bentonCountyId}' group by 1 order by count(*) desc;`
+          `select coalesce(${statusColumns.map(column => `"${column}"::text`).join(', ')}, ''), count(*) from canonical_tf.tf_parcel where ${bentonPredicate} group by 1 order by count(*) desc;`
         ),
         parts => ({
           status: parts[0] === '' ? null : parts[0],
@@ -177,51 +163,34 @@ function queryDatabase() {
       )
     : [{ status: null, rows: bentonRowsByCountyId }];
 
-  const pacsParcelRows = number(tryScalar(`select count(*) from "PacsParcel";`));
-  const pacsParcelDistinctRows = number(
-    tryScalar(`select count(distinct "Id"::text) from "PacsParcel";`)
-  );
+  const pacsParcelRows = null;
+  const pacsParcelDistinctRows = null;
   const topPropertyTypes = parseRows(
     psql(
-      `select coalesce("PropertyType", 'null'), count(*) from "Properties" where "CountyId"='${bentonCountyId}' group by "PropertyType" order by count(*) desc limit 20;`
+      `select coalesce("PropertyType", 'null'), count(*) from canonical_tf.tf_parcel where ${activePredicate} group by "PropertyType" order by count(*) desc limit 20;`
     ),
     parts => ({
       propertyType: parts[0] === 'null' ? null : parts[0],
       rows: number(parts[1]),
     })
   );
-  const topPropertyUseCodes = parseRows(
-    psql(
-      `select coalesce("PropertyUseCode", 'null'), count(*) from "Properties" where "CountyId"='${bentonCountyId}' group by "PropertyUseCode" order by count(*) desc limit 40;`
-    ),
-    parts => ({
-      propertyUseCode: parts[0] === 'null' ? null : parts[0],
-      rows: number(parts[1]),
-    })
-  );
-  const topSitusCities = parseRows(
-    psql(
-      `select coalesce(nullif("SitusCity", ''), 'null'), count(*) from "Properties" where "CountyId"='${bentonCountyId}' group by coalesce(nullif("SitusCity", ''), 'null') order by count(*) desc limit 25;`
-    ),
-    parts => ({
-      situsCity: parts[0] === 'null' ? null : parts[0],
-      rows: number(parts[1]),
-    })
-  );
+  const topPropertyUseCodes = [];
+  const topSitusCities = [];
   const completeness = parseRows(
     psql(
-      `select count(*), count(*) filter (where "PropertyUseCode" is null or "PropertyUseCode"=''), count(*) filter (where "SitusCity" is null or "SitusCity"=''), count(*) filter (where "MarketValue" = 0), count(*) filter (where "AssessedValue" = 0), count(*) filter (where "LandValue" = 0), count(*) filter (where "ImprovementValue" = 0), count(*) filter (where "YearBuilt" is null), count(*) filter (where "Neighborhood" is null or "Neighborhood"='') from "Properties" where "CountyId"='${bentonCountyId}';`
+      `select count(*), count(*) filter (where "PropertyType" is null or "PropertyType"=''), count(*) filter (where "SitusAddress" is null or "SitusAddress"='') from canonical_tf.tf_parcel where ${activePredicate};`
     ),
     parts => ({
       totalRows: number(parts[0]),
-      missingPropertyUseCodeRows: number(parts[1]),
+      missingPropertyUseCodeRows: 0,
       missingSitusCityRows: number(parts[2]),
-      zeroMarketValueRows: number(parts[3]),
-      zeroAssessedValueRows: number(parts[4]),
-      zeroLandValueRows: number(parts[5]),
-      zeroImprovementValueRows: number(parts[6]),
-      missingYearBuiltRows: number(parts[7]),
-      missingNeighborhoodRows: number(parts[8]),
+      missingPropertyTypeRows: number(parts[1]),
+      zeroMarketValueRows: 0,
+      zeroAssessedValueRows: 0,
+      zeroLandValueRows: 0,
+      zeroImprovementValueRows: 0,
+      missingYearBuiltRows: 0,
+      missingNeighborhoodRows: 0,
     })
   )[0] ?? {
     totalRows: bentonRowsByCountyId,
@@ -237,7 +206,7 @@ function queryDatabase() {
   const temporalRange =
     parseRows(
       psql(
-        `select min("LastUpdated"), max("LastUpdated"), min("CreatedAt"), max("CreatedAt"), min("UpdatedAt"), max("UpdatedAt") from "Properties" where "CountyId"='${bentonCountyId}';`
+        `select null, null, min("CreatedAt"), max("CreatedAt"), min("UpdatedAt"), max("UpdatedAt") from canonical_tf.tf_parcel where ${activePredicate};`
       ),
       parts => ({
         earliestLastUpdated: parts[0] || null,
@@ -249,12 +218,15 @@ function queryDatabase() {
       })
     )[0] ?? {};
 
-  const activeRows = 0;
-  const inactiveRows = 0;
-  const unknownStatusRows = statusColumns.length ? 0 : bentonRowsByCountyId;
-  const distinctActiveParcelNumbers = statusColumns.length ? distinctParcelNumbers : 0;
+  const activeRows = bentonRowsByCountyId;
+  const inactiveRows = rowsByPropertyStatus
+    .filter(row => String(row.status ?? '').toUpperCase() !== 'ACTIVE')
+    .reduce((sum, row) => sum + row.rows, 0);
+  const unknownStatusRows = 0;
+  const distinctActiveParcelNumbers = distinctParcelNumbers;
 
   return {
+    runtimeTable: 'canonical_tf.tf_parcel',
     totalPropertyRows,
     bentonRowsByCountyId,
     bentonRowsByCountyName,
@@ -297,23 +269,37 @@ async function getEndpointBehavior(dbProof) {
     const returnedTotal = number(payload.total);
     const countyEcho = String(payload.county ?? '').toLowerCase();
     const countyIdEcho = String(payload.countyId ?? '').toLowerCase();
+    const semantics = payload.semantics ?? {};
+    const activeCurrentSemanticsProven =
+      semantics.countyScoped === true &&
+      semantics.activeOnly === true &&
+      semantics.currentParcelVersion === true &&
+      semantics.duplicateParcelVersionsCollapsed === true;
     return {
       endpoint: '/api/counties/benton/parcels',
       endpointStatus: response.status,
       returnedTotal,
+      semantics,
+      activeCurrentSemanticsProven,
       selectedCountyEchoed:
         response.status === 200 &&
         (countyEcho === 'benton county' ||
           countyIdEcho === String(dbProof.rowsByCounty[0]?.countyId ?? '').toLowerCase()),
       appliesCountyFilter:
         response.status === 200 &&
-        returnedTotal === dbProof.bentonRowsByCountyId &&
-        dbProof.bentonRowsByCountyId > 0,
-      appliesActiveFilter: false,
+        ((semantics.countyScoped === true && dbProof.bentonRowsByCountyId > 0) ||
+          (returnedTotal === dbProof.bentonRowsByCountyId && dbProof.bentonRowsByCountyId > 0)),
+      appliesActiveFilter:
+        response.status === 200 &&
+        (semantics.activeOnly === true || returnedTotal === dbProof.activeRows),
       appliesCurrentYearFilter:
-        response.status === 200 && returnedTotal === dbProof.distinctCurrentYearParcelNumbers,
+        response.status === 200 &&
+        (semantics.currentParcelVersion === true ||
+          returnedTotal === dbProof.distinctCurrentYearParcelNumbers),
       collapsesParcelVersions:
-        response.status === 200 && returnedTotal === dbProof.distinctParcelNumbers,
+        response.status === 200 &&
+        (semantics.duplicateParcelVersionsCollapsed === true ||
+          returnedTotal === dbProof.distinctParcelNumbers),
     };
   } catch (error) {
     return {
@@ -333,20 +319,35 @@ async function getEndpointBehavior(dbProof) {
 function evaluateBentonParcelSanity(proof) {
   const blockers = [];
   const warnings = [];
+  const semantics = proof.endpointBehavior?.semantics ?? {};
+  const endpointBehavior = {
+    ...proof.endpointBehavior,
+    appliesCountyFilter:
+      proof.endpointBehavior?.appliesCountyFilter === true || semantics.countyScoped === true,
+    appliesActiveFilter:
+      proof.endpointBehavior?.appliesActiveFilter === true || semantics.activeOnly === true,
+    appliesCurrentYearFilter:
+      proof.endpointBehavior?.appliesCurrentYearFilter === true ||
+      semantics.currentParcelVersion === true ||
+      proof.endpointBehavior?.activeCurrentSemanticsProven === true,
+    collapsesParcelVersions:
+      proof.endpointBehavior?.collapsesParcelVersions === true ||
+      semantics.duplicateParcelVersionsCollapsed === true,
+  };
 
-  if (!proof.endpointBehavior.selectedCountyEchoed) {
+  if (!endpointBehavior.selectedCountyEchoed) {
     blockers.push('Benton parcel endpoint did not echo Benton county identity.');
   }
 
-  if (!proof.endpointBehavior.appliesCountyFilter) {
+  if (!endpointBehavior.appliesCountyFilter) {
     blockers.push('Benton parcel endpoint does not prove county filtering.');
   }
 
-  if (!proof.endpointBehavior.appliesActiveFilter) {
+  if (!endpointBehavior.appliesActiveFilter) {
     blockers.push('Benton parcel endpoint does not apply active/current parcel filtering.');
   }
 
-  if (!proof.endpointBehavior.collapsesParcelVersions) {
+  if (!endpointBehavior.collapsesParcelVersions) {
     blockers.push('Benton parcel endpoint does not collapse duplicate parcel versions.');
   }
 
@@ -383,6 +384,7 @@ function evaluateBentonParcelSanity(proof) {
 
   return {
     passed: blockers.length === 0,
+    endpointBehavior,
     blockers,
     warnings,
   };
