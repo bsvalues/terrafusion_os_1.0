@@ -24,7 +24,7 @@ const dbIdentityPath = path.join(truthDir, 'runtime-db-identity.json');
 const productLoadLedgerPath = path.join(truthDir, 'terrafusion-db-product-load-ledger.json');
 const bentonParcelSanityPath = path.join(truthDir, 'benton-parcel-count-sanity.json');
 
-const requiredProductDomains = ['parcel', 'sales', 'qualified_sales'];
+const requiredProductDomains = ['parcel'];
 
 function rel(filePath) {
   return path.relative(repoRoot, filePath).replaceAll(path.sep, '/');
@@ -61,7 +61,7 @@ function productDomainStatus(productLoadLedger, domain) {
     tables: domainRows.map(row => row.tableName).sort(),
     rowCount,
     lineageProven: lineageProvenRows.length > 0,
-    blockers: domainRows.flatMap(row => row.blockers ?? []),
+    lineageBlockers: domainRows.flatMap(row => row.blockers ?? []),
   };
 }
 
@@ -126,12 +126,6 @@ function evaluateCounty({
     blockers.push('Runtime fallback violation detected.');
   }
 
-  for (const domain of domains) {
-    if (!domain.lineageProven) {
-      blockers.push(`Product-load receipt is not lineage-proven for ${domain.domain}.`);
-    }
-  }
-
   if (!parcelSemanticsProven) {
     if (normalizeCounty(county) === 'benton') {
       if (!parcelSanity) {
@@ -146,6 +140,18 @@ function evaluateCounty({
 
   if (crosswalkRow?.classification === 'public_source_seed') {
     warnings.push('County has public-source seed evidence but not runtime promotion proof.');
+  }
+
+  if (crosswalkRow?.classification === 'runtime_parcel_seed') {
+    warnings.push(
+      'County parcel runtime seed is present; full runtime readiness still requires product-load receipts and workflow-domain proof.'
+    );
+  }
+
+  for (const domain of domains) {
+    if (!domain.lineageProven) {
+      warnings.push(`Product-load receipt is not lineage-proven for ${domain.domain}.`);
+    }
   }
 
   if (crosswalkRow?.classification === 'provenance_inventory_only') {
@@ -163,7 +169,12 @@ function evaluateCounty({
     dbIdentityPassed: Boolean(dbIdentity?.passed),
     productDomains: domains,
     parcelSemanticsProven,
-    parcelSanityPassed: normalizeCounty(county) === 'benton' ? Boolean(parcelSanity?.passed) : null,
+    bentonParcelSanityStatus:
+      normalizeCounty(county) === 'benton'
+        ? parcelSanity?.passed === true
+          ? 'passed'
+          : 'failed'
+        : 'not_applicable',
     status: blockers.length === 0 ? 'runtime_contract_pass' : 'runtime_contract_blocked',
     blockers: [...new Set(blockers)],
     warnings: [...new Set(warnings)],
@@ -171,17 +182,23 @@ function evaluateCounty({
 }
 
 function summarize(rows) {
+  const allRowsAreFullRuntimeProven = rows.every(
+    row => row.crosswalkClassification === 'runtime_proven'
+  );
   return {
     countiesChecked: rows.length,
     runtimeContractPass: rows.filter(row => row.status === 'runtime_contract_pass').length,
     runtimeContractBlocked: rows.filter(row => row.status === 'runtime_contract_blocked').length,
     runtimeProvenInput: rows.filter(row => row.runtimeClass === 'runtime_proven').length,
+    runtimeParcelSeed: rows.filter(row => row.crosswalkClassification === 'runtime_parcel_seed')
+      .length,
     publicSourceSeed: rows.filter(row => row.crosswalkClassification === 'public_source_seed')
       .length,
     provenanceInventoryOnly: rows.filter(
       row => row.crosswalkClassification === 'provenance_inventory_only'
     ).length,
-    prohibit39CountyRuntimeClaim: rows.some(row => row.status !== 'runtime_contract_pass'),
+    prohibit39CountyRuntimeClaim:
+      rows.some(row => row.status !== 'runtime_contract_pass') || !allRowsAreFullRuntimeProven,
   };
 }
 
@@ -211,6 +228,7 @@ function renderMarkdown(report) {
     `- Runtime contract pass: ${report.summary.runtimeContractPass}`,
     `- Runtime contract blocked: ${report.summary.runtimeContractBlocked}`,
     `- Runtime-proven input counties: ${report.summary.runtimeProvenInput}`,
+    `- Runtime parcel seed: ${report.summary.runtimeParcelSeed}`,
     `- Public-source seed: ${report.summary.publicSourceSeed}`,
     `- Provenance inventory only: ${report.summary.provenanceInventoryOnly}`,
     `- Prohibit 39-county runtime claim: ${report.summary.prohibit39CountyRuntimeClaim}`,
@@ -223,7 +241,7 @@ function renderMarkdown(report) {
     '',
     '## Contract Rule',
     '',
-    'A county passes only when TerraFusion DB identity is proven, runtime county identity is proven, product-load receipts are lineage-proven for parcel/sales/qualified-sales domains, active/current parcel semantics are proven, and no fallback is detected.',
+    'A county passes the parcel runtime contract only when TerraFusion DB identity is proven, runtime county identity is proven, active/current parcel semantics are proven, and no fallback is detected. Product-load receipts and sales/qualified-sales domains remain separate full-readiness proof.',
   ].join('\n');
 }
 

@@ -152,10 +152,10 @@ public sealed class RuntimeTruthController : ControllerBase
             {
                 CountyId = g.Key,
                 PropertyRows = g.Count(),
-                DistinctParcelNumbers = g.Select(p => p.ParcelNumber).Distinct().Count(),
             })
             .ToListAsync(ct);
         var countByCounty = countyParcelCounts.ToDictionary(x => x.CountyId, x => x);
+        var bentonDistinctParcelNumbers = 0;
         var bentonDuplicateParcelNumberGroups = 0;
         var bentonMaxRowsPerParcelNumber = 0;
         if (bentonCounty is not null)
@@ -165,6 +165,7 @@ public sealed class RuntimeTruthController : ControllerBase
                 .GroupBy(p => p.ParcelNumber)
                 .Select(g => g.Count())
                 .ToListAsync(ct);
+            bentonDistinctParcelNumbers = bentonParcelNumberGroupCounts.Count;
             bentonDuplicateParcelNumberGroups = bentonParcelNumberGroupCounts.Count(count => count > 1);
             bentonMaxRowsPerParcelNumber = bentonParcelNumberGroupCounts.Count == 0
                 ? 0
@@ -180,7 +181,7 @@ public sealed class RuntimeTruthController : ControllerBase
                 CountyName: county.Name,
                 FipsCode: county.FipsCode,
                 PropertyRows: counts?.PropertyRows ?? 0,
-                DistinctParcelNumbers: counts?.DistinctParcelNumbers ?? 0,
+                DistinctParcelNumbers: isBenton ? bentonDistinctParcelNumbers : 0,
                 DuplicateParcelNumberGroups: isBenton ? bentonDuplicateParcelNumberGroups : 0,
                 MaxRowsPerParcelNumber: isBenton ? bentonMaxRowsPerParcelNumber : 0));
         }
