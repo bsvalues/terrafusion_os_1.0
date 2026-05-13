@@ -162,6 +162,7 @@ public sealed class RuntimeTruthController : ControllerBase
         {
             var bentonParcelNumberGroupCounts = await activeParcels
                 .Where(p => p.CountyId == bentonCounty.Id)
+                .Where(p => !string.IsNullOrWhiteSpace(p.ParcelNumber))
                 .GroupBy(p => p.ParcelNumber)
                 .Select(g => g.Count())
                 .ToListAsync(ct);

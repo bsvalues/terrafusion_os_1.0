@@ -163,3 +163,84 @@ test('runtime DB content audit passes when configured count matches canonical tf
     await server.close();
   }
 });
+
+test('runtime DB content audit derives expected Benton count from parcel sanity proof', async () => {
+  const root = makeTempRepo('tf-runtime-db-content-derived-count-');
+  fs.writeFileSync(
+    path.join(root, 'generated', 'truth', 'benton-parcel-count-sanity.json'),
+    `${JSON.stringify(
+      {
+        passed: true,
+        distinctActiveParcelNumbers: 83296,
+        endpointBehavior: {
+          activeCurrentSemanticsProven: true,
+        },
+      },
+      null,
+      2
+    )}\n`
+  );
+  const server = await startServer((request, response) => {
+    if (request.url === '/api/runtime/truth/db-content') {
+      response.setHeader('content-type', 'application/json');
+      response.end(
+        JSON.stringify({
+          expectedBentonParcelCount: null,
+          totalCounties: 39,
+          totalProperties: 3197521,
+          countySummaries: [
+            {
+              countyName: 'Benton County',
+              fipsCode: '53005',
+              propertyRows: 83326,
+              distinctParcelNumbers: 83296,
+              duplicateParcelNumberGroups: 15,
+              maxRowsPerParcelNumber: 16,
+            },
+          ],
+          bentonDecision: {
+            expectedParcelCount: null,
+            propertyRowsMatchExpected: false,
+            distinctParcelIdsMatchExpected: false,
+            distinctParcelNumbersMatchExpected: false,
+            classification: 'benton_canonical_count_unchecked',
+          },
+          passed: false,
+          blockers: ['Expected Benton parcel count is not configured.'],
+          warnings: [
+            'Runtime Benton canonical parcels contain duplicate parcel number groups: 15.',
+          ],
+        })
+      );
+      return;
+    }
+    response.statusCode = 404;
+    response.end('not found');
+  });
+
+  try {
+    await execFileAsync('node', [scriptPath, root], {
+      cwd: process.cwd(),
+      env: {
+        ...process.env,
+        TF_RUNTIME_BASE_URL: server.baseUrl,
+      },
+    });
+
+    const report = JSON.parse(
+      fs.readFileSync(
+        path.join(root, 'generated', 'truth', 'runtime-db-content-audit.json'),
+        'utf8'
+      )
+    );
+    assert.equal(report.passed, true);
+    assert.equal(report.content.expectedBentonParcelCount, 83296);
+    assert.equal(report.content.bentonDecision.distinctParcelNumbersMatchExpected, true);
+    assert.equal(
+      report.content.bentonDecision.classification,
+      'derived_count_matches_distinct_canonical_parcels'
+    );
+  } finally {
+    await server.close();
+  }
+});

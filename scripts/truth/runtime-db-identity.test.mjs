@@ -154,6 +154,67 @@ test('ignores stale non-RuntimeTruth parcel count configs when runtime expected 
   assert.equal(report.configExpectationSources[0].matchesRuntimeExpectation, true);
 });
 
+test('derives Benton expected count from passed parcel sanity proof when runtime expected count is unset', () => {
+  const root = makeTempRepo('tf-runtime-db-identity-derived-count-');
+  fs.writeFileSync(
+    path.join(root, 'generated', 'truth', 'benton-parcel-count-sanity.json'),
+    `${JSON.stringify(
+      {
+        passed: true,
+        distinctActiveParcelNumbers: 83296,
+        endpointBehavior: {
+          activeCurrentSemanticsProven: true,
+        },
+      },
+      null,
+      2
+    )}\n`
+  );
+  writeConfig(root, 'backend/src/TerraFusion.API/appsettings.Development.json', {
+    RuntimeTruth: {
+      ExpectedJune10Database: 'terrafusion',
+    },
+  });
+  const fixturePath = writeFixture(root, {
+    apiBaseUrl: 'http://127.0.0.1',
+    environment: 'Development',
+    provider: 'Npgsql.EntityFrameworkCore.PostgreSQL',
+    connectionStringName: 'DefaultConnection',
+    serverRedacted: 'localhost',
+    database: 'terrafusion',
+    expectedJune10Database: 'terrafusion',
+    contentRootPath: expectedApiContentRoot(root),
+    expectedBentonParcelCount: null,
+    isExpectedJune10RuntimeDb: true,
+    isBentonParcelCountExpected: false,
+    migrationState: { appliedCount: 10, pendingCount: 0, latestApplied: '20260502000000_Runtime' },
+    rowCounts: {
+      counties: 39,
+      tfParcels: 3197521,
+      tfSales: 98,
+      canonicalSaleQualifications: 251484,
+    },
+    passed: true,
+    blockers: [],
+    warnings: [],
+  });
+
+  const result = runScript(root, fixturePath);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+
+  const report = readReport(root);
+  assert.equal(report.identity.expectedBentonParcelCount, 83296);
+  assert.equal(report.identity.isBentonParcelCountExpected, true);
+  assert.ok(
+    report.configExpectationSources.some(
+      source =>
+        source.path === 'generated/truth/benton-parcel-count-sanity.json' &&
+        source.key === 'BentonParcelSanity.distinctActiveParcelNumbers' &&
+        source.matchesRuntimeExpectation === true
+    )
+  );
+});
+
 test('fails closed when runtime endpoint cannot confirm expected DB', () => {
   const root = makeTempRepo('tf-runtime-db-identity-fail-');
   const fixturePath = writeFixture(root, {

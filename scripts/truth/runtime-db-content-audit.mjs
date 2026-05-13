@@ -16,6 +16,7 @@ const repoRoot = process.argv[2] ? path.resolve(process.argv[2]) : process.cwd()
 const truthDir = path.join(repoRoot, 'generated', 'truth');
 const outJson = path.join(truthDir, 'runtime-db-content-audit.json');
 const outMd = path.join(truthDir, 'runtime-db-content-audit.md');
+const bentonParcelSanityPath = path.join(truthDir, 'benton-parcel-count-sanity.json');
 const runtimeBaseUrl =
   process.env.TF_RUNTIME_BASE_URL ??
   process.env.TERRAFUSION_RUNTIME_BASE_URL ??
@@ -83,6 +84,73 @@ function normalizePayload(payload) {
   };
 }
 
+function readBentonParcelSanityExpectation() {
+  if (!fs.existsSync(bentonParcelSanityPath)) return null;
+  try {
+    const proof = JSON.parse(fs.readFileSync(bentonParcelSanityPath, 'utf8'));
+    const expectedBentonParcelCount = Number.parseInt(
+      String(proof.distinctActiveParcelNumbers ?? ''),
+      10
+    );
+    if (
+      proof.passed === true &&
+      proof.endpointBehavior?.activeCurrentSemanticsProven === true &&
+      Number.isFinite(expectedBentonParcelCount) &&
+      expectedBentonParcelCount > 0
+    ) {
+      return {
+        expectedBentonParcelCount,
+        source: 'benton_parcel_count_sanity',
+      };
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function applyDerivedBentonExpectation(content) {
+  const derived = readBentonParcelSanityExpectation();
+  if (!content || content.expectedBentonParcelCount !== null || !derived) return content;
+
+  const bentonSummary = content.countySummaries.find(summary => {
+    const name = String(summary.countyName ?? '').toLowerCase();
+    return name === 'benton county' || summary.fipsCode === '53005';
+  });
+  const expected = derived.expectedBentonParcelCount;
+  const propertyRowsMatchExpected = bentonSummary?.propertyRows === expected;
+  const distinctParcelNumbersMatchExpected = bentonSummary?.distinctParcelNumbers === expected;
+  const derivedDecision = {
+    ...(content.bentonDecision ?? {}),
+    expectedParcelCount: expected,
+    propertyRowsMatchExpected,
+    distinctParcelIdsMatchExpected: false,
+    distinctParcelNumbersMatchExpected,
+    classification: propertyRowsMatchExpected
+      ? 'derived_count_matches_canonical_tf_parcel_rows'
+      : distinctParcelNumbersMatchExpected
+        ? 'derived_count_matches_distinct_canonical_parcels'
+        : 'derived_count_matches_neither_canonical_rows_nor_distinct_parcels',
+  };
+  const blockers = (content.blockers ?? []).filter(
+    blocker => blocker !== 'Expected Benton parcel count is not configured.'
+  );
+  if (!propertyRowsMatchExpected && !distinctParcelNumbersMatchExpected) {
+    blockers.push(
+      `Derived Benton parcel count ${expected} matches neither canonical_tf.tf_parcel rows ${bentonSummary?.propertyRows ?? 0} nor distinct parcel numbers ${bentonSummary?.distinctParcelNumbers ?? 0}.`
+    );
+  }
+
+  return {
+    ...content,
+    expectedBentonParcelCount: expected,
+    expectedBentonParcelCountSource: derived.source,
+    bentonDecision: derivedDecision,
+    blockers: [...new Set(blockers)],
+    passed: blockers.length === 0,
+  };
+}
+
 function evaluate(probe) {
   const blockers = [];
   const warnings = [];
@@ -93,7 +161,9 @@ function evaluate(probe) {
   if (probe.error) blockers.push(`Runtime DB content endpoint failed: ${probe.error}`);
   if (!probe.payload) blockers.push('Runtime DB content endpoint did not return JSON payload.');
 
-  const content = probe.payload ? normalizePayload(probe.payload) : null;
+  const content = probe.payload
+    ? applyDerivedBentonExpectation(normalizePayload(probe.payload))
+    : null;
   if (content) {
     if (!content.passed) blockers.push(...content.blockers);
     warnings.push(...content.warnings);
@@ -133,6 +203,7 @@ function renderMarkdown(report) {
     `- Result: ${report.passed ? 'PASS' : 'FAIL'}`,
     `- Endpoint status: ${report.endpointStatus ?? 'unreachable'}`,
     `- Expected Benton parcel count: ${content.expectedBentonParcelCount ?? '-'}`,
+    `- Expected Benton parcel count source: ${content.expectedBentonParcelCountSource ?? '-'}`,
     `- Benton classification: ${decision.classification ?? '-'}`,
     `- Property rows match expected: ${decision.propertyRowsMatchExpected ? 'yes' : 'no'}`,
     `- Distinct ParcelNumbers match expected: ${decision.distinctParcelNumbersMatchExpected ? 'yes' : 'no'}`,

@@ -25,6 +25,7 @@ const configSearchFiles = [
   'backend/src/TerraFusion.API/appsettings.BentonCounty.json',
   'backend/src/TerraFusion.API/appsettings.json',
 ];
+const bentonParcelSanityPath = path.join(truthDir, 'benton-parcel-count-sanity.json');
 
 function rel(filePath) {
   return path.relative(repoRoot, filePath).replaceAll(path.sep, '/');
@@ -73,6 +74,15 @@ function normalizePayload(payload) {
     path.resolve(contentRootPath).toLowerCase() ===
       path.resolve(expectedContentRootPath).toLowerCase();
 
+  const derivedBentonExpectation = readBentonParcelSanityExpectation();
+  const runtimeExpectedBentonParcelCount =
+    pick(payload, 'expectedBentonParcelCount', 'ExpectedBentonParcelCount') ?? null;
+  const expectedBentonParcelCount =
+    runtimeExpectedBentonParcelCount ?? derivedBentonExpectation?.expectedBentonParcelCount ?? null;
+  const isBentonParcelCountExpected =
+    Boolean(pick(payload, 'isBentonParcelCountExpected', 'IsBentonParcelCountExpected')) ||
+    Boolean(derivedBentonExpectation?.isBentonParcelCountExpected);
+
   return {
     apiBaseUrl: pick(payload, 'apiBaseUrl', 'ApiBaseUrl') ?? null,
     environment: pick(payload, 'environment', 'Environment') ?? null,
@@ -88,11 +98,12 @@ function normalizePayload(payload) {
     isExpectedJune10RuntimeDb: Boolean(
       pick(payload, 'isExpectedJune10RuntimeDb', 'IsExpectedJune10RuntimeDb')
     ),
-    expectedBentonParcelCount:
-      pick(payload, 'expectedBentonParcelCount', 'ExpectedBentonParcelCount') ?? null,
-    isBentonParcelCountExpected: Boolean(
-      pick(payload, 'isBentonParcelCountExpected', 'IsBentonParcelCountExpected')
-    ),
+    expectedBentonParcelCount,
+    expectedBentonParcelCountSource:
+      runtimeExpectedBentonParcelCount !== null && runtimeExpectedBentonParcelCount !== undefined
+        ? 'runtime_config'
+        : (derivedBentonExpectation?.source ?? null),
+    isBentonParcelCountExpected,
     migrationState: {
       appliedCount: pick(migrationState, 'appliedCount', 'AppliedCount') ?? null,
       pendingCount: pick(migrationState, 'pendingCount', 'PendingCount') ?? null,
@@ -113,10 +124,49 @@ function normalizePayload(payload) {
   };
 }
 
+function readBentonParcelSanityExpectation() {
+  if (!fs.existsSync(bentonParcelSanityPath)) return null;
+  try {
+    const proof = JSON.parse(fs.readFileSync(bentonParcelSanityPath, 'utf8'));
+    const expectedBentonParcelCount = Number.parseInt(
+      String(proof.distinctActiveParcelNumbers ?? ''),
+      10
+    );
+    if (
+      proof.passed === true &&
+      proof.endpointBehavior?.activeCurrentSemanticsProven === true &&
+      Number.isFinite(expectedBentonParcelCount) &&
+      expectedBentonParcelCount > 0
+    ) {
+      return {
+        expectedBentonParcelCount,
+        isBentonParcelCountExpected: true,
+        source: 'benton_parcel_count_sanity',
+      };
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
 function readConfigExpectationSources(identity) {
   const expectedCount = identity?.expectedBentonParcelCount;
   const expectedDb = identity?.expectedJune10Database;
   const sources = [];
+  const derivedBentonExpectation = readBentonParcelSanityExpectation();
+
+  if (derivedBentonExpectation) {
+    sources.push({
+      path: rel(bentonParcelSanityPath),
+      key: 'BentonParcelSanity.distinctActiveParcelNumbers',
+      value: derivedBentonExpectation.expectedBentonParcelCount,
+      matchesRuntimeExpectation:
+        expectedCount !== null &&
+        expectedCount !== undefined &&
+        String(derivedBentonExpectation.expectedBentonParcelCount) === String(expectedCount),
+    });
+  }
 
   for (const relativePath of configSearchFiles) {
     const filePath = path.join(repoRoot, relativePath);
@@ -234,6 +284,7 @@ function renderMarkdown(report) {
     `- Expected June 10 DB: ${identity.expectedJune10Database ?? '-'}`,
     `- Expected runtime DB: ${identity.isExpectedJune10RuntimeDb ? 'yes' : 'no'}`,
     `- Expected Benton parcel count: ${identity.expectedBentonParcelCount ?? '-'}`,
+    `- Expected Benton parcel count source: ${identity.expectedBentonParcelCountSource ?? '-'}`,
     `- Benton parcel count expected: ${identity.isBentonParcelCountExpected ? 'yes' : 'no'}`,
     '',
     '## Config Expectation Sources',
