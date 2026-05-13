@@ -11,6 +11,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { runtimeFetch } from './runtime-auth.mjs';
 
 const repoRoot = process.argv[2] ? path.resolve(process.argv[2]) : process.cwd();
 const inventoryPath = path.join(repoRoot, 'generated', 'truth', 'data-source-truth-inventory.json');
@@ -175,7 +176,7 @@ async function probeCandidate(row) {
 
 async function probeEndpoint(endpoint) {
   try {
-    const response = await fetch(endpoint, { headers: { accept: 'application/json' } });
+    const response = await runtimeFetch(endpoint, { headers: { accept: 'application/json' } });
     const contentType = response.headers.get('content-type') ?? '';
     const text = await response.text();
     let payload = null;

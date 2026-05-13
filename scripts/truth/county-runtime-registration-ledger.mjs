@@ -11,6 +11,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { runtimeFetch } from './runtime-auth.mjs';
 
 const repoRoot = process.argv[2] ? path.resolve(process.argv[2]) : process.cwd();
 const outDir = path.join(repoRoot, 'generated', 'truth');
@@ -148,7 +149,7 @@ async function probeEndpoint(endpoint, county) {
   const timeout = setTimeout(() => controller.abort(), probeTimeoutMs);
 
   try {
-    const response = await fetch(endpoint, {
+    const response = await runtimeFetch(endpoint, {
       headers: { accept: 'application/json' },
       signal: controller.signal,
     });

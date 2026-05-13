@@ -11,6 +11,7 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { runtimeFetch } from './runtime-auth.mjs';
 
 const repoRoot = process.argv[2] ? path.resolve(process.argv[2]) : process.cwd();
 const truthDir = path.join(repoRoot, 'generated', 'truth');
@@ -290,7 +291,7 @@ function queryDatabase() {
 async function getEndpointBehavior(dbProof) {
   const endpoint = new URL('/api/counties/benton/parcels?limit=1', runtimeBaseUrl).toString();
   try {
-    const response = await fetch(endpoint, { headers: { accept: 'application/json' } });
+    const response = await runtimeFetch(endpoint, { headers: { accept: 'application/json' } });
     const text = await response.text();
     const payload = JSON.parse(text);
     const returnedTotal = number(payload.total);
