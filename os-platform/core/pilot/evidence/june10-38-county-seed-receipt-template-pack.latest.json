@@ -1,0 +1,407 @@
+{
+  "generatedAtUtc": "2026-05-14T18:57:28.934Z",
+  "sourceWorkOrderPackGeneratedAtUtc": "2026-05-14T18:28:31.866Z",
+  "summary": {
+    "templates": 5,
+    "templateOnly": true,
+    "runtimeClaimAllowed": false
+  },
+  "rules": [
+    "Templates are not receipts and must not be counted as acquisition evidence.",
+    "Only files written to the receipt target path and passing the seed receipt validator may advance status.",
+    "All REPLACE_* placeholders must be replaced by observed evidence.",
+    "No runtime claim is allowed from this template pack."
+  ],
+  "templates": [
+    {
+      "workOrderId": "J10-SEED-DIRECT-SALES-SEARCH-YAKIMA",
+      "county": "Yakima",
+      "countyToken": "yakima",
+      "receiptTarget": "evidence/june10-38-county-seed/yakima/source-snapshot-receipt.json",
+      "templateOnly": true,
+      "runtimeClaimAllowed": false,
+      "receipt": {
+        "receiptVersion": "june10-seed-v1",
+        "status": "ATTEMPT",
+        "claimLabel": "attempt only",
+        "capturedAtUtc": "REPLACE_WITH_CAPTURE_TIMESTAMP_UTC",
+        "county": "Yakima",
+        "countyToken": "yakima",
+        "state": "WA",
+        "fips": "REPLACE_WITH_COUNTY_FIPS",
+        "sourceSystem": {
+          "systemName": "REPLACE_WITH_PUBLIC_SOURCE_SYSTEM_NAME",
+          "url": "REPLACE_WITH_VERIFIED_PUBLIC_SOURCE_URL",
+          "accessMethod": "browser_or_public_download",
+          "notes": "Do not record secrets, cookies, bearer tokens, passwords, or private credentials."
+        },
+        "noSecretValuesRecorded": true,
+        "rawArtifacts": [
+          {
+            "path": "evidence/june10-38-county-seed/yakima/raw/REPLACE_WITH_ARTIFACT_FILE",
+            "sha256": "REPLACE_WITH_SHA256",
+            "capturedAtUtc": "REPLACE_WITH_CAPTURE_TIMESTAMP_UTC",
+            "sourceUrl": "REPLACE_WITH_ARTIFACT_SOURCE_URL"
+          }
+        ],
+        "normalizedArtifacts": [
+          {
+            "path": "evidence/june10-38-county-seed/yakima/normalized/REPLACE_WITH_NORMALIZED_FILE",
+            "schema": "terrafusion-seed-parcel-v1",
+            "sha256": "REPLACE_WITH_SHA256"
+          }
+        ],
+        "target": {
+          "terrafusionDbIdentity": "REPLACE_AFTER_TERRAFUSION_DB_IDENTITY_PROOF",
+          "databaseRole": "initial_seed_staging",
+          "schema": "REPLACE_WITH_TERRAFUSION_SEED_SCHEMA",
+          "tables": ["REPLACE_WITH_TARGET_TABLE"]
+        },
+        "counts": {
+          "parcelRowsNormalized": 0,
+          "parcelRowsLoaded": 0,
+          "distinctParcelIdsLoaded": 0
+        },
+        "apiProof": {
+          "endpoint": "REPLACE_AFTER_LOAD",
+          "status": null,
+          "payloadCounty": "Yakima",
+          "countyEcho": false,
+          "fallbackDetected": null,
+          "rowCount": 0
+        },
+        "uiSmoke": {
+          "performed": false,
+          "frontendUrl": "REPLACE_AFTER_API_PROOF",
+          "screenshotFolder": "evidence/june10-38-county-seed/yakima/ui-smoke",
+          "trustLabelVisible": false,
+          "unsupportedWorkflowLabelsVisible": false
+        },
+        "workflowLabels": {
+          "inspectParcels": "blocked",
+          "previewScenario": "blocked",
+          "costForgeEstimate": "blocked",
+          "officialValuation": "blocked"
+        },
+        "notes": [
+          "This template is intentionally not a passing receipt.",
+          "Replace every REPLACE_* value with observed evidence before validation.",
+          "Do not record source-system secrets or private credentials.",
+          "Do not claim runtime readiness until load, API proof, and UI smoke gates pass."
+        ]
+      }
+    },
+    {
+      "workOrderId": "J10-SEED-MONTHLY-REPORT-PARCEL-HISTORY-DOUGLAS",
+      "county": "Douglas",
+      "countyToken": "douglas",
+      "receiptTarget": "evidence/june10-38-county-seed/douglas/source-snapshot-receipt.json",
+      "templateOnly": true,
+      "runtimeClaimAllowed": false,
+      "receipt": {
+        "receiptVersion": "june10-seed-v1",
+        "status": "ATTEMPT",
+        "claimLabel": "attempt only",
+        "capturedAtUtc": "REPLACE_WITH_CAPTURE_TIMESTAMP_UTC",
+        "county": "Douglas",
+        "countyToken": "douglas",
+        "state": "WA",
+        "fips": "REPLACE_WITH_COUNTY_FIPS",
+        "sourceSystem": {
+          "systemName": "REPLACE_WITH_PUBLIC_SOURCE_SYSTEM_NAME",
+          "url": "REPLACE_WITH_VERIFIED_PUBLIC_SOURCE_URL",
+          "accessMethod": "browser_or_public_download",
+          "notes": "Do not record secrets, cookies, bearer tokens, passwords, or private credentials."
+        },
+        "noSecretValuesRecorded": true,
+        "rawArtifacts": [
+          {
+            "path": "evidence/june10-38-county-seed/douglas/raw/REPLACE_WITH_ARTIFACT_FILE",
+            "sha256": "REPLACE_WITH_SHA256",
+            "capturedAtUtc": "REPLACE_WITH_CAPTURE_TIMESTAMP_UTC",
+            "sourceUrl": "REPLACE_WITH_ARTIFACT_SOURCE_URL"
+          }
+        ],
+        "normalizedArtifacts": [
+          {
+            "path": "evidence/june10-38-county-seed/douglas/normalized/REPLACE_WITH_NORMALIZED_FILE",
+            "schema": "terrafusion-seed-parcel-v1",
+            "sha256": "REPLACE_WITH_SHA256"
+          }
+        ],
+        "target": {
+          "terrafusionDbIdentity": "REPLACE_AFTER_TERRAFUSION_DB_IDENTITY_PROOF",
+          "databaseRole": "initial_seed_staging",
+          "schema": "REPLACE_WITH_TERRAFUSION_SEED_SCHEMA",
+          "tables": ["REPLACE_WITH_TARGET_TABLE"]
+        },
+        "counts": {
+          "parcelRowsNormalized": 0,
+          "parcelRowsLoaded": 0,
+          "distinctParcelIdsLoaded": 0
+        },
+        "apiProof": {
+          "endpoint": "REPLACE_AFTER_LOAD",
+          "status": null,
+          "payloadCounty": "Douglas",
+          "countyEcho": false,
+          "fallbackDetected": null,
+          "rowCount": 0
+        },
+        "uiSmoke": {
+          "performed": false,
+          "frontendUrl": "REPLACE_AFTER_API_PROOF",
+          "screenshotFolder": "evidence/june10-38-county-seed/douglas/ui-smoke",
+          "trustLabelVisible": false,
+          "unsupportedWorkflowLabelsVisible": false
+        },
+        "workflowLabels": {
+          "inspectParcels": "blocked",
+          "previewScenario": "blocked",
+          "costForgeEstimate": "blocked",
+          "officialValuation": "blocked"
+        },
+        "notes": [
+          "This template is intentionally not a passing receipt.",
+          "Replace every REPLACE_* value with observed evidence before validation.",
+          "Do not record source-system secrets or private credentials.",
+          "Do not claim runtime readiness until load, API proof, and UI smoke gates pass."
+        ]
+      }
+    },
+    {
+      "workOrderId": "J10-SEED-MONTHLY-SALES-REPORT-KLICKITAT",
+      "county": "Klickitat",
+      "countyToken": "klickitat",
+      "receiptTarget": "evidence/june10-38-county-seed/klickitat/source-snapshot-receipt.json",
+      "templateOnly": true,
+      "runtimeClaimAllowed": false,
+      "receipt": {
+        "receiptVersion": "june10-seed-v1",
+        "status": "ATTEMPT",
+        "claimLabel": "attempt only",
+        "capturedAtUtc": "REPLACE_WITH_CAPTURE_TIMESTAMP_UTC",
+        "county": "Klickitat",
+        "countyToken": "klickitat",
+        "state": "WA",
+        "fips": "REPLACE_WITH_COUNTY_FIPS",
+        "sourceSystem": {
+          "systemName": "REPLACE_WITH_PUBLIC_SOURCE_SYSTEM_NAME",
+          "url": "REPLACE_WITH_VERIFIED_PUBLIC_SOURCE_URL",
+          "accessMethod": "browser_or_public_download",
+          "notes": "Do not record secrets, cookies, bearer tokens, passwords, or private credentials."
+        },
+        "noSecretValuesRecorded": true,
+        "rawArtifacts": [
+          {
+            "path": "evidence/june10-38-county-seed/klickitat/raw/REPLACE_WITH_ARTIFACT_FILE",
+            "sha256": "REPLACE_WITH_SHA256",
+            "capturedAtUtc": "REPLACE_WITH_CAPTURE_TIMESTAMP_UTC",
+            "sourceUrl": "REPLACE_WITH_ARTIFACT_SOURCE_URL"
+          }
+        ],
+        "normalizedArtifacts": [
+          {
+            "path": "evidence/june10-38-county-seed/klickitat/normalized/REPLACE_WITH_NORMALIZED_FILE",
+            "schema": "terrafusion-seed-parcel-v1",
+            "sha256": "REPLACE_WITH_SHA256"
+          }
+        ],
+        "target": {
+          "terrafusionDbIdentity": "REPLACE_AFTER_TERRAFUSION_DB_IDENTITY_PROOF",
+          "databaseRole": "initial_seed_staging",
+          "schema": "REPLACE_WITH_TERRAFUSION_SEED_SCHEMA",
+          "tables": ["REPLACE_WITH_TARGET_TABLE"]
+        },
+        "counts": {
+          "parcelRowsNormalized": 0,
+          "parcelRowsLoaded": 0,
+          "distinctParcelIdsLoaded": 0
+        },
+        "apiProof": {
+          "endpoint": "REPLACE_AFTER_LOAD",
+          "status": null,
+          "payloadCounty": "Klickitat",
+          "countyEcho": false,
+          "fallbackDetected": null,
+          "rowCount": 0
+        },
+        "uiSmoke": {
+          "performed": false,
+          "frontendUrl": "REPLACE_AFTER_API_PROOF",
+          "screenshotFolder": "evidence/june10-38-county-seed/klickitat/ui-smoke",
+          "trustLabelVisible": false,
+          "unsupportedWorkflowLabelsVisible": false
+        },
+        "workflowLabels": {
+          "inspectParcels": "blocked",
+          "previewScenario": "blocked",
+          "costForgeEstimate": "blocked",
+          "officialValuation": "blocked"
+        },
+        "notes": [
+          "This template is intentionally not a passing receipt.",
+          "Replace every REPLACE_* value with observed evidence before validation.",
+          "Do not record source-system secrets or private credentials.",
+          "Do not claim runtime readiness until load, API proof, and UI smoke gates pass."
+        ]
+      }
+    },
+    {
+      "workOrderId": "J10-SEED-PARCEL-TRANSFER-HISTORY-COWLITZ",
+      "county": "Cowlitz",
+      "countyToken": "cowlitz",
+      "receiptTarget": "evidence/june10-38-county-seed/cowlitz/source-snapshot-receipt.json",
+      "templateOnly": true,
+      "runtimeClaimAllowed": false,
+      "receipt": {
+        "receiptVersion": "june10-seed-v1",
+        "status": "ATTEMPT",
+        "claimLabel": "attempt only",
+        "capturedAtUtc": "REPLACE_WITH_CAPTURE_TIMESTAMP_UTC",
+        "county": "Cowlitz",
+        "countyToken": "cowlitz",
+        "state": "WA",
+        "fips": "REPLACE_WITH_COUNTY_FIPS",
+        "sourceSystem": {
+          "systemName": "REPLACE_WITH_PUBLIC_SOURCE_SYSTEM_NAME",
+          "url": "REPLACE_WITH_VERIFIED_PUBLIC_SOURCE_URL",
+          "accessMethod": "browser_or_public_download",
+          "notes": "Do not record secrets, cookies, bearer tokens, passwords, or private credentials."
+        },
+        "noSecretValuesRecorded": true,
+        "rawArtifacts": [
+          {
+            "path": "evidence/june10-38-county-seed/cowlitz/raw/REPLACE_WITH_ARTIFACT_FILE",
+            "sha256": "REPLACE_WITH_SHA256",
+            "capturedAtUtc": "REPLACE_WITH_CAPTURE_TIMESTAMP_UTC",
+            "sourceUrl": "REPLACE_WITH_ARTIFACT_SOURCE_URL"
+          }
+        ],
+        "normalizedArtifacts": [
+          {
+            "path": "evidence/june10-38-county-seed/cowlitz/normalized/REPLACE_WITH_NORMALIZED_FILE",
+            "schema": "terrafusion-seed-parcel-v1",
+            "sha256": "REPLACE_WITH_SHA256"
+          }
+        ],
+        "target": {
+          "terrafusionDbIdentity": "REPLACE_AFTER_TERRAFUSION_DB_IDENTITY_PROOF",
+          "databaseRole": "initial_seed_staging",
+          "schema": "REPLACE_WITH_TERRAFUSION_SEED_SCHEMA",
+          "tables": ["REPLACE_WITH_TARGET_TABLE"]
+        },
+        "counts": {
+          "parcelRowsNormalized": 0,
+          "parcelRowsLoaded": 0,
+          "distinctParcelIdsLoaded": 0
+        },
+        "apiProof": {
+          "endpoint": "REPLACE_AFTER_LOAD",
+          "status": null,
+          "payloadCounty": "Cowlitz",
+          "countyEcho": false,
+          "fallbackDetected": null,
+          "rowCount": 0
+        },
+        "uiSmoke": {
+          "performed": false,
+          "frontendUrl": "REPLACE_AFTER_API_PROOF",
+          "screenshotFolder": "evidence/june10-38-county-seed/cowlitz/ui-smoke",
+          "trustLabelVisible": false,
+          "unsupportedWorkflowLabelsVisible": false
+        },
+        "workflowLabels": {
+          "inspectParcels": "blocked",
+          "previewScenario": "blocked",
+          "costForgeEstimate": "blocked",
+          "officialValuation": "blocked"
+        },
+        "notes": [
+          "This template is intentionally not a passing receipt.",
+          "Replace every REPLACE_* value with observed evidence before validation.",
+          "Do not record source-system secrets or private credentials.",
+          "Do not claim runtime readiness until load, API proof, and UI smoke gates pass."
+        ]
+      }
+    },
+    {
+      "workOrderId": "J10-SEED-PARCEL-TRANSFER-HISTORY-OPEN-DATA-EXPORT-KITSAP",
+      "county": "Kitsap",
+      "countyToken": "kitsap",
+      "receiptTarget": "evidence/june10-38-county-seed/kitsap/source-snapshot-receipt.json",
+      "templateOnly": true,
+      "runtimeClaimAllowed": false,
+      "receipt": {
+        "receiptVersion": "june10-seed-v1",
+        "status": "ATTEMPT",
+        "claimLabel": "attempt only",
+        "capturedAtUtc": "REPLACE_WITH_CAPTURE_TIMESTAMP_UTC",
+        "county": "Kitsap",
+        "countyToken": "kitsap",
+        "state": "WA",
+        "fips": "REPLACE_WITH_COUNTY_FIPS",
+        "sourceSystem": {
+          "systemName": "REPLACE_WITH_PUBLIC_SOURCE_SYSTEM_NAME",
+          "url": "REPLACE_WITH_VERIFIED_PUBLIC_SOURCE_URL",
+          "accessMethod": "browser_or_public_download",
+          "notes": "Do not record secrets, cookies, bearer tokens, passwords, or private credentials."
+        },
+        "noSecretValuesRecorded": true,
+        "rawArtifacts": [
+          {
+            "path": "evidence/june10-38-county-seed/kitsap/raw/REPLACE_WITH_ARTIFACT_FILE",
+            "sha256": "REPLACE_WITH_SHA256",
+            "capturedAtUtc": "REPLACE_WITH_CAPTURE_TIMESTAMP_UTC",
+            "sourceUrl": "REPLACE_WITH_ARTIFACT_SOURCE_URL"
+          }
+        ],
+        "normalizedArtifacts": [
+          {
+            "path": "evidence/june10-38-county-seed/kitsap/normalized/REPLACE_WITH_NORMALIZED_FILE",
+            "schema": "terrafusion-seed-parcel-v1",
+            "sha256": "REPLACE_WITH_SHA256"
+          }
+        ],
+        "target": {
+          "terrafusionDbIdentity": "REPLACE_AFTER_TERRAFUSION_DB_IDENTITY_PROOF",
+          "databaseRole": "initial_seed_staging",
+          "schema": "REPLACE_WITH_TERRAFUSION_SEED_SCHEMA",
+          "tables": ["REPLACE_WITH_TARGET_TABLE"]
+        },
+        "counts": {
+          "parcelRowsNormalized": 0,
+          "parcelRowsLoaded": 0,
+          "distinctParcelIdsLoaded": 0
+        },
+        "apiProof": {
+          "endpoint": "REPLACE_AFTER_LOAD",
+          "status": null,
+          "payloadCounty": "Kitsap",
+          "countyEcho": false,
+          "fallbackDetected": null,
+          "rowCount": 0
+        },
+        "uiSmoke": {
+          "performed": false,
+          "frontendUrl": "REPLACE_AFTER_API_PROOF",
+          "screenshotFolder": "evidence/june10-38-county-seed/kitsap/ui-smoke",
+          "trustLabelVisible": false,
+          "unsupportedWorkflowLabelsVisible": false
+        },
+        "workflowLabels": {
+          "inspectParcels": "blocked",
+          "previewScenario": "blocked",
+          "costForgeEstimate": "blocked",
+          "officialValuation": "blocked"
+        },
+        "notes": [
+          "This template is intentionally not a passing receipt.",
+          "Replace every REPLACE_* value with observed evidence before validation.",
+          "Do not record source-system secrets or private credentials.",
+          "Do not claim runtime readiness until load, API proof, and UI smoke gates pass."
+        ]
+      }
+    }
+  ]
+}
