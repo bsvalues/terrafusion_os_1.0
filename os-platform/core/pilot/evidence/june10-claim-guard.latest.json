@@ -1,0 +1,65 @@
+{
+  "generatedAtUtc": "2026-05-14T22:34:35.304Z",
+  "guardStatus": "LOCKED",
+  "publicClaimsAllowed": false,
+  "summary": {
+    "redTeamVerdict": "RED",
+    "guardStatus": "LOCKED",
+    "publicClaimsAllowed": false,
+    "bannedNarratives": 6,
+    "proposedClaimViolations": 0,
+    "shipBlockers": 23,
+    "seedReceiptsFound": 0,
+    "bentonCorpusSealed": false
+  },
+  "allowedFraming": "TerraFusion is in controlled readiness execution. The governance gates are operating, Benton is the primary runtime pilot closure lane, and the 38-county seed lane is prepared but not promoted. Production and statewide runtime claims remain blocked until the proof gates pass.",
+  "blockedClaims": [
+    {
+      "claim": "39 counties are runtime-ready",
+      "reason": "Blocked until required proof artifacts pass and red-team verdict clears."
+    },
+    {
+      "claim": "Benton full corpus is sealed",
+      "reason": "Blocked until required proof artifacts pass and red-team verdict clears."
+    },
+    {
+      "claim": "TerraFusion is production approved",
+      "reason": "Blocked until required proof artifacts pass and red-team verdict clears."
+    },
+    {
+      "claim": "All data flows end to end",
+      "reason": "Blocked until required proof artifacts pass and red-team verdict clears."
+    },
+    {
+      "claim": "Official county-certified valuation is ready",
+      "reason": "Blocked until required proof artifacts pass and red-team verdict clears."
+    },
+    {
+      "claim": "Seed templates prove county acquisition",
+      "reason": "Blocked until required proof artifacts pass and red-team verdict clears."
+    }
+  ],
+  "proposedClaimFindings": [],
+  "requiredContainmentPosture": [
+    "Treat the readiness packet failure as authoritative until it passes.",
+    "Treat Benton corpus evidence as ATTEMPT only until sealed.",
+    "Treat the 38-county lane as governed acquisition preparation until real receipts pass.",
+    "Do not claim runtime readiness from source registry coverage, templates, or work orders.",
+    "Require product-load receipts before making product data confidence claims."
+  ],
+  "requiredProofArtifacts": [
+    "Passing June 10 readiness packet.",
+    "Passing TerraFusion DB product-load ledger with ProductLoadReceipts evidence.",
+    "Sealed Benton full-corpus verification, not ATTEMPT.",
+    "Passing Benton runtime pilot closure.",
+    "At least one real 38-county seed receipt passing the validator.",
+    "API proof and UI smoke for every promoted non-Benton county.",
+    "County-scope artifact showing no fake 39-county runtime claim."
+  ],
+  "rules": [
+    "The claim guard approves language only; it does not prove runtime readiness.",
+    "Banned narratives remain blocked until the red-team verdict clears.",
+    "Templates, work orders, and source registry coverage are not data-loaded proof.",
+    "Public claims must stay inside the allowed framing while guardStatus is LOCKED or REVIEW_REQUIRED."
+  ]
+}
