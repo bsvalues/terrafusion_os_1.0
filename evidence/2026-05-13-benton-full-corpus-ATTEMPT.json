@@ -1,0 +1,42 @@
+{
+  "runId": "7994f061-c556-4374-b721-97f1b5d818fe",
+  "verdict": {
+    "sealed": false,
+    "clauses": [
+      {
+        "name": "all_six_lanes_executed",
+        "pass": false
+      },
+      {
+        "name": "no_silent_fallback_paths_triggered",
+        "pass": true
+      },
+      {
+        "name": "reconciliation_artifacts_generated",
+        "pass": false
+      },
+      {
+        "name": "quarantine_deltas_recorded",
+        "pass": true
+      },
+      {
+        "name": "replay_timestamps_captured",
+        "pass": true
+      },
+      {
+        "name": "pacs_snapshot_identifier_preserved",
+        "pass": false
+      },
+      {
+        "name": "api_readback_verifies_promoted_truth",
+        "pass": false
+      }
+    ]
+  },
+  "summary": {
+    "runStatus": "Interrupted",
+    "lanesCompleted": 0,
+    "batchesObserved": 18,
+    "gatesObserved": 50
+  }
+}
