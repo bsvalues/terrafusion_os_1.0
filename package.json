@@ -113,6 +113,7 @@
     "truth:june10-seed-receipt-template-pack": "node os-platform/core/pilot/june10-seed-receipt-template-pack.mjs",
     "truth:june10-seed-wave-plan": "node os-platform/core/pilot/june10-seed-wave-planner.mjs",
     "truth:june10-seed-work-order-pack": "node os-platform/core/pilot/june10-seed-work-order-pack.mjs",
+    "truth:june10-ship-blocker-ledger": "node os-platform/core/pilot/june10-ship-blocker-ledger.mjs",
     "truth:post-db-refresh-rerun": "node scripts/truth/post-db-refresh-rerun.mjs",
     "truth:direct-source": "node os-platform/core/pilot/direct-source-recompute.mjs",
     "truth:statistics-parity-scope": "node os-platform/core/pilot/statistics-parity-scope-alignment.mjs",
