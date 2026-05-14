@@ -102,6 +102,7 @@
     "truth:runtime-data-boundary-audit": "node scripts/truth/runtime-data-boundary-audit.mjs",
     "truth:washington-39-county-data-crosswalk": "node scripts/truth/washington-39-county-data-crosswalk.mjs",
     "truth:county-runtime-contract": "node scripts/truth/county-runtime-contract.mjs",
+    "truth:june10-red-team": "node os-platform/core/pilot/june10-red-team.mjs",
     "truth:june10-readiness-packet": "node scripts/truth/june10-readiness-packet.mjs",
     "truth:june10-seed-control-plane": "node os-platform/core/pilot/june10-seed-control-plane.mjs",
     "truth:june10-seed-execution-status": "node os-platform/core/pilot/june10-seed-execution-status.mjs",
