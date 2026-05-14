@@ -1,0 +1,85 @@
+{
+  "generatedAtUtc": "2026-05-14T18:48:40.036Z",
+  "summary": {
+    "sourceWorkOrderPackGeneratedAtUtc": "2026-05-14T18:28:31.866Z",
+    "sourceReceiptGeneratedAtUtc": "2026-05-14T17:09:56.359Z",
+    "workOrders": 5,
+    "receiptsFound": 0,
+    "awaitingSourceCapture": 5,
+    "receiptCaptured": 0,
+    "normalizedReady": 0,
+    "loadedNeedsApiProof": 0,
+    "apiProvenNeedsUiSmoke": 0,
+    "limitedWorkflowReady": 0,
+    "blockedByReceiptFailure": 0,
+    "runtimeClaimAllowed": false
+  },
+  "rows": [
+    {
+      "workOrderId": "J10-SEED-DIRECT-SALES-SEARCH-YAKIMA",
+      "county": "Yakima",
+      "countyToken": "yakima",
+      "receiptTarget": "evidence/june10-38-county-seed/yakima/source-snapshot-receipt.json",
+      "receiptStatus": "NO_RECEIPT",
+      "receiptPassed": null,
+      "executionStatus": "AWAITING_SOURCE_CAPTURE",
+      "nextOperatorAction": "capture_source_snapshot",
+      "runtimeClaimAllowed": false,
+      "blockers": []
+    },
+    {
+      "workOrderId": "J10-SEED-MONTHLY-REPORT-PARCEL-HISTORY-DOUGLAS",
+      "county": "Douglas",
+      "countyToken": "douglas",
+      "receiptTarget": "evidence/june10-38-county-seed/douglas/source-snapshot-receipt.json",
+      "receiptStatus": "NO_RECEIPT",
+      "receiptPassed": null,
+      "executionStatus": "AWAITING_SOURCE_CAPTURE",
+      "nextOperatorAction": "capture_source_snapshot",
+      "runtimeClaimAllowed": false,
+      "blockers": []
+    },
+    {
+      "workOrderId": "J10-SEED-MONTHLY-SALES-REPORT-KLICKITAT",
+      "county": "Klickitat",
+      "countyToken": "klickitat",
+      "receiptTarget": "evidence/june10-38-county-seed/klickitat/source-snapshot-receipt.json",
+      "receiptStatus": "NO_RECEIPT",
+      "receiptPassed": null,
+      "executionStatus": "AWAITING_SOURCE_CAPTURE",
+      "nextOperatorAction": "capture_source_snapshot",
+      "runtimeClaimAllowed": false,
+      "blockers": []
+    },
+    {
+      "workOrderId": "J10-SEED-PARCEL-TRANSFER-HISTORY-COWLITZ",
+      "county": "Cowlitz",
+      "countyToken": "cowlitz",
+      "receiptTarget": "evidence/june10-38-county-seed/cowlitz/source-snapshot-receipt.json",
+      "receiptStatus": "NO_RECEIPT",
+      "receiptPassed": null,
+      "executionStatus": "AWAITING_SOURCE_CAPTURE",
+      "nextOperatorAction": "capture_source_snapshot",
+      "runtimeClaimAllowed": false,
+      "blockers": []
+    },
+    {
+      "workOrderId": "J10-SEED-PARCEL-TRANSFER-HISTORY-OPEN-DATA-EXPORT-KITSAP",
+      "county": "Kitsap",
+      "countyToken": "kitsap",
+      "receiptTarget": "evidence/june10-38-county-seed/kitsap/source-snapshot-receipt.json",
+      "receiptStatus": "NO_RECEIPT",
+      "receiptPassed": null,
+      "executionStatus": "AWAITING_SOURCE_CAPTURE",
+      "nextOperatorAction": "capture_source_snapshot",
+      "runtimeClaimAllowed": false,
+      "blockers": []
+    }
+  ],
+  "rules": [
+    "This status is a work-order control plane, not runtime readiness proof.",
+    "Runtime claims remain blocked until receipts pass load, API proof, and UI smoke gates.",
+    "Missing receipts mean acquisition work is pending, not complete.",
+    "Failed receipts block promotion until corrected."
+  ]
+}

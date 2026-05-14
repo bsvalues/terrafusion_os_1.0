@@ -103,6 +103,7 @@
     "truth:washington-39-county-data-crosswalk": "node scripts/truth/washington-39-county-data-crosswalk.mjs",
     "truth:county-runtime-contract": "node scripts/truth/county-runtime-contract.mjs",
     "truth:june10-readiness-packet": "node scripts/truth/june10-readiness-packet.mjs",
+    "truth:june10-seed-execution-status": "node os-platform/core/pilot/june10-seed-execution-status.mjs",
     "truth:june10-seed-receipts": "node os-platform/core/pilot/june10-seed-receipt-validator.mjs",
     "truth:june10-seed-wave-plan": "node os-platform/core/pilot/june10-seed-wave-planner.mjs",
     "truth:june10-seed-work-order-pack": "node os-platform/core/pilot/june10-seed-work-order-pack.mjs",
