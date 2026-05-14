@@ -7,7 +7,9 @@
     "workbookSha256": "459a7d5d77ccfcd1be8c913da50afd9e3b3c496b1120a2a4003e6ce843355cc9",
     "workbookLastModifiedUtc": "2026-04-23T18:10:37.915Z",
     "worksheet": "WA Sales Acquisition Registry",
-    "worksheetPath": "xl/worksheets/sheet1.xml"
+    "worksheetPath": "xl/worksheets/sheet1.xml",
+    "supplementalResearchAtUtc": "2026-05-14T00:11:45.6142408Z",
+    "supplementalResearchScope": "Closed Ferry, Skamania, and Whitman source-decision gaps from public assessor/GIS evidence without changing runtime readiness claims."
   },
   "assertions": {
     "expectedCountyCount": 39,
@@ -23,15 +25,15 @@
   "counts": {
     "byStatus": {
       "researched": 4,
-      "adapter-ready": 33,
-      "not-started": 2
+      "adapter-ready": 35,
+      "not-started": 0
     },
     "byAcquisitionFamily": {
-      "Parcel transfer history": 6,
-      "Direct sales search": 24,
+      "Parcel transfer history": 8,
+      "Direct sales search": 25,
       "Monthly sales report": 4,
       "Monthly report / parcel history": 1,
-      "Unknown": 3,
+      "Unknown": 0,
       "Parcel transfer history / open data export": 1
     },
     "byPriority": {
@@ -39,15 +41,14 @@
       "P1": 29,
       "P3": 2
     },
-    "adapterReady": 33,
+    "adapterReady": 35,
     "researched": 4,
-    "notStarted": 2,
-    "unknownFamily": 3
+    "notStarted": 0,
+    "unknownFamily": 0
   },
   "failures": [],
   "limitations": [
-    "2 counties remain not-started in the registry control plane.",
-    "3 counties still have Unknown acquisition family posture.",
+    "All 39 counties now have a source-decision acquisition family in the registry control plane.",
     "This proves registry coverage and acquisition-path inventory only; it does not prove statewide ingestion, normalization, geometry, or endpoint runtime coverage."
   ],
   "counties": [
@@ -145,11 +146,11 @@
       "county": "Ferry",
       "officialAssessorBaseUrl": "https://www.ferry-county.com",
       "primarySalesSource": "Parcel-first via TaxSifter; direct sales search not verified in this pass",
-      "fallbackSource": "Auditor recording request / Treasurer document center / GIS addressing",
-      "acquisitionFamily": "Unknown",
-      "gisMapSurface": "GIS and Addressing",
+      "fallbackSource": "Ferry County ArcGIS parcel map / Auditor recording request / Treasurer document center",
+      "acquisitionFamily": "Parcel transfer history",
+      "gisMapSurface": "Ferry County ArcGIS parcel map / GIS and Addressing",
       "priority": "P2",
-      "status": "researched"
+      "status": "adapter-ready"
     },
     {
       "county": "Franklin",
@@ -344,12 +345,12 @@
     {
       "county": "Skamania",
       "officialAssessorBaseUrl": "https://www.skamaniacounty.org",
-      "primarySalesSource": "Research needed",
-      "fallbackSource": "Research needed",
-      "acquisitionFamily": "Unknown",
-      "gisMapSurface": "Research needed",
+      "primarySalesSource": "TaxSifter parcel and sales search",
+      "fallbackSource": "Recorded Documents Database / MapSifter parcel by aerial image search",
+      "acquisitionFamily": "Direct sales search",
+      "gisMapSurface": "GIS HUB / MapSifter",
       "priority": "P3",
-      "status": "not-started"
+      "status": "adapter-ready"
     },
     {
       "county": "Snohomish",
@@ -424,12 +425,12 @@
     {
       "county": "Whitman",
       "officialAssessorBaseUrl": "https://www.whitmancounty.org",
-      "primarySalesSource": "Research needed",
-      "fallbackSource": "Research needed",
-      "acquisitionFamily": "Unknown",
-      "gisMapSurface": "Research needed",
+      "primarySalesSource": "Parcel-first via TaxSifter; assessor sales analysis noted, direct sales UI not verified in this pass",
+      "fallbackSource": "Whitman GIS parcel link / Board of Equalization comparable-sales evidence",
+      "acquisitionFamily": "Parcel transfer history",
+      "gisMapSurface": "GIS parcel link / TaxSifter",
       "priority": "P3",
-      "status": "not-started"
+      "status": "researched"
     },
     {
       "county": "Yakima",
