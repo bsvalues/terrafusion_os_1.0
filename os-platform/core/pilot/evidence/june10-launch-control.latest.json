@@ -1,0 +1,128 @@
+{
+  "generatedAtUtc": "2026-05-14T22:43:43.184Z",
+  "launchVerdict": "NO_GO",
+  "summary": {
+    "launchVerdict": "NO_GO",
+    "readinessStatus": "FAIL",
+    "shipBlockers": 23,
+    "redTeamVerdict": "RED",
+    "criticalAttacks": 3,
+    "claimGuardStatus": "LOCKED",
+    "publicClaimsAllowed": false,
+    "seedLanePassed": true,
+    "seedReceiptsFound": 0,
+    "seedRuntimeClaimAllowed": false,
+    "stopConditions": 3
+  },
+  "approvedExternalFraming": "TerraFusion is in controlled readiness execution. The governance gates are operating, Benton is the primary runtime pilot closure lane, and the 38-county seed lane is prepared but not promoted. Production and statewide runtime claims remain blocked until the proof gates pass.",
+  "stopConditions": [
+    "June 10 readiness packet is not passing.",
+    "Credibility red-team verdict is RED.",
+    "Launch claim guard is LOCKED."
+  ],
+  "nextCommands": [
+    "pnpm run truth:terrafusion-db-product-load-ledger",
+    "pnpm run truth:benton-runtime-pilot-closure",
+    "pnpm run truth:washington-39-county-data-crosswalk",
+    "pnpm run truth:runtime-candidate-set",
+    "pnpm run truth:june10-red-team",
+    "pnpm run truth:june10-claim-guard"
+  ],
+  "requiredProofArtifacts": [
+    "Passing June 10 readiness packet.",
+    "Passing TerraFusion DB product-load ledger with ProductLoadReceipts evidence.",
+    "Sealed Benton full-corpus verification, not ATTEMPT.",
+    "Passing Benton runtime pilot closure.",
+    "At least one real 38-county seed receipt passing the validator.",
+    "API proof and UI smoke for every promoted non-Benton county.",
+    "County-scope artifact showing no fake 39-county runtime claim."
+  ],
+  "shipBlockers": [
+    {
+      "source": "productLoadLedger",
+      "message": "Artifact reports failed proof posture: top-level passed is false."
+    },
+    {
+      "source": "productLoadLedger",
+      "message": "Artifact reports failed proof posture: summary.lineageProven is false."
+    },
+    {
+      "source": "productLoadLedger",
+      "message": "receiptEvidence: ProductLoadReceipts table is missing."
+    },
+    {
+      "source": "productLoadLedger",
+      "message": "canonical_tf.tf_parcel: Table missing or unreadable."
+    },
+    {
+      "source": "productLoadLedger",
+      "message": "canonical_tf.tf_sale: Rows exist but no product load receipt proves lineage."
+    },
+    {
+      "source": "productLoadLedger",
+      "message": "CanonicalSaleQualifications: Rows exist but no product load receipt proves lineage."
+    },
+    {
+      "source": "productLoadLedger",
+      "message": "CamaCharacteristics: Rows exist but no product load receipt proves lineage."
+    },
+    {
+      "source": "productLoadLedger",
+      "message": "ImprovementDetails: Table exists but is empty."
+    },
+    {
+      "source": "productLoadLedger",
+      "message": "LandSegments: Table exists but is empty."
+    },
+    {
+      "source": "productLoadLedger",
+      "message": "GisParcelGeometries: Rows exist but no product load receipt proves lineage."
+    },
+    {
+      "source": "productLoadLedger",
+      "message": "DossierPackets: Table exists but is empty."
+    },
+    {
+      "source": "productLoadLedger",
+      "message": "CountyDownstreamClosureReceipts: Table exists but is empty."
+    },
+    {
+      "source": "productLoadLedger",
+      "message": "CountyApplyHandoffReceipts: Table exists but is empty."
+    },
+    {
+      "source": "bentonPilotClosure",
+      "message": "Artifact reports failed proof posture: top-level status is FAIL."
+    },
+    {
+      "source": "bentonPilotClosure",
+      "message": "June 10 runtime scope is runtime_scope_requires_review, expected benton_only_runtime_pilot."
+    },
+    {
+      "source": "bentonPilotClosure",
+      "message": "Expected exactly one runtime-proven county; found 39."
+    },
+    {
+      "source": "bentonPilotClosure",
+      "message": "Expected 38 provenance-only counties; found 0."
+    },
+    {
+      "source": "bentonPilotClosure",
+      "message": "Benton ratio-study window has no final-decision qualified sales."
+    },
+    {
+      "source": "crosswalk",
+      "message": "Crosswalk runtime-proven count does not match runtime candidate set."
+    },
+    {
+      "source": "runtimeCandidateSet",
+      "message": "Runtime candidate set does not prove Benton-only June 10 scope."
+    }
+  ],
+  "rules": [
+    "Launch control is an executive control packet, not runtime proof.",
+    "NO_GO means no production approval, public readiness claim, or statewide runtime claim.",
+    "Claim guard language is the maximum allowed public framing while launchVerdict is not GO.",
+    "A GO verdict requires passing readiness, non-RED red-team posture, unlocked claim guard, and seed-lane claim safety."
+  ]
+}
