@@ -1,0 +1,67 @@
+{
+  "generatedAtUtc": "2026-05-14T19:14:09.250Z",
+  "passed": true,
+  "summary": {
+    "workOrders": 5,
+    "templates": 5,
+    "receiptsFound": 0,
+    "awaitingSourceCapture": 5,
+    "blockedByReceiptFailure": 0,
+    "runtimeClaimAllowed": false,
+    "blockers": 0
+  },
+  "rows": [
+    {
+      "workOrderId": "J10-SEED-DIRECT-SALES-SEARCH-YAKIMA",
+      "county": "Yakima",
+      "countyToken": "yakima",
+      "receiptTarget": "evidence/june10-38-county-seed/yakima/source-snapshot-receipt.json",
+      "executionStatus": "AWAITING_SOURCE_CAPTURE",
+      "templateOnly": true,
+      "runtimeClaimAllowed": false
+    },
+    {
+      "workOrderId": "J10-SEED-MONTHLY-REPORT-PARCEL-HISTORY-DOUGLAS",
+      "county": "Douglas",
+      "countyToken": "douglas",
+      "receiptTarget": "evidence/june10-38-county-seed/douglas/source-snapshot-receipt.json",
+      "executionStatus": "AWAITING_SOURCE_CAPTURE",
+      "templateOnly": true,
+      "runtimeClaimAllowed": false
+    },
+    {
+      "workOrderId": "J10-SEED-MONTHLY-SALES-REPORT-KLICKITAT",
+      "county": "Klickitat",
+      "countyToken": "klickitat",
+      "receiptTarget": "evidence/june10-38-county-seed/klickitat/source-snapshot-receipt.json",
+      "executionStatus": "AWAITING_SOURCE_CAPTURE",
+      "templateOnly": true,
+      "runtimeClaimAllowed": false
+    },
+    {
+      "workOrderId": "J10-SEED-PARCEL-TRANSFER-HISTORY-COWLITZ",
+      "county": "Cowlitz",
+      "countyToken": "cowlitz",
+      "receiptTarget": "evidence/june10-38-county-seed/cowlitz/source-snapshot-receipt.json",
+      "executionStatus": "AWAITING_SOURCE_CAPTURE",
+      "templateOnly": true,
+      "runtimeClaimAllowed": false
+    },
+    {
+      "workOrderId": "J10-SEED-PARCEL-TRANSFER-HISTORY-OPEN-DATA-EXPORT-KITSAP",
+      "county": "Kitsap",
+      "countyToken": "kitsap",
+      "receiptTarget": "evidence/june10-38-county-seed/kitsap/source-snapshot-receipt.json",
+      "executionStatus": "AWAITING_SOURCE_CAPTURE",
+      "templateOnly": true,
+      "runtimeClaimAllowed": false
+    }
+  ],
+  "blockers": [],
+  "rules": [
+    "This control plane reconciles seed artifacts only; it is not runtime readiness proof.",
+    "Runtime claims remain blocked until validated receipts, API proof, and UI smoke exist.",
+    "Receipt templates must never be counted as acquisition evidence.",
+    "Work order, template, and execution status receipt targets must match exactly."
+  ]
+}
