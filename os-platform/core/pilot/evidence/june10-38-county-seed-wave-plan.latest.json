@@ -1,0 +1,174 @@
+{
+  "generatedAtUtc": "2026-05-14T17:40:11.958Z",
+  "sourceCoverageGeneratedAtUtc": "2026-04-29T17:16:08.237Z",
+  "sourceReceiptGeneratedAtUtc": "2026-05-14T17:09:56.359Z",
+  "summary": {
+    "countiesInScope": 38,
+    "familiesInScope": 5,
+    "firstWaveWorkOrders": 5,
+    "workOrdersWithoutReceipt": 5,
+    "limitedWorkflowReady": 0,
+    "bentonExcluded": true,
+    "runtimeClaimAllowed": false
+  },
+  "familyRows": [
+    {
+      "acquisitionFamily": "Direct sales search",
+      "countyCount": 24,
+      "representativeCounty": "Yakima",
+      "representativePriority": "P2",
+      "representativeStatus": "adapter-ready",
+      "receiptStatus": "NO_RECEIPT",
+      "nextAction": "capture_source_snapshot"
+    },
+    {
+      "acquisitionFamily": "Monthly report / parcel history",
+      "countyCount": 1,
+      "representativeCounty": "Douglas",
+      "representativePriority": "P1",
+      "representativeStatus": "adapter-ready",
+      "receiptStatus": "NO_RECEIPT",
+      "nextAction": "capture_source_snapshot"
+    },
+    {
+      "acquisitionFamily": "Monthly sales report",
+      "countyCount": 4,
+      "representativeCounty": "Klickitat",
+      "representativePriority": "P2",
+      "representativeStatus": "adapter-ready",
+      "receiptStatus": "NO_RECEIPT",
+      "nextAction": "capture_source_snapshot"
+    },
+    {
+      "acquisitionFamily": "Parcel transfer history",
+      "countyCount": 8,
+      "representativeCounty": "Cowlitz",
+      "representativePriority": "P1",
+      "representativeStatus": "adapter-ready",
+      "receiptStatus": "NO_RECEIPT",
+      "nextAction": "capture_source_snapshot"
+    },
+    {
+      "acquisitionFamily": "Parcel transfer history / open data export",
+      "countyCount": 1,
+      "representativeCounty": "Kitsap",
+      "representativePriority": "P1",
+      "representativeStatus": "adapter-ready",
+      "receiptStatus": "NO_RECEIPT",
+      "nextAction": "capture_source_snapshot"
+    }
+  ],
+  "workOrders": [
+    {
+      "workOrderId": "J10-SEED-DIRECT-SALES-SEARCH-YAKIMA",
+      "county": "Yakima",
+      "countyToken": "yakima",
+      "acquisitionFamily": "Direct sales search",
+      "priority": "P2",
+      "registryStatus": "adapter-ready",
+      "officialAssessorBaseUrl": "https://www.yakimacounty.us",
+      "primarySalesSource": "Sales Searches",
+      "fallbackSource": "Other Searches + BOE comparable-sales guidance",
+      "gisMapSurface": "Parcel Search / mapping",
+      "receiptStatus": "NO_RECEIPT",
+      "nextAction": "capture_source_snapshot",
+      "claimAllowed": "source/seed work order only",
+      "forbiddenClaims": [
+        "runtime-ready",
+        "full county data loaded",
+        "official county-certified valuation",
+        "CostForge official calibration"
+      ]
+    },
+    {
+      "workOrderId": "J10-SEED-MONTHLY-REPORT-PARCEL-HISTORY-DOUGLAS",
+      "county": "Douglas",
+      "countyToken": "douglas",
+      "acquisitionFamily": "Monthly report / parcel history",
+      "priority": "P1",
+      "registryStatus": "adapter-ready",
+      "officialAssessorBaseUrl": "https://www.douglascountywa.gov",
+      "primarySalesSource": "Monthly Sales",
+      "fallbackSource": "Web Mapping / TaxSifter parcel history",
+      "gisMapSurface": "Web Mapping / Map Search",
+      "receiptStatus": "NO_RECEIPT",
+      "nextAction": "capture_source_snapshot",
+      "claimAllowed": "source/seed work order only",
+      "forbiddenClaims": [
+        "runtime-ready",
+        "full county data loaded",
+        "official county-certified valuation",
+        "CostForge official calibration"
+      ]
+    },
+    {
+      "workOrderId": "J10-SEED-MONTHLY-SALES-REPORT-KLICKITAT",
+      "county": "Klickitat",
+      "countyToken": "klickitat",
+      "acquisitionFamily": "Monthly sales report",
+      "priority": "P2",
+      "registryStatus": "adapter-ready",
+      "officialAssessorBaseUrl": "https://www.klickitatcounty.org",
+      "primarySalesSource": "Klickitat County Assessor Sales Reports",
+      "fallbackSource": "Interactive Mapping Service / Auditor recording search",
+      "gisMapSurface": "Interactive Mapping Service / GIS and Maps",
+      "receiptStatus": "NO_RECEIPT",
+      "nextAction": "capture_source_snapshot",
+      "claimAllowed": "source/seed work order only",
+      "forbiddenClaims": [
+        "runtime-ready",
+        "full county data loaded",
+        "official county-certified valuation",
+        "CostForge official calibration"
+      ]
+    },
+    {
+      "workOrderId": "J10-SEED-PARCEL-TRANSFER-HISTORY-COWLITZ",
+      "county": "Cowlitz",
+      "countyToken": "cowlitz",
+      "acquisitionFamily": "Parcel transfer history",
+      "priority": "P1",
+      "registryStatus": "adapter-ready",
+      "officialAssessorBaseUrl": "https://www.co.cowlitz.wa.us",
+      "primarySalesSource": "Parcel detail conveyances + Request Sales Report",
+      "fallbackSource": "Auditor Public Record Search / recorded documents / assessor map",
+      "gisMapSurface": "County GIS Maps + Assessor GIS Map",
+      "receiptStatus": "NO_RECEIPT",
+      "nextAction": "capture_source_snapshot",
+      "claimAllowed": "source/seed work order only",
+      "forbiddenClaims": [
+        "runtime-ready",
+        "full county data loaded",
+        "official county-certified valuation",
+        "CostForge official calibration"
+      ]
+    },
+    {
+      "workOrderId": "J10-SEED-PARCEL-TRANSFER-HISTORY-OPEN-DATA-EXPORT-KITSAP",
+      "county": "Kitsap",
+      "countyToken": "kitsap",
+      "acquisitionFamily": "Parcel transfer history / open data export",
+      "priority": "P1",
+      "registryStatus": "adapter-ready",
+      "officialAssessorBaseUrl": "https://www.kitsapgov.com",
+      "primarySalesSource": "Parcel Details sales history + Sales Data / prior-year residential sales",
+      "fallbackSource": "Auditor deed search + weekly downloadable assessor TXT data",
+      "gisMapSurface": "Parcel Search Map",
+      "receiptStatus": "NO_RECEIPT",
+      "nextAction": "capture_source_snapshot",
+      "claimAllowed": "source/seed work order only",
+      "forbiddenClaims": [
+        "runtime-ready",
+        "full county data loaded",
+        "official county-certified valuation",
+        "CostForge official calibration"
+      ]
+    }
+  ],
+  "rules": [
+    "This is a first-wave seed work plan, not a runtime readiness certification.",
+    "Benton is excluded because Benton is owned by the active Sync/runtime proof lane.",
+    "A county cannot move past a work order claim without a validated seed receipt.",
+    "No 38-county or 39-county runtime claim is allowed from this plan."
+  ]
+}
