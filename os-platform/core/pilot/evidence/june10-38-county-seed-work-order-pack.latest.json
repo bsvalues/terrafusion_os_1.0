@@ -1,0 +1,446 @@
+{
+  "generatedAtUtc": "2026-05-14T18:28:31.866Z",
+  "summary": {
+    "sourceWavePlanGeneratedAtUtc": "2026-05-14T17:40:11.958Z",
+    "workOrders": 5,
+    "runtimeClaimAllowed": false,
+    "sourceSnapshotStage": 5,
+    "blocked": 0,
+    "receiptTargets": [
+      "evidence/june10-38-county-seed/yakima/source-snapshot-receipt.json",
+      "evidence/june10-38-county-seed/douglas/source-snapshot-receipt.json",
+      "evidence/june10-38-county-seed/klickitat/source-snapshot-receipt.json",
+      "evidence/june10-38-county-seed/cowlitz/source-snapshot-receipt.json",
+      "evidence/june10-38-county-seed/kitsap/source-snapshot-receipt.json"
+    ]
+  },
+  "doctrine": [
+    "TerraFusion DB is product runtime truth.",
+    "Legacy/public source systems are acquisition inputs only.",
+    "Product runtime claims require TerraFusion API proof over TerraFusion DB rows.",
+    "No 38-county or 39-county runtime claim is allowed from source acquisition work orders.",
+    "No official county-certified valuation claim is allowed from public-source seed data."
+  ],
+  "workOrders": [
+    {
+      "workOrderId": "J10-SEED-DIRECT-SALES-SEARCH-YAKIMA",
+      "county": "Yakima",
+      "countyToken": "yakima",
+      "acquisitionFamily": "Direct sales search",
+      "priority": "P2",
+      "registryStatus": "adapter-ready",
+      "currentStage": "source_snapshot",
+      "nextAction": "capture_source_snapshot",
+      "receiptStatus": "NO_RECEIPT",
+      "receiptTarget": "evidence/june10-38-county-seed/yakima/source-snapshot-receipt.json",
+      "runtimeClaimAllowed": false,
+      "claimAllowed": "source/seed work order only",
+      "forbiddenClaims": [
+        "runtime-ready",
+        "full county data loaded",
+        "official county-certified valuation",
+        "CostForge official calibration"
+      ],
+      "doctrine": [
+        "TerraFusion DB is product runtime truth.",
+        "Legacy/public source systems are acquisition inputs only.",
+        "Product runtime claims require TerraFusion API proof over TerraFusion DB rows.",
+        "No 38-county or 39-county runtime claim is allowed from source acquisition work orders.",
+        "No official county-certified valuation claim is allowed from public-source seed data."
+      ],
+      "requiredReceiptFields": [
+        "county",
+        "countyToken",
+        "state",
+        "fips",
+        "sourceSystem.url",
+        "sourceSystem.systemName",
+        "rawArtifacts[].path",
+        "rawArtifacts[].sha256",
+        "rawArtifacts[].capturedAtUtc",
+        "noSecretValuesRecorded",
+        "normalizedArtifacts[].schema",
+        "normalizedArtifacts[].sha256",
+        "target.terrafusionDbIdentity",
+        "target.databaseRole",
+        "target.schema",
+        "target.tables[]",
+        "counts.parcelRowsNormalized",
+        "counts.parcelRowsLoaded",
+        "counts.distinctParcelIdsLoaded",
+        "workflowLabels"
+      ],
+      "sourceCaptureChecklist": [
+        "Verify official assessor/source URL for Yakima: https://www.yakimacounty.us",
+        "Capture the primary sales or parcel source named by the registry: Sales Searches",
+        "Record fallback source if primary source is unavailable: Other Searches + BOE comparable-sales guidance",
+        "Record GIS/map surface for parcel identity cross-check: Parcel Search / mapping",
+        "Store raw artifacts by path, SHA-256, and capturedAtUtc timestamp.",
+        "Confirm no secrets, cookies, passwords, or bearer tokens are stored in the receipt."
+      ],
+      "normalizationChecklist": [
+        "Normalize only into TerraFusion-owned seed schemas.",
+        "Preserve county, countyToken, state, and FIPS fields.",
+        "Emit parcel row count and distinct parcel identifier count.",
+        "Reject payloads that cannot prove county identity."
+      ],
+      "loadProofChecklist": [
+        "Record TerraFusion DB identity before any load claim.",
+        "Load into staging/seed-owned TerraFusion DB tables only.",
+        "Record target schema, table names, loaded row count, and distinct parcel count.",
+        "Do not use direct product runtime access to source systems."
+      ],
+      "apiUiProofChecklist": [
+        "Probe TerraFusion API for the selected county after load.",
+        "Verify payload county identity and row count.",
+        "Reject Benton fallback or any other county fallback.",
+        "Run UI smoke only after API proof exists."
+      ],
+      "stopConditions": [
+        "Source content is sample, demo, or synthetic.",
+        "Source identity cannot be tied to the named county.",
+        "Raw artifact hash or capture timestamp is missing.",
+        "Receipt would require storing a secret, cookie, bearer token, or password.",
+        "Normalized schema is not TerraFusion-owned.",
+        "TerraFusion DB target identity is missing before load claims.",
+        "Loaded rows cannot be proven through TerraFusion API without fallback."
+      ]
+    },
+    {
+      "workOrderId": "J10-SEED-MONTHLY-REPORT-PARCEL-HISTORY-DOUGLAS",
+      "county": "Douglas",
+      "countyToken": "douglas",
+      "acquisitionFamily": "Monthly report / parcel history",
+      "priority": "P1",
+      "registryStatus": "adapter-ready",
+      "currentStage": "source_snapshot",
+      "nextAction": "capture_source_snapshot",
+      "receiptStatus": "NO_RECEIPT",
+      "receiptTarget": "evidence/june10-38-county-seed/douglas/source-snapshot-receipt.json",
+      "runtimeClaimAllowed": false,
+      "claimAllowed": "source/seed work order only",
+      "forbiddenClaims": [
+        "runtime-ready",
+        "full county data loaded",
+        "official county-certified valuation",
+        "CostForge official calibration"
+      ],
+      "doctrine": [
+        "TerraFusion DB is product runtime truth.",
+        "Legacy/public source systems are acquisition inputs only.",
+        "Product runtime claims require TerraFusion API proof over TerraFusion DB rows.",
+        "No 38-county or 39-county runtime claim is allowed from source acquisition work orders.",
+        "No official county-certified valuation claim is allowed from public-source seed data."
+      ],
+      "requiredReceiptFields": [
+        "county",
+        "countyToken",
+        "state",
+        "fips",
+        "sourceSystem.url",
+        "sourceSystem.systemName",
+        "rawArtifacts[].path",
+        "rawArtifacts[].sha256",
+        "rawArtifacts[].capturedAtUtc",
+        "noSecretValuesRecorded",
+        "normalizedArtifacts[].schema",
+        "normalizedArtifacts[].sha256",
+        "target.terrafusionDbIdentity",
+        "target.databaseRole",
+        "target.schema",
+        "target.tables[]",
+        "counts.parcelRowsNormalized",
+        "counts.parcelRowsLoaded",
+        "counts.distinctParcelIdsLoaded",
+        "workflowLabels"
+      ],
+      "sourceCaptureChecklist": [
+        "Verify official assessor/source URL for Douglas: https://www.douglascountywa.gov",
+        "Capture the primary sales or parcel source named by the registry: Monthly Sales",
+        "Record fallback source if primary source is unavailable: Web Mapping / TaxSifter parcel history",
+        "Record GIS/map surface for parcel identity cross-check: Web Mapping / Map Search",
+        "Store raw artifacts by path, SHA-256, and capturedAtUtc timestamp.",
+        "Confirm no secrets, cookies, passwords, or bearer tokens are stored in the receipt."
+      ],
+      "normalizationChecklist": [
+        "Normalize only into TerraFusion-owned seed schemas.",
+        "Preserve county, countyToken, state, and FIPS fields.",
+        "Emit parcel row count and distinct parcel identifier count.",
+        "Reject payloads that cannot prove county identity."
+      ],
+      "loadProofChecklist": [
+        "Record TerraFusion DB identity before any load claim.",
+        "Load into staging/seed-owned TerraFusion DB tables only.",
+        "Record target schema, table names, loaded row count, and distinct parcel count.",
+        "Do not use direct product runtime access to source systems."
+      ],
+      "apiUiProofChecklist": [
+        "Probe TerraFusion API for the selected county after load.",
+        "Verify payload county identity and row count.",
+        "Reject Benton fallback or any other county fallback.",
+        "Run UI smoke only after API proof exists."
+      ],
+      "stopConditions": [
+        "Source content is sample, demo, or synthetic.",
+        "Source identity cannot be tied to the named county.",
+        "Raw artifact hash or capture timestamp is missing.",
+        "Receipt would require storing a secret, cookie, bearer token, or password.",
+        "Normalized schema is not TerraFusion-owned.",
+        "TerraFusion DB target identity is missing before load claims.",
+        "Loaded rows cannot be proven through TerraFusion API without fallback."
+      ]
+    },
+    {
+      "workOrderId": "J10-SEED-MONTHLY-SALES-REPORT-KLICKITAT",
+      "county": "Klickitat",
+      "countyToken": "klickitat",
+      "acquisitionFamily": "Monthly sales report",
+      "priority": "P2",
+      "registryStatus": "adapter-ready",
+      "currentStage": "source_snapshot",
+      "nextAction": "capture_source_snapshot",
+      "receiptStatus": "NO_RECEIPT",
+      "receiptTarget": "evidence/june10-38-county-seed/klickitat/source-snapshot-receipt.json",
+      "runtimeClaimAllowed": false,
+      "claimAllowed": "source/seed work order only",
+      "forbiddenClaims": [
+        "runtime-ready",
+        "full county data loaded",
+        "official county-certified valuation",
+        "CostForge official calibration"
+      ],
+      "doctrine": [
+        "TerraFusion DB is product runtime truth.",
+        "Legacy/public source systems are acquisition inputs only.",
+        "Product runtime claims require TerraFusion API proof over TerraFusion DB rows.",
+        "No 38-county or 39-county runtime claim is allowed from source acquisition work orders.",
+        "No official county-certified valuation claim is allowed from public-source seed data."
+      ],
+      "requiredReceiptFields": [
+        "county",
+        "countyToken",
+        "state",
+        "fips",
+        "sourceSystem.url",
+        "sourceSystem.systemName",
+        "rawArtifacts[].path",
+        "rawArtifacts[].sha256",
+        "rawArtifacts[].capturedAtUtc",
+        "noSecretValuesRecorded",
+        "normalizedArtifacts[].schema",
+        "normalizedArtifacts[].sha256",
+        "target.terrafusionDbIdentity",
+        "target.databaseRole",
+        "target.schema",
+        "target.tables[]",
+        "counts.parcelRowsNormalized",
+        "counts.parcelRowsLoaded",
+        "counts.distinctParcelIdsLoaded",
+        "workflowLabels"
+      ],
+      "sourceCaptureChecklist": [
+        "Verify official assessor/source URL for Klickitat: https://www.klickitatcounty.org",
+        "Capture the primary sales or parcel source named by the registry: Klickitat County Assessor Sales Reports",
+        "Record fallback source if primary source is unavailable: Interactive Mapping Service / Auditor recording search",
+        "Record GIS/map surface for parcel identity cross-check: Interactive Mapping Service / GIS and Maps",
+        "Store raw artifacts by path, SHA-256, and capturedAtUtc timestamp.",
+        "Confirm no secrets, cookies, passwords, or bearer tokens are stored in the receipt."
+      ],
+      "normalizationChecklist": [
+        "Normalize only into TerraFusion-owned seed schemas.",
+        "Preserve county, countyToken, state, and FIPS fields.",
+        "Emit parcel row count and distinct parcel identifier count.",
+        "Reject payloads that cannot prove county identity."
+      ],
+      "loadProofChecklist": [
+        "Record TerraFusion DB identity before any load claim.",
+        "Load into staging/seed-owned TerraFusion DB tables only.",
+        "Record target schema, table names, loaded row count, and distinct parcel count.",
+        "Do not use direct product runtime access to source systems."
+      ],
+      "apiUiProofChecklist": [
+        "Probe TerraFusion API for the selected county after load.",
+        "Verify payload county identity and row count.",
+        "Reject Benton fallback or any other county fallback.",
+        "Run UI smoke only after API proof exists."
+      ],
+      "stopConditions": [
+        "Source content is sample, demo, or synthetic.",
+        "Source identity cannot be tied to the named county.",
+        "Raw artifact hash or capture timestamp is missing.",
+        "Receipt would require storing a secret, cookie, bearer token, or password.",
+        "Normalized schema is not TerraFusion-owned.",
+        "TerraFusion DB target identity is missing before load claims.",
+        "Loaded rows cannot be proven through TerraFusion API without fallback."
+      ]
+    },
+    {
+      "workOrderId": "J10-SEED-PARCEL-TRANSFER-HISTORY-COWLITZ",
+      "county": "Cowlitz",
+      "countyToken": "cowlitz",
+      "acquisitionFamily": "Parcel transfer history",
+      "priority": "P1",
+      "registryStatus": "adapter-ready",
+      "currentStage": "source_snapshot",
+      "nextAction": "capture_source_snapshot",
+      "receiptStatus": "NO_RECEIPT",
+      "receiptTarget": "evidence/june10-38-county-seed/cowlitz/source-snapshot-receipt.json",
+      "runtimeClaimAllowed": false,
+      "claimAllowed": "source/seed work order only",
+      "forbiddenClaims": [
+        "runtime-ready",
+        "full county data loaded",
+        "official county-certified valuation",
+        "CostForge official calibration"
+      ],
+      "doctrine": [
+        "TerraFusion DB is product runtime truth.",
+        "Legacy/public source systems are acquisition inputs only.",
+        "Product runtime claims require TerraFusion API proof over TerraFusion DB rows.",
+        "No 38-county or 39-county runtime claim is allowed from source acquisition work orders.",
+        "No official county-certified valuation claim is allowed from public-source seed data."
+      ],
+      "requiredReceiptFields": [
+        "county",
+        "countyToken",
+        "state",
+        "fips",
+        "sourceSystem.url",
+        "sourceSystem.systemName",
+        "rawArtifacts[].path",
+        "rawArtifacts[].sha256",
+        "rawArtifacts[].capturedAtUtc",
+        "noSecretValuesRecorded",
+        "normalizedArtifacts[].schema",
+        "normalizedArtifacts[].sha256",
+        "target.terrafusionDbIdentity",
+        "target.databaseRole",
+        "target.schema",
+        "target.tables[]",
+        "counts.parcelRowsNormalized",
+        "counts.parcelRowsLoaded",
+        "counts.distinctParcelIdsLoaded",
+        "workflowLabels"
+      ],
+      "sourceCaptureChecklist": [
+        "Verify official assessor/source URL for Cowlitz: https://www.co.cowlitz.wa.us",
+        "Capture the primary sales or parcel source named by the registry: Parcel detail conveyances + Request Sales Report",
+        "Record fallback source if primary source is unavailable: Auditor Public Record Search / recorded documents / assessor map",
+        "Record GIS/map surface for parcel identity cross-check: County GIS Maps + Assessor GIS Map",
+        "Store raw artifacts by path, SHA-256, and capturedAtUtc timestamp.",
+        "Confirm no secrets, cookies, passwords, or bearer tokens are stored in the receipt."
+      ],
+      "normalizationChecklist": [
+        "Normalize only into TerraFusion-owned seed schemas.",
+        "Preserve county, countyToken, state, and FIPS fields.",
+        "Emit parcel row count and distinct parcel identifier count.",
+        "Reject payloads that cannot prove county identity."
+      ],
+      "loadProofChecklist": [
+        "Record TerraFusion DB identity before any load claim.",
+        "Load into staging/seed-owned TerraFusion DB tables only.",
+        "Record target schema, table names, loaded row count, and distinct parcel count.",
+        "Do not use direct product runtime access to source systems."
+      ],
+      "apiUiProofChecklist": [
+        "Probe TerraFusion API for the selected county after load.",
+        "Verify payload county identity and row count.",
+        "Reject Benton fallback or any other county fallback.",
+        "Run UI smoke only after API proof exists."
+      ],
+      "stopConditions": [
+        "Source content is sample, demo, or synthetic.",
+        "Source identity cannot be tied to the named county.",
+        "Raw artifact hash or capture timestamp is missing.",
+        "Receipt would require storing a secret, cookie, bearer token, or password.",
+        "Normalized schema is not TerraFusion-owned.",
+        "TerraFusion DB target identity is missing before load claims.",
+        "Loaded rows cannot be proven through TerraFusion API without fallback."
+      ]
+    },
+    {
+      "workOrderId": "J10-SEED-PARCEL-TRANSFER-HISTORY-OPEN-DATA-EXPORT-KITSAP",
+      "county": "Kitsap",
+      "countyToken": "kitsap",
+      "acquisitionFamily": "Parcel transfer history / open data export",
+      "priority": "P1",
+      "registryStatus": "adapter-ready",
+      "currentStage": "source_snapshot",
+      "nextAction": "capture_source_snapshot",
+      "receiptStatus": "NO_RECEIPT",
+      "receiptTarget": "evidence/june10-38-county-seed/kitsap/source-snapshot-receipt.json",
+      "runtimeClaimAllowed": false,
+      "claimAllowed": "source/seed work order only",
+      "forbiddenClaims": [
+        "runtime-ready",
+        "full county data loaded",
+        "official county-certified valuation",
+        "CostForge official calibration"
+      ],
+      "doctrine": [
+        "TerraFusion DB is product runtime truth.",
+        "Legacy/public source systems are acquisition inputs only.",
+        "Product runtime claims require TerraFusion API proof over TerraFusion DB rows.",
+        "No 38-county or 39-county runtime claim is allowed from source acquisition work orders.",
+        "No official county-certified valuation claim is allowed from public-source seed data."
+      ],
+      "requiredReceiptFields": [
+        "county",
+        "countyToken",
+        "state",
+        "fips",
+        "sourceSystem.url",
+        "sourceSystem.systemName",
+        "rawArtifacts[].path",
+        "rawArtifacts[].sha256",
+        "rawArtifacts[].capturedAtUtc",
+        "noSecretValuesRecorded",
+        "normalizedArtifacts[].schema",
+        "normalizedArtifacts[].sha256",
+        "target.terrafusionDbIdentity",
+        "target.databaseRole",
+        "target.schema",
+        "target.tables[]",
+        "counts.parcelRowsNormalized",
+        "counts.parcelRowsLoaded",
+        "counts.distinctParcelIdsLoaded",
+        "workflowLabels"
+      ],
+      "sourceCaptureChecklist": [
+        "Verify official assessor/source URL for Kitsap: https://www.kitsapgov.com",
+        "Capture the primary sales or parcel source named by the registry: Parcel Details sales history + Sales Data / prior-year residential sales",
+        "Record fallback source if primary source is unavailable: Auditor deed search + weekly downloadable assessor TXT data",
+        "Record GIS/map surface for parcel identity cross-check: Parcel Search Map",
+        "Store raw artifacts by path, SHA-256, and capturedAtUtc timestamp.",
+        "Confirm no secrets, cookies, passwords, or bearer tokens are stored in the receipt."
+      ],
+      "normalizationChecklist": [
+        "Normalize only into TerraFusion-owned seed schemas.",
+        "Preserve county, countyToken, state, and FIPS fields.",
+        "Emit parcel row count and distinct parcel identifier count.",
+        "Reject payloads that cannot prove county identity."
+      ],
+      "loadProofChecklist": [
+        "Record TerraFusion DB identity before any load claim.",
+        "Load into staging/seed-owned TerraFusion DB tables only.",
+        "Record target schema, table names, loaded row count, and distinct parcel count.",
+        "Do not use direct product runtime access to source systems."
+      ],
+      "apiUiProofChecklist": [
+        "Probe TerraFusion API for the selected county after load.",
+        "Verify payload county identity and row count.",
+        "Reject Benton fallback or any other county fallback.",
+        "Run UI smoke only after API proof exists."
+      ],
+      "stopConditions": [
+        "Source content is sample, demo, or synthetic.",
+        "Source identity cannot be tied to the named county.",
+        "Raw artifact hash or capture timestamp is missing.",
+        "Receipt would require storing a secret, cookie, bearer token, or password.",
+        "Normalized schema is not TerraFusion-owned.",
+        "TerraFusion DB target identity is missing before load claims.",
+        "Loaded rows cannot be proven through TerraFusion API without fallback."
+      ]
+    }
+  ]
+}
