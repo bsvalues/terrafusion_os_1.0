@@ -1,6 +1,6 @@
 # June 10 Sync Evidence Intake
 
-Generated: 2026-05-15T16:42:32.347Z
+Generated: 2026-05-15T16:56:53.316Z
 
 Intake status: WAITING_SYNC_DB_EVIDENCE
 Can run Benton closure: false
@@ -24,7 +24,7 @@ Can run Benton closure: false
 - Product-load ledger is not passing.
 - ProductLoadReceipts evidence is missing.
 - No product table has lineage-proven status.
-- canonical_tf.tf_parcel: missing_table.
+- canonical_tf.tf_parcel: rows_exist_lineage_unproven.
 - canonical_tf.tf_sale: rows_exist_lineage_unproven.
 - CanonicalSaleQualifications: rows_exist_lineage_unproven.
 - CamaCharacteristics: rows_exist_lineage_unproven.

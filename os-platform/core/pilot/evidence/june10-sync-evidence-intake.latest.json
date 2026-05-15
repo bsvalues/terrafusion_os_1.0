@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-15T16:42:32.347Z",
+  "generatedAtUtc": "2026-05-15T16:56:53.316Z",
   "intakeStatus": "WAITING_SYNC_DB_EVIDENCE",
   "canRunBentonClosure": false,
   "summary": {
@@ -19,7 +19,7 @@
     "Product-load ledger is not passing.",
     "ProductLoadReceipts evidence is missing.",
     "No product table has lineage-proven status.",
-    "canonical_tf.tf_parcel: missing_table.",
+    "canonical_tf.tf_parcel: rows_exist_lineage_unproven.",
     "canonical_tf.tf_sale: rows_exist_lineage_unproven.",
     "CanonicalSaleQualifications: rows_exist_lineage_unproven.",
     "CamaCharacteristics: rows_exist_lineage_unproven.",
@@ -42,9 +42,9 @@
     {
       "tableName": "canonical_tf.tf_parcel",
       "productDomain": "parcel",
-      "rowCount": null,
-      "lineageStatus": "missing_table",
-      "blockers": ["Table missing or unreadable."]
+      "rowCount": 3197521,
+      "lineageStatus": "rows_exist_lineage_unproven",
+      "blockers": ["Rows exist but no product load receipt proves lineage."]
     },
     {
       "tableName": "canonical_tf.tf_sale",
