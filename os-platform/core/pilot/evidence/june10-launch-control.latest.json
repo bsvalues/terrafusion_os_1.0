@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-14T22:43:43.184Z",
+  "generatedAtUtc": "2026-05-15T01:06:24.017Z",
   "launchVerdict": "NO_GO",
   "summary": {
     "launchVerdict": "NO_GO",
@@ -12,13 +12,20 @@
     "seedLanePassed": true,
     "seedReceiptsFound": 0,
     "seedRuntimeClaimAllowed": false,
-    "stopConditions": 3
+    "p0Items": 6,
+    "blockedP0Items": 5,
+    "readyForCodexP0Items": 0,
+    "syncEvidenceIntakeStatus": "WAITING_SYNC_DB_EVIDENCE",
+    "syncEvidenceBlockers": 21,
+    "stopConditions": 4
   },
   "approvedExternalFraming": "TerraFusion is in controlled readiness execution. The governance gates are operating, Benton is the primary runtime pilot closure lane, and the 38-county seed lane is prepared but not promoted. Production and statewide runtime claims remain blocked until the proof gates pass.",
+  "firstUnblockCommand": "pnpm run truth:terrafusion-db-product-load-ledger",
   "stopConditions": [
     "June 10 readiness packet is not passing.",
     "Credibility red-team verdict is RED.",
-    "Launch claim guard is LOCKED."
+    "Launch claim guard is LOCKED.",
+    "P0 burn-down is not clear."
   ],
   "nextCommands": [
     "pnpm run truth:terrafusion-db-product-load-ledger",

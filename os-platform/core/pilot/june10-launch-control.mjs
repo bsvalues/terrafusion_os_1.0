@@ -33,6 +33,14 @@ const DEFAULT_SEED_LANE = path.join(
   "evidence",
   "june10-38-county-seed-lane.latest.json"
 );
+const DEFAULT_P0_BURNDOWN = path.join(
+  repoRoot,
+  "os-platform",
+  "core",
+  "pilot",
+  "evidence",
+  "june10-p0-burndown-plan.latest.json"
+);
 const DEFAULT_OUT_JSON = path.join(
   repoRoot,
   "os-platform",
@@ -63,8 +71,9 @@ function unique(values) {
   return [...new Set(values.filter(Boolean))];
 }
 
-function launchVerdictFor({ readiness, redTeam, claimGuard, seedLane }) {
+function launchVerdictFor({ readiness, redTeam, claimGuard, seedLane, p0Burndown }) {
   if (!readiness || !redTeam || !claimGuard || !seedLane) return "NO_GO";
+  if (p0Burndown && p0Burndown.summary?.p0Items > 0) return "NO_GO";
   if (readiness.status !== "PASS") return "NO_GO";
   if (redTeam.verdict === "RED") return "NO_GO";
   if (claimGuard.guardStatus === "LOCKED" || claimGuard.publicClaimsAllowed !== true) return "NO_GO";
@@ -74,10 +83,16 @@ function launchVerdictFor({ readiness, redTeam, claimGuard, seedLane }) {
   return "GO";
 }
 
-export function buildJune10LaunchControlReport({ readiness, redTeam, claimGuard, seedLane }) {
-  const launchVerdict = launchVerdictFor({ readiness, redTeam, claimGuard, seedLane });
+function firstUnblockCommandFrom(p0Burndown) {
+  const first = (p0Burndown?.executionQueue ?? []).find((item) => item.nextUnblockCommand || item.proofCommand);
+  return first?.nextUnblockCommand ?? first?.proofCommand ?? null;
+}
+
+export function buildJune10LaunchControlReport({ readiness, redTeam, claimGuard, seedLane, p0Burndown = null }) {
+  const launchVerdict = launchVerdictFor({ readiness, redTeam, claimGuard, seedLane, p0Burndown });
   const shipBlockers = readiness?.shipBlockers ?? [];
   const stopConditions = [];
+  const firstUnblockCommand = firstUnblockCommandFrom(p0Burndown);
 
   if (!readiness) stopConditions.push("June 10 readiness packet is missing.");
   else if (readiness.status !== "PASS") stopConditions.push("June 10 readiness packet is not passing.");
@@ -92,7 +107,10 @@ export function buildJune10LaunchControlReport({ readiness, redTeam, claimGuard,
   else if (seedLane.summary?.runtimeClaimAllowed !== false) stopConditions.push("Seed lane runtime claim guard is not false.");
   else if (seedLane.passed !== true) stopConditions.push("38-county seed lane is not passing its control-plane checks.");
 
+  if (p0Burndown?.summary?.p0Items > 0) stopConditions.push("P0 burn-down is not clear.");
+
   const nextCommands = unique([
+    firstUnblockCommand,
     ...(readiness?.executionQueue ?? []).map((item) => item.nextCommand),
     ...(launchVerdict === "NO_GO"
       ? ["pnpm run truth:june10-red-team", "pnpm run truth:june10-claim-guard"]
@@ -115,6 +133,11 @@ export function buildJune10LaunchControlReport({ readiness, redTeam, claimGuard,
     seedLanePassed: seedLane?.passed ?? null,
     seedReceiptsFound: seedLane?.summary?.receiptsFound ?? null,
     seedRuntimeClaimAllowed: seedLane?.summary?.runtimeClaimAllowed ?? null,
+    p0Items: p0Burndown?.summary?.p0Items ?? null,
+    blockedP0Items: p0Burndown?.summary?.blockedItems ?? null,
+    readyForCodexP0Items: p0Burndown?.summary?.readyForCodexItems ?? null,
+    syncEvidenceIntakeStatus: p0Burndown?.summary?.syncEvidenceIntakeStatus ?? "missing",
+    syncEvidenceBlockers: p0Burndown?.summary?.syncEvidenceBlockers ?? null,
     stopConditions: stopConditions.length
   };
 
@@ -125,6 +148,7 @@ export function buildJune10LaunchControlReport({ readiness, redTeam, claimGuard,
     approvedExternalFraming:
       claimGuard?.allowedFraming ??
       "No external framing is approved until the claim guard and red-team artifacts exist.",
+    firstUnblockCommand,
     stopConditions,
     nextCommands,
     requiredProofArtifacts,
@@ -157,6 +181,10 @@ function renderMarkdown(report) {
     `- Seed lane passed: ${report.summary.seedLanePassed ?? "unknown"}`,
     `- Seed receipts found: ${report.summary.seedReceiptsFound ?? "unknown"}`,
     `- Seed runtime claim allowed: ${report.summary.seedRuntimeClaimAllowed ?? "unknown"}`,
+    `- P0 items: ${report.summary.p0Items ?? "unknown"}`,
+    `- Blocked P0 items: ${report.summary.blockedP0Items ?? "unknown"}`,
+    `- Ready-for-Codex P0 items: ${report.summary.readyForCodexP0Items ?? "unknown"}`,
+    `- Sync evidence intake status: ${report.summary.syncEvidenceIntakeStatus}`,
     "",
     "## Approved External Framing",
     "",
@@ -171,6 +199,8 @@ function renderMarkdown(report) {
   } else {
     report.stopConditions.forEach((condition) => lines.push(`- ${condition}`));
   }
+
+  lines.push("", "## P0 Burn-down", "", `First unblock command: ${report.firstUnblockCommand ? `\`${report.firstUnblockCommand}\`` : "None"}`);
 
   lines.push("", "## Next Commands", "");
   if (report.nextCommands.length === 0) {
@@ -194,6 +224,7 @@ function parseArgs(argv) {
     redTeamPath: DEFAULT_RED_TEAM,
     claimGuardPath: DEFAULT_CLAIM_GUARD,
     seedLanePath: DEFAULT_SEED_LANE,
+    p0BurndownPath: DEFAULT_P0_BURNDOWN,
     outJson: DEFAULT_OUT_JSON,
     outMd: DEFAULT_OUT_MD,
     write: true
@@ -205,6 +236,7 @@ function parseArgs(argv) {
     else if (arg === "--red-team") args.redTeamPath = path.resolve(argv[++i]);
     else if (arg === "--claim-guard") args.claimGuardPath = path.resolve(argv[++i]);
     else if (arg === "--seed-lane") args.seedLanePath = path.resolve(argv[++i]);
+    else if (arg === "--p0-burndown") args.p0BurndownPath = path.resolve(argv[++i]);
     else if (arg === "--out-json") args.outJson = path.resolve(argv[++i]);
     else if (arg === "--out-md") args.outMd = path.resolve(argv[++i]);
     else if (arg === "--no-write") args.write = false;
@@ -219,7 +251,8 @@ export function main(argv = process.argv.slice(2)) {
     readiness: readJson(args.readinessPath, null),
     redTeam: readJson(args.redTeamPath, null),
     claimGuard: readJson(args.claimGuardPath, null),
-    seedLane: readJson(args.seedLanePath, null)
+    seedLane: readJson(args.seedLanePath, null),
+    p0Burndown: readJson(args.p0BurndownPath, null)
   });
 
   if (args.write) {
@@ -235,6 +268,8 @@ export function main(argv = process.argv.slice(2)) {
         readinessStatus: report.summary.readinessStatus,
         shipBlockers: report.summary.shipBlockers,
         stopConditions: report.summary.stopConditions,
+        p0Items: report.summary.p0Items,
+        firstUnblockCommand: report.firstUnblockCommand,
         output: rel(args.outJson)
       },
       null,

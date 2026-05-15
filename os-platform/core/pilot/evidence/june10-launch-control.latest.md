@@ -1,6 +1,6 @@
 # June 10 Launch Control
 
-Generated: 2026-05-14T22:43:43.184Z
+Generated: 2026-05-15T01:06:24.017Z
 
 Launch verdict: NO_GO
 
@@ -15,6 +15,10 @@ Launch verdict: NO_GO
 - Seed lane passed: true
 - Seed receipts found: 0
 - Seed runtime claim allowed: false
+- P0 items: 6
+- Blocked P0 items: 5
+- Ready-for-Codex P0 items: 0
+- Sync evidence intake status: WAITING_SYNC_DB_EVIDENCE
 
 ## Approved External Framing
 
@@ -25,6 +29,11 @@ TerraFusion is in controlled readiness execution. The governance gates are opera
 - June 10 readiness packet is not passing.
 - Credibility red-team verdict is RED.
 - Launch claim guard is LOCKED.
+- P0 burn-down is not clear.
+
+## P0 Burn-down
+
+First unblock command: `pnpm run truth:terrafusion-db-product-load-ledger`
 
 ## Next Commands
 

@@ -47,6 +47,25 @@ function sampleInputs() {
         receiptsFound: 0,
         runtimeClaimAllowed: false
       }
+    },
+    p0Burndown: {
+      launchVerdict: "NO_GO",
+      summary: {
+        p0Items: 6,
+        waitingExternalItems: 1,
+        blockedItems: 5,
+        readyForCodexItems: 0,
+        syncEvidenceIntakeStatus: "WAITING_SYNC_DB_EVIDENCE",
+        syncEvidenceBlockers: 21
+      },
+      executionQueue: [
+        {
+          sequence: 1,
+          source: "productLoadLedger",
+          status: "WAITING_SYNC_DB_EVIDENCE",
+          nextUnblockCommand: "pnpm run truth:terrafusion-db-product-load-ledger"
+        }
+      ]
     }
   };
 }
@@ -69,6 +88,17 @@ test("keeps the safest framing and required proof commands visible", () => {
   assert.ok(report.requiredProofArtifacts.includes("Passing June 10 readiness packet."));
 });
 
+test("includes P0 burndown state and first unblock command in launch control", () => {
+  const report = buildJune10LaunchControlReport(sampleInputs());
+
+  assert.equal(report.summary.p0Items, 6);
+  assert.equal(report.summary.readyForCodexP0Items, 0);
+  assert.equal(report.summary.syncEvidenceIntakeStatus, "WAITING_SYNC_DB_EVIDENCE");
+  assert.equal(report.firstUnblockCommand, "pnpm run truth:terrafusion-db-product-load-ledger");
+  assert.ok(report.stopConditions.includes("P0 burn-down is not clear."));
+  assert.equal(report.nextCommands[0], "pnpm run truth:terrafusion-db-product-load-ledger");
+});
+
 test("CLI writes launch-control JSON and Markdown reports", () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "tf-june10-launch-control-"));
   const inputs = sampleInputs();
@@ -77,6 +107,7 @@ test("CLI writes launch-control JSON and Markdown reports", () => {
     redTeam: path.join(tmp, "red-team.json"),
     claimGuard: path.join(tmp, "claim-guard.json"),
     seedLane: path.join(tmp, "seed-lane.json"),
+    p0Burndown: path.join(tmp, "p0-burndown.json"),
     outJson: path.join(tmp, "launch-control.json"),
     outMd: path.join(tmp, "launch-control.md")
   };
@@ -85,6 +116,7 @@ test("CLI writes launch-control JSON and Markdown reports", () => {
   fs.writeFileSync(paths.redTeam, `${JSON.stringify(inputs.redTeam, null, 2)}\n`);
   fs.writeFileSync(paths.claimGuard, `${JSON.stringify(inputs.claimGuard, null, 2)}\n`);
   fs.writeFileSync(paths.seedLane, `${JSON.stringify(inputs.seedLane, null, 2)}\n`);
+  fs.writeFileSync(paths.p0Burndown, `${JSON.stringify(inputs.p0Burndown, null, 2)}\n`);
 
   execFileSync(
     "node",
@@ -98,6 +130,8 @@ test("CLI writes launch-control JSON and Markdown reports", () => {
       paths.claimGuard,
       "--seed-lane",
       paths.seedLane,
+      "--p0-burndown",
+      paths.p0Burndown,
       "--out-json",
       paths.outJson,
       "--out-md",
@@ -110,6 +144,8 @@ test("CLI writes launch-control JSON and Markdown reports", () => {
   const markdown = fs.readFileSync(paths.outMd, "utf8");
 
   assert.equal(report.launchVerdict, "NO_GO");
+  assert.equal(report.summary.p0Items, 6);
   assert.match(markdown, /June 10 Launch Control/);
   assert.match(markdown, /NO_GO/);
+  assert.match(markdown, /P0 Burn-down/);
 });
