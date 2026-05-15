@@ -32,6 +32,14 @@ const DEFAULT_OUT_MD = path.join(
   "evidence",
   "june10-operator-command-queue.latest.md"
 );
+const DEFAULT_CONTROL_PLANE_REFRESH = path.join(
+  repoRoot,
+  "os-platform",
+  "core",
+  "pilot",
+  "evidence",
+  "june10-control-plane-refresh.latest.json"
+);
 
 function readJson(filePath, fallback = null) {
   if (!fs.existsSync(filePath)) return fallback;
@@ -57,7 +65,14 @@ function commandReason(status, firstUnblockCommand) {
   return `Blocked until first unblock command passes: ${firstUnblockCommand}.`;
 }
 
-export function buildJune10OperatorCommandQueue({ warRoomStatus }) {
+function materialNoOpStopWork(controlPlaneRefresh) {
+  if (controlPlaneRefresh?.summary?.materialStateChanged !== false) return [];
+  return [
+    "Latest control-plane refresh changed no material artifacts; wait for new Sync/DB evidence before rerunning blocked commands."
+  ];
+}
+
+export function buildJune10OperatorCommandQueue({ warRoomStatus, controlPlaneRefresh = null }) {
   if (!warRoomStatus) {
     return {
       generatedAtUtc: new Date().toISOString(),
@@ -69,7 +84,9 @@ export function buildJune10OperatorCommandQueue({ warRoomStatus }) {
         totalCommands: 0,
         activeCommands: 0,
         blockedCommands: 0,
-        stopWorkItems: 1
+        stopWorkItems: 1,
+        lastRefreshMaterialStateChanged: controlPlaneRefresh?.summary?.materialStateChanged ?? null,
+        lastRefreshMaterialChangedArtifacts: controlPlaneRefresh?.summary?.materialChangedArtifacts ?? null
       },
       commands: [],
       stopWork: ["Do not run June 10 commands until war-room status exists."],
@@ -88,6 +105,7 @@ export function buildJune10OperatorCommandQueue({ warRoomStatus }) {
   });
   const activeCommands = commands.filter((item) => item.status === "ACTIVE").length;
   const blockedCommands = commands.filter((item) => item.status !== "ACTIVE").length;
+  const stopWork = unique([...(warRoomStatus.stopWork ?? []), ...materialNoOpStopWork(controlPlaneRefresh)]);
 
   return {
     generatedAtUtc: new Date().toISOString(),
@@ -104,10 +122,12 @@ export function buildJune10OperatorCommandQueue({ warRoomStatus }) {
       totalCommands: commands.length,
       activeCommands,
       blockedCommands,
-      stopWorkItems: warRoomStatus.stopWork?.length ?? 0
+      stopWorkItems: stopWork.length,
+      lastRefreshMaterialStateChanged: controlPlaneRefresh?.summary?.materialStateChanged ?? null,
+      lastRefreshMaterialChangedArtifacts: controlPlaneRefresh?.summary?.materialChangedArtifacts ?? null
     },
     commands,
-    stopWork: warRoomStatus.stopWork ?? [],
+    stopWork,
     allowedFraming: warRoomStatus.allowedFraming ?? null,
     rules: [
       "Only ACTIVE commands may be executed from this queue.",
@@ -135,6 +155,8 @@ function renderMarkdown(queue) {
     `- Active commands: ${queue.summary.activeCommands}`,
     `- Blocked commands: ${queue.summary.blockedCommands}`,
     `- Stop-work items: ${queue.summary.stopWorkItems}`,
+    `- Last refresh material state changed: ${queue.summary.lastRefreshMaterialStateChanged ?? "unknown"}`,
+    `- Last refresh material changed artifacts: ${queue.summary.lastRefreshMaterialChangedArtifacts ?? "unknown"}`,
     "",
     "## Commands",
     "",
@@ -157,6 +179,7 @@ function renderMarkdown(queue) {
 function parseArgs(argv) {
   const args = {
     warRoomPath: DEFAULT_WAR_ROOM,
+    controlPlaneRefreshPath: DEFAULT_CONTROL_PLANE_REFRESH,
     outJson: DEFAULT_OUT_JSON,
     outMd: DEFAULT_OUT_MD,
     write: true
@@ -165,6 +188,7 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === "--war-room") args.warRoomPath = path.resolve(argv[++i]);
+    else if (arg === "--control-plane-refresh") args.controlPlaneRefreshPath = path.resolve(argv[++i]);
     else if (arg === "--out-json") args.outJson = path.resolve(argv[++i]);
     else if (arg === "--out-md") args.outMd = path.resolve(argv[++i]);
     else if (arg === "--no-write") args.write = false;
@@ -176,7 +200,8 @@ function parseArgs(argv) {
 export function main(argv = process.argv.slice(2)) {
   const args = parseArgs(argv);
   const queue = buildJune10OperatorCommandQueue({
-    warRoomStatus: readJson(args.warRoomPath, null)
+    warRoomStatus: readJson(args.warRoomPath, null),
+    controlPlaneRefresh: readJson(args.controlPlaneRefreshPath, null)
   });
 
   if (args.write) {

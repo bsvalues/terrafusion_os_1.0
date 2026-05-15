@@ -49,6 +49,28 @@ test("instructs operators to run the ordered refresh after the active command co
   assert.ok(!queue.rules.some((rule) => rule.includes("Regenerate war-room status after")));
 });
 
+test("surfaces material no-op refresh state as a wait condition", () => {
+  const queue = buildJune10OperatorCommandQueue({
+    warRoomStatus: sampleWarRoomStatus(),
+    controlPlaneRefresh: {
+      refreshStatus: "PASS",
+      summary: {
+        materialStateChanged: false,
+        materialChangedArtifacts: 0,
+        materialUnchangedArtifacts: 7
+      }
+    }
+  });
+
+  assert.equal(queue.summary.lastRefreshMaterialStateChanged, false);
+  assert.equal(queue.summary.lastRefreshMaterialChangedArtifacts, 0);
+  assert.ok(
+    queue.stopWork.includes(
+      "Latest control-plane refresh changed no material artifacts; wait for new Sync/DB evidence before rerunning blocked commands."
+    )
+  );
+});
+
 test("turns missing war-room status into a stop-work queue", () => {
   const queue = buildJune10OperatorCommandQueue({ warRoomStatus: null });
 

@@ -1,6 +1,6 @@
 # June 10 Operator Command Queue
 
-Generated: 2026-05-15T18:02:59.428Z
+Generated: 2026-05-15T19:08:10.929Z
 
 Queue status: FIRST_UNBLOCK_ONLY
 War-room verdict: NO_GO
@@ -12,7 +12,9 @@ First unblock command: `pnpm run truth:terrafusion-db-product-load-ledger`
 - Total commands: 7
 - Active commands: 1
 - Blocked commands: 6
-- Stop-work items: 5
+- Stop-work items: 6
+- Last refresh material state changed: false
+- Last refresh material changed artifacts: 0
 
 ## Commands
 
@@ -33,6 +35,7 @@ BLOCKED_BY_FIRST_UNBLOCK | `pnpm run truth:june10-control-plane-refresh` | Block
 - Do not bypass launch-control stop conditions.
 - Do not run Benton closure until Sync evidence intake is accepted.
 - Do not start new Codex P0 closure work until the first unblock command passes.
+- Latest control-plane refresh changed no material artifacts; wait for new Sync/DB evidence before rerunning blocked commands.
 
 ## Rules
 

@@ -1,6 +1,6 @@
 # June 10 P0 Burndown Plan
 
-Generated: 2026-05-15T18:02:58.800Z
+Generated: 2026-05-15T19:08:10.372Z
 
 Launch verdict: NO_GO
 
