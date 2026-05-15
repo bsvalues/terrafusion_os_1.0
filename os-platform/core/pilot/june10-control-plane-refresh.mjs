@@ -34,6 +34,7 @@ const DEFAULT_FRESHNESS = path.join(
   "evidence",
   "june10-control-plane-freshness.latest.json"
 );
+const MAX_COMMAND_OUTPUT_CHARS = 6000;
 
 function scriptPath(name) {
   return ["os-platform", "core", "pilot", name].join("/");
@@ -106,10 +107,14 @@ function commandLineFor(step) {
 }
 
 function redactCommandOutput(value) {
-  return String(value ?? "")
+  const redacted = String(value ?? "")
     .replace(/\b(authorization\s*:\s*bearer)\s+\S+/gi, "$1 <redacted>")
     .replace(/\b(token|password|secret|api[_-]?key|connectionstring)\s*=\s*[^;\s]+/gi, "$1=<redacted>")
     .replace(/\b(password)\s*=\s*[^;]+/gi, "$1=<redacted>");
+  if (redacted.length <= MAX_COMMAND_OUTPUT_CHARS) return redacted;
+
+  const tail = redacted.slice(-MAX_COMMAND_OUTPUT_CHARS);
+  return `[truncated ${redacted.length - MAX_COMMAND_OUTPUT_CHARS} chars]\n${tail}`;
 }
 
 function normalizeStep(step) {

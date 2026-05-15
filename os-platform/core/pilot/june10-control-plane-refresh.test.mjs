@@ -70,6 +70,26 @@ test("redacts secret-like command output before writing refresh evidence", () =>
   assert.match(report.steps[0].stderr, /Password=<redacted>/i);
 });
 
+test("bounds stored command output while preserving tail context", () => {
+  const steps = completedSteps();
+  steps[0].stdout = `${"a".repeat(7000)}TAIL-CONTEXT`;
+  steps[0].stderr = `${"b".repeat(7000)}ERROR-TAIL`;
+
+  const report = buildJune10ControlPlaneRefresh({
+    steps,
+    finalFreshness: {
+      freshnessStatus: "FRESH",
+      summary: { blockers: 0 }
+    }
+  });
+
+  assert.ok(report.steps[0].stdout.length < 6500);
+  assert.ok(report.steps[0].stderr.length < 6500);
+  assert.match(report.steps[0].stdout, /\[truncated .* chars\]/);
+  assert.match(report.steps[0].stdout, /TAIL-CONTEXT$/);
+  assert.match(report.steps[0].stderr, /ERROR-TAIL$/);
+});
+
 test("fails when any refresh step exits non-zero", () => {
   const steps = completedSteps();
   steps[2].exitCode = 1;

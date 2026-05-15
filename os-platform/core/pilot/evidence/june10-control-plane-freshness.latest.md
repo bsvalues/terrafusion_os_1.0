@@ -1,6 +1,6 @@
 # June 10 Control-Plane Freshness
 
-Generated: 2026-05-15T02:10:12.689Z
+Generated: 2026-05-15T02:16:27.585Z
 
 Freshness status: FRESH
 
@@ -19,12 +19,12 @@ Freshness status: FRESH
 
 | Artifact | Present | Generated |
 |---|---:|---|
-syncEvidenceIntake | true | 2026-05-15T02:10:10.656Z
-shipBlockerLedger | true | 2026-05-15T02:10:11.005Z
-p0Burndown | true | 2026-05-15T02:10:11.455Z
-launchControl | true | 2026-05-15T02:10:11.919Z
-warRoomStatus | true | 2026-05-15T02:10:12.212Z
-operatorCommandQueue | true | 2026-05-15T02:10:12.432Z
+syncEvidenceIntake | true | 2026-05-15T02:16:25.894Z
+shipBlockerLedger | true | 2026-05-15T02:16:26.199Z
+p0Burndown | true | 2026-05-15T02:16:26.504Z
+launchControl | true | 2026-05-15T02:16:26.801Z
+warRoomStatus | true | 2026-05-15T02:16:27.049Z
+operatorCommandQueue | true | 2026-05-15T02:16:27.320Z
 
 ## Blockers
 
