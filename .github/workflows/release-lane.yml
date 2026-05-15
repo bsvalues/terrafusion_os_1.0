@@ -71,6 +71,11 @@ jobs:
             sed -i 's|dotnet restore TerraFusion\.sln|dotnet restore src/TerraFusion.API/TerraFusion.API.csproj|g' backend/Dockerfile
           fi
 
+          if grep -q 'RUN npx vite build --outDir /app/dist' frontend/Dockerfile; then
+            echo "Patching frontend Dockerfile: raise Node heap for Vite production build"
+            sed -i 's|RUN npx vite build --outDir /app/dist|RUN NODE_OPTIONS="--max-old-space-size=4096" npx vite build --outDir /app/dist|g' frontend/Dockerfile
+          fi
+
       - name: Validate environment configuration
         shell: bash
         run: |
