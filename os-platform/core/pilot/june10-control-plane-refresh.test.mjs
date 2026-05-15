@@ -144,6 +144,45 @@ test("detects material no-op refreshes while ignoring volatile timestamps", () =
   assert.equal(report.summary.materialUnchangedArtifacts, 2);
 });
 
+test("distinguishes operator queue churn from unblock-relevant changes", () => {
+  const previousArtifacts = {
+    "june10-sync-evidence-intake": {
+      intakeStatus: "WAITING_SYNC_DB_EVIDENCE",
+      summary: { blockers: 21 }
+    },
+    "june10-operator-command-queue": {
+      queueStatus: "FIRST_UNBLOCK_ONLY",
+      summary: { stopWorkItems: 5 }
+    }
+  };
+
+  const currentArtifacts = {
+    "june10-sync-evidence-intake": {
+      intakeStatus: "WAITING_SYNC_DB_EVIDENCE",
+      summary: { blockers: 21 }
+    },
+    "june10-operator-command-queue": {
+      queueStatus: "FIRST_UNBLOCK_ONLY",
+      summary: { stopWorkItems: 6 }
+    }
+  };
+
+  const report = buildJune10ControlPlaneRefresh({
+    steps: completedSteps(),
+    finalFreshness: {
+      freshnessStatus: "FRESH",
+      summary: { blockers: 0 }
+    },
+    previousArtifacts,
+    currentArtifacts
+  });
+
+  assert.equal(report.summary.materialStateChanged, true);
+  assert.equal(report.summary.materialChangedArtifacts, 1);
+  assert.equal(report.summary.unblockRelevantStateChanged, false);
+  assert.deepEqual(report.unblockRelevantChangedArtifacts, []);
+});
+
 test("fails when any refresh step exits non-zero", () => {
   const steps = completedSteps();
   steps[2].exitCode = 1;

@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-15T19:08:10.929Z",
+  "generatedAtUtc": "2026-05-15T19:40:21.993Z",
   "queueStatus": "FIRST_UNBLOCK_ONLY",
   "warRoomVerdict": "NO_GO",
   "activeLane": "WAITING_SYNC_DB_EVIDENCE",
@@ -8,9 +8,9 @@
     "totalCommands": 7,
     "activeCommands": 1,
     "blockedCommands": 6,
-    "stopWorkItems": 6,
-    "lastRefreshMaterialStateChanged": false,
-    "lastRefreshMaterialChangedArtifacts": 0
+    "stopWorkItems": 5,
+    "lastRefreshMaterialStateChanged": true,
+    "lastRefreshMaterialChangedArtifacts": 1
   },
   "commands": [
     {
@@ -54,8 +54,7 @@
     "Do not claim statewide or 39-county runtime readiness.",
     "Do not bypass launch-control stop conditions.",
     "Do not run Benton closure until Sync evidence intake is accepted.",
-    "Do not start new Codex P0 closure work until the first unblock command passes.",
-    "Latest control-plane refresh changed no material artifacts; wait for new Sync/DB evidence before rerunning blocked commands."
+    "Do not start new Codex P0 closure work until the first unblock command passes."
   ],
   "allowedFraming": "TerraFusion is in controlled readiness execution. The governance gates are operating, Benton is the primary runtime pilot closure lane, and the 38-county seed lane is prepared but not promoted. Production and statewide runtime claims remain blocked until the proof gates pass.",
   "rules": [

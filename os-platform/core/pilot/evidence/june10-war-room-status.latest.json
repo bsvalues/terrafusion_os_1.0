@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-15T19:08:10.796Z",
+  "generatedAtUtc": "2026-05-15T19:40:21.781Z",
   "warRoomVerdict": "NO_GO",
   "activeLane": "WAITING_SYNC_DB_EVIDENCE",
   "firstUnblockCommand": "pnpm run truth:terrafusion-db-product-load-ledger",

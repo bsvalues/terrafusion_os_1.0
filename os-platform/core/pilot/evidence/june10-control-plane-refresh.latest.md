@@ -1,6 +1,6 @@
 # June 10 Control-Plane Refresh
 
-Generated: 2026-05-15T19:08:11.100Z
+Generated: 2026-05-15T19:40:22.251Z
 
 Refresh status: PASS
 
@@ -16,6 +16,8 @@ Refresh status: PASS
 - Material state changed: true
 - Material changed artifacts: 1
 - Material unchanged artifacts: 6
+- Unblock-relevant state changed: false
+- Unblock-relevant changed artifacts: 0
 
 ## Steps
 
@@ -36,6 +38,10 @@ controlPlaneFreshness | 0 | false | `node os-platform/core/pilot/june10-control-
 ## Material Changes
 
 - june10-operator-command-queue
+
+## Unblock-Relevant Changes
+
+- None
 
 ## Rules
 

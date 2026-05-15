@@ -70,6 +70,13 @@ const MATERIAL_ARTIFACTS = [
     filePath: DEFAULT_FRESHNESS
   }
 ];
+const UNBLOCK_RELEVANT_ARTIFACT_IDS = new Set([
+  "june10-sync-evidence-intake",
+  "june10-ship-blocker-ledger",
+  "june10-p0-burndown-plan",
+  "june10-launch-control",
+  "june10-war-room-status"
+]);
 
 function scriptPath(name) {
   return ["os-platform", "core", "pilot", name].join("/");
@@ -199,6 +206,7 @@ function compareMaterialArtifacts(previousArtifacts = null, currentArtifacts = n
       materialChangedArtifacts: 0,
       materialUnchangedArtifacts: 0,
       materialMissingArtifacts: 0,
+      unblockRelevantChangedArtifacts: [],
       changedArtifacts: []
     };
   }
@@ -229,7 +237,10 @@ function compareMaterialArtifacts(previousArtifacts = null, currentArtifacts = n
     materialChangedArtifacts: changedArtifacts.length,
     materialUnchangedArtifacts: unchanged,
     materialMissingArtifacts: missing,
-    changedArtifacts
+    changedArtifacts,
+    unblockRelevantChangedArtifacts: changedArtifacts.filter((id) =>
+      UNBLOCK_RELEVANT_ARTIFACT_IDS.has(id)
+    )
   };
 }
 
@@ -313,9 +324,12 @@ export function buildJune10ControlPlaneRefresh({
       materialComparedArtifacts: materialComparison.materialComparedArtifacts,
       materialChangedArtifacts: materialComparison.materialChangedArtifacts,
       materialUnchangedArtifacts: materialComparison.materialUnchangedArtifacts,
-      materialMissingArtifacts: materialComparison.materialMissingArtifacts
+      materialMissingArtifacts: materialComparison.materialMissingArtifacts,
+      unblockRelevantStateChanged: materialComparison.unblockRelevantChangedArtifacts.length > 0,
+      unblockRelevantChangedArtifacts: materialComparison.unblockRelevantChangedArtifacts.length
     },
     materialChangedArtifacts: materialComparison.changedArtifacts,
+    unblockRelevantChangedArtifacts: materialComparison.unblockRelevantChangedArtifacts,
     steps: normalizedSteps,
     blockers,
     rules: [
@@ -347,6 +361,8 @@ function renderMarkdown(report) {
     `- Material state changed: ${report.summary.materialStateChanged ?? "unknown"}`,
     `- Material changed artifacts: ${report.summary.materialChangedArtifacts}`,
     `- Material unchanged artifacts: ${report.summary.materialUnchangedArtifacts}`,
+    `- Unblock-relevant state changed: ${report.summary.unblockRelevantStateChanged ?? "unknown"}`,
+    `- Unblock-relevant changed artifacts: ${report.summary.unblockRelevantChangedArtifacts ?? "unknown"}`,
     "",
     "## Steps",
     "",
@@ -367,6 +383,10 @@ function renderMarkdown(report) {
   lines.push("", "## Material Changes", "");
   if (!report.materialChangedArtifacts.length) lines.push("- None");
   else report.materialChangedArtifacts.forEach((artifact) => lines.push(`- ${artifact}`));
+
+  lines.push("", "## Unblock-Relevant Changes", "");
+  if (!report.unblockRelevantChangedArtifacts.length) lines.push("- None");
+  else report.unblockRelevantChangedArtifacts.forEach((artifact) => lines.push(`- ${artifact}`));
 
   lines.push("", "## Rules", "");
   report.rules.forEach((rule) => lines.push(`- ${rule}`));
@@ -465,6 +485,8 @@ export function main(argv = process.argv.slice(2)) {
         finalFreshnessStatus: report.summary.finalFreshnessStatus,
         materialStateChanged: report.summary.materialStateChanged,
         materialChangedArtifacts: report.summary.materialChangedArtifacts,
+        unblockRelevantStateChanged: report.summary.unblockRelevantStateChanged,
+        unblockRelevantChangedArtifacts: report.summary.unblockRelevantChangedArtifacts,
         blockers: report.blockers.length,
         output: rel(args.outJson)
       },
