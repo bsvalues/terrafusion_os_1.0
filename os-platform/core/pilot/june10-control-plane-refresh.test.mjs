@@ -51,6 +51,25 @@ test("renders refresh command lines with OS-neutral path separators", () => {
   assert.ok(report.steps.every((step) => !step.commandLine.includes("\\")));
 });
 
+test("redacts secret-like command output before writing refresh evidence", () => {
+  const steps = completedSteps();
+  steps[0].stdout = "token=abc123 password=super-secret Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.payload.sig";
+  steps[0].stderr = "ConnectionString=Server=.;Password=top-secret;";
+
+  const report = buildJune10ControlPlaneRefresh({
+    steps,
+    finalFreshness: {
+      freshnessStatus: "FRESH",
+      summary: { blockers: 0 }
+    }
+  });
+
+  assert.doesNotMatch(report.steps[0].stdout, /abc123|super-secret|eyJhbGciOiJIUzI1NiJ9|payload\.sig/);
+  assert.doesNotMatch(report.steps[0].stderr, /top-secret/);
+  assert.match(report.steps[0].stdout, /token=<redacted>/);
+  assert.match(report.steps[0].stderr, /Password=<redacted>/i);
+});
+
 test("fails when any refresh step exits non-zero", () => {
   const steps = completedSteps();
   steps[2].exitCode = 1;

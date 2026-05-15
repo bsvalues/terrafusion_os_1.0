@@ -105,6 +105,13 @@ function commandLineFor(step) {
   return [step.command, ...(step.args ?? [])].join(" ");
 }
 
+function redactCommandOutput(value) {
+  return String(value ?? "")
+    .replace(/\b(authorization\s*:\s*bearer)\s+\S+/gi, "$1 <redacted>")
+    .replace(/\b(token|password|secret|api[_-]?key|connectionstring)\s*=\s*[^;\s]+/gi, "$1=<redacted>")
+    .replace(/\b(password)\s*=\s*[^;]+/gi, "$1=<redacted>");
+}
+
 function normalizeStep(step) {
   return {
     id: step.id,
@@ -114,8 +121,8 @@ function normalizeStep(step) {
     exitCode: step.exitCode ?? null,
     startedAtUtc: step.startedAtUtc ?? null,
     completedAtUtc: step.completedAtUtc ?? null,
-    stdout: step.stdout ?? "",
-    stderr: step.stderr ?? ""
+    stdout: redactCommandOutput(step.stdout),
+    stderr: redactCommandOutput(step.stderr)
   };
 }
 
