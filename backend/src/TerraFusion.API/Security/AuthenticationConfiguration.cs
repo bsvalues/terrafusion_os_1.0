@@ -14,6 +14,7 @@ using TerraFusion.Data.Repositories;
 using CoreAuth = TerraFusion.Core.Services;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Collections.Concurrent;
+using System.Security.Cryptography;
 
 namespace TerraFusion.API.Security
 {
@@ -104,6 +105,13 @@ namespace TerraFusion.API.Security
             services.AddScoped<TerraFusion.API.Services.IJwtTokenService, TerraFusion.API.Services.JwtTokenService>();
             services.AddScoped<CoreAuth.IJwtTokenService, ApiJwtTokenServiceAdapter>();
             services.AddScoped<CoreAuth.IAuthenticationService, CoreAuth.AuthenticationService>();
+            if (ConfiguredBootstrapSecurityService.HasBootstrapCredentials(configuration))
+            {
+                services.AddSingleton<CoreAuth.ISecurityService>(provider =>
+                    new ConfiguredBootstrapSecurityService(
+                        configuration,
+                        provider.GetRequiredService<ILogger<ConfiguredBootstrapSecurityService>>()));
+            }
             services.TryAddSingleton<CoreAuth.ISecurityService, InMemorySecurityService>();
             services.AddHostedService<CoreAuth.RevocationCleanupBackgroundService>();
 
@@ -228,6 +236,173 @@ namespace TerraFusion.API.Security
         public System.Security.Claims.ClaimsPrincipal? ValidateToken(string token)
         {
             return _inner.ValidateToken(token);
+        }
+    }
+
+    internal sealed class ConfiguredBootstrapSecurityService : CoreAuth.ISecurityService
+    {
+        private static readonly string[] DefaultRoles =
+        {
+            "GovernmentUser",
+            "Administrator",
+            "FullSystemAccess"
+        };
+
+        private readonly string _email;
+        private readonly string _password;
+        private readonly string[] _roles;
+        private readonly ConcurrentDictionary<string, int> _failedAttempts = new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, DateTimeOffset> _lockedAccounts = new(StringComparer.OrdinalIgnoreCase);
+        private readonly ILogger<ConfiguredBootstrapSecurityService> _logger;
+
+        public ConfiguredBootstrapSecurityService(
+            IConfiguration configuration,
+            ILogger<ConfiguredBootstrapSecurityService> logger)
+        {
+            _email = ReadSetting(configuration, "Auth:Bootstrap:Email", "TERRAFUSION_BOOTSTRAP_EMAIL").Trim();
+            _password = ReadSetting(configuration, "Auth:Bootstrap:Password", "TERRAFUSION_BOOTSTRAP_PASSWORD");
+            _roles = ReadRoles(configuration);
+            _logger = logger;
+        }
+
+        public static bool HasBootstrapCredentials(IConfiguration configuration)
+        {
+            return !string.IsNullOrWhiteSpace(ReadSetting(configuration, "Auth:Bootstrap:Email", "TERRAFUSION_BOOTSTRAP_EMAIL"))
+                && !string.IsNullOrWhiteSpace(ReadSetting(configuration, "Auth:Bootstrap:Password", "TERRAFUSION_BOOTSTRAP_PASSWORD"));
+        }
+
+        public Task<bool> IsValidGovernmentUserAsync(string email)
+        {
+            return Task.FromResult(IsConfiguredUser(email));
+        }
+
+        public Task LogSecurityEventAsync(string eventType, string description, string? details = null)
+        {
+            _logger.LogInformation("Security event {EventType}: {Description} {Details}", eventType, description, details);
+            return Task.CompletedTask;
+        }
+
+        public Task<bool> ValidateUserCredentialsAsync(string email, string password)
+        {
+            if (!IsConfiguredUser(email) || string.IsNullOrEmpty(password))
+            {
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(FixedTimeEquals(password, _password));
+        }
+
+        public Task<IEnumerable<string>> GetUserRolesAsync(string email)
+        {
+            IEnumerable<string> roles = IsConfiguredUser(email) ? _roles : Array.Empty<string>();
+            return Task.FromResult(roles);
+        }
+
+        public Task<bool> IsAccountLockedAsync(string email)
+        {
+            if (_lockedAccounts.TryGetValue(email, out var lockedUntil))
+            {
+                if (lockedUntil > DateTimeOffset.UtcNow)
+                {
+                    return Task.FromResult(true);
+                }
+
+                _lockedAccounts.TryRemove(email, out _);
+            }
+
+            return Task.FromResult(false);
+        }
+
+        public Task RecordFailedLoginAttemptAsync(string email)
+        {
+            _failedAttempts.AddOrUpdate(email, 1, (_, count) => count + 1);
+            return Task.CompletedTask;
+        }
+
+        public Task ResetFailedLoginAttemptsAsync(string email)
+        {
+            _failedAttempts.TryRemove(email, out _);
+            return Task.CompletedTask;
+        }
+
+        public Task<int> GetFailedLoginAttemptsAsync(string email)
+        {
+            _failedAttempts.TryGetValue(email, out var count);
+            return Task.FromResult(count);
+        }
+
+        public Task LockAccountAsync(string email, TimeSpan duration, string reason)
+        {
+            _lockedAccounts[email] = DateTimeOffset.UtcNow.Add(duration);
+            _logger.LogWarning("Account locked for configured bootstrap user hash {EmailHash}. Reason: {Reason}", email.GetHashCode(), reason);
+            return Task.CompletedTask;
+        }
+
+        public Task UnlockAccountAsync(string email)
+        {
+            _lockedAccounts.TryRemove(email, out _);
+            return Task.CompletedTask;
+        }
+
+        public Task<bool> IsIpAddressAllowedAsync(string ipAddress)
+        {
+            return Task.FromResult(true);
+        }
+
+        public Task<bool> HasPermissionAsync(string userId, string permission)
+        {
+            return Task.FromResult(IsConfiguredUser(userId) && HasElevatedRole());
+        }
+
+        public Task<bool> HasModuleAccessAsync(string userId, string moduleId)
+        {
+            return Task.FromResult(IsConfiguredUser(userId) && HasElevatedRole());
+        }
+
+        private bool IsConfiguredUser(string email)
+        {
+            return !string.IsNullOrWhiteSpace(email)
+                && string.Equals(email.Trim(), _email, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private bool HasElevatedRole()
+        {
+            return _roles.Any(role =>
+                role.Equals("Administrator", StringComparison.OrdinalIgnoreCase)
+                || role.Equals("Admin", StringComparison.OrdinalIgnoreCase)
+                || role.Equals("SystemAdmin", StringComparison.OrdinalIgnoreCase)
+                || role.Equals("SystemAdministrator", StringComparison.OrdinalIgnoreCase)
+                || role.Equals("FullSystemAccess", StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static string ReadSetting(IConfiguration configuration, string key, string envKey)
+        {
+            return configuration[key] ?? configuration[envKey] ?? string.Empty;
+        }
+
+        private static string[] ReadRoles(IConfiguration configuration)
+        {
+            var raw = ReadSetting(configuration, "Auth:Bootstrap:Roles", "TERRAFUSION_BOOTSTRAP_ROLES");
+            if (string.IsNullOrWhiteSpace(raw))
+            {
+                return DefaultRoles;
+            }
+
+            var roles = raw
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Where(role => !string.IsNullOrWhiteSpace(role))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
+            return roles.Length == 0 ? DefaultRoles : roles;
+        }
+
+        private static bool FixedTimeEquals(string provided, string expected)
+        {
+            var providedBytes = Encoding.UTF8.GetBytes(provided);
+            var expectedBytes = Encoding.UTF8.GetBytes(expected);
+            return providedBytes.Length == expectedBytes.Length
+                && CryptographicOperations.FixedTimeEquals(providedBytes, expectedBytes);
         }
     }
 

@@ -32,38 +32,39 @@ public class AuthController : ControllerBase
     {
         try
         {
+            var email = request.Email.Trim();
+
             // Validate government user
-            if (!await _securityService.IsValidGovernmentUserAsync(request.Email))
+            if (!await _securityService.IsValidGovernmentUserAsync(email))
             {
                 await _securityService.LogSecurityEventAsync("INVALID_LOGIN_ATTEMPT", 
-                    $"Non-government user attempted login: {request.Email}");
+                    $"Non-government user attempted login: {email}");
                 return Unauthorized(new { message = "Invalid credentials" });
             }
 
-            // In production, validate against government directory (Active Directory, LDAP, etc.)
-            var isValidCredentials = await ValidateUserCredentials(request.Email, request.Password);
+            var isValidCredentials = await _securityService.ValidateUserCredentialsAsync(email, request.Password);
             
             if (!isValidCredentials)
             {
                 await _securityService.LogSecurityEventAsync("FAILED_LOGIN_ATTEMPT", 
-                    $"Failed login attempt for user: {request.Email}");
+                    $"Failed login attempt for user: {email}");
                 return Unauthorized(new { message = "Invalid credentials" });
             }
 
             // Generate JWT token
-            var roles = await GetUserRoles(request.Email);
+            var roles = await _securityService.GetUserRolesAsync(email);
             var token = await _authService.GenerateJwtTokenAsync(
-                Guid.NewGuid().ToString(), 
-                request.Email, 
+                Guid.NewGuid().ToString(),
+                email,
                 roles);
 
             await _securityService.LogSecurityEventAsync("SUCCESSFUL_LOGIN", 
-                $"User successfully logged in: {request.Email}");
+                $"User successfully logged in: {email}");
 
             return Ok(new LoginResponse
             {
                 Token = token,
-                Email = request.Email,
+                Email = email,
                 Roles = roles.ToArray(),
                 ExpiresAt = DateTime.UtcNow.AddHours(8)
             });
@@ -75,6 +76,18 @@ public class AuthController : ControllerBase
                 $"Error during login for user: {request.Email}", ex.Message);
             return StatusCode(500, new { message = "Internal server error" });
         }
+    }
+
+    [HttpGet("access-policy")]
+    [AllowAnonymous]
+    public IActionResult GetAccessPolicy()
+    {
+        return Ok(new
+        {
+            signupMode = "provisioned_access_only",
+            publicSignupEnabled = false,
+            message = "TerraFusion access is provisioned by an administrator. Public self-signup is disabled."
+        });
     }
 
     [HttpPost("refresh")]
@@ -97,7 +110,7 @@ public class AuthController : ControllerBase
                 return Unauthorized(new { message = "Invalid token claims" });
             }
 
-            var roles = await GetUserRoles(email);
+            var roles = await _securityService.GetUserRolesAsync(email);
             var newToken = await _authService.GenerateJwtTokenAsync(userId, email, roles);
 
             await _securityService.LogSecurityEventAsync("TOKEN_REFRESH", 
@@ -199,36 +212,6 @@ public class AuthController : ControllerBase
             _logger.LogError(ex, "Error retrieving user profile");
             return StatusCode(500, new { message = "Internal server error" });
         }
-    }
-
-    private async Task<bool> ValidateUserCredentials(string email, string password)
-    {
-        // In production, integrate with government authentication systems
-        // For demo purposes, use simple validation
-        await Task.Delay(100); // Simulate authentication delay
-        
-        // Government users with @gov., @state., @county. domains
-        return email.EndsWith("@gov.") || 
-               email.EndsWith("@state.") || 
-               email.EndsWith("@county.") ||
-               email.EndsWith("@terrafusionmarket.com");
-    }
-
-    private async Task<IEnumerable<string>> GetUserRoles(string email)
-    {
-        // In production, get from government directory or database
-        await Task.Delay(50);
-        
-        var roles = new List<string> { "GovernmentUser" };
-        
-        if (email.Contains("admin"))
-            roles.Add("Administrator");
-        if (email.Contains("assessor"))
-            roles.Add("PropertyAssessor");
-        if (email.Contains("auditor"))
-            roles.Add("CountyAuditor");
-        
-        return roles;
     }
 
     private static bool TryParseRevocationMetadata(string token, out string jti, out DateTime expiresAtUtc)
