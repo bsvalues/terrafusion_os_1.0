@@ -1,6 +1,6 @@
 # June 10 Control-Plane Refresh
 
-Generated: 2026-05-15T17:06:59.299Z
+Generated: 2026-05-15T18:02:59.731Z
 
 Refresh status: PASS
 
@@ -13,6 +13,9 @@ Refresh status: PASS
 - Final freshness blockers: 0
 - Redacted output fields: 0
 - Truncated output fields: 0
+- Material state changed: false
+- Material changed artifacts: 0
+- Material unchanged artifacts: 7
 
 ## Steps
 
@@ -27,6 +30,10 @@ operatorCommandQueue | 0 | false | `node os-platform/core/pilot/june10-operator-
 controlPlaneFreshness | 0 | false | `node os-platform/core/pilot/june10-control-plane-freshness.mjs`
 
 ## Blockers
+
+- None
+
+## Material Changes
 
 - None
 

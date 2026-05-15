@@ -36,6 +36,41 @@ const DEFAULT_FRESHNESS = path.join(
 );
 const MAX_COMMAND_OUTPUT_CHARS = 6000;
 
+function evidencePath(name) {
+  return path.join(repoRoot, "os-platform", "core", "pilot", "evidence", name);
+}
+
+const MATERIAL_ARTIFACTS = [
+  {
+    id: "june10-sync-evidence-intake",
+    filePath: evidencePath("june10-sync-evidence-intake.latest.json")
+  },
+  {
+    id: "june10-ship-blocker-ledger",
+    filePath: evidencePath("june10-ship-blocker-ledger.latest.json")
+  },
+  {
+    id: "june10-p0-burndown-plan",
+    filePath: evidencePath("june10-p0-burndown-plan.latest.json")
+  },
+  {
+    id: "june10-launch-control",
+    filePath: evidencePath("june10-launch-control.latest.json")
+  },
+  {
+    id: "june10-war-room-status",
+    filePath: evidencePath("june10-war-room-status.latest.json")
+  },
+  {
+    id: "june10-operator-command-queue",
+    filePath: evidencePath("june10-operator-command-queue.latest.json")
+  },
+  {
+    id: "june10-control-plane-freshness",
+    filePath: DEFAULT_FRESHNESS
+  }
+];
+
 function scriptPath(name) {
   return ["os-platform", "core", "pilot", name].join("/");
 }
@@ -129,6 +164,75 @@ function sanitizeCommandOutput(value) {
   };
 }
 
+function isVolatileMaterialKey(key) {
+  const normalized = String(key).toLowerCase();
+  return (
+    normalized.includes("generatedat") ||
+    normalized === "startedatutc" ||
+    normalized === "completedatutc"
+  );
+}
+
+function normalizeMaterialValue(value) {
+  if (Array.isArray(value)) return value.map(normalizeMaterialValue);
+  if (!value || typeof value !== "object") return value;
+
+  return Object.fromEntries(
+    Object.entries(value)
+      .filter(([key]) => !isVolatileMaterialKey(key))
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, entry]) => [key, normalizeMaterialValue(entry)])
+  );
+}
+
+function readMaterialArtifacts() {
+  return Object.fromEntries(
+    MATERIAL_ARTIFACTS.map((artifact) => [artifact.id, readJson(artifact.filePath, null)])
+  );
+}
+
+function compareMaterialArtifacts(previousArtifacts = null, currentArtifacts = null) {
+  if (!previousArtifacts || !currentArtifacts) {
+    return {
+      materialStateChanged: null,
+      materialComparedArtifacts: 0,
+      materialChangedArtifacts: 0,
+      materialUnchangedArtifacts: 0,
+      materialMissingArtifacts: 0,
+      changedArtifacts: []
+    };
+  }
+
+  const ids = [...new Set([...Object.keys(previousArtifacts), ...Object.keys(currentArtifacts)])].sort();
+  const changedArtifacts = [];
+  let unchanged = 0;
+  let missing = 0;
+
+  for (const id of ids) {
+    const previous = previousArtifacts[id] ?? null;
+    const current = currentArtifacts[id] ?? null;
+    if (!previous || !current) {
+      missing += 1;
+      changedArtifacts.push(id);
+      continue;
+    }
+
+    const previousStable = JSON.stringify(normalizeMaterialValue(previous));
+    const currentStable = JSON.stringify(normalizeMaterialValue(current));
+    if (previousStable === currentStable) unchanged += 1;
+    else changedArtifacts.push(id);
+  }
+
+  return {
+    materialStateChanged: changedArtifacts.length > 0,
+    materialComparedArtifacts: ids.length,
+    materialChangedArtifacts: changedArtifacts.length,
+    materialUnchangedArtifacts: unchanged,
+    materialMissingArtifacts: missing,
+    changedArtifacts
+  };
+}
+
 function normalizeStep(step) {
   const stdout = sanitizeCommandOutput(step.stdout);
   const stderr = sanitizeCommandOutput(step.stderr);
@@ -177,10 +281,16 @@ function blockersFor({ steps, finalFreshness, refreshStatus }) {
   return blockers;
 }
 
-export function buildJune10ControlPlaneRefresh({ steps, finalFreshness }) {
+export function buildJune10ControlPlaneRefresh({
+  steps,
+  finalFreshness,
+  previousArtifacts = null,
+  currentArtifacts = null
+}) {
   const normalizedSteps = steps.map(normalizeStep);
   const refreshStatus = refreshStatusFor({ steps: normalizedSteps, finalFreshness });
   const blockers = blockersFor({ steps: normalizedSteps, finalFreshness, refreshStatus });
+  const materialComparison = compareMaterialArtifacts(previousArtifacts, currentArtifacts);
 
   return {
     generatedAtUtc: new Date().toISOString(),
@@ -198,8 +308,14 @@ export function buildJune10ControlPlaneRefresh({ steps, finalFreshness }) {
       truncatedOutputFields: normalizedSteps.reduce(
         (sum, step) => sum + Number(step.stdoutTruncated) + Number(step.stderrTruncated),
         0
-      )
+      ),
+      materialStateChanged: materialComparison.materialStateChanged,
+      materialComparedArtifacts: materialComparison.materialComparedArtifacts,
+      materialChangedArtifacts: materialComparison.materialChangedArtifacts,
+      materialUnchangedArtifacts: materialComparison.materialUnchangedArtifacts,
+      materialMissingArtifacts: materialComparison.materialMissingArtifacts
     },
+    materialChangedArtifacts: materialComparison.changedArtifacts,
     steps: normalizedSteps,
     blockers,
     rules: [
@@ -228,6 +344,9 @@ function renderMarkdown(report) {
     `- Final freshness blockers: ${report.summary.finalFreshnessBlockers ?? "unknown"}`,
     `- Redacted output fields: ${report.summary.redactedOutputFields}`,
     `- Truncated output fields: ${report.summary.truncatedOutputFields}`,
+    `- Material state changed: ${report.summary.materialStateChanged ?? "unknown"}`,
+    `- Material changed artifacts: ${report.summary.materialChangedArtifacts}`,
+    `- Material unchanged artifacts: ${report.summary.materialUnchangedArtifacts}`,
     "",
     "## Steps",
     "",
@@ -244,6 +363,10 @@ function renderMarkdown(report) {
   lines.push("", "## Blockers", "");
   if (report.blockers.length === 0) lines.push("- None");
   else report.blockers.forEach((blocker) => lines.push(`- ${blocker}`));
+
+  lines.push("", "## Material Changes", "");
+  if (!report.materialChangedArtifacts.length) lines.push("- None");
+  else report.materialChangedArtifacts.forEach((artifact) => lines.push(`- ${artifact}`));
 
   lines.push("", "## Rules", "");
   report.rules.forEach((rule) => lines.push(`- ${rule}`));
@@ -324,9 +447,11 @@ function parseArgs(argv) {
 
 export function main(argv = process.argv.slice(2)) {
   const args = parseArgs(argv);
+  const previousArtifacts = args.dryRun ? null : readMaterialArtifacts();
   const steps = args.dryRun ? defaultRefreshSteps() : runRefreshSteps();
   const finalFreshness = args.dryRun ? null : readJson(DEFAULT_FRESHNESS, null);
-  const report = buildJune10ControlPlaneRefresh({ steps, finalFreshness });
+  const currentArtifacts = args.dryRun ? null : readMaterialArtifacts();
+  const report = buildJune10ControlPlaneRefresh({ steps, finalFreshness, previousArtifacts, currentArtifacts });
 
   fs.mkdirSync(path.dirname(args.outJson), { recursive: true });
   fs.writeFileSync(args.outJson, `${JSON.stringify(report, null, 2)}\n`);
@@ -338,6 +463,8 @@ export function main(argv = process.argv.slice(2)) {
         refreshStatus: report.refreshStatus,
         executedSteps: report.summary.executedSteps,
         finalFreshnessStatus: report.summary.finalFreshnessStatus,
+        materialStateChanged: report.summary.materialStateChanged,
+        materialChangedArtifacts: report.summary.materialChangedArtifacts,
         blockers: report.blockers.length,
         output: rel(args.outJson)
       },

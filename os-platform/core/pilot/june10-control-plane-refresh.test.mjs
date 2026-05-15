@@ -96,6 +96,54 @@ test("bounds stored command output while preserving tail context", () => {
   assert.equal(report.summary.truncatedOutputFields, 2);
 });
 
+test("detects material no-op refreshes while ignoring volatile timestamps", () => {
+  const previousArtifacts = {
+    "june10-sync-evidence-intake": {
+      generatedAtUtc: "2026-05-15T01:00:00.000Z",
+      intakeStatus: "WAITING_SYNC_DB_EVIDENCE",
+      summary: {
+        blockers: 21,
+        productLoadLedgerPassed: false
+      }
+    },
+    "june10-war-room-status": {
+      generatedAtUtc: "2026-05-15T01:01:00.000Z",
+      warRoomVerdict: "NO_GO",
+      activeLane: "WAITING_SYNC_DB_EVIDENCE"
+    }
+  };
+
+  const currentArtifacts = {
+    "june10-sync-evidence-intake": {
+      generatedAtUtc: "2026-05-15T02:00:00.000Z",
+      intakeStatus: "WAITING_SYNC_DB_EVIDENCE",
+      summary: {
+        blockers: 21,
+        productLoadLedgerPassed: false
+      }
+    },
+    "june10-war-room-status": {
+      generatedAtUtc: "2026-05-15T02:01:00.000Z",
+      warRoomVerdict: "NO_GO",
+      activeLane: "WAITING_SYNC_DB_EVIDENCE"
+    }
+  };
+
+  const report = buildJune10ControlPlaneRefresh({
+    steps: completedSteps(),
+    finalFreshness: {
+      freshnessStatus: "FRESH",
+      summary: { blockers: 0 }
+    },
+    previousArtifacts,
+    currentArtifacts
+  });
+
+  assert.equal(report.summary.materialStateChanged, false);
+  assert.equal(report.summary.materialChangedArtifacts, 0);
+  assert.equal(report.summary.materialUnchangedArtifacts, 2);
+});
+
 test("fails when any refresh step exits non-zero", () => {
   const steps = completedSteps();
   steps[2].exitCode = 1;
