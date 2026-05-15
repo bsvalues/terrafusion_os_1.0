@@ -40,6 +40,22 @@ const DEFAULT_LAUNCH_CONTROL = path.join(
   "evidence",
   "june10-launch-control.latest.json"
 );
+const DEFAULT_WAR_ROOM = path.join(
+  repoRoot,
+  "os-platform",
+  "core",
+  "pilot",
+  "evidence",
+  "june10-war-room-status.latest.json"
+);
+const DEFAULT_OPERATOR_COMMAND_QUEUE = path.join(
+  repoRoot,
+  "os-platform",
+  "core",
+  "pilot",
+  "evidence",
+  "june10-operator-command-queue.latest.json"
+);
 const DEFAULT_OUT_JSON = path.join(
   repoRoot,
   "os-platform",
@@ -96,9 +112,23 @@ function firstUnblockCommandFrom(p0Burndown) {
   return first?.nextUnblockCommand ?? first?.proofCommand ?? null;
 }
 
-function buildBlockers({ syncEvidenceIntake, shipBlockerLedger, p0Burndown, launchControl }) {
+function buildBlockers({
+  syncEvidenceIntake,
+  shipBlockerLedger,
+  p0Burndown,
+  launchControl,
+  warRoomStatus,
+  operatorCommandQueue
+}) {
   const blockers = [];
-  const required = { syncEvidenceIntake, shipBlockerLedger, p0Burndown, launchControl };
+  const required = {
+    syncEvidenceIntake,
+    shipBlockerLedger,
+    p0Burndown,
+    launchControl,
+    warRoomStatus,
+    operatorCommandQueue
+  };
 
   for (const [name, artifact] of Object.entries(required)) {
     if (!artifact) blockers.push(`${name} artifact is missing.`);
@@ -107,6 +137,8 @@ function buildBlockers({ syncEvidenceIntake, shipBlockerLedger, p0Burndown, laun
   addOrderBlocker(blockers, "syncEvidenceIntake", syncEvidenceIntake, "p0Burndown", p0Burndown);
   addOrderBlocker(blockers, "shipBlockerLedger", shipBlockerLedger, "p0Burndown", p0Burndown);
   addOrderBlocker(blockers, "p0Burndown", p0Burndown, "launchControl", launchControl);
+  addOrderBlocker(blockers, "launchControl", launchControl, "warRoomStatus", warRoomStatus);
+  addOrderBlocker(blockers, "warRoomStatus", warRoomStatus, "operatorCommandQueue", operatorCommandQueue);
 
   const intakeStatus = syncEvidenceIntake?.intakeStatus ?? "missing";
   if (p0Burndown && p0Burndown.summary?.syncEvidenceIntakeStatus !== intakeStatus) {
@@ -131,6 +163,26 @@ function buildBlockers({ syncEvidenceIntake, shipBlockerLedger, p0Burndown, laun
     blockers.push("Launch control does not reflect the first P0 unblock command.");
   }
 
+  if (warRoomStatus && launchControl && warRoomStatus.warRoomVerdict !== launchControl.launchVerdict) {
+    blockers.push("War-room status does not reflect launch-control verdict.");
+  }
+
+  if (warRoomStatus && launchControl && warRoomStatus.firstUnblockCommand !== launchControl.firstUnblockCommand) {
+    blockers.push("War-room status does not reflect launch-control first unblock command.");
+  }
+
+  if (
+    operatorCommandQueue &&
+    warRoomStatus &&
+    operatorCommandQueue.firstUnblockCommand !== warRoomStatus.firstUnblockCommand
+  ) {
+    blockers.push("Operator command queue does not reflect war-room first unblock command.");
+  }
+
+  if (operatorCommandQueue && warRoomStatus && operatorCommandQueue.warRoomVerdict !== warRoomStatus.warRoomVerdict) {
+    blockers.push("Operator command queue does not reflect war-room verdict.");
+  }
+
   return blockers;
 }
 
@@ -138,19 +190,25 @@ export function buildJune10ControlPlaneFreshness({
   syncEvidenceIntake,
   shipBlockerLedger,
   p0Burndown,
-  launchControl
+  launchControl,
+  warRoomStatus,
+  operatorCommandQueue
 }) {
   const blockers = buildBlockers({
     syncEvidenceIntake,
     shipBlockerLedger,
     p0Burndown,
-    launchControl
+    launchControl,
+    warRoomStatus,
+    operatorCommandQueue
   });
   const chain = [
     chainItem("syncEvidenceIntake", syncEvidenceIntake),
     chainItem("shipBlockerLedger", shipBlockerLedger),
     chainItem("p0Burndown", p0Burndown),
-    chainItem("launchControl", launchControl)
+    chainItem("launchControl", launchControl),
+    chainItem("warRoomStatus", warRoomStatus),
+    chainItem("operatorCommandQueue", operatorCommandQueue)
   ];
 
   return {
@@ -161,6 +219,8 @@ export function buildJune10ControlPlaneFreshness({
       requiredArtifactsPresent: chain.filter((item) => item.present).length,
       blockers: blockers.length,
       launchVerdict: launchControl?.launchVerdict ?? "missing",
+      warRoomVerdict: warRoomStatus?.warRoomVerdict ?? "missing",
+      operatorQueueStatus: operatorCommandQueue?.queueStatus ?? "missing",
       p0Items: p0Burndown?.summary?.p0Items ?? null,
       syncEvidenceIntakeStatus: syncEvidenceIntake?.intakeStatus ?? "missing"
     },
@@ -189,6 +249,8 @@ function renderMarkdown(report) {
     `- Required artifacts present: ${report.summary.requiredArtifactsPresent}`,
     `- Blockers: ${report.summary.blockers}`,
     `- Launch verdict: ${report.summary.launchVerdict}`,
+    `- War-room verdict: ${report.summary.warRoomVerdict}`,
+    `- Operator queue status: ${report.summary.operatorQueueStatus}`,
     `- P0 items: ${report.summary.p0Items ?? "unknown"}`,
     `- Sync evidence intake status: ${report.summary.syncEvidenceIntakeStatus}`,
     "",
@@ -216,6 +278,8 @@ function parseArgs(argv) {
     shipBlockerLedgerPath: DEFAULT_SHIP_BLOCKER_LEDGER,
     p0BurndownPath: DEFAULT_P0_BURNDOWN,
     launchControlPath: DEFAULT_LAUNCH_CONTROL,
+    warRoomPath: DEFAULT_WAR_ROOM,
+    operatorCommandQueuePath: DEFAULT_OPERATOR_COMMAND_QUEUE,
     outJson: DEFAULT_OUT_JSON,
     outMd: DEFAULT_OUT_MD,
     write: true
@@ -227,6 +291,8 @@ function parseArgs(argv) {
     else if (arg === "--ship-blocker-ledger") args.shipBlockerLedgerPath = path.resolve(argv[++i]);
     else if (arg === "--p0-burndown") args.p0BurndownPath = path.resolve(argv[++i]);
     else if (arg === "--launch-control") args.launchControlPath = path.resolve(argv[++i]);
+    else if (arg === "--war-room") args.warRoomPath = path.resolve(argv[++i]);
+    else if (arg === "--operator-command-queue") args.operatorCommandQueuePath = path.resolve(argv[++i]);
     else if (arg === "--out-json") args.outJson = path.resolve(argv[++i]);
     else if (arg === "--out-md") args.outMd = path.resolve(argv[++i]);
     else if (arg === "--no-write") args.write = false;
@@ -241,7 +307,9 @@ export function main(argv = process.argv.slice(2)) {
     syncEvidenceIntake: readJson(args.syncIntakePath, null),
     shipBlockerLedger: readJson(args.shipBlockerLedgerPath, null),
     p0Burndown: readJson(args.p0BurndownPath, null),
-    launchControl: readJson(args.launchControlPath, null)
+    launchControl: readJson(args.launchControlPath, null),
+    warRoomStatus: readJson(args.warRoomPath, null),
+    operatorCommandQueue: readJson(args.operatorCommandQueuePath, null)
   });
 
   if (args.write) {

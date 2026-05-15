@@ -45,6 +45,23 @@ function sampleArtifacts() {
         p0Items: 6,
         syncEvidenceIntakeStatus: "WAITING_SYNC_DB_EVIDENCE"
       }
+    },
+    warRoomStatus: {
+      generatedAtUtc: "2026-05-15T01:04:00.000Z",
+      warRoomVerdict: "NO_GO",
+      activeLane: "WAITING_SYNC_DB_EVIDENCE",
+      firstUnblockCommand: "pnpm run truth:terrafusion-db-product-load-ledger"
+    },
+    operatorCommandQueue: {
+      generatedAtUtc: "2026-05-15T01:05:00.000Z",
+      queueStatus: "FIRST_UNBLOCK_ONLY",
+      warRoomVerdict: "NO_GO",
+      activeLane: "WAITING_SYNC_DB_EVIDENCE",
+      firstUnblockCommand: "pnpm run truth:terrafusion-db-product-load-ledger",
+      summary: {
+        activeCommands: 1,
+        blockedCommands: 6
+      }
     }
   };
 }
@@ -54,9 +71,9 @@ test("passes when the June 10 control-plane artifacts are in dependency order", 
 
   assert.equal(report.freshnessStatus, "FRESH");
   assert.equal(report.summary.blockers, 0);
-  assert.equal(report.summary.requiredArtifactsPresent, 4);
+  assert.equal(report.summary.requiredArtifactsPresent, 6);
   assert.equal(report.chain[0].name, "syncEvidenceIntake");
-  assert.equal(report.chain.at(-1).name, "launchControl");
+  assert.equal(report.chain.at(-1).name, "operatorCommandQueue");
 });
 
 test("fails when launch control is older than the P0 burndown input", () => {
@@ -79,6 +96,26 @@ test("fails when P0 burndown does not reflect Sync evidence intake status", () =
   assert.ok(report.blockers.some((blocker) => blocker.includes("P0 burndown does not reflect Sync evidence intake status")));
 });
 
+test("fails when operator command queue is older than war-room status", () => {
+  const artifacts = sampleArtifacts();
+  artifacts.operatorCommandQueue.generatedAtUtc = "2026-05-15T01:03:30.000Z";
+
+  const report = buildJune10ControlPlaneFreshness(artifacts);
+
+  assert.equal(report.freshnessStatus, "STALE");
+  assert.ok(report.blockers.some((blocker) => blocker.includes("operatorCommandQueue is older than warRoomStatus")));
+});
+
+test("fails when operator command queue does not preserve the first unblock command", () => {
+  const artifacts = sampleArtifacts();
+  artifacts.operatorCommandQueue.firstUnblockCommand = "pnpm run truth:june10-red-team";
+
+  const report = buildJune10ControlPlaneFreshness(artifacts);
+
+  assert.equal(report.freshnessStatus, "STALE");
+  assert.ok(report.blockers.some((blocker) => blocker.includes("Operator command queue does not reflect war-room first unblock command")));
+});
+
 test("CLI writes control-plane freshness JSON and Markdown reports", () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "tf-june10-freshness-"));
   const artifacts = sampleArtifacts();
@@ -87,6 +124,8 @@ test("CLI writes control-plane freshness JSON and Markdown reports", () => {
     shipBlockerLedger: path.join(tmp, "ledger.json"),
     p0Burndown: path.join(tmp, "p0.json"),
     launchControl: path.join(tmp, "launch.json"),
+    warRoomStatus: path.join(tmp, "war-room.json"),
+    operatorCommandQueue: path.join(tmp, "command-queue.json"),
     outJson: path.join(tmp, "freshness.json"),
     outMd: path.join(tmp, "freshness.md")
   };
@@ -95,6 +134,8 @@ test("CLI writes control-plane freshness JSON and Markdown reports", () => {
   fs.writeFileSync(paths.shipBlockerLedger, `${JSON.stringify(artifacts.shipBlockerLedger, null, 2)}\n`);
   fs.writeFileSync(paths.p0Burndown, `${JSON.stringify(artifacts.p0Burndown, null, 2)}\n`);
   fs.writeFileSync(paths.launchControl, `${JSON.stringify(artifacts.launchControl, null, 2)}\n`);
+  fs.writeFileSync(paths.warRoomStatus, `${JSON.stringify(artifacts.warRoomStatus, null, 2)}\n`);
+  fs.writeFileSync(paths.operatorCommandQueue, `${JSON.stringify(artifacts.operatorCommandQueue, null, 2)}\n`);
 
   execFileSync(
     "node",
@@ -108,6 +149,10 @@ test("CLI writes control-plane freshness JSON and Markdown reports", () => {
       paths.p0Burndown,
       "--launch-control",
       paths.launchControl,
+      "--war-room",
+      paths.warRoomStatus,
+      "--operator-command-queue",
+      paths.operatorCommandQueue,
       "--out-json",
       paths.outJson,
       "--out-md",
@@ -120,6 +165,8 @@ test("CLI writes control-plane freshness JSON and Markdown reports", () => {
   const markdown = fs.readFileSync(paths.outMd, "utf8");
 
   assert.equal(report.freshnessStatus, "FRESH");
+  assert.equal(report.summary.requiredArtifactsPresent, 6);
   assert.match(markdown, /June 10 Control-Plane Freshness/);
+  assert.match(markdown, /operatorCommandQueue/);
   assert.match(markdown, /FRESH/);
 });

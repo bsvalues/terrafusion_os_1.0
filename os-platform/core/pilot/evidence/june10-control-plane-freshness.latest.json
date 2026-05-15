@@ -1,11 +1,13 @@
 {
-  "generatedAtUtc": "2026-05-15T01:13:04.235Z",
+  "generatedAtUtc": "2026-05-15T01:26:40.710Z",
   "freshnessStatus": "FRESH",
   "summary": {
-    "requiredArtifacts": 4,
-    "requiredArtifactsPresent": 4,
+    "requiredArtifacts": 6,
+    "requiredArtifactsPresent": 6,
     "blockers": 0,
     "launchVerdict": "NO_GO",
+    "warRoomVerdict": "NO_GO",
+    "operatorQueueStatus": "FIRST_UNBLOCK_ONLY",
     "p0Items": 6,
     "syncEvidenceIntakeStatus": "WAITING_SYNC_DB_EVIDENCE"
   },
@@ -29,6 +31,16 @@
       "name": "launchControl",
       "present": true,
       "generatedAtUtc": "2026-05-15T01:06:24.017Z"
+    },
+    {
+      "name": "warRoomStatus",
+      "present": true,
+      "generatedAtUtc": "2026-05-15T01:17:44.490Z"
+    },
+    {
+      "name": "operatorCommandQueue",
+      "present": true,
+      "generatedAtUtc": "2026-05-15T01:21:42.874Z"
     }
   ],
   "blockers": [],

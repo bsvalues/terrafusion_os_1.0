@@ -1,15 +1,17 @@
 # June 10 Control-Plane Freshness
 
-Generated: 2026-05-15T01:13:04.235Z
+Generated: 2026-05-15T01:26:40.710Z
 
 Freshness status: FRESH
 
 ## Summary
 
-- Required artifacts: 4
-- Required artifacts present: 4
+- Required artifacts: 6
+- Required artifacts present: 6
 - Blockers: 0
 - Launch verdict: NO_GO
+- War-room verdict: NO_GO
+- Operator queue status: FIRST_UNBLOCK_ONLY
 - P0 items: 6
 - Sync evidence intake status: WAITING_SYNC_DB_EVIDENCE
 
@@ -21,6 +23,8 @@ syncEvidenceIntake | true | 2026-05-15T00:57:37.308Z
 shipBlockerLedger | true | 2026-05-14T23:43:32.244Z
 p0Burndown | true | 2026-05-15T01:01:47.939Z
 launchControl | true | 2026-05-15T01:06:24.017Z
+warRoomStatus | true | 2026-05-15T01:17:44.490Z
+operatorCommandQueue | true | 2026-05-15T01:21:42.874Z
 
 ## Blockers
 
