@@ -1,0 +1,64 @@
+{
+  "generatedAtUtc": "2026-05-15T01:21:42.874Z",
+  "queueStatus": "FIRST_UNBLOCK_ONLY",
+  "warRoomVerdict": "NO_GO",
+  "activeLane": "WAITING_SYNC_DB_EVIDENCE",
+  "firstUnblockCommand": "pnpm run truth:terrafusion-db-product-load-ledger",
+  "summary": {
+    "totalCommands": 7,
+    "activeCommands": 1,
+    "blockedCommands": 6,
+    "stopWorkItems": 5
+  },
+  "commands": [
+    {
+      "command": "pnpm run truth:terrafusion-db-product-load-ledger",
+      "status": "ACTIVE",
+      "reason": "Allowed by current war-room state."
+    },
+    {
+      "command": "pnpm run truth:benton-runtime-pilot-closure",
+      "status": "BLOCKED_BY_FIRST_UNBLOCK",
+      "reason": "Blocked until first unblock command passes: pnpm run truth:terrafusion-db-product-load-ledger."
+    },
+    {
+      "command": "pnpm run truth:washington-39-county-data-crosswalk",
+      "status": "BLOCKED_BY_FIRST_UNBLOCK",
+      "reason": "Blocked until first unblock command passes: pnpm run truth:terrafusion-db-product-load-ledger."
+    },
+    {
+      "command": "pnpm run truth:runtime-candidate-set",
+      "status": "BLOCKED_BY_FIRST_UNBLOCK",
+      "reason": "Blocked until first unblock command passes: pnpm run truth:terrafusion-db-product-load-ledger."
+    },
+    {
+      "command": "pnpm run truth:june10-red-team",
+      "status": "BLOCKED_BY_FIRST_UNBLOCK",
+      "reason": "Blocked until first unblock command passes: pnpm run truth:terrafusion-db-product-load-ledger."
+    },
+    {
+      "command": "pnpm run truth:june10-claim-guard",
+      "status": "BLOCKED_BY_FIRST_UNBLOCK",
+      "reason": "Blocked until first unblock command passes: pnpm run truth:terrafusion-db-product-load-ledger."
+    },
+    {
+      "command": "pnpm run truth:june10-war-room-status",
+      "status": "BLOCKED_BY_FIRST_UNBLOCK",
+      "reason": "Blocked until first unblock command passes: pnpm run truth:terrafusion-db-product-load-ledger."
+    }
+  ],
+  "stopWork": [
+    "Do not claim June 10 production approval.",
+    "Do not claim statewide or 39-county runtime readiness.",
+    "Do not bypass launch-control stop conditions.",
+    "Do not run Benton closure until Sync evidence intake is accepted.",
+    "Do not start new Codex P0 closure work until the first unblock command passes."
+  ],
+  "allowedFraming": "TerraFusion is in controlled readiness execution. The governance gates are operating, Benton is the primary runtime pilot closure lane, and the 38-county seed lane is prepared but not promoted. Production and statewide runtime claims remain blocked until the proof gates pass.",
+  "rules": [
+    "Only ACTIVE commands may be executed from this queue.",
+    "When war-room verdict is NO_GO, the first unblock command is the only active command.",
+    "Blocked commands are not suggestions; they are sequencing guards.",
+    "Regenerate war-room status after the active command completes."
+  ]
+}
