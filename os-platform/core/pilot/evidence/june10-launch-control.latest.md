@@ -1,6 +1,6 @@
 # June 10 Launch Control
 
-Generated: 2026-05-15T16:56:53.899Z
+Generated: 2026-05-15T17:06:58.556Z
 
 Launch verdict: NO_GO
 
