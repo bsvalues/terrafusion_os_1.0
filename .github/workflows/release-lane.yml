@@ -197,6 +197,23 @@ jobs:
           docker build --pull --target runtime -f backend/Dockerfile -t "$BACKEND_IMAGE" backend
           docker push "$BACKEND_IMAGE"
 
+      - name: Reclaim runner disk before frontend image
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Docker disk usage before cleanup:"
+          docker system df || true
+
+          # The backend image is already pushed to GHCR. Hosted runners can run
+          # out of disk when the frontend install/build starts with backend
+          # layers and BuildKit cache still resident.
+          docker image rm "$BACKEND_IMAGE" || true
+          docker builder prune -af || true
+          docker image prune -af || true
+
+          echo "Docker disk usage after cleanup:"
+          docker system df || true
+
       - name: Build and push frontend image
         shell: bash
         run: |
