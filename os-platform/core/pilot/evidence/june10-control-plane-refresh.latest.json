@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-15T01:45:44.689Z",
+  "generatedAtUtc": "2026-05-15T01:51:29.223Z",
   "refreshStatus": "PASS",
   "summary": {
     "totalSteps": 7,
@@ -15,8 +15,8 @@
       "commandLine": "node os-platform\\core\\pilot\\june10-sync-evidence-intake.mjs",
       "usesBootstrapFreshness": false,
       "exitCode": 0,
-      "startedAtUtc": "2026-05-15T01:45:43.029Z",
-      "completedAtUtc": "2026-05-15T01:45:43.254Z",
+      "startedAtUtc": "2026-05-15T01:51:26.653Z",
+      "completedAtUtc": "2026-05-15T01:51:27.207Z",
       "stdout": "{\n  \"intakeStatus\": \"WAITING_SYNC_DB_EVIDENCE\",\n  \"canRunBentonClosure\": false,\n  \"blockers\": 21,\n  \"output\": \"os-platform/core/pilot/evidence/june10-sync-evidence-intake.latest.json\"\n}\n",
       "stderr": ""
     },
@@ -26,8 +26,8 @@
       "commandLine": "node os-platform\\core\\pilot\\june10-ship-blocker-ledger.mjs",
       "usesBootstrapFreshness": false,
       "exitCode": 0,
-      "startedAtUtc": "2026-05-15T01:45:43.254Z",
-      "completedAtUtc": "2026-05-15T01:45:43.489Z",
+      "startedAtUtc": "2026-05-15T01:51:27.207Z",
+      "completedAtUtc": "2026-05-15T01:51:27.566Z",
       "stdout": "{\n  \"launchVerdict\": \"NO_GO\",\n  \"blockerGroups\": 11,\n  \"p0Groups\": 6,\n  \"readinessBlockers\": 23,\n  \"output\": \"os-platform/core/pilot/evidence/june10-ship-blocker-ledger.latest.json\"\n}\n",
       "stderr": ""
     },
@@ -37,8 +37,8 @@
       "commandLine": "node os-platform\\core\\pilot\\june10-p0-burndown-plan.mjs",
       "usesBootstrapFreshness": false,
       "exitCode": 0,
-      "startedAtUtc": "2026-05-15T01:45:43.489Z",
-      "completedAtUtc": "2026-05-15T01:45:43.706Z",
+      "startedAtUtc": "2026-05-15T01:51:27.566Z",
+      "completedAtUtc": "2026-05-15T01:51:27.931Z",
       "stdout": "{\n  \"launchVerdict\": \"NO_GO\",\n  \"p0Items\": 6,\n  \"waitingExternalItems\": 1,\n  \"blockedItems\": 5,\n  \"syncEvidenceIntakeStatus\": \"WAITING_SYNC_DB_EVIDENCE\",\n  \"output\": \"os-platform/core/pilot/evidence/june10-p0-burndown-plan.latest.json\"\n}\n",
       "stderr": ""
     },
@@ -48,8 +48,8 @@
       "commandLine": "node os-platform\\core\\pilot\\june10-launch-control.mjs",
       "usesBootstrapFreshness": false,
       "exitCode": 0,
-      "startedAtUtc": "2026-05-15T01:45:43.706Z",
-      "completedAtUtc": "2026-05-15T01:45:44.182Z",
+      "startedAtUtc": "2026-05-15T01:51:27.931Z",
+      "completedAtUtc": "2026-05-15T01:51:28.224Z",
       "stdout": "{\n  \"launchVerdict\": \"NO_GO\",\n  \"readinessStatus\": \"FAIL\",\n  \"shipBlockers\": 23,\n  \"stopConditions\": 4,\n  \"p0Items\": 6,\n  \"firstUnblockCommand\": \"pnpm run truth:terrafusion-db-product-load-ledger\",\n  \"output\": \"os-platform/core/pilot/evidence/june10-launch-control.latest.json\"\n}\n",
       "stderr": ""
     },
@@ -59,8 +59,8 @@
       "commandLine": "node os-platform\\core\\pilot\\june10-war-room-status.mjs --freshness <bootstrap-freshness>",
       "usesBootstrapFreshness": true,
       "exitCode": 0,
-      "startedAtUtc": "2026-05-15T01:45:44.182Z",
-      "completedAtUtc": "2026-05-15T01:45:44.369Z",
+      "startedAtUtc": "2026-05-15T01:51:28.224Z",
+      "completedAtUtc": "2026-05-15T01:51:28.508Z",
       "stdout": "{\n  \"warRoomVerdict\": \"NO_GO\",\n  \"activeLane\": \"WAITING_SYNC_DB_EVIDENCE\",\n  \"firstUnblockCommand\": \"pnpm run truth:terrafusion-db-product-load-ledger\",\n  \"output\": \"os-platform/core/pilot/evidence/june10-war-room-status.latest.json\"\n}\n",
       "stderr": ""
     },
@@ -70,8 +70,8 @@
       "commandLine": "node os-platform\\core\\pilot\\june10-operator-command-queue.mjs",
       "usesBootstrapFreshness": false,
       "exitCode": 0,
-      "startedAtUtc": "2026-05-15T01:45:44.369Z",
-      "completedAtUtc": "2026-05-15T01:45:44.527Z",
+      "startedAtUtc": "2026-05-15T01:51:28.509Z",
+      "completedAtUtc": "2026-05-15T01:51:28.875Z",
       "stdout": "{\n  \"queueStatus\": \"FIRST_UNBLOCK_ONLY\",\n  \"activeCommands\": 1,\n  \"blockedCommands\": 6,\n  \"output\": \"os-platform/core/pilot/evidence/june10-operator-command-queue.latest.json\"\n}\n",
       "stderr": ""
     },
@@ -81,8 +81,8 @@
       "commandLine": "node os-platform\\core\\pilot\\june10-control-plane-freshness.mjs",
       "usesBootstrapFreshness": false,
       "exitCode": 0,
-      "startedAtUtc": "2026-05-15T01:45:44.527Z",
-      "completedAtUtc": "2026-05-15T01:45:44.688Z",
+      "startedAtUtc": "2026-05-15T01:51:28.875Z",
+      "completedAtUtc": "2026-05-15T01:51:29.221Z",
       "stdout": "{\n  \"freshnessStatus\": \"FRESH\",\n  \"requiredArtifactsPresent\": 6,\n  \"blockers\": 0,\n  \"output\": \"os-platform/core/pilot/evidence/june10-control-plane-freshness.latest.json\"\n}\n",
       "stderr": ""
     }
