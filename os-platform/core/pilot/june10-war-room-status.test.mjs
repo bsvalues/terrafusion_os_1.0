@@ -108,7 +108,7 @@ test("marks stale control-plane status as the active lane before other work", ()
   });
 
   assert.equal(status.activeLane, "CONTROL_PLANE_STALE");
-  assert.equal(status.firstUnblockCommand, "pnpm run truth:june10-control-plane-freshness");
+  assert.equal(status.firstUnblockCommand, "pnpm run truth:june10-control-plane-refresh");
   assert.ok(status.stopWork.includes("Do not use launch-control output until freshness is restored."));
 });
 

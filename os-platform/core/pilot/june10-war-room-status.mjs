@@ -77,7 +77,7 @@ function activeLaneFor({ freshness, syncEvidenceIntake, activeP0 }) {
 }
 
 function firstUnblockCommandFor({ activeLane, launchControl, activeP0 }) {
-  if (activeLane === "CONTROL_PLANE_STALE") return "pnpm run truth:june10-control-plane-freshness";
+  if (activeLane === "CONTROL_PLANE_STALE") return "pnpm run truth:june10-control-plane-refresh";
   return activeP0?.nextUnblockCommand ?? launchControl?.firstUnblockCommand ?? null;
 }
 
