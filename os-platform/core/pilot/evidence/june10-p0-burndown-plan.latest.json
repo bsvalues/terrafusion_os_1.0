@@ -1,0 +1,139 @@
+{
+  "generatedAtUtc": "2026-05-15T00:15:57.819Z",
+  "launchVerdict": "NO_GO",
+  "summary": {
+    "p0Items": 6,
+    "deferredNonP0Items": 5,
+    "waitingExternalItems": 1,
+    "blockedItems": 5,
+    "readyForCodexItems": 0
+  },
+  "planBlockers": [],
+  "executionQueue": [
+    {
+      "sequence": 1,
+      "source": "productLoadLedger",
+      "status": "WAITING_EXTERNAL_SYNC_DB",
+      "ownerLane": "Claude Code / Sync DB, audited by Codex",
+      "blockedBy": [],
+      "proofCommand": "pnpm run truth:terrafusion-db-product-load-ledger",
+      "requiredResolution": "Emit/read product-load receipts proving TerraFusion DB table rows were loaded through the approved ingestion path.",
+      "blockerCount": 14,
+      "firstBlocker": "Artifact reports failed proof posture: top-level passed is false.",
+      "stopCondition": false
+    },
+    {
+      "sequence": 2,
+      "source": "bentonPilotClosure",
+      "status": "BLOCKED_BY_DEPENDENCY",
+      "ownerLane": "Codex after all Benton data gates are green",
+      "blockedBy": ["productLoadLedger"],
+      "proofCommand": "pnpm run truth:benton-runtime-pilot-closure",
+      "requiredResolution": "Prove Benton runtime pilot closure only after DB identity, content, load receipts, parcel sanity, and sale qualification pass.",
+      "blockerCount": 7,
+      "firstBlocker": "Artifact reports failed proof posture: top-level status is FAIL.",
+      "stopCondition": false
+    },
+    {
+      "sequence": 3,
+      "source": "redTeam:runtime_lineage",
+      "status": "BLOCKED_BY_DEPENDENCY",
+      "ownerLane": "Codex / launch-control review",
+      "blockedBy": ["productLoadLedger"],
+      "proofCommand": "pnpm run truth:june10-red-team",
+      "requiredResolution": "Clear or contain the credibility attack before public readiness claims.",
+      "blockerCount": 1,
+      "firstBlocker": "Rows may exist in TerraFusion DB, but product-load lineage is not proven enough for audit-grade trust.",
+      "stopCondition": true
+    },
+    {
+      "sequence": 4,
+      "source": "redTeam:benton_realism",
+      "status": "BLOCKED_BY_DEPENDENCY",
+      "ownerLane": "Codex / launch-control review",
+      "blockedBy": ["bentonPilotClosure"],
+      "proofCommand": "pnpm run truth:june10-red-team",
+      "requiredResolution": "Clear or contain the credibility attack before public readiness claims.",
+      "blockerCount": 1,
+      "firstBlocker": "Benton full-corpus proof is an ATTEMPT, not a seal; six-lane completion and API readback are not proven.",
+      "stopCondition": true
+    },
+    {
+      "sequence": 5,
+      "source": "redTeam:governance_posture",
+      "status": "BLOCKED_BY_DEPENDENCY",
+      "ownerLane": "Codex / launch-control review",
+      "blockedBy": ["productLoadLedger", "bentonPilotClosure"],
+      "proofCommand": "pnpm run truth:june10-red-team",
+      "requiredResolution": "Clear or contain the credibility attack before public readiness claims.",
+      "blockerCount": 1,
+      "firstBlocker": "Final readiness packet is failing, so any production approval claim outruns the proof record.",
+      "stopCondition": true
+    },
+    {
+      "sequence": 6,
+      "source": "launchControl",
+      "status": "BLOCKED_BY_P0",
+      "ownerLane": "Codex",
+      "blockedBy": [
+        "productLoadLedger",
+        "bentonPilotClosure",
+        "redTeam:runtime_lineage"
+      ],
+      "proofCommand": "pnpm run truth:june10-launch-control",
+      "requiredResolution": "Clear launch-control stop conditions.",
+      "blockerCount": 3,
+      "firstBlocker": "June 10 readiness packet is not passing.",
+      "stopCondition": true
+    }
+  ],
+  "deferredItems": [
+    {
+      "source": "crosswalk",
+      "priority": "P1",
+      "ownerLane": "Codex",
+      "proofCommand": "pnpm run truth:washington-39-county-data-crosswalk",
+      "blockerCount": 1,
+      "reason": "Deferred until P0 launch blockers clear."
+    },
+    {
+      "source": "runtimeCandidateSet",
+      "priority": "P1",
+      "ownerLane": "Codex after runtime registration ledger refresh",
+      "proofCommand": "pnpm run truth:runtime-candidate-set",
+      "blockerCount": 1,
+      "reason": "Deferred until P0 launch blockers clear."
+    },
+    {
+      "source": "redTeam:county_trust",
+      "priority": "P1",
+      "ownerLane": "Codex / launch-control review",
+      "proofCommand": "pnpm run truth:june10-red-team",
+      "blockerCount": 1,
+      "reason": "Deferred until P0 launch blockers clear."
+    },
+    {
+      "source": "redTeam:overclaim_risk",
+      "priority": "P1",
+      "ownerLane": "Codex / launch-control review",
+      "proofCommand": "pnpm run truth:june10-red-team",
+      "blockerCount": 1,
+      "reason": "Deferred until P0 launch blockers clear."
+    },
+    {
+      "source": "redTeam:uat_survivability",
+      "priority": "P1",
+      "ownerLane": "Codex / launch-control review",
+      "proofCommand": "pnpm run truth:june10-red-team",
+      "blockerCount": 1,
+      "reason": "Deferred until P0 launch blockers clear."
+    }
+  ],
+  "rules": [
+    "This is a burn-down plan, not a readiness pass.",
+    "P0 items are the only active June 10 lane until cleared.",
+    "Product runtime claims stay blocked while any P0 item remains unresolved.",
+    "External Sync/DB work must produce proof artifacts before dependent Codex work can close.",
+    "P1 work is deferred unless it directly clears a P0 blocker."
+  ]
+}
