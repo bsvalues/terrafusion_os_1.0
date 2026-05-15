@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-15T01:01:47.939Z",
+  "generatedAtUtc": "2026-05-15T01:39:04.001Z",
   "launchVerdict": "NO_GO",
   "summary": {
     "p0Items": 6,
@@ -87,7 +87,7 @@
       ],
       "proofCommand": "pnpm run truth:june10-launch-control",
       "requiredResolution": "Clear launch-control stop conditions.",
-      "blockerCount": 3,
+      "blockerCount": 4,
       "firstBlocker": "June 10 readiness packet is not passing.",
       "stopCondition": true
     }

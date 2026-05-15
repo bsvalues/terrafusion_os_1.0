@@ -1,0 +1,97 @@
+{
+  "generatedAtUtc": "2026-05-15T01:39:04.830Z",
+  "refreshStatus": "PASS",
+  "summary": {
+    "totalSteps": 7,
+    "executedSteps": 7,
+    "failedSteps": 0,
+    "finalFreshnessStatus": "FRESH",
+    "finalFreshnessBlockers": 0
+  },
+  "steps": [
+    {
+      "id": "syncEvidenceIntake",
+      "label": "Sync evidence intake",
+      "commandLine": "node os-platform\\core\\pilot\\june10-sync-evidence-intake.mjs",
+      "usesBootstrapFreshness": false,
+      "exitCode": 0,
+      "startedAtUtc": "2026-05-15T01:39:03.438Z",
+      "completedAtUtc": "2026-05-15T01:39:03.635Z",
+      "stdout": "{\n  \"intakeStatus\": \"WAITING_SYNC_DB_EVIDENCE\",\n  \"canRunBentonClosure\": false,\n  \"blockers\": 21,\n  \"output\": \"os-platform/core/pilot/evidence/june10-sync-evidence-intake.latest.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "id": "shipBlockerLedger",
+      "label": "Ship blocker ledger",
+      "commandLine": "node os-platform\\core\\pilot\\june10-ship-blocker-ledger.mjs",
+      "usesBootstrapFreshness": false,
+      "exitCode": 0,
+      "startedAtUtc": "2026-05-15T01:39:03.635Z",
+      "completedAtUtc": "2026-05-15T01:39:03.837Z",
+      "stdout": "{\n  \"launchVerdict\": \"NO_GO\",\n  \"blockerGroups\": 11,\n  \"p0Groups\": 6,\n  \"readinessBlockers\": 23,\n  \"output\": \"os-platform/core/pilot/evidence/june10-ship-blocker-ledger.latest.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "id": "p0Burndown",
+      "label": "P0 burndown",
+      "commandLine": "node os-platform\\core\\pilot\\june10-p0-burndown-plan.mjs",
+      "usesBootstrapFreshness": false,
+      "exitCode": 0,
+      "startedAtUtc": "2026-05-15T01:39:03.837Z",
+      "completedAtUtc": "2026-05-15T01:39:04.028Z",
+      "stdout": "{\n  \"launchVerdict\": \"NO_GO\",\n  \"p0Items\": 6,\n  \"waitingExternalItems\": 1,\n  \"blockedItems\": 5,\n  \"syncEvidenceIntakeStatus\": \"WAITING_SYNC_DB_EVIDENCE\",\n  \"output\": \"os-platform/core/pilot/evidence/june10-p0-burndown-plan.latest.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "id": "launchControl",
+      "label": "Launch control",
+      "commandLine": "node os-platform\\core\\pilot\\june10-launch-control.mjs",
+      "usesBootstrapFreshness": false,
+      "exitCode": 0,
+      "startedAtUtc": "2026-05-15T01:39:04.028Z",
+      "completedAtUtc": "2026-05-15T01:39:04.212Z",
+      "stdout": "{\n  \"launchVerdict\": \"NO_GO\",\n  \"readinessStatus\": \"FAIL\",\n  \"shipBlockers\": 23,\n  \"stopConditions\": 4,\n  \"p0Items\": 6,\n  \"firstUnblockCommand\": \"pnpm run truth:terrafusion-db-product-load-ledger\",\n  \"output\": \"os-platform/core/pilot/evidence/june10-launch-control.latest.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "id": "warRoomStatus",
+      "label": "War-room status",
+      "commandLine": "node os-platform\\core\\pilot\\june10-war-room-status.mjs --freshness <bootstrap-freshness>",
+      "usesBootstrapFreshness": true,
+      "exitCode": 0,
+      "startedAtUtc": "2026-05-15T01:39:04.212Z",
+      "completedAtUtc": "2026-05-15T01:39:04.384Z",
+      "stdout": "{\n  \"warRoomVerdict\": \"NO_GO\",\n  \"activeLane\": \"WAITING_SYNC_DB_EVIDENCE\",\n  \"firstUnblockCommand\": \"pnpm run truth:terrafusion-db-product-load-ledger\",\n  \"output\": \"os-platform/core/pilot/evidence/june10-war-room-status.latest.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "id": "operatorCommandQueue",
+      "label": "Operator command queue",
+      "commandLine": "node os-platform\\core\\pilot\\june10-operator-command-queue.mjs",
+      "usesBootstrapFreshness": false,
+      "exitCode": 0,
+      "startedAtUtc": "2026-05-15T01:39:04.384Z",
+      "completedAtUtc": "2026-05-15T01:39:04.618Z",
+      "stdout": "{\n  \"queueStatus\": \"FIRST_UNBLOCK_ONLY\",\n  \"activeCommands\": 1,\n  \"blockedCommands\": 6,\n  \"output\": \"os-platform/core/pilot/evidence/june10-operator-command-queue.latest.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "id": "controlPlaneFreshness",
+      "label": "Control-plane freshness",
+      "commandLine": "node os-platform\\core\\pilot\\june10-control-plane-freshness.mjs",
+      "usesBootstrapFreshness": false,
+      "exitCode": 0,
+      "startedAtUtc": "2026-05-15T01:39:04.618Z",
+      "completedAtUtc": "2026-05-15T01:39:04.829Z",
+      "stdout": "{\n  \"freshnessStatus\": \"FRESH\",\n  \"requiredArtifactsPresent\": 6,\n  \"blockers\": 0,\n  \"output\": \"os-platform/core/pilot/evidence/june10-control-plane-freshness.latest.json\"\n}\n",
+      "stderr": ""
+    }
+  ],
+  "blockers": [],
+  "rules": [
+    "This runner refreshes only June 10 control-plane artifacts.",
+    "It does not run DB, Sync, runtime, or product-load commands.",
+    "The war-room step uses a temporary freshness bootstrap so a stale starting point cannot deadlock recovery.",
+    "Final control-plane freshness is the authoritative result of the refresh."
+  ]
+}

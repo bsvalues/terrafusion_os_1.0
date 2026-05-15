@@ -1,6 +1,6 @@
 # June 10 Ship Blocker Ledger
 
-Generated: 2026-05-14T23:43:32.244Z
+Generated: 2026-05-15T01:39:03.808Z
 
 Launch verdict: NO_GO
 Readiness status: FAIL
@@ -10,7 +10,7 @@ Red-team verdict: RED
 
 - Blocker groups: 11
 - Readiness blockers: 23
-- Launch stop conditions: 3
+- Launch stop conditions: 4
 - Critical red-team attacks: 3
 - P0 groups: 6
 - P1 groups: 5
@@ -21,7 +21,7 @@ Red-team verdict: RED
 |---|---|---:|---|---|
 P0 | productLoadLedger | 14 | Claude Code / Sync DB, audited by Codex | `pnpm run truth:terrafusion-db-product-load-ledger`
 P0 | bentonPilotClosure | 7 | Codex after all Benton data gates are green | `pnpm run truth:benton-runtime-pilot-closure`
-P0 | launchControl | 3 | Codex | `pnpm run truth:june10-launch-control`
+P0 | launchControl | 4 | Codex | `pnpm run truth:june10-launch-control`
 P0 | redTeam:benton_realism | 1 | Codex / launch-control review | `pnpm run truth:june10-red-team`
 P0 | redTeam:governance_posture | 1 | Codex / launch-control review | `pnpm run truth:june10-red-team`
 P0 | redTeam:runtime_lineage | 1 | Codex / launch-control review | `pnpm run truth:june10-red-team`
@@ -77,6 +77,7 @@ Required resolution: Clear launch-control stop conditions.
 - June 10 readiness packet is not passing.
 - Credibility red-team verdict is RED.
 - Launch claim guard is LOCKED.
+- P0 burn-down is not clear.
 
 ### P0 redTeam:benton_realism
 

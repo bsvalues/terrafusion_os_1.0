@@ -104,6 +104,7 @@
     "truth:county-runtime-contract": "node scripts/truth/county-runtime-contract.mjs",
     "truth:june10-claim-guard": "node os-platform/core/pilot/june10-claim-guard.mjs",
     "truth:june10-control-plane-freshness": "node os-platform/core/pilot/june10-control-plane-freshness.mjs",
+    "truth:june10-control-plane-refresh": "node os-platform/core/pilot/june10-control-plane-refresh.mjs",
     "truth:june10-launch-control": "node os-platform/core/pilot/june10-launch-control.mjs",
     "truth:june10-operator-command-queue": "node os-platform/core/pilot/june10-operator-command-queue.mjs",
     "truth:june10-red-team": "node os-platform/core/pilot/june10-red-team.mjs",

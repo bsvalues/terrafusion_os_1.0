@@ -1,12 +1,12 @@
 {
-  "generatedAtUtc": "2026-05-14T23:43:32.244Z",
+  "generatedAtUtc": "2026-05-15T01:39:03.808Z",
   "launchVerdict": "NO_GO",
   "readinessStatus": "FAIL",
   "redTeamVerdict": "RED",
   "summary": {
     "blockerGroups": 11,
     "readinessBlockers": 23,
-    "launchStopConditions": 3,
+    "launchStopConditions": 4,
     "criticalRedTeamAttacks": 3,
     "p0Groups": 6,
     "p1Groups": 5
@@ -59,11 +59,12 @@
       "ownerLane": "Codex",
       "nextCommand": "pnpm run truth:june10-launch-control",
       "requiredResolution": "Clear launch-control stop conditions.",
-      "blockerCount": 3,
+      "blockerCount": 4,
       "blockers": [
         "June 10 readiness packet is not passing.",
         "Credibility red-team verdict is RED.",
-        "Launch claim guard is LOCKED."
+        "Launch claim guard is LOCKED.",
+        "P0 burn-down is not clear."
       ]
     },
     {
