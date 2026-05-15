@@ -36,7 +36,7 @@ const DEFAULT_FRESHNESS = path.join(
 );
 
 function scriptPath(name) {
-  return path.join("os-platform", "core", "pilot", name);
+  return ["os-platform", "core", "pilot", name].join("/");
 }
 
 function rel(filePath) {

@@ -1,6 +1,6 @@
 # June 10 Control-Plane Refresh
 
-Generated: 2026-05-15T01:51:29.223Z
+Generated: 2026-05-15T01:57:16.876Z
 
 Refresh status: PASS
 
@@ -16,13 +16,13 @@ Refresh status: PASS
 
 | Step | Exit | Bootstrap freshness | Command |
 |---|---:|---:|---|
-syncEvidenceIntake | 0 | false | `node os-platform\core\pilot\june10-sync-evidence-intake.mjs`
-shipBlockerLedger | 0 | false | `node os-platform\core\pilot\june10-ship-blocker-ledger.mjs`
-p0Burndown | 0 | false | `node os-platform\core\pilot\june10-p0-burndown-plan.mjs`
-launchControl | 0 | false | `node os-platform\core\pilot\june10-launch-control.mjs`
-warRoomStatus | 0 | true | `node os-platform\core\pilot\june10-war-room-status.mjs --freshness <bootstrap-freshness>`
-operatorCommandQueue | 0 | false | `node os-platform\core\pilot\june10-operator-command-queue.mjs`
-controlPlaneFreshness | 0 | false | `node os-platform\core\pilot\june10-control-plane-freshness.mjs`
+syncEvidenceIntake | 0 | false | `node os-platform/core/pilot/june10-sync-evidence-intake.mjs`
+shipBlockerLedger | 0 | false | `node os-platform/core/pilot/june10-ship-blocker-ledger.mjs`
+p0Burndown | 0 | false | `node os-platform/core/pilot/june10-p0-burndown-plan.mjs`
+launchControl | 0 | false | `node os-platform/core/pilot/june10-launch-control.mjs`
+warRoomStatus | 0 | true | `node os-platform/core/pilot/june10-war-room-status.mjs --freshness <bootstrap-freshness>`
+operatorCommandQueue | 0 | false | `node os-platform/core/pilot/june10-operator-command-queue.mjs`
+controlPlaneFreshness | 0 | false | `node os-platform/core/pilot/june10-control-plane-freshness.mjs`
 
 ## Blockers
 

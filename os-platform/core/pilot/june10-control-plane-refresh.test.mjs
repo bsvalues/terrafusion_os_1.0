@@ -38,6 +38,19 @@ test("passes only when every refresh step succeeds and final freshness is fresh"
   assert.equal(report.steps.at(-1).id, "controlPlaneFreshness");
 });
 
+test("renders refresh command lines with OS-neutral path separators", () => {
+  const report = buildJune10ControlPlaneRefresh({
+    steps: completedSteps(),
+    finalFreshness: {
+      freshnessStatus: "FRESH",
+      summary: { blockers: 0 }
+    }
+  });
+
+  assert.equal(report.steps[0].commandLine, "node os-platform/core/pilot/june10-sync-evidence-intake.mjs");
+  assert.ok(report.steps.every((step) => !step.commandLine.includes("\\")));
+});
+
 test("fails when any refresh step exits non-zero", () => {
   const steps = completedSteps();
   steps[2].exitCode = 1;
