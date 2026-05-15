@@ -1,6 +1,6 @@
 # June 10 Operator Command Queue
 
-Generated: 2026-05-15T16:27:14.837Z
+Generated: 2026-05-15T16:42:35.695Z
 
 Queue status: FIRST_UNBLOCK_ONLY
 War-room verdict: NO_GO
@@ -24,7 +24,7 @@ BLOCKED_BY_FIRST_UNBLOCK | `pnpm run truth:washington-39-county-data-crosswalk` 
 BLOCKED_BY_FIRST_UNBLOCK | `pnpm run truth:runtime-candidate-set` | Blocked until first unblock command passes: pnpm run truth:terrafusion-db-product-load-ledger.
 BLOCKED_BY_FIRST_UNBLOCK | `pnpm run truth:june10-red-team` | Blocked until first unblock command passes: pnpm run truth:terrafusion-db-product-load-ledger.
 BLOCKED_BY_FIRST_UNBLOCK | `pnpm run truth:june10-claim-guard` | Blocked until first unblock command passes: pnpm run truth:terrafusion-db-product-load-ledger.
-BLOCKED_BY_FIRST_UNBLOCK | `pnpm run truth:june10-war-room-status` | Blocked until first unblock command passes: pnpm run truth:terrafusion-db-product-load-ledger.
+BLOCKED_BY_FIRST_UNBLOCK | `pnpm run truth:june10-control-plane-refresh` | Blocked until first unblock command passes: pnpm run truth:terrafusion-db-product-load-ledger.
 
 ## Stop Work
 

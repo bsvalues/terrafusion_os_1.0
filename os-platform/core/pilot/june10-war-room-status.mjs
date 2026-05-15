@@ -131,8 +131,12 @@ export function buildJune10WarRoomStatus({ launchControl, p0Burndown, freshness,
       "No external framing is approved until launch-control evidence exists.",
     nextCommands: [
       firstUnblockCommand,
-      ...(launchControl?.nextCommands ?? []).filter((command) => command !== firstUnblockCommand),
-      "pnpm run truth:june10-war-room-status"
+      ...(launchControl?.nextCommands ?? []).filter(
+        (command) =>
+          command !== firstUnblockCommand &&
+          command !== "pnpm run truth:june10-war-room-status"
+      ),
+      "pnpm run truth:june10-control-plane-refresh"
     ].filter(Boolean),
     rules: [
       "This packet is an operator status card; it does not prove runtime data.",

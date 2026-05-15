@@ -1,6 +1,6 @@
 # June 10 War Room Status
 
-Generated: 2026-05-15T16:27:14.627Z
+Generated: 2026-05-15T16:42:35.353Z
 
 War-room verdict: NO_GO
 Active lane: WAITING_SYNC_DB_EVIDENCE
@@ -36,7 +36,7 @@ First unblock command: `pnpm run truth:terrafusion-db-product-load-ledger`
 - `pnpm run truth:runtime-candidate-set`
 - `pnpm run truth:june10-red-team`
 - `pnpm run truth:june10-claim-guard`
-- `pnpm run truth:june10-war-room-status`
+- `pnpm run truth:june10-control-plane-refresh`
 
 ## Allowed Framing
 

@@ -30,7 +30,8 @@ function sampleLaunchControl() {
     ],
     nextCommands: [
       "pnpm run truth:terrafusion-db-product-load-ledger",
-      "pnpm run truth:june10-red-team"
+      "pnpm run truth:june10-red-team",
+      "pnpm run truth:june10-war-room-status"
     ]
   };
 }
@@ -93,6 +94,8 @@ test("builds a compact war-room status from launch and P0 evidence", () => {
   assert.equal(status.activeP0.source, "productLoadLedger");
   assert.equal(status.summary.controlPlaneFreshness, "FRESH");
   assert.ok(status.stopWork.includes("Do not run Benton closure until Sync evidence intake is accepted."));
+  assert.ok(status.nextCommands.includes("pnpm run truth:june10-control-plane-refresh"));
+  assert.ok(!status.nextCommands.includes("pnpm run truth:june10-war-room-status"));
 });
 
 test("marks stale control-plane status as the active lane before other work", () => {

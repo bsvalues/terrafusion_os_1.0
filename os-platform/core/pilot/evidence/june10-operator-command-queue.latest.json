@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-15T16:27:14.837Z",
+  "generatedAtUtc": "2026-05-15T16:42:35.695Z",
   "queueStatus": "FIRST_UNBLOCK_ONLY",
   "warRoomVerdict": "NO_GO",
   "activeLane": "WAITING_SYNC_DB_EVIDENCE",
@@ -42,7 +42,7 @@
       "reason": "Blocked until first unblock command passes: pnpm run truth:terrafusion-db-product-load-ledger."
     },
     {
-      "command": "pnpm run truth:june10-war-room-status",
+      "command": "pnpm run truth:june10-control-plane-refresh",
       "status": "BLOCKED_BY_FIRST_UNBLOCK",
       "reason": "Blocked until first unblock command passes: pnpm run truth:terrafusion-db-product-load-ledger."
     }
