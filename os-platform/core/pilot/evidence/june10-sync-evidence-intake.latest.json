@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-15T01:57:15.269Z",
+  "generatedAtUtc": "2026-05-15T02:03:54.189Z",
   "intakeStatus": "WAITING_SYNC_DB_EVIDENCE",
   "canRunBentonClosure": false,
   "summary": {
@@ -44,90 +44,70 @@
       "productDomain": "parcel",
       "rowCount": null,
       "lineageStatus": "missing_table",
-      "blockers": [
-        "Table missing or unreadable."
-      ]
+      "blockers": ["Table missing or unreadable."]
     },
     {
       "tableName": "canonical_tf.tf_sale",
       "productDomain": "sales",
       "rowCount": 98,
       "lineageStatus": "rows_exist_lineage_unproven",
-      "blockers": [
-        "Rows exist but no product load receipt proves lineage."
-      ]
+      "blockers": ["Rows exist but no product load receipt proves lineage."]
     },
     {
       "tableName": "CanonicalSaleQualifications",
       "productDomain": "qualified_sales",
       "rowCount": 251484,
       "lineageStatus": "rows_exist_lineage_unproven",
-      "blockers": [
-        "Rows exist but no product load receipt proves lineage."
-      ]
+      "blockers": ["Rows exist but no product load receipt proves lineage."]
     },
     {
       "tableName": "CamaCharacteristics",
       "productDomain": "costforge",
       "rowCount": 75907,
       "lineageStatus": "rows_exist_lineage_unproven",
-      "blockers": [
-        "Rows exist but no product load receipt proves lineage."
-      ]
+      "blockers": ["Rows exist but no product load receipt proves lineage."]
     },
     {
       "tableName": "ImprovementDetails",
       "productDomain": "costforge",
       "rowCount": 0,
       "lineageStatus": "empty_table",
-      "blockers": [
-        "Table exists but is empty."
-      ]
+      "blockers": ["Table exists but is empty."]
     },
     {
       "tableName": "LandSegments",
       "productDomain": "costforge",
       "rowCount": 0,
       "lineageStatus": "empty_table",
-      "blockers": [
-        "Table exists but is empty."
-      ]
+      "blockers": ["Table exists but is empty."]
     },
     {
       "tableName": "GisParcelGeometries",
       "productDomain": "atlas",
       "rowCount": 80014,
       "lineageStatus": "rows_exist_lineage_unproven",
-      "blockers": [
-        "Rows exist but no product load receipt proves lineage."
-      ]
+      "blockers": ["Rows exist but no product load receipt proves lineage."]
     },
     {
       "tableName": "DossierPackets",
       "productDomain": "dossier",
       "rowCount": 0,
       "lineageStatus": "empty_table",
-      "blockers": [
-        "Table exists but is empty."
-      ]
+      "blockers": ["Table exists but is empty."]
     },
     {
       "tableName": "CountyDownstreamClosureReceipts",
       "productDomain": "dais",
       "rowCount": 0,
       "lineageStatus": "empty_table",
-      "blockers": [
-        "Table exists but is empty."
-      ]
+      "blockers": ["Table exists but is empty."]
     },
     {
       "tableName": "CountyApplyHandoffReceipts",
       "productDomain": "dossier",
       "rowCount": 0,
       "lineageStatus": "empty_table",
-      "blockers": [
-        "Table exists but is empty."
-      ]
+      "blockers": ["Table exists but is empty."]
     }
   ],
   "failedCorpusClauses": [

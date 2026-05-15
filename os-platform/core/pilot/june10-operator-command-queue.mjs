@@ -113,7 +113,7 @@ export function buildJune10OperatorCommandQueue({ warRoomStatus }) {
       "Only ACTIVE commands may be executed from this queue.",
       "When war-room verdict is NO_GO, the first unblock command is the only active command.",
       "Blocked commands are not suggestions; they are sequencing guards.",
-      "Regenerate war-room status after the active command completes."
+      "Run pnpm run truth:june10-control-plane-refresh after the active command completes."
     ]
   };
 }

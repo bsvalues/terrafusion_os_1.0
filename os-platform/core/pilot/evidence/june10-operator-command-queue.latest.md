@@ -1,6 +1,6 @@
 # June 10 Operator Command Queue
 
-Generated: 2026-05-15T01:57:16.601Z
+Generated: 2026-05-15T02:03:55.328Z
 
 Queue status: FIRST_UNBLOCK_ONLY
 War-room verdict: NO_GO
@@ -39,4 +39,4 @@ BLOCKED_BY_FIRST_UNBLOCK | `pnpm run truth:june10-war-room-status` | Blocked unt
 - Only ACTIVE commands may be executed from this queue.
 - When war-room verdict is NO_GO, the first unblock command is the only active command.
 - Blocked commands are not suggestions; they are sequencing guards.
-- Regenerate war-room status after the active command completes.
+- Run pnpm run truth:june10-control-plane-refresh after the active command completes.

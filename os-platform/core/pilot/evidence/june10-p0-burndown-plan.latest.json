@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-15T01:57:15.786Z",
+  "generatedAtUtc": "2026-05-15T02:03:54.638Z",
   "launchVerdict": "NO_GO",
   "summary": {
     "p0Items": 6,
@@ -32,9 +32,7 @@
       "source": "bentonPilotClosure",
       "status": "BLOCKED_BY_DEPENDENCY",
       "ownerLane": "Codex after all Benton data gates are green",
-      "blockedBy": [
-        "productLoadLedger"
-      ],
+      "blockedBy": ["productLoadLedger"],
       "proofCommand": "pnpm run truth:benton-runtime-pilot-closure",
       "requiredResolution": "Prove Benton runtime pilot closure only after DB identity, content, load receipts, parcel sanity, and sale qualification pass.",
       "blockerCount": 7,
@@ -46,9 +44,7 @@
       "source": "redTeam:runtime_lineage",
       "status": "BLOCKED_BY_DEPENDENCY",
       "ownerLane": "Codex / launch-control review",
-      "blockedBy": [
-        "productLoadLedger"
-      ],
+      "blockedBy": ["productLoadLedger"],
       "proofCommand": "pnpm run truth:june10-red-team",
       "requiredResolution": "Clear or contain the credibility attack before public readiness claims.",
       "blockerCount": 1,
@@ -60,9 +56,7 @@
       "source": "redTeam:benton_realism",
       "status": "BLOCKED_BY_DEPENDENCY",
       "ownerLane": "Codex / launch-control review",
-      "blockedBy": [
-        "bentonPilotClosure"
-      ],
+      "blockedBy": ["bentonPilotClosure"],
       "proofCommand": "pnpm run truth:june10-red-team",
       "requiredResolution": "Clear or contain the credibility attack before public readiness claims.",
       "blockerCount": 1,
@@ -74,10 +68,7 @@
       "source": "redTeam:governance_posture",
       "status": "BLOCKED_BY_DEPENDENCY",
       "ownerLane": "Codex / launch-control review",
-      "blockedBy": [
-        "productLoadLedger",
-        "bentonPilotClosure"
-      ],
+      "blockedBy": ["productLoadLedger", "bentonPilotClosure"],
       "proofCommand": "pnpm run truth:june10-red-team",
       "requiredResolution": "Clear or contain the credibility attack before public readiness claims.",
       "blockerCount": 1,

@@ -38,6 +38,17 @@ test("allows only the first unblock command while war-room verdict is NO_GO", ()
   assert.ok(queue.commands.slice(1).every((item) => item.status === "BLOCKED_BY_FIRST_UNBLOCK"));
 });
 
+test("instructs operators to run the ordered refresh after the active command completes", () => {
+  const queue = buildJune10OperatorCommandQueue({ warRoomStatus: sampleWarRoomStatus() });
+
+  assert.ok(
+    queue.rules.includes(
+      "Run pnpm run truth:june10-control-plane-refresh after the active command completes."
+    )
+  );
+  assert.ok(!queue.rules.some((rule) => rule.includes("Regenerate war-room status after")));
+});
+
 test("turns missing war-room status into a stop-work queue", () => {
   const queue = buildJune10OperatorCommandQueue({ warRoomStatus: null });
 
