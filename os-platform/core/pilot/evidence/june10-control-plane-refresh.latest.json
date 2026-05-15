@@ -1,12 +1,14 @@
 {
-  "generatedAtUtc": "2026-05-15T02:16:27.618Z",
+  "generatedAtUtc": "2026-05-15T16:27:15.107Z",
   "refreshStatus": "PASS",
   "summary": {
     "totalSteps": 7,
     "executedSteps": 7,
     "failedSteps": 0,
     "finalFreshnessStatus": "FRESH",
-    "finalFreshnessBlockers": 0
+    "finalFreshnessBlockers": 0,
+    "redactedOutputFields": 0,
+    "truncatedOutputFields": 0
   },
   "steps": [
     {
@@ -15,10 +17,14 @@
       "commandLine": "node os-platform/core/pilot/june10-sync-evidence-intake.mjs",
       "usesBootstrapFreshness": false,
       "exitCode": 0,
-      "startedAtUtc": "2026-05-15T02:16:25.662Z",
-      "completedAtUtc": "2026-05-15T02:16:25.929Z",
+      "startedAtUtc": "2026-05-15T16:27:12.512Z",
+      "completedAtUtc": "2026-05-15T16:27:13.349Z",
       "stdout": "{\n  \"intakeStatus\": \"WAITING_SYNC_DB_EVIDENCE\",\n  \"canRunBentonClosure\": false,\n  \"blockers\": 21,\n  \"output\": \"os-platform/core/pilot/evidence/june10-sync-evidence-intake.latest.json\"\n}\n",
-      "stderr": ""
+      "stderr": "",
+      "stdoutRedacted": false,
+      "stderrRedacted": false,
+      "stdoutTruncated": false,
+      "stderrTruncated": false
     },
     {
       "id": "shipBlockerLedger",
@@ -26,10 +32,14 @@
       "commandLine": "node os-platform/core/pilot/june10-ship-blocker-ledger.mjs",
       "usesBootstrapFreshness": false,
       "exitCode": 0,
-      "startedAtUtc": "2026-05-15T02:16:25.929Z",
-      "completedAtUtc": "2026-05-15T02:16:26.289Z",
+      "startedAtUtc": "2026-05-15T16:27:13.349Z",
+      "completedAtUtc": "2026-05-15T16:27:14.050Z",
       "stdout": "{\n  \"launchVerdict\": \"NO_GO\",\n  \"blockerGroups\": 11,\n  \"p0Groups\": 6,\n  \"readinessBlockers\": 23,\n  \"output\": \"os-platform/core/pilot/evidence/june10-ship-blocker-ledger.latest.json\"\n}\n",
-      "stderr": ""
+      "stderr": "",
+      "stdoutRedacted": false,
+      "stderrRedacted": false,
+      "stdoutTruncated": false,
+      "stderrTruncated": false
     },
     {
       "id": "p0Burndown",
@@ -37,10 +47,14 @@
       "commandLine": "node os-platform/core/pilot/june10-p0-burndown-plan.mjs",
       "usesBootstrapFreshness": false,
       "exitCode": 0,
-      "startedAtUtc": "2026-05-15T02:16:26.289Z",
-      "completedAtUtc": "2026-05-15T02:16:26.540Z",
+      "startedAtUtc": "2026-05-15T16:27:14.050Z",
+      "completedAtUtc": "2026-05-15T16:27:14.276Z",
       "stdout": "{\n  \"launchVerdict\": \"NO_GO\",\n  \"p0Items\": 6,\n  \"waitingExternalItems\": 1,\n  \"blockedItems\": 5,\n  \"syncEvidenceIntakeStatus\": \"WAITING_SYNC_DB_EVIDENCE\",\n  \"output\": \"os-platform/core/pilot/evidence/june10-p0-burndown-plan.latest.json\"\n}\n",
-      "stderr": ""
+      "stderr": "",
+      "stdoutRedacted": false,
+      "stderrRedacted": false,
+      "stdoutTruncated": false,
+      "stderrTruncated": false
     },
     {
       "id": "launchControl",
@@ -48,10 +62,14 @@
       "commandLine": "node os-platform/core/pilot/june10-launch-control.mjs",
       "usesBootstrapFreshness": false,
       "exitCode": 0,
-      "startedAtUtc": "2026-05-15T02:16:26.540Z",
-      "completedAtUtc": "2026-05-15T02:16:26.845Z",
+      "startedAtUtc": "2026-05-15T16:27:14.276Z",
+      "completedAtUtc": "2026-05-15T16:27:14.478Z",
       "stdout": "{\n  \"launchVerdict\": \"NO_GO\",\n  \"readinessStatus\": \"FAIL\",\n  \"shipBlockers\": 23,\n  \"stopConditions\": 4,\n  \"p0Items\": 6,\n  \"firstUnblockCommand\": \"pnpm run truth:terrafusion-db-product-load-ledger\",\n  \"output\": \"os-platform/core/pilot/evidence/june10-launch-control.latest.json\"\n}\n",
-      "stderr": ""
+      "stderr": "",
+      "stdoutRedacted": false,
+      "stderrRedacted": false,
+      "stdoutTruncated": false,
+      "stderrTruncated": false
     },
     {
       "id": "warRoomStatus",
@@ -59,10 +77,14 @@
       "commandLine": "node os-platform/core/pilot/june10-war-room-status.mjs --freshness <bootstrap-freshness>",
       "usesBootstrapFreshness": true,
       "exitCode": 0,
-      "startedAtUtc": "2026-05-15T02:16:26.845Z",
-      "completedAtUtc": "2026-05-15T02:16:27.114Z",
+      "startedAtUtc": "2026-05-15T16:27:14.478Z",
+      "completedAtUtc": "2026-05-15T16:27:14.669Z",
       "stdout": "{\n  \"warRoomVerdict\": \"NO_GO\",\n  \"activeLane\": \"WAITING_SYNC_DB_EVIDENCE\",\n  \"firstUnblockCommand\": \"pnpm run truth:terrafusion-db-product-load-ledger\",\n  \"output\": \"os-platform/core/pilot/evidence/june10-war-room-status.latest.json\"\n}\n",
-      "stderr": ""
+      "stderr": "",
+      "stdoutRedacted": false,
+      "stderrRedacted": false,
+      "stdoutTruncated": false,
+      "stderrTruncated": false
     },
     {
       "id": "operatorCommandQueue",
@@ -70,10 +92,14 @@
       "commandLine": "node os-platform/core/pilot/june10-operator-command-queue.mjs",
       "usesBootstrapFreshness": false,
       "exitCode": 0,
-      "startedAtUtc": "2026-05-15T02:16:27.114Z",
-      "completedAtUtc": "2026-05-15T02:16:27.356Z",
+      "startedAtUtc": "2026-05-15T16:27:14.669Z",
+      "completedAtUtc": "2026-05-15T16:27:14.873Z",
       "stdout": "{\n  \"queueStatus\": \"FIRST_UNBLOCK_ONLY\",\n  \"activeCommands\": 1,\n  \"blockedCommands\": 6,\n  \"output\": \"os-platform/core/pilot/evidence/june10-operator-command-queue.latest.json\"\n}\n",
-      "stderr": ""
+      "stderr": "",
+      "stdoutRedacted": false,
+      "stderrRedacted": false,
+      "stdoutTruncated": false,
+      "stderrTruncated": false
     },
     {
       "id": "controlPlaneFreshness",
@@ -81,10 +107,14 @@
       "commandLine": "node os-platform/core/pilot/june10-control-plane-freshness.mjs",
       "usesBootstrapFreshness": false,
       "exitCode": 0,
-      "startedAtUtc": "2026-05-15T02:16:27.356Z",
-      "completedAtUtc": "2026-05-15T02:16:27.616Z",
+      "startedAtUtc": "2026-05-15T16:27:14.873Z",
+      "completedAtUtc": "2026-05-15T16:27:15.105Z",
       "stdout": "{\n  \"freshnessStatus\": \"FRESH\",\n  \"requiredArtifactsPresent\": 6,\n  \"blockers\": 0,\n  \"output\": \"os-platform/core/pilot/evidence/june10-control-plane-freshness.latest.json\"\n}\n",
-      "stderr": ""
+      "stderr": "",
+      "stdoutRedacted": false,
+      "stderrRedacted": false,
+      "stdoutTruncated": false,
+      "stderrTruncated": false
     }
   ],
   "blockers": [],

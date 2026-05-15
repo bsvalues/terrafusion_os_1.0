@@ -1,6 +1,6 @@
 # June 10 Control-Plane Refresh
 
-Generated: 2026-05-15T02:16:27.618Z
+Generated: 2026-05-15T16:27:15.107Z
 
 Refresh status: PASS
 
@@ -11,6 +11,8 @@ Refresh status: PASS
 - Failed steps: 0
 - Final freshness status: FRESH
 - Final freshness blockers: 0
+- Redacted output fields: 0
+- Truncated output fields: 0
 
 ## Steps
 

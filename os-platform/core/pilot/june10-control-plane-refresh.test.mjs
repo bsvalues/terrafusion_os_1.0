@@ -68,6 +68,9 @@ test("redacts secret-like command output before writing refresh evidence", () =>
   assert.doesNotMatch(report.steps[0].stderr, /top-secret/);
   assert.match(report.steps[0].stdout, /token=<redacted>/);
   assert.match(report.steps[0].stderr, /Password=<redacted>/i);
+  assert.equal(report.steps[0].stdoutRedacted, true);
+  assert.equal(report.steps[0].stderrRedacted, true);
+  assert.equal(report.summary.redactedOutputFields, 2);
 });
 
 test("bounds stored command output while preserving tail context", () => {
@@ -88,6 +91,9 @@ test("bounds stored command output while preserving tail context", () => {
   assert.match(report.steps[0].stdout, /\[truncated .* chars\]/);
   assert.match(report.steps[0].stdout, /TAIL-CONTEXT$/);
   assert.match(report.steps[0].stderr, /ERROR-TAIL$/);
+  assert.equal(report.steps[0].stdoutTruncated, true);
+  assert.equal(report.steps[0].stderrTruncated, true);
+  assert.equal(report.summary.truncatedOutputFields, 2);
 });
 
 test("fails when any refresh step exits non-zero", () => {
@@ -145,6 +151,10 @@ test("CLI dry run writes a planned refresh report without running commands", () 
   assert.equal(report.refreshStatus, "PLANNED");
   assert.equal(report.summary.totalSteps, defaultRefreshSteps().length);
   assert.equal(report.summary.executedSteps, 0);
+  assert.equal(report.summary.redactedOutputFields, 0);
+  assert.equal(report.summary.truncatedOutputFields, 0);
   assert.match(markdown, /June 10 Control-Plane Refresh/);
+  assert.match(markdown, /Redacted output fields/);
+  assert.match(markdown, /Truncated output fields/);
   assert.match(markdown, /controlPlaneFreshness/);
 });

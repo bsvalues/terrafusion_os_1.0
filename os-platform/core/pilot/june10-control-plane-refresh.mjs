@@ -106,18 +106,33 @@ function commandLineFor(step) {
   return [step.command, ...(step.args ?? [])].join(" ");
 }
 
-function redactCommandOutput(value) {
-  const redacted = String(value ?? "")
+function sanitizeCommandOutput(value) {
+  const original = String(value ?? "");
+  const redacted = original
     .replace(/\b(authorization\s*:\s*bearer)\s+\S+/gi, "$1 <redacted>")
     .replace(/\b(token|password|secret|api[_-]?key|connectionstring)\s*=\s*[^;\s]+/gi, "$1=<redacted>")
     .replace(/\b(password)\s*=\s*[^;]+/gi, "$1=<redacted>");
-  if (redacted.length <= MAX_COMMAND_OUTPUT_CHARS) return redacted;
+  const wasRedacted = redacted !== original;
+  if (redacted.length <= MAX_COMMAND_OUTPUT_CHARS) {
+    return {
+      value: redacted,
+      redacted: wasRedacted,
+      truncated: false
+    };
+  }
 
   const tail = redacted.slice(-MAX_COMMAND_OUTPUT_CHARS);
-  return `[truncated ${redacted.length - MAX_COMMAND_OUTPUT_CHARS} chars]\n${tail}`;
+  return {
+    value: `[truncated ${redacted.length - MAX_COMMAND_OUTPUT_CHARS} chars]\n${tail}`,
+    redacted: wasRedacted,
+    truncated: true
+  };
 }
 
 function normalizeStep(step) {
+  const stdout = sanitizeCommandOutput(step.stdout);
+  const stderr = sanitizeCommandOutput(step.stderr);
+
   return {
     id: step.id,
     label: step.label,
@@ -126,8 +141,12 @@ function normalizeStep(step) {
     exitCode: step.exitCode ?? null,
     startedAtUtc: step.startedAtUtc ?? null,
     completedAtUtc: step.completedAtUtc ?? null,
-    stdout: redactCommandOutput(step.stdout),
-    stderr: redactCommandOutput(step.stderr)
+    stdout: stdout.value,
+    stderr: stderr.value,
+    stdoutRedacted: stdout.redacted,
+    stderrRedacted: stderr.redacted,
+    stdoutTruncated: stdout.truncated,
+    stderrTruncated: stderr.truncated
   };
 }
 
@@ -171,7 +190,15 @@ export function buildJune10ControlPlaneRefresh({ steps, finalFreshness }) {
       executedSteps: normalizedSteps.filter((step) => step.exitCode !== null).length,
       failedSteps: normalizedSteps.filter((step) => step.exitCode !== null && step.exitCode !== 0).length,
       finalFreshnessStatus: finalFreshness?.freshnessStatus ?? "missing",
-      finalFreshnessBlockers: finalFreshness?.summary?.blockers ?? null
+      finalFreshnessBlockers: finalFreshness?.summary?.blockers ?? null,
+      redactedOutputFields: normalizedSteps.reduce(
+        (sum, step) => sum + Number(step.stdoutRedacted) + Number(step.stderrRedacted),
+        0
+      ),
+      truncatedOutputFields: normalizedSteps.reduce(
+        (sum, step) => sum + Number(step.stdoutTruncated) + Number(step.stderrTruncated),
+        0
+      )
     },
     steps: normalizedSteps,
     blockers,
@@ -199,6 +226,8 @@ function renderMarkdown(report) {
     `- Failed steps: ${report.summary.failedSteps}`,
     `- Final freshness status: ${report.summary.finalFreshnessStatus}`,
     `- Final freshness blockers: ${report.summary.finalFreshnessBlockers ?? "unknown"}`,
+    `- Redacted output fields: ${report.summary.redactedOutputFields}`,
+    `- Truncated output fields: ${report.summary.truncatedOutputFields}`,
     "",
     "## Steps",
     "",

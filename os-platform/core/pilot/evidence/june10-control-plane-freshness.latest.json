@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-15T02:16:27.585Z",
+  "generatedAtUtc": "2026-05-15T16:27:15.074Z",
   "freshnessStatus": "FRESH",
   "summary": {
     "requiredArtifacts": 6,
@@ -15,32 +15,32 @@
     {
       "name": "syncEvidenceIntake",
       "present": true,
-      "generatedAtUtc": "2026-05-15T02:16:25.894Z"
+      "generatedAtUtc": "2026-05-15T16:27:12.869Z"
     },
     {
       "name": "shipBlockerLedger",
       "present": true,
-      "generatedAtUtc": "2026-05-15T02:16:26.199Z"
+      "generatedAtUtc": "2026-05-15T16:27:13.914Z"
     },
     {
       "name": "p0Burndown",
       "present": true,
-      "generatedAtUtc": "2026-05-15T02:16:26.504Z"
+      "generatedAtUtc": "2026-05-15T16:27:14.195Z"
     },
     {
       "name": "launchControl",
       "present": true,
-      "generatedAtUtc": "2026-05-15T02:16:26.801Z"
+      "generatedAtUtc": "2026-05-15T16:27:14.448Z"
     },
     {
       "name": "warRoomStatus",
       "present": true,
-      "generatedAtUtc": "2026-05-15T02:16:27.049Z"
+      "generatedAtUtc": "2026-05-15T16:27:14.627Z"
     },
     {
       "name": "operatorCommandQueue",
       "present": true,
-      "generatedAtUtc": "2026-05-15T02:16:27.320Z"
+      "generatedAtUtc": "2026-05-15T16:27:14.837Z"
     }
   ],
   "blockers": [],
