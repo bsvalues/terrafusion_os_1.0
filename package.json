@@ -115,6 +115,7 @@
     "truth:june10-seed-work-order-pack": "node os-platform/core/pilot/june10-seed-work-order-pack.mjs",
     "truth:june10-p0-burndown": "node os-platform/core/pilot/june10-p0-burndown-plan.mjs",
     "truth:june10-ship-blocker-ledger": "node os-platform/core/pilot/june10-ship-blocker-ledger.mjs",
+    "truth:june10-sync-evidence-intake": "node os-platform/core/pilot/june10-sync-evidence-intake.mjs",
     "truth:post-db-refresh-rerun": "node scripts/truth/post-db-refresh-rerun.mjs",
     "truth:direct-source": "node os-platform/core/pilot/direct-source-recompute.mjs",
     "truth:statistics-parity-scope": "node os-platform/core/pilot/statistics-parity-scope-alignment.mjs",
