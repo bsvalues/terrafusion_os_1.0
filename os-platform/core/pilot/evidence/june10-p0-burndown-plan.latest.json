@@ -1,26 +1,31 @@
 {
-  "generatedAtUtc": "2026-05-15T00:15:57.819Z",
+  "generatedAtUtc": "2026-05-15T01:01:47.939Z",
   "launchVerdict": "NO_GO",
   "summary": {
     "p0Items": 6,
     "deferredNonP0Items": 5,
     "waitingExternalItems": 1,
     "blockedItems": 5,
-    "readyForCodexItems": 0
+    "readyForCodexItems": 0,
+    "syncEvidenceIntakeStatus": "WAITING_SYNC_DB_EVIDENCE",
+    "syncEvidenceBlockers": 21
   },
   "planBlockers": [],
   "executionQueue": [
     {
       "sequence": 1,
       "source": "productLoadLedger",
-      "status": "WAITING_EXTERNAL_SYNC_DB",
+      "status": "WAITING_SYNC_DB_EVIDENCE",
       "ownerLane": "Claude Code / Sync DB, audited by Codex",
       "blockedBy": [],
       "proofCommand": "pnpm run truth:terrafusion-db-product-load-ledger",
       "requiredResolution": "Emit/read product-load receipts proving TerraFusion DB table rows were loaded through the approved ingestion path.",
       "blockerCount": 14,
-      "firstBlocker": "Artifact reports failed proof posture: top-level passed is false.",
-      "stopCondition": false
+      "firstBlocker": "Product-load ledger is not passing.",
+      "stopCondition": false,
+      "syncEvidenceIntakeStatus": "WAITING_SYNC_DB_EVIDENCE",
+      "syncEvidenceBlockers": 21,
+      "nextUnblockCommand": "pnpm run truth:terrafusion-db-product-load-ledger"
     },
     {
       "sequence": 2,

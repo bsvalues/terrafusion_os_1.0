@@ -16,6 +16,14 @@ const DEFAULT_LEDGER = path.join(
   "evidence",
   "june10-ship-blocker-ledger.latest.json"
 );
+const DEFAULT_SYNC_INTAKE = path.join(
+  repoRoot,
+  "os-platform",
+  "core",
+  "pilot",
+  "evidence",
+  "june10-sync-evidence-intake.latest.json"
+);
 const DEFAULT_OUT_JSON = path.join(
   repoRoot,
   "os-platform",
@@ -73,9 +81,17 @@ function statusFor(source, blockedBy) {
   return "READY_FOR_CODEX";
 }
 
-function itemFromGroup(group, index) {
+function syncIntakeStatusFor(syncEvidenceIntake) {
+  return syncEvidenceIntake?.intakeStatus ?? "missing";
+}
+
+function nextUnblockCommandFor(syncEvidenceIntake, fallback) {
+  return syncEvidenceIntake?.nextCommands?.[0] ?? fallback ?? null;
+}
+
+function itemFromGroup(group, index, syncEvidenceIntake = null) {
   const blockedBy = dependenciesFor(group.source);
-  return {
+  const item = {
     sequence: index + 1,
     source: group.source,
     status: statusFor(group.source, blockedBy),
@@ -87,9 +103,19 @@ function itemFromGroup(group, index) {
     firstBlocker: group.blockers?.[0] ?? null,
     stopCondition: group.source === "launchControl" || group.source.startsWith("redTeam:")
   };
+
+  if (group.source === "productLoadLedger" && syncEvidenceIntake) {
+    item.status = syncIntakeStatusFor(syncEvidenceIntake);
+    item.syncEvidenceIntakeStatus = syncIntakeStatusFor(syncEvidenceIntake);
+    item.syncEvidenceBlockers = syncEvidenceIntake.summary?.blockers ?? syncEvidenceIntake.blockers?.length ?? null;
+    item.nextUnblockCommand = nextUnblockCommandFor(syncEvidenceIntake, group.nextCommand);
+    item.firstBlocker = syncEvidenceIntake.blockers?.[0] ?? item.firstBlocker;
+  }
+
+  return item;
 }
 
-export function buildJune10P0BurndownPlan({ ledger }) {
+export function buildJune10P0BurndownPlan({ ledger, syncEvidenceIntake = null }) {
   if (!ledger) {
     return {
       generatedAtUtc: new Date().toISOString(),
@@ -115,7 +141,7 @@ export function buildJune10P0BurndownPlan({ ledger }) {
   const p0Groups = groups
     .filter((group) => group.priority === "P0")
     .sort((a, b) => sequenceRank(a.source) - sequenceRank(b.source) || a.source.localeCompare(b.source));
-  const executionQueue = p0Groups.map(itemFromGroup);
+  const executionQueue = p0Groups.map((group, index) => itemFromGroup(group, index, syncEvidenceIntake));
   const deferredItems = groups
     .filter((group) => group.priority !== "P0")
     .map((group) => ({
@@ -133,9 +159,13 @@ export function buildJune10P0BurndownPlan({ ledger }) {
     summary: {
       p0Items: executionQueue.length,
       deferredNonP0Items: deferredItems.length,
-      waitingExternalItems: executionQueue.filter((item) => item.status === "WAITING_EXTERNAL_SYNC_DB").length,
+      waitingExternalItems: executionQueue.filter((item) =>
+        ["WAITING_EXTERNAL_SYNC_DB", "WAITING_SYNC_DB_EVIDENCE"].includes(item.status)
+      ).length,
       blockedItems: executionQueue.filter((item) => item.status.startsWith("BLOCKED")).length,
-      readyForCodexItems: executionQueue.filter((item) => item.status === "READY_FOR_CODEX").length
+      readyForCodexItems: executionQueue.filter((item) => item.status === "READY_FOR_CODEX").length,
+      syncEvidenceIntakeStatus: syncIntakeStatusFor(syncEvidenceIntake),
+      syncEvidenceBlockers: syncEvidenceIntake?.summary?.blockers ?? syncEvidenceIntake?.blockers?.length ?? null
     },
     planBlockers: executionQueue.length === 0 ? ["No P0 items found; launch-control evidence may be stale."] : [],
     executionQueue,
@@ -165,11 +195,13 @@ function renderMarkdown(plan) {
     `- Waiting external items: ${plan.summary.waitingExternalItems}`,
     `- Blocked items: ${plan.summary.blockedItems}`,
     `- Ready for Codex items: ${plan.summary.readyForCodexItems}`,
+    `- Sync evidence intake status: ${plan.summary.syncEvidenceIntakeStatus}`,
+    `- Sync evidence blockers: ${plan.summary.syncEvidenceBlockers ?? "unknown"}`,
     "",
     "## Execution Queue",
     "",
-    "| Seq | Source | Status | Owner lane | Blocked by | Proof command |",
-    "|---:|---|---|---|---|---|"
+    "| Seq | Source | Status | Owner lane | Blocked by | Proof command | Next unblock command |",
+    "|---:|---|---|---|---|---|---|"
   ];
 
   for (const item of plan.executionQueue) {
@@ -180,7 +212,8 @@ function renderMarkdown(plan) {
         item.status,
         item.ownerLane,
         item.blockedBy.length ? item.blockedBy.join(", ") : "-",
-        item.proofCommand ? `\`${item.proofCommand}\`` : "-"
+        item.proofCommand ? `\`${item.proofCommand}\`` : "-",
+        item.nextUnblockCommand ? `\`${item.nextUnblockCommand}\`` : "-"
       ].join(" | ")
     );
   }
@@ -207,6 +240,7 @@ function renderMarkdown(plan) {
 function parseArgs(argv) {
   const args = {
     ledgerPath: DEFAULT_LEDGER,
+    syncIntakePath: DEFAULT_SYNC_INTAKE,
     outJson: DEFAULT_OUT_JSON,
     outMd: DEFAULT_OUT_MD,
     write: true
@@ -215,6 +249,7 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === "--ledger") args.ledgerPath = path.resolve(argv[++i]);
+    else if (arg === "--sync-intake") args.syncIntakePath = path.resolve(argv[++i]);
     else if (arg === "--out-json") args.outJson = path.resolve(argv[++i]);
     else if (arg === "--out-md") args.outMd = path.resolve(argv[++i]);
     else if (arg === "--no-write") args.write = false;
@@ -226,7 +261,8 @@ function parseArgs(argv) {
 export function main(argv = process.argv.slice(2)) {
   const args = parseArgs(argv);
   const plan = buildJune10P0BurndownPlan({
-    ledger: readJson(args.ledgerPath, null)
+    ledger: readJson(args.ledgerPath, null),
+    syncEvidenceIntake: readJson(args.syncIntakePath, null)
   });
 
   if (args.write) {
@@ -242,6 +278,7 @@ export function main(argv = process.argv.slice(2)) {
         p0Items: plan.summary.p0Items,
         waitingExternalItems: plan.summary.waitingExternalItems,
         blockedItems: plan.summary.blockedItems,
+        syncEvidenceIntakeStatus: plan.summary.syncEvidenceIntakeStatus,
         output: rel(args.outJson)
       },
       null,

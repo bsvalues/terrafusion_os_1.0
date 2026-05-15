@@ -62,6 +62,25 @@ function sampleLedger() {
   };
 }
 
+function waitingSyncEvidenceIntake() {
+  return {
+    intakeStatus: "WAITING_SYNC_DB_EVIDENCE",
+    canRunBentonClosure: false,
+    summary: {
+      blockers: 21
+    },
+    blockers: [
+      "Product-load ledger is not passing.",
+      "ProductLoadReceipts evidence is missing."
+    ],
+    nextCommands: [
+      "pnpm run truth:terrafusion-db-product-load-ledger",
+      "pnpm run truth:june10-sync-evidence-intake",
+      "pnpm run truth:june10-p0-burndown"
+    ]
+  };
+}
+
 test("builds a P0-only burndown with explicit wait states and dependencies", () => {
   const plan = buildJune10P0BurndownPlan({ ledger: sampleLedger() });
 
@@ -73,6 +92,22 @@ test("builds a P0-only burndown with explicit wait states and dependencies", () 
   assert.equal(plan.executionQueue[1].source, "bentonPilotClosure");
   assert.deepEqual(plan.executionQueue[1].blockedBy, ["productLoadLedger"]);
   assert.ok(plan.executionQueue.some((item) => item.source === "launchControl" && item.status === "BLOCKED_BY_P0"));
+});
+
+test("attaches Sync evidence intake state to the product-load P0 item", () => {
+  const plan = buildJune10P0BurndownPlan({
+    ledger: sampleLedger(),
+    syncEvidenceIntake: waitingSyncEvidenceIntake()
+  });
+
+  const productLoad = plan.executionQueue[0];
+
+  assert.equal(productLoad.source, "productLoadLedger");
+  assert.equal(productLoad.status, "WAITING_SYNC_DB_EVIDENCE");
+  assert.equal(productLoad.syncEvidenceIntakeStatus, "WAITING_SYNC_DB_EVIDENCE");
+  assert.equal(productLoad.syncEvidenceBlockers, 21);
+  assert.equal(productLoad.nextUnblockCommand, "pnpm run truth:terrafusion-db-product-load-ledger");
+  assert.equal(plan.summary.syncEvidenceIntakeStatus, "WAITING_SYNC_DB_EVIDENCE");
 });
 
 test("marks missing ledger as a no-go planning blocker", () => {
@@ -90,6 +125,8 @@ test("CLI writes P0 burndown JSON and Markdown reports", () => {
   const outMd = path.join(tmp, "p0.md");
 
   fs.writeFileSync(ledgerPath, `${JSON.stringify(sampleLedger(), null, 2)}\n`);
+  const syncIntakePath = path.join(tmp, "sync-intake.json");
+  fs.writeFileSync(syncIntakePath, `${JSON.stringify(waitingSyncEvidenceIntake(), null, 2)}\n`);
 
   execFileSync(
     "node",
@@ -97,6 +134,8 @@ test("CLI writes P0 burndown JSON and Markdown reports", () => {
       "os-platform/core/pilot/june10-p0-burndown-plan.mjs",
       "--ledger",
       ledgerPath,
+      "--sync-intake",
+      syncIntakePath,
       "--out-json",
       outJson,
       "--out-md",
@@ -109,6 +148,7 @@ test("CLI writes P0 burndown JSON and Markdown reports", () => {
   const markdown = fs.readFileSync(outMd, "utf8");
 
   assert.equal(plan.summary.p0Items, 4);
+  assert.equal(plan.summary.syncEvidenceIntakeStatus, "WAITING_SYNC_DB_EVIDENCE");
   assert.match(markdown, /June 10 P0 Burndown Plan/);
-  assert.match(markdown, /WAITING_EXTERNAL_SYNC_DB/);
+  assert.match(markdown, /WAITING_SYNC_DB_EVIDENCE/);
 });
