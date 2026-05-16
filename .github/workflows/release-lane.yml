@@ -235,6 +235,10 @@ jobs:
           cp ops/proxy/Caddyfile runtime/Caddyfile
           cp ops/prod/runtime-compose.template.yml runtime/runtime-compose.yml
           cp -R docs/spec-lock/. runtime/docs/spec-lock/
+          cp sovereign.yaml runtime/sovereign.yaml
+          if ! grep -q './sovereign.yaml:/app/sovereign.yaml:ro' runtime/runtime-compose.yml; then
+            sed -i '/- \.\/docs\/spec-lock:\/app\/docs\/spec-lock:ro/a\      - ./sovereign.yaml:/app/sovereign.yaml:ro' runtime/runtime-compose.yml
+          fi
           sed -i "s/ASPNETCORE_ENVIRONMENT: Production/ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENV_LABEL}/" runtime/runtime-compose.yml
           if [ "$TARGET_ENV" = "staging" ]; then
             cat > runtime/config/appsettings.Staging.json <<'EOF'
