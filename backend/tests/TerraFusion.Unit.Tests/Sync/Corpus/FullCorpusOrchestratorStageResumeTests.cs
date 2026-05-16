@@ -36,7 +36,10 @@ public sealed class FullCorpusOrchestratorStageResumeTests : IDisposable
         services.AddDbContext<TerraFusionDbContext>(opt => opt.UseInMemoryDatabase(_dbName));
         services.AddSingleton<IConfiguration>(
             new ConfigurationBuilder().AddInMemoryCollection(
-                new Dictionary<string, string?>()).Build());
+                new Dictionary<string, string?>
+                {
+                    ["FullCorpus:Worker:Enabled"] = "true"
+                }).Build());
         services.AddSingleton<ICorpusLaneRunner>(_capture);
         services.AddSingleton<IPacsBaselineReconciler>(new OkReconciler());
         _provider = services.BuildServiceProvider();
@@ -49,6 +52,7 @@ public sealed class FullCorpusOrchestratorStageResumeTests : IDisposable
 
     private FullCorpusOrchestratorHostedService BuildHost()
         => new(_provider.GetRequiredService<IServiceScopeFactory>(),
+            _provider.GetRequiredService<IConfiguration>(),
             NullLogger<FullCorpusOrchestratorHostedService>.Instance);
 
     private TerraFusionDbContext GetReadDb()
