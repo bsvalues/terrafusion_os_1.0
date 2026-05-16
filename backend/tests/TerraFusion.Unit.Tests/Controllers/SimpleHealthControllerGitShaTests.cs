@@ -1,5 +1,6 @@
 using System.Reflection;
 using FluentAssertions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
 using TerraFusion.API.Controllers;
@@ -22,6 +23,15 @@ namespace TerraFusion.Unit.Tests.Controllers;
 [Trait("Category", "ReleaseHygiene")]
 public sealed class SimpleHealthControllerGitShaTests
 {
+    [Fact]
+    public void Health_Controller_AllowsAnonymousAccess_ForDeploymentHealthChecks()
+    {
+        typeof(SimpleHealthController)
+            .GetCustomAttribute<AllowAnonymousAttribute>()
+            .Should()
+            .NotBeNull("Docker, edge proxy, and public release health probes must reach /health without an auth token");
+    }
+
     [Fact]
     public void Health_Response_IncludesGitShaField_WhenEnvVarUnset()
     {

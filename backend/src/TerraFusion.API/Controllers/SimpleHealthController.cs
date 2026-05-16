@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TerraFusion.API.Controllers;
 
+[AllowAnonymous]
 [ApiController]
 [Route("health")]
 public class SimpleHealthController : ControllerBase
