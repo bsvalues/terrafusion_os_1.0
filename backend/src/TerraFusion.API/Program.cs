@@ -2639,7 +2639,9 @@ else
   {
     var feature = ctx.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
     var correlationId = ctx.Items["CorrelationId"]?.ToString() ?? ctx.TraceIdentifier;
-    var logger = ctx.RequestServices.GetRequiredService<ILogger<Program>>();
+    var logger = ctx.RequestServices
+        .GetRequiredService<ILoggerFactory>()
+        .CreateLogger("TerraFusion.API.ExceptionHandler");
     logger.LogError(feature?.Error, "Unhandled exception. CorrelationId={CorrelationId} Path={Path}",
         correlationId, ctx.Request.Path);
     ctx.Response.StatusCode = StatusCodes.Status500InternalServerError;
