@@ -31,7 +31,6 @@ jobs:
     env:
       TARGET_ENV: ${{ inputs.target_env }}
       RELEASE_SHA: ${{ inputs.release_sha }}
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
       DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
       DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
       DEPLOY_USER: ${{ vars.DEPLOY_USER }}
@@ -43,7 +42,7 @@ jobs:
       TF_AUTH_BOOTSTRAP_ROLES: ${{ secrets.TF_AUTH_BOOTSTRAP_ROLES }}
     steps:
       - name: Checkout requested SHA
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ inputs.release_sha }}
           fetch-depth: 0
@@ -190,7 +189,7 @@ jobs:
           exit 1
 
       - name: Log in to GHCR
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -524,7 +523,7 @@ jobs:
           done
 
       - name: Upload deploy evidence
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: evidence-${{ inputs.target_env }}-${{ inputs.release_sha }}
           path: evidence/
