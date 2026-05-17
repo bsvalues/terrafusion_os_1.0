@@ -31,6 +31,7 @@ jobs:
     env:
       TARGET_ENV: ${{ inputs.target_env }}
       RELEASE_SHA: ${{ inputs.release_sha }}
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
       DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
       DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
       DEPLOY_USER: ${{ vars.DEPLOY_USER }}
