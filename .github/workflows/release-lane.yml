@@ -394,6 +394,51 @@ jobs:
           probe "/property"
           echo "Shell route contract intact after deploy"
 
+      - name: Provisioned auth contract smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "=== Provisioned auth contract smoke ==="
+
+          POLICY_JSON="$(curl -fsS --max-time 10 "${PUBLIC_URL}/api/auth/access-policy")"
+          POLICY_JSON="$POLICY_JSON" node <<'NODE'
+          const policy = JSON.parse(process.env.POLICY_JSON || "{}");
+          if (policy.signupMode !== "provisioned_access_only") {
+            throw new Error(`Expected signupMode=provisioned_access_only, got ${policy.signupMode}`);
+          }
+          if (policy.publicSignupEnabled !== false) {
+            throw new Error("Expected publicSignupEnabled=false");
+          }
+          console.log("Access policy is provisioned-access-only");
+          NODE
+
+          LOGIN_PAYLOAD="$(node <<'NODE'
+          process.stdout.write(JSON.stringify({
+            email: process.env.TF_AUTH_BOOTSTRAP_EMAIL,
+            password: process.env.TF_AUTH_BOOTSTRAP_PASSWORD
+          }));
+          NODE
+          )"
+
+          LOGIN_RESPONSE="$(curl -fsS --max-time 10 \
+            -H 'Content-Type: application/json' \
+            -d "$LOGIN_PAYLOAD" \
+            "${PUBLIC_URL}/api/auth/login")"
+
+          LOGIN_RESPONSE="$LOGIN_RESPONSE" node <<'NODE'
+          const response = JSON.parse(process.env.LOGIN_RESPONSE || "{}");
+          const token = response.token || response.Token;
+          const email = response.email || response.Email || response.user?.email || response.User?.Email;
+          const roles = response.roles || response.Roles || response.user?.roles || response.User?.Roles || [];
+          if (!token) {
+            throw new Error("Provisioned auth smoke did not receive a token");
+          }
+          if (email !== process.env.TF_AUTH_BOOTSTRAP_EMAIL) {
+            throw new Error(`Provisioned auth smoke returned unexpected email: ${email}`);
+          }
+          console.log(`Provisioned login returned token for ${email} with ${Array.isArray(roles) ? roles.length : 0} roles`);
+          NODE
+
       - name: Finalize current SHA on VPS
         shell: bash
         run: |
