@@ -19,7 +19,7 @@ on:
     branches: [main]
 
 env:
-  NODE_VERSION: '22'
+  NODE_VERSION: '20'
   DOTNET_VERSION: '8.0.x'
 
 concurrency:
@@ -300,6 +300,8 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: pnpm/action-setup@v5
+
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -310,22 +312,22 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          npm install
+          pnpm install --frozen-lockfile
           dotnet restore backend/TerraFusion.sln || dotnet restore backend/ || echo "Backend restore skipped"
 
       - name: Code Quality Check
         run: |
-          npm run lint || echo "Lint check complete"
-          npm run type-check || echo "Type check complete"
+          pnpm run lint || echo "Lint check complete"
+          pnpm run type-check || echo "Type check complete"
 
       - name: Run Frontend Tests
-        run: npm run test:unit || echo "Unit tests complete"
+        run: pnpm run test:unit || echo "Unit tests complete"
         continue-on-error: true
 
       - name: Security Scan
         continue-on-error: true
         run: |
-          npm audit --audit-level high || echo "Security audit complete"
+          pnpm audit --audit-level high || echo "Security audit complete"
           dotnet list package --vulnerable || echo "Backend security check complete"
 
   # ═══════════════════════════════════════════════════════════════════════════
