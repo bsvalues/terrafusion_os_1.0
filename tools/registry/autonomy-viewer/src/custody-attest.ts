@@ -168,7 +168,9 @@ export function containsMutableRef(value: string): RegExp | null {
 }
 
 function extractUrlCandidates(value: string): string[] {
-  return value.match(/https?:\/\/[^\s"'<>)]+/gi) ?? [];
+  return (value.match(/https?:\/\/[^\s"'<>)]+/gi) ?? []).map(candidate =>
+    candidate.replace(/[.,;:!?]+$/g, '')
+  );
 }
 
 function isSignatureIdentityField(pathParts: string[], value: string): boolean {

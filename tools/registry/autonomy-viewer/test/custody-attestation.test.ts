@@ -269,6 +269,17 @@ test('validateNoMutableUrls: detects mutable URL embedded in JSON prose string',
   assert.equal(errors[0].type, 'mutable_url');
 });
 
+test('validateNoMutableUrls: detects mutable URL embedded before prose punctuation', () => {
+  const content = JSON.stringify({
+    note: 'Operator evidence is available at https://github.com/owner/repo/releases/latest.',
+  });
+
+  const errors = validateNoMutableUrls(content);
+
+  assert.equal(errors.length, 1, 'Trailing prose punctuation must not hide mutable URLs');
+  assert.equal(errors[0].type, 'mutable_url');
+});
+
 test('validateNoMutableUrls: ignores non-URL git refs in signature/source metadata', () => {
   const content = JSON.stringify({
     source: {
