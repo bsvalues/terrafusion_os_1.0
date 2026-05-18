@@ -297,6 +297,32 @@ test('validateNoMutableUrls: ignores non-URL git refs in signature/source metada
   assert.equal(errors.length, 0, 'Git refs are metadata, not mutable artifact URLs');
 });
 
+test('validateNoMutableUrls: detects mutable artifact fields in non-JSON evidence', () => {
+  const content = `
+    <script>
+      window.__evidence = { "releaseUrl": "refs/heads/main" };
+    </script>
+  `;
+
+  const errors = validateNoMutableUrls(content);
+
+  assert.equal(errors.length, 1, 'Keyed artifact URL refs in non-JSON evidence must be detected');
+  assert.equal(errors[0].type, 'mutable_url');
+  assert.equal(errors[0].artifact, 'refs/heads/main');
+});
+
+test('validateNoMutableUrls: detects mutable artifact fields in parsed JSON evidence', () => {
+  const content = JSON.stringify({
+    releaseUrl: 'refs/heads/main',
+  });
+
+  const errors = validateNoMutableUrls(content);
+
+  assert.equal(errors.length, 1, 'Artifact URL fields must not accept bare mutable refs');
+  assert.equal(errors[0].type, 'mutable_url');
+  assert.equal(errors[0].artifact, 'refs/heads/main');
+});
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Required Fields Tests
 // ─────────────────────────────────────────────────────────────────────────────
@@ -517,6 +543,42 @@ test('round-trip: build then verify succeeds', () => {
     });
     assert.ok(verifyResult.ok, 'Verification should succeed');
     assert.equal(verifyResult.filesVerified, buildResult.attestation.hashes.length);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true });
+  }
+});
+
+test('verification: ignores signing identity URL and git refs in evidence index metadata', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'attest-test-'));
+  createTestArtifacts(tmpDir);
+
+  try {
+    fs.writeFileSync(
+      path.join(tmpDir, 'autonomy-evidence-index.json'),
+      JSON.stringify({
+        schema: 'terrafusion.autonomy.evidence.index.v1',
+        source: {
+          ref: 'refs/heads/main',
+        },
+        expectedSignaturePolicy: {
+          identity:
+            'https://github.com/bsvalues/terrafusion_os_1.0/.github/workflows/autonomy-evidence-publisher.yml@refs/heads/main',
+          ref: 'refs/heads/main',
+        },
+        records: [],
+      })
+    );
+
+    const result = buildAttestation({ inputDir: tmpDir, runId: 'test-123' });
+    createTestAttestationFile(tmpDir, result.attestation);
+
+    const verifyResult = verifyCustodyAttestation({
+      inputDir: tmpDir,
+      attestPath: path.join(tmpDir, 'custody-attestation.json'),
+      strict: false,
+    });
+
+    assert.ok(verifyResult.ok, 'Signature metadata should not fail mutable artifact URL checks');
   } finally {
     fs.rmSync(tmpDir, { recursive: true });
   }

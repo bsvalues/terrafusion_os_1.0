@@ -173,6 +173,32 @@ function extractUrlCandidates(value: string): string[] {
   );
 }
 
+const MUTABLE_ARTIFACT_URL_FIELDS = new Set([
+  'ledgerUrl',
+  'releaseUrl',
+  'bundleDownloadUrl',
+  'dashboardUrl',
+  'custodyUrl',
+]);
+
+function isMutableArtifactUrlField(pathParts: string[]): boolean {
+  const key = pathParts[pathParts.length - 1];
+  return MUTABLE_ARTIFACT_URL_FIELDS.has(key);
+}
+
+function extractArtifactFieldCandidates(value: string): string[] {
+  const candidates: string[] = [];
+  const fieldPattern =
+    /["']?(ledgerUrl|releaseUrl|bundleDownloadUrl|dashboardUrl|custodyUrl)["']?\s*:\s*["']([^"']+)["']/gi;
+
+  let match: RegExpExecArray | null;
+  while ((match = fieldPattern.exec(value)) !== null) {
+    candidates.push(match[2].replace(/[.,;:!?]+$/g, ''));
+  }
+
+  return candidates;
+}
+
 function isSignatureIdentityField(pathParts: string[], value: string): boolean {
   const key = pathParts[pathParts.length - 1];
   const parent = pathParts[pathParts.length - 2];
@@ -193,6 +219,17 @@ function validateJsonValueNoMutableUrls(value: unknown, pathParts: string[] = []
   if (typeof value === 'string') {
     if (isSignatureIdentityField(pathParts, value)) {
       return errors;
+    }
+
+    if (isMutableArtifactUrlField(pathParts)) {
+      const mutablePattern = containsMutableRef(value);
+      if (mutablePattern) {
+        errors.push({
+          type: 'mutable_url',
+          artifact: value,
+          message: `Mutable URL detected: "${value}" matches ${mutablePattern}`,
+        });
+      }
     }
 
     for (const urlCandidate of extractUrlCandidates(value)) {
@@ -395,25 +432,24 @@ export function validateNoMutableUrls(content: string | object): AttestError[] {
   }
 
   const text = content;
+  const scannedCandidates = new Set<string>();
 
-  // Find all URL-like strings
-  const urlPatterns = [
-    /https?:\/\/[^\s"'<>]+/g,
-    /"(ledgerUrl|releaseUrl|bundleDownloadUrl|dashboardUrl|custodyUrl)":\s*"([^"]+)"/g,
-  ];
+  for (const urlCandidate of [
+    ...extractArtifactFieldCandidates(text),
+    ...extractUrlCandidates(text),
+  ]) {
+    if (scannedCandidates.has(urlCandidate)) {
+      continue;
+    }
+    scannedCandidates.add(urlCandidate);
 
-  for (const pattern of urlPatterns) {
-    let match;
-    while ((match = pattern.exec(text)) !== null) {
-      const url = match[2] ?? match[0];
-      const mutablePattern = containsMutableRef(url);
-      if (mutablePattern) {
-        errors.push({
-          type: 'mutable_url',
-          artifact: url,
-          message: `Mutable URL detected: "${url}" matches ${mutablePattern}`,
-        });
-      }
+    const mutablePattern = containsMutableRef(urlCandidate);
+    if (mutablePattern) {
+      errors.push({
+        type: 'mutable_url',
+        artifact: urlCandidate,
+        message: `Mutable URL detected: "${urlCandidate}" matches ${mutablePattern}`,
+      });
     }
   }
 
