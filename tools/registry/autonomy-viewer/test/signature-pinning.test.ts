@@ -8,7 +8,7 @@
 
 import * as assert from 'node:assert';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
@@ -84,6 +84,22 @@ subjectAltName = URI:${identity}
     ],
     { stdio: 'pipe' }
   );
+}
+
+function readGitHubOidcCertificateDerBase64(
+  tempDir: string,
+  identity: string,
+  issuer: string
+): string {
+  const certPath = join(tempDir, 'bundle-cert.pem');
+  const derPath = join(tempDir, 'bundle-cert.der');
+
+  writeGitHubOidcCertificate(tempDir, certPath, identity, issuer);
+  execFileSync('openssl', ['x509', '-in', certPath, '-outform', 'DER', '-out', derPath], {
+    stdio: 'pipe',
+  });
+
+  return readFileSync(derPath).toString('base64');
 }
 
 function buildTestIdentity(repo: string, workflow: string, ref: string): string {
@@ -442,6 +458,106 @@ Certificate:
         })
       );
       writeGitHubOidcCertificate(tempDir, crtPath, identity, GITHUB_ISSUER);
+
+      const result = verifySignature(zipPath, {
+        sig: sigPath,
+        crt: crtPath,
+        bundle: bundlePath,
+      });
+
+      assert.strictEqual(result.ok, true);
+      assert.strictEqual(result.identity, identity);
+      assert.strictEqual(result.issuer, GITHUB_ISSUER);
+    } finally {
+      rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  it('extracts identity from nested Sigstore bundle certificate rawBytes', () => {
+    const identity = buildTestIdentity(TEST_REPO, TEST_WORKFLOW, TEST_REF);
+    const tempDir = mkdtempSync(join(tmpdir(), 'tf-signature-pinning-'));
+    const zipPath = join(tempDir, 'autonomy-evidence.zip');
+    const bundlePath = `${zipPath}.bundle`;
+    const crtPath = `${zipPath}.crt`;
+    const sigPath = `${zipPath}.sig`;
+
+    try {
+      writeFileSync(zipPath, 'zip-content');
+      writeFileSync(sigPath, 'sig-content');
+      writeGitHubOidcCertificate(
+        tempDir,
+        crtPath,
+        'https://github.com/other/repo/.github/workflows/wrong.yml@refs/heads/main',
+        GITHUB_ISSUER
+      );
+      writeFileSync(
+        bundlePath,
+        JSON.stringify({
+          mediaType: 'application/vnd.dev.sigstore.bundle+json;version=0.3',
+          verificationMaterial: {
+            content: {
+              $case: 'x509CertificateChain',
+              x509CertificateChain: {
+                certificates: [
+                  {
+                    rawBytes: readGitHubOidcCertificateDerBase64(tempDir, identity, GITHUB_ISSUER),
+                  },
+                ],
+              },
+            },
+          },
+        })
+      );
+
+      const result = verifySignature(zipPath, {
+        sig: sigPath,
+        crt: crtPath,
+        bundle: bundlePath,
+      });
+
+      assert.strictEqual(result.ok, true);
+      assert.strictEqual(result.identity, identity);
+      assert.strictEqual(result.issuer, GITHUB_ISSUER);
+    } finally {
+      rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  it('ignores unrelated rawBytes outside Sigstore certificate paths', () => {
+    const identity = buildTestIdentity(TEST_REPO, TEST_WORKFLOW, TEST_REF);
+    const wrongIdentity =
+      'https://github.com/other/repo/.github/workflows/wrong.yml@refs/heads/main';
+    const tempDir = mkdtempSync(join(tmpdir(), 'tf-signature-pinning-'));
+    const zipPath = join(tempDir, 'autonomy-evidence.zip');
+    const bundlePath = `${zipPath}.bundle`;
+    const crtPath = `${zipPath}.crt`;
+    const sigPath = `${zipPath}.sig`;
+
+    try {
+      writeFileSync(zipPath, 'zip-content');
+      writeFileSync(sigPath, 'sig-content');
+      writeGitHubOidcCertificate(tempDir, crtPath, wrongIdentity, GITHUB_ISSUER);
+      writeFileSync(
+        bundlePath,
+        JSON.stringify({
+          mediaType: 'application/vnd.dev.sigstore.bundle+json;version=0.3',
+          untrustedPayload: {
+            rawBytes: readGitHubOidcCertificateDerBase64(tempDir, wrongIdentity, GITHUB_ISSUER),
+          },
+          verificationMaterial: {
+            content: {
+              $case: 'x509CertificateChain',
+              x509CertificateChain: {
+                certificates: [
+                  {
+                    rawBytes: readGitHubOidcCertificateDerBase64(tempDir, identity, GITHUB_ISSUER),
+                  },
+                ],
+              },
+            },
+          },
+        })
+      );
 
       const result = verifySignature(zipPath, {
         sig: sigPath,

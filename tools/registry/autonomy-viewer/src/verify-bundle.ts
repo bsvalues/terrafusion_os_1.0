@@ -511,45 +511,108 @@ function parseOpenSslCertificateIdentity(text: string): { identity?: string; iss
   return { identity, issuer };
 }
 
+function decodeCertificateRawBytes(rawBytes: string): Buffer {
+  const normalized = rawBytes.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = normalized.padEnd(normalized.length + ((4 - (normalized.length % 4)) % 4), '=');
+  return Buffer.from(padded, 'base64');
+}
+
+function extractDerCertificateIdentity(rawBytes: string): {
+  identity?: string;
+  issuer?: string;
+} {
+  const tempDir = mkdtempSync(join(tmpdir(), 'tf-verify-bundle-'));
+  const certPath = join(tempDir, 'cert.der');
+
+  try {
+    writeFileSync(certPath, decodeCertificateRawBytes(rawBytes));
+    const certText = execFileSync(
+      'openssl',
+      ['x509', '-inform', 'DER', '-in', certPath, '-noout', '-text'],
+      {
+        encoding: 'utf8',
+        stdio: 'pipe',
+      }
+    );
+    return parseOpenSslCertificateIdentity(certText);
+  } catch {
+    return {};
+  } finally {
+    rmSync(tempDir, { recursive: true, force: true });
+  }
+}
+
+function pushRawBytesCandidate(candidates: string[], value: unknown): void {
+  if (typeof value === 'string' && value.trim()) {
+    candidates.push(value.trim());
+  }
+}
+
+function pushCertificateChainCandidates(candidates: string[], chain: unknown): void {
+  if (!chain || typeof chain !== 'object') {
+    return;
+  }
+
+  const certificates = (chain as { certificates?: unknown }).certificates;
+  if (!Array.isArray(certificates)) {
+    return;
+  }
+
+  for (const certificate of certificates) {
+    if (certificate && typeof certificate === 'object') {
+      pushRawBytesCandidate(candidates, (certificate as { rawBytes?: unknown }).rawBytes);
+    }
+  }
+}
+
+function collectCertificateRawBytes(bundleJson: unknown): string[] {
+  if (!bundleJson || typeof bundleJson !== 'object') {
+    return [];
+  }
+
+  const candidates: string[] = [];
+  const verificationMaterial = (bundleJson as { verificationMaterial?: unknown })
+    .verificationMaterial;
+  if (!verificationMaterial || typeof verificationMaterial !== 'object') {
+    return candidates;
+  }
+
+  const material = verificationMaterial as {
+    certificate?: { rawBytes?: unknown };
+    x509CertificateChain?: unknown;
+    content?: {
+      certificate?: { rawBytes?: unknown };
+      x509CertificateChain?: unknown;
+    };
+  };
+
+  pushRawBytesCandidate(candidates, material.certificate?.rawBytes);
+  pushCertificateChainCandidates(candidates, material.x509CertificateChain);
+  pushRawBytesCandidate(candidates, material.content?.certificate?.rawBytes);
+  pushCertificateChainCandidates(candidates, material.content?.x509CertificateChain);
+
+  return candidates;
+}
+
 function extractBundleCertificateIdentity(bundlePath: string): {
   identity?: string;
   issuer?: string;
 } {
   try {
-    const bundleJson = JSON.parse(readFileSync(bundlePath, 'utf8')) as {
-      verificationMaterial?: {
-        certificate?: { rawBytes?: string };
-        x509CertificateChain?: { certificates?: Array<{ rawBytes?: string }> };
-      };
-    };
+    const bundleJson = JSON.parse(readFileSync(bundlePath, 'utf8')) as unknown;
+    const candidates = [...new Set(collectCertificateRawBytes(bundleJson))];
 
-    const rawBytes =
-      bundleJson.verificationMaterial?.certificate?.rawBytes ||
-      bundleJson.verificationMaterial?.x509CertificateChain?.certificates?.[0]?.rawBytes;
-    if (!rawBytes) {
-      return {};
-    }
-
-    const tempDir = mkdtempSync(join(tmpdir(), 'tf-verify-bundle-'));
-    const certPath = join(tempDir, 'cert.der');
-
-    try {
-      writeFileSync(certPath, Buffer.from(rawBytes, 'base64'));
-      const certText = execFileSync(
-        'openssl',
-        ['x509', '-inform', 'DER', '-in', certPath, '-noout', '-text'],
-        {
-          encoding: 'utf8',
-          stdio: 'pipe',
-        }
-      );
-      return parseOpenSslCertificateIdentity(certText);
-    } finally {
-      rmSync(tempDir, { recursive: true, force: true });
+    for (const rawBytes of candidates) {
+      const parsed = extractDerCertificateIdentity(rawBytes);
+      if (parsed.identity || parsed.issuer) {
+        return parsed;
+      }
     }
   } catch {
     return {};
   }
+
+  return {};
 }
 
 function parseCertificateFileWithOpenSsl(
