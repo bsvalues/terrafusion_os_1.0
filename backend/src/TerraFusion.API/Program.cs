@@ -60,14 +60,24 @@ static IEnumerable<string> EnumerateSelfAndAncestors(string startPath)
 
 static string ResolveApiContentRoot()
 {
+    static bool IsApiSourceRoot(string candidate) =>
+        File.Exists(Path.Combine(candidate, "TerraFusion.API.csproj")) &&
+        File.Exists(Path.Combine(candidate, "appsettings.json"));
+
+    static bool IsApiPublishedRoot(string candidate) =>
+        File.Exists(Path.Combine(candidate, "TerraFusion.API.dll")) &&
+        File.Exists(Path.Combine(candidate, "appsettings.json"));
+
+    static bool IsApiContentRoot(string candidate) =>
+        IsApiSourceRoot(candidate) || IsApiPublishedRoot(candidate);
+
     // Explicit override — test harnesses set this before host construction to
     // bypass the ancestor walk. Honor it first so WebApplicationFactory-style
-    // test fixtures work in non-standard layouts (worktrees, custom bin dirs).
+    // test fixtures work in non-standard layouts (worktrees, custom bin dirs),
+    // and published containers can use /app as their content root.
     var envOverride = Environment.GetEnvironmentVariable("TERRAFUSION_API_CONTENT_ROOT")
                    ?? Environment.GetEnvironmentVariable("ASPNETCORE_CONTENTROOT");
-    if (!string.IsNullOrWhiteSpace(envOverride) &&
-        File.Exists(Path.Combine(envOverride, "TerraFusion.API.csproj")) &&
-        File.Exists(Path.Combine(envOverride, "appsettings.json")))
+    if (!string.IsNullOrWhiteSpace(envOverride) && IsApiContentRoot(envOverride))
     {
         return Path.GetFullPath(envOverride);
     }
@@ -85,8 +95,7 @@ static string ResolveApiContentRoot()
     {
         foreach (var probe in EnumerateSelfAndAncestors(candidate))
         {
-            if (File.Exists(Path.Combine(probe, "TerraFusion.API.csproj")) &&
-                File.Exists(Path.Combine(probe, "appsettings.json")))
+            if (IsApiContentRoot(probe))
             {
                 return probe;
             }
@@ -2630,7 +2639,9 @@ else
   {
     var feature = ctx.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
     var correlationId = ctx.Items["CorrelationId"]?.ToString() ?? ctx.TraceIdentifier;
-    var logger = ctx.RequestServices.GetRequiredService<ILogger<Program>>();
+    var logger = ctx.RequestServices
+        .GetRequiredService<ILoggerFactory>()
+        .CreateLogger("TerraFusion.API.ExceptionHandler");
     logger.LogError(feature?.Error, "Unhandled exception. CorrelationId={CorrelationId} Path={Path}",
         correlationId, ctx.Request.Path);
     ctx.Response.StatusCode = StatusCodes.Status500InternalServerError;

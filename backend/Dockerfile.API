@@ -52,6 +52,13 @@ RUN groupadd -r terrafusion && useradd -r -g terrafusion -s /sbin/nologin terraf
 COPY --from=publish /app/publish .
 RUN chown -R terrafusion:terrafusion /app
 
+# Prometheus PR-9 / HIGH #32: stamp git SHA into the image
+# Build with: docker build --build-arg GIT_SHA=$(git rev-parse --short HEAD) ...
+# Read inside container via Environment.GetEnvironmentVariable("TF_GIT_SHA");
+# exposed by GET /health → gitSha field.
+ARG GIT_SHA=unknown
+ENV TF_GIT_SHA=${GIT_SHA}
+
 # Environment
 ENV ASPNETCORE_URLS=http://+:5000
 ENV ASPNETCORE_ENVIRONMENT=Production

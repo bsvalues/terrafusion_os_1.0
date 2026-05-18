@@ -308,6 +308,10 @@ function runtimeInfo(county, runtimeLedger, candidateSet) {
     runtimeRows: ledgerRow?.parcelRows ?? ledgerRow?.runtimeRows ?? candidateRow?.runtimeRows ?? 0,
     runtimeAction: ledgerRow?.recommendedAction ?? candidateRow?.recommendedAction ?? 'unknown',
     runtimeBlockers: ledgerRow?.blockers ?? candidateRow?.blockers ?? [],
+    parcelSemanticsProven:
+      ledgerRow?.activeCurrentSemanticsProven === true ||
+      ledgerRow?.activeCurrentParcelSemanticsProven === true ||
+      ledgerRow?.parcelSemanticsPassed === true,
   };
 }
 
@@ -321,6 +325,9 @@ function classifyCounty({ assets, runtime, productLoadReceiptsProven }) {
     assets.length > 0 && assets.every(asset => asset.categories.includes('demo_or_sample'));
 
   if (hasRuntimeProven && hasRuntimeRows && productLoadReceiptsProven) return 'runtime_proven';
+  if (hasRuntimeProven && hasRuntimeRows && runtime.parcelSemanticsProven) {
+    return 'runtime_parcel_seed';
+  }
   if (hasRuntimeRows || runtime.runtimeClass === 'registered_empty') return 'runtime_unproven';
   if ((hasPayload || hasLocalData || hasAdapter) && !demoOnly) return 'public_source_seed';
   return 'provenance_inventory_only';
@@ -336,6 +343,14 @@ function activationPosture({ registry, assets, runtime, classification, rowEstim
     return {
       activationStatus: 'runtime_proven',
       activationNextAction: 'keep_runtime_candidate',
+      activationOwner: 'Codex',
+    };
+  }
+
+  if (classification === 'runtime_parcel_seed') {
+    return {
+      activationStatus: 'runtime_parcel_seed_needs_lineage_receipts',
+      activationNextAction: 'add_or_verify_product_load_receipts_before_full_runtime_claim',
       activationOwner: 'Codex',
     };
   }
@@ -413,11 +428,19 @@ function buildRows() {
 
     if (registry.status === 'not-started') blockers.push('Registry status is not-started.');
     if (registry.acquisitionFamily === 'Unknown') blockers.push('Acquisition family is unknown.');
-    if (classification !== 'runtime_proven') blockers.push('No county runtime lineage proof.');
-    if (!productLoadLedger || productLoadLedger.summary?.lineageProven === 0) {
+    if (classification !== 'runtime_proven' && classification !== 'runtime_parcel_seed') {
+      blockers.push('No county runtime lineage proof.');
+    }
+    if (
+      classification !== 'runtime_parcel_seed' &&
+      (!productLoadLedger || productLoadLedger.summary?.lineageProven === 0)
+    ) {
       blockers.push('No product-load receipt proof is available.');
     }
-    if (assets.some(asset => asset.categories.includes('demo_or_sample'))) {
+    if (
+      classification !== 'runtime_parcel_seed' &&
+      assets.some(asset => asset.categories.includes('demo_or_sample'))
+    ) {
       blockers.push('Demo/sample evidence is present and must not be treated as runtime truth.');
     }
     if (runtime.runtimeBlockers?.length) blockers.push(...runtime.runtimeBlockers);
@@ -456,6 +479,7 @@ function buildRows() {
       runtimeClass: runtime.runtimeClass,
       runtimeRows: runtime.runtimeRows,
       runtimeAction: runtime.runtimeAction,
+      parcelSemanticsProven: runtime.parcelSemanticsProven,
       classification,
       ...activation,
       blockers: [...new Set(blockers)],
@@ -483,6 +507,7 @@ function summarize(rows) {
     byRegistryStatus,
     byActivationStatus,
     runtimeProven: rows.filter(row => row.classification === 'runtime_proven').length,
+    runtimeParcelSeed: rows.filter(row => row.classification === 'runtime_parcel_seed').length,
     publicSourceSeed: rows.filter(row => row.classification === 'public_source_seed').length,
     runtimeUnproven: rows.filter(row => row.classification === 'runtime_unproven').length,
     provenanceInventoryOnly: rows.filter(row => row.classification === 'provenance_inventory_only')
@@ -535,6 +560,7 @@ function renderMd(rows, summary) {
     '',
     `- Counties checked: ${summary.countiesChecked}`,
     `- Runtime proven: ${summary.runtimeProven}`,
+    `- Runtime parcel seed: ${summary.runtimeParcelSeed}`,
     `- Runtime unproven: ${summary.runtimeUnproven}`,
     `- Public-source seed: ${summary.publicSourceSeed}`,
     `- Provenance inventory only: ${summary.provenanceInventoryOnly}`,
@@ -554,7 +580,7 @@ function renderMd(rows, summary) {
     '',
     '## Rule',
     '',
-    'A county is not runtime-ready because it appears in the registry. Runtime readiness requires TerraFusion DB rows, county identity proof, product-load receipts, active/current semantics, and no fallback.',
+    'A county is not runtime-ready because it appears in the registry. Runtime parcel seed proof requires TerraFusion DB rows, county identity proof, active/current semantics, and no fallback. Full runtime readiness also requires product-load receipts and workflow/domain proof.',
   ].join('\n');
 }
 

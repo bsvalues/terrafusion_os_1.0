@@ -617,6 +617,7 @@ function expectedMatchFailurePostures(value, label, pathParts = []) {
 }
 
 function isPositiveReadinessProofField(normalized) {
+  if (normalized === 'runtimeproven') return false;
   if (normalized.endsWith('notproven') || normalized.endsWith('unproven')) return false;
   if (normalized.endsWith('notready')) return false;
   return normalized.endsWith('proven') || normalized.endsWith('ready');

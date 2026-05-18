@@ -3,21 +3,17 @@
 # Verifies that pending EF Core migrations apply cleanly against a fresh
 # Postgres database. Catches IAttrValCd-class schema drift before it lands.
 #
-# Triggered only when migrations, the DbContext, or entities change — so it
-# does not block PRs that don't touch the data layer.
+# Always emits the branch-protection-required "Migration Apply Check" context.
+# PRs without migration-relevant changes take a fast pass inside the job.
 
 name: Migration Apply Gate
 
 on:
-  pull_request:
-    paths:
-      - 'backend/src/TerraFusion.Data/Migrations/**'
-      - 'backend/src/TerraFusion.Data/TerraFusionDbContext.cs'
-      - 'backend/src/TerraFusion.Core/Entities/**'
+  pull_request: {}
 
 jobs:
   apply-migrations:
-    name: Verify pending migrations apply cleanly
+    name: Migration Apply Check
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -32,18 +28,42 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-dotnet@v4
+      - name: Detect migration-relevant changes
+        id: changes
+        shell: bash
+        run: |
+          changed_files="$(git diff --name-only \
+            '${{ github.event.pull_request.base.sha }}' \
+            '${{ github.event.pull_request.head.sha }}' \
+            -- \
+            'backend/src/TerraFusion.Data/Migrations/**' \
+            'backend/src/TerraFusion.Data/TerraFusionDbContext.cs' \
+            'backend/src/TerraFusion.Core/Entities/**' || true)"
+
+          if [ -z "$changed_files" ]; then
+            echo "run_migrations=false" >> "$GITHUB_OUTPUT"
+            echo "No migration-relevant changes. Required check passes without applying migrations."
+          else
+            echo "run_migrations=true" >> "$GITHUB_OUTPUT"
+            echo "Migration-relevant changes:"
+            echo "$changed_files"
+          fi
+
+      - uses: actions/setup-dotnet@v5
+        if: steps.changes.outputs.run_migrations == 'true'
         with:
           dotnet-version: '8.0.x'
 
       - name: Install EF Core tools
+        if: steps.changes.outputs.run_migrations == 'true'
         run: dotnet tool install --global dotnet-ef --version 8.0.*
 
       - name: Apply migrations
+        if: steps.changes.outputs.run_migrations == 'true'
         working-directory: backend
         run: |
           dotnet ef database update \
@@ -53,6 +73,7 @@ jobs:
             --connection "Host=localhost;Port=5432;Database=terrafusion;Username=postgres;Password=ci_password"
 
       - name: Verify no migration-vs-snapshot drift
+        if: steps.changes.outputs.run_migrations == 'true'
         working-directory: backend
         run: |
           dotnet ef migrations script \
@@ -63,6 +84,7 @@ jobs:
           echo "Generated migration script: $(wc -l < /tmp/migration-script.sql) lines"
 
       - name: Lint for destructive Down() patterns in NEW migrations
+        if: steps.changes.outputs.run_migrations == 'true'
         working-directory: backend
         run: |
           new_migrations=$(git diff --name-only origin/main..HEAD -- 'src/TerraFusion.Data/Migrations/*.cs' | grep -v Designer.cs || true)

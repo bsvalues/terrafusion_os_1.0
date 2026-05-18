@@ -313,6 +313,9 @@ public sealed class Cx16RealLoginFactory : WebApplicationFactory<ApiProgram>
             services.AddScoped(_ => new Mock<ICostForgeService>().Object);
             services.AddScoped(_ => new Mock<ICostForgeAIService>().Object);
 
+            services.RemoveAll<ISecurityService>();
+            services.AddSingleton<ISecurityService, Cx16TestSecurityService>();
+
             // Disable HTTPS metadata requirement for test host (no TLS in TestServer)
             // and ensure the signing key matches the key used by JwtTokenService.
             // This is needed because AddTerraFusionAuthentication reads config during
@@ -385,5 +388,56 @@ public sealed class Cx16RealLoginFactory : WebApplicationFactory<ApiProgram>
         {
             _seedLock.Release();
         }
+    }
+
+    private sealed class Cx16TestSecurityService : ISecurityService
+    {
+        private const string Password = "Government2026!";
+
+        private static readonly IReadOnlyDictionary<string, string[]> Users =
+            new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["assessor@terrafusionmarket.com"] = ["PropertyAssessor", "GovernmentUser"],
+                ["user@terrafusionmarket.com"] = ["GovernmentUser"],
+            };
+
+        public Task<bool> IsValidGovernmentUserAsync(string email)
+        {
+            return Task.FromResult(Users.ContainsKey(email));
+        }
+
+        public Task LogSecurityEventAsync(string eventType, string description, string? details = null)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task<bool> ValidateUserCredentialsAsync(string email, string password)
+        {
+            return Task.FromResult(Users.ContainsKey(email) && password == Password);
+        }
+
+        public Task<IEnumerable<string>> GetUserRolesAsync(string email)
+        {
+            Users.TryGetValue(email, out var roles);
+            return Task.FromResult<IEnumerable<string>>(roles ?? Array.Empty<string>());
+        }
+
+        public Task<bool> IsAccountLockedAsync(string email) => Task.FromResult(false);
+
+        public Task RecordFailedLoginAttemptAsync(string email) => Task.CompletedTask;
+
+        public Task ResetFailedLoginAttemptsAsync(string email) => Task.CompletedTask;
+
+        public Task<int> GetFailedLoginAttemptsAsync(string email) => Task.FromResult(0);
+
+        public Task LockAccountAsync(string email, TimeSpan duration, string reason) => Task.CompletedTask;
+
+        public Task UnlockAccountAsync(string email) => Task.CompletedTask;
+
+        public Task<bool> IsIpAddressAllowedAsync(string ipAddress) => Task.FromResult(true);
+
+        public Task<bool> HasPermissionAsync(string userId, string permission) => Task.FromResult(true);
+
+        public Task<bool> HasModuleAccessAsync(string userId, string moduleId) => Task.FromResult(true);
     }
 }

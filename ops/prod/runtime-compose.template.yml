@@ -34,6 +34,7 @@ services:
     volumes:
       - ./data:/app/data
       - ./docs/spec-lock:/app/docs/spec-lock:ro
+      - ./sovereign.yaml:/app/sovereign.yaml:ro
     extra_hosts:
       - host.docker.internal:host-gateway
 
