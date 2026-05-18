@@ -173,6 +173,32 @@ function extractUrlCandidates(value: string): string[] {
   );
 }
 
+const MUTABLE_ARTIFACT_URL_FIELDS = new Set([
+  'ledgerUrl',
+  'releaseUrl',
+  'bundleDownloadUrl',
+  'dashboardUrl',
+  'custodyUrl',
+]);
+
+function isMutableArtifactUrlField(pathParts: string[]): boolean {
+  const key = pathParts[pathParts.length - 1];
+  return MUTABLE_ARTIFACT_URL_FIELDS.has(key);
+}
+
+function extractArtifactFieldCandidates(value: string): string[] {
+  const candidates: string[] = [];
+  const fieldPattern =
+    /["']?(ledgerUrl|releaseUrl|bundleDownloadUrl|dashboardUrl|custodyUrl)["']?\s*:\s*["']([^"']+)["']/gi;
+
+  let match: RegExpExecArray | null;
+  while ((match = fieldPattern.exec(value)) !== null) {
+    candidates.push(match[2].replace(/[.,;:!?]+$/g, ''));
+  }
+
+  return candidates;
+}
+
 function isSignatureIdentityField(pathParts: string[], value: string): boolean {
   const key = pathParts[pathParts.length - 1];
   const parent = pathParts[pathParts.length - 2];
@@ -193,6 +219,17 @@ function validateJsonValueNoMutableUrls(value: unknown, pathParts: string[] = []
   if (typeof value === 'string') {
     if (isSignatureIdentityField(pathParts, value)) {
       return errors;
+    }
+
+    if (isMutableArtifactUrlField(pathParts)) {
+      const mutablePattern = containsMutableRef(value);
+      if (mutablePattern) {
+        errors.push({
+          type: 'mutable_url',
+          artifact: value,
+          message: `Mutable URL detected: "${value}" matches ${mutablePattern}`,
+        });
+      }
     }
 
     for (const urlCandidate of extractUrlCandidates(value)) {
@@ -395,8 +432,17 @@ export function validateNoMutableUrls(content: string | object): AttestError[] {
   }
 
   const text = content;
+  const scannedCandidates = new Set<string>();
 
-  for (const urlCandidate of extractUrlCandidates(text)) {
+  for (const urlCandidate of [
+    ...extractArtifactFieldCandidates(text),
+    ...extractUrlCandidates(text),
+  ]) {
+    if (scannedCandidates.has(urlCandidate)) {
+      continue;
+    }
+    scannedCandidates.add(urlCandidate);
+
     const mutablePattern = containsMutableRef(urlCandidate);
     if (mutablePattern) {
       errors.push({

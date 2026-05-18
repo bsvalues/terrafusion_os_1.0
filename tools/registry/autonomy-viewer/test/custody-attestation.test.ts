@@ -297,6 +297,32 @@ test('validateNoMutableUrls: ignores non-URL git refs in signature/source metada
   assert.equal(errors.length, 0, 'Git refs are metadata, not mutable artifact URLs');
 });
 
+test('validateNoMutableUrls: detects mutable artifact fields in non-JSON evidence', () => {
+  const content = `
+    <script>
+      window.__evidence = { "releaseUrl": "refs/heads/main" };
+    </script>
+  `;
+
+  const errors = validateNoMutableUrls(content);
+
+  assert.equal(errors.length, 1, 'Keyed artifact URL refs in non-JSON evidence must be detected');
+  assert.equal(errors[0].type, 'mutable_url');
+  assert.equal(errors[0].artifact, 'refs/heads/main');
+});
+
+test('validateNoMutableUrls: detects mutable artifact fields in parsed JSON evidence', () => {
+  const content = JSON.stringify({
+    releaseUrl: 'refs/heads/main',
+  });
+
+  const errors = validateNoMutableUrls(content);
+
+  assert.equal(errors.length, 1, 'Artifact URL fields must not accept bare mutable refs');
+  assert.equal(errors[0].type, 'mutable_url');
+  assert.equal(errors[0].artifact, 'refs/heads/main');
+});
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Required Fields Tests
 // ─────────────────────────────────────────────────────────────────────────────
