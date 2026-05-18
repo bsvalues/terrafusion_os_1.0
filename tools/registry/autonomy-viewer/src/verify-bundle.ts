@@ -24,7 +24,7 @@
  *   2 = Invalid arguments or file not found
  */
 
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
@@ -502,6 +502,7 @@ function findSignatureTriplet(zipPath: string): {
 function parseOpenSslCertificateIdentity(text: string): { identity?: string; issuer?: string } {
   const identity = text.match(/Subject Alternative Name:[\s\S]*?URI:([^\s,\n]+)/)?.[1];
   const issuer =
+    text.match(/1\.3\.6\.1\.4\.1\.57264\.1\.1:[\s\S]*?(https?:\/\/[^\s,\n]+)/)?.[1]?.trim() ||
     text.match(/1\.3\.6\.1\.4\.1\.57264\.1\.1:\s*\n\s*\.*([^\n]+)/)?.[1]?.trim() ||
     (text.includes('token.actions.githubusercontent.com')
       ? 'https://token.actions.githubusercontent.com'
@@ -534,10 +535,14 @@ function extractBundleCertificateIdentity(bundlePath: string): {
 
     try {
       writeFileSync(certPath, Buffer.from(rawBytes, 'base64'));
-      const certText = execSync(`openssl x509 -inform DER -in "${certPath}" -noout -text`, {
-        encoding: 'utf8',
-        stdio: 'pipe',
-      });
+      const certText = execFileSync(
+        'openssl',
+        ['x509', '-inform', 'DER', '-in', certPath, '-noout', '-text'],
+        {
+          encoding: 'utf8',
+          stdio: 'pipe',
+        }
+      );
       return parseOpenSslCertificateIdentity(certText);
     } finally {
       rmSync(tempDir, { recursive: true, force: true });
@@ -545,6 +550,42 @@ function extractBundleCertificateIdentity(bundlePath: string): {
   } catch {
     return {};
   }
+}
+
+function parseCertificateFileWithOpenSsl(
+  certPath: string,
+  formatArgs: string[]
+): {
+  identity?: string;
+  issuer?: string;
+} {
+  try {
+    const certText = execFileSync(
+      'openssl',
+      ['x509', ...formatArgs, '-in', certPath, '-noout', '-text'],
+      {
+        encoding: 'utf8',
+        stdio: 'pipe',
+      }
+    );
+    return parseOpenSslCertificateIdentity(certText);
+  } catch {
+    return {};
+  }
+}
+
+function extractCertificateFileIdentity(certPath: string): {
+  identity?: string;
+  issuer?: string;
+} {
+  for (const formatArgs of [[], ['-inform', 'DER']]) {
+    const parsed = parseCertificateFileWithOpenSsl(certPath, formatArgs);
+    if (parsed.identity || parsed.issuer) {
+      return parsed;
+    }
+  }
+
+  return {};
 }
 
 /**
@@ -596,7 +637,15 @@ function verifySignature(
   let identity: string | undefined;
   let issuer: string | undefined;
 
-  ({ identity, issuer } = extractBundleCertificateIdentity(triplet.bundle!));
+  const bundleIdentity = extractBundleCertificateIdentity(triplet.bundle!);
+  if (bundleIdentity.identity && bundleIdentity.issuer) {
+    ({ identity, issuer } = bundleIdentity);
+  } else if (!bundleIdentity.identity && !bundleIdentity.issuer && triplet.crt) {
+    const certIdentity = extractCertificateFileIdentity(triplet.crt);
+    ({ identity, issuer } = certIdentity);
+  } else {
+    ({ identity, issuer } = bundleIdentity);
+  }
 
   // Return success if all three files exist
   // Full cryptographic verification is delegated to cosign in CI
