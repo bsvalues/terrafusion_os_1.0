@@ -167,6 +167,12 @@ export function containsMutableRef(value: string): RegExp | null {
   return null;
 }
 
+function extractUrlCandidates(value: string): string[] {
+  return (value.match(/https?:\/\/[^\s"'<>)]+/gi) ?? []).map(candidate =>
+    candidate.replace(/[.,;:!?]+$/g, '')
+  );
+}
+
 function isSignatureIdentityField(pathParts: string[], value: string): boolean {
   const key = pathParts[pathParts.length - 1];
   const parent = pathParts[pathParts.length - 2];
@@ -189,13 +195,15 @@ function validateJsonValueNoMutableUrls(value: unknown, pathParts: string[] = []
       return errors;
     }
 
-    const mutablePattern = containsMutableRef(value);
-    if (mutablePattern) {
-      errors.push({
-        type: 'mutable_url',
-        artifact: value,
-        message: `Mutable URL detected: "${value}" matches ${mutablePattern}`,
-      });
+    for (const urlCandidate of extractUrlCandidates(value)) {
+      const mutablePattern = containsMutableRef(urlCandidate);
+      if (mutablePattern) {
+        errors.push({
+          type: 'mutable_url',
+          artifact: urlCandidate,
+          message: `Mutable URL detected: "${urlCandidate}" matches ${mutablePattern}`,
+        });
+      }
     }
     return errors;
   }
