@@ -396,24 +396,14 @@ export function validateNoMutableUrls(content: string | object): AttestError[] {
 
   const text = content;
 
-  // Find all URL-like strings
-  const urlPatterns = [
-    /https?:\/\/[^\s"'<>]+/g,
-    /"(ledgerUrl|releaseUrl|bundleDownloadUrl|dashboardUrl|custodyUrl)":\s*"([^"]+)"/g,
-  ];
-
-  for (const pattern of urlPatterns) {
-    let match;
-    while ((match = pattern.exec(text)) !== null) {
-      const url = match[2] ?? match[0];
-      const mutablePattern = containsMutableRef(url);
-      if (mutablePattern) {
-        errors.push({
-          type: 'mutable_url',
-          artifact: url,
-          message: `Mutable URL detected: "${url}" matches ${mutablePattern}`,
-        });
-      }
+  for (const urlCandidate of extractUrlCandidates(text)) {
+    const mutablePattern = containsMutableRef(urlCandidate);
+    if (mutablePattern) {
+      errors.push({
+        type: 'mutable_url',
+        artifact: urlCandidate,
+        message: `Mutable URL detected: "${urlCandidate}" matches ${mutablePattern}`,
+      });
     }
   }
 

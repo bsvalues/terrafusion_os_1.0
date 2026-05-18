@@ -522,6 +522,42 @@ test('round-trip: build then verify succeeds', () => {
   }
 });
 
+test('verification: ignores signing identity URL and git refs in evidence index metadata', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'attest-test-'));
+  createTestArtifacts(tmpDir);
+
+  try {
+    fs.writeFileSync(
+      path.join(tmpDir, 'autonomy-evidence-index.json'),
+      JSON.stringify({
+        schema: 'terrafusion.autonomy.evidence.index.v1',
+        source: {
+          ref: 'refs/heads/main',
+        },
+        expectedSignaturePolicy: {
+          identity:
+            'https://github.com/bsvalues/terrafusion_os_1.0/.github/workflows/autonomy-evidence-publisher.yml@refs/heads/main',
+          ref: 'refs/heads/main',
+        },
+        records: [],
+      })
+    );
+
+    const result = buildAttestation({ inputDir: tmpDir, runId: 'test-123' });
+    createTestAttestationFile(tmpDir, result.attestation);
+
+    const verifyResult = verifyCustodyAttestation({
+      inputDir: tmpDir,
+      attestPath: path.join(tmpDir, 'custody-attestation.json'),
+      strict: false,
+    });
+
+    assert.ok(verifyResult.ok, 'Signature metadata should not fail mutable artifact URL checks');
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true });
+  }
+});
+
 test('verification: reports correct filesVerified count', () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'attest-test-'));
   createTestArtifacts(tmpDir);
