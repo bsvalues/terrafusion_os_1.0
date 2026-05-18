@@ -26,7 +26,7 @@ import {
   validateNoMutableUrls,
   type CustodyAttestation,
 } from '../src/custody-attest.js';
-import { verifyCustodyAttestation } from '../src/verify-custody.js';
+import { verifyCustodyAttestation, verifyPins, type VerifyOptions } from '../src/verify-custody.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Test Fixtures
@@ -579,6 +579,46 @@ test('verification: ignores signing identity URL and git refs in evidence index 
     });
 
     assert.ok(verifyResult.ok, 'Signature metadata should not fail mutable artifact URL checks');
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true });
+  }
+});
+
+test('signature pins: strict custody verification auto-loads evidence index policy from input directory', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'attest-test-'));
+  createTestArtifacts(tmpDir);
+
+  try {
+    fs.writeFileSync(
+      path.join(tmpDir, 'autonomy-evidence-index.json'),
+      JSON.stringify({
+        schema: 'terrafusion.autonomy.evidence.index.v1',
+        expectedSignaturePolicy: {
+          issuer: 'https://token.actions.githubusercontent.com',
+          identity:
+            'https://github.com/bsvalues/terrafusion_os_1.0/.github/workflows/autonomy-evidence-publisher.yml@refs/heads/main',
+          ref: 'refs/heads/main',
+          sha: 'a'.repeat(40),
+          requireShaBinding: true,
+        },
+        records: [],
+      })
+    );
+
+    const opts: VerifyOptions = {
+      inputDir: tmpDir,
+      attestPath: path.join(tmpDir, 'custody-attestation.json'),
+      strict: true,
+      json: false,
+      verbose: false,
+      verifySignatures: true,
+      verifyRekor: true,
+    };
+
+    const result = verifyPins(opts, false);
+
+    assert.equal(result.pinned, true);
+    assert.equal(result.errors.length, 0);
   } finally {
     fs.rmSync(tmpDir, { recursive: true });
   }

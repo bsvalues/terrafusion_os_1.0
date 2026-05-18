@@ -401,7 +401,7 @@ function loadPolicyFromIndex(indexPath: string): ExpectedPolicy | null {
  * Phase 4N20: Verify pins against expected values.
  * Enforces SHA binding for merged/incident tiers when requireShaBinding=true.
  */
-function verifyPins(
+export function verifyPins(
   opts: VerifyOptions,
   verbose: boolean
 ): { pinned: boolean; errors: SignatureError[] } {
@@ -414,8 +414,12 @@ function verifyPins(
   let expectedSha: string | undefined;
   let expectedRef: string | undefined;
 
-  if (opts.policyFromIndex) {
-    const policy = loadPolicyFromIndex(opts.policyFromIndex);
+  const defaultPolicyPath = path.join(opts.inputDir, 'autonomy-evidence-index.json');
+  const policyPath =
+    opts.policyFromIndex || (fs.existsSync(defaultPolicyPath) ? defaultPolicyPath : undefined);
+
+  if (policyPath) {
+    const policy = loadPolicyFromIndex(policyPath);
     if (policy) {
       expectedIssuer = expectedIssuer || policy.issuer;
       expectedIdentity = expectedIdentity || policy.identity;
@@ -423,7 +427,7 @@ function verifyPins(
       expectedSha = policy.sha;
       expectedRef = policy.ref;
       if (verbose) {
-        console.log(`  Loaded pins from index: ${opts.policyFromIndex}`);
+        console.log(`  Loaded pins from index: ${policyPath}`);
         if (requireShaBinding) console.log(`  SHA binding: REQUIRED`);
       }
     }
