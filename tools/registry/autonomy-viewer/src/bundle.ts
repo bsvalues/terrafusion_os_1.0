@@ -443,10 +443,14 @@ export function main(): void {
 
   // Write standalone manifest (for quick inspection)
   if (opts.emitManifest) {
+    const manifestJson = JSON.stringify(manifest, null, 2);
     const manifestPath = join(opts.outDir, `${zipName}.manifest.json`);
-    writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
+    const compatibilityManifestPath = join(opts.outDir, 'MANIFEST.json');
+    writeFileSync(manifestPath, manifestJson, 'utf8');
+    writeFileSync(compatibilityManifestPath, manifestJson, 'utf8');
     if (opts.verbose) {
       console.log(`✅ Manifest: ${manifestPath}`);
+      console.log(`✅ Compatibility manifest: ${compatibilityManifestPath}`);
     }
   }
 
