@@ -415,6 +415,7 @@ jobs:
             --in "$(dirname $BUNDLE_PATH)" \
             --verify-signatures \
             --verify-rekor \
+            --policy-from-index "$INDEX_PATH" \
             --strict \
             --verbose
           REKOR_EXIT=$?

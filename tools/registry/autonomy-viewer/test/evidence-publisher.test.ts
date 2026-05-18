@@ -181,6 +181,18 @@ describe('Evidence Publisher: Verification Contracts', () => {
     const verifyStep = steps.find(s => s.name?.toLowerCase().includes('verify'));
     assert.ok(verifyStep?.run?.includes('exit 1'), 'verify step must exit 1 on failure');
   });
+
+  it('Rekor verification should load signature policy pins from the evidence index', () => {
+    const workflow = loadWorkflow();
+    const steps = workflow.jobs.publish?.steps ?? [];
+
+    const rekorStep = steps.find(s => s.name?.includes('Verify Rekor Anchoring'));
+    assert.ok(rekorStep, 'must have Rekor anchoring verification step');
+    assert.ok(
+      rekorStep.run?.includes('--policy-from-index "$INDEX_PATH"'),
+      'Rekor custody verification must receive the evidence-index signature policy'
+    );
+  });
 });
 
 // =============================================================================
@@ -188,7 +200,7 @@ describe('Evidence Publisher: Verification Contracts', () => {
 // =============================================================================
 
 describe('Evidence Publisher: Release Naming Contracts', () => {
-  it('should use autonomy-evidence/ tag namespace', () => {
+  it('should use slash-free autonomy-evidence tag namespace', () => {
     const workflow = loadWorkflow();
     const steps = workflow.jobs.gate?.steps ?? [];
 
@@ -197,8 +209,8 @@ describe('Evidence Publisher: Release Naming Contracts', () => {
 
     assert.ok(releaseTagLine, 'must define RELEASE_TAG');
     assert.ok(
-      releaseTagLine[1].includes('autonomy-evidence/'),
-      'release tag must use autonomy-evidence/ namespace'
+      releaseTagLine[1].includes('autonomy-evidence-'),
+      'release tag must use slash-free autonomy-evidence namespace'
     );
   });
 
