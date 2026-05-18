@@ -26,17 +26,18 @@ Snapshot file: <path to branch-protection-snapshot-*.json or git SHA of restore 
 
 ## Historical overrides
 
-### 2026-05-06 (approximate, from MEMORY.md note)
+### 2026-05-06 (approximate, unverified operator recollection)
 Operator: bsvalues
 Action: enforce_admins toggle off + admin merge of PR #794 + toggle back on
 PR / commit: https://github.com/bsvalues/terrafusion_os_1.0/pull/794
 Reason: GitHub Actions compute budget exhausted; classic branch protection
         `enforce_admins=true` toggled off + restored in 30-second window with
-        full snapshot rollback artifact (per project_sync_doctrine_4_v5_seal.md
-        memory).
+        full snapshot rollback artifact per operator recollection.
 Risk window opened: ~2026-05-06 (exact time not captured)
 Risk window closed: ~2026-05-06 (30-second window per memory)
 Snapshot file: (not captured in repo at the time)
+Evidence class: unverified recollection; retained as an audit-gap disclosure,
+                not certified override proof.
 
 ### 2026-05-12 22:27:48Z
 Operator: bsvalues (via Claude Code agent execution)

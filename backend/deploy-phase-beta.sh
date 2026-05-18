@@ -218,7 +218,7 @@ build_services() {
     else
         warning "No SHA-tagged images were produced. Operator must verify compose-built images carry GIT_SHA via the TF_GIT_SHA env var inside the container."
     fi
-    echo -e "${CYAN}   Verify in-process value via:  curl http://localhost:5000/health  (gitSha field)${NC}"
+    echo -e "${CYAN}   Verify in-process value via:  curl \${TF_API_HEALTH_URL:-http://localhost:\${TF_API_PORT:-5046}/health}  (gitSha field)${NC}"
     echo ""
 }
 
