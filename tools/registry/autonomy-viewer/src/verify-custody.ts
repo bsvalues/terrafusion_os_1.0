@@ -414,9 +414,11 @@ export function verifyPins(
   let expectedSha: string | undefined;
   let expectedRef: string | undefined;
 
+  const explicitPinsProvided = Boolean(expectedIssuer || expectedIdentity);
   const defaultPolicyPath = path.join(opts.inputDir, 'autonomy-evidence-index.json');
   const policyPath =
-    opts.policyFromIndex || (fs.existsSync(defaultPolicyPath) ? defaultPolicyPath : undefined);
+    opts.policyFromIndex ||
+    (!explicitPinsProvided && fs.existsSync(defaultPolicyPath) ? defaultPolicyPath : undefined);
 
   if (policyPath) {
     const policy = loadPolicyFromIndex(policyPath);

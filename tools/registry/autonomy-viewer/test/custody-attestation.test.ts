@@ -624,6 +624,48 @@ test('signature pins: strict custody verification auto-loads evidence index poli
   }
 });
 
+test('signature pins: explicit expected pins do not inherit implicit evidence index SHA or ref policy', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'attest-test-'));
+  createTestArtifacts(tmpDir);
+
+  try {
+    fs.writeFileSync(
+      path.join(tmpDir, 'autonomy-evidence-index.json'),
+      JSON.stringify({
+        schema: 'terrafusion.autonomy.evidence.index.v1',
+        expectedSignaturePolicy: {
+          issuer: 'https://token.actions.githubusercontent.com',
+          identity:
+            'https://github.com/bsvalues/terrafusion_os_1.0/.github/workflows/autonomy-evidence-publisher.yml@refs/heads/main',
+          ref: 'refs/heads/feature/untrusted',
+          requireShaBinding: true,
+        },
+        records: [],
+      })
+    );
+
+    const opts: VerifyOptions = {
+      inputDir: tmpDir,
+      attestPath: path.join(tmpDir, 'custody-attestation.json'),
+      strict: true,
+      json: false,
+      verbose: false,
+      verifySignatures: true,
+      verifyRekor: true,
+      expectedIssuer: 'https://token.actions.githubusercontent.com',
+      expectedIdentity:
+        'https://github.com/bsvalues/terrafusion_os_1.0/.github/workflows/autonomy-evidence-publisher.yml@refs/heads/main',
+    };
+
+    const result = verifyPins(opts, false);
+
+    assert.equal(result.pinned, true);
+    assert.equal(result.errors.length, 0);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true });
+  }
+});
+
 test('verification: reports correct filesVerified count', () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'attest-test-'));
   createTestArtifacts(tmpDir);
