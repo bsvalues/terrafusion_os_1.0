@@ -258,6 +258,17 @@ test('validateNoMutableUrls: ignores GitHub OIDC signing identity refs', () => {
   assert.equal(errors.length, 0, 'Signing identity is not an artifact URL');
 });
 
+test('validateNoMutableUrls: detects mutable URL embedded in JSON prose string', () => {
+  const content = JSON.stringify({
+    note: 'Operator evidence is available at https://github.com/owner/repo/releases/latest',
+  });
+
+  const errors = validateNoMutableUrls(content);
+
+  assert.equal(errors.length, 1, 'Mutable URLs embedded in prose must still be detected');
+  assert.equal(errors[0].type, 'mutable_url');
+});
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Required Fields Tests
 // ─────────────────────────────────────────────────────────────────────────────

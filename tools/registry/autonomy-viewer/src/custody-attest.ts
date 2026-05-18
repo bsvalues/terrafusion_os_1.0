@@ -189,10 +189,6 @@ function validateJsonValueNoMutableUrls(value: unknown, pathParts: string[] = []
       return errors;
     }
 
-    if (!/^https?:\/\//.test(value)) {
-      return errors;
-    }
-
     const mutablePattern = containsMutableRef(value);
     if (mutablePattern) {
       errors.push({
