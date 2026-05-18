@@ -18,13 +18,13 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import test from 'node:test';
 import {
-    ATTESTATION_SCHEMA,
-    buildAttestation,
-    containsMutableRef,
-    REQUIRED_ARTIFACTS,
-    TOOL_VERSION,
-    validateNoMutableUrls,
-    type CustodyAttestation,
+  ATTESTATION_SCHEMA,
+  buildAttestation,
+  containsMutableRef,
+  REQUIRED_ARTIFACTS,
+  TOOL_VERSION,
+  validateNoMutableUrls,
+  type CustodyAttestation,
 } from '../src/custody-attest.js';
 import { verifyCustodyAttestation } from '../src/verify-custody.js';
 
@@ -241,6 +241,21 @@ test('validateNoMutableUrls: accepts immutable URLs in JSON', () => {
   });
   const errors = validateNoMutableUrls(content);
   assert.equal(errors.length, 0, 'Should accept all immutable URLs');
+});
+
+test('validateNoMutableUrls: ignores GitHub OIDC signing identity refs', () => {
+  const content = JSON.stringify({
+    expectedSignaturePolicy: {
+      identity:
+        'https://github.com/bsvalues/terrafusion_os_1.0/.github/workflows/autonomy-evidence-publisher.yml@refs/heads/main',
+      issuer: 'https://token.actions.githubusercontent.com',
+    },
+    releaseUrl: 'https://github.com/owner/repo/releases/tag/v1.0.0',
+  });
+
+  const errors = validateNoMutableUrls(content);
+
+  assert.equal(errors.length, 0, 'Signing identity is not an artifact URL');
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -167,6 +167,59 @@ export function containsMutableRef(value: string): RegExp | null {
   return null;
 }
 
+function isSignatureIdentityField(pathParts: string[], value: string): boolean {
+  const key = pathParts[pathParts.length - 1];
+  const parent = pathParts[pathParts.length - 2];
+  const looksLikeGitHubOidcIdentity =
+    value.startsWith('https://github.com/') &&
+    value.includes('/.github/workflows/') &&
+    value.includes('@refs/heads/');
+
+  return (
+    looksLikeGitHubOidcIdentity &&
+    ((parent === 'expectedSignaturePolicy' && key === 'identity') || key === 'signingIdentity')
+  );
+}
+
+function validateJsonValueNoMutableUrls(value: unknown, pathParts: string[] = []): AttestError[] {
+  const errors: AttestError[] = [];
+
+  if (typeof value === 'string') {
+    if (isSignatureIdentityField(pathParts, value)) {
+      return errors;
+    }
+
+    if (!/^https?:\/\//.test(value)) {
+      return errors;
+    }
+
+    const mutablePattern = containsMutableRef(value);
+    if (mutablePattern) {
+      errors.push({
+        type: 'mutable_url',
+        artifact: value,
+        message: `Mutable URL detected: "${value}" matches ${mutablePattern}`,
+      });
+    }
+    return errors;
+  }
+
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => {
+      errors.push(...validateJsonValueNoMutableUrls(item, [...pathParts, String(index)]));
+    });
+    return errors;
+  }
+
+  if (value && typeof value === 'object') {
+    for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+      errors.push(...validateJsonValueNoMutableUrls(child, [...pathParts, key]));
+    }
+  }
+
+  return errors;
+}
+
 /**
  * Extract manifest.json SHA256 from inside a ZIP bundle.
  */
@@ -326,7 +379,18 @@ function createEmptyAttestation(opts: BuildAttestOptions): CustodyAttestation {
  */
 export function validateNoMutableUrls(content: string | object): AttestError[] {
   const errors: AttestError[] = [];
-  const text = typeof content === 'string' ? content : JSON.stringify(content);
+
+  if (typeof content !== 'string') {
+    return validateJsonValueNoMutableUrls(content);
+  }
+
+  try {
+    return validateJsonValueNoMutableUrls(JSON.parse(content));
+  } catch {
+    // Non-JSON evidence such as HTML falls back to URL scanning below.
+  }
+
+  const text = content;
 
   // Find all URL-like strings
   const urlPatterns = [
