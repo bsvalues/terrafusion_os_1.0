@@ -24,8 +24,10 @@
  *   2 = Invalid arguments or file not found
  */
 
-import { existsSync, readFileSync } from 'node:fs';
-import { basename, dirname, resolve } from 'node:path';
+import { execSync } from 'node:child_process';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { sha256, type EvidenceManifest } from './manifest.js';
 import { readZipEntries, readZipFileData } from './zip/zip-reader.js';
@@ -495,6 +497,57 @@ function findSignatureTriplet(zipPath: string): {
 }
 
 /**
+ * Phase 4N20: Parse GitHub OIDC identity pins from OpenSSL certificate text.
+ */
+function parseOpenSslCertificateIdentity(text: string): { identity?: string; issuer?: string } {
+  const identity = text.match(/Subject Alternative Name:[\s\S]*?URI:([^\s,\n]+)/)?.[1];
+  const issuer =
+    text.match(/1\.3\.6\.1\.4\.1\.57264\.1\.1:\s*\n\s*\.*([^\n]+)/)?.[1]?.trim() ||
+    (text.includes('token.actions.githubusercontent.com')
+      ? 'https://token.actions.githubusercontent.com'
+      : undefined);
+
+  return { identity, issuer };
+}
+
+function extractBundleCertificateIdentity(bundlePath: string): {
+  identity?: string;
+  issuer?: string;
+} {
+  try {
+    const bundleJson = JSON.parse(readFileSync(bundlePath, 'utf8')) as {
+      verificationMaterial?: {
+        certificate?: { rawBytes?: string };
+        x509CertificateChain?: { certificates?: Array<{ rawBytes?: string }> };
+      };
+    };
+
+    const rawBytes =
+      bundleJson.verificationMaterial?.certificate?.rawBytes ||
+      bundleJson.verificationMaterial?.x509CertificateChain?.certificates?.[0]?.rawBytes;
+    if (!rawBytes) {
+      return {};
+    }
+
+    const tempDir = mkdtempSync(join(tmpdir(), 'tf-verify-bundle-'));
+    const certPath = join(tempDir, 'cert.der');
+
+    try {
+      writeFileSync(certPath, Buffer.from(rawBytes, 'base64'));
+      const certText = execSync(`openssl x509 -inform DER -in "${certPath}" -noout -text`, {
+        encoding: 'utf8',
+        stdio: 'pipe',
+      });
+      return parseOpenSslCertificateIdentity(certText);
+    } finally {
+      rmSync(tempDir, { recursive: true, force: true });
+    }
+  } catch {
+    return {};
+  }
+}
+
+/**
  * Phase 4N18: Verify signature using cosign.
  * Returns result with identity/issuer extracted from certificate.
  *
@@ -543,19 +596,7 @@ function verifySignature(
   let identity: string | undefined;
   let issuer: string | undefined;
 
-  try {
-    // The .bundle is a JSON file containing the Rekor entry
-    const bundleData = readFileSync(triplet.bundle!, 'utf8');
-    const bundleJson = JSON.parse(bundleData);
-
-    // Extract from dsseEnvelope or hashedRekordEntry
-    if (bundleJson.verificationMaterial?.certificate?.rawBytes) {
-      // Certificate is base64-encoded, we'd need to decode and parse X.509
-      // For now, just note that signature materials are present
-    }
-  } catch {
-    // Bundle parsing is optional - signature files exist, that's the key check
-  }
+  ({ identity, issuer } = extractBundleCertificateIdentity(triplet.bundle!));
 
   // Return success if all three files exist
   // Full cryptographic verification is delegated to cosign in CI
@@ -1061,21 +1102,21 @@ if (
 
 // Export for testing
 export {
-    buildUnifiedResult,
-    checkForbiddenIdentity,
-    findSignatureTriplet,
-    loadPolicyFromIndex,
-    parseArgs,
-    verifyBundle,
-    verifyPin,
-    verifyPins,
-    verifySignature,
-    type PinResult,
-    type SignatureError,
-    type SignaturePinsResult,
-    type UnifiedVerifyResult,
-    type VerifyError,
-    type VerifyOptions,
-    type VerifyResult
+  buildUnifiedResult,
+  checkForbiddenIdentity,
+  findSignatureTriplet,
+  loadPolicyFromIndex,
+  parseOpenSslCertificateIdentity,
+  parseArgs,
+  verifyBundle,
+  verifyPin,
+  verifyPins,
+  verifySignature,
+  type PinResult,
+  type SignatureError,
+  type SignaturePinsResult,
+  type UnifiedVerifyResult,
+  type VerifyError,
+  type VerifyOptions,
+  type VerifyResult,
 };
-

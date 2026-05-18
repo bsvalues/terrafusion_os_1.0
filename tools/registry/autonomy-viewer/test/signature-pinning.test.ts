@@ -9,17 +9,18 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 import {
-    ExpectedSignaturePolicy,
-    buildSigningIdentity,
-    deriveWorkflowPath,
-    validateIdentity,
+  ExpectedSignaturePolicy,
+  buildSigningIdentity,
+  deriveWorkflowPath,
+  validateIdentity,
 } from '../src/evidence-index.js';
 import {
-    buildUnifiedResult,
-    checkForbiddenIdentity,
-    verifyPin,
-    type VerifyOptions,
-    type VerifyResult,
+  buildUnifiedResult,
+  checkForbiddenIdentity,
+  parseOpenSslCertificateIdentity,
+  verifyPin,
+  type VerifyOptions,
+  type VerifyResult,
 } from '../src/verify-bundle.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -354,6 +355,23 @@ describe('Phase 4N20: Determinism Tests', () => {
 // ─────────────────────────────────────────────────────────────────────────────
 
 describe('Phase 4N20: Helper Function Tests', () => {
+  it('extracts GitHub OIDC issuer and workflow identity from OpenSSL certificate text', () => {
+    const identity = buildTestIdentity(TEST_REPO, TEST_WORKFLOW, TEST_REF);
+    const certificateText = `
+Certificate:
+    X509v3 extensions:
+        X509v3 Subject Alternative Name:
+            URI:${identity}
+        1.3.6.1.4.1.57264.1.1:
+            ..${GITHUB_ISSUER}
+`;
+
+    const parsed = parseOpenSslCertificateIdentity(certificateText);
+
+    assert.strictEqual(parsed.identity, identity);
+    assert.strictEqual(parsed.issuer, GITHUB_ISSUER);
+  });
+
   it('deriveWorkflowPath returns correct path for incident flag', () => {
     const path = deriveWorkflowPath('my-workflow', true);
     assert.ok(path.includes('incident'), 'incident flag should derive incident workflow');

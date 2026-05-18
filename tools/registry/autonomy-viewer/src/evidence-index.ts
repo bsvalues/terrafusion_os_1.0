@@ -707,6 +707,12 @@ function parseArgs(): IndexOptions {
       opts.releaseTag = args[++i];
     } else if (arg === '--server-url' && args[i + 1]) {
       opts.serverUrl = args[++i];
+    } else if (arg === '--signing-mode' && args[i + 1]) {
+      const mode = args[++i];
+      if (mode !== 'full' && mode !== 'primary' && mode !== 'none') {
+        throw new Error(`Invalid --signing-mode "${mode}". Expected full, primary, or none.`);
+      }
+      opts.signingMode = mode;
     } else if (arg === '--workflow-path' && args[i + 1]) {
       // Phase 4N20: Explicit workflow path for signature pinning
       opts.workflowPath = args[++i];
@@ -749,6 +755,10 @@ Options:
   --retention-tier <t>  Tier: ci, merged, incident (default: ci)
   --release-tag <tag>   Release tag for immutable URLs (required for publishing)
   --server-url <url>    GitHub server URL (default: GITHUB_SERVER_URL or https://github.com)
+  --signing-mode <mode> Signature policy mode: full, primary, none
+  --workflow-path <p>   Workflow file path for signature pinning
+  --sha <sha>           Signing commit SHA for signature policy
+  --issuer <issuer>     OIDC issuer for signature policy
   --verbose             Verbose output
   --help, -h            Show this help
 `);
