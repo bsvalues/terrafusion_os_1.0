@@ -269,6 +269,23 @@ test('validateNoMutableUrls: detects mutable URL embedded in JSON prose string',
   assert.equal(errors[0].type, 'mutable_url');
 });
 
+test('validateNoMutableUrls: ignores non-URL git refs in signature/source metadata', () => {
+  const content = JSON.stringify({
+    source: {
+      ref: 'refs/heads/main',
+    },
+    expectedSignaturePolicy: {
+      ref: 'refs/heads/main',
+      identity:
+        'https://github.com/bsvalues/terrafusion_os_1.0/.github/workflows/autonomy-evidence-publisher.yml@refs/heads/main',
+    },
+  });
+
+  const errors = validateNoMutableUrls(content);
+
+  assert.equal(errors.length, 0, 'Git refs are metadata, not mutable artifact URLs');
+});
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Required Fields Tests
 // ─────────────────────────────────────────────────────────────────────────────
