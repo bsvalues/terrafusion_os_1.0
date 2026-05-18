@@ -290,7 +290,7 @@ jobs:
             --sha "${{ github.sha }}" \
             --issuer "$TF_SIG_ISSUER" \
             --workflow-path "$TF_SIG_WORKFLOW" \
-            --signing-mode full \
+            --signing-mode primary \
             --retention-tier merged \
             --release-tag "${{ needs.gate.outputs.release_tag }}" \
             --verbose
