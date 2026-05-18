@@ -83,6 +83,17 @@ interface SignaturePinsResult {
   sha?: PinResult;
 }
 
+type ExpectedSignaturePins = {
+  issuer?: string;
+  identity?: string;
+  repo?: string;
+  workflowPath?: string;
+  ref?: string;
+  sha?: string;
+};
+
+type CosignRunner = typeof execFileSync;
+
 /**
  * Phase 4N18: Unified verification result with both hashes and signatures.
  * Phase 4N20: Extended with identity & issuer pinning.
@@ -660,7 +671,12 @@ function extractCertificateFileIdentity(certPath: string): {
  */
 function verifySignature(
   zipPath: string,
-  triplet: { sig: string | null; crt: string | null; bundle: string | null }
+  triplet: { sig: string | null; crt: string | null; bundle: string | null },
+  expectedPins?: {
+    expectedIdentity?: string;
+    expectedIssuer?: string;
+    cosignRunner?: CosignRunner;
+  }
 ): { ok: boolean; identity?: string; issuer?: string; errors: SignatureError[] } {
   const errors: SignatureError[] = [];
 
@@ -710,14 +726,79 @@ function verifySignature(
     ({ identity, issuer } = bundleIdentity);
   }
 
+  if ((!identity || !issuer) && expectedPins?.expectedIdentity && expectedPins.expectedIssuer) {
+    const cosignError = verifyExpectedPinsWithCosign(
+      zipPath,
+      triplet as { sig: string; crt: string; bundle: string },
+      expectedPins.expectedIdentity,
+      expectedPins.expectedIssuer,
+      expectedPins.cosignRunner
+    );
+
+    if (cosignError) {
+      errors.push(cosignError);
+    } else {
+      identity = expectedPins.expectedIdentity;
+      issuer = expectedPins.expectedIssuer;
+    }
+  }
+
   // Return success if all three files exist
-  // Full cryptographic verification is delegated to cosign in CI
+  // Full cryptographic verification is delegated to cosign in CI. When
+  // certificate parsing cannot extract keyless identity pins, the verifier
+  // requires cosign to prove the expected issuer and identity before using them.
   return {
-    ok: true,
+    ok: errors.length === 0,
     identity,
     issuer,
-    errors: [],
+    errors,
   };
+}
+
+function verifyExpectedPinsWithCosign(
+  zipPath: string,
+  triplet: { sig: string; crt: string; bundle: string },
+  expectedIdentity: string,
+  expectedIssuer: string,
+  cosignRunner: CosignRunner = execFileSync
+): SignatureError | null {
+  try {
+    cosignRunner(
+      'cosign',
+      [
+        'verify-blob',
+        '--bundle',
+        triplet.bundle,
+        '--certificate',
+        triplet.crt,
+        '--signature',
+        triplet.sig,
+        '--certificate-identity',
+        expectedIdentity,
+        '--certificate-oidc-issuer',
+        expectedIssuer,
+        zipPath,
+      ],
+      { encoding: 'utf8', stdio: 'pipe' }
+    );
+    return null;
+  } catch (error) {
+    const maybeNodeError = error as { code?: string; message?: string };
+    if (maybeNodeError.code === 'ENOENT') {
+      return {
+        type: 'cosign_not_found',
+        message:
+          'Could not extract certificate identity and cosign was not available to verify expected signature pins.',
+      };
+    }
+
+    return {
+      type: 'verification_failed',
+      expected: `${expectedIssuer} ${expectedIdentity}`,
+      actual: '(cosign rejected signature pins)',
+      message: 'Cosign verification failed for expected signature identity and issuer pins.',
+    };
+  }
 }
 
 /**
@@ -749,6 +830,36 @@ function loadPolicyFromIndex(indexPath: string): {
   } catch {
     return null;
   }
+}
+
+function resolveExpectedSignaturePins(opts: VerifyOptions): {
+  expected: ExpectedSignaturePins;
+  policyLoadError?: SignatureError;
+} {
+  let policy: ReturnType<typeof loadPolicyFromIndex> = null;
+  if (opts.policyFromIndex) {
+    policy = loadPolicyFromIndex(opts.policyFromIndex);
+    if (!policy) {
+      return {
+        expected: {},
+        policyLoadError: {
+          type: 'policy_load_failed',
+          message: `Failed to load policy from: ${opts.policyFromIndex}`,
+        },
+      };
+    }
+  }
+
+  return {
+    expected: {
+      issuer: opts.expectedIssuer || policy?.issuer,
+      identity: opts.expectedIdentity || policy?.identity,
+      repo: opts.expectedRepo || policy?.repo,
+      workflowPath: opts.expectedWorkflow || policy?.workflowPath,
+      ref: opts.expectedRef || policy?.ref,
+      sha: opts.expectedSha || policy?.sha,
+    },
+  };
 }
 
 /**
@@ -799,28 +910,12 @@ function verifyPins(
 ): { pinned: boolean; pins?: SignaturePinsResult; errors: SignatureError[] } {
   const errors: SignatureError[] = [];
 
-  // Load policy from index if specified
-  let policy: ReturnType<typeof loadPolicyFromIndex> = null;
-  if (opts.policyFromIndex) {
-    policy = loadPolicyFromIndex(opts.policyFromIndex);
-    if (!policy) {
-      errors.push({
-        type: 'policy_load_failed',
-        message: `Failed to load policy from: ${opts.policyFromIndex}`,
-      });
-      return { pinned: false, errors };
-    }
+  const resolved = resolveExpectedSignaturePins(opts);
+  if (resolved.policyLoadError) {
+    errors.push(resolved.policyLoadError);
+    return { pinned: false, errors };
   }
-
-  // Merge CLI options with policy (CLI takes precedence)
-  const expected = {
-    issuer: opts.expectedIssuer || policy?.issuer,
-    identity: opts.expectedIdentity || policy?.identity,
-    repo: opts.expectedRepo || policy?.repo,
-    workflowPath: opts.expectedWorkflow || policy?.workflowPath,
-    ref: opts.expectedRef || policy?.ref,
-    sha: opts.expectedSha || policy?.sha,
-  };
+  const { expected } = resolved;
 
   // If no pins provided, return unpinned
   const hasPins =
@@ -1163,10 +1258,14 @@ function main(): void {
   if (options.verifySignatures) {
     const triplet = findSignatureTriplet(options.zipPath);
     tripletFound = triplet.allPresent;
+    const { expected } = resolveExpectedSignaturePins(options);
 
     if (triplet.allPresent || triplet.sig || triplet.crt || triplet.bundle) {
       // At least one signature file exists, try to verify
-      sigResult = verifySignature(options.zipPath, triplet);
+      sigResult = verifySignature(options.zipPath, triplet, {
+        expectedIdentity: expected.identity,
+        expectedIssuer: expected.issuer,
+      });
     } else {
       // No signature files at all
       sigResult = {
