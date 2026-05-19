@@ -168,6 +168,64 @@ test("uses public-site smoke failure as the canonical public UX blocker", () => 
   assert.ok(report.blockers.some((blocker) => blocker.evidence?.includes("access_policy")));
 });
 
+test("uses fresher endpoint smoke DB identity when standalone runtime DB identity evidence is stale", () => {
+  const report = buildJune10ProductionReadinessAudit(
+    sampleInputs({
+      runtimeDbIdentity: {
+        generatedAt: "2026-05-19T19:20:10.231Z",
+        passed: false,
+        identity: {
+          apiBaseUrl: "http://localhost:5046",
+          database: "terrafusion",
+          provider: "Npgsql.EntityFrameworkCore.PostgreSQL"
+        },
+        blockers: ["Runtime Properties count 128788 does not match configured Benton parcel count 89447."]
+      },
+      endpointContract: {
+        generatedAtUtc: "2026-05-19T22:01:32.192Z",
+        localRuntimeProbes: [
+          {
+            id: "runtime_db_identity",
+            path: "/api/runtime/truth/db-identity",
+            status: 200,
+            bodyText: JSON.stringify({
+              apiBaseUrl: "http://localhost:5046",
+              provider: "Npgsql.EntityFrameworkCore.PostgreSQL",
+              database: "terrafusion",
+              passed: true,
+              blockers: []
+            })
+          }
+        ],
+        contractMismatches: []
+      }
+    })
+  );
+
+  assert.equal(report.summary.runtimeDbIdentityPassed, true);
+  assert.equal(report.summary.runtimeDbIdentitySource, "endpoint_contract");
+  assert.equal(report.blockers.some((blocker) => blocker.source === "runtime_db_identity"), false);
+});
+
+test("omits endpoint repair actions from fix order when endpoint probes and contracts are green", () => {
+  const report = buildJune10ProductionReadinessAudit(
+    sampleInputs({
+      endpointContract: {
+        localRuntimeProbes: [
+          { id: "health", url: "http://localhost:5046/health", status: 200 },
+          { id: "runtime_db_identity", url: "http://localhost:5046/api/runtime/truth/db-identity", status: 200 }
+        ],
+        contractMismatches: []
+      }
+    })
+  );
+
+  assert.equal(report.summary.failedRuntimeProbes, 0);
+  assert.equal(report.summary.contractMismatches, 0);
+  assert.equal(report.requiredFixOrder.some((item) => item.includes("Restore live runtime endpoint probes")), false);
+  assert.equal(report.requiredFixOrder.some((item) => item.includes("Resolve frontend/backend endpoint contract mismatches")), false);
+});
+
 test("CLI writes production readiness audit JSON and Markdown reports", () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "tf-june10-prod-audit-"));
   const inputs = sampleInputs();

@@ -76,6 +76,61 @@ function runtimeIdentityDetails(runtimeDbIdentity) {
   return runtimeDbIdentity?.identity ?? runtimeDbIdentity ?? {};
 }
 
+function parseJson(text) {
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
+function timestampValue(value) {
+  if (!value) return 0;
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function runtimeDbIdentityFromEndpointContract(endpointContract) {
+  const probe = (endpointContract?.localRuntimeProbes ?? []).find((item) => item.id === "runtime_db_identity");
+  if (!probe || probe.status !== 200) return null;
+
+  const payload = parseJson(probe.bodyText);
+  if (!payload || payload.passed !== true) return null;
+
+  return {
+    ...payload,
+    generatedAt: endpointContract.generatedAtUtc ?? null,
+    evidenceSource: "endpoint_contract"
+  };
+}
+
+function resolveRuntimeDbIdentity(runtimeDbIdentity, endpointContract) {
+  const endpointIdentity = runtimeDbIdentityFromEndpointContract(endpointContract);
+  if (!endpointIdentity) {
+    return {
+      evidence: runtimeDbIdentity,
+      source: runtimeDbIdentity ? "runtime_db_identity" : null
+    };
+  }
+
+  const standaloneGeneratedAt = runtimeDbIdentity?.generatedAt ?? runtimeDbIdentity?.generatedAtUtc ?? null;
+  const endpointGeneratedAt = endpointIdentity.generatedAt;
+  const endpointIsNewer = timestampValue(endpointGeneratedAt) >= timestampValue(standaloneGeneratedAt);
+
+  if (!runtimeDbIdentity || endpointIsNewer) {
+    return {
+      evidence: endpointIdentity,
+      source: "endpoint_contract"
+    };
+  }
+
+  return {
+    evidence: runtimeDbIdentity,
+    source: "runtime_db_identity"
+  };
+}
+
 function rustDeploymentUnproven(rust) {
   if (!rust) return true;
   const crates = rust.crates ?? [];
@@ -91,6 +146,40 @@ function verdictFor(blockers, warnings) {
   return "fully_ready";
 }
 
+function requiredFixOrderFor({ blockers, warnings, rust }) {
+  const hasBlocker = (source) => blockers.some((blocker) => blocker.source === source);
+  const order = [];
+
+  if (hasBlocker("readiness")) {
+    order.push("Make readiness:june10 and truth:june10-readiness-packet pass with zero ship blockers.");
+  }
+  if (hasBlocker("product_load_lineage")) {
+    order.push("Emit TerraFusion DB product-load receipts and prove lineage for runtime truth tables.");
+  }
+  if (hasBlocker("runtime_db_identity")) {
+    order.push("Prove the running API is connected to the intended TerraFusion DB.");
+  }
+  if (hasBlocker("runtime_endpoint")) {
+    order.push("Restore live runtime endpoint probes for the expected API base URLs.");
+  }
+  if (hasBlocker("public_site") || hasBlocker("public_site_signup")) {
+    order.push("Fix terrafusionmarket.com public access posture: usable signup/access request or remove misleading signup route.");
+  }
+  if (hasBlocker("contract_mismatch")) {
+    order.push("Resolve frontend/backend endpoint contract mismatches.");
+  }
+  if (hasBlocker("red_team")) {
+    order.push("Resolve June 10 red-team critical attacks until the verdict is no longer RED.");
+  }
+  if (hasBlocker("rust_runtime") || warnings.some((warning) => warning.source === "rust_runtime") || rustDeploymentUnproven(rust)) {
+    order.push("Prove Rust engine deployment in the live runtime path or remove Rust from launch claims.");
+  }
+
+  order.push("Re-run this production readiness audit and keep the verdict below full readiness until all blockers clear.");
+
+  return order;
+}
+
 export function buildJune10ProductionReadinessAudit({
   readiness,
   redTeam,
@@ -102,6 +191,8 @@ export function buildJune10ProductionReadinessAudit({
 }) {
   const blockers = [];
   const warnings = [];
+  const resolvedRuntimeDbIdentity = resolveRuntimeDbIdentity(runtimeDbIdentity, endpointContract);
+  const runtimeDbIdentityEvidence = resolvedRuntimeDbIdentity.evidence;
 
   if (!readiness) {
     addBlocker(blockers, "readiness", "CRITICAL", "June 10 readiness packet is missing.");
@@ -141,16 +232,16 @@ export function buildJune10ProductionReadinessAudit({
     );
   }
 
-  if (!runtimeDbIdentity) {
+  if (!runtimeDbIdentityEvidence) {
     addBlocker(blockers, "runtime_db_identity", "CRITICAL", "Runtime TerraFusion DB identity evidence is missing.");
-  } else if (runtimeDbIdentity.passed !== true) {
-    const identity = runtimeIdentityDetails(runtimeDbIdentity);
+  } else if (runtimeDbIdentityEvidence.passed !== true) {
+    const identity = runtimeIdentityDetails(runtimeDbIdentityEvidence);
     addBlocker(
       blockers,
       "runtime_db_identity",
       "CRITICAL",
       "Runtime TerraFusion DB identity did not pass.",
-      `apiBaseUrl=${identity.apiBaseUrl ?? runtimeDbIdentity.runtimeBaseUrl ?? "unknown"}; database=${identity.database ?? "unknown"}`
+      `apiBaseUrl=${identity.apiBaseUrl ?? runtimeDbIdentityEvidence.runtimeBaseUrl ?? "unknown"}; database=${identity.database ?? "unknown"}`
     );
   }
 
@@ -238,7 +329,7 @@ export function buildJune10ProductionReadinessAudit({
   }
 
   const verdict = verdictFor(blockers, warnings);
-  const identity = runtimeIdentityDetails(runtimeDbIdentity);
+  const identity = runtimeIdentityDetails(runtimeDbIdentityEvidence);
 
   return {
     generatedAtUtc: new Date().toISOString(),
@@ -250,8 +341,9 @@ export function buildJune10ProductionReadinessAudit({
       redTeamVerdict: redTeam?.verdict ?? "missing",
       productLoadLedgerPassed: productLoadLedger?.passed ?? null,
       lineageProven: productLoadLedger?.summary?.lineageProven ?? null,
-      runtimeDbIdentityPassed: runtimeDbIdentity?.passed ?? null,
-      runtimeApiBaseUrl: identity.apiBaseUrl ?? runtimeDbIdentity?.runtimeBaseUrl ?? null,
+      runtimeDbIdentityPassed: runtimeDbIdentityEvidence?.passed ?? null,
+      runtimeDbIdentitySource: resolvedRuntimeDbIdentity.source,
+      runtimeApiBaseUrl: identity.apiBaseUrl ?? runtimeDbIdentityEvidence?.runtimeBaseUrl ?? null,
       runtimeDatabase: identity.database ?? null,
       publicSiteBaseUrl: publicSite?.baseUrl ?? null,
       failedRuntimeProbes: endpointContract ? failedRuntimeProbes(endpointContract).length : null,
@@ -261,15 +353,7 @@ export function buildJune10ProductionReadinessAudit({
     },
     blockers,
     warnings,
-    requiredFixOrder: [
-      "Make readiness:june10 and truth:june10-readiness-packet pass with zero ship blockers.",
-      "Emit TerraFusion DB product-load receipts and prove lineage for runtime truth tables.",
-      "Restore live runtime endpoint probes for the expected API base URLs.",
-      "Fix terrafusionmarket.com public access posture: usable signup/access request or remove misleading signup route.",
-      "Resolve frontend/backend endpoint contract mismatches.",
-      "Prove Rust engine deployment in the live runtime path or remove Rust from launch claims.",
-      "Re-run this production readiness audit and keep the verdict below full readiness until all blockers clear."
-    ],
+    requiredFixOrder: requiredFixOrderFor({ blockers, warnings, rust }),
     bannedProductionClaimsWhileBlocked: [
       "fully production ready",
       "all endpoints are live",
@@ -299,6 +383,7 @@ function renderMarkdown(report) {
     `- Product-load ledger passed: ${report.summary.productLoadLedgerPassed ?? "missing"}`,
     `- Lineage-proven tables: ${report.summary.lineageProven ?? "missing"}`,
     `- Runtime DB identity passed: ${report.summary.runtimeDbIdentityPassed ?? "missing"}`,
+    `- Runtime DB identity source: ${report.summary.runtimeDbIdentitySource ?? "missing"}`,
     `- Runtime API base URL: ${report.summary.runtimeApiBaseUrl ?? "missing"}`,
     `- Runtime database: ${report.summary.runtimeDatabase ?? "missing"}`,
     `- Public site: ${report.summary.publicSiteBaseUrl ?? "missing"}`,

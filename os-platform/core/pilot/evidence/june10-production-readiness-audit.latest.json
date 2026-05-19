@@ -1,14 +1,15 @@
 {
-  "generatedAtUtc": "2026-05-19T22:01:47.375Z",
+  "generatedAtUtc": "2026-05-19T23:47:03.123Z",
   "verdict": "not_ready",
   "summary": {
-    "shipBlockers": 5,
+    "shipBlockers": 4,
     "warnings": 2,
     "readinessStatus": "FAIL",
     "redTeamVerdict": "RED",
     "productLoadLedgerPassed": false,
     "lineageProven": 0,
-    "runtimeDbIdentityPassed": false,
+    "runtimeDbIdentityPassed": true,
+    "runtimeDbIdentitySource": "endpoint_contract",
     "runtimeApiBaseUrl": "http://localhost:5046",
     "runtimeDatabase": "terrafusion",
     "publicSiteBaseUrl": "https://terrafusionmarket.com",
@@ -37,12 +38,6 @@
       "evidence": "passed=false; lineageProven=0; rowsExistLineageUnproven=6"
     },
     {
-      "source": "runtime_db_identity",
-      "severity": "CRITICAL",
-      "message": "Runtime TerraFusion DB identity did not pass.",
-      "evidence": "apiBaseUrl=http://localhost:5046; database=terrafusion"
-    },
-    {
       "source": "public_site",
       "severity": "HIGH",
       "message": "terrafusionmarket.com public-site smoke is not passing.",
@@ -64,9 +59,8 @@
   "requiredFixOrder": [
     "Make readiness:june10 and truth:june10-readiness-packet pass with zero ship blockers.",
     "Emit TerraFusion DB product-load receipts and prove lineage for runtime truth tables.",
-    "Restore live runtime endpoint probes for the expected API base URLs.",
     "Fix terrafusionmarket.com public access posture: usable signup/access request or remove misleading signup route.",
-    "Resolve frontend/backend endpoint contract mismatches.",
+    "Resolve June 10 red-team critical attacks until the verdict is no longer RED.",
     "Prove Rust engine deployment in the live runtime path or remove Rust from launch claims.",
     "Re-run this production readiness audit and keep the verdict below full readiness until all blockers clear."
   ],
