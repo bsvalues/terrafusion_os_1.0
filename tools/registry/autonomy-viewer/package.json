@@ -37,7 +37,7 @@
     "airgap:bundle": "npx tsx bin/airgap-bundle.mjs",
     "mirror:publish": "npx tsx bin/mirror-publish.mjs",
     "closeout:proof": "npx tsx bin/closeout-proof.mjs",
-    "test": "npx tsx --test test/*.test.ts"
+    "test": "node scripts/run-tests.mjs"
   },
   "keywords": [
     "terrafusion",
