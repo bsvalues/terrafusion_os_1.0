@@ -29,6 +29,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: Enable Windows long paths
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: git config --global core.longpaths true
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -40,7 +45,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 9.0.0
 
       - name: Get pnpm store directory
         shell: bash
