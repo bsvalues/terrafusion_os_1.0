@@ -16,10 +16,11 @@ import * as assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import {
-    type OpsStatusInput,
-    computeOpsStatus,
-    OPS_STATUS_SCHEMA,
-    OPS_STATUS_VERSION
+  type OpsStatusInput,
+  computeOpsStatus,
+  formatOpsStatusMarkdown,
+  OPS_STATUS_SCHEMA,
+  OPS_STATUS_VERSION,
 } from '../src/ops/ops-status.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -283,6 +284,30 @@ describe('OpsStatus: Fail-Closed', () => {
     assert.equal(result.overall.ok, false);
     assert.ok(result.overall.degradedSubsystems.includes('drReconstitution'));
   });
+
+  it('fails_closed_on_missing_signer_epoch', () => {
+    const input = createValidInput();
+    // @ts-expect-error - Testing fail-closed behavior
+    input.signerEpoch = undefined;
+
+    const result = computeOpsStatus(input);
+
+    assert.equal(result.overall.ok, false);
+    assert.ok(result.overall.degradedSubsystems.includes('signerEpoch'));
+    assert.ok(result.runbookHints.some(hint => hint.subsystem === 'signerEpoch'));
+  });
+
+  it('fails_closed_on_missing_retention_status', () => {
+    const input = createValidInput();
+    // @ts-expect-error - Testing fail-closed behavior
+    input.retentionStatus = undefined;
+
+    const result = computeOpsStatus(input);
+
+    assert.equal(result.overall.ok, false);
+    assert.ok(result.overall.degradedSubsystems.includes('retention'));
+    assert.ok(result.runbookHints.some(hint => hint.subsystem === 'retention'));
+  });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -349,5 +374,36 @@ describe('OpsStatus: Result Shape', () => {
     // Schema matches
     assert.equal(result.$schema, OPS_STATUS_SCHEMA);
     assert.equal(result.version, OPS_STATUS_VERSION);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Tests: Markdown Formatting
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('OpsStatus: Markdown Formatting', () => {
+  it('formats status as markdown for the CLI default output', () => {
+    const input = createValidInput();
+    const result = computeOpsStatus(input);
+
+    const markdown = formatOpsStatusMarkdown(result);
+
+    assert.match(markdown, /^# TerraFusion Ops Status/m);
+    assert.match(markdown, /\*\*Profile:\*\* county/);
+    assert.match(markdown, /\*\*Overall:\*\* OK/);
+    assert.match(markdown, /## Runbook Hints/);
+  });
+
+  it('includes degraded runbook hints in markdown output', () => {
+    const input = createValidInput();
+    input.lastVerification.ok = false;
+    input.lastVerification.errors = ['CASEFILE_HASH_MISMATCH'];
+    const result = computeOpsStatus(input);
+
+    const markdown = formatOpsStatusMarkdown(result);
+
+    assert.match(markdown, /\*\*Overall:\*\* DEGRADED/);
+    assert.match(markdown, /verification/);
+    assert.match(markdown, /runbooks\/verification-failure\.md/);
   });
 });

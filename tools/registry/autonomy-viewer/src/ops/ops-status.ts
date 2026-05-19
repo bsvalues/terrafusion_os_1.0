@@ -148,6 +148,23 @@ function createMissingDrReconstitution(): DrReconstitutionStatus {
   };
 }
 
+function createMissingSignerEpoch(): SignerEpochStatus {
+  return {
+    epochId: 0,
+    keyId: 'unknown',
+    revocationState: 'active',
+    createdAt: '',
+  };
+}
+
+function createMissingRetentionStatus(): RetentionStatus {
+  return {
+    pending: 0,
+    executed: 0,
+    blocked: 0,
+  };
+}
+
 /**
  * Compute unified operational status from subsystem states.
  * Fails-closed on missing state.
@@ -160,6 +177,8 @@ export function computeOpsStatus(input: OpsStatusInput): OpsStatusResult {
   const verification = input.lastVerification ?? createMissingVerification();
   const oracleHealth = input.lastOracleHealth ?? createMissingOracleHealth();
   const drReconstitution = input.lastDrReconstitution ?? createMissingDrReconstitution();
+  const signerEpoch = input.signerEpoch ?? createMissingSignerEpoch();
+  const retentionStatus = input.retentionStatus ?? createMissingRetentionStatus();
 
   // Check verification
   if (!verification.ok) {
@@ -204,7 +223,16 @@ export function computeOpsStatus(input: OpsStatusInput): OpsStatusResult {
   }
 
   // Check signer epoch
-  if (input.signerEpoch?.revocationState === 'revoked') {
+  if (!input.signerEpoch) {
+    degradedSubsystems.push('signerEpoch');
+    runbookHints.push({
+      subsystem: 'signerEpoch',
+      severity: 'critical',
+      action: 'Signer epoch state missing; verify signer epoch source before proceeding',
+      runbookPath: RUNBOOK_PATHS.signerEpoch,
+    });
+  }
+  if (signerEpoch.revocationState === 'revoked') {
     degradedSubsystems.push('signerEpoch');
     runbookHints.push({
       subsystem: 'signerEpoch',
@@ -215,7 +243,16 @@ export function computeOpsStatus(input: OpsStatusInput): OpsStatusResult {
   }
 
   // Check retention
-  if (input.retentionStatus?.blocked > 0) {
+  if (!input.retentionStatus) {
+    degradedSubsystems.push('retention');
+    runbookHints.push({
+      subsystem: 'retention',
+      severity: 'critical',
+      action: 'Retention state missing; verify retention ledger before proceeding',
+      runbookPath: RUNBOOK_PATHS.retention,
+    });
+  }
+  if (retentionStatus.blocked > 0) {
     degradedSubsystems.push('retention');
     runbookHints.push({
       subsystem: 'retention',
@@ -243,8 +280,51 @@ export function computeOpsStatus(input: OpsStatusInput): OpsStatusResult {
     verification,
     oracleHealth,
     drReconstitution,
-    signerEpoch: input.signerEpoch,
-    retention: input.retentionStatus,
+    signerEpoch,
+    retention: retentionStatus,
     runbookHints,
   };
+}
+
+/**
+ * Format an ops status result for human CLI output.
+ */
+export function formatOpsStatusMarkdown(status: OpsStatusResult): string {
+  const overall = status.overall.ok ? 'OK' : 'DEGRADED';
+  const degradedSubsystems = status.overall.degradedSubsystems.length
+    ? status.overall.degradedSubsystems.join(', ')
+    : 'none';
+  const runbookRows = status.runbookHints.length
+    ? status.runbookHints
+        .map(
+          hint => `| ${hint.subsystem} | ${hint.severity} | ${hint.action} | ${hint.runbookPath} |`
+        )
+        .join('\n')
+    : '| none | info | No operator action required. | - |';
+
+  return [
+    '# TerraFusion Ops Status',
+    '',
+    `**Profile:** ${status.profile}`,
+    `**Generated:** ${status.generatedAt}`,
+    `**Overall:** ${overall}`,
+    `**Degraded Subsystems:** ${degradedSubsystems}`,
+    '',
+    '## Subsystems',
+    '',
+    '| Subsystem | Status | Detail |',
+    '|---|---|---|',
+    `| Verification | ${status.verification.ok ? 'OK' : 'DEGRADED'} | ${status.verification.bundleName || 'missing'} |`,
+    `| Oracle Health | ${status.oracleHealth.ok ? 'OK' : 'DEGRADED'} | score ${status.oracleHealth.healthScore} |`,
+    `| DR Reconstitution | ${status.drReconstitution.ok ? 'OK' : 'DEGRADED'} | ${status.drReconstitution.chunksRecovered} chunks |`,
+    `| Signer Epoch | ${status.signerEpoch.revocationState} | ${status.signerEpoch.keyId} |`,
+    `| Retention | ${status.retention.blocked > 0 ? 'DEGRADED' : 'OK'} | ${status.retention.blocked} blocked |`,
+    '',
+    '## Runbook Hints',
+    '',
+    '| Subsystem | Severity | Action | Runbook |',
+    '|---|---|---|---|',
+    runbookRows,
+    '',
+  ].join('\n');
 }

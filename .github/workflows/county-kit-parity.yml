@@ -27,6 +27,10 @@ jobs:
         os: [ubuntu-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
+    env:
+      TF_RBAC_TIER: ci
+      TF_RBAC_ACTOR: county-kit-parity-ci
+      TF_RBAC_CORRELATION_ID: county-kit-parity-${{ github.run_id }}-${{ matrix.os }}
 
     steps:
       - name: Enable Windows long paths
@@ -43,7 +47,7 @@ jobs:
           node-version: '20'
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v5
         with:
           version: 9.0.0
 
