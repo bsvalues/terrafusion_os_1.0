@@ -731,6 +731,13 @@ describe('Phase 4N14: Immutable URL Wiring', () => {
       assert.ok(result.includes('encoded path'));
     });
 
+    it('should reject encoded slash outside the release tag segment', () => {
+      const url = 'https://github.com/autonomy-evidence%2F2026-01/repo/releases/tag/autonomy-evidence%2F2026-01';
+      const result = validateImmutableUrl(url);
+      assert.ok(result !== null);
+      assert.ok(result.includes('encoded path'));
+    });
+
     it('should reject URL-encoded traversal (%2e)', () => {
       const url = 'https://github.com/owner/repo/releases/download/v1.0.0/%2e%2e/secret';
       const result = validateImmutableUrl(url);
@@ -790,6 +797,11 @@ describe('Phase 4N14: Immutable URL Wiring', () => {
       assert.ok(url.includes('autonomy-evidence%2F2026-01'));
     });
 
+    it('should accept encoded slash in release tag namespace', () => {
+      const url = buildReleaseUrl('https://github.com', 'owner/repo', 'autonomy-evidence/2026-01');
+      assert.equal(validateImmutableUrl(url), null);
+    });
+
     it('should produce immutable URL (passes validation)', () => {
       const url = buildReleaseUrl('https://github.com', 'owner/repo', 'v1.0.0');
       assert.equal(validateImmutableUrl(url), null);
@@ -811,6 +823,16 @@ describe('Phase 4N14: Immutable URL Wiring', () => {
       );
       assert.ok(url.includes('autonomy-evidence%2F2026-01'));
       assert.ok(url.includes('my%20file.zip'));
+    });
+
+    it('should accept encoded slash in asset download release tag namespace', () => {
+      const url = buildAssetUrl(
+        'https://github.com',
+        'owner/repo',
+        'autonomy-evidence/2026-01',
+        'bundle.zip'
+      );
+      assert.equal(validateImmutableUrl(url), null);
     });
 
     it('should produce immutable URL (passes validation)', () => {
