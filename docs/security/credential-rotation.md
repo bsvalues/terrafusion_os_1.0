@@ -13,20 +13,25 @@ take.
 
 ## Burned credentials
 
-| Credential | Introduced (commit) | Removed (commit) | Risk window | Last-4 chars |
+Plaintext values are intentionally omitted from current HEAD. Use the commit
+references and non-reversible verification fingerprints below for incident
+response; recover exact historic values from git history only when a deployment
+owner needs to compare a live secret in a controlled rotation workflow.
+
+| Credential | Introduced (commit) | Removed (commit) | Risk window | Verification fingerprint |
 |---|---|---|---|---|
-| MSSQL `sa` password `TF_Pacs2026!` | `dc69db7c2` | `4428bf45c` | Always-burned | `26!` |
-| Postgres `postgres` password literal `postgres` | (pre-`974a1fb34`) | `974a1fb34`, `34d864778` (SEC-007 — SEC-010) | Always-burned | `gres` |
-| Dev JWT signing key `TerraFusion-Dev-Secret-Key-2026-Do-Not-Use-In-Production!!` | base | (still in `appsettings.json` for dev only) | Always-burned for any deployment that used the dev default | `n!!` |
-| `TerraDivineJWT2025SecretKeyForProductionGovernmentCompliance!` (BentonCounty JwtSecret) | base | Removed by PR-7 (this PR) | Always-burned for any Benton-profile deployment that used this | `nce!` |
-| `TerraEncryptionDivine2025GovernmentGradeSecurity!` (BentonCounty EncryptionKey) | base | Removed by PR-7 (this PR) | Always-burned for any Benton-profile deployment that used this | `ity!` |
+| MSSQL `sa` password from legacy local default | `dc69db7c2` | `4428bf45c` | Always-burned | last-4 `026!` |
+| Postgres `postgres` password literal | (pre-`974a1fb34`) | `974a1fb34`, `34d864778` (SEC-007 - SEC-010) | Always-burned | last-4 `gres` |
+| Dev JWT signing key from `appsettings.json` | base | (still in `appsettings.json` for dev only) | Always-burned for any deployment that used the dev default | last-4 `on!!` |
+| BentonCounty `Security:JwtSecret` historic literal | base | Removed by PR-7 (this PR) | Always-burned for any Benton-profile deployment that used this | last-4 `nce!` |
+| BentonCounty `Security:EncryptionKey` historic literal | base | Removed by PR-7 (this PR) | Always-burned for any Benton-profile deployment that used this | last-4 `ity!` |
 
 ## Verification steps per deployment owner
 
 1. **Identify what each environment is using today.**
-   - For MSSQL `sa`: check the actual deployed SA password vs the burned values.
+   - For MSSQL `sa`: compare the deployed value against the historic value from the referenced commit in a controlled secret-handling session.
    - For Postgres `postgres`: same.
-   - For JWT signing: decode any existing JWT to check the `kid` or signing-key identity; rotate if it matches a burned value.
+   - For JWT signing: verify token signatures against candidate keys in an isolated tool, or inspect the live runtime secret source. Decoding headers or claims alone does not prove which signing key was used.
    - For encryption: if any database column or audit-log entry was encrypted with the burned key, plan re-encryption.
 
 2. **Rotate any environment that may have used a burned value.**
@@ -36,7 +41,7 @@ take.
    - Verify the application still works.
 
 3. **Document the rotation** — every operator should append an entry to
-   `docs/audit/credential-rotations.log` (create this file if absent):
+   `docs/audits/credential-rotations.log` (create this file if absent):
    ```
    2026-MM-DD operator: <name>
    environment: <env name>
