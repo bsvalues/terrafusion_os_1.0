@@ -1,0 +1,83 @@
+{
+  "generatedAtUtc": "2026-05-19T19:24:37.956Z",
+  "verdict": "not_ready",
+  "summary": {
+    "shipBlockers": 6,
+    "warnings": 1,
+    "readinessStatus": "FAIL",
+    "redTeamVerdict": "RED",
+    "productLoadLedgerPassed": false,
+    "lineageProven": 0,
+    "runtimeDbIdentityPassed": false,
+    "runtimeApiBaseUrl": "http://localhost:5046",
+    "runtimeDatabase": "terrafusion",
+    "publicSiteBaseUrl": null,
+    "failedRuntimeProbes": null,
+    "contractMismatches": null,
+    "rustCrates": null,
+    "rustRuntimeIntegrations": null
+  },
+  "blockers": [
+    {
+      "source": "readiness",
+      "severity": "CRITICAL",
+      "message": "June 10 readiness packet is not passing.",
+      "evidence": "status=FAIL; shipBlockers=12; warnings=0"
+    },
+    {
+      "source": "red_team",
+      "severity": "CRITICAL",
+      "message": "June 10 red-team verdict is RED.",
+      "evidence": "criticalAttacks=3; shipBlockers=23"
+    },
+    {
+      "source": "product_load_lineage",
+      "severity": "CRITICAL",
+      "message": "TerraFusion DB product-load lineage is not proven.",
+      "evidence": "passed=false; lineageProven=0; rowsExistLineageUnproven=6"
+    },
+    {
+      "source": "runtime_db_identity",
+      "severity": "CRITICAL",
+      "message": "Runtime TerraFusion DB identity did not pass.",
+      "evidence": "apiBaseUrl=http://localhost:5046; database=terrafusion"
+    },
+    {
+      "source": "public_site",
+      "severity": "HIGH",
+      "message": "terrafusionmarket.com public-site smoke evidence is missing.",
+      "evidence": null
+    },
+    {
+      "source": "endpoint_contract",
+      "severity": "HIGH",
+      "message": "Endpoint contract smoke evidence is missing.",
+      "evidence": null
+    }
+  ],
+  "warnings": [
+    {
+      "source": "rust_runtime",
+      "message": "Rust runtime usage evidence is missing.",
+      "evidence": null
+    }
+  ],
+  "requiredFixOrder": [
+    "Make readiness:june10 and truth:june10-readiness-packet pass with zero ship blockers.",
+    "Emit TerraFusion DB product-load receipts and prove lineage for runtime truth tables.",
+    "Restore live runtime endpoint probes for the expected API base URLs.",
+    "Fix terrafusionmarket.com public access posture: usable signup/access request or remove misleading signup route.",
+    "Resolve frontend/backend endpoint contract mismatches.",
+    "Prove Rust engine deployment in the live runtime path or remove Rust from launch claims.",
+    "Re-run this production readiness audit and keep the verdict below full readiness until all blockers clear."
+  ],
+  "bannedProductionClaimsWhileBlocked": [
+    "fully production ready",
+    "all endpoints are live",
+    "all data flows end to end",
+    "terrafusionmarket.com is publicly usable",
+    "39 counties are runtime-ready",
+    "Rust engines are in production use",
+    "TerraFusion DB rows are lineage-proven"
+  ]
+}

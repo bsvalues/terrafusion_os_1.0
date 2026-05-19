@@ -107,6 +107,7 @@
     "truth:june10-control-plane-refresh": "node os-platform/core/pilot/june10-control-plane-refresh.mjs",
     "truth:june10-launch-control": "node os-platform/core/pilot/june10-launch-control.mjs",
     "truth:june10-operator-command-queue": "node os-platform/core/pilot/june10-operator-command-queue.mjs",
+    "truth:june10-production-readiness-audit": "node os-platform/core/pilot/june10-production-readiness-audit.mjs",
     "truth:june10-red-team": "node os-platform/core/pilot/june10-red-team.mjs",
     "truth:june10-readiness-packet": "node scripts/truth/june10-readiness-packet.mjs",
     "truth:june10-seed-control-plane": "node os-platform/core/pilot/june10-seed-control-plane.mjs",
