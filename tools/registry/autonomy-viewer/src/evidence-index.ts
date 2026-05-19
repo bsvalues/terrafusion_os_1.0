@@ -823,10 +823,18 @@ function validateUrlSecurityConstraints(url: string): string | null {
     return `URL contains fragment (not allowed in evidence URLs): ${url}`;
   }
 
-  // Reject URL-encoded traversal attempts (%2f = /, %2e = .)
+  // Reject URL-encoded traversal attempts. GitHub encodes slashes in release
+  // tags such as autonomy-evidence/2026-05, so %2f is allowed only inside the
+  // release tag segment after validating the decoded tag is not a path trick.
   const lowerUrl = url.toLowerCase();
-  if (lowerUrl.includes('%2f') || lowerUrl.includes('%2e')) {
+  if (lowerUrl.includes('%2e')) {
     return `URL contains encoded path characters (potential traversal): ${url}`;
+  }
+  if (lowerUrl.includes('%2f')) {
+    const tagError = validateEncodedReleaseTagSegment(url);
+    if (tagError) {
+      return tagError;
+    }
   }
 
   // Reject double-encoding attempts (%252f = %2f)
@@ -853,6 +861,55 @@ function validateUrlSecurityConstraints(url: string): string | null {
   return null; // Valid
 }
 
+function validateEncodedReleaseTagSegment(url: string): string | null {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return `URL contains encoded path characters (potential traversal): ${url}`;
+  }
+
+  const match = parsed.pathname.match(/^\/[^/]+\/[^/]+\/releases\/(?:tag|download)\/([^/]+)(?:\/|$)/i);
+  const encodedTag = match?.[1];
+  if (!encodedTag) {
+    return `URL contains encoded path characters (potential traversal): ${url}`;
+  }
+
+  const lowerPath = parsed.pathname.toLowerCase();
+  const lowerTag = encodedTag.toLowerCase();
+  const tagStart = lowerPath.indexOf(lowerTag);
+  const tagEnd = tagStart + lowerTag.length;
+
+  for (let index = lowerPath.indexOf('%2f'); index !== -1; index = lowerPath.indexOf('%2f', index + 1)) {
+    if (index < tagStart || index >= tagEnd) {
+      return `URL contains encoded path characters (potential traversal): ${url}`;
+    }
+  }
+
+  let decodedTag: string;
+  try {
+    decodedTag = decodeURIComponent(encodedTag);
+  } catch {
+    return `URL contains malformed encoded release tag: ${url}`;
+  }
+
+  const decodedLower = decodedTag.toLowerCase();
+  const tagSegments = decodedTag.split('/');
+  if (
+    decodedTag.startsWith('/') ||
+    decodedTag.endsWith('/') ||
+    tagSegments.some(segment => segment === '.' || segment === '..' || segment === '') ||
+    decodedLower.includes('refs/heads') ||
+    decodedLower.includes('refs/tags') ||
+    decodedLower === 'latest' ||
+    decodedLower.endsWith('@latest')
+  ) {
+    return `URL contains encoded path characters (potential traversal): ${url}`;
+  }
+
+  return null;
+}
+
 /**
  * Validate a URL is immutable (no latest, no branch refs, no shorteners).
  * Phase 4N15: Enhanced with security constraints for auditor-grade validation.
@@ -870,8 +927,15 @@ export function validateImmutableUrl(url: string): string | null {
     return `URL is not a GitHub releases URL: ${url}`;
   }
 
+  let decodedUrl: string;
+  try {
+    decodedUrl = decodeURIComponent(url);
+  } catch {
+    return `URL contains malformed encoding: ${url}`;
+  }
+
   for (const pattern of MUTABLE_URL_PATTERNS) {
-    if (pattern.test(url)) {
+    if (pattern.test(url) || pattern.test(decodedUrl)) {
       return `URL contains mutable reference: ${url} (matched ${pattern})`;
     }
   }
