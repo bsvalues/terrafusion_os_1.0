@@ -629,10 +629,12 @@ describe('Phase 4N28: Incident Response Playbook', () => {
     '..',
     '..',
     '..',
+    'docs',
+    'operations',
     'AUTONOMY_INCIDENT_RESPONSE_PLAYBOOK.md'
   );
 
-  it('should exist at repository root', () => {
+  it('should exist in governed operations docs', () => {
     assert.ok(fs.existsSync(playbookPath), 'Playbook must exist');
   });
 

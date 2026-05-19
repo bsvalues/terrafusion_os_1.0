@@ -265,6 +265,7 @@ jobs:
       id-token: write
     with:
       base64-subjects: ${{ needs.build-backend.outputs.base64_subjects }}
+      private-repository: true
       provenance-name: backend-provenance.intoto.jsonl
 
   provenance-frontend:
@@ -278,6 +279,7 @@ jobs:
       id-token: write
     with:
       base64-subjects: ${{ needs.build-frontend.outputs.base64_subjects }}
+      private-repository: true
       provenance-name: frontend-provenance.intoto.jsonl
 
   # ===========================================================================
