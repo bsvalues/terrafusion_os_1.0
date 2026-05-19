@@ -79,13 +79,22 @@ function main() {
     process.exit(1);
   }
 
-  // Build input for ops status
   const input = {
-    profileName: opts.profile,
-    timestamp: new Date().toISOString(),
-    telemetryRollup: undefined,
-    verificationReports: [],
-    sloDefinitions: [],
+    profile: opts.profile,
+    lastVerification: undefined,
+    lastOracleHealth: undefined,
+    lastDrReconstitution: undefined,
+    signerEpoch: {
+      epochId: 0,
+      keyId: 'unknown',
+      revocationState: 'active',
+      createdAt: '',
+    },
+    retentionStatus: {
+      pending: 0,
+      executed: 0,
+      blocked: 0,
+    },
   };
 
   // If telemetry file provided, parse and compute rollup
@@ -102,7 +111,7 @@ function main() {
       if (parseResult.errorCode) {
         console.error(`Warning: telemetry parse errors: ${parseResult.errorCode}`);
       }
-      input.telemetryRollup = computeRollup(parseResult.events);
+      computeRollup(parseResult.events);
     } catch (err) {
       console.error(`Error reading telemetry file: ${err.message}`);
       process.exit(1);
@@ -120,12 +129,7 @@ function main() {
   }
 
   // Exit code based on overall status
-  if (status.overallStatus === 'critical') {
-    process.exit(2);
-  } else if (status.overallStatus === 'degraded') {
-    process.exit(1);
-  }
-  process.exit(0);
+  process.exit(status.overall.ok ? 0 : 1);
 }
 
 main();
