@@ -1,0 +1,112 @@
+{
+  "generatedAtUtc": "2026-05-19T20:13:00.057Z",
+  "apiBaseUrl": "http://localhost:5046",
+  "passed": false,
+  "summary": {
+    "requiredProbes": 4,
+    "localRuntimeProbes": 4,
+    "failedRuntimeProbes": 4,
+    "contractMismatches": 4,
+    "blockers": 5
+  },
+  "localRuntimeProbes": [
+    {
+      "id": "health",
+      "method": "GET",
+      "path": "/health",
+      "url": "http://localhost:5046/health",
+      "status": null,
+      "contentType": null,
+      "bodyText": "",
+      "bodySnippet": "",
+      "ok": false,
+      "error": "fetch failed"
+    },
+    {
+      "id": "runtime_db_identity",
+      "method": "GET",
+      "path": "/api/runtime/truth/db-identity",
+      "url": "http://localhost:5046/api/runtime/truth/db-identity",
+      "status": null,
+      "contentType": null,
+      "bodyText": "",
+      "bodySnippet": "",
+      "ok": false,
+      "error": "fetch failed"
+    },
+    {
+      "id": "benton_parcels",
+      "method": "GET",
+      "path": "/api/counties/benton/parcels?limit=5",
+      "url": "http://localhost:5046/api/counties/benton/parcels?limit=5",
+      "status": null,
+      "contentType": null,
+      "bodyText": "",
+      "bodySnippet": "",
+      "ok": false,
+      "error": "fetch failed"
+    },
+    {
+      "id": "access_policy",
+      "method": "GET",
+      "path": "/api/auth/access-policy",
+      "url": "http://localhost:5046/api/auth/access-policy",
+      "status": null,
+      "contentType": null,
+      "bodyText": "",
+      "bodySnippet": "",
+      "ok": false,
+      "error": "fetch failed"
+    }
+  ],
+  "contractMismatches": [
+    {
+      "endpointId": "health",
+      "endpoint": "/health",
+      "reason": "expected status 200, got fetch failed"
+    },
+    {
+      "endpointId": "runtime_db_identity",
+      "endpoint": "/api/runtime/truth/db-identity",
+      "reason": "expected status 200, got fetch failed"
+    },
+    {
+      "endpointId": "benton_parcels",
+      "endpoint": "/api/counties/benton/parcels?limit=5",
+      "reason": "expected status 200, got fetch failed"
+    },
+    {
+      "endpointId": "access_policy",
+      "endpoint": "/api/auth/access-policy",
+      "reason": "expected status 200, got fetch failed"
+    }
+  ],
+  "blockers": [
+    {
+      "source": "runtime_probe",
+      "message": "GET /health did not return 200.",
+      "evidence": "fetch failed"
+    },
+    {
+      "source": "runtime_probe",
+      "message": "GET /api/runtime/truth/db-identity did not return 200.",
+      "evidence": "fetch failed"
+    },
+    {
+      "source": "runtime_probe",
+      "message": "GET /api/counties/benton/parcels?limit=5 did not return 200.",
+      "evidence": "fetch failed"
+    },
+    {
+      "source": "runtime_probe",
+      "message": "GET /api/auth/access-policy did not return 200.",
+      "evidence": "fetch failed"
+    },
+    {
+      "source": "contract_shape",
+      "message": "One or more endpoint responses do not match the June 10 launch-control contract.",
+      "evidence": "4 mismatch(es)"
+    }
+  ],
+  "interpretation": "Endpoint contract smoke is not passing; production readiness cannot claim all endpoints match contracts."
+}

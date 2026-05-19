@@ -108,6 +108,7 @@
     "truth:june10-launch-control": "node os-platform/core/pilot/june10-launch-control.mjs",
     "truth:june10-operator-command-queue": "node os-platform/core/pilot/june10-operator-command-queue.mjs",
     "truth:june10-production-readiness-audit": "node os-platform/core/pilot/june10-production-readiness-audit.mjs",
+    "truth:june10-endpoint-contract-smoke": "node os-platform/core/pilot/june10-endpoint-contract-smoke.mjs",
     "truth:june10-public-site-smoke": "node os-platform/core/pilot/june10-public-site-smoke.mjs",
     "truth:june10-red-team": "node os-platform/core/pilot/june10-red-team.mjs",
     "truth:june10-readiness-packet": "node scripts/truth/june10-readiness-packet.mjs",
