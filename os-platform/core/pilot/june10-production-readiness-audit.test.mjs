@@ -145,6 +145,29 @@ test("allows only partial readiness when proof is mostly green but Rust deployme
   assert.ok(report.warnings.some((warning) => warning.source === "rust_runtime"));
 });
 
+test("uses public-site smoke failure as the canonical public UX blocker", () => {
+  const report = buildJune10ProductionReadinessAudit(
+    sampleInputs({
+      publicSite: {
+        baseUrl: "https://terrafusionmarket.com",
+        passed: false,
+        summary: { blockers: 1, warnings: 1 },
+        blockers: [
+          {
+            source: "access_policy",
+            message: "Public signup is disabled and no access-request channel is exposed by /api/auth/access-policy."
+          }
+        ],
+        routes: [],
+        apiProbes: []
+      }
+    })
+  );
+
+  assert.ok(report.blockers.some((blocker) => blocker.source === "public_site"));
+  assert.ok(report.blockers.some((blocker) => blocker.evidence?.includes("access_policy")));
+});
+
 test("CLI writes production readiness audit JSON and Markdown reports", () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "tf-june10-prod-audit-"));
   const inputs = sampleInputs();

@@ -1,13 +1,13 @@
 # June 10 Production Readiness Audit
 
-Generated: 2026-05-19T19:24:37.956Z
+Generated: 2026-05-19T20:06:08.345Z
 
 Verdict: not_ready
 
 ## Summary
 
 - Ship blockers: 6
-- Warnings: 1
+- Warnings: 2
 - Readiness status: FAIL
 - Red-team verdict: RED
 - Product-load ledger passed: false
@@ -15,7 +15,7 @@ Verdict: not_ready
 - Runtime DB identity passed: false
 - Runtime API base URL: http://localhost:5046
 - Runtime database: terrafusion
-- Public site: missing
+- Public site: https://terrafusionmarket.com
 - Failed runtime probes: missing
 - Contract mismatches: missing
 - Rust crates: missing
@@ -27,11 +27,12 @@ Verdict: not_ready
 - **CRITICAL red_team**: June 10 red-team verdict is RED. (criticalAttacks=3; shipBlockers=23)
 - **CRITICAL product_load_lineage**: TerraFusion DB product-load lineage is not proven. (passed=false; lineageProven=0; rowsExistLineageUnproven=6)
 - **CRITICAL runtime_db_identity**: Runtime TerraFusion DB identity did not pass. (apiBaseUrl=http://localhost:5046; database=terrafusion)
-- **HIGH public_site**: terrafusionmarket.com public-site smoke evidence is missing.
+- **HIGH public_site**: terrafusionmarket.com public-site smoke is not passing. (access_policy: Public signup is disabled and no access-request channel is exposed by /api/auth/access-policy.)
 - **HIGH endpoint_contract**: Endpoint contract smoke evidence is missing.
 
 ## Warnings
 
+- **public_site**: terrafusionmarket.com public-site smoke has warnings. (1 warning(s))
 - **rust_runtime**: Rust runtime usage evidence is missing.
 
 ## Required Fix Order

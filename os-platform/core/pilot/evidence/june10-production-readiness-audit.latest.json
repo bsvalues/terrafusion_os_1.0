@@ -1,9 +1,9 @@
 {
-  "generatedAtUtc": "2026-05-19T19:24:37.956Z",
+  "generatedAtUtc": "2026-05-19T20:06:08.345Z",
   "verdict": "not_ready",
   "summary": {
     "shipBlockers": 6,
-    "warnings": 1,
+    "warnings": 2,
     "readinessStatus": "FAIL",
     "redTeamVerdict": "RED",
     "productLoadLedgerPassed": false,
@@ -11,7 +11,7 @@
     "runtimeDbIdentityPassed": false,
     "runtimeApiBaseUrl": "http://localhost:5046",
     "runtimeDatabase": "terrafusion",
-    "publicSiteBaseUrl": null,
+    "publicSiteBaseUrl": "https://terrafusionmarket.com",
     "failedRuntimeProbes": null,
     "contractMismatches": null,
     "rustCrates": null,
@@ -45,8 +45,8 @@
     {
       "source": "public_site",
       "severity": "HIGH",
-      "message": "terrafusionmarket.com public-site smoke evidence is missing.",
-      "evidence": null
+      "message": "terrafusionmarket.com public-site smoke is not passing.",
+      "evidence": "access_policy: Public signup is disabled and no access-request channel is exposed by /api/auth/access-policy."
     },
     {
       "source": "endpoint_contract",
@@ -56,6 +56,11 @@
     }
   ],
   "warnings": [
+    {
+      "source": "public_site",
+      "message": "terrafusionmarket.com public-site smoke has warnings.",
+      "evidence": "1 warning(s)"
+    },
     {
       "source": "rust_runtime",
       "message": "Rust runtime usage evidence is missing.",

@@ -156,6 +156,26 @@ export function buildJune10ProductionReadinessAudit({
 
   if (!publicSite) {
     addBlocker(blockers, "public_site", "HIGH", "terrafusionmarket.com public-site smoke evidence is missing.");
+  } else if (typeof publicSite.passed === "boolean") {
+    if (publicSite.passed !== true) {
+      addBlocker(
+        blockers,
+        "public_site",
+        "HIGH",
+        "terrafusionmarket.com public-site smoke is not passing.",
+        (publicSite.blockers ?? []).map((blocker) => `${blocker.source}: ${blocker.message}`).join("; ") ||
+          `blockers=${publicSite.summary?.blockers ?? "unknown"}`
+      );
+    }
+
+    if ((publicSite.warnings ?? []).length > 0) {
+      addWarning(
+        warnings,
+        "public_site",
+        "terrafusionmarket.com public-site smoke has warnings.",
+        `${publicSite.warnings.length} warning(s)`
+      );
+    }
   } else {
     const signup = routeByPath(publicSite, "/signup");
     if (!signup || signup.status !== 200 || (hasSignupDeadEndLanguage(signup) && !hasAccessRequestLanguage(signup))) {
