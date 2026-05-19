@@ -103,6 +103,22 @@ function parseArgs(): BundleOptions {
   return opts;
 }
 
+function resolveZipName(opts: BundleOptions, baseSha: string): string {
+  const shortSha = baseSha.slice(0, 8);
+  const runIdSuffix = opts.runId || 'local';
+  const zipName = opts.name || `autonomy-evidence-${shortSha}-${runIdSuffix}.zip`;
+
+  if (/[\\/:]/.test(zipName) || zipName === '.' || zipName === '..') {
+    throw new Error(`Invalid bundle name: ${zipName}`);
+  }
+
+  if (!zipName.endsWith('.zip')) {
+    throw new Error(`Bundle name must end with .zip: ${zipName}`);
+  }
+
+  return zipName;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // File Loading
 // ─────────────────────────────────────────────────────────────────────────────
@@ -432,9 +448,7 @@ export function main(): void {
   const zipBuf = buildDeterministicZip(files);
 
   // Determine output filename
-  const shortSha = baseSha.slice(0, 8);
-  const runIdSuffix = opts.runId || 'local';
-  const zipName = opts.name || `autonomy-evidence-${shortSha}-${runIdSuffix}.zip`;
+  const zipName = resolveZipName(opts, baseSha);
   const zipPath = join(opts.outDir, zipName);
 
   // Write ZIP

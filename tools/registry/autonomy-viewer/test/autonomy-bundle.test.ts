@@ -353,6 +353,31 @@ node --test os-platform/core/tests/phase83-tools.test.mjs
       rmSync(root, { recursive: true, force: true });
     }
   });
+
+  it('rejects bundle names that escape the output directory', () => {
+    const root = makeBundleFixture();
+    const outDir = join(root, 'dist');
+    const originalArgv = process.argv;
+
+    try {
+      process.argv = [
+        process.execPath,
+        resolve('tools/registry/autonomy-viewer/src/bundle.ts'),
+        '--in',
+        root,
+        '--out',
+        outDir,
+        '--name',
+        '../escape.zip',
+        '--emit-manifest',
+      ];
+
+      assert.throws(() => runBundleCli(), /Invalid bundle name/);
+    } finally {
+      process.argv = originalArgv;
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
