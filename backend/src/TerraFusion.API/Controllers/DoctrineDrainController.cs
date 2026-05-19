@@ -292,7 +292,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(ownerSeedS1.LoadBatchId);
                 if (!IsCompleted(ownerSeedS1.Status))
                     return await FailLaneAsync(LaneName, "Owner-Seed-S1", ownerSeedS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 ownerSeedBatchId = ownerSeedS1.LoadBatchId;
                 await resume.CheckpointAsync("Owner-Seed-S1", batchIds, cancellationToken);
                 seedPropIds = await _db.LegacyPacsRawOwners
@@ -319,7 +319,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(parcelS1.LoadBatchId);
                 if (!IsCompleted(parcelS1.Status))
                     return await FailLaneAsync(LaneName, "Parcel-S1", parcelS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 parcelS1BatchId = parcelS1.LoadBatchId;
                 parcelS1RowsLanded = parcelS1.RowsLanded;
                 await resume.CheckpointAsync("Parcel-S1", batchIds, cancellationToken);
@@ -341,7 +341,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(parcelSpine.PromotionLoadBatchId);
                 if (!IsCompleted(parcelSpine.Status))
                     return await FailLaneAsync(LaneName, "Parcel-Spine", parcelSpine.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 spineBatchId = parcelSpine.PromotionLoadBatchId;
                 spineRowsPromoted = parcelSpine.ParcelsPromoted;
                 await resume.CheckpointAsync("Parcel-Spine", batchIds, cancellationToken);
@@ -361,7 +361,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(parcelCanon.PromotionLoadBatchId);
                 if (!IsCompleted(parcelCanon.Status))
                     return await FailLaneAsync(LaneName, "Parcel-Canonical", parcelCanon.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 canonProjected = parcelCanon.ParcelsProjected;
                 await resume.CheckpointAsync("Parcel-Canonical", batchIds, cancellationToken);
             }
@@ -381,7 +381,7 @@ public class DoctrineDrainController : ControllerBase
         {
             _logger.LogError(ex, "[Drain:parcel] FAILED");
             return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
-                batchIds, startedAt, quarantineBefore, cancellationToken);
+                batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
         }
     }
 
@@ -451,9 +451,10 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(ownerS1.LoadBatchId);
                 if (!IsCompleted(ownerS1.Status))
                     return await FailLaneAsync(LaneName, "Owner-S1", ownerS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 ownerS1BatchId = ownerS1.LoadBatchId;
                 ownerS1RowsLanded = ownerS1.RowsLanded;
+                rowsLanded = ownerS1RowsLanded;
                 await resume.CheckpointAsync("Owner-S1", batchIds, cancellationToken);
             }
 
@@ -483,7 +484,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(acctS1.LoadBatchId);
                 if (!IsCompleted(acctS1.Status))
                     return await FailLaneAsync(LaneName, "Account-S1", acctS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 acctS1BatchId = acctS1.LoadBatchId;
                 await resume.CheckpointAsync("Account-S1", batchIds, cancellationToken);
             }
@@ -502,7 +503,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(suppS1.LoadBatchId);
                 if (!IsCompleted(suppS1.Status))
                     return await FailLaneAsync(LaneName, "Supp-S1", suppS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 suppS1BatchId = suppS1.LoadBatchId;
                 await resume.CheckpointAsync("Supp-S1", batchIds, cancellationToken);
             }
@@ -521,7 +522,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(parcelS1.LoadBatchId);
                 if (!IsCompleted(parcelS1.Status))
                     return await FailLaneAsync(LaneName, "Parcel-S1", parcelS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 parcelS1BatchId = parcelS1.LoadBatchId;
                 await resume.CheckpointAsync("Parcel-S1", batchIds, cancellationToken);
             }
@@ -539,7 +540,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(parcelSpine.PromotionLoadBatchId);
                 if (!IsCompleted(parcelSpine.Status))
                     return await FailLaneAsync(LaneName, "Parcel-Spine", parcelSpine.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 parcelSpineBatchId = parcelSpine.PromotionLoadBatchId;
                 await resume.CheckpointAsync("Parcel-Spine", batchIds, cancellationToken);
             }
@@ -556,7 +557,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(parcelCanon.PromotionLoadBatchId);
                 if (!IsCompleted(parcelCanon.Status))
                     return await FailLaneAsync(LaneName, "Parcel-Canonical", parcelCanon.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 await resume.CheckpointAsync("Parcel-Canonical", batchIds, cancellationToken);
             }
 
@@ -575,7 +576,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(ownerTruth.PromotionLoadBatchId);
                 if (!IsCompleted(ownerTruth.Status))
                     return await FailLaneAsync(LaneName, "Owner-Truth", ownerTruth.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 ownerTruthBatchId = ownerTruth.PromotionLoadBatchId;
                 ownerTruthOwnersPromoted = ownerTruth.OwnersPromoted;
                 await resume.CheckpointAsync("Owner-Truth", batchIds, cancellationToken);
@@ -595,7 +596,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(ownerCanon.PromotionLoadBatchId);
                 if (!IsCompleted(ownerCanon.Status))
                     return await FailLaneAsync(LaneName, "Owner-Canonical", ownerCanon.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 ownerCanonOwnersProjected = ownerCanon.OwnersProjected;
                 ownerCanonLinksProjected = ownerCanon.LinksProjected;
                 await resume.CheckpointAsync("Owner-Canonical", batchIds, cancellationToken);
@@ -625,9 +626,10 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(wpovS1.LoadBatchId);
                 if (!IsCompleted(wpovS1.Status))
                     return await FailLaneAsync(LaneName, "WPOV-S1", wpovS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 wpovS1BatchId = wpovS1.LoadBatchId;
                 wpovS1RowsLanded = wpovS1.RowsLanded;
+                rowsLanded = ownerS1RowsLanded + wpovS1RowsLanded;
                 await resume.CheckpointAsync("WPOV-S1", batchIds, cancellationToken);
             }
 
@@ -646,7 +648,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(wpovTruth.PromotionLoadBatchId);
                 if (!IsCompleted(wpovTruth.Status))
                     return await FailLaneAsync(LaneName, "WPOV-Truth", wpovTruth.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 wpovTruthBatchId = wpovTruth.PromotionLoadBatchId;
                 wpovTruthRowsPromoted = wpovTruth.RowsPromoted;
                 await resume.CheckpointAsync("WPOV-Truth", batchIds, cancellationToken);
@@ -665,7 +667,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(wsdorCanon.PromotionLoadBatchId);
                 if (!IsCompleted(wsdorCanon.Status))
                     return await FailLaneAsync(LaneName, "WSDOR-Canonical", wsdorCanon.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 wsdorCanonRowsProjected = wsdorCanon.RowsProjected;
                 await resume.CheckpointAsync("WSDOR-Canonical", batchIds, cancellationToken);
             }
@@ -688,7 +690,7 @@ public class DoctrineDrainController : ControllerBase
         {
             _logger.LogError(ex, "[Drain:owner-wsdor] FAILED");
             return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
-                batchIds, startedAt, quarantineBefore, cancellationToken);
+                batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
         }
     }
 
@@ -758,7 +760,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(ownerSeedS1.LoadBatchId);
                 if (!IsCompleted(ownerSeedS1.Status))
                     return await FailLaneAsync(LaneName, "Owner-Seed-S1", ownerSeedS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 ownerSeedBatchId = ownerSeedS1.LoadBatchId;
                 await resume.CheckpointAsync("Owner-Seed-S1", batchIds, cancellationToken);
             }
@@ -784,7 +786,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(parcelS1.LoadBatchId);
                 if (!IsCompleted(parcelS1.Status))
                     return await FailLaneAsync(LaneName, "Parcel-S1", parcelS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 parcelS1BatchId = parcelS1.LoadBatchId;
                 await resume.CheckpointAsync("Parcel-S1", batchIds, cancellationToken);
             }
@@ -802,7 +804,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(parcelSpine.PromotionLoadBatchId);
                 if (!IsCompleted(parcelSpine.Status))
                     return await FailLaneAsync(LaneName, "Parcel-Spine", parcelSpine.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 parcelSpineBatchId = parcelSpine.PromotionLoadBatchId;
                 await resume.CheckpointAsync("Parcel-Spine", batchIds, cancellationToken);
             }
@@ -819,7 +821,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(parcelCanon.PromotionLoadBatchId);
                 if (!IsCompleted(parcelCanon.Status))
                     return await FailLaneAsync(LaneName, "Parcel-Canonical", parcelCanon.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 await resume.CheckpointAsync("Parcel-Canonical", batchIds, cancellationToken);
             }
 
@@ -845,7 +847,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(suppS1.LoadBatchId);
                 if (!IsCompleted(suppS1.Status))
                     return await FailLaneAsync(LaneName, "Supp-S1", suppS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 suppS1BatchId = suppS1.LoadBatchId;
                 await resume.CheckpointAsync("Supp-S1", batchIds, cancellationToken);
             }
@@ -907,9 +909,10 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(imprvS1.LoadBatchId);
                 if (!IsCompleted(imprvS1.Status))
                     return await FailLaneAsync(LaneName, "Imprv-S1", imprvS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 imprvS1BatchId = imprvS1.LoadBatchId;
                 imprvS1RowsLanded = imprvS1.RowsLanded;
+                rowsLanded = imprvS1RowsLanded;
                 await resume.CheckpointAsync("Imprv-S1", batchIds, cancellationToken);
             }
 
@@ -926,8 +929,9 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(detailS1.LoadBatchId);
                 if (!IsCompleted(detailS1.Status))
                     return await FailLaneAsync(LaneName, "ImprvDetail-S1", detailS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 detailS1RowsLanded = detailS1.RowsLanded;
+                rowsLanded = imprvS1RowsLanded + detailS1RowsLanded;
                 await resume.CheckpointAsync("ImprvDetail-S1", batchIds, cancellationToken);
             }
 
@@ -963,6 +967,7 @@ public class DoctrineDrainController : ControllerBase
                     operatorName, startedAt, quarantineBefore,
                     cancellationToken);
                 attrS1RowsLanded = yearSliced.TotalRowsLanded;
+                rowsLanded = imprvS1RowsLanded + detailS1RowsLanded + attrS1RowsLanded;
                 if (yearSliced.FailureResponse is not null)
                 {
                     return yearSliced.FailureResponse;
@@ -995,7 +1000,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(imprvTruth.PromotionLoadBatchId);
                 if (!IsCompleted(imprvTruth.Status))
                     return await FailLaneAsync(LaneName, "Imprv-Truth", imprvTruth.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 imprvTruthBatchId = imprvTruth.PromotionLoadBatchId;
                 imprvTruthImprvsPromoted = imprvTruth.ImprvsPromoted;
                 await resume.CheckpointAsync("Imprv-Truth", batchIds, cancellationToken);
@@ -1015,7 +1020,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(imprvCanon.PromotionLoadBatchId);
                 if (!IsCompleted(imprvCanon.Status))
                     return await FailLaneAsync(LaneName, "Imprv-Canonical", imprvCanon.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 imprvCanonImprovementsProjected = imprvCanon.ImprovementsProjected;
                 imprvCanonFeaturesProjected = imprvCanon.FeaturesProjected;
                 await resume.CheckpointAsync("Imprv-Canonical", batchIds, cancellationToken);
@@ -1039,7 +1044,7 @@ public class DoctrineDrainController : ControllerBase
         {
             _logger.LogError(ex, "[Drain:improvement] FAILED");
             return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
-                batchIds, startedAt, quarantineBefore, cancellationToken);
+                batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
         }
     }
 
@@ -1103,7 +1108,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(ownerSeedS1.LoadBatchId);
                 if (!IsCompleted(ownerSeedS1.Status))
                     return await FailLaneAsync(LaneName, "Owner-Seed-S1", ownerSeedS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 ownerSeedBatchId = ownerSeedS1.LoadBatchId;
                 await resume.CheckpointAsync("Owner-Seed-S1", batchIds, cancellationToken);
             }
@@ -1129,7 +1134,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(parcelS1.LoadBatchId);
                 if (!IsCompleted(parcelS1.Status))
                     return await FailLaneAsync(LaneName, "Parcel-S1", parcelS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 parcelS1BatchId = parcelS1.LoadBatchId;
                 await resume.CheckpointAsync("Parcel-S1", batchIds, cancellationToken);
             }
@@ -1147,7 +1152,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(parcelSpine.PromotionLoadBatchId);
                 if (!IsCompleted(parcelSpine.Status))
                     return await FailLaneAsync(LaneName, "Parcel-Spine", parcelSpine.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 parcelSpineBatchId = parcelSpine.PromotionLoadBatchId;
                 await resume.CheckpointAsync("Parcel-Spine", batchIds, cancellationToken);
             }
@@ -1164,7 +1169,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(parcelCanon.PromotionLoadBatchId);
                 if (!IsCompleted(parcelCanon.Status))
                     return await FailLaneAsync(LaneName, "Parcel-Canonical", parcelCanon.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 await resume.CheckpointAsync("Parcel-Canonical", batchIds, cancellationToken);
             }
 
@@ -1190,7 +1195,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(suppS1.LoadBatchId);
                 if (!IsCompleted(suppS1.Status))
                     return await FailLaneAsync(LaneName, "Supp-S1", suppS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 suppS1BatchId = suppS1.LoadBatchId;
                 await resume.CheckpointAsync("Supp-S1", batchIds, cancellationToken);
             }
@@ -1210,9 +1215,10 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(landS1.LoadBatchId);
                 if (!IsCompleted(landS1.Status))
                     return await FailLaneAsync(LaneName, "Land-S1", landS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 landS1BatchId = landS1.LoadBatchId;
                 landS1RowsLanded = landS1.RowsLanded;
+                rowsLanded = landS1RowsLanded;
                 await resume.CheckpointAsync("Land-S1", batchIds, cancellationToken);
             }
 
@@ -1231,7 +1237,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(landTruth.PromotionLoadBatchId);
                 if (!IsCompleted(landTruth.Status))
                     return await FailLaneAsync(LaneName, "Land-Truth", landTruth.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 landTruthBatchId = landTruth.PromotionLoadBatchId;
                 landTruthLandSegsPromoted = landTruth.LandSegsPromoted;
                 await resume.CheckpointAsync("Land-Truth", batchIds, cancellationToken);
@@ -1250,7 +1256,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(landCanon.PromotionLoadBatchId);
                 if (!IsCompleted(landCanon.Status))
                     return await FailLaneAsync(LaneName, "Land-Canonical", landCanon.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 landCanonLandsProjected = landCanon.LandsProjected;
                 await resume.CheckpointAsync("Land-Canonical", batchIds, cancellationToken);
             }
@@ -1273,7 +1279,7 @@ public class DoctrineDrainController : ControllerBase
         {
             _logger.LogError(ex, "[Drain:land] FAILED");
             return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
-                batchIds, startedAt, quarantineBefore, cancellationToken);
+                batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
         }
     }
 
@@ -1340,9 +1346,10 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(saleS1.LoadBatchId);
                 if (!IsCompleted(saleS1.Status))
                     return await FailLaneAsync(LaneName, "Sale-S1", saleS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 saleS1BatchId = saleS1.LoadBatchId;
                 saleS1RowsLanded = saleS1.RowsLanded;
+                rowsLanded = saleS1RowsLanded;
                 await resume.CheckpointAsync("Sale-S1", batchIds, cancellationToken);
             }
 
@@ -1369,7 +1376,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(saleSuppS1.LoadBatchId);
                 if (!IsCompleted(saleSuppS1.Status))
                     return await FailLaneAsync(LaneName, "Sale-Supp-S1", saleSuppS1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 saleSuppS1BatchId = saleSuppS1.LoadBatchId;
                 await resume.CheckpointAsync("Sale-Supp-S1", batchIds, cancellationToken);
             }
@@ -1389,7 +1396,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(saleTruth.PromotionLoadBatchId);
                 if (!IsCompleted(saleTruth.Status))
                     return await FailLaneAsync(LaneName, "Sale-Truth", saleTruth.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 saleTruthBatchId = saleTruth.PromotionLoadBatchId;
                 saleTruthSalesPromoted = saleTruth.SalesPromoted;
                 await resume.CheckpointAsync("Sale-Truth", batchIds, cancellationToken);
@@ -1420,7 +1427,7 @@ public class DoctrineDrainController : ControllerBase
                     batchIds.Add(saleParcelS1.LoadBatchId);
                     if (!IsCompleted(saleParcelS1.Status))
                         return await FailLaneAsync(LaneName, "Sale-Parcel-S1", saleParcelS1.ErrorSummary,
-                            batchIds, startedAt, quarantineBefore, cancellationToken);
+                            batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                     saleParcelS1BatchId = saleParcelS1.LoadBatchId;
                     await resume.CheckpointAsync("Sale-Parcel-S1", batchIds, cancellationToken);
                 }
@@ -1438,7 +1445,7 @@ public class DoctrineDrainController : ControllerBase
                     batchIds.Add(saleParcelSpine.PromotionLoadBatchId);
                     if (!IsCompleted(saleParcelSpine.Status))
                         return await FailLaneAsync(LaneName, "Sale-Parcel-Spine", saleParcelSpine.ErrorSummary,
-                            batchIds, startedAt, quarantineBefore, cancellationToken);
+                            batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                     saleParcelSpineBatchId = saleParcelSpine.PromotionLoadBatchId;
                     await resume.CheckpointAsync("Sale-Parcel-Spine", batchIds, cancellationToken);
                 }
@@ -1455,7 +1462,7 @@ public class DoctrineDrainController : ControllerBase
                     batchIds.Add(saleParcelCanon.PromotionLoadBatchId);
                     if (!IsCompleted(saleParcelCanon.Status))
                         return await FailLaneAsync(LaneName, "Sale-Parcel-Canonical", saleParcelCanon.ErrorSummary,
-                            batchIds, startedAt, quarantineBefore, cancellationToken);
+                            batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                     await resume.CheckpointAsync("Sale-Parcel-Canonical", batchIds, cancellationToken);
                 }
 
@@ -1471,7 +1478,7 @@ public class DoctrineDrainController : ControllerBase
                     batchIds.Add(saleCanon.PromotionLoadBatchId);
                     if (!IsCompleted(saleCanon.Status))
                         return await FailLaneAsync(LaneName, "Sale-Canonical", saleCanon.ErrorSummary,
-                            batchIds, startedAt, quarantineBefore, cancellationToken);
+                            batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                     salesProjected = saleCanon.SalesProjected;
                     await resume.CheckpointAsync("Sale-Canonical", batchIds, cancellationToken);
                 }
@@ -1495,7 +1502,7 @@ public class DoctrineDrainController : ControllerBase
         {
             _logger.LogError(ex, "[Drain:sales] FAILED");
             return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
-                batchIds, startedAt, quarantineBefore, cancellationToken);
+                batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
         }
     }
 
@@ -1550,8 +1557,9 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(d1.LoadBatchId);
                 if (!IsCompleted(d1.Status))
                     return await FailLaneAsync(LaneName, "ArcGis-D1", d1.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 d1FeaturesLanded = d1.FeaturesLanded;
+                rowsLanded = d1FeaturesLanded;
                 await resume.CheckpointAsync("ArcGis-D1", batchIds, cancellationToken);
             }
 
@@ -1567,7 +1575,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(d2.PromotionLoadBatchId);
                 if (!IsCompleted(d2.Status))
                     return await FailLaneAsync(LaneName, "ArcGis-D2", d2.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 d2RowsPromoted = d2.RowsPromoted;
                 await resume.CheckpointAsync("ArcGis-D2", batchIds, cancellationToken);
             }
@@ -1584,7 +1592,7 @@ public class DoctrineDrainController : ControllerBase
                 batchIds.Add(d3.PromotionLoadBatchId);
                 if (!IsCompleted(d3.Status))
                     return await FailLaneAsync(LaneName, "ArcGis-D3", d3.ErrorSummary,
-                        batchIds, startedAt, quarantineBefore, cancellationToken);
+                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
                 d3RowsProjected = d3.RowsProjected;
                 await resume.CheckpointAsync("ArcGis-D3", batchIds, cancellationToken);
             }
@@ -1607,7 +1615,7 @@ public class DoctrineDrainController : ControllerBase
         {
             _logger.LogError(ex, "[Drain:geometry] FAILED");
             return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
-                batchIds, startedAt, quarantineBefore, cancellationToken);
+                batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
         }
     }
 
@@ -1781,7 +1789,7 @@ public class DoctrineDrainController : ControllerBase
                 // the persisted LastCompletedStage reflects the exact
                 // year that failed and resume picks up there.
                 var failResponse = await FailLaneAsync(LaneName, stageName, attrSlice.ErrorSummary,
-                    batchIds, startedAt, quarantineBefore, cancellationToken);
+                    batchIds, totalRowsLanded, startedAt, quarantineBefore, cancellationToken);
                 return new YearSlicedImprvAttrResult
                 {
                     LastBatchId = null,
@@ -1943,13 +1951,17 @@ public class DoctrineDrainController : ControllerBase
     private async System.Threading.Tasks.Task EmitGateMetricsAsync(
         string lane,
         IReadOnlyList<Guid> batchIds,
+        DateTime emittedAfterUtc,
         CancellationToken cancellationToken)
     {
         if (batchIds.Count == 0) return;
         try
         {
             var failedByName = await _db.SyncBridgePromotionGateResults
-                .Where(g => batchIds.Contains(g.LoadBatchId) && g.Status == "FAIL")
+                .Where(g =>
+                    batchIds.Contains(g.LoadBatchId) &&
+                    g.Status == "FAIL" &&
+                    g.ExecutedAt >= emittedAfterUtc)
                 .GroupBy(g => g.GateName)
                 .Select(g => new { name = g.Key, count = g.Count() })
                 .ToListAsync(cancellationToken);
@@ -1988,8 +2000,13 @@ public class DoctrineDrainController : ControllerBase
         var durationSec = (DateTime.UtcNow - startedAt).TotalSeconds;
 
         // PR-8 Prometheus H22: emit metrics before the HTTP response.
-        EmitLaneCompletionMetrics(lane, success: true, durationSec, rowsLanded, failedStage: null);
-        await EmitGateMetricsAsync(lane, batchIds, cancellationToken);
+        EmitLaneCompletionMetrics(
+            lane,
+            success: true,
+            durationSeconds: durationSec,
+            rowsLanded: rowsLanded,
+            failedStage: null);
+        await EmitGateMetricsAsync(lane, batchIds, startedAt, cancellationToken);
 
         return Ok(new
         {
@@ -2052,6 +2069,7 @@ public class DoctrineDrainController : ControllerBase
         string failedStage,
         string? errorSummary,
         List<Guid> batchIds,
+        int rowsLanded,
         DateTime startedAt,
         int quarantineBefore,
         CancellationToken cancellationToken)
@@ -2075,11 +2093,13 @@ public class DoctrineDrainController : ControllerBase
         var durationSec = (DateTime.UtcNow - startedAt).TotalSeconds;
 
         // PR-8 Prometheus H22: emit metrics before the HTTP response.
-        // rowsLanded=0 on lane failure (failure can occur before any
-        // landing succeeds; finer-grained per-stage rowsLanded is out
-        // of scope for this PR since lane locals aren't passed in).
-        EmitLaneCompletionMetrics(lane, success: false, durationSec, rowsLanded: 0, failedStage: failedStage);
-        await EmitGateMetricsAsync(lane, batchIds, cancellationToken);
+        EmitLaneCompletionMetrics(
+            lane,
+            success: false,
+            durationSeconds: durationSec,
+            rowsLanded: rowsLanded,
+            failedStage: failedStage);
+        await EmitGateMetricsAsync(lane, batchIds, startedAt, cancellationToken);
 
         return new ObjectResult(new
         {
@@ -2090,7 +2110,7 @@ public class DoctrineDrainController : ControllerBase
             batchIds,
             counts = new
             {
-                rowsLanded = 0,
+                rowsLanded,
                 rowsPromotedToTruth = 0,
                 rowsCanonicalized = 0,
                 rowsQuarantinedThisLane = Math.Max(0, quarantineAfter - quarantineBefore),
