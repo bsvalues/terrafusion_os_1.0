@@ -111,6 +111,7 @@
     "truth:june10-endpoint-contract-smoke": "node os-platform/core/pilot/june10-endpoint-contract-smoke.mjs",
     "truth:june10-public-site-smoke": "node os-platform/core/pilot/june10-public-site-smoke.mjs",
     "truth:june10-red-team": "node os-platform/core/pilot/june10-red-team.mjs",
+    "truth:june10-rust-runtime-usage": "node os-platform/core/pilot/june10-rust-runtime-usage.mjs",
     "truth:june10-readiness-packet": "node scripts/truth/june10-readiness-packet.mjs",
     "truth:june10-seed-control-plane": "node os-platform/core/pilot/june10-seed-control-plane.mjs",
     "truth:june10-seed-execution-status": "node os-platform/core/pilot/june10-seed-execution-status.mjs",

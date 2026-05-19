@@ -1,6 +1,6 @@
 # June 10 Production Readiness Audit
 
-Generated: 2026-05-19T20:16:37.024Z
+Generated: 2026-05-19T21:23:02.262Z
 
 Verdict: not_ready
 
@@ -18,8 +18,8 @@ Verdict: not_ready
 - Public site: https://terrafusionmarket.com
 - Failed runtime probes: 4
 - Contract mismatches: 4
-- Rust crates: missing
-- Rust runtime integrations: missing
+- Rust crates: 101
+- Rust runtime integrations: 3
 
 ## Ship Blockers
 
@@ -34,7 +34,7 @@ Verdict: not_ready
 ## Warnings
 
 - **public_site**: terrafusionmarket.com public-site smoke has warnings. (1 warning(s))
-- **rust_runtime**: Rust runtime usage evidence is missing.
+- **rust_runtime**: Rust engines exist, but live production runtime use is not proven. (crates=101; integrations=3)
 
 ## Required Fix Order
 

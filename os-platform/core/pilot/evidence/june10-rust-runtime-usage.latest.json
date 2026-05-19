@@ -1,0 +1,1191 @@
+{
+  "generatedAtUtc": "2026-05-19T21:15:51.237Z",
+  "repoRoot": "C:\\Users\\bsval\\.config\\superpowers\\worktrees\\terrafusion_os_1.0\\june10-production-readiness-audit-gate",
+  "passed": false,
+  "summary": {
+    "rustCrates": 101,
+    "launchRelevantRustCrates": 2,
+    "quarantinedRustCrates": 78,
+    "runtimeIntegrations": 3,
+    "liveProvenRuntimeIntegrations": 0,
+    "expectedBinaries": 2,
+    "missingBinaries": 2,
+    "normalWorkflowStubs": 0,
+    "unusedRustServices": 1,
+    "blockers": 0,
+    "warnings": 3
+  },
+  "crates": [
+    {
+      "name": "web_audit_tracker",
+      "path": "os-platform/specialized/web-audit-tracker/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "terra-agent-desktop",
+      "path": "packages/commercial/modules/01-terra-agent/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "terra_flow",
+      "path": "packages/commercial/modules/02-terra-flow/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "web_audit_tracker",
+      "path": "packages/commercial/modules/03-web-audit-tracker/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "terra-levy",
+      "path": "packages/commercial/modules/04-terra-levy/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "terra-miner",
+      "path": "packages/commercial/modules/05-terra-miner/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "terra-fusion-sync",
+      "path": "packages/commercial/modules/06-terra-fusion-sync/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "gispro",
+      "path": "packages/commercial/modules/07-gispro/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "costforge-ai",
+      "path": "packages/commercial/modules/08-costforge-ai/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "property-workbench",
+      "path": "packages/commercial/modules/09-property-workbench/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "terra_insight",
+      "path": "packages/commercial/modules/10-terra-insight/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "terra_fusion_dashboard",
+      "path": "packages/commercial/modules/11-terra-fusion-dashboard/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "terra_fusion_assessor",
+      "path": "packages/commercial/modules/12-terra-fusion-assessor/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "terrafusion_marketplace",
+      "path": "packages/commercial/modules/13-marketplace/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "01_terra_agent",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/01-terra-agent/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "02_terra_flow",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/02-terra-flow/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "03_web_audit_tracker",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/03-web-audit-tracker/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "04_terra_levy",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/04-terra-levy/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "05_terra_miner",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/05-terra-miner/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "06_terra_fusion_sync",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/06-terra-fusion-sync/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "07_gispro",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/07-gispro/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "costforge-ai",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/08-costforge-ai/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "09_property_workbench",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/09-property-workbench/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "10_terra_insight",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/10-terra-insight/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "11_terra_fusion_dashboard",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/11-terra-fusion-dashboard/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "12_terra_fusion_assessor",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/12-terra-fusion-assessor/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_flow",
+      "path": "packages/terra-flow/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "terra_insight",
+      "path": "packages/terra-insight/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "terra-levy",
+      "path": "packages/terra-levy/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "terra-miner",
+      "path": "packages/terra-miner/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "terra-fusion-sync",
+      "path": "packages/terra-sync/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "terraforge-kernel-cost",
+      "path": "packages/terrabuild/kernels/terraforge.kernel.cost/Cargo.toml",
+      "launchRelevant": true,
+      "quarantined": false
+    },
+    {
+      "name": "terraforge-kernel-valuation",
+      "path": "packages/terrabuild/kernels/terraforge.kernel.valuation/Cargo.toml",
+      "launchRelevant": true,
+      "quarantined": false
+    },
+    {
+      "name": "terrabuild-backend",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-build-actual/backend/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-launcher",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-build-actual/deployment/tauri-launcher/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-launcher",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-build-actual/TerraFusion_Build_PRODUCTION/deployment/tauri-launcher/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "universal_conversion_agent",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-pro-production/rust_agent/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion_import",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-pro-production/terrafusion_import/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion_rust",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-pro-production/terrafusion_rust/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_fusion_pro",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-prof-production/terra_fusion_pro/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "analysis_service",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-prof-production/terra_fusion_pro/services/analysis_service/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "api_gateway",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-prof-production/terra_fusion_pro/services/api_gateway/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "form_service",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-prof-production/terra_fusion_pro/services/form_service/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "property_service",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-prof-production/terra_fusion_pro/services/property_service/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "report_service",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-prof-production/terra_fusion_pro/services/report_service/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "user_service",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-prof-production/terra_fusion_pro/services/user_service/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "shared",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-prof-production/terra_fusion_pro/shared/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "web_client",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-prof-production/terra_fusion_pro/web_client/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terraforge-kernel-cost",
+      "path": "QUARANTINE/top-level-dirs/applications/terraforge-suite/modules/terraforge.kernel.cost/Cargo.toml",
+      "launchRelevant": true,
+      "quarantined": true
+    },
+    {
+      "name": "terraforge-kernel-valuation",
+      "path": "QUARANTINE/top-level-dirs/applications/terraforge-suite/modules/terraforge.kernel.valuation/Cargo.toml",
+      "launchRelevant": true,
+      "quarantined": true
+    },
+    {
+      "name": "terra-agent-desktop",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/01-terra-agent/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_flow",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/02-terra-flow/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "web_audit_tracker",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/03-web-audit-tracker/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-levy",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/04-terra-levy/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-miner",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/05-terra-miner/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-fusion-sync",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/06-terra-fusion-sync/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "gispro",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/07-gispro/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "property-workbench",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/09-property-workbench/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_insight",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/10-terra-insight/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_fusion_dashboard",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/11-terra-fusion-dashboard/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_fusion_assessor",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/12-terra-fusion-assessor/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion_marketplace",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/13-marketplace/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-collections",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/14-terra-collections/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-agent-desktop",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/15-customer-service/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-commercial",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Commercial_Software/backend/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-agent-desktop",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/01-terra-agent/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_flow",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/02-terra-flow/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "web_audit_tracker",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/03-web-audit-tracker/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-levy",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/04-terra-levy/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-miner",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/05-terra-miner/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-fusion-sync",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/06-terra-fusion-sync/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "gispro",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/07-gispro/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "costforge-ai",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/08-costforge-ai/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "property-workbench",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/09-property-workbench/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_insight",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/10-terra-insight/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_fusion_dashboard",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/11-terra-fusion-dashboard/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_fusion_assessor",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/12-terra-fusion-assessor/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-commercial",
+      "path": "QUARANTINE/top-level-dirs/marketplace/commercial/backend/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-commercial",
+      "path": "QUARANTINE/top-level-dirs/marketplace/commercial/commercial-suite/backend/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion_marketplace",
+      "path": "QUARANTINE/top-level-dirs/marketplace/commercial/marketplace-champion/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "costforge-ai",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/costforge-ai-enhanced/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "gispro",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/gispro/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-agent-desktop",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/terra-agent/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-collections",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/terra-collections/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_flow",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/terra-flow/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_fusion_assessor",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/terra-fusion-assessor/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_fusion_dashboard",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/terra-fusion-dashboard/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-fusion-sync",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/terra-fusion-sync/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_insight",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/terra-insight/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-levy",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/terra-levy/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-miner",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/terra-miner/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-county-demo-system",
+      "path": "QUARANTINE/top-level-dirs/marketplace/shock-and-awe/demos/county-demo-system/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-county-isolation",
+      "path": "QUARANTINE/top-level-dirs/monorepo-scaffolding/services/county-isolation/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-government-compliance",
+      "path": "QUARANTINE/top-level-dirs/monorepo-scaffolding/services/government-compliance/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-harris-pacs-bridge",
+      "path": "QUARANTINE/top-level-dirs/monorepo-scaffolding/services/harris-pacs-bridge/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-os-consciousness",
+      "path": "QUARANTINE/top-level-dirs/monorepo-scaffolding/services/os-consciousness/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-os-core",
+      "path": "QUARANTINE/top-level-dirs/monorepo-scaffolding/services/os-core/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-quantum-optimizer",
+      "path": "QUARANTINE/top-level-dirs/monorepo-scaffolding/services/quantum-optimizer/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion_developer_platform",
+      "path": "QUARANTINE/top-level-dirs/TerraFusion_Command_Portal_Starter/terrafusion-command-portal/backend/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "speclock-tss",
+      "path": "tools/speclock-tss/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    },
+    {
+      "name": "tf-designctl",
+      "path": "tools/tf-designctl-rust/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": false
+    }
+  ],
+  "launchRelevantCrates": [
+    {
+      "name": "terraforge-kernel-cost",
+      "path": "packages/terrabuild/kernels/terraforge.kernel.cost/Cargo.toml",
+      "launchRelevant": true,
+      "quarantined": false
+    },
+    {
+      "name": "terraforge-kernel-valuation",
+      "path": "packages/terrabuild/kernels/terraforge.kernel.valuation/Cargo.toml",
+      "launchRelevant": true,
+      "quarantined": false
+    }
+  ],
+  "quarantinedRustCrates": [
+    {
+      "name": "01_terra_agent",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/01-terra-agent/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "02_terra_flow",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/02-terra-flow/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "03_web_audit_tracker",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/03-web-audit-tracker/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "04_terra_levy",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/04-terra-levy/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "05_terra_miner",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/05-terra-miner/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "06_terra_fusion_sync",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/06-terra-fusion-sync/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "07_gispro",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/07-gispro/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "costforge-ai",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/08-costforge-ai/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "09_property_workbench",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/09-property-workbench/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "10_terra_insight",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/10-terra-insight/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "11_terra_fusion_dashboard",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/11-terra-fusion-dashboard/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "12_terra_fusion_assessor",
+      "path": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/12-terra-fusion-assessor/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrabuild-backend",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-build-actual/backend/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-launcher",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-build-actual/deployment/tauri-launcher/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-launcher",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-build-actual/TerraFusion_Build_PRODUCTION/deployment/tauri-launcher/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "universal_conversion_agent",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-pro-production/rust_agent/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion_import",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-pro-production/terrafusion_import/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion_rust",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-pro-production/terrafusion_rust/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_fusion_pro",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-prof-production/terra_fusion_pro/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "analysis_service",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-prof-production/terra_fusion_pro/services/analysis_service/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "api_gateway",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-prof-production/terra_fusion_pro/services/api_gateway/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "form_service",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-prof-production/terra_fusion_pro/services/form_service/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "property_service",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-prof-production/terra_fusion_pro/services/property_service/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "report_service",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-prof-production/terra_fusion_pro/services/report_service/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "user_service",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-prof-production/terra_fusion_pro/services/user_service/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "shared",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-prof-production/terra_fusion_pro/shared/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "web_client",
+      "path": "QUARANTINE/top-level-dirs/applications/terra-prof-production/terra_fusion_pro/web_client/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terraforge-kernel-cost",
+      "path": "QUARANTINE/top-level-dirs/applications/terraforge-suite/modules/terraforge.kernel.cost/Cargo.toml",
+      "launchRelevant": true,
+      "quarantined": true
+    },
+    {
+      "name": "terraforge-kernel-valuation",
+      "path": "QUARANTINE/top-level-dirs/applications/terraforge-suite/modules/terraforge.kernel.valuation/Cargo.toml",
+      "launchRelevant": true,
+      "quarantined": true
+    },
+    {
+      "name": "terra-agent-desktop",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/01-terra-agent/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_flow",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/02-terra-flow/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "web_audit_tracker",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/03-web-audit-tracker/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-levy",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/04-terra-levy/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-miner",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/05-terra-miner/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-fusion-sync",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/06-terra-fusion-sync/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "gispro",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/07-gispro/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "property-workbench",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/09-property-workbench/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_insight",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/10-terra-insight/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_fusion_dashboard",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/11-terra-fusion-dashboard/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_fusion_assessor",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/12-terra-fusion-assessor/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion_marketplace",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/13-marketplace/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-collections",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/14-terra-collections/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-agent-desktop",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/15-customer-service/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-commercial",
+      "path": "QUARANTINE/top-level-dirs/deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Commercial_Software/backend/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-agent-desktop",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/01-terra-agent/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_flow",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/02-terra-flow/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "web_audit_tracker",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/03-web-audit-tracker/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-levy",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/04-terra-levy/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-miner",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/05-terra-miner/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-fusion-sync",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/06-terra-fusion-sync/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "gispro",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/07-gispro/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "costforge-ai",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/08-costforge-ai/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "property-workbench",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/09-property-workbench/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_insight",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/10-terra-insight/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_fusion_dashboard",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/11-terra-fusion-dashboard/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_fusion_assessor",
+      "path": "QUARANTINE/top-level-dirs/deployment/production/modules/12-terra-fusion-assessor/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-commercial",
+      "path": "QUARANTINE/top-level-dirs/marketplace/commercial/backend/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-commercial",
+      "path": "QUARANTINE/top-level-dirs/marketplace/commercial/commercial-suite/backend/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion_marketplace",
+      "path": "QUARANTINE/top-level-dirs/marketplace/commercial/marketplace-champion/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "costforge-ai",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/costforge-ai-enhanced/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "gispro",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/gispro/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-agent-desktop",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/terra-agent/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-collections",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/terra-collections/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_flow",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/terra-flow/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_fusion_assessor",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/terra-fusion-assessor/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_fusion_dashboard",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/terra-fusion-dashboard/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-fusion-sync",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/terra-fusion-sync/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra_insight",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/terra-insight/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-levy",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/terra-levy/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terra-miner",
+      "path": "QUARANTINE/top-level-dirs/marketplace/government-core/terra-miner/src-tauri/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-county-demo-system",
+      "path": "QUARANTINE/top-level-dirs/marketplace/shock-and-awe/demos/county-demo-system/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-county-isolation",
+      "path": "QUARANTINE/top-level-dirs/monorepo-scaffolding/services/county-isolation/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-government-compliance",
+      "path": "QUARANTINE/top-level-dirs/monorepo-scaffolding/services/government-compliance/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-harris-pacs-bridge",
+      "path": "QUARANTINE/top-level-dirs/monorepo-scaffolding/services/harris-pacs-bridge/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-os-consciousness",
+      "path": "QUARANTINE/top-level-dirs/monorepo-scaffolding/services/os-consciousness/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-os-core",
+      "path": "QUARANTINE/top-level-dirs/monorepo-scaffolding/services/os-core/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion-quantum-optimizer",
+      "path": "QUARANTINE/top-level-dirs/monorepo-scaffolding/services/quantum-optimizer/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    },
+    {
+      "name": "terrafusion_developer_platform",
+      "path": "QUARANTINE/top-level-dirs/TerraFusion_Command_Portal_Starter/terrafusion-command-portal/backend/Cargo.toml",
+      "launchRelevant": false,
+      "quarantined": true
+    }
+  ],
+  "runtimeIntegrations": [
+    {
+      "endpoint": "POST /api/costforge/batch-calculate",
+      "filePath": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
+      "integrationEvidence": [
+        "batch-calculate",
+        "IKernelValuationService",
+        "terraforge-rust-kernel"
+      ],
+      "liveProven": false
+    },
+    {
+      "endpoint": "POST /api/valuation/kernel-cost-approach",
+      "filePath": "backend/src/TerraFusion.API/Controllers/ValuationController.cs",
+      "integrationEvidence": [
+        "kernel-cost-approach",
+        "ComputeCostWithKernelAsync"
+      ],
+      "liveProven": false
+    },
+    {
+      "endpoint": "backend service registration",
+      "filePath": "backend/src/TerraFusion.API/Program.cs",
+      "integrationEvidence": [
+        "IRustKernelProcessHost",
+        "RustKernelProcessHost",
+        "IKernelValuationService"
+      ],
+      "liveProven": false
+    }
+  ],
+  "expectedBinaries": [
+    {
+      "name": "terraforge-kernel-cost",
+      "expectedPaths": [
+        "packages/terrabuild/kernels/target/release/terraforge-kernel-cost.exe",
+        "packages/terrabuild/kernels/target/release/terraforge-kernel-cost",
+        "packages/terrabuild/kernels/target/debug/terraforge-kernel-cost.exe",
+        "packages/terrabuild/kernels/target/debug/terraforge-kernel-cost"
+      ],
+      "foundPath": null
+    },
+    {
+      "name": "terraforge-kernel-valuation",
+      "expectedPaths": [
+        "packages/terrabuild/kernels/target/release/terraforge-kernel-valuation.exe",
+        "packages/terrabuild/kernels/target/release/terraforge-kernel-valuation",
+        "packages/terrabuild/kernels/target/debug/terraforge-kernel-valuation.exe",
+        "packages/terrabuild/kernels/target/debug/terraforge-kernel-valuation"
+      ],
+      "foundPath": null
+    }
+  ],
+  "normalWorkflowStubs": [],
+  "unusedRustServices": [
+    {
+      "service": "RustFFIService",
+      "status": "not_registered",
+      "filePath": "backend/src/TerraFusion.API/Services/RustFFIService.cs",
+      "evidence": "RustFFIService exists but Program.cs keeps its registration commented out."
+    }
+  ],
+  "blockers": [],
+  "warnings": [
+    {
+      "source": "kernel_binary",
+      "message": "Launch-relevant Rust kernel source exists, but expected kernel binaries were not found.",
+      "evidence": "terraforge-kernel-cost, terraforge-kernel-valuation"
+    },
+    {
+      "source": "live_runtime",
+      "message": "Rust runtime integrations exist in code, but live production runtime execution is not proven.",
+      "evidence": "0/3 integration(s) live-proven"
+    },
+    {
+      "source": "unused_service",
+      "message": "Rust-adjacent service code exists but is not registered in the runtime container.",
+      "evidence": "1 unused service(s)"
+    }
+  ],
+  "interpretation": "Rust exists and backend integration evidence exists, but live runtime execution is not proven."
+}
