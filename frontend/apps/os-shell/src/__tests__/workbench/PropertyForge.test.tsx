@@ -273,20 +273,7 @@ describe('PropertyForge', () => {
 
   describe('Loading States', () => {
     it('shows loading indicator during explain', async () => {
-      mockInvokeTool.mockImplementation(
-        () =>
-          new Promise((resolve) =>
-            setTimeout(
-              () =>
-                resolve({
-                  success: true,
-                  correlationId: 'corr-loading-forge',
-                  result: { toolId: 'explain_model_results', output: '{}' },
-                }),
-              100
-            )
-          )
-      );
+      mockInvokeTool.mockImplementation(() => new Promise(() => {}));
 
       render(<TestWrapper parcelId='12345-001' />);
 
