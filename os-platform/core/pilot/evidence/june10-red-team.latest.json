@@ -1,0 +1,120 @@
+{
+  "generatedAtUtc": "2026-05-14T22:13:04.152Z",
+  "verdict": "RED",
+  "summary": {
+    "verdict": "RED",
+    "attacks": 7,
+    "criticalAttacks": 3,
+    "highAttacks": 3,
+    "shipBlockers": 23,
+    "seedReceiptsFound": 0,
+    "seedRuntimeClaimAllowed": false,
+    "bentonCorpusSealed": false,
+    "readinessStatus": "FAIL"
+  },
+  "credibilityAttacks": [
+    {
+      "surface": "governance_posture",
+      "severity": "CRITICAL",
+      "attack": "Final readiness packet is failing, so any production approval claim outruns the proof record.",
+      "evidence": "23 ship blocker(s); readiness status FAIL.",
+      "likelyFailureMoment": "Executive or IT reviewer asks for go/no-go evidence and the packet says FAIL."
+    },
+    {
+      "surface": "runtime_lineage",
+      "severity": "CRITICAL",
+      "attack": "Rows may exist in TerraFusion DB, but product-load lineage is not proven enough for audit-grade trust.",
+      "evidence": "lineageProven=0; rowsExistLineageUnproven=4.",
+      "likelyFailureMoment": "State auditor asks when each product table was loaded and which receipt proves it."
+    },
+    {
+      "surface": "benton_realism",
+      "severity": "CRITICAL",
+      "attack": "Benton full-corpus proof is an ATTEMPT, not a seal; six-lane completion and API readback are not proven.",
+      "evidence": "runStatus=Interrupted; lanesCompleted=0; sealed=false.",
+      "likelyFailureMoment": "Benton staff asks whether the full corpus is complete and API-verified."
+    },
+    {
+      "surface": "uat_survivability",
+      "severity": "HIGH",
+      "attack": "Benton pilot closure is not passing, so end-to-end UAT can fail even if individual data checks pass.",
+      "evidence": "pilotClosureStatus=FAIL.",
+      "likelyFailureMoment": "Operator tries to complete the Benton workflow from data load through closure."
+    },
+    {
+      "surface": "county_trust",
+      "severity": "HIGH",
+      "attack": "The 38-county seed lane has work orders and templates but no actual source receipts yet.",
+      "evidence": "workOrders=5; receiptsFound=0.",
+      "likelyFailureMoment": "A county asks whether its data was actually acquired, loaded, or smoke-tested."
+    },
+    {
+      "surface": "overclaim_risk",
+      "severity": "HIGH",
+      "attack": "County-scope language is still easy to overread as statewide runtime readiness.",
+      "evidence": "runtimeCandidateScope=runtime_scope_requires_review; runtimeCandidateProven=39.",
+      "likelyFailureMoment": "Leadership repeats a 39-county runtime claim and a reviewer asks for county-by-county proof."
+    },
+    {
+      "surface": "source_inventory",
+      "severity": "MEDIUM",
+      "attack": "Coverage proof is registry/source-decision proof only, not ingestion, normalization, geometry, API, or UI proof.",
+      "evidence": "All 39 counties now have a source-decision acquisition family in the registry control plane.",
+      "likelyFailureMoment": "Reviewer mistakes source-decision coverage for loaded runtime data."
+    }
+  ],
+  "likelyFailureMoments": [
+    "Executive or IT reviewer asks for go/no-go evidence and the packet says FAIL.",
+    "State auditor asks when each product table was loaded and which receipt proves it.",
+    "Benton staff asks whether the full corpus is complete and API-verified.",
+    "Operator tries to complete the Benton workflow from data load through closure.",
+    "A county asks whether its data was actually acquired, loaded, or smoke-tested.",
+    "Leadership repeats a 39-county runtime claim and a reviewer asks for county-by-county proof.",
+    "Reviewer mistakes source-decision coverage for loaded runtime data."
+  ],
+  "highestRiskNarratives": [
+    "Production ready before the readiness packet passes.",
+    "Benton full corpus is complete before a sealed verification exists.",
+    "39 counties are runtime-ready before receipt, API, and UI proof exists.",
+    "Rows in TerraFusion DB imply lineage-proven product loads.",
+    "Templates or work orders imply real acquisition evidence."
+  ],
+  "trustCollapseScenarios": [
+    "A county asks for table load receipts and the product-load ledger cannot produce them.",
+    "A live Benton UAT path reaches closure and the closure packet still reports FAIL.",
+    "A reviewer compares 39-county marketing language against zero seed receipts.",
+    "A taxpayer challenges a valuation explanation that depends on fallback or recommendation-backed evidence.",
+    "An IT reviewer asks for API readback from the corpus drain and the artifact shows unauthorized or incomplete readback."
+  ],
+  "bannedNarratives": [
+    "39 counties are runtime-ready",
+    "Benton full corpus is sealed",
+    "TerraFusion is production approved",
+    "All data flows end to end",
+    "Official county-certified valuation is ready",
+    "Seed templates prove county acquisition"
+  ],
+  "requiredContainmentPosture": [
+    "Treat the readiness packet failure as authoritative until it passes.",
+    "Treat Benton corpus evidence as ATTEMPT only until sealed.",
+    "Treat the 38-county lane as governed acquisition preparation until real receipts pass.",
+    "Do not claim runtime readiness from source registry coverage, templates, or work orders.",
+    "Require product-load receipts before making product data confidence claims."
+  ],
+  "safestPublicFraming": "TerraFusion is in controlled readiness execution. The governance gates are operating, Benton is the primary runtime pilot closure lane, and the 38-county seed lane is prepared but not promoted. Production and statewide runtime claims remain blocked until the proof gates pass.",
+  "requiredProofArtifacts": [
+    "Passing June 10 readiness packet.",
+    "Passing TerraFusion DB product-load ledger with ProductLoadReceipts evidence.",
+    "Sealed Benton full-corpus verification, not ATTEMPT.",
+    "Passing Benton runtime pilot closure.",
+    "At least one real 38-county seed receipt passing the validator.",
+    "API proof and UI smoke for every promoted non-Benton county.",
+    "County-scope artifact showing no fake 39-county runtime claim."
+  ],
+  "sourceArtifacts": {
+    "readinessStatus": "FAIL",
+    "seedLanePassed": true,
+    "bentonCorpusRunStatus": "Interrupted",
+    "coverageStatus": "PASS_WITH_LIMITATIONS"
+  }
+}

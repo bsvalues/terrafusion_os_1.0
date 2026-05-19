@@ -37,63 +37,86 @@ jobs:
 
   governed-spine:
     needs: changes
-    if: needs.changes.outputs.core == 'true'
     runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
     env:
       BRANCH_PROTECTION_READ_TOKEN: ${{ secrets.BRANCH_PROTECTION_READ_TOKEN }}
     steps:
+      - name: No core governance changes
+        if: needs.changes.outputs.core != 'true'
+        run: echo "No core governance surface changes — governed-spine satisfied."
       - uses: actions/checkout@v4
+        if: needs.changes.outputs.core == 'true'
       - uses: pnpm/action-setup@v4
+        if: needs.changes.outputs.core == 'true'
       - uses: actions/setup-node@v4
+        if: needs.changes.outputs.core == 'true'
         with:
           node-version: 20
           cache: 'pnpm'
       - name: Install
+        if: needs.changes.outputs.core == 'true'
         run: pnpm install --frozen-lockfile
       - name: Verify branch protection matches canon snapshot
-        if: env.TF_ENFORCE_BRANCH_PROTECTION == '1' && github.event_name == 'push' && github.ref_name == 'main' && env.BRANCH_PROTECTION_READ_TOKEN != ''
+        if: needs.changes.outputs.core == 'true' && env.TF_ENFORCE_BRANCH_PROTECTION == '1' && github.event_name == 'push' && github.ref_name == 'main' && env.BRANCH_PROTECTION_READ_TOKEN != ''
         env:
           TF_REPO: ${{ github.repository }}
           GH_TOKEN: ${{ env.BRANCH_PROTECTION_READ_TOKEN }}
           GITHUB_TOKEN: ${{ github.token }}
         run: bash scripts/ci/verify-branch-protection-against-canon.sh
       - name: Verify AGENTS.md matches protection canon
+        if: needs.changes.outputs.core == 'true'
         run: bash scripts/ci/verify-agents-doc-against-protection-canon.sh
       - name: Release lane safety lint (no auto-approve / no direct-to-prod)
+        if: needs.changes.outputs.core == 'true'
         run: bash scripts/ci/release-lane-safety-lint.sh
       - name: Governed Spine (type-check + phase83-tools)
+        if: needs.changes.outputs.core == 'true'
         run: pnpm test:governed
 
   phase85-tools:
     needs: changes
-    if: needs.changes.outputs.core == 'true'
     runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
     steps:
+      - name: No core governance changes
+        if: needs.changes.outputs.core != 'true'
+        run: echo "No core governance surface changes — phase85-tools satisfied."
       - uses: actions/checkout@v4
+        if: needs.changes.outputs.core == 'true'
       - uses: pnpm/action-setup@v4
+        if: needs.changes.outputs.core == 'true'
       - uses: actions/setup-node@v4
+        if: needs.changes.outputs.core == 'true'
         with:
           node-version: 20
           cache: 'pnpm'
       - name: Install
+        if: needs.changes.outputs.core == 'true'
         run: pnpm install --frozen-lockfile
       - name: Phase 8.5 tool gates
+        if: needs.changes.outputs.core == 'true'
         run: node --test os-platform/core/tests/phase85-tools.test.mjs
 
   phase86-toolrunner:
     needs: changes
-    if: needs.changes.outputs.core == 'true'
     runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
     steps:
+      - name: No core governance changes
+        if: needs.changes.outputs.core != 'true'
+        run: echo "No core governance surface changes — phase86-toolrunner satisfied."
       - uses: actions/checkout@v4
+        if: needs.changes.outputs.core == 'true'
       - uses: pnpm/action-setup@v4
+        if: needs.changes.outputs.core == 'true'
       - uses: actions/setup-node@v4
+        if: needs.changes.outputs.core == 'true'
         with:
           node-version: 20
           cache: 'pnpm'
       - name: Install
+        if: needs.changes.outputs.core == 'true'
         run: pnpm install --frozen-lockfile
       - name: Phase 8.6 ToolRunner gates
+        if: needs.changes.outputs.core == 'true'
         run: node --test os-platform/core/tests/phase86-toolrunner.test.mjs
 
   check-generated-js:

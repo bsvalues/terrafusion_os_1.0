@@ -1,14 +1,15 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { login } from '../authAPI';
+import { getAccessPolicy, login } from '../authAPI';
 
 vi.mock('../../services/api', () => ({
-  default: { post: vi.fn() },
+  default: { get: vi.fn(), post: vi.fn() },
 }));
 
 import api from '../api';
 
 describe('authAPI.login', () => {
   beforeEach(() => {
+    (api.get as vi.Mock).mockReset();
     (api.post as vi.Mock).mockReset();
   });
 
@@ -30,5 +31,32 @@ describe('authAPI.login', () => {
   it('throws deterministic error on network/unknown', async () => {
     (api.post as vi.Mock).mockRejectedValue(new Error('network down'));
     await expect(login({ email: 'u@gov.', password: 'p' })).rejects.toThrow(/network/i);
+  });
+
+  it('returns explicit provisioned-access policy', async () => {
+    (api.get as vi.Mock).mockResolvedValue({
+      data: {
+        signupMode: 'provisioned_access_only',
+        publicSignupEnabled: false,
+        message: 'Provisioned only',
+      },
+    });
+
+    await expect(getAccessPolicy()).resolves.toEqual({
+      signupMode: 'provisioned_access_only',
+      publicSignupEnabled: false,
+      message: 'Provisioned only',
+    });
+    expect(api.get).toHaveBeenCalledWith('/auth/access-policy');
+  });
+
+  it('fails closed to provisioned-access policy when policy endpoint is unavailable', async () => {
+    (api.get as vi.Mock).mockRejectedValue(new Error('not deployed yet'));
+
+    await expect(getAccessPolicy()).resolves.toEqual({
+      signupMode: 'provisioned_access_only',
+      publicSignupEnabled: false,
+      message: 'TerraFusion access is provisioned by an administrator. Public self-signup is disabled.',
+    });
   });
 });

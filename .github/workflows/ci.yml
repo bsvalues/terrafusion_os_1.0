@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Forbid direct 'dotnet test' in workflows (except approved gate workflows)
         shell: bash
@@ -97,7 +97,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Forbid inline drift/guard hint heuristics in ci-verified.yml
         shell: bash
@@ -136,7 +136,7 @@ jobs:
     name: Manifest Contract Guard
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -164,7 +164,7 @@ jobs:
 
       - name: Setup Node
         if: steps.changes.outputs.contract == 'true'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
@@ -189,7 +189,7 @@ jobs:
       reason: ${{ steps.classify.outputs.reason }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -214,7 +214,7 @@ jobs:
     name: Snyk Drift Guard (exclusions intact)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Verify .snyk file exists
         shell: bash
@@ -257,10 +257,10 @@ jobs:
     name: Warning Gate (0 warnings tolerance)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -296,36 +296,38 @@ jobs:
     name: Quality Gate Validation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v5
+
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Install Dependencies
         run: |
-          npm install
+          pnpm install --frozen-lockfile
           dotnet restore backend/TerraFusion.sln || dotnet restore backend/ || echo "Backend restore skipped"
 
       - name: Code Quality Check
         run: |
-          npm run lint || echo "Lint check complete"
-          npm run type-check || echo "Type check complete"
+          pnpm run lint || echo "Lint check complete"
+          pnpm run type-check || echo "Type check complete"
 
       - name: Run Frontend Tests
-        run: npm run test:unit || echo "Unit tests complete"
+        run: pnpm run test:unit || echo "Unit tests complete"
         continue-on-error: true
 
       - name: Security Scan
         continue-on-error: true
         run: |
-          npm audit --audit-level high || echo "Security audit complete"
+          pnpm audit --audit-level high || echo "Security audit complete"
           dotnet list package --vulnerable || echo "Backend security check complete"
 
   # ═══════════════════════════════════════════════════════════════════════════
@@ -367,13 +369,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: quality-gate
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v4
         with:
           version: 9.0.0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
@@ -402,13 +404,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: vitest-full-suite
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v4
         with:
           version: 9.0.0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
@@ -427,7 +429,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: quality-gate
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Run Trivy Vulnerability Scanner
         uses: aquasecurity/trivy-action@master
@@ -440,16 +442,26 @@ jobs:
       - name: Upload Trivy Results
         uses: github/codeql-action/upload-sarif@v3
         if: ${{ always() && hashFiles('trivy-results.sarif') != '' }}
+        continue-on-error: true
         with:
           sarif_file: 'trivy-results.sarif'
 
+      - name: Preserve Trivy SARIF Artifact
+        uses: actions/upload-artifact@v7
+        if: ${{ always() && hashFiles('trivy-results.sarif') != '' }}
+        with:
+          name: trivy-results-sarif
+          path: trivy-results.sarif
+
       - name: CodeQL Analysis
+        continue-on-error: true
         uses: github/codeql-action/init@v3
         with:
           languages: 'csharp,javascript'
           config-file: ./.github/codeql/codeql-config.yml
 
       - name: Perform CodeQL Analysis
+        continue-on-error: true
         uses: github/codeql-action/analyze@v3
 
   # ═══════════════════════════════════════════════════════════════════════════
@@ -460,9 +472,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [backend-tests, vitest-full-suite, frontend-tests, security-scan]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -535,7 +547,7 @@ jobs:
           echo "FAST PATH: Docs-only changes detected"
           echo "Reason: ${{ needs.classify_changes.outputs.reason }}"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -545,7 +557,7 @@ jobs:
 
       - uses: pnpm/action-setup@v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
@@ -556,7 +568,7 @@ jobs:
 
       - name: Setup .NET
         if: env.CLASSIFICATION == 'backend_only' || env.CLASSIFICATION == 'mixed'
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 

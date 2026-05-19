@@ -15,6 +15,7 @@
 | `/tf-break` | Standalone breaker agent for CI and security reviews | [tf-break.md](tf-break.md) |
 | `/tf-speclock` | Create spec-lock + tests only (no implementation) | [tf-speclock.md](tf-speclock.md) |
 | `/tf-spec` | Spec-lock template reference | [spec-lock-templates.md](spec-lock-templates.md) |
+| `/j10-war-room` through `/j10-final-readiness` | June 10 launch-control operations prompts | [june10-command-pack.md](june10-command-pack.md) |
 
 ---
 
@@ -77,6 +78,24 @@
 | Dashboard | Grafana dashboards |
 | Alerts | Prometheus alerting rules |
 | Events | SSE/WebSocket/Message bus |
+
+---
+
+## June 10 Operations
+
+Use [June 10 Operations Command Pack](june10-command-pack.md) for launch-control work during the June 10 execution window.
+
+| Command | Purpose |
+|---------|---------|
+| `/j10-war-room` | Daily operational command posture. |
+| `/j10-truth-gate` | Before-touching-anything readiness truth gate. |
+| `/j10-ship-blocker` | Focused blocker isolation and containment. |
+| `/j10-benton-uat` | Benton runtime pilot UAT review. |
+| `/j10-executive-reality` | Leadership and county trust review. |
+| `/j10-cut-line` | Scope freeze and stop-drift enforcement. |
+| `/j10-final-readiness` | Final go/no-go readiness review. |
+
+These commands are operations prompts, not feature-build prompts. They preserve the doctrine that TerraFusion DB is product runtime truth, legacy/public source systems are upstream only, and TerraFusion API is the product runtime access layer.
 
 ---
 
@@ -180,6 +199,7 @@ Create snippets or use prompt files:
 - `/tf-execute` command
 - `/tf-break` command
 - Spec-lock template pack (API, UI, Metrics, Dashboard, Alerts, Events)
+- June 10 operations command pack registration
 
 ---
 

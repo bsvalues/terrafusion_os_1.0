@@ -7,19 +7,25 @@
  */
 
 import * as assert from 'node:assert';
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { describe, it } from 'node:test';
 import {
-    ExpectedSignaturePolicy,
-    buildSigningIdentity,
-    deriveWorkflowPath,
-    validateIdentity,
+  ExpectedSignaturePolicy,
+  buildSigningIdentity,
+  deriveWorkflowPath,
+  validateIdentity,
 } from '../src/evidence-index.js';
 import {
-    buildUnifiedResult,
-    checkForbiddenIdentity,
-    verifyPin,
-    type VerifyOptions,
-    type VerifyResult,
+  buildUnifiedResult,
+  checkForbiddenIdentity,
+  parseOpenSslCertificateIdentity,
+  verifyPin,
+  verifySignature,
+  type VerifyOptions,
+  type VerifyResult,
 } from '../src/verify-bundle.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -32,6 +38,69 @@ const TEST_REF = 'refs/heads/main';
 const TEST_WORKFLOW = '.github/workflows/autonomy-evidence-publisher.yml';
 const TEST_INCIDENT_WORKFLOW = '.github/workflows/autonomy-incident-publisher.yml';
 const TEST_SHA = 'a'.repeat(40);
+
+function writeGitHubOidcCertificate(
+  tempDir: string,
+  certPath: string,
+  identity: string,
+  issuer: string
+): void {
+  const configPath = join(tempDir, 'openssl.cnf');
+  const keyPath = join(tempDir, 'cert.key');
+
+  writeFileSync(
+    configPath,
+    `
+[req]
+distinguished_name = dn
+x509_extensions = v3_req
+prompt = no
+
+[dn]
+CN = TerraFusion test certificate
+
+[v3_req]
+subjectAltName = URI:${identity}
+1.3.6.1.4.1.57264.1.1 = ASN1:UTF8String:${issuer}
+`
+  );
+
+  execFileSync(
+    'openssl',
+    [
+      'req',
+      '-x509',
+      '-newkey',
+      'rsa:2048',
+      '-keyout',
+      keyPath,
+      '-out',
+      certPath,
+      '-days',
+      '1',
+      '-nodes',
+      '-config',
+      configPath,
+    ],
+    { stdio: 'pipe' }
+  );
+}
+
+function readGitHubOidcCertificateDerBase64(
+  tempDir: string,
+  identity: string,
+  issuer: string
+): string {
+  const certPath = join(tempDir, 'bundle-cert.pem');
+  const derPath = join(tempDir, 'bundle-cert.der');
+
+  writeGitHubOidcCertificate(tempDir, certPath, identity, issuer);
+  execFileSync('openssl', ['x509', '-in', certPath, '-outform', 'DER', '-out', derPath], {
+    stdio: 'pipe',
+  });
+
+  return readFileSync(derPath).toString('base64');
+}
 
 function buildTestIdentity(repo: string, workflow: string, ref: string): string {
   return `https://github.com/${repo}/${workflow}@${ref}`;
@@ -354,6 +423,305 @@ describe('Phase 4N20: Determinism Tests', () => {
 // ─────────────────────────────────────────────────────────────────────────────
 
 describe('Phase 4N20: Helper Function Tests', () => {
+  it('extracts GitHub OIDC issuer and workflow identity from OpenSSL certificate text', () => {
+    const identity = buildTestIdentity(TEST_REPO, TEST_WORKFLOW, TEST_REF);
+    const certificateText = `
+Certificate:
+    X509v3 extensions:
+        X509v3 Subject Alternative Name:
+            URI:${identity}
+        1.3.6.1.4.1.57264.1.1:
+            ..${GITHUB_ISSUER}
+`;
+
+    const parsed = parseOpenSslCertificateIdentity(certificateText);
+
+    assert.strictEqual(parsed.identity, identity);
+    assert.strictEqual(parsed.issuer, GITHUB_ISSUER);
+  });
+
+  it('uses the detached certificate file when cosign bundle lacks certificate bytes', () => {
+    const identity = buildTestIdentity(TEST_REPO, TEST_WORKFLOW, TEST_REF);
+    const tempDir = mkdtempSync(join(tmpdir(), 'tf-signature-pinning-'));
+    const zipPath = join(tempDir, 'autonomy-evidence.zip');
+    const bundlePath = `${zipPath}.bundle`;
+    const crtPath = `${zipPath}.crt`;
+    const sigPath = `${zipPath}.sig`;
+
+    try {
+      writeFileSync(zipPath, 'zip-content');
+      writeFileSync(sigPath, 'sig-content');
+      writeFileSync(
+        bundlePath,
+        JSON.stringify({
+          mediaType: 'application/vnd.dev.sigstore.bundle+json;version=0.3',
+        })
+      );
+      writeGitHubOidcCertificate(tempDir, crtPath, identity, GITHUB_ISSUER);
+
+      const result = verifySignature(zipPath, {
+        sig: sigPath,
+        crt: crtPath,
+        bundle: bundlePath,
+      });
+
+      assert.strictEqual(result.ok, true);
+      assert.strictEqual(result.identity, identity);
+      assert.strictEqual(result.issuer, GITHUB_ISSUER);
+    } finally {
+      rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  it('extracts identity from nested Sigstore bundle certificate rawBytes', () => {
+    const identity = buildTestIdentity(TEST_REPO, TEST_WORKFLOW, TEST_REF);
+    const tempDir = mkdtempSync(join(tmpdir(), 'tf-signature-pinning-'));
+    const zipPath = join(tempDir, 'autonomy-evidence.zip');
+    const bundlePath = `${zipPath}.bundle`;
+    const crtPath = `${zipPath}.crt`;
+    const sigPath = `${zipPath}.sig`;
+
+    try {
+      writeFileSync(zipPath, 'zip-content');
+      writeFileSync(sigPath, 'sig-content');
+      writeGitHubOidcCertificate(
+        tempDir,
+        crtPath,
+        'https://github.com/other/repo/.github/workflows/wrong.yml@refs/heads/main',
+        GITHUB_ISSUER
+      );
+      writeFileSync(
+        bundlePath,
+        JSON.stringify({
+          mediaType: 'application/vnd.dev.sigstore.bundle+json;version=0.3',
+          verificationMaterial: {
+            content: {
+              $case: 'x509CertificateChain',
+              x509CertificateChain: {
+                certificates: [
+                  {
+                    rawBytes: readGitHubOidcCertificateDerBase64(tempDir, identity, GITHUB_ISSUER),
+                  },
+                ],
+              },
+            },
+          },
+        })
+      );
+
+      const result = verifySignature(zipPath, {
+        sig: sigPath,
+        crt: crtPath,
+        bundle: bundlePath,
+      });
+
+      assert.strictEqual(result.ok, true);
+      assert.strictEqual(result.identity, identity);
+      assert.strictEqual(result.issuer, GITHUB_ISSUER);
+    } finally {
+      rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  it('ignores unrelated rawBytes outside Sigstore certificate paths', () => {
+    const identity = buildTestIdentity(TEST_REPO, TEST_WORKFLOW, TEST_REF);
+    const wrongIdentity =
+      'https://github.com/other/repo/.github/workflows/wrong.yml@refs/heads/main';
+    const tempDir = mkdtempSync(join(tmpdir(), 'tf-signature-pinning-'));
+    const zipPath = join(tempDir, 'autonomy-evidence.zip');
+    const bundlePath = `${zipPath}.bundle`;
+    const crtPath = `${zipPath}.crt`;
+    const sigPath = `${zipPath}.sig`;
+
+    try {
+      writeFileSync(zipPath, 'zip-content');
+      writeFileSync(sigPath, 'sig-content');
+      writeGitHubOidcCertificate(tempDir, crtPath, wrongIdentity, GITHUB_ISSUER);
+      writeFileSync(
+        bundlePath,
+        JSON.stringify({
+          mediaType: 'application/vnd.dev.sigstore.bundle+json;version=0.3',
+          untrustedPayload: {
+            rawBytes: readGitHubOidcCertificateDerBase64(tempDir, wrongIdentity, GITHUB_ISSUER),
+          },
+          verificationMaterial: {
+            content: {
+              $case: 'x509CertificateChain',
+              x509CertificateChain: {
+                certificates: [
+                  {
+                    rawBytes: readGitHubOidcCertificateDerBase64(tempDir, identity, GITHUB_ISSUER),
+                  },
+                ],
+              },
+            },
+          },
+        })
+      );
+
+      const result = verifySignature(zipPath, {
+        sig: sigPath,
+        crt: crtPath,
+        bundle: bundlePath,
+      });
+
+      assert.strictEqual(result.ok, true);
+      assert.strictEqual(result.identity, identity);
+      assert.strictEqual(result.issuer, GITHUB_ISSUER);
+    } finally {
+      rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  it('rejects detached certificate text that was not parsed from X.509', () => {
+    const identity = buildTestIdentity(TEST_REPO, TEST_WORKFLOW, TEST_REF);
+    const tempDir = mkdtempSync(join(tmpdir(), 'tf-signature-pinning-'));
+    const zipPath = join(tempDir, 'autonomy-evidence.zip');
+    const bundlePath = `${zipPath}.bundle`;
+    const crtPath = `${zipPath}.crt`;
+    const sigPath = `${zipPath}.sig`;
+
+    try {
+      writeFileSync(zipPath, 'zip-content');
+      writeFileSync(sigPath, 'sig-content');
+      writeFileSync(
+        bundlePath,
+        JSON.stringify({
+          mediaType: 'application/vnd.dev.sigstore.bundle+json;version=0.3',
+        })
+      );
+      writeFileSync(
+        crtPath,
+        `
+Certificate:
+    X509v3 extensions:
+        X509v3 Subject Alternative Name:
+            URI:${identity}
+        1.3.6.1.4.1.57264.1.1:
+            ..${GITHUB_ISSUER}
+`
+      );
+
+      const result = verifySignature(zipPath, {
+        sig: sigPath,
+        crt: crtPath,
+        bundle: bundlePath,
+      });
+
+      assert.strictEqual(result.ok, true);
+      assert.strictEqual(result.identity, undefined);
+      assert.strictEqual(result.issuer, undefined);
+    } finally {
+      rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  it('uses cosign verification before accepting expected pins when certificate identity is unavailable', () => {
+    const identity = buildTestIdentity(TEST_REPO, TEST_WORKFLOW, TEST_REF);
+    const tempDir = mkdtempSync(join(tmpdir(), 'tf-signature-pinning-'));
+    const zipPath = join(tempDir, 'autonomy-evidence.zip');
+    const bundlePath = `${zipPath}.bundle`;
+    const crtPath = `${zipPath}.crt`;
+    const sigPath = `${zipPath}.sig`;
+    const observedArgs: string[][] = [];
+    const cosignRunner = ((command: string, args?: readonly string[]) => {
+      assert.strictEqual(command, 'cosign');
+      observedArgs.push([...(args ?? [])]);
+      return '';
+    }) as typeof execFileSync;
+
+    try {
+      writeFileSync(zipPath, 'zip-content');
+      writeFileSync(sigPath, 'sig-content');
+      writeFileSync(crtPath, 'not-a-certificate');
+      writeFileSync(
+        bundlePath,
+        JSON.stringify({
+          mediaType: 'application/vnd.dev.sigstore.bundle+json;version=0.3',
+        })
+      );
+
+      const result = verifySignature(
+        zipPath,
+        {
+          sig: sigPath,
+          crt: crtPath,
+          bundle: bundlePath,
+        },
+        {
+          expectedIdentity: identity,
+          expectedIssuer: GITHUB_ISSUER,
+          cosignRunner,
+        }
+      );
+
+      assert.strictEqual(result.ok, true);
+      assert.strictEqual(result.identity, identity);
+      assert.strictEqual(result.issuer, GITHUB_ISSUER);
+      assert.deepStrictEqual(observedArgs[0], [
+        'verify-blob',
+        '--bundle',
+        bundlePath,
+        '--certificate',
+        crtPath,
+        '--signature',
+        sigPath,
+        '--certificate-identity',
+        identity,
+        '--certificate-oidc-issuer',
+        GITHUB_ISSUER,
+        zipPath,
+      ]);
+    } finally {
+      rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  it('does not accept expected pins when cosign rejects them', () => {
+    const identity = buildTestIdentity(TEST_REPO, TEST_WORKFLOW, TEST_REF);
+    const tempDir = mkdtempSync(join(tmpdir(), 'tf-signature-pinning-'));
+    const zipPath = join(tempDir, 'autonomy-evidence.zip');
+    const bundlePath = `${zipPath}.bundle`;
+    const crtPath = `${zipPath}.crt`;
+    const sigPath = `${zipPath}.sig`;
+    const cosignRunner = (() => {
+      throw new Error('signature mismatch');
+    }) as typeof execFileSync;
+
+    try {
+      writeFileSync(zipPath, 'zip-content');
+      writeFileSync(sigPath, 'sig-content');
+      writeFileSync(crtPath, 'not-a-certificate');
+      writeFileSync(
+        bundlePath,
+        JSON.stringify({
+          mediaType: 'application/vnd.dev.sigstore.bundle+json;version=0.3',
+        })
+      );
+
+      const result = verifySignature(
+        zipPath,
+        {
+          sig: sigPath,
+          crt: crtPath,
+          bundle: bundlePath,
+        },
+        {
+          expectedIdentity: identity,
+          expectedIssuer: GITHUB_ISSUER,
+          cosignRunner,
+        }
+      );
+
+      assert.strictEqual(result.ok, false);
+      assert.strictEqual(result.identity, undefined);
+      assert.strictEqual(result.issuer, undefined);
+      assert.strictEqual(result.errors[0]?.type, 'verification_failed');
+    } finally {
+      rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
+
   it('deriveWorkflowPath returns correct path for incident flag', () => {
     const path = deriveWorkflowPath('my-workflow', true);
     assert.ok(path.includes('incident'), 'incident flag should derive incident workflow');

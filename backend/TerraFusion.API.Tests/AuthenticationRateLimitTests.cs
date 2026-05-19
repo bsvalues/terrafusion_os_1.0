@@ -36,6 +36,12 @@ public sealed class AuthenticationRateLimitTests : IClassFixture<ApiWebAppFactor
             .Setup(x => x.IsValidGovernmentUserAsync(It.IsAny<string>()))
             .ReturnsAsync(true);
         securityService
+            .Setup(x => x.ValidateUserCredentialsAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(true);
+        securityService
+            .Setup(x => x.GetUserRolesAsync(It.IsAny<string>()))
+            .ReturnsAsync(new[] { "GovernmentUser" });
+        securityService
             .Setup(x => x.LogSecurityEventAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string?>()))
             .Returns(Task.CompletedTask);
 

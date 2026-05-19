@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -53,22 +54,33 @@ public sealed class FullCorpusOrchestratorHostedService : IHostedService, IDispo
 
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<FullCorpusOrchestratorHostedService> _logger;
+    private readonly bool _enabled;
 
     private readonly CancellationTokenSource _stoppingCts = new();
     private Task? _workerLoop;
 
     public FullCorpusOrchestratorHostedService(
         IServiceScopeFactory scopeFactory,
+        IConfiguration configuration,
         ILogger<FullCorpusOrchestratorHostedService> logger)
     {
         ArgumentNullException.ThrowIfNull(scopeFactory);
+        ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(logger);
         _scopeFactory = scopeFactory;
         _logger = logger;
+        _enabled = configuration.GetValue("FullCorpus:Worker:Enabled", false);
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
+        if (!_enabled)
+        {
+            _logger.LogInformation(
+                "FullCorpusOrchestratorHostedService: worker disabled. Set FullCorpus:Worker:Enabled=true to enable background polling.");
+            return;
+        }
+
         // Step 1: interrupted-run sweep. Synchronous on startup —
         // must happen before the loop accepts the first poll.
         try

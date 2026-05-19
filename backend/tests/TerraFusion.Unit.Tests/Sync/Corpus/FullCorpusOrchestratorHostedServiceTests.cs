@@ -38,7 +38,10 @@ public sealed class FullCorpusOrchestratorHostedServiceTests : IDisposable
         var services = new ServiceCollection();
         services.AddDbContext<TerraFusionDbContext>(opt => opt.UseInMemoryDatabase(_dbName));
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(
-            new Dictionary<string, string?>()).Build();
+            new Dictionary<string, string?>
+            {
+                ["FullCorpus:Worker:Enabled"] = "true"
+            }).Build();
         services.AddSingleton<IConfiguration>(configuration);
         services.AddSingleton<ICorpusLaneRunner>(new SuccessLaneRunner());
         services.AddSingleton<IPacsBaselineReconciler>(new FakeReconciler());
@@ -55,6 +58,7 @@ public sealed class FullCorpusOrchestratorHostedServiceTests : IDisposable
         var scopeFactory = _provider.GetRequiredService<IServiceScopeFactory>();
         return new FullCorpusOrchestratorHostedService(
             scopeFactory,
+            _provider.GetRequiredService<IConfiguration>(),
             NullLogger<FullCorpusOrchestratorHostedService>.Instance);
     }
 
@@ -95,6 +99,42 @@ public sealed class FullCorpusOrchestratorHostedServiceTests : IDisposable
         var swept = await read.FullCorpusRuns.SingleAsync();
         swept.Status.Should().Be(FullCorpusOrchestrator.StatusInterrupted);
         swept.ErrorMessage.Should().Contain("backend restarted");
+    }
+
+    [Fact]
+    public async Task StartAsync_when_worker_disabled_does_not_touch_corpus_tables()
+    {
+        using (var scope = _provider.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<TerraFusionDbContext>();
+            db.FullCorpusRuns.Add(new FullCorpusRun
+            {
+                RunId = Guid.NewGuid(),
+                OperatorName = "stale",
+                WorkingYear = 2026,
+                Status = FullCorpusOrchestrator.StatusRunning,
+                StartedAt = DateTime.UtcNow.AddHours(-3),
+            });
+            await db.SaveChangesAsync();
+        }
+
+        var disabledConfig = new ConfigurationBuilder().AddInMemoryCollection(
+            new Dictionary<string, string?>
+            {
+                ["FullCorpus:Worker:Enabled"] = "false"
+            }).Build();
+        var host = new FullCorpusOrchestratorHostedService(
+            _provider.GetRequiredService<IServiceScopeFactory>(),
+            disabledConfig,
+            NullLogger<FullCorpusOrchestratorHostedService>.Instance);
+
+        await host.StartAsync(CancellationToken.None);
+        await host.StopAsync(CancellationToken.None);
+
+        var read = GetReadDb();
+        var untouched = await read.FullCorpusRuns.SingleAsync();
+        untouched.Status.Should().Be(FullCorpusOrchestrator.StatusRunning);
+        untouched.ErrorMessage.Should().BeNull();
     }
 
     [Fact]

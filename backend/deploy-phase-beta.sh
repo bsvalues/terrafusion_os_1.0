@@ -27,6 +27,13 @@ DEPLOYMENT_ENV="${DEPLOYMENT_ENV:-development}"
 COMPOSE_FILE="docker-compose.microservices.yml"
 LOG_FILE="deployment-$(date +%Y%m%d-%H%M%S).log"
 
+# Prometheus PR-9 / HIGH #32: capture immutable artifact identity
+# Tag every locally-built image with the short git SHA of the working tree
+# so "what's running in prod" is provable from `docker images` instead of
+# operator memory + `git rev-parse HEAD` on the deploy host.
+GIT_SHA="$(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
+export GIT_SHA
+
 # Create logs directory
 mkdir -p logs
 
@@ -148,9 +155,10 @@ EOF
 # Function: Build services
 build_services() {
     section "PHASE BETA-2: Building Microservices"
-    
+
     echo -e "${BLUE}Building TerraFusion microservices...${NC}"
-    
+    log "Build identity: GIT_SHA=${GIT_SHA}"
+
     # Build .NET solution first
     if [ -f "TerraFusion.sln" ]; then
         log "Building .NET solution"
@@ -160,11 +168,58 @@ build_services() {
     else
         warning ".NET solution not found, skipping build"
     fi
-    
-    # Build Docker images
-    log "Building Docker images for microservices"
-    docker-compose -f $COMPOSE_FILE build --parallel
+
+    # Build Docker images via compose (passes GIT_SHA build-arg through
+    # docker-compose; compose YAML is not modified here — registry/tag config
+    # is out of scope for PR-9).
+    log "Building Docker images for microservices (compose, parallel)"
+    docker-compose -f $COMPOSE_FILE build --parallel \
+        --build-arg "GIT_SHA=${GIT_SHA}"
+
+    # Prometheus PR-9 / HIGH #32: tag the three top-level service images with
+    # the git SHA so the local Docker daemon carries an immutable handle for
+    # this commit. Registry-push is intentionally out of scope; the local tag
+    # is the minimum-viable artifact-traceability fix.
+    log "Tagging service images with GIT_SHA=${GIT_SHA}"
+    BUILT_TAGS=()
+    for svc_def in \
+        "Dockerfile.API:terrafusion-api" \
+        "Dockerfile.Consciousness:terrafusion-consciousness" \
+        "Dockerfile.Gateway:terrafusion-gateway"
+    do
+        dockerfile="${svc_def%%:*}"
+        image_name="${svc_def##*:}"
+        if [ -f "$dockerfile" ]; then
+            log "Building ${image_name}:${GIT_SHA} from ${dockerfile}"
+            if docker build \
+                -f "$dockerfile" \
+                --build-arg "GIT_SHA=${GIT_SHA}" \
+                -t "${image_name}:${GIT_SHA}" \
+                -t "${image_name}:latest" \
+                .
+            then
+                BUILT_TAGS+=("${image_name}:${GIT_SHA}")
+                success "Built ${image_name}:${GIT_SHA}"
+            else
+                warning "docker build failed for ${dockerfile} (continuing; compose may still have built it)"
+            fi
+        else
+            log "Skipping ${image_name}: ${dockerfile} not present at repo root"
+        fi
+    done
+
     success "All microservice images built successfully"
+    echo ""
+    echo -e "${CYAN}🔖 Built image tags (immutable artifact identity):${NC}"
+    if [ "${#BUILT_TAGS[@]}" -gt 0 ]; then
+        for tag in "${BUILT_TAGS[@]}"; do
+            echo -e "  ${GREEN}${tag}${NC}"
+        done
+    else
+        warning "No SHA-tagged images were produced. Operator must verify compose-built images carry GIT_SHA via the TF_GIT_SHA env var inside the container."
+    fi
+    echo -e "${CYAN}   Verify in-process value via:  curl \${TF_API_HEALTH_URL:-http://localhost:\${TF_API_PORT:-5046}/health}  (gitSha field)${NC}"
+    echo ""
 }
 
 # Function: Start infrastructure services

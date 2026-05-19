@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -42,34 +43,102 @@ public sealed class CountyRowsController : ControllerBase
         var safeLimit = Math.Clamp(limit, 1, 500);
         var safeOffset = Math.Max(offset, 0);
 
-        var query = _db.Properties.AsNoTracking().Where(p => p.CountyId == county.Id);
-        var total = await query.CountAsync(ct);
-        var rows = await query
-            .OrderBy(p => p.ParcelId)
+        var activeParcels = _db.TfParcels
+            .AsNoTracking()
+            .Where(p =>
+                p.CountyId == county.Id &&
+                p.ParcelStatus == "ACTIVE" &&
+                p.ParcelNumber != null &&
+                p.ParcelNumber != string.Empty);
+        var hasWaInitialSeedRows = await activeParcels.AnyAsync(p => p.ConversionEra == "WA_INITIAL_SEED", ct);
+        if (hasWaInitialSeedRows)
+        {
+            var seedParcels = activeParcels.Where(p => p.ConversionEra == "WA_INITIAL_SEED");
+            var seedTotal = await seedParcels.CountAsync(ct);
+            var seedRows = await seedParcels
+                .OrderBy(p => p.ParcelNumber)
+                .Skip(safeOffset)
+                .Take(safeLimit)
+                .Select(p => new
+                {
+                    parcelId = p.TfParcelId,
+                    parcelNumber = p.ParcelNumber,
+                    address = p.SitusAddress,
+                    propertyType = p.PropertyType,
+                    legalDescription = p.LegalDescription,
+                    parcelStatus = p.ParcelStatus,
+                    currentOwnerId = p.CurrentOwnerId,
+                    currentAssessmentId = p.CurrentAssessmentId,
+                    updatedAt = p.UpdatedAt,
+                })
+                .ToListAsync(ct);
+
+            return Ok(new
+            {
+                county = county.Name,
+                countyId = county.Id,
+                rowType = "parcels",
+                runtimeTable = "canonical_tf.tf_parcel",
+                semantics = new
+                {
+                    countyScoped = true,
+                    activeOnly = true,
+                    duplicateParcelVersionsCollapsed = true,
+                    currentParcelVersion = true,
+                    source = "wa_initial_seed_deduped_import",
+                },
+                total = seedTotal,
+                count = seedRows.Count,
+                rows = seedRows,
+            });
+        }
+
+        var distinctParcelNumbers = activeParcels
+            .Select(p => p.ParcelNumber!)
+            .Distinct();
+        var total = await distinctParcelNumbers.CountAsync(ct);
+        var pageParcelNumbers = await distinctParcelNumbers
+            .OrderBy(parcelNumber => parcelNumber)
             .Skip(safeOffset)
             .Take(safeLimit)
+            .ToListAsync(ct);
+        var pageRows = pageParcelNumbers.Count == 0
+            ? []
+            : await activeParcels
+                .Where(p => pageParcelNumbers.Contains(p.ParcelNumber!))
+                .ToListAsync(ct);
+        var rows = pageRows
+            .GroupBy(p => p.ParcelNumber)
+            .Select(g => g.OrderByDescending(p => p.UpdatedAt).First())
+            .OrderBy(p => p.ParcelNumber)
             .Select(p => new
             {
-                p.ParcelId,
-                p.ParcelNumber,
-                p.Address,
-                p.PropertyType,
-                p.Neighborhood,
-                p.SitusCity,
-                p.YearBuilt,
-                p.AssessedValue,
-                p.LandValue,
-                p.ImprovementValue,
-                p.MarketValue,
-                p.TaxYear,
+                parcelId = p.TfParcelId,
+                parcelNumber = p.ParcelNumber,
+                address = p.SitusAddress,
+                propertyType = p.PropertyType,
+                legalDescription = p.LegalDescription,
+                parcelStatus = p.ParcelStatus,
+                currentOwnerId = p.CurrentOwnerId,
+                currentAssessmentId = p.CurrentAssessmentId,
+                updatedAt = p.UpdatedAt,
             })
-            .ToListAsync(ct);
+            .ToList();
 
         return Ok(new
         {
             county = county.Name,
             countyId = county.Id,
             rowType = "parcels",
+            runtimeTable = "canonical_tf.tf_parcel",
+            semantics = new
+            {
+                countyScoped = true,
+                activeOnly = true,
+                duplicateParcelVersionsCollapsed = true,
+                currentParcelVersion = true,
+                source = "canonical_tf_runtime_query",
+            },
             total,
             count = rows.Count,
             rows,
@@ -90,40 +159,73 @@ public sealed class CountyRowsController : ControllerBase
         var safeLimit = Math.Clamp(limit, 1, 500);
         var safeOffset = Math.Max(offset, 0);
 
-        var query = _db.ComparableSales.AsNoTracking().Where(s => s.CountyId == county.Id);
+        var query = _db.TfSales.AsNoTracking().Where(s => s.CountyId == county.Id);
         var total = await query.CountAsync(ct);
-        var rows = await query
-            .OrderByDescending(s => s.SaleDate)
-            .ThenBy(s => s.ParcelId)
+        var sales = await query
+            .OrderByDescending(s => s.SlDt)
+            .ThenByDescending(s => s.ChgOfOwnerId)
             .Skip(safeOffset)
             .Take(safeLimit)
-            .Select(s => new
-            {
-                s.Id,
-                s.ParcelId,
-                s.SaleDate,
-                s.SalePrice,
-                s.AdjustedSalePrice,
-                s.PropertyType,
-                s.Neighborhood,
-                s.GrossLivingArea,
-                s.LotSizeSqft,
-                s.YearBuilt,
-                s.Condition,
-                s.QualityGrade,
-                s.SalesYear,
-                s.SaleQualification,
-                s.QualificationRecommendation,
-                s.QualificationDecision,
-                s.IsVerified,
-            })
             .ToListAsync(ct);
+
+        var directParcelIds = sales.Select(s => s.TfParcelId).ToHashSet();
+        var directParcels = await _db.TfParcels
+            .AsNoTracking()
+            .Where(p => directParcelIds.Contains(p.TfParcelId))
+            .ToDictionaryAsync(p => p.TfParcelId, ct);
+
+        var saleIds = sales.Select(s => s.TfSaleId).ToHashSet();
+        var saleXrefs = await _db.SyncBridgeSourceXrefs
+            .AsNoTracking()
+            .Where(x => x.TfEntityType == "sale" && x.IsActive && saleIds.Contains(x.TfEntityId))
+            .ToListAsync(ct);
+        var salePropIds = saleXrefs
+            .Select(x => new { x.TfEntityId, PropId = ExtractSourceLong(x.SourceKeyJson, "prop_id") })
+            .Where(x => x.PropId.HasValue)
+            .ToDictionary(x => x.TfEntityId, x => x.PropId!.Value);
+        var requiredPropIds = salePropIds.Values.ToHashSet();
+        var lineageParcelXrefs = requiredPropIds.Count == 0
+            ? []
+            : await _db.SyncBridgeSourceXrefs
+                .AsNoTracking()
+                .Where(x => x.TfEntityType == "parcel" && x.IsActive && x.SourceKeyJson.Contains("prop_id"))
+                .ToListAsync(ct);
+        var lineageParcelIds = lineageParcelXrefs
+            .Select(x => new { x.TfEntityId, PropId = ExtractSourceLong(x.SourceKeyJson, "prop_id") })
+            .Where(x => x.PropId.HasValue && requiredPropIds.Contains(x.PropId.Value))
+            .GroupBy(x => x.PropId!.Value)
+            .ToDictionary(g => g.Key, g => g.First().TfEntityId);
+        var relinkParcelIds = lineageParcelIds.Values.ToHashSet();
+        var lineageParcels = await _db.TfParcels
+            .AsNoTracking()
+            .Where(p => relinkParcelIds.Contains(p.TfParcelId))
+            .ToDictionaryAsync(p => p.TfParcelId, ct);
+
+        var rows = sales
+            .Select(s =>
+            {
+                var parcel = ResolveSaleParcel(s.TfParcelId, s.TfSaleId, directParcels, salePropIds, lineageParcelIds, lineageParcels);
+                return new
+                {
+                    id = s.TfSaleId,
+                    tfParcelId = s.TfParcelId,
+                    parcelNumber = parcel?.ParcelNumber,
+                    saleDate = s.SlDt,
+                    salePrice = s.SlPrice,
+                    adjustedSalePrice = s.AdjSlPrice,
+                    saleQualified = s.SaleQualified,
+                    chgOfOwnerId = s.ChgOfOwnerId,
+                    conversionEra = s.ConversionEra,
+                };
+            })
+            .ToList();
 
         return Ok(new
         {
             county = county.Name,
             countyId = county.Id,
             rowType = "sales",
+            runtimeTable = "canonical_tf.tf_sale",
             total,
             count = rows.Count,
             rows,
@@ -139,32 +241,20 @@ public sealed class CountyRowsController : ControllerBase
         if (county is null)
             return NotFound(new { county = countyToken, error = "County not found." });
 
-        var propertyCount = await _db.Properties
+        var canonicalParcelCount = await _db.TfParcels
             .AsNoTracking()
-            .CountAsync(p => p.CountyId == county.Id, ct);
-        var comparableSaleCount = await _db.ComparableSales
+            .CountAsync(p => p.CountyId == county.Id && p.ParcelStatus == "ACTIVE", ct);
+        var canonicalSaleCount = await _db.TfSales
             .AsNoTracking()
             .CountAsync(s => s.CountyId == county.Id, ct);
-        var pacsParcelCount = await _db.PacsParcel
-            .AsNoTracking()
-            .CountAsync(p => p.CountyId == county.Id, ct);
-        var pacsParcelIds = _db.PacsParcel
-            .AsNoTracking()
-            .Where(p => p.CountyId == county.Id)
-            .Select(p => p.Id);
-        var pacsSaleCount = await _db.PacsSales
-            .AsNoTracking()
-            .CountAsync(s => pacsParcelIds.Contains(s.ParcelId), ct);
         var canonicalSaleQualificationCount = await _db.CanonicalSaleQualifications
             .AsNoTracking()
             .CountAsync(q => q.CountyId == county.Id, ct);
 
         var devSeedersSkipped = DevSeedersSkipped();
         var classification = ClassifyRuntimeLineage(
-            propertyCount,
-            comparableSaleCount,
-            pacsParcelCount,
-            pacsSaleCount,
+            canonicalParcelCount,
+            canonicalSaleCount,
             canonicalSaleQualificationCount);
 
         return Ok(new
@@ -178,14 +268,9 @@ public sealed class CountyRowsController : ControllerBase
             eliteOperationsMockDataEnabled = ConfigBool("EliteOperations:MockDataEnabled"),
             canonicalRuntime = new
             {
-                properties = propertyCount,
-                comparableSales = comparableSaleCount,
+                tfParcels = canonicalParcelCount,
+                tfSales = canonicalSaleCount,
                 canonicalSaleQualifications = canonicalSaleQualificationCount,
-            },
-            sourceMirror = new
-            {
-                pacsParcels = pacsParcelCount,
-                pacsSales = pacsSaleCount,
             },
             posture = new
             {
@@ -211,26 +296,65 @@ public sealed class CountyRowsController : ControllerBase
     }
 
     private static string ClassifyRuntimeLineage(
-        int propertyCount,
-        int comparableSaleCount,
-        int pacsParcelCount,
-        int pacsSaleCount,
+        int canonicalParcelCount,
+        int canonicalSaleCount,
         int canonicalSaleQualificationCount)
     {
-        if (propertyCount <= 0 && comparableSaleCount <= 0)
+        if (canonicalParcelCount <= 0 && canonicalSaleCount <= 0)
             return "no_runtime_rows";
 
-        if (pacsParcelCount > 0 &&
-            propertyCount > 0 &&
-            pacsSaleCount > 0 &&
-            comparableSaleCount > 0 &&
+        if (canonicalParcelCount > 0 &&
+            canonicalSaleCount > 0 &&
             canonicalSaleQualificationCount > 0)
-            return "pacs_mirror_canonicalized_runtime";
+            return "terrafusion_canonical_runtime_complete";
 
-        if (pacsParcelCount > 0 && propertyCount > 0)
-            return "pacs_mirror_projected_runtime_partial";
+        if (canonicalParcelCount > 0)
+            return "terrafusion_canonical_runtime_partial";
 
-        return "canonical_runtime_rows_without_source_mirror_proof";
+        return "terrafusion_canonical_runtime_unclassified";
+    }
+
+    private static TerraFusion.Core.Entities.CanonicalTf.TfParcel? ResolveSaleParcel(
+        Guid directTfParcelId,
+        Guid tfSaleId,
+        IReadOnlyDictionary<Guid, TerraFusion.Core.Entities.CanonicalTf.TfParcel> directParcels,
+        IReadOnlyDictionary<Guid, long> salePropIds,
+        IReadOnlyDictionary<long, Guid> lineageParcelIds,
+        IReadOnlyDictionary<Guid, TerraFusion.Core.Entities.CanonicalTf.TfParcel> lineageParcels)
+    {
+        if (directParcels.TryGetValue(directTfParcelId, out var directParcel))
+            return directParcel;
+
+        if (!salePropIds.TryGetValue(tfSaleId, out var propId))
+            return null;
+        if (!lineageParcelIds.TryGetValue(propId, out var relinkedParcelId))
+            return null;
+
+        return lineageParcels.TryGetValue(relinkedParcelId, out var relinkedParcel)
+            ? relinkedParcel
+            : null;
+    }
+
+    private static long? ExtractSourceLong(string? sourceKeyJson, string propertyName)
+    {
+        if (string.IsNullOrWhiteSpace(sourceKeyJson)) return null;
+
+        try
+        {
+            using var document = JsonDocument.Parse(sourceKeyJson);
+            if (!document.RootElement.TryGetProperty(propertyName, out var property))
+                return null;
+            return property.ValueKind switch
+            {
+                JsonValueKind.Number when property.TryGetInt64(out var value) => value,
+                JsonValueKind.String when long.TryParse(property.GetString(), out var value) => value,
+                _ => null,
+            };
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
     }
 
     private async Task<CountyProjection?> ResolveCountyAsync(string countyToken, CancellationToken ct)

@@ -176,3 +176,73 @@ test('Benton parcel sanity passes for sane active parcel shape', async () => {
   assert.equal(report.passed, true);
   assert.equal(report.distinctActiveParcelNumbers, 89447);
 });
+
+test('Benton parcel sanity accepts canonical runtime semantics without raw Properties status columns', async () => {
+  const root = makeTempRepo('tf-benton-parcel-sanity-canonical-');
+  const fixturePath = writeFixture(root, {
+    generatedAt: '2026-05-13T00:00:00.000Z',
+    runtimeBaseUrl: 'fixture',
+    runtimeTable: 'canonical_tf.tf_parcel',
+    totalPropertyRows: 3197521,
+    bentonRowsByCountyId: 89447,
+    bentonRowsByCountyName: 89447,
+    bentonRowsByCountyToken: 89447,
+    activeRows: 89447,
+    inactiveRows: 0,
+    unknownStatusRows: 0,
+    distinctParcelNumbers: 89447,
+    distinctActiveParcelNumbers: 89447,
+    distinctCurrentYearParcelNumbers: 89447,
+    currentTaxYear: null,
+    rowsByTaxYear: [{ taxYear: null, rows: 89447, distinctParcels: 89447 }],
+    rowsByPropertyStatus: [{ status: 'ACTIVE', rows: 89447 }],
+    rowsByCounty: [{ countyId: 'benton', countyName: 'Benton County', rows: 89447 }],
+    nullCountyRows: 0,
+    nonBentonRows: 3108074,
+    propertyStatusColumns: ['ParcelStatus'],
+    sourceMirror: {
+      pacsParcelRows: null,
+      pacsParcelDistinctRows: null,
+      propertyRowsMinusPacsParcelRows: null,
+    },
+    topPropertyTypes: [],
+    topPropertyUseCodes: [],
+    topSitusCities: [],
+    fieldCompleteness: { totalRows: 89447 },
+    temporalRange: {
+      earliestUpdatedAt: '2026-05-13T00:00:00Z',
+      latestUpdatedAt: '2026-05-13T00:00:00Z',
+    },
+    endpointBehavior: {
+      endpoint: '/api/counties/benton/parcels',
+      endpointStatus: 200,
+      returnedTotal: 89447,
+      selectedCountyEchoed: true,
+      activeCurrentSemanticsProven: true,
+      semantics: {
+        countyScoped: true,
+        activeOnly: true,
+        currentParcelVersion: true,
+        duplicateParcelVersionsCollapsed: true,
+        source: 'wa_initial_seed_deduped_import',
+      },
+    },
+    expectedActiveParcelRange: { min: 1, max: 100000, source: 'operator_expectation' },
+  });
+
+  await execFileAsync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    env: { ...process.env, TF_BENTON_PARCEL_SANITY_FIXTURE: fixturePath },
+  });
+
+  const report = JSON.parse(
+    fs.readFileSync(
+      path.join(root, 'generated', 'truth', 'benton-parcel-count-sanity.json'),
+      'utf8'
+    )
+  );
+
+  assert.equal(report.passed, true);
+  assert.equal(report.endpointBehavior.activeCurrentSemanticsProven, true);
+  assert.equal(report.endpointBehavior.semantics.source, 'wa_initial_seed_deduped_import');
+});

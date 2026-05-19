@@ -1,0 +1,55 @@
+{
+  "generatedAtUtc": "2026-05-15T20:48:14.283Z",
+  "warRoomVerdict": "NO_GO",
+  "activeLane": "WAITING_SYNC_DB_EVIDENCE",
+  "firstUnblockCommand": "pnpm run truth:terrafusion-db-product-load-ledger",
+  "activeP0": {
+    "sequence": 1,
+    "source": "productLoadLedger",
+    "status": "WAITING_SYNC_DB_EVIDENCE",
+    "ownerLane": "Claude Code / Sync DB, audited by Codex",
+    "blockedBy": [],
+    "proofCommand": "pnpm run truth:terrafusion-db-product-load-ledger",
+    "requiredResolution": "Emit/read product-load receipts proving TerraFusion DB table rows were loaded through the approved ingestion path.",
+    "blockerCount": 14,
+    "firstBlocker": "Product-load ledger is not passing.",
+    "stopCondition": false,
+    "syncEvidenceIntakeStatus": "WAITING_SYNC_DB_EVIDENCE",
+    "syncEvidenceBlockers": 21,
+    "nextUnblockCommand": "pnpm run truth:terrafusion-db-product-load-ledger"
+  },
+  "summary": {
+    "launchVerdict": "NO_GO",
+    "readinessStatus": "FAIL",
+    "stopConditions": 4,
+    "p0Items": 6,
+    "readyForCodexP0Items": 0,
+    "syncEvidenceIntakeStatus": "WAITING_SYNC_DB_EVIDENCE",
+    "syncEvidenceBlockers": 21,
+    "controlPlaneFreshness": "FRESH",
+    "controlPlaneFreshnessBlockers": 0
+  },
+  "stopWork": [
+    "Do not claim June 10 production approval.",
+    "Do not claim statewide or 39-county runtime readiness.",
+    "Do not bypass launch-control stop conditions.",
+    "Do not run Benton closure until Sync evidence intake is accepted.",
+    "Do not start new Codex P0 closure work until the first unblock command passes."
+  ],
+  "allowedFraming": "TerraFusion is in controlled readiness execution. The governance gates are operating, Benton is the primary runtime pilot closure lane, and the 38-county seed lane is prepared but not promoted. Production and statewide runtime claims remain blocked until the proof gates pass.",
+  "nextCommands": [
+    "pnpm run truth:terrafusion-db-product-load-ledger",
+    "pnpm run truth:benton-runtime-pilot-closure",
+    "pnpm run truth:washington-39-county-data-crosswalk",
+    "pnpm run truth:runtime-candidate-set",
+    "pnpm run truth:june10-red-team",
+    "pnpm run truth:june10-claim-guard",
+    "pnpm run truth:june10-control-plane-refresh"
+  ],
+  "rules": [
+    "This packet is an operator status card; it does not prove runtime data.",
+    "The first unblock command is the only active next action while launch verdict is NO_GO.",
+    "Stop-work instructions override feature work, UI polish, and speculative expansion.",
+    "Allowed framing is inherited from launch control and must not be expanded here."
+  ]
+}

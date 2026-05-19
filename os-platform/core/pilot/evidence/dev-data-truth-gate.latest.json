@@ -1777,22 +1777,21 @@
         "county39CoverageStatus": "PASS_WITH_LIMITATIONS",
         "county39CoverageScope": "registry/acquisition inventory workbook",
         "county39Limitations": [
-          "2 counties remain not-started in the registry control plane.",
-          "3 counties still have Unknown acquisition family posture.",
+          "All 39 counties now have a source-decision acquisition family in the registry control plane.",
           "This proves registry coverage and acquisition-path inventory only; it does not prove statewide ingestion, normalization, geometry, or endpoint runtime coverage."
         ],
         "county39Counts": {
           "byStatus": {
             "researched": 4,
-            "adapter-ready": 33,
-            "not-started": 2
+            "adapter-ready": 35,
+            "not-started": 0
           },
           "byAcquisitionFamily": {
-            "Parcel transfer history": 6,
-            "Direct sales search": 24,
+            "Parcel transfer history": 8,
+            "Direct sales search": 25,
             "Monthly sales report": 4,
             "Monthly report / parcel history": 1,
-            "Unknown": 3,
+            "Unknown": 0,
             "Parcel transfer history / open data export": 1
           },
           "byPriority": {
@@ -1800,10 +1799,10 @@
             "P1": 29,
             "P3": 2
           },
-          "adapterReady": 33,
+          "adapterReady": 35,
           "researched": 4,
-          "notStarted": 2,
-          "unknownFamily": 3
+          "notStarted": 0,
+          "unknownFamily": 0
         }
       }
     },
@@ -1817,22 +1816,21 @@
         "status": "PASS_WITH_LIMITATIONS",
         "scope": "registry/acquisition inventory workbook",
         "limitations": [
-          "2 counties remain not-started in the registry control plane.",
-          "3 counties still have Unknown acquisition family posture.",
+          "All 39 counties now have a source-decision acquisition family in the registry control plane.",
           "This proves registry coverage and acquisition-path inventory only; it does not prove statewide ingestion, normalization, geometry, or endpoint runtime coverage."
         ],
         "counts": {
           "byStatus": {
             "researched": 4,
-            "adapter-ready": 33,
-            "not-started": 2
+            "adapter-ready": 35,
+            "not-started": 0
           },
           "byAcquisitionFamily": {
-            "Parcel transfer history": 6,
-            "Direct sales search": 24,
+            "Parcel transfer history": 8,
+            "Direct sales search": 25,
             "Monthly sales report": 4,
             "Monthly report / parcel history": 1,
-            "Unknown": 3,
+            "Unknown": 0,
             "Parcel transfer history / open data export": 1
           },
           "byPriority": {
@@ -1840,10 +1838,10 @@
             "P1": 29,
             "P3": 2
           },
-          "adapterReady": 33,
+          "adapterReady": 35,
           "researched": 4,
-          "notStarted": 2,
-          "unknownFamily": 3
+          "notStarted": 0,
+          "unknownFamily": 0
         }
       }
     },

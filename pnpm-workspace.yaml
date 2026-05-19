@@ -45,6 +45,7 @@ packages:
 
   # Tools with package.json
   - 'tools/*'
+  - 'tools/registry/autonomy-viewer'
 
   # Apps (Slice M+ — Electron cockpit and future GUI apps)
   - 'apps/*'

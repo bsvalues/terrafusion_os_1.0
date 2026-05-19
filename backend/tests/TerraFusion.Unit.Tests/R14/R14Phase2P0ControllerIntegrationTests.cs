@@ -804,6 +804,12 @@ internal sealed class R14Phase2ControllerFactory : WebApplicationFactory<ApiProg
             .Setup(service => service.IsValidGovernmentUserAsync(It.IsAny<string>()))
             .ReturnsAsync(true);
         securityService
+            .Setup(service => service.ValidateUserCredentialsAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(true);
+        securityService
+            .Setup(service => service.GetUserRolesAsync(It.IsAny<string>()))
+            .ReturnsAsync(new[] { "GovernmentUser" });
+        securityService
             .Setup(service => service.LogSecurityEventAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string?>()))
             .Returns(() => Task.CompletedTask);
 

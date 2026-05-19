@@ -31,10 +31,10 @@ import * as crypto from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import {
-    ATTESTATION_SCHEMA,
-    containsMutableRef,
-    REQUIRED_ARTIFACTS,
-    type CustodyAttestation,
+  ATTESTATION_SCHEMA,
+  REQUIRED_ARTIFACTS,
+  validateNoMutableUrls,
+  type CustodyAttestation,
 } from './custody-attest.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -274,20 +274,14 @@ export function verifyCustodyAttestation(opts: VerifyAttestationOptions): Verify
       if (fs.existsSync(filePath)) {
         try {
           const content = fs.readFileSync(filePath, 'utf8');
-          // Simple URL extraction
-          const urlMatch = content.match(/https?:\/\/[^\s"'<>]+/g);
-          if (urlMatch) {
-            for (const url of urlMatch) {
-              const mutable = containsMutableRef(url);
-              if (mutable) {
-                errors.push({
-                  type: 'mutable_url',
-                  path: entry.name,
-                  actual: url,
-                  message: `Mutable URL in ${entry.name}: ${url}`,
-                });
-              }
-            }
+          const mutableUrlErrors = validateNoMutableUrls(content);
+          for (const mutableUrlError of mutableUrlErrors) {
+            errors.push({
+              type: 'mutable_url',
+              path: entry.name,
+              actual: mutableUrlError.artifact,
+              message: `Mutable URL in ${entry.name}: ${mutableUrlError.artifact}`,
+            });
           }
         } catch {
           // Skip unreadable files
@@ -407,7 +401,7 @@ function loadPolicyFromIndex(indexPath: string): ExpectedPolicy | null {
  * Phase 4N20: Verify pins against expected values.
  * Enforces SHA binding for merged/incident tiers when requireShaBinding=true.
  */
-function verifyPins(
+export function verifyPins(
   opts: VerifyOptions,
   verbose: boolean
 ): { pinned: boolean; errors: SignatureError[] } {
@@ -420,8 +414,14 @@ function verifyPins(
   let expectedSha: string | undefined;
   let expectedRef: string | undefined;
 
-  if (opts.policyFromIndex) {
-    const policy = loadPolicyFromIndex(opts.policyFromIndex);
+  const explicitPinsProvided = Boolean(expectedIssuer || expectedIdentity);
+  const defaultPolicyPath = path.join(opts.inputDir, 'autonomy-evidence-index.json');
+  const policyPath =
+    opts.policyFromIndex ||
+    (!explicitPinsProvided && fs.existsSync(defaultPolicyPath) ? defaultPolicyPath : undefined);
+
+  if (policyPath) {
+    const policy = loadPolicyFromIndex(policyPath);
     if (policy) {
       expectedIssuer = expectedIssuer || policy.issuer;
       expectedIdentity = expectedIdentity || policy.identity;
@@ -429,7 +429,7 @@ function verifyPins(
       expectedSha = policy.sha;
       expectedRef = policy.ref;
       if (verbose) {
-        console.log(`  Loaded pins from index: ${opts.policyFromIndex}`);
+        console.log(`  Loaded pins from index: ${policyPath}`);
         if (requireShaBinding) console.log(`  SHA binding: REQUIRED`);
       }
     }

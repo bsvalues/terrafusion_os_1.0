@@ -1,0 +1,16 @@
+{
+  "generatedAtUtc": "2026-05-14T19:44:04.929Z",
+  "root": "evidence/june10-38-county-seed",
+  "receiptFileName": "source-snapshot-receipt.json",
+  "summary": {
+    "receiptsFound": 0,
+    "passed": false,
+    "failed": 0,
+    "statusCounts": {},
+    "noReceiptsFound": true
+  },
+  "rows": [],
+  "limitations": [
+    "No seed receipts found. This is acceptable before the 38-county initial seed lane starts."
+  ]
+}

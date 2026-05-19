@@ -37,7 +37,9 @@ public class SystemGptAtlasLiveServiceTests
         var cts = new CancellationTokenSource();
         var receivedEvents = new List<SystemGptAtlasLiveEventDto>();
 
-        // Act - collect events for ~250ms (should get 2-3 events)
+        // Act - collect two events. The stream interval is deterministic, but
+        // GitHub shared runners can delay task scheduling long enough that a
+        // sub-second safety timeout cancels after only the first yielded event.
         var streamTask = Task.Run(async () =>
         {
             await foreach (var evt in service.StreamEventsAsync(cts.Token))
@@ -47,7 +49,7 @@ public class SystemGptAtlasLiveServiceTests
             }
         });
 
-        cts.CancelAfter(500); // safety timeout
+        cts.CancelAfter(TimeSpan.FromSeconds(5)); // safety timeout
         try { await streamTask; } catch (OperationCanceledException) { }
 
         // Assert

@@ -81,6 +81,7 @@ CMD ["dotnet", "watch", "--project", "src/TerraFusion.API/TerraFusion.API.csproj
 # Stage 3: Runtime (Production)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
 WORKDIR /app
+ARG GIT_SHA=unknown
 
 # Security: run as non-root
 RUN addgroup -g 1001 -S terrafusion && adduser -S terrafusion -u 1001 -G terrafusion
@@ -89,6 +90,7 @@ USER terrafusion
 # Configure app to listen on port 5000
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV ASPNETCORE_URLS=http://0.0.0.0:5000
+ENV TF_GIT_SHA=${GIT_SHA}
 
 # Copy published app
 COPY --from=build /app/publish ./
