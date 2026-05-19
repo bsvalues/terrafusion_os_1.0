@@ -1,42 +1,42 @@
 # June 10 Endpoint Contract Smoke
 
-Generated: 2026-05-19T20:13:00.057Z
+Generated: 2026-05-19T22:01:32.192Z
 
 API base URL: http://localhost:5046
-Passed: false
+Passed: true
 
 ## Summary
 
 - Required probes: 4
 - Runtime probes: 4
-- Failed runtime probes: 4
-- Contract mismatches: 4
-- Blockers: 5
+- Failed runtime probes: 0
+- Contract mismatches: 0
+- Blockers: 0
+
+## Auth
+
+- Development token attempted: true
+- Development token acquired: true
+- Development token status: 200
+- Development token redacted: true
 
 ## Runtime Probes
 
 | ID | Method | Path | Status | Shape OK | Evidence |
 |---|---|---|---:|---:|---|
-health | GET | /health | error | false | fetch failed
-runtime_db_identity | GET | /api/runtime/truth/db-identity | error | false | fetch failed
-benton_parcels | GET | /api/counties/benton/parcels?limit=5 | error | false | fetch failed
-access_policy | GET | /api/auth/access-policy | error | false | fetch failed
+health | GET | /health | 200 | true | {"status":"Healthy","timestamp":"2026-05-19T22:01:30.7374712Z","environment":"Development","version":"1.0.0","service":"TerraFusion OS API - Basic Mode","gitSha":"unknown"}
+runtime_db_identity | GET | /api/runtime/truth/db-identity | 200 | true | {"apiBaseUrl":"http://localhost:5046","environment":"Development","contentRootPath":"C:\\Users\\bsval\\.config\\superpowers\\worktrees\\terrafusion_os_1.0\\june10-production-readiness-audit-gate\\backend\\src\\TerraFusion.API\\bin\\Debug\\n
+benton_parcels | GET | /api/counties/benton/parcels?limit=5 | 200 | true | {"county":"Benton County","countyId":"19190019-1919-1919-1919-191919191919","rowType":"parcels","runtimeTable":"canonical_tf.tf_parcel","semantics":{"countyScoped":true,"activeOnly":true,"duplicateParcelVersionsCollapsed":true,"currentParce
+access_policy | GET | /api/auth/access-policy | 200 | true | {"signupMode":"provisioned_access_only","publicSignupEnabled":false,"message":"TerraFusion access is provisioned by an administrator. Public self-signup is disabled."}
 
 ## Contract Mismatches
 
-- **health** /health: expected status 200, got fetch failed
-- **runtime_db_identity** /api/runtime/truth/db-identity: expected status 200, got fetch failed
-- **benton_parcels** /api/counties/benton/parcels?limit=5: expected status 200, got fetch failed
-- **access_policy** /api/auth/access-policy: expected status 200, got fetch failed
+- None
 
 ## Blockers
 
-- **runtime_probe**: GET /health did not return 200. (fetch failed)
-- **runtime_probe**: GET /api/runtime/truth/db-identity did not return 200. (fetch failed)
-- **runtime_probe**: GET /api/counties/benton/parcels?limit=5 did not return 200. (fetch failed)
-- **runtime_probe**: GET /api/auth/access-policy did not return 200. (fetch failed)
-- **contract_shape**: One or more endpoint responses do not match the June 10 launch-control contract. (4 mismatch(es))
+- None
 
 ## Interpretation
 
-Endpoint contract smoke is not passing; production readiness cannot claim all endpoints match contracts.
+Endpoint contract smoke passed for the required June 10 runtime API probes.

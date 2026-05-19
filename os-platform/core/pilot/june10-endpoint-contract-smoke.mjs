@@ -9,6 +9,7 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "../../..");
 
 const DEFAULT_API_BASE_URL = "http://localhost:5046";
+const DEFAULT_TIMEOUT_MS = 60000;
 const DEFAULT_OUT_JSON = path.join(
   repoRoot,
   "os-platform",
@@ -25,6 +26,7 @@ const DEFAULT_OUT_MD = path.join(
   "evidence",
   "june10-endpoint-contract-smoke.latest.md"
 );
+const DEVELOPMENT_TOKEN_PATH = "/api/auth/dev-token";
 
 const REQUIRED_PROBES = [
   {
@@ -38,6 +40,7 @@ const REQUIRED_PROBES = [
     id: "runtime_db_identity",
     method: "GET",
     path: "/api/runtime/truth/db-identity",
+    authRequired: true,
     required: true,
     validate: validateRuntimeDbIdentity
   },
@@ -45,6 +48,7 @@ const REQUIRED_PROBES = [
     id: "benton_parcels",
     method: "GET",
     path: "/api/counties/benton/parcels?limit=5",
+    authRequired: true,
     required: true,
     validate: validateBentonParcels
   },
@@ -189,14 +193,26 @@ function addBlocker(blockers, source, message, evidence = null) {
   blockers.push({ source, message, evidence });
 }
 
-async function fetchProbe(apiBaseUrl, probeDefinition, timeoutMs) {
+function redactedDevelopmentTokenEvidence(auth) {
+  return {
+    attempted: auth.attempted,
+    path: DEVELOPMENT_TOKEN_PATH,
+    status: auth.status,
+    contentType: auth.contentType,
+    acquired: auth.acquired,
+    tokenRedacted: auth.acquired,
+    error: auth.error
+  };
+}
+
+async function fetchDevelopmentToken(apiBaseUrl, timeoutMs) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
-  const url = `${normalizeBaseUrl(apiBaseUrl)}${probeDefinition.path}`;
+  const url = `${normalizeBaseUrl(apiBaseUrl)}${DEVELOPMENT_TOKEN_PATH}`;
 
   try {
     const response = await fetch(url, {
-      method: probeDefinition.method,
+      method: "GET",
       redirect: "follow",
       signal: controller.signal,
       headers: {
@@ -206,6 +222,54 @@ async function fetchProbe(apiBaseUrl, probeDefinition, timeoutMs) {
       }
     });
     const contentType = response.headers.get("content-type") ?? "";
+    const bodyText = await response.text();
+    const payload = parseJson(bodyText);
+    const token = payload?.token ?? payload?.accessToken ?? payload?.jwt ?? null;
+
+    return {
+      attempted: true,
+      status: response.status,
+      contentType,
+      acquired: response.status === 200 && typeof token === "string" && token.length > 0,
+      token: typeof token === "string" ? token : null,
+      error: null
+    };
+  } catch (error) {
+    return {
+      attempted: true,
+      status: null,
+      contentType: null,
+      acquired: false,
+      token: null,
+      error: error.name === "AbortError" ? `Timed out after ${timeoutMs}ms` : error.message
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function fetchProbe(apiBaseUrl, probeDefinition, timeoutMs, auth) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  const url = `${normalizeBaseUrl(apiBaseUrl)}${probeDefinition.path}`;
+  const headers = {
+    accept: "application/json,text/plain,*/*",
+    "user-agent": "TerraFusion-June10-EndpointContractSmoke/1.0",
+    connection: "close"
+  };
+
+  if (probeDefinition.authRequired && auth?.token) {
+    headers.authorization = `Bearer ${auth.token}`;
+  }
+
+  try {
+    const response = await fetch(url, {
+      method: probeDefinition.method,
+      redirect: "follow",
+      signal: controller.signal,
+      headers
+    });
+    const contentType = response.headers.get("content-type") ?? "";
     const bodyText = snippet(await response.text());
 
     return {
@@ -213,6 +277,8 @@ async function fetchProbe(apiBaseUrl, probeDefinition, timeoutMs) {
       method: probeDefinition.method,
       path: probeDefinition.path,
       url,
+      authRequired: Boolean(probeDefinition.authRequired),
+      authApplied: Boolean(probeDefinition.authRequired && auth?.token),
       status: response.status,
       contentType,
       bodyText,
@@ -226,6 +292,8 @@ async function fetchProbe(apiBaseUrl, probeDefinition, timeoutMs) {
       method: probeDefinition.method,
       path: probeDefinition.path,
       url,
+      authRequired: Boolean(probeDefinition.authRequired),
+      authApplied: Boolean(probeDefinition.authRequired && auth?.token),
       status: null,
       contentType: null,
       bodyText: "",
@@ -238,7 +306,7 @@ async function fetchProbe(apiBaseUrl, probeDefinition, timeoutMs) {
   }
 }
 
-export function buildJune10EndpointContractSmokeReport({ apiBaseUrl, probes }) {
+export function buildJune10EndpointContractSmokeReport({ apiBaseUrl, probes, auth = null }) {
   const blockers = [];
   const contractMismatches = [];
   const failedRuntimeProbes = probes.filter((probe) => probe.status !== 200);
@@ -277,6 +345,19 @@ export function buildJune10EndpointContractSmokeReport({ apiBaseUrl, probes }) {
       contractMismatches: contractMismatches.length,
       blockers: blockers.length
     },
+    auth: {
+      developmentToken: auth
+        ? redactedDevelopmentTokenEvidence(auth)
+        : {
+            attempted: false,
+            path: DEVELOPMENT_TOKEN_PATH,
+            status: null,
+            contentType: null,
+            acquired: false,
+            tokenRedacted: false,
+            error: null
+          }
+    },
     localRuntimeProbes: probes,
     contractMismatches,
     blockers,
@@ -289,14 +370,15 @@ export function buildJune10EndpointContractSmokeReport({ apiBaseUrl, probes }) {
 
 export async function probeJune10EndpointContracts({
   apiBaseUrl = DEFAULT_API_BASE_URL,
-  timeoutMs = 10000
+  timeoutMs = DEFAULT_TIMEOUT_MS
 } = {}) {
+  const auth = await fetchDevelopmentToken(apiBaseUrl, timeoutMs);
   const probes = [];
   for (const probeDefinition of REQUIRED_PROBES) {
-    probes.push(await fetchProbe(apiBaseUrl, probeDefinition, timeoutMs));
+    probes.push(await fetchProbe(apiBaseUrl, probeDefinition, timeoutMs, auth));
   }
 
-  return buildJune10EndpointContractSmokeReport({ apiBaseUrl, probes });
+  return buildJune10EndpointContractSmokeReport({ apiBaseUrl, probes, auth });
 }
 
 function renderMarkdown(report) {
@@ -315,6 +397,13 @@ function renderMarkdown(report) {
     `- Failed runtime probes: ${report.summary.failedRuntimeProbes}`,
     `- Contract mismatches: ${report.summary.contractMismatches}`,
     `- Blockers: ${report.summary.blockers}`,
+    "",
+    "## Auth",
+    "",
+    `- Development token attempted: ${report.auth.developmentToken.attempted}`,
+    `- Development token acquired: ${report.auth.developmentToken.acquired}`,
+    `- Development token status: ${report.auth.developmentToken.status ?? "-"}`,
+    `- Development token redacted: ${report.auth.developmentToken.tokenRedacted}`,
     "",
     "## Runtime Probes",
     "",
@@ -352,7 +441,7 @@ function renderMarkdown(report) {
 function parseArgs(argv) {
   const args = {
     apiBaseUrl: process.env.TF_API_BASE_URL ?? DEFAULT_API_BASE_URL,
-    timeoutMs: Number.parseInt(process.env.TF_ENDPOINT_CONTRACT_TIMEOUT_MS ?? "10000", 10),
+    timeoutMs: Number.parseInt(process.env.TF_ENDPOINT_CONTRACT_TIMEOUT_MS ?? String(DEFAULT_TIMEOUT_MS), 10),
     outJson: DEFAULT_OUT_JSON,
     outMd: DEFAULT_OUT_MD,
     write: true

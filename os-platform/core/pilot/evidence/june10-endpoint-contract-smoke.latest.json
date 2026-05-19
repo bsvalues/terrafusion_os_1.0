@@ -1,13 +1,24 @@
 {
-  "generatedAtUtc": "2026-05-19T20:13:00.057Z",
+  "generatedAtUtc": "2026-05-19T22:01:32.192Z",
   "apiBaseUrl": "http://localhost:5046",
-  "passed": false,
+  "passed": true,
   "summary": {
     "requiredProbes": 4,
     "localRuntimeProbes": 4,
-    "failedRuntimeProbes": 4,
-    "contractMismatches": 4,
-    "blockers": 5
+    "failedRuntimeProbes": 0,
+    "contractMismatches": 0,
+    "blockers": 0
+  },
+  "auth": {
+    "developmentToken": {
+      "attempted": true,
+      "path": "/api/auth/dev-token",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "acquired": true,
+      "tokenRedacted": true,
+      "error": null
+    }
   },
   "localRuntimeProbes": [
     {
@@ -15,98 +26,59 @@
       "method": "GET",
       "path": "/health",
       "url": "http://localhost:5046/health",
-      "status": null,
-      "contentType": null,
-      "bodyText": "",
-      "bodySnippet": "",
-      "ok": false,
-      "error": "fetch failed"
+      "authRequired": false,
+      "authApplied": false,
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bodyText": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-19T22:01:30.7374712Z\",\"environment\":\"Development\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"unknown\"}",
+      "bodySnippet": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-19T22:01:30.7374712Z\",\"environment\":\"Development\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"unknown\"}",
+      "ok": true,
+      "error": null
     },
     {
       "id": "runtime_db_identity",
       "method": "GET",
       "path": "/api/runtime/truth/db-identity",
       "url": "http://localhost:5046/api/runtime/truth/db-identity",
-      "status": null,
-      "contentType": null,
-      "bodyText": "",
-      "bodySnippet": "",
-      "ok": false,
-      "error": "fetch failed"
+      "authRequired": true,
+      "authApplied": true,
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bodyText": "{\"apiBaseUrl\":\"http://localhost:5046\",\"environment\":\"Development\",\"contentRootPath\":\"C:\\\\Users\\\\bsval\\\\.config\\\\superpowers\\\\worktrees\\\\terrafusion_os_1.0\\\\june10-production-readiness-audit-gate\\\\backend\\\\src\\\\TerraFusion.API\\\\bin\\\\Debug\\\\net8.0\\\\\",\"provider\":\"Npgsql.EntityFrameworkCore.PostgreSQL\",\"connectionStringName\":\"DefaultConnection\",\"serverRedacted\":\"configured-host-redacted\",\"database\":\"terrafusion\",\"expectedJune10Database\":\"terrafusion\",\"isExpectedJune10RuntimeDb\":true,\"expectedBentonParcelCount\":null,\"isBentonParcelCountExpected\":false,\"migrationState\":{\"appliedCount\":99,\"pendingCount\":0,\"latestApplied\":\"20260518123620_AddPropertyCountyTaxYearIndex\",\"warnings\":[]},\"rowCounts\":{\"counties\":39,\"properties\":128788,\"comparableSales\":259102,\"tfParcels\":3199010,\"tfSales\":721,\"canonicalSaleQualifications\":251484},\"passed\":true,\"blockers\":[],\"warnings\":[]}",
+      "bodySnippet": "{\"apiBaseUrl\":\"http://localhost:5046\",\"environment\":\"Development\",\"contentRootPath\":\"C:\\\\Users\\\\bsval\\\\.config\\\\superpowers\\\\worktrees\\\\terrafusion_os_1.0\\\\june10-production-readiness-audit-gate\\\\backend\\\\src\\\\TerraFusion.API\\\\bin\\\\Debug\\\\n",
+      "ok": true,
+      "error": null
     },
     {
       "id": "benton_parcels",
       "method": "GET",
       "path": "/api/counties/benton/parcels?limit=5",
       "url": "http://localhost:5046/api/counties/benton/parcels?limit=5",
-      "status": null,
-      "contentType": null,
-      "bodyText": "",
-      "bodySnippet": "",
-      "ok": false,
-      "error": "fetch failed"
+      "authRequired": true,
+      "authApplied": true,
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bodyText": "{\"county\":\"Benton County\",\"countyId\":\"19190019-1919-1919-1919-191919191919\",\"rowType\":\"parcels\",\"runtimeTable\":\"canonical_tf.tf_parcel\",\"semantics\":{\"countyScoped\":true,\"activeOnly\":true,\"duplicateParcelVersionsCollapsed\":true,\"currentParcelVersion\":true,\"source\":\"canonical_tf_runtime_query\"},\"total\":83296,\"count\":5,\"rows\":[{\"parcelId\":\"0e4c296c-3a87-427c-b7b5-fe7c51395f88\",\"parcelNumber\":\"101040000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-19T21:55:03.010596Z\"},{\"parcelId\":\"48407623-93da-48ef-9a45-dd9d7732ae4d\",\"parcelNumber\":\"101050000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-19T21:55:03.010596Z\"},{\"parcelId\":\"de655d81-543c-4b69-af13-b6870f05080f\",\"parcelNumber\":\"101070000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-19T21:55:03.010596Z\"},{\"parcelId\":\"c4ae1f4a-5f14-48c3-8d70-e429a120dcd1\",\"parcelNumber\":\"101140000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-19T21:55:03.010596Z\"},{\"parcelId\":\"007d3cea-386c-4653-ab78-44936b6ad0f4\",\"parcelNumber\":\"101151000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-19T21:55:03.010596Z\"}]}",
+      "bodySnippet": "{\"county\":\"Benton County\",\"countyId\":\"19190019-1919-1919-1919-191919191919\",\"rowType\":\"parcels\",\"runtimeTable\":\"canonical_tf.tf_parcel\",\"semantics\":{\"countyScoped\":true,\"activeOnly\":true,\"duplicateParcelVersionsCollapsed\":true,\"currentParce",
+      "ok": true,
+      "error": null
     },
     {
       "id": "access_policy",
       "method": "GET",
       "path": "/api/auth/access-policy",
       "url": "http://localhost:5046/api/auth/access-policy",
-      "status": null,
-      "contentType": null,
-      "bodyText": "",
-      "bodySnippet": "",
-      "ok": false,
-      "error": "fetch failed"
+      "authRequired": false,
+      "authApplied": false,
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bodyText": "{\"signupMode\":\"provisioned_access_only\",\"publicSignupEnabled\":false,\"message\":\"TerraFusion access is provisioned by an administrator. Public self-signup is disabled.\"}",
+      "bodySnippet": "{\"signupMode\":\"provisioned_access_only\",\"publicSignupEnabled\":false,\"message\":\"TerraFusion access is provisioned by an administrator. Public self-signup is disabled.\"}",
+      "ok": true,
+      "error": null
     }
   ],
-  "contractMismatches": [
-    {
-      "endpointId": "health",
-      "endpoint": "/health",
-      "reason": "expected status 200, got fetch failed"
-    },
-    {
-      "endpointId": "runtime_db_identity",
-      "endpoint": "/api/runtime/truth/db-identity",
-      "reason": "expected status 200, got fetch failed"
-    },
-    {
-      "endpointId": "benton_parcels",
-      "endpoint": "/api/counties/benton/parcels?limit=5",
-      "reason": "expected status 200, got fetch failed"
-    },
-    {
-      "endpointId": "access_policy",
-      "endpoint": "/api/auth/access-policy",
-      "reason": "expected status 200, got fetch failed"
-    }
-  ],
-  "blockers": [
-    {
-      "source": "runtime_probe",
-      "message": "GET /health did not return 200.",
-      "evidence": "fetch failed"
-    },
-    {
-      "source": "runtime_probe",
-      "message": "GET /api/runtime/truth/db-identity did not return 200.",
-      "evidence": "fetch failed"
-    },
-    {
-      "source": "runtime_probe",
-      "message": "GET /api/counties/benton/parcels?limit=5 did not return 200.",
-      "evidence": "fetch failed"
-    },
-    {
-      "source": "runtime_probe",
-      "message": "GET /api/auth/access-policy did not return 200.",
-      "evidence": "fetch failed"
-    },
-    {
-      "source": "contract_shape",
-      "message": "One or more endpoint responses do not match the June 10 launch-control contract.",
-      "evidence": "4 mismatch(es)"
-    }
-  ],
-  "interpretation": "Endpoint contract smoke is not passing; production readiness cannot claim all endpoints match contracts."
+  "contractMismatches": [],
+  "blockers": [],
+  "interpretation": "Endpoint contract smoke passed for the required June 10 runtime API probes."
 }

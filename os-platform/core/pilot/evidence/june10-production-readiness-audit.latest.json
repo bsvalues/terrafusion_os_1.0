@@ -1,8 +1,8 @@
 {
-  "generatedAtUtc": "2026-05-19T21:23:02.262Z",
+  "generatedAtUtc": "2026-05-19T22:01:47.375Z",
   "verdict": "not_ready",
   "summary": {
-    "shipBlockers": 7,
+    "shipBlockers": 5,
     "warnings": 2,
     "readinessStatus": "FAIL",
     "redTeamVerdict": "RED",
@@ -12,8 +12,8 @@
     "runtimeApiBaseUrl": "http://localhost:5046",
     "runtimeDatabase": "terrafusion",
     "publicSiteBaseUrl": "https://terrafusionmarket.com",
-    "failedRuntimeProbes": 4,
-    "contractMismatches": 4,
+    "failedRuntimeProbes": 0,
+    "contractMismatches": 0,
     "rustCrates": 101,
     "rustRuntimeIntegrations": 3
   },
@@ -47,18 +47,6 @@
       "severity": "HIGH",
       "message": "terrafusionmarket.com public-site smoke is not passing.",
       "evidence": "access_policy: Public signup is disabled and no access-request channel is exposed by /api/auth/access-policy."
-    },
-    {
-      "source": "runtime_endpoint",
-      "severity": "HIGH",
-      "message": "One or more runtime endpoint probes failed.",
-      "evidence": "http://localhost:5046/health:fetch failed; http://localhost:5046/api/runtime/truth/db-identity:fetch failed; http://localhost:5046/api/counties/benton/parcels?limit=5:fetch failed; http://localhost:5046/api/auth/access-policy:fetch failed"
-    },
-    {
-      "source": "contract_mismatch",
-      "severity": "HIGH",
-      "message": "Frontend/backend endpoint contracts are not fully proven.",
-      "evidence": "4 contract mismatch(es)"
     }
   ],
   "warnings": [

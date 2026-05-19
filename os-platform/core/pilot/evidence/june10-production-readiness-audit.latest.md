@@ -1,12 +1,12 @@
 # June 10 Production Readiness Audit
 
-Generated: 2026-05-19T21:23:02.262Z
+Generated: 2026-05-19T22:01:47.375Z
 
 Verdict: not_ready
 
 ## Summary
 
-- Ship blockers: 7
+- Ship blockers: 5
 - Warnings: 2
 - Readiness status: FAIL
 - Red-team verdict: RED
@@ -16,8 +16,8 @@ Verdict: not_ready
 - Runtime API base URL: http://localhost:5046
 - Runtime database: terrafusion
 - Public site: https://terrafusionmarket.com
-- Failed runtime probes: 4
-- Contract mismatches: 4
+- Failed runtime probes: 0
+- Contract mismatches: 0
 - Rust crates: 101
 - Rust runtime integrations: 3
 
@@ -28,8 +28,6 @@ Verdict: not_ready
 - **CRITICAL product_load_lineage**: TerraFusion DB product-load lineage is not proven. (passed=false; lineageProven=0; rowsExistLineageUnproven=6)
 - **CRITICAL runtime_db_identity**: Runtime TerraFusion DB identity did not pass. (apiBaseUrl=http://localhost:5046; database=terrafusion)
 - **HIGH public_site**: terrafusionmarket.com public-site smoke is not passing. (access_policy: Public signup is disabled and no access-request channel is exposed by /api/auth/access-policy.)
-- **HIGH runtime_endpoint**: One or more runtime endpoint probes failed. (http://localhost:5046/health:fetch failed; http://localhost:5046/api/runtime/truth/db-identity:fetch failed; http://localhost:5046/api/counties/benton/parcels?limit=5:fetch failed; http://localhost:5046/api/auth/access-policy:fetch failed)
-- **HIGH contract_mismatch**: Frontend/backend endpoint contracts are not fully proven. (4 contract mismatch(es))
 
 ## Warnings
 
