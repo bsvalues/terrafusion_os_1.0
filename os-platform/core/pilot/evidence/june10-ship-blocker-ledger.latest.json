@@ -1,0 +1,165 @@
+{
+  "generatedAtUtc": "2026-05-15T20:48:13.606Z",
+  "launchVerdict": "NO_GO",
+  "readinessStatus": "FAIL",
+  "redTeamVerdict": "RED",
+  "summary": {
+    "blockerGroups": 11,
+    "readinessBlockers": 23,
+    "launchStopConditions": 4,
+    "criticalRedTeamAttacks": 3,
+    "p0Groups": 6,
+    "p1Groups": 5
+  },
+  "blockerGroups": [
+    {
+      "source": "productLoadLedger",
+      "priority": "P0",
+      "ownerLane": "Claude Code / Sync DB, audited by Codex",
+      "nextCommand": "pnpm run truth:terrafusion-db-product-load-ledger",
+      "requiredResolution": "Emit/read product-load receipts proving TerraFusion DB table rows were loaded through the approved ingestion path.",
+      "blockerCount": 14,
+      "blockers": [
+        "Artifact reports failed proof posture: top-level passed is false.",
+        "Artifact reports failed proof posture: summary.lineageProven is false.",
+        "receiptEvidence: ProductLoadReceipts table is missing.",
+        "canonical_tf.tf_parcel: Table missing or unreadable.",
+        "canonical_tf.tf_sale: Rows exist but no product load receipt proves lineage.",
+        "CanonicalSaleQualifications: Rows exist but no product load receipt proves lineage.",
+        "CamaCharacteristics: Rows exist but no product load receipt proves lineage.",
+        "ImprovementDetails: Table exists but is empty.",
+        "LandSegments: Table exists but is empty.",
+        "GisParcelGeometries: Rows exist but no product load receipt proves lineage.",
+        "DossierPackets: Table exists but is empty.",
+        "CountyDownstreamClosureReceipts: Table exists but is empty.",
+        "CountyApplyHandoffReceipts: Table exists but is empty.",
+        "TerraFusion DB product load ledger is not lineage-proven."
+      ]
+    },
+    {
+      "source": "bentonPilotClosure",
+      "priority": "P0",
+      "ownerLane": "Codex after all Benton data gates are green",
+      "nextCommand": "pnpm run truth:benton-runtime-pilot-closure",
+      "requiredResolution": "Prove Benton runtime pilot closure only after DB identity, content, load receipts, parcel sanity, and sale qualification pass.",
+      "blockerCount": 7,
+      "blockers": [
+        "Artifact reports failed proof posture: top-level status is FAIL.",
+        "June 10 runtime scope is runtime_scope_requires_review, expected benton_only_runtime_pilot.",
+        "Expected exactly one runtime-proven county; found 39.",
+        "Expected 38 provenance-only counties; found 0.",
+        "Benton ratio-study window has no final-decision qualified sales.",
+        "Benton runtime pilot closure is not passing.",
+        "Benton runtime pilot closure does not prove canonical sale qualification and Benton-only scope."
+      ]
+    },
+    {
+      "source": "launchControl",
+      "priority": "P0",
+      "ownerLane": "Codex",
+      "nextCommand": "pnpm run truth:june10-launch-control",
+      "requiredResolution": "Clear launch-control stop conditions.",
+      "blockerCount": 4,
+      "blockers": [
+        "June 10 readiness packet is not passing.",
+        "Credibility red-team verdict is RED.",
+        "Launch claim guard is LOCKED.",
+        "P0 burn-down is not clear."
+      ]
+    },
+    {
+      "source": "redTeam:benton_realism",
+      "priority": "P0",
+      "ownerLane": "Codex / launch-control review",
+      "nextCommand": "pnpm run truth:june10-red-team",
+      "requiredResolution": "Clear or contain the credibility attack before public readiness claims.",
+      "blockerCount": 1,
+      "blockers": [
+        "Benton full-corpus proof is an ATTEMPT, not a seal; six-lane completion and API readback are not proven."
+      ]
+    },
+    {
+      "source": "redTeam:governance_posture",
+      "priority": "P0",
+      "ownerLane": "Codex / launch-control review",
+      "nextCommand": "pnpm run truth:june10-red-team",
+      "requiredResolution": "Clear or contain the credibility attack before public readiness claims.",
+      "blockerCount": 1,
+      "blockers": [
+        "Final readiness packet is failing, so any production approval claim outruns the proof record."
+      ]
+    },
+    {
+      "source": "redTeam:runtime_lineage",
+      "priority": "P0",
+      "ownerLane": "Codex / launch-control review",
+      "nextCommand": "pnpm run truth:june10-red-team",
+      "requiredResolution": "Clear or contain the credibility attack before public readiness claims.",
+      "blockerCount": 1,
+      "blockers": [
+        "Rows may exist in TerraFusion DB, but product-load lineage is not proven enough for audit-grade trust."
+      ]
+    },
+    {
+      "source": "crosswalk",
+      "priority": "P1",
+      "ownerLane": "Codex",
+      "nextCommand": "pnpm run truth:washington-39-county-data-crosswalk",
+      "requiredResolution": "Keep 39-county runtime claims prohibited unless every promoted county has TerraFusion DB runtime proof.",
+      "blockerCount": 1,
+      "blockers": [
+        "Crosswalk runtime-proven count does not match runtime candidate set."
+      ]
+    },
+    {
+      "source": "runtimeCandidateSet",
+      "priority": "P1",
+      "ownerLane": "Codex after runtime registration ledger refresh",
+      "nextCommand": "pnpm run truth:runtime-candidate-set",
+      "requiredResolution": "Keep June 10 scope locked to Benton runtime pilot unless evidence-backed county promotion is deliberately completed.",
+      "blockerCount": 1,
+      "blockers": [
+        "Runtime candidate set does not prove Benton-only June 10 scope."
+      ]
+    },
+    {
+      "source": "redTeam:county_trust",
+      "priority": "P1",
+      "ownerLane": "Codex / launch-control review",
+      "nextCommand": "pnpm run truth:june10-red-team",
+      "requiredResolution": "Clear or contain the credibility attack before public readiness claims.",
+      "blockerCount": 1,
+      "blockers": [
+        "The 38-county seed lane has work orders and templates but no actual source receipts yet."
+      ]
+    },
+    {
+      "source": "redTeam:overclaim_risk",
+      "priority": "P1",
+      "ownerLane": "Codex / launch-control review",
+      "nextCommand": "pnpm run truth:june10-red-team",
+      "requiredResolution": "Clear or contain the credibility attack before public readiness claims.",
+      "blockerCount": 1,
+      "blockers": [
+        "County-scope language is still easy to overread as statewide runtime readiness."
+      ]
+    },
+    {
+      "source": "redTeam:uat_survivability",
+      "priority": "P1",
+      "ownerLane": "Codex / launch-control review",
+      "nextCommand": "pnpm run truth:june10-red-team",
+      "requiredResolution": "Clear or contain the credibility attack before public readiness claims.",
+      "blockerCount": 1,
+      "blockers": [
+        "Benton pilot closure is not passing, so end-to-end UAT can fail even if individual data checks pass."
+      ]
+    }
+  ],
+  "rules": [
+    "This ledger prioritizes blockers; it does not clear them.",
+    "P0 blockers must clear before June 10 GO can be considered.",
+    "Launch-control stop conditions and red-team critical attacks are ship blockers.",
+    "Owner lanes describe execution responsibility; proof commands are the required verification surface."
+  ]
+}

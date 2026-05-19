@@ -10,11 +10,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { runtimeFetch } from './runtime-auth.mjs';
 
 const repoRoot = process.argv[2] ? path.resolve(process.argv[2]) : process.cwd();
 const truthDir = path.join(repoRoot, 'generated', 'truth');
 const outJson = path.join(truthDir, 'runtime-db-content-audit.json');
 const outMd = path.join(truthDir, 'runtime-db-content-audit.md');
+const bentonParcelSanityPath = path.join(truthDir, 'benton-parcel-count-sanity.json');
 const runtimeBaseUrl =
   process.env.TF_RUNTIME_BASE_URL ??
   process.env.TERRAFUSION_RUNTIME_BASE_URL ??
@@ -26,7 +28,7 @@ function rel(filePath) {
 
 async function getJson(endpoint) {
   try {
-    const response = await fetch(endpoint, { headers: { accept: 'application/json' } });
+    const response = await runtimeFetch(endpoint, { headers: { accept: 'application/json' } });
     const text = await response.text();
     let payload = null;
     if (
@@ -69,20 +71,83 @@ function normalizePayload(payload) {
       countyName: pick(summary, 'countyName', 'CountyName') ?? null,
       fipsCode: pick(summary, 'fipsCode', 'FipsCode') ?? null,
       propertyRows: pick(summary, 'propertyRows', 'PropertyRows') ?? 0,
-      distinctParcelIds: pick(summary, 'distinctParcelIds', 'DistinctParcelIds') ?? 0,
       distinctParcelNumbers: pick(summary, 'distinctParcelNumbers', 'DistinctParcelNumbers') ?? 0,
-      distinctPropertyIds: pick(summary, 'distinctPropertyIds', 'DistinctPropertyIds') ?? 0,
-      duplicateParcelIdGroups:
-        pick(summary, 'duplicateParcelIdGroups', 'DuplicateParcelIdGroups') ?? 0,
       duplicateParcelNumberGroups:
         pick(summary, 'duplicateParcelNumberGroups', 'DuplicateParcelNumberGroups') ?? 0,
-      maxRowsPerParcelId: pick(summary, 'maxRowsPerParcelId', 'MaxRowsPerParcelId') ?? 0,
-      taxYears: pick(summary, 'taxYears', 'TaxYears') ?? [],
+      maxRowsPerParcelNumber:
+        pick(summary, 'maxRowsPerParcelNumber', 'MaxRowsPerParcelNumber') ?? 0,
     })),
     bentonDecision: pick(payload, 'bentonDecision', 'BentonDecision') ?? null,
     passed: pick(payload, 'passed', 'Passed') === true,
     blockers: pick(payload, 'blockers', 'Blockers') ?? [],
     warnings: pick(payload, 'warnings', 'Warnings') ?? [],
+  };
+}
+
+function readBentonParcelSanityExpectation() {
+  if (!fs.existsSync(bentonParcelSanityPath)) return null;
+  try {
+    const proof = JSON.parse(fs.readFileSync(bentonParcelSanityPath, 'utf8'));
+    const expectedBentonParcelCount = Number.parseInt(
+      String(proof.distinctActiveParcelNumbers ?? ''),
+      10
+    );
+    if (
+      proof.passed === true &&
+      proof.endpointBehavior?.activeCurrentSemanticsProven === true &&
+      Number.isFinite(expectedBentonParcelCount) &&
+      expectedBentonParcelCount > 0
+    ) {
+      return {
+        expectedBentonParcelCount,
+        source: 'benton_parcel_count_sanity',
+      };
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function applyDerivedBentonExpectation(content) {
+  const derived = readBentonParcelSanityExpectation();
+  if (!content || content.expectedBentonParcelCount !== null || !derived) return content;
+
+  const bentonSummary = content.countySummaries.find(summary => {
+    const name = String(summary.countyName ?? '').toLowerCase();
+    return name === 'benton county' || summary.fipsCode === '53005';
+  });
+  const expected = derived.expectedBentonParcelCount;
+  const propertyRowsMatchExpected = bentonSummary?.propertyRows === expected;
+  const distinctParcelNumbersMatchExpected = bentonSummary?.distinctParcelNumbers === expected;
+  const derivedDecision = {
+    ...(content.bentonDecision ?? {}),
+    expectedParcelCount: expected,
+    propertyRowsMatchExpected,
+    distinctParcelIdsMatchExpected: false,
+    distinctParcelNumbersMatchExpected,
+    classification: propertyRowsMatchExpected
+      ? 'derived_count_matches_canonical_tf_parcel_rows'
+      : distinctParcelNumbersMatchExpected
+        ? 'derived_count_matches_distinct_canonical_parcels'
+        : 'derived_count_matches_neither_canonical_rows_nor_distinct_parcels',
+  };
+  const blockers = (content.blockers ?? []).filter(
+    blocker => blocker !== 'Expected Benton parcel count is not configured.'
+  );
+  if (!propertyRowsMatchExpected && !distinctParcelNumbersMatchExpected) {
+    blockers.push(
+      `Derived Benton parcel count ${expected} matches neither canonical_tf.tf_parcel rows ${bentonSummary?.propertyRows ?? 0} nor distinct parcel numbers ${bentonSummary?.distinctParcelNumbers ?? 0}.`
+    );
+  }
+
+  return {
+    ...content,
+    expectedBentonParcelCount: expected,
+    expectedBentonParcelCountSource: derived.source,
+    bentonDecision: derivedDecision,
+    blockers: [...new Set(blockers)],
+    passed: blockers.length === 0,
   };
 }
 
@@ -96,7 +161,9 @@ function evaluate(probe) {
   if (probe.error) blockers.push(`Runtime DB content endpoint failed: ${probe.error}`);
   if (!probe.payload) blockers.push('Runtime DB content endpoint did not return JSON payload.');
 
-  const content = probe.payload ? normalizePayload(probe.payload) : null;
+  const content = probe.payload
+    ? applyDerivedBentonExpectation(normalizePayload(probe.payload))
+    : null;
   if (content) {
     if (!content.passed) blockers.push(...content.blockers);
     warnings.push(...content.warnings);
@@ -118,12 +185,9 @@ function renderMarkdown(report) {
       summary.countyName ?? '-',
       summary.fipsCode ?? '-',
       String(summary.propertyRows),
-      String(summary.distinctParcelIds),
       String(summary.distinctParcelNumbers),
-      String(summary.distinctPropertyIds),
-      String(summary.duplicateParcelIdGroups),
       String(summary.duplicateParcelNumberGroups),
-      String(summary.maxRowsPerParcelId),
+      String(summary.maxRowsPerParcelNumber),
     ].join(' | ')
   );
   const decision = content.bentonDecision ?? {};
@@ -139,15 +203,15 @@ function renderMarkdown(report) {
     `- Result: ${report.passed ? 'PASS' : 'FAIL'}`,
     `- Endpoint status: ${report.endpointStatus ?? 'unreachable'}`,
     `- Expected Benton parcel count: ${content.expectedBentonParcelCount ?? '-'}`,
+    `- Expected Benton parcel count source: ${content.expectedBentonParcelCountSource ?? '-'}`,
     `- Benton classification: ${decision.classification ?? '-'}`,
     `- Property rows match expected: ${decision.propertyRowsMatchExpected ? 'yes' : 'no'}`,
-    `- Distinct ParcelIds match expected: ${decision.distinctParcelIdsMatchExpected ? 'yes' : 'no'}`,
     `- Distinct ParcelNumbers match expected: ${decision.distinctParcelNumbersMatchExpected ? 'yes' : 'no'}`,
     '',
-    '## County Property Shape',
+    '## County Canonical Parcel Shape',
     '',
-    '| County | FIPS | Property Rows | Distinct ParcelIds | Distinct ParcelNumbers | Distinct PropertyIds | Duplicate ParcelId Groups | Duplicate ParcelNumber Groups | Max Rows Per ParcelId |',
-    '|---|---|---:|---:|---:|---:|---:|---:|---:|',
+    '| County | FIPS | Active TF Parcel Rows | Distinct ParcelNumbers | Duplicate ParcelNumber Groups | Max Rows Per ParcelNumber |',
+    '|---|---|---:|---:|---:|---:|',
     ...rows,
     '',
     '## Blockers',
@@ -160,7 +224,7 @@ function renderMarkdown(report) {
     '',
     '## Trust Rule',
     '',
-    'This audit reads TerraFusion DB runtime tables only. It does not inspect upstream source systems or bridge credentials.',
+    'This audit reads TerraFusion DB canonical runtime tables only. It does not inspect upstream source systems or bridge credentials.',
   ].join('\n');
 }
 

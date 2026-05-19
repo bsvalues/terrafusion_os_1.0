@@ -27,7 +27,6 @@ import type { LucideIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { WorkbenchTabSlug } from '../../contracts/workbench';
 import { usePropertyStore } from '../../stores/propertyStore';
-import { activateModule } from '../../orchestration/moduleActivation';
 
 export interface SuiteModuleDef {
   id: string;
@@ -83,8 +82,6 @@ export function SuiteModuleGrid({ modules, accentVar = '--tf-accent' }: SuiteMod
       if (!targetId) {
         return;
       }
-      // Standalone modules: navigate by route so deep-links and back-button work.
-      void activateModule(targetId, { source: 'start_menu' });
       navigate(`/${targetId}`);
     }
   };

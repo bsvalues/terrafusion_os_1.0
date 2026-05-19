@@ -72,7 +72,7 @@ function startServer(handler) {
   });
 }
 
-test('runtime source lineage proof passes source mirror and canonical runtime counts', async () => {
+test('runtime source lineage proof passes TerraFusion canonical runtime counts', async () => {
   const root = makeTempRepo('tf-runtime-source-lineage-pass-');
   writeDbIdentity(root);
   const server = await startServer((request, response) => {
@@ -81,18 +81,14 @@ test('runtime source lineage proof passes source mirror and canonical runtime co
       response.end(
         JSON.stringify({
           county: 'Benton County',
-          runtimeLineageClassification: 'pacs_mirror_canonicalized_runtime',
+          runtimeLineageClassification: 'terrafusion_canonical_runtime_complete',
           databaseProvider: 'Microsoft.EntityFrameworkCore.SqlServer',
           developmentSeedersSkipped: true,
           runtimeMockDataEnabled: false,
           canonicalRuntime: {
-            properties: 276,
-            comparableSales: 42,
+            tfParcels: 276,
+            tfSales: 42,
             canonicalSaleQualifications: 36,
-          },
-          sourceMirror: {
-            pacsParcels: 128788,
-            pacsSales: 259102,
           },
           posture: {
             noSilentFallback: true,
@@ -124,13 +120,13 @@ test('runtime source lineage proof passes source mirror and canonical runtime co
     );
     assert.equal(report.summary.passed, 1);
     assert.equal(report.proofs[0].canonicalRows, 354);
-    assert.equal(report.proofs[0].sourceRows, 387890);
+    assert.equal(report.proofs[0].sourceRows, 0);
   } finally {
     await server.close();
   }
 });
 
-test('runtime source lineage proof blocks mock runtime or missing source mirror', async () => {
+test('runtime source lineage proof blocks mock runtime or missing canonical runtime rows', async () => {
   const root = makeTempRepo('tf-runtime-source-lineage-fail-');
   writeDbIdentity(root);
   const server = await startServer((request, response) => {
@@ -139,16 +135,12 @@ test('runtime source lineage proof blocks mock runtime or missing source mirror'
       response.end(
         JSON.stringify({
           county: 'Benton County',
-          runtimeLineageClassification: 'canonical_runtime_rows_without_source_mirror_proof',
+          runtimeLineageClassification: 'terrafusion_canonical_runtime_unclassified',
           runtimeMockDataEnabled: true,
           canonicalRuntime: {
-            properties: 1,
-            comparableSales: 0,
+            tfParcels: 0,
+            tfSales: 0,
             canonicalSaleQualifications: 0,
-          },
-          sourceMirror: {
-            pacsParcels: 0,
-            pacsSales: 0,
           },
           posture: {
             noSilentFallback: true,
@@ -180,7 +172,7 @@ test('runtime source lineage proof blocks mock runtime or missing source mirror'
       )
     );
     assert.equal(report.summary.failed, 1);
-    assert.ok(report.proofs[0].blockers.includes('No source mirror rows counted.'));
+    assert.ok(report.proofs[0].blockers.includes('No canonical runtime rows counted.'));
     assert.ok(report.proofs[0].blockers.includes('Runtime mock data is enabled.'));
   } finally {
     await server.close();
@@ -192,7 +184,7 @@ test('runtime source lineage proof fails when runtime DB identity is not trusted
   writeDbIdentity(root, {
     passed: false,
     blockers: [
-      'Runtime Properties count 128788 does not match configured Benton parcel count 89447.',
+      'Runtime canonical_tf.tf_parcel count 128788 does not match configured Benton parcel count 89447.',
     ],
     identity: {
       database: 'terrafusion',
@@ -210,13 +202,9 @@ test('runtime source lineage proof fails when runtime DB identity is not trusted
           runtimeLineageClassification: 'source_mirror_canonicalized_runtime',
           runtimeMockDataEnabled: false,
           canonicalRuntime: {
-            properties: 276,
-            comparableSales: 42,
+            tfParcels: 276,
+            tfSales: 42,
             canonicalSaleQualifications: 36,
-          },
-          sourceMirror: {
-            pacsParcels: 128788,
-            pacsSales: 259102,
           },
           posture: {
             noSilentFallback: true,

@@ -194,7 +194,7 @@ test('runtime row path proof fails when runtime DB identity is not trusted', asy
   writeDbIdentity(root, {
     passed: false,
     blockers: [
-      'Runtime Properties count 128788 does not match configured Benton parcel count 89447.',
+      'Runtime canonical_tf.tf_parcel count 128788 does not match configured Benton parcel count 89447.',
     ],
     identity: {
       database: 'terrafusion',

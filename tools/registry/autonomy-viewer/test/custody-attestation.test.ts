@@ -18,15 +18,15 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import test from 'node:test';
 import {
-    ATTESTATION_SCHEMA,
-    buildAttestation,
-    containsMutableRef,
-    REQUIRED_ARTIFACTS,
-    TOOL_VERSION,
-    validateNoMutableUrls,
-    type CustodyAttestation,
+  ATTESTATION_SCHEMA,
+  buildAttestation,
+  containsMutableRef,
+  REQUIRED_ARTIFACTS,
+  TOOL_VERSION,
+  validateNoMutableUrls,
+  type CustodyAttestation,
 } from '../src/custody-attest.js';
-import { verifyCustodyAttestation } from '../src/verify-custody.js';
+import { verifyCustodyAttestation, verifyPins, type VerifyOptions } from '../src/verify-custody.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Test Fixtures
@@ -241,6 +241,86 @@ test('validateNoMutableUrls: accepts immutable URLs in JSON', () => {
   });
   const errors = validateNoMutableUrls(content);
   assert.equal(errors.length, 0, 'Should accept all immutable URLs');
+});
+
+test('validateNoMutableUrls: ignores GitHub OIDC signing identity refs', () => {
+  const content = JSON.stringify({
+    expectedSignaturePolicy: {
+      identity:
+        'https://github.com/bsvalues/terrafusion_os_1.0/.github/workflows/autonomy-evidence-publisher.yml@refs/heads/main',
+      issuer: 'https://token.actions.githubusercontent.com',
+    },
+    releaseUrl: 'https://github.com/owner/repo/releases/tag/v1.0.0',
+  });
+
+  const errors = validateNoMutableUrls(content);
+
+  assert.equal(errors.length, 0, 'Signing identity is not an artifact URL');
+});
+
+test('validateNoMutableUrls: detects mutable URL embedded in JSON prose string', () => {
+  const content = JSON.stringify({
+    note: 'Operator evidence is available at https://github.com/owner/repo/releases/latest',
+  });
+
+  const errors = validateNoMutableUrls(content);
+
+  assert.equal(errors.length, 1, 'Mutable URLs embedded in prose must still be detected');
+  assert.equal(errors[0].type, 'mutable_url');
+});
+
+test('validateNoMutableUrls: detects mutable URL embedded before prose punctuation', () => {
+  const content = JSON.stringify({
+    note: 'Operator evidence is available at https://github.com/owner/repo/releases/latest.',
+  });
+
+  const errors = validateNoMutableUrls(content);
+
+  assert.equal(errors.length, 1, 'Trailing prose punctuation must not hide mutable URLs');
+  assert.equal(errors[0].type, 'mutable_url');
+});
+
+test('validateNoMutableUrls: ignores non-URL git refs in signature/source metadata', () => {
+  const content = JSON.stringify({
+    source: {
+      ref: 'refs/heads/main',
+    },
+    expectedSignaturePolicy: {
+      ref: 'refs/heads/main',
+      identity:
+        'https://github.com/bsvalues/terrafusion_os_1.0/.github/workflows/autonomy-evidence-publisher.yml@refs/heads/main',
+    },
+  });
+
+  const errors = validateNoMutableUrls(content);
+
+  assert.equal(errors.length, 0, 'Git refs are metadata, not mutable artifact URLs');
+});
+
+test('validateNoMutableUrls: detects mutable artifact fields in non-JSON evidence', () => {
+  const content = `
+    <script>
+      window.__evidence = { "releaseUrl": "refs/heads/main" };
+    </script>
+  `;
+
+  const errors = validateNoMutableUrls(content);
+
+  assert.equal(errors.length, 1, 'Keyed artifact URL refs in non-JSON evidence must be detected');
+  assert.equal(errors[0].type, 'mutable_url');
+  assert.equal(errors[0].artifact, 'refs/heads/main');
+});
+
+test('validateNoMutableUrls: detects mutable artifact fields in parsed JSON evidence', () => {
+  const content = JSON.stringify({
+    releaseUrl: 'refs/heads/main',
+  });
+
+  const errors = validateNoMutableUrls(content);
+
+  assert.equal(errors.length, 1, 'Artifact URL fields must not accept bare mutable refs');
+  assert.equal(errors[0].type, 'mutable_url');
+  assert.equal(errors[0].artifact, 'refs/heads/main');
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -463,6 +543,124 @@ test('round-trip: build then verify succeeds', () => {
     });
     assert.ok(verifyResult.ok, 'Verification should succeed');
     assert.equal(verifyResult.filesVerified, buildResult.attestation.hashes.length);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true });
+  }
+});
+
+test('verification: ignores signing identity URL and git refs in evidence index metadata', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'attest-test-'));
+  createTestArtifacts(tmpDir);
+
+  try {
+    fs.writeFileSync(
+      path.join(tmpDir, 'autonomy-evidence-index.json'),
+      JSON.stringify({
+        schema: 'terrafusion.autonomy.evidence.index.v1',
+        source: {
+          ref: 'refs/heads/main',
+        },
+        expectedSignaturePolicy: {
+          identity:
+            'https://github.com/bsvalues/terrafusion_os_1.0/.github/workflows/autonomy-evidence-publisher.yml@refs/heads/main',
+          ref: 'refs/heads/main',
+        },
+        records: [],
+      })
+    );
+
+    const result = buildAttestation({ inputDir: tmpDir, runId: 'test-123' });
+    createTestAttestationFile(tmpDir, result.attestation);
+
+    const verifyResult = verifyCustodyAttestation({
+      inputDir: tmpDir,
+      attestPath: path.join(tmpDir, 'custody-attestation.json'),
+      strict: false,
+    });
+
+    assert.ok(verifyResult.ok, 'Signature metadata should not fail mutable artifact URL checks');
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true });
+  }
+});
+
+test('signature pins: strict custody verification auto-loads evidence index policy from input directory', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'attest-test-'));
+  createTestArtifacts(tmpDir);
+
+  try {
+    fs.writeFileSync(
+      path.join(tmpDir, 'autonomy-evidence-index.json'),
+      JSON.stringify({
+        schema: 'terrafusion.autonomy.evidence.index.v1',
+        expectedSignaturePolicy: {
+          issuer: 'https://token.actions.githubusercontent.com',
+          identity:
+            'https://github.com/bsvalues/terrafusion_os_1.0/.github/workflows/autonomy-evidence-publisher.yml@refs/heads/main',
+          ref: 'refs/heads/main',
+          sha: 'a'.repeat(40),
+          requireShaBinding: true,
+        },
+        records: [],
+      })
+    );
+
+    const opts: VerifyOptions = {
+      inputDir: tmpDir,
+      attestPath: path.join(tmpDir, 'custody-attestation.json'),
+      strict: true,
+      json: false,
+      verbose: false,
+      verifySignatures: true,
+      verifyRekor: true,
+    };
+
+    const result = verifyPins(opts, false);
+
+    assert.equal(result.pinned, true);
+    assert.equal(result.errors.length, 0);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true });
+  }
+});
+
+test('signature pins: explicit expected pins do not inherit implicit evidence index SHA or ref policy', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'attest-test-'));
+  createTestArtifacts(tmpDir);
+
+  try {
+    fs.writeFileSync(
+      path.join(tmpDir, 'autonomy-evidence-index.json'),
+      JSON.stringify({
+        schema: 'terrafusion.autonomy.evidence.index.v1',
+        expectedSignaturePolicy: {
+          issuer: 'https://token.actions.githubusercontent.com',
+          identity:
+            'https://github.com/bsvalues/terrafusion_os_1.0/.github/workflows/autonomy-evidence-publisher.yml@refs/heads/main',
+          ref: 'refs/heads/feature/untrusted',
+          requireShaBinding: true,
+        },
+        records: [],
+      })
+    );
+
+    const opts: VerifyOptions = {
+      inputDir: tmpDir,
+      attestPath: path.join(tmpDir, 'custody-attestation.json'),
+      strict: true,
+      json: false,
+      verbose: false,
+      verifySignatures: true,
+      verifyRekor: true,
+      expectedIssuer: 'https://token.actions.githubusercontent.com',
+      expectedIdentity:
+        'https://github.com/bsvalues/terrafusion_os_1.0/.github/workflows/autonomy-evidence-publisher.yml@refs/heads/main',
+    };
+
+    const result = verifyPins(opts, false);
+
+    assert.equal(result.pinned, true);
+    assert.equal(result.errors.length, 0);
   } finally {
     fs.rmSync(tmpDir, { recursive: true });
   }

@@ -1,0 +1,53 @@
+{
+  "generatedAtUtc": "2026-05-15T20:48:14.874Z",
+  "freshnessStatus": "FRESH",
+  "summary": {
+    "requiredArtifacts": 6,
+    "requiredArtifactsPresent": 6,
+    "blockers": 0,
+    "launchVerdict": "NO_GO",
+    "warRoomVerdict": "NO_GO",
+    "operatorQueueStatus": "FIRST_UNBLOCK_ONLY",
+    "p0Items": 6,
+    "syncEvidenceIntakeStatus": "WAITING_SYNC_DB_EVIDENCE"
+  },
+  "chain": [
+    {
+      "name": "syncEvidenceIntake",
+      "present": true,
+      "generatedAtUtc": "2026-05-15T20:48:13.393Z"
+    },
+    {
+      "name": "shipBlockerLedger",
+      "present": true,
+      "generatedAtUtc": "2026-05-15T20:48:13.606Z"
+    },
+    {
+      "name": "p0Burndown",
+      "present": true,
+      "generatedAtUtc": "2026-05-15T20:48:13.783Z"
+    },
+    {
+      "name": "launchControl",
+      "present": true,
+      "generatedAtUtc": "2026-05-15T20:48:13.996Z"
+    },
+    {
+      "name": "warRoomStatus",
+      "present": true,
+      "generatedAtUtc": "2026-05-15T20:48:14.283Z"
+    },
+    {
+      "name": "operatorCommandQueue",
+      "present": true,
+      "generatedAtUtc": "2026-05-15T20:48:14.594Z"
+    }
+  ],
+  "blockers": [],
+  "rules": [
+    "Freshness only proves generated control-plane artifacts agree with each other.",
+    "Freshness does not clear launch blockers or prove runtime data.",
+    "Launch control must be regenerated after P0 burn-down changes.",
+    "P0 burn-down must be regenerated after Sync evidence intake or ship-blocker ledger changes."
+  ]
+}

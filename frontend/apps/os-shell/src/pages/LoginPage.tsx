@@ -43,6 +43,12 @@ const LoginPage: React.FC = () => {
         <p className='text-gray-400 text-sm text-center mb-6'>
           Your session has expired. Please sign in to continue.
         </p>
+        <div className='mb-5 rounded-lg border border-cyan-500/20 bg-slate-900/70 px-4 py-3 text-sm text-slate-300'>
+          <p className='font-semibold text-cyan-300'>Provisioned access only</p>
+          <p className='mt-1 text-slate-400'>
+            Public self-signup is disabled. Use the operator account issued by the TerraFusion administrator.
+          </p>
+        </div>
         {error && (
           <div className='mb-4 p-3 rounded bg-red-900/50 border border-red-500/50 text-red-300 text-sm text-center'>
             {error}

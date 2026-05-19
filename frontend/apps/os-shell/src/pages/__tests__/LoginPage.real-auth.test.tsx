@@ -77,4 +77,17 @@ describe('LoginPage real auth exchange', () => {
     expect(await screen.findByText(/invalid|failed|error/i)).toBeInTheDocument();
     expect(navigate).not.toHaveBeenCalled();
   });
+
+  it('states that public signup is disabled and access is provisioned', () => {
+    render(
+      <MemoryRouter initialEntries={['/login']}>
+        <AuthProvider>
+          <LoginPage />
+        </AuthProvider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(/provisioned access only/i)).toBeInTheDocument();
+    expect(screen.getByText(/public self-signup is disabled/i)).toBeInTheDocument();
+  });
 });

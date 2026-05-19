@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TerraFusion.API.Controllers;
 
+[AllowAnonymous]
 [ApiController]
 [Route("health")]
 public class SimpleHealthController : ControllerBase
@@ -17,14 +19,26 @@ public class SimpleHealthController : ControllerBase
     public IActionResult Get()
     {
         _logger.LogInformation("Simple health check requested");
-        
+
+        // Prometheus PR-9 / HIGH #32: expose immutable artifact identity.
+        // TF_GIT_SHA is stamped at docker build time via --build-arg GIT_SHA;
+        // when running outside a container (or built without the arg) the
+        // env var is unset and we return "unknown" so the response shape is
+        // stable for clients.
+        var gitSha = Environment.GetEnvironmentVariable("TF_GIT_SHA");
+        if (string.IsNullOrWhiteSpace(gitSha))
+        {
+            gitSha = "unknown";
+        }
+
         return Ok(new
         {
             Status = "Healthy",
             Timestamp = DateTime.UtcNow,
             Environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
             Version = "1.0.0",
-            Service = "TerraFusion OS API - Basic Mode"
+            Service = "TerraFusion OS API - Basic Mode",
+            GitSha = gitSha
         });
     }
 

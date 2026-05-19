@@ -1,0 +1,40 @@
+{
+  "slice": "June 10 Sync Drain Observation",
+  "generatedAtUtc": "2026-05-14T00:19:27.4814580Z",
+  "mode": "read_only_observation",
+  "runtimeActionTaken": false,
+  "databaseMutationTaken": false,
+  "process": {
+    "pid": 56564,
+    "name": "dotnet",
+    "startTimeLocal": "2026-05-13T12:08:26-07:00",
+    "responding": true
+  },
+  "portObservation": {
+    "checkedPorts": [5046, 5056, 5173],
+    "listenersFound": 0
+  },
+  "terrafusionDbSnapshot": {
+    "database": "terrafusion",
+    "container": "terrafusion-postgres-dev",
+    "queriesAreReadOnly": true,
+    "rowCounts": {
+      "legacy_pacs_raw.owner": 5604894,
+      "truth_pacs.parcel_spine": 428467,
+      "canonical_tf.tf_parcel": 3197521,
+      "canonical_tf.tf_sale": 98
+    }
+  },
+  "interpretation": {
+    "drainStillActive": true,
+    "safeToRestartRuntime": false,
+    "safeToRegenerateRuntimeTruthPackets": false,
+    "nextAction": "Wait for drain completion or terminal failure, then start a clean API and regenerate full-corpus evidence/readiness packets."
+  },
+  "guardrails": [
+    "No runtime restart was performed.",
+    "No source-system connection was opened.",
+    "No database mutation was performed.",
+    "No generated/truth artifact was hand-edited."
+  ]
+}

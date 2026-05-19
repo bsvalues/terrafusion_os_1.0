@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using TerraFusion.API.Controllers;
 using TerraFusion.API.Tests.TestHelpers;
+using TerraFusion.Core.Entities.CanonicalTf;
 using TerraFusion.Core.Entities;
 using TerraFusion.Data;
 using Xunit;
@@ -42,6 +43,20 @@ public sealed class RuntimeTruthControllerTests : IDisposable
             PropertyType = "residential",
             AssessmentDate = DateTime.UtcNow,
             LastUpdated = DateTime.UtcNow,
+        });
+        _db.TfParcels.Add(new TfParcel
+        {
+            CountyId = _db.Counties.Local.First().Id,
+            ParcelNumber = "BENTON-001",
+            SitusAddress = "1 Runtime Truth Way",
+            ParcelStatus = "ACTIVE",
+        });
+        _db.TfParcels.Add(new TfParcel
+        {
+            CountyId = _db.Counties.Local.First().Id,
+            ParcelNumber = "BENTON-001",
+            SitusAddress = "Duplicate Runtime Truth Way",
+            ParcelStatus = "ACTIVE",
         });
         _db.Properties.Add(new Property
         {
@@ -84,9 +99,11 @@ public sealed class RuntimeTruthControllerTests : IDisposable
         var json = JsonSerializer.Serialize(ok.Value);
 
         Assert.Contains("Microsoft.EntityFrameworkCore.InMemory", json);
+        Assert.Contains("\"ContentRootPath\"", json);
         Assert.Contains("\"Counties\":1", json);
         Assert.Contains("\"Properties\":2", json);
         Assert.Contains("\"ComparableSales\":1", json);
+        Assert.Contains("\"TfParcels\":2", json);
     }
 
     [Fact]
@@ -105,7 +122,7 @@ public sealed class RuntimeTruthControllerTests : IDisposable
     }
 
     [Fact]
-    public async SystemTask GetDbIdentity_FailsWhenRuntimePropertyCountDoesNotMatchConfiguredBentonCount()
+    public async SystemTask GetDbIdentity_FailsWhenRuntimeCanonicalParcelCountDoesNotMatchConfiguredBentonCount()
     {
         var sut = CreateController(new Dictionary<string, string?>
         {
@@ -119,7 +136,7 @@ public sealed class RuntimeTruthControllerTests : IDisposable
 
         Assert.Contains("\"ExpectedBentonParcelCount\":3", json);
         Assert.Contains("\"IsBentonParcelCountExpected\":false", json);
-        Assert.Contains("does not match configured Benton parcel count 3", json);
+        Assert.Contains("Runtime canonical_tf.tf_parcel count 2 does not match configured Benton parcel count 3", json);
     }
 
     [Fact]
@@ -136,10 +153,10 @@ public sealed class RuntimeTruthControllerTests : IDisposable
         var json = JsonSerializer.Serialize(ok.Value);
 
         Assert.Contains("\"PropertyRows\":2", json);
-        Assert.Contains("\"DistinctParcelIds\":1", json);
-        Assert.Contains("\"DuplicateParcelIdGroups\":1", json);
-        Assert.Contains("configured_count_matches_distinct_parcels_not_rows", json);
-        Assert.Contains("Runtime Benton property rows 2 do not match configured parcel count 1", json);
+        Assert.Contains("\"DistinctParcelNumbers\":1", json);
+        Assert.Contains("\"DuplicateParcelNumberGroups\":1", json);
+        Assert.Contains("configured_count_matches_distinct_canonical_parcels_not_rows", json);
+        Assert.Contains("Runtime Benton canonical parcels contain duplicate parcel number groups: 1", json);
     }
 
     private RuntimeTruthController CreateController(Dictionary<string, string?>? settings = null)

@@ -27,8 +27,17 @@ jobs:
         os: [ubuntu-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
+    env:
+      TF_RBAC_TIER: ci
+      TF_RBAC_ACTOR: county-kit-parity-ci
+      TF_RBAC_CORRELATION_ID: county-kit-parity-${{ github.run_id }}-${{ matrix.os }}
 
     steps:
+      - name: Enable Windows long paths
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: git config --global core.longpaths true
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -38,9 +47,9 @@ jobs:
           node-version: '20'
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v5
         with:
-          version: 8
+          version: 9.0.0
 
       - name: Get pnpm store directory
         shell: bash

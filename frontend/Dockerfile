@@ -28,7 +28,7 @@ COPY frontend/ frontend/
 
 # Build production bundle
 WORKDIR /app/frontend
-RUN npx vite build --outDir /app/dist
+RUN NODE_OPTIONS="--max-old-space-size=4096" npx vite build --outDir /app/dist
 
 # Assert build produced output
 RUN test -f /app/dist/index.html || (echo 'ERROR: /app/dist/index.html missing after build' && exit 1)

@@ -24,9 +24,9 @@ jobs:
           node-version: '20'
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v5
         with:
-          version: 8
+          version: 9.0.0
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -42,8 +42,7 @@ jobs:
         run: |
           cd tools/registry/autonomy-viewer
           npx tsx --eval "
-            import { CASEFILE_SCHEMA } from './src/casefile.js';
-            import { SEALED_CASEFILE_SCHEMA } from './src/verify-casefile.js';
+            import { CASEFILE_SCHEMA, SEALED_CASEFILE_SCHEMA } from './src/casefile.ts';
             import fs from 'fs';
 
             const lock = JSON.parse(fs.readFileSync('../../../golden/GOLDEN_CORPUS.lock.json', 'utf-8'));
@@ -86,9 +85,9 @@ jobs:
           node-version: '20'
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v5
         with:
-          version: 8
+          version: 9.0.0
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -129,9 +128,9 @@ jobs:
           node-version: '20'
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v5
         with:
-          version: 8
+          version: 9.0.0
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

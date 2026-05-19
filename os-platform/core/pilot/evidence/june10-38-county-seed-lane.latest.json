@@ -1,0 +1,139 @@
+{
+  "generatedAtUtc": "2026-05-14T19:44:05.865Z",
+  "mode": "RUN",
+  "passed": true,
+  "summary": {
+    "commandsPlanned": 6,
+    "commandsRun": 6,
+    "commandsPassed": 6,
+    "commandsFailed": 0,
+    "workOrders": 5,
+    "receiptsFound": 0,
+    "blockers": 0,
+    "runtimeClaimAllowed": false
+  },
+  "commands": [
+    {
+      "id": "seed_receipts",
+      "script": "june10-seed-receipt-validator.mjs",
+      "purpose": "Validate real seed receipts if any exist.",
+      "exitCode": 0,
+      "stdout": "{\n  \"receiptsFound\": 0,\n  \"passed\": false,\n  \"failed\": 0,\n  \"noReceiptsFound\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "id": "seed_wave_plan",
+      "script": "june10-seed-wave-planner.mjs",
+      "purpose": "Refresh first-wave representative county plan.",
+      "exitCode": 0,
+      "stdout": "{\n  \"countiesInScope\": 38,\n  \"firstWaveWorkOrders\": 5,\n  \"runtimeClaimAllowed\": false,\n  \"workOrdersWithoutReceipt\": 5\n}\n",
+      "stderr": ""
+    },
+    {
+      "id": "seed_work_order_pack",
+      "script": "june10-seed-work-order-pack.mjs",
+      "purpose": "Refresh executable first-wave work orders.",
+      "exitCode": 0,
+      "stdout": "{\n  \"workOrders\": 5,\n  \"runtimeClaimAllowed\": false,\n  \"sourceSnapshotStage\": 5,\n  \"blocked\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "id": "seed_receipt_template_pack",
+      "script": "june10-seed-receipt-template-pack.mjs",
+      "purpose": "Refresh template-only receipt shapes.",
+      "exitCode": 0,
+      "stdout": "{\n  \"templates\": 5,\n  \"templateOnly\": true,\n  \"runtimeClaimAllowed\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "id": "seed_execution_status",
+      "script": "june10-seed-execution-status.mjs",
+      "purpose": "Refresh execution status from work orders and receipts.",
+      "exitCode": 0,
+      "stdout": "{\n  \"workOrders\": 5,\n  \"awaitingSourceCapture\": 5,\n  \"receiptCaptured\": 0,\n  \"blockedByReceiptFailure\": 0,\n  \"runtimeClaimAllowed\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "id": "seed_control_plane",
+      "script": "june10-seed-control-plane.mjs",
+      "purpose": "Verify seed control-plane artifacts agree.",
+      "exitCode": 0,
+      "stdout": "{\n  \"passed\": true,\n  \"workOrders\": 5,\n  \"receiptsFound\": 0,\n  \"blockers\": 0,\n  \"runtimeClaimAllowed\": false\n}\n",
+      "stderr": ""
+    }
+  ],
+  "controlPlane": {
+    "generatedAtUtc": "2026-05-14T19:44:05.816Z",
+    "passed": true,
+    "summary": {
+      "workOrders": 5,
+      "templates": 5,
+      "receiptsFound": 0,
+      "awaitingSourceCapture": 5,
+      "blockedByReceiptFailure": 0,
+      "runtimeClaimAllowed": false,
+      "blockers": 0
+    },
+    "rows": [
+      {
+        "workOrderId": "J10-SEED-DIRECT-SALES-SEARCH-YAKIMA",
+        "county": "Yakima",
+        "countyToken": "yakima",
+        "receiptTarget": "evidence/june10-38-county-seed/yakima/source-snapshot-receipt.json",
+        "executionStatus": "AWAITING_SOURCE_CAPTURE",
+        "templateOnly": true,
+        "runtimeClaimAllowed": false
+      },
+      {
+        "workOrderId": "J10-SEED-MONTHLY-REPORT-PARCEL-HISTORY-DOUGLAS",
+        "county": "Douglas",
+        "countyToken": "douglas",
+        "receiptTarget": "evidence/june10-38-county-seed/douglas/source-snapshot-receipt.json",
+        "executionStatus": "AWAITING_SOURCE_CAPTURE",
+        "templateOnly": true,
+        "runtimeClaimAllowed": false
+      },
+      {
+        "workOrderId": "J10-SEED-MONTHLY-SALES-REPORT-KLICKITAT",
+        "county": "Klickitat",
+        "countyToken": "klickitat",
+        "receiptTarget": "evidence/june10-38-county-seed/klickitat/source-snapshot-receipt.json",
+        "executionStatus": "AWAITING_SOURCE_CAPTURE",
+        "templateOnly": true,
+        "runtimeClaimAllowed": false
+      },
+      {
+        "workOrderId": "J10-SEED-PARCEL-TRANSFER-HISTORY-COWLITZ",
+        "county": "Cowlitz",
+        "countyToken": "cowlitz",
+        "receiptTarget": "evidence/june10-38-county-seed/cowlitz/source-snapshot-receipt.json",
+        "executionStatus": "AWAITING_SOURCE_CAPTURE",
+        "templateOnly": true,
+        "runtimeClaimAllowed": false
+      },
+      {
+        "workOrderId": "J10-SEED-PARCEL-TRANSFER-HISTORY-OPEN-DATA-EXPORT-KITSAP",
+        "county": "Kitsap",
+        "countyToken": "kitsap",
+        "receiptTarget": "evidence/june10-38-county-seed/kitsap/source-snapshot-receipt.json",
+        "executionStatus": "AWAITING_SOURCE_CAPTURE",
+        "templateOnly": true,
+        "runtimeClaimAllowed": false
+      }
+    ],
+    "blockers": [],
+    "rules": [
+      "This control plane reconciles seed artifacts only; it is not runtime readiness proof.",
+      "Runtime claims remain blocked until validated receipts, API proof, and UI smoke exist.",
+      "Receipt templates must never be counted as acquisition evidence.",
+      "Work order, template, and execution status receipt targets must match exactly."
+    ]
+  },
+  "blockers": [],
+  "rules": [
+    "This lane runner refreshes seed control artifacts only.",
+    "It must not access source systems, mutate TerraFusion DB, or imply runtime readiness.",
+    "Runtime claims remain blocked unless separate load, API, and UI proof gates pass.",
+    "Dry-run output is a command plan, not evidence."
+  ]
+}

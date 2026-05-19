@@ -11,7 +11,11 @@
 
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 import { describe, it } from 'node:test';
+import { main as runBundleCli } from '../src/bundle.js';
 import { buildManifest, sha256, verifyManifest } from '../src/manifest.js';
 import { crc32 } from '../src/zip/crc32.js';
 import { buildDeterministicZip } from '../src/zip/zip-writer.js';
@@ -22,6 +26,24 @@ import { buildDeterministicZip } from '../src/zip/zip-writer.js';
 
 function sha256Buf(buf: Buffer): string {
   return crypto.createHash('sha256').update(buf).digest('hex');
+}
+
+function makeBundleFixture(): string {
+  const root = mkdtempSync(join(tmpdir(), 'tf-autonomy-bundle-'));
+  const auditOut = join(root, 'tools', 'registry', 'perf-skill-audit', 'out');
+  const viewerDist = join(root, 'tools', 'registry', 'autonomy-viewer', 'dist');
+  mkdirSync(auditOut, { recursive: true });
+  mkdirSync(viewerDist, { recursive: true });
+
+  writeFileSync(join(auditOut, 'perf.plan.json'), JSON.stringify({ baseSha: 'abc123' }));
+  writeFileSync(
+    join(auditOut, 'apply-proofs.json'),
+    JSON.stringify([{ outcome: 'applied', planItemId: 'proof-1' }])
+  );
+  writeFileSync(join(viewerDist, 'autonomy-dashboard.html'), '<!doctype html><title>test</title>');
+  writeFileSync(join(root, 'AUTONOMY_V1_GOVERNANCE_CONTRACT.md'), '# Contract\n');
+
+  return root;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -292,6 +314,69 @@ node --test os-platform/core/tests/phase83-tools.test.mjs
 
     assert.ok(readme.includes('type-check'), 'README should include type-check gate');
     assert.ok(readme.includes('phase83'), 'README should include phase83 gate');
+  });
+
+  it('emits both bundle-named and compatibility standalone manifests', () => {
+    const root = makeBundleFixture();
+    const outDir = join(root, 'dist');
+    const bundleName = 'autonomy-evidence-test-run.zip';
+    const originalArgv = process.argv;
+
+    try {
+      process.argv = [
+        process.execPath,
+        resolve('tools/registry/autonomy-viewer/src/bundle.ts'),
+        '--in',
+        root,
+        '--out',
+        outDir,
+        '--name',
+        bundleName,
+        '--run-id',
+        'test-run',
+        '--emit-manifest',
+      ];
+      runBundleCli();
+
+      const namedManifestPath = join(outDir, `${bundleName}.manifest.json`);
+      const compatibilityManifestPath = join(outDir, 'MANIFEST.json');
+
+      assert.ok(existsSync(namedManifestPath), 'bundle-named manifest should exist');
+      assert.ok(existsSync(compatibilityManifestPath), 'compatibility MANIFEST.json should exist');
+      assert.equal(
+        readFileSync(compatibilityManifestPath, 'utf8'),
+        readFileSync(namedManifestPath, 'utf8'),
+        'compatibility manifest should match bundle-named manifest'
+      );
+    } finally {
+      process.argv = originalArgv;
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('rejects bundle names that escape the output directory', () => {
+    const root = makeBundleFixture();
+    const outDir = join(root, 'dist');
+    const originalArgv = process.argv;
+
+    try {
+      process.argv = [
+        process.execPath,
+        resolve('tools/registry/autonomy-viewer/src/bundle.ts'),
+        '--in',
+        root,
+        '--out',
+        outDir,
+        '--name',
+        '../escape.zip',
+        '--emit-manifest',
+      ];
+
+      assert.throws(() => runBundleCli(), /Invalid bundle name/);
+    } finally {
+      process.argv = originalArgv;
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 });
 

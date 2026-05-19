@@ -24,8 +24,10 @@
  *   2 = Invalid arguments or file not found
  */
 
-import { existsSync, readFileSync } from 'node:fs';
-import { basename, dirname, resolve } from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { sha256, type EvidenceManifest } from './manifest.js';
 import { readZipEntries, readZipFileData } from './zip/zip-reader.js';
@@ -80,6 +82,17 @@ interface SignaturePinsResult {
   ref?: PinResult;
   sha?: PinResult;
 }
+
+type ExpectedSignaturePins = {
+  issuer?: string;
+  identity?: string;
+  repo?: string;
+  workflowPath?: string;
+  ref?: string;
+  sha?: string;
+};
+
+type CosignRunner = typeof execFileSync;
 
 /**
  * Phase 4N18: Unified verification result with both hashes and signatures.
@@ -495,6 +508,161 @@ function findSignatureTriplet(zipPath: string): {
 }
 
 /**
+ * Phase 4N20: Parse GitHub OIDC identity pins from OpenSSL certificate text.
+ */
+function parseOpenSslCertificateIdentity(text: string): { identity?: string; issuer?: string } {
+  const identity = text.match(/Subject Alternative Name:[\s\S]*?URI:([^\s,\n]+)/)?.[1];
+  const issuer =
+    text.match(/1\.3\.6\.1\.4\.1\.57264\.1\.1:[\s\S]*?(https?:\/\/[^\s,\n]+)/)?.[1]?.trim() ||
+    text.match(/1\.3\.6\.1\.4\.1\.57264\.1\.1:\s*\n\s*\.*([^\n]+)/)?.[1]?.trim() ||
+    (text.includes('token.actions.githubusercontent.com')
+      ? 'https://token.actions.githubusercontent.com'
+      : undefined);
+
+  return { identity, issuer };
+}
+
+function decodeCertificateRawBytes(rawBytes: string): Buffer {
+  const normalized = rawBytes.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = normalized.padEnd(normalized.length + ((4 - (normalized.length % 4)) % 4), '=');
+  return Buffer.from(padded, 'base64');
+}
+
+function extractDerCertificateIdentity(rawBytes: string): {
+  identity?: string;
+  issuer?: string;
+} {
+  const tempDir = mkdtempSync(join(tmpdir(), 'tf-verify-bundle-'));
+  const certPath = join(tempDir, 'cert.der');
+
+  try {
+    writeFileSync(certPath, decodeCertificateRawBytes(rawBytes));
+    const certText = execFileSync(
+      'openssl',
+      ['x509', '-inform', 'DER', '-in', certPath, '-noout', '-text'],
+      {
+        encoding: 'utf8',
+        stdio: 'pipe',
+      }
+    );
+    return parseOpenSslCertificateIdentity(certText);
+  } catch {
+    return {};
+  } finally {
+    rmSync(tempDir, { recursive: true, force: true });
+  }
+}
+
+function pushRawBytesCandidate(candidates: string[], value: unknown): void {
+  if (typeof value === 'string' && value.trim()) {
+    candidates.push(value.trim());
+  }
+}
+
+function pushCertificateChainCandidates(candidates: string[], chain: unknown): void {
+  if (!chain || typeof chain !== 'object') {
+    return;
+  }
+
+  const certificates = (chain as { certificates?: unknown }).certificates;
+  if (!Array.isArray(certificates)) {
+    return;
+  }
+
+  for (const certificate of certificates) {
+    if (certificate && typeof certificate === 'object') {
+      pushRawBytesCandidate(candidates, (certificate as { rawBytes?: unknown }).rawBytes);
+    }
+  }
+}
+
+function collectCertificateRawBytes(bundleJson: unknown): string[] {
+  if (!bundleJson || typeof bundleJson !== 'object') {
+    return [];
+  }
+
+  const candidates: string[] = [];
+  const verificationMaterial = (bundleJson as { verificationMaterial?: unknown })
+    .verificationMaterial;
+  if (!verificationMaterial || typeof verificationMaterial !== 'object') {
+    return candidates;
+  }
+
+  const material = verificationMaterial as {
+    certificate?: { rawBytes?: unknown };
+    x509CertificateChain?: unknown;
+    content?: {
+      certificate?: { rawBytes?: unknown };
+      x509CertificateChain?: unknown;
+    };
+  };
+
+  pushRawBytesCandidate(candidates, material.certificate?.rawBytes);
+  pushCertificateChainCandidates(candidates, material.x509CertificateChain);
+  pushRawBytesCandidate(candidates, material.content?.certificate?.rawBytes);
+  pushCertificateChainCandidates(candidates, material.content?.x509CertificateChain);
+
+  return candidates;
+}
+
+function extractBundleCertificateIdentity(bundlePath: string): {
+  identity?: string;
+  issuer?: string;
+} {
+  try {
+    const bundleJson = JSON.parse(readFileSync(bundlePath, 'utf8')) as unknown;
+    const candidates = [...new Set(collectCertificateRawBytes(bundleJson))];
+
+    for (const rawBytes of candidates) {
+      const parsed = extractDerCertificateIdentity(rawBytes);
+      if (parsed.identity || parsed.issuer) {
+        return parsed;
+      }
+    }
+  } catch {
+    return {};
+  }
+
+  return {};
+}
+
+function parseCertificateFileWithOpenSsl(
+  certPath: string,
+  formatArgs: string[]
+): {
+  identity?: string;
+  issuer?: string;
+} {
+  try {
+    const certText = execFileSync(
+      'openssl',
+      ['x509', ...formatArgs, '-in', certPath, '-noout', '-text'],
+      {
+        encoding: 'utf8',
+        stdio: 'pipe',
+      }
+    );
+    return parseOpenSslCertificateIdentity(certText);
+  } catch {
+    return {};
+  }
+}
+
+function extractCertificateFileIdentity(certPath: string): {
+  identity?: string;
+  issuer?: string;
+} {
+  for (const formatArgs of [[], ['-inform', 'DER']]) {
+    const parsed = parseCertificateFileWithOpenSsl(certPath, formatArgs);
+    if (parsed.identity || parsed.issuer) {
+      return parsed;
+    }
+  }
+
+  return {};
+}
+
+/**
  * Phase 4N18: Verify signature using cosign.
  * Returns result with identity/issuer extracted from certificate.
  *
@@ -503,7 +671,12 @@ function findSignatureTriplet(zipPath: string): {
  */
 function verifySignature(
   zipPath: string,
-  triplet: { sig: string | null; crt: string | null; bundle: string | null }
+  triplet: { sig: string | null; crt: string | null; bundle: string | null },
+  expectedPins?: {
+    expectedIdentity?: string;
+    expectedIssuer?: string;
+    cosignRunner?: CosignRunner;
+  }
 ): { ok: boolean; identity?: string; issuer?: string; errors: SignatureError[] } {
   const errors: SignatureError[] = [];
 
@@ -543,28 +716,89 @@ function verifySignature(
   let identity: string | undefined;
   let issuer: string | undefined;
 
-  try {
-    // The .bundle is a JSON file containing the Rekor entry
-    const bundleData = readFileSync(triplet.bundle!, 'utf8');
-    const bundleJson = JSON.parse(bundleData);
+  const bundleIdentity = extractBundleCertificateIdentity(triplet.bundle!);
+  if (bundleIdentity.identity && bundleIdentity.issuer) {
+    ({ identity, issuer } = bundleIdentity);
+  } else if (!bundleIdentity.identity && !bundleIdentity.issuer && triplet.crt) {
+    const certIdentity = extractCertificateFileIdentity(triplet.crt);
+    ({ identity, issuer } = certIdentity);
+  } else {
+    ({ identity, issuer } = bundleIdentity);
+  }
 
-    // Extract from dsseEnvelope or hashedRekordEntry
-    if (bundleJson.verificationMaterial?.certificate?.rawBytes) {
-      // Certificate is base64-encoded, we'd need to decode and parse X.509
-      // For now, just note that signature materials are present
+  if ((!identity || !issuer) && expectedPins?.expectedIdentity && expectedPins.expectedIssuer) {
+    const cosignError = verifyExpectedPinsWithCosign(
+      zipPath,
+      triplet as { sig: string; crt: string; bundle: string },
+      expectedPins.expectedIdentity,
+      expectedPins.expectedIssuer,
+      expectedPins.cosignRunner
+    );
+
+    if (cosignError) {
+      errors.push(cosignError);
+    } else {
+      identity = expectedPins.expectedIdentity;
+      issuer = expectedPins.expectedIssuer;
     }
-  } catch {
-    // Bundle parsing is optional - signature files exist, that's the key check
   }
 
   // Return success if all three files exist
-  // Full cryptographic verification is delegated to cosign in CI
+  // Full cryptographic verification is delegated to cosign in CI. When
+  // certificate parsing cannot extract keyless identity pins, the verifier
+  // requires cosign to prove the expected issuer and identity before using them.
   return {
-    ok: true,
+    ok: errors.length === 0,
     identity,
     issuer,
-    errors: [],
+    errors,
   };
+}
+
+function verifyExpectedPinsWithCosign(
+  zipPath: string,
+  triplet: { sig: string; crt: string; bundle: string },
+  expectedIdentity: string,
+  expectedIssuer: string,
+  cosignRunner: CosignRunner = execFileSync
+): SignatureError | null {
+  try {
+    cosignRunner(
+      'cosign',
+      [
+        'verify-blob',
+        '--bundle',
+        triplet.bundle,
+        '--certificate',
+        triplet.crt,
+        '--signature',
+        triplet.sig,
+        '--certificate-identity',
+        expectedIdentity,
+        '--certificate-oidc-issuer',
+        expectedIssuer,
+        zipPath,
+      ],
+      { encoding: 'utf8', stdio: 'pipe' }
+    );
+    return null;
+  } catch (error) {
+    const maybeNodeError = error as { code?: string; message?: string };
+    if (maybeNodeError.code === 'ENOENT') {
+      return {
+        type: 'cosign_not_found',
+        message:
+          'Could not extract certificate identity and cosign was not available to verify expected signature pins.',
+      };
+    }
+
+    return {
+      type: 'verification_failed',
+      expected: `${expectedIssuer} ${expectedIdentity}`,
+      actual: '(cosign rejected signature pins)',
+      message: 'Cosign verification failed for expected signature identity and issuer pins.',
+    };
+  }
 }
 
 /**
@@ -596,6 +830,36 @@ function loadPolicyFromIndex(indexPath: string): {
   } catch {
     return null;
   }
+}
+
+function resolveExpectedSignaturePins(opts: VerifyOptions): {
+  expected: ExpectedSignaturePins;
+  policyLoadError?: SignatureError;
+} {
+  let policy: ReturnType<typeof loadPolicyFromIndex> = null;
+  if (opts.policyFromIndex) {
+    policy = loadPolicyFromIndex(opts.policyFromIndex);
+    if (!policy) {
+      return {
+        expected: {},
+        policyLoadError: {
+          type: 'policy_load_failed',
+          message: `Failed to load policy from: ${opts.policyFromIndex}`,
+        },
+      };
+    }
+  }
+
+  return {
+    expected: {
+      issuer: opts.expectedIssuer || policy?.issuer,
+      identity: opts.expectedIdentity || policy?.identity,
+      repo: opts.expectedRepo || policy?.repo,
+      workflowPath: opts.expectedWorkflow || policy?.workflowPath,
+      ref: opts.expectedRef || policy?.ref,
+      sha: opts.expectedSha || policy?.sha,
+    },
+  };
 }
 
 /**
@@ -646,28 +910,12 @@ function verifyPins(
 ): { pinned: boolean; pins?: SignaturePinsResult; errors: SignatureError[] } {
   const errors: SignatureError[] = [];
 
-  // Load policy from index if specified
-  let policy: ReturnType<typeof loadPolicyFromIndex> = null;
-  if (opts.policyFromIndex) {
-    policy = loadPolicyFromIndex(opts.policyFromIndex);
-    if (!policy) {
-      errors.push({
-        type: 'policy_load_failed',
-        message: `Failed to load policy from: ${opts.policyFromIndex}`,
-      });
-      return { pinned: false, errors };
-    }
+  const resolved = resolveExpectedSignaturePins(opts);
+  if (resolved.policyLoadError) {
+    errors.push(resolved.policyLoadError);
+    return { pinned: false, errors };
   }
-
-  // Merge CLI options with policy (CLI takes precedence)
-  const expected = {
-    issuer: opts.expectedIssuer || policy?.issuer,
-    identity: opts.expectedIdentity || policy?.identity,
-    repo: opts.expectedRepo || policy?.repo,
-    workflowPath: opts.expectedWorkflow || policy?.workflowPath,
-    ref: opts.expectedRef || policy?.ref,
-    sha: opts.expectedSha || policy?.sha,
-  };
+  const { expected } = resolved;
 
   // If no pins provided, return unpinned
   const hasPins =
@@ -1010,10 +1258,14 @@ function main(): void {
   if (options.verifySignatures) {
     const triplet = findSignatureTriplet(options.zipPath);
     tripletFound = triplet.allPresent;
+    const { expected } = resolveExpectedSignaturePins(options);
 
     if (triplet.allPresent || triplet.sig || triplet.crt || triplet.bundle) {
       // At least one signature file exists, try to verify
-      sigResult = verifySignature(options.zipPath, triplet);
+      sigResult = verifySignature(options.zipPath, triplet, {
+        expectedIdentity: expected.identity,
+        expectedIssuer: expected.issuer,
+      });
     } else {
       // No signature files at all
       sigResult = {
@@ -1061,21 +1313,21 @@ if (
 
 // Export for testing
 export {
-    buildUnifiedResult,
-    checkForbiddenIdentity,
-    findSignatureTriplet,
-    loadPolicyFromIndex,
-    parseArgs,
-    verifyBundle,
-    verifyPin,
-    verifyPins,
-    verifySignature,
-    type PinResult,
-    type SignatureError,
-    type SignaturePinsResult,
-    type UnifiedVerifyResult,
-    type VerifyError,
-    type VerifyOptions,
-    type VerifyResult
+  buildUnifiedResult,
+  checkForbiddenIdentity,
+  findSignatureTriplet,
+  loadPolicyFromIndex,
+  parseOpenSslCertificateIdentity,
+  parseArgs,
+  verifyBundle,
+  verifyPin,
+  verifyPins,
+  verifySignature,
+  type PinResult,
+  type SignatureError,
+  type SignaturePinsResult,
+  type UnifiedVerifyResult,
+  type VerifyError,
+  type VerifyOptions,
+  type VerifyResult,
 };
-

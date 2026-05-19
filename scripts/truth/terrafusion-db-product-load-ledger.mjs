@@ -26,16 +26,16 @@ const fixturePath = process.env.TF_PRODUCT_LOAD_LEDGER_FIXTURE
 
 const PRODUCT_TABLES = [
   {
-    tableName: 'Properties',
+    tableName: 'canonical_tf.tf_parcel',
     productDomain: 'parcel',
-    productTimestampColumns: ['UpdatedAt', 'LastUpdated', 'CreatedAt', 'AssessmentDate'],
+    productTimestampColumns: ['UpdatedAt', 'CreatedAt', 'ImportedAt'],
     sourceTableName: 'pacs_property_profiles',
     sourceTimestampColumns: ['LastPacsSync'],
   },
   {
-    tableName: 'ComparableSales',
+    tableName: 'canonical_tf.tf_sale',
     productDomain: 'sales',
-    productTimestampColumns: ['IngestedAt', 'DecisionAt', 'SaleDate'],
+    productTimestampColumns: ['UpdatedAt', 'CreatedAt', 'ImportedAt', 'SaleDate'],
     sourceTableName: 'pacs_sales',
     sourceTimestampColumns: ['LastPacsSync', 'ImportDate'],
   },
@@ -167,16 +167,31 @@ function quoteIdent(name) {
   return `"${String(name).replaceAll('"', '""')}"`;
 }
 
+function splitTableName(tableName) {
+  const parts = String(tableName).split('.');
+  if (parts.length === 2) {
+    return { schema: parts[0], table: parts[1] };
+  }
+  return { schema: 'public', table: tableName };
+}
+
+function quoteTable(tableName) {
+  const { schema, table } = splitTableName(tableName);
+  return `${quoteIdent(schema)}.${quoteIdent(table)}`;
+}
+
 function tableExists(tableName) {
+  const { schema, table } = splitTableName(tableName);
   const result = psql(
-    `select exists(select 1 from information_schema.tables where table_schema='public' and table_name='${tableName.replaceAll("'", "''")}');`
+    `select exists(select 1 from information_schema.tables where table_schema='${schema.replaceAll("'", "''")}' and table_name='${String(table).replaceAll("'", "''")}');`
   );
   return result === 't';
 }
 
 function existingColumns(tableName) {
+  const { schema, table } = splitTableName(tableName);
   const result = psql(
-    `select column_name from information_schema.columns where table_schema='public' and table_name='${tableName.replaceAll("'", "''")}';`
+    `select column_name from information_schema.columns where table_schema='${schema.replaceAll("'", "''")}' and table_name='${String(table).replaceAll("'", "''")}';`
   );
   return new Set(
     result
@@ -187,13 +202,13 @@ function existingColumns(tableName) {
 }
 
 function countRows(tableName) {
-  const result = psql(`select count(*) from ${quoteIdent(tableName)};`);
+  const result = psql(`select count(*) from ${quoteTable(tableName)};`);
   const parsed = Number.parseInt(result, 10);
   return Number.isFinite(parsed) ? parsed : null;
 }
 
 function maxColumn(tableName, columnName) {
-  const result = psql(`select max(${quoteIdent(columnName)}) from ${quoteIdent(tableName)};`);
+  const result = psql(`select max(${quoteIdent(columnName)}) from ${quoteTable(tableName)};`);
   return parseIso(result);
 }
 
