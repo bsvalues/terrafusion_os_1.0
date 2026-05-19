@@ -18,6 +18,7 @@
  */
 
 import * as assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { beforeEach, describe, it } from 'node:test';
 
 // ============================================================================
@@ -124,7 +125,7 @@ function toOpaqueId(value: string): string {
     return value;
   }
 
-  return `sha256:${Buffer.from(value).toString('hex').padEnd(64, '0').slice(0, 64)}`;
+  return `sha256:${createHash('sha256').update(value, 'utf8').digest('hex')}`;
 }
 
 function createMockValidation(

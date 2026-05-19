@@ -337,8 +337,8 @@ describe('Phase IIIb – Audit Event PII Safety', () => {
     assert.ok(!eventJson.match(/@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/));
     // No SSN patterns
     assert.ok(!eventJson.match(/\d{3}-\d{2}-\d{4}/));
-    // No phone patterns. Require separators so ISO timestamps are not false positives.
-    assert.ok(!eventJson.match(/\b\d{3}[-.]\d{3}[-.]\d{4}\b/));
+    // No phone patterns. Also catches unseparated 10-digit numbers without matching ISO timestamps.
+    assert.ok(!eventJson.match(/\b(?:\d{3}[-.]\d{3}[-.]\d{4}|\d{10})\b/));
   });
 
   it('actorId is hashed, not stored raw', () => {

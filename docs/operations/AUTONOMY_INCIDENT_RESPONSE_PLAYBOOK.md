@@ -27,7 +27,7 @@ After rollback, rerun the affected governance gates and attach the new verificat
 
 ## Archive
 
-Incident evidence must remain available for the incident retention tier. Incident releases and their verification packets are retained for 7 year minimum retention unless a longer legal hold applies.
+Incident evidence must remain available for the incident retention tier. Incident releases and their verification packets are retained for 7-year minimum retention unless a longer legal hold applies.
 
 ## Checklist
 
