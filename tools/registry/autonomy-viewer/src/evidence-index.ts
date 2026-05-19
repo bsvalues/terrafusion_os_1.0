@@ -869,16 +869,25 @@ function validateEncodedReleaseTagSegment(url: string): string | null {
     return `URL contains encoded path characters (potential traversal): ${url}`;
   }
 
-  const match = parsed.pathname.match(/^\/[^/]+\/[^/]+\/releases\/(?:tag|download)\/([^/]+)(?:\/|$)/i);
-  const encodedTag = match?.[1];
-  if (!encodedTag) {
+  const pathSegments = parsed.pathname.split('/');
+  const encodedTag = pathSegments[5];
+  const hasReleaseTagShape =
+    pathSegments.length >= 6 &&
+    pathSegments[0] === '' &&
+    pathSegments[1] !== '' &&
+    pathSegments[2] !== '' &&
+    pathSegments[3].toLowerCase() === 'releases' &&
+    /^(?:tag|download)$/i.test(pathSegments[4]) &&
+    encodedTag !== '';
+
+  if (!hasReleaseTagShape || !encodedTag) {
     return `URL contains encoded path characters (potential traversal): ${url}`;
   }
 
   const lowerPath = parsed.pathname.toLowerCase();
-  const lowerTag = encodedTag.toLowerCase();
-  const tagStart = lowerPath.indexOf(lowerTag);
-  const tagEnd = tagStart + lowerTag.length;
+  const tagPrefix = `/${pathSegments[1]}/${pathSegments[2]}/releases/${pathSegments[4]}/`;
+  const tagStart = tagPrefix.length;
+  const tagEnd = tagStart + encodedTag.length;
 
   for (let index = lowerPath.indexOf('%2f'); index !== -1; index = lowerPath.indexOf('%2f', index + 1)) {
     if (index < tagStart || index >= tagEnd) {

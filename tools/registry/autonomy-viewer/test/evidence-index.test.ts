@@ -731,6 +731,13 @@ describe('Phase 4N14: Immutable URL Wiring', () => {
       assert.ok(result.includes('encoded path'));
     });
 
+    it('should reject encoded slash outside the release tag segment', () => {
+      const url = 'https://github.com/autonomy-evidence%2F2026-01/repo/releases/tag/autonomy-evidence%2F2026-01';
+      const result = validateImmutableUrl(url);
+      assert.ok(result !== null);
+      assert.ok(result.includes('encoded path'));
+    });
+
     it('should reject URL-encoded traversal (%2e)', () => {
       const url = 'https://github.com/owner/repo/releases/download/v1.0.0/%2e%2e/secret';
       const result = validateImmutableUrl(url);
