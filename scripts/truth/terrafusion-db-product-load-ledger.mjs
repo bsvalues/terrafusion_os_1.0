@@ -703,11 +703,23 @@ function evaluateProductLoadLineage(row) {
   const blockers = [];
   const warnings = [];
   const loadRequirement = row.loadRequirement ?? loadRequirementFor(row.tableName);
+  const noActionRequired = {
+    recommendedAction: 'none',
+    receiptEvidenceRequired: null,
+  };
 
   if (loadRequirement === 'operational_state') {
     if (row.rowCount === null) {
       blockers.push('Operational state table missing or unreadable.');
-      return { ...row, loadRequirement, lineageStatus: 'missing_table', blockers, warnings };
+      return {
+        ...row,
+        loadRequirement,
+        lineageStatus: 'missing_table',
+        recommendedAction: 'restore_or_create_operational_state_table',
+        receiptEvidenceRequired: 'Operational state table must exist in TerraFusion DB.',
+        blockers,
+        warnings,
+      };
     }
 
     if (row.rowCount === 0) {
@@ -718,6 +730,7 @@ function evaluateProductLoadLineage(row) {
         ...row,
         loadRequirement,
         lineageStatus: 'operational_empty_allowed',
+        ...noActionRequired,
         blockers,
         warnings,
       };
@@ -730,6 +743,7 @@ function evaluateProductLoadLineage(row) {
       ...row,
       loadRequirement,
       lineageStatus: 'operational_state_present',
+      ...noActionRequired,
       blockers,
       warnings,
     };
@@ -737,12 +751,30 @@ function evaluateProductLoadLineage(row) {
 
   if (row.rowCount === null) {
     blockers.push('Table missing or unreadable.');
-    return { ...row, loadRequirement, lineageStatus: 'missing_table', blockers, warnings };
+    return {
+      ...row,
+      loadRequirement,
+      lineageStatus: 'missing_table',
+      recommendedAction: 'restore_or_create_seed_table',
+      receiptEvidenceRequired:
+        'Seed-required product table must exist in TerraFusion DB before readiness can pass.',
+      blockers,
+      warnings,
+    };
   }
 
   if (row.rowCount === 0) {
     blockers.push('Table exists but is empty.');
-    return { ...row, loadRequirement, lineageStatus: 'empty_table', blockers, warnings };
+    return {
+      ...row,
+      loadRequirement,
+      lineageStatus: 'empty_table',
+      recommendedAction: 'load_seed_data_or_downgrade_scope',
+      receiptEvidenceRequired:
+        'Seed-required product table needs non-zero runtime rows plus receipt evidence.',
+      blockers,
+      warnings,
+    };
   }
 
   if (!row.latestProductLoadReceiptAt) {
@@ -757,6 +789,9 @@ function evaluateProductLoadLineage(row) {
       ...row,
       loadRequirement,
       lineageStatus: 'rows_exist_lineage_unproven',
+      recommendedAction: 'emit_product_load_receipt_after_lineage_proof',
+      receiptEvidenceRequired:
+        'Add a table-scoped ProductLoadReceipts row, accepted sync_bridge.load_batch mapping, or approved embedded lineage contract after proving row source, county, count, and load timestamp.',
       blockers,
       warnings,
     };
@@ -766,6 +801,7 @@ function evaluateProductLoadLineage(row) {
     ...row,
     loadRequirement,
     lineageStatus: 'lineage_proven',
+    ...noActionRequired,
     blockers,
     warnings,
   };
@@ -834,8 +870,8 @@ function renderMarkdown(report) {
     '',
     '## Ledger',
     '',
-    '| Table | Domain | Requirement | Rows | Product Updated | Source/Cache Sync | ETL Completed | Product Load Receipt | Status | Blockers |',
-    '|---|---|---|---:|---|---|---|---|---|---|',
+    '| Table | Domain | Requirement | Rows | Product Updated | Source/Cache Sync | ETL Completed | Product Load Receipt | Status | Action | Blockers |',
+    '|---|---|---|---:|---|---|---|---|---|---|---|',
     ...report.rows.map(row =>
       [
         `\`${row.tableName}\``,
@@ -847,6 +883,7 @@ function renderMarkdown(report) {
         row.latestEtlCompletedAt ?? '-',
         row.latestProductLoadReceiptAt ?? '-',
         row.lineageStatus,
+        row.recommendedAction ?? '-',
         row.blockers.length ? row.blockers.join('<br>') : '-',
       ].join(' | ')
     ),

@@ -316,6 +316,8 @@ test('product load ledger keeps CamaCharacteristics red without a table-scoped r
   assert.equal(report.passed, false);
   assert.equal(report.rows[0].latestProductLoadReceiptAt, null);
   assert.equal(report.rows[0].lineageStatus, 'rows_exist_lineage_unproven');
+  assert.equal(report.rows[0].recommendedAction, 'emit_product_load_receipt_after_lineage_proof');
+  assert.match(report.rows[0].receiptEvidenceRequired, /ProductLoadReceipts/i);
 });
 
 test('product load ledger does not treat unrelated sync_bridge batches as table lineage', async () => {
