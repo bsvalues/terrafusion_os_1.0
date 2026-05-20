@@ -49,11 +49,18 @@ const ACTIVE_RUNTIME_ROOTS = [
   "backend/src/TerraFusion.API/Program.cs",
   "backend/src/TerraFusion.API/Controllers",
   "backend/src/TerraFusion.API/Services",
+  "backend/tests",
   "frontend/apps/os-shell/src"
 ];
 
 const ALLOWED_LEGACY_PATH_RE =
   /(^|\/)(Sync|Admin|Proof|HealthProof|RuntimeTruth|SourceLineage|PacsOps|FullCorpus|OwnerWsdor|LegacySource)[^/]*\.(cs|ts|tsx|js|jsx)$|(^|\/)(tests?|__tests__|evidence|docs|ARCHIVE|archive|QUARANTINE)(\/|$)/i;
+const INGESTION_SYNC_PATH_RE =
+  /(^|\/)(Sync|Admin|PacsOps|FullCorpus|OwnerWsdor|LegacySource)[^/]*\.(cs|ts|tsx|js|jsx)$/i;
+const PROOF_OR_TEST_PATH_RE = /(^|\/)(tests?|__tests__|evidence)(\/|$)|(^|\/)(Proof|HealthProof|RuntimeTruth|SourceLineage)[^/]*\.(cs|ts|tsx|js|jsx)$/i;
+const ARCHIVE_OR_QUARANTINE_PATH_RE = /(^|\/)(ARCHIVE|archive|QUARANTINE)(\/|$)/i;
+const FRONTEND_PATH_RE = /^frontend\//i;
+const COMMENT_LINE_RE = /^\s*(\/\/|\/\*|\*|#|<!--)/;
 const ACTIVE_LEGACY_TERM_RE = /\b(PACS|Harris|pacs_oltp|PACS_Training|Pacmls|tf-mssql|SqlConnection|OdbcConnection)\b/i;
 const TEXT_FILE_RE = /\.(cs|ts|tsx|js|jsx|mjs|json)$/i;
 const SAFE_RUST_ALLOWED_CLAIM_RE = /rust integration seams exist;\s*runtime execution is not proven\.?/i;
@@ -158,6 +165,29 @@ function allowedLegacyPath(relativePath) {
   return ALLOWED_LEGACY_PATH_RE.test(relativePath);
 }
 
+function emptyLegacyCategoryCounts() {
+  return {
+    active_runtime_dependency: 0,
+    ingestion_sync_allowed: 0,
+    proof_or_test_only: 0,
+    docs_comments_labels: 0,
+    archived_or_quarantined: 0,
+    user_facing_terminology: 0
+  };
+}
+
+function classifyLegacyReference(relativePath, line) {
+  const trimmed = line.trim();
+
+  if (ARCHIVE_OR_QUARANTINE_PATH_RE.test(relativePath)) return "archived_or_quarantined";
+  if (PROOF_OR_TEST_PATH_RE.test(relativePath)) return "proof_or_test_only";
+  if (INGESTION_SYNC_PATH_RE.test(relativePath)) return "ingestion_sync_allowed";
+  if (COMMENT_LINE_RE.test(trimmed)) return "docs_comments_labels";
+  if (FRONTEND_PATH_RE.test(relativePath)) return "user_facing_terminology";
+
+  return "active_runtime_dependency";
+}
+
 function activeRuntimeFiles(root) {
   const files = [];
   for (const relativeRoot of ACTIVE_RUNTIME_ROOTS) {
@@ -168,9 +198,13 @@ function activeRuntimeFiles(root) {
   return [...new Set(files)].filter((filePath) => TEXT_FILE_RE.test(filePath));
 }
 
-export function inspectActiveRuntimeLegacyLeaks({ repoRoot: root = repoRoot } = {}) {
+export function inspectRuntimeLegacyBoundary({ repoRoot: root = repoRoot } = {}) {
   const absoluteRoot = path.resolve(root);
-  const leaks = [];
+  const findings = [];
+  const categoryCounts = emptyLegacyCategoryCounts();
+  const examplesByCategory = Object.fromEntries(
+    Object.keys(categoryCounts).map((category) => [category, []])
+  );
 
   for (const filePath of activeRuntimeFiles(absoluteRoot)) {
     const relativePath = rel(absoluteRoot, filePath);
@@ -179,19 +213,39 @@ export function inspectActiveRuntimeLegacyLeaks({ repoRoot: root = repoRoot } = 
 
     lines.forEach((line, index) => {
       const match = line.match(ACTIVE_LEGACY_TERM_RE);
-      if (!match || allowed) return;
-      leaks.push({
+      if (!match) return;
+
+      const category = classifyLegacyReference(relativePath, line);
+      const finding = {
         filePath: relativePath,
         lineNumber: index + 1,
         term: match[1],
-        allowed,
+        allowed: category !== "active_runtime_dependency",
         line: line.trim().slice(0, 240),
-        classification: "active_product_runtime_legacy_reference"
-      });
+        category,
+        classification: category
+      };
+
+      findings.push(finding);
+      categoryCounts[category] += 1;
+      if (examplesByCategory[category].length < 10) examplesByCategory[category].push(finding);
     });
   }
 
-  return leaks;
+  const blockingFindings = findings.filter((finding) => finding.category === "active_runtime_dependency");
+
+  return {
+    rawCount: findings.length,
+    blockingActiveRuntimeDependencyCount: blockingFindings.length,
+    categoryCounts,
+    examplesByCategory,
+    findings,
+    blockingFindings
+  };
+}
+
+export function inspectActiveRuntimeLegacyLeaks({ repoRoot: root = repoRoot } = {}) {
+  return inspectRuntimeLegacyBoundary({ repoRoot: root }).blockingFindings;
 }
 
 export function buildJune10LaunchGateReport({
@@ -203,7 +257,8 @@ export function buildJune10LaunchGateReport({
   productLoadLedgerPath = DEFAULT_PRODUCT_LOAD_LEDGER,
   rustRuntimeUsage,
   rustClaimsSuppressed = false,
-  activeRuntimeLegacyLeaks = []
+  activeRuntimeLegacyLeaks = [],
+  runtimeLegacyBoundary = null
 }) {
   const blockers = [];
   const warnings = [];
@@ -214,7 +269,28 @@ export function buildJune10LaunchGateReport({
   const productLoadLedgerPassed = isProductLoadLedgerPassing(productLoadLedger);
   const rustProven = rustRuntimeProven(rustRuntimeUsage);
   const rustPostureAccepted = rustProven || rustClaimsSuppressed;
-  const activeRuntimeLegacyLeakCount = activeRuntimeLegacyLeaks.length;
+  const effectiveRuntimeLegacyBoundary =
+    runtimeLegacyBoundary ?? {
+      rawCount: activeRuntimeLegacyLeaks.length,
+      blockingActiveRuntimeDependencyCount: activeRuntimeLegacyLeaks.length,
+      categoryCounts: {
+        ...emptyLegacyCategoryCounts(),
+        active_runtime_dependency: activeRuntimeLegacyLeaks.length
+      },
+      examplesByCategory: {},
+      findings: activeRuntimeLegacyLeaks,
+      blockingFindings: activeRuntimeLegacyLeaks
+    };
+  effectiveRuntimeLegacyBoundary.categoryCounts = {
+    ...emptyLegacyCategoryCounts(),
+    ...(effectiveRuntimeLegacyBoundary.categoryCounts ?? {})
+  };
+  effectiveRuntimeLegacyBoundary.examplesByCategory = {
+    ...Object.fromEntries(Object.keys(emptyLegacyCategoryCounts()).map((category) => [category, []])),
+    ...(effectiveRuntimeLegacyBoundary.examplesByCategory ?? {})
+  };
+  const activeRuntimeLegacyLeakCount =
+    effectiveRuntimeLegacyBoundary.blockingActiveRuntimeDependencyCount;
 
   if (!apiHealthLive) {
     blockers.push(
@@ -305,6 +381,7 @@ export function buildJune10LaunchGateReport({
       rustRuntimeProven: rustProven,
       rustClaimsSuppressed,
       activeRuntimeLegacyLeaks: activeRuntimeLegacyLeakCount,
+      rawRuntimeLegacyReferences: effectiveRuntimeLegacyBoundary.rawCount,
       blockers: blockers.length,
       warnings: warnings.length
     },
@@ -336,7 +413,12 @@ export function buildJune10LaunchGateReport({
       },
       legacyRuntimeBoundary: {
         allowedLanePolicy: "Sync/admin/proof lanes may retain legacy-source terms; active product runtime may not.",
-        leaks: activeRuntimeLegacyLeaks
+        rawCount: effectiveRuntimeLegacyBoundary.rawCount,
+        blockingActiveRuntimeDependencyCount: activeRuntimeLegacyLeakCount,
+        categoryCounts: effectiveRuntimeLegacyBoundary.categoryCounts,
+        examplesByCategory: effectiveRuntimeLegacyBoundary.examplesByCategory,
+        findings: effectiveRuntimeLegacyBoundary.findings,
+        leaks: effectiveRuntimeLegacyBoundary.blockingFindings
       }
     },
     blockers,
@@ -362,7 +444,7 @@ export async function probeJune10LaunchGate({
   const publicSiteSmoke = await probeJune10PublicSite({ baseUrl: publicBaseUrl, timeoutMs });
   const productLoadLedger = readJson(productLoadLedgerPath);
   const rustRuntimeUsage = inspectJune10RustRuntimeUsage({ repoRoot: root });
-  const activeRuntimeLegacyLeaks = inspectActiveRuntimeLegacyLeaks({ repoRoot: root });
+  const runtimeLegacyBoundary = inspectRuntimeLegacyBoundary({ repoRoot: root });
   const effectiveRustClaimsSuppressed =
     rustClaimsSuppressed ??
     (process.env.TF_JUNE10_SUPPRESS_RUST_RUNTIME_CLAIMS === "1" ||
@@ -377,7 +459,7 @@ export async function probeJune10LaunchGate({
     productLoadLedgerPath,
     rustRuntimeUsage,
     rustClaimsSuppressed: effectiveRustClaimsSuppressed,
-    activeRuntimeLegacyLeaks
+    runtimeLegacyBoundary
   });
 }
 
@@ -400,6 +482,7 @@ function renderMarkdown(report) {
     `- Rust runtime proven: ${report.summary.rustRuntimeProven}`,
     `- Rust claims suppressed: ${report.summary.rustClaimsSuppressed}`,
     `- Active runtime legacy leaks: ${report.summary.activeRuntimeLegacyLeaks}`,
+    `- Raw runtime legacy references: ${report.summary.rawRuntimeLegacyReferences}`,
     `- Blockers: ${report.summary.blockers}`,
     `- Warnings: ${report.summary.warnings}`,
     "",
@@ -429,6 +512,31 @@ function renderMarkdown(report) {
     for (const leak of report.checks.legacyRuntimeBoundary.leaks) {
       lines.push(`| \`${leak.filePath}\` | ${leak.lineNumber} | ${leak.term} | ${leak.line.replaceAll("|", "\\|")} |`);
     }
+  }
+
+  lines.push("", "## Runtime Legacy Classification", "");
+  lines.push(`- Raw references: ${report.checks.legacyRuntimeBoundary.rawCount}`);
+  lines.push(
+    `- Blocking active runtime dependencies: ${report.checks.legacyRuntimeBoundary.blockingActiveRuntimeDependencyCount}`
+  );
+  lines.push("", "| Category | Count |", "|---|---:|");
+  for (const [category, count] of Object.entries(report.checks.legacyRuntimeBoundary.categoryCounts ?? {})) {
+    lines.push(`| ${category} | ${count} |`);
+  }
+
+  lines.push("", "### Category Examples", "");
+  for (const [category, examples] of Object.entries(report.checks.legacyRuntimeBoundary.examplesByCategory ?? {})) {
+    lines.push(`#### ${category}`, "");
+    if (!examples.length) {
+      lines.push("- None", "");
+      continue;
+    }
+    for (const example of examples.slice(0, 5)) {
+      lines.push(
+        `- \`${example.filePath}:${example.lineNumber}\` ${example.term} — ${example.line.replaceAll("|", "\\|")}`
+      );
+    }
+    lines.push("");
   }
 
   lines.push("", "## Required Fixes", "");

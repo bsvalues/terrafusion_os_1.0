@@ -10,6 +10,7 @@ import path from "node:path";
 import {
   buildJune10LaunchGateReport,
   inspectActiveRuntimeLegacyLeaks,
+  inspectRuntimeLegacyBoundary,
   probeJune10LaunchGate,
   resolveRustClaimsSuppression
 } from "./june10-launch-gate.mjs";
@@ -272,6 +273,86 @@ test("legacy leak scanner blocks product runtime references but allows sync/admi
   assert.equal(leaks.length, 1);
   assert.equal(leaks[0].filePath, "backend/src/TerraFusion.API/Controllers/CostForgeController.cs");
   assert.equal(leaks[0].allowed, false);
+});
+
+test("legacy boundary classifier separates active dependency from allowed categories", () => {
+  const root = makeTempRepo();
+  writeFile(
+    root,
+    "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
+    [
+      "using Microsoft.Data.SqlClient;",
+      "public class CostForgeController {",
+      "  private SqlConnection OpenLegacyConnection() => new SqlConnection();",
+      "  // PACS appears here only as implementation commentary.",
+      "}"
+    ].join("\n")
+  );
+  writeFile(
+    root,
+    "backend/src/TerraFusion.API/Controllers/SyncController.cs",
+    "public class SyncController { const string allowed = \"Harris PACS upstream provenance\"; }"
+  );
+  writeFile(
+    root,
+    "backend/tests/TerraFusion.API.Tests/BoundaryTests.cs",
+    "public class BoundaryTests { const string proof = \"PACS test fixture\"; }"
+  );
+  writeFile(
+    root,
+    "frontend/apps/os-shell/src/pages/Login.tsx",
+    "export function Login() { return <p>Legacy PACS terminology visible to users</p>; }"
+  );
+  writeFile(
+    root,
+    "frontend/apps/os-shell/src/ARCHIVE/OldBridge.tsx",
+    "export const old = \"Harris PACS archived bridge\";"
+  );
+
+  const boundary = inspectRuntimeLegacyBoundary({ repoRoot: root });
+
+  assert.equal(boundary.rawCount, 6);
+  assert.equal(boundary.blockingActiveRuntimeDependencyCount, 1);
+  assert.equal(boundary.categoryCounts.active_runtime_dependency, 1);
+  assert.equal(boundary.categoryCounts.ingestion_sync_allowed, 1);
+  assert.equal(boundary.categoryCounts.proof_or_test_only, 1);
+  assert.equal(boundary.categoryCounts.docs_comments_labels, 1);
+  assert.equal(boundary.categoryCounts.user_facing_terminology, 1);
+  assert.equal(boundary.categoryCounts.archived_or_quarantined, 1);
+  assert.equal(boundary.blockingFindings.every((finding) => finding.category === "active_runtime_dependency"), true);
+});
+
+test("launch gate blocks only active runtime dependency legacy findings", () => {
+  const report = buildJune10LaunchGateReport({
+    apiBaseUrl: "http://127.0.0.1:5046",
+    publicBaseUrl: "https://terrafusionmarket.com",
+    endpointSmoke: endpointSmoke(),
+    publicSiteSmoke: publicSiteSmoke(),
+    productLoadLedger: productLoadLedger(),
+    rustRuntimeUsage: rustRuntimeUsage(),
+    rustClaimsSuppressed: false,
+    runtimeLegacyBoundary: {
+      rawCount: 3,
+      blockingActiveRuntimeDependencyCount: 0,
+      categoryCounts: {
+        active_runtime_dependency: 0,
+        ingestion_sync_allowed: 1,
+        proof_or_test_only: 1,
+        docs_comments_labels: 1,
+        archived_or_quarantined: 0,
+        user_facing_terminology: 0
+      },
+      findings: [],
+      blockingFindings: []
+    }
+  });
+
+  assert.equal(report.passed, true);
+  assert.equal(report.summary.activeRuntimeLegacyLeaks, 0);
+  assert.equal(report.summary.rawRuntimeLegacyReferences, 3);
+  assert.equal(report.checks.legacyRuntimeBoundary.categoryCounts.ingestion_sync_allowed, 1);
+  assert.ok(Array.isArray(report.checks.legacyRuntimeBoundary.examplesByCategory.ingestion_sync_allowed));
+  assert.ok(!report.blockers.some((blocker) => blocker.source === "legacy_runtime_boundary"));
 });
 
 test("probeJune10LaunchGate composes live endpoint and public site smoke with ledger evidence", async () => {
