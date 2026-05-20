@@ -139,6 +139,21 @@ const PRODUCT_LOAD_RECEIPT_CONTRACT = {
   ],
 };
 
+const SYNC_BRIDGE_LOAD_BATCH_CONTRACT = {
+  tableName: 'sync_bridge.load_batch',
+  tableIdentityColumn: 'SourceSystem',
+  timestampColumn: 'CompletedAt',
+  statusColumn: 'Status',
+  rowsPromotedColumn: 'RowsPromoted',
+};
+
+const SYNC_BRIDGE_PROJECTOR_SOURCES_BY_TABLE = {
+  'canonical_tf.tf_parcel': ['canonical-tf-parcel-projector'],
+  'canonical_tf.tf_sale': ['canonical-tf-projector'],
+  LandSegments: ['canonical-tf-land-projector'],
+  GisParcelGeometries: ['canonical-tf-arcgis-projector'],
+};
+
 function rel(filePath) {
   return path.relative(repoRoot, filePath).replaceAll(path.sep, '/');
 }
@@ -227,6 +242,13 @@ function latestEtlCompletedAt() {
 }
 
 function latestProductLoadReceiptAtFor(_tableName) {
+  const productLoadReceiptAt = latestProductLoadReceiptAtForProductLoadReceipts(_tableName);
+  const syncBridgeLoadBatchAt = latestSyncBridgeLoadBatchAtFor(_tableName);
+
+  return latest(productLoadReceiptAt, syncBridgeLoadBatchAt);
+}
+
+function latestProductLoadReceiptAtForProductLoadReceipts(_tableName) {
   if (!tableExists('ProductLoadReceipts')) return null;
   const columns = existingColumns('ProductLoadReceipts');
   const tableColumn = [
@@ -264,6 +286,37 @@ function latestProductLoadReceiptAtFor(_tableName) {
   );
 }
 
+function syncBridgeProjectorSourcesFor(tableName) {
+  return SYNC_BRIDGE_PROJECTOR_SOURCES_BY_TABLE[String(tableName)] ?? [];
+}
+
+function latestSyncBridgeLoadBatchAtFor(tableName) {
+  if (!tableExists(SYNC_BRIDGE_LOAD_BATCH_CONTRACT.tableName)) return null;
+
+  const sources = syncBridgeProjectorSourcesFor(tableName);
+  if (sources.length === 0) return null;
+
+  const columns = existingColumns(SYNC_BRIDGE_LOAD_BATCH_CONTRACT.tableName);
+  const requiredColumns = [
+    SYNC_BRIDGE_LOAD_BATCH_CONTRACT.tableIdentityColumn,
+    SYNC_BRIDGE_LOAD_BATCH_CONTRACT.timestampColumn,
+    SYNC_BRIDGE_LOAD_BATCH_CONTRACT.statusColumn,
+  ];
+  if (!requiredColumns.every(column => columns.has(column))) return null;
+
+  const sourceList = sources
+    .map(source => `'${String(source).replaceAll("'", "''").toLowerCase()}'`)
+    .join(', ');
+  const rowsPromotedPredicate = columns.has(SYNC_BRIDGE_LOAD_BATCH_CONTRACT.rowsPromotedColumn)
+    ? ` and coalesce(${quoteIdent(SYNC_BRIDGE_LOAD_BATCH_CONTRACT.rowsPromotedColumn)}, 0) > 0`
+    : '';
+  const result = psql(
+    `select max(${quoteIdent(SYNC_BRIDGE_LOAD_BATCH_CONTRACT.timestampColumn)}) from ${quoteTable(SYNC_BRIDGE_LOAD_BATCH_CONTRACT.tableName)} where lower(${quoteIdent(SYNC_BRIDGE_LOAD_BATCH_CONTRACT.tableIdentityColumn)}::text) in (${sourceList}) and ${quoteIdent(SYNC_BRIDGE_LOAD_BATCH_CONTRACT.statusColumn)} = 'COMPLETED'${rowsPromotedPredicate};`
+  );
+
+  return parseIso(result);
+}
+
 function productLoadReceiptEvidenceFromDatabase() {
   const exists = tableExists(PRODUCT_LOAD_RECEIPT_CONTRACT.tableName);
   const columns = exists ? existingColumns(PRODUCT_LOAD_RECEIPT_CONTRACT.tableName) : new Set();
@@ -275,29 +328,74 @@ function productLoadReceiptEvidenceFromDatabase() {
   const rowCount = exists ? countRows(PRODUCT_LOAD_RECEIPT_CONTRACT.tableName) : null;
   const blockers = [];
 
-  if (!exists) {
-    blockers.push('ProductLoadReceipts table is missing.');
+  const syncBridgeLoadBatchEvidence = syncBridgeLoadBatchEvidenceFromDatabase();
+  const hasAnyReceiptEvidence = exists || syncBridgeLoadBatchEvidence.exists;
+
+  if (!exists && !syncBridgeLoadBatchEvidence.exists) {
+    blockers.push(
+      'ProductLoadReceipts table is missing and sync_bridge.load_batch receipt evidence is unavailable.'
+    );
   } else {
-    if (!tableColumn) {
+    if (exists && !tableColumn) {
       blockers.push('ProductLoadReceipts has no accepted product table identity column.');
     }
-    if (timestampColumns.length === 0) {
+    if (exists && timestampColumns.length === 0) {
       blockers.push('ProductLoadReceipts has no accepted load timestamp column.');
     }
-    if (rowCount === 0) {
+    if (exists && rowCount === 0) {
       blockers.push('ProductLoadReceipts table exists but is empty.');
     }
   }
 
   return {
     tableName: PRODUCT_LOAD_RECEIPT_CONTRACT.tableName,
-    exists,
-    rowCount,
+    exists: hasAnyReceiptEvidence,
+    evidenceSource: exists
+      ? PRODUCT_LOAD_RECEIPT_CONTRACT.tableName
+      : syncBridgeLoadBatchEvidence.tableName,
+    rowCount:
+      rowCount ??
+      (syncBridgeLoadBatchEvidence.exists ? syncBridgeLoadBatchEvidence.rowCount : null),
+    productLoadReceiptsTableExists: exists,
+    productLoadReceiptsRowCount: rowCount,
     tableIdentityColumn: tableColumn,
     timestampColumns,
     acceptedTableColumns: PRODUCT_LOAD_RECEIPT_CONTRACT.acceptedTableColumns,
     acceptedTimestampColumns: PRODUCT_LOAD_RECEIPT_CONTRACT.acceptedTimestampColumns,
     recommendedColumns: PRODUCT_LOAD_RECEIPT_CONTRACT.recommendedColumns,
+    syncBridgeLoadBatchEvidence,
+    blockers,
+  };
+}
+
+function syncBridgeLoadBatchEvidenceFromDatabase() {
+  const exists = tableExists(SYNC_BRIDGE_LOAD_BATCH_CONTRACT.tableName);
+  const columns = exists ? existingColumns(SYNC_BRIDGE_LOAD_BATCH_CONTRACT.tableName) : new Set();
+  const rowCount = exists ? countRows(SYNC_BRIDGE_LOAD_BATCH_CONTRACT.tableName) : null;
+  const blockers = [];
+
+  if (!exists) {
+    blockers.push('sync_bridge.load_batch table is missing.');
+  } else {
+    for (const column of [
+      SYNC_BRIDGE_LOAD_BATCH_CONTRACT.tableIdentityColumn,
+      SYNC_BRIDGE_LOAD_BATCH_CONTRACT.timestampColumn,
+      SYNC_BRIDGE_LOAD_BATCH_CONTRACT.statusColumn,
+    ]) {
+      if (!columns.has(column)) blockers.push(`sync_bridge.load_batch is missing ${column}.`);
+    }
+    if (rowCount === 0) blockers.push('sync_bridge.load_batch table exists but is empty.');
+  }
+
+  return {
+    tableName: SYNC_BRIDGE_LOAD_BATCH_CONTRACT.tableName,
+    exists: exists && blockers.length === 0,
+    rowCount,
+    tableIdentityColumn: SYNC_BRIDGE_LOAD_BATCH_CONTRACT.tableIdentityColumn,
+    timestampColumns: columns.has(SYNC_BRIDGE_LOAD_BATCH_CONTRACT.timestampColumn)
+      ? [SYNC_BRIDGE_LOAD_BATCH_CONTRACT.timestampColumn]
+      : [],
+    acceptedSourceSystemsByTable: SYNC_BRIDGE_PROJECTOR_SOURCES_BY_TABLE,
     blockers,
   };
 }
@@ -316,19 +414,43 @@ function productLoadReceiptEvidenceFromFixture(fixture) {
     column => columns.has(column) || columns.has(column[0].toLowerCase() + column.slice(1))
   );
 
+  const syncBridgeLoadBatchEvidence = syncBridgeLoadBatchEvidenceFromFixture(fixture);
+  const hasAnyReceiptEvidence = receipts.length > 0 || syncBridgeLoadBatchEvidence.exists;
+
   return {
     tableName: PRODUCT_LOAD_RECEIPT_CONTRACT.tableName,
-    exists: receipts.length > 0,
-    rowCount: receipts.length,
+    exists: hasAnyReceiptEvidence,
+    evidenceSource:
+      receipts.length > 0
+        ? PRODUCT_LOAD_RECEIPT_CONTRACT.tableName
+        : syncBridgeLoadBatchEvidence.tableName,
+    rowCount: receipts.length > 0 ? receipts.length : syncBridgeLoadBatchEvidence.rowCount,
+    productLoadReceiptsTableExists: receipts.length > 0,
+    productLoadReceiptsRowCount: receipts.length,
     tableIdentityColumn: tableColumn,
     timestampColumns,
     acceptedTableColumns: PRODUCT_LOAD_RECEIPT_CONTRACT.acceptedTableColumns,
     acceptedTimestampColumns: PRODUCT_LOAD_RECEIPT_CONTRACT.acceptedTimestampColumns,
     recommendedColumns: PRODUCT_LOAD_RECEIPT_CONTRACT.recommendedColumns,
-    blockers:
-      receipts.length > 0
-        ? []
-        : ['Product load receipt fixture has no productLoadReceipts entries.'],
+    syncBridgeLoadBatchEvidence,
+    blockers: hasAnyReceiptEvidence
+      ? []
+      : [
+          'Product load receipt fixture has no productLoadReceipts or syncBridgeLoadBatches entries.',
+        ],
+  };
+}
+
+function syncBridgeLoadBatchEvidenceFromFixture(fixture) {
+  const batches = Array.isArray(fixture.syncBridgeLoadBatches) ? fixture.syncBridgeLoadBatches : [];
+  return {
+    tableName: SYNC_BRIDGE_LOAD_BATCH_CONTRACT.tableName,
+    exists: batches.length > 0,
+    rowCount: batches.length,
+    tableIdentityColumn: SYNC_BRIDGE_LOAD_BATCH_CONTRACT.tableIdentityColumn,
+    timestampColumns: batches.length > 0 ? [SYNC_BRIDGE_LOAD_BATCH_CONTRACT.timestampColumn] : [],
+    acceptedSourceSystemsByTable: SYNC_BRIDGE_PROJECTOR_SOURCES_BY_TABLE,
+    blockers: batches.length > 0 ? [] : ['syncBridgeLoadBatches fixture has no entries.'],
   };
 }
 
@@ -358,6 +480,34 @@ function latestFixtureProductLoadReceiptAtFor(receipts, tableName) {
         receipt.createdAtUtc,
         receipt.createdAt,
         receipt.updatedAt,
+      ])
+  );
+}
+
+function latestFixtureSyncBridgeLoadBatchAtFor(batches, tableName) {
+  if (!Array.isArray(batches)) return null;
+
+  const acceptedSources = syncBridgeProjectorSourcesFor(tableName).map(source =>
+    String(source).toLowerCase()
+  );
+  if (acceptedSources.length === 0) return null;
+
+  return latest(
+    ...batches
+      .filter(batch => {
+        const sourceSystem = String(batch.sourceSystem ?? batch.SourceSystem ?? '').toLowerCase();
+        const status = String(batch.status ?? batch.Status ?? '').toUpperCase();
+        const rowsPromoted = Number(batch.rowsPromoted ?? batch.RowsPromoted ?? 0);
+
+        return acceptedSources.includes(sourceSystem) && status === 'COMPLETED' && rowsPromoted > 0;
+      })
+      .flatMap(batch => [
+        batch.completedAt,
+        batch.CompletedAt,
+        batch.completedAtUtc,
+        batch.CompletedAtUtc,
+        batch.createdAt,
+        batch.CreatedAt,
       ])
   );
 }
@@ -469,8 +619,12 @@ function renderMarkdown(report) {
     `- Empty tables: ${report.summary.emptyTables}`,
     `- Missing tables: ${report.summary.missingTables}`,
     `- Latest ETL completed at: ${report.globalEtlCompletedAt ?? '-'}`,
-    `- Product load receipt table exists: ${report.receiptEvidence.exists ? 'yes' : 'no'}`,
-    `- Product load receipt rows: ${report.receiptEvidence.rowCount ?? '-'}`,
+    `- Product load receipt evidence exists: ${report.receiptEvidence.exists ? 'yes' : 'no'}`,
+    `- Product load receipt evidence source: ${report.receiptEvidence.evidenceSource ?? '-'}`,
+    `- ProductLoadReceipts table exists: ${report.receiptEvidence.productLoadReceiptsTableExists ? 'yes' : 'no'}`,
+    `- ProductLoadReceipts rows: ${report.receiptEvidence.productLoadReceiptsRowCount ?? '-'}`,
+    `- sync_bridge.load_batch exists: ${report.receiptEvidence.syncBridgeLoadBatchEvidence?.exists ? 'yes' : 'no'}`,
+    `- sync_bridge.load_batch rows: ${report.receiptEvidence.syncBridgeLoadBatchEvidence?.rowCount ?? '-'}`,
     '',
     '## Product Load Receipt Contract',
     '',
@@ -524,7 +678,10 @@ function buildReport() {
         ...row,
         latestProductLoadReceiptAt:
           row.latestProductLoadReceiptAt ??
-          latestFixtureProductLoadReceiptAtFor(fixture.productLoadReceipts, row.tableName),
+          latest(
+            latestFixtureProductLoadReceiptAtFor(fixture.productLoadReceipts, row.tableName),
+            latestFixtureSyncBridgeLoadBatchAtFor(fixture.syncBridgeLoadBatches, row.tableName)
+          ),
       })
     );
     return {

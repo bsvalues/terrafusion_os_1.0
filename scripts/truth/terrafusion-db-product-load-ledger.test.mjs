@@ -143,3 +143,87 @@ test('product load ledger resolves table-scoped product load receipts from recei
   assert.equal(report.receiptEvidence.rowCount, 2);
   assert.equal(report.receiptEvidence.tableIdentityColumn, 'TargetTableName');
 });
+
+test('product load ledger accepts sync_bridge load batches as TerraFusion DB receipt evidence', async () => {
+  const root = makeTempRepo('tf-product-ledger-sync-batch-');
+  const fixturePath = writeFixture(root, {
+    database: { container: 'fixture', database: 'terrafusion', user: 'postgres' },
+    syncBridgeLoadBatches: [
+      {
+        sourceSystem: 'canonical-tf-parcel-projector',
+        status: 'COMPLETED',
+        completedAt: '2026-05-20T16:22:24.631Z',
+        rowsPromoted: 582869,
+      },
+    ],
+    rows: [
+      {
+        tableName: 'canonical_tf.tf_parcel',
+        productDomain: 'parcel',
+        rowCount: 582869,
+        latestProductUpdatedAt: '2026-05-20T16:22:24.631Z',
+      },
+    ],
+  });
+
+  await execFileAsync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    env: { ...process.env, TF_PRODUCT_LOAD_LEDGER_FIXTURE: fixturePath },
+  });
+
+  const report = JSON.parse(
+    fs.readFileSync(
+      path.join(root, 'generated', 'truth', 'terrafusion-db-product-load-ledger.json'),
+      'utf8'
+    )
+  );
+
+  assert.equal(report.passed, true);
+  assert.equal(report.rows[0].latestProductLoadReceiptAt, '2026-05-20T16:22:24.631Z');
+  assert.equal(report.rows[0].lineageStatus, 'lineage_proven');
+  assert.equal(report.receiptEvidence.exists, true);
+  assert.equal(report.receiptEvidence.evidenceSource, 'sync_bridge.load_batch');
+  assert.equal(report.receiptEvidence.productLoadReceiptsTableExists, false);
+  assert.equal(report.receiptEvidence.syncBridgeLoadBatchEvidence.exists, true);
+});
+
+test('product load ledger does not treat unrelated sync_bridge batches as table lineage', async () => {
+  const root = makeTempRepo('tf-product-ledger-sync-batch-unrelated-');
+  const fixturePath = writeFixture(root, {
+    database: { container: 'fixture', database: 'terrafusion', user: 'postgres' },
+    syncBridgeLoadBatches: [
+      {
+        sourceSystem: 'canonical-tf-owner-projector',
+        status: 'COMPLETED',
+        completedAt: '2026-05-20T16:22:24.631Z',
+        rowsPromoted: 10,
+      },
+    ],
+    rows: [
+      {
+        tableName: 'canonical_tf.tf_parcel',
+        productDomain: 'parcel',
+        rowCount: 582869,
+        latestProductUpdatedAt: '2026-05-20T16:22:24.631Z',
+      },
+    ],
+  });
+
+  await execFileAsync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    env: { ...process.env, TF_PRODUCT_LOAD_LEDGER_FIXTURE: fixturePath },
+  }).catch(error => {
+    assert.equal(error.code, 1);
+  });
+
+  const report = JSON.parse(
+    fs.readFileSync(
+      path.join(root, 'generated', 'truth', 'terrafusion-db-product-load-ledger.json'),
+      'utf8'
+    )
+  );
+
+  assert.equal(report.passed, false);
+  assert.equal(report.rows[0].latestProductLoadReceiptAt, null);
+  assert.equal(report.rows[0].lineageStatus, 'rows_exist_lineage_unproven');
+});

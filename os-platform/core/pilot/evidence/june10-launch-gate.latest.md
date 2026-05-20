@@ -1,6 +1,6 @@
 # June 10 Launch Gate
 
-Generated: 2026-05-20T16:22:58.524Z
+Generated: 2026-05-20T16:39:16.995Z
 
 Passed: false
 API base URL: http://localhost:5046
@@ -21,7 +21,7 @@ Public base URL: https://terrafusionmarket.com
 ## Blockers
 
 - **public_access_posture**: Public access posture is not explicit and usable for launch-control evidence. (1 blocker(s))
-- **product_load_ledger**: Product-load lineage is not proven by the TerraFusion DB ledger. (0 lineage-proven table(s), 10 blocker(s))
+- **product_load_ledger**: Product-load lineage is not proven by the TerraFusion DB ledger. (3 lineage-proven table(s), 7 blocker(s))
 - **legacy_runtime_boundary**: Active product runtime still contains PACS/Harris/source-system references outside the allowed sync/admin/proof lanes. (581 leak(s))
 
 ## Warnings
