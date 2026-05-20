@@ -135,7 +135,12 @@ function validateHealth(probe) {
 function validateRuntimeDbIdentity(probe) {
   const payload = parseJson(probe.bodyText);
   const identity = payload?.identity ?? payload ?? {};
-  return Boolean(identity.database || identity.provider || payload?.passed === true);
+  const blockers = Array.isArray(payload?.blockers) ? payload.blockers : [];
+  return Boolean(
+    payload?.passed === true &&
+      blockers.length === 0 &&
+      (identity.database || identity.provider)
+  );
 }
 
 function validateBentonParcels(probe) {

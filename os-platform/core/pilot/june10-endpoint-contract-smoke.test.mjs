@@ -58,6 +58,35 @@ test("blocks when Benton parcel endpoint does not expose countable rows or count
   assert.ok(report.contractMismatches.some((mismatch) => mismatch.endpointId === "benton_parcels"));
 });
 
+test("blocks when runtime DB identity endpoint reports internal blockers", () => {
+  const report = buildJune10EndpointContractSmokeReport({
+    apiBaseUrl: "http://127.0.0.1:5046",
+    probes: [
+      probe({ path: "/health", body: { status: "ok" } }),
+      probe({
+        path: "/api/runtime/truth/db-identity",
+        body: {
+          database: "main",
+          provider: "Microsoft.EntityFrameworkCore.Sqlite",
+          passed: false,
+          blockers: ["Expected June 10 TerraFusion DB name is not configured."]
+        }
+      }),
+      probe({
+        path: "/api/counties/benton/parcels?limit=5",
+        body: { county: "Benton", total: 10, rows: [{ parcelId: "1001", county: "Benton" }] }
+      }),
+      probe({
+        path: "/api/auth/access-policy",
+        body: { signupMode: "provisioned_access_only", publicSignupEnabled: false, accessRequestUrl: "/request-access" }
+      })
+    ]
+  });
+
+  assert.equal(report.passed, false);
+  assert.ok(report.contractMismatches.some((mismatch) => mismatch.endpointId === "runtime_db_identity"));
+});
+
 test("passes when required runtime endpoints are reachable and response shapes match", () => {
   const report = buildJune10EndpointContractSmokeReport({
     apiBaseUrl: "http://127.0.0.1:5046",

@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-20T22:32:37.407Z",
+  "generatedAtUtc": "2026-05-20T22:54:44.494Z",
   "apiBaseUrl": "https://terrafusionmarket.com",
   "passed": true,
   "summary": {
@@ -41,8 +41,8 @@
       "authApplied": false,
       "status": 200,
       "contentType": "application/json; charset=utf-8",
-      "bodyText": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T22:32:35.9095785Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"f57f4accefb7950024faaafe96343c1533e7e3ff\"}",
-      "bodySnippet": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T22:32:35.9095785Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"f57f4accefb7950024faaafe96343c1533e7e3ff\"}",
+      "bodyText": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T22:54:43.5295275Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"f57f4accefb7950024faaafe96343c1533e7e3ff\"}",
+      "bodySnippet": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T22:54:43.5295275Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"f57f4accefb7950024faaafe96343c1533e7e3ff\"}",
       "ok": true,
       "error": null
     },
@@ -55,7 +55,7 @@
       "authApplied": true,
       "status": 200,
       "contentType": "application/json; charset=utf-8",
-      "bodyText": "{\"apiBaseUrl\":\"http://terrafusionmarket.com\",\"environment\":\"Production\",\"contentRootPath\":\"/app\",\"provider\":\"Microsoft.EntityFrameworkCore.Sqlite\",\"connectionStringName\":\"DefaultConnection\",\"serverRedacted\":\"configured-host-redacted\",\"database\":\"main\",\"expectedJune10Database\":null,\"isExpectedJune10RuntimeDb\":false,\"expectedBentonParcelCount\":null,\"isBentonParcelCountExpected\":false,\"migrationState\":{\"appliedCount\":0,\"pendingCount\":88,\"latestApplied\":null,\"warnings\":[]},\"rowCounts\":null,\"passed\":false,\"blockers\":[\"Expected June 10 TerraFusion DB name is not configured. Set TF_EXPECTED_JUNE10_DB_NAME or RuntimeTruth:ExpectedJune10Database.\"],\"warnings\":[\"Row counts skipped for launch-control liveness. Re-run with includeCounts=true for heavyweight database-count evidence.\"]}",
+      "bodyText": "{\"apiBaseUrl\":\"http://terrafusionmarket.com\",\"environment\":\"Production\",\"contentRootPath\":\"/app\",\"provider\":\"Microsoft.EntityFrameworkCore.Sqlite\",\"connectionStringName\":\"DefaultConnection\",\"serverRedacted\":\"configured-host-redacted\",\"database\":\"main\",\"expectedJune10Database\":\"main\",\"isExpectedJune10RuntimeDb\":true,\"expectedBentonParcelCount\":null,\"isBentonParcelCountExpected\":false,\"migrationState\":{\"appliedCount\":0,\"pendingCount\":88,\"latestApplied\":null,\"warnings\":[]},\"rowCounts\":null,\"passed\":true,\"blockers\":[],\"warnings\":[\"Row counts skipped for launch-control liveness. Re-run with includeCounts=true for heavyweight database-count evidence.\"]}",
       "bodySnippet": "{\"apiBaseUrl\":\"http://terrafusionmarket.com\",\"environment\":\"Production\",\"contentRootPath\":\"/app\",\"provider\":\"Microsoft.EntityFrameworkCore.Sqlite\",\"connectionStringName\":\"DefaultConnection\",\"serverRedacted\":\"configured-host-redacted\",\"datab",
       "ok": true,
       "error": null
