@@ -74,7 +74,12 @@ test("passes when signup provides an access-request path and marketplace is visi
         200,
         '{"signupMode":"provisioned_access_only","publicSignupEnabled":false,"accessRequestUrl":"/request-access"}'
       )
-    ]
+    ],
+    renderedRoutes: [
+      route("/login", 200, "Provisioned access only Request access Sign In"),
+      route("/signup", 200, "Provisioned access only Request access Sign In")
+    ],
+    renderedBrowserRequired: true
   });
 
   assert.equal(report.passed, true);
@@ -103,6 +108,34 @@ test("blocks when access policy disables public signup without access-request ch
 
   assert.equal(report.passed, false);
   assert.ok(report.blockers.some((blocker) => blocker.source === "access_policy"));
+});
+
+test("blocks when access policy has a request channel but rendered login/signup hide it", () => {
+  const report = buildJune10PublicSiteSmokeReport({
+    baseUrl: "https://terrafusionmarket.com",
+    routes: [
+      route("/", 200, "<div id=\"root\"></div>"),
+      route("/login", 200, "<div id=\"root\"></div>"),
+      route("/signup", 200, "<div id=\"root\"></div>"),
+      route("/marketplace", 200, "Marketplace registry Browse governed modules")
+    ],
+    apiProbes: [
+      apiProbe("/api/health", 200, '{"status":"ok"}'),
+      apiProbe(
+        "/api/auth/access-policy",
+        200,
+        '{"signupMode":"provisioned_access_only","publicSignupEnabled":false,"accessRequestUrl":"mailto:support@terrafusionmarket.com"}'
+      )
+    ],
+    renderedRoutes: [
+      route("/login", 200, "TerraFusion OS Provisioned access only Sign In"),
+      route("/signup", 200, "TerraFusion OS Public self-signup is disabled Sign In")
+    ],
+    renderedBrowserRequired: true
+  });
+
+  assert.equal(report.passed, false);
+  assert.ok(report.blockers.some((blocker) => blocker.source === "rendered_access_posture"));
 });
 
 test("probes an HTTP fixture and writes JSON and Markdown evidence", async () => {
@@ -136,7 +169,7 @@ test("probes an HTTP fixture and writes JSON and Markdown evidence", async () =>
   const outMd = path.join(tmp, "public-site.md");
 
   try {
-    const report = await probeJune10PublicSite({ baseUrl });
+    const report = await probeJune10PublicSite({ baseUrl, renderBrowser: false });
     assert.equal(report.passed, false);
     assert.ok(report.routes.find((item) => item.path === "/signup"));
 
@@ -149,7 +182,8 @@ test("probes an HTTP fixture and writes JSON and Markdown evidence", async () =>
         "--out-json",
         outJson,
         "--out-md",
-        outMd
+        outMd,
+        "--skip-browser-render"
       ],
       { cwd: process.cwd() }
     );

@@ -28,6 +28,7 @@ const DEFAULT_OUT_MD = path.join(
 
 const ROUTES = ["/", "/login", "/signup", "/marketplace"];
 const API_PROBES = ["/api/health", "/api/auth/access-policy"];
+const RENDERED_ROUTES = ["/login", "/signup"];
 
 function rel(filePath) {
   return path.relative(repoRoot, filePath).replaceAll(path.sep, "/");
@@ -46,6 +47,12 @@ function snippet(text, limit = 4000) {
 
 function hasAccessRequestLanguage(route) {
   return /request\s+(provisioned\s+)?access|access\s+request|contact\s+.*administrator|invite|issued\s+by\s+.*administrator/i.test(
+    route?.bodyText ?? ""
+  );
+}
+
+function hasActionableAccessRequestLanguage(route) {
+  return /request\s+(provisioned\s+)?access|access\s+request|mailto:|support@|contact\s+(support|administrator)|invite/i.test(
     route?.bodyText ?? ""
   );
 }
@@ -137,11 +144,89 @@ function findPath(items, pathname) {
   return items.find((item) => item.path === pathname) ?? null;
 }
 
-export function buildJune10PublicSiteSmokeReport({ baseUrl, routes, apiProbes }) {
+async function renderRouteProbes(baseUrl, routes, timeoutMs) {
+  let chromium;
+  try {
+    ({ chromium } = await import("@playwright/test"));
+  } catch (error) {
+    return routes.map((pathname) => ({
+      path: pathname,
+      url: `${normalizeBaseUrl(baseUrl)}${pathname}`,
+      finalUrl: null,
+      status: null,
+      bodyText: "",
+      bodySnippet: "",
+      ok: false,
+      error: `Playwright is unavailable: ${error.message}`
+    }));
+  }
+
+  const browser = await chromium.launch({ headless: true });
+  const renderedRoutes = [];
+
+  try {
+    const context = await browser.newContext({
+      ignoreHTTPSErrors: true,
+      userAgent: "TerraFusion-June10-PublicSiteRenderSmoke/1.0"
+    });
+
+    for (const pathname of routes) {
+      const page = await context.newPage();
+      const url = `${normalizeBaseUrl(baseUrl)}${pathname}`;
+      try {
+        const response = await page.goto(url, {
+          waitUntil: "domcontentloaded",
+          timeout: timeoutMs
+        });
+        await page.waitForTimeout(1000);
+        const bodyText = snippet(await page.locator("body").innerText({ timeout: Math.min(timeoutMs, 5000) }));
+
+        renderedRoutes.push({
+          path: pathname,
+          url,
+          finalUrl: page.url(),
+          status: response?.status() ?? null,
+          bodyText,
+          bodySnippet: bodyText.slice(0, 240),
+          ok: Boolean(response && response.status() >= 200 && response.status() < 400),
+          error: null
+        });
+      } catch (error) {
+        renderedRoutes.push({
+          path: pathname,
+          url,
+          finalUrl: page.url(),
+          status: null,
+          bodyText: "",
+          bodySnippet: "",
+          ok: false,
+          error: error.message
+        });
+      } finally {
+        await page.close().catch(() => {});
+      }
+    }
+
+    await context.close().catch(() => {});
+  } finally {
+    await browser.close().catch(() => {});
+  }
+
+  return renderedRoutes;
+}
+
+export function buildJune10PublicSiteSmokeReport({
+  baseUrl,
+  routes,
+  apiProbes,
+  renderedRoutes = [],
+  renderedBrowserRequired = false
+}) {
   const blockers = [];
   const warnings = [];
   const reachableRoutes = routes.filter((route) => route.ok).length;
   const apiAuthGated = apiProbes.filter((probe) => probe.status === 401 || probe.status === 403).length;
+  const reachableRenderedRoutes = renderedRoutes.filter((route) => route.ok).length;
 
   for (const route of routes) {
     if (!route.ok) {
@@ -150,6 +235,8 @@ export function buildJune10PublicSiteSmokeReport({ baseUrl, routes, apiProbes })
   }
 
   const signup = findPath(routes, "/signup");
+  const renderedLogin = findPath(renderedRoutes, "/login");
+  const renderedSignup = findPath(renderedRoutes, "/signup");
   const accessPolicyProbe = findPath(apiProbes, "/api/auth/access-policy");
   const accessPolicy = parseJsonProbe(accessPolicyProbe);
 
@@ -164,6 +251,41 @@ export function buildJune10PublicSiteSmokeReport({ baseUrl, routes, apiProbes })
       "Public signup is disabled and no access-request channel is exposed by /api/auth/access-policy.",
       accessPolicyProbe.bodySnippet
     );
+  }
+
+  if (renderedBrowserRequired && renderedRoutes.length === 0) {
+    addBlocker(blockers, "rendered_access_posture", "Rendered login/signup browser smoke did not run.");
+  }
+
+  for (const renderedRoute of renderedRoutes) {
+    if (!renderedRoute.ok) {
+      addBlocker(
+        blockers,
+        "rendered_access_posture",
+        `${renderedRoute.path} did not render successfully in a browser.`,
+        renderedRoute.error ?? `status=${renderedRoute.status}`
+      );
+    }
+  }
+
+  if (
+    accessPolicyProbe?.status === 200 &&
+    accessPolicy?.publicSignupEnabled === false &&
+    hasAccessRequestChannel(accessPolicy) &&
+    renderedBrowserRequired
+  ) {
+    const renderedAccessVisible =
+      (renderedLogin?.ok && hasActionableAccessRequestLanguage(renderedLogin)) ||
+      (renderedSignup?.ok && hasActionableAccessRequestLanguage(renderedSignup));
+
+    if (!renderedAccessVisible) {
+      addBlocker(
+        blockers,
+        "rendered_access_posture",
+        "Public signup is disabled, /api/auth/access-policy exposes an access channel, but rendered login/signup pages do not show it.",
+        renderedLogin?.bodySnippet || renderedSignup?.bodySnippet || "No rendered body text."
+      );
+    }
   }
 
   if (!signup) {
@@ -205,12 +327,15 @@ export function buildJune10PublicSiteSmokeReport({ baseUrl, routes, apiProbes })
     summary: {
       routesChecked: routes.length,
       reachableRoutes,
+      renderedRoutesChecked: renderedRoutes.length,
+      reachableRenderedRoutes,
       apiProbesChecked: apiProbes.length,
       apiAuthGated,
       blockers: blockers.length,
       warnings: warnings.length
     },
     routes,
+    renderedRoutes,
     apiProbes,
     blockers,
     warnings,
@@ -221,7 +346,7 @@ export function buildJune10PublicSiteSmokeReport({ baseUrl, routes, apiProbes })
   };
 }
 
-export async function probeJune10PublicSite({ baseUrl = DEFAULT_BASE_URL, timeoutMs = 10000 } = {}) {
+export async function probeJune10PublicSite({ baseUrl = DEFAULT_BASE_URL, timeoutMs = 10000, renderBrowser = true } = {}) {
   const routes = [];
   for (const route of ROUTES) {
     routes.push(await fetchProbe(baseUrl, route, timeoutMs));
@@ -232,7 +357,15 @@ export async function probeJune10PublicSite({ baseUrl = DEFAULT_BASE_URL, timeou
     apiProbes.push(await fetchProbe(baseUrl, probe, timeoutMs));
   }
 
-  return buildJune10PublicSiteSmokeReport({ baseUrl: normalizeBaseUrl(baseUrl), routes, apiProbes });
+  const renderedRoutes = renderBrowser ? await renderRouteProbes(baseUrl, RENDERED_ROUTES, timeoutMs) : [];
+
+  return buildJune10PublicSiteSmokeReport({
+    baseUrl: normalizeBaseUrl(baseUrl),
+    routes,
+    apiProbes,
+    renderedRoutes,
+    renderedBrowserRequired: renderBrowser
+  });
 }
 
 function renderMarkdown(report) {
@@ -248,6 +381,8 @@ function renderMarkdown(report) {
     "",
     `- Routes checked: ${report.summary.routesChecked}`,
     `- Reachable routes: ${report.summary.reachableRoutes}`,
+    `- Rendered routes checked: ${report.summary.renderedRoutesChecked}`,
+    `- Reachable rendered routes: ${report.summary.reachableRenderedRoutes}`,
     `- API probes checked: ${report.summary.apiProbesChecked}`,
     `- Auth-gated API probes: ${report.summary.apiAuthGated}`,
     `- Blockers: ${report.summary.blockers}`,
@@ -261,6 +396,15 @@ function renderMarkdown(report) {
 
   for (const route of report.routes) {
     lines.push([route.path, route.status ?? "error", route.ok, (route.error ?? route.bodySnippet) || "-"].join(" | "));
+  }
+
+  lines.push("", "## Rendered Browser Probes", "", "| Path | Status | OK | Final URL | Evidence |", "|---|---:|---:|---|---|");
+  if (report.renderedRoutes.length === 0) {
+    lines.push("- | - | - | - | Not run");
+  } else {
+    for (const route of report.renderedRoutes) {
+      lines.push([route.path, route.status ?? "error", route.ok, route.finalUrl ?? "-", (route.error ?? route.bodySnippet) || "-"].join(" | "));
+    }
   }
 
   lines.push("", "## API Probes", "", "| Path | Status | OK | Evidence |", "|---|---:|---:|---|");
@@ -287,6 +431,7 @@ function parseArgs(argv) {
     timeoutMs: Number.parseInt(process.env.TF_PUBLIC_SITE_TIMEOUT_MS ?? "10000", 10),
     outJson: DEFAULT_OUT_JSON,
     outMd: DEFAULT_OUT_MD,
+    renderBrowser: true,
     write: true
   };
 
@@ -296,6 +441,7 @@ function parseArgs(argv) {
     else if (arg === "--timeout-ms") args.timeoutMs = Number.parseInt(argv[++i], 10);
     else if (arg === "--out-json") args.outJson = path.resolve(argv[++i]);
     else if (arg === "--out-md") args.outMd = path.resolve(argv[++i]);
+    else if (arg === "--skip-browser-render") args.renderBrowser = false;
     else if (arg === "--no-write") args.write = false;
   }
 
@@ -304,7 +450,11 @@ function parseArgs(argv) {
 
 export async function main(argv = process.argv.slice(2)) {
   const args = parseArgs(argv);
-  const report = await probeJune10PublicSite({ baseUrl: args.baseUrl, timeoutMs: args.timeoutMs });
+  const report = await probeJune10PublicSite({
+    baseUrl: args.baseUrl,
+    timeoutMs: args.timeoutMs,
+    renderBrowser: args.renderBrowser
+  });
 
   if (args.write) {
     fs.mkdirSync(path.dirname(args.outJson), { recursive: true });
