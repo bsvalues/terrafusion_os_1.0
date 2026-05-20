@@ -56,11 +56,16 @@ const ACTIVE_RUNTIME_ROOTS = [
 const ALLOWED_LEGACY_PATH_RE =
   /(^|\/)(Sync|Admin|Proof|HealthProof|RuntimeTruth|SourceLineage|PacsOps|FullCorpus|OwnerWsdor|LegacySource)[^/]*\.(cs|ts|tsx|js|jsx)$|(^|\/)(tests?|__tests__|evidence|docs|ARCHIVE|archive|QUARANTINE)(\/|$)/i;
 const INGESTION_SYNC_PATH_RE =
-  /(^|\/)(Sync|Admin|PacsOps|FullCorpus|OwnerWsdor|LegacySource)[^/]*\.(cs|ts|tsx|js|jsx)$/i;
-const PROOF_OR_TEST_PATH_RE = /(^|\/)(tests?|__tests__|evidence)(\/|$)|(^|\/)(Proof|HealthProof|RuntimeTruth|SourceLineage)[^/]*\.(cs|ts|tsx|js|jsx)$/i;
+  /(^|\/)[^/]*(Sync|Import|Bridge|PacsOps|FullCorpus|OwnerWsdor|LegacySource)[^/]*\.(cs|ts|tsx|js|jsx)$/i;
+const PROOF_OR_TEST_PATH_RE =
+  /(^|\/)(tests?|__tests__|evidence)(\/|$)|(^|\/)[^/]*(Proof|HealthProof|RuntimeTruth|SourceLineage|Debug|Monitoring|Demonstration|Readiness|Test)[^/]*\.(cs|ts|tsx|js|jsx)$/i;
 const ARCHIVE_OR_QUARANTINE_PATH_RE = /(^|\/)(ARCHIVE|archive|QUARANTINE)(\/|$)/i;
 const FRONTEND_PATH_RE = /^frontend\//i;
 const COMMENT_LINE_RE = /^\s*(\/\/|\/\*|\*|#|<!--)/;
+const ADMIN_SYNC_ROUTE_LINE_RE = /["']\/?api\/(?:admin|sync|proof|runtime-truth|healthproof)[^"']*["']/i;
+const ROUTE_CONTRACT_LINE_RE = /\[(?:Route|HttpGet|HttpPost|HttpPut|HttpDelete)\s*\(|app\.Map(?:Get|Post|Put|Delete)\s*\(/;
+const DIRECT_LEGACY_DEPENDENCY_LINE_RE =
+  /\b(SqlConnection|OdbcConnection|TerraFusion\.Core\.PACS|IPacsAdapter|PacsSqlAdapter|PacsEfAdapter|ConnectionStrings:PacsConnection|pacs_oltp|tf-mssql)\b/i;
 const ACTIVE_LEGACY_TERM_RE = /\b(PACS|Harris|pacs_oltp|PACS_Training|Pacmls|tf-mssql|SqlConnection|OdbcConnection)\b/i;
 const TEXT_FILE_RE = /\.(cs|ts|tsx|js|jsx|mjs|json)$/i;
 const SAFE_RUST_ALLOWED_CLAIM_RE = /rust integration seams exist;\s*runtime execution is not proven\.?/i;
@@ -183,9 +188,12 @@ function classifyLegacyReference(relativePath, line) {
   if (PROOF_OR_TEST_PATH_RE.test(relativePath)) return "proof_or_test_only";
   if (INGESTION_SYNC_PATH_RE.test(relativePath)) return "ingestion_sync_allowed";
   if (COMMENT_LINE_RE.test(trimmed)) return "docs_comments_labels";
+  if (ADMIN_SYNC_ROUTE_LINE_RE.test(trimmed)) return "ingestion_sync_allowed";
   if (FRONTEND_PATH_RE.test(relativePath)) return "user_facing_terminology";
+  if (DIRECT_LEGACY_DEPENDENCY_LINE_RE.test(trimmed)) return "active_runtime_dependency";
+  if (ROUTE_CONTRACT_LINE_RE.test(trimmed)) return "active_runtime_dependency";
 
-  return "active_runtime_dependency";
+  return "user_facing_terminology";
 }
 
 function activeRuntimeFiles(root) {

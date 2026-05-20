@@ -260,7 +260,7 @@ test("legacy leak scanner blocks product runtime references but allows sync/admi
   writeFile(
     root,
     "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
-    "public class CostForgeController { const string leak = \"Harris PACS runtime route\"; }"
+    "using TerraFusion.Core.PACS; public class CostForgeController { }"
   );
   writeFile(
     root,
@@ -320,6 +320,52 @@ test("legacy boundary classifier separates active dependency from allowed catego
   assert.equal(boundary.categoryCounts.user_facing_terminology, 1);
   assert.equal(boundary.categoryCounts.archived_or_quarantined, 1);
   assert.equal(boundary.blockingFindings.every((finding) => finding.category === "active_runtime_dependency"), true);
+});
+
+test("legacy boundary classifier preserves direct dependencies while allowing sync and label-only references", () => {
+  const root = makeTempRepo();
+  writeFile(
+    root,
+    "backend/src/TerraFusion.API/Program.cs",
+    [
+      "using TerraFusion.Core.PACS;",
+      "svc.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.Core.PACS.PacsSqlAdapter>();",
+      "app.MapPost(\"/api/admin/pacs/seed\", () => Results.Accepted());",
+      "return Results.Accepted(\"/api/admin/pacs/seed/status\", new { message = \"PACS seed started\" });"
+    ].join("\n")
+  );
+  writeFile(
+    root,
+    "backend/src/TerraFusion.API/Services/PacsToTerraFusionSyncService.cs",
+    "public class PacsToTerraFusionSyncService { private const string Source = \"PACS import lane\"; }"
+  );
+  writeFile(
+    root,
+    "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
+    [
+      "public class CostForgeController {",
+      "  object Describe() => new { description = \"Check PACS source quality issue\" };",
+      "}"
+    ].join("\n")
+  );
+  writeFile(
+    root,
+    "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
+    "[HttpGet(\"pacs-counts\")] public object Counts() => \"pacs proof\";"
+  );
+
+  const boundary = inspectRuntimeLegacyBoundary({ repoRoot: root });
+
+  assert.equal(boundary.rawCount, 7);
+  assert.equal(boundary.blockingActiveRuntimeDependencyCount, 2);
+  assert.equal(boundary.categoryCounts.active_runtime_dependency, 2);
+  assert.equal(boundary.categoryCounts.ingestion_sync_allowed, 3);
+  assert.equal(boundary.categoryCounts.user_facing_terminology, 1);
+  assert.equal(boundary.categoryCounts.proof_or_test_only, 1);
+  assert.deepEqual(
+    boundary.blockingFindings.map((finding) => finding.lineNumber),
+    [1, 2]
+  );
 });
 
 test("launch gate blocks only active runtime dependency legacy findings", () => {
