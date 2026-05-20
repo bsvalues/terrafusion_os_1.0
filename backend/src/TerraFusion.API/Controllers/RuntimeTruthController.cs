@@ -30,7 +30,9 @@ public sealed class RuntimeTruthController : ControllerBase
     }
 
     [HttpGet("db-identity")]
-    public async Task<IActionResult> GetDbIdentity(CancellationToken ct = default)
+    public async Task<IActionResult> GetDbIdentity(
+        [FromQuery] bool includeCounts = false,
+        CancellationToken ct = default)
     {
         var provider = _db.Database.ProviderName ?? "unknown";
         var (database, dataSource, connectionWarning) = ReadConnectionIdentity();
@@ -84,23 +86,31 @@ public sealed class RuntimeTruthController : ControllerBase
         var migrationState = await ReadMigrationStateAsync(ct);
         warnings.AddRange(migrationState.Warnings);
 
-        var rowCounts = new RuntimeTruthRowCounts(
-            Counties: await SafeCountAsync(() => _db.Counties.CountAsync(ct), warnings, "Counties"),
-            Properties: await SafeCountAsync(() => _db.Properties.CountAsync(ct), warnings, "Properties"),
-            ComparableSales: await SafeCountAsync(() => _db.ComparableSales.CountAsync(ct), warnings, "ComparableSales"),
-            TfParcels: await SafeCountAsync(() => _db.TfParcels.CountAsync(ct), warnings, "canonical_tf.tf_parcel"),
-            TfSales: await SafeCountAsync(() => _db.TfSales.CountAsync(ct), warnings, "canonical_tf.tf_sale"),
-            CanonicalSaleQualifications: await SafeCountAsync(
-                () => _db.CanonicalSaleQualifications.CountAsync(ct),
-                warnings,
-                "CanonicalSaleQualifications"));
+        RuntimeTruthRowCounts? rowCounts = null;
+        if (includeCounts)
+        {
+            rowCounts = new RuntimeTruthRowCounts(
+                Counties: await SafeCountAsync(() => _db.Counties.CountAsync(ct), warnings, "Counties"),
+                Properties: await SafeCountAsync(() => _db.Properties.CountAsync(ct), warnings, "Properties"),
+                ComparableSales: await SafeCountAsync(() => _db.ComparableSales.CountAsync(ct), warnings, "ComparableSales"),
+                TfParcels: await SafeCountAsync(() => _db.TfParcels.CountAsync(ct), warnings, "canonical_tf.tf_parcel"),
+                TfSales: await SafeCountAsync(() => _db.TfSales.CountAsync(ct), warnings, "canonical_tf.tf_sale"),
+                CanonicalSaleQualifications: await SafeCountAsync(
+                    () => _db.CanonicalSaleQualifications.CountAsync(ct),
+                    warnings,
+                    "CanonicalSaleQualifications"));
+        }
+        else
+        {
+            warnings.Add("Row counts skipped for launch-control liveness. Re-run with includeCounts=true for heavyweight database-count evidence.");
+        }
 
         var isBentonParcelCountExpected =
             expectedBentonParcelCount.HasValue &&
-            rowCounts.TfParcels.HasValue &&
+            rowCounts?.TfParcels.HasValue == true &&
             rowCounts.TfParcels.Value == expectedBentonParcelCount.Value;
 
-        if (expectedBentonParcelCount.HasValue && rowCounts.TfParcels.HasValue && !isBentonParcelCountExpected)
+        if (expectedBentonParcelCount.HasValue && rowCounts?.TfParcels.HasValue == true && !isBentonParcelCountExpected)
         {
             blockers.Add(
                 $"Runtime canonical_tf.tf_parcel count {rowCounts.TfParcels.Value} does not match configured Benton parcel count {expectedBentonParcelCount.Value}.");
@@ -354,7 +364,7 @@ public sealed record RuntimeDbIdentityResponse(
     int? ExpectedBentonParcelCount,
     bool IsBentonParcelCountExpected,
     RuntimeTruthMigrationState MigrationState,
-    RuntimeTruthRowCounts RowCounts,
+    RuntimeTruthRowCounts? RowCounts,
     bool Passed,
     IReadOnlyList<string> Blockers,
     IReadOnlyList<string> Warnings);

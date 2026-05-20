@@ -34,6 +34,7 @@ public sealed class CountyRowsController : ControllerBase
         string countyToken,
         [FromQuery] int limit = 50,
         [FromQuery] int offset = 0,
+        [FromQuery] bool includeTotal = false,
         CancellationToken ct = default)
     {
         var county = await ResolveCountyAsync(countyToken, ct);
@@ -54,7 +55,7 @@ public sealed class CountyRowsController : ControllerBase
         if (hasWaInitialSeedRows)
         {
             var seedParcels = activeParcels.Where(p => p.ConversionEra == "WA_INITIAL_SEED");
-            var seedTotal = await seedParcels.CountAsync(ct);
+            int? seedTotal = includeTotal ? await seedParcels.CountAsync(ct) : null;
             var seedRows = await seedParcels
                 .OrderBy(p => p.ParcelNumber)
                 .Skip(safeOffset)
@@ -88,6 +89,7 @@ public sealed class CountyRowsController : ControllerBase
                     source = "wa_initial_seed_deduped_import",
                 },
                 total = seedTotal,
+                totalKnown = includeTotal,
                 count = seedRows.Count,
                 rows = seedRows,
             });
@@ -96,7 +98,7 @@ public sealed class CountyRowsController : ControllerBase
         var distinctParcelNumbers = activeParcels
             .Select(p => p.ParcelNumber!)
             .Distinct();
-        var total = await distinctParcelNumbers.CountAsync(ct);
+        int? total = includeTotal ? await distinctParcelNumbers.CountAsync(ct) : null;
         var pageParcelNumbers = await distinctParcelNumbers
             .OrderBy(parcelNumber => parcelNumber)
             .Skip(safeOffset)
@@ -140,6 +142,7 @@ public sealed class CountyRowsController : ControllerBase
                 source = "canonical_tf_runtime_query",
             },
             total,
+            totalKnown = includeTotal,
             count = rows.Count,
             rows,
         });

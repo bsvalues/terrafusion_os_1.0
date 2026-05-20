@@ -2496,15 +2496,15 @@ builder.Services.AddEnterpriseAgentCoordination();
 
 // 🏗️ Register Elite Development Pipeline System
 // Military-grade cross-workspace build coordination across 38 workspaces
-// Temporarily disabled to stabilize local runtime and verify endpoints.
-// RE-ENABLED: Required by DevelopmentPipelineController
-var disableDevPipeline = Environment.GetEnvironmentVariable("TF_DISABLE_DEV_PIPELINE");
-var isDevPipelineDisabled = string.Equals(disableDevPipeline, "1", StringComparison.OrdinalIgnoreCase)
-    || string.Equals(disableDevPipeline, "true", StringComparison.OrdinalIgnoreCase);
-if (!isDevPipelineDisabled)
-{
-  builder.Services.AddDevelopmentPipeline();
-}
+// The controller service is registered by default; the expensive background
+// worker is opt-in so runtime liveness probes are not blocked by workspace
+// build orchestration.
+builder.Services.AddDevelopmentPipeline(
+  enableBackgroundWorker: IsFeatureEnabled(
+    builder.Configuration,
+    "DevelopmentPipeline:BackgroundWorker:Enabled",
+    "TF_ENABLE_DEVELOPMENT_PIPELINE_WORKER",
+    false));
 
 // Register TIER 5+ Multi-County Federation System
 builder.Services.AddScoped<IMultiCountyFederationService, MultiCountyFederationService>();

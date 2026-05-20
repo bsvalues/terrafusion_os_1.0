@@ -12,14 +12,19 @@ public static class DevelopmentPipelineExtensions
     /// <summary>
     /// Register Development Pipeline services with military-grade configuration
     /// </summary>
-    public static IServiceCollection AddDevelopmentPipeline(this IServiceCollection services)
+    public static IServiceCollection AddDevelopmentPipeline(
+        this IServiceCollection services,
+        bool enableBackgroundWorker = false)
     {
         // Register Development Pipeline Service as singleton for persistent state
         services.AddSingleton<DevelopmentPipelineService>();
 
-        // Register as hosted service for background execution
-        services.AddHostedService<DevelopmentPipelineService>(provider =>
-            provider.GetRequiredService<DevelopmentPipelineService>());
+        if (enableBackgroundWorker)
+        {
+            // Register as hosted service for explicit background execution only.
+            services.AddHostedService<DevelopmentPipelineService>(provider =>
+                provider.GetRequiredService<DevelopmentPipelineService>());
+        }
 
         // Configure pipeline-specific options
         services.Configure<DevelopmentPipelineOptions>(options =>

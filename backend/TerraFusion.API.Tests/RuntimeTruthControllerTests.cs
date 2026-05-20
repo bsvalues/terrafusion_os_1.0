@@ -89,11 +89,27 @@ public sealed class RuntimeTruthControllerTests : IDisposable
     }
 
     [Fact]
-    public async SystemTask GetDbIdentity_ReturnsRuntimeProviderAndRowCounts()
+    public async SystemTask GetDbIdentity_DefaultSkipsHeavyRowCountsForLaunchSmoke()
     {
         var sut = CreateController();
 
         var result = await sut.GetDbIdentity();
+
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var json = JsonSerializer.Serialize(ok.Value);
+
+        Assert.Contains("Microsoft.EntityFrameworkCore.InMemory", json);
+        Assert.Contains("\"ContentRootPath\"", json);
+        Assert.Contains("\"RowCounts\":null", json);
+        Assert.Contains("Row counts skipped", json);
+    }
+
+    [Fact]
+    public async SystemTask GetDbIdentity_WithIncludeCountsReturnsRuntimeProviderAndRowCounts()
+    {
+        var sut = CreateController();
+
+        var result = await sut.GetDbIdentity(includeCounts: true);
 
         var ok = Assert.IsType<OkObjectResult>(result);
         var json = JsonSerializer.Serialize(ok.Value);
@@ -111,7 +127,7 @@ public sealed class RuntimeTruthControllerTests : IDisposable
     {
         var sut = CreateController();
 
-        var result = await sut.GetDbIdentity();
+        var result = await sut.GetDbIdentity(includeCounts: true);
 
         var ok = Assert.IsType<OkObjectResult>(result);
         var json = JsonSerializer.Serialize(ok.Value);

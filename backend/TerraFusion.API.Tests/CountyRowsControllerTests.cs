@@ -100,6 +100,32 @@ public sealed class CountyRowsControllerTests : IDisposable
     }
 
     [Fact]
+    public async SystemTask GetParcels_DefaultDoesNotRequireFullTotalForLaunchSmoke()
+    {
+        var result = await _sut.GetParcels("pacific", limit: 1);
+
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var text = System.Text.Json.JsonSerializer.Serialize(ok.Value);
+
+        Assert.Contains("\"total\":null", text);
+        Assert.Contains("\"totalKnown\":false", text);
+        Assert.Contains("\"count\":1", text);
+    }
+
+    [Fact]
+    public async SystemTask GetParcels_WithIncludeTotalReturnsFullTotal()
+    {
+        var result = await _sut.GetParcels("pacific", limit: 1, includeTotal: true);
+
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var text = System.Text.Json.JsonSerializer.Serialize(ok.Value);
+
+        Assert.Contains("\"total\":1", text);
+        Assert.Contains("\"totalKnown\":true", text);
+        Assert.Contains("\"count\":1", text);
+    }
+
+    [Fact]
     public async SystemTask GetSales_ReturnsSelectedCountyRowsOnly()
     {
         var result = await _sut.GetSales("benton");

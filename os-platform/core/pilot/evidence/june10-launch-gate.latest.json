@@ -1,26 +1,26 @@
 {
-  "generatedAtUtc": "2026-05-20T00:35:17.108Z",
+  "generatedAtUtc": "2026-05-20T01:45:07.025Z",
   "gate": "june10_launch_gate",
   "apiBaseUrl": "http://localhost:5046",
   "publicBaseUrl": "https://terrafusionmarket.com",
   "passed": false,
   "summary": {
-    "apiHealthLive": false,
-    "endpointSmokePassed": false,
+    "apiHealthLive": true,
+    "endpointSmokePassed": true,
     "publicAccessPostureExplicit": false,
     "productLoadLedgerPassed": false,
     "rustRuntimeProven": false,
     "rustClaimsSuppressed": false,
     "activeRuntimeLegacyLeaks": 581,
-    "blockers": 6,
+    "blockers": 4,
     "warnings": 0
   },
   "checks": {
     "endpointSmoke": {
-      "passed": false,
-      "failedRuntimeProbes": 4,
-      "contractMismatches": 4,
-      "blockers": 5
+      "passed": true,
+      "failedRuntimeProbes": 0,
+      "contractMismatches": 0,
+      "blockers": 0
     },
     "publicSiteSmoke": {
       "passed": false,
@@ -4697,16 +4697,6 @@
   },
   "blockers": [
     {
-      "source": "api_health",
-      "message": "API health is not live now. Stale readiness evidence is not accepted.",
-      "evidence": "fetch failed"
-    },
-    {
-      "source": "endpoint_smoke",
-      "message": "Endpoint contract smoke did not pass from live probes.",
-      "evidence": "4 failed probe(s), 4 contract mismatch(es)"
-    },
-    {
       "source": "public_access_posture",
       "message": "Public access posture is not explicit and usable for launch-control evidence.",
       "evidence": "1 blocker(s)"
@@ -4729,8 +4719,6 @@
   ],
   "warnings": [],
   "requiredFixes": [
-    "API health is not live now. Stale readiness evidence is not accepted.",
-    "Endpoint contract smoke did not pass from live probes.",
     "Public access posture is not explicit and usable for launch-control evidence.",
     "Product-load lineage is not proven by the TerraFusion DB ledger.",
     "Rust runtime execution is not proven and Rust launch claims are not explicitly suppressed.",

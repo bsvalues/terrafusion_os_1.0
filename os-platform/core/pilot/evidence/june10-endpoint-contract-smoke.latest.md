@@ -1,6 +1,6 @@
 # June 10 Endpoint Contract Smoke
 
-Generated: 2026-05-19T22:01:32.192Z
+Generated: 2026-05-20T01:44:16.712Z
 
 API base URL: http://localhost:5046
 Passed: true
@@ -24,7 +24,7 @@ Passed: true
 
 | ID | Method | Path | Status | Shape OK | Evidence |
 |---|---|---|---:|---:|---|
-health | GET | /health | 200 | true | {"status":"Healthy","timestamp":"2026-05-19T22:01:30.7374712Z","environment":"Development","version":"1.0.0","service":"TerraFusion OS API - Basic Mode","gitSha":"unknown"}
+health | GET | /health | 200 | true | {"status":"Healthy","timestamp":"2026-05-20T01:44:16.3820171Z","environment":"Development","version":"1.0.0","service":"TerraFusion OS API - Basic Mode","gitSha":"unknown"}
 runtime_db_identity | GET | /api/runtime/truth/db-identity | 200 | true | {"apiBaseUrl":"http://localhost:5046","environment":"Development","contentRootPath":"C:\\Users\\bsval\\.config\\superpowers\\worktrees\\terrafusion_os_1.0\\june10-production-readiness-audit-gate\\backend\\src\\TerraFusion.API\\bin\\Debug\\n
 benton_parcels | GET | /api/counties/benton/parcels?limit=5 | 200 | true | {"county":"Benton County","countyId":"19190019-1919-1919-1919-191919191919","rowType":"parcels","runtimeTable":"canonical_tf.tf_parcel","semantics":{"countyScoped":true,"activeOnly":true,"duplicateParcelVersionsCollapsed":true,"currentParce
 access_policy | GET | /api/auth/access-policy | 200 | true | {"signupMode":"provisioned_access_only","publicSignupEnabled":false,"message":"TerraFusion access is provisioned by an administrator. Public self-signup is disabled."}
