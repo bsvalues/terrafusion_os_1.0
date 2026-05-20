@@ -1,42 +1,49 @@
 # June 10 Endpoint Contract Smoke
 
-Generated: 2026-05-20T16:21:13.111Z
+Generated: 2026-05-20T21:05:39.501Z
 
-API base URL: http://localhost:5046
-Passed: true
+API base URL: https://terrafusionmarket.com
+Passed: false
 
 ## Summary
 
 - Required probes: 4
 - Runtime probes: 4
-- Failed runtime probes: 0
-- Contract mismatches: 0
-- Blockers: 0
+- Failed runtime probes: 1
+- Contract mismatches: 1
+- Blockers: 2
 
 ## Auth
 
 - Development token attempted: true
-- Development token acquired: true
-- Development token status: 200
-- Development token redacted: true
+- Development token acquired: false
+- Development token status: 401
+- Development token redacted: false
+- Provisioned login attempted: true
+- Provisioned login configured: true
+- Provisioned login acquired: true
+- Provisioned login status: 200
+- Provisioned login token redacted: true
+- Provisioned login credentials redacted: true
 
 ## Runtime Probes
 
 | ID | Method | Path | Status | Shape OK | Evidence |
 |---|---|---|---:|---:|---|
-health | GET | /health | 200 | true | {"status":"Healthy","timestamp":"2026-05-20T16:21:13.0282847Z","environment":"Development","version":"1.0.0","service":"TerraFusion OS API - Basic Mode","gitSha":"unknown"}
-runtime_db_identity | GET | /api/runtime/truth/db-identity | 200 | true | {"apiBaseUrl":"http://localhost:5046","environment":"Development","contentRootPath":"C:\\Users\\bsval\\.config\\superpowers\\worktrees\\terrafusion_os_1.0\\june10-production-readiness-audit-gate\\backend\\src\\TerraFusion.API\\bin\\Debug\\n
-benton_parcels | GET | /api/counties/benton/parcels?limit=5 | 200 | true | {"county":"Benton County","countyId":"19190019-1919-1919-1919-191919191919","rowType":"parcels","runtimeTable":"canonical_tf.tf_parcel","semantics":{"countyScoped":true,"activeOnly":true,"duplicateParcelVersionsCollapsed":true,"currentParce
+health | GET | /health | 200 | true | {"status":"Healthy","timestamp":"2026-05-20T21:05:38.1506219Z","environment":"Production","version":"1.0.0","service":"TerraFusion OS API - Basic Mode","gitSha":"b8b7a2adaf16af42971b3af6534a8bfedd162891"}
+runtime_db_identity | GET | /api/runtime/truth/db-identity | 200 | true | {"apiBaseUrl":"http://terrafusionmarket.com","environment":"Production","contentRootPath":"/app","provider":"Microsoft.EntityFrameworkCore.Sqlite","connectionStringName":"DefaultConnection","serverRedacted":"configured-host-redacted","datab
+benton_parcels | GET | /api/counties/benton/parcels?limit=5 | 500 | false | {"error":"Internal server error","correlationId":"tf-cc792cdb9e1a4e8283bd4e6cd211d175","message":"An unexpected error occurred. Reference the correlationId when reporting."}
 access_policy | GET | /api/auth/access-policy | 200 | true | {"signupMode":"provisioned_access_only","publicSignupEnabled":false,"accessRequestUrl":"mailto:support@terrafusionmarket.com?subject=TerraFusion%20OS%20Provisioned%20Access%20Request","supportEmail":"support@terrafusionmarket.com","message"
 
 ## Contract Mismatches
 
-- None
+- **benton_parcels** /api/counties/benton/parcels?limit=5: expected status 200, got 500
 
 ## Blockers
 
-- None
+- **runtime_probe**: GET /api/counties/benton/parcels?limit=5 did not return 200. (status=500)
+- **contract_shape**: One or more endpoint responses do not match the June 10 launch-control contract. (1 mismatch(es))
 
 ## Interpretation
 
-Endpoint contract smoke passed for the required June 10 runtime API probes.
+Endpoint contract smoke is not passing; production readiness cannot claim all endpoints match contracts.

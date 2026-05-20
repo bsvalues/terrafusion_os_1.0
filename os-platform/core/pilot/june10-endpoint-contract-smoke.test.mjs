@@ -142,6 +142,92 @@ test("uses a development auth token for protected runtime endpoint probes withou
   }
 });
 
+test("uses provisioned production login for protected runtime endpoint probes without writing credentials or token to evidence", async () => {
+  const email = "operator@example.test";
+  const password = "fixture-password-that-must-not-be-written";
+  const token = "production-token-that-must-not-be-written";
+  const protectedPaths = new Set([
+    "/api/runtime/truth/db-identity",
+    "/api/counties/benton/parcels?limit=5"
+  ]);
+  const server = http.createServer((req, res) => {
+    res.setHeader("content-type", "application/json");
+
+    if (req.url === "/api/auth/dev-token") {
+      res.statusCode = 401;
+      res.end('{"error":"dev token unavailable"}');
+      return;
+    }
+
+    if (req.url === "/api/auth/login" && req.method === "POST") {
+      let body = "";
+      req.on("data", (chunk) => {
+        body += chunk;
+      });
+      req.on("end", () => {
+        const payload = JSON.parse(body || "{}");
+        if (payload.email !== email || payload.password !== password) {
+          res.statusCode = 401;
+          res.end('{"error":"invalid credentials"}');
+          return;
+        }
+        res.end(JSON.stringify({ token, email, roles: ["Administrator"] }));
+      });
+      return;
+    }
+
+    if (protectedPaths.has(req.url) && req.headers.authorization !== `Bearer ${token}`) {
+      res.statusCode = 401;
+      res.end('{"error":"unauthorized"}');
+      return;
+    }
+
+    if (req.url === "/health") {
+      res.end('{"status":"ok"}');
+      return;
+    }
+    if (req.url === "/api/runtime/truth/db-identity") {
+      res.end('{"passed":true,"identity":{"database":"terrafusion","provider":"Npgsql.EntityFrameworkCore.PostgreSQL"}}');
+      return;
+    }
+    if (req.url === "/api/counties/benton/parcels?limit=5") {
+      res.end('{"county":"Benton","total":2,"rows":[{"parcelId":"1001","county":"Benton"},{"parcelId":"1002","county":"Benton"}]}');
+      return;
+    }
+    if (req.url === "/api/auth/access-policy") {
+      res.end('{"signupMode":"provisioned_access_only","publicSignupEnabled":false,"accessRequestUrl":"/request-access"}');
+      return;
+    }
+
+    res.statusCode = 404;
+    res.end('{"error":"not found"}');
+  });
+  server.keepAliveTimeout = 1;
+  server.headersTimeout = 2000;
+
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const { port } = server.address();
+
+  try {
+    const report = await probeJune10EndpointContracts({
+      apiBaseUrl: `http://127.0.0.1:${port}`,
+      authEmail: email,
+      authPassword: password
+    });
+
+    const serialized = JSON.stringify(report);
+    assert.equal(report.passed, true);
+    assert.equal(report.auth.developmentToken.acquired, false);
+    assert.equal(report.auth.provisionedLogin.acquired, true);
+    assert.equal(report.summary.failedRuntimeProbes, 0);
+    assert.equal(serialized.includes(token), false);
+    assert.equal(serialized.includes(password), false);
+  } finally {
+    server.closeAllConnections?.();
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
 test("probes an HTTP fixture and writes endpoint contract evidence", async () => {
   const server = http.createServer((req, res) => {
     res.setHeader("content-type", "application/json");

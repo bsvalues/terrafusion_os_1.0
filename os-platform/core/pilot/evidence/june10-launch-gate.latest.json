@@ -1,13 +1,13 @@
 {
-  "generatedAtUtc": "2026-05-20T19:01:24.576Z",
+  "generatedAtUtc": "2026-05-20T21:12:19.228Z",
   "gate": "june10_launch_gate",
-  "apiBaseUrl": "http://localhost:5046",
+  "apiBaseUrl": "https://terrafusionmarket.com",
   "publicBaseUrl": "https://terrafusionmarket.com",
   "passed": false,
   "summary": {
     "apiHealthLive": true,
-    "endpointSmokePassed": true,
-    "publicAccessPostureExplicit": false,
+    "endpointSmokePassed": false,
+    "publicAccessPostureExplicit": true,
     "productLoadLedgerPassed": true,
     "rustRuntimeProven": false,
     "rustClaimsSuppressed": true,
@@ -18,14 +18,14 @@
   },
   "checks": {
     "endpointSmoke": {
-      "passed": true,
-      "failedRuntimeProbes": 0,
-      "contractMismatches": 0,
-      "blockers": 0
+      "passed": false,
+      "failedRuntimeProbes": 1,
+      "contractMismatches": 1,
+      "blockers": 2
     },
     "publicSiteSmoke": {
-      "passed": false,
-      "blockers": 1,
+      "passed": true,
+      "blockers": 0,
       "warnings": 1
     },
     "productLoadLedger": {
@@ -17777,9 +17777,9 @@
   },
   "blockers": [
     {
-      "source": "public_access_posture",
-      "message": "Public access posture is not explicit and usable for launch-control evidence.",
-      "evidence": "1 blocker(s)"
+      "source": "endpoint_smoke",
+      "message": "Endpoint contract smoke did not pass from live probes.",
+      "evidence": "1 failed probe(s), 1 contract mismatch(es)"
     }
   ],
   "warnings": [
@@ -17789,8 +17789,6 @@
       "evidence": null
     }
   ],
-  "requiredFixes": [
-    "Public access posture is not explicit and usable for launch-control evidence."
-  ],
+  "requiredFixes": ["Endpoint contract smoke did not pass from live probes."],
   "interpretation": "June 10 launch gate is red. Production approval must not rely on stale evidence, unproven lineage, unsuppressed Rust claims, or active runtime legacy leaks."
 }

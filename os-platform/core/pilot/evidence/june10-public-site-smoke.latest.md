@@ -1,9 +1,9 @@
 # June 10 Public Site Smoke
 
-Generated: 2026-05-20T16:21:24.707Z
+Generated: 2026-05-20T21:01:27.467Z
 
 Base URL: https://terrafusionmarket.com
-Passed: false
+Passed: true
 
 ## Summary
 
@@ -11,7 +11,7 @@ Passed: false
 - Reachable routes: 4
 - API probes checked: 2
 - Auth-gated API probes: 1
-- Blockers: 1
+- Blockers: 0
 - Warnings: 1
 
 ## Route Probes
@@ -28,11 +28,11 @@ Passed: false
 | Path | Status | OK | Evidence |
 |---|---:|---:|---|
 /api/health | 401 | false | -
-/api/auth/access-policy | 200 | true | {"signupMode":"provisioned_access_only","publicSignupEnabled":false,"message":"TerraFusion access is provisioned by an administrator. Public self-signup is disabled."}
+/api/auth/access-policy | 200 | true | {"signupMode":"provisioned_access_only","publicSignupEnabled":false,"accessRequestUrl":"mailto:support@terrafusionmarket.com?subject=TerraFusion%20OS%20Provisioned%20Access%20Request","supportEmail":"support@terrafusionmarket.com","message"
 
 ## Blockers
 
-- **access_policy**: Public signup is disabled and no access-request channel is exposed by /api/auth/access-policy. ({"signupMode":"provisioned_access_only","publicSignupEnabled":false,"message":"TerraFusion access is provisioned by an administrator. Public self-signup is disabled."})
+- None
 
 ## Warnings
 
@@ -40,4 +40,4 @@ Passed: false
 
 ## Interpretation
 
-Public site is not production-usable as a public entry point until blockers clear.
+Public site smoke passed for launch-control evidence.

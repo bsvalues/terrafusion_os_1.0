@@ -1,13 +1,13 @@
 {
-  "generatedAtUtc": "2026-05-20T16:21:24.707Z",
+  "generatedAtUtc": "2026-05-20T21:01:27.467Z",
   "baseUrl": "https://terrafusionmarket.com",
-  "passed": false,
+  "passed": true,
   "summary": {
     "routesChecked": 4,
     "reachableRoutes": 4,
     "apiProbesChecked": 2,
     "apiAuthGated": 1,
-    "blockers": 1,
+    "blockers": 0,
     "warnings": 1
   },
   "routes": [
@@ -68,19 +68,13 @@
       "url": "https://terrafusionmarket.com/api/auth/access-policy",
       "status": 200,
       "contentType": "application/json; charset=utf-8",
-      "bodyText": "{\"signupMode\":\"provisioned_access_only\",\"publicSignupEnabled\":false,\"message\":\"TerraFusion access is provisioned by an administrator. Public self-signup is disabled.\"}",
-      "bodySnippet": "{\"signupMode\":\"provisioned_access_only\",\"publicSignupEnabled\":false,\"message\":\"TerraFusion access is provisioned by an administrator. Public self-signup is disabled.\"}",
+      "bodyText": "{\"signupMode\":\"provisioned_access_only\",\"publicSignupEnabled\":false,\"accessRequestUrl\":\"mailto:support@terrafusionmarket.com?subject=TerraFusion%20OS%20Provisioned%20Access%20Request\",\"supportEmail\":\"support@terrafusionmarket.com\",\"message\":\"TerraFusion access is provisioned by an administrator. Public self-signup is disabled. Request provisioned access from support@terrafusionmarket.com.\"}",
+      "bodySnippet": "{\"signupMode\":\"provisioned_access_only\",\"publicSignupEnabled\":false,\"accessRequestUrl\":\"mailto:support@terrafusionmarket.com?subject=TerraFusion%20OS%20Provisioned%20Access%20Request\",\"supportEmail\":\"support@terrafusionmarket.com\",\"message\"",
       "ok": true,
       "error": null
     }
   ],
-  "blockers": [
-    {
-      "source": "access_policy",
-      "message": "Public signup is disabled and no access-request channel is exposed by /api/auth/access-policy.",
-      "evidence": "{\"signupMode\":\"provisioned_access_only\",\"publicSignupEnabled\":false,\"message\":\"TerraFusion access is provisioned by an administrator. Public self-signup is disabled.\"}"
-    }
-  ],
+  "blockers": [],
   "warnings": [
     {
       "source": "api_auth",
@@ -88,5 +82,5 @@
       "evidence": "status=401"
     }
   ],
-  "interpretation": "Public site is not production-usable as a public entry point until blockers clear."
+  "interpretation": "Public site smoke passed for launch-control evidence."
 }

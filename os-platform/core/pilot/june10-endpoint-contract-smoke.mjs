@@ -27,6 +27,7 @@ const DEFAULT_OUT_MD = path.join(
   "june10-endpoint-contract-smoke.latest.md"
 );
 const DEVELOPMENT_TOKEN_PATH = "/api/auth/dev-token";
+const PROVISIONED_LOGIN_PATH = "/api/auth/login";
 
 const REQUIRED_PROBES = [
   {
@@ -205,6 +206,20 @@ function redactedDevelopmentTokenEvidence(auth) {
   };
 }
 
+function redactedProvisionedLoginEvidence(auth) {
+  return {
+    attempted: auth.attempted,
+    path: PROVISIONED_LOGIN_PATH,
+    status: auth.status,
+    contentType: auth.contentType,
+    configured: auth.configured,
+    acquired: auth.acquired,
+    tokenRedacted: auth.acquired,
+    credentialsRedacted: auth.configured,
+    error: auth.error
+  };
+}
+
 async function fetchDevelopmentToken(apiBaseUrl, timeoutMs) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -237,6 +252,66 @@ async function fetchDevelopmentToken(apiBaseUrl, timeoutMs) {
   } catch (error) {
     return {
       attempted: true,
+      status: null,
+      contentType: null,
+      acquired: false,
+      token: null,
+      error: error.name === "AbortError" ? `Timed out after ${timeoutMs}ms` : error.message
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function fetchProvisionedLoginToken(apiBaseUrl, timeoutMs, { authEmail = null, authPassword = null } = {}) {
+  const configured = Boolean(authEmail && authPassword);
+  if (!configured) {
+    return {
+      attempted: false,
+      configured,
+      status: null,
+      contentType: null,
+      acquired: false,
+      token: null,
+      error: null
+    };
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  const url = `${normalizeBaseUrl(apiBaseUrl)}${PROVISIONED_LOGIN_PATH}`;
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      redirect: "follow",
+      signal: controller.signal,
+      headers: {
+        accept: "application/json,text/plain,*/*",
+        "content-type": "application/json",
+        "user-agent": "TerraFusion-June10-EndpointContractSmoke/1.0",
+        connection: "close"
+      },
+      body: JSON.stringify({ email: authEmail, password: authPassword })
+    });
+    const contentType = response.headers.get("content-type") ?? "";
+    const bodyText = await response.text();
+    const payload = parseJson(bodyText);
+    const token = payload?.token ?? payload?.Token ?? payload?.accessToken ?? payload?.jwt ?? null;
+
+    return {
+      attempted: true,
+      configured,
+      status: response.status,
+      contentType,
+      acquired: response.status === 200 && typeof token === "string" && token.length > 0,
+      token: typeof token === "string" ? token : null,
+      error: null
+    };
+  } catch (error) {
+    return {
+      attempted: true,
+      configured,
       status: null,
       contentType: null,
       acquired: false,
@@ -356,6 +431,19 @@ export function buildJune10EndpointContractSmokeReport({ apiBaseUrl, probes, aut
             acquired: false,
             tokenRedacted: false,
             error: null
+          },
+      provisionedLogin: auth?.provisionedLogin
+        ? redactedProvisionedLoginEvidence(auth.provisionedLogin)
+        : {
+            attempted: false,
+            path: PROVISIONED_LOGIN_PATH,
+            status: null,
+            contentType: null,
+            configured: false,
+            acquired: false,
+            tokenRedacted: false,
+            credentialsRedacted: false,
+            error: null
           }
     },
     localRuntimeProbes: probes,
@@ -370,9 +458,27 @@ export function buildJune10EndpointContractSmokeReport({ apiBaseUrl, probes, aut
 
 export async function probeJune10EndpointContracts({
   apiBaseUrl = DEFAULT_API_BASE_URL,
-  timeoutMs = DEFAULT_TIMEOUT_MS
+  timeoutMs = DEFAULT_TIMEOUT_MS,
+  authEmail = process.env.TF_ENDPOINT_CONTRACT_AUTH_EMAIL ?? process.env.TF_AUTH_BOOTSTRAP_EMAIL ?? null,
+  authPassword = process.env.TF_ENDPOINT_CONTRACT_AUTH_PASSWORD ?? process.env.TF_AUTH_BOOTSTRAP_PASSWORD ?? null
 } = {}) {
-  const auth = await fetchDevelopmentToken(apiBaseUrl, timeoutMs);
+  const developmentToken = await fetchDevelopmentToken(apiBaseUrl, timeoutMs);
+  const provisionedLogin = developmentToken.acquired
+    ? {
+        attempted: false,
+        configured: Boolean(authEmail && authPassword),
+        status: null,
+        contentType: null,
+        acquired: false,
+        token: null,
+        error: null
+      }
+    : await fetchProvisionedLoginToken(apiBaseUrl, timeoutMs, { authEmail, authPassword });
+  const auth = {
+    ...developmentToken,
+    token: developmentToken.token ?? provisionedLogin.token,
+    provisionedLogin
+  };
   const probes = [];
   for (const probeDefinition of REQUIRED_PROBES) {
     probes.push(await fetchProbe(apiBaseUrl, probeDefinition, timeoutMs, auth));
@@ -404,6 +510,12 @@ function renderMarkdown(report) {
     `- Development token acquired: ${report.auth.developmentToken.acquired}`,
     `- Development token status: ${report.auth.developmentToken.status ?? "-"}`,
     `- Development token redacted: ${report.auth.developmentToken.tokenRedacted}`,
+    `- Provisioned login attempted: ${report.auth.provisionedLogin.attempted}`,
+    `- Provisioned login configured: ${report.auth.provisionedLogin.configured}`,
+    `- Provisioned login acquired: ${report.auth.provisionedLogin.acquired}`,
+    `- Provisioned login status: ${report.auth.provisionedLogin.status ?? "-"}`,
+    `- Provisioned login token redacted: ${report.auth.provisionedLogin.tokenRedacted}`,
+    `- Provisioned login credentials redacted: ${report.auth.provisionedLogin.credentialsRedacted}`,
     "",
     "## Runtime Probes",
     "",

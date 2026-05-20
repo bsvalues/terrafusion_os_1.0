@@ -1,22 +1,33 @@
 {
-  "generatedAtUtc": "2026-05-20T16:21:13.111Z",
-  "apiBaseUrl": "http://localhost:5046",
-  "passed": true,
+  "generatedAtUtc": "2026-05-20T21:05:39.501Z",
+  "apiBaseUrl": "https://terrafusionmarket.com",
+  "passed": false,
   "summary": {
     "requiredProbes": 4,
     "localRuntimeProbes": 4,
-    "failedRuntimeProbes": 0,
-    "contractMismatches": 0,
-    "blockers": 0
+    "failedRuntimeProbes": 1,
+    "contractMismatches": 1,
+    "blockers": 2
   },
   "auth": {
     "developmentToken": {
       "attempted": true,
       "path": "/api/auth/dev-token",
+      "status": 401,
+      "contentType": "",
+      "acquired": false,
+      "tokenRedacted": false,
+      "error": null
+    },
+    "provisionedLogin": {
+      "attempted": true,
+      "path": "/api/auth/login",
       "status": 200,
       "contentType": "application/json; charset=utf-8",
+      "configured": true,
       "acquired": true,
       "tokenRedacted": true,
+      "credentialsRedacted": true,
       "error": null
     }
   },
@@ -25,13 +36,13 @@
       "id": "health",
       "method": "GET",
       "path": "/health",
-      "url": "http://localhost:5046/health",
+      "url": "https://terrafusionmarket.com/health",
       "authRequired": false,
       "authApplied": false,
       "status": 200,
       "contentType": "application/json; charset=utf-8",
-      "bodyText": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T16:21:13.0282847Z\",\"environment\":\"Development\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"unknown\"}",
-      "bodySnippet": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T16:21:13.0282847Z\",\"environment\":\"Development\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"unknown\"}",
+      "bodyText": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T21:05:38.1506219Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"b8b7a2adaf16af42971b3af6534a8bfedd162891\"}",
+      "bodySnippet": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T21:05:38.1506219Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"b8b7a2adaf16af42971b3af6534a8bfedd162891\"}",
       "ok": true,
       "error": null
     },
@@ -39,13 +50,13 @@
       "id": "runtime_db_identity",
       "method": "GET",
       "path": "/api/runtime/truth/db-identity",
-      "url": "http://localhost:5046/api/runtime/truth/db-identity",
+      "url": "https://terrafusionmarket.com/api/runtime/truth/db-identity",
       "authRequired": true,
       "authApplied": true,
       "status": 200,
       "contentType": "application/json; charset=utf-8",
-      "bodyText": "{\"apiBaseUrl\":\"http://localhost:5046\",\"environment\":\"Development\",\"contentRootPath\":\"C:\\\\Users\\\\bsval\\\\.config\\\\superpowers\\\\worktrees\\\\terrafusion_os_1.0\\\\june10-production-readiness-audit-gate\\\\backend\\\\src\\\\TerraFusion.API\\\\bin\\\\Debug\\\\net8.0\\\\\",\"provider\":\"Npgsql.EntityFrameworkCore.PostgreSQL\",\"connectionStringName\":\"DefaultConnection\",\"serverRedacted\":\"configured-host-redacted\",\"database\":\"terrafusion\",\"expectedJune10Database\":\"terrafusion\",\"isExpectedJune10RuntimeDb\":true,\"expectedBentonParcelCount\":null,\"isBentonParcelCountExpected\":false,\"migrationState\":{\"appliedCount\":99,\"pendingCount\":0,\"latestApplied\":\"20260518123620_AddPropertyCountyTaxYearIndex\",\"warnings\":[]},\"rowCounts\":null,\"passed\":true,\"blockers\":[],\"warnings\":[\"Row counts skipped for launch-control liveness. Re-run with includeCounts=true for heavyweight database-count evidence.\"]}",
-      "bodySnippet": "{\"apiBaseUrl\":\"http://localhost:5046\",\"environment\":\"Development\",\"contentRootPath\":\"C:\\\\Users\\\\bsval\\\\.config\\\\superpowers\\\\worktrees\\\\terrafusion_os_1.0\\\\june10-production-readiness-audit-gate\\\\backend\\\\src\\\\TerraFusion.API\\\\bin\\\\Debug\\\\n",
+      "bodyText": "{\"apiBaseUrl\":\"http://terrafusionmarket.com\",\"environment\":\"Production\",\"contentRootPath\":\"/app\",\"provider\":\"Microsoft.EntityFrameworkCore.Sqlite\",\"connectionStringName\":\"DefaultConnection\",\"serverRedacted\":\"configured-host-redacted\",\"database\":\"main\",\"expectedJune10Database\":null,\"isExpectedJune10RuntimeDb\":false,\"expectedBentonParcelCount\":null,\"isBentonParcelCountExpected\":false,\"migrationState\":{\"appliedCount\":0,\"pendingCount\":88,\"latestApplied\":null,\"warnings\":[]},\"rowCounts\":null,\"passed\":false,\"blockers\":[\"Expected June 10 TerraFusion DB name is not configured. Set TF_EXPECTED_JUNE10_DB_NAME or RuntimeTruth:ExpectedJune10Database.\"],\"warnings\":[\"Row counts skipped for launch-control liveness. Re-run with includeCounts=true for heavyweight database-count evidence.\"]}",
+      "bodySnippet": "{\"apiBaseUrl\":\"http://terrafusionmarket.com\",\"environment\":\"Production\",\"contentRootPath\":\"/app\",\"provider\":\"Microsoft.EntityFrameworkCore.Sqlite\",\"connectionStringName\":\"DefaultConnection\",\"serverRedacted\":\"configured-host-redacted\",\"datab",
       "ok": true,
       "error": null
     },
@@ -53,21 +64,21 @@
       "id": "benton_parcels",
       "method": "GET",
       "path": "/api/counties/benton/parcels?limit=5",
-      "url": "http://localhost:5046/api/counties/benton/parcels?limit=5",
+      "url": "https://terrafusionmarket.com/api/counties/benton/parcels?limit=5",
       "authRequired": true,
       "authApplied": true,
-      "status": 200,
+      "status": 500,
       "contentType": "application/json; charset=utf-8",
-      "bodyText": "{\"county\":\"Benton County\",\"countyId\":\"19190019-1919-1919-1919-191919191919\",\"rowType\":\"parcels\",\"runtimeTable\":\"canonical_tf.tf_parcel\",\"semantics\":{\"countyScoped\":true,\"activeOnly\":true,\"duplicateParcelVersionsCollapsed\":true,\"currentParcelVersion\":true,\"source\":\"canonical_tf_runtime_query\"},\"total\":null,\"totalKnown\":false,\"count\":5,\"rows\":[{\"parcelId\":\"f1079787-a796-4ce7-9468-cb8b56b04802\",\"parcelNumber\":\"101040000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-20T16:01:30.094835Z\"},{\"parcelId\":\"f6aa32da-8bf1-466d-a650-fd28053cab48\",\"parcelNumber\":\"101050000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-20T16:01:30.094835Z\"},{\"parcelId\":\"b8faf953-ee54-434b-b26d-efc5ee6a8f80\",\"parcelNumber\":\"101070000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-20T16:01:30.094835Z\"},{\"parcelId\":\"5881d097-5d27-4fc4-b351-7ca8ae1f3723\",\"parcelNumber\":\"101140000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-20T16:01:30.094835Z\"},{\"parcelId\":\"b67a32d6-689c-4437-9b2d-734b7d31b632\",\"parcelNumber\":\"101151000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-20T16:01:30.094835Z\"}]}",
-      "bodySnippet": "{\"county\":\"Benton County\",\"countyId\":\"19190019-1919-1919-1919-191919191919\",\"rowType\":\"parcels\",\"runtimeTable\":\"canonical_tf.tf_parcel\",\"semantics\":{\"countyScoped\":true,\"activeOnly\":true,\"duplicateParcelVersionsCollapsed\":true,\"currentParce",
-      "ok": true,
+      "bodyText": "{\"error\":\"Internal server error\",\"correlationId\":\"tf-cc792cdb9e1a4e8283bd4e6cd211d175\",\"message\":\"An unexpected error occurred. Reference the correlationId when reporting.\"}",
+      "bodySnippet": "{\"error\":\"Internal server error\",\"correlationId\":\"tf-cc792cdb9e1a4e8283bd4e6cd211d175\",\"message\":\"An unexpected error occurred. Reference the correlationId when reporting.\"}",
+      "ok": false,
       "error": null
     },
     {
       "id": "access_policy",
       "method": "GET",
       "path": "/api/auth/access-policy",
-      "url": "http://localhost:5046/api/auth/access-policy",
+      "url": "https://terrafusionmarket.com/api/auth/access-policy",
       "authRequired": false,
       "authApplied": false,
       "status": 200,
@@ -78,7 +89,24 @@
       "error": null
     }
   ],
-  "contractMismatches": [],
-  "blockers": [],
-  "interpretation": "Endpoint contract smoke passed for the required June 10 runtime API probes."
+  "contractMismatches": [
+    {
+      "endpointId": "benton_parcels",
+      "endpoint": "/api/counties/benton/parcels?limit=5",
+      "reason": "expected status 200, got 500"
+    }
+  ],
+  "blockers": [
+    {
+      "source": "runtime_probe",
+      "message": "GET /api/counties/benton/parcels?limit=5 did not return 200.",
+      "evidence": "status=500"
+    },
+    {
+      "source": "contract_shape",
+      "message": "One or more endpoint responses do not match the June 10 launch-control contract.",
+      "evidence": "1 mismatch(es)"
+    }
+  ],
+  "interpretation": "Endpoint contract smoke is not passing; production readiness cannot claim all endpoints match contracts."
 }

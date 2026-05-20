@@ -1,16 +1,16 @@
 # June 10 Launch Gate
 
-Generated: 2026-05-20T19:01:24.576Z
+Generated: 2026-05-20T21:12:19.228Z
 
 Passed: false
-API base URL: http://localhost:5046
+API base URL: https://terrafusionmarket.com
 Public base URL: https://terrafusionmarket.com
 
 ## Summary
 
 - API health live now: true
-- Endpoint smoke passed live now: true
-- Public access posture explicit: false
+- Endpoint smoke passed live now: false
+- Public access posture explicit: true
 - Product-load ledger passed: true
 - Rust runtime proven: false
 - Rust claims suppressed: true
@@ -21,7 +21,7 @@ Public base URL: https://terrafusionmarket.com
 
 ## Blockers
 
-- **public_access_posture**: Public access posture is not explicit and usable for launch-control evidence. (1 blocker(s))
+- **endpoint_smoke**: Endpoint contract smoke did not pass from live probes. (1 failed probe(s), 1 contract mismatch(es))
 
 ## Warnings
 
@@ -94,7 +94,7 @@ Public base URL: https://terrafusionmarket.com
 
 ## Required Fixes
 
-- Public access posture is not explicit and usable for launch-control evidence.
+- Endpoint contract smoke did not pass from live probes.
 
 ## Interpretation
 
