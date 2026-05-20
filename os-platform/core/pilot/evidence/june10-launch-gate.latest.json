@@ -1,27 +1,27 @@
 {
-  "generatedAtUtc": "2026-05-20T21:12:19.228Z",
+  "generatedAtUtc": "2026-05-20T22:33:07.534Z",
   "gate": "june10_launch_gate",
   "apiBaseUrl": "https://terrafusionmarket.com",
   "publicBaseUrl": "https://terrafusionmarket.com",
-  "passed": false,
+  "passed": true,
   "summary": {
     "apiHealthLive": true,
-    "endpointSmokePassed": false,
+    "endpointSmokePassed": true,
     "publicAccessPostureExplicit": true,
     "productLoadLedgerPassed": true,
     "rustRuntimeProven": false,
     "rustClaimsSuppressed": true,
     "activeRuntimeLegacyLeaks": 0,
     "rawRuntimeLegacyReferences": 1917,
-    "blockers": 1,
+    "blockers": 0,
     "warnings": 1
   },
   "checks": {
     "endpointSmoke": {
-      "passed": false,
-      "failedRuntimeProbes": 1,
-      "contractMismatches": 1,
-      "blockers": 2
+      "passed": true,
+      "failedRuntimeProbes": 0,
+      "contractMismatches": 0,
+      "blockers": 0
     },
     "publicSiteSmoke": {
       "passed": true,
@@ -17775,13 +17775,7 @@
       "leaks": []
     }
   },
-  "blockers": [
-    {
-      "source": "endpoint_smoke",
-      "message": "Endpoint contract smoke did not pass from live probes.",
-      "evidence": "1 failed probe(s), 1 contract mismatch(es)"
-    }
-  ],
+  "blockers": [],
   "warnings": [
     {
       "source": "rust_runtime",
@@ -17789,6 +17783,6 @@
       "evidence": null
     }
   ],
-  "requiredFixes": ["Endpoint contract smoke did not pass from live probes."],
-  "interpretation": "June 10 launch gate is red. Production approval must not rely on stale evidence, unproven lineage, unsuppressed Rust claims, or active runtime legacy leaks."
+  "requiredFixes": [],
+  "interpretation": "June 10 launch gate passed from live runtime evidence and explicit containment posture."
 }

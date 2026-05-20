@@ -1,13 +1,13 @@
 {
-  "generatedAtUtc": "2026-05-20T21:05:39.501Z",
+  "generatedAtUtc": "2026-05-20T22:32:37.407Z",
   "apiBaseUrl": "https://terrafusionmarket.com",
-  "passed": false,
+  "passed": true,
   "summary": {
     "requiredProbes": 4,
     "localRuntimeProbes": 4,
-    "failedRuntimeProbes": 1,
-    "contractMismatches": 1,
-    "blockers": 2
+    "failedRuntimeProbes": 0,
+    "contractMismatches": 0,
+    "blockers": 0
   },
   "auth": {
     "developmentToken": {
@@ -41,8 +41,8 @@
       "authApplied": false,
       "status": 200,
       "contentType": "application/json; charset=utf-8",
-      "bodyText": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T21:05:38.1506219Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"b8b7a2adaf16af42971b3af6534a8bfedd162891\"}",
-      "bodySnippet": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T21:05:38.1506219Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"b8b7a2adaf16af42971b3af6534a8bfedd162891\"}",
+      "bodyText": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T22:32:35.9095785Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"f57f4accefb7950024faaafe96343c1533e7e3ff\"}",
+      "bodySnippet": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T22:32:35.9095785Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"f57f4accefb7950024faaafe96343c1533e7e3ff\"}",
       "ok": true,
       "error": null
     },
@@ -67,11 +67,11 @@
       "url": "https://terrafusionmarket.com/api/counties/benton/parcels?limit=5",
       "authRequired": true,
       "authApplied": true,
-      "status": 500,
+      "status": 200,
       "contentType": "application/json; charset=utf-8",
-      "bodyText": "{\"error\":\"Internal server error\",\"correlationId\":\"tf-cc792cdb9e1a4e8283bd4e6cd211d175\",\"message\":\"An unexpected error occurred. Reference the correlationId when reporting.\"}",
-      "bodySnippet": "{\"error\":\"Internal server error\",\"correlationId\":\"tf-cc792cdb9e1a4e8283bd4e6cd211d175\",\"message\":\"An unexpected error occurred. Reference the correlationId when reporting.\"}",
-      "ok": false,
+      "bodyText": "{\"county\":\"Benton\",\"countyId\":\"19190019-1919-1919-1919-191919191919\",\"rowType\":\"parcels\",\"runtimeTable\":\"Properties\",\"semantics\":{\"countyScoped\":true,\"activeOnly\":false,\"duplicateParcelVersionsCollapsed\":true,\"currentParcelVersion\":false,\"source\":\"terrafusion_properties_runtime_table\",\"canonicalProjectionPending\":true},\"total\":null,\"totalKnown\":false,\"count\":5,\"rows\":[{\"parcelId\":\"fca5ce32-cd08-4e77-935f-e912fd27f231\",\"parcelNumber\":\"00AA00001129049\",\"address\":\"5020 CLEARWATER AVE KENNEWICK, WA 99336\",\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"UNKNOWN_PRODUCT_TABLE_STATUS\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2005-01-01T00:00:00\"},{\"parcelId\":\"95bdfac0-ccf5-4815-a582-33ef52bd6526\",\"parcelNumber\":\"00AA00001129099\",\"address\":\"1310 TAPTEAL DR RICHLAND, WA 99352\",\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"UNKNOWN_PRODUCT_TABLE_STATUS\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2005-01-01T00:00:00\"},{\"parcelId\":\"6eac0a5d-2563-45c7-af82-838c9333f5a2\",\"parcelNumber\":\"00AA00001129501\",\"address\":\"PACS 00AA00001129501\",\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"UNKNOWN_PRODUCT_TABLE_STATUS\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2005-01-01T00:00:00\"},{\"parcelId\":\"ea3ba61a-dd2b-45ac-a6bb-e1327fd586b1\",\"parcelNumber\":\"00AA00001129590\",\"address\":\"317 N DELAWARE ST KENNEWICK, WA 99336-7750\",\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"UNKNOWN_PRODUCT_TABLE_STATUS\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2005-01-01T00:00:00\"},{\"parcelId\":\"5b8f85e9-ad72-4f81-9f87-a4c54f6f88a1\",\"parcelNumber\":\"00AA00001134706\",\"address\":\"PACS 00AA00001134706\",\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"UNKNOWN_PRODUCT_TABLE_STATUS\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2006-01-01T00:00:00\"}]}",
+      "bodySnippet": "{\"county\":\"Benton\",\"countyId\":\"19190019-1919-1919-1919-191919191919\",\"rowType\":\"parcels\",\"runtimeTable\":\"Properties\",\"semantics\":{\"countyScoped\":true,\"activeOnly\":false,\"duplicateParcelVersionsCollapsed\":true,\"currentParcelVersion\":false,\"s",
+      "ok": true,
       "error": null
     },
     {
@@ -89,24 +89,7 @@
       "error": null
     }
   ],
-  "contractMismatches": [
-    {
-      "endpointId": "benton_parcels",
-      "endpoint": "/api/counties/benton/parcels?limit=5",
-      "reason": "expected status 200, got 500"
-    }
-  ],
-  "blockers": [
-    {
-      "source": "runtime_probe",
-      "message": "GET /api/counties/benton/parcels?limit=5 did not return 200.",
-      "evidence": "status=500"
-    },
-    {
-      "source": "contract_shape",
-      "message": "One or more endpoint responses do not match the June 10 launch-control contract.",
-      "evidence": "1 mismatch(es)"
-    }
-  ],
-  "interpretation": "Endpoint contract smoke is not passing; production readiness cannot claim all endpoints match contracts."
+  "contractMismatches": [],
+  "blockers": [],
+  "interpretation": "Endpoint contract smoke passed for the required June 10 runtime API probes."
 }

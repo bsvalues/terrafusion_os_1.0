@@ -1,27 +1,27 @@
 # June 10 Launch Gate
 
-Generated: 2026-05-20T21:12:19.228Z
+Generated: 2026-05-20T22:33:07.534Z
 
-Passed: false
+Passed: true
 API base URL: https://terrafusionmarket.com
 Public base URL: https://terrafusionmarket.com
 
 ## Summary
 
 - API health live now: true
-- Endpoint smoke passed live now: false
+- Endpoint smoke passed live now: true
 - Public access posture explicit: true
 - Product-load ledger passed: true
 - Rust runtime proven: false
 - Rust claims suppressed: true
 - Active runtime legacy leaks: 0
 - Raw runtime legacy references: 1917
-- Blockers: 1
+- Blockers: 0
 - Warnings: 1
 
 ## Blockers
 
-- **endpoint_smoke**: Endpoint contract smoke did not pass from live probes. (1 failed probe(s), 1 contract mismatch(es))
+- None
 
 ## Warnings
 
@@ -94,8 +94,8 @@ Public base URL: https://terrafusionmarket.com
 
 ## Required Fixes
 
-- Endpoint contract smoke did not pass from live probes.
+- None
 
 ## Interpretation
 
-June 10 launch gate is red. Production approval must not rely on stale evidence, unproven lineage, unsuppressed Rust claims, or active runtime legacy leaks.
+June 10 launch gate passed from live runtime evidence and explicit containment posture.
