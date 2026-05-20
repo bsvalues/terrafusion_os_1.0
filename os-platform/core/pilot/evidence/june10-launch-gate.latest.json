@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-20T16:39:16.995Z",
+  "generatedAtUtc": "2026-05-20T16:46:13.505Z",
   "gate": "june10_launch_gate",
   "apiBaseUrl": "http://localhost:5046",
   "publicBaseUrl": "https://terrafusionmarket.com",
@@ -32,7 +32,7 @@
       "passed": false,
       "receiptTableExists": true,
       "lineageProven": 3,
-      "blockers": 7
+      "blockers": 4
     },
     "rustRuntimeUsage": {
       "passed": false,
@@ -4704,7 +4704,7 @@
     {
       "source": "product_load_ledger",
       "message": "Product-load lineage is not proven by the TerraFusion DB ledger.",
-      "evidence": "3 lineage-proven table(s), 7 blocker(s)"
+      "evidence": "3 lineage-proven table(s), 4 blocker(s)"
     },
     {
       "source": "legacy_runtime_boundary",

@@ -28,6 +28,7 @@ const PRODUCT_TABLES = [
   {
     tableName: 'canonical_tf.tf_parcel',
     productDomain: 'parcel',
+    loadRequirement: 'seed_required',
     productTimestampColumns: ['UpdatedAt', 'CreatedAt', 'ImportedAt'],
     sourceTableName: 'pacs_property_profiles',
     sourceTimestampColumns: ['LastPacsSync'],
@@ -35,6 +36,7 @@ const PRODUCT_TABLES = [
   {
     tableName: 'canonical_tf.tf_sale',
     productDomain: 'sales',
+    loadRequirement: 'seed_required',
     productTimestampColumns: ['UpdatedAt', 'CreatedAt', 'ImportedAt', 'SaleDate'],
     sourceTableName: 'pacs_sales',
     sourceTimestampColumns: ['LastPacsSync', 'ImportDate'],
@@ -42,6 +44,7 @@ const PRODUCT_TABLES = [
   {
     tableName: 'CanonicalSaleQualifications',
     productDomain: 'qualified_sales',
+    loadRequirement: 'seed_required',
     productTimestampColumns: ['UpdatedAt', 'CreatedAt', 'SourceWorkbookLockedAt'],
     sourceTableName: null,
     sourceTimestampColumns: [],
@@ -49,6 +52,7 @@ const PRODUCT_TABLES = [
   {
     tableName: 'CamaCharacteristics',
     productDomain: 'costforge',
+    loadRequirement: 'seed_required',
     productTimestampColumns: ['UpdatedAt', 'CreatedAt'],
     sourceTableName: null,
     sourceTimestampColumns: [],
@@ -56,6 +60,7 @@ const PRODUCT_TABLES = [
   {
     tableName: 'ImprovementDetails',
     productDomain: 'costforge',
+    loadRequirement: 'seed_required',
     productTimestampColumns: ['UpdatedAt', 'CreatedAt'],
     sourceTableName: 'pacs_improvement_details',
     sourceTimestampColumns: ['LastPacsSync'],
@@ -63,6 +68,7 @@ const PRODUCT_TABLES = [
   {
     tableName: 'LandSegments',
     productDomain: 'costforge',
+    loadRequirement: 'seed_required',
     productTimestampColumns: ['UpdatedAt', 'CreatedAt'],
     sourceTableName: 'pacs_land_details',
     sourceTimestampColumns: ['LastPacsSync'],
@@ -70,6 +76,7 @@ const PRODUCT_TABLES = [
   {
     tableName: 'GisParcelGeometries',
     productDomain: 'atlas',
+    loadRequirement: 'seed_required',
     productTimestampColumns: ['SyncedAt', 'UpdatedAt', 'CreatedAt'],
     sourceTableName: null,
     sourceTimestampColumns: [],
@@ -77,6 +84,7 @@ const PRODUCT_TABLES = [
   {
     tableName: 'DossierPackets',
     productDomain: 'dossier',
+    loadRequirement: 'operational_state',
     productTimestampColumns: ['UpdatedAt', 'CreatedAt'],
     sourceTableName: null,
     sourceTimestampColumns: [],
@@ -84,6 +92,7 @@ const PRODUCT_TABLES = [
   {
     tableName: 'CountyDownstreamClosureReceipts',
     productDomain: 'dais',
+    loadRequirement: 'operational_state',
     productTimestampColumns: ['UpdatedAt', 'ReturnedAtUtc', 'OpenedAtUtc', 'CreatedAt'],
     sourceTableName: null,
     sourceTimestampColumns: [],
@@ -91,6 +100,7 @@ const PRODUCT_TABLES = [
   {
     tableName: 'CountyApplyHandoffReceipts',
     productDomain: 'dossier',
+    loadRequirement: 'operational_state',
     productTimestampColumns: [
       'UpdatedAt',
       'AppliedAtUtc',
@@ -138,6 +148,10 @@ const PRODUCT_LOAD_RECEIPT_CONTRACT = {
     'OutputHash',
   ],
 };
+
+const LOAD_REQUIREMENTS_BY_TABLE = Object.fromEntries(
+  PRODUCT_TABLES.map(definition => [definition.tableName, definition.loadRequirement])
+);
 
 const SYNC_BRIDGE_LOAD_BATCH_CONTRACT = {
   tableName: 'sync_bridge.load_batch',
@@ -288,6 +302,10 @@ function latestProductLoadReceiptAtForProductLoadReceipts(_tableName) {
 
 function syncBridgeProjectorSourcesFor(tableName) {
   return SYNC_BRIDGE_PROJECTOR_SOURCES_BY_TABLE[String(tableName)] ?? [];
+}
+
+function loadRequirementFor(tableName) {
+  return LOAD_REQUIREMENTS_BY_TABLE[String(tableName)] ?? 'seed_required';
 }
 
 function latestSyncBridgeLoadBatchAtFor(tableName) {
@@ -519,6 +537,7 @@ function buildRowsFromDatabase() {
       return evaluateProductLoadLineage({
         tableName: definition.tableName,
         productDomain: definition.productDomain,
+        loadRequirement: definition.loadRequirement,
         rowCount: null,
         latestProductUpdatedAt: null,
         latestSourceSyncAt: null,
@@ -534,6 +553,7 @@ function buildRowsFromDatabase() {
     return evaluateProductLoadLineage({
       tableName: definition.tableName,
       productDomain: definition.productDomain,
+      loadRequirement: definition.loadRequirement,
       rowCount: countRows(definition.tableName),
       latestProductUpdatedAt: latestColumnTimestamp(
         definition.tableName,
@@ -553,15 +573,47 @@ function buildRowsFromDatabase() {
 function evaluateProductLoadLineage(row) {
   const blockers = [];
   const warnings = [];
+  const loadRequirement = row.loadRequirement ?? loadRequirementFor(row.tableName);
+
+  if (loadRequirement === 'operational_state') {
+    if (row.rowCount === null) {
+      blockers.push('Operational state table missing or unreadable.');
+      return { ...row, loadRequirement, lineageStatus: 'missing_table', blockers, warnings };
+    }
+
+    if (row.rowCount === 0) {
+      warnings.push(
+        'Operational state table is empty; this is allowed before user workflow activity.'
+      );
+      return {
+        ...row,
+        loadRequirement,
+        lineageStatus: 'operational_empty_allowed',
+        blockers,
+        warnings,
+      };
+    }
+
+    warnings.push(
+      'Rows are operational state generated by product workflow; product-load receipt is not required.'
+    );
+    return {
+      ...row,
+      loadRequirement,
+      lineageStatus: 'operational_state_present',
+      blockers,
+      warnings,
+    };
+  }
 
   if (row.rowCount === null) {
     blockers.push('Table missing or unreadable.');
-    return { ...row, lineageStatus: 'missing_table', blockers, warnings };
+    return { ...row, loadRequirement, lineageStatus: 'missing_table', blockers, warnings };
   }
 
   if (row.rowCount === 0) {
     blockers.push('Table exists but is empty.');
-    return { ...row, lineageStatus: 'empty_table', blockers, warnings };
+    return { ...row, loadRequirement, lineageStatus: 'empty_table', blockers, warnings };
   }
 
   if (!row.latestProductLoadReceiptAt) {
@@ -574,6 +626,7 @@ function evaluateProductLoadLineage(row) {
     }
     return {
       ...row,
+      loadRequirement,
       lineageStatus: 'rows_exist_lineage_unproven',
       blockers,
       warnings,
@@ -582,6 +635,7 @@ function evaluateProductLoadLineage(row) {
 
   return {
     ...row,
+    loadRequirement,
     lineageStatus: 'lineage_proven',
     blockers,
     warnings,
@@ -597,6 +651,11 @@ function summarize(rows) {
     ).length,
     emptyTables: rows.filter(row => row.lineageStatus === 'empty_table').length,
     missingTables: rows.filter(row => row.lineageStatus === 'missing_table').length,
+    seedRequiredTables: rows.filter(row => row.loadRequirement === 'seed_required').length,
+    operationalStateTables: rows.filter(row => row.loadRequirement === 'operational_state').length,
+    operationalStateAllowed: rows.filter(row =>
+      ['operational_empty_allowed', 'operational_state_present'].includes(row.lineageStatus)
+    ).length,
     blockers: rows.reduce((sum, row) => sum + row.blockers.length, 0),
     warnings: rows.reduce((sum, row) => sum + row.warnings.length, 0),
   };
@@ -618,6 +677,9 @@ function renderMarkdown(report) {
     `- Rows exist, lineage unproven: ${report.summary.rowsExistLineageUnproven}`,
     `- Empty tables: ${report.summary.emptyTables}`,
     `- Missing tables: ${report.summary.missingTables}`,
+    `- Seed-required tables: ${report.summary.seedRequiredTables}`,
+    `- Operational state tables: ${report.summary.operationalStateTables}`,
+    `- Operational state allowed: ${report.summary.operationalStateAllowed}`,
     `- Latest ETL completed at: ${report.globalEtlCompletedAt ?? '-'}`,
     `- Product load receipt evidence exists: ${report.receiptEvidence.exists ? 'yes' : 'no'}`,
     `- Product load receipt evidence source: ${report.receiptEvidence.evidenceSource ?? '-'}`,
@@ -643,12 +705,13 @@ function renderMarkdown(report) {
     '',
     '## Ledger',
     '',
-    '| Table | Domain | Rows | Product Updated | Source/Cache Sync | ETL Completed | Product Load Receipt | Status | Blockers |',
-    '|---|---|---:|---|---|---|---|---|---|',
+    '| Table | Domain | Requirement | Rows | Product Updated | Source/Cache Sync | ETL Completed | Product Load Receipt | Status | Blockers |',
+    '|---|---|---|---:|---|---|---|---|---|---|',
     ...report.rows.map(row =>
       [
         `\`${row.tableName}\``,
         row.productDomain,
+        row.loadRequirement ?? '-',
         row.rowCount === null ? '-' : String(row.rowCount),
         row.latestProductUpdatedAt ?? '-',
         row.latestSourceSyncAt ?? '-',
@@ -667,6 +730,7 @@ function renderMarkdown(report) {
     '## Trust Rule',
     '',
     'Rows in TerraFusion DB are runtime-present only when no product-load receipt exists. June 10 readiness must not treat runtime-present rows as lineage-proven rows.',
+    'Operational state tables are workflow state, not source-seeded product tables; they may be empty before user activity without blocking product-load lineage.',
   ].join('\n');
 }
 
@@ -676,6 +740,7 @@ function buildReport() {
     const rows = fixture.rows.map(row =>
       evaluateProductLoadLineage({
         ...row,
+        loadRequirement: row.loadRequirement ?? loadRequirementFor(row.tableName),
         latestProductLoadReceiptAt:
           row.latestProductLoadReceiptAt ??
           latest(

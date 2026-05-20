@@ -227,3 +227,74 @@ test('product load ledger does not treat unrelated sync_bridge batches as table 
   assert.equal(report.rows[0].latestProductLoadReceiptAt, null);
   assert.equal(report.rows[0].lineageStatus, 'rows_exist_lineage_unproven');
 });
+
+test('product load ledger allows empty operational state tables without product-load receipts', async () => {
+  const root = makeTempRepo('tf-product-ledger-operational-empty-');
+  const fixturePath = writeFixture(root, {
+    database: { container: 'fixture', database: 'terrafusion', user: 'postgres' },
+    rows: [
+      {
+        tableName: 'CountyDownstreamClosureReceipts',
+        productDomain: 'dais',
+        rowCount: 0,
+      },
+      {
+        tableName: 'CountyApplyHandoffReceipts',
+        productDomain: 'dossier',
+        rowCount: 0,
+      },
+    ],
+  });
+
+  await execFileAsync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    env: { ...process.env, TF_PRODUCT_LOAD_LEDGER_FIXTURE: fixturePath },
+  });
+
+  const report = JSON.parse(
+    fs.readFileSync(
+      path.join(root, 'generated', 'truth', 'terrafusion-db-product-load-ledger.json'),
+      'utf8'
+    )
+  );
+
+  assert.equal(report.passed, true);
+  assert.equal(report.summary.operationalStateTables, 2);
+  assert.equal(report.summary.operationalStateAllowed, 2);
+  assert.equal(report.rows[0].loadRequirement, 'operational_state');
+  assert.equal(report.rows[0].lineageStatus, 'operational_empty_allowed');
+  assert.deepEqual(report.rows[0].blockers, []);
+});
+
+test('product load ledger does not require product-load receipts for user-generated operational rows', async () => {
+  const root = makeTempRepo('tf-product-ledger-operational-present-');
+  const fixturePath = writeFixture(root, {
+    database: { container: 'fixture', database: 'terrafusion', user: 'postgres' },
+    rows: [
+      {
+        tableName: 'DossierPackets',
+        productDomain: 'dossier',
+        rowCount: 2,
+        latestProductUpdatedAt: '2026-05-17T22:56:16.504Z',
+      },
+    ],
+  });
+
+  await execFileAsync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    env: { ...process.env, TF_PRODUCT_LOAD_LEDGER_FIXTURE: fixturePath },
+  });
+
+  const report = JSON.parse(
+    fs.readFileSync(
+      path.join(root, 'generated', 'truth', 'terrafusion-db-product-load-ledger.json'),
+      'utf8'
+    )
+  );
+
+  assert.equal(report.passed, true);
+  assert.equal(report.rows[0].loadRequirement, 'operational_state');
+  assert.equal(report.rows[0].lineageStatus, 'operational_state_present');
+  assert.deepEqual(report.rows[0].blockers, []);
+  assert.ok(report.rows[0].warnings.some(warning => warning.includes('operational state')));
+});
