@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-20T16:57:11.825Z",
+  "generatedAtUtc": "2026-05-20T17:07:00.084Z",
   "gate": "june10_launch_gate",
   "apiBaseUrl": "http://localhost:5046",
   "publicBaseUrl": "https://terrafusionmarket.com",
@@ -31,8 +31,8 @@
       "path": "C:\\Users\\bsval\\.config\\superpowers\\worktrees\\terrafusion_os_1.0\\june10-production-readiness-audit-gate\\generated\\truth\\terrafusion-db-product-load-ledger.json",
       "passed": false,
       "receiptTableExists": true,
-      "lineageProven": 5,
-      "blockers": 2
+      "lineageProven": 6,
+      "blockers": 1
     },
     "rustRuntimeUsage": {
       "passed": false,
@@ -4704,7 +4704,7 @@
     {
       "source": "product_load_ledger",
       "message": "Product-load lineage is not proven by the TerraFusion DB ledger.",
-      "evidence": "5 lineage-proven table(s), 2 blocker(s)"
+      "evidence": "6 lineage-proven table(s), 1 blocker(s)"
     },
     {
       "source": "legacy_runtime_boundary",

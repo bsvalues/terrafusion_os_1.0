@@ -169,6 +169,13 @@ const SYNC_BRIDGE_PROJECTOR_SOURCES_BY_TABLE = {
   GisParcelGeometries: ['canonical-tf-arcgis-projector'],
 };
 
+const EMBEDDED_LINEAGE_CONTRACTS_BY_TABLE = {
+  CanonicalSaleQualifications: {
+    identityColumn: 'SourceWorkbookId',
+    timestampColumn: 'SourceWorkbookLockedAt',
+  },
+};
+
 function rel(filePath) {
   return path.relative(repoRoot, filePath).replaceAll(path.sep, '/');
 }
@@ -259,8 +266,9 @@ function latestEtlCompletedAt() {
 function latestProductLoadReceiptAtFor(_tableName) {
   const productLoadReceiptAt = latestProductLoadReceiptAtForProductLoadReceipts(_tableName);
   const syncBridgeLoadBatchAt = latestSyncBridgeLoadBatchAtFor(_tableName);
+  const embeddedLineageAt = latestEmbeddedLineageReceiptAtFor(_tableName);
 
-  return latest(productLoadReceiptAt, syncBridgeLoadBatchAt);
+  return latest(productLoadReceiptAt, syncBridgeLoadBatchAt, embeddedLineageAt);
 }
 
 function latestProductLoadReceiptAtForProductLoadReceipts(_tableName) {
@@ -305,8 +313,33 @@ function syncBridgeProjectorSourcesFor(tableName) {
   return SYNC_BRIDGE_PROJECTOR_SOURCES_BY_TABLE[String(tableName)] ?? [];
 }
 
+function embeddedLineageContractFor(tableName) {
+  return EMBEDDED_LINEAGE_CONTRACTS_BY_TABLE[String(tableName)] ?? null;
+}
+
 function loadRequirementFor(tableName) {
   return LOAD_REQUIREMENTS_BY_TABLE[String(tableName)] ?? 'seed_required';
+}
+
+function latestEmbeddedLineageReceiptAtFor(tableName) {
+  const contract = embeddedLineageContractFor(tableName);
+  if (!contract || !tableExists(tableName)) return null;
+
+  const columns = existingColumns(tableName);
+  if (!columns.has(contract.identityColumn) || !columns.has(contract.timestampColumn)) return null;
+
+  const result = psql(
+    `select count(*), count(${quoteIdent(contract.identityColumn)}), count(${quoteIdent(contract.timestampColumn)}), max(${quoteIdent(contract.timestampColumn)}) from ${quoteTable(tableName)};`
+  );
+  const [totalRaw, identityCountRaw, timestampCountRaw, latestRaw] = result.split('|');
+  const total = Number.parseInt(totalRaw, 10);
+  const identityCount = Number.parseInt(identityCountRaw, 10);
+  const timestampCount = Number.parseInt(timestampCountRaw, 10);
+
+  if (!Number.isFinite(total) || total <= 0) return null;
+  if (identityCount !== total || timestampCount !== total) return null;
+
+  return parseIso(latestRaw);
 }
 
 function latestSyncBridgeLoadBatchAtFor(tableName) {
@@ -348,11 +381,13 @@ function productLoadReceiptEvidenceFromDatabase() {
   const blockers = [];
 
   const syncBridgeLoadBatchEvidence = syncBridgeLoadBatchEvidenceFromDatabase();
-  const hasAnyReceiptEvidence = exists || syncBridgeLoadBatchEvidence.exists;
+  const embeddedLineageEvidence = embeddedLineageEvidenceFromDatabase();
+  const hasAnyReceiptEvidence =
+    exists || syncBridgeLoadBatchEvidence.exists || embeddedLineageEvidence.exists;
 
-  if (!exists && !syncBridgeLoadBatchEvidence.exists) {
+  if (!exists && !syncBridgeLoadBatchEvidence.exists && !embeddedLineageEvidence.exists) {
     blockers.push(
-      'ProductLoadReceipts table is missing and sync_bridge.load_batch receipt evidence is unavailable.'
+      'ProductLoadReceipts table is missing, sync_bridge.load_batch receipt evidence is unavailable, and no embedded lineage receipt is complete.'
     );
   } else {
     if (exists && !tableColumn) {
@@ -383,6 +418,7 @@ function productLoadReceiptEvidenceFromDatabase() {
     acceptedTimestampColumns: PRODUCT_LOAD_RECEIPT_CONTRACT.acceptedTimestampColumns,
     recommendedColumns: PRODUCT_LOAD_RECEIPT_CONTRACT.recommendedColumns,
     syncBridgeLoadBatchEvidence,
+    embeddedLineageEvidence,
     blockers,
   };
 }
@@ -419,6 +455,36 @@ function syncBridgeLoadBatchEvidenceFromDatabase() {
   };
 }
 
+function embeddedLineageEvidenceFromDatabase() {
+  const tables = Object.entries(EMBEDDED_LINEAGE_CONTRACTS_BY_TABLE).map(
+    ([tableName, contract]) => {
+      const exists = tableExists(tableName);
+      const columns = exists ? existingColumns(tableName) : new Set();
+      const hasColumns =
+        columns.has(contract.identityColumn) && columns.has(contract.timestampColumn);
+      const latestReceiptAt = hasColumns ? latestEmbeddedLineageReceiptAtFor(tableName) : null;
+
+      return {
+        tableName,
+        exists,
+        identityColumn: contract.identityColumn,
+        timestampColumn: contract.timestampColumn,
+        latestReceiptAt,
+        complete: Boolean(latestReceiptAt),
+      };
+    }
+  );
+
+  return {
+    exists: tables.some(table => table.complete),
+    acceptedTables: Object.keys(EMBEDDED_LINEAGE_CONTRACTS_BY_TABLE),
+    tables,
+    blockers: tables.some(table => table.complete)
+      ? []
+      : ['No accepted table has complete embedded lineage receipt fields.'],
+  };
+}
+
 function productLoadReceiptEvidenceFromFixture(fixture) {
   const receipts = Array.isArray(fixture.productLoadReceipts) ? fixture.productLoadReceipts : [];
   const sample = receipts[0] ?? {};
@@ -434,7 +500,9 @@ function productLoadReceiptEvidenceFromFixture(fixture) {
   );
 
   const syncBridgeLoadBatchEvidence = syncBridgeLoadBatchEvidenceFromFixture(fixture);
-  const hasAnyReceiptEvidence = receipts.length > 0 || syncBridgeLoadBatchEvidence.exists;
+  const embeddedLineageEvidence = embeddedLineageEvidenceFromFixture(fixture);
+  const hasAnyReceiptEvidence =
+    receipts.length > 0 || syncBridgeLoadBatchEvidence.exists || embeddedLineageEvidence.exists;
 
   return {
     tableName: PRODUCT_LOAD_RECEIPT_CONTRACT.tableName,
@@ -452,10 +520,11 @@ function productLoadReceiptEvidenceFromFixture(fixture) {
     acceptedTimestampColumns: PRODUCT_LOAD_RECEIPT_CONTRACT.acceptedTimestampColumns,
     recommendedColumns: PRODUCT_LOAD_RECEIPT_CONTRACT.recommendedColumns,
     syncBridgeLoadBatchEvidence,
+    embeddedLineageEvidence,
     blockers: hasAnyReceiptEvidence
       ? []
       : [
-          'Product load receipt fixture has no productLoadReceipts or syncBridgeLoadBatches entries.',
+          'Product load receipt fixture has no productLoadReceipts, syncBridgeLoadBatches, or embeddedLineageReceipts entries.',
         ],
   };
 }
@@ -470,6 +539,46 @@ function syncBridgeLoadBatchEvidenceFromFixture(fixture) {
     timestampColumns: batches.length > 0 ? [SYNC_BRIDGE_LOAD_BATCH_CONTRACT.timestampColumn] : [],
     acceptedSourceSystemsByTable: SYNC_BRIDGE_PROJECTOR_SOURCES_BY_TABLE,
     blockers: batches.length > 0 ? [] : ['syncBridgeLoadBatches fixture has no entries.'],
+  };
+}
+
+function embeddedLineageEvidenceFromFixture(fixture) {
+  const receipts = Array.isArray(fixture.embeddedLineageReceipts)
+    ? fixture.embeddedLineageReceipts
+    : [];
+  const acceptedTables = Object.keys(EMBEDDED_LINEAGE_CONTRACTS_BY_TABLE);
+  const tables = acceptedTables.map(tableName => {
+    const contract = embeddedLineageContractFor(tableName);
+    const receipt = receipts.find(
+      item => String(item.tableName ?? '').toLowerCase() === tableName.toLowerCase()
+    );
+    const rowCount = Number(receipt?.rowCount ?? 0);
+    const missingIdentity = Number(receipt?.rowsMissingSourceWorkbookId ?? 0);
+    const missingTimestamp = Number(receipt?.rowsMissingSourceWorkbookLockedAt ?? 0);
+    const latestReceiptAt = parseIso(receipt?.sourceWorkbookLockedAt);
+
+    return {
+      tableName,
+      exists: Boolean(receipt),
+      identityColumn: contract.identityColumn,
+      timestampColumn: contract.timestampColumn,
+      latestReceiptAt,
+      complete:
+        Boolean(receipt) &&
+        rowCount > 0 &&
+        missingIdentity === 0 &&
+        missingTimestamp === 0 &&
+        Boolean(latestReceiptAt),
+    };
+  });
+
+  return {
+    exists: tables.some(table => table.complete),
+    acceptedTables,
+    tables,
+    blockers: tables.some(table => table.complete)
+      ? []
+      : ['No accepted fixture table has complete embedded lineage receipt fields.'],
   };
 }
 
@@ -529,6 +638,25 @@ function latestFixtureSyncBridgeLoadBatchAtFor(batches, tableName) {
         batch.CreatedAt,
       ])
   );
+}
+
+function latestFixtureEmbeddedLineageReceiptAtFor(receipts, tableName) {
+  if (!Array.isArray(receipts)) return null;
+  const contract = embeddedLineageContractFor(tableName);
+  if (!contract) return null;
+
+  const receipt = receipts.find(
+    item => String(item.tableName ?? '').toLowerCase() === String(tableName).toLowerCase()
+  );
+  if (!receipt) return null;
+
+  const rowCount = Number(receipt.rowCount ?? 0);
+  const missingIdentity = Number(receipt.rowsMissingSourceWorkbookId ?? 0);
+  const missingTimestamp = Number(receipt.rowsMissingSourceWorkbookLockedAt ?? 0);
+
+  if (rowCount <= 0 || missingIdentity !== 0 || missingTimestamp !== 0) return null;
+
+  return parseIso(receipt.sourceWorkbookLockedAt);
 }
 
 function buildRowsFromDatabase() {
@@ -746,7 +874,8 @@ function buildReport() {
           row.latestProductLoadReceiptAt ??
           latest(
             latestFixtureProductLoadReceiptAtFor(fixture.productLoadReceipts, row.tableName),
-            latestFixtureSyncBridgeLoadBatchAtFor(fixture.syncBridgeLoadBatches, row.tableName)
+            latestFixtureSyncBridgeLoadBatchAtFor(fixture.syncBridgeLoadBatches, row.tableName),
+            latestFixtureEmbeddedLineageReceiptAtFor(fixture.embeddedLineageReceipts, row.tableName)
           ),
       })
     );

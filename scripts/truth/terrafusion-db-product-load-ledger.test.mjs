@@ -243,6 +243,81 @@ test('product load ledger proves canonical land and improvement seeds from sync_
   assert.equal(improvement.lineageStatus, 'lineage_proven');
 });
 
+test('product load ledger accepts complete CanonicalSaleQualifications workbook lineage', async () => {
+  const root = makeTempRepo('tf-product-ledger-sale-qualification-workbook-');
+  const fixturePath = writeFixture(root, {
+    database: { container: 'fixture', database: 'terrafusion', user: 'postgres' },
+    embeddedLineageReceipts: [
+      {
+        tableName: 'CanonicalSaleQualifications',
+        sourceWorkbookId: 'c37a0000-0000-4000-8000-000000000001',
+        sourceWorkbookLockedAt: '2026-05-12T16:49:39.378Z',
+        rowCount: 251484,
+        rowsMissingSourceWorkbookId: 0,
+        rowsMissingSourceWorkbookLockedAt: 0,
+      },
+    ],
+    rows: [
+      {
+        tableName: 'CanonicalSaleQualifications',
+        productDomain: 'qualified_sales',
+        rowCount: 251484,
+        latestProductUpdatedAt: '2026-05-12T16:49:39.378Z',
+      },
+    ],
+  });
+
+  await execFileAsync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    env: { ...process.env, TF_PRODUCT_LOAD_LEDGER_FIXTURE: fixturePath },
+  });
+
+  const report = JSON.parse(
+    fs.readFileSync(
+      path.join(root, 'generated', 'truth', 'terrafusion-db-product-load-ledger.json'),
+      'utf8'
+    )
+  );
+
+  assert.equal(report.passed, true);
+  assert.equal(report.rows[0].latestProductLoadReceiptAt, '2026-05-12T16:49:39.378Z');
+  assert.equal(report.rows[0].lineageStatus, 'lineage_proven');
+  assert.equal(report.receiptEvidence.embeddedLineageEvidence.exists, true);
+});
+
+test('product load ledger keeps CamaCharacteristics red without a table-scoped receipt', async () => {
+  const root = makeTempRepo('tf-product-ledger-cama-no-receipt-');
+  const fixturePath = writeFixture(root, {
+    database: { container: 'fixture', database: 'terrafusion', user: 'postgres' },
+    rows: [
+      {
+        tableName: 'CamaCharacteristics',
+        productDomain: 'costforge',
+        rowCount: 75907,
+        latestProductUpdatedAt: '2026-04-17T03:41:23.707Z',
+      },
+    ],
+  });
+
+  await execFileAsync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    env: { ...process.env, TF_PRODUCT_LOAD_LEDGER_FIXTURE: fixturePath },
+  }).catch(error => {
+    assert.equal(error.code, 1);
+  });
+
+  const report = JSON.parse(
+    fs.readFileSync(
+      path.join(root, 'generated', 'truth', 'terrafusion-db-product-load-ledger.json'),
+      'utf8'
+    )
+  );
+
+  assert.equal(report.passed, false);
+  assert.equal(report.rows[0].latestProductLoadReceiptAt, null);
+  assert.equal(report.rows[0].lineageStatus, 'rows_exist_lineage_unproven');
+});
+
 test('product load ledger does not treat unrelated sync_bridge batches as table lineage', async () => {
   const root = makeTempRepo('tf-product-ledger-sync-batch-unrelated-');
   const fixturePath = writeFixture(root, {
