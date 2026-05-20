@@ -4,7 +4,11 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 
-vi.mock('@/services/authAPI', () => ({ __esModule: true, login: vi.fn() }));
+vi.mock('@/services/authAPI', () => ({
+  __esModule: true,
+  login: vi.fn(),
+  getAccessPolicy: vi.fn(),
+}));
 
 // Prevent AuthProvider from calling fetchDevToken() in dev preview mode —
 // that fetch hangs in jsdom and consumes the 5s test timeout.
@@ -19,13 +23,22 @@ vi.mock('react-router-dom', async () => {
   return { ...actual, useNavigate: () => navigate };
 });
 
-import { login as authLogin } from '@/services/authAPI';
+import { getAccessPolicy, login as authLogin } from '@/services/authAPI';
 import { AuthProvider } from '@/auth/AuthProvider';
 import LoginPage from '../LoginPage';
 
 describe('LoginPage real auth exchange', () => {
   beforeEach(() => {
     (authLogin as vi.Mock).mockReset();
+    (getAccessPolicy as vi.Mock).mockReset();
+    (getAccessPolicy as vi.Mock).mockResolvedValue({
+      signupMode: 'provisioned_access_only',
+      publicSignupEnabled: false,
+      accessRequestUrl: 'mailto:support@terrafusionmarket.com?subject=TerraFusion%20OS%20Provisioned%20Access%20Request',
+      supportEmail: 'support@terrafusionmarket.com',
+      message:
+        'TerraFusion access is provisioned by an administrator. Public self-signup is disabled. Request provisioned access from support@terrafusionmarket.com.',
+    });
     navigate.mockReset();
     localStorage.clear();
   });
@@ -40,6 +53,8 @@ describe('LoginPage real auth exchange', () => {
         </AuthProvider>
       </MemoryRouter>,
     );
+
+    await screen.findByRole('link', { name: /request access/i });
 
     const u = userEvent.setup();
     await u.type(screen.getByLabelText(/email/i), 'user@gov.example.com');
@@ -69,6 +84,8 @@ describe('LoginPage real auth exchange', () => {
       </MemoryRouter>,
     );
 
+    await screen.findByRole('link', { name: /request access/i });
+
     const u = userEvent.setup();
     await u.type(screen.getByLabelText(/email/i), 'user@gov.example.com');
     await u.type(screen.getByLabelText(/pass/i), 'bad');
@@ -78,7 +95,7 @@ describe('LoginPage real auth exchange', () => {
     expect(navigate).not.toHaveBeenCalled();
   });
 
-  it('states that public signup is disabled and access is provisioned', () => {
+  it('states that public signup is disabled and gives a provisioned-access request channel', async () => {
     render(
       <MemoryRouter initialEntries={['/login']}>
         <AuthProvider>
@@ -88,6 +105,10 @@ describe('LoginPage real auth exchange', () => {
     );
 
     expect(screen.getByText(/provisioned access only/i)).toBeInTheDocument();
-    expect(screen.getByText(/public self-signup is disabled/i)).toBeInTheDocument();
+    expect(await screen.findByText(/request provisioned access/i)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /request access/i })).toHaveAttribute(
+      'href',
+      'mailto:support@terrafusionmarket.com?subject=TerraFusion%20OS%20Provisioned%20Access%20Request',
+    );
   });
 });

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/auth/useAuth';
-import { login as authLogin } from '@/services/authAPI';
+import { getAccessPolicy, login as authLogin, type AccessPolicy } from '@/services/authAPI';
 
 /**
  * LoginPage — Auth redirect target with real JWT exchange.
@@ -18,6 +18,19 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [accessPolicy, setAccessPolicy] = useState<AccessPolicy | null>(null);
+
+  useEffect(() => {
+    let active = true;
+
+    getAccessPolicy().then((policy) => {
+      if (active) setAccessPolicy(policy);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,8 +59,17 @@ const LoginPage: React.FC = () => {
         <div className='mb-5 rounded-lg border border-cyan-500/20 bg-slate-900/70 px-4 py-3 text-sm text-slate-300'>
           <p className='font-semibold text-cyan-300'>Provisioned access only</p>
           <p className='mt-1 text-slate-400'>
-            Public self-signup is disabled. Use the operator account issued by the TerraFusion administrator.
+            {accessPolicy?.message ??
+              'Public self-signup is disabled. Use the operator account issued by the TerraFusion administrator.'}
           </p>
+          {accessPolicy?.accessRequestUrl && (
+            <a
+              href={accessPolicy.accessRequestUrl}
+              className='mt-3 inline-flex text-cyan-300 hover:text-cyan-200 font-semibold'
+            >
+              Request access
+            </a>
+          )}
         </div>
         {error && (
           <div className='mb-4 p-3 rounded bg-red-900/50 border border-red-500/50 text-red-300 text-sm text-center'>

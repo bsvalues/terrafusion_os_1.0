@@ -100,7 +100,9 @@ public sealed class HostingerAuthAccessTests
         {
             signupMode = "provisioned_access_only",
             publicSignupEnabled = false,
-            message = "TerraFusion access is provisioned by an administrator. Public self-signup is disabled."
+            accessRequestUrl = "mailto:support@terrafusionmarket.com?subject=TerraFusion%20OS%20Provisioned%20Access%20Request",
+            supportEmail = "support@terrafusionmarket.com",
+            message = "TerraFusion access is provisioned by an administrator. Public self-signup is disabled. Request provisioned access from support@terrafusionmarket.com."
         });
     }
 }

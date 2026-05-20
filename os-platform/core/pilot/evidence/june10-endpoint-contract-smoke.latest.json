@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-20T15:56:42.389Z",
+  "generatedAtUtc": "2026-05-20T16:21:13.111Z",
   "apiBaseUrl": "http://localhost:5046",
   "passed": true,
   "summary": {
@@ -30,8 +30,8 @@
       "authApplied": false,
       "status": 200,
       "contentType": "application/json; charset=utf-8",
-      "bodyText": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T15:56:42.2840332Z\",\"environment\":\"Development\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"unknown\"}",
-      "bodySnippet": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T15:56:42.2840332Z\",\"environment\":\"Development\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"unknown\"}",
+      "bodyText": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T16:21:13.0282847Z\",\"environment\":\"Development\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"unknown\"}",
+      "bodySnippet": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T16:21:13.0282847Z\",\"environment\":\"Development\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"unknown\"}",
       "ok": true,
       "error": null
     },
@@ -58,7 +58,7 @@
       "authApplied": true,
       "status": 200,
       "contentType": "application/json; charset=utf-8",
-      "bodyText": "{\"county\":\"Benton County\",\"countyId\":\"19190019-1919-1919-1919-191919191919\",\"rowType\":\"parcels\",\"runtimeTable\":\"canonical_tf.tf_parcel\",\"semantics\":{\"countyScoped\":true,\"activeOnly\":true,\"duplicateParcelVersionsCollapsed\":true,\"currentParcelVersion\":true,\"source\":\"canonical_tf_runtime_query\"},\"total\":null,\"totalKnown\":false,\"count\":5,\"rows\":[{\"parcelId\":\"108ec9ef-4474-4754-934e-df4748020a60\",\"parcelNumber\":\"101040000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-20T01:17:44.211902Z\"},{\"parcelId\":\"18bc082e-4aa8-4947-98a8-543a9f0e1c67\",\"parcelNumber\":\"101050000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-20T01:17:44.211902Z\"},{\"parcelId\":\"2dc77af1-515d-41f7-852e-923eac2fc66c\",\"parcelNumber\":\"101070000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-20T01:17:44.211902Z\"},{\"parcelId\":\"c4c1e8c6-6061-4c6d-9af2-a8ca7914a6bc\",\"parcelNumber\":\"101140000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-20T01:17:44.211902Z\"},{\"parcelId\":\"5da1e5f4-c0c9-4a5e-9484-dc37b8edcbf5\",\"parcelNumber\":\"101151000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-20T01:17:44.211902Z\"}]}",
+      "bodyText": "{\"county\":\"Benton County\",\"countyId\":\"19190019-1919-1919-1919-191919191919\",\"rowType\":\"parcels\",\"runtimeTable\":\"canonical_tf.tf_parcel\",\"semantics\":{\"countyScoped\":true,\"activeOnly\":true,\"duplicateParcelVersionsCollapsed\":true,\"currentParcelVersion\":true,\"source\":\"canonical_tf_runtime_query\"},\"total\":null,\"totalKnown\":false,\"count\":5,\"rows\":[{\"parcelId\":\"f1079787-a796-4ce7-9468-cb8b56b04802\",\"parcelNumber\":\"101040000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-20T16:01:30.094835Z\"},{\"parcelId\":\"f6aa32da-8bf1-466d-a650-fd28053cab48\",\"parcelNumber\":\"101050000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-20T16:01:30.094835Z\"},{\"parcelId\":\"b8faf953-ee54-434b-b26d-efc5ee6a8f80\",\"parcelNumber\":\"101070000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-20T16:01:30.094835Z\"},{\"parcelId\":\"5881d097-5d27-4fc4-b351-7ca8ae1f3723\",\"parcelNumber\":\"101140000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-20T16:01:30.094835Z\"},{\"parcelId\":\"b67a32d6-689c-4437-9b2d-734b7d31b632\",\"parcelNumber\":\"101151000000000\",\"address\":null,\"propertyType\":\"R\",\"legalDescription\":null,\"parcelStatus\":\"ACTIVE\",\"currentOwnerId\":null,\"currentAssessmentId\":null,\"updatedAt\":\"2026-05-20T16:01:30.094835Z\"}]}",
       "bodySnippet": "{\"county\":\"Benton County\",\"countyId\":\"19190019-1919-1919-1919-191919191919\",\"rowType\":\"parcels\",\"runtimeTable\":\"canonical_tf.tf_parcel\",\"semantics\":{\"countyScoped\":true,\"activeOnly\":true,\"duplicateParcelVersionsCollapsed\":true,\"currentParce",
       "ok": true,
       "error": null
@@ -72,8 +72,8 @@
       "authApplied": false,
       "status": 200,
       "contentType": "application/json; charset=utf-8",
-      "bodyText": "{\"signupMode\":\"provisioned_access_only\",\"publicSignupEnabled\":false,\"message\":\"TerraFusion access is provisioned by an administrator. Public self-signup is disabled.\"}",
-      "bodySnippet": "{\"signupMode\":\"provisioned_access_only\",\"publicSignupEnabled\":false,\"message\":\"TerraFusion access is provisioned by an administrator. Public self-signup is disabled.\"}",
+      "bodyText": "{\"signupMode\":\"provisioned_access_only\",\"publicSignupEnabled\":false,\"accessRequestUrl\":\"mailto:support@terrafusionmarket.com?subject=TerraFusion%20OS%20Provisioned%20Access%20Request\",\"supportEmail\":\"support@terrafusionmarket.com\",\"message\":\"TerraFusion access is provisioned by an administrator. Public self-signup is disabled. Request provisioned access from support@terrafusionmarket.com.\"}",
+      "bodySnippet": "{\"signupMode\":\"provisioned_access_only\",\"publicSignupEnabled\":false,\"accessRequestUrl\":\"mailto:support@terrafusionmarket.com?subject=TerraFusion%20OS%20Provisioned%20Access%20Request\",\"supportEmail\":\"support@terrafusionmarket.com\",\"message\"",
       "ok": true,
       "error": null
     }
