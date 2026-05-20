@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using TerraFusion.API.Controllers;
 using TerraFusion.API.Tests.TestHelpers;
@@ -126,6 +129,85 @@ public sealed class CountyRowsControllerTests : IDisposable
     }
 
     [Fact]
+    public async SystemTask GetParcels_FallsBackToTerraFusionPropertiesWhenCanonicalParcelTableIsNotYetProjected()
+    {
+        await using var connection = new SqliteConnection("Data Source=:memory:");
+        await connection.OpenAsync();
+
+        var configuration = new ConfigurationBuilder().Build();
+        var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        await using var db = new TerraFusionDbContext(options, configuration);
+        var countyId = Guid.NewGuid();
+        await db.Database.ExecuteSqlRawAsync(
+            """
+            CREATE TABLE Counties (
+                Id TEXT NOT NULL PRIMARY KEY,
+                Name TEXT NOT NULL,
+                State TEXT NOT NULL,
+                FipsCode TEXT NULL
+            );
+            """);
+        await db.Database.ExecuteSqlRawAsync(
+            """
+            CREATE TABLE Properties (
+                Id TEXT NOT NULL PRIMARY KEY,
+                PropertyId TEXT NOT NULL,
+                ParcelId TEXT NOT NULL,
+                ParcelNumber TEXT NOT NULL,
+                Address TEXT NOT NULL,
+                OwnerName TEXT NULL,
+                OwnerSSN TEXT NULL,
+                PropertyType TEXT NULL,
+                LegalDescription TEXT NULL,
+                Neighborhood TEXT NULL,
+                PropertyUseCode TEXT NULL,
+                TaxDistrictCode TEXT NULL,
+                TaxDistrictName TEXT NULL,
+                SitusCity TEXT NULL,
+                SitusState TEXT NULL,
+                SitusZip TEXT NULL,
+                Zoning TEXT NULL,
+                YearBuilt INTEGER NULL,
+                LotWidthFront TEXT NULL,
+                LotDepth TEXT NULL,
+                AssessedValue TEXT NOT NULL,
+                LandValue TEXT NOT NULL,
+                ImprovementValue TEXT NOT NULL,
+                MarketValue TEXT NOT NULL,
+                AssessmentDate TEXT NOT NULL,
+                LastUpdated TEXT NOT NULL,
+                TaxYear INTEGER NOT NULL,
+                CountyId TEXT NOT NULL,
+                CreatedAt TEXT NOT NULL,
+                UpdatedAt TEXT NOT NULL
+            );
+            """);
+        await db.Database.ExecuteSqlInterpolatedAsync(
+            $"""
+            INSERT INTO Counties (Id, Name, State, FipsCode)
+            VALUES ({countyId}, 'Benton County', 'WA', '53005');
+            """);
+        await InsertProductPropertyAsync(db, countyId, "BENTON-PRODUCT-001");
+        await InsertProductPropertyAsync(db, countyId, "BENTON-PRODUCT-002");
+
+        var sut = new CountyRowsController(db, NullLogger<CountyRowsController>.Instance);
+
+        var result = await sut.GetParcels("benton", includeTotal: true);
+
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var text = System.Text.Json.JsonSerializer.Serialize(ok.Value);
+        Assert.Contains("Benton County", text);
+        Assert.Contains("Properties", text);
+        Assert.Contains("terrafusion_properties_runtime_table", text);
+        Assert.Contains("BENTON-PRODUCT-001", text);
+        Assert.Contains("\"total\":2", text);
+        Assert.Contains("\"duplicateParcelVersionsCollapsed\":true", text);
+    }
+
+    [Fact]
     public async SystemTask GetSales_ReturnsSelectedCountyRowsOnly()
     {
         var result = await _sut.GetSales("benton");
@@ -184,6 +266,28 @@ public sealed class CountyRowsControllerTests : IDisposable
         TaxYear = 2026,
         CountyId = countyId,
     };
+
+    private static async SystemTask InsertProductPropertyAsync(TerraFusionDbContext db, Guid countyId, string parcelId)
+    {
+        var now = DateTime.UtcNow;
+        await db.Database.ExecuteSqlInterpolatedAsync(
+            $"""
+            INSERT INTO Properties (
+                Id, PropertyId, ParcelId, ParcelNumber, Address, OwnerName, OwnerSSN, PropertyType,
+                LegalDescription, Neighborhood, PropertyUseCode, TaxDistrictCode, TaxDistrictName,
+                SitusCity, SitusState, SitusZip, Zoning, YearBuilt, LotWidthFront, LotDepth,
+                AssessedValue, LandValue, ImprovementValue, MarketValue, AssessmentDate, LastUpdated,
+                TaxYear, CountyId, CreatedAt, UpdatedAt
+            )
+            VALUES (
+                {Guid.NewGuid()}, {parcelId}, {parcelId}, {parcelId}, {parcelId + " Main St"}, NULL, NULL, 'residential',
+                NULL, '100', NULL, NULL, NULL,
+                'Test', 'WA', NULL, NULL, NULL, NULL, NULL,
+                250000, 80000, 170000, 260000, {now}, {now},
+                2026, {countyId}, {now}, {now}
+            );
+            """);
+    }
 
     private static ComparableSale MakeLegacySale(Guid countyId, string parcelId) => new()
     {

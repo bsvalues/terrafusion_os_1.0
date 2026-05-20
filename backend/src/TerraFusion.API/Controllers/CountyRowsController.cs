@@ -44,6 +44,27 @@ public sealed class CountyRowsController : ControllerBase
         var safeLimit = Math.Clamp(limit, 1, 500);
         var safeOffset = Math.Max(offset, 0);
 
+        try
+        {
+            return await GetCanonicalParcelRowsAsync(county, safeLimit, safeOffset, includeTotal, ct);
+        }
+        catch (Exception ex) when (IsMissingCanonicalParcelProjection(ex))
+        {
+            _logger.LogWarning(
+                ex,
+                "Canonical parcel projection table is unavailable for county {CountyId}; using TerraFusion Properties runtime table with explicit projection-pending metadata.",
+                county.Id);
+            return await GetPropertyParcelRowsAsync(county, safeLimit, safeOffset, includeTotal, ct);
+        }
+    }
+
+    private async Task<IActionResult> GetCanonicalParcelRowsAsync(
+        CountyProjection county,
+        int safeLimit,
+        int safeOffset,
+        bool includeTotal,
+        CancellationToken ct)
+    {
         var activeParcels = _db.TfParcels
             .AsNoTracking()
             .Where(p =>
@@ -140,6 +161,77 @@ public sealed class CountyRowsController : ControllerBase
                 duplicateParcelVersionsCollapsed = true,
                 currentParcelVersion = true,
                 source = "canonical_tf_runtime_query",
+            },
+            total,
+            totalKnown = includeTotal,
+            count = rows.Count,
+            rows,
+        });
+    }
+
+    private async Task<IActionResult> GetPropertyParcelRowsAsync(
+        CountyProjection county,
+        int safeLimit,
+        int safeOffset,
+        bool includeTotal,
+        CancellationToken ct)
+    {
+        var properties = _db.Properties
+            .AsNoTracking()
+            .Where(p =>
+                p.CountyId == county.Id &&
+                p.ParcelNumber != null &&
+                p.ParcelNumber != string.Empty);
+
+        var distinctParcelNumbers = properties
+            .Select(p => p.ParcelNumber!)
+            .Distinct();
+        int? total = includeTotal ? await distinctParcelNumbers.CountAsync(ct) : null;
+        var pageParcelNumbers = await distinctParcelNumbers
+            .OrderBy(parcelNumber => parcelNumber)
+            .Skip(safeOffset)
+            .Take(safeLimit)
+            .ToListAsync(ct);
+        var pageRows = pageParcelNumbers.Count == 0
+            ? []
+            : await properties
+                .Where(p => pageParcelNumbers.Contains(p.ParcelNumber!))
+                .ToListAsync(ct);
+        var rows = pageRows
+            .GroupBy(p => p.ParcelNumber)
+            .Select(g => g
+                .OrderByDescending(p => p.LastUpdated)
+                .ThenByDescending(p => p.UpdatedAt)
+                .First())
+            .OrderBy(p => p.ParcelNumber)
+            .Select(p => new
+            {
+                parcelId = p.Id,
+                parcelNumber = p.ParcelNumber,
+                address = p.Address,
+                propertyType = p.PropertyType,
+                legalDescription = p.LegalDescription,
+                parcelStatus = "UNKNOWN_PRODUCT_TABLE_STATUS",
+                currentOwnerId = (Guid?)null,
+                currentAssessmentId = (Guid?)null,
+                updatedAt = p.LastUpdated == default ? p.UpdatedAt : p.LastUpdated,
+            })
+            .ToList();
+
+        return Ok(new
+        {
+            county = county.Name,
+            countyId = county.Id,
+            rowType = "parcels",
+            runtimeTable = "Properties",
+            semantics = new
+            {
+                countyScoped = true,
+                activeOnly = false,
+                duplicateParcelVersionsCollapsed = true,
+                currentParcelVersion = false,
+                source = "terrafusion_properties_runtime_table",
+                canonicalProjectionPending = true,
             },
             total,
             totalKnown = includeTotal,
@@ -358,6 +450,23 @@ public sealed class CountyRowsController : ControllerBase
         {
             return null;
         }
+    }
+
+    private static bool IsMissingCanonicalParcelProjection(Exception exception)
+    {
+        for (var current = exception; current is not null; current = current.InnerException)
+        {
+            var message = current.Message;
+            if (!message.Contains("tf_parcel", StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            if (message.Contains("no such table", StringComparison.OrdinalIgnoreCase) ||
+                message.Contains("invalid object name", StringComparison.OrdinalIgnoreCase) ||
+                message.Contains("does not exist", StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+
+        return false;
     }
 
     private async Task<CountyProjection?> ResolveCountyAsync(string countyToken, CancellationToken ct)
