@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-20T17:45:34.548Z",
+  "generatedAtUtc": "2026-05-20T18:48:10.229Z",
   "gate": "june10_launch_gate",
   "apiBaseUrl": "http://localhost:5046",
   "publicBaseUrl": "https://terrafusionmarket.com",
@@ -11,9 +11,9 @@
     "productLoadLedgerPassed": false,
     "rustRuntimeProven": false,
     "rustClaimsSuppressed": true,
-    "activeRuntimeLegacyLeaks": 20,
-    "rawRuntimeLegacyReferences": 1926,
-    "blockers": 3,
+    "activeRuntimeLegacyLeaks": 0,
+    "rawRuntimeLegacyReferences": 1917,
+    "blockers": 2,
     "warnings": 1
   },
   "checks": {
@@ -44,113 +44,31 @@
     },
     "legacyRuntimeBoundary": {
       "allowedLanePolicy": "Sync/admin/proof lanes may retain legacy-source terms; active product runtime may not.",
-      "rawCount": 1926,
-      "blockingActiveRuntimeDependencyCount": 20,
+      "rawCount": 1917,
+      "blockingActiveRuntimeDependencyCount": 0,
       "categoryCounts": {
-        "active_runtime_dependency": 20,
-        "ingestion_sync_allowed": 119,
-        "proof_or_test_only": 1376,
-        "docs_comments_labels": 254,
-        "archived_or_quarantined": 0,
-        "user_facing_terminology": 157
+        "active_runtime_dependency": 0,
+        "ingestion_sync_allowed": 120,
+        "proof_or_test_only": 1338,
+        "docs_comments_labels": 172,
+        "archived_or_quarantined": 179,
+        "user_facing_terminology": 108
       },
       "examplesByCategory": {
-        "active_runtime_dependency": [
-          {
-            "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 31,
-            "term": "PACS",
-            "allowed": false,
-            "line": "using TerraFusion.Core.PACS;",
-            "category": "active_runtime_dependency",
-            "classification": "active_runtime_dependency"
-          },
-          {
-            "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 850,
-            "term": "PACS",
-            "allowed": false,
-            "line": "svc.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.Core.PACS.PacsSqlAdapter>();",
-            "category": "active_runtime_dependency",
-            "classification": "active_runtime_dependency"
-          },
-          {
-            "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 1615,
-            "term": "PACS",
-            "allowed": false,
-            "line": "builder.Services.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.API.Services.PacsEfAdapter>();",
-            "category": "active_runtime_dependency",
-            "classification": "active_runtime_dependency"
-          },
-          {
-            "filePath": "backend/src/TerraFusion.API/Controllers/HarrisPACSIntegrationController.cs",
-            "lineNumber": 4,
-            "term": "PACS",
-            "allowed": false,
-            "line": "using TerraFusion.Core.PACS;",
-            "category": "active_runtime_dependency",
-            "classification": "active_runtime_dependency"
-          },
-          {
-            "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
-            "lineNumber": 19,
-            "term": "PACS",
-            "allowed": false,
-            "line": "using TerraFusion.Core.PACS;",
-            "category": "active_runtime_dependency",
-            "classification": "active_runtime_dependency"
-          },
-          {
-            "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
-            "lineNumber": 29,
-            "term": "pacs",
-            "allowed": false,
-            "line": "[Route(\"api/pacs\")]",
-            "category": "active_runtime_dependency",
-            "classification": "active_runtime_dependency"
-          },
-          {
-            "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
-            "lineNumber": 77,
-            "term": "PACS",
-            "allowed": false,
-            "line": "Message = \"PACS SQL Server not configured. Set ConnectionStrings:PacsConnection.\"",
-            "category": "active_runtime_dependency",
-            "classification": "active_runtime_dependency"
-          },
-          {
-            "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
-            "lineNumber": 25,
-            "term": "pacs",
-            "allowed": false,
-            "line": "[Route(\"api/production/pacs\")]",
-            "category": "active_runtime_dependency",
-            "classification": "active_runtime_dependency"
-          },
-          {
-            "filePath": "backend/src/TerraFusion.API/Controllers/TerraFusionMarketplaceController.cs",
-            "lineNumber": 146,
-            "term": "harris",
-            "allowed": false,
-            "line": "[HttpGet(\"activations/{activationId}/harris-bridge\")]",
-            "category": "active_runtime_dependency",
-            "classification": "active_runtime_dependency"
-          },
-          {
-            "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
-            "lineNumber": 287,
-            "term": "SqlConnection",
-            "allowed": false,
-            "line": "using var connection = new SqlConnection(_ciapsConnectionString);",
-            "category": "active_runtime_dependency",
-            "classification": "active_runtime_dependency"
-          }
-        ],
+        "active_runtime_dependency": [],
         "ingestion_sync_allowed": [
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 2923,
+            "lineNumber": 849,
+            "term": "PACS",
+            "allowed": true,
+            "line": "svc.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.Core.PACS.PacsSqlAdapter>();",
+            "category": "ingestion_sync_allowed",
+            "classification": "ingestion_sync_allowed"
+          },
+          {
+            "filePath": "backend/src/TerraFusion.API/Program.cs",
+            "lineNumber": 2939,
             "term": "pacs",
             "allowed": true,
             "line": "app.MapPost(\"/api/admin/pacs/seed\", (",
@@ -159,7 +77,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 2953,
+            "lineNumber": 2969,
             "term": "pacs",
             "allowed": true,
             "line": "return Results.Accepted(\"/api/admin/pacs/seed/status\",",
@@ -168,7 +86,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 2957,
+            "lineNumber": 2973,
             "term": "pacs",
             "allowed": true,
             "line": "app.MapGet(\"/api/admin/pacs/seed/status\", () =>",
@@ -177,7 +95,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 2967,
+            "lineNumber": 2983,
             "term": "pacs",
             "allowed": true,
             "line": "app.MapPost(\"/api/admin/pacs/canonicalize\", (",
@@ -186,7 +104,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 2995,
+            "lineNumber": 3011,
             "term": "pacs",
             "allowed": true,
             "line": "return Results.Accepted(\"/api/admin/pacs/canonicalize/status\",",
@@ -195,7 +113,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 2999,
+            "lineNumber": 3015,
             "term": "pacs",
             "allowed": true,
             "line": "app.MapGet(\"/api/admin/pacs/canonicalize/status\", () =>",
@@ -204,7 +122,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 3013,
+            "lineNumber": 3029,
             "term": "pacs",
             "allowed": true,
             "line": "app.MapPost(\"/api/admin/pacs/seed-sales\", (",
@@ -213,7 +131,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 3042,
+            "lineNumber": 3058,
             "term": "pacs",
             "allowed": true,
             "line": "return Results.Accepted(\"/api/admin/pacs/seed-sales/status\",",
@@ -222,111 +140,102 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 3046,
+            "lineNumber": 3062,
             "term": "pacs",
             "allowed": true,
             "line": "app.MapGet(\"/api/admin/pacs/seed-sales/status\", () =>",
-            "category": "ingestion_sync_allowed",
-            "classification": "ingestion_sync_allowed"
-          },
-          {
-            "filePath": "backend/src/TerraFusion.API/Controllers/DataImportController.cs",
-            "lineNumber": 8,
-            "term": "PACS",
-            "allowed": true,
-            "line": "/// Full PACS sync wiring is Post-R1; these endpoints return empty collections",
             "category": "ingestion_sync_allowed",
             "classification": "ingestion_sync_allowed"
           }
         ],
         "proof_or_test_only": [
           {
-            "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
-            "lineNumber": 48,
-            "term": "pacs",
-            "allowed": true,
-            "line": "///   GET  sync-pop-2/pacs-table-columns   — read-only INFORMATION_SCHEMA query",
-            "category": "proof_or_test_only",
-            "classification": "proof_or_test_only"
-          },
-          {
-            "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
-            "lineNumber": 144,
+            "filePath": "backend/src/TerraFusion.API/Controllers/CognitiveFrameworkMonitoringController.cs",
+            "lineNumber": 219,
             "term": "Harris",
             "allowed": true,
-            "line": "/// SYNC-POP-2: drains live Harris PACS into the doctrine pipeline.",
+            "line": "TaskTitle = \"Deploy Harris PACS Integration\",",
             "category": "proof_or_test_only",
             "classification": "proof_or_test_only"
           },
           {
-            "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
-            "lineNumber": 171,
-            "term": "pacs_oltp",
+            "filePath": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
+            "lineNumber": 119,
+            "term": "Harris",
             "allowed": true,
-            "line": "hint  = \"Set TF_DEV_PACS_PASSWORD env var and ensure pacs_oltp is reachable on localhost,1433.\",",
+            "line": "_logger.LogInformation(\"CostForge test Harris PACS sync endpoint called: {CountyId}\", request.CountyId);",
             "category": "proof_or_test_only",
             "classification": "proof_or_test_only"
           },
           {
-            "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
+            "filePath": "backend/src/TerraFusion.API/Controllers/ElitePerformanceMonitoringController.cs",
+            "lineNumber": 180,
+            "term": "PACS",
+            "allowed": true,
+            "line": "/// Get production PACS performance metrics",
+            "category": "proof_or_test_only",
+            "classification": "proof_or_test_only"
+          },
+          {
+            "filePath": "backend/src/TerraFusion.API/Controllers/ElitePerformanceMonitoringController.cs",
             "lineNumber": 183,
             "term": "PACS",
             "allowed": true,
-            "line": "// ── S1: PACS sales → legacy_pacs_raw.sale ─────────────────",
+            "line": "/// <returns>Production PACS performance metrics with database and sync performance</returns>",
             "category": "proof_or_test_only",
             "classification": "proof_or_test_only"
           },
           {
-            "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
+            "filePath": "backend/src/TerraFusion.API/Controllers/ElitePerformanceMonitoringController.cs",
+            "lineNumber": 184,
+            "term": "pacs",
+            "allowed": true,
+            "line": "[HttpGet(\"production-pacs/performance\")]",
+            "category": "proof_or_test_only",
+            "classification": "proof_or_test_only"
+          },
+          {
+            "filePath": "backend/src/TerraFusion.API/Controllers/ElitePerformanceMonitoringController.cs",
+            "lineNumber": 189,
+            "term": "PACS",
+            "allowed": true,
+            "line": "_logger.LogInformation(\"🏛️ API: Getting production PACS performance metrics\");",
+            "category": "proof_or_test_only",
+            "classification": "proof_or_test_only"
+          },
+          {
+            "filePath": "backend/src/TerraFusion.API/Controllers/ElitePerformanceMonitoringController.cs",
+            "lineNumber": 195,
+            "term": "PACS",
+            "allowed": true,
+            "line": "_logger.LogInformation(\"✅ Production PACS metrics retrieved: {Records} records processed, {QueryTime:F2}ms avg query time, {IntegrityScore:F2} integrity score\",",
+            "category": "proof_or_test_only",
+            "classification": "proof_or_test_only"
+          },
+          {
+            "filePath": "backend/src/TerraFusion.API/Controllers/ElitePerformanceMonitoringController.cs",
             "lineNumber": 202,
             "term": "PACS",
             "allowed": true,
-            "line": "// ── S2-A: PACS prop_supp_assoc → legacy_pacs_raw.prop_supp_assoc",
+            "line": "_logger.LogError(ex, \"❌ Error getting production PACS performance metrics\");",
             "category": "proof_or_test_only",
             "classification": "proof_or_test_only"
           },
           {
-            "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
-            "lineNumber": 267,
-            "term": "Harris",
-            "allowed": true,
-            "line": "/// SYNC-POP-2 helper: introspects a Harris PACS source table to see",
-            "category": "proof_or_test_only",
-            "classification": "proof_or_test_only"
-          },
-          {
-            "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
-            "lineNumber": 269,
+            "filePath": "backend/src/TerraFusion.API/Controllers/ElitePerformanceMonitoringController.cs",
+            "lineNumber": 205,
             "term": "PACS",
             "allowed": true,
-            "line": "/// assumptions against real PACS schema.",
+            "line": "Error = \"Production PACS performance error\",",
             "category": "proof_or_test_only",
             "classification": "proof_or_test_only"
           },
           {
-            "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
-            "lineNumber": 271,
-            "term": "pacs",
-            "allowed": true,
-            "line": "[HttpGet(\"sync-pop-2/pacs-table-columns\")]",
-            "category": "proof_or_test_only",
-            "classification": "proof_or_test_only"
-          },
-          {
-            "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
-            "lineNumber": 290,
-            "term": "SqlConnection",
-            "allowed": true,
-            "line": "await using var conn = new Microsoft.Data.SqlClient.SqlConnection(pacsCs);",
-            "category": "proof_or_test_only",
-            "classification": "proof_or_test_only"
-          },
-          {
-            "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
-            "lineNumber": 411,
+            "filePath": "backend/src/TerraFusion.API/Controllers/ElitePerformanceMonitoringController.cs",
+            "lineNumber": 524,
             "term": "PACS",
             "allowed": true,
-            "line": "// ── S1: PACS sales → legacy_pacs_raw.sale ─────────────────",
+            "line": "[\"Production PACS\"] = \"Healthy\",",
             "category": "proof_or_test_only",
             "classification": "proof_or_test_only"
           }
@@ -334,7 +243,7 @@
         "docs_comments_labels": [
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 137,
+            "lineNumber": 136,
             "term": "PACS",
             "allowed": true,
             "line": "// ── Standalone PACS seed mode ──────────────────────────────────────────────",
@@ -343,7 +252,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 138,
+            "lineNumber": 137,
             "term": "pacs",
             "allowed": true,
             "line": "// Run as: dotnet run --project TerraFusion.API -- --seed-pacs",
@@ -352,7 +261,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 180,
+            "lineNumber": 179,
             "term": "PACS",
             "allowed": true,
             "line": "// Re-runs only canonical Property upserts from the PACS mirror.",
@@ -361,7 +270,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 327,
+            "lineNumber": 326,
             "term": "PACS",
             "allowed": true,
             "line": "// ── Levy rebuild from PACS oracle + canonical levy tables ──────────────────",
@@ -370,7 +279,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 1221,
+            "lineNumber": 1228,
             "term": "PACS",
             "allowed": true,
             "line": "// Slice OPS-1-A-2 — PACS reachability probe + Process-backed refresh",
@@ -379,7 +288,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 1251,
+            "lineNumber": 1258,
             "term": "PACS",
             "allowed": true,
             "line": "// C36 / canonical / PACS work (per C41-A Hard Guards).",
@@ -388,7 +297,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 1258,
+            "lineNumber": 1265,
             "term": "PACS",
             "allowed": true,
             "line": "// C43-A guards. No mutation, no joins, no PACS reads.",
@@ -397,7 +306,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 1282,
+            "lineNumber": 1289,
             "term": "PACS",
             "allowed": true,
             "line": "// Slice C48-D — opt-in PACS schema catalog wiring. When the operator has",
@@ -406,7 +315,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 1292,
+            "lineNumber": 1299,
             "term": "Harris",
             "allowed": true,
             "line": "// the connection string MUST point at Harris PACS (the legacy source), never",
@@ -415,7 +324,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 1339,
+            "lineNumber": 1346,
             "term": "Harris",
             "allowed": true,
             "line": "// 🔄 Legacy Harris PACS background sync is disabled by default.",
@@ -423,11 +332,102 @@
             "classification": "docs_comments_labels"
           }
         ],
-        "archived_or_quarantined": [],
+        "archived_or_quarantined": [
+          {
+            "filePath": "backend/src/TerraFusion.API/Program.cs",
+            "lineNumber": 1626,
+            "term": "PACS",
+            "allowed": true,
+            "line": "TerraFusion.Core.PACS.PacsServiceRegistration.AddPacsAdapter(builder.Services);",
+            "category": "archived_or_quarantined",
+            "classification": "archived_or_quarantined"
+          },
+          {
+            "filePath": "backend/src/TerraFusion.API/Program.cs",
+            "lineNumber": 1630,
+            "term": "PACS",
+            "allowed": true,
+            "line": "builder.Services.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.API.Services.PacsEfAdapter>();",
+            "category": "archived_or_quarantined",
+            "classification": "archived_or_quarantined"
+          },
+          {
+            "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
+            "lineNumber": 48,
+            "term": "pacs",
+            "allowed": true,
+            "line": "///   GET  sync-pop-2/pacs-table-columns   — read-only INFORMATION_SCHEMA query",
+            "category": "archived_or_quarantined",
+            "classification": "archived_or_quarantined"
+          },
+          {
+            "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
+            "lineNumber": 144,
+            "term": "Harris",
+            "allowed": true,
+            "line": "/// SYNC-POP-2: drains live Harris PACS into the doctrine pipeline.",
+            "category": "archived_or_quarantined",
+            "classification": "archived_or_quarantined"
+          },
+          {
+            "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
+            "lineNumber": 171,
+            "term": "pacs_oltp",
+            "allowed": true,
+            "line": "hint  = \"Set TF_DEV_PACS_PASSWORD env var and ensure pacs_oltp is reachable on localhost,1433.\",",
+            "category": "archived_or_quarantined",
+            "classification": "archived_or_quarantined"
+          },
+          {
+            "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
+            "lineNumber": 183,
+            "term": "PACS",
+            "allowed": true,
+            "line": "// ── S1: PACS sales → legacy_pacs_raw.sale ─────────────────",
+            "category": "archived_or_quarantined",
+            "classification": "archived_or_quarantined"
+          },
+          {
+            "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
+            "lineNumber": 202,
+            "term": "PACS",
+            "allowed": true,
+            "line": "// ── S2-A: PACS prop_supp_assoc → legacy_pacs_raw.prop_supp_assoc",
+            "category": "archived_or_quarantined",
+            "classification": "archived_or_quarantined"
+          },
+          {
+            "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
+            "lineNumber": 267,
+            "term": "Harris",
+            "allowed": true,
+            "line": "/// SYNC-POP-2 helper: introspects a Harris PACS source table to see",
+            "category": "archived_or_quarantined",
+            "classification": "archived_or_quarantined"
+          },
+          {
+            "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
+            "lineNumber": 269,
+            "term": "PACS",
+            "allowed": true,
+            "line": "/// assumptions against real PACS schema.",
+            "category": "archived_or_quarantined",
+            "classification": "archived_or_quarantined"
+          },
+          {
+            "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
+            "lineNumber": 271,
+            "term": "pacs",
+            "allowed": true,
+            "line": "[HttpGet(\"sync-pop-2/pacs-table-columns\")]",
+            "category": "archived_or_quarantined",
+            "classification": "archived_or_quarantined"
+          }
+        ],
         "user_facing_terminology": [
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 903,
+            "lineNumber": 902,
             "term": "pacs",
             "allowed": true,
             "line": "if (args.Contains(\"--seed-pacs\"))",
@@ -436,7 +436,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 1300,
+            "lineNumber": 1307,
             "term": "harris",
             "allowed": true,
             "line": "?? \"harris-pacs-prod\";",
@@ -445,16 +445,16 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 2453,
+            "lineNumber": 2467,
             "term": "pacs",
             "allowed": true,
-            "line": ".AddPacsReadiness(\"ready\", \"pacs\")",
+            "line": "healthChecksBuilder.AddPacsReadiness(\"ready\", \"pacs\");",
             "category": "user_facing_terminology",
             "classification": "user_facing_terminology"
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 2928,
+            "lineNumber": 2944,
             "term": "PACS",
             "allowed": true,
             "line": "return Results.Conflict(\"PACS seed already running. Check /api/admin/pacs/seed/status.\");",
@@ -463,7 +463,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 2954,
+            "lineNumber": 2970,
             "term": "PACS",
             "allowed": true,
             "line": "new { message = \"PACS seed started in background. Poll /api/admin/pacs/seed/status.\" });",
@@ -472,7 +472,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 2996,
+            "lineNumber": 3012,
             "term": "pacs",
             "allowed": true,
             "line": "new { message = \"Canonicalization started. Poll /api/admin/pacs/canonicalize/status.\" });",
@@ -481,7 +481,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 3018,
+            "lineNumber": 3034,
             "term": "pacs",
             "allowed": true,
             "line": "return Results.Conflict(\"Sales seed already running. Check /api/admin/pacs/seed-sales/status.\");",
@@ -490,7 +490,7 @@
           },
           {
             "filePath": "backend/src/TerraFusion.API/Program.cs",
-            "lineNumber": 3043,
+            "lineNumber": 3059,
             "term": "pacs",
             "allowed": true,
             "line": "new { message = \"Sales-only seed started. Poll /api/admin/pacs/seed-sales/status.\" });",
@@ -520,16 +520,7 @@
       "findings": [
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 31,
-          "term": "PACS",
-          "allowed": false,
-          "line": "using TerraFusion.Core.PACS;",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 137,
+          "lineNumber": 136,
           "term": "PACS",
           "allowed": true,
           "line": "// ── Standalone PACS seed mode ──────────────────────────────────────────────",
@@ -538,7 +529,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 138,
+          "lineNumber": 137,
           "term": "pacs",
           "allowed": true,
           "line": "// Run as: dotnet run --project TerraFusion.API -- --seed-pacs",
@@ -547,7 +538,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 180,
+          "lineNumber": 179,
           "term": "PACS",
           "allowed": true,
           "line": "// Re-runs only canonical Property upserts from the PACS mirror.",
@@ -556,7 +547,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 327,
+          "lineNumber": 326,
           "term": "PACS",
           "allowed": true,
           "line": "// ── Levy rebuild from PACS oracle + canonical levy tables ──────────────────",
@@ -565,16 +556,16 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 850,
+          "lineNumber": 849,
           "term": "PACS",
-          "allowed": false,
+          "allowed": true,
           "line": "svc.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.Core.PACS.PacsSqlAdapter>();",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
+          "category": "ingestion_sync_allowed",
+          "classification": "ingestion_sync_allowed"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 903,
+          "lineNumber": 902,
           "term": "pacs",
           "allowed": true,
           "line": "if (args.Contains(\"--seed-pacs\"))",
@@ -583,7 +574,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1221,
+          "lineNumber": 1228,
           "term": "PACS",
           "allowed": true,
           "line": "// Slice OPS-1-A-2 — PACS reachability probe + Process-backed refresh",
@@ -592,7 +583,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1251,
+          "lineNumber": 1258,
           "term": "PACS",
           "allowed": true,
           "line": "// C36 / canonical / PACS work (per C41-A Hard Guards).",
@@ -601,7 +592,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1258,
+          "lineNumber": 1265,
           "term": "PACS",
           "allowed": true,
           "line": "// C43-A guards. No mutation, no joins, no PACS reads.",
@@ -610,7 +601,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1282,
+          "lineNumber": 1289,
           "term": "PACS",
           "allowed": true,
           "line": "// Slice C48-D — opt-in PACS schema catalog wiring. When the operator has",
@@ -619,7 +610,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1292,
+          "lineNumber": 1299,
           "term": "Harris",
           "allowed": true,
           "line": "// the connection string MUST point at Harris PACS (the legacy source), never",
@@ -628,7 +619,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1300,
+          "lineNumber": 1307,
           "term": "harris",
           "allowed": true,
           "line": "?? \"harris-pacs-prod\";",
@@ -637,7 +628,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1339,
+          "lineNumber": 1346,
           "term": "Harris",
           "allowed": true,
           "line": "// 🔄 Legacy Harris PACS background sync is disabled by default.",
@@ -646,7 +637,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1340,
+          "lineNumber": 1347,
           "term": "PACS",
           "allowed": true,
           "line": "// The canonical path is explicit TerraFusionSync invocation through the PACS adapter boundary.",
@@ -655,7 +646,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1358,
+          "lineNumber": 1365,
           "term": "pacs",
           "allowed": true,
           "line": "// docs/pacs/block-c-contract-v1.8.md for the deprecation rationale.",
@@ -664,7 +655,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1600,
+          "lineNumber": 1607,
           "term": "PACS",
           "allowed": true,
           "line": "// Phase 11: GIS data service — PACS-sourced parcel boundary & layer data",
@@ -673,34 +664,25 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1603,
+          "lineNumber": 1626,
           "term": "PACS",
           "allowed": true,
-          "line": "// 🏛️ PACS Adapter - pacscontract.v1 compliant read-only boundary",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "line": "TerraFusion.Core.PACS.PacsServiceRegistration.AddPacsAdapter(builder.Services);",
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1605,
+          "lineNumber": 1630,
           "term": "PACS",
           "allowed": true,
-          "line": "// When absent: seeded PACS data from EF Core / SQLite (PacsEfAdapter) for local dev",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1615,
-          "term": "PACS",
-          "allowed": false,
           "line": "builder.Services.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.API.Services.PacsEfAdapter>();",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1632,
+          "lineNumber": 1648,
           "term": "Harris",
           "allowed": true,
           "line": "// Detects discrepancies between Harris PACS and TerraFusion, auto-corrects data issues, maintains 99.9% accuracy",
@@ -709,7 +691,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1663,
+          "lineNumber": 1679,
           "term": "PACS",
           "allowed": true,
           "line": "// (ArcGIS-sourced) and canonical_tf.tf_parcel (PACS-sourced).",
@@ -718,7 +700,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1674,
+          "lineNumber": 1690,
           "term": "PACS",
           "allowed": true,
           "line": "// Slice S1: PACS sale raw landing — drains an IPacsSaleSource into",
@@ -727,7 +709,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1681,
+          "lineNumber": 1697,
           "term": "PACS",
           "allowed": true,
           "line": "// Slice S2-A: PACS prop_supp_assoc raw landing — supp-aware-join",
@@ -736,7 +718,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1687,
+          "lineNumber": 1703,
           "term": "PACS",
           "allowed": true,
           "line": "// Slice S1 (SYNC-POP-4a): PACS property/parcel raw landing — the",
@@ -745,7 +727,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1695,
+          "lineNumber": 1711,
           "term": "PACS",
           "allowed": true,
           "line": "// Slice S2-B (SYNC-POP-4b): PACS parcel-spine truth promoter —",
@@ -754,7 +736,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1703,
+          "lineNumber": 1719,
           "term": "PACS",
           "allowed": true,
           "line": "// Slice S3 (SYNC-POP-4c): PACS parcel canonical projector — writes",
@@ -763,7 +745,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1712,
+          "lineNumber": 1728,
           "term": "PACS",
           "allowed": true,
           "line": "// Single-tier (canonical-only) populator that reads PACS dbo.attribute",
@@ -772,7 +754,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1721,
+          "lineNumber": 1737,
           "term": "PACS",
           "allowed": true,
           "line": "// ATTR-POP-1; reads (i_attr_val_id, i_attr_val_cd) pairs from PACS",
@@ -781,7 +763,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1729,
+          "lineNumber": 1745,
           "term": "PACS",
           "allowed": true,
           "line": "// Slice B1-A: PACS account raw landing — Block B's PII-rich",
@@ -790,7 +772,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1736,
+          "lineNumber": 1752,
           "term": "PACS",
           "allowed": true,
           "line": "// Slice B1-B: PACS owner raw landing — 4-key year-versioned link",
@@ -799,7 +781,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1744,
+          "lineNumber": 1760,
           "term": "PACS",
           "allowed": true,
           "line": "// Slice B1-C: PACS wash_prop_owner_val raw landing — WSDOR-grade",
@@ -808,7 +790,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1752,
+          "lineNumber": 1768,
           "term": "PACS",
           "allowed": true,
           "line": "// Slice C1-A: PACS imprv raw landing — Block C's per-improvement",
@@ -817,7 +799,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1759,
+          "lineNumber": 1775,
           "term": "PACS",
           "allowed": true,
           "line": "// Slice C1-B: PACS imprv_detail raw landing — per-component",
@@ -826,7 +808,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1766,
+          "lineNumber": 1782,
           "term": "PACS",
           "allowed": true,
           "line": "// Slice C1-C: PACS imprv_attr raw landing with dictionary",
@@ -835,7 +817,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1771,
+          "lineNumber": 1787,
           "term": "PACS",
           "allowed": true,
           "line": "// the operator can refresh codes from PACS dbo.imprv_attr_val at",
@@ -844,7 +826,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1834,
+          "lineNumber": 1850,
           "term": "PACS",
           "allowed": true,
           "line": "// Slice L1: PACS land_detail raw landing — Block C's land lane",
@@ -853,7 +835,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1841,
+          "lineNumber": 1857,
           "term": "PACS",
           "allowed": true,
           "line": "// SYNC-DOCTRINE-4-IMPL-V4: PACS property_val raw landing — provides",
@@ -862,7 +844,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1863,
+          "lineNumber": 1879,
           "term": "PACS",
           "allowed": true,
           "line": "// landing-layer imprv_attr dictionary from PACS at backend startup.",
@@ -871,7 +853,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1876,
+          "lineNumber": 1892,
           "term": "pacs",
           "allowed": true,
           "line": "// docs/pacs/block-d-execution-plan.md §3.1.",
@@ -880,7 +862,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1884,
+          "lineNumber": 1900,
           "term": "pacs",
           "allowed": true,
           "line": "// docs/pacs/block-d-execution-plan.md §3.2.",
@@ -889,7 +871,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1893,
+          "lineNumber": 1909,
           "term": "pacs",
           "allowed": true,
           "line": "// docs/pacs/block-d-execution-plan.md §3.3 + v1.8 contract.",
@@ -898,7 +880,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1903,
+          "lineNumber": 1919,
           "term": "pacs",
           "allowed": true,
           "line": "// canonical_tf.tf_sale. Per docs/pacs/block-c-contract-v1.9.md",
@@ -907,7 +889,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1913,
+          "lineNumber": 1929,
           "term": "pacs",
           "allowed": true,
           "line": "// Per docs/pacs/blocks-d-through-h-design.md §F2. Read-only;",
@@ -916,7 +898,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1922,
+          "lineNumber": 1938,
           "term": "pacs",
           "allowed": true,
           "line": "// docs/pacs/blocks-d-through-h-design.md §\"F3\". Read-only.",
@@ -925,7 +907,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1930,
+          "lineNumber": 1946,
           "term": "pacs",
           "allowed": true,
           "line": "// type/state codes). Per docs/pacs/blocks-d-through-h-design.md",
@@ -934,7 +916,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1964,
+          "lineNumber": 1980,
           "term": "PACS",
           "allowed": true,
           "line": "// the existing /api/sync/doctrine/drain/{lane} endpoints; PACS",
@@ -943,7 +925,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2013,
+          "lineNumber": 2029,
           "term": "PACS",
           "allowed": true,
           "line": "// PII-redacting; resolves PACS prop_id to TfParcelId via source_xref;",
@@ -952,7 +934,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2029,
+          "lineNumber": 2045,
           "term": "PACS",
           "allowed": true,
           "line": "// PACS prop_id and owner_id (==acct_id) to canonical TfParcelId +",
@@ -961,7 +943,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2038,
+          "lineNumber": 2054,
           "term": "PACS",
           "allowed": true,
           "line": "// projector. Resolves PACS prop_id to TfParcelId via source_xref,",
@@ -970,7 +952,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2049,
+          "lineNumber": 2065,
           "term": "PACS",
           "allowed": true,
           "line": "// Slice L3: canonical_tf.tf_land projector. Resolves PACS prop_id",
@@ -979,7 +961,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2081,
+          "lineNumber": 2097,
           "term": "PACS",
           "allowed": true,
           "line": "// Slice S3: canonical_tf.tf_sale projector — resolves PACS prop_id",
@@ -988,7 +970,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2082,
+          "lineNumber": 2098,
           "term": "pacs",
           "allowed": true,
           "line": "// to TfParcelId via source_xref, projects qualifying truth-pacs",
@@ -997,7 +979,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2138,
+          "lineNumber": 2154,
           "term": "Harris",
           "allowed": true,
           "line": "// Exports Prometheus metrics for: Consciousness (swarm), CostForge AI, TerraGaia, TerraFusionGPT, TerraLevy, TerraFlow, TerraSync, Harris PACS integration",
@@ -1006,25 +988,16 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2450,
-          "term": "PACS",
-          "allowed": true,
-          "line": "// but the AddPacsReadiness extension was never called. Result: PACS down →",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2453,
+          "lineNumber": 2467,
           "term": "pacs",
           "allowed": true,
-          "line": ".AddPacsReadiness(\"ready\", \"pacs\")",
+          "line": "healthChecksBuilder.AddPacsReadiness(\"ready\", \"pacs\");",
           "category": "user_facing_terminology",
           "classification": "user_facing_terminology"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2915,
+          "lineNumber": 2931,
           "term": "pacs",
           "allowed": true,
           "line": "// POST /api/admin/pacs/seed  — pulls source-system tables",
@@ -1033,7 +1006,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2923,
+          "lineNumber": 2939,
           "term": "pacs",
           "allowed": true,
           "line": "app.MapPost(\"/api/admin/pacs/seed\", (",
@@ -1042,7 +1015,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2928,
+          "lineNumber": 2944,
           "term": "PACS",
           "allowed": true,
           "line": "return Results.Conflict(\"PACS seed already running. Check /api/admin/pacs/seed/status.\");",
@@ -1051,7 +1024,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2953,
+          "lineNumber": 2969,
           "term": "pacs",
           "allowed": true,
           "line": "return Results.Accepted(\"/api/admin/pacs/seed/status\",",
@@ -1060,7 +1033,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2954,
+          "lineNumber": 2970,
           "term": "PACS",
           "allowed": true,
           "line": "new { message = \"PACS seed started in background. Poll /api/admin/pacs/seed/status.\" });",
@@ -1069,7 +1042,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2957,
+          "lineNumber": 2973,
           "term": "pacs",
           "allowed": true,
           "line": "app.MapGet(\"/api/admin/pacs/seed/status\", () =>",
@@ -1078,7 +1051,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2961,
+          "lineNumber": 2977,
           "term": "pacs",
           "allowed": true,
           "line": "// POST /api/admin/pacs/canonicalize — Phase 7 only: promote Pacs* mirror rows → canonical TF entities.",
@@ -1087,7 +1060,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2967,
+          "lineNumber": 2983,
           "term": "pacs",
           "allowed": true,
           "line": "app.MapPost(\"/api/admin/pacs/canonicalize\", (",
@@ -1096,7 +1069,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2995,
+          "lineNumber": 3011,
           "term": "pacs",
           "allowed": true,
           "line": "return Results.Accepted(\"/api/admin/pacs/canonicalize/status\",",
@@ -1105,7 +1078,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2996,
+          "lineNumber": 3012,
           "term": "pacs",
           "allowed": true,
           "line": "new { message = \"Canonicalization started. Poll /api/admin/pacs/canonicalize/status.\" });",
@@ -1114,7 +1087,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 2999,
+          "lineNumber": 3015,
           "term": "pacs",
           "allowed": true,
           "line": "app.MapGet(\"/api/admin/pacs/canonicalize/status\", () =>",
@@ -1123,7 +1096,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 3005,
+          "lineNumber": 3021,
           "term": "pacs",
           "allowed": true,
           "line": "// POST /api/admin/pacs/seed-sales — targeted seed: sales only, then canonicalize + qualify.",
@@ -1132,7 +1105,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 3013,
+          "lineNumber": 3029,
           "term": "pacs",
           "allowed": true,
           "line": "app.MapPost(\"/api/admin/pacs/seed-sales\", (",
@@ -1141,7 +1114,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 3018,
+          "lineNumber": 3034,
           "term": "pacs",
           "allowed": true,
           "line": "return Results.Conflict(\"Sales seed already running. Check /api/admin/pacs/seed-sales/status.\");",
@@ -1150,7 +1123,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 3042,
+          "lineNumber": 3058,
           "term": "pacs",
           "allowed": true,
           "line": "return Results.Accepted(\"/api/admin/pacs/seed-sales/status\",",
@@ -1159,7 +1132,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 3043,
+          "lineNumber": 3059,
           "term": "pacs",
           "allowed": true,
           "line": "new { message = \"Sales-only seed started. Poll /api/admin/pacs/seed-sales/status.\" });",
@@ -1168,7 +1141,7 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 3046,
+          "lineNumber": 3062,
           "term": "pacs",
           "allowed": true,
           "line": "app.MapGet(\"/api/admin/pacs/seed-sales/status\", () =>",
@@ -1217,8 +1190,8 @@
           "term": "pacs",
           "allowed": true,
           "line": "///   GET  sync-pop-2/pacs-table-columns   — read-only INFORMATION_SCHEMA query",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1226,8 +1199,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// SYNC-POP-2: drains live Harris PACS into the doctrine pipeline.",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1235,8 +1208,8 @@
           "term": "pacs_oltp",
           "allowed": true,
           "line": "hint  = \"Set TF_DEV_PACS_PASSWORD env var and ensure pacs_oltp is reachable on localhost,1433.\",",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1244,8 +1217,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// ── S1: PACS sales → legacy_pacs_raw.sale ─────────────────",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1253,8 +1226,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// ── S2-A: PACS prop_supp_assoc → legacy_pacs_raw.prop_supp_assoc",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1262,8 +1235,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// SYNC-POP-2 helper: introspects a Harris PACS source table to see",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1271,8 +1244,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// assumptions against real PACS schema.",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1280,8 +1253,8 @@
           "term": "pacs",
           "allowed": true,
           "line": "[HttpGet(\"sync-pop-2/pacs-table-columns\")]",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1289,8 +1262,8 @@
           "term": "SqlConnection",
           "allowed": true,
           "line": "await using var conn = new Microsoft.Data.SqlClient.SqlConnection(pacsCs);",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1298,8 +1271,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// ── S1: PACS sales → legacy_pacs_raw.sale ─────────────────",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1307,8 +1280,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// against live Harris PACS, capture the type-distribution histogram",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1316,8 +1289,8 @@
           "term": "PACS",
           "allowed": true,
           "line": ": \"INCONCLUSIVE: legacy_pacs_raw.property = 0. Source returned no rows; check PACS connection and dbo.property contents.\",",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1325,8 +1298,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// PACS tables (account, prop_supp_assoc, property, plus the",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1334,8 +1307,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// Use 2026 as the working year for keyed imprv lookups; PACS data is",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1343,8 +1316,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// <param name=\"WorkingYear\">PACS prop_val_yr to filter imprv stages by.",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1352,8 +1325,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// <param name=\"WorkingYear\">PACS prop_val_yr to filter land stages by. Default 2026.</param>",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1361,8 +1334,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// anchored seed unlocks all five PACS lanes (sale, owner, WSDOR,",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1370,8 +1343,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// OWNER-LANE seed: lands owners, then derives all PACS keys.",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1379,8 +1352,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// PARCEL chain (used by every PACS lane's xref resolution).",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1388,8 +1361,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// Independent of PACS chains; resolves APN crosswalk against",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1397,8 +1370,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// includes everything we just projected from the PACS lanes).",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1406,8 +1379,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// <param name=\"WorkingYear\">PACS year filter. Default 2026.</param>",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1415,8 +1388,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// and drains the full PACS corpus. Wall-clock ~60-150 minutes. Use for",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1424,8 +1397,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// ATTR-POP-1: populate canonical_tf.attribute_definition from PACS",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1433,8 +1406,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// the resolved Benton county. Reads PACS <c>dbo.attribute</c>",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1442,8 +1415,8 @@
           "term": "pacs",
           "allowed": true,
           "line": ".Where(b => b.SourceSystem == \"truth-pacs-imprv-promoter\" && b.Status == \"COMPLETED\")",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1451,8 +1424,8 @@
           "term": "PACS",
           "allowed": true,
           "line": ": \"INCONCLUSIVE: PACS dbo.attribute returned no rows. Investigate.\",",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1460,8 +1433,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "//   loop opened by ATTR-POP-1 + ATTR-DRAIN-1. Reads PACS value-grain",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1469,8 +1442,8 @@
           "term": "pacs",
           "allowed": true,
           "line": ".Where(b => b.SourceSystem == \"truth-pacs-imprv-promoter\" && b.Status == \"COMPLETED\")",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1478,8 +1451,8 @@
           "term": "PACS",
           "allowed": true,
           "line": ": \"INCONCLUSIVE: 0 rows from PACS. Investigate.\"),",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1487,8 +1460,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// SYNC-COMPLETE-1: PACS source-side row counts for post-drain validation.",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1496,8 +1469,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Returns SELECT COUNT(*) against a whitelisted set of PACS tables",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1505,8 +1478,8 @@
           "term": "pacs",
           "allowed": true,
           "line": "[HttpGet(\"pacs-counts\")]",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1514,8 +1487,8 @@
           "term": "SqlConnection",
           "allowed": true,
           "line": "await using var conn = new Microsoft.Data.SqlClient.SqlConnection(pacsCs);",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1523,8 +1496,8 @@
           "term": "pacs_oltp",
           "allowed": true,
           "line": "note = \"All counts are SELECT COUNT(*) at the time of this call against live pacs_oltp. -1 sentinel indicates per-query failure (see errors block).\",",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1532,8 +1505,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// row? PACS network reads are out of scope; this measures only",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1541,8 +1514,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "PropId = 9_000_000 + i,                    // out of real PACS range",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs",
@@ -1550,8 +1523,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "OwnerId = 9_000_000_000L + i,              // out of real PACS range",
-          "category": "proof_or_test_only",
-          "classification": "proof_or_test_only"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/CognitiveFrameworkMonitoringController.cs",
@@ -2133,10 +2106,10 @@
           "filePath": "backend/src/TerraFusion.API/Controllers/HarrisPACSIntegrationController.cs",
           "lineNumber": 4,
           "term": "PACS",
-          "allowed": false,
+          "allowed": true,
           "line": "using TerraFusion.Core.PACS;",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/HarrisPACSIntegrationController.cs",
@@ -2144,8 +2117,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogDebug(\"No county claims found for PACS request; falling back to Benton County in Development\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/HarrisPACSIntegrationController.cs",
@@ -2153,8 +2126,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "\"PACS jurisdiction mismatch: user county {CountyName} (FIPS {FipsCode}) does not match requested jurisdiction {Jurisdiction}\",",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/HarrisPACSIntegrationController.cs",
@@ -2162,8 +2135,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Get available Harris PACS jurisdictions",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/HarrisPACSIntegrationController.cs",
@@ -2171,8 +2144,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "error = \"PACS jurisdictions not available\",",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/HarrisPACSIntegrationController.cs",
@@ -2180,8 +2153,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "details = \"pacscontract.v1 does not expose jurisdictions. Use PACS adapter endpoints.\"",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/HarrisPACSIntegrationController.cs",
@@ -2189,8 +2162,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "_logger.LogError(ex, \"Error retrieving Harris PACS jurisdictions\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/HarrisPACSIntegrationController.cs",
@@ -2198,8 +2171,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Get Harris PACS system status",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/HarrisPACSIntegrationController.cs",
@@ -2207,8 +2180,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "_logger.LogError(ex, \"Error retrieving Harris PACS system status\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/HarrisPACSIntegrationController.cs",
@@ -2216,8 +2189,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Health check endpoint for Harris PACS integration",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/HarrisPACSIntegrationController.cs",
@@ -2225,8 +2198,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "message = \"Harris PACS system is offline\"",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/HarrisPACSIntegrationController.cs",
@@ -2234,8 +2207,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "_logger.LogError(ex, \"Harris PACS health check failed\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/LandSegmentExceptionController.cs",
@@ -2360,8 +2333,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// PACS Controller - /api/pacs Endpoints",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
@@ -2369,8 +2342,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "// Live Harris PACS data endpoints backed by IPacsAdapter (pacscontract.v1).",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
@@ -2378,8 +2351,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// Returns 503 when PACS is not yet configured (missing TF_DEV_PACS_* / connection",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
@@ -2387,17 +2360,17 @@
           "term": "PACS",
           "allowed": true,
           "line": "// Phase 33 — PACS Live Integration",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
           "lineNumber": 19,
           "term": "PACS",
-          "allowed": false,
+          "allowed": true,
           "line": "using TerraFusion.Core.PACS;",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
@@ -2405,8 +2378,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Live Harris PACS data endpoints.",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
@@ -2414,17 +2387,17 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Returns HTTP 503 when PACS SQL Server is not yet provisioned.",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
           "lineNumber": 29,
           "term": "pacs",
-          "allowed": false,
+          "allowed": true,
           "line": "[Route(\"api/pacs\")]",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
@@ -2432,8 +2405,8 @@
           "term": "pacs",
           "allowed": true,
           "line": "// ── GET /api/pacs/properties ─────────────────────────────────────────",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
@@ -2441,8 +2414,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Returns 503 when PACS is not configured.",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
@@ -2450,17 +2423,17 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogWarning(\"PACS adapter not available: {Message}\", ex.Message);",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
           "lineNumber": 77,
           "term": "PACS",
-          "allowed": false,
+          "allowed": true,
           "line": "Message = \"PACS SQL Server not configured. Set ConnectionStrings:PacsConnection.\"",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
@@ -2468,8 +2441,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// Cap PACS query at 5s so the endpoint fails fast and the frontend can fall back.",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
@@ -2477,8 +2450,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogWarning(\"PACS properties query timed out after 10s — SQL Server not reachable\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
@@ -2486,8 +2459,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "Message = \"PACS query timed out. SQL Server not provisioned or unreachable.\",",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
@@ -2495,8 +2468,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogWarning(\"PACS contract violation: {Code} {Message}\", ex.ErrorCode, ex.Message);",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
@@ -2504,8 +2477,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogError(ex, \"Unexpected error reading PACS properties\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
@@ -2513,8 +2486,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "Message = \"PACS query failed. See server logs.\",",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
@@ -2522,8 +2495,8 @@
           "term": "pacs",
           "allowed": true,
           "line": "// ── GET /api/pacs/health ─────────────────────────────────────────────",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
@@ -2531,8 +2504,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// PACS adapter connectivity status — used by smoke tests.",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
@@ -2540,8 +2513,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Returns 200 {\"status\":\"connected\"} when PACS is live.",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
@@ -2549,8 +2522,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "return StatusCode(503, new { status = \"timeout\", detail = \"PACS health probe timed out after 5s\" });",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PacsOpsController.cs",
@@ -2810,8 +2783,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "* TERRAFUSION OS - PRODUCTION PACS INTEGRATION CONTROLLER",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
@@ -2819,8 +2792,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "* Real Benton County Harris PACS API Integration",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
@@ -2828,8 +2801,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Production PACS Integration Controller",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
@@ -2837,17 +2810,17 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Provides championship-level API endpoints for real Benton County Harris PACS integration",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
           "lineNumber": 25,
           "term": "pacs",
-          "allowed": false,
+          "allowed": true,
           "line": "[Route(\"api/production/pacs\")]",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
@@ -2855,8 +2828,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Initialize complete production PACS integration",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
@@ -2864,8 +2837,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogInformation(\"🏛️ API: Initializing production PACS integration for Benton County\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
@@ -2873,8 +2846,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// Initialize production PACS integration",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
@@ -2882,8 +2855,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogError(\"❌ Production PACS integration failed: {Message}\", integrationResult.Message);",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
@@ -2891,8 +2864,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "Error = \"Production PACS integration failed\",",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
@@ -2900,8 +2873,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogInformation(\"✅ Production PACS integration completed successfully: {Records} records processed\",",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
@@ -2909,8 +2882,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogError(ex, \"❌ Critical error during production PACS integration\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
@@ -2918,8 +2891,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogInformation(\"🤖 API: Preparing AI training datasets from production PACS data\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
@@ -2927,8 +2900,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Validate production schemas against real PACS database structures",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
@@ -2936,8 +2909,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Ensures compatibility with Benton County Harris PACS systems",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
@@ -2945,8 +2918,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogInformation(\"🔍 API: Validating production schemas against real PACS structures\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
@@ -2954,8 +2927,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Optimize production queries using real PACS performance patterns",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
@@ -2963,8 +2936,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogInformation(\"⚡ API: Optimizing production queries using real PACS performance patterns\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
@@ -2972,8 +2945,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Provides real-time status of all PACS integration components",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
@@ -2981,8 +2954,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "SystemName = \"TerraFusion OS - Production PACS Integration\",",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/PropertiesController.cs",
@@ -3283,60 +3256,6 @@
         },
         {
           "filePath": "backend/src/TerraFusion.API/Controllers/TerraFusionMarketplaceController.cs",
-          "lineNumber": 139,
-          "term": "HARRIS",
-          "allowed": true,
-          "line": "/// HARRIS PACS INTEGRATION: Get Harris PACS Bridge Status",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Controllers/TerraFusionMarketplaceController.cs",
-          "lineNumber": 141,
-          "term": "harris",
-          "allowed": true,
-          "line": "/// GET /api/terrafusionmarketplace/activations/{activationId}/harris-bridge",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Controllers/TerraFusionMarketplaceController.cs",
-          "lineNumber": 143,
-          "term": "Harris",
-          "allowed": true,
-          "line": "/// Returns the status and metrics of Harris PACS bridge integration for",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Controllers/TerraFusionMarketplaceController.cs",
-          "lineNumber": 146,
-          "term": "harris",
-          "allowed": false,
-          "line": "[HttpGet(\"activations/{activationId}/harris-bridge\")]",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Controllers/TerraFusionMarketplaceController.cs",
-          "lineNumber": 150,
-          "term": "harris",
-          "allowed": true,
-          "line": "\"activations/{activationId}/harris-bridge\",",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Controllers/TerraFusionMarketplaceController.cs",
-          "lineNumber": 151,
-          "term": "Harris",
-          "allowed": true,
-          "line": "\"Harris bridge marketplace telemetry\",",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Controllers/TerraFusionMarketplaceController.cs",
           "lineNumber": 211,
           "term": "Harris",
           "allowed": true,
@@ -3611,8 +3530,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// This revolutionary service orchestrates smooth, zero-disruption migration from Harris PACS",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/CountyMigrationPathways.cs",
@@ -3620,8 +3539,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Performs thorough analysis of county's current Harris PACS deployment,",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/DataMigrationEngine.cs",
@@ -3629,8 +3548,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// This sophisticated engine orchestrates seamless data migration from Harris PACS",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/DataMigrationEngine.cs",
@@ -3638,8 +3557,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "// This would integrate with Harris PACS to analyze data structure",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ElitePerformanceMonitoringService.cs",
@@ -3665,8 +3584,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "_logger.LogDebug(\"⚡ Cache strategies aggressively optimized for Harris PACS integration\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSEnhancementBridge.cs",
@@ -3917,8 +3836,8 @@
           "term": "HARRIS",
           "allowed": true,
           "line": "* TERRAFUSION OS - HARRIS PACS INTEGRATION SERVICE",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
@@ -3926,8 +3845,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Production Harris PACS Integration Service",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
@@ -3935,8 +3854,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Integrates with real Benton County Harris PACS database structures",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
@@ -3944,8 +3863,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Production Harris PACS Integration Service",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
@@ -3953,8 +3872,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// Production Data Structures (Based on Real PACS Schema)",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
@@ -3962,8 +3881,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Initialize integration with real Benton County Harris PACS systems",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
@@ -3971,26 +3890,26 @@
           "term": "Harris",
           "allowed": true,
           "line": "_logger.LogInformation(\"🏛️ Initializing Benton County Harris PACS Integration with Real Production Schemas\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
           "lineNumber": 287,
           "term": "SqlConnection",
-          "allowed": false,
+          "allowed": true,
           "line": "using var connection = new SqlConnection(_ciapsConnectionString);",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
           "lineNumber": 350,
           "term": "SqlConnection",
-          "allowed": false,
+          "allowed": true,
           "line": "using var connection = new SqlConnection(_ciapsConnectionString);",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
@@ -3998,8 +3917,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Synchronize with production PACS using real sync service patterns",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
@@ -4007,8 +3926,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "_logger.LogInformation(\"🔄 Synchronizing with production Harris PACS\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
@@ -4016,8 +3935,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "Message = $\"PACS synchronization completed: {successfulSyncs}/{syncOperations.Count} operations successful\",",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
@@ -4025,8 +3944,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogError(ex, \"❌ Error during PACS synchronization\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
@@ -4034,8 +3953,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "Message = $\"PACS synchronization error: {ex.Message}\",",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
@@ -4043,8 +3962,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// Step 1: Extract data from production PACS",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
@@ -4052,8 +3971,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Get comprehensive PACS integration performance metrics",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
@@ -4061,17 +3980,17 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogError(ex, \"❌ Error gathering PACS integration metrics\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
           "lineNumber": 692,
           "term": "SqlConnection",
-          "allowed": false,
+          "allowed": true,
           "line": "using var connection = new SqlConnection(_ciapsConnectionString);",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
@@ -4079,8 +3998,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogInformation(\"⏰ Executing scheduled PACS synchronization\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
@@ -4088,8 +4007,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogWarning(\"⚠️ Scheduled PACS sync completed with issues: {Message}\", result.Message);",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
@@ -4097,35 +4016,35 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogError(ex, \"❌ Error during scheduled PACS synchronization\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
           "lineNumber": 762,
           "term": "SqlConnection",
-          "allowed": false,
+          "allowed": true,
           "line": "private async Task<CIAPSProperty?> QueryCIAPSPropertyDataAsync(SqlConnection connection, string parcelId)",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
           "lineNumber": 774,
           "term": "SqlConnection",
-          "allowed": false,
+          "allowed": true,
           "line": "private async Task<BuildingPermit?> QueryBuildingPermitDataAsync(SqlConnection connection, string parcelId)",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
           "lineNumber": 981,
           "term": "SqlConnection",
-          "allowed": false,
+          "allowed": true,
           "line": "private async Task<object> ValidateCIAPSSchemaAsync(SqlConnection connection)",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
@@ -4133,17 +4052,17 @@
           "term": "PACS",
           "allowed": true,
           "line": "// Supporting data models based on real Benton County PACS structures",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
           "lineNumber": 1314,
           "term": "SqlConnection",
-          "allowed": false,
+          "allowed": true,
           "line": "private async Task<SchemaValidationResult> ValidateCIAPSSchemaAsync(SqlConnection connection)",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
@@ -4151,17 +4070,17 @@
           "term": "PACS",
           "allowed": true,
           "line": "Message = \"Data extracted from production PACS\",",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
           "lineNumber": 1480,
           "term": "SqlConnection",
-          "allowed": false,
+          "allowed": true,
           "line": "private async Task<SchemaValidationResult> ValidateCIAPSSchemaAsync(SqlConnection connection)",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IAISuperiorityDemonstrationService.cs",
@@ -4178,8 +4097,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "using TerraFusion.API.Models.PACS;",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4187,8 +4106,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Harris PACS Integration Service Interface - Championship-level property assessment system integration",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4196,8 +4115,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// for Tyler Technologies PACS v12.4.7 with sovereign county data isolation",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4205,8 +4124,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Retrieves property data from Harris PACS by parcel ID with AI enhancement",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4214,8 +4133,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Retrieves paginated list of properties from Harris PACS jurisdiction",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4223,8 +4142,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// <returns>List of property data from PACS system</returns>",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4232,8 +4151,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Synchronizes property data from Harris PACS to TerraFusion database",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4241,8 +4160,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Validates PACS connection configuration for jurisdiction",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4250,8 +4169,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// <param name=\"config\">PACS connection configuration to validate</param>",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4259,8 +4178,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Retrieves property assessment history from PACS for trend analysis",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4268,8 +4187,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Executes AI-enhanced batch property valuation via Harris PACS integration",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4277,8 +4196,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Retrieves comparable sales data from PACS for property valuation",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4286,8 +4205,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Updates property valuation in Harris PACS after AI enhancement",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4295,8 +4214,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// <returns>Update result with PACS confirmation</returns>",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4304,8 +4223,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// ✅ Gather baseline performance metrics from Harris PACS for superiority comparison benchmarking",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4313,8 +4232,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// ✅ Execute demonstration scenario against Harris PACS for performance comparison",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4322,8 +4241,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Property Data Model - Harris PACS property information with TerraFusion AI enhancement",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4331,8 +4250,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// PACS Sync Result - Property data synchronization outcome",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4340,8 +4259,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// PACS Sync Status - Current synchronization state for jurisdiction",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4349,8 +4268,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// PACS Connection Validation - Connection test results",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4358,8 +4277,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Enhanced Property Valuation - AI-enhanced valuation for PACS update",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/IHarrisPACSIntegrationService.cs",
@@ -4367,8 +4286,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// PACS Update Result - Property valuation update outcome",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ISaleQualificationService.cs",
@@ -4511,8 +4430,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// PACS EF Core Adapter - Development/SQLite Implementation",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/PacsEfAdapter.cs",
@@ -4520,8 +4439,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// Reads from seeded PACS mirror tables in TerraFusionDbContext (SQLite).",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/PacsEfAdapter.cs",
@@ -4529,17 +4448,17 @@
           "term": "Pacs",
           "allowed": true,
           "line": "using TerraFusion.Core.Entities.Pacs;",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/PacsEfAdapter.cs",
           "lineNumber": 17,
           "term": "PACS",
-          "allowed": false,
+          "allowed": true,
           "line": "using TerraFusion.Core.PACS;",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/PacsEfAdapter.cs",
@@ -4547,8 +4466,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Reads seeded PACS data from SQLite via TerraFusionDbContext.",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/PACSEnhancementExtensions.cs",
@@ -4556,8 +4475,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "using TerraFusion.API.Models.PACS;",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/PACSEnhancementExtensions.cs",
@@ -4565,8 +4484,8 @@
           "term": "pacs",
           "allowed": true,
           "line": "ConnectionId = $\"pacs-{countyCode.ToLowerInvariant()}\",",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/PacsToTerraFusionSyncService.cs",
@@ -4799,8 +4718,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "* TERRAFUSION OS - PRODUCTION PACS DATA INTEGRATION ENGINE",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
@@ -4808,8 +4727,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Production PACS Data Integration Engine",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
@@ -4817,8 +4736,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Integrates with real Benton County Harris PACS production database structures",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
@@ -4826,8 +4745,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Production PACS Data Integration Engine",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
@@ -4835,8 +4754,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// Production Database Connections (Based on Real PACS Architecture)",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
@@ -4844,8 +4763,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Initialize complete production integration with real Benton County PACS systems",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
@@ -4853,8 +4772,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogInformation(\"🏛️ Initializing Production PACS Integration with Real Benton County Systems\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
@@ -4862,8 +4781,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "// Validate production schemas against real PACS structures",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
@@ -4871,8 +4790,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "Message = $\"Production PACS integration completed: {successfulIntegrations}/{integrationResults.Count} databases integrated\",",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
@@ -4880,26 +4799,26 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogError(ex, \"❌ Critical error during production PACS integration\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
           "lineNumber": 200,
           "term": "SqlConnection",
-          "allowed": false,
+          "allowed": true,
           "line": "using var connection = new SqlConnection(connectionString);",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
           "lineNumber": 321,
           "term": "SqlConnection",
-          "allowed": false,
+          "allowed": true,
           "line": "using var connection = new SqlConnection(connectionString);",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
@@ -4907,8 +4826,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogInformation(\"🤖 Preparing AI training datasets from production PACS data\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
@@ -4916,8 +4835,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Validate production schemas against real PACS database structures",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
@@ -4925,8 +4844,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogInformation(\"🔍 Validating production schemas against real PACS structures\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
@@ -4934,8 +4853,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "/// Optimize production queries using real PACS performance patterns",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
@@ -4943,8 +4862,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogInformation(\"⚡ Optimizing production queries using real PACS performance patterns\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
@@ -4952,8 +4871,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "_logger.LogInformation(\"🤖 Initializing 1,008 AI agents with production PACS data patterns\");",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
@@ -4961,8 +4880,8 @@
           "term": "PACS",
           "allowed": true,
           "line": "Purpose = \"Train AI agents on property valuation patterns from real PACS data\",",
-          "category": "user_facing_terminology",
-          "classification": "user_facing_terminology"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/SaleQualificationService.cs",
@@ -5393,8 +5312,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// from Harris PACS to TerraFusion OS with user training, change management, and",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/WorkflowTransitionGuide.cs",
@@ -5402,8 +5321,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "// Phase 1: Analyze existing Harris PACS workflows",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/WorkflowTransitionGuide.cs",
@@ -5411,8 +5330,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "/// Harris PACS workflows to TerraFusion equivalents.",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/src/TerraFusion.API/Services/WorkflowTransitionGuide.cs",
@@ -5420,8 +5339,8 @@
           "term": "Harris",
           "allowed": true,
           "line": "// This would analyze Harris PACS workflows",
-          "category": "docs_comments_labels",
-          "classification": "docs_comments_labels"
+          "category": "archived_or_quarantined",
+          "classification": "archived_or_quarantined"
         },
         {
           "filePath": "backend/tests/integration/api/IntegrationTest001.cs",
@@ -17853,188 +17772,7 @@
           "classification": "proof_or_test_only"
         }
       ],
-      "leaks": [
-        {
-          "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 31,
-          "term": "PACS",
-          "allowed": false,
-          "line": "using TerraFusion.Core.PACS;",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 850,
-          "term": "PACS",
-          "allowed": false,
-          "line": "svc.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.Core.PACS.PacsSqlAdapter>();",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Program.cs",
-          "lineNumber": 1615,
-          "term": "PACS",
-          "allowed": false,
-          "line": "builder.Services.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.API.Services.PacsEfAdapter>();",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Controllers/HarrisPACSIntegrationController.cs",
-          "lineNumber": 4,
-          "term": "PACS",
-          "allowed": false,
-          "line": "using TerraFusion.Core.PACS;",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
-          "lineNumber": 19,
-          "term": "PACS",
-          "allowed": false,
-          "line": "using TerraFusion.Core.PACS;",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
-          "lineNumber": 29,
-          "term": "pacs",
-          "allowed": false,
-          "line": "[Route(\"api/pacs\")]",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Controllers/PacsController.cs",
-          "lineNumber": 77,
-          "term": "PACS",
-          "allowed": false,
-          "line": "Message = \"PACS SQL Server not configured. Set ConnectionStrings:PacsConnection.\"",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs",
-          "lineNumber": 25,
-          "term": "pacs",
-          "allowed": false,
-          "line": "[Route(\"api/production/pacs\")]",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Controllers/TerraFusionMarketplaceController.cs",
-          "lineNumber": 146,
-          "term": "harris",
-          "allowed": false,
-          "line": "[HttpGet(\"activations/{activationId}/harris-bridge\")]",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
-          "lineNumber": 287,
-          "term": "SqlConnection",
-          "allowed": false,
-          "line": "using var connection = new SqlConnection(_ciapsConnectionString);",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
-          "lineNumber": 350,
-          "term": "SqlConnection",
-          "allowed": false,
-          "line": "using var connection = new SqlConnection(_ciapsConnectionString);",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
-          "lineNumber": 692,
-          "term": "SqlConnection",
-          "allowed": false,
-          "line": "using var connection = new SqlConnection(_ciapsConnectionString);",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
-          "lineNumber": 762,
-          "term": "SqlConnection",
-          "allowed": false,
-          "line": "private async Task<CIAPSProperty?> QueryCIAPSPropertyDataAsync(SqlConnection connection, string parcelId)",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
-          "lineNumber": 774,
-          "term": "SqlConnection",
-          "allowed": false,
-          "line": "private async Task<BuildingPermit?> QueryBuildingPermitDataAsync(SqlConnection connection, string parcelId)",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
-          "lineNumber": 981,
-          "term": "SqlConnection",
-          "allowed": false,
-          "line": "private async Task<object> ValidateCIAPSSchemaAsync(SqlConnection connection)",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
-          "lineNumber": 1314,
-          "term": "SqlConnection",
-          "allowed": false,
-          "line": "private async Task<SchemaValidationResult> ValidateCIAPSSchemaAsync(SqlConnection connection)",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs",
-          "lineNumber": 1480,
-          "term": "SqlConnection",
-          "allowed": false,
-          "line": "private async Task<SchemaValidationResult> ValidateCIAPSSchemaAsync(SqlConnection connection)",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Services/PacsEfAdapter.cs",
-          "lineNumber": 17,
-          "term": "PACS",
-          "allowed": false,
-          "line": "using TerraFusion.Core.PACS;",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
-          "lineNumber": 200,
-          "term": "SqlConnection",
-          "allowed": false,
-          "line": "using var connection = new SqlConnection(connectionString);",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        },
-        {
-          "filePath": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
-          "lineNumber": 321,
-          "term": "SqlConnection",
-          "allowed": false,
-          "line": "using var connection = new SqlConnection(connectionString);",
-          "category": "active_runtime_dependency",
-          "classification": "active_runtime_dependency"
-        }
-      ]
+      "leaks": []
     }
   },
   "blockers": [
@@ -18047,11 +17785,6 @@
       "source": "product_load_ledger",
       "message": "Product-load lineage is not proven by the TerraFusion DB ledger.",
       "evidence": "6 lineage-proven table(s), 1 blocker(s)"
-    },
-    {
-      "source": "legacy_runtime_boundary",
-      "message": "Active product runtime still contains PACS/Harris/source-system references outside the allowed sync/admin/proof lanes.",
-      "evidence": "20 leak(s)"
     }
   ],
   "warnings": [
@@ -18063,8 +17796,7 @@
   ],
   "requiredFixes": [
     "Public access posture is not explicit and usable for launch-control evidence.",
-    "Product-load lineage is not proven by the TerraFusion DB ledger.",
-    "Active product runtime still contains PACS/Harris/source-system references outside the allowed sync/admin/proof lanes."
+    "Product-load lineage is not proven by the TerraFusion DB ledger."
   ],
   "interpretation": "June 10 launch gate is red. Production approval must not rely on stale evidence, unproven lineage, unsuppressed Rust claims, or active runtime legacy leaks."
 }

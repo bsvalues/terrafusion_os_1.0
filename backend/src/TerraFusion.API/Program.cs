@@ -28,7 +28,6 @@ using TerraFusion.Levy.Models;
 using TerraFusion.Levy.Services;
 using System.Data;
 using TerraFusion.Core.Services;
-using TerraFusion.Core.PACS;
 using TerraFusion.Core.Extensions;
 using TerraFusion.API.Health;
 using TerraFusion.Sync.Workbench.Atlas;
@@ -1117,6 +1116,16 @@ builder.Logging.AddDebug();
 // sinks; it does not displace Microsoft.Extensions.Logging providers).
 builder.Services.AddStructuredLogging(builder.Configuration, builder.Environment);
 
+var june10ProductionExcludedControllers = builder.Environment.IsDevelopment()
+    ? Array.Empty<string>()
+    : new[]
+    {
+        "CanonicalDebugController",
+        "PacsController",
+        "HarrisPACSIntegrationController",
+        "ProductionPACSIntegrationController"
+    };
+
 // Add basic services with JSON serialization configuration
 builder.Services.AddControllers()
     .ConfigureApplicationPartManager(manager =>
@@ -1132,9 +1141,7 @@ builder.Services.AddControllers()
           new TerraFusion.API.Controllers.NamespaceExcludingControllerFeatureProvider(
               "TerraFusion.AI.Controllers",
               new[] { "Codex369Controller" },
-              builder.Environment.IsDevelopment()
-                  ? Array.Empty<string>()
-                  : new[] { "CanonicalDebugController" }));
+              june10ProductionExcludedControllers));
     })
     .AddJsonOptions(options =>
     {
@@ -1600,19 +1607,28 @@ builder.Services.AddScoped<TerraFusion.Core.Services.IQueueService, TerraFusion.
 // Phase 11: GIS data service — PACS-sourced parcel boundary & layer data
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IGisDataService, TerraFusion.API.Services.GisDataService>();
 
-// 🏛️ PACS Adapter - pacscontract.v1 compliant read-only boundary
-// When PacsConnection is configured: SQL Server via Dapper (PacsSqlAdapter)
-// When absent: seeded PACS data from EF Core / SQLite (PacsEfAdapter) for local dev
-var pacsConn = builder.Configuration.GetConnectionString("PacsConnection");
-// Connection string is "configured" only if it exists AND doesn't contain unresolved env vars
-var pacsConfigured = !string.IsNullOrEmpty(pacsConn) && !pacsConn.Contains("${");
-if (pacsConfigured)
+var enableLegacySourceRuntimeAdapters =
+    builder.Environment.IsDevelopment()
+    || builder.Configuration.GetValue<bool>("LegacySources:EnableRuntimeAdapters")
+    || string.Equals(
+        Environment.GetEnvironmentVariable("TF_ENABLE_LEGACY_SOURCE_RUNTIME_ADAPTERS"),
+        "1",
+        StringComparison.OrdinalIgnoreCase);
+
+if (enableLegacySourceRuntimeAdapters)
 {
-  builder.Services.AddPacsAdapter();
-}
-else
-{
-  builder.Services.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.API.Services.PacsEfAdapter>();
+  // Legacy source adapters are development/admin bridge dependencies only.
+  // Product runtime must use TerraFusion DB through TerraFusion API.
+  var pacsConn = builder.Configuration.GetConnectionString("PacsConnection");
+  var pacsConfigured = !string.IsNullOrEmpty(pacsConn) && !pacsConn.Contains("${");
+  if (pacsConfigured)
+  {
+    TerraFusion.Core.PACS.PacsServiceRegistration.AddPacsAdapter(builder.Services);
+  }
+  else
+  {
+    builder.Services.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.API.Services.PacsEfAdapter>();
+  }
 }
 // Conditionally register Redis-backed cache or NoOp fallback
 if (redisAvailable)
@@ -2442,16 +2458,16 @@ builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyRiskScoringService, Te
 // a dead parallel certification path.
 
 // Add health checks for monitoring
-builder.Services.AddHealthChecks()
+var healthChecksBuilder = builder.Services.AddHealthChecks()
     .AddDbContextCheck<TerraFusion.Data.TerraFusionDbContext>("database")
-    .AddCheck<TerraFusion.API.Health.ModuleConsistencyHealthCheck>("modules_consistency")
-    // PR-3 observability fix #2: register PacsReadinessHealthCheck. The check
-    // existed with full IPacsAdapter wiring + PACS_REQUIRED gating + unit tests
-    // but the AddPacsReadiness extension was never called. Result: PACS down →
-    // /healthz/ready returned 200. Now it returns 503 when PACS_REQUIRED=true
-    // and the contract fails to validate.
-    .AddPacsReadiness("ready", "pacs")
-    .AddSpecLockCheck();
+    .AddCheck<TerraFusion.API.Health.ModuleConsistencyHealthCheck>("modules_consistency");
+
+if (enableLegacySourceRuntimeAdapters)
+{
+  healthChecksBuilder.AddPacsReadiness("ready", "pacs");
+}
+
+healthChecksBuilder.AddSpecLockCheck();
 
 // 🔒 SpecLock Runtime Guard (MACHINE MODE)
 // Validates generated artifacts match manifest sha256 at startup.

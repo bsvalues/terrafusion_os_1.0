@@ -1,6 +1,6 @@
 # June 10 Launch Gate
 
-Generated: 2026-05-20T17:45:34.548Z
+Generated: 2026-05-20T18:48:10.229Z
 
 Passed: false
 API base URL: http://localhost:5046
@@ -14,16 +14,15 @@ Public base URL: https://terrafusionmarket.com
 - Product-load ledger passed: false
 - Rust runtime proven: false
 - Rust claims suppressed: true
-- Active runtime legacy leaks: 20
-- Raw runtime legacy references: 1926
-- Blockers: 3
+- Active runtime legacy leaks: 0
+- Raw runtime legacy references: 1917
+- Blockers: 2
 - Warnings: 1
 
 ## Blockers
 
 - **public_access_posture**: Public access posture is not explicit and usable for launch-control evidence. (1 blocker(s))
 - **product_load_ledger**: Product-load lineage is not proven by the TerraFusion DB ledger. (6 lineage-proven table(s), 1 blocker(s))
-- **legacy_runtime_boundary**: Active product runtime still contains PACS/Harris/source-system references outside the allowed sync/admin/proof lanes. (20 leak(s))
 
 ## Warnings
 
@@ -31,95 +30,73 @@ Public base URL: https://terrafusionmarket.com
 
 ## Active Runtime Legacy Leaks
 
-| File | Line | Term | Evidence |
-|---|---:|---|---|
-| `backend/src/TerraFusion.API/Program.cs` | 31 | PACS | using TerraFusion.Core.PACS; |
-| `backend/src/TerraFusion.API/Program.cs` | 850 | PACS | svc.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.Core.PACS.PacsSqlAdapter>(); |
-| `backend/src/TerraFusion.API/Program.cs` | 1615 | PACS | builder.Services.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.API.Services.PacsEfAdapter>(); |
-| `backend/src/TerraFusion.API/Controllers/HarrisPACSIntegrationController.cs` | 4 | PACS | using TerraFusion.Core.PACS; |
-| `backend/src/TerraFusion.API/Controllers/PacsController.cs` | 19 | PACS | using TerraFusion.Core.PACS; |
-| `backend/src/TerraFusion.API/Controllers/PacsController.cs` | 29 | pacs | [Route("api/pacs")] |
-| `backend/src/TerraFusion.API/Controllers/PacsController.cs` | 77 | PACS | Message = "PACS SQL Server not configured. Set ConnectionStrings:PacsConnection." |
-| `backend/src/TerraFusion.API/Controllers/ProductionPACSIntegrationController.cs` | 25 | pacs | [Route("api/production/pacs")] |
-| `backend/src/TerraFusion.API/Controllers/TerraFusionMarketplaceController.cs` | 146 | harris | [HttpGet("activations/{activationId}/harris-bridge")] |
-| `backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs` | 287 | SqlConnection | using var connection = new SqlConnection(_ciapsConnectionString); |
-| `backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs` | 350 | SqlConnection | using var connection = new SqlConnection(_ciapsConnectionString); |
-| `backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs` | 692 | SqlConnection | using var connection = new SqlConnection(_ciapsConnectionString); |
-| `backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs` | 762 | SqlConnection | private async Task<CIAPSProperty?> QueryCIAPSPropertyDataAsync(SqlConnection connection, string parcelId) |
-| `backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs` | 774 | SqlConnection | private async Task<BuildingPermit?> QueryBuildingPermitDataAsync(SqlConnection connection, string parcelId) |
-| `backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs` | 981 | SqlConnection | private async Task<object> ValidateCIAPSSchemaAsync(SqlConnection connection) |
-| `backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs` | 1314 | SqlConnection | private async Task<SchemaValidationResult> ValidateCIAPSSchemaAsync(SqlConnection connection) |
-| `backend/src/TerraFusion.API/Services/HarrisPACSProductionService.cs` | 1480 | SqlConnection | private async Task<SchemaValidationResult> ValidateCIAPSSchemaAsync(SqlConnection connection) |
-| `backend/src/TerraFusion.API/Services/PacsEfAdapter.cs` | 17 | PACS | using TerraFusion.Core.PACS; |
-| `backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs` | 200 | SqlConnection | using var connection = new SqlConnection(connectionString); |
-| `backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs` | 321 | SqlConnection | using var connection = new SqlConnection(connectionString); |
+- None
 
 ## Runtime Legacy Classification
 
-- Raw references: 1926
-- Blocking active runtime dependencies: 20
+- Raw references: 1917
+- Blocking active runtime dependencies: 0
 
 | Category | Count |
 |---|---:|
-| active_runtime_dependency | 20 |
-| ingestion_sync_allowed | 119 |
-| proof_or_test_only | 1376 |
-| docs_comments_labels | 254 |
-| archived_or_quarantined | 0 |
-| user_facing_terminology | 157 |
+| active_runtime_dependency | 0 |
+| ingestion_sync_allowed | 120 |
+| proof_or_test_only | 1338 |
+| docs_comments_labels | 172 |
+| archived_or_quarantined | 179 |
+| user_facing_terminology | 108 |
 
 ### Category Examples
 
 #### active_runtime_dependency
 
-- `backend/src/TerraFusion.API/Program.cs:31` PACS — using TerraFusion.Core.PACS;
-- `backend/src/TerraFusion.API/Program.cs:850` PACS — svc.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.Core.PACS.PacsSqlAdapter>();
-- `backend/src/TerraFusion.API/Program.cs:1615` PACS — builder.Services.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.API.Services.PacsEfAdapter>();
-- `backend/src/TerraFusion.API/Controllers/HarrisPACSIntegrationController.cs:4` PACS — using TerraFusion.Core.PACS;
-- `backend/src/TerraFusion.API/Controllers/PacsController.cs:19` PACS — using TerraFusion.Core.PACS;
+- None
 
 #### ingestion_sync_allowed
 
-- `backend/src/TerraFusion.API/Program.cs:2923` pacs — app.MapPost("/api/admin/pacs/seed", (
-- `backend/src/TerraFusion.API/Program.cs:2953` pacs — return Results.Accepted("/api/admin/pacs/seed/status",
-- `backend/src/TerraFusion.API/Program.cs:2957` pacs — app.MapGet("/api/admin/pacs/seed/status", () =>
-- `backend/src/TerraFusion.API/Program.cs:2967` pacs — app.MapPost("/api/admin/pacs/canonicalize", (
-- `backend/src/TerraFusion.API/Program.cs:2995` pacs — return Results.Accepted("/api/admin/pacs/canonicalize/status",
+- `backend/src/TerraFusion.API/Program.cs:849` PACS — svc.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.Core.PACS.PacsSqlAdapter>();
+- `backend/src/TerraFusion.API/Program.cs:2939` pacs — app.MapPost("/api/admin/pacs/seed", (
+- `backend/src/TerraFusion.API/Program.cs:2969` pacs — return Results.Accepted("/api/admin/pacs/seed/status",
+- `backend/src/TerraFusion.API/Program.cs:2973` pacs — app.MapGet("/api/admin/pacs/seed/status", () =>
+- `backend/src/TerraFusion.API/Program.cs:2983` pacs — app.MapPost("/api/admin/pacs/canonicalize", (
 
 #### proof_or_test_only
 
-- `backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs:48` pacs — ///   GET  sync-pop-2/pacs-table-columns   — read-only INFORMATION_SCHEMA query
-- `backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs:144` Harris — /// SYNC-POP-2: drains live Harris PACS into the doctrine pipeline.
-- `backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs:171` pacs_oltp — hint  = "Set TF_DEV_PACS_PASSWORD env var and ensure pacs_oltp is reachable on localhost,1433.",
-- `backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs:183` PACS — // ── S1: PACS sales → legacy_pacs_raw.sale ─────────────────
-- `backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs:202` PACS — // ── S2-A: PACS prop_supp_assoc → legacy_pacs_raw.prop_supp_assoc
+- `backend/src/TerraFusion.API/Controllers/CognitiveFrameworkMonitoringController.cs:219` Harris — TaskTitle = "Deploy Harris PACS Integration",
+- `backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs:119` Harris — _logger.LogInformation("CostForge test Harris PACS sync endpoint called: {CountyId}", request.CountyId);
+- `backend/src/TerraFusion.API/Controllers/ElitePerformanceMonitoringController.cs:180` PACS — /// Get production PACS performance metrics
+- `backend/src/TerraFusion.API/Controllers/ElitePerformanceMonitoringController.cs:183` PACS — /// <returns>Production PACS performance metrics with database and sync performance</returns>
+- `backend/src/TerraFusion.API/Controllers/ElitePerformanceMonitoringController.cs:184` pacs — [HttpGet("production-pacs/performance")]
 
 #### docs_comments_labels
 
-- `backend/src/TerraFusion.API/Program.cs:137` PACS — // ── Standalone PACS seed mode ──────────────────────────────────────────────
-- `backend/src/TerraFusion.API/Program.cs:138` pacs — // Run as: dotnet run --project TerraFusion.API -- --seed-pacs
-- `backend/src/TerraFusion.API/Program.cs:180` PACS — // Re-runs only canonical Property upserts from the PACS mirror.
-- `backend/src/TerraFusion.API/Program.cs:327` PACS — // ── Levy rebuild from PACS oracle + canonical levy tables ──────────────────
-- `backend/src/TerraFusion.API/Program.cs:1221` PACS — // Slice OPS-1-A-2 — PACS reachability probe + Process-backed refresh
+- `backend/src/TerraFusion.API/Program.cs:136` PACS — // ── Standalone PACS seed mode ──────────────────────────────────────────────
+- `backend/src/TerraFusion.API/Program.cs:137` pacs — // Run as: dotnet run --project TerraFusion.API -- --seed-pacs
+- `backend/src/TerraFusion.API/Program.cs:179` PACS — // Re-runs only canonical Property upserts from the PACS mirror.
+- `backend/src/TerraFusion.API/Program.cs:326` PACS — // ── Levy rebuild from PACS oracle + canonical levy tables ──────────────────
+- `backend/src/TerraFusion.API/Program.cs:1228` PACS — // Slice OPS-1-A-2 — PACS reachability probe + Process-backed refresh
 
 #### archived_or_quarantined
 
-- None
+- `backend/src/TerraFusion.API/Program.cs:1626` PACS — TerraFusion.Core.PACS.PacsServiceRegistration.AddPacsAdapter(builder.Services);
+- `backend/src/TerraFusion.API/Program.cs:1630` PACS — builder.Services.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.API.Services.PacsEfAdapter>();
+- `backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs:48` pacs — ///   GET  sync-pop-2/pacs-table-columns   — read-only INFORMATION_SCHEMA query
+- `backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs:144` Harris — /// SYNC-POP-2: drains live Harris PACS into the doctrine pipeline.
+- `backend/src/TerraFusion.API/Controllers/CanonicalDebugController.cs:171` pacs_oltp — hint  = "Set TF_DEV_PACS_PASSWORD env var and ensure pacs_oltp is reachable on localhost,1433.",
 
 #### user_facing_terminology
 
-- `backend/src/TerraFusion.API/Program.cs:903` pacs — if (args.Contains("--seed-pacs"))
-- `backend/src/TerraFusion.API/Program.cs:1300` harris — ?? "harris-pacs-prod";
-- `backend/src/TerraFusion.API/Program.cs:2453` pacs — .AddPacsReadiness("ready", "pacs")
-- `backend/src/TerraFusion.API/Program.cs:2928` PACS — return Results.Conflict("PACS seed already running. Check /api/admin/pacs/seed/status.");
-- `backend/src/TerraFusion.API/Program.cs:2954` PACS — new { message = "PACS seed started in background. Poll /api/admin/pacs/seed/status." });
+- `backend/src/TerraFusion.API/Program.cs:902` pacs — if (args.Contains("--seed-pacs"))
+- `backend/src/TerraFusion.API/Program.cs:1307` harris — ?? "harris-pacs-prod";
+- `backend/src/TerraFusion.API/Program.cs:2467` pacs — healthChecksBuilder.AddPacsReadiness("ready", "pacs");
+- `backend/src/TerraFusion.API/Program.cs:2944` PACS — return Results.Conflict("PACS seed already running. Check /api/admin/pacs/seed/status.");
+- `backend/src/TerraFusion.API/Program.cs:2970` PACS — new { message = "PACS seed started in background. Poll /api/admin/pacs/seed/status." });
 
 
 ## Required Fixes
 
 - Public access posture is not explicit and usable for launch-control evidence.
 - Product-load lineage is not proven by the TerraFusion DB ledger.
-- Active product runtime still contains PACS/Harris/source-system references outside the allowed sync/admin/proof lanes.
 
 ## Interpretation
 

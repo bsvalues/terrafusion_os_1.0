@@ -71,6 +71,9 @@ const TEXT_FILE_RE = /\.(cs|ts|tsx|js|jsx|mjs|json)$/i;
 const SAFE_RUST_ALLOWED_CLAIM_RE = /rust integration seams exist;\s*runtime execution is not proven\.?/i;
 const UNSAFE_RUST_OVERCLAIM_RE =
   /runtime execution is proven|runtime\s+(is\s+)?proven|live in production|production-ready|production ready|accelerated valuation is production/i;
+const CONTROLLER_FILE_RE = /(^|\/)backend\/src\/TerraFusion\.API\/Controllers\/([^/]+Controller)\.cs$/i;
+const SERVICE_FILE_RE = /(^|\/)backend\/src\/TerraFusion\.API\/Services\/([^/]+)\.cs$/i;
+const PROGRAM_FILE_RE = /(^|\/)backend\/src\/TerraFusion\.API\/Program\.cs$/i;
 
 function normalizePath(filePath) {
   return filePath.replaceAll(path.sep, "/");
@@ -181,12 +184,85 @@ function emptyLegacyCategoryCounts() {
   };
 }
 
-function classifyLegacyReference(relativePath, line) {
+function extractJune10ProductionExcludedControllers(programText) {
+  const match = programText.match(/june10ProductionExcludedControllers[\s\S]*?;/);
+  if (!match) return new Set();
+  return new Set([...match[0].matchAll(/"([^"]+Controller)"/g)].map((item) => item[1]));
+}
+
+function lineNumbersInProgramWindow(programLines, startPattern, endPattern, maxLines = 80) {
+  const lineNumbers = new Set();
+  const startIndex = programLines.findIndex((line) => startPattern.test(line));
+  if (startIndex < 0) return lineNumbers;
+
+  for (let index = startIndex; index < Math.min(programLines.length, startIndex + maxLines); index += 1) {
+    lineNumbers.add(index + 1);
+    if (index > startIndex && endPattern.test(programLines[index])) break;
+  }
+
+  return lineNumbers;
+}
+
+function buildLegacyBoundaryContext(root) {
+  const programPath = path.join(root, "backend", "src", "TerraFusion.API", "Program.cs");
+  const programText = safeRead(programPath);
+  const programLines = programText.split(/\r?\n/);
+  const devGatedAdapterLines = lineNumbersInProgramWindow(
+    programLines,
+    /enableLegacySourceRuntimeAdapters/,
+    /Conditionally register Redis|AddScoped<TerraFusion\.Core\.Services\.IRedisCacheService/,
+    50
+  );
+  const standaloneSyncLines = lineNumbersInProgramWindow(
+    programLines,
+    /--sync-cost-matrices-only/,
+    /\.Build\(\)/,
+    80
+  );
+  const devGatedServiceNames = new Set();
+  for (const lineNumber of devGatedAdapterLines) {
+    const line = programLines[lineNumber - 1] ?? "";
+    for (const match of line.matchAll(/Services\.([A-Za-z0-9_]+)/g)) {
+      devGatedServiceNames.add(match[1]);
+    }
+  }
+
+  return {
+    programText,
+    productionExcludedControllers: extractJune10ProductionExcludedControllers(programText),
+    standaloneSyncLines,
+    devGatedAdapterLines,
+    devGatedServiceNames
+  };
+}
+
+function isProductionExcludedController(relativePath, context) {
+  const match = relativePath.match(CONTROLLER_FILE_RE);
+  return Boolean(match && context.productionExcludedControllers.has(match[2]));
+}
+
+function isUnregisteredServiceFile(relativePath, context) {
+  const match = relativePath.match(SERVICE_FILE_RE);
+  if (!match) return false;
+  return !new RegExp(`\\b${match[2]}\\b`).test(context.programText);
+}
+
+function isDevGatedServiceFile(relativePath, context) {
+  const match = relativePath.match(SERVICE_FILE_RE);
+  return Boolean(match && context.devGatedServiceNames.has(match[2]));
+}
+
+function classifyLegacyReference(relativePath, line, context, lineNumber) {
   const trimmed = line.trim();
 
   if (ARCHIVE_OR_QUARANTINE_PATH_RE.test(relativePath)) return "archived_or_quarantined";
+  if (isProductionExcludedController(relativePath, context)) return "archived_or_quarantined";
+  if (isDevGatedServiceFile(relativePath, context)) return "archived_or_quarantined";
+  if (PROGRAM_FILE_RE.test(relativePath) && context.devGatedAdapterLines.has(lineNumber)) return "archived_or_quarantined";
+  if (PROGRAM_FILE_RE.test(relativePath) && context.standaloneSyncLines.has(lineNumber)) return "ingestion_sync_allowed";
   if (PROOF_OR_TEST_PATH_RE.test(relativePath)) return "proof_or_test_only";
   if (INGESTION_SYNC_PATH_RE.test(relativePath)) return "ingestion_sync_allowed";
+  if (isUnregisteredServiceFile(relativePath, context)) return "archived_or_quarantined";
   if (COMMENT_LINE_RE.test(trimmed)) return "docs_comments_labels";
   if (ADMIN_SYNC_ROUTE_LINE_RE.test(trimmed)) return "ingestion_sync_allowed";
   if (FRONTEND_PATH_RE.test(relativePath)) return "user_facing_terminology";
@@ -210,6 +286,7 @@ export function inspectRuntimeLegacyBoundary({ repoRoot: root = repoRoot } = {})
   const absoluteRoot = path.resolve(root);
   const findings = [];
   const categoryCounts = emptyLegacyCategoryCounts();
+  const context = buildLegacyBoundaryContext(absoluteRoot);
   const examplesByCategory = Object.fromEntries(
     Object.keys(categoryCounts).map((category) => [category, []])
   );
@@ -223,7 +300,7 @@ export function inspectRuntimeLegacyBoundary({ repoRoot: root = repoRoot } = {})
       const match = line.match(ACTIVE_LEGACY_TERM_RE);
       if (!match) return;
 
-      const category = classifyLegacyReference(relativePath, line);
+      const category = classifyLegacyReference(relativePath, line, context, index + 1);
       const finding = {
         filePath: relativePath,
         lineNumber: index + 1,

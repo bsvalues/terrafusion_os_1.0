@@ -368,6 +368,105 @@ test("legacy boundary classifier preserves direct dependencies while allowing sy
   );
 });
 
+test("legacy boundary classifier treats production-excluded legacy controllers as quarantined", () => {
+  const root = makeTempRepo();
+  writeFile(
+    root,
+    "backend/src/TerraFusion.API/Program.cs",
+    [
+      "var june10ProductionExcludedControllers = builder.Environment.IsDevelopment()",
+      "  ? Array.Empty<string>()",
+      "  : new[] { \"PacsController\", \"ProductionPACSIntegrationController\" };"
+    ].join("\n")
+  );
+  writeFile(
+    root,
+    "backend/src/TerraFusion.API/Controllers/PacsController.cs",
+    [
+      "using TerraFusion.Core.PACS;",
+      "[Route(\"api/pacs\")]",
+      "public class PacsController { }"
+    ].join("\n")
+  );
+  writeFile(
+    root,
+    "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
+    "using TerraFusion.Core.PACS; public class CostForgeController { }"
+  );
+
+  const boundary = inspectRuntimeLegacyBoundary({ repoRoot: root });
+
+  assert.equal(boundary.rawCount, 3);
+  assert.equal(boundary.categoryCounts.archived_or_quarantined, 2);
+  assert.equal(boundary.categoryCounts.active_runtime_dependency, 1);
+  assert.equal(boundary.blockingActiveRuntimeDependencyCount, 1);
+  assert.equal(boundary.blockingFindings[0].filePath, "backend/src/TerraFusion.API/Controllers/CostForgeController.cs");
+});
+
+test("legacy boundary classifier blocks registered legacy services but quarantines unregistered service files", () => {
+  const root = makeTempRepo();
+  writeFile(
+    root,
+    "backend/src/TerraFusion.API/Program.cs",
+    "builder.Services.AddScoped<RegisteredLegacyService>();"
+  );
+  writeFile(
+    root,
+    "backend/src/TerraFusion.API/Services/RegisteredLegacyService.cs",
+    "public class RegisteredLegacyService { void Open() { using var connection = new SqlConnection(\"legacy\"); } }"
+  );
+  writeFile(
+    root,
+    "backend/src/TerraFusion.API/Services/UnregisteredLegacyService.cs",
+    "public class UnregisteredLegacyService { void Open() { using var connection = new SqlConnection(\"legacy\"); } }"
+  );
+
+  const boundary = inspectRuntimeLegacyBoundary({ repoRoot: root });
+
+  assert.equal(boundary.rawCount, 2);
+  assert.equal(boundary.categoryCounts.active_runtime_dependency, 1);
+  assert.equal(boundary.categoryCounts.archived_or_quarantined, 1);
+  assert.equal(boundary.blockingFindings[0].filePath, "backend/src/TerraFusion.API/Services/RegisteredLegacyService.cs");
+});
+
+test("legacy boundary classifier allows standalone sync and dev-gated source adapters", () => {
+  const root = makeTempRepo();
+  writeFile(
+    root,
+    "backend/src/TerraFusion.API/Program.cs",
+    [
+      "if (args.Contains(\"--sync-cost-matrices-only\"))",
+      "{",
+      "  svc.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.Core.PACS.PacsSqlAdapter>();",
+      "}",
+      "var enableLegacySourceRuntimeAdapters = builder.Environment.IsDevelopment();",
+      "if (enableLegacySourceRuntimeAdapters)",
+      "{",
+      "  builder.Services.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.API.Services.PacsEfAdapter>();",
+      "}",
+      "builder.Services.AddScoped<RegisteredRuntimeAdapter>();"
+    ].join("\n")
+  );
+  writeFile(
+    root,
+    "backend/src/TerraFusion.API/Services/PacsEfAdapter.cs",
+    "using TerraFusion.Core.PACS; public sealed class PacsEfAdapter { }"
+  );
+  writeFile(
+    root,
+    "backend/src/TerraFusion.API/Services/RegisteredRuntimeAdapter.cs",
+    "using TerraFusion.Core.PACS; public sealed class RegisteredRuntimeAdapter { }"
+  );
+
+  const boundary = inspectRuntimeLegacyBoundary({ repoRoot: root });
+
+  assert.equal(boundary.rawCount, 4);
+  assert.equal(boundary.categoryCounts.ingestion_sync_allowed, 1);
+  assert.equal(boundary.categoryCounts.archived_or_quarantined, 2);
+  assert.equal(boundary.categoryCounts.active_runtime_dependency, 1);
+  assert.equal(boundary.blockingFindings[0].filePath, "backend/src/TerraFusion.API/Services/RegisteredRuntimeAdapter.cs");
+});
+
 test("launch gate blocks only active runtime dependency legacy findings", () => {
   const report = buildJune10LaunchGateReport({
     apiBaseUrl: "http://127.0.0.1:5046",

@@ -136,19 +136,19 @@ namespace TerraFusion.API.Controllers
         }
 
         /// <summary>
-        /// HARRIS PACS INTEGRATION: Get Harris PACS Bridge Status
+        /// LEGACY SOURCE BRIDGE: Get bridge status
         ///
-        /// GET /api/terrafusionmarketplace/activations/{activationId}/harris-bridge
+        /// GET /api/terrafusionmarketplace/activations/{activationId}/legacy-source-bridge
         ///
-        /// Returns the status and metrics of Harris PACS bridge integration for
+        /// Returns the status and metrics of legacy source bridge integration for
         /// a specific module activation.
         /// </summary>
-        [HttpGet("activations/{activationId}/harris-bridge")]
-        public ActionResult GetHarrisBridgeStatus(string activationId)
+        [HttpGet("activations/{activationId}/legacy-source-bridge")]
+        public ActionResult GetLegacySourceBridgeStatus(string activationId)
         {
             return CompatibilityUnavailable(
-                "activations/{activationId}/harris-bridge",
-                "Harris bridge marketplace telemetry",
+                "activations/{activationId}/legacy-source-bridge",
+                "Legacy source bridge marketplace telemetry",
                 activationId: activationId);
         }
 
