@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-20T18:48:10.229Z",
+  "generatedAtUtc": "2026-05-20T19:01:24.576Z",
   "gate": "june10_launch_gate",
   "apiBaseUrl": "http://localhost:5046",
   "publicBaseUrl": "https://terrafusionmarket.com",
@@ -8,12 +8,12 @@
     "apiHealthLive": true,
     "endpointSmokePassed": true,
     "publicAccessPostureExplicit": false,
-    "productLoadLedgerPassed": false,
+    "productLoadLedgerPassed": true,
     "rustRuntimeProven": false,
     "rustClaimsSuppressed": true,
     "activeRuntimeLegacyLeaks": 0,
     "rawRuntimeLegacyReferences": 1917,
-    "blockers": 2,
+    "blockers": 1,
     "warnings": 1
   },
   "checks": {
@@ -30,10 +30,10 @@
     },
     "productLoadLedger": {
       "path": "C:\\Users\\bsval\\.config\\superpowers\\worktrees\\terrafusion_os_1.0\\june10-production-readiness-audit-gate\\generated\\truth\\terrafusion-db-product-load-ledger.json",
-      "passed": false,
+      "passed": true,
       "receiptTableExists": true,
-      "lineageProven": 6,
-      "blockers": 1
+      "lineageProven": 7,
+      "blockers": 0
     },
     "rustRuntimeUsage": {
       "passed": false,
@@ -17780,11 +17780,6 @@
       "source": "public_access_posture",
       "message": "Public access posture is not explicit and usable for launch-control evidence.",
       "evidence": "1 blocker(s)"
-    },
-    {
-      "source": "product_load_ledger",
-      "message": "Product-load lineage is not proven by the TerraFusion DB ledger.",
-      "evidence": "6 lineage-proven table(s), 1 blocker(s)"
     }
   ],
   "warnings": [
@@ -17795,8 +17790,7 @@
     }
   ],
   "requiredFixes": [
-    "Public access posture is not explicit and usable for launch-control evidence.",
-    "Product-load lineage is not proven by the TerraFusion DB ledger."
+    "Public access posture is not explicit and usable for launch-control evidence."
   ],
   "interpretation": "June 10 launch gate is red. Production approval must not rely on stale evidence, unproven lineage, unsuppressed Rust claims, or active runtime legacy leaks."
 }

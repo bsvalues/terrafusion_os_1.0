@@ -1,6 +1,6 @@
 # June 10 Launch Gate
 
-Generated: 2026-05-20T18:48:10.229Z
+Generated: 2026-05-20T19:01:24.576Z
 
 Passed: false
 API base URL: http://localhost:5046
@@ -11,18 +11,17 @@ Public base URL: https://terrafusionmarket.com
 - API health live now: true
 - Endpoint smoke passed live now: true
 - Public access posture explicit: false
-- Product-load ledger passed: false
+- Product-load ledger passed: true
 - Rust runtime proven: false
 - Rust claims suppressed: true
 - Active runtime legacy leaks: 0
 - Raw runtime legacy references: 1917
-- Blockers: 2
+- Blockers: 1
 - Warnings: 1
 
 ## Blockers
 
 - **public_access_posture**: Public access posture is not explicit and usable for launch-control evidence. (1 blocker(s))
-- **product_load_ledger**: Product-load lineage is not proven by the TerraFusion DB ledger. (6 lineage-proven table(s), 1 blocker(s))
 
 ## Warnings
 
@@ -96,7 +95,6 @@ Public base URL: https://terrafusionmarket.com
 ## Required Fixes
 
 - Public access posture is not explicit and usable for launch-control evidence.
-- Product-load lineage is not proven by the TerraFusion DB ledger.
 
 ## Interpretation
 

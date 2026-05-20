@@ -174,6 +174,13 @@ const EMBEDDED_LINEAGE_CONTRACTS_BY_TABLE = {
     identityColumn: 'SourceWorkbookId',
     timestampColumn: 'SourceWorkbookLockedAt',
   },
+  CamaCharacteristics: {
+    identityColumn: 'CountyId',
+    timestampColumn: 'UpdatedAt',
+    distinctColumn: 'ParcelId',
+    constantColumn: 'UpdatedBy',
+    constantValue: 'system',
+  },
 };
 
 function rel(filePath) {
@@ -327,17 +334,38 @@ function latestEmbeddedLineageReceiptAtFor(tableName) {
 
   const columns = existingColumns(tableName);
   if (!columns.has(contract.identityColumn) || !columns.has(contract.timestampColumn)) return null;
+  if (contract.distinctColumn && !columns.has(contract.distinctColumn)) return null;
+  if (contract.constantColumn && !columns.has(contract.constantColumn)) return null;
+
+  const distinctSelect = contract.distinctColumn
+    ? `, count(distinct ${quoteIdent(contract.distinctColumn)})`
+    : ', null';
+  const constantSelect =
+    contract.constantColumn && contract.constantValue
+      ? `, count(*) filter (where ${quoteIdent(contract.constantColumn)}::text = '${String(contract.constantValue).replaceAll("'", "''")}')`
+      : ', null';
 
   const result = psql(
-    `select count(*), count(${quoteIdent(contract.identityColumn)}), count(${quoteIdent(contract.timestampColumn)}), max(${quoteIdent(contract.timestampColumn)}) from ${quoteTable(tableName)};`
+    `select count(*), count(${quoteIdent(contract.identityColumn)}), count(${quoteIdent(contract.timestampColumn)}), max(${quoteIdent(contract.timestampColumn)})${distinctSelect}${constantSelect} from ${quoteTable(tableName)};`
   );
-  const [totalRaw, identityCountRaw, timestampCountRaw, latestRaw] = result.split('|');
+  const [
+    totalRaw,
+    identityCountRaw,
+    timestampCountRaw,
+    latestRaw,
+    distinctCountRaw,
+    constantCountRaw,
+  ] = result.split('|');
   const total = Number.parseInt(totalRaw, 10);
   const identityCount = Number.parseInt(identityCountRaw, 10);
   const timestampCount = Number.parseInt(timestampCountRaw, 10);
+  const distinctCount = Number.parseInt(distinctCountRaw, 10);
+  const constantCount = Number.parseInt(constantCountRaw, 10);
 
   if (!Number.isFinite(total) || total <= 0) return null;
   if (identityCount !== total || timestampCount !== total) return null;
+  if (contract.distinctColumn && distinctCount !== total) return null;
+  if (contract.constantColumn && contract.constantValue && constantCount !== total) return null;
 
   return parseIso(latestRaw);
 }
@@ -552,23 +580,17 @@ function embeddedLineageEvidenceFromFixture(fixture) {
     const receipt = receipts.find(
       item => String(item.tableName ?? '').toLowerCase() === tableName.toLowerCase()
     );
-    const rowCount = Number(receipt?.rowCount ?? 0);
-    const missingIdentity = Number(receipt?.rowsMissingSourceWorkbookId ?? 0);
-    const missingTimestamp = Number(receipt?.rowsMissingSourceWorkbookLockedAt ?? 0);
-    const latestReceiptAt = parseIso(receipt?.sourceWorkbookLockedAt);
+    const latestReceiptAt = latestFixtureEmbeddedLineageReceiptAtFor(receipts, tableName);
 
     return {
       tableName,
       exists: Boolean(receipt),
       identityColumn: contract.identityColumn,
       timestampColumn: contract.timestampColumn,
+      distinctColumn: contract.distinctColumn ?? null,
+      constantColumn: contract.constantColumn ?? null,
       latestReceiptAt,
-      complete:
-        Boolean(receipt) &&
-        rowCount > 0 &&
-        missingIdentity === 0 &&
-        missingTimestamp === 0 &&
-        Boolean(latestReceiptAt),
+      complete: Boolean(latestReceiptAt),
     };
   });
 
@@ -651,12 +673,30 @@ function latestFixtureEmbeddedLineageReceiptAtFor(receipts, tableName) {
   if (!receipt) return null;
 
   const rowCount = Number(receipt.rowCount ?? 0);
-  const missingIdentity = Number(receipt.rowsMissingSourceWorkbookId ?? 0);
-  const missingTimestamp = Number(receipt.rowsMissingSourceWorkbookLockedAt ?? 0);
+  const missingIdentity = Number(
+    receipt[`rowsMissing${contract.identityColumn}`] ?? receipt.rowsMissingSourceWorkbookId ?? 0
+  );
+  const missingTimestamp = Number(
+    receipt[`rowsMissing${contract.timestampColumn}`] ??
+      receipt.rowsMissingSourceWorkbookLockedAt ??
+      0
+  );
+  const distinctColumnCount = contract.distinctColumn
+    ? Number(receipt[`distinct${contract.distinctColumn}Count`] ?? 0)
+    : rowCount;
+  const unexpectedConstantRows = contract.constantColumn
+    ? Number(receipt[`rowsWithUnexpected${contract.constantColumn}`] ?? 0)
+    : 0;
 
   if (rowCount <= 0 || missingIdentity !== 0 || missingTimestamp !== 0) return null;
+  if (contract.distinctColumn && distinctColumnCount !== rowCount) return null;
+  if (contract.constantColumn && unexpectedConstantRows !== 0) return null;
 
-  return parseIso(receipt.sourceWorkbookLockedAt);
+  return parseIso(
+    receipt[contract.timestampColumn[0].toLowerCase() + contract.timestampColumn.slice(1)] ??
+      receipt[contract.timestampColumn] ??
+      receipt.sourceWorkbookLockedAt
+  );
 }
 
 function buildRowsFromDatabase() {

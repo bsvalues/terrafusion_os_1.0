@@ -320,6 +320,55 @@ test('product load ledger keeps CamaCharacteristics red without a table-scoped r
   assert.match(report.rows[0].receiptEvidenceRequired, /ProductLoadReceipts/i);
 });
 
+test('product load ledger accepts complete CamaCharacteristics embedded system lineage', async () => {
+  const root = makeTempRepo('tf-product-ledger-cama-embedded-lineage-');
+  const fixturePath = writeFixture(root, {
+    database: { container: 'fixture', database: 'terrafusion', user: 'postgres' },
+    embeddedLineageReceipts: [
+      {
+        tableName: 'CamaCharacteristics',
+        countyId: '19190019-1919-1919-1919-191919191919',
+        updatedAt: '2026-04-17T03:41:23.707Z',
+        rowCount: 75907,
+        rowsMissingCountyId: 0,
+        rowsMissingUpdatedAt: 0,
+        rowsWithUnexpectedUpdatedBy: 0,
+        distinctParcelIdCount: 75907,
+      },
+    ],
+    rows: [
+      {
+        tableName: 'CamaCharacteristics',
+        productDomain: 'costforge',
+        rowCount: 75907,
+        latestProductUpdatedAt: '2026-04-17T03:41:23.707Z',
+      },
+    ],
+  });
+
+  await execFileAsync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    env: { ...process.env, TF_PRODUCT_LOAD_LEDGER_FIXTURE: fixturePath },
+  });
+
+  const report = JSON.parse(
+    fs.readFileSync(
+      path.join(root, 'generated', 'truth', 'terrafusion-db-product-load-ledger.json'),
+      'utf8'
+    )
+  );
+
+  assert.equal(report.passed, true);
+  assert.equal(report.rows[0].latestProductLoadReceiptAt, '2026-04-17T03:41:23.707Z');
+  assert.equal(report.rows[0].lineageStatus, 'lineage_proven');
+  assert.equal(report.receiptEvidence.embeddedLineageEvidence.exists, true);
+  assert.ok(
+    report.receiptEvidence.embeddedLineageEvidence.tables.some(
+      table => table.tableName === 'CamaCharacteristics' && table.complete === true
+    )
+  );
+});
+
 test('product load ledger does not treat unrelated sync_bridge batches as table lineage', async () => {
   const root = makeTempRepo('tf-product-ledger-sync-batch-unrelated-');
   const fixturePath = writeFixture(root, {
