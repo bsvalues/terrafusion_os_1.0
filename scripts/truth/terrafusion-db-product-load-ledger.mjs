@@ -58,20 +58,20 @@ const PRODUCT_TABLES = [
     sourceTimestampColumns: [],
   },
   {
-    tableName: 'ImprovementDetails',
+    tableName: 'canonical_tf.tf_improvement',
     productDomain: 'costforge',
     loadRequirement: 'seed_required',
     productTimestampColumns: ['UpdatedAt', 'CreatedAt'],
-    sourceTableName: 'pacs_improvement_details',
-    sourceTimestampColumns: ['LastPacsSync'],
+    sourceTableName: null,
+    sourceTimestampColumns: [],
   },
   {
-    tableName: 'LandSegments',
+    tableName: 'canonical_tf.tf_land',
     productDomain: 'costforge',
     loadRequirement: 'seed_required',
     productTimestampColumns: ['UpdatedAt', 'CreatedAt'],
-    sourceTableName: 'pacs_land_details',
-    sourceTimestampColumns: ['LastPacsSync'],
+    sourceTableName: null,
+    sourceTimestampColumns: [],
   },
   {
     tableName: 'GisParcelGeometries',
@@ -164,7 +164,8 @@ const SYNC_BRIDGE_LOAD_BATCH_CONTRACT = {
 const SYNC_BRIDGE_PROJECTOR_SOURCES_BY_TABLE = {
   'canonical_tf.tf_parcel': ['canonical-tf-parcel-projector'],
   'canonical_tf.tf_sale': ['canonical-tf-projector'],
-  LandSegments: ['canonical-tf-land-projector'],
+  'canonical_tf.tf_improvement': ['canonical-tf-imprv-projector'],
+  'canonical_tf.tf_land': ['canonical-tf-land-projector'],
   GisParcelGeometries: ['canonical-tf-arcgis-projector'],
 };
 
