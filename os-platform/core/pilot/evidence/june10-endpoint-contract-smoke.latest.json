@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-20T01:44:16.712Z",
+  "generatedAtUtc": "2026-05-20T15:56:42.389Z",
   "apiBaseUrl": "http://localhost:5046",
   "passed": true,
   "summary": {
@@ -30,8 +30,8 @@
       "authApplied": false,
       "status": 200,
       "contentType": "application/json; charset=utf-8",
-      "bodyText": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T01:44:16.3820171Z\",\"environment\":\"Development\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"unknown\"}",
-      "bodySnippet": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T01:44:16.3820171Z\",\"environment\":\"Development\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"unknown\"}",
+      "bodyText": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T15:56:42.2840332Z\",\"environment\":\"Development\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"unknown\"}",
+      "bodySnippet": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T15:56:42.2840332Z\",\"environment\":\"Development\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"unknown\"}",
       "ok": true,
       "error": null
     },

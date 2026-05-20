@@ -1,6 +1,6 @@
 # June 10 Launch Gate
 
-Generated: 2026-05-20T01:45:07.025Z
+Generated: 2026-05-20T15:57:56.918Z
 
 Passed: false
 API base URL: http://localhost:5046
@@ -13,21 +13,20 @@ Public base URL: https://terrafusionmarket.com
 - Public access posture explicit: false
 - Product-load ledger passed: false
 - Rust runtime proven: false
-- Rust claims suppressed: false
+- Rust claims suppressed: true
 - Active runtime legacy leaks: 581
-- Blockers: 4
-- Warnings: 0
+- Blockers: 3
+- Warnings: 1
 
 ## Blockers
 
 - **public_access_posture**: Public access posture is not explicit and usable for launch-control evidence. (1 blocker(s))
 - **product_load_ledger**: Product-load lineage is not proven by the TerraFusion DB ledger. (0 lineage-proven table(s), 10 blocker(s))
-- **rust_runtime**: Rust runtime execution is not proven and Rust launch claims are not explicitly suppressed. (0/3 runtime integration(s) live-proven)
 - **legacy_runtime_boundary**: Active product runtime still contains PACS/Harris/source-system references outside the allowed sync/admin/proof lanes. (581 leak(s))
 
 ## Warnings
 
-- None
+- **rust_runtime**: Rust integration seams exist but launch claims are suppressed because live runtime execution is not proven.
 
 ## Active Runtime Legacy Leaks
 
@@ -619,7 +618,6 @@ Public base URL: https://terrafusionmarket.com
 
 - Public access posture is not explicit and usable for launch-control evidence.
 - Product-load lineage is not proven by the TerraFusion DB ledger.
-- Rust runtime execution is not proven and Rust launch claims are not explicitly suppressed.
 - Active product runtime still contains PACS/Harris/source-system references outside the allowed sync/admin/proof lanes.
 
 ## Interpretation

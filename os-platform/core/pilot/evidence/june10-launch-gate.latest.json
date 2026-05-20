@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-20T01:45:07.025Z",
+  "generatedAtUtc": "2026-05-20T15:57:56.918Z",
   "gate": "june10_launch_gate",
   "apiBaseUrl": "http://localhost:5046",
   "publicBaseUrl": "https://terrafusionmarket.com",
@@ -10,10 +10,10 @@
     "publicAccessPostureExplicit": false,
     "productLoadLedgerPassed": false,
     "rustRuntimeProven": false,
-    "rustClaimsSuppressed": false,
+    "rustClaimsSuppressed": true,
     "activeRuntimeLegacyLeaks": 581,
-    "blockers": 4,
-    "warnings": 0
+    "blockers": 3,
+    "warnings": 1
   },
   "checks": {
     "endpointSmoke": {
@@ -39,7 +39,7 @@
       "runtimeIntegrations": 3,
       "liveProvenRuntimeIntegrations": 0,
       "missingBinaries": 2,
-      "claimsSuppressed": false
+      "claimsSuppressed": true
     },
     "legacyRuntimeBoundary": {
       "allowedLanePolicy": "Sync/admin/proof lanes may retain legacy-source terms; active product runtime may not.",
@@ -4707,21 +4707,21 @@
       "evidence": "0 lineage-proven table(s), 10 blocker(s)"
     },
     {
-      "source": "rust_runtime",
-      "message": "Rust runtime execution is not proven and Rust launch claims are not explicitly suppressed.",
-      "evidence": "0/3 runtime integration(s) live-proven"
-    },
-    {
       "source": "legacy_runtime_boundary",
       "message": "Active product runtime still contains PACS/Harris/source-system references outside the allowed sync/admin/proof lanes.",
       "evidence": "581 leak(s)"
     }
   ],
-  "warnings": [],
+  "warnings": [
+    {
+      "source": "rust_runtime",
+      "message": "Rust integration seams exist but launch claims are suppressed because live runtime execution is not proven.",
+      "evidence": null
+    }
+  ],
   "requiredFixes": [
     "Public access posture is not explicit and usable for launch-control evidence.",
     "Product-load lineage is not proven by the TerraFusion DB ledger.",
-    "Rust runtime execution is not proven and Rust launch claims are not explicitly suppressed.",
     "Active product runtime still contains PACS/Harris/source-system references outside the allowed sync/admin/proof lanes."
   ],
   "interpretation": "June 10 launch gate is red. Production approval must not rely on stale evidence, unproven lineage, unsuppressed Rust claims, or active runtime legacy leaks."

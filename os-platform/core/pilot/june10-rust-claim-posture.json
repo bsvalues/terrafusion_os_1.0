@@ -1,0 +1,14 @@
+{
+  "claimsSuppressed": true,
+  "allowedPublicClaim": "Rust integration seams exist; runtime execution is not proven.",
+  "forbiddenClaims": [
+    "Rust runtime execution is proven.",
+    "Rust kernels are live in production.",
+    "Rust accelerated valuation is production-ready."
+  ],
+  "launchDoctrine": [
+    "Do not claim Rust runtime execution until live endpoint proof shows the Rust path executed.",
+    "Do not claim Rust acceleration in production until expected binaries exist and runtime probes prove invocation.",
+    "Rust source, seams, or service registrations are evidence of integration intent only."
+  ]
+}

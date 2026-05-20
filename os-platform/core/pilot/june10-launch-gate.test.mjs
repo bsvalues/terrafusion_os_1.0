@@ -10,7 +10,8 @@ import path from "node:path";
 import {
   buildJune10LaunchGateReport,
   inspectActiveRuntimeLegacyLeaks,
-  probeJune10LaunchGate
+  probeJune10LaunchGate,
+  resolveRustClaimsSuppression
 } from "./june10-launch-gate.mjs";
 
 function endpointSmoke(overrides = {}) {
@@ -95,6 +96,10 @@ function writeFile(root, relativePath, content) {
   const fullPath = path.join(root, ...relativePath.split("/"));
   fs.mkdirSync(path.dirname(fullPath), { recursive: true });
   fs.writeFileSync(fullPath, content);
+}
+
+function writeRustClaimPosture(root, posture) {
+  writeFile(root, "os-platform/core/pilot/june10-rust-claim-posture.json", `${JSON.stringify(posture, null, 2)}\n`);
 }
 
 test("launch gate passes only when live smoke, load ledger, Rust posture, and legacy boundary are clean", () => {
@@ -195,6 +200,58 @@ test("launch gate blocks Rust runtime claims unless they are proven or explicitl
 
   assert.equal(suppressed.passed, true);
   assert.equal(suppressed.summary.rustClaimsSuppressed, true);
+});
+
+test("Rust claim suppression requires an explicit safe launch posture artifact", () => {
+  const root = makeTempRepo();
+  const unprovenRust = rustRuntimeUsage({
+    passed: false,
+    summary: {
+      launchRelevantRustCrates: 1,
+      runtimeIntegrations: 1,
+      liveProvenRuntimeIntegrations: 0,
+      missingBinaries: 1,
+      warnings: 1,
+      blockers: 0
+    }
+  });
+
+  assert.equal(resolveRustClaimsSuppression({ repoRoot: root, rustRuntimeUsage: unprovenRust }), false);
+
+  writeRustClaimPosture(root, {
+    claimsSuppressed: true,
+    allowedPublicClaim: "Rust integration seams exist; runtime execution is not proven.",
+    forbiddenClaims: [
+      "Rust runtime execution is proven.",
+      "Rust kernels are live in production.",
+      "Rust accelerated valuation is production-ready."
+    ]
+  });
+
+  assert.equal(resolveRustClaimsSuppression({ repoRoot: root, rustRuntimeUsage: unprovenRust }), true);
+});
+
+test("Rust claim suppression rejects posture artifacts that overclaim live execution", () => {
+  const root = makeTempRepo();
+  const unprovenRust = rustRuntimeUsage({
+    passed: false,
+    summary: {
+      launchRelevantRustCrates: 1,
+      runtimeIntegrations: 1,
+      liveProvenRuntimeIntegrations: 0,
+      missingBinaries: 1,
+      warnings: 1,
+      blockers: 0
+    }
+  });
+
+  writeRustClaimPosture(root, {
+    claimsSuppressed: true,
+    allowedPublicClaim: "Rust runtime execution is proven and production-ready.",
+    forbiddenClaims: ["Rust runtime execution is not proven."]
+  });
+
+  assert.equal(resolveRustClaimsSuppression({ repoRoot: root, rustRuntimeUsage: unprovenRust }), false);
 });
 
 test("legacy leak scanner blocks product runtime references but allows sync/admin proof lanes", () => {

@@ -21,6 +21,13 @@ const DEFAULT_PRODUCT_LOAD_LEDGER = path.join(
   "truth",
   "terrafusion-db-product-load-ledger.json"
 );
+const DEFAULT_RUST_CLAIM_POSTURE = path.join(
+  repoRoot,
+  "os-platform",
+  "core",
+  "pilot",
+  "june10-rust-claim-posture.json"
+);
 const DEFAULT_OUT_JSON = path.join(
   repoRoot,
   "os-platform",
@@ -49,6 +56,9 @@ const ALLOWED_LEGACY_PATH_RE =
   /(^|\/)(Sync|Admin|Proof|HealthProof|RuntimeTruth|SourceLineage|PacsOps|FullCorpus|OwnerWsdor|LegacySource)[^/]*\.(cs|ts|tsx|js|jsx)$|(^|\/)(tests?|__tests__|evidence|docs|ARCHIVE|archive|QUARANTINE)(\/|$)/i;
 const ACTIVE_LEGACY_TERM_RE = /\b(PACS|Harris|pacs_oltp|PACS_Training|Pacmls|tf-mssql|SqlConnection|OdbcConnection)\b/i;
 const TEXT_FILE_RE = /\.(cs|ts|tsx|js|jsx|mjs|json)$/i;
+const SAFE_RUST_ALLOWED_CLAIM_RE = /rust integration seams exist;\s*runtime execution is not proven\.?/i;
+const UNSAFE_RUST_OVERCLAIM_RE =
+  /runtime execution is proven|runtime\s+(is\s+)?proven|live in production|production-ready|production ready|accelerated valuation is production/i;
 
 function normalizePath(filePath) {
   return filePath.replaceAll(path.sep, "/");
@@ -121,6 +131,27 @@ function rustRuntimeProven(rustRuntimeUsage) {
       Number(rustRuntimeUsage?.summary?.liveProvenRuntimeIntegrations ?? 0) === Number(rustRuntimeUsage?.summary?.runtimeIntegrations ?? -1) &&
       Number(rustRuntimeUsage?.summary?.missingBinaries ?? 0) === 0
   );
+}
+
+export function resolveRustClaimsSuppression({
+  repoRoot: root = repoRoot,
+  posturePath = path.join(path.resolve(root), "os-platform", "core", "pilot", "june10-rust-claim-posture.json"),
+  rustRuntimeUsage = null
+} = {}) {
+  if (rustRuntimeProven(rustRuntimeUsage)) return false;
+
+  const posture = readJson(posturePath);
+  if (!posture || posture.claimsSuppressed !== true) return false;
+
+  const allowedPublicClaim = String(posture.allowedPublicClaim ?? "");
+  if (!SAFE_RUST_ALLOWED_CLAIM_RE.test(allowedPublicClaim)) return false;
+  if (UNSAFE_RUST_OVERCLAIM_RE.test(allowedPublicClaim)) return false;
+
+  const forbiddenClaims = Array.isArray(posture.forbiddenClaims) ? posture.forbiddenClaims.map((claim) => String(claim)) : [];
+  const forbidsRuntimeProvenClaim = forbiddenClaims.some((claim) => /runtime execution is proven/i.test(claim));
+  const forbidsProductionReadyClaim = forbiddenClaims.some((claim) => /production-ready|production ready|live in production/i.test(claim));
+
+  return forbidsRuntimeProvenClaim && forbidsProductionReadyClaim;
 }
 
 function allowedLegacyPath(relativePath) {
@@ -324,13 +355,18 @@ export async function probeJune10LaunchGate({
   timeoutMs = DEFAULT_TIMEOUT_MS,
   repoRoot: root = repoRoot,
   productLoadLedgerPath = DEFAULT_PRODUCT_LOAD_LEDGER,
-  rustClaimsSuppressed = process.env.TF_JUNE10_SUPPRESS_RUST_RUNTIME_CLAIMS === "1"
+  rustClaimPosturePath = DEFAULT_RUST_CLAIM_POSTURE,
+  rustClaimsSuppressed = null
 } = {}) {
   const endpointSmoke = await probeJune10EndpointContracts({ apiBaseUrl, timeoutMs });
   const publicSiteSmoke = await probeJune10PublicSite({ baseUrl: publicBaseUrl, timeoutMs });
   const productLoadLedger = readJson(productLoadLedgerPath);
   const rustRuntimeUsage = inspectJune10RustRuntimeUsage({ repoRoot: root });
   const activeRuntimeLegacyLeaks = inspectActiveRuntimeLegacyLeaks({ repoRoot: root });
+  const effectiveRustClaimsSuppressed =
+    rustClaimsSuppressed ??
+    (process.env.TF_JUNE10_SUPPRESS_RUST_RUNTIME_CLAIMS === "1" ||
+      resolveRustClaimsSuppression({ repoRoot: root, posturePath: rustClaimPosturePath, rustRuntimeUsage }));
 
   return buildJune10LaunchGateReport({
     apiBaseUrl,
@@ -340,7 +376,7 @@ export async function probeJune10LaunchGate({
     productLoadLedger,
     productLoadLedgerPath,
     rustRuntimeUsage,
-    rustClaimsSuppressed,
+    rustClaimsSuppressed: effectiveRustClaimsSuppressed,
     activeRuntimeLegacyLeaks
   });
 }
@@ -411,7 +447,8 @@ function parseArgs(argv) {
     timeoutMs: Number.parseInt(process.env.TF_JUNE10_LAUNCH_GATE_TIMEOUT_MS ?? String(DEFAULT_TIMEOUT_MS), 10),
     repoRoot: process.env.TF_REPO_ROOT ?? repoRoot,
     productLoadLedgerPath: process.env.TF_PRODUCT_LOAD_LEDGER_PATH ?? DEFAULT_PRODUCT_LOAD_LEDGER,
-    rustClaimsSuppressed: process.env.TF_JUNE10_SUPPRESS_RUST_RUNTIME_CLAIMS === "1",
+    rustClaimPosturePath: process.env.TF_JUNE10_RUST_CLAIM_POSTURE_PATH ?? DEFAULT_RUST_CLAIM_POSTURE,
+    rustClaimsSuppressed: null,
     outJson: DEFAULT_OUT_JSON,
     outMd: DEFAULT_OUT_MD,
     write: true
@@ -424,6 +461,7 @@ function parseArgs(argv) {
     else if (arg === "--timeout-ms") args.timeoutMs = Number.parseInt(argv[++i], 10);
     else if (arg === "--repo-root") args.repoRoot = path.resolve(argv[++i]);
     else if (arg === "--product-load-ledger") args.productLoadLedgerPath = path.resolve(argv[++i]);
+    else if (arg === "--rust-claim-posture") args.rustClaimPosturePath = path.resolve(argv[++i]);
     else if (arg === "--suppress-rust-claims") args.rustClaimsSuppressed = true;
     else if (arg === "--out-json") args.outJson = path.resolve(argv[++i]);
     else if (arg === "--out-md") args.outMd = path.resolve(argv[++i]);
@@ -441,6 +479,7 @@ export async function main(argv = process.argv.slice(2)) {
     timeoutMs: args.timeoutMs,
     repoRoot: args.repoRoot,
     productLoadLedgerPath: args.productLoadLedgerPath,
+    rustClaimPosturePath: args.rustClaimPosturePath,
     rustClaimsSuppressed: args.rustClaimsSuppressed
   });
 
