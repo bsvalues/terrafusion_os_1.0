@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-05-21T01:29:53.079Z",
+  "composePath": ".tmp/runtime-compose.production.yml",
+  "servicesScanned": 3,
+  "serviceSummaries": [
+    {
+      "service": "proxy",
+      "lineNumber": 2,
+      "hasHealthcheck": false,
+      "serviceHealthyDependencies": ["backend", "frontend"]
+    },
+    {
+      "service": "backend",
+      "lineNumber": 22,
+      "hasHealthcheck": true,
+      "serviceHealthyDependencies": []
+    },
+    {
+      "service": "frontend",
+      "lineNumber": 47,
+      "hasHealthcheck": true,
+      "serviceHealthyDependencies": ["backend"]
+    }
+  ],
+  "violations": [],
+  "warnings": [],
+  "passed": true
+}
