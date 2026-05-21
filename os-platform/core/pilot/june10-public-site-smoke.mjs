@@ -65,6 +65,10 @@ function hasLoginShellLanguage(route) {
   return /your\s+session\s+has\s+expired|provisioned\s+access\s+only|sign\s+in/i.test(route?.bodyText ?? "");
 }
 
+function hasExpiredSessionLanguage(route) {
+  return /your\s+session\s+has\s+expired|session\s+expired/i.test(route?.bodyText ?? "");
+}
+
 function hasMarketplaceLanguage(route) {
   return /marketplace\s+registry|governed\s+module|browse\s+.*module|module\s+catalog|marketplace/i.test(route?.bodyText ?? "");
 }
@@ -284,6 +288,15 @@ export function buildJune10PublicSiteSmokeReport({
         "rendered_access_posture",
         "Public signup is disabled, /api/auth/access-policy exposes an access channel, but rendered login/signup pages do not show it.",
         renderedLogin?.bodySnippet || renderedSignup?.bodySnippet || "No rendered body text."
+      );
+    }
+
+    if (renderedLogin?.ok && hasExpiredSessionLanguage(renderedLogin)) {
+      addBlocker(
+        blockers,
+        "rendered_access_posture",
+        "Direct rendered /login presents first-time unauthenticated visitors as an expired-session state.",
+        renderedLogin.bodySnippet
       );
     }
   }

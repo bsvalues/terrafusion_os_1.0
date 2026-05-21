@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/auth/useAuth';
 import { getAccessPolicy, login as authLogin, type AccessPolicy } from '@/services/authAPI';
@@ -51,13 +52,13 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900' data-testid='login-page'>
-      <div className='w-full max-w-md p-8 rounded-2xl bg-gray-800/80 border border-cyan-500/30 shadow-lg'>
+      <div className='w-full max-w-md p-8 rounded-lg bg-gray-800/80 border border-cyan-500/30 shadow-lg'>
         <h1 className='text-2xl font-bold text-cyan-400 mb-2 text-center'>TerraFusion OS</h1>
-        <p className='text-gray-400 text-sm text-center mb-6'>
-          Your session has expired. Please sign in to continue.
+        <p className='text-gray-300 text-sm text-center mb-6'>
+          Sign in with an issued operator account, or request provisioned access.
         </p>
-        <div className='mb-5 rounded-lg border border-cyan-500/20 bg-slate-900/70 px-4 py-3 text-sm text-slate-300'>
-          <p className='font-semibold text-cyan-300'>Provisioned access only</p>
+        <div className='mb-5 rounded-lg border border-cyan-500/30 bg-slate-900/80 px-4 py-4 text-sm text-slate-300'>
+          <p className='text-base font-semibold text-cyan-300'>Provisioned access only</p>
           <p className='mt-1 text-slate-400'>
             {accessPolicy?.message ??
               'Public self-signup is disabled. Use the operator account issued by the TerraFusion administrator.'}
@@ -65,9 +66,10 @@ const LoginPage: React.FC = () => {
           {accessPolicy?.accessRequestUrl && (
             <a
               href={accessPolicy.accessRequestUrl}
-              className='mt-3 inline-flex text-cyan-300 hover:text-cyan-200 font-semibold'
+              className='mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-cyan-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-slate-900'
             >
-              Request access
+              <Mail aria-hidden='true' className='h-4 w-4' />
+              Request provisioned access
             </a>
           )}
         </div>

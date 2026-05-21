@@ -138,6 +138,44 @@ test("blocks when access policy has a request channel but rendered login/signup 
   assert.ok(report.blockers.some((blocker) => blocker.source === "rendered_access_posture"));
 });
 
+test("blocks when direct rendered login presents a first-time visitor as an expired session", () => {
+  const report = buildJune10PublicSiteSmokeReport({
+    baseUrl: "https://terrafusionmarket.com",
+    routes: [
+      route("/", 200, "<div id=\"root\"></div>"),
+      route("/login", 200, "<div id=\"root\"></div>"),
+      route("/signup", 200, "Request provisioned access"),
+      route("/marketplace", 200, "Marketplace registry Browse governed modules")
+    ],
+    apiProbes: [
+      apiProbe("/api/health", 200, '{"status":"ok"}'),
+      apiProbe(
+        "/api/auth/access-policy",
+        200,
+        '{"signupMode":"provisioned_access_only","publicSignupEnabled":false,"accessRequestUrl":"mailto:support@terrafusionmarket.com"}'
+      )
+    ],
+    renderedRoutes: [
+      route(
+        "/login",
+        200,
+        "TerraFusion OS Your session has expired. Provisioned access only Request provisioned access Sign In"
+      ),
+      route("/signup", 200, "TerraFusion OS Provisioned access only Request provisioned access Sign In")
+    ],
+    renderedBrowserRequired: true
+  });
+
+  assert.equal(report.passed, false);
+  assert.ok(
+    report.blockers.some(
+      (blocker) =>
+        blocker.source === "rendered_access_posture" &&
+        blocker.message.includes("expired-session")
+    )
+  );
+});
+
 test("probes an HTTP fixture and writes JSON and Markdown evidence", async () => {
   const server = http.createServer((req, res) => {
     if (req.url === "/api/health") {

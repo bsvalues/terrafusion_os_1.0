@@ -54,7 +54,7 @@ describe('LoginPage real auth exchange', () => {
       </MemoryRouter>,
     );
 
-    await screen.findByRole('link', { name: /request access/i });
+    await screen.findByRole('link', { name: /request provisioned access/i });
 
     const u = userEvent.setup();
     await u.type(screen.getByLabelText(/email/i), 'user@gov.example.com');
@@ -84,7 +84,7 @@ describe('LoginPage real auth exchange', () => {
       </MemoryRouter>,
     );
 
-    await screen.findByRole('link', { name: /request access/i });
+    await screen.findByRole('link', { name: /request provisioned access/i });
 
     const u = userEvent.setup();
     await u.type(screen.getByLabelText(/email/i), 'user@gov.example.com');
@@ -106,9 +106,23 @@ describe('LoginPage real auth exchange', () => {
 
     expect(screen.getByText(/provisioned access only/i)).toBeInTheDocument();
     expect(await screen.findByText(/request provisioned access/i)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /request access/i })).toHaveAttribute(
+    expect(await screen.findByRole('link', { name: /request provisioned access/i })).toHaveAttribute(
       'href',
       'mailto:support@terrafusionmarket.com?subject=TerraFusion%20OS%20Provisioned%20Access%20Request',
     );
+  });
+
+  it('does not show an expired-session warning on a direct unauthenticated login visit', async () => {
+    render(
+      <MemoryRouter initialEntries={['/login']}>
+        <AuthProvider>
+          <LoginPage />
+        </AuthProvider>
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByRole('link', { name: /request provisioned access/i })).toBeInTheDocument();
+    expect(screen.queryByText(/your session has expired/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/sign in with an issued operator account/i)).toBeInTheDocument();
   });
 });
