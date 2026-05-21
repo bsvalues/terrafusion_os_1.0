@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/auth/useAuth';
 import { getAccessPolicy, login as authLogin, type AccessPolicy } from '@/services/authAPI';
@@ -55,23 +54,14 @@ const LoginPage: React.FC = () => {
       <div className='w-full max-w-md p-8 rounded-lg bg-gray-800/80 border border-cyan-500/30 shadow-lg'>
         <h1 className='text-2xl font-bold text-cyan-400 mb-2 text-center'>TerraFusion OS</h1>
         <p className='text-gray-300 text-sm text-center mb-6'>
-          Sign in with an issued operator account, or request provisioned access.
+          Sign in with administrator-issued TerraFusion credentials.
         </p>
         <div className='mb-5 rounded-lg border border-cyan-500/30 bg-slate-900/80 px-4 py-4 text-sm text-slate-300'>
           <p className='text-base font-semibold text-cyan-300'>Provisioned access only</p>
           <p className='mt-1 text-slate-400'>
             {accessPolicy?.message ??
-              'Public self-signup is disabled. Use the operator account issued by the TerraFusion administrator.'}
+              'Public self-signup and public access requests are disabled. Use the operator account issued by the TerraFusion administrator.'}
           </p>
-          {accessPolicy?.accessRequestUrl && (
-            <a
-              href={accessPolicy.accessRequestUrl}
-              className='mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-cyan-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-slate-900'
-            >
-              <Mail aria-hidden='true' className='h-4 w-4' />
-              Request provisioned access
-            </a>
-          )}
         </div>
         {error && (
           <div className='mb-4 p-3 rounded bg-red-900/50 border border-red-500/50 text-red-300 text-sm text-center'>

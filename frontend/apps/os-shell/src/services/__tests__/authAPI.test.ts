@@ -28,6 +28,15 @@ describe('authAPI.login', () => {
     await expect(login({ email: 'u@gov.us', password: 'bad' })).rejects.toThrow(/invalid/i);
   });
 
+  it('surfaces unprovisioned account message from backend', async () => {
+    (api.post as vi.Mock).mockRejectedValue({
+      response: { status: 401, data: { message: 'Account not provisioned' } },
+    });
+    await expect(login({ email: 'missing@gov.us', password: 'p' })).rejects.toThrow(
+      /account not provisioned/i,
+    );
+  });
+
   it('throws deterministic error on network/unknown', async () => {
     (api.post as vi.Mock).mockRejectedValue(new Error('network down'));
     await expect(login({ email: 'u@gov.', password: 'p' })).rejects.toThrow(/network/i);
@@ -45,8 +54,6 @@ describe('authAPI.login', () => {
     await expect(getAccessPolicy()).resolves.toEqual({
       signupMode: 'provisioned_access_only',
       publicSignupEnabled: false,
-      accessRequestUrl: 'mailto:support@terrafusionmarket.com?subject=TerraFusion%20OS%20Provisioned%20Access%20Request',
-      supportEmail: 'support@terrafusionmarket.com',
       message: 'Provisioned only',
     });
     expect(api.get).toHaveBeenCalledWith('/auth/access-policy');
@@ -58,9 +65,8 @@ describe('authAPI.login', () => {
     await expect(getAccessPolicy()).resolves.toEqual({
       signupMode: 'provisioned_access_only',
       publicSignupEnabled: false,
-      accessRequestUrl: 'mailto:support@terrafusionmarket.com?subject=TerraFusion%20OS%20Provisioned%20Access%20Request',
-      supportEmail: 'support@terrafusionmarket.com',
-      message: 'TerraFusion access is provisioned by an administrator. Public self-signup is disabled.',
+      message:
+        'TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled.',
     });
   });
 });

@@ -155,12 +155,12 @@ function validateAccessPolicy(probe) {
   const payload = parseJson(probe.bodyText);
   if (!payload) return false;
   return Boolean(
-    "publicSignupEnabled" in payload ||
-      payload.signupMode ||
-      payload.accessRequestUrl ||
-      payload.requestAccessUrl ||
-      payload.contactUrl ||
-      payload.supportEmail
+    payload.signupMode === "provisioned_access_only" &&
+      payload.publicSignupEnabled === false &&
+      !payload.accessRequestUrl &&
+      !payload.requestAccessUrl &&
+      !payload.contactUrl &&
+      !payload.supportEmail
   );
 }
 

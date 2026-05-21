@@ -105,14 +105,11 @@ namespace TerraFusion.API.Security
             services.AddScoped<TerraFusion.API.Services.IJwtTokenService, TerraFusion.API.Services.JwtTokenService>();
             services.AddScoped<CoreAuth.IJwtTokenService, ApiJwtTokenServiceAdapter>();
             services.AddScoped<CoreAuth.IAuthenticationService, CoreAuth.AuthenticationService>();
-            if (ConfiguredBootstrapSecurityService.HasBootstrapCredentials(configuration))
-            {
-                services.AddSingleton<CoreAuth.ISecurityService>(provider =>
-                    new ConfiguredBootstrapSecurityService(
-                        configuration,
-                        provider.GetRequiredService<ILogger<ConfiguredBootstrapSecurityService>>()));
-            }
-            services.TryAddSingleton<CoreAuth.ISecurityService, InMemorySecurityService>();
+            services.AddScoped<DatabaseProvisionedSecurityService>();
+            services.AddScoped<CoreAuth.ISecurityService>(provider =>
+                provider.GetRequiredService<DatabaseProvisionedSecurityService>());
+            services.AddScoped<IProvisionedUserContextProvider>(provider =>
+                provider.GetRequiredService<DatabaseProvisionedSecurityService>());
             services.AddHostedService<CoreAuth.RevocationCleanupBackgroundService>();
 
             services.AddAuthorization(options =>

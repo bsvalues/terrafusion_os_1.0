@@ -46,8 +46,9 @@ function snippet(text, limit = 4000) {
 }
 
 function hasAccessRequestLanguage(route) {
-  return /request\s+(provisioned\s+)?access|access\s+request|contact\s+.*administrator|invite|issued\s+by\s+.*administrator/i.test(
-    route?.bodyText ?? ""
+  const bodyText = String(route?.bodyText ?? "").replace(/public\s+access\s+requests\s+are\s+disabled/gi, "");
+  return /request\s+(provisioned\s+)?access|access\s+request|mailto:|support@|contact\s+(support|administrator)|invite/i.test(
+    bodyText
   );
 }
 
@@ -60,13 +61,14 @@ function hasActionableAccessRequestLanguage(route) {
     );
   }
 
+  const bodyText = String(route?.bodyText ?? "").replace(/public\s+access\s+requests\s+are\s+disabled/gi, "");
   return /request\s+(provisioned\s+)?access|access\s+request|mailto:|support@|contact\s+(support|administrator)|invite/i.test(
-    route?.bodyText ?? ""
+    bodyText
   );
 }
 
 function hasDisabledSignupLanguage(route) {
-  return /self-signup\s+is\s+disabled|public\s+self-signup\s+is\s+disabled|signup\s+disabled/i.test(route?.bodyText ?? "");
+  return /self-signup\s+is\s+disabled|public\s+self-signup\s+is\s+disabled|public\s+access\s+requests\s+are\s+disabled|signup\s+disabled/i.test(route?.bodyText ?? "");
 }
 
 function hasLoginShellLanguage(route) {
@@ -270,12 +272,12 @@ export function buildJune10PublicSiteSmokeReport({
   if (
     accessPolicyProbe?.status === 200 &&
     accessPolicy?.publicSignupEnabled === false &&
-    !hasAccessRequestChannel(accessPolicy)
+    hasAccessRequestChannel(accessPolicy)
   ) {
     addBlocker(
       blockers,
       "access_policy",
-      "Public signup is disabled and no access-request channel is exposed by /api/auth/access-policy.",
+      "/api/auth/access-policy exposes a public access-request channel. Production auth must be administrator-provisioned only.",
       accessPolicyProbe.bodySnippet
     );
   }
@@ -295,55 +297,37 @@ export function buildJune10PublicSiteSmokeReport({
     }
   }
 
-  if (
-    accessPolicyProbe?.status === 200 &&
-    accessPolicy?.publicSignupEnabled === false &&
-    hasAccessRequestChannel(accessPolicy) &&
-    renderedBrowserRequired
-  ) {
-    for (const renderedRoute of renderedRoutes.filter((route) => RENDERED_ROUTES.includes(route.path))) {
-      if (renderedRoute.ok && !hasActionableAccessRequestLanguage(renderedRoute)) {
-        addBlocker(
-          blockers,
-          "rendered_access_posture",
-          `${renderedRoute.path} rendered without a visible access-request action.`,
-          renderedRoute.bodySnippet || "No rendered body text."
-        );
-      }
-    }
-
-    if (renderedRoutes.length === 0) {
+  for (const renderedRoute of renderedRoutes.filter((route) => RENDERED_ROUTES.includes(route.path))) {
+    if (renderedRoute.ok && hasActionableAccessRequestLanguage(renderedRoute)) {
       addBlocker(
         blockers,
         "rendered_access_posture",
-        "Public signup is disabled, /api/auth/access-policy exposes an access channel, but rendered login/signup pages do not show it.",
-        renderedLogin?.bodySnippet || renderedSignup?.bodySnippet || "No rendered body text."
+        `${renderedRoute.path} exposes a public access-request action. Production auth must be provisioned by administrators only.`,
+        renderedRoute.bodySnippet || "No rendered body text."
       );
     }
+  }
 
-    if (renderedLogin?.ok && hasExpiredSessionLanguage(renderedLogin)) {
-      addBlocker(
-        blockers,
-        "rendered_access_posture",
-        "Direct rendered /login presents first-time unauthenticated visitors as an expired-session state.",
-        renderedLogin.bodySnippet
-      );
-    }
+  if (renderedLogin?.ok && hasExpiredSessionLanguage(renderedLogin)) {
+    addBlocker(
+      blockers,
+      "rendered_access_posture",
+      "Direct rendered /login presents first-time unauthenticated visitors as an expired-session state.",
+      renderedLogin.bodySnippet
+    );
   }
 
   if (!signup) {
     addBlocker(blockers, "signup", "/signup was not probed.");
   } else if (!signup.ok) {
     addBlocker(blockers, "signup", "/signup is not reachable.", signup.error ?? `status=${signup.status}`);
-  } else if (hasDisabledSignupLanguage(signup) && !hasAccessRequestLanguage(signup)) {
+  } else if (hasAccessRequestLanguage(signup)) {
     addBlocker(
       blockers,
       "signup",
-      "/signup is a disabled self-signup dead end with no usable access-request path.",
+      "/signup exposes public access-request language. Production auth must remain administrator-provisioned only.",
       signup.bodySnippet
     );
-  } else if (hasLoginShellLanguage(signup) && !hasAccessRequestLanguage(signup)) {
-    addBlocker(blockers, "signup", "/signup renders a login/session shell instead of signup or access request.", signup.bodySnippet);
   }
 
   const marketplace = findPath(routes, "/marketplace");

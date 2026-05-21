@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using System.IdentityModel.Tokens.Jwt;
+using TerraFusion.API.Security.Services;
 using TerraFusion.Core.Services;
 using TerraFusion.Core.DTOs;
 
@@ -14,15 +15,18 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthenticationService _authService;
     private readonly ISecurityService _securityService;
+    private readonly IProvisionedUserContextProvider _provisionedUsers;
     private readonly ILogger<AuthController> _logger;
 
     public AuthController(
         IAuthenticationService authService,
         ISecurityService securityService,
+        IProvisionedUserContextProvider provisionedUsers,
         ILogger<AuthController> logger)
     {
         _authService = authService;
         _securityService = securityService;
+        _provisionedUsers = provisionedUsers;
         _logger = logger;
     }
 
@@ -33,13 +37,13 @@ public class AuthController : ControllerBase
         try
         {
             var email = request.Email.Trim();
+            var provisionedUser = await _provisionedUsers.GetProvisionedUserContextAsync(email);
 
-            // Validate government user
-            if (!await _securityService.IsValidGovernmentUserAsync(email))
+            if (provisionedUser is null)
             {
-                await _securityService.LogSecurityEventAsync("INVALID_LOGIN_ATTEMPT", 
-                    $"Non-government user attempted login: {email}");
-                return Unauthorized(new { message = "Invalid credentials" });
+                await _securityService.LogSecurityEventAsync("UNPROVISIONED_LOGIN_ATTEMPT",
+                    $"Unprovisioned account attempted login: {email}");
+                return Unauthorized(new { message = "Account not provisioned" });
             }
 
             var isValidCredentials = await _securityService.ValidateUserCredentialsAsync(email, request.Password);
@@ -51,21 +55,30 @@ public class AuthController : ControllerBase
                 return Unauthorized(new { message = "Invalid credentials" });
             }
 
-            // Generate JWT token
-            var roles = await _securityService.GetUserRolesAsync(email);
-            var token = await _authService.GenerateJwtTokenAsync(
-                Guid.NewGuid().ToString(),
-                email,
-                roles);
+            var claims = BuildProvisionedClaims(provisionedUser);
+            var tokenPair = await _authService.GenerateTokenPairAsync(
+                provisionedUser.UserId.ToString(),
+                provisionedUser.Email,
+                provisionedUser.Roles,
+                claims);
+
+            await _provisionedUsers.RecordUserSessionAsync(
+                provisionedUser.UserId,
+                tokenPair.AccessToken,
+                tokenPair.RefreshToken,
+                DateTime.UtcNow.AddDays(7),
+                ControllerContext.HttpContext?.Connection.RemoteIpAddress?.ToString(),
+                ControllerContext.HttpContext?.Request.Headers.UserAgent.ToString());
 
             await _securityService.LogSecurityEventAsync("SUCCESSFUL_LOGIN", 
-                $"User successfully logged in: {email}");
+                $"User successfully logged in: {provisionedUser.Email}");
 
             return Ok(new LoginResponse
             {
-                Token = token,
-                Email = email,
-                Roles = roles.ToArray(),
+                Token = tokenPair.AccessToken,
+                RefreshToken = tokenPair.RefreshToken,
+                Email = provisionedUser.Email,
+                Roles = provisionedUser.Roles,
                 ExpiresAt = DateTime.UtcNow.AddHours(8)
             });
         }
@@ -86,9 +99,7 @@ public class AuthController : ControllerBase
         {
             signupMode = "provisioned_access_only",
             publicSignupEnabled = false,
-            accessRequestUrl = "mailto:support@terrafusionmarket.com?subject=TerraFusion%20OS%20Provisioned%20Access%20Request",
-            supportEmail = "support@terrafusionmarket.com",
-            message = "TerraFusion access is provisioned by an administrator. Public self-signup is disabled. Request provisioned access from support@terrafusionmarket.com."
+            message = "TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled."
         });
     }
 
@@ -104,16 +115,27 @@ public class AuthController : ControllerBase
                 return Unauthorized(new { message = "Invalid token" });
             }
 
-            var email = principal.FindFirst("email")?.Value;
-            var userId = principal.FindFirst("sub")?.Value;
+            var email = principal.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
+                ?? principal.FindFirst("email")?.Value;
+            var userId = principal.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                ?? principal.FindFirst("sub")?.Value;
 
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(userId))
             {
                 return Unauthorized(new { message = "Invalid token claims" });
             }
 
-            var roles = await _securityService.GetUserRolesAsync(email);
-            var newToken = await _authService.GenerateJwtTokenAsync(userId, email, roles);
+            var provisionedUser = await _provisionedUsers.GetProvisionedUserContextAsync(email);
+            if (provisionedUser is null || provisionedUser.UserId.ToString() != userId)
+            {
+                return Unauthorized(new { message = "Account not provisioned" });
+            }
+
+            var newToken = await _authService.GenerateJwtTokenAsync(
+                userId,
+                provisionedUser.Email,
+                provisionedUser.Roles,
+                BuildProvisionedClaims(provisionedUser));
 
             await _securityService.LogSecurityEventAsync("TOKEN_REFRESH", 
                 $"Token refreshed for user: {email}");
@@ -121,8 +143,8 @@ public class AuthController : ControllerBase
             return Ok(new LoginResponse
             {
                 Token = newToken,
-                Email = email,
-                Roles = roles.ToArray(),
+                Email = provisionedUser.Email,
+                Roles = provisionedUser.Roles,
                 ExpiresAt = DateTime.UtcNow.AddHours(8)
             });
         }
@@ -251,5 +273,35 @@ public class AuthController : ControllerBase
         {
             return false;
         }
+    }
+
+    private static Dictionary<string, object> BuildProvisionedClaims(ProvisionedUserAuthContext user)
+    {
+        var claims = new Dictionary<string, object>
+        {
+            ["perm"] = user.Permissions
+        };
+
+        if (user.CountyId.HasValue)
+        {
+            claims["countyId"] = user.CountyId.Value.ToString();
+        }
+
+        if (!string.IsNullOrWhiteSpace(user.CountyName))
+        {
+            claims["countyName"] = user.CountyName;
+        }
+
+        if (!string.IsNullOrWhiteSpace(user.CountyState))
+        {
+            claims["countyState"] = user.CountyState;
+        }
+
+        if (!string.IsNullOrWhiteSpace(user.CountyFipsCode))
+        {
+            claims["countyFipsCode"] = user.CountyFipsCode;
+        }
+
+        return claims;
     }
 }

@@ -194,6 +194,7 @@
     "test:canon-ping": "node --test os-platform/core/tests/canon-ping.test.mjs",
     "test:canon-doctor": "node --test os-platform/core/tests/canon-doctor.test.mjs",
     "trace:query": "node scripts/trace-query.mjs",
+    "auth:provision-user": "dotnet run --project backend/tools/TerraFusion.AuthProvisioner/TerraFusion.AuthProvisioner.csproj --",
     "tf:local-agent": "node os-platform/core/pilot/local-agent/cli.js",
     "tf:la": "node os-platform/core/pilot/local-agent/cli.js",
     "proof:local-agent:release": "node os-platform/core/pilot/local-agent-release-proof.mjs",

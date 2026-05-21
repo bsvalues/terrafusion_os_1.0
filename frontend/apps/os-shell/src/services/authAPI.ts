@@ -11,15 +11,10 @@ export type AccessPolicy = {
   signupMode: string;
   publicSignupEnabled: boolean;
   message: string;
-  accessRequestUrl: string;
-  supportEmail: string;
 };
 
 const LOGIN_PATH = '/auth/login';
 const ACCESS_POLICY_PATH = '/auth/access-policy';
-const DEFAULT_ACCESS_REQUEST_URL =
-  'mailto:support@terrafusionmarket.com?subject=TerraFusion%20OS%20Provisioned%20Access%20Request';
-const DEFAULT_SUPPORT_EMAIL = 'support@terrafusionmarket.com';
 
 function normalizeToken(data: unknown): string | null {
   if (!data || typeof data !== 'object') return null;
@@ -37,7 +32,10 @@ export async function login(req: LoginRequest): Promise<LoginResult> {
     return { token };
   } catch (err: unknown) {
     const status = (err as { response?: { status?: number } })?.response?.status;
-    if (status === 401 || status === 403) throw new Error('Invalid credentials');
+    const message = (err as { response?: { data?: { message?: unknown } } })?.response?.data?.message;
+    if (status === 401 || status === 403) {
+      throw new Error(typeof message === 'string' && message ? message : 'Invalid credentials');
+    }
     throw new Error('Network error');
   }
 }
@@ -49,19 +47,16 @@ export async function getAccessPolicy(): Promise<AccessPolicy> {
     return {
       signupMode: data?.signupMode ?? 'provisioned_access_only',
       publicSignupEnabled: data?.publicSignupEnabled === true,
-      accessRequestUrl: data?.accessRequestUrl ?? DEFAULT_ACCESS_REQUEST_URL,
-      supportEmail: data?.supportEmail ?? DEFAULT_SUPPORT_EMAIL,
       message:
         data?.message ??
-        'TerraFusion access is provisioned by an administrator. Public self-signup is disabled.',
+        'TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled.',
     };
   } catch {
     return {
       signupMode: 'provisioned_access_only',
       publicSignupEnabled: false,
-      accessRequestUrl: DEFAULT_ACCESS_REQUEST_URL,
-      supportEmail: DEFAULT_SUPPORT_EMAIL,
-      message: 'TerraFusion access is provisioned by an administrator. Public self-signup is disabled.',
+      message:
+        'TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled.',
     };
   }
 }

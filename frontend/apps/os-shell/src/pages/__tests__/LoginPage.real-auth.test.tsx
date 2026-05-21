@@ -34,10 +34,8 @@ describe('LoginPage real auth exchange', () => {
     (getAccessPolicy as vi.Mock).mockResolvedValue({
       signupMode: 'provisioned_access_only',
       publicSignupEnabled: false,
-      accessRequestUrl: 'mailto:support@terrafusionmarket.com?subject=TerraFusion%20OS%20Provisioned%20Access%20Request',
-      supportEmail: 'support@terrafusionmarket.com',
       message:
-        'TerraFusion access is provisioned by an administrator. Public self-signup is disabled. Request provisioned access from support@terrafusionmarket.com.',
+        'TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled.',
     });
     navigate.mockReset();
     localStorage.clear();
@@ -54,7 +52,7 @@ describe('LoginPage real auth exchange', () => {
       </MemoryRouter>,
     );
 
-    await screen.findByRole('link', { name: /request provisioned access/i });
+    await screen.findByText(/provisioned access only/i);
 
     const u = userEvent.setup();
     await u.type(screen.getByLabelText(/email/i), 'user@gov.example.com');
@@ -84,7 +82,7 @@ describe('LoginPage real auth exchange', () => {
       </MemoryRouter>,
     );
 
-    await screen.findByRole('link', { name: /request provisioned access/i });
+    await screen.findByText(/provisioned access only/i);
 
     const u = userEvent.setup();
     await u.type(screen.getByLabelText(/email/i), 'user@gov.example.com');
@@ -95,7 +93,7 @@ describe('LoginPage real auth exchange', () => {
     expect(navigate).not.toHaveBeenCalled();
   });
 
-  it('states that public signup is disabled and gives a provisioned-access request channel', async () => {
+  it('states that public signup and public access requests are disabled', async () => {
     render(
       <MemoryRouter initialEntries={['/login']}>
         <AuthProvider>
@@ -105,11 +103,9 @@ describe('LoginPage real auth exchange', () => {
     );
 
     expect(screen.getByText(/provisioned access only/i)).toBeInTheDocument();
-    expect(await screen.findByText(/request provisioned access/i)).toBeInTheDocument();
-    expect(await screen.findByRole('link', { name: /request provisioned access/i })).toHaveAttribute(
-      'href',
-      'mailto:support@terrafusionmarket.com?subject=TerraFusion%20OS%20Provisioned%20Access%20Request',
-    );
+    expect(await screen.findByText(/public self-signup and public access requests are disabled/i)).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /request provisioned access/i })).not.toBeInTheDocument();
+    expect(screen.queryByText(/mailto/i)).not.toBeInTheDocument();
   });
 
   it('does not show an expired-session warning on a direct unauthenticated login visit', async () => {
@@ -121,8 +117,8 @@ describe('LoginPage real auth exchange', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByRole('link', { name: /request provisioned access/i })).toBeInTheDocument();
+    expect(await screen.findByText(/provisioned access only/i)).toBeInTheDocument();
     expect(screen.queryByText(/your session has expired/i)).not.toBeInTheDocument();
-    expect(screen.getByText(/sign in with an issued operator account/i)).toBeInTheDocument();
+    expect(screen.getByText(/sign in with administrator-issued terrafusion credentials/i)).toBeInTheDocument();
   });
 });

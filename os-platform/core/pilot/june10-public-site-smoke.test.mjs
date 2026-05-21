@@ -39,32 +39,30 @@ function apiProbe(pathname, status, body = "{}") {
   };
 }
 
-test("blocks production readiness when signup route is only disabled-login shell", () => {
+test("allows disabled signup without a public access-request channel", () => {
   const report = buildJune10PublicSiteSmokeReport({
     baseUrl: "https://terrafusionmarket.com",
     routes: [
       route("/", 200, "TerraFusion OS Your session has expired. Sign In"),
       route("/login", 200, "Provisioned access only Sign In"),
       route("/signup", 200, "Public self-signup is disabled. Sign In"),
-      route("/marketplace", 200, "Your session has expired. Provisioned access only. Sign In")
+      route("/marketplace", 200, "Marketplace registry Browse governed modules")
     ],
     apiProbes: [apiProbe("/api/health", 401, '{"error":"Unauthorized"}')]
   });
 
-  assert.equal(report.passed, false);
-  assert.equal(report.summary.blockers, 2);
-  assert.ok(report.blockers.some((blocker) => blocker.source === "signup"));
-  assert.ok(report.blockers.some((blocker) => blocker.source === "marketplace"));
+  assert.equal(report.passed, true);
+  assert.equal(report.summary.blockers, 0);
   assert.equal(report.summary.apiAuthGated, 1);
 });
 
-test("passes when signup provides an access-request path and marketplace is visible", () => {
+test("passes when login disables public requests and marketplace is visible", () => {
   const report = buildJune10PublicSiteSmokeReport({
     baseUrl: "https://terrafusionmarket.com",
     routes: [
       route("/", 200, "TerraFusion OS"),
       route("/login", 200, "Provisioned access only Sign In"),
-      route("/signup", 200, "Request provisioned access Contact administrator"),
+      route("/signup", 200, "Public self-signup and public access requests are disabled"),
       route("/marketplace", 200, "Marketplace registry Browse governed modules")
     ],
     apiProbes: [
@@ -72,12 +70,12 @@ test("passes when signup provides an access-request path and marketplace is visi
       apiProbe(
         "/api/auth/access-policy",
         200,
-        '{"signupMode":"provisioned_access_only","publicSignupEnabled":false,"accessRequestUrl":"/request-access"}'
+        '{"signupMode":"provisioned_access_only","publicSignupEnabled":false,"message":"TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled."}'
       )
     ],
     renderedRoutes: [
-      route("/login", 200, "Provisioned access only Request access Sign In"),
-      route("/signup", 200, "Provisioned access only Request access Sign In")
+      route("/login", 200, "Provisioned access only Sign In"),
+      route("/signup", 200, "Provisioned access only Sign In")
     ],
     renderedBrowserRequired: true
   });
@@ -87,7 +85,7 @@ test("passes when signup provides an access-request path and marketplace is visi
   assert.equal(report.summary.apiAuthGated, 0);
 });
 
-test("blocks when access policy disables public signup without access-request channel", () => {
+test("blocks when access policy exposes a public access-request channel", () => {
   const report = buildJune10PublicSiteSmokeReport({
     baseUrl: "https://terrafusionmarket.com",
     routes: [
@@ -101,7 +99,7 @@ test("blocks when access policy disables public signup without access-request ch
       apiProbe(
         "/api/auth/access-policy",
         200,
-        '{"signupMode":"provisioned_access_only","publicSignupEnabled":false,"message":"TerraFusion access is provisioned by an administrator. Public self-signup is disabled."}'
+        '{"signupMode":"provisioned_access_only","publicSignupEnabled":false,"accessRequestUrl":"mailto:support@terrafusionmarket.com"}'
       )
     ]
   });
@@ -110,35 +108,7 @@ test("blocks when access policy disables public signup without access-request ch
   assert.ok(report.blockers.some((blocker) => blocker.source === "access_policy"));
 });
 
-test("blocks when access policy has a request channel but rendered login/signup hide it", () => {
-  const report = buildJune10PublicSiteSmokeReport({
-    baseUrl: "https://terrafusionmarket.com",
-    routes: [
-      route("/", 200, "<div id=\"root\"></div>"),
-      route("/login", 200, "<div id=\"root\"></div>"),
-      route("/signup", 200, "<div id=\"root\"></div>"),
-      route("/marketplace", 200, "Marketplace registry Browse governed modules")
-    ],
-    apiProbes: [
-      apiProbe("/api/health", 200, '{"status":"ok"}'),
-      apiProbe(
-        "/api/auth/access-policy",
-        200,
-        '{"signupMode":"provisioned_access_only","publicSignupEnabled":false,"accessRequestUrl":"mailto:support@terrafusionmarket.com"}'
-      )
-    ],
-    renderedRoutes: [
-      route("/login", 200, "TerraFusion OS Provisioned access only Sign In"),
-      route("/signup", 200, "TerraFusion OS Public self-signup is disabled Sign In")
-    ],
-    renderedBrowserRequired: true
-  });
-
-  assert.equal(report.passed, false);
-  assert.ok(report.blockers.some((blocker) => blocker.source === "rendered_access_posture"));
-});
-
-test("blocks when any rendered access route hides the access request after browser render", () => {
+test("blocks when rendered login exposes public access request", () => {
   const report = buildJune10PublicSiteSmokeReport({
     baseUrl: "https://terrafusionmarket.com",
     routes: [
@@ -157,28 +127,22 @@ test("blocks when any rendered access route hides the access request after brows
     ],
     renderedRoutes: [
       route("/login", 200, "TerraFusion OS Provisioned access only Request provisioned access Sign In"),
-      route("/signup", 200, "TerraFusion OS Provisioned access only Sign In")
+      route("/signup", 200, "TerraFusion OS Public self-signup is disabled Sign In")
     ],
     renderedBrowserRequired: true
   });
 
   assert.equal(report.passed, false);
-  assert.ok(
-    report.blockers.some(
-      (blocker) =>
-        blocker.source === "rendered_access_posture" &&
-        blocker.message.includes("/signup")
-    )
-  );
+  assert.ok(report.blockers.some((blocker) => blocker.source === "rendered_access_posture"));
 });
 
-test("blocks when direct rendered login presents a first-time visitor as an expired session", () => {
+test("blocks when any rendered access route exposes access request after browser render", () => {
   const report = buildJune10PublicSiteSmokeReport({
     baseUrl: "https://terrafusionmarket.com",
     routes: [
       route("/", 200, "<div id=\"root\"></div>"),
       route("/login", 200, "<div id=\"root\"></div>"),
-      route("/signup", 200, "Request provisioned access"),
+      route("/signup", 200, "<div id=\"root\"></div>"),
       route("/marketplace", 200, "Marketplace registry Browse governed modules")
     ],
     apiProbes: [
@@ -190,12 +154,45 @@ test("blocks when direct rendered login presents a first-time visitor as an expi
       )
     ],
     renderedRoutes: [
+      route("/login", 200, "TerraFusion OS Provisioned access only Sign In"),
+      route("/signup", 200, "TerraFusion OS Provisioned access only Sign In")
+    ],
+    renderedBrowserRequired: true
+  });
+
+  assert.equal(report.passed, false);
+  assert.ok(
+    report.blockers.some(
+      (blocker) =>
+        blocker.source === "access_policy"
+    )
+  );
+});
+
+test("blocks when direct rendered login presents a first-time visitor as an expired session", () => {
+  const report = buildJune10PublicSiteSmokeReport({
+    baseUrl: "https://terrafusionmarket.com",
+    routes: [
+      route("/", 200, "<div id=\"root\"></div>"),
+      route("/login", 200, "<div id=\"root\"></div>"),
+      route("/signup", 200, "Public self-signup and public access requests are disabled"),
+      route("/marketplace", 200, "Marketplace registry Browse governed modules")
+    ],
+    apiProbes: [
+      apiProbe("/api/health", 200, '{"status":"ok"}'),
+      apiProbe(
+        "/api/auth/access-policy",
+        200,
+        '{"signupMode":"provisioned_access_only","publicSignupEnabled":false,"message":"TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled."}'
+      )
+    ],
+    renderedRoutes: [
       route(
         "/login",
         200,
-        "TerraFusion OS Your session has expired. Provisioned access only Request provisioned access Sign In"
+        "TerraFusion OS Your session has expired. Provisioned access only Sign In"
       ),
-      route("/signup", 200, "TerraFusion OS Provisioned access only Request provisioned access Sign In")
+      route("/signup", 200, "TerraFusion OS Provisioned access only Sign In")
     ],
     renderedBrowserRequired: true
   });

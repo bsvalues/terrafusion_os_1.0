@@ -511,7 +511,7 @@ test("probeJune10LaunchGate composes live endpoint and public site smoke with le
 
     if (req.url === "/" || req.url === "/login" || req.url === "/signup" || req.url === "/marketplace") {
       res.setHeader("content-type", "text/html");
-      res.end("<html><body>Marketplace governed module access request sign in</body></html>");
+      res.end("<html><body>Marketplace governed module Provisioned access only Sign In</body></html>");
       return;
     }
 
@@ -532,7 +532,7 @@ test("probeJune10LaunchGate composes live endpoint and public site smoke with le
       return;
     }
     if (req.url === "/api/auth/access-policy") {
-      res.end('{"signupMode":"provisioned_access_only","publicSignupEnabled":false,"accessRequestUrl":"/request-access"}');
+      res.end('{"signupMode":"provisioned_access_only","publicSignupEnabled":false,"message":"TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled."}');
       return;
     }
 

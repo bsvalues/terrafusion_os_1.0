@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -44,7 +44,6 @@ test("blocks when required runtime endpoint probe fails", () => {
   assert.equal(report.summary.failedRuntimeProbes, 1);
   assert.ok(report.blockers.some((blocker) => blocker.source === "runtime_probe"));
 });
-
 test("blocks when Benton parcel endpoint does not expose countable rows or county identity", () => {
   const report = buildJune10EndpointContractSmokeReport({
     apiBaseUrl: "http://127.0.0.1:5046",
@@ -78,7 +77,7 @@ test("blocks when runtime DB identity endpoint reports internal blockers", () =>
       }),
       probe({
         path: "/api/auth/access-policy",
-        body: { signupMode: "provisioned_access_only", publicSignupEnabled: false, accessRequestUrl: "/request-access" }
+        body: { signupMode: "provisioned_access_only", publicSignupEnabled: false }
       })
     ]
   });
@@ -102,7 +101,7 @@ test("passes when required runtime endpoints are reachable and response shapes m
       }),
       probe({
         path: "/api/auth/access-policy",
-        body: { signupMode: "provisioned_access_only", publicSignupEnabled: false, accessRequestUrl: "/request-access" }
+        body: { signupMode: "provisioned_access_only", publicSignupEnabled: false }
       })
     ]
   });
@@ -145,7 +144,7 @@ test("uses a development auth token for protected runtime endpoint probes withou
       return;
     }
     if (req.url === "/api/auth/access-policy") {
-      res.end('{"signupMode":"provisioned_access_only","publicSignupEnabled":false,"accessRequestUrl":"/request-access"}');
+      res.end('{"signupMode":"provisioned_access_only","publicSignupEnabled":false}');
       return;
     }
 
@@ -224,7 +223,7 @@ test("uses provisioned production login for protected runtime endpoint probes wi
       return;
     }
     if (req.url === "/api/auth/access-policy") {
-      res.end('{"signupMode":"provisioned_access_only","publicSignupEnabled":false,"accessRequestUrl":"/request-access"}');
+      res.end('{"signupMode":"provisioned_access_only","publicSignupEnabled":false}');
       return;
     }
 
@@ -274,7 +273,7 @@ test("probes an HTTP fixture and writes endpoint contract evidence", async () =>
       return;
     }
     if (req.url === "/api/auth/access-policy") {
-      res.end('{"signupMode":"provisioned_access_only","publicSignupEnabled":false,"accessRequestUrl":"/request-access"}');
+      res.end('{"signupMode":"provisioned_access_only","publicSignupEnabled":false}');
       return;
     }
 
