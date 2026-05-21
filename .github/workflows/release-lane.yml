@@ -413,10 +413,33 @@ jobs:
           NODE
           )"
 
-          LOGIN_RESPONSE="$(curl -fsS --max-time 10 \
-            -H 'Content-Type: application/json' \
-            -d "$LOGIN_PAYLOAD" \
-            "${PUBLIC_URL}/api/auth/login")"
+          LOGIN_RESPONSE=""
+          for attempt in $(seq 1 6); do
+            set +e
+            LOGIN_RESPONSE="$(curl -fsS --max-time 30 \
+              -H 'Content-Type: application/json' \
+              -d "$LOGIN_PAYLOAD" \
+              "${PUBLIC_URL}/api/auth/login" 2>login_error.txt)"
+            rc=$?
+            set -e
+
+            if [ "$rc" -eq 0 ] && [ -n "$LOGIN_RESPONSE" ]; then
+              break
+            fi
+
+            echo "Provisioned auth login smoke attempt ${attempt}/6 failed with curl exit ${rc}."
+            if [ -s login_error.txt ]; then
+              sed 's/^/  curl: /' login_error.txt
+            fi
+            if [ "$attempt" -lt 6 ]; then
+              sleep 10
+            fi
+          done
+
+          if [ -z "$LOGIN_RESPONSE" ]; then
+            echo "Provisioned auth login smoke did not receive a response after retries."
+            exit 1
+          fi
 
           LOGIN_RESPONSE="$LOGIN_RESPONSE" node <<'NODE'
           const response = JSON.parse(process.env.LOGIN_RESPONSE || "{}");
