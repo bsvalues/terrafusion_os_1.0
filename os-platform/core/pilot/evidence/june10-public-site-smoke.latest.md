@@ -1,6 +1,6 @@
 # June 10 Public Site Smoke
 
-Generated: 2026-05-21T00:20:42.785Z
+Generated: 2026-05-21T01:08:44.042Z
 
 Base URL: https://terrafusionmarket.com
 Passed: true
@@ -29,8 +29,8 @@ Passed: true
 
 | Path | Status | OK | Final URL | Evidence |
 |---|---:|---:|---|---|
-/login | 200 | true | https://terrafusionmarket.com/login | TerraFusion OS Your session has expired. Please sign in to continue. Provisioned access only TerraFusion access is provisioned by an administrator. Public self-signup is disabled. Request provisioned access from support@terrafusionmarket.co
-/signup | 200 | true | https://terrafusionmarket.com/login | TerraFusion OS Your session has expired. Please sign in to continue. Provisioned access only TerraFusion access is provisioned by an administrator. Public self-signup is disabled. Request provisioned access from support@terrafusionmarket.co
+/login | 200 | true | https://terrafusionmarket.com/login | TerraFusion OS Sign in with an issued operator account, or request provisioned access. Provisioned access only TerraFusion access is provisioned by an administrator. Public self-signup is disabled. Request provisioned access from support@te
+/signup | 200 | true | https://terrafusionmarket.com/login | TerraFusion OS Sign in with an issued operator account, or request provisioned access. Provisioned access only TerraFusion access is provisioned by an administrator. Public self-signup is disabled. Request provisioned access from support@te
 
 ## API Probes
 

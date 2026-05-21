@@ -52,6 +52,14 @@ function hasAccessRequestLanguage(route) {
 }
 
 function hasActionableAccessRequestLanguage(route) {
+  if (Array.isArray(route?.accessRequestLinks)) {
+    return route.accessRequestLinks.some((link) =>
+      /request\s+(provisioned\s+)?access|access\s+request|mailto:|support@|contact\s+(support|administrator)|invite/i.test(
+        `${link?.text ?? ""} ${link?.href ?? ""}`
+      )
+    );
+  }
+
   return /request\s+(provisioned\s+)?access|access\s+request|mailto:|support@|contact\s+(support|administrator)|invite/i.test(
     route?.bodyText ?? ""
   );
@@ -182,8 +190,22 @@ async function renderRouteProbes(baseUrl, routes, timeoutMs) {
           waitUntil: "domcontentloaded",
           timeout: timeoutMs
         });
-        await page.waitForTimeout(1000);
+        if (RENDERED_ROUTES.includes(pathname)) {
+          await page
+            .getByRole("link", { name: /request\s+(provisioned\s+)?access/i })
+            .waitFor({ state: "visible", timeout: Math.min(timeoutMs, 10000) })
+            .catch(() => {});
+        }
         const bodyText = snippet(await page.locator("body").innerText({ timeout: Math.min(timeoutMs, 5000) }));
+        const accessRequestLinks = await page
+          .locator("a")
+          .evaluateAll((links) =>
+            links.map((link) => ({
+              text: link.textContent?.replace(/\s+/g, " ").trim() ?? "",
+              href: link.getAttribute("href") ?? ""
+            }))
+          )
+          .catch(() => []);
 
         renderedRoutes.push({
           path: pathname,
@@ -192,6 +214,7 @@ async function renderRouteProbes(baseUrl, routes, timeoutMs) {
           status: response?.status() ?? null,
           bodyText,
           bodySnippet: bodyText.slice(0, 240),
+          accessRequestLinks,
           ok: Boolean(response && response.status() >= 200 && response.status() < 400),
           error: null
         });
@@ -278,11 +301,18 @@ export function buildJune10PublicSiteSmokeReport({
     hasAccessRequestChannel(accessPolicy) &&
     renderedBrowserRequired
   ) {
-    const renderedAccessVisible =
-      (renderedLogin?.ok && hasActionableAccessRequestLanguage(renderedLogin)) ||
-      (renderedSignup?.ok && hasActionableAccessRequestLanguage(renderedSignup));
+    for (const renderedRoute of renderedRoutes.filter((route) => RENDERED_ROUTES.includes(route.path))) {
+      if (renderedRoute.ok && !hasActionableAccessRequestLanguage(renderedRoute)) {
+        addBlocker(
+          blockers,
+          "rendered_access_posture",
+          `${renderedRoute.path} rendered without a visible access-request action.`,
+          renderedRoute.bodySnippet || "No rendered body text."
+        );
+      }
+    }
 
-    if (!renderedAccessVisible) {
+    if (renderedRoutes.length === 0) {
       addBlocker(
         blockers,
         "rendered_access_posture",
