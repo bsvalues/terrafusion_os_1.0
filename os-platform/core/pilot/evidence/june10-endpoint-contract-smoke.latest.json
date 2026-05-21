@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-20T22:54:44.494Z",
+  "generatedAtUtc": "2026-05-21T00:25:18.660Z",
   "apiBaseUrl": "https://terrafusionmarket.com",
   "passed": true,
   "summary": {
@@ -41,8 +41,8 @@
       "authApplied": false,
       "status": 200,
       "contentType": "application/json; charset=utf-8",
-      "bodyText": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T22:54:43.5295275Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"f57f4accefb7950024faaafe96343c1533e7e3ff\"}",
-      "bodySnippet": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-20T22:54:43.5295275Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"f57f4accefb7950024faaafe96343c1533e7e3ff\"}",
+      "bodyText": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-21T00:25:15.8106937Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"f57f4accefb7950024faaafe96343c1533e7e3ff\"}",
+      "bodySnippet": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-21T00:25:15.8106937Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"f57f4accefb7950024faaafe96343c1533e7e3ff\"}",
       "ok": true,
       "error": null
     },

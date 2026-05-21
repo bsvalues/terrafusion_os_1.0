@@ -1,6 +1,6 @@
 # June 10 Public Site Smoke
 
-Generated: 2026-05-20T22:54:47.678Z
+Generated: 2026-05-21T00:20:42.785Z
 
 Base URL: https://terrafusionmarket.com
 Passed: true
@@ -9,6 +9,8 @@ Passed: true
 
 - Routes checked: 4
 - Reachable routes: 4
+- Rendered routes checked: 2
+- Reachable rendered routes: 2
 - API probes checked: 2
 - Auth-gated API probes: 1
 - Blockers: 0
@@ -22,6 +24,13 @@ Passed: true
 /login | 200 | true | <!doctype html> <html lang="en"> <head> <meta charset="UTF-8" /> <!-- Theme bootstrap: read localStorage before any CSS render to prevent flash --> <script> (function () { try { var t = localStorage.getItem('tf-theme'); // Default to 'night
 /signup | 200 | true | <!doctype html> <html lang="en"> <head> <meta charset="UTF-8" /> <!-- Theme bootstrap: read localStorage before any CSS render to prevent flash --> <script> (function () { try { var t = localStorage.getItem('tf-theme'); // Default to 'night
 /marketplace | 200 | true | <!doctype html> <html lang="en"> <head> <meta charset="UTF-8" /> <!-- Theme bootstrap: read localStorage before any CSS render to prevent flash --> <script> (function () { try { var t = localStorage.getItem('tf-theme'); // Default to 'night
+
+## Rendered Browser Probes
+
+| Path | Status | OK | Final URL | Evidence |
+|---|---:|---:|---|---|
+/login | 200 | true | https://terrafusionmarket.com/login | TerraFusion OS Your session has expired. Please sign in to continue. Provisioned access only TerraFusion access is provisioned by an administrator. Public self-signup is disabled. Request provisioned access from support@terrafusionmarket.co
+/signup | 200 | true | https://terrafusionmarket.com/login | TerraFusion OS Your session has expired. Please sign in to continue. Provisioned access only TerraFusion access is provisioned by an administrator. Public self-signup is disabled. Request provisioned access from support@terrafusionmarket.co
 
 ## API Probes
 
