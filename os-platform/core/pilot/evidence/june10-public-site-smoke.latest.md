@@ -1,6 +1,6 @@
 # June 10 Public Site Smoke
 
-Generated: 2026-05-21T01:08:44.042Z
+Generated: 2026-05-21T23:39:17.805Z
 
 Base URL: https://terrafusionmarket.com
 Passed: true
@@ -29,15 +29,15 @@ Passed: true
 
 | Path | Status | OK | Final URL | Evidence |
 |---|---:|---:|---|---|
-/login | 200 | true | https://terrafusionmarket.com/login | TerraFusion OS Sign in with an issued operator account, or request provisioned access. Provisioned access only TerraFusion access is provisioned by an administrator. Public self-signup is disabled. Request provisioned access from support@te
-/signup | 200 | true | https://terrafusionmarket.com/login | TerraFusion OS Sign in with an issued operator account, or request provisioned access. Provisioned access only TerraFusion access is provisioned by an administrator. Public self-signup is disabled. Request provisioned access from support@te
+/login | 200 | true | https://terrafusionmarket.com/login | TerraFusion OS Sign in with administrator-issued TerraFusion credentials. Provisioned access only TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled. Email Password Sign In
+/signup | 200 | true | https://terrafusionmarket.com/login | TerraFusion OS Sign in with administrator-issued TerraFusion credentials. Provisioned access only TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled. Email Password Sign In
 
 ## API Probes
 
 | Path | Status | OK | Evidence |
 |---|---:|---:|---|
 /api/health | 401 | false | -
-/api/auth/access-policy | 200 | true | {"signupMode":"provisioned_access_only","publicSignupEnabled":false,"accessRequestUrl":"mailto:support@terrafusionmarket.com?subject=TerraFusion%20OS%20Provisioned%20Access%20Request","supportEmail":"support@terrafusionmarket.com","message"
+/api/auth/access-policy | 200 | true | {"signupMode":"provisioned_access_only","publicSignupEnabled":false,"message":"TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled."}
 
 ## Blockers
 

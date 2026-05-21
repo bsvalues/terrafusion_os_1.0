@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-21T01:09:39.326Z",
+  "generatedAtUtc": "2026-05-21T23:37:54.661Z",
   "gate": "june10_launch_gate",
   "apiBaseUrl": "https://terrafusionmarket.com",
   "publicBaseUrl": "https://terrafusionmarket.com",
@@ -39,7 +39,7 @@
       "passed": false,
       "runtimeIntegrations": 3,
       "liveProvenRuntimeIntegrations": 0,
-      "missingBinaries": 2,
+      "missingBinaries": 0,
       "claimsSuppressed": true
     },
     "legacyRuntimeBoundary": {

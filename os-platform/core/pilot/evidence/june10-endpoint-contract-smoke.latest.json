@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-21T01:09:16.049Z",
+  "generatedAtUtc": "2026-05-21T23:32:29.858Z",
   "apiBaseUrl": "https://terrafusionmarket.com",
   "passed": true,
   "summary": {
@@ -41,8 +41,8 @@
       "authApplied": false,
       "status": 200,
       "contentType": "application/json; charset=utf-8",
-      "bodyText": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-21T01:09:14.6982328Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"f57f4accefb7950024faaafe96343c1533e7e3ff\"}",
-      "bodySnippet": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-21T01:09:14.6982328Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"f57f4accefb7950024faaafe96343c1533e7e3ff\"}",
+      "bodyText": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-21T23:32:29.2196325Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"unknown\"}",
+      "bodySnippet": "{\"status\":\"Healthy\",\"timestamp\":\"2026-05-21T23:32:29.2196325Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\",\"gitSha\":\"unknown\"}",
       "ok": true,
       "error": null
     },
@@ -55,7 +55,7 @@
       "authApplied": true,
       "status": 200,
       "contentType": "application/json; charset=utf-8",
-      "bodyText": "{\"apiBaseUrl\":\"http://terrafusionmarket.com\",\"environment\":\"Production\",\"contentRootPath\":\"/app\",\"provider\":\"Microsoft.EntityFrameworkCore.Sqlite\",\"connectionStringName\":\"DefaultConnection\",\"serverRedacted\":\"configured-host-redacted\",\"database\":\"main\",\"expectedJune10Database\":\"main\",\"isExpectedJune10RuntimeDb\":true,\"expectedBentonParcelCount\":null,\"isBentonParcelCountExpected\":false,\"migrationState\":{\"appliedCount\":0,\"pendingCount\":88,\"latestApplied\":null,\"warnings\":[]},\"rowCounts\":null,\"passed\":true,\"blockers\":[],\"warnings\":[\"Row counts skipped for launch-control liveness. Re-run with includeCounts=true for heavyweight database-count evidence.\"]}",
+      "bodyText": "{\"apiBaseUrl\":\"http://terrafusionmarket.com\",\"environment\":\"Production\",\"contentRootPath\":\"/app\",\"provider\":\"Microsoft.EntityFrameworkCore.Sqlite\",\"connectionStringName\":\"DefaultConnection\",\"serverRedacted\":\"configured-host-redacted\",\"database\":\"terrafusion.db\",\"expectedJune10Database\":\"terrafusion.db\",\"isExpectedJune10RuntimeDb\":true,\"expectedBentonParcelCount\":null,\"isBentonParcelCountExpected\":false,\"migrationState\":{\"appliedCount\":0,\"pendingCount\":88,\"latestApplied\":null,\"warnings\":[]},\"rowCounts\":null,\"passed\":true,\"blockers\":[],\"warnings\":[\"Row counts skipped for launch-control liveness. Re-run with includeCounts=true for heavyweight database-count evidence.\"]}",
       "bodySnippet": "{\"apiBaseUrl\":\"http://terrafusionmarket.com\",\"environment\":\"Production\",\"contentRootPath\":\"/app\",\"provider\":\"Microsoft.EntityFrameworkCore.Sqlite\",\"connectionStringName\":\"DefaultConnection\",\"serverRedacted\":\"configured-host-redacted\",\"datab",
       "ok": true,
       "error": null
@@ -83,8 +83,8 @@
       "authApplied": false,
       "status": 200,
       "contentType": "application/json; charset=utf-8",
-      "bodyText": "{\"signupMode\":\"provisioned_access_only\",\"publicSignupEnabled\":false,\"accessRequestUrl\":\"mailto:support@terrafusionmarket.com?subject=TerraFusion%20OS%20Provisioned%20Access%20Request\",\"supportEmail\":\"support@terrafusionmarket.com\",\"message\":\"TerraFusion access is provisioned by an administrator. Public self-signup is disabled. Request provisioned access from support@terrafusionmarket.com.\"}",
-      "bodySnippet": "{\"signupMode\":\"provisioned_access_only\",\"publicSignupEnabled\":false,\"accessRequestUrl\":\"mailto:support@terrafusionmarket.com?subject=TerraFusion%20OS%20Provisioned%20Access%20Request\",\"supportEmail\":\"support@terrafusionmarket.com\",\"message\"",
+      "bodyText": "{\"signupMode\":\"provisioned_access_only\",\"publicSignupEnabled\":false,\"message\":\"TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled.\"}",
+      "bodySnippet": "{\"signupMode\":\"provisioned_access_only\",\"publicSignupEnabled\":false,\"message\":\"TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled.\"}",
       "ok": true,
       "error": null
     }
