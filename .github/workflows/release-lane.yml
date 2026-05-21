@@ -37,9 +37,8 @@ jobs:
       PUBLIC_URL: ${{ vars.PUBLIC_URL }}
       APP_ROOT: ${{ vars.APP_ROOT }}
       DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-      TF_AUTH_BOOTSTRAP_EMAIL: ${{ secrets.TF_AUTH_BOOTSTRAP_EMAIL }}
-      TF_AUTH_BOOTSTRAP_PASSWORD: ${{ secrets.TF_AUTH_BOOTSTRAP_PASSWORD }}
-      TF_AUTH_BOOTSTRAP_ROLES: ${{ secrets.TF_AUTH_BOOTSTRAP_ROLES }}
+      TF_PROVISIONED_AUTH_EMAIL: ${{ secrets.TF_PROVISIONED_AUTH_EMAIL }}
+      TF_PROVISIONED_AUTH_PASSWORD: ${{ secrets.TF_PROVISIONED_AUTH_PASSWORD }}
     steps:
       - name: Checkout requested SHA
         uses: actions/checkout@v5
@@ -53,10 +52,10 @@ jobs:
           set -euo pipefail
           # Deploy infrastructure (Caddyfile, compose template) lives on the default
           # branch and must match the pipeline expectations (service names, health
-          # headers, etc.).  Always overlay from main — old release SHAs may have
-          # incompatible versions (e.g. wrong service names in Caddyfile).
+          # headers, etc.). Build inputs must come from the requested release SHA so
+          # auth/runtime changes cannot be silently replaced by main during deploy.
           git fetch origin main --no-tags --depth=1 2>/dev/null || true
-          for path in ops/proxy/Caddyfile ops/prod/runtime-compose.template.yml ops/edge-proxy/Caddyfile ops/edge-proxy/docker-compose.yml frontend/Dockerfile backend/Dockerfile; do
+          for path in ops/proxy/Caddyfile ops/prod/runtime-compose.template.yml ops/edge-proxy/Caddyfile ops/edge-proxy/docker-compose.yml; do
             dir="$(dirname "$path")"
             mkdir -p "$dir"
             echo "Overlaying $path from origin/main"
@@ -85,14 +84,12 @@ jobs:
           APP_ROOT="${APP_ROOT:-/opt/terrafusion/${TARGET_ENV}}"
           PUBLIC_URL="${PUBLIC_URL%/}"
 
-          for required in DEPLOY_HOST DEPLOY_USER PUBLIC_URL DEPLOY_SSH_KEY TF_AUTH_BOOTSTRAP_EMAIL TF_AUTH_BOOTSTRAP_PASSWORD; do
+          for required in DEPLOY_HOST DEPLOY_USER PUBLIC_URL DEPLOY_SSH_KEY TF_PROVISIONED_AUTH_EMAIL TF_PROVISIONED_AUTH_PASSWORD; do
             if [ -z "${!required:-}" ]; then
               echo "Missing required environment configuration: ${required}"
               exit 1
             fi
           done
-
-          TF_AUTH_BOOTSTRAP_ROLES="${TF_AUTH_BOOTSTRAP_ROLES:-GovernmentUser,Administrator,FullSystemAccess}"
 
           PUBLIC_HOST="$(node -e "const url = new URL(process.env.PUBLIC_URL); process.stdout.write(url.hostname);")"
           OWNER="$(printf '%s' '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
@@ -118,7 +115,6 @@ jobs:
             printf 'FRONTEND_IMAGE=%s\n' "$FRONTEND_IMAGE"
             printf 'DEPLOYED_AT=%s\n' "$DEPLOYED_AT"
             printf 'ASPNETCORE_ENV_LABEL=%s\n' "$ASPNETCORE_ENV_LABEL"
-            printf 'TF_AUTH_BOOTSTRAP_ROLES=%s\n' "$TF_AUTH_BOOTSTRAP_ROLES"
           } >> "$GITHUB_ENV"
 
       - name: Configure SSH key
@@ -261,9 +257,6 @@ jobs:
           TF_PUBLIC_HOST=${PUBLIC_HOST}
           TF_BACKEND_IMAGE=${BACKEND_IMAGE}
           TF_FRONTEND_IMAGE=${FRONTEND_IMAGE}
-          TERRAFUSION_BOOTSTRAP_EMAIL=${TF_AUTH_BOOTSTRAP_EMAIL}
-          TERRAFUSION_BOOTSTRAP_PASSWORD=${TF_AUTH_BOOTSTRAP_PASSWORD}
-          TERRAFUSION_BOOTSTRAP_ROLES=${TF_AUTH_BOOTSTRAP_ROLES}
           EOF
 
       - name: Upload runtime bundle to VPS
@@ -414,8 +407,8 @@ jobs:
 
           LOGIN_PAYLOAD="$(node <<'NODE'
           process.stdout.write(JSON.stringify({
-            email: process.env.TF_AUTH_BOOTSTRAP_EMAIL,
-            password: process.env.TF_AUTH_BOOTSTRAP_PASSWORD
+            email: process.env.TF_PROVISIONED_AUTH_EMAIL,
+            password: process.env.TF_PROVISIONED_AUTH_PASSWORD
           }));
           NODE
           )"
@@ -433,7 +426,7 @@ jobs:
           if (!token) {
             throw new Error("Provisioned auth smoke did not receive a token");
           }
-          if (email !== process.env.TF_AUTH_BOOTSTRAP_EMAIL) {
+          if (email !== process.env.TF_PROVISIONED_AUTH_EMAIL) {
             throw new Error(`Provisioned auth smoke returned unexpected email: ${email}`);
           }
           console.log(`Provisioned login returned token for ${email} with ${Array.isArray(roles) ? roles.length : 0} roles`);
