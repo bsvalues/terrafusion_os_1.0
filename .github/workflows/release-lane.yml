@@ -39,6 +39,8 @@ jobs:
       DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
       TF_PROVISIONED_AUTH_EMAIL: ${{ secrets.TF_PROVISIONED_AUTH_EMAIL }}
       TF_PROVISIONED_AUTH_PASSWORD: ${{ secrets.TF_PROVISIONED_AUTH_PASSWORD }}
+      TF_EXPECTED_JUNE10_DB_NAME: ${{ vars.TF_EXPECTED_JUNE10_DB_NAME }}
+      TF_EXPECTED_JUNE10_DB_PROVIDER: ${{ vars.TF_EXPECTED_JUNE10_DB_PROVIDER }}
     steps:
       - name: Checkout requested SHA
         uses: actions/checkout@v5
@@ -83,6 +85,8 @@ jobs:
           DEPLOY_PORT="${DEPLOY_PORT:-22}"
           APP_ROOT="${APP_ROOT:-/opt/terrafusion/${TARGET_ENV}}"
           PUBLIC_URL="${PUBLIC_URL%/}"
+          TF_EXPECTED_JUNE10_DB_NAME="${TF_EXPECTED_JUNE10_DB_NAME:-terrafusion.db}"
+          TF_EXPECTED_JUNE10_DB_PROVIDER="${TF_EXPECTED_JUNE10_DB_PROVIDER:-Sqlite}"
 
           for required in DEPLOY_HOST DEPLOY_USER PUBLIC_URL DEPLOY_SSH_KEY TF_PROVISIONED_AUTH_EMAIL TF_PROVISIONED_AUTH_PASSWORD; do
             if [ -z "${!required:-}" ]; then
@@ -115,6 +119,8 @@ jobs:
             printf 'FRONTEND_IMAGE=%s\n' "$FRONTEND_IMAGE"
             printf 'DEPLOYED_AT=%s\n' "$DEPLOYED_AT"
             printf 'ASPNETCORE_ENV_LABEL=%s\n' "$ASPNETCORE_ENV_LABEL"
+            printf 'TF_EXPECTED_JUNE10_DB_NAME=%s\n' "$TF_EXPECTED_JUNE10_DB_NAME"
+            printf 'TF_EXPECTED_JUNE10_DB_PROVIDER=%s\n' "$TF_EXPECTED_JUNE10_DB_PROVIDER"
           } >> "$GITHUB_ENV"
 
       - name: Configure SSH key
@@ -257,6 +263,8 @@ jobs:
           TF_PUBLIC_HOST=${PUBLIC_HOST}
           TF_BACKEND_IMAGE=${BACKEND_IMAGE}
           TF_FRONTEND_IMAGE=${FRONTEND_IMAGE}
+          TF_EXPECTED_JUNE10_DB_NAME=${TF_EXPECTED_JUNE10_DB_NAME}
+          TF_EXPECTED_JUNE10_DB_PROVIDER=${TF_EXPECTED_JUNE10_DB_PROVIDER}
           EOF
 
       - name: Upload runtime bundle to VPS

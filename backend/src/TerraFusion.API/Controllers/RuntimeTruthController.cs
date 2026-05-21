@@ -267,9 +267,16 @@ public sealed class RuntimeTruthController : ControllerBase
         try
         {
             var connection = _db.Database.GetDbConnection();
+            var dataSource = string.IsNullOrWhiteSpace(connection.DataSource) ? null : connection.DataSource;
+            var database = string.IsNullOrWhiteSpace(connection.Database) ? null : connection.Database;
+            if (IsSqliteProvider() && !string.IsNullOrWhiteSpace(dataSource))
+            {
+                database = Path.GetFileName(dataSource.Trim());
+            }
+
             return (
-                string.IsNullOrWhiteSpace(connection.Database) ? null : connection.Database,
-                string.IsNullOrWhiteSpace(connection.DataSource) ? null : connection.DataSource,
+                database,
+                dataSource,
                 null);
         }
         catch (Exception ex) when (ex is InvalidOperationException or NotSupportedException)
@@ -280,6 +287,10 @@ public sealed class RuntimeTruthController : ControllerBase
                 $"Connection identity unavailable for provider '{_db.Database.ProviderName}': {ex.Message}");
         }
     }
+
+    private bool IsSqliteProvider() =>
+        (_db.Database.ProviderName ?? string.Empty)
+            .Contains("Sqlite", StringComparison.OrdinalIgnoreCase);
 
     private async Task<RuntimeTruthMigrationState> ReadMigrationStateAsync(CancellationToken ct)
     {
