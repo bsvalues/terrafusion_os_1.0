@@ -1,0 +1,112 @@
+{
+  "currentVersion": 10.91,
+  "cimVersion": "2.9.0",
+  "serviceDescription": "This layer represents the tax parcels in King County. This layer also includes place-holder polygons which do not represent tax parcels but are included to identify platted and unplatted land descriptions. The layer includes stacked polygon geometry for undivided interest and vertical parcels. King County parcel numbers may include leading zeros in PIN, Major or Minor. The data is created for Assessment purposes and is not guaranteed to represent accurate measurements or to reflect salability or buildability of a tax parcel. These tax parcel boundaries represent general location only, and they should not be considered or used as the exact legal parcel boundary location. Do not use for survey purposes.",
+  "mapName": "Layers",
+  "description": "This layer represents the tax parcels in King County. This layer also includes place-holder polygons which do not represent tax parcels but are included to identify platted and unplatted land descriptions. The layer includes stacked polygon geometry for undivided interest and vertical parcels. King County parcel numbers may include leading zeros in PIN, Major or Minor. The data is created for Assessment purposes and is not guaranteed to represent accurate measurements or to reflect salability or buildability of a tax parcel. These tax parcel boundaries represent general location only, and they should not be considered or used as the exact legal parcel boundary location. Do not use for survey purposes.",
+  "copyrightText": "King County",
+  "supportsDynamicLayers": false,
+  "layers": [
+    {
+      "id": 439,
+      "name": "parcel_area",
+      "parentLayerId": -1,
+      "defaultVisibility": false,
+      "subLayerIds": null,
+      "minScale": 10000,
+      "maxScale": 0,
+      "type": "Feature Layer",
+      "geometryType": "esriGeometryPolygon",
+      "supportsDynamicLegends": true
+    }
+  ],
+  "tables": [],
+  "spatialReference": {
+    "wkid": 2926,
+    "latestWkid": 2926,
+    "xyTolerance": 0.002,
+    "zTolerance": 0.001,
+    "mTolerance": 0.001,
+    "falseX": -117104300,
+    "falseY": -99539600,
+    "xyUnits": 37926742.22403606,
+    "falseZ": -100000,
+    "zUnits": 10000,
+    "falseM": -100000,
+    "mUnits": 10000
+  },
+  "singleFusedMapCache": false,
+  "initialExtent": {
+    "xmin": 908606.9024383735,
+    "ymin": 229925.51740388028,
+    "xmax": 1253007.94410504,
+    "ymax": 556097.3924038803,
+    "spatialReference": {
+      "wkid": 2926,
+      "latestWkid": 2926,
+      "xyTolerance": 0.002,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -117104300,
+      "falseY": -99539600,
+      "xyUnits": 37926742.22403606,
+      "falseZ": -100000,
+      "zUnits": 10000,
+      "falseM": -100000,
+      "mUnits": 10000
+    }
+  },
+  "fullExtent": {
+    "xmin": 1218256.2234999985,
+    "ymin": 30932.680000007153,
+    "xmax": 1577865.299999997,
+    "ymax": 287704.24400000274,
+    "spatialReference": {
+      "wkid": 2926,
+      "latestWkid": 2926,
+      "xyTolerance": 0.002,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -117104300,
+      "falseY": -99539600,
+      "xyUnits": 37926742.22403606,
+      "falseZ": -100000,
+      "zUnits": 10000,
+      "falseM": -100000,
+      "mUnits": 10000
+    }
+  },
+  "datesInUnknownTimezone": false,
+  "minScale": 10000,
+  "maxScale": 0,
+  "units": "esriFeet",
+  "supportedImageFormatTypes": "PNG32,PNG24,PNG,JPG,DIB,TIFF,EMF,PS,PDF,GIF,SVG,SVGZ,BMP",
+  "documentInfo": {
+    "Title": "Property (property)",
+    "Author": "KCGIS Center",
+    "Comments": "This layer represents the tax parcels in King County. This layer also includes place-holder polygons which do not represent tax parcels but are included to identify platted and unplatted land descriptions. The layer includes stacked polygon geometry for undivided interest and vertical parcels. King County parcel numbers may include leading zeros in PIN, Major or Minor. The data is created for Assessment purposes and is not guaranteed to represent accurate measurements or to reflect salability or buildability of a tax parcel. These tax parcel boundaries represent general location only, and they should not be considered or used as the exact legal parcel boundary location. Do not use for survey purposes.",
+    "Subject": "Assists users in locating property within King County. The layer serves as the parcel framework data layer for King County.",
+    "Category": "",
+    "AntialiasingMode": "None",
+    "TextAntialiasingMode": "Force",
+    "Version": "10.1",
+    "Keywords": "King County,property_OpenData,tax,parcel,major,minor,pin,kingcounty_opendata"
+  },
+  "capabilities": "Map,Query,Data",
+  "supportedQueryFormats": "JSON, geoJSON, PBF",
+  "exportTilesAllowed": false,
+  "referenceScale": 0,
+  "supportsDatumTransformation": true,
+  "archivingInfo": {
+    "supportsHistoricMoment": false
+  },
+  "supportsClipping": true,
+  "supportsSpatialFilter": true,
+  "supportsTimeRelation": true,
+  "supportsQueryDataElements": true,
+  "maxRecordCount": 4000,
+  "maxImageHeight": 4096,
+  "maxImageWidth": 4096,
+  "supportedExtensions": "FeatureServer",
+  "resampling": false
+}

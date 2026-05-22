@@ -1,0 +1,481 @@
+{
+  "generatedAtUtc": "2026-05-22T19:11:26.825Z",
+  "county": "King",
+  "countyToken": "king",
+  "adapterId": "king-readonly-parcel-area-arcgis-schema-v1",
+  "adapterStatus": "verified",
+  "sourceType": "county_property_portal_plus_gis",
+  "accessMethod": "read_only_public_arcgis_rest_metadata_fetch",
+  "expectedExportFormat": "arcgis_rest_service_json_layer_schema_metadata",
+  "fetchPlan": [
+    {
+      "id": "king_parcel_area_service_metadata",
+      "url": "https://gisdata.kingcounty.gov/arcgis/rest/services/OpenDataPortal/property__parcel_area/MapServer",
+      "method": "GET",
+      "readOnly": true,
+      "purpose": "Fetch public King County OpenDataPortal parcel service metadata only."
+    },
+    {
+      "id": "king_parcel_area_layer_metadata",
+      "url": "https://gisdata.kingcounty.gov/arcgis/rest/services/OpenDataPortal/property__parcel_area/MapServer/439",
+      "method": "GET",
+      "readOnly": true,
+      "purpose": "Fetch public King County parcel_area layer schema metadata only; no feature query."
+    }
+  ],
+  "parcelIdentity": {
+    "proven": true,
+    "sourceField": "PIN",
+    "componentFields": ["MAJOR", "MINOR"],
+    "proof": {
+      "serviceTitle": "Property (property)",
+      "serviceKeywords": "King County,property_OpenData,tax,parcel,major,minor,pin,kingcounty_opendata",
+      "parcelLayerName": "parcel_area",
+      "parcelLayerId": 439,
+      "pinField": {
+        "name": "PIN",
+        "type": "esriFieldTypeString",
+        "alias": "PIN",
+        "length": 10,
+        "domain": null
+      },
+      "fieldNames": [
+        "OBJECTID",
+        "Shape",
+        "MAJOR",
+        "MINOR",
+        "PIN",
+        "Shape_Length",
+        "Shape_Area"
+      ]
+    },
+    "semantics": "King County parcel_area metadata states parcel numbers may include leading zeros in PIN, Major, or Minor and exposes PIN plus MAJOR/MINOR fields."
+  },
+  "serviceMetadata": {
+    "currentVersion": 10.91,
+    "cimVersion": "2.9.0",
+    "serviceDescription": "This layer represents the tax parcels in King County. This layer also includes place-holder polygons which do not represent tax parcels but are included to identify platted and unplatted land descriptions. The layer includes stacked polygon geometry for undivided interest and vertical parcels. King County parcel numbers may include leading zeros in PIN, Major or Minor. The data is created for Assessment purposes and is not guaranteed to represent accurate measurements or to reflect salability or buildability of a tax parcel. These tax parcel boundaries represent general location only, and they should not be considered or used as the exact legal parcel boundary location. Do not use for survey purposes.",
+    "mapName": "Layers",
+    "description": "This layer represents the tax parcels in King County. This layer also includes place-holder polygons which do not represent tax parcels but are included to identify platted and unplatted land descriptions. The layer includes stacked polygon geometry for undivided interest and vertical parcels. King County parcel numbers may include leading zeros in PIN, Major or Minor. The data is created for Assessment purposes and is not guaranteed to represent accurate measurements or to reflect salability or buildability of a tax parcel. These tax parcel boundaries represent general location only, and they should not be considered or used as the exact legal parcel boundary location. Do not use for survey purposes.",
+    "copyrightText": "King County",
+    "supportsDynamicLayers": false,
+    "layers": [
+      {
+        "id": 439,
+        "name": "parcel_area",
+        "parentLayerId": -1,
+        "defaultVisibility": false,
+        "subLayerIds": null,
+        "minScale": 10000,
+        "maxScale": 0,
+        "type": "Feature Layer",
+        "geometryType": "esriGeometryPolygon",
+        "supportsDynamicLegends": true
+      }
+    ],
+    "tables": [],
+    "spatialReference": {
+      "wkid": 2926,
+      "latestWkid": 2926,
+      "xyTolerance": 0.002,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -117104300,
+      "falseY": -99539600,
+      "xyUnits": 37926742.22403606,
+      "falseZ": -100000,
+      "zUnits": 10000,
+      "falseM": -100000,
+      "mUnits": 10000
+    },
+    "singleFusedMapCache": false,
+    "initialExtent": {
+      "xmin": 908606.9024383735,
+      "ymin": 229925.51740388028,
+      "xmax": 1253007.94410504,
+      "ymax": 556097.3924038803,
+      "spatialReference": {
+        "wkid": 2926,
+        "latestWkid": 2926,
+        "xyTolerance": 0.002,
+        "zTolerance": 0.001,
+        "mTolerance": 0.001,
+        "falseX": -117104300,
+        "falseY": -99539600,
+        "xyUnits": 37926742.22403606,
+        "falseZ": -100000,
+        "zUnits": 10000,
+        "falseM": -100000,
+        "mUnits": 10000
+      }
+    },
+    "fullExtent": {
+      "xmin": 1218256.2234999985,
+      "ymin": 30932.680000007153,
+      "xmax": 1577865.299999997,
+      "ymax": 287704.24400000274,
+      "spatialReference": {
+        "wkid": 2926,
+        "latestWkid": 2926,
+        "xyTolerance": 0.002,
+        "zTolerance": 0.001,
+        "mTolerance": 0.001,
+        "falseX": -117104300,
+        "falseY": -99539600,
+        "xyUnits": 37926742.22403606,
+        "falseZ": -100000,
+        "zUnits": 10000,
+        "falseM": -100000,
+        "mUnits": 10000
+      }
+    },
+    "datesInUnknownTimezone": false,
+    "minScale": 10000,
+    "maxScale": 0,
+    "units": "esriFeet",
+    "supportedImageFormatTypes": "PNG32,PNG24,PNG,JPG,DIB,TIFF,EMF,PS,PDF,GIF,SVG,SVGZ,BMP",
+    "documentInfo": {
+      "Title": "Property (property)",
+      "Author": "KCGIS Center",
+      "Comments": "This layer represents the tax parcels in King County. This layer also includes place-holder polygons which do not represent tax parcels but are included to identify platted and unplatted land descriptions. The layer includes stacked polygon geometry for undivided interest and vertical parcels. King County parcel numbers may include leading zeros in PIN, Major or Minor. The data is created for Assessment purposes and is not guaranteed to represent accurate measurements or to reflect salability or buildability of a tax parcel. These tax parcel boundaries represent general location only, and they should not be considered or used as the exact legal parcel boundary location. Do not use for survey purposes.",
+      "Subject": "Assists users in locating property within King County. The layer serves as the parcel framework data layer for King County.",
+      "Category": "",
+      "AntialiasingMode": "None",
+      "TextAntialiasingMode": "Force",
+      "Version": "10.1",
+      "Keywords": "King County,property_OpenData,tax,parcel,major,minor,pin,kingcounty_opendata"
+    },
+    "capabilities": "Map,Query,Data",
+    "supportedQueryFormats": "JSON, geoJSON, PBF",
+    "exportTilesAllowed": false,
+    "referenceScale": 0,
+    "supportsDatumTransformation": true,
+    "archivingInfo": {
+      "supportsHistoricMoment": false
+    },
+    "supportsClipping": true,
+    "supportsSpatialFilter": true,
+    "supportsTimeRelation": true,
+    "supportsQueryDataElements": true,
+    "maxRecordCount": 4000,
+    "maxImageHeight": 4096,
+    "maxImageWidth": 4096,
+    "supportedExtensions": "FeatureServer",
+    "resampling": false
+  },
+  "parcelLayer": {
+    "currentVersion": 10.91,
+    "cimVersion": "2.9.0",
+    "id": 439,
+    "name": "parcel_area",
+    "type": "Feature Layer",
+    "description": "This layer represents the tax parcels in King County. This layer also includes place-holder polygons which do not represent tax parcels but are included to identify platted and unplatted land descriptions. The layer includes stacked polygon geometry for undivided interest and vertical parcels. King County parcel numbers may include leading zeros in PIN, Major or Minor. The data is created for Assessment purposes and is not guaranteed to represent accurate measurements or to reflect salability or buildability of a tax parcel. These tax parcel boundaries represent general location only, and they should not be considered or used as the exact legal parcel boundary location. Do not use for survey purposes.",
+    "geometryType": "esriGeometryPolygon",
+    "sourceSpatialReference": {
+      "wkid": 2926,
+      "latestWkid": 2926,
+      "xyTolerance": 0.002,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -117104300,
+      "falseY": -99539600,
+      "xyUnits": 2000,
+      "falseZ": 0,
+      "zUnits": 1,
+      "falseM": 0,
+      "mUnits": 1
+    },
+    "copyrightText": "King County",
+    "parentLayer": null,
+    "subLayers": [],
+    "minScale": 10000,
+    "maxScale": 0,
+    "referenceScale": 0,
+    "drawingInfo": {
+      "renderer": {
+        "type": "simple",
+        "symbol": {
+          "type": "esriSFS",
+          "style": "esriSFSSolid",
+          "color": [199, 245, 188, 255],
+          "outline": {
+            "type": "esriSLS",
+            "style": "esriSLSSolid",
+            "color": [110, 110, 110, 255],
+            "width": 0.4
+          }
+        }
+      },
+      "scaleSymbols": true,
+      "transparency": 0,
+      "labelingInfo": null
+    },
+    "defaultVisibility": false,
+    "extent": {
+      "xmin": 1218256.2234999985,
+      "ymin": 30932.680000007153,
+      "xmax": 1577865.299999997,
+      "ymax": 287704.24400000274,
+      "spatialReference": {
+        "wkid": 2926,
+        "latestWkid": 2926,
+        "xyTolerance": 0.002,
+        "zTolerance": 0.001,
+        "mTolerance": 0.001,
+        "falseX": -117104300,
+        "falseY": -99539600,
+        "xyUnits": 37926742.22403606,
+        "falseZ": -100000,
+        "zUnits": 10000,
+        "falseM": -100000,
+        "mUnits": 10000
+      }
+    },
+    "hasAttachments": false,
+    "htmlPopupType": "esriServerHTMLPopupTypeAsHTMLText",
+    "displayField": "MAJOR",
+    "typeIdField": null,
+    "subtypeFieldName": null,
+    "subtypeField": null,
+    "defaultSubtypeCode": null,
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID",
+        "domain": null
+      },
+      {
+        "name": "Shape",
+        "type": "esriFieldTypeGeometry",
+        "alias": "Shape",
+        "domain": null
+      },
+      {
+        "name": "MAJOR",
+        "type": "esriFieldTypeString",
+        "alias": "MAJOR",
+        "length": 6,
+        "domain": null
+      },
+      {
+        "name": "MINOR",
+        "type": "esriFieldTypeString",
+        "alias": "MINOR",
+        "length": 4,
+        "domain": null
+      },
+      {
+        "name": "PIN",
+        "type": "esriFieldTypeString",
+        "alias": "PIN",
+        "length": 10,
+        "domain": null
+      },
+      {
+        "name": "Shape_Length",
+        "type": "esriFieldTypeDouble",
+        "alias": "Shape_Length",
+        "domain": null
+      },
+      {
+        "name": "Shape_Area",
+        "type": "esriFieldTypeDouble",
+        "alias": "Shape_Area",
+        "domain": null
+      }
+    ],
+    "geometryField": {
+      "name": "Shape",
+      "type": "esriFieldTypeGeometry",
+      "alias": "Shape"
+    },
+    "indexes": [
+      {
+        "name": "FDO_OBJECTID",
+        "fields": "OBJECTID",
+        "isAscending": true,
+        "isUnique": true,
+        "description": ""
+      },
+      {
+        "name": "FDO_Shape",
+        "fields": "Shape",
+        "isAscending": true,
+        "isUnique": false,
+        "description": ""
+      },
+      {
+        "name": "I390PIN",
+        "fields": "PIN",
+        "isAscending": true,
+        "isUnique": false,
+        "description": ""
+      }
+    ],
+    "subtypes": [],
+    "relationships": [],
+    "canModifyLayer": false,
+    "canScaleSymbols": false,
+    "hasLabels": false,
+    "capabilities": "Map,Query,Data",
+    "maxRecordCount": 4000,
+    "supportsStatistics": true,
+    "supportsExceedsLimitStatistics": true,
+    "supportsAdvancedQueries": true,
+    "supportedQueryFormats": "JSON, geoJSON, PBF",
+    "isDataVersioned": false,
+    "ownershipBasedAccessControlForFeatures": {
+      "allowOthersToQuery": true
+    },
+    "useStandardizedQueries": true,
+    "supportedSpatialRelationships": [
+      "esriSpatialRelIntersects",
+      "esriSpatialRelContains",
+      "esriSpatialRelCrosses",
+      "esriSpatialRelEnvelopeIntersects",
+      "esriSpatialRelIndexIntersects",
+      "esriSpatialRelOverlaps",
+      "esriSpatialRelTouches",
+      "esriSpatialRelWithin",
+      "esriSpatialRelRelation"
+    ],
+    "advancedQueryCapabilities": {
+      "useStandardizedQueries": true,
+      "supportsStatistics": true,
+      "supportsPercentileStatistics": true,
+      "supportsHavingClause": true,
+      "supportsOrderBy": true,
+      "supportsDistinct": true,
+      "supportsCountDistinct": true,
+      "supportsPagination": true,
+      "supportsLod": false,
+      "supportsQueryWithLodSR": false,
+      "supportsTrueCurve": true,
+      "supportsQueryWithDatumTransformation": true,
+      "supportsReturningQueryExtent": true,
+      "supportsQueryWithDistance": true,
+      "supportsSqlExpression": true,
+      "supportsTimeRelation": true,
+      "supportsSqlFormat": false,
+      "supportsQueryAnalytic": false
+    },
+    "supportsDatumTransformation": true,
+    "dateFieldsTimeReference": null,
+    "preferredTimeReference": null,
+    "datesInUnknownTimezone": false,
+    "hasGeometryProperties": true,
+    "geometryProperties": {
+      "shapeAreaFieldName": "Shape_Area",
+      "shapeLengthFieldName": "Shape_Length",
+      "units": "esriFeet"
+    },
+    "hasMetadata": false,
+    "isDataArchived": false,
+    "archivingInfo": {
+      "supportsQueryWithHistoricMoment": false,
+      "startArchivingMoment": -1
+    },
+    "supportsCoordinatesQuantization": true,
+    "supportsDynamicLegends": true
+  },
+  "stagingShape": {
+    "schema": "terrafusion-staging-parcel-source-v1",
+    "mode": "contract_only_no_rows_loaded",
+    "fields": {
+      "county": {
+        "value": "King"
+      },
+      "countyToken": {
+        "value": "king"
+      },
+      "parcelId": {
+        "sourceField": "PIN",
+        "componentFields": ["MAJOR", "MINOR"],
+        "required": true
+      },
+      "ownerName": {
+        "sourceField": null,
+        "required": false
+      },
+      "situsAddress": {
+        "sourceField": null,
+        "required": false
+      },
+      "assessedValue": {
+        "sourceFields": [],
+        "required": false
+      },
+      "major": {
+        "sourceField": "MAJOR",
+        "required": false
+      },
+      "minor": {
+        "sourceField": "MINOR",
+        "required": false
+      },
+      "geometryReference": {
+        "source": "ArcGIS feature layer geometry if later capture is authorized",
+        "required": false
+      }
+    },
+    "rows": []
+  },
+  "lineageReceipt": {
+    "receiptVersion": "june10-adapter-verification-v1",
+    "status": "VERIFIED",
+    "capturedAtUtc": "2026-05-22T19:11:26.825Z",
+    "county": "King",
+    "countyToken": "king",
+    "adapterId": "king-readonly-parcel-area-arcgis-schema-v1",
+    "noSecretValuesRecorded": true,
+    "rawArtifacts": [
+      {
+        "id": "service_metadata",
+        "sourceUrl": "https://gisdata.kingcounty.gov/arcgis/rest/services/OpenDataPortal/property__parcel_area/MapServer",
+        "capturedAtUtc": "2026-05-22T19:11:26.825Z",
+        "sha256": "32ce1268d88f663831dfe7cd89082ab834ec96b9ffcdad4e416a95e6862918b7",
+        "readOnly": true,
+        "path": "os-platform/core/pilot/evidence/june10-38-county-adapters/king/raw/king-parcel-area-service-metadata.json"
+      },
+      {
+        "id": "parcel_layer_metadata",
+        "sourceUrl": "https://gisdata.kingcounty.gov/arcgis/rest/services/OpenDataPortal/property__parcel_area/MapServer/439",
+        "capturedAtUtc": "2026-05-22T19:11:26.825Z",
+        "sha256": "b770d977feeba416e2eecdf408601387b7e1ba0422e1e0d4610c4f0ba135d5ac",
+        "readOnly": true,
+        "path": "os-platform/core/pilot/evidence/june10-38-county-adapters/king/raw/king-parcel-area-layer-metadata.json"
+      }
+    ],
+    "normalizedArtifact": {
+      "path": "os-platform/core/pilot/evidence/june10-38-county-adapters/king/normalized/king-staging-source-contract.json",
+      "schema": "terrafusion-staging-parcel-source-v1",
+      "sha256": "bb6856a3e29ee00b45e4e24c2074b1e0d5f7def50b7c4708364df4a858f9dc1f",
+      "rowCount": 0
+    },
+    "counts": {
+      "parcelRowsFetched": 0,
+      "parcelRowsNormalized": 0,
+      "productionRowsWritten": 0
+    },
+    "runtimeClaimAllowed": false,
+    "dbMutationAllowed": false
+  },
+  "productionRowsWritten": 0,
+  "runtimeClaimAllowed": false,
+  "dbMutationAllowed": false,
+  "blockers": [],
+  "warnings": [
+    "Public King parcel_area schema did not expose owner fields in metadata.",
+    "Public King parcel_area schema did not expose situs address fields in metadata.",
+    "Public King parcel_area schema did not expose an assessed value field in metadata.",
+    "King parcel_area metadata notes placeholder/stacked polygon geometry; parcel counts require later semantic filtering.",
+    "King parcel_area metadata says boundaries are general location only and not for survey purposes."
+  ],
+  "rules": [
+    "This adapter verifies public King County parcel_area schema metadata and staging contract only.",
+    "It does not call ArcGIS query endpoints, fetch feature rows, or perform bulk extraction.",
+    "It writes no TerraFusion production DB rows.",
+    "Runtime claims remain blocked until separate load, API, and UI proof exist."
+  ]
+}

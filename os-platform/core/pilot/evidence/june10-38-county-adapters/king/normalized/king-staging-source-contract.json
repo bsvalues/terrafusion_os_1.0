@@ -1,0 +1,42 @@
+{
+  "schema": "terrafusion-staging-parcel-source-v1",
+  "mode": "contract_only_no_rows_loaded",
+  "fields": {
+    "county": {
+      "value": "King"
+    },
+    "countyToken": {
+      "value": "king"
+    },
+    "parcelId": {
+      "sourceField": "PIN",
+      "componentFields": ["MAJOR", "MINOR"],
+      "required": true
+    },
+    "ownerName": {
+      "sourceField": null,
+      "required": false
+    },
+    "situsAddress": {
+      "sourceField": null,
+      "required": false
+    },
+    "assessedValue": {
+      "sourceFields": [],
+      "required": false
+    },
+    "major": {
+      "sourceField": "MAJOR",
+      "required": false
+    },
+    "minor": {
+      "sourceField": "MINOR",
+      "required": false
+    },
+    "geometryReference": {
+      "source": "ArcGIS feature layer geometry if later capture is authorized",
+      "required": false
+    }
+  },
+  "rows": []
+}

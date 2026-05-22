@@ -78,6 +78,18 @@ function sourceLockPack() {
           fallbackSource: "MapsOnline / parcel fact sheet / recorded documents",
           gisMapSurface: "Property Information Center + MapsOnline"
         }
+      },
+      {
+        county: "King",
+        countyToken: "king",
+        acquisitionFamily: "Direct sales search",
+        sourceDecisionStatus: "source_candidate_locked",
+        sourceUrls: ["https://kingcounty.gov"],
+        sourceLabels: {
+          primarySalesSource: "eSales Search",
+          fallbackSource: "Parcel detail + recorded documents",
+          gisMapSurface: "Parcel Viewer / GIS Center"
+        }
       }
     ]
   };
@@ -86,7 +98,7 @@ function sourceLockPack() {
 test("adapter matrix emits required contract fields for every locked county", () => {
   const report = buildAdapterContractMatrix({ sourceLockPack: sourceLockPack() });
 
-  assert.equal(report.summary.counties, 5);
+  assert.equal(report.summary.counties, 6);
   assert.equal(report.summary.runtimeClaimAllowed, false);
 
   for (const row of report.rows) {
@@ -101,12 +113,13 @@ test("adapter matrix emits required contract fields for every locked county", ()
   }
 });
 
-test("adapter matrix classifies Cowlitz, Yakima, Spokane, and Clark as interactive portal candidates", () => {
+test("adapter matrix classifies Cowlitz, Yakima, Spokane, Clark, and King as interactive portal candidates", () => {
   const report = buildAdapterContractMatrix({ sourceLockPack: sourceLockPack() });
   const cowlitz = report.rows.find((row) => row.county === "Cowlitz");
   const yakima = report.rows.find((row) => row.county === "Yakima");
   const spokane = report.rows.find((row) => row.county === "Spokane");
   const clark = report.rows.find((row) => row.county === "Clark");
+  const king = report.rows.find((row) => row.county === "King");
 
   assert.equal(cowlitz.sourceType, "county_property_portal_plus_gis");
   assert.equal(cowlitz.accessMethod, "manual_snapshot_or_playwright_capture");
@@ -127,6 +140,11 @@ test("adapter matrix classifies Cowlitz, Yakima, Spokane, and Clark as interacti
   assert.equal(clark.accessMethod, "manual_snapshot_or_playwright_capture");
   assert.equal(clark.expectedExportFormat, "html_or_json_network_capture_plus_optional_gis_layer");
   assert.equal(clark.adapterStatus, "candidate");
+
+  assert.equal(king.sourceType, "county_property_portal_plus_gis");
+  assert.equal(king.accessMethod, "manual_snapshot_or_playwright_capture");
+  assert.equal(king.expectedExportFormat, "html_or_json_network_capture_plus_optional_gis_layer");
+  assert.equal(king.adapterStatus, "candidate");
 });
 
 test("adapter matrix classifies open data/export counties separately", () => {
@@ -260,6 +278,34 @@ test("adapter matrix marks Clark verified from read-only adapter receipt without
   assert.equal(report.summary.verifiedAdapters, 1);
 });
 
+test("adapter matrix marks King verified from read-only adapter receipt without runtime claims", () => {
+  const report = buildAdapterContractMatrix({
+    sourceLockPack: sourceLockPack(),
+    adapterVerificationReports: [
+      {
+        county: "King",
+        countyToken: "king",
+        adapterId: "king-readonly-parcel-area-arcgis-schema-v1",
+        adapterStatus: "verified",
+        runtimeClaimAllowed: false,
+        dbMutationAllowed: false,
+        productionRowsWritten: 0,
+        parcelIdentity: { proven: true, sourceField: "PIN" },
+        blockers: []
+      }
+    ]
+  });
+
+  const king = report.rows.find((row) => row.county === "King");
+
+  assert.equal(king.adapterStatus, "verified");
+  assert.equal(king.runtimeClaimAllowed, false);
+  assert.equal(king.dbMutationAllowed, false);
+  assert.equal(king.parcelIdentifierField, "PIN");
+  assert.equal(king.verification.adapterId, "king-readonly-parcel-area-arcgis-schema-v1");
+  assert.equal(report.summary.verifiedAdapters, 1);
+});
+
 test("adapter matrix CLI writes JSON and Markdown evidence", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "tf-adapter-matrix-"));
   const sourceLockPath = path.join(root, "source-lock.json");
@@ -278,8 +324,8 @@ test("adapter matrix CLI writes JSON and Markdown evidence", () => {
   );
 
   assert.equal(result.status, 0);
-  assert.match(result.stdout, /"counties": 5/);
-  assert.equal(JSON.parse(fs.readFileSync(outJson, "utf8")).summary.counties, 5);
+  assert.match(result.stdout, /"counties": 6/);
+  assert.equal(JSON.parse(fs.readFileSync(outJson, "utf8")).summary.counties, 6);
   assert.match(fs.readFileSync(outMd, "utf8"), /Adapter Contract Matrix/);
 });
 
@@ -292,7 +338,7 @@ test("adapter matrix run helper writes evidence", () => {
   fs.writeFileSync(sourceLockPath, JSON.stringify(sourceLockPack(), null, 2));
   const report = runAdapterContractMatrix({ sourceLockPath, outJson, outMd });
 
-  assert.equal(report.summary.counties, 5);
-  assert.equal(JSON.parse(fs.readFileSync(outJson, "utf8")).summary.counties, 5);
+  assert.equal(report.summary.counties, 6);
+  assert.equal(JSON.parse(fs.readFileSync(outJson, "utf8")).summary.counties, 6);
   assert.match(fs.readFileSync(outMd, "utf8"), /Yakima/);
 });

@@ -1,12 +1,12 @@
 {
-  "generatedAtUtc": "2026-05-22T18:39:01.612Z",
+  "generatedAtUtc": "2026-05-22T19:11:42.017Z",
   "sourceLockGeneratedAtUtc": "2026-05-22T16:09:39.578Z",
   "slice": "38-County Adapter Contract Matrix",
   "summary": {
     "counties": 10,
-    "candidateAdapters": 6,
+    "candidateAdapters": 5,
     "implementedAdapters": 0,
-    "verifiedAdapters": 4,
+    "verifiedAdapters": 5,
     "runtimeClaimAllowed": false,
     "dbMutationAllowed": false
   },
@@ -124,7 +124,7 @@
       "sourceType": "county_property_portal_plus_gis",
       "accessMethod": "manual_snapshot_or_playwright_capture",
       "expectedExportFormat": "html_or_json_network_capture_plus_optional_gis_layer",
-      "parcelIdentifierField": "parcel_id_or_account_number",
+      "parcelIdentifierField": "PIN",
       "ownerAddressValueFields": [
         "owner_name_if_available",
         "situs_address_if_available",
@@ -135,8 +135,13 @@
       ],
       "updateCadence": "on_demand_snapshot",
       "licenseTermsRisk": "medium_terms_review_required",
-      "adapterStatus": "candidate",
-      "verification": null,
+      "adapterStatus": "verified",
+      "verification": {
+        "adapterId": "king-readonly-parcel-area-arcgis-schema-v1",
+        "generatedAtUtc": "2026-05-22T19:11:26.825Z",
+        "parcelIdentifierField": "PIN",
+        "lineageReceiptVersion": "june10-adapter-verification-v1"
+      },
       "sourceUrls": ["https://kingcounty.gov"],
       "receiptTarget": "evidence/june10-38-county-seed/king/source-snapshot-receipt.json",
       "runtimeClaimAllowed": false,
