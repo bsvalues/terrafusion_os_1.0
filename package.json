@@ -123,6 +123,7 @@
     "truth:june10-38-county-adapter-contract-matrix": "node os-platform/core/pilot/june10-38-county-adapter-contract-matrix.mjs",
     "truth:june10-cowlitz-readonly-adapter": "node os-platform/core/pilot/june10-cowlitz-readonly-adapter.mjs",
     "truth:june10-yakima-readonly-adapter": "node os-platform/core/pilot/june10-yakima-readonly-adapter.mjs",
+    "truth:june10-spokane-readonly-adapter": "node os-platform/core/pilot/june10-spokane-readonly-adapter.mjs",
     "truth:june10-seed-execution-status": "node os-platform/core/pilot/june10-seed-execution-status.mjs",
     "truth:june10-seed-lane": "node os-platform/core/pilot/june10-seed-lane-runner.mjs",
     "truth:june10-seed-receipts": "node os-platform/core/pilot/june10-seed-receipt-validator.mjs",

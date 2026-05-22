@@ -1,0 +1,113 @@
+{
+  "id": 2,
+  "name": "Parcels",
+  "displayField": "nbhd_name",
+  "type": "Feature Layer",
+  "geometryType": "esriGeometryPolygon",
+  "maxRecordCount": 2000,
+  "supportedQueryFormats": "JSON, geoJSON, PBF",
+  "fields": [
+    {
+      "name": "OBJECTID",
+      "type": "esriFieldTypeOID",
+      "alias": "OBJECTID",
+      "length": null
+    },
+    {
+      "name": "PID_NUM",
+      "type": "esriFieldTypeString",
+      "alias": "Parcel Number",
+      "length": 255
+    },
+    {
+      "name": "ACO_NUM",
+      "type": "esriFieldTypeString",
+      "alias": "Segregation Number",
+      "length": 255
+    },
+    {
+      "name": "exmp_amt",
+      "type": "esriFieldTypeDouble",
+      "alias": "exmp_amt",
+      "length": null
+    },
+    {
+      "name": "owner_name",
+      "type": "esriFieldTypeString",
+      "alias": "owner_name",
+      "length": 100
+    },
+    {
+      "name": "tax_year",
+      "type": "esriFieldTypeInteger",
+      "alias": "tax_year",
+      "length": null
+    },
+    {
+      "name": "asmt_year",
+      "type": "esriFieldTypeInteger",
+      "alias": "asmt_year",
+      "length": null
+    },
+    {
+      "name": "site_address",
+      "type": "esriFieldTypeString",
+      "alias": "site_address",
+      "length": 50
+    },
+    {
+      "name": "asmt_year_exmp_amt",
+      "type": "esriFieldTypeDouble",
+      "alias": "asmt_year_exmp_amt",
+      "length": null
+    },
+    {
+      "name": "eff_from_date",
+      "type": "esriFieldTypeDate",
+      "alias": "eff_from_date",
+      "length": 8
+    },
+    {
+      "name": "eff_to_date",
+      "type": "esriFieldTypeDate",
+      "alias": "eff_to_date",
+      "length": 8
+    },
+    {
+      "name": "site_state",
+      "type": "esriFieldTypeString",
+      "alias": "site_state",
+      "length": 2
+    },
+    {
+      "name": "site_zip",
+      "type": "esriFieldTypeString",
+      "alias": "site_zip",
+      "length": 10
+    },
+    {
+      "name": "seg_status",
+      "type": "esriFieldTypeString",
+      "alias": "seg_status",
+      "length": 20
+    },
+    {
+      "name": "Shape",
+      "type": "esriFieldTypeGeometry",
+      "alias": "SHAPE",
+      "length": null
+    },
+    {
+      "name": "Shape.STArea()",
+      "type": "esriFieldTypeDouble",
+      "alias": "Shape.STArea(",
+      "length": null
+    },
+    {
+      "name": "Shape.STLength()",
+      "type": "esriFieldTypeDouble",
+      "alias": "SHAPE.STLength(",
+      "length": null
+    }
+  ]
+}

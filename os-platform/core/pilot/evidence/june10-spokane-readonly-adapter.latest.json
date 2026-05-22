@@ -1,0 +1,279 @@
+{
+  "generatedAtUtc": "2026-05-22T17:55:29.398Z",
+  "county": "Spokane",
+  "countyToken": "spokane",
+  "adapterId": "spokane-readonly-scout-arcgis-schema-v1",
+  "adapterStatus": "verified",
+  "sourceType": "county_property_portal_plus_gis",
+  "accessMethod": "read_only_public_arcgis_rest_directory_metadata_fetch",
+  "expectedExportFormat": "arcgis_rest_service_html_layer_schema_metadata",
+  "fetchPlan": [
+    {
+      "id": "spokane_scout_service_directory",
+      "url": "https://gismo.spokanecounty.org/arcgis/rest/services/SCOUT/Queries/MapServer",
+      "method": "GET",
+      "readOnly": true,
+      "purpose": "Fetch public ArcGIS REST service directory metadata only."
+    },
+    {
+      "id": "spokane_scout_layers_directory",
+      "url": "https://gismo.spokanecounty.org/arcgis/rest/services/SCOUT/Queries/MapServer/layers",
+      "method": "GET",
+      "readOnly": true,
+      "purpose": "Fetch public ArcGIS REST layer schema metadata only; no feature query."
+    }
+  ],
+  "parcelIdentity": {
+    "proven": true,
+    "sourceField": "PID_NUM",
+    "proof": {
+      "serviceName": "SCOUT/Queries",
+      "sourceHost": "gismo.spokanecounty.org",
+      "parcelLayerName": "Parcels",
+      "parcelLayerId": 2,
+      "pidField": {
+        "name": "PID_NUM",
+        "type": "esriFieldTypeString",
+        "alias": "Parcel Number",
+        "length": 255
+      },
+      "fieldNames": [
+        "OBJECTID",
+        "PID_NUM",
+        "ACO_NUM",
+        "exmp_amt",
+        "owner_name",
+        "tax_year",
+        "asmt_year",
+        "site_address",
+        "asmt_year_exmp_amt",
+        "eff_from_date",
+        "eff_to_date",
+        "site_state",
+        "site_zip",
+        "seg_status",
+        "Shape",
+        "Shape.STArea()",
+        "Shape.STLength()"
+      ]
+    },
+    "semantics": "Spokane SCOUT Queries Parcels layer exposes PID_NUM with alias Parcel Number in public ArcGIS REST schema metadata."
+  },
+  "serviceMetadata": {
+    "serviceName": "SCOUT/Queries",
+    "serviceDescription": "",
+    "mapName": "Queries",
+    "capabilities": null
+  },
+  "parcelLayer": {
+    "id": 2,
+    "name": "Parcels",
+    "displayField": "nbhd_name",
+    "type": "Feature Layer",
+    "geometryType": "esriGeometryPolygon",
+    "maxRecordCount": 2000,
+    "supportedQueryFormats": "JSON, geoJSON, PBF",
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID",
+        "length": null
+      },
+      {
+        "name": "PID_NUM",
+        "type": "esriFieldTypeString",
+        "alias": "Parcel Number",
+        "length": 255
+      },
+      {
+        "name": "ACO_NUM",
+        "type": "esriFieldTypeString",
+        "alias": "Segregation Number",
+        "length": 255
+      },
+      {
+        "name": "exmp_amt",
+        "type": "esriFieldTypeDouble",
+        "alias": "exmp_amt",
+        "length": null
+      },
+      {
+        "name": "owner_name",
+        "type": "esriFieldTypeString",
+        "alias": "owner_name",
+        "length": 100
+      },
+      {
+        "name": "tax_year",
+        "type": "esriFieldTypeInteger",
+        "alias": "tax_year",
+        "length": null
+      },
+      {
+        "name": "asmt_year",
+        "type": "esriFieldTypeInteger",
+        "alias": "asmt_year",
+        "length": null
+      },
+      {
+        "name": "site_address",
+        "type": "esriFieldTypeString",
+        "alias": "site_address",
+        "length": 50
+      },
+      {
+        "name": "asmt_year_exmp_amt",
+        "type": "esriFieldTypeDouble",
+        "alias": "asmt_year_exmp_amt",
+        "length": null
+      },
+      {
+        "name": "eff_from_date",
+        "type": "esriFieldTypeDate",
+        "alias": "eff_from_date",
+        "length": 8
+      },
+      {
+        "name": "eff_to_date",
+        "type": "esriFieldTypeDate",
+        "alias": "eff_to_date",
+        "length": 8
+      },
+      {
+        "name": "site_state",
+        "type": "esriFieldTypeString",
+        "alias": "site_state",
+        "length": 2
+      },
+      {
+        "name": "site_zip",
+        "type": "esriFieldTypeString",
+        "alias": "site_zip",
+        "length": 10
+      },
+      {
+        "name": "seg_status",
+        "type": "esriFieldTypeString",
+        "alias": "seg_status",
+        "length": 20
+      },
+      {
+        "name": "Shape",
+        "type": "esriFieldTypeGeometry",
+        "alias": "SHAPE",
+        "length": null
+      },
+      {
+        "name": "Shape.STArea()",
+        "type": "esriFieldTypeDouble",
+        "alias": "Shape.STArea(",
+        "length": null
+      },
+      {
+        "name": "Shape.STLength()",
+        "type": "esriFieldTypeDouble",
+        "alias": "SHAPE.STLength(",
+        "length": null
+      }
+    ]
+  },
+  "stagingShape": {
+    "schema": "terrafusion-staging-parcel-source-v1",
+    "mode": "contract_only_no_rows_loaded",
+    "fields": {
+      "county": {
+        "value": "Spokane"
+      },
+      "countyToken": {
+        "value": "spokane"
+      },
+      "parcelId": {
+        "sourceField": "PID_NUM",
+        "required": true
+      },
+      "ownerName": {
+        "sourceField": "owner_name",
+        "required": false
+      },
+      "situsAddress": {
+        "sourceFields": ["site_address", "site_state", "site_zip"],
+        "required": false
+      },
+      "assessedValue": {
+        "sourceFields": [],
+        "required": false
+      },
+      "taxYear": {
+        "sourceField": "tax_year",
+        "required": false
+      },
+      "assessmentYear": {
+        "sourceField": "asmt_year",
+        "required": false
+      },
+      "status": {
+        "sourceField": "seg_status",
+        "required": false
+      },
+      "geometryReference": {
+        "source": "ArcGIS feature layer geometry if later capture is authorized",
+        "required": false
+      }
+    },
+    "rows": []
+  },
+  "lineageReceipt": {
+    "receiptVersion": "june10-adapter-verification-v1",
+    "status": "VERIFIED",
+    "capturedAtUtc": "2026-05-22T17:55:29.398Z",
+    "county": "Spokane",
+    "countyToken": "spokane",
+    "adapterId": "spokane-readonly-scout-arcgis-schema-v1",
+    "noSecretValuesRecorded": true,
+    "rawArtifacts": [
+      {
+        "id": "service_metadata",
+        "sourceUrl": "https://gismo.spokanecounty.org/arcgis/rest/services/SCOUT/Queries/MapServer",
+        "capturedAtUtc": "2026-05-22T17:55:29.398Z",
+        "sha256": "bedfa0dd4478a8ccfea0088dda4b4a0224b275a9c3cbf2578de59bc54cc10fd6",
+        "readOnly": true,
+        "path": "os-platform/core/pilot/evidence/june10-38-county-adapters/spokane/raw/spokane-scout-service-metadata.json"
+      },
+      {
+        "id": "parcel_layer_metadata",
+        "sourceUrl": "https://gismo.spokanecounty.org/arcgis/rest/services/SCOUT/Queries/MapServer/layers",
+        "capturedAtUtc": "2026-05-22T17:55:29.398Z",
+        "sha256": "d179ac66b8f6f7aaf61c81025d4efaa2bcb044342225091e81fb7190a3709673",
+        "readOnly": true,
+        "path": "os-platform/core/pilot/evidence/june10-38-county-adapters/spokane/raw/spokane-scout-parcel-layer-metadata.json"
+      }
+    ],
+    "normalizedArtifact": {
+      "path": "os-platform/core/pilot/evidence/june10-38-county-adapters/spokane/normalized/spokane-staging-source-contract.json",
+      "schema": "terrafusion-staging-parcel-source-v1",
+      "sha256": "4dca4a0510737edf72c398c3c29554fee60d378bf9cc423b36dc150cfdd848b9",
+      "rowCount": 0
+    },
+    "counts": {
+      "parcelRowsFetched": 0,
+      "parcelRowsNormalized": 0,
+      "productionRowsWritten": 0
+    },
+    "runtimeClaimAllowed": false,
+    "dbMutationAllowed": false
+  },
+  "productionRowsWritten": 0,
+  "runtimeClaimAllowed": false,
+  "dbMutationAllowed": false,
+  "blockers": [],
+  "warnings": [
+    "Public SCOUT Parcels schema did not expose an assessed value field in metadata."
+  ],
+  "rules": [
+    "This adapter verifies public Spokane SCOUT schema metadata and staging contract only.",
+    "It does not call ArcGIS query endpoints, fetch feature rows, or perform bulk extraction.",
+    "It writes no TerraFusion production DB rows.",
+    "Runtime claims remain blocked until separate load, API, and UI proof exist."
+  ]
+}

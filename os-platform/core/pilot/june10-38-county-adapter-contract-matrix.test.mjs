@@ -54,6 +54,18 @@ function sourceLockPack() {
           fallbackSource: "Other Searches",
           gisMapSurface: "Parcel Search / mapping"
         }
+      },
+      {
+        county: "Spokane",
+        countyToken: "spokane",
+        acquisitionFamily: "Direct sales search",
+        sourceDecisionStatus: "source_candidate_locked",
+        sourceUrls: ["https://www.spokanecounty.org"],
+        sourceLabels: {
+          primarySalesSource: "SCOUT Sales Search",
+          fallbackSource: "Map parcel detail history",
+          gisMapSurface: "SCOUT map"
+        }
       }
     ]
   };
@@ -62,7 +74,7 @@ function sourceLockPack() {
 test("adapter matrix emits required contract fields for every locked county", () => {
   const report = buildAdapterContractMatrix({ sourceLockPack: sourceLockPack() });
 
-  assert.equal(report.summary.counties, 3);
+  assert.equal(report.summary.counties, 4);
   assert.equal(report.summary.runtimeClaimAllowed, false);
 
   for (const row of report.rows) {
@@ -77,10 +89,11 @@ test("adapter matrix emits required contract fields for every locked county", ()
   }
 });
 
-test("adapter matrix classifies Cowlitz and Yakima as interactive portal candidates", () => {
+test("adapter matrix classifies Cowlitz, Yakima, and Spokane as interactive portal candidates", () => {
   const report = buildAdapterContractMatrix({ sourceLockPack: sourceLockPack() });
   const cowlitz = report.rows.find((row) => row.county === "Cowlitz");
   const yakima = report.rows.find((row) => row.county === "Yakima");
+  const spokane = report.rows.find((row) => row.county === "Spokane");
 
   assert.equal(cowlitz.sourceType, "county_property_portal_plus_gis");
   assert.equal(cowlitz.accessMethod, "manual_snapshot_or_playwright_capture");
@@ -91,6 +104,11 @@ test("adapter matrix classifies Cowlitz and Yakima as interactive portal candida
   assert.equal(yakima.accessMethod, "manual_snapshot_or_playwright_capture");
   assert.equal(yakima.expectedExportFormat, "html_or_json_network_capture");
   assert.equal(yakima.adapterStatus, "candidate");
+
+  assert.equal(spokane.sourceType, "county_property_portal_plus_gis");
+  assert.equal(spokane.accessMethod, "manual_snapshot_or_playwright_capture");
+  assert.equal(spokane.expectedExportFormat, "html_or_json_network_capture_plus_optional_gis_layer");
+  assert.equal(spokane.adapterStatus, "candidate");
 });
 
 test("adapter matrix classifies open data/export counties separately", () => {
@@ -168,6 +186,34 @@ test("adapter matrix marks Yakima verified from read-only adapter receipt withou
   assert.equal(report.summary.verifiedAdapters, 1);
 });
 
+test("adapter matrix marks Spokane verified from read-only adapter receipt without runtime claims", () => {
+  const report = buildAdapterContractMatrix({
+    sourceLockPack: sourceLockPack(),
+    adapterVerificationReports: [
+      {
+        county: "Spokane",
+        countyToken: "spokane",
+        adapterId: "spokane-readonly-scout-arcgis-schema-v1",
+        adapterStatus: "verified",
+        runtimeClaimAllowed: false,
+        dbMutationAllowed: false,
+        productionRowsWritten: 0,
+        parcelIdentity: { proven: true, sourceField: "PID_NUM" },
+        blockers: []
+      }
+    ]
+  });
+
+  const spokane = report.rows.find((row) => row.county === "Spokane");
+
+  assert.equal(spokane.adapterStatus, "verified");
+  assert.equal(spokane.runtimeClaimAllowed, false);
+  assert.equal(spokane.dbMutationAllowed, false);
+  assert.equal(spokane.parcelIdentifierField, "PID_NUM");
+  assert.equal(spokane.verification.adapterId, "spokane-readonly-scout-arcgis-schema-v1");
+  assert.equal(report.summary.verifiedAdapters, 1);
+});
+
 test("adapter matrix CLI writes JSON and Markdown evidence", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "tf-adapter-matrix-"));
   const sourceLockPath = path.join(root, "source-lock.json");
@@ -186,8 +232,8 @@ test("adapter matrix CLI writes JSON and Markdown evidence", () => {
   );
 
   assert.equal(result.status, 0);
-  assert.match(result.stdout, /"counties": 3/);
-  assert.equal(JSON.parse(fs.readFileSync(outJson, "utf8")).summary.counties, 3);
+  assert.match(result.stdout, /"counties": 4/);
+  assert.equal(JSON.parse(fs.readFileSync(outJson, "utf8")).summary.counties, 4);
   assert.match(fs.readFileSync(outMd, "utf8"), /Adapter Contract Matrix/);
 });
 
@@ -200,7 +246,7 @@ test("adapter matrix run helper writes evidence", () => {
   fs.writeFileSync(sourceLockPath, JSON.stringify(sourceLockPack(), null, 2));
   const report = runAdapterContractMatrix({ sourceLockPath, outJson, outMd });
 
-  assert.equal(report.summary.counties, 3);
-  assert.equal(JSON.parse(fs.readFileSync(outJson, "utf8")).summary.counties, 3);
+  assert.equal(report.summary.counties, 4);
+  assert.equal(JSON.parse(fs.readFileSync(outJson, "utf8")).summary.counties, 4);
   assert.match(fs.readFileSync(outMd, "utf8"), /Yakima/);
 });

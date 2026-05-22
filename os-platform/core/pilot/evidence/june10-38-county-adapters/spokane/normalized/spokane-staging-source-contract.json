@@ -1,0 +1,45 @@
+{
+  "schema": "terrafusion-staging-parcel-source-v1",
+  "mode": "contract_only_no_rows_loaded",
+  "fields": {
+    "county": {
+      "value": "Spokane"
+    },
+    "countyToken": {
+      "value": "spokane"
+    },
+    "parcelId": {
+      "sourceField": "PID_NUM",
+      "required": true
+    },
+    "ownerName": {
+      "sourceField": "owner_name",
+      "required": false
+    },
+    "situsAddress": {
+      "sourceFields": ["site_address", "site_state", "site_zip"],
+      "required": false
+    },
+    "assessedValue": {
+      "sourceFields": [],
+      "required": false
+    },
+    "taxYear": {
+      "sourceField": "tax_year",
+      "required": false
+    },
+    "assessmentYear": {
+      "sourceField": "asmt_year",
+      "required": false
+    },
+    "status": {
+      "sourceField": "seg_status",
+      "required": false
+    },
+    "geometryReference": {
+      "source": "ArcGIS feature layer geometry if later capture is authorized",
+      "required": false
+    }
+  },
+  "rows": []
+}

@@ -1,0 +1,16 @@
+{
+  "pageMetadata": {
+    "title": "SCOUT/Queries (MapServer)",
+    "layersTitle": "All Layers and Tables (SCOUT/Queries)",
+    "serviceUrl": "https://gismo.spokanecounty.org/arcgis/rest/services/SCOUT/Queries/MapServer",
+    "layersUrl": "https://gismo.spokanecounty.org/arcgis/rest/services/SCOUT/Queries/MapServer/layers",
+    "sourceHost": "gismo.spokanecounty.org",
+    "portal": "Spokane County SCOUT"
+  },
+  "serviceMetadata": {
+    "serviceName": "SCOUT/Queries",
+    "serviceDescription": "",
+    "mapName": "Queries",
+    "capabilities": null
+  }
+}
