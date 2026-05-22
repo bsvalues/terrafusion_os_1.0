@@ -1,0 +1,341 @@
+{
+  "generatedAtUtc": "2026-05-22T21:21:42.131Z",
+  "slice": "Governed Ingestion Authorization Model",
+  "sourceDesignReceiptSha256": "611cbfae75bc96777ff73bf75d5c335dd83261451be67e301ce785bc75e43da2",
+  "summary": {
+    "countiesCovered": 2,
+    "counties": ["Cowlitz", "Yakima"],
+    "authorizationState": "blocked_pending_evidence",
+    "productionDbMutationAllowed": false,
+    "runtimePromotionAllowed": false,
+    "projectionPromotionAllowed": false
+  },
+  "roles": {
+    "countyLoadAuthorizers": ["data_governance_lead", "county_data_steward"],
+    "termsLicensingApprovers": ["legal_terms_reviewer", "data_governance_lead"],
+    "validationApprovers": ["data_quality_lead", "database_operator"],
+    "projectionApprovers": ["data_governance_lead", "platform_release_manager"],
+    "runtimeRegistrationApprovers": [
+      "platform_release_manager",
+      "security_officer",
+      "data_governance_lead"
+    ],
+    "rollbackAuthorities": ["platform_release_manager", "database_operator"],
+    "emergencyStopAuthorities": ["platform_release_manager", "security_officer"]
+  },
+  "globalPolicy": {
+    "whoCanAuthorizeCountyLoad": [
+      "data_governance_lead",
+      "county_data_steward"
+    ],
+    "requiredEvidenceBeforeAuthorization": [
+      "verified_read_only_adapter_receipt",
+      "conditional_load_path_design_receipt",
+      "terms_license_review_receipt",
+      "row_validation_receipt",
+      "rollback_plan_receipt",
+      "dry_run_lineage_receipt"
+    ],
+    "termsLicensingApprovalStateRequired": "approved",
+    "validationThresholds": {
+      "required": {
+        "sourceParcelIdPresentPercent": 100,
+        "duplicateParcelIdPercent": 0,
+        "lineageReceiptCoveragePercent": 100,
+        "dryRunProductionRowsWritten": 0,
+        "maxRejectedRowsPercent": 1
+      },
+      "projectionRequired": {
+        "countyTokenRegistered": true,
+        "normalizedPayloadHashVerified": true,
+        "projectionReceiptApproved": true
+      },
+      "runtimeRegistrationRequired": {
+        "projectionRowsWrittenGreaterThanZero": true,
+        "endpointContractSmokePassed": true,
+        "noCrossCountyFallback": true,
+        "runtimeRegistrationApprovalReceipt": true
+      }
+    },
+    "rollbackAuthority": ["platform_release_manager", "database_operator"],
+    "projectionApprovalWorkflow": "separate approval after load authorization and row validation",
+    "runtimeRegistrationApprovalWorkflow": "separate approval after projection proof and endpoint smoke",
+    "auditReceiptRequirements": {
+      "requiredReceipts": [
+        "governed_ingestion_authorization_receipt",
+        "terms_license_review_receipt",
+        "row_validation_receipt",
+        "dry_run_lineage_receipt",
+        "rollback_plan_receipt"
+      ],
+      "projectionReceipts": [
+        "projection_approval_receipt",
+        "projection_execution_receipt",
+        "projection_validation_receipt"
+      ],
+      "runtimeReceipts": [
+        "runtime_registration_approval_receipt",
+        "endpoint_contract_smoke_receipt",
+        "county_no_fallback_receipt"
+      ],
+      "receiptFields": [
+        "receipt_id",
+        "county_token",
+        "authorized_by",
+        "authorized_role",
+        "source_receipt_sha256",
+        "validation_receipt_sha256",
+        "decision",
+        "created_at_utc"
+      ]
+    }
+  },
+  "hardStops": [
+    "No production writes in this slice.",
+    "No runtime promotion in this slice.",
+    "No projection promotion in this slice.",
+    "No county load authorization without terms/licensing approval.",
+    "No county load authorization without row validation receipt.",
+    "No county load authorization without rollback plan receipt."
+  ],
+  "counties": [
+    {
+      "county": "Cowlitz",
+      "countyToken": "cowlitz",
+      "adapterId": "cowlitz-readonly-arcgis-metadata-v1",
+      "termsLicensingApproval": {
+        "state": "not_approved",
+        "requiredApprovers": ["legal_terms_reviewer", "data_governance_lead"],
+        "requiredEvidence": [
+          "terms_or_license_review_url_or_file",
+          "allowed_use_scope",
+          "bulk_capture_permission_state"
+        ],
+        "blocker": "Terms/licensing approval must be explicit before any county load authorization."
+      },
+      "requiredEvidenceBeforeAuthorization": [
+        "verified_read_only_adapter_receipt",
+        "conditional_load_path_design_receipt",
+        "terms_license_review_receipt",
+        "row_validation_receipt",
+        "rollback_plan_receipt",
+        "dry_run_lineage_receipt"
+      ],
+      "validationThresholds": {
+        "required": {
+          "sourceParcelIdPresentPercent": 100,
+          "duplicateParcelIdPercent": 0,
+          "lineageReceiptCoveragePercent": 100,
+          "dryRunProductionRowsWritten": 0,
+          "maxRejectedRowsPercent": 1
+        },
+        "projectionRequired": {
+          "countyTokenRegistered": true,
+          "normalizedPayloadHashVerified": true,
+          "projectionReceiptApproved": true
+        },
+        "runtimeRegistrationRequired": {
+          "projectionRowsWrittenGreaterThanZero": true,
+          "endpointContractSmokePassed": true,
+          "noCrossCountyFallback": true,
+          "runtimeRegistrationApprovalReceipt": true
+        }
+      },
+      "rollbackAuthority": {
+        "roles": ["platform_release_manager", "database_operator"],
+        "requiredReceipt": "rollback_plan_receipt",
+        "rollbackModeBeforeWrite": "no_op_no_transaction_opened",
+        "rollbackModeAfterFutureWrite": "restore_from_pre_write_snapshot_and_revoke_runtime_registration"
+      },
+      "projectionApprovalWorkflow": {
+        "state": "not_requested",
+        "approvers": ["data_governance_lead", "platform_release_manager"],
+        "requiredBeforeApproval": [
+          "production_load_authorization_receipt",
+          "row_validation_receipt",
+          "pre_projection_snapshot_receipt",
+          "projection_plan_receipt"
+        ],
+        "currentAction": "blocked"
+      },
+      "runtimeRegistrationApprovalWorkflow": {
+        "state": "not_requested",
+        "approvers": [
+          "platform_release_manager",
+          "security_officer",
+          "data_governance_lead"
+        ],
+        "requiredBeforeApproval": [
+          "projection_execution_receipt",
+          "endpoint_contract_smoke_receipt",
+          "no_cross_county_fallback_receipt",
+          "county_trust_label_receipt"
+        ],
+        "currentAction": "blocked"
+      },
+      "auditReceiptRequirements": {
+        "requiredReceipts": [
+          "governed_ingestion_authorization_receipt",
+          "terms_license_review_receipt",
+          "row_validation_receipt",
+          "dry_run_lineage_receipt",
+          "rollback_plan_receipt"
+        ],
+        "projectionReceipts": [
+          "projection_approval_receipt",
+          "projection_execution_receipt",
+          "projection_validation_receipt"
+        ],
+        "runtimeReceipts": [
+          "runtime_registration_approval_receipt",
+          "endpoint_contract_smoke_receipt",
+          "county_no_fallback_receipt"
+        ],
+        "receiptFields": [
+          "receipt_id",
+          "county_token",
+          "authorized_by",
+          "authorized_role",
+          "source_receipt_sha256",
+          "validation_receipt_sha256",
+          "decision",
+          "created_at_utc"
+        ]
+      },
+      "authorizationDecision": {
+        "authorizedForProductionLoad": false,
+        "authorizedForProjection": false,
+        "authorizedForRuntimeRegistration": false,
+        "blockers": [
+          "Terms/licensing approval is not complete.",
+          "Missing row validation receipt.",
+          "Missing rollback plan receipt.",
+          "Source parcel ID presence does not meet 100% threshold.",
+          "Duplicate parcel ID rate is above zero.",
+          "Rejected row rate exceeds allowed threshold.",
+          "Lineage receipt coverage does not meet 100% threshold."
+        ]
+      }
+    },
+    {
+      "county": "Yakima",
+      "countyToken": "yakima",
+      "adapterId": "yakima-readonly-spatialest-config-v1",
+      "termsLicensingApproval": {
+        "state": "not_approved",
+        "requiredApprovers": ["legal_terms_reviewer", "data_governance_lead"],
+        "requiredEvidence": [
+          "terms_or_license_review_url_or_file",
+          "allowed_use_scope",
+          "bulk_capture_permission_state"
+        ],
+        "blocker": "Terms/licensing approval must be explicit before any county load authorization."
+      },
+      "requiredEvidenceBeforeAuthorization": [
+        "verified_read_only_adapter_receipt",
+        "conditional_load_path_design_receipt",
+        "terms_license_review_receipt",
+        "row_validation_receipt",
+        "rollback_plan_receipt",
+        "dry_run_lineage_receipt"
+      ],
+      "validationThresholds": {
+        "required": {
+          "sourceParcelIdPresentPercent": 100,
+          "duplicateParcelIdPercent": 0,
+          "lineageReceiptCoveragePercent": 100,
+          "dryRunProductionRowsWritten": 0,
+          "maxRejectedRowsPercent": 1
+        },
+        "projectionRequired": {
+          "countyTokenRegistered": true,
+          "normalizedPayloadHashVerified": true,
+          "projectionReceiptApproved": true
+        },
+        "runtimeRegistrationRequired": {
+          "projectionRowsWrittenGreaterThanZero": true,
+          "endpointContractSmokePassed": true,
+          "noCrossCountyFallback": true,
+          "runtimeRegistrationApprovalReceipt": true
+        }
+      },
+      "rollbackAuthority": {
+        "roles": ["platform_release_manager", "database_operator"],
+        "requiredReceipt": "rollback_plan_receipt",
+        "rollbackModeBeforeWrite": "no_op_no_transaction_opened",
+        "rollbackModeAfterFutureWrite": "restore_from_pre_write_snapshot_and_revoke_runtime_registration"
+      },
+      "projectionApprovalWorkflow": {
+        "state": "not_requested",
+        "approvers": ["data_governance_lead", "platform_release_manager"],
+        "requiredBeforeApproval": [
+          "production_load_authorization_receipt",
+          "row_validation_receipt",
+          "pre_projection_snapshot_receipt",
+          "projection_plan_receipt"
+        ],
+        "currentAction": "blocked"
+      },
+      "runtimeRegistrationApprovalWorkflow": {
+        "state": "not_requested",
+        "approvers": [
+          "platform_release_manager",
+          "security_officer",
+          "data_governance_lead"
+        ],
+        "requiredBeforeApproval": [
+          "projection_execution_receipt",
+          "endpoint_contract_smoke_receipt",
+          "no_cross_county_fallback_receipt",
+          "county_trust_label_receipt"
+        ],
+        "currentAction": "blocked"
+      },
+      "auditReceiptRequirements": {
+        "requiredReceipts": [
+          "governed_ingestion_authorization_receipt",
+          "terms_license_review_receipt",
+          "row_validation_receipt",
+          "dry_run_lineage_receipt",
+          "rollback_plan_receipt"
+        ],
+        "projectionReceipts": [
+          "projection_approval_receipt",
+          "projection_execution_receipt",
+          "projection_validation_receipt"
+        ],
+        "runtimeReceipts": [
+          "runtime_registration_approval_receipt",
+          "endpoint_contract_smoke_receipt",
+          "county_no_fallback_receipt"
+        ],
+        "receiptFields": [
+          "receipt_id",
+          "county_token",
+          "authorized_by",
+          "authorized_role",
+          "source_receipt_sha256",
+          "validation_receipt_sha256",
+          "decision",
+          "created_at_utc"
+        ]
+      },
+      "authorizationDecision": {
+        "authorizedForProductionLoad": false,
+        "authorizedForProjection": false,
+        "authorizedForRuntimeRegistration": false,
+        "blockers": [
+          "Terms/licensing approval is not complete.",
+          "Missing row validation receipt.",
+          "Missing rollback plan receipt.",
+          "Source parcel ID presence does not meet 100% threshold.",
+          "Duplicate parcel ID rate is above zero.",
+          "Rejected row rate exceeds allowed threshold.",
+          "Lineage receipt coverage does not meet 100% threshold."
+        ]
+      }
+    }
+  ],
+  "blockers": [],
+  "passed": true
+}

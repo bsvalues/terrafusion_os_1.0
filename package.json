@@ -128,6 +128,7 @@
     "truth:june10-king-readonly-adapter": "node os-platform/core/pilot/june10-king-readonly-adapter.mjs",
     "truth:june10-wave-a-adapter-quality-review": "node os-platform/core/pilot/june10-wave-a-adapter-quality-review.mjs",
     "truth:june10-conditional-load-path-design": "node os-platform/core/pilot/june10-conditional-load-path-design.mjs",
+    "truth:june10-production-ingestion-authorization-policy": "node os-platform/core/pilot/june10-production-ingestion-authorization-policy.mjs",
     "truth:june10-seed-execution-status": "node os-platform/core/pilot/june10-seed-execution-status.mjs",
     "truth:june10-seed-lane": "node os-platform/core/pilot/june10-seed-lane-runner.mjs",
     "truth:june10-seed-receipts": "node os-platform/core/pilot/june10-seed-receipt-validator.mjs",
