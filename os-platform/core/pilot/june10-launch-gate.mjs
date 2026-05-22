@@ -21,6 +21,12 @@ const DEFAULT_PRODUCT_LOAD_LEDGER = path.join(
   "truth",
   "terrafusion-db-product-load-ledger.json"
 );
+const DEFAULT_RUNTIME_DB_CONTENT_AUDIT = path.join(
+  repoRoot,
+  "generated",
+  "truth",
+  "runtime-db-content-audit.json"
+);
 const DEFAULT_RUST_CLAIM_POSTURE = path.join(
   repoRoot,
   "os-platform",
@@ -137,6 +143,18 @@ function isProductLoadLedgerPassing(productLoadLedger) {
   if (productLoadLedger.passed === false) return false;
   if (productLoadLedger.receiptEvidence?.exists !== true) return false;
   return Number(productLoadLedger.summary?.lineageProven ?? 0) > 0 && Number(productLoadLedger.summary?.blockers ?? 0) === 0;
+}
+
+function isRuntimeDbContentAuditPassing(runtimeDbContentAudit) {
+  if (!runtimeDbContentAudit) return false;
+  if (runtimeDbContentAudit.passed !== true) return false;
+  if (runtimeDbContentAudit.endpointStatus !== 200) return false;
+
+  const blockerCount = Array.isArray(runtimeDbContentAudit.blockers)
+    ? runtimeDbContentAudit.blockers.length
+    : Number(runtimeDbContentAudit.summary?.blockers ?? runtimeDbContentAudit.content?.blockers?.length ?? 0);
+
+  return blockerCount === 0;
 }
 
 function rustRuntimeProven(rustRuntimeUsage) {
@@ -340,6 +358,8 @@ export function buildJune10LaunchGateReport({
   publicSiteSmoke,
   productLoadLedger,
   productLoadLedgerPath = DEFAULT_PRODUCT_LOAD_LEDGER,
+  runtimeDbContentAudit,
+  runtimeDbContentAuditPath = DEFAULT_RUNTIME_DB_CONTENT_AUDIT,
   rustRuntimeUsage,
   rustClaimsSuppressed = false,
   activeRuntimeLegacyLeaks = [],
@@ -352,6 +372,7 @@ export function buildJune10LaunchGateReport({
   const endpointSmokePassed = endpointSmoke?.passed === true;
   const publicAccessPostureExplicit = publicSiteSmoke?.passed === true;
   const productLoadLedgerPassed = isProductLoadLedgerPassing(productLoadLedger);
+  const runtimeDbContentAuditPassed = isRuntimeDbContentAuditPassing(runtimeDbContentAudit);
   const rustProven = rustRuntimeProven(rustRuntimeUsage);
   const rustPostureAccepted = rustProven || rustClaimsSuppressed;
   const effectiveRuntimeLegacyBoundary =
@@ -425,6 +446,26 @@ export function buildJune10LaunchGateReport({
     );
   }
 
+  if (!runtimeDbContentAudit) {
+    blockers.push(
+      blocker(
+        "runtime_db_content",
+        "Live runtime DB content audit artifact is missing or unreadable.",
+        runtimeDbContentAuditPath
+      )
+    );
+  } else if (!runtimeDbContentAuditPassed) {
+    blockers.push(
+      blocker(
+        "runtime_db_content",
+        "Live runtime DB content audit did not pass. Product-load readiness cannot rely on stale or non-production evidence.",
+        (runtimeDbContentAudit.blockers ?? runtimeDbContentAudit.content?.blockers ?? ["runtime DB content audit failed"])
+          .slice(0, 3)
+          .join(" | ")
+      )
+    );
+  }
+
   if (!rustPostureAccepted) {
     blockers.push(
       blocker(
@@ -463,6 +504,7 @@ export function buildJune10LaunchGateReport({
       endpointSmokePassed,
       publicAccessPostureExplicit,
       productLoadLedgerPassed,
+      runtimeDbContentAuditPassed,
       rustRuntimeProven: rustProven,
       rustClaimsSuppressed,
       activeRuntimeLegacyLeaks: activeRuntimeLegacyLeakCount,
@@ -488,6 +530,15 @@ export function buildJune10LaunchGateReport({
         receiptTableExists: productLoadLedger?.receiptEvidence?.exists ?? null,
         lineageProven: productLoadLedger?.summary?.lineageProven ?? null,
         blockers: productLoadLedger?.summary?.blockers ?? null
+      },
+      runtimeDbContentAudit: {
+        path: runtimeDbContentAuditPath,
+        passed: runtimeDbContentAuditPassed,
+        endpointStatus: runtimeDbContentAudit?.endpointStatus ?? null,
+        endpoint: runtimeDbContentAudit?.endpoint ?? null,
+        blockers: Array.isArray(runtimeDbContentAudit?.blockers)
+          ? runtimeDbContentAudit.blockers.length
+          : runtimeDbContentAudit?.content?.blockers?.length ?? null
       },
       rustRuntimeUsage: {
         passed: rustRuntimeUsage?.passed === true,
@@ -522,12 +573,14 @@ export async function probeJune10LaunchGate({
   timeoutMs = DEFAULT_TIMEOUT_MS,
   repoRoot: root = repoRoot,
   productLoadLedgerPath = DEFAULT_PRODUCT_LOAD_LEDGER,
+  runtimeDbContentAuditPath = DEFAULT_RUNTIME_DB_CONTENT_AUDIT,
   rustClaimPosturePath = DEFAULT_RUST_CLAIM_POSTURE,
   rustClaimsSuppressed = null
 } = {}) {
   const endpointSmoke = await probeJune10EndpointContracts({ apiBaseUrl, timeoutMs });
   const publicSiteSmoke = await probeJune10PublicSite({ baseUrl: publicBaseUrl, timeoutMs });
   const productLoadLedger = readJson(productLoadLedgerPath);
+  const runtimeDbContentAudit = readJson(runtimeDbContentAuditPath);
   const rustRuntimeUsage = inspectJune10RustRuntimeUsage({ repoRoot: root });
   const runtimeLegacyBoundary = inspectRuntimeLegacyBoundary({ repoRoot: root });
   const effectiveRustClaimsSuppressed =
@@ -542,6 +595,8 @@ export async function probeJune10LaunchGate({
     publicSiteSmoke,
     productLoadLedger,
     productLoadLedgerPath,
+    runtimeDbContentAudit,
+    runtimeDbContentAuditPath,
     rustRuntimeUsage,
     rustClaimsSuppressed: effectiveRustClaimsSuppressed,
     runtimeLegacyBoundary
@@ -564,6 +619,7 @@ function renderMarkdown(report) {
     `- Endpoint smoke passed live now: ${report.summary.endpointSmokePassed}`,
     `- Public access posture explicit: ${report.summary.publicAccessPostureExplicit}`,
     `- Product-load ledger passed: ${report.summary.productLoadLedgerPassed}`,
+    `- Runtime DB content audit passed: ${report.summary.runtimeDbContentAuditPassed}`,
     `- Rust runtime proven: ${report.summary.rustRuntimeProven}`,
     `- Rust claims suppressed: ${report.summary.rustClaimsSuppressed}`,
     `- Active runtime legacy leaks: ${report.summary.activeRuntimeLegacyLeaks}`,
@@ -640,6 +696,7 @@ function parseArgs(argv) {
     timeoutMs: Number.parseInt(process.env.TF_JUNE10_LAUNCH_GATE_TIMEOUT_MS ?? String(DEFAULT_TIMEOUT_MS), 10),
     repoRoot: process.env.TF_REPO_ROOT ?? repoRoot,
     productLoadLedgerPath: process.env.TF_PRODUCT_LOAD_LEDGER_PATH ?? DEFAULT_PRODUCT_LOAD_LEDGER,
+    runtimeDbContentAuditPath: process.env.TF_RUNTIME_DB_CONTENT_AUDIT_PATH ?? DEFAULT_RUNTIME_DB_CONTENT_AUDIT,
     rustClaimPosturePath: process.env.TF_JUNE10_RUST_CLAIM_POSTURE_PATH ?? DEFAULT_RUST_CLAIM_POSTURE,
     rustClaimsSuppressed: null,
     outJson: DEFAULT_OUT_JSON,
@@ -654,6 +711,7 @@ function parseArgs(argv) {
     else if (arg === "--timeout-ms") args.timeoutMs = Number.parseInt(argv[++i], 10);
     else if (arg === "--repo-root") args.repoRoot = path.resolve(argv[++i]);
     else if (arg === "--product-load-ledger") args.productLoadLedgerPath = path.resolve(argv[++i]);
+    else if (arg === "--runtime-db-content-audit") args.runtimeDbContentAuditPath = path.resolve(argv[++i]);
     else if (arg === "--rust-claim-posture") args.rustClaimPosturePath = path.resolve(argv[++i]);
     else if (arg === "--suppress-rust-claims") args.rustClaimsSuppressed = true;
     else if (arg === "--out-json") args.outJson = path.resolve(argv[++i]);
@@ -672,6 +730,7 @@ export async function main(argv = process.argv.slice(2)) {
     timeoutMs: args.timeoutMs,
     repoRoot: args.repoRoot,
     productLoadLedgerPath: args.productLoadLedgerPath,
+    runtimeDbContentAuditPath: args.runtimeDbContentAuditPath,
     rustClaimPosturePath: args.rustClaimPosturePath,
     rustClaimsSuppressed: args.rustClaimsSuppressed
   });
@@ -692,6 +751,7 @@ export async function main(argv = process.argv.slice(2)) {
         endpointSmokePassed: report.summary.endpointSmokePassed,
         publicAccessPostureExplicit: report.summary.publicAccessPostureExplicit,
         productLoadLedgerPassed: report.summary.productLoadLedgerPassed,
+        runtimeDbContentAuditPassed: report.summary.runtimeDbContentAuditPassed,
         rustRuntimeProven: report.summary.rustRuntimeProven,
         rustClaimsSuppressed: report.summary.rustClaimsSuppressed,
         activeRuntimeLegacyLeaks: report.summary.activeRuntimeLegacyLeaks,

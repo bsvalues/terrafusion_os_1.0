@@ -1,19 +1,20 @@
 {
-  "generatedAtUtc": "2026-05-22T00:52:42.470Z",
+  "generatedAtUtc": "2026-05-22T01:29:54.055Z",
   "gate": "june10_launch_gate",
   "apiBaseUrl": "https://terrafusionmarket.com",
   "publicBaseUrl": "https://terrafusionmarket.com",
-  "passed": true,
+  "passed": false,
   "summary": {
     "apiHealthLive": true,
     "endpointSmokePassed": true,
     "publicAccessPostureExplicit": true,
     "productLoadLedgerPassed": true,
+    "runtimeDbContentAuditPassed": false,
     "rustRuntimeProven": false,
     "rustClaimsSuppressed": true,
     "activeRuntimeLegacyLeaks": 0,
     "rawRuntimeLegacyReferences": 1917,
-    "blockers": 0,
+    "blockers": 1,
     "warnings": 1
   },
   "checks": {
@@ -34,6 +35,13 @@
       "receiptTableExists": true,
       "lineageProven": 7,
       "blockers": 0
+    },
+    "runtimeDbContentAudit": {
+      "path": "C:\\Users\\bsval\\.config\\superpowers\\worktrees\\terrafusion_os_1.0\\june10-production-readiness-audit-gate\\generated\\truth\\runtime-db-content-audit.json",
+      "passed": false,
+      "endpointStatus": 200,
+      "endpoint": "https://terrafusionmarket.com/api/runtime/truth/db-content",
+      "blockers": 2
     },
     "rustRuntimeUsage": {
       "passed": false,
@@ -17775,7 +17783,13 @@
       "leaks": []
     }
   },
-  "blockers": [],
+  "blockers": [
+    {
+      "source": "runtime_db_content",
+      "message": "Live runtime DB content audit did not pass. Product-load readiness cannot rely on stale or non-production evidence.",
+      "evidence": "canonical_tf.tf_parcel is missing or unreadable in TerraFusion DB: SQLite Error 1: 'no such table: tf_parcel'. | Expected Benton parcel count is not configured."
+    }
+  ],
   "warnings": [
     {
       "source": "rust_runtime",
@@ -17783,6 +17797,8 @@
       "evidence": null
     }
   ],
-  "requiredFixes": [],
-  "interpretation": "June 10 launch gate passed from live runtime evidence and explicit containment posture."
+  "requiredFixes": [
+    "Live runtime DB content audit did not pass. Product-load readiness cannot rely on stale or non-production evidence."
+  ],
+  "interpretation": "June 10 launch gate is red. Production approval must not rely on stale evidence, unproven lineage, unsuppressed Rust claims, or active runtime legacy leaks."
 }

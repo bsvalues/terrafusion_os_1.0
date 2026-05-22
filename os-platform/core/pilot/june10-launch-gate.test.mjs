@@ -71,6 +71,25 @@ function productLoadLedger(overrides = {}) {
   };
 }
 
+function runtimeDbContentAudit(overrides = {}) {
+  return {
+    endpoint: "https://terrafusionmarket.com/api/runtime/truth/db-content",
+    endpointStatus: 200,
+    passed: true,
+    blockers: [],
+    content: {
+      passed: true,
+      blockers: [],
+      totalCounties: 1,
+      totalProperties: 10,
+      bentonDecision: {
+        classification: "benton_runtime_content_proven"
+      }
+    },
+    ...overrides
+  };
+}
+
 function rustRuntimeUsage(overrides = {}) {
   return {
     passed: true,
@@ -110,6 +129,7 @@ test("launch gate passes only when live smoke, load ledger, Rust posture, and le
     endpointSmoke: endpointSmoke(),
     publicSiteSmoke: publicSiteSmoke(),
     productLoadLedger: productLoadLedger(),
+    runtimeDbContentAudit: runtimeDbContentAudit(),
     rustRuntimeUsage: rustRuntimeUsage(),
     rustClaimsSuppressed: false,
     activeRuntimeLegacyLeaks: []
@@ -121,6 +141,7 @@ test("launch gate passes only when live smoke, load ledger, Rust posture, and le
   assert.equal(report.summary.endpointSmokePassed, true);
   assert.equal(report.summary.publicAccessPostureExplicit, true);
   assert.equal(report.summary.productLoadLedgerPassed, true);
+  assert.equal(report.summary.runtimeDbContentAuditPassed, true);
   assert.equal(report.summary.rustRuntimeProven, true);
 });
 
@@ -135,6 +156,7 @@ test("launch gate blocks stale readiness when API health is not live now", () =>
     }),
     publicSiteSmoke: publicSiteSmoke(),
     productLoadLedger: productLoadLedger(),
+    runtimeDbContentAudit: runtimeDbContentAudit(),
     rustRuntimeUsage: rustRuntimeUsage(),
     rustClaimsSuppressed: false,
     activeRuntimeLegacyLeaks: []
@@ -152,6 +174,7 @@ test("launch gate blocks product-load claims without a lineage ledger", () => {
     endpointSmoke: endpointSmoke(),
     publicSiteSmoke: publicSiteSmoke(),
     productLoadLedger: null,
+    runtimeDbContentAudit: runtimeDbContentAudit(),
     rustRuntimeUsage: rustRuntimeUsage(),
     rustClaimsSuppressed: false,
     activeRuntimeLegacyLeaks: []
@@ -159,6 +182,28 @@ test("launch gate blocks product-load claims without a lineage ledger", () => {
 
   assert.equal(report.passed, false);
   assert.ok(report.blockers.some((blocker) => blocker.source === "product_load_ledger"));
+});
+
+test("launch gate blocks stale product-load claims when live runtime DB content audit is red", () => {
+  const report = buildJune10LaunchGateReport({
+    apiBaseUrl: "http://127.0.0.1:5046",
+    publicBaseUrl: "https://terrafusionmarket.com",
+    endpointSmoke: endpointSmoke(),
+    publicSiteSmoke: publicSiteSmoke(),
+    productLoadLedger: productLoadLedger(),
+    runtimeDbContentAudit: runtimeDbContentAudit({
+      passed: false,
+      blockers: ["canonical_tf.tf_parcel is missing or unreadable in TerraFusion DB."]
+    }),
+    rustRuntimeUsage: rustRuntimeUsage(),
+    rustClaimsSuppressed: false,
+    activeRuntimeLegacyLeaks: []
+  });
+
+  assert.equal(report.passed, false);
+  assert.equal(report.summary.productLoadLedgerPassed, true);
+  assert.equal(report.summary.runtimeDbContentAuditPassed, false);
+  assert.ok(report.blockers.some((blocker) => blocker.source === "runtime_db_content"));
 });
 
 test("launch gate blocks Rust runtime claims unless they are proven or explicitly suppressed", () => {
@@ -180,6 +225,7 @@ test("launch gate blocks Rust runtime claims unless they are proven or explicitl
     endpointSmoke: endpointSmoke(),
     publicSiteSmoke: publicSiteSmoke(),
     productLoadLedger: productLoadLedger(),
+    runtimeDbContentAudit: runtimeDbContentAudit(),
     rustRuntimeUsage: unprovenRust,
     rustClaimsSuppressed: false,
     activeRuntimeLegacyLeaks: []
@@ -194,6 +240,7 @@ test("launch gate blocks Rust runtime claims unless they are proven or explicitl
     endpointSmoke: endpointSmoke(),
     publicSiteSmoke: publicSiteSmoke(),
     productLoadLedger: productLoadLedger(),
+    runtimeDbContentAudit: runtimeDbContentAudit(),
     rustRuntimeUsage: unprovenRust,
     rustClaimsSuppressed: true,
     activeRuntimeLegacyLeaks: []
@@ -474,6 +521,7 @@ test("launch gate blocks only active runtime dependency legacy findings", () => 
     endpointSmoke: endpointSmoke(),
     publicSiteSmoke: publicSiteSmoke(),
     productLoadLedger: productLoadLedger(),
+    runtimeDbContentAudit: runtimeDbContentAudit(),
     rustRuntimeUsage: rustRuntimeUsage(),
     rustClaimsSuppressed: false,
     runtimeLegacyBoundary: {
@@ -503,8 +551,10 @@ test("launch gate blocks only active runtime dependency legacy findings", () => 
 test("probeJune10LaunchGate composes live endpoint and public site smoke with ledger evidence", async () => {
   const root = makeTempRepo();
   const ledgerPath = path.join(root, "generated", "truth", "terrafusion-db-product-load-ledger.json");
+  const runtimeDbContentPath = path.join(root, "generated", "truth", "runtime-db-content-audit.json");
   fs.mkdirSync(path.dirname(ledgerPath), { recursive: true });
   fs.writeFileSync(ledgerPath, JSON.stringify(productLoadLedger(), null, 2));
+  fs.writeFileSync(runtimeDbContentPath, JSON.stringify(runtimeDbContentAudit(), null, 2));
 
   const server = http.createServer((req, res) => {
     res.setHeader("content-type", "application/json");
@@ -552,6 +602,7 @@ test("probeJune10LaunchGate composes live endpoint and public site smoke with le
       publicBaseUrl: baseUrl,
       repoRoot: root,
       productLoadLedgerPath: ledgerPath,
+      runtimeDbContentAuditPath: runtimeDbContentPath,
       rustClaimsSuppressed: true,
       timeoutMs: 5000
     });

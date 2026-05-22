@@ -1,8 +1,8 @@
 # June 10 Launch Gate
 
-Generated: 2026-05-22T00:52:42.470Z
+Generated: 2026-05-22T01:29:54.055Z
 
-Passed: true
+Passed: false
 API base URL: https://terrafusionmarket.com
 Public base URL: https://terrafusionmarket.com
 
@@ -12,16 +12,17 @@ Public base URL: https://terrafusionmarket.com
 - Endpoint smoke passed live now: true
 - Public access posture explicit: true
 - Product-load ledger passed: true
+- Runtime DB content audit passed: false
 - Rust runtime proven: false
 - Rust claims suppressed: true
 - Active runtime legacy leaks: 0
 - Raw runtime legacy references: 1917
-- Blockers: 0
+- Blockers: 1
 - Warnings: 1
 
 ## Blockers
 
-- None
+- **runtime_db_content**: Live runtime DB content audit did not pass. Product-load readiness cannot rely on stale or non-production evidence. (canonical_tf.tf_parcel is missing or unreadable in TerraFusion DB: SQLite Error 1: 'no such table: tf_parcel'. | Expected Benton parcel count is not configured.)
 
 ## Warnings
 
@@ -94,8 +95,8 @@ Public base URL: https://terrafusionmarket.com
 
 ## Required Fixes
 
-- None
+- Live runtime DB content audit did not pass. Product-load readiness cannot rely on stale or non-production evidence.
 
 ## Interpretation
 
-June 10 launch gate passed from live runtime evidence and explicit containment posture.
+June 10 launch gate is red. Production approval must not rely on stale evidence, unproven lineage, unsuppressed Rust claims, or active runtime legacy leaks.
