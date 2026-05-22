@@ -1,13 +1,13 @@
 # June 10 38-County Adapter Contract Matrix
 
-Generated: 2026-05-22T16:54:08.287Z
+Generated: 2026-05-22T17:31:33.271Z
 
 ## Summary
 
 - Counties: 10
-- Candidate adapters: 9
+- Candidate adapters: 8
 - Implemented adapters: 0
-- Verified adapters: 1
+- Verified adapters: 2
 - Runtime claim allowed: false
 - DB mutation allowed: false
 
@@ -24,7 +24,7 @@ Pierce | downloadable_assessor_export_plus_parcel_history | download_snapshot | 
 Snohomish | downloadable_assessor_export_plus_parcel_history | download_snapshot | txt_csv_or_fixed_width_download | parcel_number_or_tax_account_id | owner_name_if_available<br>situs_address_if_available<br>assessed_value_if_available<br>sale_date_if_available<br>sale_price_if_available<br>geometry_or_map_reference_if_available | on_demand_snapshot | medium_terms_review_required | candidate
 Spokane | county_property_portal_plus_gis | manual_snapshot_or_playwright_capture | html_or_json_network_capture_plus_optional_gis_layer | parcel_id_or_account_number | owner_name_if_available<br>situs_address_if_available<br>assessed_value_if_available<br>sale_date_if_available<br>sale_price_if_available<br>geometry_or_map_reference_if_available | on_demand_snapshot | medium_terms_review_required | candidate
 Whatcom | county_property_portal_plus_gis | manual_snapshot_or_playwright_capture | html_or_json_network_capture_plus_optional_gis_layer | parcel_id_or_account_number | owner_name_if_available<br>situs_address_if_available<br>assessed_value_if_available<br>sale_date_if_available<br>sale_price_if_available<br>geometry_or_map_reference_if_available | on_demand_snapshot | medium_terms_review_required | candidate
-Yakima | spatialest_property_portal | manual_snapshot_or_playwright_capture | html_or_json_network_capture | parcel_id_or_account_number | owner_name_if_available<br>situs_address_if_available<br>assessed_value_if_available<br>sale_date_if_available<br>sale_price_if_available<br>geometry_or_map_reference_if_available | on_demand_snapshot | low_public_portal_terms_review_required | candidate
+Yakima | spatialest_property_portal | manual_snapshot_or_playwright_capture | html_or_json_network_capture | parcel_number | owner_name_if_available<br>situs_address_if_available<br>assessed_value_if_available<br>sale_date_if_available<br>sale_price_if_available<br>geometry_or_map_reference_if_available | on_demand_snapshot | low_public_portal_terms_review_required | verified
 
 ## Claim Rules
 

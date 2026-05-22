@@ -1,0 +1,41 @@
+{
+  "schema": "terrafusion-staging-parcel-source-v1",
+  "mode": "contract_only_no_rows_loaded",
+  "fields": {
+    "county": {
+      "value": "Yakima"
+    },
+    "countyToken": {
+      "value": "yakima"
+    },
+    "parcelId": {
+      "sourceField": "parcel_number",
+      "required": true
+    },
+    "ownerName": {
+      "sourceField": "owner_name",
+      "required": false
+    },
+    "situsAddress": {
+      "sourceField": "line_1",
+      "required": false
+    },
+    "assessedValue": {
+      "sourceField": "current_assessed_value",
+      "required": false
+    },
+    "landArea": {
+      "sourceField": "total_acres",
+      "required": false
+    },
+    "propertyUse": {
+      "sourceField": "property_use",
+      "required": false
+    },
+    "geometryReference": {
+      "source": "Spatialest WMS parcel layer if later capture is authorized",
+      "required": false
+    }
+  },
+  "rows": []
+}

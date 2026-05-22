@@ -1,12 +1,12 @@
 {
-  "generatedAtUtc": "2026-05-22T16:54:08.287Z",
+  "generatedAtUtc": "2026-05-22T17:31:33.271Z",
   "sourceLockGeneratedAtUtc": "2026-05-22T16:09:39.578Z",
   "slice": "38-County Adapter Contract Matrix",
   "summary": {
     "counties": 10,
-    "candidateAdapters": 9,
+    "candidateAdapters": 8,
     "implementedAdapters": 0,
-    "verifiedAdapters": 1,
+    "verifiedAdapters": 2,
     "runtimeClaimAllowed": false,
     "dbMutationAllowed": false
   },
@@ -73,7 +73,7 @@
       "adapterStatus": "verified",
       "verification": {
         "adapterId": "cowlitz-readonly-arcgis-metadata-v1",
-        "generatedAtUtc": "2026-05-22T16:54:07.225Z",
+        "generatedAtUtc": "2026-05-22T17:27:39.726Z",
         "parcelIdentifierField": "PARCNO",
         "lineageReceiptVersion": "june10-adapter-verification-v1"
       },
@@ -269,7 +269,7 @@
       "sourceType": "spatialest_property_portal",
       "accessMethod": "manual_snapshot_or_playwright_capture",
       "expectedExportFormat": "html_or_json_network_capture",
-      "parcelIdentifierField": "parcel_id_or_account_number",
+      "parcelIdentifierField": "parcel_number",
       "ownerAddressValueFields": [
         "owner_name_if_available",
         "situs_address_if_available",
@@ -280,8 +280,13 @@
       ],
       "updateCadence": "on_demand_snapshot",
       "licenseTermsRisk": "low_public_portal_terms_review_required",
-      "adapterStatus": "candidate",
-      "verification": null,
+      "adapterStatus": "verified",
+      "verification": {
+        "adapterId": "yakima-readonly-spatialest-config-v1",
+        "generatedAtUtc": "2026-05-22T17:31:18.627Z",
+        "parcelIdentifierField": "parcel_number",
+        "lineageReceiptVersion": "june10-adapter-verification-v1"
+      },
       "sourceUrls": [
         "https://property.spatialest.com/wa/yakima#/",
         "https://www.yakimacounty.us"

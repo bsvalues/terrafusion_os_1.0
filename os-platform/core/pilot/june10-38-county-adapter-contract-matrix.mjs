@@ -33,7 +33,8 @@ const DEFAULT_OUT_MD = path.join(
   "june10-38-county-adapter-contract-matrix.latest.md"
 );
 const DEFAULT_ADAPTER_VERIFICATION_PATHS = [
-  path.join(repoRoot, "os-platform", "core", "pilot", "evidence", "june10-cowlitz-readonly-adapter.latest.json")
+  path.join(repoRoot, "os-platform", "core", "pilot", "evidence", "june10-cowlitz-readonly-adapter.latest.json"),
+  path.join(repoRoot, "os-platform", "core", "pilot", "evidence", "june10-yakima-readonly-adapter.latest.json")
 ];
 
 function readJson(filePath) {

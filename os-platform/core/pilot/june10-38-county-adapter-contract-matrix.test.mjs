@@ -140,6 +140,34 @@ test("adapter matrix marks Cowlitz verified from read-only adapter receipt witho
   assert.equal(report.summary.verifiedAdapters, 1);
 });
 
+test("adapter matrix marks Yakima verified from read-only adapter receipt without runtime claims", () => {
+  const report = buildAdapterContractMatrix({
+    sourceLockPack: sourceLockPack(),
+    adapterVerificationReports: [
+      {
+        county: "Yakima",
+        countyToken: "yakima",
+        adapterId: "yakima-readonly-spatialest-config-v1",
+        adapterStatus: "verified",
+        runtimeClaimAllowed: false,
+        dbMutationAllowed: false,
+        productionRowsWritten: 0,
+        parcelIdentity: { proven: true, sourceField: "parcel_number" },
+        blockers: []
+      }
+    ]
+  });
+
+  const yakima = report.rows.find((row) => row.county === "Yakima");
+
+  assert.equal(yakima.adapterStatus, "verified");
+  assert.equal(yakima.runtimeClaimAllowed, false);
+  assert.equal(yakima.dbMutationAllowed, false);
+  assert.equal(yakima.parcelIdentifierField, "parcel_number");
+  assert.equal(yakima.verification.adapterId, "yakima-readonly-spatialest-config-v1");
+  assert.equal(report.summary.verifiedAdapters, 1);
+});
+
 test("adapter matrix CLI writes JSON and Markdown evidence", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "tf-adapter-matrix-"));
   const sourceLockPath = path.join(root, "source-lock.json");

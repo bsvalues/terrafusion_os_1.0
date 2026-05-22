@@ -1,0 +1,385 @@
+{
+  "generatedAtUtc": "2026-05-22T17:31:18.627Z",
+  "county": "Yakima",
+  "countyToken": "yakima",
+  "adapterId": "yakima-readonly-spatialest-config-v1",
+  "adapterStatus": "verified",
+  "sourceType": "spatialest_property_portal",
+  "accessMethod": "read_only_public_spatialest_config_fetch",
+  "expectedExportFormat": "spatialest_html_data_props_json",
+  "fetchPlan": [
+    {
+      "id": "yakima_spatialest_page",
+      "url": "https://property.spatialest.com/wa/yakima",
+      "method": "GET",
+      "readOnly": true,
+      "purpose": "Fetch public Spatialest page HTML and extract data-props metadata only."
+    }
+  ],
+  "parcelIdentity": {
+    "proven": true,
+    "sourceField": "parcel_number",
+    "proof": {
+      "searchBy": [
+        {
+          "id": "parcel",
+          "title": "Parcel #"
+        },
+        {
+          "id": "Address",
+          "title": "Address"
+        },
+        {
+          "id": "no_dash_parcel",
+          "title": ""
+        }
+      ],
+      "fieldIds": [
+        "line_1",
+        "current_assessed_value",
+        "parcel_number",
+        "owner_name",
+        "propertydetails",
+        "property_use",
+        "tca_number",
+        "total_acres",
+        "nbhd",
+        "owners",
+        "LegalDescription",
+        "Fire_Protection",
+        "School_District",
+        "total_bldg_sqft",
+        "parcel_gas",
+        "parcel_electricity",
+        "l_water_source",
+        "l_sewer_source",
+        "property_type",
+        "zone",
+        "site_street_type",
+        "site_street",
+        "site_traffic",
+        "site_side_walk",
+        "site_curbs",
+        "site_location",
+        "land",
+        "land_flag",
+        "l_soilclass",
+        "l_calc_cu",
+        "l_flood_plain",
+        "l_shape",
+        "l_topography",
+        "l_view",
+        "l_landscaping",
+        "l_value_method",
+        "num_lots",
+        "square_feet",
+        "acres",
+        "recid1",
+        "residential",
+        "building_style",
+        "res_qual",
+        "res_cond",
+        "year_built",
+        "num_stories",
+        "num_bedrooms",
+        "main_fn_area",
+        "uppr_fn_area",
+        "addl_fn_area",
+        "full_baths",
+        "three_qtr_bath",
+        "half_baths",
+        "totl_fixturs",
+        "bsmt_area",
+        "fn_bsmt_area",
+        "att_gar_sqft",
+        "bltin_garage",
+        "wood_deck_sf",
+        "patio_sf",
+        "cover_sf",
+        "res_masonry",
+        "res_roof_type",
+        "res_roofing",
+        "res_floor",
+        "res_wall_type",
+        "res_found",
+        "res_fuel",
+        "res_heat",
+        "ac",
+        "wood_stove",
+        "masnry_frplc",
+        "prefab_frplc",
+        "commercial",
+        "use_category",
+        "cs_qual",
+        "cs_cond",
+        "cs_ext_wall",
+        "grnd_fl_area",
+        "cs_foundation",
+        "cs_construction",
+        "cs_heatcool_typ",
+        "detachedstructures",
+        "det_structure",
+        "det_qual",
+        "det_cond",
+        "det_cons",
+        "det_cons_type",
+        "det_ext_wall",
+        "det_roof_type",
+        "det_roof",
+        "det_floor",
+        "measure_1",
+        "measure_2",
+        "agriculture",
+        "crop_record",
+        "crop_type",
+        "units",
+        "year",
+        "crop_age",
+        "ExciseTransactions",
+        "excise_number",
+        "grantor",
+        "sale_date",
+        "sale_price",
+        "Excise_Type",
+        "portion_ind",
+        "",
+        "Values",
+        "label",
+        "2026",
+        "2025",
+        "2024",
+        "2023",
+        "2022",
+        "2021",
+        "2020",
+        "taxbreakdown",
+        "levy_name",
+        "current_tax_rate",
+        "current_tax",
+        "CensusDemo",
+        "RecentAreaSales",
+        "RelatedSales"
+      ],
+      "parcelLayerTitle": "Parcel Layer",
+      "parcelLayerSourceParams": "{ \"LAYERS\" : \"yakima-wa:Parcels\", \"SRS\": \"EPSG:900913\", \"format\" : \"image/png8\" }",
+      "loadedLayerIdentifier": "ParcelIdentifier"
+    },
+    "semantics": "Spatialest search config exposes Parcel # search and public result/schema fields expose parcel_number on the Yakima parcel layer."
+  },
+  "schemaMetadata": {
+    "tenant": "WA Yakima",
+    "client": "yakima",
+    "state": "wa",
+    "dataTimestamp": "05/22/2026",
+    "parcelLayer": {
+      "url": "https://geo-wc1.spatialest.com/geoserver/gwc/service/wms",
+      "type": "TileWMS",
+      "index": 8000,
+      "title": "Parcel Layer",
+      "legend": "",
+      "opacity": 100,
+      "overlay": true,
+      "tooltip": "",
+      "layertype": "tile",
+      "paramskey": "",
+      "projection": "",
+      "attribution": "",
+      "sourceparams": "{ \"LAYERS\" : \"yakima-wa:Parcels\", \"SRS\": \"EPSG:900913\", \"format\" : \"image/png8\" }",
+      "defaultVisible": true,
+      "tileGridOptions": "",
+      "enableLegendToggle": false,
+      "enableOpacitySlider": true,
+      "projectionDefinition": ""
+    },
+    "mapIdentifiers": {
+      "plotLayerTitle": "Parcels",
+      "loadedLayerIdentifier": "ParcelIdentifier",
+      "parcelDataIdentifier": ""
+    },
+    "searchBy": [
+      {
+        "id": "parcel",
+        "title": "Parcel #",
+        "useAsFilter": true,
+        "useAsSuggestion": true
+      },
+      {
+        "id": "Address",
+        "title": "Address",
+        "useAsFilter": true,
+        "useAsSuggestion": true
+      },
+      {
+        "id": "no_dash_parcel",
+        "title": "",
+        "useAsFilter": false,
+        "useAsSuggestion": false
+      }
+    ],
+    "fields": [
+      {
+        "id": "line_1",
+        "title": "",
+        "schema": "public",
+        "format": "",
+        "source": "spatialest_config"
+      },
+      {
+        "id": "current_assessed_value",
+        "title": "Assessed Value",
+        "schema": "public",
+        "format": "number",
+        "source": "spatialest_config"
+      },
+      {
+        "id": "parcel_number",
+        "title": "",
+        "schema": "public",
+        "format": "",
+        "source": "spatialest_config"
+      },
+      {
+        "id": "owner_name",
+        "title": "",
+        "schema": "public",
+        "format": "",
+        "source": "spatialest_config"
+      },
+      {
+        "id": "property_use",
+        "title": "Property Use",
+        "schema": "public",
+        "format": "",
+        "source": "spatialest_config"
+      },
+      {
+        "id": "tca_number",
+        "title": "Tax Code Area",
+        "schema": "public",
+        "format": "",
+        "source": "spatialest_config"
+      },
+      {
+        "id": "total_acres",
+        "title": "Property Size",
+        "schema": "public",
+        "format": "decimal",
+        "source": "spatialest_config"
+      },
+      {
+        "id": "nbhd",
+        "title": "Neighborhood",
+        "schema": "public",
+        "format": "",
+        "source": "spatialest_config"
+      },
+      {
+        "id": "owners",
+        "title": "Owners",
+        "schema": "public",
+        "format": "",
+        "source": "spatialest_config"
+      }
+    ],
+    "permissions": {
+      "canSearchFull": true,
+      "canExportExcel": true,
+      "isAuthenticated": false
+    },
+    "termsUrl": "https://www.schneidergis.com/legal-information/software-terms"
+  },
+  "stagingShape": {
+    "schema": "terrafusion-staging-parcel-source-v1",
+    "mode": "contract_only_no_rows_loaded",
+    "fields": {
+      "county": {
+        "value": "Yakima"
+      },
+      "countyToken": {
+        "value": "yakima"
+      },
+      "parcelId": {
+        "sourceField": "parcel_number",
+        "required": true
+      },
+      "ownerName": {
+        "sourceField": "owner_name",
+        "required": false
+      },
+      "situsAddress": {
+        "sourceField": "line_1",
+        "required": false
+      },
+      "assessedValue": {
+        "sourceField": "current_assessed_value",
+        "required": false
+      },
+      "landArea": {
+        "sourceField": "total_acres",
+        "required": false
+      },
+      "propertyUse": {
+        "sourceField": "property_use",
+        "required": false
+      },
+      "geometryReference": {
+        "source": "Spatialest WMS parcel layer if later capture is authorized",
+        "required": false
+      }
+    },
+    "rows": []
+  },
+  "lineageReceipt": {
+    "receiptVersion": "june10-adapter-verification-v1",
+    "status": "VERIFIED",
+    "capturedAtUtc": "2026-05-22T17:31:18.627Z",
+    "county": "Yakima",
+    "countyToken": "yakima",
+    "adapterId": "yakima-readonly-spatialest-config-v1",
+    "noSecretValuesRecorded": true,
+    "rawArtifacts": [
+      {
+        "id": "page_metadata",
+        "sourceUrl": "https://property.spatialest.com/wa/yakima",
+        "capturedAtUtc": "2026-05-22T17:31:18.627Z",
+        "sha256": "f5ed04732cf20b497683ea6d7c47a87457437a8a8f0c5c3747524766a175e34f",
+        "readOnly": true,
+        "path": "os-platform/core/pilot/evidence/june10-38-county-adapters/yakima/raw/yakima-spatialest-page-metadata.json"
+      },
+      {
+        "id": "schema_metadata",
+        "sourceUrl": "https://property.spatialest.com/wa/yakima",
+        "capturedAtUtc": "2026-05-22T17:31:18.627Z",
+        "sha256": "7abb48443eab5f7c30d95c9105e38f2a9891607cd3444119f832e2aaee606189",
+        "readOnly": true,
+        "path": "os-platform/core/pilot/evidence/june10-38-county-adapters/yakima/raw/yakima-spatialest-schema-metadata.json"
+      }
+    ],
+    "normalizedArtifact": {
+      "path": "os-platform/core/pilot/evidence/june10-38-county-adapters/yakima/normalized/yakima-staging-source-contract.json",
+      "schema": "terrafusion-staging-parcel-source-v1",
+      "sha256": "12dc710ea536bd9f8565492b9e3690635a4e86d659cc0ad9766384372be77e8a",
+      "rowCount": 0
+    },
+    "counts": {
+      "parcelRowsFetched": 0,
+      "parcelRowsNormalized": 0,
+      "productionRowsWritten": 0
+    },
+    "runtimeClaimAllowed": false,
+    "dbMutationAllowed": false
+  },
+  "productionRowsWritten": 0,
+  "runtimeClaimAllowed": false,
+  "dbMutationAllowed": false,
+  "blockers": [],
+  "warnings": [
+    "Public config exposes Excel export permission, but this adapter does not download exports until terms are reviewed."
+  ],
+  "rules": [
+    "This adapter verifies public Spatialest metadata and staging contract only.",
+    "It does not call search, property-card, export, image, or sales APIs.",
+    "It writes no TerraFusion production DB rows.",
+    "Runtime claims remain blocked until separate load, API, and UI proof exist."
+  ]
+}

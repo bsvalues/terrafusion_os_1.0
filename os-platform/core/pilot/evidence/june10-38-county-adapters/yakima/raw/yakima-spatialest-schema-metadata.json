@@ -1,0 +1,122 @@
+{
+  "tenant": "WA Yakima",
+  "client": "yakima",
+  "state": "wa",
+  "dataTimestamp": "05/22/2026",
+  "parcelLayer": {
+    "url": "https://geo-wc1.spatialest.com/geoserver/gwc/service/wms",
+    "type": "TileWMS",
+    "index": 8000,
+    "title": "Parcel Layer",
+    "legend": "",
+    "opacity": 100,
+    "overlay": true,
+    "tooltip": "",
+    "layertype": "tile",
+    "paramskey": "",
+    "projection": "",
+    "attribution": "",
+    "sourceparams": "{ \"LAYERS\" : \"yakima-wa:Parcels\", \"SRS\": \"EPSG:900913\", \"format\" : \"image/png8\" }",
+    "defaultVisible": true,
+    "tileGridOptions": "",
+    "enableLegendToggle": false,
+    "enableOpacitySlider": true,
+    "projectionDefinition": ""
+  },
+  "mapIdentifiers": {
+    "plotLayerTitle": "Parcels",
+    "loadedLayerIdentifier": "ParcelIdentifier",
+    "parcelDataIdentifier": ""
+  },
+  "searchBy": [
+    {
+      "id": "parcel",
+      "title": "Parcel #",
+      "useAsFilter": true,
+      "useAsSuggestion": true
+    },
+    {
+      "id": "Address",
+      "title": "Address",
+      "useAsFilter": true,
+      "useAsSuggestion": true
+    },
+    {
+      "id": "no_dash_parcel",
+      "title": "",
+      "useAsFilter": false,
+      "useAsSuggestion": false
+    }
+  ],
+  "fields": [
+    {
+      "id": "line_1",
+      "title": "",
+      "schema": "public",
+      "format": "",
+      "source": "spatialest_config"
+    },
+    {
+      "id": "current_assessed_value",
+      "title": "Assessed Value",
+      "schema": "public",
+      "format": "number",
+      "source": "spatialest_config"
+    },
+    {
+      "id": "parcel_number",
+      "title": "",
+      "schema": "public",
+      "format": "",
+      "source": "spatialest_config"
+    },
+    {
+      "id": "owner_name",
+      "title": "",
+      "schema": "public",
+      "format": "",
+      "source": "spatialest_config"
+    },
+    {
+      "id": "property_use",
+      "title": "Property Use",
+      "schema": "public",
+      "format": "",
+      "source": "spatialest_config"
+    },
+    {
+      "id": "tca_number",
+      "title": "Tax Code Area",
+      "schema": "public",
+      "format": "",
+      "source": "spatialest_config"
+    },
+    {
+      "id": "total_acres",
+      "title": "Property Size",
+      "schema": "public",
+      "format": "decimal",
+      "source": "spatialest_config"
+    },
+    {
+      "id": "nbhd",
+      "title": "Neighborhood",
+      "schema": "public",
+      "format": "",
+      "source": "spatialest_config"
+    },
+    {
+      "id": "owners",
+      "title": "Owners",
+      "schema": "public",
+      "format": "",
+      "source": "spatialest_config"
+    }
+  ],
+  "permissions": {
+    "canSearchFull": true,
+    "canExportExcel": true,
+    "isAuthenticated": false
+  },
+  "termsUrl": "https://www.schneidergis.com/legal-information/software-terms"
+}
