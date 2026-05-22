@@ -113,6 +113,7 @@
     "truth:june10-public-site-smoke": "node os-platform/core/pilot/june10-public-site-smoke.mjs",
     "truth:june10-launch-gate": "node os-platform/core/pilot/june10-launch-gate.mjs",
     "truth:june10-full-production-data-gate": "node os-platform/core/pilot/june10-full-production-data-gate.mjs",
+    "truth:washington-runtime-expansion-phase-a": "node os-platform/core/pilot/washington-runtime-expansion-phase-a.mjs",
     "truth:compose-health-dependency-guard": "node os-platform/core/pilot/compose-health-dependency-guard.mjs",
     "truth:june10-red-team": "node os-platform/core/pilot/june10-red-team.mjs",
     "truth:june10-rust-runtime-usage": "node os-platform/core/pilot/june10-rust-runtime-usage.mjs",

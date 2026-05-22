@@ -1,6 +1,7 @@
 {
-  "generatedAtUtc": "2026-05-22T15:30:51.143Z",
+  "generatedAtUtc": "2026-05-22T15:46:15.727Z",
   "sourceCrosswalkGeneratedAt": "2026-05-22T00:47:09.954Z",
+  "sourcePhaseAGeneratedAt": "2026-05-22T15:46:00.660Z",
   "passed": false,
   "summary": {
     "countiesChecked": 39,

@@ -137,6 +137,39 @@ test("full production data gate fails for Benton-only runtime proof and reports 
   assert.ok(report.claimRules.forbiddenClaims.includes("full production data is ready"));
 });
 
+test("full production data gate consumes Phase A Benton promotion proof and reports 1 of 39 ready", () => {
+  const report = buildFullProductionDataGateReport({
+    crosswalk: crosswalk(
+      counties.map((county) => ({
+        county,
+        state: "WA",
+        classification: "provenance_inventory_only",
+        activationStatus: "provenance_only_needs_data_acquisition",
+        runtimeClass: "not_registered",
+        runtimeRows: 0,
+        parcelSemanticsProven: false,
+        blockers: []
+      }))
+    ),
+    phaseA: {
+      passed: true,
+      promotion: {
+        county: "Benton",
+        fullDataReady: true,
+        countyRow: readyCounty("Benton")
+      }
+    }
+  });
+
+  const benton = report.countyResults.find((row) => row.county === "Benton");
+
+  assert.equal(report.passed, false);
+  assert.equal(report.summary.fullDataReadyCounties, 1);
+  assert.equal(report.summary.notFullDataReadyCounties, 38);
+  assert.equal(report.summary.bentonOnlyPilot, true);
+  assert.equal(benton.ready, true);
+});
+
 test("full production data gate writes JSON and Markdown evidence", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "tf-full-production-data-"));
   const crosswalkPath = path.join(root, "crosswalk.json");

@@ -1,0 +1,52 @@
+{
+  "generatedAtUtc": "2026-05-22T15:46:00.660Z",
+  "slice": "Washington Runtime Expansion Phase A",
+  "targetCounty": "Benton",
+  "status": "WAITING_SYNC_TERMINAL",
+  "passed": false,
+  "runtimeMutationAllowed": false,
+  "doctrine": [
+    "Target Benton only.",
+    "Do not mutate production while Sync is active.",
+    "Benton can become 1/39 full-data-ready only after terminal Sync and all runtime proof gates pass.",
+    "38 remaining counties stay blocked until their own acquisition/load/runtime proof is complete."
+  ],
+  "summary": {
+    "targetCounty": "Benton",
+    "syncTerminal": false,
+    "canonicalParcelProven": false,
+    "activeCurrentParcelSemanticsProven": false,
+    "productLoadLineageProven": true,
+    "endpointRuntimeRegistrationProven": true,
+    "workflowDomainUsabilityProven": false,
+    "fullDataReadyCountiesAdded": 0
+  },
+  "promotion": {
+    "county": "Benton",
+    "fullDataReady": false,
+    "countyRow": null
+  },
+  "blockers": [
+    {
+      "source": "sync_terminal",
+      "message": "TerraFusion Sync is not terminal; production DB mutation and promotion remain blocked.",
+      "evidence": "drainStillActive=true; terminalStatus=missing"
+    },
+    {
+      "source": "canonical_parcel",
+      "message": "Canonical Benton parcel table/projection is not proven.",
+      "evidence": null
+    },
+    {
+      "source": "parcel_semantics",
+      "message": "Active/current Benton parcel semantics are not proven.",
+      "evidence": null
+    },
+    {
+      "source": "workflow_domain",
+      "message": "Benton workflow/domain usability is not proven.",
+      "evidence": "Expected 38 provenance-only counties; found 36.; Benton sale-qualification lineage proof did not pass.; Benton sale-qualification lineage is not_qualified_runtime_ready, expected canonical_landing_backed.; Benton CanonicalSaleQualifications landing table is empty.; Benton ratio-study window has no effective qualified sales.; Benton ratio-study window has no final-decision qualified sales."
+    }
+  ],
+  "expectedFullProductionDataGateResultAfterPromotion": "0/39 ready until Benton Phase A passes"
+}

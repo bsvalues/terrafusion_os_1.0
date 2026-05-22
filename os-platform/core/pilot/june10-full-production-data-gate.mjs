@@ -15,6 +15,14 @@ const DEFAULT_CROSSWALK = path.join(
   "truth",
   "washington-39-county-data-crosswalk.json"
 );
+const DEFAULT_PHASE_A = path.join(
+  repoRoot,
+  "os-platform",
+  "core",
+  "pilot",
+  "evidence",
+  "washington-runtime-expansion-phase-a.latest.json"
+);
 const DEFAULT_OUT_JSON = path.join(
   repoRoot,
   "os-platform",
@@ -83,8 +91,20 @@ export function evaluateCountyFullDataReadiness(row) {
   };
 }
 
-export function buildFullProductionDataGateReport({ crosswalk, generatedAtUtc = new Date().toISOString() }) {
-  const rows = asArray(crosswalk?.rows);
+function applyPhaseAPromotion(rows, phaseA) {
+  if (phaseA?.passed !== true || phaseA?.promotion?.fullDataReady !== true || !phaseA?.promotion?.countyRow) {
+    return rows;
+  }
+
+  return rows.map((row) => (row.county === phaseA.promotion.county ? phaseA.promotion.countyRow : row));
+}
+
+export function buildFullProductionDataGateReport({
+  crosswalk,
+  phaseA = null,
+  generatedAtUtc = new Date().toISOString()
+}) {
+  const rows = applyPhaseAPromotion(asArray(crosswalk?.rows), phaseA);
   const countyResults = rows.map(evaluateCountyFullDataReadiness);
   const fullDataReadyCounties = countyResults.filter((row) => row.ready).length;
   const notFullDataReadyCounties = countyResults.length - fullDataReadyCounties;
@@ -124,6 +144,7 @@ export function buildFullProductionDataGateReport({ crosswalk, generatedAtUtc = 
   return {
     generatedAtUtc,
     sourceCrosswalkGeneratedAt: crosswalk?.generatedAt ?? null,
+    sourcePhaseAGeneratedAt: phaseA?.generatedAtUtc ?? null,
     passed: blockers.length === 0,
     summary,
     doctrine: [
@@ -169,6 +190,7 @@ function renderMarkdown(report) {
     `- Full-data-ready counties: ${report.summary.fullDataReadyCounties}`,
     `- Not-full-data-ready counties: ${report.summary.notFullDataReadyCounties}`,
     `- Benton-only pilot posture: ${report.summary.bentonOnlyPilot}`,
+    `- Phase A full-data-ready counties added: ${report.sourcePhaseAGeneratedAt ? (report.summary.bentonOnlyPilot ? 1 : 0) : 0}`,
     `- Full production data ready: ${report.summary.fullProductionDataReady}`,
     `- Prohibit full production claim: ${report.summary.prohibitFullProductionClaim}`,
     "",
@@ -212,6 +234,7 @@ function renderMarkdown(report) {
 function parseArgs(argv) {
   const args = {
     crosswalkPath: DEFAULT_CROSSWALK,
+    phaseAPath: DEFAULT_PHASE_A,
     outJson: DEFAULT_OUT_JSON,
     outMd: DEFAULT_OUT_MD,
     write: true
@@ -220,6 +243,7 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === "--crosswalk") args.crosswalkPath = path.resolve(argv[++i]);
+    else if (arg === "--phase-a") args.phaseAPath = path.resolve(argv[++i]);
     else if (arg === "--out-json") args.outJson = path.resolve(argv[++i]);
     else if (arg === "--out-md") args.outMd = path.resolve(argv[++i]);
     else if (arg === "--no-write") args.write = false;
@@ -231,13 +255,15 @@ function parseArgs(argv) {
 export function runFullProductionDataGate(options = {}) {
   const args = {
     crosswalkPath: DEFAULT_CROSSWALK,
+    phaseAPath: DEFAULT_PHASE_A,
     outJson: DEFAULT_OUT_JSON,
     outMd: DEFAULT_OUT_MD,
     write: true,
     ...options
   };
   const report = buildFullProductionDataGateReport({
-    crosswalk: readJson(args.crosswalkPath)
+    crosswalk: readJson(args.crosswalkPath),
+    phaseA: fs.existsSync(args.phaseAPath) ? readJson(args.phaseAPath) : null
   });
 
   if (args.write) {

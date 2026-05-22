@@ -1,6 +1,6 @@
 # June 10 Full Production Data Gate
 
-Generated: 2026-05-22T15:30:51.143Z
+Generated: 2026-05-22T15:46:15.727Z
 
 Verdict: **FAIL**
 
@@ -11,6 +11,7 @@ Verdict: **FAIL**
 - Full-data-ready counties: 0
 - Not-full-data-ready counties: 39
 - Benton-only pilot posture: false
+- Phase A full-data-ready counties added: 0
 - Full production data ready: false
 - Prohibit full production claim: true
 
