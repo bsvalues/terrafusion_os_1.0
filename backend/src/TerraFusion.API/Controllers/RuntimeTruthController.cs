@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
 using TerraFusion.Data;
 
 namespace TerraFusion.API.Controllers;
@@ -153,52 +154,67 @@ public sealed class RuntimeTruthController : ControllerBase
             string.Equals(c.FipsCode, "53005", StringComparison.OrdinalIgnoreCase));
 
         var countySummaries = new List<RuntimeCountyContentSummary>();
-        var activeParcels = _db.TfParcels
-            .AsNoTracking()
-            .Where(p => p.ParcelStatus == "ACTIVE");
-        var countyParcelCounts = await activeParcels
-            .GroupBy(p => p.CountyId)
-            .Select(g => new
-            {
-                CountyId = g.Key,
-                PropertyRows = g.Count(),
-            })
-            .ToListAsync(ct);
-        var countByCounty = countyParcelCounts.ToDictionary(x => x.CountyId, x => x);
+        var blockers = new List<string>();
+        var warnings = new List<string>();
+        var countByCounty = new Dictionary<Guid, int>();
         var bentonDistinctParcelNumbers = 0;
         var bentonDuplicateParcelNumberGroups = 0;
         var bentonMaxRowsPerParcelNumber = 0;
-        if (bentonCounty is not null)
+        var totalProperties = 0;
+        var canonicalParcelTableReadable = true;
+
+        try
         {
-            var bentonParcelNumberGroupCounts = await activeParcels
-                .Where(p => p.CountyId == bentonCounty.Id)
-                .Where(p => !string.IsNullOrWhiteSpace(p.ParcelNumber))
-                .GroupBy(p => p.ParcelNumber)
-                .Select(g => g.Count())
+            var activeParcels = _db.TfParcels
+                .AsNoTracking()
+                .Where(p => p.ParcelStatus == "ACTIVE");
+            var countyParcelCounts = await activeParcels
+                .GroupBy(p => p.CountyId)
+                .Select(g => new
+                {
+                    CountyId = g.Key,
+                    PropertyRows = g.Count(),
+                })
                 .ToListAsync(ct);
-            bentonDistinctParcelNumbers = bentonParcelNumberGroupCounts.Count;
-            bentonDuplicateParcelNumberGroups = bentonParcelNumberGroupCounts.Count(count => count > 1);
-            bentonMaxRowsPerParcelNumber = bentonParcelNumberGroupCounts.Count == 0
-                ? 0
-                : bentonParcelNumberGroupCounts.Max();
+            countByCounty = countyParcelCounts.ToDictionary(x => x.CountyId, x => x.PropertyRows);
+            totalProperties = await _db.TfParcels.CountAsync(ct);
+
+            if (bentonCounty is not null)
+            {
+                var bentonParcelNumberGroupCounts = await activeParcels
+                    .Where(p => p.CountyId == bentonCounty.Id)
+                    .Where(p => !string.IsNullOrWhiteSpace(p.ParcelNumber))
+                    .GroupBy(p => p.ParcelNumber)
+                    .Select(g => g.Count())
+                    .ToListAsync(ct);
+                bentonDistinctParcelNumbers = bentonParcelNumberGroupCounts.Count;
+                bentonDuplicateParcelNumberGroups = bentonParcelNumberGroupCounts.Count(count => count > 1);
+                bentonMaxRowsPerParcelNumber = bentonParcelNumberGroupCounts.Count == 0
+                    ? 0
+                    : bentonParcelNumberGroupCounts.Max();
+            }
+        }
+        catch (Exception ex) when (IsRuntimeTruthProbeException(ex))
+        {
+            canonicalParcelTableReadable = false;
+            blockers.Add(
+                $"canonical_tf.tf_parcel is missing or unreadable in TerraFusion DB: {RootMessage(ex)}");
         }
 
         foreach (var county in counties.OrderBy(c => c.Name))
         {
-            countByCounty.TryGetValue(county.Id, out var counts);
+            countByCounty.TryGetValue(county.Id, out var propertyRows);
             var isBenton = bentonCounty is not null && county.Id == bentonCounty.Id;
             countySummaries.Add(new RuntimeCountyContentSummary(
                 CountyId: county.Id,
                 CountyName: county.Name,
                 FipsCode: county.FipsCode,
-                PropertyRows: counts?.PropertyRows ?? 0,
+                PropertyRows: propertyRows,
                 DistinctParcelNumbers: isBenton ? bentonDistinctParcelNumbers : 0,
                 DuplicateParcelNumberGroups: isBenton ? bentonDuplicateParcelNumberGroups : 0,
                 MaxRowsPerParcelNumber: isBenton ? bentonMaxRowsPerParcelNumber : 0));
         }
 
-        var blockers = new List<string>();
-        var warnings = new List<string>();
         RuntimeBentonContentDecision? bentonDecision = null;
 
         if (expectedBentonParcelCount is null)
@@ -214,13 +230,19 @@ public sealed class RuntimeTruthController : ControllerBase
         {
             var summary = countySummaries.First(c => c.CountyId == bentonCounty.Id);
             var countMatchesRows =
+                canonicalParcelTableReadable &&
                 expectedBentonParcelCount.HasValue && summary.PropertyRows == expectedBentonParcelCount.Value;
             var countMatchesDistinctParcelNumbers =
+                canonicalParcelTableReadable &&
                 expectedBentonParcelCount.HasValue &&
                 summary.DistinctParcelNumbers == expectedBentonParcelCount.Value;
 
             var classification = "benton_canonical_count_unchecked";
-            if (countMatchesRows)
+            if (!canonicalParcelTableReadable)
+            {
+                classification = "canonical_tf_parcel_unreadable";
+            }
+            else if (countMatchesRows)
             {
                 classification = "configured_count_matches_canonical_tf_parcel_rows";
             }
@@ -254,7 +276,7 @@ public sealed class RuntimeTruthController : ControllerBase
         return Ok(new RuntimeDbContentResponse(
             ExpectedBentonParcelCount: expectedBentonParcelCount,
             TotalCounties: counties.Count,
-            TotalProperties: await _db.TfParcels.CountAsync(ct),
+            TotalProperties: totalProperties,
             CountySummaries: countySummaries,
             BentonDecision: bentonDecision,
             Passed: passed,
@@ -325,11 +347,20 @@ public sealed class RuntimeTruthController : ControllerBase
         {
             return await count();
         }
-        catch (Exception ex) when (ex is InvalidOperationException or NotSupportedException)
+        catch (Exception ex) when (IsRuntimeTruthProbeException(ex))
         {
-            warnings.Add($"Could not count {tableName}: {ex.Message}");
+            warnings.Add($"Could not count {tableName}: {RootMessage(ex)}");
             return null;
         }
+    }
+
+    private static bool IsRuntimeTruthProbeException(Exception ex) =>
+        ex is InvalidOperationException or NotSupportedException or DbException;
+
+    private static string RootMessage(Exception ex)
+    {
+        var root = ex.GetBaseException();
+        return string.IsNullOrWhiteSpace(root.Message) ? ex.Message : root.Message;
     }
 
     private static string? RedactDataSource(string? dataSource)

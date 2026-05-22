@@ -69,10 +69,12 @@ function normalizePayload(payload) {
   const migrationState = pick(payload, 'migrationState', 'MigrationState') ?? {};
   const contentRootPath = pick(payload, 'contentRootPath', 'ContentRootPath') ?? null;
   const expectedContentRootPath = path.join(repoRoot, 'backend', 'src', 'TerraFusion.API');
-  const isExpectedWorkspace =
-    typeof contentRootPath === 'string' &&
-    path.resolve(contentRootPath).toLowerCase() ===
-      path.resolve(expectedContentRootPath).toLowerCase();
+  const environment = pick(payload, 'environment', 'Environment') ?? null;
+  const isExpectedWorkspace = isExpectedRuntimeContentRoot({
+    contentRootPath,
+    expectedContentRootPath,
+    environment,
+  });
 
   const derivedBentonExpectation = readBentonParcelSanityExpectation();
   const runtimeExpectedBentonParcelCount =
@@ -85,7 +87,7 @@ function normalizePayload(payload) {
 
   return {
     apiBaseUrl: pick(payload, 'apiBaseUrl', 'ApiBaseUrl') ?? null,
-    environment: pick(payload, 'environment', 'Environment') ?? null,
+    environment,
     contentRootPath,
     expectedContentRootPath,
     isExpectedWorkspace,
@@ -122,6 +124,22 @@ function normalizePayload(payload) {
     blockers: pick(payload, 'blockers', 'Blockers') ?? [],
     warnings: pick(payload, 'warnings', 'Warnings') ?? [],
   };
+}
+
+function isExpectedRuntimeContentRoot({ contentRootPath, expectedContentRootPath, environment }) {
+  if (typeof contentRootPath !== 'string' || !contentRootPath.trim()) return false;
+
+  if (
+    String(environment ?? '').toLowerCase() === 'production' &&
+    contentRootPath.replaceAll('\\', '/').replace(/\/+$/, '') === '/app'
+  ) {
+    return true;
+  }
+
+  return (
+    path.resolve(contentRootPath).toLowerCase() ===
+    path.resolve(expectedContentRootPath).toLowerCase()
+  );
 }
 
 function readBentonParcelSanityExpectation() {

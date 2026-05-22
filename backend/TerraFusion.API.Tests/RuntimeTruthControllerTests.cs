@@ -2,6 +2,8 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using TerraFusion.API.Controllers;
@@ -145,7 +147,7 @@ public sealed class RuntimeTruthControllerTests : IDisposable
             ["RuntimeTruth:ExpectedBentonParcelCount"] = "3",
         });
 
-        var result = await sut.GetDbIdentity();
+        var result = await sut.GetDbIdentity(includeCounts: true);
 
         var ok = Assert.IsType<OkObjectResult>(result);
         var json = JsonSerializer.Serialize(ok.Value);
@@ -175,13 +177,66 @@ public sealed class RuntimeTruthControllerTests : IDisposable
         Assert.Contains("Runtime Benton canonical parcels contain duplicate parcel number groups: 1", json);
     }
 
+    [Fact]
+    public async SystemTask GetDbContent_FailsClosedWhenCanonicalParcelTableIsMissing()
+    {
+        await using var connection = new SqliteConnection("Data Source=:memory:");
+        await connection.OpenAsync();
+
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["RuntimeTruth:ExpectedBentonParcelCount"] = "1",
+            })
+            .Build();
+        var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        await using var db = new TerraFusionDbContext(options, configuration);
+        var countyId = Guid.NewGuid();
+        await db.Database.ExecuteSqlRawAsync(
+            """
+            CREATE TABLE Counties (
+                Id TEXT NOT NULL PRIMARY KEY,
+                Name TEXT NOT NULL,
+                State TEXT NOT NULL,
+                FipsCode TEXT NULL
+            );
+            """);
+        await db.Database.ExecuteSqlInterpolatedAsync(
+            $"""
+            INSERT INTO Counties (Id, Name, State, FipsCode)
+            VALUES ({countyId}, 'Benton County', 'WA', '53005');
+            """);
+
+        var sut = CreateController(db, configuration);
+
+        var result = await sut.GetDbContent();
+
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var json = JsonSerializer.Serialize(ok.Value);
+
+        Assert.Contains("\"Passed\":false", json);
+        Assert.Contains("canonical_tf.tf_parcel is missing or unreadable in TerraFusion DB", json);
+        Assert.Contains("canonical_tf_parcel_unreadable", json);
+        Assert.Contains("\"TotalProperties\":0", json);
+    }
+
     private RuntimeTruthController CreateController(Dictionary<string, string?>? settings = null)
     {
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(settings ?? new Dictionary<string, string?>())
             .Build();
+        return CreateController(_db, configuration);
+    }
+
+    private static RuntimeTruthController CreateController(
+        TerraFusionDbContext db,
+        IConfiguration configuration)
+    {
         var controller = new RuntimeTruthController(
-            _db,
+            db,
             configuration,
             new TestEnvironment { EnvironmentName = "Development" });
         controller.ControllerContext = new ControllerContext

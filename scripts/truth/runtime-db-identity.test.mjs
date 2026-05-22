@@ -293,3 +293,44 @@ test('fails closed when runtime API content root belongs to a different checkout
   assert.equal(report.identity.isExpectedWorkspace, false);
   assert.ok(report.blockers.some(item => item.includes('different workspace')));
 });
+
+test('accepts production container content root when runtime DB identity is proven', () => {
+  const root = makeTempRepo('tf-runtime-db-identity-production-root-');
+  writeConfig(root, 'backend/src/TerraFusion.API/appsettings.Development.json', {
+    RuntimeTruth: {
+      ExpectedJune10Database: 'terrafusion.db',
+    },
+  });
+  const fixturePath = writeFixture(root, {
+    apiBaseUrl: 'https://terrafusionmarket.com',
+    environment: 'Production',
+    provider: 'Microsoft.EntityFrameworkCore.Sqlite',
+    connectionStringName: 'DefaultConnection',
+    serverRedacted: 'configured-host-redacted',
+    database: 'terrafusion.db',
+    expectedJune10Database: 'terrafusion.db',
+    contentRootPath: '/app',
+    expectedBentonParcelCount: null,
+    isExpectedJune10RuntimeDb: true,
+    isBentonParcelCountExpected: false,
+    migrationState: { appliedCount: 10, pendingCount: 0, latestApplied: '20260502000000_Runtime' },
+    rowCounts: {
+      counties: 39,
+      properties: 128788,
+      comparableSales: 259102,
+      canonicalSaleQualifications: 251484,
+    },
+    passed: true,
+    blockers: [],
+    warnings: [],
+  });
+
+  const result = runScript(root, fixturePath);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+
+  const report = readReport(root);
+  assert.equal(report.passed, true);
+  assert.equal(report.identity.contentRootPath, '/app');
+  assert.equal(report.identity.isExpectedWorkspace, true);
+  assert.ok(!report.blockers.some(item => item.includes('different workspace')));
+});
