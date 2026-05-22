@@ -22,6 +22,14 @@ const DEFAULT_ENDPOINT_CONTRACT = path.join(
   "june10-endpoint-contract-smoke.latest.json"
 );
 const DEFAULT_RUST = path.join(repoRoot, "os-platform", "core", "pilot", "evidence", "june10-rust-runtime-usage.latest.json");
+const DEFAULT_FULL_PRODUCTION_DATA_GATE = path.join(
+  repoRoot,
+  "os-platform",
+  "core",
+  "pilot",
+  "evidence",
+  "june10-full-production-data-gate.latest.json"
+);
 const DEFAULT_OUT_JSON = path.join(
   repoRoot,
   "os-platform",
@@ -159,6 +167,9 @@ function requiredFixOrderFor({ blockers, warnings, rust }) {
   if (hasBlocker("runtime_db_identity")) {
     order.push("Prove the running API is connected to the intended TerraFusion DB.");
   }
+  if (hasBlocker("full_production_data")) {
+    order.push("Load and prove full TerraFusion DB runtime data for all 39 Washington counties.");
+  }
   if (hasBlocker("runtime_endpoint")) {
     order.push("Restore live runtime endpoint probes for the expected API base URLs.");
   }
@@ -187,7 +198,8 @@ export function buildJune10ProductionReadinessAudit({
   runtimeDbIdentity,
   publicSite,
   endpointContract,
-  rust
+  rust,
+  fullProductionDataGate
 }) {
   const blockers = [];
   const warnings = [];
@@ -242,6 +254,18 @@ export function buildJune10ProductionReadinessAudit({
       "CRITICAL",
       "Runtime TerraFusion DB identity did not pass.",
       `apiBaseUrl=${identity.apiBaseUrl ?? runtimeDbIdentityEvidence.runtimeBaseUrl ?? "unknown"}; database=${identity.database ?? "unknown"}`
+    );
+  }
+
+  if (!fullProductionDataGate) {
+    addBlocker(blockers, "full_production_data", "CRITICAL", "June 10 full-production data gate is missing.");
+  } else if (fullProductionDataGate.passed !== true) {
+    addBlocker(
+      blockers,
+      "full_production_data",
+      "CRITICAL",
+      "Full production data is not proven for all 39 Washington counties.",
+      `fullDataReadyCounties=${fullProductionDataGate.summary?.fullDataReadyCounties ?? "unknown"}; notFullDataReadyCounties=${fullProductionDataGate.summary?.notFullDataReadyCounties ?? "unknown"}`
     );
   }
 
@@ -349,7 +373,10 @@ export function buildJune10ProductionReadinessAudit({
       failedRuntimeProbes: endpointContract ? failedRuntimeProbes(endpointContract).length : null,
       contractMismatches: endpointContract?.contractMismatches?.length ?? null,
       rustCrates: rust?.crates?.length ?? null,
-      rustRuntimeIntegrations: rust?.runtimeIntegrations?.length ?? null
+      rustRuntimeIntegrations: rust?.runtimeIntegrations?.length ?? null,
+      fullProductionDataReady: fullProductionDataGate?.passed ?? null,
+      fullDataReadyCounties: fullProductionDataGate?.summary?.fullDataReadyCounties ?? null,
+      notFullDataReadyCounties: fullProductionDataGate?.summary?.notFullDataReadyCounties ?? null
     },
     blockers,
     warnings,
@@ -360,6 +387,7 @@ export function buildJune10ProductionReadinessAudit({
       "all data flows end to end",
       "terrafusionmarket.com is publicly usable",
       "39 counties are runtime-ready",
+      "full production data is ready",
       "Rust engines are in production use",
       "TerraFusion DB rows are lineage-proven"
     ]
@@ -391,6 +419,9 @@ function renderMarkdown(report) {
     `- Contract mismatches: ${report.summary.contractMismatches ?? "missing"}`,
     `- Rust crates: ${report.summary.rustCrates ?? "missing"}`,
     `- Rust runtime integrations: ${report.summary.rustRuntimeIntegrations ?? "missing"}`,
+    `- Full production data ready: ${report.summary.fullProductionDataReady ?? "missing"}`,
+    `- Full-data-ready counties: ${report.summary.fullDataReadyCounties ?? "missing"}`,
+    `- Not-full-data-ready counties: ${report.summary.notFullDataReadyCounties ?? "missing"}`,
     "",
     "## Ship Blockers",
     ""
@@ -431,6 +462,7 @@ function parseArgs(argv) {
     publicSitePath: DEFAULT_PUBLIC_SITE,
     endpointContractPath: DEFAULT_ENDPOINT_CONTRACT,
     rustPath: DEFAULT_RUST,
+    fullProductionDataGatePath: DEFAULT_FULL_PRODUCTION_DATA_GATE,
     outJson: DEFAULT_OUT_JSON,
     outMd: DEFAULT_OUT_MD,
     write: true
@@ -445,6 +477,7 @@ function parseArgs(argv) {
     else if (arg === "--public-site") args.publicSitePath = path.resolve(argv[++i]);
     else if (arg === "--endpoint-contract") args.endpointContractPath = path.resolve(argv[++i]);
     else if (arg === "--rust") args.rustPath = path.resolve(argv[++i]);
+    else if (arg === "--full-production-data-gate") args.fullProductionDataGatePath = path.resolve(argv[++i]);
     else if (arg === "--out-json") args.outJson = path.resolve(argv[++i]);
     else if (arg === "--out-md") args.outMd = path.resolve(argv[++i]);
     else if (arg === "--no-write") args.write = false;
@@ -462,7 +495,8 @@ export function main(argv = process.argv.slice(2)) {
     runtimeDbIdentity: readJson(args.runtimeDbIdentityPath, null),
     publicSite: readJson(args.publicSitePath, null),
     endpointContract: readJson(args.endpointContractPath, null),
-    rust: readJson(args.rustPath, null)
+    rust: readJson(args.rustPath, null),
+    fullProductionDataGate: readJson(args.fullProductionDataGatePath, null)
   });
 
   if (args.write) {

@@ -1,0 +1,811 @@
+{
+  "generatedAtUtc": "2026-05-22T15:30:51.143Z",
+  "sourceCrosswalkGeneratedAt": "2026-05-22T00:47:09.954Z",
+  "passed": false,
+  "summary": {
+    "countiesChecked": 39,
+    "requiredCounties": 39,
+    "fullDataReadyCounties": 0,
+    "notFullDataReadyCounties": 39,
+    "bentonOnlyPilot": false,
+    "fullProductionDataReady": false,
+    "prohibitFullProductionClaim": true
+  },
+  "doctrine": [
+    "Full production means full data, not proof scaffolding.",
+    "Every Washington county must have TerraFusion DB-backed runtime rows before a 39-county production data claim.",
+    "Registry presence, source intelligence, and acquisition work orders are not runtime data.",
+    "Benton pilot readiness is useful but does not satisfy full production data readiness.",
+    "Product runtime must continue through TerraFusion API over TerraFusion DB."
+  ],
+  "claimRules": {
+    "allowedClaims": [
+      "Benton runtime pilot may be discussed only if its separate Benton gates pass"
+    ],
+    "forbiddenClaims": [
+      "full production data is ready",
+      "39-county runtime data is ready",
+      "all counties are loaded",
+      "all counties can complete full workflows",
+      "inventory proof equals production data"
+    ]
+  },
+  "countyResults": [
+    {
+      "county": "Adams",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Asotin",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Benton",
+      "ready": false,
+      "runtimeRows": 5,
+      "blockers": [
+        "Parcel semantics are not proven.",
+        "Demo/sample evidence is present and must not be treated as runtime truth."
+      ]
+    },
+    {
+      "county": "Chelan",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is public_source_seed, not runtime_proven.",
+        "Activation status is seed_data_needs_adapter_or_db_load, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "Demo/sample evidence is present and must not be treated as runtime truth.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Clallam",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Clark",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is runtime_unproven, not runtime_proven.",
+        "Activation status is loaded_needs_runtime_contract, not runtime_proven.",
+        "Runtime class is registered_empty, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "Demo/sample evidence is present and must not be treated as runtime truth.",
+        "County endpoint is registered but returns zero rows."
+      ]
+    },
+    {
+      "county": "Columbia",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "Demo/sample evidence is present and must not be treated as runtime truth.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Cowlitz",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is public_source_seed, not runtime_proven.",
+        "Activation status is seed_data_needs_adapter_or_db_load, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "Demo/sample evidence is present and must not be treated as runtime truth.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Douglas",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Ferry",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Franklin",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "Demo/sample evidence is present and must not be treated as runtime truth.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Garfield",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Grant",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is public_source_seed, not runtime_proven.",
+        "Activation status is seed_data_needs_adapter_or_db_load, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "Demo/sample evidence is present and must not be treated as runtime truth.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Grays Harbor",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Island",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is public_source_seed, not runtime_proven.",
+        "Activation status is seed_data_needs_adapter_or_db_load, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "Demo/sample evidence is present and must not be treated as runtime truth.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Jefferson",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "King",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is runtime_unproven, not runtime_proven.",
+        "Activation status is loaded_needs_runtime_contract, not runtime_proven.",
+        "Runtime class is registered_empty, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County endpoint is registered but returns zero rows."
+      ]
+    },
+    {
+      "county": "Kitsap",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Kittitas",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Klickitat",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Lewis",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Lincoln",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Mason",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Okanogan",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Pacific",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Pend Oreille",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Pierce",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "San Juan",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is public_source_seed, not runtime_proven.",
+        "Activation status is seed_data_needs_adapter_or_db_load, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "Demo/sample evidence is present and must not be treated as runtime truth.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Skagit",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Skamania",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Snohomish",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is public_source_seed, not runtime_proven.",
+        "Activation status is seed_data_needs_adapter_or_db_load, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "Demo/sample evidence is present and must not be treated as runtime truth.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Spokane",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is public_source_seed, not runtime_proven.",
+        "Activation status is seed_data_needs_adapter_or_db_load, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "Demo/sample evidence is present and must not be treated as runtime truth.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Stevens",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is public_source_seed, not runtime_proven.",
+        "Activation status is seed_data_needs_adapter_or_db_load, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "Demo/sample evidence is present and must not be treated as runtime truth.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Thurston",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Wahkiakum",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Walla Walla",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Whatcom",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is public_source_seed, not runtime_proven.",
+        "Activation status is seed_data_needs_adapter_or_db_load, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "Demo/sample evidence is present and must not be treated as runtime truth.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Whitman",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is provenance_inventory_only, not runtime_proven.",
+        "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    },
+    {
+      "county": "Yakima",
+      "ready": false,
+      "runtimeRows": 0,
+      "blockers": [
+        "County classification is public_source_seed, not runtime_proven.",
+        "Activation status is seed_data_needs_adapter_or_db_load, not runtime_proven.",
+        "Runtime class is not_registered, not runtime_proven.",
+        "Runtime returned zero rows.",
+        "Parcel semantics are not proven.",
+        "No county runtime lineage proof.",
+        "Demo/sample evidence is present and must not be treated as runtime truth.",
+        "County is not registered in runtime endpoint.",
+        "No active source/DB/runtime row evidence found in data-source inventory."
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "source": "full_county_data",
+      "message": "Full production requires full-data readiness for 39 counties; 0 are ready and 39 are not ready.",
+      "evidence": [
+        {
+          "county": "Adams",
+          "ready": false,
+          "runtimeRows": 0,
+          "blockers": [
+            "County classification is provenance_inventory_only, not runtime_proven.",
+            "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+            "Runtime class is not_registered, not runtime_proven.",
+            "Runtime returned zero rows.",
+            "Parcel semantics are not proven.",
+            "No county runtime lineage proof.",
+            "County is not registered in runtime endpoint.",
+            "No active source/DB/runtime row evidence found in data-source inventory."
+          ]
+        },
+        {
+          "county": "Asotin",
+          "ready": false,
+          "runtimeRows": 0,
+          "blockers": [
+            "County classification is provenance_inventory_only, not runtime_proven.",
+            "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+            "Runtime class is not_registered, not runtime_proven.",
+            "Runtime returned zero rows.",
+            "Parcel semantics are not proven.",
+            "No county runtime lineage proof.",
+            "County is not registered in runtime endpoint.",
+            "No active source/DB/runtime row evidence found in data-source inventory."
+          ]
+        },
+        {
+          "county": "Benton",
+          "ready": false,
+          "runtimeRows": 5,
+          "blockers": [
+            "Parcel semantics are not proven.",
+            "Demo/sample evidence is present and must not be treated as runtime truth."
+          ]
+        },
+        {
+          "county": "Chelan",
+          "ready": false,
+          "runtimeRows": 0,
+          "blockers": [
+            "County classification is public_source_seed, not runtime_proven.",
+            "Activation status is seed_data_needs_adapter_or_db_load, not runtime_proven.",
+            "Runtime class is not_registered, not runtime_proven.",
+            "Runtime returned zero rows.",
+            "Parcel semantics are not proven.",
+            "No county runtime lineage proof.",
+            "Demo/sample evidence is present and must not be treated as runtime truth.",
+            "County is not registered in runtime endpoint.",
+            "No active source/DB/runtime row evidence found in data-source inventory."
+          ]
+        },
+        {
+          "county": "Clallam",
+          "ready": false,
+          "runtimeRows": 0,
+          "blockers": [
+            "County classification is provenance_inventory_only, not runtime_proven.",
+            "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+            "Runtime class is not_registered, not runtime_proven.",
+            "Runtime returned zero rows.",
+            "Parcel semantics are not proven.",
+            "No county runtime lineage proof.",
+            "County is not registered in runtime endpoint.",
+            "No active source/DB/runtime row evidence found in data-source inventory."
+          ]
+        },
+        {
+          "county": "Clark",
+          "ready": false,
+          "runtimeRows": 0,
+          "blockers": [
+            "County classification is runtime_unproven, not runtime_proven.",
+            "Activation status is loaded_needs_runtime_contract, not runtime_proven.",
+            "Runtime class is registered_empty, not runtime_proven.",
+            "Runtime returned zero rows.",
+            "Parcel semantics are not proven.",
+            "No county runtime lineage proof.",
+            "Demo/sample evidence is present and must not be treated as runtime truth.",
+            "County endpoint is registered but returns zero rows."
+          ]
+        },
+        {
+          "county": "Columbia",
+          "ready": false,
+          "runtimeRows": 0,
+          "blockers": [
+            "County classification is provenance_inventory_only, not runtime_proven.",
+            "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+            "Runtime class is not_registered, not runtime_proven.",
+            "Runtime returned zero rows.",
+            "Parcel semantics are not proven.",
+            "No county runtime lineage proof.",
+            "Demo/sample evidence is present and must not be treated as runtime truth.",
+            "County is not registered in runtime endpoint.",
+            "No active source/DB/runtime row evidence found in data-source inventory."
+          ]
+        },
+        {
+          "county": "Cowlitz",
+          "ready": false,
+          "runtimeRows": 0,
+          "blockers": [
+            "County classification is public_source_seed, not runtime_proven.",
+            "Activation status is seed_data_needs_adapter_or_db_load, not runtime_proven.",
+            "Runtime class is not_registered, not runtime_proven.",
+            "Runtime returned zero rows.",
+            "Parcel semantics are not proven.",
+            "No county runtime lineage proof.",
+            "Demo/sample evidence is present and must not be treated as runtime truth.",
+            "County is not registered in runtime endpoint.",
+            "No active source/DB/runtime row evidence found in data-source inventory."
+          ]
+        },
+        {
+          "county": "Douglas",
+          "ready": false,
+          "runtimeRows": 0,
+          "blockers": [
+            "County classification is provenance_inventory_only, not runtime_proven.",
+            "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+            "Runtime class is not_registered, not runtime_proven.",
+            "Runtime returned zero rows.",
+            "Parcel semantics are not proven.",
+            "No county runtime lineage proof.",
+            "County is not registered in runtime endpoint.",
+            "No active source/DB/runtime row evidence found in data-source inventory."
+          ]
+        },
+        {
+          "county": "Ferry",
+          "ready": false,
+          "runtimeRows": 0,
+          "blockers": [
+            "County classification is provenance_inventory_only, not runtime_proven.",
+            "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+            "Runtime class is not_registered, not runtime_proven.",
+            "Runtime returned zero rows.",
+            "Parcel semantics are not proven.",
+            "No county runtime lineage proof.",
+            "County is not registered in runtime endpoint.",
+            "No active source/DB/runtime row evidence found in data-source inventory."
+          ]
+        },
+        {
+          "county": "Franklin",
+          "ready": false,
+          "runtimeRows": 0,
+          "blockers": [
+            "County classification is provenance_inventory_only, not runtime_proven.",
+            "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+            "Runtime class is not_registered, not runtime_proven.",
+            "Runtime returned zero rows.",
+            "Parcel semantics are not proven.",
+            "No county runtime lineage proof.",
+            "Demo/sample evidence is present and must not be treated as runtime truth.",
+            "County is not registered in runtime endpoint.",
+            "No active source/DB/runtime row evidence found in data-source inventory."
+          ]
+        },
+        {
+          "county": "Garfield",
+          "ready": false,
+          "runtimeRows": 0,
+          "blockers": [
+            "County classification is provenance_inventory_only, not runtime_proven.",
+            "Activation status is provenance_only_needs_data_acquisition, not runtime_proven.",
+            "Runtime class is not_registered, not runtime_proven.",
+            "Runtime returned zero rows.",
+            "Parcel semantics are not proven.",
+            "No county runtime lineage proof.",
+            "County is not registered in runtime endpoint.",
+            "No active source/DB/runtime row evidence found in data-source inventory."
+          ]
+        }
+      ]
+    }
+  ]
+}

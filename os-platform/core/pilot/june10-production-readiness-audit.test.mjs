@@ -94,6 +94,15 @@ function sampleInputs(overrides = {}) {
         }
       ]
     },
+    fullProductionDataGate: {
+      passed: true,
+      summary: {
+        fullDataReadyCounties: 39,
+        notFullDataReadyCounties: 0,
+        prohibitFullProductionClaim: false
+      },
+      blockers: []
+    },
     ...overrides
   };
 }
@@ -108,6 +117,52 @@ test("marks production readiness not_ready when readiness, lineage, public UX, a
   assert.ok(report.blockers.some((blocker) => blocker.source === "public_site_signup"));
   assert.ok(report.blockers.some((blocker) => blocker.source === "runtime_endpoint"));
   assert.ok(report.blockers.some((blocker) => blocker.source === "rust_runtime"));
+});
+
+test("blocks full production readiness when the 39-county full-data gate is red", () => {
+  const report = buildJune10ProductionReadinessAudit(
+    sampleInputs({
+      readiness: { status: "PASS", shipBlockers: [], warnings: [] },
+      redTeam: { verdict: "GREEN", summary: { criticalAttacks: 0, shipBlockers: 0 }, bannedNarratives: [] },
+      productLoadLedger: {
+        passed: true,
+        summary: { tablesChecked: 10, lineageProven: 10, rowsExistLineageUnproven: 0, emptyTables: 0 },
+        rows: []
+      },
+      publicSite: {
+        baseUrl: "https://terrafusionmarket.com",
+        routes: [{ path: "/login", status: 200, bodyText: "Provisioned access" }],
+        apiProbes: [{ path: "/api/health", status: 200 }]
+      },
+      endpointContract: {
+        localRuntimeProbes: [{ id: "health", url: "http://localhost:5046/health", status: 200 }],
+        contractMismatches: []
+      },
+      rust: {
+        crates: [],
+        runtimeIntegrations: [],
+        normalWorkflowStubs: []
+      },
+      fullProductionDataGate: {
+        passed: false,
+        summary: {
+          fullDataReadyCounties: 0,
+          notFullDataReadyCounties: 39,
+          prohibitFullProductionClaim: true
+        },
+        blockers: [
+          {
+            source: "full_county_data",
+            message: "Full production requires full-data readiness for 39 counties; 0 are ready."
+          }
+        ]
+      }
+    })
+  );
+
+  assert.equal(report.verdict, "not_ready");
+  assert.ok(report.blockers.some((blocker) => blocker.source === "full_production_data"));
+  assert.ok(report.requiredFixOrder.some((item) => item.includes("Load and prove full TerraFusion DB runtime data for all 39 Washington counties.")));
 });
 
 test("allows only partial readiness when proof is mostly green but Rust deployment is unproven", () => {

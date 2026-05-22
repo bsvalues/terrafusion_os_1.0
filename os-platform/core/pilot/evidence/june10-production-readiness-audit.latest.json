@@ -1,29 +1,32 @@
 {
-  "generatedAtUtc": "2026-05-19T23:47:03.123Z",
+  "generatedAtUtc": "2026-05-22T15:33:22.478Z",
   "verdict": "not_ready",
   "summary": {
-    "shipBlockers": 4,
+    "shipBlockers": 3,
     "warnings": 2,
     "readinessStatus": "FAIL",
     "redTeamVerdict": "RED",
-    "productLoadLedgerPassed": false,
-    "lineageProven": 0,
+    "productLoadLedgerPassed": true,
+    "lineageProven": 7,
     "runtimeDbIdentityPassed": true,
     "runtimeDbIdentitySource": "endpoint_contract",
-    "runtimeApiBaseUrl": "http://localhost:5046",
-    "runtimeDatabase": "terrafusion",
+    "runtimeApiBaseUrl": "http://terrafusionmarket.com",
+    "runtimeDatabase": "terrafusion.db",
     "publicSiteBaseUrl": "https://terrafusionmarket.com",
     "failedRuntimeProbes": 0,
     "contractMismatches": 0,
     "rustCrates": 101,
-    "rustRuntimeIntegrations": 3
+    "rustRuntimeIntegrations": 3,
+    "fullProductionDataReady": false,
+    "fullDataReadyCounties": 0,
+    "notFullDataReadyCounties": 39
   },
   "blockers": [
     {
       "source": "readiness",
       "severity": "CRITICAL",
       "message": "June 10 readiness packet is not passing.",
-      "evidence": "status=FAIL; shipBlockers=12; warnings=0"
+      "evidence": "status=FAIL; shipBlockers=412; warnings=43"
     },
     {
       "source": "red_team",
@@ -32,16 +35,10 @@
       "evidence": "criticalAttacks=3; shipBlockers=23"
     },
     {
-      "source": "product_load_lineage",
+      "source": "full_production_data",
       "severity": "CRITICAL",
-      "message": "TerraFusion DB product-load lineage is not proven.",
-      "evidence": "passed=false; lineageProven=0; rowsExistLineageUnproven=6"
-    },
-    {
-      "source": "public_site",
-      "severity": "HIGH",
-      "message": "terrafusionmarket.com public-site smoke is not passing.",
-      "evidence": "access_policy: Public signup is disabled and no access-request channel is exposed by /api/auth/access-policy."
+      "message": "Full production data is not proven for all 39 Washington counties.",
+      "evidence": "fullDataReadyCounties=0; notFullDataReadyCounties=39"
     }
   ],
   "warnings": [
@@ -58,8 +55,7 @@
   ],
   "requiredFixOrder": [
     "Make readiness:june10 and truth:june10-readiness-packet pass with zero ship blockers.",
-    "Emit TerraFusion DB product-load receipts and prove lineage for runtime truth tables.",
-    "Fix terrafusionmarket.com public access posture: usable signup/access request or remove misleading signup route.",
+    "Load and prove full TerraFusion DB runtime data for all 39 Washington counties.",
     "Resolve June 10 red-team critical attacks until the verdict is no longer RED.",
     "Prove Rust engine deployment in the live runtime path or remove Rust from launch claims.",
     "Re-run this production readiness audit and keep the verdict below full readiness until all blockers clear."
@@ -70,6 +66,7 @@
     "all data flows end to end",
     "terrafusionmarket.com is publicly usable",
     "39 counties are runtime-ready",
+    "full production data is ready",
     "Rust engines are in production use",
     "TerraFusion DB rows are lineage-proven"
   ]
