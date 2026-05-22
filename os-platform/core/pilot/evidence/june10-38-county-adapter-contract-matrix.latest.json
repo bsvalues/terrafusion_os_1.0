@@ -1,0 +1,285 @@
+{
+  "generatedAtUtc": "2026-05-22T16:31:41.259Z",
+  "sourceLockGeneratedAtUtc": "2026-05-22T16:09:39.578Z",
+  "slice": "38-County Adapter Contract Matrix",
+  "summary": {
+    "counties": 10,
+    "candidateAdapters": 10,
+    "implementedAdapters": 0,
+    "verifiedAdapters": 0,
+    "runtimeClaimAllowed": false,
+    "dbMutationAllowed": false
+  },
+  "claimRules": {
+    "runtimeClaimAllowed": false,
+    "dbMutationAllowed": false,
+    "allowedClaims": [
+      "adapter contract candidate defined",
+      "source snapshot can be captured under receipt rules"
+    ],
+    "forbiddenClaims": [
+      "runtime-ready",
+      "full county data loaded",
+      "official county-certified valuation",
+      "adapter verified",
+      "database loaded"
+    ]
+  },
+  "rows": [
+    {
+      "county": "Clark",
+      "countyToken": "clark",
+      "sourceDecisionStatus": "source_candidate_locked",
+      "sourceType": "county_property_portal_plus_gis",
+      "accessMethod": "manual_snapshot_or_playwright_capture",
+      "expectedExportFormat": "html_or_json_network_capture_plus_optional_gis_layer",
+      "parcelIdentifierField": "parcel_id_or_account_number",
+      "ownerAddressValueFields": [
+        "owner_name_if_available",
+        "situs_address_if_available",
+        "assessed_value_if_available",
+        "sale_date_if_available",
+        "sale_price_if_available",
+        "geometry_or_map_reference_if_available"
+      ],
+      "updateCadence": "on_demand_snapshot",
+      "licenseTermsRisk": "medium_terms_review_required",
+      "adapterStatus": "candidate",
+      "sourceUrls": ["https://clark.wa.gov"],
+      "receiptTarget": "evidence/june10-38-county-seed/clark/source-snapshot-receipt.json",
+      "runtimeClaimAllowed": false,
+      "dbMutationAllowed": false
+    },
+    {
+      "county": "Cowlitz",
+      "countyToken": "cowlitz",
+      "sourceDecisionStatus": "source_locked",
+      "sourceType": "county_property_portal_plus_gis",
+      "accessMethod": "manual_snapshot_or_playwright_capture",
+      "expectedExportFormat": "html_or_json_network_capture_plus_optional_gis_layer",
+      "parcelIdentifierField": "parcel_id_or_account_number",
+      "ownerAddressValueFields": [
+        "owner_name_if_available",
+        "situs_address_if_available",
+        "assessed_value_if_available",
+        "sale_date_if_available",
+        "sale_price_if_available",
+        "geometry_or_map_reference_if_available"
+      ],
+      "updateCadence": "on_demand_snapshot",
+      "licenseTermsRisk": "low_public_portal_terms_review_required",
+      "adapterStatus": "candidate",
+      "sourceUrls": [
+        "https://cowlitzinfo.net/cowlitzpropertyapp/cowlitzpropertyapp/zoner/index",
+        "https://gis.cowlitzwa.gov/ccportal/apps/webappviewer/index.html?id=848eadafa8ba4566a6a6370a4294c5e2",
+        "https://gis.cowlitzwa.gov/ccportal/apps/webappviewer/index.html?id=3b7b5f787ccc46e9bd8c144d998991ae",
+        "https://www.co.cowlitz.wa.us"
+      ],
+      "receiptTarget": "evidence/june10-38-county-seed/cowlitz/source-snapshot-receipt.json",
+      "runtimeClaimAllowed": false,
+      "dbMutationAllowed": false
+    },
+    {
+      "county": "Grant",
+      "countyToken": "grant",
+      "sourceDecisionStatus": "source_candidate_locked",
+      "sourceType": "county_property_portal_plus_gis",
+      "accessMethod": "manual_snapshot_or_playwright_capture",
+      "expectedExportFormat": "html_or_json_network_capture_plus_optional_gis_layer",
+      "parcelIdentifierField": "parcel_id_or_account_number",
+      "ownerAddressValueFields": [
+        "owner_name_if_available",
+        "situs_address_if_available",
+        "assessed_value_if_available",
+        "sale_date_if_available",
+        "sale_price_if_available",
+        "geometry_or_map_reference_if_available"
+      ],
+      "updateCadence": "on_demand_snapshot",
+      "licenseTermsRisk": "medium_terms_review_required",
+      "adapterStatus": "candidate",
+      "sourceUrls": ["https://www.grantcountywa.gov"],
+      "receiptTarget": "evidence/june10-38-county-seed/grant/source-snapshot-receipt.json",
+      "runtimeClaimAllowed": false,
+      "dbMutationAllowed": false
+    },
+    {
+      "county": "King",
+      "countyToken": "king",
+      "sourceDecisionStatus": "source_candidate_locked",
+      "sourceType": "county_property_portal_plus_gis",
+      "accessMethod": "manual_snapshot_or_playwright_capture",
+      "expectedExportFormat": "html_or_json_network_capture_plus_optional_gis_layer",
+      "parcelIdentifierField": "parcel_id_or_account_number",
+      "ownerAddressValueFields": [
+        "owner_name_if_available",
+        "situs_address_if_available",
+        "assessed_value_if_available",
+        "sale_date_if_available",
+        "sale_price_if_available",
+        "geometry_or_map_reference_if_available"
+      ],
+      "updateCadence": "on_demand_snapshot",
+      "licenseTermsRisk": "medium_terms_review_required",
+      "adapterStatus": "candidate",
+      "sourceUrls": ["https://kingcounty.gov"],
+      "receiptTarget": "evidence/june10-38-county-seed/king/source-snapshot-receipt.json",
+      "runtimeClaimAllowed": false,
+      "dbMutationAllowed": false
+    },
+    {
+      "county": "Kitsap",
+      "countyToken": "kitsap",
+      "sourceDecisionStatus": "source_candidate_locked",
+      "sourceType": "downloadable_assessor_export_plus_parcel_history",
+      "accessMethod": "download_snapshot",
+      "expectedExportFormat": "txt_csv_or_fixed_width_download",
+      "parcelIdentifierField": "parcel_number_or_tax_account_id",
+      "ownerAddressValueFields": [
+        "owner_name_if_available",
+        "situs_address_if_available",
+        "assessed_value_if_available",
+        "sale_date_if_available",
+        "sale_price_if_available",
+        "geometry_or_map_reference_if_available"
+      ],
+      "updateCadence": "weekly_if_download_available",
+      "licenseTermsRisk": "medium_terms_review_required",
+      "adapterStatus": "candidate",
+      "sourceUrls": ["https://www.kitsapgov.com"],
+      "receiptTarget": "evidence/june10-38-county-seed/kitsap/source-snapshot-receipt.json",
+      "runtimeClaimAllowed": false,
+      "dbMutationAllowed": false
+    },
+    {
+      "county": "Pierce",
+      "countyToken": "pierce",
+      "sourceDecisionStatus": "source_candidate_locked",
+      "sourceType": "downloadable_assessor_export_plus_parcel_history",
+      "accessMethod": "download_snapshot",
+      "expectedExportFormat": "txt_csv_or_fixed_width_download",
+      "parcelIdentifierField": "parcel_number_or_tax_account_id",
+      "ownerAddressValueFields": [
+        "owner_name_if_available",
+        "situs_address_if_available",
+        "assessed_value_if_available",
+        "sale_date_if_available",
+        "sale_price_if_available",
+        "geometry_or_map_reference_if_available"
+      ],
+      "updateCadence": "on_demand_snapshot",
+      "licenseTermsRisk": "medium_terms_review_required",
+      "adapterStatus": "candidate",
+      "sourceUrls": ["https://www.co.pierce.wa.us"],
+      "receiptTarget": "evidence/june10-38-county-seed/pierce/source-snapshot-receipt.json",
+      "runtimeClaimAllowed": false,
+      "dbMutationAllowed": false
+    },
+    {
+      "county": "Snohomish",
+      "countyToken": "snohomish",
+      "sourceDecisionStatus": "source_candidate_locked",
+      "sourceType": "downloadable_assessor_export_plus_parcel_history",
+      "accessMethod": "download_snapshot",
+      "expectedExportFormat": "txt_csv_or_fixed_width_download",
+      "parcelIdentifierField": "parcel_number_or_tax_account_id",
+      "ownerAddressValueFields": [
+        "owner_name_if_available",
+        "situs_address_if_available",
+        "assessed_value_if_available",
+        "sale_date_if_available",
+        "sale_price_if_available",
+        "geometry_or_map_reference_if_available"
+      ],
+      "updateCadence": "on_demand_snapshot",
+      "licenseTermsRisk": "medium_terms_review_required",
+      "adapterStatus": "candidate",
+      "sourceUrls": ["https://snohomishcountywa.gov"],
+      "receiptTarget": "evidence/june10-38-county-seed/snohomish/source-snapshot-receipt.json",
+      "runtimeClaimAllowed": false,
+      "dbMutationAllowed": false
+    },
+    {
+      "county": "Spokane",
+      "countyToken": "spokane",
+      "sourceDecisionStatus": "source_candidate_locked",
+      "sourceType": "county_property_portal_plus_gis",
+      "accessMethod": "manual_snapshot_or_playwright_capture",
+      "expectedExportFormat": "html_or_json_network_capture_plus_optional_gis_layer",
+      "parcelIdentifierField": "parcel_id_or_account_number",
+      "ownerAddressValueFields": [
+        "owner_name_if_available",
+        "situs_address_if_available",
+        "assessed_value_if_available",
+        "sale_date_if_available",
+        "sale_price_if_available",
+        "geometry_or_map_reference_if_available"
+      ],
+      "updateCadence": "on_demand_snapshot",
+      "licenseTermsRisk": "medium_terms_review_required",
+      "adapterStatus": "candidate",
+      "sourceUrls": ["https://www.spokanecounty.org"],
+      "receiptTarget": "evidence/june10-38-county-seed/spokane/source-snapshot-receipt.json",
+      "runtimeClaimAllowed": false,
+      "dbMutationAllowed": false
+    },
+    {
+      "county": "Whatcom",
+      "countyToken": "whatcom",
+      "sourceDecisionStatus": "source_candidate_locked",
+      "sourceType": "county_property_portal_plus_gis",
+      "accessMethod": "manual_snapshot_or_playwright_capture",
+      "expectedExportFormat": "html_or_json_network_capture_plus_optional_gis_layer",
+      "parcelIdentifierField": "parcel_id_or_account_number",
+      "ownerAddressValueFields": [
+        "owner_name_if_available",
+        "situs_address_if_available",
+        "assessed_value_if_available",
+        "sale_date_if_available",
+        "sale_price_if_available",
+        "geometry_or_map_reference_if_available"
+      ],
+      "updateCadence": "on_demand_snapshot",
+      "licenseTermsRisk": "medium_terms_review_required",
+      "adapterStatus": "candidate",
+      "sourceUrls": ["https://www.co.whatcom.wa.us"],
+      "receiptTarget": "evidence/june10-38-county-seed/whatcom/source-snapshot-receipt.json",
+      "runtimeClaimAllowed": false,
+      "dbMutationAllowed": false
+    },
+    {
+      "county": "Yakima",
+      "countyToken": "yakima",
+      "sourceDecisionStatus": "source_locked",
+      "sourceType": "spatialest_property_portal",
+      "accessMethod": "manual_snapshot_or_playwright_capture",
+      "expectedExportFormat": "html_or_json_network_capture",
+      "parcelIdentifierField": "parcel_id_or_account_number",
+      "ownerAddressValueFields": [
+        "owner_name_if_available",
+        "situs_address_if_available",
+        "assessed_value_if_available",
+        "sale_date_if_available",
+        "sale_price_if_available",
+        "geometry_or_map_reference_if_available"
+      ],
+      "updateCadence": "on_demand_snapshot",
+      "licenseTermsRisk": "low_public_portal_terms_review_required",
+      "adapterStatus": "candidate",
+      "sourceUrls": [
+        "https://property.spatialest.com/wa/yakima#/",
+        "https://www.yakimacounty.us"
+      ],
+      "receiptTarget": "evidence/june10-38-county-seed/yakima/source-snapshot-receipt.json",
+      "runtimeClaimAllowed": false,
+      "dbMutationAllowed": false
+    }
+  ],
+  "rules": [
+    "No runtime claims.",
+    "No DB mutation.",
+    "No scraping beyond allowed source behavior.",
+    "Adapter status remains candidate until a receipt proves raw capture, normalized artifact, and contract verification.",
+    "License and terms risk must be resolved before automated capture or load."
+  ]
+}
