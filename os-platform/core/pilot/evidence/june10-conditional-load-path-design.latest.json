@@ -1,0 +1,437 @@
+{
+  "generatedAtUtc": "2026-05-22T19:46:52.051Z",
+  "slice": "Conditional Load-Path Design for Cowlitz and Yakima",
+  "summary": {
+    "countiesDesigned": 2,
+    "counties": ["Cowlitz", "Yakima"],
+    "productionDbMutationAllowed": false,
+    "runtimeClaimAllowed": false,
+    "dryRunOnly": true,
+    "rollbackMode": "no_op_no_transaction_opened",
+    "stagingTable": "staging_county_seed.conditional_parcel_source_dry_run",
+    "receiptVersion": "june10-conditional-load-dry-run-v1"
+  },
+  "doctrine": [
+    "This slice defines a conditional load path only.",
+    "No production DB mutation.",
+    "No runtime claim.",
+    "No source scraping beyond already verified adapter behavior.",
+    "Any later write path requires separate authorization and passing pre-write validations."
+  ],
+  "counties": [
+    {
+      "county": "Cowlitz",
+      "countyToken": "cowlitz",
+      "adapterId": "cowlitz-readonly-arcgis-metadata-v1",
+      "sourceType": "county_property_portal_plus_gis",
+      "accessMethod": "read_only_public_arcgis_metadata_fetch",
+      "expectedExportFormat": "arcgis_item_json_app_config_json_layer_metadata_json",
+      "stagingTable": {
+        "schemaName": "staging_county_seed",
+        "tableName": "conditional_parcel_source_dry_run",
+        "mode": "design_only_not_created_by_this_guard",
+        "requiredFields": [
+          "county_token",
+          "source_parcel_id",
+          "source_lineage_receipt_id"
+        ],
+        "nullableFields": [
+          "owner_name",
+          "situs_address",
+          "assessed_value_components",
+          "land_area",
+          "property_use",
+          "geometry_reference",
+          "source_payload_hash",
+          "source_updated_at"
+        ],
+        "generatedFields": [
+          "dry_run_receipt_id",
+          "normalized_payload_hash",
+          "captured_at_utc"
+        ],
+        "uniqueness": [
+          "county_token",
+          "source_parcel_id",
+          "source_lineage_receipt_id"
+        ],
+        "indexes": [
+          "county_token",
+          "source_parcel_id",
+          "source_lineage_receipt_id"
+        ],
+        "productionTable": null
+      },
+      "fieldMapping": {
+        "parcelId": {
+          "sourceFields": ["PARCNO"],
+          "required": true,
+          "targetField": "source_parcel_id"
+        },
+        "ownerName": {
+          "sourceFields": ["DEED_HOLDER_NAME"],
+          "required": false,
+          "targetField": "owner_name"
+        },
+        "situsAddress": {
+          "sourceFields": [
+            "SITUS_STREET_NUMBER",
+            "SITUS_STREET_DIRECTION",
+            "SITUS_STREET_NAME",
+            "SITUS_STREET_SUFFIX",
+            "SITUS_STREET_UNIT",
+            "SITUS_CITY",
+            "SITUS_ZIP_CODE"
+          ],
+          "required": false,
+          "targetField": "situs_address"
+        },
+        "assessedValue": {
+          "sourceFields": ["LAND_ASSESSED_VALUE", "IMPR_ASSESSED_VALUE"],
+          "required": false,
+          "targetField": "assessed_value_components"
+        },
+        "geometryReference": {
+          "sourceFields": [],
+          "required": false,
+          "targetField": "geometry_reference"
+        },
+        "optionalFields": {
+          "landArea": {
+            "sourceFields": [],
+            "targetField": "land_area"
+          },
+          "propertyUse": {
+            "sourceFields": [],
+            "targetField": "property_use"
+          }
+        }
+      },
+      "missingFieldPolicy": {
+        "requiredFields": [
+          "county_token",
+          "source_parcel_id",
+          "source_lineage_receipt_id"
+        ],
+        "optionalNullableFields": [
+          "owner_name",
+          "situs_address",
+          "assessed_value_components",
+          "land_area",
+          "property_use",
+          "geometry_reference",
+          "source_updated_at"
+        ],
+        "rejectRowWhenMissing": [
+          "county_token",
+          "source_parcel_id",
+          "source_lineage_receipt_id"
+        ],
+        "doNotInfer": [
+          "owner_name",
+          "situs_address",
+          "assessed_value_components"
+        ],
+        "policy": "Required identity and lineage fields reject the row. Optional descriptive, valuation, land, use, and geometry fields remain nullable and must not be inferred."
+      },
+      "lineageReceiptFormat": {
+        "receiptVersion": "june10-conditional-load-dry-run-v1",
+        "sourceAdapterReceiptVersion": "june10-adapter-verification-v1",
+        "county": "Cowlitz",
+        "countyToken": "cowlitz",
+        "adapterId": "cowlitz-readonly-arcgis-metadata-v1",
+        "requiredHashes": [
+          "source_adapter_receipt_sha256",
+          "normalized_payload_sha256",
+          "staging_contract_sha256"
+        ],
+        "requiredCounts": [
+          "source_rows_examined",
+          "source_rows_rejected",
+          "source_rows_dry_run_normalized",
+          "production_rows_written"
+        ],
+        "fixedCounts": {
+          "production_rows_written": 0
+        },
+        "requiredBooleans": {
+          "dry_run_only": true,
+          "runtime_claim_allowed": false,
+          "db_mutation_allowed": false
+        },
+        "sourceAdapterReceiptSha256": "698f0b3684bd629f3fc1095382bc16e5c4316c28724fe29355d88c307db5924e",
+        "normalizedContractSha256": "4c07c8fefa47f000de7e353f23383b74ee7319b94804333903aeab3f1fbeaa7b"
+      },
+      "projectionEligibility": {
+        "currentStatus": "blocked_until_terms_and_row_validation",
+        "dryRunEligible": true,
+        "productionWriteEligible": false,
+        "runtimeRegistrationEligible": false,
+        "requiredBeforeWrite": [
+          "terms_access_review_approved",
+          "sample_or_snapshot_payload_captured_under_allowed_source_behavior",
+          "row_level_validation_report_passes",
+          "lineage_receipt_written_for_dry_run",
+          "operator_approval_in_separate_write_authorized_slice"
+        ],
+        "reason": "Cowlitz has sufficient identity and field metadata for conditional dry-run design, not production load."
+      },
+      "validationChecks": {
+        "beforeAnyDbWrite": [
+          "terms_access_review_approved",
+          "adapter_receipt_status_verified",
+          "adapter_receipt_has_zero_production_rows",
+          "source_parcel_id_present_and_unique_in_batch",
+          "county_token_present_and_allowed",
+          "normalized_payload_matches_staging_schema",
+          "dry_run_receipt_hash_matches_normalized_payload",
+          "operator_explicitly_disables_no_op_mode_in_a_later_authorized_slice"
+        ],
+        "beforeProjection": [
+          "county_token_maps_to_registered_terrafusion_county",
+          "projection_receipt_target_is_non_production_or_explicitly_authorized",
+          "parcel_identity_confidence_is_high",
+          "required_identity_and_lineage_fields_are_non_null",
+          "duplicate_source_parcel_ids_are_rejected_or_versioned_by_policy",
+          "valuation_fields_are_marked_nullable_if_missing"
+        ],
+        "prohibitedInThisSlice": [
+          "create_table",
+          "insert",
+          "update",
+          "delete",
+          "merge",
+          "upsert",
+          "runtime_registration",
+          "production_projection"
+        ]
+      },
+      "dryRunGuard": {
+        "enabled": true,
+        "mode": "no_op",
+        "wouldWriteProductionDb": false,
+        "wouldRegisterRuntimeCounty": false,
+        "rollbackMode": "no_op_no_transaction_opened",
+        "rollbackSteps": [
+          "No production transaction is opened.",
+          "No staging table is created by this guard.",
+          "No production rows are inserted, updated, deleted, merged, or upserted.",
+          "Generated evidence can be deleted or regenerated without database rollback."
+        ]
+      },
+      "sourceWarnings": [
+        "License text warns against en masse owner/tax parcel dissemination without data share agreement."
+      ],
+      "sourceAdapterReceipt": {
+        "status": "verified",
+        "productionRowsWritten": 0,
+        "runtimeClaimAllowed": false,
+        "dbMutationAllowed": false
+      }
+    },
+    {
+      "county": "Yakima",
+      "countyToken": "yakima",
+      "adapterId": "yakima-readonly-spatialest-config-v1",
+      "sourceType": "spatialest_property_portal",
+      "accessMethod": "read_only_public_spatialest_config_fetch",
+      "expectedExportFormat": "spatialest_html_data_props_json",
+      "stagingTable": {
+        "schemaName": "staging_county_seed",
+        "tableName": "conditional_parcel_source_dry_run",
+        "mode": "design_only_not_created_by_this_guard",
+        "requiredFields": [
+          "county_token",
+          "source_parcel_id",
+          "source_lineage_receipt_id"
+        ],
+        "nullableFields": [
+          "owner_name",
+          "situs_address",
+          "assessed_value_components",
+          "land_area",
+          "property_use",
+          "geometry_reference",
+          "source_payload_hash",
+          "source_updated_at"
+        ],
+        "generatedFields": [
+          "dry_run_receipt_id",
+          "normalized_payload_hash",
+          "captured_at_utc"
+        ],
+        "uniqueness": [
+          "county_token",
+          "source_parcel_id",
+          "source_lineage_receipt_id"
+        ],
+        "indexes": [
+          "county_token",
+          "source_parcel_id",
+          "source_lineage_receipt_id"
+        ],
+        "productionTable": null
+      },
+      "fieldMapping": {
+        "parcelId": {
+          "sourceFields": ["parcel_number"],
+          "required": true,
+          "targetField": "source_parcel_id"
+        },
+        "ownerName": {
+          "sourceFields": ["owner_name"],
+          "required": false,
+          "targetField": "owner_name"
+        },
+        "situsAddress": {
+          "sourceFields": ["line_1"],
+          "required": false,
+          "targetField": "situs_address"
+        },
+        "assessedValue": {
+          "sourceFields": ["current_assessed_value"],
+          "required": false,
+          "targetField": "assessed_value_components"
+        },
+        "geometryReference": {
+          "sourceFields": [],
+          "required": false,
+          "targetField": "geometry_reference"
+        },
+        "optionalFields": {
+          "landArea": {
+            "sourceFields": ["total_acres"],
+            "targetField": "land_area"
+          },
+          "propertyUse": {
+            "sourceFields": ["property_use"],
+            "targetField": "property_use"
+          }
+        }
+      },
+      "missingFieldPolicy": {
+        "requiredFields": [
+          "county_token",
+          "source_parcel_id",
+          "source_lineage_receipt_id"
+        ],
+        "optionalNullableFields": [
+          "owner_name",
+          "situs_address",
+          "assessed_value_components",
+          "land_area",
+          "property_use",
+          "geometry_reference",
+          "source_updated_at"
+        ],
+        "rejectRowWhenMissing": [
+          "county_token",
+          "source_parcel_id",
+          "source_lineage_receipt_id"
+        ],
+        "doNotInfer": [
+          "owner_name",
+          "situs_address",
+          "assessed_value_components"
+        ],
+        "policy": "Required identity and lineage fields reject the row. Optional descriptive, valuation, land, use, and geometry fields remain nullable and must not be inferred."
+      },
+      "lineageReceiptFormat": {
+        "receiptVersion": "june10-conditional-load-dry-run-v1",
+        "sourceAdapterReceiptVersion": "june10-adapter-verification-v1",
+        "county": "Yakima",
+        "countyToken": "yakima",
+        "adapterId": "yakima-readonly-spatialest-config-v1",
+        "requiredHashes": [
+          "source_adapter_receipt_sha256",
+          "normalized_payload_sha256",
+          "staging_contract_sha256"
+        ],
+        "requiredCounts": [
+          "source_rows_examined",
+          "source_rows_rejected",
+          "source_rows_dry_run_normalized",
+          "production_rows_written"
+        ],
+        "fixedCounts": {
+          "production_rows_written": 0
+        },
+        "requiredBooleans": {
+          "dry_run_only": true,
+          "runtime_claim_allowed": false,
+          "db_mutation_allowed": false
+        },
+        "sourceAdapterReceiptSha256": "9865c614a3024001d45ff9c56a06e9a0e61916e63ae00cad1a058ad956f34184",
+        "normalizedContractSha256": "12dc710ea536bd9f8565492b9e3690635a4e86d659cc0ad9766384372be77e8a"
+      },
+      "projectionEligibility": {
+        "currentStatus": "blocked_until_terms_and_row_validation",
+        "dryRunEligible": true,
+        "productionWriteEligible": false,
+        "runtimeRegistrationEligible": false,
+        "requiredBeforeWrite": [
+          "terms_access_review_approved",
+          "sample_or_snapshot_payload_captured_under_allowed_source_behavior",
+          "row_level_validation_report_passes",
+          "lineage_receipt_written_for_dry_run",
+          "operator_approval_in_separate_write_authorized_slice"
+        ],
+        "reason": "Yakima has sufficient identity and field metadata for conditional dry-run design, not production load."
+      },
+      "validationChecks": {
+        "beforeAnyDbWrite": [
+          "terms_access_review_approved",
+          "adapter_receipt_status_verified",
+          "adapter_receipt_has_zero_production_rows",
+          "source_parcel_id_present_and_unique_in_batch",
+          "county_token_present_and_allowed",
+          "normalized_payload_matches_staging_schema",
+          "dry_run_receipt_hash_matches_normalized_payload",
+          "operator_explicitly_disables_no_op_mode_in_a_later_authorized_slice"
+        ],
+        "beforeProjection": [
+          "county_token_maps_to_registered_terrafusion_county",
+          "projection_receipt_target_is_non_production_or_explicitly_authorized",
+          "parcel_identity_confidence_is_high",
+          "required_identity_and_lineage_fields_are_non_null",
+          "duplicate_source_parcel_ids_are_rejected_or_versioned_by_policy",
+          "valuation_fields_are_marked_nullable_if_missing"
+        ],
+        "prohibitedInThisSlice": [
+          "create_table",
+          "insert",
+          "update",
+          "delete",
+          "merge",
+          "upsert",
+          "runtime_registration",
+          "production_projection"
+        ]
+      },
+      "dryRunGuard": {
+        "enabled": true,
+        "mode": "no_op",
+        "wouldWriteProductionDb": false,
+        "wouldRegisterRuntimeCounty": false,
+        "rollbackMode": "no_op_no_transaction_opened",
+        "rollbackSteps": [
+          "No production transaction is opened.",
+          "No staging table is created by this guard.",
+          "No production rows are inserted, updated, deleted, merged, or upserted.",
+          "Generated evidence can be deleted or regenerated without database rollback."
+        ]
+      },
+      "sourceWarnings": [
+        "Public config exposes Excel export permission, but this adapter does not download exports until terms are reviewed."
+      ],
+      "sourceAdapterReceipt": {
+        "status": "verified",
+        "productionRowsWritten": 0,
+        "runtimeClaimAllowed": false,
+        "dbMutationAllowed": false
+      }
+    }
+  ],
+  "blockers": [],
+  "passed": true
+}
