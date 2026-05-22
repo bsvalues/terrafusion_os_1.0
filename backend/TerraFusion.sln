@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerraFusion.Integration.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerraFusion.CurrentUse", "src\TerraFusion.CurrentUse\TerraFusion.CurrentUse.csproj", "{CD9ABFA5-976D-4346-83D9-C9BD4D98B251}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerraFusion.CurrentUse.Tests", "tests\TerraFusion.CurrentUse.Tests\TerraFusion.CurrentUse.Tests.csproj", "{8E095257-C559-4A9D-9AC3-BEC92D664615}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -199,6 +201,18 @@ Global
 		{CD9ABFA5-976D-4346-83D9-C9BD4D98B251}.Release|x64.Build.0 = Release|Any CPU
 		{CD9ABFA5-976D-4346-83D9-C9BD4D98B251}.Release|x86.ActiveCfg = Release|Any CPU
 		{CD9ABFA5-976D-4346-83D9-C9BD4D98B251}.Release|x86.Build.0 = Release|Any CPU
+		{8E095257-C559-4A9D-9AC3-BEC92D664615}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E095257-C559-4A9D-9AC3-BEC92D664615}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E095257-C559-4A9D-9AC3-BEC92D664615}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8E095257-C559-4A9D-9AC3-BEC92D664615}.Debug|x64.Build.0 = Debug|Any CPU
+		{8E095257-C559-4A9D-9AC3-BEC92D664615}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8E095257-C559-4A9D-9AC3-BEC92D664615}.Debug|x86.Build.0 = Debug|Any CPU
+		{8E095257-C559-4A9D-9AC3-BEC92D664615}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E095257-C559-4A9D-9AC3-BEC92D664615}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E095257-C559-4A9D-9AC3-BEC92D664615}.Release|x64.ActiveCfg = Release|Any CPU
+		{8E095257-C559-4A9D-9AC3-BEC92D664615}.Release|x64.Build.0 = Release|Any CPU
+		{8E095257-C559-4A9D-9AC3-BEC92D664615}.Release|x86.ActiveCfg = Release|Any CPU
+		{8E095257-C559-4A9D-9AC3-BEC92D664615}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -220,5 +234,6 @@ Global
 		{68C654DD-444F-4A33-9F02-DD7270FF7002} = {6C80B606-F555-4843-9B73-9FC1AA160097}
 		{D2EED7F6-4972-4340-BB82-AFF5A11ECB4F} = {6C80B606-F555-4843-9B73-9FC1AA160097}
 		{CD9ABFA5-976D-4346-83D9-C9BD4D98B251} = {807F7173-3BC2-4BDB-ADBD-980DBDBB2DE2}
+		{8E095257-C559-4A9D-9AC3-BEC92D664615} = {6C80B606-F555-4843-9B73-9FC1AA160097}
 	EndGlobalSection
 EndGlobal

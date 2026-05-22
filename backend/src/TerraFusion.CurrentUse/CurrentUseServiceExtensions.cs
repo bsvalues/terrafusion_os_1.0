@@ -1,15 +1,21 @@
+using FluentValidation;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using TerraFusion.CurrentUse.Data;
+using TerraFusion.CurrentUse.Health;
+using TerraFusion.CurrentUse.Middleware;
 using TerraFusion.CurrentUse.Services;
+using TerraFusion.CurrentUse.Validation;
 
 namespace TerraFusion.CurrentUse;
 
 public static class CurrentUseServiceExtensions
 {
     /// <summary>
-    /// Registers CurrentUse services, DbContext, and controllers.
+    /// Registers CurrentUse services, DbContext, validators, health checks, and controllers.
     /// Call from the host API's Program.cs or DI setup.
     /// </summary>
     public static IServiceCollection AddCurrentUseServices(this IServiceCollection services, IConfiguration configuration)
@@ -31,14 +37,37 @@ public static class CurrentUseServiceExtensions
                     npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "currentuse")));
         }
 
-        // Register services
+        // Register domain services
         services.AddScoped<IClassificationService, ClassificationService>();
         services.AddScoped<IRollbackCalculationService, RollbackCalculationService>();
         services.AddScoped<IInterestService, InterestService>();
         services.AddScoped<IRemovalService, RemovalService>();
         services.AddScoped<IPenaltyExceptionService, PenaltyExceptionService>();
+        services.AddScoped<IAuditService, AuditService>();
+
+        // Register FluentValidation validators
+        services.AddScoped<IValidator<DTOs.RollbackCalculationRequest>, RollbackCalculationRequestValidator>();
+        services.AddScoped<IValidator<DTOs.ClassificationCreateRequest>, ClassificationCreateRequestValidator>();
+        services.AddScoped<IValidator<DTOs.RemovalInitiateRequest>, RemovalInitiateRequestValidator>();
+
+        // Register health check
+        services.AddHealthChecks()
+            .AddCheck<CurrentUseHealthCheck>(
+                "currentuse-database",
+                HealthStatus.Degraded,
+                tags: new[] { "currentuse", "database", "ready" });
 
         return services;
+    }
+
+    /// <summary>
+    /// Adds CurrentUse exception handling middleware.
+    /// Call in the middleware pipeline before MapControllers.
+    /// </summary>
+    public static IApplicationBuilder UseCurrentUseMiddleware(this IApplicationBuilder app)
+    {
+        app.UseMiddleware<CurrentUseExceptionMiddleware>();
+        return app;
     }
 
     /// <summary>
