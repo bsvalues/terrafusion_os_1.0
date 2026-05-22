@@ -119,6 +119,7 @@
     "truth:june10-rust-runtime-usage": "node os-platform/core/pilot/june10-rust-runtime-usage.mjs",
     "truth:june10-readiness-packet": "node scripts/truth/june10-readiness-packet.mjs",
     "truth:june10-seed-control-plane": "node os-platform/core/pilot/june10-seed-control-plane.mjs",
+    "truth:june10-38-county-acquisition-source-lock": "node os-platform/core/pilot/june10-38-county-acquisition-source-lock.mjs",
     "truth:june10-seed-execution-status": "node os-platform/core/pilot/june10-seed-execution-status.mjs",
     "truth:june10-seed-lane": "node os-platform/core/pilot/june10-seed-lane-runner.mjs",
     "truth:june10-seed-receipts": "node os-platform/core/pilot/june10-seed-receipt-validator.mjs",

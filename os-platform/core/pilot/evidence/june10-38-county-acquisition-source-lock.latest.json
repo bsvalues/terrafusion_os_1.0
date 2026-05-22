@@ -1,0 +1,356 @@
+{
+  "generatedAtUtc": "2026-05-22T16:09:39.578Z",
+  "sourceCoverageGeneratedAtUtc": "2026-04-29T17:16:08.237Z",
+  "slice": "38-County Acquisition Source Lock",
+  "summary": {
+    "requestedWaveACounties": 10,
+    "countiesLocked": 10,
+    "sourceLocked": 2,
+    "sourceCandidateLocked": 8,
+    "sourceDecisionRequired": 0,
+    "missingCounties": 0,
+    "bentonExcluded": true,
+    "runtimeClaimAllowed": false
+  },
+  "claimRules": {
+    "runtimeClaimAllowed": false,
+    "allowedClaims": [
+      "source lock ready for snapshot capture",
+      "acquisition work in progress"
+    ],
+    "forbiddenClaims": [
+      "runtime-ready",
+      "full county data loaded",
+      "official county-certified valuation",
+      "CostForge official calibration",
+      "statewide production data ready"
+    ]
+  },
+  "sourceLocks": [
+    {
+      "county": "Clark",
+      "countyToken": "clark",
+      "state": "WA",
+      "priority": "P1",
+      "registryStatus": "adapter-ready",
+      "acquisitionFamily": "Direct sales search",
+      "sourceDecisionStatus": "source_candidate_locked",
+      "sourceUrls": ["https://clark.wa.gov"],
+      "sourceLabels": {
+        "officialAssessorBaseUrl": "https://clark.wa.gov",
+        "primarySalesSource": "Property Information Center sales history + Residential Property Sales Information",
+        "fallbackSource": "MapsOnline / parcel fact sheet / recorded documents",
+        "gisMapSurface": "Property Information Center + MapsOnline"
+      },
+      "requiredRawArtifacts": [
+        "parcel_or_property_export",
+        "sales_or_transfer_export_if_available",
+        "gis_or_parcel_identity_crosswalk_if_available"
+      ],
+      "receiptTarget": "evidence/june10-38-county-seed/clark/source-snapshot-receipt.json",
+      "nextAction": "capture_source_snapshot",
+      "runtimeClaimAllowed": false,
+      "stopConditions": [
+        "source content is sample, demo, or synthetic",
+        "county identity cannot be proven from source content",
+        "raw artifact hash or capturedAtUtc timestamp is missing",
+        "source requires storing a secret, cookie, bearer token, or password",
+        "normalized artifact is not TerraFusion-owned"
+      ]
+    },
+    {
+      "county": "Cowlitz",
+      "countyToken": "cowlitz",
+      "state": "WA",
+      "priority": "P1",
+      "registryStatus": "adapter-ready",
+      "acquisitionFamily": "Parcel transfer history",
+      "sourceDecisionStatus": "source_locked",
+      "sourceUrls": [
+        "https://cowlitzinfo.net/cowlitzpropertyapp/cowlitzpropertyapp/zoner/index",
+        "https://gis.cowlitzwa.gov/ccportal/apps/webappviewer/index.html?id=848eadafa8ba4566a6a6370a4294c5e2",
+        "https://gis.cowlitzwa.gov/ccportal/apps/webappviewer/index.html?id=3b7b5f787ccc46e9bd8c144d998991ae",
+        "https://www.co.cowlitz.wa.us"
+      ],
+      "sourceLabels": {
+        "officialAssessorBaseUrl": "https://www.co.cowlitz.wa.us",
+        "primarySalesSource": "Parcel detail conveyances + Request Sales Report",
+        "fallbackSource": "Auditor Public Record Search / recorded documents / assessor map",
+        "gisMapSurface": "County GIS Maps + Assessor GIS Map"
+      },
+      "requiredRawArtifacts": [
+        "parcel_or_property_export",
+        "sales_or_transfer_export_if_available",
+        "gis_or_parcel_identity_crosswalk_if_available"
+      ],
+      "receiptTarget": "evidence/june10-38-county-seed/cowlitz/source-snapshot-receipt.json",
+      "nextAction": "capture_source_snapshot",
+      "runtimeClaimAllowed": false,
+      "stopConditions": [
+        "source content is sample, demo, or synthetic",
+        "county identity cannot be proven from source content",
+        "raw artifact hash or capturedAtUtc timestamp is missing",
+        "source requires storing a secret, cookie, bearer token, or password",
+        "normalized artifact is not TerraFusion-owned"
+      ]
+    },
+    {
+      "county": "Grant",
+      "countyToken": "grant",
+      "state": "WA",
+      "priority": "P1",
+      "registryStatus": "adapter-ready",
+      "acquisitionFamily": "Direct sales search",
+      "sourceDecisionStatus": "source_candidate_locked",
+      "sourceUrls": ["https://www.grantcountywa.gov"],
+      "sourceLabels": {
+        "officialAssessorBaseUrl": "https://www.grantcountywa.gov",
+        "primarySalesSource": "Sales Search + Current Sales reports",
+        "fallbackSource": "Property Search / Map Search / assessor media portal",
+        "gisMapSurface": "Property Search Map"
+      },
+      "requiredRawArtifacts": [
+        "parcel_or_property_export",
+        "sales_or_transfer_export_if_available",
+        "gis_or_parcel_identity_crosswalk_if_available"
+      ],
+      "receiptTarget": "evidence/june10-38-county-seed/grant/source-snapshot-receipt.json",
+      "nextAction": "capture_source_snapshot",
+      "runtimeClaimAllowed": false,
+      "stopConditions": [
+        "source content is sample, demo, or synthetic",
+        "county identity cannot be proven from source content",
+        "raw artifact hash or capturedAtUtc timestamp is missing",
+        "source requires storing a secret, cookie, bearer token, or password",
+        "normalized artifact is not TerraFusion-owned"
+      ]
+    },
+    {
+      "county": "King",
+      "countyToken": "king",
+      "state": "WA",
+      "priority": "P1",
+      "registryStatus": "adapter-ready",
+      "acquisitionFamily": "Direct sales search",
+      "sourceDecisionStatus": "source_candidate_locked",
+      "sourceUrls": ["https://kingcounty.gov"],
+      "sourceLabels": {
+        "officialAssessorBaseUrl": "https://kingcounty.gov",
+        "primarySalesSource": "eSales Search",
+        "fallbackSource": "Parcel detail + recorded documents",
+        "gisMapSurface": "Parcel Viewer / GIS Center"
+      },
+      "requiredRawArtifacts": [
+        "parcel_or_property_export",
+        "sales_or_transfer_export_if_available",
+        "gis_or_parcel_identity_crosswalk_if_available"
+      ],
+      "receiptTarget": "evidence/june10-38-county-seed/king/source-snapshot-receipt.json",
+      "nextAction": "capture_source_snapshot",
+      "runtimeClaimAllowed": false,
+      "stopConditions": [
+        "source content is sample, demo, or synthetic",
+        "county identity cannot be proven from source content",
+        "raw artifact hash or capturedAtUtc timestamp is missing",
+        "source requires storing a secret, cookie, bearer token, or password",
+        "normalized artifact is not TerraFusion-owned"
+      ]
+    },
+    {
+      "county": "Kitsap",
+      "countyToken": "kitsap",
+      "state": "WA",
+      "priority": "P1",
+      "registryStatus": "adapter-ready",
+      "acquisitionFamily": "Parcel transfer history / open data export",
+      "sourceDecisionStatus": "source_candidate_locked",
+      "sourceUrls": ["https://www.kitsapgov.com"],
+      "sourceLabels": {
+        "officialAssessorBaseUrl": "https://www.kitsapgov.com",
+        "primarySalesSource": "Parcel Details sales history + Sales Data / prior-year residential sales",
+        "fallbackSource": "Auditor deed search + weekly downloadable assessor TXT data",
+        "gisMapSurface": "Parcel Search Map"
+      },
+      "requiredRawArtifacts": [
+        "parcel_or_property_export",
+        "sales_or_transfer_export_if_available",
+        "gis_or_parcel_identity_crosswalk_if_available"
+      ],
+      "receiptTarget": "evidence/june10-38-county-seed/kitsap/source-snapshot-receipt.json",
+      "nextAction": "capture_source_snapshot",
+      "runtimeClaimAllowed": false,
+      "stopConditions": [
+        "source content is sample, demo, or synthetic",
+        "county identity cannot be proven from source content",
+        "raw artifact hash or capturedAtUtc timestamp is missing",
+        "source requires storing a secret, cookie, bearer token, or password",
+        "normalized artifact is not TerraFusion-owned"
+      ]
+    },
+    {
+      "county": "Pierce",
+      "countyToken": "pierce",
+      "state": "WA",
+      "priority": "P1",
+      "registryStatus": "adapter-ready",
+      "acquisitionFamily": "Direct sales search",
+      "sourceDecisionStatus": "source_candidate_locked",
+      "sourceUrls": ["https://www.co.pierce.wa.us"],
+      "sourceLabels": {
+        "officialAssessorBaseUrl": "https://www.co.pierce.wa.us",
+        "primarySalesSource": "ATIP comparable sales information",
+        "fallbackSource": "Auditor recorded documents + PublicGIS/Open Data",
+        "gisMapSurface": "PublicGIS / Open Data"
+      },
+      "requiredRawArtifacts": [
+        "parcel_or_property_export",
+        "sales_or_transfer_export_if_available",
+        "gis_or_parcel_identity_crosswalk_if_available"
+      ],
+      "receiptTarget": "evidence/june10-38-county-seed/pierce/source-snapshot-receipt.json",
+      "nextAction": "capture_source_snapshot",
+      "runtimeClaimAllowed": false,
+      "stopConditions": [
+        "source content is sample, demo, or synthetic",
+        "county identity cannot be proven from source content",
+        "raw artifact hash or capturedAtUtc timestamp is missing",
+        "source requires storing a secret, cookie, bearer token, or password",
+        "normalized artifact is not TerraFusion-owned"
+      ]
+    },
+    {
+      "county": "Snohomish",
+      "countyToken": "snohomish",
+      "state": "WA",
+      "priority": "P1",
+      "registryStatus": "adapter-ready",
+      "acquisitionFamily": "Direct sales search",
+      "sourceDecisionStatus": "source_candidate_locked",
+      "sourceUrls": ["https://snohomishcountywa.gov"],
+      "sourceLabels": {
+        "officialAssessorBaseUrl": "https://snohomishcountywa.gov",
+        "primarySalesSource": "Property Sales Search + County Sales report (Excel/PDF)",
+        "fallbackSource": "Recorded Documents Search + Assessor Open Data",
+        "gisMapSurface": "SCOPI / GIS Open Data"
+      },
+      "requiredRawArtifacts": [
+        "parcel_or_property_export",
+        "sales_or_transfer_export_if_available",
+        "gis_or_parcel_identity_crosswalk_if_available"
+      ],
+      "receiptTarget": "evidence/june10-38-county-seed/snohomish/source-snapshot-receipt.json",
+      "nextAction": "capture_source_snapshot",
+      "runtimeClaimAllowed": false,
+      "stopConditions": [
+        "source content is sample, demo, or synthetic",
+        "county identity cannot be proven from source content",
+        "raw artifact hash or capturedAtUtc timestamp is missing",
+        "source requires storing a secret, cookie, bearer token, or password",
+        "normalized artifact is not TerraFusion-owned"
+      ]
+    },
+    {
+      "county": "Spokane",
+      "countyToken": "spokane",
+      "state": "WA",
+      "priority": "P1",
+      "registryStatus": "adapter-ready",
+      "acquisitionFamily": "Direct sales search",
+      "sourceDecisionStatus": "source_candidate_locked",
+      "sourceUrls": ["https://www.spokanecounty.org"],
+      "sourceLabels": {
+        "officialAssessorBaseUrl": "https://www.spokanecounty.org",
+        "primarySalesSource": "SCOUT Sales Search",
+        "fallbackSource": "Map parcel detail history",
+        "gisMapSurface": "SCOUT map"
+      },
+      "requiredRawArtifacts": [
+        "parcel_or_property_export",
+        "sales_or_transfer_export_if_available",
+        "gis_or_parcel_identity_crosswalk_if_available"
+      ],
+      "receiptTarget": "evidence/june10-38-county-seed/spokane/source-snapshot-receipt.json",
+      "nextAction": "capture_source_snapshot",
+      "runtimeClaimAllowed": false,
+      "stopConditions": [
+        "source content is sample, demo, or synthetic",
+        "county identity cannot be proven from source content",
+        "raw artifact hash or capturedAtUtc timestamp is missing",
+        "source requires storing a secret, cookie, bearer token, or password",
+        "normalized artifact is not TerraFusion-owned"
+      ]
+    },
+    {
+      "county": "Whatcom",
+      "countyToken": "whatcom",
+      "state": "WA",
+      "priority": "P1",
+      "registryStatus": "adapter-ready",
+      "acquisitionFamily": "Direct sales search",
+      "sourceDecisionStatus": "source_candidate_locked",
+      "sourceUrls": ["https://www.co.whatcom.wa.us"],
+      "sourceLabels": {
+        "officialAssessorBaseUrl": "https://www.co.whatcom.wa.us",
+        "primarySalesSource": "Sales Search + Neighborhood Market Study & Valuation Sales Data",
+        "fallbackSource": "Interactive Tax Parcel Viewer + Property Data Downloads",
+        "gisMapSurface": "Map Search / Interactive Tax Parcel Viewer"
+      },
+      "requiredRawArtifacts": [
+        "parcel_or_property_export",
+        "sales_or_transfer_export_if_available",
+        "gis_or_parcel_identity_crosswalk_if_available"
+      ],
+      "receiptTarget": "evidence/june10-38-county-seed/whatcom/source-snapshot-receipt.json",
+      "nextAction": "capture_source_snapshot",
+      "runtimeClaimAllowed": false,
+      "stopConditions": [
+        "source content is sample, demo, or synthetic",
+        "county identity cannot be proven from source content",
+        "raw artifact hash or capturedAtUtc timestamp is missing",
+        "source requires storing a secret, cookie, bearer token, or password",
+        "normalized artifact is not TerraFusion-owned"
+      ]
+    },
+    {
+      "county": "Yakima",
+      "countyToken": "yakima",
+      "state": "WA",
+      "priority": "P2",
+      "registryStatus": "adapter-ready",
+      "acquisitionFamily": "Direct sales search",
+      "sourceDecisionStatus": "source_locked",
+      "sourceUrls": [
+        "https://property.spatialest.com/wa/yakima#/",
+        "https://www.yakimacounty.us"
+      ],
+      "sourceLabels": {
+        "officialAssessorBaseUrl": "https://www.yakimacounty.us",
+        "primarySalesSource": "Sales Searches",
+        "fallbackSource": "Other Searches + BOE comparable-sales guidance",
+        "gisMapSurface": "Parcel Search / mapping"
+      },
+      "requiredRawArtifacts": [
+        "parcel_or_property_export",
+        "sales_or_transfer_export_if_available",
+        "gis_or_parcel_identity_crosswalk_if_available"
+      ],
+      "receiptTarget": "evidence/june10-38-county-seed/yakima/source-snapshot-receipt.json",
+      "nextAction": "capture_source_snapshot",
+      "runtimeClaimAllowed": false,
+      "stopConditions": [
+        "source content is sample, demo, or synthetic",
+        "county identity cannot be proven from source content",
+        "raw artifact hash or capturedAtUtc timestamp is missing",
+        "source requires storing a secret, cookie, bearer token, or password",
+        "normalized artifact is not TerraFusion-owned"
+      ]
+    }
+  ],
+  "missingCounties": [],
+  "rules": [
+    "This source lock is not a receipt.",
+    "This source lock does not certify runtime readiness.",
+    "Each county still needs raw artifact capture, SHA-256 hash, normalized TerraFusion artifact, DB load proof, API proof, and UI smoke before runtime promotion.",
+    "Benton remains on the certification track; this pack advances parallel acquisition only."
+  ]
+}
