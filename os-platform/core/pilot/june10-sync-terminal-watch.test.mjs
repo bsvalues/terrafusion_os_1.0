@@ -110,6 +110,28 @@ test("blocks certification when Sync is terminal but API health is down", () => 
   assert.ok(report.cleanRestartReadiness.items.some((item) => item.name === "API health recovery required"));
 });
 
+test("classifies DB probe failure separately from active Sync", () => {
+  const input = terminalInput();
+  input.syncState = {
+    observedAtUtc: "2026-05-22T22:39:30.000Z",
+    source: "docker:psql",
+    inProgressBatches: null,
+    latestBatch: null,
+    statusCounts: {},
+    tableEstimates: {},
+    error: "Docker Desktop is unable to start"
+  };
+
+  const report = buildJune10SyncTerminalWatch(input);
+
+  assert.equal(report.watchStatus, "DB_PROBE_UNAVAILABLE");
+  assert.equal(report.summary.syncProbeAvailable, false);
+  assert.equal(report.summary.syncTerminal, false);
+  assert.equal(report.certificationTrigger.ready, false);
+  assert.ok(report.blockers.some((blocker) => blocker.source === "sync_probe"));
+  assert.ok(report.cleanRestartReadiness.items.some((item) => item.name === "Sync/DB probe availability"));
+});
+
 test("marks Benton certification triggers green only when Sync terminal and API healthy", () => {
   const report = buildJune10SyncTerminalWatch(terminalInput());
 

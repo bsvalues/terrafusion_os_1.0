@@ -1,48 +1,31 @@
 {
-  "generatedAtUtc": "2026-05-22T22:40:21.250Z",
+  "generatedAtUtc": "2026-05-22T23:27:33.482Z",
   "slice": "June 10 Sync Terminal Watch",
-  "watchStatus": "SYNC_ACTIVE",
+  "watchStatus": "DB_PROBE_UNAVAILABLE",
   "passed": false,
   "runtimeActionTaken": false,
   "databaseMutationTaken": false,
   "summary": {
+    "syncProbeAvailable": false,
     "syncTerminal": false,
-    "inProgressBatches": 1,
-    "latestBatchStatus": "IN_PROGRESS",
-    "latestBatchOperator": "claude-strict-serial-improvement-tn500-v142",
+    "inProgressBatches": 0,
+    "latestBatchStatus": null,
+    "latestBatchOperator": null,
     "terminalQuietMinutes": null,
     "apiHealthy": false,
     "apiHealthStatus": null,
     "timeoutEscalationRequired": false,
-    "blockers": 2
+    "blockers": 3
   },
   "syncState": {
-    "observedAtUtc": "2026-05-22T22:40:18.835Z",
+    "observedAtUtc": "2026-05-22T23:27:33.481Z",
     "source": "docker:psql",
-    "statusCounts": {
-      "FAILED": 74,
-      "COMPLETED": 2534,
-      "IN_PROGRESS": 1
-    },
-    "latestBatch": {
-      "status": "IN_PROGRESS",
-      "operator": "claude-strict-serial-improvement-tn500-v142",
-      "startedAt": "2026-05-22T22:32:55.164Z",
-      "completedAt": null,
-      "rowsPromoted": null
-    },
-    "tableEstimates": {
-      "canonical_tf.tf_sale": 721,
-      "legacy_pacs_raw.owner": 5522301,
-      "canonical_tf.tf_parcel": 3197521,
-      "sync_bridge.load_batch": 2529,
-      "truth_pacs.parcel_spine": 511793,
-      "canonical_tf.tf_improvement": 1105,
-      "canonical_tf.tf_improvement_feature": 827693
-    }
+    "statusCounts": {},
+    "latestBatch": null,
+    "tableEstimates": {}
   },
   "apiHealth": {
-    "checkedAtUtc": "2026-05-22T22:40:21.261Z",
+    "checkedAtUtc": "2026-05-22T23:27:33.482Z",
     "url": "http://localhost:5046/health",
     "status": null,
     "ok": false,
@@ -55,6 +38,12 @@
   },
   "cleanRestartReadiness": {
     "items": [
+      {
+        "name": "Sync/DB probe availability",
+        "status": "blocked",
+        "detail": "Sync/DB probe failed; recover Docker/Postgres visibility before any runtime certification decision.",
+        "action": "manual_review_only"
+      },
       {
         "name": "Sync terminal state",
         "status": "blocked",
@@ -116,7 +105,12 @@
     {
       "source": "sync_terminal",
       "message": "TerraFusion Sync terminal state is not proven.",
-      "evidence": "inProgress=1; latestStatus=IN_PROGRESS; quietMinutes=unknown"
+      "evidence": "inProgress=0; latestStatus=missing; quietMinutes=unknown"
+    },
+    {
+      "source": "sync_probe",
+      "message": "Sync/DB probe is unavailable; terminal state cannot be determined.",
+      "evidence": "Command failed: docker exec -i terrafusion-postgres-dev psql -U postgres -d terrafusion -t -A -v ON_ERROR_STOP=1\nfailed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.\n"
     },
     {
       "source": "api_health",

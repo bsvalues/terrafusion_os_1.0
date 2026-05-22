@@ -170,6 +170,7 @@ export function buildJune10SyncTerminalWatch(input) {
   const thresholds = { ...DEFAULT_THRESHOLDS, ...(input.thresholds ?? {}) };
   const syncState = input.syncState ?? {};
   const apiHealth = input.apiHealth ?? { ok: false, status: null, error: "missing API health probe" };
+  const syncProbeAvailable = !syncState.error && Number.isFinite(syncState.inProgressBatches);
   const terminalState = syncTerminalState({ generatedAtUtc, syncState, thresholds });
   const apiHealthy = apiHealth.ok === true && apiHealth.status === 200;
   const escalations = buildEscalations({ generatedAtUtc, syncState, thresholds });
@@ -182,6 +183,16 @@ export function buildJune10SyncTerminalWatch(input) {
         "sync_terminal",
         "TerraFusion Sync terminal state is not proven.",
         `inProgress=${terminalState.inProgress}; latestStatus=${syncState.latestBatch?.status ?? "missing"}; quietMinutes=${terminalState.quietMinutes === null ? "unknown" : terminalState.quietMinutes.toFixed(1)}`
+      )
+    );
+  }
+
+  if (!syncProbeAvailable) {
+    blockers.push(
+      blocker(
+        "sync_probe",
+        "Sync/DB probe is unavailable; terminal state cannot be determined.",
+        syncState.error ?? "inProgressBatches missing or non-numeric"
       )
     );
   }
@@ -201,11 +212,26 @@ export function buildJune10SyncTerminalWatch(input) {
   }
 
   let watchStatus = "READY_FOR_BENTON_CERTIFICATION";
-  if (timeoutEscalationRequired) watchStatus = "ESCALATE_SYNC_TIMEOUT";
+  if (!syncProbeAvailable) watchStatus = "DB_PROBE_UNAVAILABLE";
+  else if (timeoutEscalationRequired) watchStatus = "ESCALATE_SYNC_TIMEOUT";
   else if (!terminalState.terminal) watchStatus = "SYNC_ACTIVE";
   else if (!apiHealthy) watchStatus = "API_RECOVERY_REQUIRED";
 
-  const triggerReady = watchStatus === "READY_FOR_BENTON_CERTIFICATION";
+  const triggerReady = syncProbeAvailable && watchStatus === "READY_FOR_BENTON_CERTIFICATION";
+  const cleanRestartReadiness = buildCleanRestartReadiness({
+    syncTerminal: terminalState.terminal,
+    apiHealthy,
+    timeoutEscalationRequired
+  });
+
+  cleanRestartReadiness.items.unshift({
+    name: "Sync/DB probe availability",
+    status: syncProbeAvailable ? "green" : "blocked",
+    detail: syncProbeAvailable
+      ? "Sync/DB probe returned structured batch state."
+      : "Sync/DB probe failed; recover Docker/Postgres visibility before any runtime certification decision.",
+    action: "manual_review_only"
+  });
 
   return {
     generatedAtUtc,
@@ -215,6 +241,7 @@ export function buildJune10SyncTerminalWatch(input) {
     runtimeActionTaken: false,
     databaseMutationTaken: false,
     summary: {
+      syncProbeAvailable,
       syncTerminal: terminalState.terminal,
       inProgressBatches: terminalState.inProgress,
       latestBatchStatus: syncState.latestBatch?.status ?? null,
@@ -234,11 +261,7 @@ export function buildJune10SyncTerminalWatch(input) {
     },
     apiHealth,
     thresholds,
-    cleanRestartReadiness: buildCleanRestartReadiness({
-      syncTerminal: terminalState.terminal,
-      apiHealthy,
-      timeoutEscalationRequired
-    }),
+    cleanRestartReadiness,
     certificationTrigger: {
       ready: triggerReady,
       conditions: [
