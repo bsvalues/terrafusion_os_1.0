@@ -1,0 +1,41 @@
+{
+  "schema": "terrafusion-staging-parcel-source-v1",
+  "mode": "contract_only_no_rows_loaded",
+  "fields": {
+    "county": {
+      "value": "Cowlitz"
+    },
+    "countyToken": {
+      "value": "cowlitz"
+    },
+    "parcelId": {
+      "sourceField": "PARCNO",
+      "required": true
+    },
+    "ownerName": {
+      "sourceField": "DEED_HOLDER_NAME",
+      "required": false
+    },
+    "situsAddress": {
+      "sourceFields": [
+        "SITUS_STREET_NUMBER",
+        "SITUS_STREET_DIRECTION",
+        "SITUS_STREET_NAME",
+        "SITUS_STREET_SUFFIX",
+        "SITUS_STREET_UNIT",
+        "SITUS_CITY",
+        "SITUS_ZIP_CODE"
+      ],
+      "required": false
+    },
+    "assessedValue": {
+      "sourceFields": ["LAND_ASSESSED_VALUE", "IMPR_ASSESSED_VALUE"],
+      "required": false
+    },
+    "geometryReference": {
+      "source": "ArcGIS feature layer geometry if later capture is authorized",
+      "required": false
+    }
+  },
+  "rows": []
+}

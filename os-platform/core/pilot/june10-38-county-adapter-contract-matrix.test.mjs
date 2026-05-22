@@ -112,6 +112,34 @@ test("adapter matrix keeps all runtime and DB claims disabled", () => {
   assert.ok(report.rules.some((rule) => rule.includes("No scraping beyond allowed source behavior.")));
 });
 
+test("adapter matrix marks Cowlitz verified from read-only adapter receipt without runtime claims", () => {
+  const report = buildAdapterContractMatrix({
+    sourceLockPack: sourceLockPack(),
+    adapterVerificationReports: [
+      {
+        county: "Cowlitz",
+        countyToken: "cowlitz",
+        adapterId: "cowlitz-readonly-arcgis-metadata-v1",
+        adapterStatus: "verified",
+        runtimeClaimAllowed: false,
+        dbMutationAllowed: false,
+        productionRowsWritten: 0,
+        parcelIdentity: { proven: true, sourceField: "PARCNO" },
+        blockers: []
+      }
+    ]
+  });
+
+  const cowlitz = report.rows.find((row) => row.county === "Cowlitz");
+
+  assert.equal(cowlitz.adapterStatus, "verified");
+  assert.equal(cowlitz.runtimeClaimAllowed, false);
+  assert.equal(cowlitz.dbMutationAllowed, false);
+  assert.equal(cowlitz.parcelIdentifierField, "PARCNO");
+  assert.equal(cowlitz.verification.adapterId, "cowlitz-readonly-arcgis-metadata-v1");
+  assert.equal(report.summary.verifiedAdapters, 1);
+});
+
 test("adapter matrix CLI writes JSON and Markdown evidence", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "tf-adapter-matrix-"));
   const sourceLockPath = path.join(root, "source-lock.json");

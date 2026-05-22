@@ -1,0 +1,180 @@
+{
+  "generatedAtUtc": "2026-05-22T16:54:07.225Z",
+  "county": "Cowlitz",
+  "countyToken": "cowlitz",
+  "adapterId": "cowlitz-readonly-arcgis-metadata-v1",
+  "adapterStatus": "verified",
+  "sourceType": "county_property_portal_plus_gis",
+  "accessMethod": "read_only_public_arcgis_metadata_fetch",
+  "expectedExportFormat": "arcgis_item_json_app_config_json_layer_metadata_json",
+  "fetchPlan": [
+    {
+      "id": "cowlitz_app_item",
+      "url": "https://gis.cowlitzwa.gov/ccportal/sharing/rest/content/items/848eadafa8ba4566a6a6370a4294c5e2?f=json",
+      "method": "GET",
+      "readOnly": true,
+      "purpose": "Fetch public ArcGIS item metadata."
+    },
+    {
+      "id": "cowlitz_app_data",
+      "url": "https://gis.cowlitzwa.gov/ccportal/sharing/rest/content/items/848eadafa8ba4566a6a6370a4294c5e2/data?f=json",
+      "method": "GET",
+      "readOnly": true,
+      "purpose": "Fetch public ArcGIS Web AppBuilder configuration."
+    },
+    {
+      "id": "cowlitz_parcel_layer_metadata",
+      "url": "https://gis.cowlitzwa.gov/ccserver/rest/services/Assessor/Parcels/MapServer/0?f=json",
+      "method": "GET",
+      "readOnly": true,
+      "purpose": "Fetch parcel layer field metadata only; no feature query."
+    }
+  ],
+  "parcelIdentity": {
+    "proven": true,
+    "sourceField": "PARCNO",
+    "proof": {
+      "searchSourceName": "Parcels",
+      "searchSourceUrl": "https://gis.cowlitzwa.gov/ccserver/rest/services/Assessor/Parcels/MapServer/0",
+      "searchFields": ["PARCNO"],
+      "layerFields": [
+        "OBJECTID",
+        "PARCNO",
+        "SOURCE",
+        "ACCOUNTNO",
+        "NBHD",
+        "NBHD_DESCRIPTION",
+        "USE_CODE",
+        "USE_CODE_DESCRIPTION",
+        "TAXCODE",
+        "TAX_STATUS",
+        "CONTRACT_PURCHASER",
+        "ABBR_PROP_REF",
+        "SUBDIVISION",
+        "DEED_HOLDER_NAME",
+        "DEED_HOLDER_ADDRESS_1",
+        "DEED_HOLDER_ADDRESS_2",
+        "DEED_HOLDER_CITY",
+        "DEED_HOLDER_STATE",
+        "DEED_HOLDER_ZIPCODE",
+        "SITUS_STREET_NUMBER",
+        "SITUS_STREET_DIRECTION",
+        "SITUS_STREET_NAME",
+        "SITUS_STREET_SUFFIX",
+        "SITUS_STREET_UNIT",
+        "SITUS_CITY",
+        "SITUS_ZIP_CODE",
+        "LAND_ASSESSED_VALUE",
+        "IMPR_ASSESSED_VALUE",
+        "ACRES_TOTAL",
+        "PID",
+        "Shape",
+        "Shape.STArea()",
+        "Shape.STLength()"
+      ]
+    },
+    "semantics": "PARCNO is the public ArcGIS parcel layer search field and exists in the parcel layer metadata."
+  },
+  "stagingShape": {
+    "schema": "terrafusion-staging-parcel-source-v1",
+    "mode": "contract_only_no_rows_loaded",
+    "fields": {
+      "county": {
+        "value": "Cowlitz"
+      },
+      "countyToken": {
+        "value": "cowlitz"
+      },
+      "parcelId": {
+        "sourceField": "PARCNO",
+        "required": true
+      },
+      "ownerName": {
+        "sourceField": "DEED_HOLDER_NAME",
+        "required": false
+      },
+      "situsAddress": {
+        "sourceFields": [
+          "SITUS_STREET_NUMBER",
+          "SITUS_STREET_DIRECTION",
+          "SITUS_STREET_NAME",
+          "SITUS_STREET_SUFFIX",
+          "SITUS_STREET_UNIT",
+          "SITUS_CITY",
+          "SITUS_ZIP_CODE"
+        ],
+        "required": false
+      },
+      "assessedValue": {
+        "sourceFields": ["LAND_ASSESSED_VALUE", "IMPR_ASSESSED_VALUE"],
+        "required": false
+      },
+      "geometryReference": {
+        "source": "ArcGIS feature layer geometry if later capture is authorized",
+        "required": false
+      }
+    },
+    "rows": []
+  },
+  "lineageReceipt": {
+    "receiptVersion": "june10-adapter-verification-v1",
+    "status": "VERIFIED",
+    "capturedAtUtc": "2026-05-22T16:54:07.225Z",
+    "county": "Cowlitz",
+    "countyToken": "cowlitz",
+    "adapterId": "cowlitz-readonly-arcgis-metadata-v1",
+    "noSecretValuesRecorded": true,
+    "rawArtifacts": [
+      {
+        "id": "app_item",
+        "sourceUrl": "https://gis.cowlitzwa.gov/ccportal/sharing/rest/content/items/848eadafa8ba4566a6a6370a4294c5e2?f=json",
+        "capturedAtUtc": "2026-05-22T16:54:07.225Z",
+        "sha256": "6566fa3c3d8f0a4f11f249a0153bdeb26d5ff8eeddfcbccc41d3b2bf29abe9fa",
+        "readOnly": true,
+        "path": "os-platform/core/pilot/evidence/june10-38-county-adapters/cowlitz/raw/cowlitz-arcgis-app-item.json"
+      },
+      {
+        "id": "app_data",
+        "sourceUrl": "https://gis.cowlitzwa.gov/ccportal/sharing/rest/content/items/848eadafa8ba4566a6a6370a4294c5e2/data?f=json",
+        "capturedAtUtc": "2026-05-22T16:54:07.225Z",
+        "sha256": "30fbda7a56f9612b5dd09ae1f0188e18b5992b066038ead7e5dff6e91ec4d326",
+        "readOnly": true,
+        "path": "os-platform/core/pilot/evidence/june10-38-county-adapters/cowlitz/raw/cowlitz-arcgis-app-data.json"
+      },
+      {
+        "id": "parcel_layer_metadata",
+        "sourceUrl": "https://gis.cowlitzwa.gov/ccserver/rest/services/Assessor/Parcels/MapServer/0?f=json",
+        "capturedAtUtc": "2026-05-22T16:54:07.225Z",
+        "sha256": "b9cec32982b138aba70f0b4e1698a6d288865a729b57dd87467a79672c4692cb",
+        "readOnly": true,
+        "path": "os-platform/core/pilot/evidence/june10-38-county-adapters/cowlitz/raw/cowlitz-parcel-layer-metadata.json"
+      }
+    ],
+    "normalizedArtifact": {
+      "path": "os-platform/core/pilot/evidence/june10-38-county-adapters/cowlitz/normalized/cowlitz-staging-source-contract.json",
+      "schema": "terrafusion-staging-parcel-source-v1",
+      "sha256": "4c07c8fefa47f000de7e353f23383b74ee7319b94804333903aeab3f1fbeaa7b",
+      "rowCount": 0
+    },
+    "counts": {
+      "parcelRowsFetched": 0,
+      "parcelRowsNormalized": 0,
+      "productionRowsWritten": 0
+    },
+    "runtimeClaimAllowed": false,
+    "dbMutationAllowed": false
+  },
+  "productionRowsWritten": 0,
+  "runtimeClaimAllowed": false,
+  "dbMutationAllowed": false,
+  "blockers": [],
+  "warnings": [
+    "License text warns against en masse owner/tax parcel dissemination without data share agreement."
+  ],
+  "rules": [
+    "This adapter verifies source metadata and staging contract only.",
+    "It does not query parcel features or perform bulk extraction.",
+    "It writes no TerraFusion production DB rows.",
+    "Runtime claims remain blocked until separate load, API, and UI proof exist."
+  ]
+}

@@ -1,12 +1,12 @@
 {
-  "generatedAtUtc": "2026-05-22T16:31:41.259Z",
+  "generatedAtUtc": "2026-05-22T16:54:08.287Z",
   "sourceLockGeneratedAtUtc": "2026-05-22T16:09:39.578Z",
   "slice": "38-County Adapter Contract Matrix",
   "summary": {
     "counties": 10,
-    "candidateAdapters": 10,
+    "candidateAdapters": 9,
     "implementedAdapters": 0,
-    "verifiedAdapters": 0,
+    "verifiedAdapters": 1,
     "runtimeClaimAllowed": false,
     "dbMutationAllowed": false
   },
@@ -15,13 +15,14 @@
     "dbMutationAllowed": false,
     "allowedClaims": [
       "adapter contract candidate defined",
+      "adapter verified when verification receipt is present",
       "source snapshot can be captured under receipt rules"
     ],
     "forbiddenClaims": [
       "runtime-ready",
       "full county data loaded",
       "official county-certified valuation",
-      "adapter verified",
+      "adapter verified without verification receipt",
       "database loaded"
     ]
   },
@@ -45,6 +46,7 @@
       "updateCadence": "on_demand_snapshot",
       "licenseTermsRisk": "medium_terms_review_required",
       "adapterStatus": "candidate",
+      "verification": null,
       "sourceUrls": ["https://clark.wa.gov"],
       "receiptTarget": "evidence/june10-38-county-seed/clark/source-snapshot-receipt.json",
       "runtimeClaimAllowed": false,
@@ -57,7 +59,7 @@
       "sourceType": "county_property_portal_plus_gis",
       "accessMethod": "manual_snapshot_or_playwright_capture",
       "expectedExportFormat": "html_or_json_network_capture_plus_optional_gis_layer",
-      "parcelIdentifierField": "parcel_id_or_account_number",
+      "parcelIdentifierField": "PARCNO",
       "ownerAddressValueFields": [
         "owner_name_if_available",
         "situs_address_if_available",
@@ -68,7 +70,13 @@
       ],
       "updateCadence": "on_demand_snapshot",
       "licenseTermsRisk": "low_public_portal_terms_review_required",
-      "adapterStatus": "candidate",
+      "adapterStatus": "verified",
+      "verification": {
+        "adapterId": "cowlitz-readonly-arcgis-metadata-v1",
+        "generatedAtUtc": "2026-05-22T16:54:07.225Z",
+        "parcelIdentifierField": "PARCNO",
+        "lineageReceiptVersion": "june10-adapter-verification-v1"
+      },
       "sourceUrls": [
         "https://cowlitzinfo.net/cowlitzpropertyapp/cowlitzpropertyapp/zoner/index",
         "https://gis.cowlitzwa.gov/ccportal/apps/webappviewer/index.html?id=848eadafa8ba4566a6a6370a4294c5e2",
@@ -98,6 +106,7 @@
       "updateCadence": "on_demand_snapshot",
       "licenseTermsRisk": "medium_terms_review_required",
       "adapterStatus": "candidate",
+      "verification": null,
       "sourceUrls": ["https://www.grantcountywa.gov"],
       "receiptTarget": "evidence/june10-38-county-seed/grant/source-snapshot-receipt.json",
       "runtimeClaimAllowed": false,
@@ -122,6 +131,7 @@
       "updateCadence": "on_demand_snapshot",
       "licenseTermsRisk": "medium_terms_review_required",
       "adapterStatus": "candidate",
+      "verification": null,
       "sourceUrls": ["https://kingcounty.gov"],
       "receiptTarget": "evidence/june10-38-county-seed/king/source-snapshot-receipt.json",
       "runtimeClaimAllowed": false,
@@ -146,6 +156,7 @@
       "updateCadence": "weekly_if_download_available",
       "licenseTermsRisk": "medium_terms_review_required",
       "adapterStatus": "candidate",
+      "verification": null,
       "sourceUrls": ["https://www.kitsapgov.com"],
       "receiptTarget": "evidence/june10-38-county-seed/kitsap/source-snapshot-receipt.json",
       "runtimeClaimAllowed": false,
@@ -170,6 +181,7 @@
       "updateCadence": "on_demand_snapshot",
       "licenseTermsRisk": "medium_terms_review_required",
       "adapterStatus": "candidate",
+      "verification": null,
       "sourceUrls": ["https://www.co.pierce.wa.us"],
       "receiptTarget": "evidence/june10-38-county-seed/pierce/source-snapshot-receipt.json",
       "runtimeClaimAllowed": false,
@@ -194,6 +206,7 @@
       "updateCadence": "on_demand_snapshot",
       "licenseTermsRisk": "medium_terms_review_required",
       "adapterStatus": "candidate",
+      "verification": null,
       "sourceUrls": ["https://snohomishcountywa.gov"],
       "receiptTarget": "evidence/june10-38-county-seed/snohomish/source-snapshot-receipt.json",
       "runtimeClaimAllowed": false,
@@ -218,6 +231,7 @@
       "updateCadence": "on_demand_snapshot",
       "licenseTermsRisk": "medium_terms_review_required",
       "adapterStatus": "candidate",
+      "verification": null,
       "sourceUrls": ["https://www.spokanecounty.org"],
       "receiptTarget": "evidence/june10-38-county-seed/spokane/source-snapshot-receipt.json",
       "runtimeClaimAllowed": false,
@@ -242,6 +256,7 @@
       "updateCadence": "on_demand_snapshot",
       "licenseTermsRisk": "medium_terms_review_required",
       "adapterStatus": "candidate",
+      "verification": null,
       "sourceUrls": ["https://www.co.whatcom.wa.us"],
       "receiptTarget": "evidence/june10-38-county-seed/whatcom/source-snapshot-receipt.json",
       "runtimeClaimAllowed": false,
@@ -266,6 +281,7 @@
       "updateCadence": "on_demand_snapshot",
       "licenseTermsRisk": "low_public_portal_terms_review_required",
       "adapterStatus": "candidate",
+      "verification": null,
       "sourceUrls": [
         "https://property.spatialest.com/wa/yakima#/",
         "https://www.yakimacounty.us"

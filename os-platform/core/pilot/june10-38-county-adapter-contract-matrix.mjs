@@ -32,6 +32,9 @@ const DEFAULT_OUT_MD = path.join(
   "evidence",
   "june10-38-county-adapter-contract-matrix.latest.md"
 );
+const DEFAULT_ADAPTER_VERIFICATION_PATHS = [
+  path.join(repoRoot, "os-platform", "core", "pilot", "evidence", "june10-cowlitz-readonly-adapter.latest.json")
+];
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -130,15 +133,39 @@ function licenseTermsRiskFor(lock, sourceType) {
   return "low_public_portal_terms_review_required";
 }
 
-function adapterStatusFor(lock) {
+function normalizeCountyToken(value) {
+  return String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function validVerificationFor(lock, verification) {
+  if (!verification) return false;
+  const verificationToken = verification.countyToken ?? normalizeCountyToken(verification.county);
+  return (
+    verificationToken === lock.countyToken &&
+    verification.adapterStatus === "verified" &&
+    verification.runtimeClaimAllowed === false &&
+    verification.dbMutationAllowed === false &&
+    Number(verification.productionRowsWritten ?? 0) === 0 &&
+    verification.parcelIdentity?.proven === true &&
+    asArray(verification.blockers).length === 0
+  );
+}
+
+function adapterStatusFor(lock, verification) {
+  if (validVerificationFor(lock, verification)) return "verified";
   if (lock.sourceDecisionStatus === "source_locked" || lock.sourceDecisionStatus === "source_candidate_locked") {
     return "candidate";
   }
   return "none";
 }
 
-function buildRow(lock) {
+function buildRow(lock, verification) {
   const sourceType = sourceTypeFor(lock);
+  const verified = validVerificationFor(lock, verification);
   return {
     county: lock.county,
     countyToken: lock.countyToken,
@@ -146,11 +173,19 @@ function buildRow(lock) {
     sourceType,
     accessMethod: accessMethodFor(sourceType),
     expectedExportFormat: expectedFormatFor(sourceType),
-    parcelIdentifierField: parcelIdentifierFieldFor(sourceType),
+    parcelIdentifierField: verified ? verification.parcelIdentity.sourceField : parcelIdentifierFieldFor(sourceType),
     ownerAddressValueFields: ownerAddressValueFieldsFor(lock),
     updateCadence: updateCadenceFor(lock),
     licenseTermsRisk: licenseTermsRiskFor(lock, sourceType),
-    adapterStatus: adapterStatusFor(lock),
+    adapterStatus: adapterStatusFor(lock, verification),
+    verification: verified
+      ? {
+          adapterId: verification.adapterId,
+          generatedAtUtc: verification.generatedAtUtc ?? null,
+          parcelIdentifierField: verification.parcelIdentity?.sourceField ?? null,
+          lineageReceiptVersion: verification.lineageReceipt?.receiptVersion ?? null
+        }
+      : null,
     sourceUrls: asArray(lock.sourceUrls),
     receiptTarget: lock.receiptTarget,
     runtimeClaimAllowed: false,
@@ -160,9 +195,16 @@ function buildRow(lock) {
 
 export function buildAdapterContractMatrix({
   sourceLockPack,
+  adapterVerificationReports = [],
   generatedAtUtc = new Date().toISOString()
 }) {
-  const rows = asArray(sourceLockPack?.sourceLocks).map(buildRow);
+  const verificationByCounty = new Map(
+    asArray(adapterVerificationReports).map((report) => [
+      report.countyToken ?? normalizeCountyToken(report.county),
+      report
+    ])
+  );
+  const rows = asArray(sourceLockPack?.sourceLocks).map((lock) => buildRow(lock, verificationByCounty.get(lock.countyToken)));
 
   return {
     generatedAtUtc,
@@ -179,12 +221,16 @@ export function buildAdapterContractMatrix({
     claimRules: {
       runtimeClaimAllowed: false,
       dbMutationAllowed: false,
-      allowedClaims: ["adapter contract candidate defined", "source snapshot can be captured under receipt rules"],
+      allowedClaims: [
+        "adapter contract candidate defined",
+        "adapter verified when verification receipt is present",
+        "source snapshot can be captured under receipt rules"
+      ],
       forbiddenClaims: [
         "runtime-ready",
         "full county data loaded",
         "official county-certified valuation",
-        "adapter verified",
+        "adapter verified without verification receipt",
         "database loaded"
       ]
     },
@@ -251,6 +297,7 @@ function renderMarkdown(report) {
 function parseArgs(argv) {
   const args = {
     sourceLockPath: DEFAULT_SOURCE_LOCK,
+    adapterVerificationPaths: DEFAULT_ADAPTER_VERIFICATION_PATHS,
     outJson: DEFAULT_OUT_JSON,
     outMd: DEFAULT_OUT_MD,
     write: true
@@ -259,6 +306,8 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === "--source-lock") args.sourceLockPath = path.resolve(argv[++i]);
+    else if (arg === "--adapter-verification") args.adapterVerificationPaths = [path.resolve(argv[++i])];
+    else if (arg === "--no-adapter-verification") args.adapterVerificationPaths = [];
     else if (arg === "--out-json") args.outJson = path.resolve(argv[++i]);
     else if (arg === "--out-md") args.outMd = path.resolve(argv[++i]);
     else if (arg === "--no-write") args.write = false;
@@ -267,17 +316,26 @@ function parseArgs(argv) {
   return args;
 }
 
+function readAdapterVerificationReports(paths) {
+  return asArray(paths)
+    .filter((filePath) => fs.existsSync(filePath))
+    .map((filePath) => readJson(filePath));
+}
+
 export function runAdapterContractMatrix(options = {}) {
   const args = {
     sourceLockPath: DEFAULT_SOURCE_LOCK,
     outJson: DEFAULT_OUT_JSON,
     outMd: DEFAULT_OUT_MD,
+    adapterVerificationPaths: DEFAULT_ADAPTER_VERIFICATION_PATHS,
     write: true,
     ...options
   };
 
   const report = buildAdapterContractMatrix({
-    sourceLockPack: readJson(args.sourceLockPath)
+    sourceLockPack: readJson(args.sourceLockPath),
+    adapterVerificationReports:
+      args.adapterVerificationReports ?? readAdapterVerificationReports(args.adapterVerificationPaths)
   });
 
   if (args.write) {

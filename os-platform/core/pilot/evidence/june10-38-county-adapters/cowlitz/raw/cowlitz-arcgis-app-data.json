@@ -1,0 +1,628 @@
+{
+  "theme": {
+    "name": "LaunchpadTheme",
+    "styles": ["style3", "default", "style2"],
+    "version": "2.26",
+    "sharedTheme": {
+      "useHeader": true,
+      "useLogo": true,
+      "isPortalSupport": true
+    },
+    "customStyles": {
+      "mainBackgroundColor": "no-color"
+    }
+  },
+  "portalUrl": "https://gis.cowlitzwa.gov/ccportal",
+  "appId": "",
+  "authorizedCrossOriginDomains": [],
+  "title": "AssessorMap",
+  "subtitle": "with ArcGIS Web AppBuilder",
+  "keepAppState": true,
+  "logo": "https://gis.cowlitzwa.gov/ccportal/sharing/rest/content/items/22b010aaf8e44b18ad1772024a413ae5/data",
+  "geometryService": "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer",
+  "links": [],
+  "widgetOnScreen": {
+    "widgets": [
+      {
+        "uri": "themes/LaunchpadTheme/widgets/AnchorBarController/Widget",
+        "position": {
+          "bottom": 10,
+          "height": 40,
+          "relativeTo": "map",
+          "zIndex": 0
+        },
+        "version": "2.33",
+        "id": "themes_LaunchpadTheme_widgets_AnchorBarController_Widget_20",
+        "name": "AnchorBarController"
+      },
+      {
+        "uri": "themes/LaunchpadTheme/widgets/Header/Widget",
+        "position": {
+          "left": 15,
+          "top": 17,
+          "width": 670,
+          "height": 46,
+          "relativeTo": "map"
+        },
+        "version": "2.33",
+        "id": "themes_LaunchpadTheme_widgets_Header_Widget_21",
+        "name": "Header"
+      },
+      {
+        "uri": "widgets/Search/Widget",
+        "position": {
+          "left": 350,
+          "top": 25,
+          "width": 300,
+          "zIndex": 1,
+          "relativeTo": "map"
+        },
+        "version": "2.33",
+        "id": "widgets_Search_Widget_22",
+        "name": "Search",
+        "config": {
+          "allPlaceholder": "Enter Tax Parcel Number, Address, or Street Name",
+          "showInfoWindowOnSelect": true,
+          "sources": [
+            {
+              "layerId": "ADDRESS_POINTS_2534_0",
+              "url": "https://gis.cowlitzwa.gov/ccserver/rest/services/BuildPlanning/ADDRESS_POINTS/MapServer/0",
+              "name": "ADDRESSPOINTS",
+              "placeholder": "",
+              "searchFields": [
+                "SITE_ALL",
+                "ADDRESS",
+                "APN",
+                "LSt_Name",
+                "Common_Name"
+              ],
+              "displayField": "ADDRESS",
+              "exactMatch": false,
+              "searchInCurrentMapExtent": false,
+              "panToScale": false,
+              "zoomScale": 1200,
+              "maxSuggestions": 6,
+              "maxResults": 6,
+              "type": "query"
+            },
+            {
+              "layerId": "Parcels_5051_0",
+              "url": "https://gis.cowlitzwa.gov/ccserver/rest/services/Assessor/Parcels/MapServer/0",
+              "name": "Parcels",
+              "placeholder": "",
+              "searchFields": ["PARCNO"],
+              "displayField": "DEED_HOLDER_NAME",
+              "exactMatch": false,
+              "searchInCurrentMapExtent": false,
+              "panToScale": false,
+              "zoomScale": null,
+              "maxSuggestions": 6,
+              "maxResults": 6,
+              "type": "query"
+            },
+            {
+              "layerId": "Streets_1472_0",
+              "url": "https://gis.cowlitzwa.gov/ccserver/rest/services/County/Streets/MapServer/0",
+              "name": "Streets",
+              "placeholder": "",
+              "searchFields": ["SITE_ALL", "ALIAS_FULLNAME", "LSt_Name"],
+              "displayField": "SITE_ALL",
+              "exactMatch": false,
+              "searchInCurrentMapExtent": false,
+              "panToScale": false,
+              "zoomScale": null,
+              "maxSuggestions": 6,
+              "maxResults": 6,
+              "type": "query"
+            },
+            {
+              "url": "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer",
+              "name": "ArcGIS World Geocoding Service",
+              "singleLineFieldName": "SingleLine",
+              "placeholder": "Find address or place",
+              "countryCode": "",
+              "panToScale": false,
+              "zoomScale": null,
+              "maxSuggestions": 6,
+              "maxResults": 6,
+              "searchInCurrentMapExtent": false,
+              "enableLocalSearch": true,
+              "localSearchMinScale": 300000,
+              "localSearchDistance": 50000,
+              "radiusUnit": "meter",
+              "type": "locator"
+            }
+          ]
+        }
+      },
+      {
+        "uri": "widgets/OverviewMap/Widget",
+        "position": {
+          "right": 20,
+          "top": 20,
+          "relativeTo": "map"
+        },
+        "version": "2.33",
+        "id": "widgets_OverviewMap_Widget_23",
+        "name": "OverviewMap"
+      },
+      {
+        "uri": "widgets/ZoomSlider/Widget",
+        "position": {
+          "left": 25,
+          "top": 95,
+          "relativeTo": "map"
+        },
+        "version": "2.33",
+        "id": "widgets_ZoomSlider_Widget_24",
+        "name": "ZoomSlider"
+      },
+      {
+        "uri": "widgets/HomeButton/Widget",
+        "position": {
+          "left": 25,
+          "top": 175,
+          "relativeTo": "map"
+        },
+        "id": "widgets_HomeButton_Widget_25",
+        "name": "HomeButton",
+        "version": "2.33"
+      },
+      {
+        "uri": "widgets/MyLocation/Widget",
+        "position": {
+          "left": 25,
+          "top": 215,
+          "relativeTo": "map"
+        },
+        "version": "2.33",
+        "id": "widgets_MyLocation_Widget_26",
+        "name": "MyLocation"
+      },
+      {
+        "uri": "widgets/AttributeTable/Widget",
+        "version": "2.33",
+        "position": {
+          "right": 20,
+          "bottom": 80,
+          "relativeTo": "map"
+        },
+        "closeable": true,
+        "id": "widgets_AttributeTable_Widget_27",
+        "name": "AttributeTable"
+      },
+      {
+        "uri": "widgets/Coordinate/Widget",
+        "position": {
+          "left": 20,
+          "bottom": 60,
+          "relativeTo": "map"
+        },
+        "id": "widgets_Coordinate_Widget_28",
+        "name": "Coordinate",
+        "version": "2.33"
+      },
+      {
+        "uri": "widgets/Scalebar/Widget",
+        "position": {
+          "left": 27,
+          "bottom": 25,
+          "relativeTo": "map"
+        },
+        "version": "2.33",
+        "id": "widgets_Scalebar_Widget_29",
+        "name": "Scalebar"
+      },
+      {
+        "uri": "widgets/Splash/Widget",
+        "visible": false,
+        "position": {
+          "relativeTo": "browser"
+        },
+        "version": "2.33",
+        "id": "widgets_Splash_Widget_30",
+        "name": "Splash"
+      },
+      {
+        "position": {
+          "right": 130,
+          "top": 20,
+          "relativeTo": "map"
+        },
+        "placeholderIndex": 1,
+        "id": "_31",
+        "name": "Measurement",
+        "version": "2.33",
+        "closeable": true,
+        "uri": "widgets/Measurement/Widget",
+        "config": {
+          "measurement": {
+            "defaultAreaUnit": "esriAcres",
+            "defaultLengthUnit": "esriFeetUS"
+          },
+          "showArea": true,
+          "showDistance": true,
+          "showLocation": true,
+          "defaultAreaUnit": "esriSquareMiles",
+          "defaultLengthUnit": "esriMiles",
+          "isOperationalLayer": false
+        }
+      },
+      {
+        "position": {
+          "right": 180,
+          "top": 20,
+          "relativeTo": "map"
+        },
+        "placeholderIndex": 1,
+        "id": "_32",
+        "name": "Draw",
+        "version": "2.33",
+        "closeable": true,
+        "uri": "widgets/Draw/Widget",
+        "config": {
+          "locationUnits": [
+            {
+              "unit": "DEGREES",
+              "abbr": "dd",
+              "format": "YN XE"
+            },
+            {
+              "unit": "DEGREE-MINUTE-SECOND",
+              "abbr": "dms",
+              "format": "A°B'C\"N X°Y'Z\"E"
+            }
+          ],
+          "distanceUnits": [
+            {
+              "unit": "KILOMETERS",
+              "abbr": "km"
+            },
+            {
+              "unit": "MILES",
+              "abbr": "mi"
+            },
+            {
+              "unit": "METERS",
+              "abbr": "m"
+            },
+            {
+              "unit": "FEET",
+              "abbr": "ft"
+            },
+            {
+              "unit": "YARDS",
+              "abbr": "yd"
+            },
+            {
+              "unit": "NAUTICAL_MILES",
+              "abbr": "nm"
+            }
+          ],
+          "areaUnits": [
+            {
+              "unit": "SQUARE_KILOMETERS",
+              "abbr": "sq km"
+            },
+            {
+              "unit": "SQUARE_MILES",
+              "abbr": "sq mi"
+            },
+            {
+              "unit": "ACRES",
+              "abbr": "ac"
+            },
+            {
+              "unit": "HECTARES",
+              "abbr": "ha"
+            },
+            {
+              "unit": "SQUARE_METERS",
+              "abbr": "sq m"
+            },
+            {
+              "unit": "SQUARE_FEET",
+              "abbr": "sq ft"
+            },
+            {
+              "unit": "SQUARE_YARDS",
+              "abbr": "sq yd"
+            }
+          ],
+          "isOperationalLayer": false
+        }
+      },
+      {
+        "position": {
+          "right": 230,
+          "top": 20,
+          "relativeTo": "map"
+        },
+        "placeholderIndex": 1,
+        "id": "_33",
+        "name": "Print",
+        "version": "2.33",
+        "closeable": true,
+        "uri": "widgets/Print/Widget",
+        "config": {
+          "serviceURL": "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task",
+          "defaultTitle": "ArcGIS Web Map",
+          "defaultAuthor": "ArcGIS Web AppBuilder",
+          "defaultCopyright": "",
+          "defaultFormat": "PDF",
+          "defaultLayout": "Letter ANSI A Landscape",
+          "copyrightEditable": true
+        }
+      },
+      {
+        "uri": "widgets/ExtentNavigate/Widget",
+        "visible": false,
+        "position": {
+          "top": 255,
+          "left": 25,
+          "relativeTo": "map"
+        },
+        "version": "2.33",
+        "id": "widgets_ExtentNavigate_Widget_34",
+        "name": "ExtentNavigate"
+      },
+      {
+        "uri": "widgets/FullScreen/Widget",
+        "visible": false,
+        "position": {
+          "right": 70,
+          "top": 20,
+          "relativeTo": "map"
+        },
+        "version": "2.33",
+        "id": "widgets_FullScreen_Widget_35",
+        "name": "FullScreen"
+      }
+    ],
+    "panel": {
+      "uri": "jimu/OnScreenWidgetPanel",
+      "position": {
+        "relativeTo": "map"
+      }
+    }
+  },
+  "map": {
+    "3D": false,
+    "2D": true,
+    "position": {
+      "left": 0,
+      "top": 0,
+      "right": 0,
+      "bottom": 0
+    },
+    "itemId": "e24ca5abb95748dcbceb9d100b5b3bc1",
+    "mapOptions": {},
+    "id": "map",
+    "portalUrl": "https://gis.cowlitzwa.gov/ccportal/"
+  },
+  "widgetPool": {
+    "panel": {
+      "uri": "themes/LaunchpadTheme/panels/LaunchpadPanel/Panel",
+      "position": {
+        "relativeTo": "map"
+      }
+    },
+    "widgets": [
+      {
+        "uri": "widgets/Legend/Widget",
+        "version": "2.33",
+        "id": "widgets_Legend_Widget_18",
+        "name": "Legend",
+        "index": 2
+      },
+      {
+        "uri": "widgets/LayerList/Widget",
+        "version": "2.33",
+        "id": "widgets_LayerList_Widget_19",
+        "name": "LayerList",
+        "index": 3
+      },
+      {
+        "name": "BasemapGallery",
+        "version": "2.33",
+        "uri": "widgets/BasemapGallery/Widget",
+        "config": {
+          "basemapGallery": {
+            "mode": 1,
+            "basemaps": []
+          }
+        },
+        "index": 5,
+        "id": "widgets_BasemapGallery_Widget_36"
+      }
+    ],
+    "groups": []
+  },
+  "mobileLayout": {
+    "widgetOnScreen": {
+      "widgets": [
+        {
+          "uri": "themes/LaunchpadTheme/widgets/AnchorBarController/Widget",
+          "position": {
+            "bottom": 0,
+            "height": 40,
+            "width": "100%",
+            "zIndex": 0,
+            "relativeTo": "map"
+          },
+          "version": "2.26"
+        },
+        {
+          "uri": "themes/LaunchpadTheme/widgets/Header/Widget",
+          "position": {
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "height": 46,
+            "relativeTo": "map"
+          },
+          "version": "2.26"
+        },
+        {
+          "uri": "widgets/Search/Widget",
+          "position": {
+            "left": 10,
+            "top": 10,
+            "right": 10,
+            "zIndex": 0,
+            "relativeTo": "map"
+          },
+          "version": "2.26"
+        },
+        {
+          "uri": "widgets/OverviewMap/Widget",
+          "position": {
+            "right": 20,
+            "top": 20
+          },
+          "version": "2.26"
+        },
+        {
+          "uri": "widgets/ZoomSlider/Widget",
+          "position": {
+            "right": 10,
+            "bottom": 160,
+            "relativeTo": "map"
+          },
+          "version": "2.26"
+        },
+        {
+          "uri": "widgets/HomeButton/Widget",
+          "position": {
+            "right": 10,
+            "bottom": 75,
+            "relativeTo": "map"
+          }
+        },
+        {
+          "uri": "widgets/MyLocation/Widget",
+          "inPanel": false,
+          "position": {
+            "right": 10,
+            "bottom": 115,
+            "relativeTo": "map"
+          },
+          "version": "2.26"
+        },
+        {
+          "uri": "widgets/AttributeTable/Widget",
+          "version": "2.26",
+          "position": {
+            "left": 10,
+            "bottom": 70,
+            "relativeTo": "map"
+          },
+          "closeable": true
+        },
+        {
+          "uri": "widgets/Coordinate/Widget",
+          "position": {
+            "left": 20,
+            "bottom": 60
+          }
+        },
+        {
+          "uri": "widgets/Scalebar/Widget",
+          "position": {
+            "left": 50,
+            "bottom": 70,
+            "relativeTo": "map"
+          },
+          "version": "2.26"
+        },
+        {
+          "uri": "widgets/Splash/Widget",
+          "visible": false,
+          "position": {
+            "relativeTo": "browser"
+          },
+          "version": "2.26"
+        },
+        {
+          "position": {
+            "left": 10,
+            "bottom": 195,
+            "relativeTo": "map"
+          }
+        },
+        {
+          "position": {
+            "left": 10,
+            "bottom": 155,
+            "relativeTo": "map"
+          }
+        },
+        {
+          "position": {
+            "left": 10,
+            "bottom": 115,
+            "relativeTo": "map"
+          }
+        },
+        {
+          "uri": "widgets/ExtentNavigate/Widget",
+          "visible": false,
+          "position": {
+            "right": 10,
+            "bottom": 238,
+            "relativeTo": "map"
+          },
+          "version": "2.26"
+        },
+        {
+          "uri": "widgets/FullScreen/Widget",
+          "visible": false,
+          "position": {
+            "right": 70,
+            "top": 20
+          },
+          "version": "2.26"
+        }
+      ]
+    },
+    "map": {
+      "position": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0
+      }
+    },
+    "widgetPool": {
+      "panel": {
+        "uri": "themes/LaunchpadTheme/panels/LaunchpadPanel/Panel"
+      }
+    }
+  },
+  "loadingPage": {
+    "backgroundColor": "#508dca",
+    "backgroundImage": {
+      "visible": false
+    },
+    "loadingGif": {
+      "visible": true,
+      "uri": "configs/loading/images/predefined_loading_1.gif",
+      "width": 58,
+      "height": 29
+    }
+  },
+  "wabVersion": "2.33",
+  "_buildInfo": {
+    "widgetManifestsMerged": true
+  },
+  "isWebTier": false,
+  "httpProxy": {
+    "useProxy": true,
+    "url": "https://gis.cowlitzwa.gov/ccportal/sharing/proxy"
+  },
+  "dataSource": {
+    "dataSources": {},
+    "settings": {}
+  },
+  "appItemId": "848eadafa8ba4566a6a6370a4294c5e2"
+}
