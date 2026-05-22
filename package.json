@@ -93,6 +93,7 @@
     "truth:runtime-candidate-set": "node scripts/truth/runtime-candidate-set.mjs",
     "truth:runtime-db-identity": "node scripts/truth/runtime-db-identity.mjs",
     "truth:runtime-db-content": "node scripts/truth/runtime-db-content-audit.mjs",
+    "truth:runtime-sqlite-canonical-parcel-projection": "node --no-warnings scripts/truth/runtime-sqlite-canonical-parcel-projection.mjs",
     "truth:terrafusion-db-product-load-ledger": "node scripts/truth/terrafusion-db-product-load-ledger.mjs",
     "truth:terrafusion-db-sales-coverage": "node scripts/truth/terrafusion-db-sales-coverage.mjs",
     "truth:benton-parcel-count-sanity": "node scripts/truth/benton-parcel-count-sanity.mjs",
