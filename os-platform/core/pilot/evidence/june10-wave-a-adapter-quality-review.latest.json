@@ -1,0 +1,260 @@
+{
+  "generatedAtUtc": "2026-05-22T19:37:15.202Z",
+  "slice": "Wave A 5-Adapter Quality Review",
+  "summary": {
+    "reviewedAdapters": 5,
+    "countiesReviewed": ["Clark", "Cowlitz", "King", "Spokane", "Yakima"],
+    "verifiedAdapters": 5,
+    "runtimeClaimAllowed": false,
+    "dbMutationAllowed": false,
+    "stagingContractConsistent": true,
+    "lineageReceiptConsistent": true,
+    "highConfidenceParcelIdentity": 5,
+    "missingOwnerFields": 1,
+    "missingAddressFields": 1,
+    "missingValueFields": 3,
+    "termsOrAccessReviewRequired": 2,
+    "geometryLimitations": 1,
+    "loadPathReady": 0,
+    "conditionalLoadPathCandidates": 2,
+    "identityReadyOnly": 3
+  },
+  "rules": [
+    "No new county expansion in this slice.",
+    "No production DB mutation.",
+    "No runtime claim.",
+    "Verified means read-only metadata/schema adapter verification only.",
+    "Load-path classification does not authorize data capture or product runtime registration."
+  ],
+  "rows": [
+    {
+      "county": "Clark",
+      "countyToken": "clark",
+      "adapterId": "clark-readonly-propertyfinder-arcgis-schema-v1",
+      "adapterStatus": "verified",
+      "sourceType": "county_property_portal_plus_gis",
+      "accessMethod": "read_only_public_arcgis_rest_metadata_fetch",
+      "expectedExportFormat": "arcgis_rest_service_json_layer_schema_metadata",
+      "productionRowsWritten": 0,
+      "runtimeClaimAllowed": false,
+      "dbMutationAllowed": false,
+      "stagingContract": {
+        "consistent": true,
+        "schema": "terrafusion-staging-parcel-source-v1",
+        "mode": "contract_only_no_rows_loaded",
+        "missingContractFields": []
+      },
+      "lineageReceipt": {
+        "consistent": true,
+        "receiptVersion": "june10-adapter-verification-v1",
+        "status": "VERIFIED",
+        "rawArtifactCount": 2,
+        "normalizedArtifact": "os-platform/core/pilot/evidence/june10-38-county-adapters/clark/normalized/clark-staging-source-contract.json"
+      },
+      "parcelIdentity": {
+        "proven": true,
+        "sourceField": "Prop_id",
+        "componentFields": [],
+        "confidenceLevel": "high",
+        "semantics": "Clark MapsOnline PropertyFinder Taxlots layer exposes Prop_id as the Property ID display field in public ArcGIS REST metadata."
+      },
+      "missingFields": ["assessedValue"],
+      "termsAccessRisk": {
+        "level": "low_public_metadata_risk",
+        "reasons": []
+      },
+      "geometryLimitations": [],
+      "loadPathClassification": "identity_ready_only",
+      "warnings": [
+        "Public Clark PropertyFinder Taxlots schema did not expose an assessed value field in metadata.",
+        "Clark Taxlots layer description says the layer is under development and may change without notice."
+      ],
+      "blockers": []
+    },
+    {
+      "county": "Cowlitz",
+      "countyToken": "cowlitz",
+      "adapterId": "cowlitz-readonly-arcgis-metadata-v1",
+      "adapterStatus": "verified",
+      "sourceType": "county_property_portal_plus_gis",
+      "accessMethod": "read_only_public_arcgis_metadata_fetch",
+      "expectedExportFormat": "arcgis_item_json_app_config_json_layer_metadata_json",
+      "productionRowsWritten": 0,
+      "runtimeClaimAllowed": false,
+      "dbMutationAllowed": false,
+      "stagingContract": {
+        "consistent": true,
+        "schema": "terrafusion-staging-parcel-source-v1",
+        "mode": "contract_only_no_rows_loaded",
+        "missingContractFields": []
+      },
+      "lineageReceipt": {
+        "consistent": true,
+        "receiptVersion": "june10-adapter-verification-v1",
+        "status": "VERIFIED",
+        "rawArtifactCount": 3,
+        "normalizedArtifact": "os-platform/core/pilot/evidence/june10-38-county-adapters/cowlitz/normalized/cowlitz-staging-source-contract.json"
+      },
+      "parcelIdentity": {
+        "proven": true,
+        "sourceField": "PARCNO",
+        "componentFields": [],
+        "confidenceLevel": "high",
+        "semantics": "PARCNO is the public ArcGIS parcel layer search field and exists in the parcel layer metadata."
+      },
+      "missingFields": [],
+      "termsAccessRisk": {
+        "level": "terms_or_access_review_required",
+        "reasons": [
+          "License text warns against en masse owner/tax parcel dissemination without data share agreement."
+        ]
+      },
+      "geometryLimitations": [],
+      "loadPathClassification": "conditional_load_path_candidate",
+      "warnings": [
+        "License text warns against en masse owner/tax parcel dissemination without data share agreement."
+      ],
+      "blockers": []
+    },
+    {
+      "county": "King",
+      "countyToken": "king",
+      "adapterId": "king-readonly-parcel-area-arcgis-schema-v1",
+      "adapterStatus": "verified",
+      "sourceType": "county_property_portal_plus_gis",
+      "accessMethod": "read_only_public_arcgis_rest_metadata_fetch",
+      "expectedExportFormat": "arcgis_rest_service_json_layer_schema_metadata",
+      "productionRowsWritten": 0,
+      "runtimeClaimAllowed": false,
+      "dbMutationAllowed": false,
+      "stagingContract": {
+        "consistent": true,
+        "schema": "terrafusion-staging-parcel-source-v1",
+        "mode": "contract_only_no_rows_loaded",
+        "missingContractFields": []
+      },
+      "lineageReceipt": {
+        "consistent": true,
+        "receiptVersion": "june10-adapter-verification-v1",
+        "status": "VERIFIED",
+        "rawArtifactCount": 2,
+        "normalizedArtifact": "os-platform/core/pilot/evidence/june10-38-county-adapters/king/normalized/king-staging-source-contract.json"
+      },
+      "parcelIdentity": {
+        "proven": true,
+        "sourceField": "PIN",
+        "componentFields": ["MAJOR", "MINOR"],
+        "confidenceLevel": "high",
+        "semantics": "King County parcel_area metadata states parcel numbers may include leading zeros in PIN, Major, or Minor and exposes PIN plus MAJOR/MINOR fields."
+      },
+      "missingFields": ["ownerName", "situsAddress", "assessedValue"],
+      "termsAccessRisk": {
+        "level": "low_public_metadata_risk",
+        "reasons": []
+      },
+      "geometryLimitations": [
+        "King parcel_area metadata notes placeholder/stacked polygon geometry; parcel counts require later semantic filtering.",
+        "King parcel_area metadata says boundaries are general location only and not for survey purposes."
+      ],
+      "loadPathClassification": "identity_ready_only",
+      "warnings": [
+        "Public King parcel_area schema did not expose owner fields in metadata.",
+        "Public King parcel_area schema did not expose situs address fields in metadata.",
+        "Public King parcel_area schema did not expose an assessed value field in metadata.",
+        "King parcel_area metadata notes placeholder/stacked polygon geometry; parcel counts require later semantic filtering.",
+        "King parcel_area metadata says boundaries are general location only and not for survey purposes."
+      ],
+      "blockers": []
+    },
+    {
+      "county": "Spokane",
+      "countyToken": "spokane",
+      "adapterId": "spokane-readonly-scout-arcgis-schema-v1",
+      "adapterStatus": "verified",
+      "sourceType": "county_property_portal_plus_gis",
+      "accessMethod": "read_only_public_arcgis_rest_directory_metadata_fetch",
+      "expectedExportFormat": "arcgis_rest_service_html_layer_schema_metadata",
+      "productionRowsWritten": 0,
+      "runtimeClaimAllowed": false,
+      "dbMutationAllowed": false,
+      "stagingContract": {
+        "consistent": true,
+        "schema": "terrafusion-staging-parcel-source-v1",
+        "mode": "contract_only_no_rows_loaded",
+        "missingContractFields": []
+      },
+      "lineageReceipt": {
+        "consistent": true,
+        "receiptVersion": "june10-adapter-verification-v1",
+        "status": "VERIFIED",
+        "rawArtifactCount": 2,
+        "normalizedArtifact": "os-platform/core/pilot/evidence/june10-38-county-adapters/spokane/normalized/spokane-staging-source-contract.json"
+      },
+      "parcelIdentity": {
+        "proven": true,
+        "sourceField": "PID_NUM",
+        "componentFields": [],
+        "confidenceLevel": "high",
+        "semantics": "Spokane SCOUT Queries Parcels layer exposes PID_NUM with alias Parcel Number in public ArcGIS REST schema metadata."
+      },
+      "missingFields": ["assessedValue"],
+      "termsAccessRisk": {
+        "level": "low_public_metadata_risk",
+        "reasons": []
+      },
+      "geometryLimitations": [],
+      "loadPathClassification": "identity_ready_only",
+      "warnings": [
+        "Public SCOUT Parcels schema did not expose an assessed value field in metadata."
+      ],
+      "blockers": []
+    },
+    {
+      "county": "Yakima",
+      "countyToken": "yakima",
+      "adapterId": "yakima-readonly-spatialest-config-v1",
+      "adapterStatus": "verified",
+      "sourceType": "spatialest_property_portal",
+      "accessMethod": "read_only_public_spatialest_config_fetch",
+      "expectedExportFormat": "spatialest_html_data_props_json",
+      "productionRowsWritten": 0,
+      "runtimeClaimAllowed": false,
+      "dbMutationAllowed": false,
+      "stagingContract": {
+        "consistent": true,
+        "schema": "terrafusion-staging-parcel-source-v1",
+        "mode": "contract_only_no_rows_loaded",
+        "missingContractFields": []
+      },
+      "lineageReceipt": {
+        "consistent": true,
+        "receiptVersion": "june10-adapter-verification-v1",
+        "status": "VERIFIED",
+        "rawArtifactCount": 2,
+        "normalizedArtifact": "os-platform/core/pilot/evidence/june10-38-county-adapters/yakima/normalized/yakima-staging-source-contract.json"
+      },
+      "parcelIdentity": {
+        "proven": true,
+        "sourceField": "parcel_number",
+        "componentFields": [],
+        "confidenceLevel": "high",
+        "semantics": "Spatialest search config exposes Parcel # search and public result/schema fields expose parcel_number on the Yakima parcel layer."
+      },
+      "missingFields": [],
+      "termsAccessRisk": {
+        "level": "terms_or_access_review_required",
+        "reasons": [
+          "Public config exposes Excel export permission, but this adapter does not download exports until terms are reviewed."
+        ]
+      },
+      "geometryLimitations": [],
+      "loadPathClassification": "conditional_load_path_candidate",
+      "warnings": [
+        "Public config exposes Excel export permission, but this adapter does not download exports until terms are reviewed."
+      ],
+      "blockers": []
+    }
+  ],
+  "blockers": [],
+  "passed": true
+}
