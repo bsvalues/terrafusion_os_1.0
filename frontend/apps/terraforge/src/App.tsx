@@ -5,6 +5,9 @@ import LevyPage from './pages/LevyPage';
 import RatioStudyPage from './pages/RatioStudyPage';
 import RegressionPage from './pages/RegressionPage';
 import SaleQualificationPage from './pages/SaleQualificationPage';
+import CurrentUsePage from './pages/CurrentUsePage';
+import CurrentUseInterestPage from './pages/CurrentUseInterestPage';
+import CurrentUseRemovalsPage from './pages/CurrentUseRemovalsPage';
 import './App.css';
 
 const NAV_ITEMS = [
@@ -14,6 +17,7 @@ const NAV_ITEMS = [
   { path: '/regression',         label: 'Regression' },
   { path: '/cost-schedules',     label: 'Cost Schedules' },
   { path: '/levy',               label: 'Levy' },
+  { path: '/current-use',        label: 'Current Use' },
 ] as const;
 
 function NavBar() {
@@ -51,6 +55,9 @@ export default function App() {
             <Route path="/regression"         element={<RegressionPage />} />
             <Route path="/cost-schedules"     element={<CostSchedulesPage />} />
             <Route path="/levy"               element={<LevyPage />} />
+            <Route path="/current-use"        element={<CurrentUsePage />} />
+            <Route path="/current-use/interest" element={<CurrentUseInterestPage />} />
+            <Route path="/current-use/removals" element={<CurrentUseRemovalsPage />} />
           </Routes>
         </main>
         <footer className="tf-footer">

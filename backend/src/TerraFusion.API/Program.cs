@@ -47,6 +47,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using System.Threading.RateLimiting;
+using TerraFusion.CurrentUse;
 
 static IEnumerable<string> EnumerateSelfAndAncestors(string startPath)
 {
@@ -2440,6 +2441,9 @@ builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyRiskScoringService, Te
 // (registered above at the Dais CRUD block). The old TerraFusion.Levy B5
 // certification stub surface has been removed so the runtime no longer carries
 // a dead parallel certification path.
+
+// Register CurrentUse (CUForge) services for current use classification & rollback
+builder.Services.AddCurrentUseServices(builder.Configuration);
 
 // Add health checks for monitoring
 builder.Services.AddHealthChecks()
