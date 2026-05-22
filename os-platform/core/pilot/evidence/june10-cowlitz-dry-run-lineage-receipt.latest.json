@@ -1,0 +1,21 @@
+{
+  "receiptVersion": "june10-cowlitz-dry-run-lineage-v1",
+  "status": "DRY_RUN_BLOCKED_PENDING_TERMS",
+  "county": "Cowlitz",
+  "countyToken": "cowlitz",
+  "generatedAtUtc": "2026-05-22T21:41:08.395Z",
+  "sourceAdapterReceiptSha256": "698f0b3684bd629f3fc1095382bc16e5c4316c28724fe29355d88c307db5924e",
+  "schemaValidationSha256": "92589cb807d90a451027318af93a93860818fe343ea9fb740912cbb275d59114",
+  "rejectedRowReportSha256": "08a340b52f1caafb59c3c3d1c4d265b125c2edc3ac7e4cc762c8feae4e76bb92",
+  "counts": {
+    "sourceRowsExamined": 0,
+    "sourceRowsAccepted": 0,
+    "sourceRowsRejected": 0,
+    "duplicateParcelIds": 0,
+    "productionRowsWritten": 0
+  },
+  "runtimeClaimAllowed": false,
+  "dbMutationAllowed": false,
+  "featureQueryAttempted": false,
+  "sourceBehavior": "metadata_only_no_feature_query"
+}

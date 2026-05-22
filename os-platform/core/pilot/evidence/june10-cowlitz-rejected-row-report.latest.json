@@ -1,0 +1,19 @@
+{
+  "reportVersion": "june10-cowlitz-rejected-row-report-v1",
+  "county": "Cowlitz",
+  "countyToken": "cowlitz",
+  "generatedAtUtc": "2026-05-22T21:41:08.395Z",
+  "summary": {
+    "rowsExamined": 0,
+    "rowsAccepted": 0,
+    "rowsRejected": 0,
+    "duplicateParcelIds": 0
+  },
+  "batchRejections": [
+    {
+      "reasonCode": "TERMS_LICENSE_NOT_APPROVED",
+      "message": "Feature row extraction is blocked until Cowlitz terms/licensing approval is explicit."
+    }
+  ],
+  "rejectedRows": []
+}

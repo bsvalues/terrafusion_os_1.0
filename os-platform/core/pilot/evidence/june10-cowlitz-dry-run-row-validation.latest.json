@@ -1,0 +1,103 @@
+{
+  "generatedAtUtc": "2026-05-22T21:41:08.395Z",
+  "slice": "Cowlitz Dry-Run Row Validation",
+  "county": "Cowlitz",
+  "countyToken": "cowlitz",
+  "termsLicensing": {
+    "state": "not_approved",
+    "source": "june10-production-ingestion-authorization-policy",
+    "featureExtractionAllowed": false
+  },
+  "extraction": {
+    "mode": "metadata_only_no_feature_query",
+    "allowedSourceBehavior": "Use existing verified metadata and local/provided rows only; do not bulk query public parcel features.",
+    "featureQueryAttempted": false,
+    "rowsFetched": 0,
+    "productionRowsWritten": 0
+  },
+  "validation": {
+    "schema": "terrafusion-staging-parcel-source-v1",
+    "schemaValid": true,
+    "requiredSourceFields": [
+      "PARCNO",
+      "DEED_HOLDER_NAME",
+      "SITUS_STREET_NUMBER",
+      "SITUS_STREET_DIRECTION",
+      "SITUS_STREET_NAME",
+      "SITUS_STREET_SUFFIX",
+      "SITUS_STREET_UNIT",
+      "SITUS_CITY",
+      "SITUS_ZIP_CODE",
+      "LAND_ASSESSED_VALUE",
+      "IMPR_ASSESSED_VALUE"
+    ],
+    "missingSourceFields": [],
+    "rowsExamined": 0,
+    "rowsAccepted": 0,
+    "rowsRejected": 0,
+    "parcelIdField": "PARCNO",
+    "parcelIdPresencePercent": null,
+    "duplicateParcelIds": 0,
+    "productionRowsWritten": 0
+  },
+  "rejectedRowReport": {
+    "reportVersion": "june10-cowlitz-rejected-row-report-v1",
+    "county": "Cowlitz",
+    "countyToken": "cowlitz",
+    "generatedAtUtc": "2026-05-22T21:41:08.395Z",
+    "summary": {
+      "rowsExamined": 0,
+      "rowsAccepted": 0,
+      "rowsRejected": 0,
+      "duplicateParcelIds": 0
+    },
+    "batchRejections": [
+      {
+        "reasonCode": "TERMS_LICENSE_NOT_APPROVED",
+        "message": "Feature row extraction is blocked until Cowlitz terms/licensing approval is explicit."
+      }
+    ],
+    "rejectedRows": []
+  },
+  "dryRunLineageReceipt": {
+    "receiptVersion": "june10-cowlitz-dry-run-lineage-v1",
+    "status": "DRY_RUN_BLOCKED_PENDING_TERMS",
+    "county": "Cowlitz",
+    "countyToken": "cowlitz",
+    "generatedAtUtc": "2026-05-22T21:41:08.395Z",
+    "sourceAdapterReceiptSha256": "698f0b3684bd629f3fc1095382bc16e5c4316c28724fe29355d88c307db5924e",
+    "schemaValidationSha256": "92589cb807d90a451027318af93a93860818fe343ea9fb740912cbb275d59114",
+    "rejectedRowReportSha256": "08a340b52f1caafb59c3c3d1c4d265b125c2edc3ac7e4cc762c8feae4e76bb92",
+    "counts": {
+      "sourceRowsExamined": 0,
+      "sourceRowsAccepted": 0,
+      "sourceRowsRejected": 0,
+      "duplicateParcelIds": 0,
+      "productionRowsWritten": 0
+    },
+    "runtimeClaimAllowed": false,
+    "dbMutationAllowed": false,
+    "featureQueryAttempted": false,
+    "sourceBehavior": "metadata_only_no_feature_query"
+  },
+  "authorization": {
+    "authorizedForProductionLoad": false,
+    "authorizedForProjection": false,
+    "authorizedForRuntimeRegistration": false,
+    "blockers": [
+      "Terms/licensing approval is not complete.",
+      "Missing rollback plan receipt.",
+      "Source parcel ID presence does not meet 100% threshold.",
+      "Rejected row rate exceeds allowed threshold.",
+      "Lineage receipt coverage does not meet 100% threshold."
+    ]
+  },
+  "blockers": [],
+  "rules": [
+    "No production DB write.",
+    "No runtime promotion.",
+    "No feature query while terms/licensing state is not approved.",
+    "Load authorization remains blocked unless every required receipt exists."
+  ],
+  "passed": true
+}
