@@ -1,0 +1,227 @@
+{
+  "currentVersion": 11.5,
+  "cimVersion": "3.5.0",
+  "serviceDescription": "",
+  "mapName": "PropertyFinder",
+  "description": "",
+  "copyrightText": "",
+  "supportsDynamicLayers": true,
+  "layers": [
+    {
+      "id": 129,
+      "name": "Building Footprints",
+      "parentLayerId": -1,
+      "defaultVisibility": false,
+      "subLayerIds": null,
+      "minScale": 24000,
+      "maxScale": 0,
+      "type": "Feature Layer",
+      "geometryType": "esriGeometryPolygon",
+      "supportsDynamicLegends": true
+    },
+    {
+      "id": 1,
+      "name": "Taxlots",
+      "parentLayerId": -1,
+      "defaultVisibility": true,
+      "subLayerIds": null,
+      "minScale": 51000,
+      "maxScale": 0,
+      "type": "Feature Layer",
+      "geometryType": "esriGeometryPolygon",
+      "supportsDynamicLegends": true
+    },
+    {
+      "id": 147,
+      "name": "Annexations",
+      "parentLayerId": -1,
+      "defaultVisibility": false,
+      "subLayerIds": null,
+      "minScale": 0,
+      "maxScale": 0,
+      "type": "Feature Layer",
+      "geometryType": "esriGeometryPolygon",
+      "supportsDynamicLegends": true
+    },
+    {
+      "id": 5,
+      "name": "Subdivisions",
+      "parentLayerId": -1,
+      "defaultVisibility": false,
+      "subLayerIds": null,
+      "minScale": 0,
+      "maxScale": 0,
+      "type": "Feature Layer",
+      "geometryType": "esriGeometryPolygon",
+      "supportsDynamicLegends": true
+    },
+    {
+      "id": 148,
+      "name": "PLSS",
+      "parentLayerId": -1,
+      "defaultVisibility": false,
+      "subLayerIds": [149, 150, 151],
+      "minScale": 0,
+      "maxScale": 0,
+      "type": "Group Layer",
+      "supportsDynamicLegends": false
+    },
+    {
+      "id": 149,
+      "name": "Township",
+      "parentLayerId": 148,
+      "defaultVisibility": true,
+      "subLayerIds": null,
+      "minScale": 0,
+      "maxScale": 0,
+      "type": "Feature Layer",
+      "geometryType": "esriGeometryPolygon",
+      "supportsDynamicLegends": true
+    },
+    {
+      "id": 150,
+      "name": "Sections",
+      "parentLayerId": 148,
+      "defaultVisibility": true,
+      "subLayerIds": null,
+      "minScale": 0,
+      "maxScale": 0,
+      "type": "Feature Layer",
+      "geometryType": "esriGeometryPolygon",
+      "supportsDynamicLegends": true
+    },
+    {
+      "id": 151,
+      "name": "1/4 Section",
+      "parentLayerId": 148,
+      "defaultVisibility": false,
+      "subLayerIds": null,
+      "minScale": 72224,
+      "maxScale": 0,
+      "type": "Feature Layer",
+      "geometryType": "esriGeometryPolygon",
+      "supportsDynamicLegends": true
+    }
+  ],
+  "tables": [],
+  "spatialReference": {
+    "wkid": 102749,
+    "latestWkid": 2286,
+    "xyTolerance": 0.002,
+    "zTolerance": 0.001,
+    "mTolerance": 0.001,
+    "falseX": -117498300,
+    "falseY": -98850300,
+    "xyUnits": 3048.0060960121928,
+    "falseZ": -100000,
+    "zUnits": 10000,
+    "falseM": -100000,
+    "mUnits": 10000
+  },
+  "singleFusedMapCache": false,
+  "initialExtent": {
+    "xmin": 1042283.4865788262,
+    "ymin": 72308.36562499993,
+    "xmax": 1210086.1386711707,
+    "ymax": 279330.6343750001,
+    "spatialReference": {
+      "wkid": 102749,
+      "latestWkid": 2286,
+      "xyTolerance": 0.002,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -117498300,
+      "falseY": -98850300,
+      "xyUnits": 3048.0060960121928,
+      "falseZ": -100000,
+      "zUnits": 10000,
+      "falseM": -100000,
+      "mUnits": 10000
+    }
+  },
+  "fullExtent": {
+    "xmin": 1055057.3752499968,
+    "ymin": 81718.46875,
+    "xmax": 1197312.2500000033,
+    "ymax": 269920.53125,
+    "spatialReference": {
+      "wkid": 102749,
+      "latestWkid": 2286,
+      "xyTolerance": 0.002,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -117498300,
+      "falseY": -98850300,
+      "xyUnits": 3048.0060960121928,
+      "falseZ": -100000,
+      "zUnits": 10000,
+      "falseM": -100000,
+      "mUnits": 10000
+    }
+  },
+  "datesInUnknownTimezone": false,
+  "minScale": 0,
+  "maxScale": 0,
+  "units": "esriFeet",
+  "supportedImageFormatTypes": "PNG32,PNG24,PNG,JPG,DIB,TIFF,EMF,PS,PDF,GIF,SVG,SVGZ,BMP",
+  "documentInfo": {
+    "Title": "Map",
+    "Author": "",
+    "Comments": "",
+    "Subject": "",
+    "Category": "",
+    "Version": "2.9.0",
+    "AntialiasingMode": "Fast",
+    "TextAntialiasingMode": "Force",
+    "Keywords": "MOL,Property Finder"
+  },
+  "supportsQueryDomains": true,
+  "capabilities": "Query,Map,Data",
+  "supportedQueryFormats": "JSON, geoJSON, PBF",
+  "exportTilesAllowed": false,
+  "referenceScale": 0,
+  "datumTransformations": [
+    {
+      "geoTransforms": [
+        {
+          "wkid": 108190,
+          "latestWkid": 108190,
+          "transformForward": true,
+          "name": "WGS_1984_(ITRF00)_To_NAD_1983"
+        }
+      ]
+    },
+    {
+      "geoTransforms": [
+        {
+          "wkid": 108190,
+          "latestWkid": 108190,
+          "transformForward": false,
+          "name": "WGS_1984_(ITRF00)_To_NAD_1983"
+        }
+      ]
+    }
+  ],
+  "supportsDatumTransformation": true,
+  "floorAwareMapProperties": {
+    "defaultFloorFilterSettings": {
+      "isEnabled": true
+    }
+  },
+  "archivingInfo": {
+    "supportsHistoricMoment": false
+  },
+  "supportsClipping": true,
+  "supportsSpatialFilter": true,
+  "supportsTimeRelation": true,
+  "supportsQueryDataElements": true,
+  "mapUnits": {
+    "uwkid": 9003
+  },
+  "maxSelectionCount": 2000,
+  "maxRecordCount": 2000,
+  "maxImageHeight": 4096,
+  "maxImageWidth": 4096,
+  "supportedExtensions": "",
+  "serviceItemId": "dfb647307169445ca9b9b443f1bb5cf1"
+}

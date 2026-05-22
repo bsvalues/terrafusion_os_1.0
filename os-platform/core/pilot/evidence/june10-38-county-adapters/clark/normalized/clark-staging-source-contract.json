@@ -1,0 +1,45 @@
+{
+  "schema": "terrafusion-staging-parcel-source-v1",
+  "mode": "contract_only_no_rows_loaded",
+  "fields": {
+    "county": {
+      "value": "Clark"
+    },
+    "countyToken": {
+      "value": "clark"
+    },
+    "parcelId": {
+      "sourceField": "Prop_id",
+      "required": true
+    },
+    "ownerName": {
+      "sourceField": "Owner",
+      "required": false
+    },
+    "situsAddress": {
+      "sourceField": "SitusAddrsFull",
+      "required": false
+    },
+    "assessedValue": {
+      "sourceFields": [],
+      "required": false
+    },
+    "mailingAddress": {
+      "sourceFields": ["MailAddrs1", "MailAddrs2", "MailAddrs3"],
+      "required": false
+    },
+    "schoolDistrict": {
+      "sourceField": "SchoolDistrict",
+      "required": false
+    },
+    "cityUrbanGrowthArea": {
+      "sourceField": "CityUGA",
+      "required": false
+    },
+    "geometryReference": {
+      "source": "ArcGIS feature layer geometry if later capture is authorized",
+      "required": false
+    }
+  },
+  "rows": []
+}

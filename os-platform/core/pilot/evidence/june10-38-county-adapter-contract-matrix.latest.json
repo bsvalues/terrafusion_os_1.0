@@ -1,12 +1,12 @@
 {
-  "generatedAtUtc": "2026-05-22T17:57:47.629Z",
+  "generatedAtUtc": "2026-05-22T18:39:01.612Z",
   "sourceLockGeneratedAtUtc": "2026-05-22T16:09:39.578Z",
   "slice": "38-County Adapter Contract Matrix",
   "summary": {
     "counties": 10,
-    "candidateAdapters": 7,
+    "candidateAdapters": 6,
     "implementedAdapters": 0,
-    "verifiedAdapters": 3,
+    "verifiedAdapters": 4,
     "runtimeClaimAllowed": false,
     "dbMutationAllowed": false
   },
@@ -34,7 +34,7 @@
       "sourceType": "county_property_portal_plus_gis",
       "accessMethod": "manual_snapshot_or_playwright_capture",
       "expectedExportFormat": "html_or_json_network_capture_plus_optional_gis_layer",
-      "parcelIdentifierField": "parcel_id_or_account_number",
+      "parcelIdentifierField": "Prop_id",
       "ownerAddressValueFields": [
         "owner_name_if_available",
         "situs_address_if_available",
@@ -45,8 +45,13 @@
       ],
       "updateCadence": "on_demand_snapshot",
       "licenseTermsRisk": "medium_terms_review_required",
-      "adapterStatus": "candidate",
-      "verification": null,
+      "adapterStatus": "verified",
+      "verification": {
+        "adapterId": "clark-readonly-propertyfinder-arcgis-schema-v1",
+        "generatedAtUtc": "2026-05-22T18:38:44.872Z",
+        "parcelIdentifierField": "Prop_id",
+        "lineageReceiptVersion": "june10-adapter-verification-v1"
+      },
       "sourceUrls": ["https://clark.wa.gov"],
       "receiptTarget": "evidence/june10-38-county-seed/clark/source-snapshot-receipt.json",
       "runtimeClaimAllowed": false,

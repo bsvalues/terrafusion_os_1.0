@@ -35,7 +35,8 @@ const DEFAULT_OUT_MD = path.join(
 const DEFAULT_ADAPTER_VERIFICATION_PATHS = [
   path.join(repoRoot, "os-platform", "core", "pilot", "evidence", "june10-cowlitz-readonly-adapter.latest.json"),
   path.join(repoRoot, "os-platform", "core", "pilot", "evidence", "june10-yakima-readonly-adapter.latest.json"),
-  path.join(repoRoot, "os-platform", "core", "pilot", "evidence", "june10-spokane-readonly-adapter.latest.json")
+  path.join(repoRoot, "os-platform", "core", "pilot", "evidence", "june10-spokane-readonly-adapter.latest.json"),
+  path.join(repoRoot, "os-platform", "core", "pilot", "evidence", "june10-clark-readonly-adapter.latest.json")
 ];
 
 function readJson(filePath) {

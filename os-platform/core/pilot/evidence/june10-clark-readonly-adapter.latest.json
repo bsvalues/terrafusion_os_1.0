@@ -1,0 +1,677 @@
+{
+  "generatedAtUtc": "2026-05-22T18:38:44.872Z",
+  "county": "Clark",
+  "countyToken": "clark",
+  "adapterId": "clark-readonly-propertyfinder-arcgis-schema-v1",
+  "adapterStatus": "verified",
+  "sourceType": "county_property_portal_plus_gis",
+  "accessMethod": "read_only_public_arcgis_rest_metadata_fetch",
+  "expectedExportFormat": "arcgis_rest_service_json_layer_schema_metadata",
+  "fetchPlan": [
+    {
+      "id": "clark_property_finder_service_metadata",
+      "url": "https://gis.clark.wa.gov/arcgisfed2/rest/services/MapsOnline/PropertyFinder/MapServer",
+      "method": "GET",
+      "readOnly": true,
+      "purpose": "Fetch public ArcGIS REST PropertyFinder service metadata only."
+    },
+    {
+      "id": "clark_taxlots_layer_metadata",
+      "url": "https://gis.clark.wa.gov/arcgisfed2/rest/services/MapsOnline/PropertyFinder/MapServer/1",
+      "method": "GET",
+      "readOnly": true,
+      "purpose": "Fetch public ArcGIS REST Taxlots layer schema metadata only; no feature query."
+    }
+  ],
+  "parcelIdentity": {
+    "proven": true,
+    "sourceField": "Prop_id",
+    "proof": {
+      "serviceName": "PropertyFinder",
+      "serviceItemId": "dfb647307169445ca9b9b443f1bb5cf1",
+      "parcelLayerName": "Taxlots",
+      "parcelLayerId": 1,
+      "displayField": "Prop_id",
+      "propIdField": {
+        "name": "Prop_id",
+        "type": "esriFieldTypeInteger",
+        "alias": "Property ID",
+        "domain": null
+      },
+      "fieldNames": [
+        "OBJECTID",
+        "Prop_id",
+        "Owner",
+        "SitusAddrsFull",
+        "Shape",
+        "sup_num",
+        "MailAddrs1",
+        "MailAddrs2",
+        "MailAddrs3",
+        "SchoolDistrict",
+        "ElementarySchool",
+        "JuniorSchool",
+        "SeniorSchool",
+        "CityUGAID",
+        "CityUGA"
+      ]
+    },
+    "semantics": "Clark MapsOnline PropertyFinder Taxlots layer exposes Prop_id as the Property ID display field in public ArcGIS REST metadata."
+  },
+  "serviceMetadata": {
+    "currentVersion": 11.5,
+    "cimVersion": "3.5.0",
+    "serviceDescription": "",
+    "mapName": "PropertyFinder",
+    "description": "",
+    "copyrightText": "",
+    "supportsDynamicLayers": true,
+    "layers": [
+      {
+        "id": 129,
+        "name": "Building Footprints",
+        "parentLayerId": -1,
+        "defaultVisibility": false,
+        "subLayerIds": null,
+        "minScale": 24000,
+        "maxScale": 0,
+        "type": "Feature Layer",
+        "geometryType": "esriGeometryPolygon",
+        "supportsDynamicLegends": true
+      },
+      {
+        "id": 1,
+        "name": "Taxlots",
+        "parentLayerId": -1,
+        "defaultVisibility": true,
+        "subLayerIds": null,
+        "minScale": 51000,
+        "maxScale": 0,
+        "type": "Feature Layer",
+        "geometryType": "esriGeometryPolygon",
+        "supportsDynamicLegends": true
+      },
+      {
+        "id": 147,
+        "name": "Annexations",
+        "parentLayerId": -1,
+        "defaultVisibility": false,
+        "subLayerIds": null,
+        "minScale": 0,
+        "maxScale": 0,
+        "type": "Feature Layer",
+        "geometryType": "esriGeometryPolygon",
+        "supportsDynamicLegends": true
+      },
+      {
+        "id": 5,
+        "name": "Subdivisions",
+        "parentLayerId": -1,
+        "defaultVisibility": false,
+        "subLayerIds": null,
+        "minScale": 0,
+        "maxScale": 0,
+        "type": "Feature Layer",
+        "geometryType": "esriGeometryPolygon",
+        "supportsDynamicLegends": true
+      },
+      {
+        "id": 148,
+        "name": "PLSS",
+        "parentLayerId": -1,
+        "defaultVisibility": false,
+        "subLayerIds": [149, 150, 151],
+        "minScale": 0,
+        "maxScale": 0,
+        "type": "Group Layer",
+        "supportsDynamicLegends": false
+      },
+      {
+        "id": 149,
+        "name": "Township",
+        "parentLayerId": 148,
+        "defaultVisibility": true,
+        "subLayerIds": null,
+        "minScale": 0,
+        "maxScale": 0,
+        "type": "Feature Layer",
+        "geometryType": "esriGeometryPolygon",
+        "supportsDynamicLegends": true
+      },
+      {
+        "id": 150,
+        "name": "Sections",
+        "parentLayerId": 148,
+        "defaultVisibility": true,
+        "subLayerIds": null,
+        "minScale": 0,
+        "maxScale": 0,
+        "type": "Feature Layer",
+        "geometryType": "esriGeometryPolygon",
+        "supportsDynamicLegends": true
+      },
+      {
+        "id": 151,
+        "name": "1/4 Section",
+        "parentLayerId": 148,
+        "defaultVisibility": false,
+        "subLayerIds": null,
+        "minScale": 72224,
+        "maxScale": 0,
+        "type": "Feature Layer",
+        "geometryType": "esriGeometryPolygon",
+        "supportsDynamicLegends": true
+      }
+    ],
+    "tables": [],
+    "spatialReference": {
+      "wkid": 102749,
+      "latestWkid": 2286,
+      "xyTolerance": 0.002,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -117498300,
+      "falseY": -98850300,
+      "xyUnits": 3048.0060960121928,
+      "falseZ": -100000,
+      "zUnits": 10000,
+      "falseM": -100000,
+      "mUnits": 10000
+    },
+    "singleFusedMapCache": false,
+    "initialExtent": {
+      "xmin": 1042283.4865788262,
+      "ymin": 72308.36562499993,
+      "xmax": 1210086.1386711707,
+      "ymax": 279330.6343750001,
+      "spatialReference": {
+        "wkid": 102749,
+        "latestWkid": 2286,
+        "xyTolerance": 0.002,
+        "zTolerance": 0.001,
+        "mTolerance": 0.001,
+        "falseX": -117498300,
+        "falseY": -98850300,
+        "xyUnits": 3048.0060960121928,
+        "falseZ": -100000,
+        "zUnits": 10000,
+        "falseM": -100000,
+        "mUnits": 10000
+      }
+    },
+    "fullExtent": {
+      "xmin": 1055057.3752499968,
+      "ymin": 81718.46875,
+      "xmax": 1197312.2500000033,
+      "ymax": 269920.53125,
+      "spatialReference": {
+        "wkid": 102749,
+        "latestWkid": 2286,
+        "xyTolerance": 0.002,
+        "zTolerance": 0.001,
+        "mTolerance": 0.001,
+        "falseX": -117498300,
+        "falseY": -98850300,
+        "xyUnits": 3048.0060960121928,
+        "falseZ": -100000,
+        "zUnits": 10000,
+        "falseM": -100000,
+        "mUnits": 10000
+      }
+    },
+    "datesInUnknownTimezone": false,
+    "minScale": 0,
+    "maxScale": 0,
+    "units": "esriFeet",
+    "supportedImageFormatTypes": "PNG32,PNG24,PNG,JPG,DIB,TIFF,EMF,PS,PDF,GIF,SVG,SVGZ,BMP",
+    "documentInfo": {
+      "Title": "Map",
+      "Author": "",
+      "Comments": "",
+      "Subject": "",
+      "Category": "",
+      "Version": "2.9.0",
+      "AntialiasingMode": "Fast",
+      "TextAntialiasingMode": "Force",
+      "Keywords": "MOL,Property Finder"
+    },
+    "supportsQueryDomains": true,
+    "capabilities": "Query,Map,Data",
+    "supportedQueryFormats": "JSON, geoJSON, PBF",
+    "exportTilesAllowed": false,
+    "referenceScale": 0,
+    "datumTransformations": [
+      {
+        "geoTransforms": [
+          {
+            "wkid": 108190,
+            "latestWkid": 108190,
+            "transformForward": true,
+            "name": "WGS_1984_(ITRF00)_To_NAD_1983"
+          }
+        ]
+      },
+      {
+        "geoTransforms": [
+          {
+            "wkid": 108190,
+            "latestWkid": 108190,
+            "transformForward": false,
+            "name": "WGS_1984_(ITRF00)_To_NAD_1983"
+          }
+        ]
+      }
+    ],
+    "supportsDatumTransformation": true,
+    "floorAwareMapProperties": {
+      "defaultFloorFilterSettings": {
+        "isEnabled": true
+      }
+    },
+    "archivingInfo": {
+      "supportsHistoricMoment": false
+    },
+    "supportsClipping": true,
+    "supportsSpatialFilter": true,
+    "supportsTimeRelation": true,
+    "supportsQueryDataElements": true,
+    "mapUnits": {
+      "uwkid": 9003
+    },
+    "maxSelectionCount": 2000,
+    "maxRecordCount": 2000,
+    "maxImageHeight": 4096,
+    "maxImageWidth": 4096,
+    "supportedExtensions": "",
+    "serviceItemId": "dfb647307169445ca9b9b443f1bb5cf1"
+  },
+  "parcelLayer": {
+    "currentVersion": 11.5,
+    "cimVersion": "3.5.0",
+    "id": 1,
+    "name": "Taxlots",
+    "type": "Feature Layer",
+    "description": "Taxlots2 is an updated version of  Taxlots.  This layer is still underdevelopment and may change without notice.",
+    "geometryType": "esriGeometryPolygon",
+    "sourceSpatialReference": {
+      "wkid": 102749,
+      "latestWkid": 2286,
+      "xyTolerance": 0.002,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -117498300,
+      "falseY": -98850300,
+      "xyUnits": 4000,
+      "falseZ": -100000,
+      "zUnits": 10000,
+      "falseM": -100000,
+      "mUnits": 10000
+    },
+    "spatialReference": {
+      "wkid": 102749,
+      "latestWkid": 2286,
+      "xyTolerance": 0.002,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -117498300,
+      "falseY": -98850300,
+      "xyUnits": 3048.0060960121928,
+      "falseZ": -100000,
+      "zUnits": 10000,
+      "falseM": -100000,
+      "mUnits": 10000
+    },
+    "copyrightText": "http://gis.clark.wa.gov/gishome/Metadata/?pid=metadata.layer&dbsID=3715",
+    "parentLayer": null,
+    "subLayers": [],
+    "minScale": 51000,
+    "maxScale": 0,
+    "referenceScale": 0,
+    "drawingInfo": {
+      "renderer": {
+        "type": "simple",
+        "symbol": {
+          "type": "esriSFS",
+          "style": "esriSFSSolid",
+          "color": [0, 0, 0, 0],
+          "outline": {
+            "type": "esriSLS",
+            "style": "esriSLSSolid",
+            "color": [110, 110, 110, 255],
+            "width": 0.4
+          }
+        }
+      },
+      "scaleSymbols": true,
+      "transparency": 0,
+      "labelingInfo": null
+    },
+    "defaultVisibility": true,
+    "extent": {
+      "xmin": 1056814.0007500052,
+      "ymin": 83504.14100000262,
+      "xmax": 1197311.375,
+      "ymax": 269570.79975,
+      "spatialReference": {
+        "wkid": 102749,
+        "latestWkid": 2286,
+        "xyTolerance": 0.002,
+        "zTolerance": 0.001,
+        "mTolerance": 0.001,
+        "falseX": -117498300,
+        "falseY": -98850300,
+        "xyUnits": 3048.0060960121928,
+        "falseZ": -100000,
+        "zUnits": 10000,
+        "falseM": -100000,
+        "mUnits": 10000
+      }
+    },
+    "hasAttachments": false,
+    "htmlPopupType": "esriServerHTMLPopupTypeAsHTMLText",
+    "displayField": "Prop_id",
+    "typeIdField": null,
+    "subtypeFieldName": null,
+    "subtypeField": null,
+    "defaultSubtypeCode": null,
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID",
+        "domain": null
+      },
+      {
+        "name": "Prop_id",
+        "type": "esriFieldTypeInteger",
+        "alias": "Property ID",
+        "domain": null
+      },
+      {
+        "name": "Owner",
+        "type": "esriFieldTypeString",
+        "alias": "Owner Name",
+        "length": 70,
+        "domain": null
+      },
+      {
+        "name": "SitusAddrsFull",
+        "type": "esriFieldTypeString",
+        "alias": "Situs Address",
+        "length": 150,
+        "domain": null
+      },
+      {
+        "name": "Shape",
+        "type": "esriFieldTypeGeometry",
+        "alias": "Shape",
+        "domain": null
+      },
+      {
+        "name": "sup_num",
+        "type": "esriFieldTypeInteger",
+        "alias": "sup_num",
+        "domain": null
+      },
+      {
+        "name": "MailAddrs1",
+        "type": "esriFieldTypeString",
+        "alias": "MailAddrs1",
+        "length": 60,
+        "domain": null
+      },
+      {
+        "name": "MailAddrs2",
+        "type": "esriFieldTypeString",
+        "alias": "MailAddrs2",
+        "length": 60,
+        "domain": null
+      },
+      {
+        "name": "MailAddrs3",
+        "type": "esriFieldTypeString",
+        "alias": "MailAddrs3",
+        "length": 60,
+        "domain": null
+      },
+      {
+        "name": "SchoolDistrict",
+        "type": "esriFieldTypeString",
+        "alias": "SchoolDistrict",
+        "length": 15,
+        "domain": null
+      },
+      {
+        "name": "ElementarySchool",
+        "type": "esriFieldTypeString",
+        "alias": "ElementarySchool",
+        "length": 25,
+        "domain": null
+      },
+      {
+        "name": "JuniorSchool",
+        "type": "esriFieldTypeString",
+        "alias": "JuniorSchool",
+        "length": 25,
+        "domain": null
+      },
+      {
+        "name": "SeniorSchool",
+        "type": "esriFieldTypeString",
+        "alias": "SeniorSchool",
+        "length": 15,
+        "domain": null
+      },
+      {
+        "name": "CityUGAID",
+        "type": "esriFieldTypeInteger",
+        "alias": "CityUGAID",
+        "domain": null
+      },
+      {
+        "name": "CityUGA",
+        "type": "esriFieldTypeString",
+        "alias": "CityUGA",
+        "length": 255,
+        "domain": null
+      }
+    ],
+    "geometryField": {
+      "name": "Shape",
+      "type": "esriFieldTypeGeometry",
+      "alias": "Shape"
+    },
+    "indexes": [
+      {
+        "name": "FDO_Shape",
+        "fields": "Shape",
+        "isAscending": true,
+        "isUnique": false,
+        "description": ""
+      },
+      {
+        "name": "Taxlots2prop_id",
+        "fields": "Prop_id",
+        "isAscending": true,
+        "isUnique": false,
+        "description": ""
+      }
+    ],
+    "subtypes": [],
+    "relationships": [],
+    "canModifyLayer": true,
+    "canScaleSymbols": false,
+    "hasLabels": false,
+    "capabilities": "Query,Map,Data",
+    "maxRecordCount": 2000,
+    "maxSelectionCount": 2000,
+    "supportsStatistics": true,
+    "supportsExceedsLimitStatistics": true,
+    "supportsAdvancedQueries": true,
+    "supportedQueryFormats": "JSON, geoJSON, PBF",
+    "isDataVersioned": false,
+    "ownershipBasedAccessControlForFeatures": {
+      "allowOthersToQuery": true
+    },
+    "useStandardizedQueries": true,
+    "supportedSpatialRelationships": [
+      "esriSpatialRelIntersects",
+      "esriSpatialRelContains",
+      "esriSpatialRelCrosses",
+      "esriSpatialRelEnvelopeIntersects",
+      "esriSpatialRelIndexIntersects",
+      "esriSpatialRelOverlaps",
+      "esriSpatialRelTouches",
+      "esriSpatialRelWithin",
+      "esriSpatialRelRelation"
+    ],
+    "advancedQueryCapabilities": {
+      "useStandardizedQueries": true,
+      "supportsStatistics": true,
+      "supportsPercentileStatistics": true,
+      "supportsHavingClause": true,
+      "supportsOrderBy": true,
+      "supportsDistinct": true,
+      "supportsCountDistinct": true,
+      "supportsAdvancedQueryRelated": true,
+      "supportsQueryRelatedPagination": true,
+      "supportsPagination": true,
+      "supportsLod": false,
+      "supportsQueryWithLodSR": false,
+      "supportsTrueCurve": true,
+      "supportsQueryWithDatumTransformation": true,
+      "supportsReturningQueryExtent": true,
+      "supportsQueryWithDistance": true,
+      "supportsSqlExpression": true,
+      "supportsTimeRelation": true,
+      "supportsSqlFormat": false,
+      "supportsQueryAnalytic": false,
+      "supportsCurrentUserQueries": true
+    },
+    "supportsDatumTransformation": true,
+    "dateFieldsTimeReference": {
+      "timeZone": "Pacific Standard Time",
+      "timeZoneIANA": "America/Los_Angeles",
+      "respectsDaylightSaving": true
+    },
+    "preferredTimeReference": null,
+    "datesInUnknownTimezone": false,
+    "hasGeometryProperties": true,
+    "geometryProperties": {
+      "shapeAreaFieldName": "Shape_Area",
+      "shapeLengthFieldName": "Shape_Length",
+      "units": "esriFeet",
+      "mapUnits": {
+        "uwkid": 9003
+      }
+    },
+    "hasMetadata": true,
+    "isDataArchived": false,
+    "archivingInfo": {
+      "supportsQueryWithHistoricMoment": false,
+      "startArchivingMoment": -1
+    },
+    "supportsCoordinatesQuantization": true,
+    "supportsDynamicLegends": true,
+    "serviceItemId": "dfb647307169445ca9b9b443f1bb5cf1"
+  },
+  "stagingShape": {
+    "schema": "terrafusion-staging-parcel-source-v1",
+    "mode": "contract_only_no_rows_loaded",
+    "fields": {
+      "county": {
+        "value": "Clark"
+      },
+      "countyToken": {
+        "value": "clark"
+      },
+      "parcelId": {
+        "sourceField": "Prop_id",
+        "required": true
+      },
+      "ownerName": {
+        "sourceField": "Owner",
+        "required": false
+      },
+      "situsAddress": {
+        "sourceField": "SitusAddrsFull",
+        "required": false
+      },
+      "assessedValue": {
+        "sourceFields": [],
+        "required": false
+      },
+      "mailingAddress": {
+        "sourceFields": ["MailAddrs1", "MailAddrs2", "MailAddrs3"],
+        "required": false
+      },
+      "schoolDistrict": {
+        "sourceField": "SchoolDistrict",
+        "required": false
+      },
+      "cityUrbanGrowthArea": {
+        "sourceField": "CityUGA",
+        "required": false
+      },
+      "geometryReference": {
+        "source": "ArcGIS feature layer geometry if later capture is authorized",
+        "required": false
+      }
+    },
+    "rows": []
+  },
+  "lineageReceipt": {
+    "receiptVersion": "june10-adapter-verification-v1",
+    "status": "VERIFIED",
+    "capturedAtUtc": "2026-05-22T18:38:44.872Z",
+    "county": "Clark",
+    "countyToken": "clark",
+    "adapterId": "clark-readonly-propertyfinder-arcgis-schema-v1",
+    "noSecretValuesRecorded": true,
+    "rawArtifacts": [
+      {
+        "id": "service_metadata",
+        "sourceUrl": "https://gis.clark.wa.gov/arcgisfed2/rest/services/MapsOnline/PropertyFinder/MapServer",
+        "capturedAtUtc": "2026-05-22T18:38:44.872Z",
+        "sha256": "082878793a17ee4cd3c447a2eaf91789c916244e693e34f1ec9d2c4ae1fe1136",
+        "readOnly": true,
+        "path": "os-platform/core/pilot/evidence/june10-38-county-adapters/clark/raw/clark-propertyfinder-service-metadata.json"
+      },
+      {
+        "id": "taxlots_layer_metadata",
+        "sourceUrl": "https://gis.clark.wa.gov/arcgisfed2/rest/services/MapsOnline/PropertyFinder/MapServer/1",
+        "capturedAtUtc": "2026-05-22T18:38:44.872Z",
+        "sha256": "fba80c0495e5abaeee55776d7e8d1a7438ec0c2a67d4aa763402c6cd8b625df7",
+        "readOnly": true,
+        "path": "os-platform/core/pilot/evidence/june10-38-county-adapters/clark/raw/clark-taxlots-layer-metadata.json"
+      }
+    ],
+    "normalizedArtifact": {
+      "path": "os-platform/core/pilot/evidence/june10-38-county-adapters/clark/normalized/clark-staging-source-contract.json",
+      "schema": "terrafusion-staging-parcel-source-v1",
+      "sha256": "a733394fc2f22b46bc30721e5e7da1541d8745866ebc1062b227df99bead30d9",
+      "rowCount": 0
+    },
+    "counts": {
+      "parcelRowsFetched": 0,
+      "parcelRowsNormalized": 0,
+      "productionRowsWritten": 0
+    },
+    "runtimeClaimAllowed": false,
+    "dbMutationAllowed": false
+  },
+  "productionRowsWritten": 0,
+  "runtimeClaimAllowed": false,
+  "dbMutationAllowed": false,
+  "blockers": [],
+  "warnings": [
+    "Public Clark PropertyFinder Taxlots schema did not expose an assessed value field in metadata.",
+    "Clark Taxlots layer description says the layer is under development and may change without notice."
+  ],
+  "rules": [
+    "This adapter verifies public Clark MapsOnline PropertyFinder schema metadata and staging contract only.",
+    "It does not call ArcGIS query endpoints, fetch feature rows, or perform bulk extraction.",
+    "It writes no TerraFusion production DB rows.",
+    "Runtime claims remain blocked until separate load, API, and UI proof exist."
+  ]
+}
