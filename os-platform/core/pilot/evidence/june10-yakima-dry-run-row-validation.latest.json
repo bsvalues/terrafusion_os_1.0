@@ -1,0 +1,98 @@
+{
+  "generatedAtUtc": "2026-05-22T21:58:50.069Z",
+  "slice": "Yakima Dry-Run Row Validation",
+  "county": "Yakima",
+  "countyToken": "yakima",
+  "termsLicensing": {
+    "state": "not_approved",
+    "source": "june10-production-ingestion-authorization-policy",
+    "featureExtractionAllowed": false
+  },
+  "extraction": {
+    "mode": "metadata_config_only_no_feature_query",
+    "allowedSourceBehavior": "Use existing verified Spatialest config metadata and local/provided rows only; do not query parcel features or download exports.",
+    "featureQueryAttempted": false,
+    "rowsFetched": 0,
+    "productionRowsWritten": 0
+  },
+  "validation": {
+    "schema": "terrafusion-staging-parcel-source-v1",
+    "schemaValid": true,
+    "requiredSourceFields": [
+      "parcel_number",
+      "owner_name",
+      "line_1",
+      "current_assessed_value",
+      "total_acres",
+      "property_use"
+    ],
+    "missingSourceFields": [],
+    "rowsExamined": 0,
+    "rowsAccepted": 0,
+    "rowsRejected": 0,
+    "parcelIdField": "parcel_number",
+    "parcelIdPresencePercent": null,
+    "duplicateParcelIds": 0,
+    "productionRowsWritten": 0
+  },
+  "rejectedRowReport": {
+    "reportVersion": "june10-yakima-rejected-row-report-v1",
+    "county": "Yakima",
+    "countyToken": "yakima",
+    "generatedAtUtc": "2026-05-22T21:58:50.069Z",
+    "summary": {
+      "rowsExamined": 0,
+      "rowsAccepted": 0,
+      "rowsRejected": 0,
+      "duplicateParcelIds": 0
+    },
+    "batchRejections": [
+      {
+        "reasonCode": "TERMS_LICENSE_NOT_APPROVED",
+        "message": "Spatialest row extraction is blocked until Yakima terms/licensing approval is explicit."
+      }
+    ],
+    "rejectedRows": []
+  },
+  "dryRunLineageReceipt": {
+    "receiptVersion": "june10-yakima-dry-run-lineage-v1",
+    "status": "DRY_RUN_BLOCKED_PENDING_TERMS",
+    "county": "Yakima",
+    "countyToken": "yakima",
+    "generatedAtUtc": "2026-05-22T21:58:50.069Z",
+    "sourceAdapterReceiptSha256": "9865c614a3024001d45ff9c56a06e9a0e61916e63ae00cad1a058ad956f34184",
+    "schemaValidationSha256": "4b60111932a91460de089cc06adad692917637ee07ea4702d735860857a58e50",
+    "rejectedRowReportSha256": "71ad26215e3b11572922ccc5f4d857e01c1962db33a2954343d547f4876d3576",
+    "counts": {
+      "sourceRowsExamined": 0,
+      "sourceRowsAccepted": 0,
+      "sourceRowsRejected": 0,
+      "duplicateParcelIds": 0,
+      "productionRowsWritten": 0
+    },
+    "runtimeClaimAllowed": false,
+    "dbMutationAllowed": false,
+    "featureQueryAttempted": false,
+    "sourceBehavior": "metadata_config_only_no_feature_query"
+  },
+  "authorization": {
+    "authorizedForProductionLoad": false,
+    "authorizedForProjection": false,
+    "authorizedForRuntimeRegistration": false,
+    "blockers": [
+      "Terms/licensing approval is not complete.",
+      "Missing rollback plan receipt.",
+      "Source parcel ID presence does not meet 100% threshold.",
+      "Rejected row rate exceeds allowed threshold.",
+      "Lineage receipt coverage does not meet 100% threshold."
+    ]
+  },
+  "blockers": [],
+  "rules": [
+    "No production DB write.",
+    "No runtime promotion.",
+    "No feature query or export download while terms/licensing state is not approved.",
+    "Load authorization remains blocked unless every required receipt exists."
+  ],
+  "passed": true
+}

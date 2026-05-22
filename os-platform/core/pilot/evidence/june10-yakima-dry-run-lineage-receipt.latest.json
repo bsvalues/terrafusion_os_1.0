@@ -1,0 +1,21 @@
+{
+  "receiptVersion": "june10-yakima-dry-run-lineage-v1",
+  "status": "DRY_RUN_BLOCKED_PENDING_TERMS",
+  "county": "Yakima",
+  "countyToken": "yakima",
+  "generatedAtUtc": "2026-05-22T21:58:50.069Z",
+  "sourceAdapterReceiptSha256": "9865c614a3024001d45ff9c56a06e9a0e61916e63ae00cad1a058ad956f34184",
+  "schemaValidationSha256": "4b60111932a91460de089cc06adad692917637ee07ea4702d735860857a58e50",
+  "rejectedRowReportSha256": "71ad26215e3b11572922ccc5f4d857e01c1962db33a2954343d547f4876d3576",
+  "counts": {
+    "sourceRowsExamined": 0,
+    "sourceRowsAccepted": 0,
+    "sourceRowsRejected": 0,
+    "duplicateParcelIds": 0,
+    "productionRowsWritten": 0
+  },
+  "runtimeClaimAllowed": false,
+  "dbMutationAllowed": false,
+  "featureQueryAttempted": false,
+  "sourceBehavior": "metadata_config_only_no_feature_query"
+}

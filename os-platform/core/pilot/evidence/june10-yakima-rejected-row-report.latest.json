@@ -1,0 +1,19 @@
+{
+  "reportVersion": "june10-yakima-rejected-row-report-v1",
+  "county": "Yakima",
+  "countyToken": "yakima",
+  "generatedAtUtc": "2026-05-22T21:58:50.069Z",
+  "summary": {
+    "rowsExamined": 0,
+    "rowsAccepted": 0,
+    "rowsRejected": 0,
+    "duplicateParcelIds": 0
+  },
+  "batchRejections": [
+    {
+      "reasonCode": "TERMS_LICENSE_NOT_APPROVED",
+      "message": "Spatialest row extraction is blocked until Yakima terms/licensing approval is explicit."
+    }
+  ],
+  "rejectedRows": []
+}
