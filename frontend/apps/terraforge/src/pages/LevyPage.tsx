@@ -231,6 +231,33 @@ function CalculatorSection() {
     URL.revokeObjectURL(url);
   };
 
+  const downloadLevyReport = () => {
+    if (!result) return;
+    fetch('/api/reports/levy-certification', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        taxYear: result.year,
+        certificationDate: new Date().toISOString().slice(0, 10),
+        totalAV: result.assessedValue,
+        totalLevy: result.totalLevy,
+        districts: result.breakdown.map(l => ({
+          code: l.levyCd, name: l.levyDescription ?? l.levyCd,
+          assessedValue: result.assessedValue, rate: l.levyRate / 1000,
+          levyAmount: l.amount, status: 'Certified',
+        })),
+      }),
+    })
+      .then(r => r.blob())
+      .then(blob => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `levy-certification_${result.taxAreaNumber}_${result.year}.html`;
+        a.click();
+      })
+      .catch(() => window.print());
+  };
+
   const inputStyle: React.CSSProperties = { background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.1)', color: '#e2e8f0', borderRadius: 6, padding: '5px 9px', fontSize: 13 };
 
   return (
@@ -269,6 +296,7 @@ function CalculatorSection() {
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={exportCsv} className="tf-btn" style={{ fontSize: 11, padding: '4px 8px' }}>⬇ CSV</button>
               <button onClick={() => window.print()} className="tf-btn" style={{ fontSize: 11, padding: '4px 8px' }}>🖨 Print</button>
+              <button onClick={downloadLevyReport} className="tf-btn" style={{ fontSize: 11, padding: '4px 8px', borderColor: 'rgba(0,255,170,.4)', color: '#00FFAA' }}>↓ Report</button>
             </div>
           </div>
 

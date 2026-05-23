@@ -404,6 +404,7 @@ const modules = {
   levy: { commands: levyCommands, description: "Levy calculation, certification, revenue projection" },
   sales: { commands: salesCommands, description: "Sale qualification, comps, ratio study, regression" },
   cost: { commands: costCommands, description: "Cost estimate, depreciation, income approach, batch" },
+  reports: { commands: null, description: "PDF/HTML report generation (rollback, levy, cost, ratio)" },
 };
 
 // ── Help Text ────────────────────────────────────────────────────────────────
@@ -429,6 +430,7 @@ function showHelp(module) {
     levy         Levy calculation, certification, revenue projection, risk
     sales        Sale qualification, comps pool, ratio study, regression
     cost         Cost estimate, depreciation, income approach, batch processing
+    reports      PDF/HTML report generation (rollback, levy, cost, ratio study)
 
   Global options:
     --api <url>     Override API base URL (default: ${DEFAULT_API})
@@ -451,6 +453,9 @@ function showHelp(module) {
     tf forge cost depreciation --age 25 --condition average
     tf forge cost income --income 120000 --vacancy 0.05 --cap-rate 0.08
     tf forge cost batch --batch parcels.ndjson --kernel
+    tf forge reports rollback-notice --data parcel.json --output notice.pdf
+    tf forge reports levy-certification --format html
+    tf forge reports --list
   `);
 }
 
@@ -493,6 +498,13 @@ export default async function forge(ctx) {
 
   if (forgeFlags.help || !module) {
     showHelp(module);
+    return 0;
+  }
+
+  // Reports module uses its own CLI dispatcher
+  if (module === "reports") {
+    const { default: reportCommand } = await import("./reports/report-cli.mjs");
+    await reportCommand(rest.slice(1));
     return 0;
   }
 
