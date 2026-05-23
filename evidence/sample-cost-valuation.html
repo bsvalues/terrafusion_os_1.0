@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cost Approach Valuation — 1-0234-100-0001</title>
+<style>
+  @page { size: letter; margin: 0.75in; }
+  body { font-family: 'Arial', sans-serif; font-size: 10pt; line-height: 1.4; color: #1a1a1a; }
+  .header { text-align: center; border-bottom: 2px solid #2d5016; padding-bottom: 10pt; margin-bottom: 14pt; }
+  .header h1 { font-size: 14pt; margin: 0; color: #2d5016; }
+  .header .subtitle { font-size: 10pt; color: #444; }
+  .section { margin: 14pt 0; }
+  .section h3 { color: #2d5016; border-bottom: 1px solid #2d5016; padding-bottom: 4pt; font-size: 11pt; }
+  .prop-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8pt; margin: 10pt 0; }
+  .prop-item { background: #f0f4e8; padding: 8pt; border-radius: 4pt; }
+  .prop-item .label { font-size: 8pt; text-transform: uppercase; color: #666; }
+  .prop-item .value { font-size: 12pt; font-weight: bold; color: #2d5016; }
+  .calc-table { width: 100%; border-collapse: collapse; margin: 10pt 0; }
+  .calc-table td { padding: 6pt 10pt; border-bottom: 1px solid #eee; }
+  .calc-table .label-col { width: 60%; }
+  .calc-table .value-col { width: 40%; text-align: right; font-family: 'Courier New', monospace; font-weight: bold; }
+  .calc-table .subtotal td { border-top: 1px solid #2d5016; font-weight: bold; }
+  .calc-table .total td { border-top: 2px solid #2d5016; font-size: 12pt; color: #2d5016; }
+  .methodology { background: #f7f7f0; padding: 10pt; border-radius: 4pt; font-size: 9pt; margin: 14pt 0; }
+  .footer { margin-top: 24pt; border-top: 1px solid #ccc; padding-top: 10pt; font-size: 8pt; color: #666; }
+  .audit-hash { font-family: monospace; font-size: 7.5pt; color: #999; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>COST APPROACH VALUATION REPORT</h1>
+  <div class="subtitle">Benton County | Assessment Date: 2026-05-23</div>
+</div>
+
+<div class="section">
+  <h3>Property Information</h3>
+  <div class="prop-grid">
+    <div class="prop-item"><div class="label">Parcel ID</div><div class="value">1-0234-100-0001</div></div>
+    <div class="prop-item"><div class="label">Owner</div><div class="value">Jane Doe</div></div>
+    <div class="prop-item"><div class="label">Address</div><div class="value">1234 W Canal Dr, Kennewick WA</div></div>
+    <div class="prop-item"><div class="label">Building Type</div><div class="value">SFR</div></div>
+    <div class="prop-item"><div class="label">Square Footage</div><div class="value">2,450.00 SF</div></div>
+    <div class="prop-item"><div class="label">Year Built</div><div class="value">1998</div></div>
+    <div class="prop-item"><div class="label">Quality</div><div class="value">Average</div></div>
+    <div class="prop-item"><div class="label">Condition</div><div class="value">Good</div></div>
+    <div class="prop-item"><div class="label">Region</div><div class="value">Benton County</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Cost Calculation</h3>
+  <table class="calc-table">
+    <tr><td class="label-col">Base Cost per SF (SFR, Benton County)</td><td class="value-col">$142.50</td></tr>
+    <tr><td class="label-col">× Square Footage</td><td class="value-col">2,450.00 SF</td></tr>
+    <tr><td class="label-col">× Quality Multiplier (Average)</td><td class="value-col">1.0000</td></tr>
+    <tr><td class="label-col">× Region Multiplier (Benton County)</td><td class="value-col">0.9800</td></tr>
+    <tr class="subtotal"><td class="label-col">= Replacement Cost New (RCN)</td><td class="value-col">$349,125.00</td></tr>
+  </table>
+
+  <h3>Depreciation</h3>
+  <table class="calc-table">
+    <tr><td class="label-col">Effective Age</td><td class="value-col">15 years</td></tr>
+    <tr><td class="label-col">Depreciation Rate</td><td class="value-col">25.0%</td></tr>
+    <tr><td class="label-col">Depreciation Amount</td><td class="value-col">($87,281.00)</td></tr>
+    <tr class="subtotal"><td class="label-col">= RCNLD (Replacement Cost New Less Depreciation)</td><td class="value-col">$261,844.00</td></tr>
+  </table>
+
+  <h3>Total Value</h3>
+  <table class="calc-table">
+    <tr><td class="label-col">RCNLD (Building)</td><td class="value-col">$261,844.00</td></tr>
+    <tr><td class="label-col">+ Land Value</td><td class="value-col">$95,000.00</td></tr>
+    <tr class="total"><td class="label-col">= TOTAL ASSESSED VALUE</td><td class="value-col">$356,844.00</td></tr>
+  </table>
+</div>
+
+<div class="methodology">
+  <strong>Methodology:</strong> Cost approach per IAAO Standard on Mass Appraisal of Real Property.
+  Base costs from Benton County 2025 Cost Schedule (Marshall & Swift adjusted).
+  Depreciation per age-condition matrix. Land valued by sales comparison.
+</div>
+
+<div class="footer">
+  <p>Generated: 2026-05-23 | Benton County Assessor's Office — TerraForge CostForge Module</p>
+  <div class="audit-hash">Audit: SHA-256:ffd50d0dbe22423b</div>
+</div>
+</body>
+</html>
