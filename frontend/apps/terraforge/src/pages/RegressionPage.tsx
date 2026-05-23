@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 
 const API = '/api/terraforge/regression';
 
+// ── Types ──────────────────────────────────────────────────────────────────
+
 interface RegressionModel {
   predictors: string[];
   beta: number[];
@@ -38,8 +40,9 @@ interface RegressionResponse {
   residuals: ResidualRow[];
 }
 
-const fmt$ = (n: number) =>
-  '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 });
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+const fmt$ = (n: number) => '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 });
 const fmtDate = (s: string) => s.slice(0, 10);
 
 function fmtBeta(name: string, value: number) {
@@ -49,6 +52,24 @@ function fmtBeta(name: string, value: number) {
   }
   return (value >= 0 ? '+' : '') + '$' + value.toFixed(2) + '/yr';
 }
+
+function Skeleton({ rows = 5 }: { rows?: number }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '16px 0' }}>
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} style={{ height: 18, background: 'rgba(255,255,255,.04)', borderRadius: 4, width: `${70 + Math.random() * 30}%`, animation: 'pulse 1.5s infinite' }} />
+      ))}
+    </div>
+  );
+}
+
+function Tooltip({ text }: { text: string }) {
+  return (
+    <span title={text} style={{ cursor: 'help', marginLeft: 6, fontSize: 12, color: 'rgba(148,163,184,.7)' }}>ⓘ</span>
+  );
+}
+
+// ── Main Page ──────────────────────────────────────────────────────────────
 
 export default function RegressionPage() {
   const [taxYear, setTaxYear]   = useState(2026);
@@ -74,61 +95,66 @@ export default function RegressionPage() {
 
   const m = data?.model;
 
+  const exportCsv = () => {
+    if (!data?.residuals.length) return;
+    const header = 'Parcel,Sale Date,Sale Price,Fitted,Residual,% Residual,GLA,Year Built,Hood\n';
+    const rows = data.residuals.map(r =>
+      `${r.parcelId},${fmtDate(r.saleDate)},${r.salePrice},${r.fitted.toFixed(0)},${r.residual.toFixed(0)},${r.percentResidual?.toFixed(2) ?? ''},${r.gla ?? ''},${r.yearBuilt ?? ''},${r.hood ?? ''}`
+    ).join('\n');
+    const blob = new Blob([header + rows], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `regression_residuals_${taxYear}.csv`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const inputStyle: React.CSSProperties = { background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.1)', color: '#e2e8f0', borderRadius: 6, padding: '4px 8px', fontSize: 13 };
+
   return (
     <div className="tf-page">
-      <div className="tf-page-header">
-        <h2>OLS Regression</h2>
-        <p className="tf-page-sub">County-wide hedonic model — SalePrice ~ GLA + LotSqft + YearBuilt</p>
+      <div className="tf-page-header" style={{ marginBottom: 16 }}>
+        <h2>OLS Regression<Tooltip text="Ordinary Least Squares hedonic model. Estimates property value as a function of GLA, lot size, and year built. Per IAAO Standard on Mass Appraisal." /></h2>
+        <p className="tf-page-sub">Benton County WA — Hedonic model: SalePrice ~ GLA + LotSqft + YearBuilt</p>
       </div>
 
       {/* Filters */}
-      <div className="tf-filters">
-        <label>
-          Tax year
-          <select value={taxYear} onChange={e => setTaxYear(Number(e.target.value))}>
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'flex-end', marginBottom: 16 }}>
+        <label style={{ fontSize: 12, color: 'rgba(226,232,240,.65)', fontWeight: 600, display: 'flex', flexDirection: 'column', gap: 3 }}>
+          Tax Year
+          <select value={taxYear} onChange={e => setTaxYear(Number(e.target.value))} style={inputStyle}>
             {[2026, 2025, 2024].map(y => <option key={y} value={y}>{y}</option>)}
           </select>
         </label>
-        <label>
-          Hood
-          <input
-            type="text"
-            placeholder="e.g. 15112"
-            value={hood}
-            onChange={e => setHood(e.target.value)}
-            style={{ background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.1)', color: '#e2e8f0', borderRadius: 6, padding: '4px 8px', fontSize: 13, width: 80 }}
-          />
+        <label style={{ fontSize: 12, color: 'rgba(226,232,240,.65)', fontWeight: 600, display: 'flex', flexDirection: 'column', gap: 3 }}>
+          Neighborhood
+          <input type="text" placeholder="e.g. 15112" value={hood} onChange={e => setHood(e.target.value)} style={{ ...inputStyle, width: 80 }} />
         </label>
-        <label>
+        <label style={{ fontSize: 12, color: 'rgba(226,232,240,.65)', fontWeight: 600, display: 'flex', flexDirection: 'column', gap: 3 }}>
           Type
-          <input
-            type="text"
-            placeholder="e.g. 11"
-            value={propType}
-            onChange={e => setPropType(e.target.value)}
-            style={{ background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.1)', color: '#e2e8f0', borderRadius: 6, padding: '4px 8px', fontSize: 13, width: 60 }}
-          />
+          <input type="text" placeholder="e.g. 11" value={propType} onChange={e => setPropType(e.target.value)} style={{ ...inputStyle, width: 60 }} />
         </label>
-        {data && (
-          <span className="tf-count">
-            pool: {data.totalPool.toLocaleString()} · fit: {data.usedForFit.toLocaleString()} · excluded: {data.excludedCount}
-          </span>
-        )}
+        <button onClick={exportCsv} className="tf-btn" style={{ fontSize: 11, padding: '5px 10px', alignSelf: 'flex-end' }}>⬇ CSV</button>
       </div>
 
-      {loading && <p className="tf-loading">Running regression…</p>}
-      {error   && <p className="tf-error">Error: {error}</p>}
+      {/* Pool stats */}
+      {data && (
+        <div style={{ fontSize: 12, color: 'rgba(148,163,184,.7)', marginBottom: 12 }}>
+          Pool: {data.totalPool.toLocaleString()} · Fit: {data.usedForFit.toLocaleString()} · Excluded: {data.excludedCount}
+        </div>
+      )}
+
+      {loading && <Skeleton rows={8} />}
+      {error && <p className="tf-error">Error: {error}</p>}
 
       {data?.insufficientData && (
-        <p className="tf-error">
-          Insufficient data — need ≥ 5 qualified observations with valid GLA (found {data.usedForFit}).
-        </p>
+        <div style={{ background: 'rgba(239,68,68,.08)', border: '1px solid rgba(239,68,68,.2)', borderRadius: 8, padding: 12, marginBottom: 16, fontSize: 13, color: '#fca5a5' }}>
+          Insufficient data — need at least 5 qualified observations with valid GLA (found {data.usedForFit}).
+        </div>
       )}
 
       {data?.singularMatrix && (
-        <p className="tf-error">
+        <div style={{ background: 'rgba(239,68,68,.08)', border: '1px solid rgba(239,68,68,.2)', borderRadius: 8, padding: 12, marginBottom: 16, fontSize: 13, color: '#fca5a5' }}>
           Singular predictor matrix — check for collinear variables in this stratum.
-        </p>
+        </div>
       )}
 
       {/* Model summary cards */}
@@ -160,12 +186,22 @@ export default function RegressionPage() {
               <div className="tf-cardSmall">β[{i}] = {m.beta[i].toFixed(4)}</div>
             </div>
           ))}
+
+          {/* Model quality gate */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, justifyContent: 'center' }}>
+            <span className={`tf-badge ${m.rSquared >= 0.7 ? 'tf-badge--green' : m.rSquared >= 0.5 ? 'tf-badge--yellow' : 'tf-badge--red'}`}>
+              R² {m.rSquared >= 0.7 ? 'GOOD' : m.rSquared >= 0.5 ? 'FAIR' : 'POOR'} ({(m.rSquared * 100).toFixed(1)}%)
+            </span>
+            <span style={{ fontSize: 10, color: 'rgba(148,163,184,.5)' }}>
+              target: R² ≥ 0.70 for mass appraisal
+            </span>
+          </div>
         </div>
       )}
 
       {/* Residuals table */}
-      {data && data.residuals.length > 0 && (
-        <div className="tf-table-wrap">
+      {!loading && !error && data && data.residuals.length > 0 && (
+        <div className="tf-table-wrap" style={{ maxHeight: 480, overflow: 'auto' }}>
           <table className="tf-table">
             <thead>
               <tr>
@@ -183,7 +219,6 @@ export default function RegressionPage() {
             <tbody>
               {data.residuals.map(r => {
                 const absPct = r.percentResidual != null ? Math.abs(r.percentResidual) : null;
-                const pctClass = absPct == null ? '' : absPct > 20 ? 'tf-badge--red' : absPct > 10 ? 'tf-badge--yellow' : '';
                 return (
                   <tr key={r.parcelId + r.saleDate}>
                     <td className="tf-mono">{r.parcelId}</td>
@@ -195,7 +230,7 @@ export default function RegressionPage() {
                     </td>
                     <td className="tf-right">
                       {r.percentResidual != null ? (
-                        <span className={pctClass ? `tf-badge ${pctClass}` : undefined}>
+                        <span className={`tf-badge ${absPct! > 20 ? 'tf-badge--red' : absPct! > 10 ? 'tf-badge--yellow' : ''}`}>
                           {r.percentResidual >= 0 ? '+' : ''}{r.percentResidual.toFixed(1)}%
                         </span>
                       ) : '—'}
