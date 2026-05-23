@@ -145,6 +145,7 @@ test("marks Benton certification triggers green only when Sync terminal and API 
     "pnpm run truth:june10-benton-duplicate-parcel-adjudication",
     "pnpm run truth:june10-benton-projection-duplicate-root-cause",
     "pnpm run truth:june10-benton-projection-uniqueness-repair-plan",
+    "pnpm run truth:june10-benton-projection-uniqueness-repair-execution",
     "pnpm run truth:terrafusion-db-product-load-ledger",
     "pnpm run truth:runtime-row-path-proof",
     "pnpm run truth:runtime-source-lineage",

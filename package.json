@@ -141,6 +141,7 @@
     "truth:june10-benton-duplicate-parcel-adjudication": "node os-platform/core/pilot/june10-benton-duplicate-parcel-adjudication.mjs",
     "truth:june10-benton-projection-duplicate-root-cause": "node os-platform/core/pilot/june10-benton-projection-duplicate-root-cause.mjs",
     "truth:june10-benton-projection-uniqueness-repair-plan": "node os-platform/core/pilot/june10-benton-projection-uniqueness-repair-plan.mjs",
+    "truth:june10-benton-projection-uniqueness-repair-execution": "node os-platform/core/pilot/june10-benton-projection-uniqueness-repair-execution.mjs",
     "truth:june10-p0-burndown": "node os-platform/core/pilot/june10-p0-burndown-plan.mjs",
     "truth:june10-ship-blocker-ledger": "node os-platform/core/pilot/june10-ship-blocker-ledger.mjs",
     "truth:june10-sync-evidence-intake": "node os-platform/core/pilot/june10-sync-evidence-intake.mjs",

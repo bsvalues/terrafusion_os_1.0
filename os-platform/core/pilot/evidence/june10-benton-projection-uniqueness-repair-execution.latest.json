@@ -1,0 +1,78 @@
+{
+  "generatedAtUtc": "2026-05-23T01:14:39.707Z",
+  "slice": "Benton Projection Uniqueness Repair Execution Gate",
+  "passed": false,
+  "executionStatus": "WAITING_SYNC_TERMINAL",
+  "databaseMutationTaken": false,
+  "certificationGranted": false,
+  "summary": {
+    "county": "Benton",
+    "table": "canonical_tf.tf_parcel",
+    "mode": "observe",
+    "beforeDuplicateGroups": 1503,
+    "beforeExtraActiveRows": 1503,
+    "beforeBentonActiveDistinctParcels": 83296,
+    "afterDuplicateGroups": null,
+    "afterExtraActiveRows": null,
+    "afterBentonActiveDistinctParcels": null,
+    "loserRowsSuperseded": null,
+    "repairRunId": null,
+    "receiptWritten": false,
+    "uniqueIndexExists": false,
+    "uniqueIndexCreated": false,
+    "syncActive": true,
+    "blockers": 1
+  },
+  "certificationGate": {
+    "unblockedByThisGate": false,
+    "requiredNextProof": [
+      "Wait for Sync terminal state and/or execute authorized repair until active duplicates are zero."
+    ]
+  },
+  "authorization": {
+    "requiredToken": "BENTON_PROJECTION_UNIQUENESS_REPAIR_APPROVED",
+    "provided": false,
+    "accepted": false
+  },
+  "syncState": {
+    "source": "docker:psql",
+    "latestBatch": {
+      "status": "IN_PROGRESS",
+      "operator": "claude-strict-serial-improvement-tn500-v146",
+      "startedAt": "2026-05-23T01:14:32.237Z",
+      "completedAt": null,
+      "rowsPromoted": null
+    },
+    "statusCounts": {
+      "FAILED": 74,
+      "COMPLETED": 2567,
+      "IN_PROGRESS": 1
+    },
+    "inProgressBatches": 1
+  },
+  "before": {
+    "duplicateGroups": 1503,
+    "extraActiveRows": 1503,
+    "bentonActiveDistinctParcels": 83296
+  },
+  "after": null,
+  "execution": null,
+  "uniqueIndex": {
+    "exists": false,
+    "created": false,
+    "error": null
+  },
+  "blockers": [
+    {
+      "source": "sync_active",
+      "message": "TerraFusion Sync is active; Benton projection uniqueness repair must not mutate DB.",
+      "evidence": {
+        "status": "IN_PROGRESS",
+        "operator": "claude-strict-serial-improvement-tn500-v146",
+        "startedAt": "2026-05-23T01:14:32.237Z",
+        "completedAt": null,
+        "rowsPromoted": null
+      }
+    }
+  ]
+}

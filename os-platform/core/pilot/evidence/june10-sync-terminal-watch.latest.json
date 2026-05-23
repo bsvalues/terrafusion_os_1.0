@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-23T00:12:55.410Z",
+  "generatedAtUtc": "2026-05-23T01:15:15.151Z",
   "slice": "June 10 Sync Terminal Watch",
   "watchStatus": "SYNC_ACTIVE",
   "passed": false,
@@ -10,7 +10,7 @@
     "syncTerminal": false,
     "inProgressBatches": 1,
     "latestBatchStatus": "IN_PROGRESS",
-    "latestBatchOperator": "claude-strict-serial-improvement-tn500-v144",
+    "latestBatchOperator": "claude-strict-serial-improvement-tn500-v146",
     "terminalQuietMinutes": null,
     "apiHealthy": true,
     "apiHealthStatus": 200,
@@ -18,17 +18,17 @@
     "blockers": 1
   },
   "syncState": {
-    "observedAtUtc": "2026-05-23T00:12:55.395Z",
+    "observedAtUtc": "2026-05-23T01:15:15.122Z",
     "source": "docker:psql",
     "statusCounts": {
       "FAILED": 74,
-      "COMPLETED": 2537,
+      "COMPLETED": 2569,
       "IN_PROGRESS": 1
     },
     "latestBatch": {
       "status": "IN_PROGRESS",
-      "operator": "claude-strict-serial-improvement-tn500-v144",
-      "startedAt": "2026-05-23T00:12:45.844Z",
+      "operator": "claude-strict-serial-improvement-tn500-v146",
+      "startedAt": "2026-05-23T01:15:08.002Z",
       "completedAt": null,
       "rowsPromoted": null
     },
@@ -39,11 +39,11 @@
       "sync_bridge.load_batch": 2529,
       "truth_pacs.parcel_spine": 511793,
       "canonical_tf.tf_improvement": 1105,
-      "canonical_tf.tf_improvement_feature": 833262
+      "canonical_tf.tf_improvement_feature": 840490
     }
   },
   "apiHealth": {
-    "checkedAtUtc": "2026-05-23T00:12:55.411Z",
+    "checkedAtUtc": "2026-05-23T01:15:15.151Z",
     "url": "http://localhost:5046/health",
     "status": 200,
     "ok": true,
@@ -109,6 +109,10 @@
       "pnpm run truth:runtime-db-identity",
       "pnpm run truth:benton-parcel-count-sanity",
       "pnpm run truth:runtime-db-content",
+      "pnpm run truth:june10-benton-duplicate-parcel-adjudication",
+      "pnpm run truth:june10-benton-projection-duplicate-root-cause",
+      "pnpm run truth:june10-benton-projection-uniqueness-repair-plan",
+      "pnpm run truth:june10-benton-projection-uniqueness-repair-execution",
       "pnpm run truth:terrafusion-db-product-load-ledger",
       "pnpm run truth:runtime-row-path-proof",
       "pnpm run truth:runtime-source-lineage",
