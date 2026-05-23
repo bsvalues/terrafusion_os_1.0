@@ -214,6 +214,43 @@ function CostEstimateTab() {
       .finally(() => setLoading(false));
   }
 
+  const downloadCostReport = () => {
+    if (!result) return;
+    fetch('/api/reports/cost-valuation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        parcelId: 'Estimate',
+        ownerName: 'Property Owner',
+        propertyAddress: form.region + ', WA',
+        buildingType: form.buildingType,
+        squareFootage: Number(form.squareFeet),
+        yearBuilt: Number(form.yearBuilt),
+        quality: form.qualityGrade,
+        condition: form.conditionGrade,
+        region: form.region,
+        baseCostPerSqFt: result.baseCost / Number(form.squareFeet),
+        qualityMultiplier: result.qualityFactor,
+        regionMultiplier: result.regionFactor,
+        replacementCostNew: result.replacementCostNew,
+        effectiveAge: result.effectiveAge,
+        depreciationRate: result.depreciationPct,
+        depreciationAmount: result.replacementCostNew - result.depreciatedCost,
+        rcnld: result.depreciatedCost,
+        landValue: result.landValue,
+        totalValue: result.totalEstimate,
+      }),
+    })
+      .then(r => r.blob())
+      .then(blob => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `cost-valuation_${form.buildingType}_${new Date().toISOString().slice(0, 10)}.html`;
+        a.click();
+      })
+      .catch(() => window.print());
+  };
+
   const inputStyle: React.CSSProperties = { background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.1)', color: '#e2e8f0', borderRadius: 6, padding: '5px 9px', fontSize: 13, width: '100%' };
   const labelStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: 'rgba(226,232,240,.65)', fontWeight: 600 };
 
@@ -254,9 +291,16 @@ function CostEstimateTab() {
         </label>
       </div>
 
-      <button onClick={calculate} disabled={loading} className="tf-btn" style={{ marginBottom: 16 }}>
-        {loading ? 'Calculating…' : 'Calculate Cost Estimate'}
-      </button>
+      <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
+        <button onClick={calculate} disabled={loading} className="tf-btn">
+          {loading ? 'Calculating…' : 'Calculate Cost Estimate'}
+        </button>
+        {result && (
+          <button onClick={downloadCostReport} className="tf-btn" style={{ borderColor: 'rgba(0,255,170,.4)', color: '#00FFAA' }}>
+            ↓ Download Valuation Report
+          </button>
+        )}
+      </div>
 
       {error && <p className="tf-error">Error: {error}</p>}
 

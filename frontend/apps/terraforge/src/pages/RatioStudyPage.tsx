@@ -115,6 +115,33 @@ export default function RatioStudyPage() {
     URL.revokeObjectURL(url);
   };
 
+  const downloadRatioReport = () => {
+    if (!stats) return;
+    fetch('/api/reports/ratio-study', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        area: hood || 'All Areas',
+        taxYear,
+        sampleSize: countWithRatio ?? total ?? 0,
+        medianRatio: stats.medianRatio ?? 1.0,
+        meanRatio: stats.meanRatio ?? 1.0,
+        cod: stats.cod ?? 0,
+        prd: stats.prd ?? 1.0,
+        prb: stats.prb ?? null,
+        strata: [],
+      }),
+    })
+      .then(r => r.blob())
+      .then(blob => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `ratio-study_${hood || 'all'}_${taxYear}.html`;
+        a.click();
+      })
+      .catch(() => window.print());
+  };
+
   const inputStyle: React.CSSProperties = { background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.1)', color: '#e2e8f0', borderRadius: 6, padding: '4px 8px', fontSize: 13 };
 
   return (
@@ -141,6 +168,7 @@ export default function RatioStudyPage() {
           <input type="text" placeholder="e.g. R" value={propType} onChange={e => { setPropType(e.target.value); setPage(1); }} style={{ ...inputStyle, width: 60 }} />
         </label>
         <button onClick={exportCsv} className="tf-btn" style={{ fontSize: 11, padding: '5px 10px', alignSelf: 'flex-end' }}>⬇ CSV</button>
+        {stats && <button onClick={downloadRatioReport} className="tf-btn" style={{ fontSize: 11, padding: '5px 10px', alignSelf: 'flex-end', borderColor: 'rgba(0,255,170,.4)', color: '#00FFAA' }}>↓ Ratio Report</button>}
       </div>
 
       {/* Summary stats */}

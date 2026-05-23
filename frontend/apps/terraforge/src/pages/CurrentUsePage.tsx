@@ -439,6 +439,42 @@ function RollbackCalculatorSection() {
     a.click();
   }
 
+  function downloadRollbackReport() {
+    if (!result) return;
+    fetch('/api/reports/rollback-notice', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        parcelId: parcelId || 'UNKNOWN',
+        ownerName: 'Property Owner',
+        classificationCode: classCode,
+        enrollmentDate: `${startYear}-01-01`,
+        removalDate: new Date().toISOString().slice(0, 10),
+        removalReason: 'Voluntary withdrawal',
+        yearBreakdown: result.yearBreakdowns.map(yb => ({
+          year: yb.year, marketValue: yb.marketValue, useValue: yb.currentUseValue,
+          difference: yb.difference, additionalTax: yb.difference * 0.01,
+          interestRate: yb.interestRate, interest: yb.interestAmount,
+        })),
+        totalAdditionalTax: result.totalRollbackTax,
+        totalInterest: result.totalInterest,
+        totalPenalty: result.totalPenalty,
+        grandTotal: result.grandTotal,
+      }),
+    })
+      .then(r => r.blob())
+      .then(blob => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `rollback-notice_${parcelId || 'estimate'}_${new Date().toISOString().slice(0, 10)}.html`;
+        a.click();
+      })
+      .catch(() => {
+        // Fallback: open print dialog
+        window.print();
+      });
+  }
+
   return (
     <section className="tf-section" style={{ marginTop: 32 }}>
       <div style={{ marginBottom: 16 }}>
@@ -501,6 +537,9 @@ function RollbackCalculatorSection() {
             </button>
             <button onClick={() => window.print()} style={{ background: 'none', border: '1px solid rgba(255,255,255,.12)', color: '#94a3b8', borderRadius: 6, padding: '7px 14px', fontSize: 12, cursor: 'pointer' }}>
               Print
+            </button>
+            <button onClick={downloadRollbackReport} style={{ background: 'none', border: '1px solid rgba(0,255,170,.3)', color: '#00FFAA', borderRadius: 6, padding: '7px 14px', fontSize: 12, cursor: 'pointer' }}>
+              ↓ Download Report (PDF)
             </button>
           </>
         )}
