@@ -42,6 +42,7 @@ const CERTIFICATION_COMMANDS = [
   "pnpm run truth:runtime-db-content",
   "pnpm run truth:june10-benton-duplicate-parcel-adjudication",
   "pnpm run truth:june10-benton-projection-duplicate-root-cause",
+  "pnpm run truth:june10-benton-projection-uniqueness-repair-plan",
   "pnpm run truth:terrafusion-db-product-load-ledger",
   "pnpm run truth:runtime-row-path-proof",
   "pnpm run truth:runtime-source-lineage",

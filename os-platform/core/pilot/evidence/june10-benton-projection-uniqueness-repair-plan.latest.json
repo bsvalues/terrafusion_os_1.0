@@ -1,0 +1,498 @@
+{
+  "generatedAtUtc": "2026-05-23T01:05:30.895Z",
+  "slice": "Benton Projection Uniqueness Repair Plan",
+  "passed": false,
+  "databaseMutationTaken": false,
+  "certificationGranted": false,
+  "summary": {
+    "county": "Benton",
+    "table": "canonical_tf.tf_parcel",
+    "rootCause": "projection_upsert_or_uniqueness_defect",
+    "duplicateGroups": 1503,
+    "extraActiveRows": 1503,
+    "maxRowsPerParcelNumber": 2,
+    "dryRunSampleGroups": 50,
+    "dryRunSampledLoserRows": 50,
+    "certificationBlockedUntilDryRunZero": true,
+    "syncActive": false,
+    "blockers": 1
+  },
+  "repairAuthorization": {
+    "mutationAllowedNow": false,
+    "reason": "This slice is a repair plan and dry-run only. Mutation requires a separate explicit repair slice.",
+    "requiredBeforeMutation": [
+      "Sync terminal state proven.",
+      "Operator approves repair transaction.",
+      "Rollback receipt tables and row snapshots are ready.",
+      "Dry-run candidate report is reviewed.",
+      "Maintenance window is active."
+    ]
+  },
+  "doctrine": [
+    "TerraFusion DB is the runtime source, but repair planning is not repair execution.",
+    "No production DB mutation is allowed while Sync is active.",
+    "Active/current parcel identity must be one row per CountyId + ParcelNumber before Benton certification.",
+    "Duplicate rows must be superseded with receipt-backed rollback, not manually deleted.",
+    "The active uniqueness rule is applied only after duplicates are resolved."
+  ],
+  "repairPlan": {
+    "activeUniquenessRule": {
+      "name": "ux_tf_parcel_active_county_parcel_number",
+      "intent": "Exactly one ACTIVE canonical parcel row per CountyId + ParcelNumber.",
+      "sql": "CREATE UNIQUE INDEX CONCURRENTLY \"ux_tf_parcel_active_county_parcel_number\" ON canonical_tf.tf_parcel (\"CountyId\", \"ParcelNumber\") WHERE \"ParcelStatus\" = 'ACTIVE' AND nullif(\"ParcelNumber\", '') IS NOT NULL;",
+      "preconditions": [
+        "Sync terminal state is proven.",
+        "Dry-run duplicate count is 0 after repair candidate selection.",
+        "Rollback receipt table exists and captures every loser row before status mutation.",
+        "No product runtime certification is active during repair."
+      ]
+    },
+    "deterministicUpsertBehavior": {
+      "conflictTargetSql": "ON CONFLICT (\"CountyId\", \"ParcelNumber\") WHERE \"ParcelStatus\" = 'ACTIVE' AND nullif(\"ParcelNumber\", '') IS NOT NULL DO UPDATE",
+      "rule": "Projection writes ACTIVE parcels by CountyId + ParcelNumber. Inserts create a row only when no active row exists; otherwise projection updates the existing canonical row in place and preserves the winning TfParcelId.",
+      "createdAtPolicy": "Preserve CreatedAt from the winning canonical row on update.",
+      "updatedAtPolicy": "Set UpdatedAt to the projection/write timestamp on update.",
+      "lineagePolicy": "Every projection run must emit a product-load receipt that records source snapshot, load batch, affected table, inserted count, updated count, superseded duplicate count, and validation counts."
+    },
+    "duplicateResolutionRule": {
+      "winnerOrder": [
+        "latest UpdatedAt",
+        "latest CreatedAt",
+        "lowest TfParcelId as deterministic tie-breaker"
+      ],
+      "loserAction": "Do not delete. Mark loser rows non-active with a governed duplicate-superseded status only inside an authorized repair transaction after recording full row snapshots in a rollback receipt.",
+      "certificationRequirement": "Benton cannot certify until active/current parcel identity is one row per parcel number or a documented legitimate multi-row identity key exists."
+    },
+    "rollbackPlan": {
+      "receiptRequired": true,
+      "receiptTables": [
+        "sync_bridge.projection_repair_receipt",
+        "sync_bridge.projection_repair_row_snapshot"
+      ],
+      "rollbackRule": "Rollback restores every loser row to its prior ParcelStatus and field values from the row snapshot receipt, then drops the active uniqueness index if it was created.",
+      "verificationAfterRollback": [
+        "Re-run duplicate adjudication.",
+        "Re-run projection duplicate root-cause gate.",
+        "Re-run Benton parcel count sanity."
+      ]
+    }
+  },
+  "dryRun": {
+    "mode": "read_only_preview",
+    "productionDbWritePerformed": false,
+    "sampleResolutionGroups": [
+      {
+        "parcelNumber": "101843020124000",
+        "rows": 2,
+        "winnerTfParcelId": "6ed2aa6d-c472-45e1-aa2c-68dfa3f4f4e0",
+        "loserTfParcelIds": ["348428e8-6100-4d49-badd-59db50470449"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020125001",
+        "rows": 2,
+        "winnerTfParcelId": "ff4cfd44-d22f-4c60-ac16-e2ddb90b8208",
+        "loserTfParcelIds": ["d7cb8cde-0505-4564-9dd1-06637f57ff03"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020125002",
+        "rows": 2,
+        "winnerTfParcelId": "0771e638-7b49-4c20-93e4-baa7e008d655",
+        "loserTfParcelIds": ["0c6431f6-1ec8-4ad8-ac7b-30f0ac452fda"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020125003",
+        "rows": 2,
+        "winnerTfParcelId": "a637a2da-3b2f-4cd7-840a-bd289d524ae9",
+        "loserTfParcelIds": ["c815fc21-b6a5-4e41-958f-9cee9899a484"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020125004",
+        "rows": 2,
+        "winnerTfParcelId": "064383e5-c811-48da-9549-ff4f7eed42cf",
+        "loserTfParcelIds": ["d716f702-73a5-497b-ad58-55ef51da6098"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020125005",
+        "rows": 2,
+        "winnerTfParcelId": "09273a95-feda-413b-b7d9-dbe85afdb886",
+        "loserTfParcelIds": ["6b6149d4-2ffb-4921-8853-e3bc8346562f"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020125006",
+        "rows": 2,
+        "winnerTfParcelId": "f3aa4752-137d-497d-8755-6dce8e0cb1d7",
+        "loserTfParcelIds": ["924dc77e-5ac2-41ff-811b-0bf3699240e6"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020125007",
+        "rows": 2,
+        "winnerTfParcelId": "b77cf929-b239-4ce2-834d-eeb8fe3c40cb",
+        "loserTfParcelIds": ["4db6edb1-b42c-4072-bb09-0ab5005ad507"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020125008",
+        "rows": 2,
+        "winnerTfParcelId": "1579ff32-705d-46ac-95bc-bef5c158874d",
+        "loserTfParcelIds": ["9a9830b5-a0c9-40b3-94b8-2a34ec248207"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020125011",
+        "rows": 2,
+        "winnerTfParcelId": "042d9cf0-62b7-498f-b6df-213aa71d0180",
+        "loserTfParcelIds": ["6046601f-7c74-4bcc-b45a-44e7c1254c8e"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020125013",
+        "rows": 2,
+        "winnerTfParcelId": "627fafb2-86a3-4159-a1ad-271fd470011e",
+        "loserTfParcelIds": ["11f539c8-9d8e-42e4-b129-87d28c9dbccd"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020125014",
+        "rows": 2,
+        "winnerTfParcelId": "a8692a98-0d9d-4667-a2d3-ce1c1c987438",
+        "loserTfParcelIds": ["9bbe82ce-09ff-44f4-aa1f-51d089e3ba26"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020125017",
+        "rows": 2,
+        "winnerTfParcelId": "fe885d5b-cea1-421b-8838-97cf57d84d93",
+        "loserTfParcelIds": ["2a42d9f8-c76c-4be2-afff-9709114dd581"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020126006",
+        "rows": 2,
+        "winnerTfParcelId": "c25005ee-95c0-4300-8d3d-08d360278071",
+        "loserTfParcelIds": ["38624b6d-6a6e-4b2d-9eb4-7cd6cbe09847"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020126009",
+        "rows": 2,
+        "winnerTfParcelId": "5d90adbb-c2ad-49fb-9100-854ec947e6cb",
+        "loserTfParcelIds": ["cb8932c3-9319-4de6-8048-081c768cd905"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020126011",
+        "rows": 2,
+        "winnerTfParcelId": "543aa789-e4e6-4b27-894f-ab81354e92c4",
+        "loserTfParcelIds": ["11fa75e3-f4f7-4502-b300-0ac0162cd0a0"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020126012",
+        "rows": 2,
+        "winnerTfParcelId": "4f2aedcb-883a-4b57-9c5c-ab63905751aa",
+        "loserTfParcelIds": ["c9de2bc8-1010-4721-8a5c-7f9197ace10d"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020126014",
+        "rows": 2,
+        "winnerTfParcelId": "892a9c05-4f0d-409c-b09b-76a27cc45573",
+        "loserTfParcelIds": ["28c35819-234b-4d20-81f9-1be52306ce12"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020126015",
+        "rows": 2,
+        "winnerTfParcelId": "ce87a4d2-65df-4fa7-ab01-92beddd6e99e",
+        "loserTfParcelIds": ["b4899a47-01b3-44c5-b51a-bf40728cfc58"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020144001",
+        "rows": 2,
+        "winnerTfParcelId": "4dca77a0-c237-4e37-9888-0a57390648b4",
+        "loserTfParcelIds": ["85cc8f4a-7107-470b-8276-b4ac963299c5"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020144006",
+        "rows": 2,
+        "winnerTfParcelId": "9ba35324-7da9-44ae-a599-8cf4ce4f1f8b",
+        "loserTfParcelIds": ["9fcf2d26-c5c1-4732-bc15-83f90cb3ed1d"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020145001",
+        "rows": 2,
+        "winnerTfParcelId": "16743b43-a945-4faa-9757-5639156ed35b",
+        "loserTfParcelIds": ["8634e346-6ea8-4fe9-9ad4-f9b923515ae0"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020145003",
+        "rows": 2,
+        "winnerTfParcelId": "1095e6d2-9720-439e-a202-d51ad0f3e214",
+        "loserTfParcelIds": ["d02f53e0-d0b8-4932-8f14-39be40ccfb84"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020145004",
+        "rows": 2,
+        "winnerTfParcelId": "c026bef9-2127-49eb-8f7f-5f27bec96d4a",
+        "loserTfParcelIds": ["fac704b7-bf29-44b3-950e-67613bb7c84b"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020145005",
+        "rows": 2,
+        "winnerTfParcelId": "a3e8f17d-15ab-4f23-b259-d5e4d99bef25",
+        "loserTfParcelIds": ["7b28f33c-14a8-477b-ae65-fb3bc200e00d"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020145006",
+        "rows": 2,
+        "winnerTfParcelId": "e687850c-786b-4a47-beb4-6057a78194a6",
+        "loserTfParcelIds": ["93f888ab-7a4a-4802-b5f3-16feccdff7f2"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020145007",
+        "rows": 2,
+        "winnerTfParcelId": "457f64a0-95d6-4a4a-9fb9-0e868e86f3b1",
+        "loserTfParcelIds": ["3d73d3c7-917c-419a-aaa9-11aa48af0f18"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020145009",
+        "rows": 2,
+        "winnerTfParcelId": "c74cdb03-0652-41ff-8c48-59e7829a4c2e",
+        "loserTfParcelIds": ["4c856c82-b6fa-4fbc-9e9a-9c6750d49610"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020145011",
+        "rows": 2,
+        "winnerTfParcelId": "094415f9-35b9-4e6f-8409-db33139d3a9b",
+        "loserTfParcelIds": ["bf9b1d7f-a054-4aab-b744-d925a1b76b7c"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020145012",
+        "rows": 2,
+        "winnerTfParcelId": "103f409b-45e5-45d2-bb3b-77d6c6b556bf",
+        "loserTfParcelIds": ["0c92d932-c250-4bc7-abec-7315bc3d5fd4"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020145014",
+        "rows": 2,
+        "winnerTfParcelId": "a1843fd4-a47d-497f-8708-e9f603d4df87",
+        "loserTfParcelIds": ["a82db3d6-1d79-40c8-a71f-0ee365a2437f"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020145015",
+        "rows": 2,
+        "winnerTfParcelId": "991a4105-460e-4ab1-bcb1-5e7de8ac7e8b",
+        "loserTfParcelIds": ["3b81b8fc-4a01-4bee-8821-8f1389e51932"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020146001",
+        "rows": 2,
+        "winnerTfParcelId": "a370ed71-5e4e-4ac5-9ebb-b428d28ba4c9",
+        "loserTfParcelIds": ["a6c26400-a066-4641-84b0-bcf2c6de6cc3"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020146003",
+        "rows": 2,
+        "winnerTfParcelId": "9db656a7-82d0-4a81-be4a-fceaf4def9c7",
+        "loserTfParcelIds": ["9949d1f9-f69c-47f5-93f8-2962c1ecd85e"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020146005",
+        "rows": 2,
+        "winnerTfParcelId": "6a6679a8-1e36-4e0d-b053-8f502338f3f6",
+        "loserTfParcelIds": ["3bf209af-5608-4a91-84a4-dfd0501c78c3"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020146006",
+        "rows": 2,
+        "winnerTfParcelId": "f2d41648-e4a6-4ff5-9ae0-da56fa3a62eb",
+        "loserTfParcelIds": ["f2d1962c-4693-4859-b39f-755af2c4ef0b"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020146007",
+        "rows": 2,
+        "winnerTfParcelId": "19bdc10b-3d2b-4a4c-afc9-bc02a87e473b",
+        "loserTfParcelIds": ["64e45ea9-8ee6-4900-9fe7-8ea1e58319bc"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020146008",
+        "rows": 2,
+        "winnerTfParcelId": "e4de5d87-f222-44da-a709-425bc68a9980",
+        "loserTfParcelIds": ["9f4725d5-7776-412e-8ad9-72f41ea450b3"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020146009",
+        "rows": 2,
+        "winnerTfParcelId": "3c6ce0ee-ac85-4f46-a120-5b2d89c34ee0",
+        "loserTfParcelIds": ["326a308d-2cd1-42de-b597-df7a33691deb"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020146010",
+        "rows": 2,
+        "winnerTfParcelId": "a2567d75-222f-44e0-963f-bf8f4d418c9e",
+        "loserTfParcelIds": ["7ceaa649-572c-4447-9b11-2fb6fbae2c8a"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020146012",
+        "rows": 2,
+        "winnerTfParcelId": "3c0a8ede-16a6-46e7-8887-3a2edfcb5238",
+        "loserTfParcelIds": ["5f1d9edb-b867-41b2-81fd-246f3b1f70fe"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020146014",
+        "rows": 2,
+        "winnerTfParcelId": "9cce14cf-771d-4326-bae8-abb86c0624e4",
+        "loserTfParcelIds": ["e54f7439-16e7-4a38-9cdb-d47ff397ab8c"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020146015",
+        "rows": 2,
+        "winnerTfParcelId": "e28f5a63-10cd-460e-9288-d616c8dc4c7f",
+        "loserTfParcelIds": ["5895c49b-5697-4654-b532-cebf3db1c588"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020146016",
+        "rows": 2,
+        "winnerTfParcelId": "0d71a0d0-52bb-4a98-8324-3a6dd234b92f",
+        "loserTfParcelIds": ["b13025a2-5e48-481c-8827-cb458a15d29d"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020164001",
+        "rows": 2,
+        "winnerTfParcelId": "674eab0d-a873-4cb2-9b17-46546c5a1b7c",
+        "loserTfParcelIds": ["9b92cb61-74c0-4bb9-89c4-e116c2efb7ad"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020164002",
+        "rows": 2,
+        "winnerTfParcelId": "8d270731-3f38-465a-9c08-b5bf6760f99e",
+        "loserTfParcelIds": ["70d0373b-25ae-42db-a0c1-4db3c5103c8a"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020164004",
+        "rows": 2,
+        "winnerTfParcelId": "0974ee1c-211d-4bfc-99fc-3dcdf0124682",
+        "loserTfParcelIds": ["284bd66f-e433-40d2-ba08-99975109e9e6"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020164009",
+        "rows": 2,
+        "winnerTfParcelId": "00915152-a38d-40d6-a3bc-1bcf664de1d2",
+        "loserTfParcelIds": ["c4d01ab0-5e6d-463a-9f56-7891b18de18e"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020164011",
+        "rows": 2,
+        "winnerTfParcelId": "292743ea-f6f5-434d-a9bf-96fe2feac8ba",
+        "loserTfParcelIds": ["4ea1566d-3393-4bb4-976e-47d642829328"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      },
+      {
+        "parcelNumber": "101843020164012",
+        "rows": 2,
+        "winnerTfParcelId": "10996fb0-5a6f-4d88-9716-58740cfea516",
+        "loserTfParcelIds": ["6db2dc62-8e3e-44d8-b229-72ba59a3fbdc"],
+        "winnerRule": "latest UpdatedAt, latest CreatedAt, lowest TfParcelId",
+        "mutationPreviewOnly": true
+      }
+    ],
+    "sampleGroups": 50,
+    "sampledLoserRows": 50
+  },
+  "blockers": [
+    {
+      "source": "active_duplicates_remaining",
+      "message": "1503 active/current Benton duplicate parcel-number groups remain. Certification stays blocked until dry-run shows 0.",
+      "evidence": {
+        "extraActiveRows": 1503,
+        "maxRowsPerParcelNumber": 2
+      }
+    }
+  ]
+}
