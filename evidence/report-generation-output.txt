@@ -1,0 +1,26 @@
+[
+  {
+    "type": "rollback-notice",
+    "size": 7345,
+    "hash": "3c6eb9195205ba69",
+    "file": "/home/ubuntu/terrafusion_os_1.0/evidence/sample-rollback-notice.html"
+  },
+  {
+    "type": "levy-certification",
+    "size": 3227,
+    "hash": "8183883ca869209c",
+    "file": "/home/ubuntu/terrafusion_os_1.0/evidence/sample-levy-certification.html"
+  },
+  {
+    "type": "cost-valuation",
+    "size": 4895,
+    "hash": "18b69834c6eef2ee",
+    "file": "/home/ubuntu/terrafusion_os_1.0/evidence/sample-cost-valuation.html"
+  },
+  {
+    "type": "ratio-study",
+    "size": 3509,
+    "hash": "efab0abfd0d42f60",
+    "file": "/home/ubuntu/terrafusion_os_1.0/evidence/sample-ratio-study.html"
+  }
+]
