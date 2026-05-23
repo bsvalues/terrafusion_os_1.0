@@ -46,19 +46,28 @@ public class CurrentUseDbContext : DbContext
             e.HasIndex(a => a.Timestamp);
         });
 
-        // Seed DOR interest rates (2016-2026)
+        // Seed WAC 458-30-590 inflation rates (official WA DOR current use interest rates)
+        // Source: https://app.leg.wa.gov/wac/default.aspx?cite=458-30-590
+        // These are the "rate of inflation" per RCW 84.34.330 used for current use rollback interest.
+        // Also used per RCW 84.34.108(4) for additional tax interest calculation.
         modelBuilder.Entity<InterestRate>().HasData(
-            new InterestRate { Year = 2016, Rate = 0.0553m, Source = "WA DOR", EffectiveDate = new DateOnly(2016, 1, 1) },
-            new InterestRate { Year = 2017, Rate = 0.0553m, Source = "WA DOR", EffectiveDate = new DateOnly(2017, 1, 1) },
-            new InterestRate { Year = 2018, Rate = 0.0600m, Source = "WA DOR", EffectiveDate = new DateOnly(2018, 1, 1) },
-            new InterestRate { Year = 2019, Rate = 0.0700m, Source = "WA DOR", EffectiveDate = new DateOnly(2019, 1, 1) },
-            new InterestRate { Year = 2020, Rate = 0.0600m, Source = "WA DOR", EffectiveDate = new DateOnly(2020, 1, 1) },
-            new InterestRate { Year = 2021, Rate = 0.0500m, Source = "WA DOR", EffectiveDate = new DateOnly(2021, 1, 1) },
-            new InterestRate { Year = 2022, Rate = 0.0486m, Source = "WA DOR", EffectiveDate = new DateOnly(2022, 1, 1) },
-            new InterestRate { Year = 2023, Rate = 0.0700m, Source = "WA DOR", EffectiveDate = new DateOnly(2023, 1, 1) },
-            new InterestRate { Year = 2024, Rate = 0.0800m, Source = "WA DOR", EffectiveDate = new DateOnly(2024, 1, 1) },
-            new InterestRate { Year = 2025, Rate = 0.0750m, Source = "WA DOR", EffectiveDate = new DateOnly(2025, 1, 1) },
-            new InterestRate { Year = 2026, Rate = 0.0700m, Source = "WA DOR", EffectiveDate = new DateOnly(2026, 1, 1) }
+            new InterestRate { Year = 2010, Rate = 0.01539m, Source = "WAC 458-30-590", EffectiveDate = new DateOnly(2010, 1, 1) },
+            new InterestRate { Year = 2011, Rate = 0.02755m, Source = "WAC 458-30-590", EffectiveDate = new DateOnly(2011, 1, 1) },
+            new InterestRate { Year = 2012, Rate = 0.01295m, Source = "WAC 458-30-590", EffectiveDate = new DateOnly(2012, 1, 1) },
+            new InterestRate { Year = 2013, Rate = 0.01314m, Source = "WAC 458-30-590", EffectiveDate = new DateOnly(2013, 1, 1) },
+            new InterestRate { Year = 2014, Rate = 0.01591m, Source = "WAC 458-30-590", EffectiveDate = new DateOnly(2014, 1, 1) },
+            new InterestRate { Year = 2015, Rate = 0.00251m, Source = "WAC 458-30-590", EffectiveDate = new DateOnly(2015, 1, 1) },
+            new InterestRate { Year = 2016, Rate = 0.00953m, Source = "WAC 458-30-590", EffectiveDate = new DateOnly(2016, 1, 1) },
+            new InterestRate { Year = 2017, Rate = 0.01553m, Source = "WAC 458-30-590", EffectiveDate = new DateOnly(2017, 1, 1) },
+            new InterestRate { Year = 2018, Rate = 0.02169m, Source = "WAC 458-30-590", EffectiveDate = new DateOnly(2018, 1, 1) },
+            new InterestRate { Year = 2019, Rate = 0.01396m, Source = "WAC 458-30-590", EffectiveDate = new DateOnly(2019, 1, 1) },
+            new InterestRate { Year = 2020, Rate = 0.00602m, Source = "WAC 458-30-590", EffectiveDate = new DateOnly(2020, 1, 1) },
+            new InterestRate { Year = 2021, Rate = 0.03860m, Source = "WAC 458-30-590", EffectiveDate = new DateOnly(2021, 1, 1) },
+            new InterestRate { Year = 2022, Rate = 0.06457m, Source = "WAC 458-30-590", EffectiveDate = new DateOnly(2022, 1, 1) },
+            new InterestRate { Year = 2023, Rate = 0.03670m, Source = "WAC 458-30-590", EffectiveDate = new DateOnly(2023, 1, 1) },
+            new InterestRate { Year = 2024, Rate = 0.02570m, Source = "WAC 458-30-590", EffectiveDate = new DateOnly(2024, 1, 1) },
+            new InterestRate { Year = 2025, Rate = 0.02440m, Source = "WAC 458-30-590", EffectiveDate = new DateOnly(2025, 1, 1) },
+            new InterestRate { Year = 2026, Rate = 0.02440m, Source = "WAC 458-30-590", EffectiveDate = new DateOnly(2026, 1, 1) }
         );
 
         // Seed sample classifications
@@ -135,7 +144,8 @@ public class CurrentUseDbContext : DbContext
             }
         );
 
-        // Seed sample removal
+        // Seed sample removal (CUTL parcel enrolled 2012, removed 2025 = 10-year rollback window)
+        // Interest calculated using WAC 458-30-590 rates over 10 years ≈ ~2.5% avg × 10 years
         modelBuilder.Entity<Removal>().HasData(
             new Removal
             {
@@ -147,9 +157,9 @@ public class CurrentUseDbContext : DbContext
                 Status = "Confirmed",
                 RemovalDate = new DateOnly(2025, 12, 15),
                 RollbackAmount = 82350.00m,
-                InterestAmount = 31245.67m,
+                InterestAmount = 12842.18m,
                 PenaltyAmount = 16470.00m,
-                TotalDue = 130065.67m,
+                TotalDue = 111662.18m,
                 PenaltyExceptionCode = null
             }
         );

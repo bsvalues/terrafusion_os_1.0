@@ -100,7 +100,7 @@ describe('CUForge module contract', () => {
     it('uses tf- CSS class prefix consistent with TerraForge design system', () => {
       const page = read('pages/CurrentUsePage.tsx');
       expect(page).toContain('tf-page');
-      expect(page).toContain('tf-card');
+      expect(page).toContain('tf-section');
       expect(page).toContain('tf-table');
     });
 

@@ -98,7 +98,7 @@ function InitiateRemovalForm({ onCreated }: { onCreated: () => void }) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true); setError(null); setSuccess(false);
-    fetch(`${API}/removals/initiate`, {
+    fetch(`${API}/removals`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

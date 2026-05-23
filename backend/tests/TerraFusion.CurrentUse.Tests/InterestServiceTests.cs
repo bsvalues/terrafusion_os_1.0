@@ -29,9 +29,10 @@ public class InterestServiceTests
         var rates = await svc.GetRatesAsync();
 
         rates.Should().NotBeEmpty();
-        rates.Should().Contain(r => r.Year == 2024 && r.Rate == 0.08m);
-        rates.Should().Contain(r => r.Year == 2023 && r.Rate == 0.07m);
-        rates.Should().Contain(r => r.Year == 2025 && r.Rate == 0.075m);
+        // Real WAC 458-30-590 rates
+        rates.Should().Contain(r => r.Year == 2024 && r.Rate == 0.02570m);
+        rates.Should().Contain(r => r.Year == 2023 && r.Rate == 0.03670m);
+        rates.Should().Contain(r => r.Year == 2025 && r.Rate == 0.02440m);
     }
 
     [Fact]
@@ -58,13 +59,13 @@ public class InterestServiceTests
         var svc = CreateService(db);
 
         // Service iterates from startYear to endYear inclusive
-        // 2023 rate = 7%, 2024 rate = 8%
+        // 2023 rate = 3.67%, 2024 rate = 2.57% (WAC 458-30-590)
         var result = await svc.CalculateAsync(50000m, 2023, 2024);
 
         result.Should().NotBeNull();
         result.Breakdown.Should().HaveCount(2); // 2023 and 2024
-        // Total = 50000 * 0.07 + 50000 * 0.08 = 3500 + 4000 = 7500
-        result.TotalInterest.Should().Be(7500m);
+        // Total = 50000 * 0.03670 + 50000 * 0.02570 = 1835 + 1285 = 3120
+        result.TotalInterest.Should().Be(3120m);
     }
 
     [Fact]

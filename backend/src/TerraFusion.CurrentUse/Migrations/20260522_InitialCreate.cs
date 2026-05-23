@@ -141,24 +141,31 @@ public partial class InitialCreate : Migration
             table: "AuditEntries",
             column: "Timestamp");
 
-        // Seed interest rates (WA DOR published rates)
+        // Seed WAC 458-30-590 inflation rates (official WA DOR current use interest rates)
+        // Source: https://app.leg.wa.gov/wac/default.aspx?cite=458-30-590
         migrationBuilder.InsertData(
             schema: "currentuse",
             table: "InterestRates",
             columns: new[] { "Year", "Rate", "Source", "EffectiveDate" },
             values: new object[,]
             {
-                { 2016, 0.0553m, "WA DOR", new DateOnly(2016, 1, 1) },
-                { 2017, 0.0553m, "WA DOR", new DateOnly(2017, 1, 1) },
-                { 2018, 0.0600m, "WA DOR", new DateOnly(2018, 1, 1) },
-                { 2019, 0.0700m, "WA DOR", new DateOnly(2019, 1, 1) },
-                { 2020, 0.0600m, "WA DOR", new DateOnly(2020, 1, 1) },
-                { 2021, 0.0500m, "WA DOR", new DateOnly(2021, 1, 1) },
-                { 2022, 0.0486m, "WA DOR", new DateOnly(2022, 1, 1) },
-                { 2023, 0.0700m, "WA DOR", new DateOnly(2023, 1, 1) },
-                { 2024, 0.0800m, "WA DOR", new DateOnly(2024, 1, 1) },
-                { 2025, 0.0750m, "WA DOR", new DateOnly(2025, 1, 1) },
-                { 2026, 0.0700m, "WA DOR", new DateOnly(2026, 1, 1) }
+                { 2010, 0.01539m, "WAC 458-30-590", new DateOnly(2010, 1, 1) },
+                { 2011, 0.02755m, "WAC 458-30-590", new DateOnly(2011, 1, 1) },
+                { 2012, 0.01295m, "WAC 458-30-590", new DateOnly(2012, 1, 1) },
+                { 2013, 0.01314m, "WAC 458-30-590", new DateOnly(2013, 1, 1) },
+                { 2014, 0.01591m, "WAC 458-30-590", new DateOnly(2014, 1, 1) },
+                { 2015, 0.00251m, "WAC 458-30-590", new DateOnly(2015, 1, 1) },
+                { 2016, 0.00953m, "WAC 458-30-590", new DateOnly(2016, 1, 1) },
+                { 2017, 0.01553m, "WAC 458-30-590", new DateOnly(2017, 1, 1) },
+                { 2018, 0.02169m, "WAC 458-30-590", new DateOnly(2018, 1, 1) },
+                { 2019, 0.01396m, "WAC 458-30-590", new DateOnly(2019, 1, 1) },
+                { 2020, 0.00602m, "WAC 458-30-590", new DateOnly(2020, 1, 1) },
+                { 2021, 0.03860m, "WAC 458-30-590", new DateOnly(2021, 1, 1) },
+                { 2022, 0.06457m, "WAC 458-30-590", new DateOnly(2022, 1, 1) },
+                { 2023, 0.03670m, "WAC 458-30-590", new DateOnly(2023, 1, 1) },
+                { 2024, 0.02570m, "WAC 458-30-590", new DateOnly(2024, 1, 1) },
+                { 2025, 0.02440m, "WAC 458-30-590", new DateOnly(2025, 1, 1) },
+                { 2026, 0.02440m, "WAC 458-30-590", new DateOnly(2026, 1, 1) }
             });
     }
 

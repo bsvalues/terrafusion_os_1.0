@@ -70,20 +70,20 @@ describe('CUForge WA RCW domain compliance', () => {
     });
   });
 
-  describe('interest rates (WAC 458-30-262)', () => {
-    it('references WAC 458-30-262 for interest rate authority', () => {
+  describe('interest rates (WAC 458-30-590)', () => {
+    it('references WAC 458-30-590 for interest rate authority', () => {
       const models = read('Models/CurrentUseModels.cs');
-      expect(models).toContain('WAC 458-30-262');
+      expect(models).toContain('WAC 458-30-590');
     });
 
-    it('uses WA DOR as the authoritative rate source', () => {
+    it('uses WAC 458-30-590 as the authoritative rate source', () => {
       const db = read('Data/CurrentUseDbContext.cs');
-      expect(db).toContain('WA DOR');
+      expect(db).toContain('WAC 458-30-590');
     });
 
-    it('seeds historical rates from 2016-2026', () => {
+    it('seeds historical rates from 2010-2026', () => {
       const db = read('Data/CurrentUseDbContext.cs');
-      expect(db).toContain('Year = 2016');
+      expect(db).toContain('Year = 2010');
       expect(db).toContain('Year = 2026');
     });
   });
