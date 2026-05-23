@@ -38,8 +38,8 @@ const DEFAULT_THRESHOLDS = {
 
 const CERTIFICATION_COMMANDS = [
   "pnpm run truth:runtime-db-identity",
-  "pnpm run truth:runtime-db-content",
   "pnpm run truth:benton-parcel-count-sanity",
+  "pnpm run truth:runtime-db-content",
   "pnpm run truth:terrafusion-db-product-load-ledger",
   "pnpm run truth:runtime-row-path-proof",
   "pnpm run truth:runtime-source-lineage",

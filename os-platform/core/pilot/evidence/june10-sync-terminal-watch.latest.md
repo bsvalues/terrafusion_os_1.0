@@ -1,25 +1,25 @@
 # June 10 Sync Terminal Watch
 
-Generated: 2026-05-22T23:27:33.482Z
+Generated: 2026-05-23T00:12:55.410Z
 
-Verdict: **DB_PROBE_UNAVAILABLE**
+Verdict: **SYNC_ACTIVE**
 
 ## Summary
 
 - Sync terminal: false
-- In-progress batches: 0
-- Latest batch status: -
-- Latest batch operator: -
-- API healthy: false
-- API status: -
+- In-progress batches: 1
+- Latest batch status: IN_PROGRESS
+- Latest batch operator: claude-strict-serial-improvement-tn500-v144
+- API healthy: true
+- API status: 200
 - Timeout escalation required: false
 - Benton certification trigger ready: false
 
 ## Clean Restart Readiness
 
-- blocked: Sync/DB probe availability - Sync/DB probe failed; recover Docker/Postgres visibility before any runtime certification decision.
+- green: Sync/DB probe availability - Sync/DB probe returned structured batch state.
 - blocked: Sync terminal state - Do not restart runtime while Sync is active or terminal state is unproven.
-- blocked: API health recovery required - API health is not green. Prepare manual clean restart only after Sync terminal state is green.
+- green: API health recovery required - API health is already green; no recovery restart needed.
 - green: Timeout/escalation clearance - No stale Sync timeout escalation is required.
 - blocked: Certification rerun guard - Certification commands are listed as triggers only; this watcher does not run them.
 
@@ -33,11 +33,7 @@ Verdict: **DB_PROBE_UNAVAILABLE**
 
 ## Blockers
 
-- sync_terminal: TerraFusion Sync terminal state is not proven. (inProgress=0; latestStatus=missing; quietMinutes=unknown)
-- sync_probe: Sync/DB probe is unavailable; terminal state cannot be determined. (Command failed: docker exec -i terrafusion-postgres-dev psql -U postgres -d terrafusion -t -A -v ON_ERROR_STOP=1
-failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
-)
-- api_health: API health is not green; runtime recovery may be needed after Sync is terminal. (status=null; error=fetch failed)
+- sync_terminal: TerraFusion Sync terminal state is not proven. (inProgress=1; latestStatus=IN_PROGRESS; quietMinutes=unknown)
 
 ## Guardrails
 
