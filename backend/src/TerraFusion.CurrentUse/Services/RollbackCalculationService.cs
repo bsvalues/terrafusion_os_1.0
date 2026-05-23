@@ -8,7 +8,8 @@ namespace TerraFusion.CurrentUse.Services;
 /// <summary>
 /// Calculates rollback taxes per RCW 84.33.140 / 84.34.108.
 /// Rollback = sum of (MarketValue - CurrentUseValue) for each year in the rollback window,
-/// plus compound interest at DOR-published rates, plus 20% penalty (unless exception applies).
+/// plus interest at WAC 458-30-590 inflation rates, plus 20% penalty (unless exception applies).
+/// Interest rates sourced from: https://app.leg.wa.gov/wac/default.aspx?cite=458-30-590
 /// </summary>
 public class RollbackCalculationService : IRollbackCalculationService
 {
@@ -57,7 +58,7 @@ public class RollbackCalculationService : IRollbackCalculationService
             var difference = Math.Max(0, marketValue - cuValue);
 
             // Interest compounds from the year of the tax to the removal year
-            var rate = rates.TryGetValue(year, out var r) ? r : 0.06m; // Default 6% if rate not found
+            var rate = rates.TryGetValue(year, out var r) ? r : 0.02440m; // Default to latest WAC 458-30-590 rate (2025: 2.44%)
             int yearsOfInterest = request.RemovalYear - year;
             decimal interestAmount = 0;
 

@@ -39,7 +39,7 @@ public class InterestService : IInterestService
 
         for (int year = startYear; year <= endYear; year++)
         {
-            var rate = rates.FirstOrDefault(r => r.Year == year)?.Rate ?? 0.06m;
+            var rate = rates.FirstOrDefault(r => r.Year == year)?.Rate ?? 0.02440m; // WAC 458-30-590 fallback
             var yearInterest = principal * rate;
             totalInterest += yearInterest;
             cumulative += yearInterest;

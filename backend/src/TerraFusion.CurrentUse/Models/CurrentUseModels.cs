@@ -25,14 +25,16 @@ public class Classification
 }
 
 /// <summary>
-/// DOR-published interest rate for rollback calculations per WAC 458-30-262.
+/// Inflation rate for current use rollback interest per WAC 458-30-590.
+/// Source: https://app.leg.wa.gov/wac/default.aspx?cite=458-30-590
+/// Used in RCW 84.34.108(4) and RCW 84.33.140 additional tax calculations.
 /// </summary>
 public class InterestRate
 {
     [Key]
     public int Year { get; set; }
     public decimal Rate { get; set; }
-    public string Source { get; set; } = "WA DOR";
+    public string Source { get; set; } = "WAC 458-30-590";
     public DateOnly EffectiveDate { get; set; }
 }
 

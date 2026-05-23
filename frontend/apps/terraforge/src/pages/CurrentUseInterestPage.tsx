@@ -108,12 +108,12 @@ function RatesSection() {
         <div>
           <h3 style={{ margin: 0, color: '#e2e8f0', fontSize: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
             Published Interest Rates
-            <Tip text="WA DOR rates per WAC 458-30-262, used for compound interest on rollback taxes">
+            <Tip text="WA DOR inflation rates per WAC 458-30-590, used for interest on rollback additional tax">
               <span style={{ fontSize: 13, color: '#64748b', cursor: 'help' }}>?</span>
             </Tip>
           </h3>
           <p style={{ margin: '4px 0 0', fontSize: 12, color: '#64748b' }}>
-            WA Department of Revenue published rates · WAC 458-30-262
+            WA Department of Revenue inflation rates · WAC 458-30-590
           </p>
         </div>
         {data && <span style={{ fontSize: 12, color: '#64748b', background: 'rgba(255,255,255,.04)', padding: '4px 10px', borderRadius: 12 }}>{data.length} years</span>}
@@ -204,11 +204,11 @@ function InterestCalculatorSection() {
         </label>
         <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
           Start Year
-          <input type="number" value={startYear} onChange={e => setStartYear(Number(e.target.value))} min={2016} max={2026} style={inputStyle} />
+          <input type="number" value={startYear} onChange={e => setStartYear(Number(e.target.value))} min={2010} max={2026} style={inputStyle} />
         </label>
         <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
           End Year
-          <input type="number" value={endYear} onChange={e => setEndYear(Number(e.target.value))} min={2016} max={2026} style={inputStyle} />
+          <input type="number" value={endYear} onChange={e => setEndYear(Number(e.target.value))} min={2010} max={2026} style={inputStyle} />
         </label>
       </div>
 
