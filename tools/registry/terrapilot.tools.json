@@ -3425,6 +3425,178 @@
         },
         "required": ["filePath", "content"]
       }
+    },
+    {
+      "toolId": "cu_calculate_rollback",
+      "displayName": "Calculate Rollback Tax",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel", "current_use"],
+      "description": "Calculate rollback taxes, interest, and penalties for a parcel being removed from current use classification per RCW 84.33/84.34",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "classificationCode": { "type": "string", "enum": ["DFL", "CUFA", "CUOS", "CUTL"], "description": "Current use classification code" },
+          "enrollmentYear": { "type": "integer", "description": "Year parcel was enrolled in current use" },
+          "removalYear": { "type": "integer", "description": "Year of removal from current use" },
+          "marketValues": { "type": "object", "description": "Year-keyed market values for lookback period" },
+          "currentUseValues": { "type": "object", "description": "Year-keyed current use values for lookback period" },
+          "penaltyExceptionCode": { "type": "string", "description": "Optional penalty exception code (DEATH, GOVT_ACQUISITION, etc.)" }
+        },
+        "required": ["parcelId", "classificationCode", "enrollmentYear", "removalYear", "marketValues", "currentUseValues"]
+      }
+    },
+    {
+      "toolId": "cu_calculate_interest",
+      "displayName": "Calculate Current Use Interest",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["current_use"],
+      "description": "Compute compound interest on rollback tax principal using WA DOR published rates per WAC 458-30-262",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "principal": { "type": "number", "description": "Rollback tax principal amount" },
+          "startYear": { "type": "integer", "description": "First year of interest accrual" },
+          "endYear": { "type": "integer", "description": "Last year of interest accrual" }
+        },
+        "required": ["principal", "startYear", "endYear"]
+      }
+    },
+    {
+      "toolId": "cu_evaluate_penalty_exceptions",
+      "displayName": "Evaluate Penalty Exceptions",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel", "current_use"],
+      "description": "Evaluate which 20% penalty exceptions apply for a parcel per RCW 84.33.140 / 84.34.108",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": { "type": "string", "description": "Parcel identifier to evaluate" }
+        },
+        "required": ["parcelId"]
+      }
+    },
+    {
+      "toolId": "cu_initiate_removal",
+      "displayName": "Initiate Current Use Removal",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "forge",
+      "touches": ["parcel", "current_use", "workflow"],
+      "description": "Initiate removal of a parcel from current use classification, triggering rollback tax calculation workflow",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["voluntary_withdrawal", "change_of_use", "sale_nonqualifying", "subdivision", "failure_requirements", "govt_acquisition", "owner_death"],
+      "piiHandling": "none",
+      "tracePolicy": "full",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "classificationCode": { "type": "string", "enum": ["DFL", "CUFA", "CUOS", "CUTL"], "description": "Current use classification code" },
+          "reason": { "type": "string", "description": "Reason for removal" }
+        },
+        "required": ["parcelId", "classificationCode", "reason"]
+      }
+    },
+    {
+      "toolId": "cu_enroll_parcel",
+      "displayName": "Enroll Parcel in Current Use",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "forge",
+      "touches": ["parcel", "current_use"],
+      "description": "Create a new current use classification enrollment for a parcel under RCW 84.33 (DFL) or RCW 84.34 (CUFA/CUOS/CUTL)",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["new_application", "reclassification", "correction"],
+      "piiHandling": "none",
+      "tracePolicy": "full",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "classificationCode": { "type": "string", "enum": ["DFL", "CUFA", "CUOS", "CUTL"], "description": "Current use classification code" },
+          "enrollmentDate": { "type": "string", "format": "date", "description": "Date of enrollment" },
+          "acreage": { "type": "number", "description": "Enrolled acreage" },
+          "currentMarketValue": { "type": "number", "description": "Market value at enrollment" },
+          "currentUseValue": { "type": "number", "description": "Current use value at enrollment" }
+        },
+        "required": ["parcelId", "classificationCode", "enrollmentDate"]
+      }
+    },
+    {
+      "toolId": "cu_get_interest_rates",
+      "displayName": "Get Current Use Interest Rates",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["current_use"],
+      "description": "Retrieve all WA DOR published interest rates for current use rollback calculations",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "toolId": "cu_list_classifications",
+      "displayName": "List Current Use Classifications",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel", "current_use"],
+      "description": "Query current use classifications with filtering by status, code, and pagination",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "enum": ["Active", "Removed", "Pending"], "description": "Filter by enrollment status" },
+          "classificationCode": { "type": "string", "enum": ["DFL", "CUFA", "CUOS", "CUTL"], "description": "Filter by classification code" },
+          "page": { "type": "integer", "description": "Page number (1-based)" },
+          "pageSize": { "type": "integer", "description": "Results per page (max 100)" }
+        },
+        "required": []
+      }
     }
   ]
 }
