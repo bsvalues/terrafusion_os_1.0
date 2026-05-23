@@ -1,0 +1,1350 @@
+{
+  "generatedAtUtc": "2026-05-23T00:28:59.205Z",
+  "slice": "Benton Duplicate Parcel-Number Adjudication",
+  "passed": false,
+  "databaseMutationTaken": false,
+  "certificationGranted": false,
+  "summary": {
+    "county": "Benton",
+    "table": "canonical_tf.tf_parcel",
+    "duplicateGroups": 1503,
+    "extraActiveRows": 1503,
+    "maxRowsPerParcelNumber": 2,
+    "sampleGroupsAdjudicated": 50,
+    "classificationCounts": {
+      "exact_or_near_duplicate_projection_bug": 50
+    },
+    "certificationImpact": "certification_blocker",
+    "projectionFixRequired": true,
+    "syncActive": true,
+    "inProgressBatches": 1,
+    "legitimateMultiRowGroupsProvenInSample": 0,
+    "sourceDuplicateProven": false,
+    "geometrySplitProven": false
+  },
+  "doctrine": [
+    "TerraFusion DB is the runtime source for this adjudication.",
+    "This gate is read-only and does not certify Benton while Sync is active.",
+    "Duplicate active/current parcel numbers are not acceptable unless schema-supported version, history, split, or geometry semantics explain them.",
+    "Source duplicates cannot be claimed from canonical_tf.tf_parcel alone.",
+    "A warning becomes acceptable only when the duplicate semantics are proven, not inferred."
+  ],
+  "schema": {
+    "table": "canonical_tf.tf_parcel",
+    "columns": [
+      "TfParcelId",
+      "CountyId",
+      "ParcelNumber",
+      "SitusAddress",
+      "LegalDescription",
+      "ParcelStatus",
+      "PropertyType",
+      "CurrentOwnerId",
+      "CurrentAssessmentId",
+      "CreatedAt",
+      "UpdatedAt",
+      "ConversionEra"
+    ],
+    "hasTaxYearOrVersionKey": false,
+    "hasGeometryOrSplitKey": false
+  },
+  "syncState": {
+    "source": "docker:psql",
+    "latestBatch": {
+      "status": "IN_PROGRESS",
+      "operator": "claude-strict-serial-improvement-tn500-v144",
+      "startedAt": "2026-05-23T00:19:29.037Z",
+      "completedAt": null,
+      "rowsPromoted": null
+    },
+    "statusCounts": {
+      "FAILED": 74,
+      "COMPLETED": 2547,
+      "IN_PROGRESS": 1
+    },
+    "inProgressBatches": 1
+  },
+  "aggregate": {
+    "duplicateGroups": 1503,
+    "extraActiveRows": 1503,
+    "maxRowsPerParcelNumber": 2
+  },
+  "sampleGroups": [
+    {
+      "rows": 2,
+      "parcelNumber": "101843020124000"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020125001"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020125002"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020125003"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020125004"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020125005"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020125006"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020125007"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020125008"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020125011"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020125013"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020125014"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020125017"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020126006"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020126009"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020126011"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020126012"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020126014"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020126015"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020144001"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020144006"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020145001"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020145003"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020145004"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020145005"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020145006"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020145007"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020145009"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020145011"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020145012"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020145014"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020145015"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020146001"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020146003"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020146005"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020146006"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020146007"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020146008"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020146009"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020146010"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020146012"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020146014"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020146015"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020146016"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020164001"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020164002"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020164004"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020164009"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020164011"
+    },
+    {
+      "rows": 2,
+      "parcelNumber": "101843020164012"
+    }
+  ],
+  "adjudicatedSampleGroups": [
+    {
+      "parcelNumber": "101843020124000",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020125001",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020125002",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020125003",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020125004",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020125005",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020125006",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020125007",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020125008",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020125011",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020125013",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020125014",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020125017",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020126006",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020126009",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020126011",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020126012",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020126014",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020126015",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020144001",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020144006",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020145001",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020145003",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020145004",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020145005",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020145006",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020145007",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020145009",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020145011",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020145012",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020145014",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020145015",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020146001",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020146003",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020146005",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020146006",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020146007",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020146008",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020146009",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020146010",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020146012",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020146014",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020146015",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020146016",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020164001",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020164002",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020164004",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020164009",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020164011",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    },
+    {
+      "parcelNumber": "101843020164012",
+      "rowCount": 2,
+      "activeRows": 2,
+      "inactiveRows": 0,
+      "sameOwner": true,
+      "sameAssessment": true,
+      "sameSitusAddress": true,
+      "sameLegalDescription": true,
+      "samePropertyType": true,
+      "sameConversionEra": true,
+      "legitimateMultiRowProven": false,
+      "sourceDuplicateProven": false,
+      "geometrySplitProven": false,
+      "classification": "exact_or_near_duplicate_projection_bug",
+      "certificationImpact": "certification_blocker",
+      "projectionFixRequired": true,
+      "reasons": [
+        "Multiple active rows share the same parcel number and same core identity fields without an explaining key."
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "source": "sync_active",
+      "message": "TerraFusion Sync is active; Benton certification must remain blocked even though this adjudication is read-only.",
+      "evidence": {
+        "status": "IN_PROGRESS",
+        "operator": "claude-strict-serial-improvement-tn500-v144",
+        "startedAt": "2026-05-23T00:19:29.037Z",
+        "completedAt": null,
+        "rowsPromoted": null
+      }
+    },
+    {
+      "source": "duplicate_active_parcel_numbers",
+      "message": "1503 active/current Benton parcel-number groups have duplicate canonical rows without an explaining version/split key.",
+      "evidence": {
+        "extraActiveRows": 1503,
+        "maxRowsPerParcelNumber": 2,
+        "sampleClassifications": {
+          "exact_or_near_duplicate_projection_bug": 50
+        }
+      }
+    }
+  ]
+}
