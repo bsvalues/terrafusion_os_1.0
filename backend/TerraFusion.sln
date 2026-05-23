@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerraFusion.Levy.Tests", "t
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerraFusion.SalesForge.Tests", "tests\TerraFusion.SalesForge.Tests\TerraFusion.SalesForge.Tests.csproj", "{274069B5-FD03-4A50-9732-42DC5B9DF8A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerraFusion.CostForge.Tests", "tests\TerraFusion.CostForge.Tests\TerraFusion.CostForge.Tests.csproj", "{3C2622EB-1C51-4C13-8A24-62600030326E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -241,6 +243,18 @@ Global
 		{274069B5-FD03-4A50-9732-42DC5B9DF8A9}.Release|x64.Build.0 = Release|Any CPU
 		{274069B5-FD03-4A50-9732-42DC5B9DF8A9}.Release|x86.ActiveCfg = Release|Any CPU
 		{274069B5-FD03-4A50-9732-42DC5B9DF8A9}.Release|x86.Build.0 = Release|Any CPU
+		{3C2622EB-1C51-4C13-8A24-62600030326E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C2622EB-1C51-4C13-8A24-62600030326E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C2622EB-1C51-4C13-8A24-62600030326E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3C2622EB-1C51-4C13-8A24-62600030326E}.Debug|x64.Build.0 = Debug|Any CPU
+		{3C2622EB-1C51-4C13-8A24-62600030326E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3C2622EB-1C51-4C13-8A24-62600030326E}.Debug|x86.Build.0 = Debug|Any CPU
+		{3C2622EB-1C51-4C13-8A24-62600030326E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C2622EB-1C51-4C13-8A24-62600030326E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C2622EB-1C51-4C13-8A24-62600030326E}.Release|x64.ActiveCfg = Release|Any CPU
+		{3C2622EB-1C51-4C13-8A24-62600030326E}.Release|x64.Build.0 = Release|Any CPU
+		{3C2622EB-1C51-4C13-8A24-62600030326E}.Release|x86.ActiveCfg = Release|Any CPU
+		{3C2622EB-1C51-4C13-8A24-62600030326E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -265,5 +279,6 @@ Global
 		{8E095257-C559-4A9D-9AC3-BEC92D664615} = {6C80B606-F555-4843-9B73-9FC1AA160097}
 		{06C522DA-0D2B-4D8B-84B6-062C3FC7CAFA} = {6C80B606-F555-4843-9B73-9FC1AA160097}
 		{274069B5-FD03-4A50-9732-42DC5B9DF8A9} = {6C80B606-F555-4843-9B73-9FC1AA160097}
+		{3C2622EB-1C51-4C13-8A24-62600030326E} = {6C80B606-F555-4843-9B73-9FC1AA160097}
 	EndGlobalSection
 EndGlobal
