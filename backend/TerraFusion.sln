@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerraFusion.CurrentUse.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerraFusion.Levy.Tests", "tests\TerraFusion.Levy.Tests\TerraFusion.Levy.Tests.csproj", "{06C522DA-0D2B-4D8B-84B6-062C3FC7CAFA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerraFusion.SalesForge.Tests", "tests\TerraFusion.SalesForge.Tests\TerraFusion.SalesForge.Tests.csproj", "{274069B5-FD03-4A50-9732-42DC5B9DF8A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -227,6 +229,18 @@ Global
 		{06C522DA-0D2B-4D8B-84B6-062C3FC7CAFA}.Release|x64.Build.0 = Release|Any CPU
 		{06C522DA-0D2B-4D8B-84B6-062C3FC7CAFA}.Release|x86.ActiveCfg = Release|Any CPU
 		{06C522DA-0D2B-4D8B-84B6-062C3FC7CAFA}.Release|x86.Build.0 = Release|Any CPU
+		{274069B5-FD03-4A50-9732-42DC5B9DF8A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{274069B5-FD03-4A50-9732-42DC5B9DF8A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{274069B5-FD03-4A50-9732-42DC5B9DF8A9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{274069B5-FD03-4A50-9732-42DC5B9DF8A9}.Debug|x64.Build.0 = Debug|Any CPU
+		{274069B5-FD03-4A50-9732-42DC5B9DF8A9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{274069B5-FD03-4A50-9732-42DC5B9DF8A9}.Debug|x86.Build.0 = Debug|Any CPU
+		{274069B5-FD03-4A50-9732-42DC5B9DF8A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{274069B5-FD03-4A50-9732-42DC5B9DF8A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{274069B5-FD03-4A50-9732-42DC5B9DF8A9}.Release|x64.ActiveCfg = Release|Any CPU
+		{274069B5-FD03-4A50-9732-42DC5B9DF8A9}.Release|x64.Build.0 = Release|Any CPU
+		{274069B5-FD03-4A50-9732-42DC5B9DF8A9}.Release|x86.ActiveCfg = Release|Any CPU
+		{274069B5-FD03-4A50-9732-42DC5B9DF8A9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -250,5 +264,6 @@ Global
 		{CD9ABFA5-976D-4346-83D9-C9BD4D98B251} = {807F7173-3BC2-4BDB-ADBD-980DBDBB2DE2}
 		{8E095257-C559-4A9D-9AC3-BEC92D664615} = {6C80B606-F555-4843-9B73-9FC1AA160097}
 		{06C522DA-0D2B-4D8B-84B6-062C3FC7CAFA} = {6C80B606-F555-4843-9B73-9FC1AA160097}
+		{274069B5-FD03-4A50-9732-42DC5B9DF8A9} = {6C80B606-F555-4843-9B73-9FC1AA160097}
 	EndGlobalSection
 EndGlobal
