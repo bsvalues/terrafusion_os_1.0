@@ -275,12 +275,12 @@ async function runBrowserSmoke({ baseUrl, email, password, screenshotPath }) {
     return {
       login: { finalUrl: null, tokenStored: false, jwtIdentity: null },
       shell: {
+        osShellHomeLoaded: false,
         canonLoaded: false,
         chromeSignals: {
           terraFusionOsTitle: false,
           shellChrome: false,
-          bentonCounty: false,
-          canonWorkbench: false
+          bentonCounty: false
         }
       },
       consoleAndRuntime: {
@@ -334,10 +334,10 @@ async function runBrowserSmoke({ baseUrl, email, password, screenshotPath }) {
       page.waitForResponse((response) => response.url().includes("/api/auth/login"), { timeout: 45000 }),
       fillLoginForm(page, email, password)
     ]);
-    await page.waitForURL((url) => url.pathname.startsWith("/canon"), { timeout: 45000 }).catch(() => {});
+    await page.waitForURL((url) => url.pathname === "/", { timeout: 45000 }).catch(() => {});
     await page.waitForLoadState("networkidle", { timeout: 45000 }).catch(() => {});
     await page
-      .getByText(/TerraFusion OS Desktop|TerraCanon IDE|Benton County/i)
+      .getByText(/TerraFusion OS Desktop|Benton County/i)
       .first()
       .waitFor({ timeout: 20000 })
       .catch(() => {});
@@ -359,12 +359,12 @@ async function runBrowserSmoke({ baseUrl, email, password, screenshotPath }) {
         jwtIdentity
       },
       shell: {
+        osShellHomeLoaded: new URL(finalUrl).pathname === "/",
         canonLoaded: new URL(finalUrl).pathname.startsWith("/canon"),
         chromeSignals: {
           terraFusionOsTitle: /TerraFusion OS/i.test(bodyText),
           shellChrome: /TerraFusion OS Desktop|HEALTH|SENTINEL|Assessor/i.test(bodyText),
-          bentonCounty: /Benton County/i.test(bodyText),
-          canonWorkbench: /TerraCanon|Canon|Workbench/i.test(bodyText)
+          bentonCounty: /Benton County/i.test(bodyText)
         },
         bodyTextLength: bodyText.length
       },
@@ -383,12 +383,12 @@ async function runBrowserSmoke({ baseUrl, email, password, screenshotPath }) {
     return {
       login: { finalUrl: page.url(), tokenStored: false, jwtIdentity: null },
       shell: {
+        osShellHomeLoaded: false,
         canonLoaded: false,
         chromeSignals: {
           terraFusionOsTitle: false,
           shellChrome: false,
-          bentonCounty: false,
-          canonWorkbench: false
+          bentonCounty: false
         }
       },
       consoleAndRuntime: {
@@ -420,7 +420,7 @@ function buildFixtureReport(fixture, email) {
     baseUrl: DEFAULT_BASE_URL,
     email,
     login: {
-      finalUrl: `${DEFAULT_BASE_URL}/canon`,
+      finalUrl: `${DEFAULT_BASE_URL}/`,
       tokenStored: true,
       jwtIdentity: {
         email,
@@ -432,12 +432,12 @@ function buildFixtureReport(fixture, email) {
       }
     },
     shell: {
-      canonLoaded: true,
+      osShellHomeLoaded: true,
+      canonLoaded: false,
       chromeSignals: {
         terraFusionOsTitle: true,
         shellChrome: true,
-        bentonCounty: true,
-        canonWorkbench: true
+        bentonCounty: true
       }
     },
     protectedApis: {
@@ -510,9 +510,11 @@ export function buildJune10OperatorPostLoginSmokeReport({
   );
 
   if (!email) blockers.push("Operator email is not configured.");
-  if (!login?.finalUrl || !new URL(login.finalUrl, baseUrl).pathname.startsWith("/canon")) {
-    blockers.push("/canon did not load after login.");
+  const finalPath = login?.finalUrl ? new URL(login.finalUrl, baseUrl).pathname : null;
+  if (finalPath !== "/") {
+    blockers.push("OS shell home did not load after login.");
   }
+  if (finalPath?.startsWith("/canon")) blockers.push("Post-login landed on Canon IDE instead of the OS shell home.");
   if (!login?.tokenStored) blockers.push("Browser did not store JWT after login.");
   if (!operatorIdentityRecognized) {
     blockers.push("Operator identity is not recognized from /api/auth/profile, including DB-backed user, permissions, active session, and Benton FIPS 53005.");
@@ -520,7 +522,8 @@ export function buildJune10OperatorPostLoginSmokeReport({
   if (!hasRequiredIdentity(login?.jwtIdentity, email)) {
     warnings.push("JWT identity claims are incomplete or do not include Benton FIPS 53005.");
   }
-  if (!shell?.canonLoaded) blockers.push("/canon route did not load cleanly.");
+  if (!shell?.osShellHomeLoaded) blockers.push("OS shell home route did not load cleanly.");
+  if (shell?.canonLoaded) blockers.push("Canon IDE loaded as the default post-login route.");
   for (const [signal, present] of Object.entries(shell?.chromeSignals ?? {})) {
     if (!present) blockers.push(`Shell chrome signal missing: ${signal}.`);
   }
@@ -603,12 +606,12 @@ export async function runJune10OperatorPostLoginSmoke({
       email,
       login: { finalUrl: null, tokenStored: false, jwtIdentity: null },
       shell: {
+        osShellHomeLoaded: false,
         canonLoaded: false,
         chromeSignals: {
           terraFusionOsTitle: false,
           shellChrome: false,
-          bentonCounty: false,
-          canonWorkbench: false
+          bentonCounty: false
         }
       },
       protectedApis: {
@@ -705,7 +708,8 @@ function renderMarkdown(report) {
     "## Shell",
     "",
     `- Final URL: ${report.login?.finalUrl ?? "not captured"}`,
-    `- /canon loaded: ${report.shell?.canonLoaded === true}`,
+    `- OS shell home loaded: ${report.shell?.osShellHomeLoaded === true}`,
+    `- Canon IDE loaded as default: ${report.shell?.canonLoaded === true}`,
     `- Shell chrome: ${report.shell?.chromeSignals?.shellChrome === true}`,
     `- Benton county context: ${report.shell?.chromeSignals?.bentonCounty === true}`,
     `- Screenshot: ${report.screenshotPath ?? "not captured"}`,

@@ -22,7 +22,7 @@ test("passes when post-login shell, identity, Benton context, logout, and invali
     baseUrl: "https://terrafusionmarket.com",
     email: "june10-operator@terrafusionmarket.com",
     login: {
-      finalUrl: "https://terrafusionmarket.com/canon",
+      finalUrl: "https://terrafusionmarket.com/",
       tokenStored: true,
       jwtIdentity: {
         email: "june10-operator@terrafusionmarket.com",
@@ -34,12 +34,12 @@ test("passes when post-login shell, identity, Benton context, logout, and invali
       }
     },
     shell: {
-      canonLoaded: true,
+      osShellHomeLoaded: true,
+      canonLoaded: false,
       chromeSignals: {
         terraFusionOsTitle: true,
         shellChrome: true,
-        bentonCounty: true,
-        canonWorkbench: true
+        bentonCounty: true
       }
     },
     protectedApis: {
@@ -98,7 +98,7 @@ test("blocks when profile identity is missing even if JWT identity and protected
     baseUrl: "https://terrafusionmarket.com",
     email: "june10-operator@terrafusionmarket.com",
     login: {
-      finalUrl: "https://terrafusionmarket.com/canon",
+      finalUrl: "https://terrafusionmarket.com/",
       tokenStored: true,
       jwtIdentity: {
         email: "june10-operator@terrafusionmarket.com",
@@ -110,12 +110,12 @@ test("blocks when profile identity is missing even if JWT identity and protected
       }
     },
     shell: {
-      canonLoaded: true,
+      osShellHomeLoaded: true,
+      canonLoaded: false,
       chromeSignals: {
         terraFusionOsTitle: true,
         shellChrome: true,
-        bentonCounty: true,
-        canonWorkbench: true
+        bentonCounty: true
       }
     },
     protectedApis: {
@@ -165,7 +165,7 @@ test("blocks when Benton FIPS 53005 is not present in the post-login identity", 
     baseUrl: "https://terrafusionmarket.com",
     email: "june10-operator@terrafusionmarket.com",
     login: {
-      finalUrl: "https://terrafusionmarket.com/canon",
+      finalUrl: "https://terrafusionmarket.com/",
       tokenStored: true,
       jwtIdentity: {
         email: "june10-operator@terrafusionmarket.com",
@@ -177,12 +177,12 @@ test("blocks when Benton FIPS 53005 is not present in the post-login identity", 
       }
     },
     shell: {
-      canonLoaded: true,
+      osShellHomeLoaded: true,
+      canonLoaded: false,
       chromeSignals: {
         terraFusionOsTitle: true,
         shellChrome: true,
-        bentonCounty: true,
-        canonWorkbench: true
+        bentonCounty: true
       }
     },
     protectedApis: {

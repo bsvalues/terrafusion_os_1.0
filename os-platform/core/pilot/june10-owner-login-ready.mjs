@@ -86,7 +86,7 @@ function buildFixtureOperatorReport({ baseUrl, email, screenshotPath }) {
     email,
     passwordSupplied: "yes (redacted)",
     login: {
-      finalUrl: `${baseUrl.replace(/\/+$/, "")}/canon`,
+      finalUrl: `${baseUrl.replace(/\/+$/, "")}/`,
       tokenStored: true,
       jwtIdentity: {
         email,
@@ -98,12 +98,12 @@ function buildFixtureOperatorReport({ baseUrl, email, screenshotPath }) {
       }
     },
     shell: {
-      canonLoaded: true,
+      osShellHomeLoaded: true,
+      canonLoaded: false,
       chromeSignals: {
         terraFusionOsTitle: true,
         shellChrome: true,
-        bentonCounty: true,
-        canonWorkbench: true
+        bentonCounty: true
       }
     },
     protectedApis: {
