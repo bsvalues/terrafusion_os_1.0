@@ -161,6 +161,7 @@ export const MODULE_REGISTRY = new Set<string>([
   'federation-dashboard',
   'costforge',
   'comps-forge',
+  'income-forge',
   'terra-gaia',
   'levy-calculator',
   'gis-viewer',
@@ -336,6 +337,9 @@ const SovereignDashboardWindow = lazy(() =>
 const CompsForgeModule = lazy(
   () => import('../pages/suites/modules/CompsForgeModule')
 );
+const IncomeForge = lazy(
+  () => import('../pages/forge/income/IncomeForge')
+);
 
 // ============================================================================
 // Phase C: Rehosted Module Components
@@ -481,6 +485,7 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   // Forge standalone modules (Tranche 1D)
   'batch-cost-run': { Component: BatchCostRun },
   'coefficient-preview': { Component: CoefficientPreview },
+  'income-forge': { Component: IncomeForge },
   // Forge standalone modules (Gen2)
   'regression-studio': { Component: RegressionStudio },
   // Dais standalone modules
@@ -751,6 +756,14 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
       return (
         <Suspense fallback={<ModuleLoadingFallback />}>
           <CompsForgeModule metadata={metadata as Record<string, unknown> | undefined} />
+        </Suspense>
+      );
+
+    // IncomeForge — income approach valuation with CostForge API authority.
+    case 'income-forge':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <IncomeForge metadata={metadata as Record<string, unknown> | undefined} />
         </Suspense>
       );
 
