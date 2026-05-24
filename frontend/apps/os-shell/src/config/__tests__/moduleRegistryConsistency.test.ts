@@ -241,6 +241,7 @@ describe('moduleActivation displayNames/icons coverage', () => {
       // Levy (legacy canonical kept for backward compat)
       'terra-levy': 'Levy Calculator',
       // Forge standalone modules (Phase 35 + Phase 36)
+      'income-forge': 'IncomeForge',
       'batch-cost-run': 'Batch Cost Runs',
       'coefficient-preview': 'Coefficient Preview',
       'cost-manual': 'Cost Manual',

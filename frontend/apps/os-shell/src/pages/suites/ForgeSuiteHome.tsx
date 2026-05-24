@@ -17,7 +17,7 @@
  * Verified layout (matches screenshot from 2026-04-09):
  *   PRIMARY   : CostForge (cost approach, AppFrame → port 5002)
  *               CompsForge (sales comparison, standalone React module)
- *               IncomeForge (income approach, queued)
+ *               IncomeForge (income approach, live)
  *   SPECIALIST: Batch Cost Runs (batch execution)
  *               Regression Studio / TerraGAMA / Coefficient Preview (queued)
  *   DEFAULT ANALYTICS: County Studio (study-anchored Operational Health +
@@ -117,7 +117,6 @@ const PRIMARY_MODULES: readonly ForgeModuleDef[] = [
     priority: 'primary',
     launchMode: 'standalone',
     moduleId: 'income-forge',
-    truthState: 'queued',
     chipLabel: 'Income approach',
   },
   {

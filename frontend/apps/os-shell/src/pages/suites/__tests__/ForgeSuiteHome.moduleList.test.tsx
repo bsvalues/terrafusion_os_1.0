@@ -5,7 +5,7 @@
  * PRIMARY_MODULES array to the wrong apps.
  *
  * Verified correct layout (current HEAD):
- *   PRIMARY   : CostForge, CompsForge, IncomeForge (queued), SalesForge, CUForge
+ *   PRIMARY   : CostForge, CompsForge, IncomeForge, SalesForge, CUForge
  *   SECONDARY : Batch Cost Runs, Regression Studio (queued),
  *               TerraGAMA (queued), Coefficient Preview (queued)
  *   COUNTY    : County Studio (default analytics workbench + VEI exploration)
@@ -119,10 +119,10 @@ describe('ForgeSuiteHome — frozen module list', () => {
     expect(screen.queryByText('Appeals')).not.toBeInTheDocument();
   });
 
-  it('IncomeForge button is disabled (queued)', () => {
+  it('IncomeForge button is enabled as a live standalone module', () => {
     renderForge();
     const incomeBtn = screen.getByText('IncomeForge').closest('button');
-    expect(incomeBtn).toBeDisabled();
+    expect(incomeBtn).not.toBeDisabled();
   });
 
   it('CostForge and CompsForge buttons are enabled', () => {

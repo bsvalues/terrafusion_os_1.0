@@ -124,6 +124,7 @@ function getModuleDisplayName(moduleId: string): string {
     'os-canon': 'TerraCanon',
     // Application Constellation (Gen2 catalog)
     'income-valuation': 'Income Valuation',
+    'income-forge': 'IncomeForge',
     'regression-studio': 'Regression Studio',
     'statistics-studio': 'Statistics Studio',
     'batch-cost-run': 'Batch Cost Runs',
@@ -203,6 +204,7 @@ function getModuleIcon(moduleId: string): string {
     'os-canon': '⚙️',
     // Application Constellation (Gen2 catalog)
     'income-valuation': '💰',
+    'income-forge': '💰',
     'regression-studio': '📈',
     'statistics-studio': '📊',
     'batch-cost-run': '📦',
