@@ -95,39 +95,47 @@ public class ForgeStatisticsService : IForgeStatisticsService
             .Where(p => p.CountyId == countyId)
             .MaxAsync(p => (int?)p.TaxYear, ct) ?? taxYear;
 
-        var rows = await (
-            from s in _db.ComparableSales.AsNoTracking()
-            join p in _db.Properties.AsNoTracking()
-              on new { ParcelId = s.ParcelId, s.CountyId, TaxYear = valuationTaxYear }
-              equals new { ParcelId = p.ParcelNumber!, p.CountyId, p.TaxYear }
-            where s.CountyId == countyId
-               && s.SalesYear >= cutoff
-               && s.SalesYear <= taxYear
-               && s.SalePrice > 10_000
-               && p.AssessedValue > 0
-               && (s.QualificationDecision == "qualified"
-                   || (s.QualificationDecision == null
-                       && (s.QualificationRecommendation == "qualified"
-                           || s.QualificationRecommendation == null)))
-               && s.SuppressOnRatioRptCd != "T"
-               && s.IncludeNoCalc != true
-            select new
+        var sales = await _db.ComparableSales.AsNoTracking()
+            .Where(s => s.CountyId == countyId
+                && s.SalesYear >= cutoff
+                && s.SalesYear <= taxYear
+                && s.SalePrice > 10_000
+                && (s.QualificationDecision == "qualified"
+                    || (s.QualificationDecision == null
+                        && (s.QualificationRecommendation == "qualified"
+                            || s.QualificationRecommendation == null)))
+                && s.SuppressOnRatioRptCd != "T"
+                && s.IncludeNoCalc != true)
+            .Select(s => new
             {
                 s.ParcelId,
                 s.Address,
                 s.PropertyType,
                 s.Neighborhood,
                 SalePrice = s.AdjustedSalePrice > 0 ? s.AdjustedSalePrice!.Value : s.SalePrice,
-                p.AssessedValue,
                 s.SaleDate,
             })
             .ToListAsync(ct);
 
-        return rows
-            .Where(s => s.SalePrice > 0)
+        var assessedValues = await _db.Properties.AsNoTracking()
+            .Where(p => p.CountyId == countyId
+                && p.TaxYear == valuationTaxYear
+                && p.AssessedValue > 0
+                && p.ParcelNumber != null
+                && p.ParcelNumber != "")
+            .Select(p => new { p.ParcelNumber, p.AssessedValue })
+            .ToListAsync(ct);
+
+        var assessedValueByParcel = assessedValues
+            .GroupBy(p => p.ParcelNumber, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.First().AssessedValue, StringComparer.OrdinalIgnoreCase);
+
+        return sales
+            .Where(s => s.SalePrice > 0 && assessedValueByParcel.ContainsKey(s.ParcelId))
             .Select(s =>
             {
-                var ratio = Math.Clamp((double)(s.AssessedValue / s.SalePrice), 0.5, 2.0);
+                var assessedValue = assessedValueByParcel[s.ParcelId];
+                var ratio = Math.Clamp((double)(assessedValue / s.SalePrice), 0.5, 2.0);
                 return new SaleRow
                 {
                     ParcelId      = s.ParcelId,
@@ -135,7 +143,7 @@ public class ForgeStatisticsService : IForgeStatisticsService
                     Neighborhood  = string.IsNullOrWhiteSpace(s.Neighborhood) ? "Unknown" : s.Neighborhood,
                     PropertyType  = s.PropertyType ?? "residential",
                     SalePrice     = s.SalePrice,
-                    AssessedValue = s.AssessedValue,
+                    AssessedValue = assessedValue,
                     SaleDate      = s.SaleDate,
                     Ratio         = ratio,
                 };
