@@ -353,6 +353,9 @@ const BatchCostRun = lazy(
 const CoefficientPreview = lazy(
   () => import('../pages/forge/batch/CoefficientPreview')
 );
+const TerraGamaPage = lazy(
+  () => import('../pages/atlas/TerraGamaPage')
+);
 // Phase 36: Atlas & Forge standalone modules
 const GeoEquityDashboard = lazy(
   () => import('../pages/atlas/GeoEquityDashboard')
@@ -488,6 +491,7 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'income-forge': { Component: IncomeForge },
   // Forge standalone modules (Gen2)
   'regression-studio': { Component: RegressionStudio },
+  'terra-gama': { Component: TerraGamaPage },
   // Dais standalone modules
   'terra-queue': { Component: TerraQueue },
   // OS Features (in-shell windows)
@@ -877,18 +881,9 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'terra-gama':
       return (
-        <AppFrame
-          moduleId="terra-gama"
-          parcelContext={
-            metadata?.parcelId
-              ? {
-                  parcelId: String(metadata.parcelId),
-                  countyId: String(metadata.countyId ?? ''),
-                  assessmentYear: Number(metadata.assessmentYear ?? new Date().getFullYear()),
-                }
-              : undefined
-          }
-        />
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading TerraGAMA...</span></div>}>
+          <TerraGamaPage />
+        </Suspense>
       );
 
     // TerraPilt — OS-native PILT module (no iframe, no external server).

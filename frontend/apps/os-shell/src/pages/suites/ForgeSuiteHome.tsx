@@ -19,7 +19,7 @@
  *               CompsForge (sales comparison, standalone React module)
  *               IncomeForge (income approach, live)
  *   SPECIALIST: Batch Cost Runs (batch execution)
- *               Regression Studio / TerraGAMA / Coefficient Preview (queued)
+ *               Regression Studio / TerraGAMA live, Coefficient Preview queued
  *   DEFAULT ANALYTICS: County Studio (study-anchored Operational Health +
  *                      Statistics Compat + VEI exploration)
  */
@@ -167,8 +167,7 @@ const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
     priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'terra-gama',
-    truthState: 'queued',
-    chipLabel: 'Planned scene',
+    chipLabel: 'Live spatial',
   },
   {
     id: 'coefficient-preview',
