@@ -83,70 +83,64 @@ public class ForgeStatisticsService : IForgeStatisticsService
 
     /// <summary>
     /// Pull qualified sales with assessed values and neighborhood codes for the given year window.
-    /// Neighborhood is resolved from CamaCharacteristics (same pattern as TerraForgeController).
+    /// Uses the same final-decision/recommendation qualification posture as TerraForge regression.
     /// Returns a flat projection used by all stat methods.
     /// </summary>
     private async Task<List<SaleRow>> FetchSaleRowsAsync(
-        int taxYear, int windowYears, CancellationToken ct)
+        int taxYear, int windowYears, Guid countyId, CancellationToken ct)
     {
         var cutoff = taxYear - (windowYears - 1);
-
-        // Step 1: pull sales
-        var rawSales = await _db.ComparableSales
+        var valuationTaxYear = await _db.Properties
             .AsNoTracking()
-            .Where(s => s.SaleQualification == "qualified"
-                     && s.SalesYear >= cutoff
-                     && s.SalesYear <= taxYear
-                     && s.SalePrice > 10_000)
-            .Select(s => new
+            .Where(p => p.CountyId == countyId)
+            .MaxAsync(p => (int?)p.TaxYear, ct) ?? taxYear;
+
+        var rows = await (
+            from s in _db.ComparableSales.AsNoTracking()
+            join p in _db.Properties.AsNoTracking()
+              on new { ParcelId = s.ParcelId, s.CountyId, TaxYear = valuationTaxYear }
+              equals new { ParcelId = p.ParcelNumber!, p.CountyId, p.TaxYear }
+            where s.CountyId == countyId
+               && s.SalesYear >= cutoff
+               && s.SalesYear <= taxYear
+               && s.SalePrice > 10_000
+               && p.AssessedValue > 0
+               && (s.QualificationDecision == "qualified"
+                   || (s.QualificationDecision == null
+                       && (s.QualificationRecommendation == "qualified"
+                           || s.QualificationRecommendation == null)))
+               && s.SuppressOnRatioRptCd != "T"
+               && s.IncludeNoCalc != true
+            select new
             {
                 s.ParcelId,
                 s.Address,
                 s.PropertyType,
+                s.Neighborhood,
                 SalePrice = s.AdjustedSalePrice > 0 ? s.AdjustedSalePrice!.Value : s.SalePrice,
+                p.AssessedValue,
                 s.SaleDate,
             })
             .ToListAsync(ct);
 
-        if (rawSales.Count == 0) return new List<SaleRow>();
-
-        var parcelIds = rawSales.Select(s => s.ParcelId).Distinct().ToHashSet();
-
-        // Step 2: AV from Properties (ParcelNumber matches ParcelId)
-        var avMap = await _db.Properties
-            .AsNoTracking()
-            .Where(p => parcelIds.Contains(p.ParcelNumber) && p.TaxYear == taxYear && p.AssessedValue > 0)
-            .Select(p => new { p.ParcelNumber, p.AssessedValue })
-            .ToDictionaryAsync(p => p.ParcelNumber!, p => p.AssessedValue, ct);
-
-        // Step 3: neighborhood from CamaCharacteristics
-        var hoodMap = await _db.CamaCharacteristics
-            .AsNoTracking()
-            .Where(c => parcelIds.Contains(c.ParcelId) && c.NeighborhoodCode != null && c.NeighborhoodCode != "")
-            .Select(c => new { c.ParcelId, c.NeighborhoodCode })
-            .ToDictionaryAsync(c => c.ParcelId, c => c.NeighborhoodCode!, ct);
-
-        // Step 4: build SaleRow list
-        var rows = new List<SaleRow>(rawSales.Count);
-        foreach (var s in rawSales)
-        {
-            if (s.ParcelId == null) continue;
-            if (!avMap.TryGetValue(s.ParcelId, out var av) || av <= 0) continue;
-            if (s.SalePrice <= 0) continue;
-            var ratio = Math.Clamp((double)(av / s.SalePrice), 0.5, 2.0);
-            rows.Add(new SaleRow
+        return rows
+            .Where(s => s.SalePrice > 0)
+            .Select(s =>
             {
-                ParcelId      = s.ParcelId,
-                Address       = s.Address ?? "",
-                Neighborhood  = hoodMap.TryGetValue(s.ParcelId, out var hood) ? hood : "Unknown",
-                PropertyType  = s.PropertyType ?? "residential",
-                SalePrice     = s.SalePrice,
-                AssessedValue = av,
-                SaleDate      = s.SaleDate,
-                Ratio         = ratio,
-            });
-        }
-        return rows;
+                var ratio = Math.Clamp((double)(s.AssessedValue / s.SalePrice), 0.5, 2.0);
+                return new SaleRow
+                {
+                    ParcelId      = s.ParcelId,
+                    Address       = s.Address ?? "",
+                    Neighborhood  = string.IsNullOrWhiteSpace(s.Neighborhood) ? "Unknown" : s.Neighborhood,
+                    PropertyType  = s.PropertyType ?? "residential",
+                    SalePrice     = s.SalePrice,
+                    AssessedValue = s.AssessedValue,
+                    SaleDate      = s.SaleDate,
+                    Ratio         = ratio,
+                };
+            })
+            .ToList();
     }
 
     private sealed class SaleRow
@@ -169,7 +163,7 @@ public class ForgeStatisticsService : IForgeStatisticsService
         var taxYear = ParseTaxYear(modelId);
         _logger.LogInformation("GetStrataAsync: taxYear={TaxYear} countyId={CountyId}", taxYear, countyId);
 
-        var rows = await FetchSaleRowsAsync(taxYear, 3, ct);
+        var rows = await FetchSaleRowsAsync(taxYear, 3, countyId, ct);
         _logger.LogInformation("GetStrataAsync: {Count} qualified sale rows loaded", rows.Count);
 
         // Normalize PropertyType → readable label
@@ -227,7 +221,7 @@ public class ForgeStatisticsService : IForgeStatisticsService
         var taxYear = ParseTaxYear(modelId);
         _logger.LogInformation("GetOutliersAsync: taxYear={TaxYear}", taxYear);
 
-        var rows = await FetchSaleRowsAsync(taxYear, 3, ct);
+        var rows = await FetchSaleRowsAsync(taxYear, 3, countyId, ct);
         if (rows.Count == 0) return new List<OutlierRecordDto>();
 
         // Global IQR fence
@@ -292,16 +286,16 @@ public class ForgeStatisticsService : IForgeStatisticsService
         if (yearA == yearB)
         {
             // Same year: compare 1-year vs 3-year rolling windows
-            rowsA  = await FetchSaleRowsAsync(yearA, 1, ct);
-            rowsB  = await FetchSaleRowsAsync(yearB, 3, ct);
+            rowsA  = await FetchSaleRowsAsync(yearA, 1, countyId, ct);
+            rowsB  = await FetchSaleRowsAsync(yearB, 3, countyId, ct);
             labelA = $"{yearA} (1-year)";
             labelB = $"{yearB} (3-year)";
         }
         else
         {
             // Different years: compare each year's 3-year window
-            rowsA  = await FetchSaleRowsAsync(yearA, 3, ct);
-            rowsB  = await FetchSaleRowsAsync(yearB, 3, ct);
+            rowsA  = await FetchSaleRowsAsync(yearA, 3, countyId, ct);
+            rowsB  = await FetchSaleRowsAsync(yearB, 3, countyId, ct);
             labelA = $"{yearA} study";
             labelB = $"{yearB} study";
         }

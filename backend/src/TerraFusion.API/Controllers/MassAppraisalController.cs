@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 using TerraFusion.API.Interfaces;
+using TerraFusion.API.Seeds;
 
 namespace TerraFusion.API.Controllers
 {
@@ -21,7 +22,7 @@ namespace TerraFusion.API.Controllers
     private readonly IForgeStatisticsService _statisticsService;
     private readonly ILogger<MassAppraisalController> _logger;
 
-    private static readonly Guid FallbackCountyId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+    private static readonly Guid FallbackCountyId = DatabaseSeeder.BentonCountyId;
 
     public MassAppraisalController(
         IMassAppraisalService massAppraisalService,
@@ -31,6 +32,27 @@ namespace TerraFusion.API.Controllers
       _massAppraisalService = massAppraisalService;
       _statisticsService = statisticsService;
       _logger = logger;
+    }
+
+    private Guid ResolveCountyId()
+    {
+      var candidates = new[]
+      {
+        User.FindFirst("countyId")?.Value,
+        Request.Headers["x-county-id"].FirstOrDefault(),
+        Request.Headers["X-County-Id"].FirstOrDefault(),
+        Request.Headers["X-TerraFusion-County"].FirstOrDefault(),
+      };
+
+      foreach (var candidate in candidates)
+      {
+        if (Guid.TryParse(candidate, out var countyId))
+        {
+          return countyId;
+        }
+      }
+
+      return FallbackCountyId;
     }
 
     /// <summary>
@@ -165,7 +187,7 @@ namespace TerraFusion.API.Controllers
     {
       try
       {
-        var strata = await _statisticsService.GetStrataAsync(modelId, FallbackCountyId);
+        var strata = await _statisticsService.GetStrataAsync(modelId, ResolveCountyId());
         return Ok(strata);
       }
       catch (Exception ex)
@@ -186,7 +208,7 @@ namespace TerraFusion.API.Controllers
     {
       try
       {
-        var outliers = await _statisticsService.GetOutliersAsync(modelId, FallbackCountyId);
+        var outliers = await _statisticsService.GetOutliersAsync(modelId, ResolveCountyId());
         return Ok(outliers);
       }
       catch (Exception ex)
@@ -211,7 +233,7 @@ namespace TerraFusion.API.Controllers
 
       try
       {
-        var comparison = await _statisticsService.CompareModelsAsync(request, FallbackCountyId);
+        var comparison = await _statisticsService.CompareModelsAsync(request, ResolveCountyId());
         return Ok(comparison);
       }
       catch (Exception ex)
@@ -232,7 +254,7 @@ namespace TerraFusion.API.Controllers
     {
       try
       {
-        var segments = await _statisticsService.DiscoverSegmentsAsync(modelId, FallbackCountyId);
+        var segments = await _statisticsService.DiscoverSegmentsAsync(modelId, ResolveCountyId());
         return Ok(segments);
       }
       catch (Exception ex)
