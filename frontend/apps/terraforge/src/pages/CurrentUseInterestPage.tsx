@@ -2,6 +2,12 @@ import { useEffect, useState } from 'react';
 import { CuSubNav } from './CurrentUsePage';
 import './CUForge.css';
 
+function Tooltip({ text }: { text: string }) {
+  return (
+    <span title={text} style={{ cursor: 'help', marginLeft: 6, fontSize: 12, color: 'rgba(148,163,184,.7)' }}>ⓘ</span>
+  );
+}
+
 const API = '/api/currentuse';
 
 // ── Types ──────────────────────────────────────────────────────────────────
