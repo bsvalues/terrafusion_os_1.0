@@ -6,8 +6,8 @@
  *
  * Verified correct layout (current HEAD):
  *   PRIMARY   : CostForge, CompsForge, IncomeForge, SalesForge, CUForge
- *   SECONDARY : Batch Cost Runs, Regression Studio,
- *               TerraGAMA (queued), Coefficient Preview (queued)
+ *   SECONDARY : Batch Cost Runs, Regression Studio, TerraGAMA,
+ *               Coefficient Preview (queued)
  *   COUNTY    : County Studio (default analytics workbench + VEI exploration)
  *
  * GeoForge and Atlas Live View are not launcher products. Atlas is County
@@ -93,13 +93,13 @@ describe('ForgeSuiteHome — frozen module list', () => {
     expect(secondarySection).not.toHaveTextContent(/legacy specialist/i);
   });
 
-  it('Regression Studio is enabled as a live specialist module while planned apps remain queued', () => {
+  it('Regression Studio and TerraGAMA are enabled as live specialist modules while Coefficient Preview remains queued', () => {
     renderForge();
     expect(screen.getByText('Regression Studio')).toBeInTheDocument();
     expect(screen.getByText('TerraGAMA')).toBeInTheDocument();
     expect(screen.getByText('Coefficient Preview')).toBeInTheDocument();
     expect(screen.getByText('Regression Studio').closest('button')).not.toBeDisabled();
-    expect(screen.getByText('TerraGAMA').closest('button')).toBeDisabled();
+    expect(screen.getByText('TerraGAMA').closest('button')).not.toBeDisabled();
     expect(screen.getByText('Coefficient Preview').closest('button')).toBeDisabled();
   });
 

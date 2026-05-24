@@ -1,274 +1,291 @@
-/**
- * TFT-123: TerraGAMA Page
- * Map with parcel polygons colored by zoning, spatial filters, zoning analysis.
- * Filter bar for zoning type, neighborhood, property class.
- * Regulation overlay toggle.
- */
-import { useCallback, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
+import { useTerraGamaStore } from './terraGamaStore';
 
-export interface GamaParcel {
-  id: string;
-  parcelNumber: string;
-  address: string;
-  neighborhood: string;
-  zoning: string;
-  propertyClass: string;
-  sqft: number;
-  yearBuilt: number;
-  center: [number, number];
+type TerraGamaTab = 'spatial' | 'neighborhoods' | 'variance' | 'coverage';
+
+const tabs: Array<{ key: TerraGamaTab; label: string }> = [
+  { key: 'spatial', label: 'Spatial Signal' },
+  { key: 'neighborhoods', label: 'Neighborhoods' },
+  { key: 'variance', label: 'Variance' },
+  { key: 'coverage', label: 'County Coverage' },
+];
+
+function fmtInt(value: number | null | undefined): string {
+  return Number.isFinite(value) ? (value as number).toLocaleString() : '-';
 }
 
-interface GamaFilters {
-  zoning: string | null;
-  neighborhood: string | null;
-  propertyClass: string | null;
+function fmtNumber(value: number | null | undefined, digits: number): string {
+  return Number.isFinite(value) ? (value as number).toFixed(digits) : '-';
 }
 
-// ---------------------------------------------------------------------------
-// Source-backed data
-// ---------------------------------------------------------------------------
+function fmtCurrency(value: number | null | undefined): string {
+  return Number.isFinite(value)
+    ? new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0,
+      }).format(value as number)
+    : '-';
+}
 
-const GAMA_PARCELS: GamaParcel[] = [];
-
-const ZONING_COLORS: Record<string, string> = {
-  'R-1': '#22C55E', 'R-2': '#16A34A', 'R-3': '#15803D',
-  'C-1': '#3B82F6', 'C-2': '#2563EB', 'C-3': '#1D4ED8',
-  'I-1': '#F59E0B', 'I-2': '#D97706',
-  AG: '#A3E635', PUD: '#A855F7',
-};
-
-const REGULATION_DATA: Record<string, { maxHeight: string; setback: string; lotCoverage: string; parking: string }> = {
-  'R-1': { maxHeight: '35 ft', setback: '20 ft front', lotCoverage: '40%', parking: '2 spaces/unit' },
-  'R-2': { maxHeight: '45 ft', setback: '15 ft front', lotCoverage: '50%', parking: '1.5 spaces/unit' },
-  'C-1': { maxHeight: '50 ft', setback: '0 ft front', lotCoverage: '80%', parking: '1 space/500 sq ft' },
-  'C-2': { maxHeight: '75 ft', setback: '0 ft front', lotCoverage: '90%', parking: '1 space/400 sq ft' },
-  'I-1': { maxHeight: '60 ft', setback: '30 ft front', lotCoverage: '60%', parking: '1 space/1000 sq ft' },
-  AG: { maxHeight: '35 ft', setback: '50 ft front', lotCoverage: '10%', parking: 'N/A' },
-  PUD: { maxHeight: 'Per plan', setback: 'Per plan', lotCoverage: 'Per plan', parking: 'Per plan' },
-};
-
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
+function fmtPercent(value: number | null | undefined, digits = 1): string {
+  return Number.isFinite(value) ? `${(value as number).toFixed(digits)}%` : '-';
+}
 
 export default function TerraGamaPage() {
-  const [filters, setFilters] = useState<GamaFilters>({ zoning: null, neighborhood: null, propertyClass: null });
-  const [selectedParcelId, setSelectedParcelId] = useState<string | null>(null);
-  const [showRegulations, setShowRegulations] = useState(false);
+  const [activeTab, setActiveTab] = useState<TerraGamaTab>('spatial');
+  const {
+    taxYear,
+    loading,
+    error,
+    countyScope,
+    countyStats,
+    neighborhoods,
+    spatial,
+    variance,
+    stats,
+    source,
+    fetchRuntimeData,
+  } = useTerraGamaStore((state) => ({
+    taxYear: state.taxYear,
+    loading: state.loading,
+    error: state.error,
+    countyScope: state.countyScope,
+    countyStats: state.countyStats,
+    neighborhoods: state.neighborhoods,
+    spatial: state.spatial,
+    variance: state.variance,
+    stats: state.stats,
+    source: state.source,
+    fetchRuntimeData: state.fetchRuntimeData,
+  }));
 
-  const zonings = useMemo(() => [...new Set(GAMA_PARCELS.map((p) => p.zoning))].sort(), []);
-  const neighborhoods = useMemo(() => [...new Set(GAMA_PARCELS.map((p) => p.neighborhood))].sort(), []);
-  const propertyClasses = useMemo(() => [...new Set(GAMA_PARCELS.map((p) => p.propertyClass))].sort(), []);
+  useEffect(() => {
+    void fetchRuntimeData(taxYear);
+  }, [fetchRuntimeData, taxYear]);
 
-  const filteredParcels = useMemo(() => {
-    return GAMA_PARCELS.filter((p) => {
-      if (filters.zoning && p.zoning !== filters.zoning) return false;
-      if (filters.neighborhood && p.neighborhood !== filters.neighborhood) return false;
-      if (filters.propertyClass && p.propertyClass !== filters.propertyClass) return false;
-      return true;
-    });
-  }, [filters]);
-
-  const selectedParcel = useMemo(
-    () => filteredParcels.find((p) => p.id === selectedParcelId) ?? null,
-    [filteredParcels, selectedParcelId],
+  const topNeighborhoods = useMemo(
+    () => [...neighborhoods].sort((a, b) => b.sale_count - a.sale_count).slice(0, 8),
+    [neighborhoods],
+  );
+  const varianceNeighborhoods = useMemo(
+    () => [...(variance?.neighborhoods ?? [])].slice(0, 8),
+    [variance?.neighborhoods],
   );
 
-  const updateFilter = useCallback((key: keyof GamaFilters, value: string | null) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-    setSelectedParcelId(null);
-  }, []);
-
-  const clearFilters = useCallback(() => {
-    setFilters({ zoning: null, neighborhood: null, propertyClass: null });
-    setSelectedParcelId(null);
-  }, []);
-
-  const hasActiveFilters = filters.zoning || filters.neighborhood || filters.propertyClass;
-
   return (
-    <div data-testid="terra-gama" className="flex flex-col h-full bg-terra-midnight text-white">
-      {/* Filter bar */}
-      <header className="flex-shrink-0 p-3 border-b border-white/10 flex items-center gap-3 flex-wrap">
-        <span className="text-sm font-semibold text-terra-cyan">TerraGAMA</span>
+    <div data-testid="terra-gama" className="h-full overflow-auto bg-slate-950 text-slate-100">
+      <div className="space-y-5 p-4">
+        <header className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-2xl font-semibold tracking-normal">TerraGAMA</h1>
+              <Badge variant="secondary">Live API</Badge>
+              <Badge variant="outline">Tax Year {taxYear}</Badge>
+            </div>
+            <p className="mt-1 max-w-3xl text-sm text-slate-300">
+              Geospatial automated mass appraisal diagnostics using TerraForge county stats,
+              neighborhood ratio snapshots, Moran's I, and neighborhood variance decomposition.
+            </p>
+          </div>
+          <div className="rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-300">
+            County scope: {countyScope.countyId ?? 'none'}
+          </div>
+        </header>
 
-        <select
-          value={filters.zoning ?? ''}
-          onChange={(e) => updateFilter('zoning', e.target.value || null)}
-          className="bg-terra-slate/40 border border-white/10 rounded px-2 py-1 text-xs text-white/80"
-          aria-label="Filter by zoning"
-        >
-          <option value="">All Zoning</option>
-          {zonings.map((z) => (
-            <option key={z} value={z}>{z}</option>
-          ))}
-        </select>
-
-        <select
-          value={filters.neighborhood ?? ''}
-          onChange={(e) => updateFilter('neighborhood', e.target.value || null)}
-          className="bg-terra-slate/40 border border-white/10 rounded px-2 py-1 text-xs text-white/80"
-          aria-label="Filter by neighborhood"
-        >
-          <option value="">All Neighborhoods</option>
-          {neighborhoods.map((n) => (
-            <option key={n} value={n}>{n}</option>
-          ))}
-        </select>
-
-        <select
-          value={filters.propertyClass ?? ''}
-          onChange={(e) => updateFilter('propertyClass', e.target.value || null)}
-          className="bg-terra-slate/40 border border-white/10 rounded px-2 py-1 text-xs text-white/80"
-          aria-label="Filter by property class"
-        >
-          <option value="">All Classes</option>
-          {propertyClasses.map((c) => (
-            <option key={c} value={c}>{c}</option>
-          ))}
-        </select>
-
-        <label className="flex items-center gap-1.5 text-xs text-white/60 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={showRegulations}
-            onChange={(e) => setShowRegulations(e.target.checked)}
-            className="accent-terra-cyan"
-          />
-          Regulations
-        </label>
-
-        {hasActiveFilters && (
-          <button onClick={clearFilters} className="text-xs text-terra-cyan hover:text-white transition-colors ml-auto">
-            Clear All
-          </button>
+        {error && (
+          <Card data-material="bento" className="border-amber-500/40 bg-amber-500/10">
+            <CardHeader>
+              <CardTitle className="text-sm">
+                {source ? 'Partial Live Spatial Analytics' : 'Live Spatial Analytics Unavailable'}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-amber-100">{error}</CardContent>
+          </Card>
         )}
 
-        <span className="text-[10px] text-white/30 ml-auto">
-          {filteredParcels.length} parcels
-        </span>
-      </header>
+        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5" aria-label="TerraGAMA stats">
+          {[
+            { label: 'Parcels', value: loading ? '...' : fmtInt(stats.parcels) },
+            { label: 'Neighborhoods', value: loading ? '...' : fmtInt(stats.neighborhoods) },
+            { label: 'Geocoded Sales', value: loading ? '...' : fmtInt(stats.geocodedSales) },
+            { label: "Moran's I", value: loading ? '...' : fmtNumber(stats.moransI, 4) },
+            { label: 'ICC', value: loading ? '...' : fmtNumber(stats.icc, 4) },
+          ].map((item) => (
+            <Card key={item.label} data-material="bento" className="border-slate-800 bg-slate-900">
+              <CardContent className="p-4">
+                <div className="text-xs uppercase text-slate-400">{item.label}</div>
+                <div className="mt-1 font-mono text-2xl font-semibold text-white">{item.value}</div>
+              </CardContent>
+            </Card>
+          ))}
+        </section>
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* Map area */}
-        <main className="flex-1 relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10">
-            <svg width="100%" height="100%">
-              <defs>
-                <pattern id="gama-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="0.5" />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#gama-grid)" />
-            </svg>
-          </div>
+        <div className="flex flex-wrap gap-2" role="tablist" aria-label="TerraGAMA views">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`rounded-md border px-3 py-2 text-sm transition ${
+                activeTab === tab.key
+                  ? 'border-cyan-400 bg-cyan-400/15 text-cyan-100'
+                  : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-500'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
-          {filteredParcels.map((parcel) => {
-            const xPct = ((parcel.center[1] + 119.23) / 0.06) * 100;
-            const yPct = ((46.27 - parcel.center[0]) / 0.06) * 100;
-            const color = ZONING_COLORS[parcel.zoning] ?? '#6B7280';
-            const isSelected = selectedParcelId === parcel.id;
-
-            return (
-              <button
-                key={parcel.id}
-                onClick={() => setSelectedParcelId(isSelected ? null : parcel.id)}
-                className="absolute transition-all duration-200"
-                style={{
-                  left: `${Math.max(5, Math.min(90, xPct))}%`,
-                  top: `${Math.max(5, Math.min(90, yPct))}%`,
-                  transform: 'translate(-50%, -50%)',
-                }}
-                aria-label={`Parcel ${parcel.parcelNumber} - ${parcel.zoning}`}
-              >
-                <div
-                  className="rounded border-2 flex items-center justify-center text-[9px] font-medium transition-all"
-                  style={{
-                    width: 60,
-                    height: 40,
-                    backgroundColor: `${color}22`,
-                    borderColor: isSelected ? '#FFFFFF' : `${color}88`,
-                    boxShadow: isSelected ? `0 0 12px ${color}` : 'none',
-                    color: isSelected ? '#FFFFFF' : `${color}CC`,
-                  }}
-                >
-                  {parcel.zoning}
-                </div>
-              </button>
-            );
-          })}
-
-          {/* Zoning legend */}
-          <div data-material="bento" className="absolute bottom-4 left-4 bg-terra-midnight/80 backdrop-blur-sm rounded border border-white/10 p-3">
-            <p className="text-[10px] text-white/40 uppercase tracking-wider mb-2">Zoning</p>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-              {Object.entries(ZONING_COLORS).map(([code, color]) => (
-                <span key={code} className="flex items-center gap-1.5 text-[10px]">
-                  <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: color }} />
-                  <span className="text-white/60">{code}</span>
-                </span>
-              ))}
-            </div>
-          </div>
-        </main>
-
-        {/* Detail panel */}
-        {selectedParcel && (
-          <aside className="w-72 flex-shrink-0 border-l border-white/10 p-4 overflow-y-auto space-y-4">
-            <Card variant="glass" data-material="bento">
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm text-terra-cyan">Parcel Detail</CardTitle>
-                  <button
-                    onClick={() => setSelectedParcelId(null)}
-                    className="text-white/40 hover:text-white text-lg"
-                    aria-label="Close detail"
-                  >
-                    x
-                  </button>
-                </div>
+        {activeTab === 'spatial' && (
+          <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+            <Card data-material="bento" className="border-slate-800 bg-slate-900">
+              <CardHeader>
+                <CardTitle className="text-base">Moran's I Spatial Autocorrelation</CardTitle>
               </CardHeader>
-              <CardContent>
-                <dl className="space-y-2 text-sm">
-                  <div className="flex justify-between"><dt className="text-white/50">Parcel #</dt><dd className="text-white">{selectedParcel.parcelNumber}</dd></div>
-                  <div className="flex justify-between"><dt className="text-white/50">Address</dt><dd className="text-white">{selectedParcel.address}</dd></div>
-                  <div className="flex justify-between"><dt className="text-white/50">Neighborhood</dt><dd className="text-white">{selectedParcel.neighborhood}</dd></div>
-                  <div className="flex justify-between"><dt className="text-white/50">Zoning</dt><dd className="text-white font-medium" style={{ color: ZONING_COLORS[selectedParcel.zoning] }}>{selectedParcel.zoning}</dd></div>
-                  <div className="flex justify-between"><dt className="text-white/50">Class</dt><dd className="text-white">{selectedParcel.propertyClass}</dd></div>
-                  <div className="flex justify-between"><dt className="text-white/50">Sq Ft</dt><dd className="text-white">{selectedParcel.sqft.toLocaleString()}</dd></div>
-                  <div className="flex justify-between"><dt className="text-white/50">Year Built</dt><dd className="text-white">{selectedParcel.yearBuilt}</dd></div>
-                </dl>
+              <CardContent className="space-y-4">
+                <div className="grid gap-3 sm:grid-cols-4">
+                  <Metric label="Moran's I" value={fmtNumber(spatial?.moransI, 4)} />
+                  <Metric label="Expected I" value={fmtNumber(spatial?.expectedI, 4)} />
+                  <Metric label="z-score" value={fmtNumber(spatial?.zScore, 3)} />
+                  <Metric
+                    label="p-value"
+                    value={
+                      Number.isFinite(spatial?.pValue) && (spatial?.pValue ?? 1) < 0.001
+                        ? '<0.001'
+                        : fmtNumber(spatial?.pValue, 4)
+                    }
+                  />
+                </div>
+                <div
+                  className={`rounded-md border px-3 py-2 text-sm ${
+                    spatial?.significantClustering
+                      ? 'border-amber-500/40 bg-amber-500/10 text-amber-100'
+                      : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-100'
+                  }`}
+                >
+                  {spatial?.interpretation ?? spatial?.error ?? 'Spatial autocorrelation has not loaded yet.'}
+                </div>
               </CardContent>
             </Card>
 
-            {showRegulations && REGULATION_DATA[selectedParcel.zoning] && (
-              <Card variant="glass" data-material="bento">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-white/70">
-                    {selectedParcel.zoning} Regulations
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <dl className="space-y-2 text-sm">
-                    {Object.entries(REGULATION_DATA[selectedParcel.zoning]).map(([key, value]) => (
-                      <div key={key} className="flex justify-between">
-                        <dt className="text-white/50 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</dt>
-                        <dd className="text-white">{value}</dd>
-                      </div>
+            <Card data-material="bento" className="border-slate-800 bg-slate-900">
+              <CardHeader>
+                <CardTitle className="text-base">Geocoding Coverage</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Metric label="Qualified sales" value={fmtInt(spatial?.sampleSize)} />
+                <Metric label="Sales with centroids" value={fmtInt(spatial?.sampleWithCoords)} />
+                <Metric label="k-nearest neighbors" value={fmtInt(spatial?.kNeighbors)} />
+                <Metric label="Top neighborhood" value={topNeighborhoods[0]?.neighborhood_code ?? '-'} />
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === 'neighborhoods' && (
+          <Card data-material="bento" className="border-slate-800 bg-slate-900">
+            <CardHeader>
+              <CardTitle className="text-base">Neighborhood Ratio Snapshots</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[640px] text-left text-sm">
+                  <thead className="text-xs uppercase text-slate-400">
+                    <tr>
+                      <th className="py-2">Neighborhood</th>
+                      <th className="py-2">Sales</th>
+                      <th className="py-2">Median Ratio</th>
+                      <th className="py-2">COD</th>
+                      <th className="py-2">PRD</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topNeighborhoods.map((row) => (
+                      <tr key={row.neighborhood_code} className="border-t border-slate-800">
+                        <td className="py-2 font-medium text-white">{row.neighborhood_code}</td>
+                        <td className="py-2 font-mono">{fmtInt(row.sale_count)}</td>
+                        <td className="py-2 font-mono">{fmtNumber(row.median_ratio, 3)}</td>
+                        <td className="py-2 font-mono">{fmtNumber(row.cod, 1)}</td>
+                        <td className="py-2 font-mono">{fmtNumber(row.prd, 3)}</td>
+                      </tr>
                     ))}
-                  </dl>
-                </CardContent>
-              </Card>
-            )}
-          </aside>
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {activeTab === 'variance' && (
+          <Card data-material="bento" className="border-slate-800 bg-slate-900">
+            <CardHeader>
+              <CardTitle className="text-base">Neighborhood Variance Decomposition</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-3 sm:grid-cols-4">
+                <Metric label="ICC" value={fmtNumber(variance?.icc, 4)} />
+                <Metric label="Sample" value={fmtInt(variance?.totalSampleSize ?? variance?.sampleSize)} />
+                <Metric label="Neighborhoods" value={fmtInt(variance?.neighborhoodCount)} />
+                <Metric label="SS Total" value={fmtNumber(variance?.ssTotal, 2)} />
+              </div>
+              <p className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300">
+                {variance?.interpretation ?? variance?.error ?? 'Variance decomposition has not loaded yet.'}
+              </p>
+              <div className="grid gap-2">
+                {varianceNeighborhoods.map((row) => (
+                  <div
+                    key={row.neighborhood}
+                    className="grid gap-2 rounded-md border border-slate-800 bg-slate-950 px-3 py-2 text-sm sm:grid-cols-5"
+                  >
+                    <span className="font-medium text-white">{row.neighborhood}</span>
+                    <span>n={fmtInt(row.count)}</span>
+                    <span>median {fmtNumber(row.medianRatio, 3)}</span>
+                    <span>mean {fmtNumber(row.meanRatio, 3)}</span>
+                    <span>delta {fmtNumber(row.deviationFromGrandMean, 3)}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {activeTab === 'coverage' && (
+          <Card data-material="bento" className="border-slate-800 bg-slate-900">
+            <CardHeader>
+              <CardTitle className="text-base">County Assessment Coverage</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <Metric label="Average assessed" value={fmtCurrency(countyStats?.averageAssessedValue)} />
+              <Metric label="Assessed this year" value={fmtInt(countyStats?.assessedThisYear)} />
+              <Metric label="Pending assessments" value={fmtInt(countyStats?.pendingAssessments)} />
+              <Metric label="Completion" value={fmtPercent(countyStats?.assessmentCompletionPercent)} />
+            </CardContent>
+          </Card>
+        )}
+
+        {source && (
+          <p className="text-xs text-slate-400">
+            Source: {source}
+          </p>
         )}
       </div>
+    </div>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-md border border-slate-800 bg-slate-950 px-3 py-2">
+      <div className="text-xs uppercase text-slate-400">{label}</div>
+      <div className="mt-1 font-mono text-lg font-semibold text-white">{value}</div>
     </div>
   );
 }
