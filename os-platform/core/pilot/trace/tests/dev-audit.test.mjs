@@ -21,6 +21,27 @@ function loadFreshTraceService(envOverrides = {}) {
   return mod;
 }
 
+async function waitFor(description, predicate, timeoutMs = 5000, intervalMs = 100) {
+  const deadline = Date.now() + timeoutMs;
+  let lastError;
+
+  while (Date.now() < deadline) {
+    try {
+      const result = await predicate();
+      if (result) return result;
+    } catch (err) {
+      lastError = err;
+    }
+
+    await new Promise(r => setTimeout(r, intervalMs));
+  }
+
+  if (lastError) {
+    throw new Error(`${description} timed out: ${lastError.message}`);
+  }
+  throw new Error(`${description} timed out`);
+}
+
 // ---------------------------------------------------------------------------
 // Test 1: file-based adapter
 // ---------------------------------------------------------------------------
@@ -109,17 +130,15 @@ test('dev-audit sqlite adapter persists events and payloads', async () => {
     context: { env: 'test' },
   }, 'payload_ref', { secret: 'yyy', note: 'sqlite-only' }, 'dev');
 
-  // sqlite writes are async via callbacks — give them time
-  await new Promise(r => setTimeout(r, 500));
-
-  // Verify the DB file was created
-  const stat = await fs.stat(dbPath);
-  assert(stat.size > 0, 'sqlite DB file must exist and be non-empty');
+  await waitFor('sqlite DB file to be created', async () => {
+    const stat = await fs.stat(dbPath);
+    return stat.size > 0 ? stat : false;
+  });
 
   // Query the DB directly to verify rows
   const require3 = createRequire(import.meta.url);
   const sqlite3Mod = require3('sqlite3').verbose();
-  const rows = await new Promise((resolve, reject) => {
+  const queryEvents = () => new Promise((resolve, reject) => {
     const db = new sqlite3Mod.Database(dbPath, sqlite3Mod.OPEN_READONLY);
     db.all(`SELECT event_json FROM events WHERE event_json LIKE ?`, [`%${correlationId}%`], (err, rows) => {
       db.close();
@@ -127,16 +146,24 @@ test('dev-audit sqlite adapter persists events and payloads', async () => {
       resolve(rows);
     });
   });
+  const rows = await waitFor('sqlite events to be persisted', async () => {
+    const currentRows = await queryEvents();
+    return currentRows.length >= 2 ? currentRows : false;
+  });
   assert(rows.length >= 2, `expected at least 2 events with correlationId, got ${rows.length}`);
 
   // Verify payload row
-  const payloadRows = await new Promise((resolve, reject) => {
+  const queryPayloads = () => new Promise((resolve, reject) => {
     const db = new sqlite3Mod.Database(dbPath, sqlite3Mod.OPEN_READONLY);
     db.all(`SELECT ref, payload_json FROM payloads`, [], (err, rows) => {
       db.close();
       if (err) return reject(err);
       resolve(rows);
     });
+  });
+  const payloadRows = await waitFor('sqlite payloads to be persisted', async () => {
+    const currentRows = await queryPayloads();
+    return currentRows.length >= 1 ? currentRows : false;
   });
   assert(payloadRows.length >= 1, `expected at least 1 payload row, got ${payloadRows.length}`);
 });

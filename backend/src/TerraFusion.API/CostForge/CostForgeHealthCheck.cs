@@ -22,7 +22,7 @@ public class CostForgeHealthCheck : IHealthCheck
         try
         {
             // Check 1: Cost matrix has expected entry count
-            var matrixCount = Controllers.BentonCostData.CostMatrix.Length;
+            var matrixCount = Controllers.CostForgeController.BentonCostData.CostMatrix.Length;
             data["costMatrixEntries"] = matrixCount;
             if (matrixCount != ExpectedMatrixEntries)
             {
@@ -32,7 +32,7 @@ public class CostForgeHealthCheck : IHealthCheck
             }
 
             // Check 2: All regions have factors
-            var regionCount = Controllers.BentonCostData.RegionFactors.Count;
+            var regionCount = Controllers.CostForgeController.BentonCostData.RegionFactors.Count;
             data["regionFactors"] = regionCount;
             if (regionCount != ExpectedRegions)
             {
@@ -42,7 +42,7 @@ public class CostForgeHealthCheck : IHealthCheck
             }
 
             // Check 3: All building types exist in matrix
-            var buildingTypes = Controllers.BentonCostData.CostMatrix
+            var buildingTypes = Controllers.CostForgeController.BentonCostData.CostMatrix
                 .Select(e => e.BuildingType)
                 .Distinct()
                 .Count();
@@ -55,8 +55,8 @@ public class CostForgeHealthCheck : IHealthCheck
             }
 
             // Check 4: Depreciation brackets cover full range
-            var resDepBrackets = Controllers.BentonCostData.ResidentialDepreciation;
-            var comDepBrackets = Controllers.BentonCostData.CommercialDepreciation;
+            var resDepBrackets = Controllers.CostForgeController.BentonCostData.ResidentialDepreciation;
+            var comDepBrackets = Controllers.CostForgeController.BentonCostData.CommercialDepreciation;
             data["residentialBrackets"] = resDepBrackets.Length;
             data["commercialBrackets"] = comDepBrackets.Length;
 
@@ -68,12 +68,12 @@ public class CostForgeHealthCheck : IHealthCheck
             }
 
             // Check 5: Quality, condition, and complexity factors exist
-            data["qualityGrades"] = Controllers.BentonCostData.QualityFactors.Count;
-            data["conditionGrades"] = Controllers.BentonCostData.ConditionFactors.Count;
-            data["complexityGrades"] = Controllers.BentonCostData.ComplexityFactors.Count;
+            data["qualityGrades"] = Controllers.CostForgeController.BentonCostData.QualityFactors.Count;
+            data["conditionGrades"] = Controllers.CostForgeController.BentonCostData.ConditionFactors.Count;
+            data["complexityGrades"] = Controllers.CostForgeController.BentonCostData.ComplexityFactors.Count;
 
             // Check 6: All base costs are positive
-            var invalidCosts = Controllers.BentonCostData.CostMatrix
+            var invalidCosts = Controllers.CostForgeController.BentonCostData.CostMatrix
                 .Where(e => e.BaseCostPerSqft <= 0)
                 .ToList();
             if (invalidCosts.Any())
