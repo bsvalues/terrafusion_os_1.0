@@ -35,7 +35,7 @@ describe('LoginPage real auth exchange', () => {
       signupMode: 'provisioned_access_only',
       publicSignupEnabled: false,
       message:
-        'TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled.',
+        'TerraFusion OS access is assigned by the TerraFusion administrator for authorized Benton County Runtime Pilot operators. No public signup is available.',
     });
     navigate.mockReset();
     localStorage.clear();
@@ -93,7 +93,7 @@ describe('LoginPage real auth exchange', () => {
     expect(navigate).not.toHaveBeenCalled();
   });
 
-  it('states that public signup and public access requests are disabled', async () => {
+  it('renders TerraFusion government access context without public request flows', async () => {
     render(
       <MemoryRouter initialEntries={['/login']}>
         <AuthProvider>
@@ -102,9 +102,15 @@ describe('LoginPage real auth exchange', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText(/provisioned access only/i)).toBeInTheDocument();
-    expect(await screen.findByText(/public self-signup and public access requests are disabled/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /terrafusion os government access/i })).toBeInTheDocument();
+    expect(screen.getAllByText(/benton county runtime pilot/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/administrator-issued operator credentials/i)).toBeInTheDocument();
+    expect(screen.getByText(/authorized government operators/i)).toBeInTheDocument();
+    expect(await screen.findByText(/assigned by the terrafusion administrator/i)).toBeInTheDocument();
+    expect(screen.getByText(/no public signup is available/i)).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /request provisioned access/i })).not.toBeInTheDocument();
+    expect(screen.queryByText(/request access/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/public access requests/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/mailto/i)).not.toBeInTheDocument();
   });
 
@@ -119,6 +125,6 @@ describe('LoginPage real auth exchange', () => {
 
     expect(await screen.findByText(/provisioned access only/i)).toBeInTheDocument();
     expect(screen.queryByText(/your session has expired/i)).not.toBeInTheDocument();
-    expect(screen.getByText(/sign in with administrator-issued terrafusion credentials/i)).toBeInTheDocument();
+    expect(screen.getByText(/authorized government operators use administrator-issued operator credentials/i)).toBeInTheDocument();
   });
 });

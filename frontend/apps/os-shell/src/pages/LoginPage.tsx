@@ -50,17 +50,25 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900' data-testid='login-page'>
-      <div className='w-full max-w-md p-8 rounded-lg bg-gray-800/80 border border-cyan-500/30 shadow-lg'>
-        <h1 className='text-2xl font-bold text-cyan-400 mb-2 text-center'>TerraFusion OS</h1>
-        <p className='text-gray-300 text-sm text-center mb-6'>
-          Sign in with administrator-issued TerraFusion credentials.
-        </p>
-        <div className='mb-5 rounded-lg border border-cyan-500/30 bg-slate-900/80 px-4 py-4 text-sm text-slate-300'>
-          <p className='text-base font-semibold text-cyan-300'>Provisioned access only</p>
-          <p className='mt-1 text-slate-400'>
+    <div className='flex min-h-screen items-center justify-center bg-slate-950 px-6' data-testid='login-page'>
+      <div className='w-full max-w-md rounded-lg border border-cyan-500/30 bg-slate-900 p-8 shadow-xl shadow-black/30'>
+        <div className='mb-6 text-center'>
+          <p className='mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400'>
+            Benton County Runtime Pilot
+          </p>
+          <h1 className='text-2xl font-bold text-cyan-300'>TerraFusion OS Government Access</h1>
+          <p className='mt-3 text-sm leading-6 text-slate-300'>
+            Authorized government operators use administrator-issued operator credentials to enter the governed TerraFusion runtime.
+          </p>
+        </div>
+        <div className='mb-5 rounded-lg border border-cyan-500/30 bg-slate-950 px-4 py-4 text-sm leading-6 text-slate-300'>
+          <p className='font-semibold text-cyan-300'>Provisioned access only</p>
+          <p className='mt-1'>
             {accessPolicy?.message ??
-              'Public self-signup and public access requests are disabled. Use the operator account issued by the TerraFusion administrator.'}
+              'TerraFusion OS access is assigned by the TerraFusion administrator for authorized Benton County Runtime Pilot operators. No public signup is available.'}
+          </p>
+          <p className='mt-3 text-slate-400'>
+            Contact your TerraFusion administrator if your operator credentials have not been issued.
           </p>
         </div>
         {error && (

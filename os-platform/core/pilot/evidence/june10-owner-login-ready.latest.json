@@ -1,0 +1,40 @@
+{
+  "generatedAt": "2026-05-24T18:18:55.122Z",
+  "baseUrl": "https://terrafusionmarket.com",
+  "ownerEmail": "june10-operator@terrafusionmarket.com",
+  "passwordSupplied": "yes (redacted)",
+  "ownerAccessReady": true,
+  "operatorSmoke": {
+    "passed": true,
+    "finalUrl": "https://terrafusionmarket.com/canon",
+    "profileStatus": 200,
+    "profileUserId": "23dc86c2-4a64-4da6-97a8-46f78d67ae61",
+    "profileRoles": ["GovernmentUser", "Administrator"],
+    "profilePermissions": [
+      "runtime:read",
+      "county:read",
+      "june10:smoke",
+      "ecosystem:view",
+      "workbench:access",
+      "costforge:read",
+      "atlas:read",
+      "salesforge:read"
+    ],
+    "profileCountyFips": "53005",
+    "profileState": "WA",
+    "sessionValid": true,
+    "screenshotPath": "os-platform/core/pilot/evidence/screenshots/june10-owner-login-ready-shell.latest.png"
+  },
+  "handoff": {
+    "path": "C:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusion-Owner-Login-Handoff.txt",
+    "relativePath": "C:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusion-Owner-Login-Handoff.txt",
+    "exists": true,
+    "containsEmail": true,
+    "containsPassword": true,
+    "gitIgnored": true,
+    "pathIncludesTmpOrUserProfile": true
+  },
+  "warnings": [],
+  "passed": true,
+  "blockers": []
+}

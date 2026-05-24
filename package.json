@@ -373,7 +373,8 @@
     "perf:custody": "npx tsx tools/registry/autonomy-viewer/src/custody-cli.ts",
     "perf:custody-attest": "npx tsx tools/registry/autonomy-viewer/src/custody-attest.ts",
     "perf:verify-custody": "npx tsx tools/registry/autonomy-viewer/src/verify-custody.ts",
-    "tdc:ui:tokens:check": "tsx tools/registry/tdc-ui-tokens-check.ts"
+    "tdc:ui:tokens:check": "tsx tools/registry/tdc-ui-tokens-check.ts",
+    "truth:june10-owner-login-ready": "node os-platform/core/pilot/june10-owner-login-ready.mjs"
   },
   "keywords": [
     "government",

@@ -100,7 +100,7 @@ public class AuthController : ControllerBase
         {
             signupMode = "provisioned_access_only",
             publicSignupEnabled = false,
-            message = "TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled."
+            message = "TerraFusion OS access is assigned by the TerraFusion administrator for authorized Benton County Runtime Pilot operators. No public signup is available."
         });
     }
 
