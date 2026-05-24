@@ -8,8 +8,8 @@
  * because a test failed, the zombie is back. Find the wrong component source
  * and kill it again.
  *
- * Locked taxonomy (IAAO three-approaches-to-value + sale qualification):
- *   PRIMARY:   CostForge · CompsForge · IncomeForge · SalesForge
+ * Locked taxonomy (IAAO three-approaches-to-value + sale qualification + current use):
+ *   PRIMARY:   CostForge · CompsForge · IncomeForge · SalesForge · CUForge
  *   SECONDARY: Batch Cost Runs · Regression Studio ·
  *              TerraGAMA · Coefficient Preview
  *   DEFAULT ANALYTICS: County Studio
@@ -88,11 +88,11 @@ describe('TerraForge suite home — taxonomy contract', () => {
 
   // ── Primary tier ────────────────────────────────────────────────────────────
 
-  it('renders exactly four primary valuation scenes — three approaches to value plus SalesForge', async () => {
+  it('renders exactly five primary valuation scenes — three approaches to value plus SalesForge and CUForge', async () => {
     await renderForgeSuiteHome();
     const primary = screen.getByTestId('forge-primary-applications');
     const cards = within(primary).getAllByRole('button');
-    expect(cards).toHaveLength(4);
+    expect(cards).toHaveLength(5);
   });
 
   it('renders CostForge in the primary tier', async () => {
@@ -117,6 +117,12 @@ describe('TerraForge suite home — taxonomy contract', () => {
     await renderForgeSuiteHome();
     const primary = screen.getByTestId('forge-primary-applications');
     expect(within(primary).getByText('SalesForge')).toBeDefined();
+  });
+
+  it('renders CUForge in the primary tier', async () => {
+    await renderForgeSuiteHome();
+    const primary = screen.getByTestId('forge-primary-applications');
+    expect(within(primary).getByText('CUForge')).toBeDefined();
   });
 
   // ── Secondary tier ──────────────────────────────────────────────────────────

@@ -121,6 +121,8 @@ describe('MODULE_REGISTRY -> ModuleRenderer coverage', () => {
     // County Studio + Atlas Live View — inline Suspense+lazy (no MODULE_ENTRY)
     'county-studio',
     'atlas-live-view',
+    // CUForge — Current Use Program (inline Suspense+lazy)
+    'cuforge',
   ]);
 
   it('every MODULE_REGISTRY entry has a MODULE_ENTRY or is a known placeholder', () => {
@@ -262,6 +264,8 @@ describe('moduleActivation displayNames/icons coverage', () => {
       // County Studio + Atlas Live View
       'county-studio': 'County Studio',
       'atlas-live-view': 'Atlas Live View',
+      // CUForge — Current Use Program
+      'cuforge': 'CUForge',
     };
 
     const missing: string[] = [];

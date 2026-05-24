@@ -239,6 +239,8 @@ export const MODULE_REGISTRY = new Set<string>([
   'county-studio',
   // Atlas Live View — study-aware spatial surface (session subscriber)
   'atlas-live-view',
+  // CUForge — Current Use Program (RCW 84.33/84.34)
+  'cuforge',
 ]);
 
 /**
@@ -415,6 +417,9 @@ const CountyStudyPage = lazy(() =>
 const AtlasLivePage = lazy(() =>
   import('../pages/forge/atlas-live/AtlasLivePage').then((m) => ({ default: m.AtlasLivePage }))
 );
+
+// CUForge — Current Use Program (RCW 84.33/84.34)
+const CUForge = lazy(() => import('../pages/forge/current-use/CUForge'));
 
 // NOTE: ComparableSalesPanel is used inside Forge → Sales sub-tab (not standalone)
 
@@ -1403,6 +1408,17 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
           }
         >
           <AtlasLivePage />
+        </Suspense>
+      );
+
+    // ========================================================================
+    // CUFORGE — Current Use Program (RCW 84.33/84.34)
+    // ========================================================================
+
+    case 'cuforge':
+      return (
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading CUForge...</span></div>}>
+          <CUForge metadata={metadata as Record<string, unknown> | undefined} />
         </Suspense>
       );
 

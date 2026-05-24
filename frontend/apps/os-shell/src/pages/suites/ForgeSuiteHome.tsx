@@ -130,6 +130,16 @@ const PRIMARY_MODULES: readonly ForgeModuleDef[] = [
     moduleId: 'sales-forge',
     chipLabel: 'Sale qualification',
   },
+  {
+    id: 'cuforge',
+    label: 'CUForge',
+    description:
+      'Current Use Program — DFL/CUFA/CUOS/CUTL enrollment, RCW 84.34.108 rollback calculator, DOR interest rates, and removal proceedings',
+    priority: 'primary',
+    launchMode: 'standalone',
+    moduleId: 'cuforge',
+    chipLabel: 'Current use',
+  },
 ] as const;
 
 const SECONDARY_MODULES: readonly ForgeModuleDef[] = [

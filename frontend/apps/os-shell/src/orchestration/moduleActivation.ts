@@ -156,6 +156,8 @@ function getModuleDisplayName(moduleId: string): string {
     // County Studio + Atlas Live View
     'county-studio': 'County Studio',
     'atlas-live-view': 'Atlas Live View',
+    // CUForge — Current Use Program
+    'cuforge': 'CUForge',
   };
 
   return displayNames[moduleId] ?? moduleId;
@@ -231,8 +233,10 @@ function getModuleIcon(moduleId: string): string {
     'gpt-analytics': '📊',
     'gpt-rag': '📚',
     // County Studio + Atlas Live View
-    'county-studio': '🏛',
+    'county-studio': '🏡',
     'atlas-live-view': '🗺',
+    // CUForge — Current Use Program
+    'cuforge': '🌾',
   };
 
   return icons[moduleId] ?? '📦';
