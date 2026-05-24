@@ -2,6 +2,12 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './CUForge.css';
 
+function Tooltip({ text }: { text: string }) {
+  return (
+    <span title={text} style={{ cursor: 'help', marginLeft: 6, fontSize: 12, color: 'rgba(148,163,184,.7)' }}>ⓘ</span>
+  );
+}
+
 const API = '/api/currentuse';
 
 // ── Types ──────────────────────────────────────────────────────────────────
