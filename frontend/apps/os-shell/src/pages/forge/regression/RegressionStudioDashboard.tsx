@@ -1,6 +1,6 @@
 // TerraFusion OS — Regression Studio Dashboard (full tabbed regression lab)
 // Mined from terra-forge-rebuild src/components/regression/RegressionStudioDashboard.tsx
-// Adapted: StudyPeriodSelector+useVEIData removed → inline period input.
+// Adapted: live TerraForge tax-year input.
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -17,25 +17,26 @@ import { NeighborhoodEffectsPanel } from "./NeighborhoodEffectsPanel";
 import { useRegressionAnalysis, useRunRegressionAnalysis } from "@/hooks/useRegressionAnalysis";
 
 interface RegressionStudioDashboardProps {
-  /** Optional pre-selected study period ID; user can also type one in. */
-  initialPeriodId?: string;
+  initialTaxYear?: number;
 }
 
-export function RegressionStudioDashboard({ initialPeriodId }: RegressionStudioDashboardProps) {
+const DEFAULT_TAX_YEAR = 2026;
+
+export function RegressionStudioDashboard({ initialTaxYear }: RegressionStudioDashboardProps) {
   const [activeTab, setActiveTab] = useState("regression");
-  const [periodId, setPeriodId] = useState<string>(initialPeriodId ?? "");
+  const [taxYear, setTaxYear] = useState<number>(initialTaxYear ?? DEFAULT_TAX_YEAR);
 
   const { data: regressionResult, isLoading: isLoadingRegression } = useRegressionAnalysis(
-    periodId || undefined
+    taxYear
   );
-  const runAnalysis = useRunRegressionAnalysis();
+  const runAnalysis = useRunRegressionAnalysis(taxYear);
 
   useEffect(() => {
-    if (initialPeriodId && !periodId) setPeriodId(initialPeriodId);
-  }, [initialPeriodId, periodId]);
+    if (initialTaxYear) setTaxYear(initialTaxYear);
+  }, [initialTaxYear]);
 
   const handleRunAnalysis = () => {
-    runAnalysis.mutate(periodId || "");
+    runAnalysis.mutate();
   };
 
   const isBusy = isLoadingRegression || runAnalysis.isPending;
@@ -58,17 +59,18 @@ export function RegressionStudioDashboard({ initialPeriodId }: RegressionStudioD
         </div>
 
         <div className="flex items-end gap-3">
-          {/* Period selector (inline — no Supabase RPC needed) */}
           <div className="flex flex-col gap-1">
-            <Label htmlFor="rsd-period" className="text-xs text-muted-foreground">
-              Study Period ID
+            <Label htmlFor="rsd-tax-year" className="text-xs text-muted-foreground">
+              Tax Year
             </Label>
             <Input
-              id="rsd-period"
-              value={periodId}
-              onChange={(e) => setPeriodId(e.target.value)}
-              placeholder="e.g. 2024-Q4"
-              className="h-8 w-40 text-sm"
+              id="rsd-tax-year"
+              type="number"
+              value={taxYear}
+              onChange={(e) => setTaxYear(Number(e.target.value) || DEFAULT_TAX_YEAR)}
+              min={2016}
+              max={new Date().getFullYear() + 1}
+              className="h-8 w-28 text-sm"
             />
           </div>
           <RegressionActions

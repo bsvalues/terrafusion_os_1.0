@@ -64,6 +64,11 @@ const { mockFns } = vi.hoisted(() => ({
   },
 }));
 
+const regressionAnalysisMock = vi.hoisted(() => ({
+  useRegressionAnalysis: vi.fn(),
+  useRunRegressionAnalysis: vi.fn(),
+}));
+
 vi.mock('@/stores/forgeRegressionStore', async () => {
   const fixtures = await vi.importActual<typeof import('@/data/forgeRegressionFixtures')>('@/data/forgeRegressionFixtures');
   return {
@@ -85,6 +90,8 @@ vi.mock('@/stores/forgeRegressionStore', async () => {
     }),
   };
 });
+
+vi.mock('@/hooks/useRegressionAnalysis', () => regressionAnalysisMock);
 
 // Mock sub-panels to keep tests focused on Studio orchestration
 vi.mock('../../pages/forge/regression/CoefficientPanel', () => ({
@@ -132,6 +139,53 @@ function renderStudio() {
 describe('Phase 16B: RegressionStudio Contract', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    regressionAnalysisMock.useRegressionAnalysis.mockReturnValue({
+      data: {
+        coefficients: [],
+        anova: [],
+        neighborhoodEffects: [],
+        modelStats: {
+          rSquared: 0,
+          rSquaredAdj: 0,
+          fStatistic: 0,
+          fPValue: 1,
+          rmse: 0,
+          mae: 0,
+          aic: 0,
+          n: 3,
+          k: 0,
+          dfResidual: 0,
+        },
+        diagnostics: {
+          linearityPassed: false,
+          linearityPValue: 0,
+          normalityPassed: false,
+          normalityPValue: 0,
+          homoscedasticityPassed: false,
+          homoscedasticityPValue: 0,
+          independencePassed: false,
+          durbinWatson: 0,
+          multicollinearityPassed: false,
+          maxVIF: 0,
+        },
+        diagnosticPlots: {
+          residualsVsFitted: [],
+          qqPlot: [],
+          scaleLocation: [],
+          cooksDistance: [],
+        },
+        equation: '',
+        computedAt: '2026-05-24T00:00:00.000Z',
+        unavailableReason: 'Insufficient observations for regression: 3 available, 5 required.',
+      },
+      isLoading: false,
+      isSuccess: true,
+      isError: false,
+    });
+    regressionAnalysisMock.useRunRegressionAnalysis.mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+    });
   });
 
   // =========================================================================
@@ -222,6 +276,27 @@ describe('Phase 16B: RegressionStudio Contract', () => {
       renderStudio();
       fireEvent.click(screen.getByRole('button', { name: /compare/i }));
       expect(screen.getByTestId('version-compare-panel')).toBeInTheDocument();
+    });
+  });
+
+  // =========================================================================
+  // Advanced Live Runtime Tab
+  // =========================================================================
+  describe('Advanced Live Runtime Tab', () => {
+    it('uses tax year controls instead of study period IDs', () => {
+      renderStudio();
+      fireEvent.click(screen.getByRole('button', { name: /advanced/i }));
+
+      expect(screen.queryByText('Study Period ID')).not.toBeInTheDocument();
+      expect(screen.getByLabelText('Tax Year')).toBeInTheDocument();
+      expect(regressionAnalysisMock.useRegressionAnalysis).toHaveBeenCalledWith(2026);
+    });
+
+    it('renders insufficient-data state from the live TerraForge hook', () => {
+      renderStudio();
+      fireEvent.click(screen.getByRole('button', { name: /advanced/i }));
+
+      expect(screen.getByText('Insufficient observations for regression: 3 available, 5 required.')).toBeInTheDocument();
     });
   });
 
