@@ -62,8 +62,18 @@ function isTokenExpiredOrMissing(token: string | null): boolean {
   }
 }
 
+function getInitialToken(): string | null {
+  const storedToken = getToken();
+  if (shouldForceLoginRedirect() && isTokenExpiredOrMissing(storedToken)) {
+    clearToken();
+    return null;
+  }
+
+  return storedToken;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [token, setTokenState] = useState<string | null>(() => getToken());
+  const [token, setTokenState] = useState<string | null>(() => getInitialToken());
 
   // In dev preview mode, automatically obtain a real JWT from the backend.
   // Re-run whenever the stored token changes so an expired token is replaced.

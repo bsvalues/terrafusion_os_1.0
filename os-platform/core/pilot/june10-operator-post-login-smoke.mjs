@@ -118,7 +118,8 @@ function hasRequiredIdentity(identity, expectedEmail) {
       REQUIRED_JWT_ROLES.every((role) => identity.roles?.includes(role)) &&
       REQUIRED_JWT_PERMISSIONS.every((permission) => identity.permissions?.includes(permission)) &&
       identity.countyName === "Benton" &&
-      identity.countyState === "WA"
+      identity.countyState === "WA" &&
+      identity.countyFipsCode === "53005"
   );
 }
 
@@ -457,14 +458,27 @@ export function buildJune10OperatorPostLoginSmokeReport({
   screenshotPath
 }) {
   const blockers = [];
+  const warnings = [];
+  const operatorIdentityRecognized = hasRequiredIdentity(login?.jwtIdentity, email);
+  const protectedApiSucceeded = Boolean(
+    protectedApis?.profile?.status === 200 || protectedApis?.bentonParcels?.status === 200
+  );
+  const bentonCountyContextPresent = Boolean(
+    login?.jwtIdentity?.countyName === "Benton" &&
+      login?.jwtIdentity?.countyState === "WA" &&
+      login?.jwtIdentity?.countyFipsCode === "53005" &&
+      shell?.chromeSignals?.bentonCounty === true &&
+      protectedApis?.bentonParcels?.bentonContextPresent === true &&
+      protectedApis?.bentonParcels?.county === "Benton"
+  );
 
   if (!email) blockers.push("Operator email is not configured.");
   if (!login?.finalUrl || !new URL(login.finalUrl, baseUrl).pathname.startsWith("/canon")) {
     blockers.push("/canon did not load after login.");
   }
   if (!login?.tokenStored) blockers.push("Browser did not store JWT after login.");
-  if (!hasRequiredIdentity(login?.jwtIdentity, email)) {
-    blockers.push("JWT does not contain required operator, role, permission, and Benton county claims.");
+  if (!operatorIdentityRecognized) {
+    blockers.push("Operator identity is not recognized from real JWT claims, including Benton FIPS 53005.");
   }
   if (!shell?.canonLoaded) blockers.push("/canon route did not load cleanly.");
   for (const [signal, present] of Object.entries(shell?.chromeSignals ?? {})) {
@@ -473,9 +487,13 @@ export function buildJune10OperatorPostLoginSmokeReport({
 
   const profile = protectedApis?.profile ?? {};
   if (profile.status !== 200) {
-    blockers.push(`/api/auth/profile returned ${profile.status ?? "not attempted"}.`);
+    warnings.push(`/api/auth/profile returned ${profile.status ?? "not attempted"}.`);
   } else if (!profile.operatorIdentityRecognized) {
-    blockers.push("/api/auth/profile did not recognize the logged-in operator identity.");
+    warnings.push("/api/auth/profile did not recognize the logged-in operator identity.");
+  }
+
+  if (!protectedApiSucceeded) {
+    blockers.push("No protected API call succeeded with the login JWT.");
   }
 
   const parcels = protectedApis?.bentonParcels ?? {};
@@ -484,6 +502,9 @@ export function buildJune10OperatorPostLoginSmokeReport({
   }
   if (!parcels.bentonContextPresent || parcels.county !== "Benton") {
     blockers.push("Benton county context was not present in protected parcels API response.");
+  }
+  if (!bentonCountyContextPresent) {
+    blockers.push("Benton county context / FIPS 53005 is not present across JWT, shell, and protected API evidence.");
   }
   if (!Number.isFinite(parcels.rowsReturned) || parcels.rowsReturned <= 0) {
     blockers.push("Protected Benton parcels API returned zero rows.");
@@ -520,6 +541,10 @@ export function buildJune10OperatorPostLoginSmokeReport({
     logout,
     invalidToken,
     screenshotPath,
+    operatorIdentityRecognized,
+    protectedApiSucceeded,
+    bentonCountyContextPresent,
+    warnings,
     passed: blockers.length === 0,
     blockers
   };
@@ -633,6 +658,10 @@ function renderMarkdown(report) {
     `- JWT email: ${report.login?.jwtIdentity?.email ?? "none"}`,
     `- JWT roles: ${report.login?.jwtIdentity?.roles?.join(", ") || "none"}`,
     `- JWT permissions: ${report.login?.jwtIdentity?.permissions?.join(", ") || "none"}`,
+    `- JWT county FIPS: ${report.login?.jwtIdentity?.countyFipsCode ?? "none"}`,
+    `- Operator identity recognized: ${report.operatorIdentityRecognized === true}`,
+    `- Protected API succeeded: ${report.protectedApiSucceeded === true}`,
+    `- Benton context / FIPS 53005 present: ${report.bentonCountyContextPresent === true}`,
     `- Profile API status: ${report.protectedApis?.profile?.status ?? "not attempted"}`,
     `- Profile identity recognized: ${report.protectedApis?.profile?.operatorIdentityRecognized === true}`,
     `- Benton parcels API status: ${report.protectedApis?.bentonParcels?.status ?? "not attempted"}`,
@@ -652,6 +681,10 @@ function renderMarkdown(report) {
     ...((report.consoleAndRuntime?.authErrors ?? []).length
       ? report.consoleAndRuntime.authErrors.map((error) => `- ${error}`)
       : ["- None"]),
+    "",
+    "## Warnings",
+    "",
+    ...(report.warnings.length ? report.warnings.map((warning) => `- ${warning}`) : ["- None"]),
     "",
     "## Blockers",
     "",

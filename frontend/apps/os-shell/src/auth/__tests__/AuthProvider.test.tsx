@@ -29,6 +29,11 @@ function renderWithAuth(ui: React.ReactElement) {
   );
 }
 
+function validJwt() {
+  const encode = (value: unknown) => btoa(JSON.stringify(value));
+  return `${encode({ alg: 'none', typ: 'JWT' })}.${encode({ exp: Math.floor(Date.now() / 1000) + 3600 })}.sig`;
+}
+
 describe('AuthProvider', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -37,7 +42,8 @@ describe('AuthProvider', () => {
 
   it('initializes_from_storage_token', () => {
     // Pre-seed storage with a token
-    authStorage.setToken('STORED_TOKEN');
+    const storedToken = validJwt();
+    authStorage.setToken(storedToken);
 
     let captured: ReturnType<typeof useAuth> | undefined;
     renderWithAuth(
@@ -49,7 +55,7 @@ describe('AuthProvider', () => {
     );
 
     expect(captured).toBeDefined();
-    expect(captured!.token).toBe('STORED_TOKEN');
+    expect(captured!.token).toBe(storedToken);
     expect(captured!.isAuthenticated).toBe(true);
   });
 
@@ -66,6 +72,24 @@ describe('AuthProvider', () => {
     expect(captured).toBeDefined();
     expect(captured!.token).toBeNull();
     expect(captured!.isAuthenticated).toBe(false);
+  });
+
+  it('clears_invalid_storage_token_and_marks_unauthenticated', () => {
+    authStorage.setToken('invalid.jwt.token');
+
+    let captured: ReturnType<typeof useAuth> | undefined;
+    renderWithAuth(
+      <AuthProbe
+        onAuth={(v) => {
+          captured = v;
+        }}
+      />
+    );
+
+    expect(captured).toBeDefined();
+    expect(captured!.token).toBeNull();
+    expect(captured!.isAuthenticated).toBe(false);
+    expect(authStorage.getToken()).toBeNull();
   });
 
   it('login_sets_token_and_marks_authenticated', () => {
@@ -91,7 +115,7 @@ describe('AuthProvider', () => {
   });
 
   it('logout_clears_token_and_marks_unauthenticated', () => {
-    authStorage.setToken('ACTIVE_TOKEN');
+    authStorage.setToken(validJwt());
 
     let captured: ReturnType<typeof useAuth> | undefined;
     renderWithAuth(

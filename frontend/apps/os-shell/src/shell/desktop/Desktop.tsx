@@ -11,7 +11,7 @@
 
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation, UNSAFE_NavigationContext } from 'react-router-dom';
-import { Layers, Moon, Search, Settings2, Sun, User } from 'lucide-react';
+import { Layers, Moon, Search, Settings2, Sun } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
 import { Launcher } from '../../components/launcher';
 import { useContextMenu } from '../../hooks/useContextMenu';
@@ -47,6 +47,7 @@ import { DesktopIconGrid } from './DesktopIconGrid';
 import { TaskbarWithNotifications } from './TaskbarWithNotifications';
 import { WindowManager } from './WindowManager';
 import { WindowPeek } from './WindowPeek';
+import { OperatorSessionButton } from './OperatorSessionButton';
 import { Z } from './zIndex';
 
 // ============================================================================
@@ -185,13 +186,7 @@ const DesktopTopSystemBar: React.FC<{
         </button>
 
         {/* Profile */}
-        <button
-          className='flex items-center opacity-40 hover:opacity-80 transition-opacity'
-          aria-label='Profile'
-          title='Profile'
-        >
-          <User className='h-3.5 w-3.5' />
-        </button>
+        <OperatorSessionButton />
       </div>
     </LiquidPanel>
   </div>

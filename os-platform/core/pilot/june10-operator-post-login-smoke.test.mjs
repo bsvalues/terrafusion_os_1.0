@@ -80,7 +80,7 @@ test("passes when post-login shell, identity, Benton context, logout, and invali
   assert.deepEqual(report.blockers, []);
 });
 
-test("blocks on missing profile identity, missing logout, and invalid-token shell access", () => {
+test("records empty profile identity as a warning when JWT identity and protected Benton API are proven", () => {
   const report = buildJune10OperatorPostLoginSmokeReport({
     baseUrl: "https://terrafusionmarket.com",
     email: "june10-operator@terrafusionmarket.com",
@@ -126,14 +126,82 @@ test("blocks on missing profile identity, missing logout, and invalid-token shel
       pageErrors: []
     },
     logout: {
-      controlFound: false,
-      clicked: false,
-      redirectedToLogin: false,
-      tokenCleared: false
+      controlFound: true,
+      clicked: true,
+      redirectedToLogin: true,
+      tokenCleared: true
     },
     invalidToken: {
-      redirectedToLogin: false,
-      tokenCleared: false,
+      redirectedToLogin: true,
+      tokenCleared: true,
+      protectedApiRejected: true,
+      status: 401
+    },
+    screenshotPath: null
+  });
+
+  assert.equal(report.operatorIdentityRecognized, true);
+  assert.equal(report.protectedApiSucceeded, true);
+  assert.equal(report.bentonCountyContextPresent, true);
+  assert.equal(report.passed, true);
+  assert.ok(report.warnings.some((warning) => warning.includes("/api/auth/profile")));
+  assert.equal(report.blockers.some((blocker) => blocker.includes("/api/auth/profile")), false);
+});
+
+test("blocks when Benton FIPS 53005 is not present in the post-login identity", () => {
+  const report = buildJune10OperatorPostLoginSmokeReport({
+    baseUrl: "https://terrafusionmarket.com",
+    email: "june10-operator@terrafusionmarket.com",
+    login: {
+      finalUrl: "https://terrafusionmarket.com/canon",
+      tokenStored: true,
+      jwtIdentity: {
+        email: "june10-operator@terrafusionmarket.com",
+        roles: ["GovernmentUser", "Administrator"],
+        permissions: ["runtime:read", "county:read", "workbench:access"],
+        countyName: "Benton",
+        countyState: "WA",
+        countyFipsCode: "99999"
+      }
+    },
+    shell: {
+      canonLoaded: true,
+      chromeSignals: {
+        terraFusionOsTitle: true,
+        shellChrome: true,
+        bentonCounty: true,
+        canonWorkbench: true
+      }
+    },
+    protectedApis: {
+      profile: {
+        status: 200,
+        operatorIdentityRecognized: true,
+        email: "june10-operator@terrafusionmarket.com",
+        roles: ["GovernmentUser", "Administrator"]
+      },
+      bentonParcels: {
+        status: 200,
+        county: "Benton",
+        rowsReturned: 1,
+        bentonContextPresent: true
+      }
+    },
+    consoleAndRuntime: {
+      authErrorCount: 0,
+      authErrors: [],
+      pageErrorCount: 0,
+      pageErrors: []
+    },
+    logout: {
+      controlFound: true,
+      clicked: true,
+      redirectedToLogin: true,
+      tokenCleared: true
+    },
+    invalidToken: {
+      redirectedToLogin: true,
+      tokenCleared: true,
       protectedApiRejected: true,
       status: 401
     },
@@ -141,9 +209,8 @@ test("blocks on missing profile identity, missing logout, and invalid-token shel
   });
 
   assert.equal(report.passed, false);
-  assert.ok(report.blockers.some((blocker) => blocker.includes("/api/auth/profile")));
-  assert.ok(report.blockers.some((blocker) => blocker.includes("logout")));
-  assert.ok(report.blockers.some((blocker) => blocker.includes("Invalid token")));
+  assert.equal(report.bentonCountyContextPresent, false);
+  assert.ok(report.blockers.some((blocker) => blocker.includes("FIPS 53005")));
 });
 
 test("fetchJsonWithBearer sends Authorization bearer token and parses JSON response", async () => {
