@@ -1,6 +1,6 @@
 # June 10 Operator Post-Login Smoke
 
-Generated: 2026-05-24T17:06:24.518Z
+Generated: 2026-05-24T17:42:07.714Z
 Base URL: https://terrafusionmarket.com
 Operator: june10-operator@terrafusionmarket.com
 Password supplied: yes (redacted)
@@ -25,7 +25,13 @@ Verdict: PASS
 - Protected API succeeded: true
 - Benton context / FIPS 53005 present: true
 - Profile API status: 200
-- Profile identity recognized: false
+- Profile identity recognized: true
+- Profile user id: 23dc86c2-4a64-4da6-97a8-46f78d67ae61
+- Profile roles: GovernmentUser, Administrator
+- Profile permissions: runtime:read, county:read, june10:smoke, ecosystem:view, workbench:access, costforge:read, atlas:read, salesforge:read
+- Profile county FIPS: 53005
+- Profile state: WA
+- Profile session valid: true
 - Benton parcels API status: 200
 - Benton parcels rows returned: 1
 
@@ -44,7 +50,7 @@ Verdict: PASS
 
 ## Warnings
 
-- /api/auth/profile did not recognize the logged-in operator identity.
+- None
 
 ## Blockers
 

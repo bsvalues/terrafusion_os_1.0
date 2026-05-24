@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-24T17:06:24.518Z",
+  "generatedAt": "2026-05-24T17:42:07.714Z",
   "baseUrl": "https://terrafusionmarket.com",
   "email": "june10-operator@terrafusionmarket.com",
   "passwordSupplied": "yes (redacted)",
@@ -38,9 +38,25 @@
   "protectedApis": {
     "profile": {
       "status": 200,
-      "operatorIdentityRecognized": false,
-      "email": null,
-      "roles": []
+      "operatorIdentityRecognized": true,
+      "userId": "23dc86c2-4a64-4da6-97a8-46f78d67ae61",
+      "email": "june10-operator@terrafusionmarket.com",
+      "roles": ["GovernmentUser", "Administrator"],
+      "permissions": [
+        "runtime:read",
+        "county:read",
+        "june10:smoke",
+        "ecosystem:view",
+        "workbench:access",
+        "costforge:read",
+        "atlas:read",
+        "salesforge:read"
+      ],
+      "countyId": "19190019-1919-1919-1919-191919191919",
+      "county": "Benton",
+      "countyFipsCode": "53005",
+      "state": "WA",
+      "sessionValid": true
     },
     "bentonParcels": {
       "status": 200,
@@ -73,9 +89,7 @@
   "operatorIdentityRecognized": true,
   "protectedApiSucceeded": true,
   "bentonCountyContextPresent": true,
-  "warnings": [
-    "/api/auth/profile did not recognize the logged-in operator identity."
-  ],
+  "warnings": [],
   "passed": true,
   "blockers": []
 }
