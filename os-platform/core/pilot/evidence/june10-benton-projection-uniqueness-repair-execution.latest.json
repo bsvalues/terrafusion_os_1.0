@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-05-23T01:18:53.345Z",
+  "generatedAtUtc": "2026-05-24T22:35:19.404Z",
   "slice": "Benton Projection Uniqueness Repair Execution Gate",
   "passed": false,
   "executionStatus": "WAITING_SYNC_TERMINAL",
@@ -35,20 +35,28 @@
     "accepted": false
   },
   "syncState": {
-    "source": "docker:psql",
+    "inProgressBatches": 1,
     "latestBatch": {
       "status": "IN_PROGRESS",
-      "operator": "claude-strict-serial-improvement-tn500-v146",
-      "startedAt": "2026-05-23T01:17:43.191Z",
+      "operator": "claude-strict-serial-improvement-tn500-v209",
+      "startedAt": "2026-05-24T22:30:06.992Z",
       "completedAt": null,
       "rowsPromoted": null
     },
     "statusCounts": {
-      "FAILED": 74,
-      "COMPLETED": 2571,
+      "FAILED": 75,
+      "COMPLETED": 3395,
       "IN_PROGRESS": 1
     },
-    "inProgressBatches": 1
+    "tableEstimates": {
+      "canonical_tf.tf_sale": 721,
+      "legacy_pacs_raw.owner": 5522301,
+      "canonical_tf.tf_parcel": 3197521,
+      "sync_bridge.load_batch": 3468,
+      "truth_pacs.parcel_spine": 511793,
+      "canonical_tf.tf_improvement": 1105,
+      "canonical_tf.tf_improvement_feature": 1198043
+    }
   },
   "before": {
     "duplicateGroups": 1503,
@@ -68,8 +76,8 @@
       "message": "TerraFusion Sync is active; Benton projection uniqueness repair must not mutate DB.",
       "evidence": {
         "status": "IN_PROGRESS",
-        "operator": "claude-strict-serial-improvement-tn500-v146",
-        "startedAt": "2026-05-23T01:17:43.191Z",
+        "operator": "claude-strict-serial-improvement-tn500-v209",
+        "startedAt": "2026-05-24T22:30:06.992Z",
         "completedAt": null,
         "rowsPromoted": null
       }
