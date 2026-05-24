@@ -90,10 +90,6 @@ public class ForgeStatisticsService : IForgeStatisticsService
         int taxYear, int windowYears, Guid countyId, CancellationToken ct)
     {
         var cutoff = taxYear - (windowYears - 1);
-        var valuationTaxYear = await _db.Properties
-            .AsNoTracking()
-            .Where(p => p.CountyId == countyId)
-            .MaxAsync(p => (int?)p.TaxYear, ct) ?? taxYear;
 
         var sales = await _db.ComparableSales.AsNoTracking()
             .Where(s => s.CountyId == countyId
@@ -117,16 +113,26 @@ public class ForgeStatisticsService : IForgeStatisticsService
             })
             .ToListAsync(ct);
 
+        if (sales.Count == 0) return new List<SaleRow>();
+
+        var saleParcelIds = sales
+            .Where(s => !string.IsNullOrWhiteSpace(s.ParcelId))
+            .Select(s => s.ParcelId)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
         var assessedValues = await _db.Properties.AsNoTracking()
             .Where(p => p.CountyId == countyId
-                && p.TaxYear == valuationTaxYear
+                && p.TaxYear == taxYear
                 && p.AssessedValue > 0
                 && p.ParcelNumber != null
-                && p.ParcelNumber != "")
-            .Select(p => new { p.ParcelNumber, p.AssessedValue })
+                && p.ParcelNumber != ""
+                && saleParcelIds.Contains(p.ParcelNumber))
+            .Select(p => new { ParcelNumber = p.ParcelNumber!, p.AssessedValue })
             .ToListAsync(ct);
 
         var assessedValueByParcel = assessedValues
+            .AsEnumerable()
             .GroupBy(p => p.ParcelNumber, StringComparer.OrdinalIgnoreCase)
             .ToDictionary(g => g.Key, g => g.First().AssessedValue, StringComparer.OrdinalIgnoreCase);
 

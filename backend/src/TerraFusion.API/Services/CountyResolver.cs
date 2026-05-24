@@ -51,7 +51,24 @@ public class CountyResolver : ICountyResolver
         if (lookup.NameToId.TryGetValue(input, out var byName))
             return byName;
 
+        // Precedence 3: county slug, e.g. "benton-wa" -> "Benton".
+        var slugName = TryGetCountyNameFromSlug(input);
+        if (slugName is not null && lookup.NameToId.TryGetValue(slugName, out var bySlug))
+            return bySlug;
+
         return null;
+    }
+
+    private static string? TryGetCountyNameFromSlug(string input)
+    {
+        var parts = input.Split('-', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (parts.Length < 2 || !string.Equals(parts[^1], "wa", StringComparison.OrdinalIgnoreCase))
+            return null;
+
+        return string.Join(
+            ' ',
+            parts[..^1].Select(part =>
+                char.ToUpperInvariant(part[0]) + part[1..].ToLowerInvariant()));
     }
 
     private async Task<CountyLookup> GetLookupAsync(CancellationToken ct)
