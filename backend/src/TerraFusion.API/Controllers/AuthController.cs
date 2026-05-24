@@ -100,7 +100,7 @@ public class AuthController : ControllerBase
         {
             signupMode = "provisioned_access_only",
             publicSignupEnabled = false,
-            message = "TerraFusion OS access is assigned by the TerraFusion administrator for authorized Benton County Runtime Pilot operators. No public signup is available."
+            message = "Access is issued through TerraFusion administration for authorized Washington county operators. No public signup is available."
         });
     }
 

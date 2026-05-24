@@ -35,7 +35,7 @@ describe('LoginPage real auth exchange', () => {
       signupMode: 'provisioned_access_only',
       publicSignupEnabled: false,
       message:
-        'TerraFusion OS access is assigned by the TerraFusion administrator for authorized Benton County Runtime Pilot operators. No public signup is available.',
+        'Access is issued through TerraFusion administration for authorized Washington county operators. No public signup is available.',
     });
     navigate.mockReset();
     localStorage.clear();
@@ -57,7 +57,7 @@ describe('LoginPage real auth exchange', () => {
     const u = userEvent.setup();
     await u.type(screen.getByLabelText(/email/i), 'user@gov.example.com');
     await u.type(screen.getByLabelText(/pass/i), 'password');
-    await u.click(screen.getByRole('button', { name: /sign in/i }));
+    await u.click(screen.getByRole('button', { name: /enter terrafusion os/i }));
 
     await waitFor(() => {
       expect(authLogin).toHaveBeenCalledTimes(1);
@@ -87,13 +87,13 @@ describe('LoginPage real auth exchange', () => {
     const u = userEvent.setup();
     await u.type(screen.getByLabelText(/email/i), 'user@gov.example.com');
     await u.type(screen.getByLabelText(/pass/i), 'bad');
-    await u.click(screen.getByRole('button', { name: /sign in/i }));
+    await u.click(screen.getByRole('button', { name: /enter terrafusion os/i }));
 
     expect(await screen.findByText(/invalid|failed|error/i)).toBeInTheDocument();
     expect(navigate).not.toHaveBeenCalled();
   });
 
-  it('renders TerraFusion government access context without public request flows', async () => {
+  it('renders the constitutional operations entry console without public request flows', async () => {
     render(
       <MemoryRouter initialEntries={['/login']}>
         <AuthProvider>
@@ -102,12 +102,19 @@ describe('LoginPage real auth exchange', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole('heading', { name: /terrafusion os government access/i })).toBeInTheDocument();
-    expect(screen.getAllByText(/benton county runtime pilot/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/administrator-issued operator credentials/i)).toBeInTheDocument();
-    expect(screen.getByText(/authorized government operators/i)).toBeInTheDocument();
-    expect(await screen.findByText(/assigned by the terrafusion administrator/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /government operations runtime/i })).toBeInTheDocument();
+    expect(screen.getAllByText(/washington county operations/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/controlled production access/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/runtime authority/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/terrafusion db/i)).toBeInTheDocument();
+    expect(screen.getByText(/identity model/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/provisioned operator/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/session model/i)).toBeInTheDocument();
+    expect(screen.getByText(/audited jwt session/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /operator access/i })).toBeInTheDocument();
+    expect(await screen.findByText(/authorized washington county operators/i)).toBeInTheDocument();
     expect(screen.getByText(/no public signup is available/i)).toBeInTheDocument();
+    expect(screen.queryByText(/benton county runtime pilot/i)).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /request provisioned access/i })).not.toBeInTheDocument();
     expect(screen.queryByText(/request access/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/public access requests/i)).not.toBeInTheDocument();
@@ -125,6 +132,6 @@ describe('LoginPage real auth exchange', () => {
 
     expect(await screen.findByText(/provisioned access only/i)).toBeInTheDocument();
     expect(screen.queryByText(/your session has expired/i)).not.toBeInTheDocument();
-    expect(screen.getByText(/authorized government operators use administrator-issued operator credentials/i)).toBeInTheDocument();
+    expect(screen.getByText(/controlled production access for authorized county operators/i)).toBeInTheDocument();
   });
 });

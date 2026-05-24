@@ -49,14 +49,14 @@ export async function getAccessPolicy(): Promise<AccessPolicy> {
       publicSignupEnabled: data?.publicSignupEnabled === true,
       message:
         data?.message ??
-        'TerraFusion OS access is assigned by the TerraFusion administrator for authorized Benton County Runtime Pilot operators. No public signup is available.',
+        'Access is issued through TerraFusion administration for authorized Washington county operators. No public signup is available.',
     };
   } catch {
     return {
       signupMode: 'provisioned_access_only',
       publicSignupEnabled: false,
       message:
-        'TerraFusion OS access is assigned by the TerraFusion administrator for authorized Benton County Runtime Pilot operators. No public signup is available.',
+        'Access is issued through TerraFusion administration for authorized Washington county operators. No public signup is available.',
     };
   }
 }
