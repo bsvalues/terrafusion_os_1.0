@@ -138,7 +138,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   }
 
   if (isAuthenticated && location.pathname === '/login') {
-    return <Navigate to='/canon' replace />;
+    return <Navigate to='/' replace />;
   }
 
   return <>{children}</>;
