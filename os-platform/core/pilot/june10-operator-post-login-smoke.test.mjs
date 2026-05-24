@@ -45,8 +45,15 @@ test("passes when post-login shell, identity, Benton context, logout, and invali
       profile: {
         status: 200,
         operatorIdentityRecognized: true,
+        userId: "98c48122-078d-4125-b342-a122d86b8ff3",
         email: "june10-operator@terrafusionmarket.com",
-        roles: ["GovernmentUser", "Administrator"]
+        roles: ["GovernmentUser", "Administrator"],
+        permissions: ["runtime:read", "county:read", "workbench:access"],
+        countyId: "53005000-0000-4000-8000-000000000005",
+        county: "Benton",
+        countyFipsCode: "53005",
+        state: "WA",
+        sessionValid: true
       },
       bentonParcels: {
         status: 200,
@@ -80,7 +87,7 @@ test("passes when post-login shell, identity, Benton context, logout, and invali
   assert.deepEqual(report.blockers, []);
 });
 
-test("records empty profile identity as a warning when JWT identity and protected Benton API are proven", () => {
+test("blocks when profile identity is missing even if JWT identity and protected Benton API are proven", () => {
   const report = buildJune10OperatorPostLoginSmokeReport({
     baseUrl: "https://terrafusionmarket.com",
     email: "june10-operator@terrafusionmarket.com",
@@ -140,12 +147,11 @@ test("records empty profile identity as a warning when JWT identity and protecte
     screenshotPath: null
   });
 
-  assert.equal(report.operatorIdentityRecognized, true);
-  assert.equal(report.protectedApiSucceeded, true);
-  assert.equal(report.bentonCountyContextPresent, true);
-  assert.equal(report.passed, true);
-  assert.ok(report.warnings.some((warning) => warning.includes("/api/auth/profile")));
-  assert.equal(report.blockers.some((blocker) => blocker.includes("/api/auth/profile")), false);
+  assert.equal(report.operatorIdentityRecognized, false);
+  assert.equal(report.protectedApiSucceeded, false);
+  assert.equal(report.bentonCountyContextPresent, false);
+  assert.equal(report.passed, false);
+  assert.ok(report.blockers.some((blocker) => blocker.includes("/api/auth/profile")));
 });
 
 test("blocks when Benton FIPS 53005 is not present in the post-login identity", () => {
@@ -177,8 +183,15 @@ test("blocks when Benton FIPS 53005 is not present in the post-login identity", 
       profile: {
         status: 200,
         operatorIdentityRecognized: true,
+        userId: "98c48122-078d-4125-b342-a122d86b8ff3",
         email: "june10-operator@terrafusionmarket.com",
-        roles: ["GovernmentUser", "Administrator"]
+        roles: ["GovernmentUser", "Administrator"],
+        permissions: ["runtime:read", "county:read", "workbench:access"],
+        countyId: "53005000-0000-4000-8000-000000000005",
+        county: "Benton",
+        countyFipsCode: "99999",
+        state: "WA",
+        sessionValid: true
       },
       bentonParcels: {
         status: 200,

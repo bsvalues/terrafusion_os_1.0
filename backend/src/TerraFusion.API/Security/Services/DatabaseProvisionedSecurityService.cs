@@ -24,6 +24,7 @@ public sealed record ProvisionedUserAuthContext(
 public interface IProvisionedUserContextProvider
 {
     System.Threading.Tasks.Task<ProvisionedUserAuthContext?> GetProvisionedUserContextAsync(string email);
+    System.Threading.Tasks.Task<bool> IsUserSessionValidAsync(Guid userId, string? sessionToken);
     System.Threading.Tasks.Task RecordUserSessionAsync(
         Guid userId,
         string sessionToken,
@@ -270,6 +271,22 @@ public sealed class DatabaseProvisionedSecurityService : ISecurityService, IProv
         });
 
         await _db.SaveChangesAsync();
+    }
+
+    public System.Threading.Tasks.Task<bool> IsUserSessionValidAsync(Guid userId, string? sessionToken)
+    {
+        if (string.IsNullOrWhiteSpace(sessionToken))
+        {
+            return System.Threading.Tasks.Task.FromResult(false);
+        }
+
+        return _db.UserSessions
+            .AsNoTracking()
+            .AnyAsync(session =>
+                session.UserId == userId
+                && session.SessionToken == sessionToken
+                && session.IsActive
+                && session.ExpiresAt > DateTime.UtcNow);
     }
 
     private System.Threading.Tasks.Task<GovernmentUser?> FindActiveUserAsync(string email)

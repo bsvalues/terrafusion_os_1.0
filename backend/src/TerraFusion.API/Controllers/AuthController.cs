@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using TerraFusion.API.Security.Services;
 using TerraFusion.Core.Services;
 using TerraFusion.Core.DTOs;
@@ -217,17 +218,36 @@ public class AuthController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetProfile()
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
         try
         {
-            var email = User.FindFirst("email")?.Value;
-            var roles = User.FindAll("role").Select(c => c.Value).ToArray();
+            var email = FindClaimValue(ClaimTypes.Email, "email");
+            var userIdClaim = FindClaimValue(ClaimTypes.NameIdentifier, "nameid", "sub");
+
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(userIdClaim))
+            {
+                return Unauthorized(new { message = "Invalid token claims" });
+            }
+
+            var provisionedUser = await _provisionedUsers.GetProvisionedUserContextAsync(email);
+            if (provisionedUser is null || !string.Equals(provisionedUser.UserId.ToString(), userIdClaim, StringComparison.OrdinalIgnoreCase))
+            {
+                return Unauthorized(new { message = "Account not provisioned" });
+            }
+
+            var bearerToken = GetBearerToken(Request);
+            var sessionValid = await _provisionedUsers.IsUserSessionValidAsync(provisionedUser.UserId, bearerToken);
 
             return Ok(new UserProfile
             {
-                Email = email!,
-                Roles = roles,
+                UserId = provisionedUser.UserId.ToString(),
+                Email = provisionedUser.Email,
+                Roles = provisionedUser.Roles,
+                Permissions = provisionedUser.Permissions,
+                CountyId = provisionedUser.CountyId?.ToString(),
+                County = provisionedUser.CountyName,
+                CountyFipsCode = provisionedUser.CountyFipsCode,
+                State = provisionedUser.CountyState,
+                SessionValid = sessionValid,
                 LastLogin = DateTime.UtcNow // In production, get from database
             });
         }
@@ -236,6 +256,31 @@ public class AuthController : ControllerBase
             _logger.LogError(ex, "Error retrieving user profile");
             return StatusCode(500, new { message = "Internal server error" });
         }
+    }
+
+    private string? FindClaimValue(params string[] claimTypes)
+    {
+        foreach (var claimType in claimTypes)
+        {
+            var value = User.FindFirst(claimType)?.Value;
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                return value;
+            }
+        }
+
+        return null;
+    }
+
+    private static string? GetBearerToken(HttpRequest request)
+    {
+        var authorization = request.Headers.Authorization.ToString();
+        if (!authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        return authorization["Bearer ".Length..].Trim();
     }
 
     private static bool TryParseRevocationMetadata(string token, out string jti, out DateTime expiresAtUtc)

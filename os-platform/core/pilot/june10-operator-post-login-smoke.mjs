@@ -128,9 +128,33 @@ function isAuthRuntimeSignal(value) {
 }
 
 function profileIdentityFromPayload(payload) {
-  const email = payload?.email ?? payload?.Email ?? payload?.user?.email ?? payload?.User?.Email ?? null;
-  const roles = asArray(payload?.roles ?? payload?.Roles ?? payload?.user?.roles ?? payload?.User?.Roles);
-  return { email, roles };
+  const source = payload?.user ?? payload?.User ?? payload ?? {};
+  return {
+    userId: source.userId ?? source.UserId ?? null,
+    email: source.email ?? source.Email ?? null,
+    roles: asArray(source.roles ?? source.Roles),
+    permissions: asArray(source.permissions ?? source.Permissions),
+    countyId: source.countyId ?? source.CountyId ?? null,
+    county: source.county ?? source.County ?? source.countyName ?? source.CountyName ?? null,
+    countyFipsCode: source.countyFipsCode ?? source.CountyFipsCode ?? null,
+    state: source.state ?? source.State ?? source.countyState ?? source.CountyState ?? null,
+    sessionValid: source.sessionValid ?? source.SessionValid ?? false
+  };
+}
+
+function hasRequiredProfileIdentity(identity, expectedEmail) {
+  const expected = String(expectedEmail ?? "").toLowerCase();
+  return Boolean(
+    identity?.userId &&
+      identity?.email &&
+      identity.email.toLowerCase() === expected &&
+      REQUIRED_JWT_ROLES.every((role) => identity.roles?.includes(role)) &&
+      REQUIRED_JWT_PERMISSIONS.every((permission) => identity.permissions?.includes(permission)) &&
+      identity.countyId &&
+      identity.countyFipsCode === "53005" &&
+      identity.state === "WA" &&
+      identity.sessionValid === true
+  );
 }
 
 export async function fetchJsonWithBearer(url, token) {
@@ -414,8 +438,15 @@ function buildFixtureReport(fixture, email) {
       profile: {
         status: 200,
         operatorIdentityRecognized: true,
+        userId: "fixture-user-id",
         email,
-        roles: ["GovernmentUser", "Administrator"]
+        roles: ["GovernmentUser", "Administrator"],
+        permissions: ["runtime:read", "county:read", "workbench:access"],
+        countyId: "fixture-county-id",
+        county: "Benton",
+        countyFipsCode: "53005",
+        state: "WA",
+        sessionValid: true
       },
       bentonParcels: {
         status: 200,
@@ -459,14 +490,14 @@ export function buildJune10OperatorPostLoginSmokeReport({
 }) {
   const blockers = [];
   const warnings = [];
-  const operatorIdentityRecognized = hasRequiredIdentity(login?.jwtIdentity, email);
+  const profile = protectedApis?.profile ?? {};
+  const operatorIdentityRecognized = hasRequiredProfileIdentity(profile, email);
   const protectedApiSucceeded = Boolean(
-    protectedApis?.profile?.status === 200 || protectedApis?.bentonParcels?.status === 200
+    profile.status === 200 && operatorIdentityRecognized === true
   );
   const bentonCountyContextPresent = Boolean(
-    login?.jwtIdentity?.countyName === "Benton" &&
-      login?.jwtIdentity?.countyState === "WA" &&
-      login?.jwtIdentity?.countyFipsCode === "53005" &&
+    profile.countyFipsCode === "53005" &&
+      profile.state === "WA" &&
       shell?.chromeSignals?.bentonCounty === true &&
       protectedApis?.bentonParcels?.bentonContextPresent === true &&
       protectedApis?.bentonParcels?.county === "Benton"
@@ -478,18 +509,22 @@ export function buildJune10OperatorPostLoginSmokeReport({
   }
   if (!login?.tokenStored) blockers.push("Browser did not store JWT after login.");
   if (!operatorIdentityRecognized) {
-    blockers.push("Operator identity is not recognized from real JWT claims, including Benton FIPS 53005.");
+    blockers.push("Operator identity is not recognized from /api/auth/profile, including DB-backed user, permissions, active session, and Benton FIPS 53005.");
+  }
+  if (!hasRequiredIdentity(login?.jwtIdentity, email)) {
+    warnings.push("JWT identity claims are incomplete or do not include Benton FIPS 53005.");
   }
   if (!shell?.canonLoaded) blockers.push("/canon route did not load cleanly.");
   for (const [signal, present] of Object.entries(shell?.chromeSignals ?? {})) {
     if (!present) blockers.push(`Shell chrome signal missing: ${signal}.`);
   }
 
-  const profile = protectedApis?.profile ?? {};
   if (profile.status !== 200) {
-    warnings.push(`/api/auth/profile returned ${profile.status ?? "not attempted"}.`);
+    blockers.push(`/api/auth/profile returned ${profile.status ?? "not attempted"}.`);
   } else if (!profile.operatorIdentityRecognized) {
-    warnings.push("/api/auth/profile did not recognize the logged-in operator identity.");
+    blockers.push("/api/auth/profile did not recognize the logged-in operator identity.");
+  } else if (profile.sessionValid !== true) {
+    blockers.push("/api/auth/profile did not confirm a valid persisted user session.");
   }
 
   if (!protectedApiSucceeded) {
@@ -504,7 +539,7 @@ export function buildJune10OperatorPostLoginSmokeReport({
     blockers.push("Benton county context was not present in protected parcels API response.");
   }
   if (!bentonCountyContextPresent) {
-    blockers.push("Benton county context / FIPS 53005 is not present across JWT, shell, and protected API evidence.");
+    blockers.push("Benton county context / FIPS 53005 is not present across profile, shell, and protected API evidence.");
   }
   if (!Number.isFinite(parcels.rowsReturned) || parcels.rowsReturned <= 0) {
     blockers.push("Protected Benton parcels API returned zero rows.");
@@ -571,7 +606,19 @@ export async function runJune10OperatorPostLoginSmoke({
         }
       },
       protectedApis: {
-        profile: { status: null, operatorIdentityRecognized: false, email: null, roles: [] },
+        profile: {
+          status: null,
+          operatorIdentityRecognized: false,
+          userId: null,
+          email: null,
+          roles: [],
+          permissions: [],
+          countyId: null,
+          county: null,
+          countyFipsCode: null,
+          state: null,
+          sessionValid: false
+        },
         bentonParcels: { status: null, county: null, rowsReturned: 0, bentonContextPresent: false }
       },
       consoleAndRuntime: { authErrorCount: 0, authErrors: [], pageErrorCount: 0, pageErrors: [] },
@@ -613,12 +660,16 @@ export async function runJune10OperatorPostLoginSmoke({
     protectedApis: {
       profile: {
         status: profileResponse.status,
-        operatorIdentityRecognized: Boolean(
-          profileIdentity.email?.toLowerCase() === email.toLowerCase() &&
-            profileIdentity.roles.includes("GovernmentUser")
-        ),
+        operatorIdentityRecognized: hasRequiredProfileIdentity(profileIdentity, email),
+        userId: profileIdentity.userId,
         email: profileIdentity.email,
-        roles: profileIdentity.roles
+        roles: profileIdentity.roles,
+        permissions: profileIdentity.permissions,
+        countyId: profileIdentity.countyId,
+        county: profileIdentity.county,
+        countyFipsCode: profileIdentity.countyFipsCode,
+        state: profileIdentity.state,
+        sessionValid: profileIdentity.sessionValid
       },
       bentonParcels: {
         status: parcelsResponse.status,
@@ -664,6 +715,12 @@ function renderMarkdown(report) {
     `- Benton context / FIPS 53005 present: ${report.bentonCountyContextPresent === true}`,
     `- Profile API status: ${report.protectedApis?.profile?.status ?? "not attempted"}`,
     `- Profile identity recognized: ${report.protectedApis?.profile?.operatorIdentityRecognized === true}`,
+    `- Profile user id: ${report.protectedApis?.profile?.userId ?? "none"}`,
+    `- Profile roles: ${report.protectedApis?.profile?.roles?.join(", ") || "none"}`,
+    `- Profile permissions: ${report.protectedApis?.profile?.permissions?.join(", ") || "none"}`,
+    `- Profile county FIPS: ${report.protectedApis?.profile?.countyFipsCode ?? "none"}`,
+    `- Profile state: ${report.protectedApis?.profile?.state ?? "none"}`,
+    `- Profile session valid: ${report.protectedApis?.profile?.sessionValid === true}`,
     `- Benton parcels API status: ${report.protectedApis?.bentonParcels?.status ?? "not attempted"}`,
     `- Benton parcels rows returned: ${report.protectedApis?.bentonParcels?.rowsReturned ?? 0}`,
     "",

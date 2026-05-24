@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Json;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -212,6 +213,94 @@ public sealed class ProductionProvisionedAuthTests
             message = "TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled."
         });
         JsonSerializer.Serialize(ok.Value).Should().NotContain("mailto");
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task Profile_EchoesProvisionedOperatorIdentityAndSessionValidity()
+    {
+        using var db = CreateDb();
+        var countyId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        const string sessionToken = "live-session-token";
+
+        db.Counties.Add(new County
+        {
+            Id = countyId,
+            Name = "Benton",
+            State = "WA",
+            FipsCode = "53005"
+        });
+        db.GovernmentUsers.Add(new GovernmentUser
+        {
+            Id = userId,
+            Email = "operator@terrafusionmarket.com",
+            FirstName = "Pilot",
+            LastName = "Operator",
+            Role = "GovernmentUser,Administrator",
+            PasswordHash = ProvisionedPasswordHasher.HashPassword("CorrectPassword123!"),
+            Permissions = JsonSerializer.Serialize(new[] { "runtime:read", "county:read", "workbench:access" }),
+            CountyId = countyId,
+            CreatedAt = DateTime.UtcNow,
+            IsActive = true
+        });
+        db.UserSessions.Add(new TerraFusion.Core.Entities.UserSession
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            SessionToken = sessionToken,
+            RefreshToken = "refresh-token",
+            CreatedAt = DateTime.UtcNow.AddMinutes(-5),
+            ExpiresAt = DateTime.UtcNow.AddHours(1),
+            LastActivityAt = DateTime.UtcNow,
+            IsActive = true
+        });
+        await db.SaveChangesAsync();
+
+        var security = CreateSecurity(db);
+        var controller = new AuthController(
+            CreateAuthService(),
+            security,
+            security,
+            NullLogger<AuthController>.Instance);
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+                    new Claim(ClaimTypes.Email, "operator@terrafusionmarket.com"),
+                    new Claim(ClaimTypes.Role, "GovernmentUser"),
+                    new Claim(ClaimTypes.Role, "Administrator"),
+                    new Claim("perm", "runtime:read"),
+                    new Claim("perm", "county:read"),
+                    new Claim("perm", "workbench:access"),
+                    new Claim("countyId", countyId.ToString()),
+                    new Claim("countyName", "Benton"),
+                    new Claim("countyState", "WA"),
+                    new Claim("countyFipsCode", "53005")
+                }, "Bearer"))
+            }
+        };
+        controller.ControllerContext.HttpContext.Request.Headers.Authorization = $"Bearer {sessionToken}";
+
+        var result = await controller.GetProfile();
+
+        var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        var json = JsonSerializer.Serialize(ok.Value);
+        using var document = JsonDocument.Parse(json);
+        var root = document.RootElement;
+
+        root.GetProperty("UserId").GetString().Should().Be(userId.ToString());
+        root.GetProperty("Email").GetString().Should().Be("operator@terrafusionmarket.com");
+        root.GetProperty("Roles").EnumerateArray().Select(item => item.GetString())
+            .Should().BeEquivalentTo("GovernmentUser", "Administrator");
+        root.GetProperty("Permissions").EnumerateArray().Select(item => item.GetString())
+            .Should().BeEquivalentTo("runtime:read", "county:read", "workbench:access");
+        root.GetProperty("CountyId").GetString().Should().Be(countyId.ToString());
+        root.GetProperty("CountyFipsCode").GetString().Should().Be("53005");
+        root.GetProperty("State").GetString().Should().Be("WA");
+        root.GetProperty("SessionValid").GetBoolean().Should().BeTrue();
     }
 
     private static DataDbContext CreateDb()
