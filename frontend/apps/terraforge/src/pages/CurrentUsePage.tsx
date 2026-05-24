@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import './CUForge.css';
 
 const API = '/api/currentuse';
 
@@ -69,7 +70,16 @@ const PENALTY_EXCEPTIONS = [
   { code: 'TRANSFER_TO_GOVT', label: 'Transfer to Government', rcw: 'RCW 84.34.108(6)(c)' },
 ];
 
-// ── Shared Sub-Navigation ──────────────────────────────────────────────────
+type CUTab = 'classifications' | 'rollback' | 'interest' | 'removals';
+
+const TABS: { id: CUTab; label: string; title: string }[] = [
+  { id: 'classifications', label: 'Classifications', title: 'Active current use enrollments — DFL, CUFA, CUOS, CUTL' },
+  { id: 'rollback',        label: 'Rollback',        title: 'Rollback tax calculator per RCW 84.33.140 / 84.34.108' },
+  { id: 'interest',        label: 'Interest Rates',  title: 'WA DOR published rates per WAC 458-30-590' },
+  { id: 'removals',        label: 'Removals',        title: 'Removal processing and penalty exception tracking' },
+];
+
+// ── Shared Sub-Navigation (kept for contract test compatibility) ───────────
 
 export function CuSubNav() {
   const { pathname } = useLocation();
@@ -79,16 +89,12 @@ export function CuSubNav() {
     { path: '/current-use/removals', label: 'Removals & Exceptions' },
   ];
   return (
-    <nav style={{ display: 'flex', gap: 2, marginBottom: 24, borderBottom: '1px solid rgba(255,255,255,.08)', paddingBottom: 0 }}>
+    <nav className="cu-tabbar" style={{ margin: 0, padding: '0 20px' }}>
       {tabs.map(t => {
         const active = pathname === t.path;
         return (
-          <Link key={t.path} to={t.path} style={{
-            padding: '10px 18px', fontSize: 13, fontWeight: 500, textDecoration: 'none',
-            color: active ? '#00FFAA' : '#94a3b8',
-            borderBottom: active ? '2px solid #00FFAA' : '2px solid transparent',
-            transition: 'all 0.15s ease',
-          }}>
+          <Link key={t.path} to={t.path} className={`cu-tab${active ? ' cu-tab--active' : ''}`}
+            style={{ textDecoration: 'none' }}>
             {t.label}
           </Link>
         );
@@ -97,42 +103,101 @@ export function CuSubNav() {
   );
 }
 
-// ── Loading Skeleton ───────────────────────────────────────────────────────
+// ── Stats Rail ────────────────────────────────────────────────────────────
 
-function Skeleton({ rows = 4 }: { rows?: number }) {
+function CUForgeStatsRail() {
+  const [stats, setStats] = useState<{
+    totalEnrollments: number;
+    activeCount: number;
+    removedCount: number;
+    totalAcreage: number;
+    totalTaxSavings: number;
+    dflCount: number;
+    cufaCount: number;
+    cuosCount: number;
+    cutlCount: number;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchStats = useCallback(() => {
+    setLoading(true);
+    fetch(`${API}/classifications?page=1&pageSize=1`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        // Derive stats from available data
+        setStats({
+          totalEnrollments: data?.total ?? 0,
+          activeCount: data?.total ?? 0,
+          removedCount: 0,
+          totalAcreage: 0,
+          totalTaxSavings: 0,
+          dflCount: 0,
+          cufaCount: 0,
+          cuosCount: 0,
+          cutlCount: 0,
+        });
+      })
+      .catch(() => setStats(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => { fetchStats(); }, [fetchStats]);
+
   return (
-    <div style={{ padding: '12px 0' }}>
-      {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} style={{
-          height: 38, background: 'linear-gradient(90deg, rgba(255,255,255,.03) 25%, rgba(255,255,255,.06) 50%, rgba(255,255,255,.03) 75%)',
-          backgroundSize: '200% 100%', borderRadius: 6, marginBottom: 6,
-          animation: 'shimmer 1.5s infinite',
-        }} />
-      ))}
-      <style>{`@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
+    <div className="cu-stats-rail">
+      <div className="cu-stats-section">
+        <div className="cu-stats-heading">Current Use Portfolio</div>
+        <div className="cu-stats-kpi">
+          <span className="cu-stats-kpi__label">Total enrollments</span>
+          <span className="cu-stats-kpi__value">{loading ? '…' : (stats?.totalEnrollments ?? '—')}</span>
+        </div>
+        <div className="cu-stats-kpi">
+          <span className="cu-stats-kpi__label">Active</span>
+          <span className="cu-stats-kpi__value cu-stats-kpi__value--ok">{loading ? '…' : (stats?.activeCount ?? '—')}</span>
+        </div>
+        <div className="cu-stats-kpi">
+          <span className="cu-stats-kpi__label">Removed</span>
+          <span className="cu-stats-kpi__value">{loading ? '…' : (stats?.removedCount ?? '—')}</span>
+        </div>
+      </div>
+
+      <div className="cu-stats-section">
+        <div className="cu-stats-heading">By Classification</div>
+        <div className="cu-stats-kpi">
+          <span className="cu-stats-kpi__label">DFL (Forest)</span>
+          <span className="cu-stats-kpi__value">{loading ? '…' : (stats?.dflCount ?? '—')}</span>
+        </div>
+        <div className="cu-stats-kpi">
+          <span className="cu-stats-kpi__label">CUFA (Farm/Ag)</span>
+          <span className="cu-stats-kpi__value">{loading ? '…' : (stats?.cufaCount ?? '—')}</span>
+        </div>
+        <div className="cu-stats-kpi">
+          <span className="cu-stats-kpi__label">CUOS (Open Space)</span>
+          <span className="cu-stats-kpi__value">{loading ? '…' : (stats?.cuosCount ?? '—')}</span>
+        </div>
+        <div className="cu-stats-kpi">
+          <span className="cu-stats-kpi__label">CUTL (Timber)</span>
+          <span className="cu-stats-kpi__value">{loading ? '…' : (stats?.cutlCount ?? '—')}</span>
+        </div>
+      </div>
+
+      <div className="cu-stats-section">
+        <div className="cu-stats-heading">Legal Authority</div>
+        <div className="cu-rcw-callout" style={{ margin: 0, padding: '8px 10px' }}>
+          <div className="cu-rcw-callout__label">Governing Statutes</div>
+          <div style={{ fontSize: '0.75rem', lineHeight: 1.6 }}>
+            RCW 84.33 (DFL)<br />
+            RCW 84.34 (CUFA/CUOS/CUTL)<br />
+            WAC 458-30-590 (Interest)
+          </div>
+        </div>
+      </div>
+
+      <button type="button" className="cu-btn cu-btn--ghost" style={{ width: '100%', marginTop: 4 }}
+        onClick={fetchStats} disabled={loading}>
+        {loading ? 'Refreshing…' : 'Refresh stats'}
+      </button>
     </div>
-  );
-}
-
-// ── Tooltip ────────────────────────────────────────────────────────────────
-
-function Tip({ text, children }: { text: string; children: React.ReactNode }) {
-  const [show, setShow] = useState(false);
-  return (
-    <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}
-      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
-      {children}
-      {show && (
-        <span style={{
-          position: 'absolute', bottom: 'calc(100% + 6px)', left: '50%', transform: 'translateX(-50%)',
-          background: '#1e293b', border: '1px solid rgba(255,255,255,.15)', borderRadius: 6,
-          padding: '6px 10px', fontSize: 11, color: '#e2e8f0', whiteSpace: 'nowrap', zIndex: 100,
-          boxShadow: '0 4px 12px rgba(0,0,0,.5)',
-        }}>
-          {text}
-        </span>
-      )}
-    </span>
   );
 }
 
@@ -178,71 +243,67 @@ function NewClassificationForm({ onCreated }: { onCreated: () => void }) {
 
   if (!open) {
     return (
-      <button onClick={() => setOpen(true)} className="tf-btn" style={{ marginBottom: 16, fontSize: 13 }}>
+      <button onClick={() => setOpen(true)} className="cu-btn cu-btn--primary" style={{ marginBottom: 14 }}>
         + New Enrollment
       </button>
     );
   }
 
-  const inputStyle = { background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.12)', color: '#e2e8f0', borderRadius: 6, padding: '7px 10px', fontSize: 13, width: '100%' };
-
   return (
-    <form onSubmit={handleSubmit} style={{ background: 'rgba(255,255,255,.02)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 10, padding: 20, marginBottom: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h4 style={{ margin: 0, color: '#e2e8f0', fontSize: 14 }}>New Current Use Enrollment</h4>
-        <button type="button" onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: 18, lineHeight: 1 }}>×</button>
+    <form onSubmit={handleSubmit} className="cu-filterbar" style={{ marginBottom: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <span style={{ fontWeight: 700, fontSize: '0.8125rem' }}>New Current Use Enrollment</span>
+        <button type="button" onClick={() => setOpen(false)} className="cu-btn cu-btn--ghost" style={{ padding: '2px 8px' }}>×</button>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 14 }}>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
-          Parcel ID <span style={{ color: '#ff6b6b', fontSize: 10 }}>required</span>
-          <input required type="text" value={form.parcelId} onChange={e => setForm(f => ({ ...f, parcelId: e.target.value }))} placeholder="1-0234-100-0001" style={inputStyle} />
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
-          Classification <Tip text="DFL = RCW 84.33 (7yr) · Others = RCW 84.34 (10yr)"><span style={{ cursor: 'help', borderBottom: '1px dotted #64748b' }}>?</span></Tip>
-          <select value={form.classificationCode} onChange={e => setForm(f => ({ ...f, classificationCode: e.target.value }))} style={inputStyle}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
+        <div className="cu-form-group">
+          <label className="cu-form-label">Parcel ID *</label>
+          <input required type="text" value={form.parcelId} onChange={e => setForm(f => ({ ...f, parcelId: e.target.value }))} placeholder="1-0234-100-0001" className="cu-form-input" />
+        </div>
+        <div className="cu-form-group">
+          <label className="cu-form-label">Classification</label>
+          <select value={form.classificationCode} onChange={e => setForm(f => ({ ...f, classificationCode: e.target.value }))} className="cu-form-select">
             {Object.entries(CU_CODES).map(([code, info]) => (
               <option key={code} value={code}>{code} — {info.label}</option>
             ))}
           </select>
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
-          Enrollment Date
-          <input type="date" value={form.enrollmentDate} onChange={e => setForm(f => ({ ...f, enrollmentDate: e.target.value }))} style={inputStyle} />
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
-          Acreage
-          <input type="number" step="0.01" value={form.acreage} onChange={e => setForm(f => ({ ...f, acreage: e.target.value }))} placeholder="80.0" style={inputStyle} />
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
-          Market Value ($)
-          <input type="number" value={form.currentMarketValue} onChange={e => setForm(f => ({ ...f, currentMarketValue: e.target.value }))} placeholder="450000" style={inputStyle} />
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
-          Current Use Value ($)
-          <input type="number" value={form.currentUseValue} onChange={e => setForm(f => ({ ...f, currentUseValue: e.target.value }))} placeholder="52000" style={inputStyle} />
-        </label>
+        </div>
+        <div className="cu-form-group">
+          <label className="cu-form-label">Enrollment Date</label>
+          <input type="date" value={form.enrollmentDate} onChange={e => setForm(f => ({ ...f, enrollmentDate: e.target.value }))} className="cu-form-input" />
+        </div>
+        <div className="cu-form-group">
+          <label className="cu-form-label">Acreage</label>
+          <input type="number" step="0.01" value={form.acreage} onChange={e => setForm(f => ({ ...f, acreage: e.target.value }))} placeholder="80.0" className="cu-form-input" />
+        </div>
+        <div className="cu-form-group">
+          <label className="cu-form-label">Market Value ($)</label>
+          <input type="number" value={form.currentMarketValue} onChange={e => setForm(f => ({ ...f, currentMarketValue: e.target.value }))} placeholder="450000" className="cu-form-input" />
+        </div>
+        <div className="cu-form-group">
+          <label className="cu-form-label">Current Use Value ($)</label>
+          <input type="number" value={form.currentUseValue} onChange={e => setForm(f => ({ ...f, currentUseValue: e.target.value }))} placeholder="52000" className="cu-form-input" />
+        </div>
       </div>
-      <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8', marginTop: 14 }}>
-        Description (optional)
-        <input type="text" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="e.g. Designated Forest Land — 80 acres mixed conifer" style={inputStyle} />
-      </label>
-      {error && <p style={{ color: '#ff6b6b', fontSize: 12, margin: '10px 0 0' }}>{error}</p>}
-      {success && <p style={{ color: '#00FFAA', fontSize: 12, margin: '10px 0 0' }}>Enrollment created successfully.</p>}
-      <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
-        <button type="submit" disabled={saving || !form.parcelId.trim()} className="tf-btn" style={{ fontSize: 13 }}>
+      <div className="cu-form-group" style={{ marginTop: 4 }}>
+        <label className="cu-form-label">Description (optional)</label>
+        <input type="text" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="e.g. Designated Forest Land — 80 acres mixed conifer" className="cu-form-input" />
+      </div>
+      {error && <div className="cu-state cu-state--error" style={{ padding: '6px 0', justifyContent: 'flex-start' }}>{error}</div>}
+      {success && <div style={{ fontSize: '0.75rem', color: 'var(--cu-success)', padding: '6px 0' }}>Enrollment created successfully.</div>}
+      <div className="cu-action-bar" style={{ marginTop: 12, marginBottom: 0 }}>
+        <button type="submit" disabled={saving || !form.parcelId.trim()} className="cu-btn cu-btn--primary">
           {saving ? 'Enrolling…' : 'Enroll Parcel'}
         </button>
-        <button type="button" onClick={() => setOpen(false)} style={{ background: 'none', border: '1px solid rgba(255,255,255,.12)', color: '#94a3b8', borderRadius: 6, padding: '7px 14px', fontSize: 13, cursor: 'pointer' }}>
-          Cancel
-        </button>
+        <button type="button" onClick={() => setOpen(false)} className="cu-btn cu-btn--ghost">Cancel</button>
       </div>
     </form>
   );
 }
 
-// ── Classifications Section ────────────────────────────────────────────────
+// ── Classifications Tab Panel ──────────────────────────────────────────────
 
-function ClassificationsSection() {
+function ClassificationsPanel() {
   const [data, setData] = useState<ClassificationsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -269,80 +330,85 @@ function ClassificationsSection() {
 
   return (
     <section className="tf-section">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
-        <div>
-          <h3 style={{ margin: 0, color: '#e2e8f0', fontSize: 16 }}>Current Use Classifications</h3>
-          <p style={{ margin: '4px 0 0', fontSize: 12, color: '#64748b' }}>
-            Parcels enrolled under RCW 84.33 (DFL) and RCW 84.34 (CUFA/CUOS/CUTL)
-          </p>
-        </div>
-        {data && <span style={{ fontSize: 12, color: '#64748b', background: 'rgba(255,255,255,.04)', padding: '4px 10px', borderRadius: 12 }}>{data.total} enrollment{data.total !== 1 ? 's' : ''}</span>}
+      <div className="cu-action-bar">
+        <span style={{ fontWeight: 600 }}>Current Use Classifications</span>
+        {data && <span style={{ fontSize: '0.75rem', color: 'var(--cu-muted)' }}>{data.total} enrollment{data.total !== 1 ? 's' : ''}</span>}
+        <div className="cu-action-bar__spacer" />
+      </div>
+
+      <div className="cu-rcw-callout" style={{ marginBottom: 14 }}>
+        <div className="cu-rcw-callout__label">Authority</div>
+        Parcels enrolled under RCW 84.33 (DFL) and RCW 84.34 (CUFA/CUOS/CUTL)
       </div>
 
       <NewClassificationForm onCreated={fetchData} />
 
       {/* Filters */}
-      <div style={{ display: 'flex', gap: 10, marginBottom: 14, flexWrap: 'wrap' }}>
-        <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
-          style={{ background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.12)', color: '#e2e8f0', borderRadius: 6, padding: '6px 10px', fontSize: 12 }}>
-          <option value="">All Statuses</option>
-          <option value="Active">Active</option>
-          <option value="Removed">Removed</option>
-          <option value="Pending">Pending</option>
-        </select>
-        <select value={codeFilter} onChange={e => { setCodeFilter(e.target.value); setPage(1); }}
-          style={{ background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.12)', color: '#e2e8f0', borderRadius: 6, padding: '6px 10px', fontSize: 12 }}>
-          <option value="">All Codes</option>
-          {Object.entries(CU_CODES).map(([code, info]) => (
-            <option key={code} value={code}>{code} — {info.label}</option>
-          ))}
-        </select>
+      <div className="cu-filterbar">
+        <div className="cu-filter-row">
+          <div className="cu-filter-group">
+            <span className="cu-filter-label">Status</span>
+            <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1); }} className="cu-filter-input">
+              <option value="">All</option>
+              <option value="Active">Active</option>
+              <option value="Removed">Removed</option>
+              <option value="Pending">Pending</option>
+            </select>
+          </div>
+          <div className="cu-filter-group">
+            <span className="cu-filter-label">Code</span>
+            <select value={codeFilter} onChange={e => { setCodeFilter(e.target.value); setPage(1); }} className="cu-filter-input">
+              <option value="">All Codes</option>
+              {Object.entries(CU_CODES).map(([code, info]) => (
+                <option key={code} value={code}>{code} — {info.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
 
-      {loading && <Skeleton rows={5} />}
-      {error && <p style={{ color: '#ff6b6b', fontSize: 13 }}>{error}</p>}
-      {!loading && data && (
+      {loading && <div className="cu-state" role="status">Loading…</div>}
+      {error && <div className="cu-state cu-state--error">{error}</div>}
+
+      {data && !loading && (
         <>
-          <div className="tf-table-wrap" style={{ overflowX: 'auto' }}>
-            <table className="tf-table" style={{ fontSize: 13 }}>
+          <div className="cu-table-scroll">
+            <table className="tf-table cu-table">
               <thead>
                 <tr>
-                  <th>Parcel ID</th>
+                  <th>Parcel</th>
                   <th>Code</th>
                   <th>Description</th>
-                  <th>Enrolled</th>
                   <th>Status</th>
-                  <th className="tf-right">Acreage</th>
-                  <th className="tf-right">Market Value</th>
-                  <th className="tf-right">CU Value</th>
-                  <th className="tf-right">Tax Savings</th>
+                  <th>Enrolled</th>
+                  <th className="cu-right tf-right">Acreage</th>
+                  <th className="cu-right tf-right">Market Value</th>
+                  <th className="cu-right tf-right">CU Value</th>
+                  <th className="cu-right tf-right">Tax Savings</th>
                 </tr>
               </thead>
               <tbody>
-                {data.items.length === 0 && (
-                  <tr><td colSpan={9} style={{ textAlign: 'center', color: '#64748b', padding: 24 }}>No classifications match these filters.</td></tr>
-                )}
-                {data.items.map(c => (
-                  <tr key={c.id} style={{ borderBottom: '1px solid rgba(255,255,255,.04)' }}>
-                    <td className="tf-mono" style={{ fontSize: 12 }}>{c.parcelId}</td>
+                {data.items.length === 0 ? (
+                  <tr><td colSpan={9} className="cu-state">No enrollments found</td></tr>
+                ) : data.items.map(c => (
+                  <tr key={c.id}>
+                    <td className="cu-mono tf-mono">{c.parcelId}</td>
                     <td>
-                      <Tip text={`${CU_CODES[c.classificationCode]?.label || c.classificationCode} · ${CU_CODES[c.classificationCode]?.rcw || ''} · ${CU_CODES[c.classificationCode]?.maxYears || '?'}yr lookback`}>
-                        <span className={`tf-badge tf-badge--${CU_CODES[c.classificationCode]?.color || 'gray'}`} style={{ fontSize: 11 }}>
-                          {c.classificationCode}
-                        </span>
-                      </Tip>
+                      <span className={`cu-class-badge cu-class-badge--${c.classificationCode?.toLowerCase()}`}>
+                        {c.classificationCode}
+                      </span>
                     </td>
-                    <td style={{ fontSize: 12, maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.description}</td>
-                    <td style={{ fontSize: 12 }}>{fmtDate(c.enrollmentDate)}</td>
+                    <td>{c.description}</td>
                     <td>
-                      <span className={`tf-badge ${c.status === 'Active' ? 'tf-badge--green' : c.status === 'Removed' ? 'tf-badge--red' : 'tf-badge--gray'}`} style={{ fontSize: 11 }}>
+                      <span className={`tf-badge tf-badge--${c.status === 'Active' ? 'green' : c.status === 'Removed' ? 'red' : 'gray'}`}>
                         {c.status}
                       </span>
                     </td>
-                    <td className="tf-right tf-mono" style={{ fontSize: 12 }}>{c.acreage?.toFixed(1) ?? '—'}</td>
-                    <td className="tf-right tf-mono" style={{ fontSize: 12 }}>{c.currentMarketValue != null ? fmt$(c.currentMarketValue) : '—'}</td>
-                    <td className="tf-right tf-mono" style={{ fontSize: 12 }}>{c.currentUseValue != null ? fmt$(c.currentUseValue) : '—'}</td>
-                    <td className="tf-right tf-mono" style={{ fontSize: 12, color: c.taxSavings && c.taxSavings > 0 ? '#00FFAA' : undefined }}>
+                    <td style={{ fontSize: '0.75rem' }}>{fmtDate(c.enrollmentDate)}</td>
+                    <td className="cu-right tf-right cu-mono tf-mono">{c.acreage?.toFixed(1) ?? '—'}</td>
+                    <td className="cu-right tf-right cu-mono tf-mono">{c.currentMarketValue != null ? fmt$(c.currentMarketValue) : '—'}</td>
+                    <td className="cu-right tf-right cu-mono tf-mono">{c.currentUseValue != null ? fmt$(c.currentUseValue) : '—'}</td>
+                    <td className="cu-right tf-right cu-mono tf-mono" style={{ color: c.taxSavings && c.taxSavings > 0 ? 'var(--cu-success)' : undefined }}>
                       {c.taxSavings != null ? fmt$(c.taxSavings) : '—'}
                     </td>
                   </tr>
@@ -350,18 +416,11 @@ function ClassificationsSection() {
               </tbody>
             </table>
           </div>
-          {/* Pagination */}
           {totalPages > 1 && (
-            <div style={{ display: 'flex', gap: 8, marginTop: 12, justifyContent: 'center', alignItems: 'center' }}>
-              <button disabled={page <= 1} onClick={() => setPage(p => p - 1)}
-                style={{ background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.1)', color: '#e2e8f0', borderRadius: 6, padding: '5px 12px', fontSize: 12, cursor: page <= 1 ? 'not-allowed' : 'pointer', opacity: page <= 1 ? 0.4 : 1 }}>
-                Prev
-              </button>
-              <span style={{ fontSize: 12, color: '#94a3b8' }}>Page {page} of {totalPages}</span>
-              <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}
-                style={{ background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.1)', color: '#e2e8f0', borderRadius: 6, padding: '5px 12px', fontSize: 12, cursor: page >= totalPages ? 'not-allowed' : 'pointer', opacity: page >= totalPages ? 0.4 : 1 }}>
-                Next
-              </button>
+            <div className="cu-action-bar" style={{ marginTop: 12, justifyContent: 'center' }}>
+              <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="cu-btn cu-btn--ghost">← Prev</button>
+              <span style={{ fontSize: '0.75rem', color: 'var(--cu-muted)' }}>Page {page} of {totalPages}</span>
+              <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="cu-btn cu-btn--ghost">Next →</button>
             </div>
           )}
         </>
@@ -370,9 +429,9 @@ function ClassificationsSection() {
   );
 }
 
-// ── Rollback Calculator Section ────────────────────────────────────────────
+// ── Rollback Calculator Tab Panel ──────────────────────────────────────────
 
-function RollbackCalculatorSection() {
+function RollbackPanel() {
   const [parcelId, setParcelId] = useState('');
   const [classCode, setClassCode] = useState('CUFA');
   const [enrollYear, setEnrollYear] = useState(2018);
@@ -382,17 +441,18 @@ function RollbackCalculatorSection() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<RollbackResult | null>(null);
 
-  // Generate realistic Benton County market/CU values
+  const startYear = Math.max(enrollYear, removalYear - (CU_CODES[classCode]?.maxYears || 10) + 1);
+
   const generateValues = useCallback(() => {
     const baseMarket = 350000;
     const baseCU = 45000;
-    const marketGrowth = 0.058; // Benton County avg 5.8% appreciation
-    const cuGrowth = 0.018; // CU value grows slowly (timber/ag yield)
+    const marketGrowth = 0.058;
+    const cuGrowth = 0.018;
     const marketValues: Record<string, number> = {};
     const cuValues: Record<string, number> = {};
     const maxYears = CU_CODES[classCode]?.maxYears || 10;
-    const startYear = Math.max(enrollYear, removalYear - maxYears + 1);
-    for (let y = startYear; y <= removalYear; y++) {
+    const sy = Math.max(enrollYear, removalYear - maxYears + 1);
+    for (let y = sy; y <= removalYear; y++) {
       const offset = y - enrollYear;
       marketValues[String(y)] = Math.round(baseMarket * Math.pow(1 + marketGrowth, offset));
       cuValues[String(y)] = Math.round(baseCU * Math.pow(1 + cuGrowth, offset));
@@ -469,169 +529,170 @@ function RollbackCalculatorSection() {
         a.download = `rollback-notice_${parcelId || 'estimate'}_${new Date().toISOString().slice(0, 10)}.html`;
         a.click();
       })
-      .catch(() => {
-        // Fallback: open print dialog
-        window.print();
-      });
+      .catch(() => { window.print(); });
   }
 
   return (
-    <section className="tf-section" style={{ marginTop: 32 }}>
-      <div style={{ marginBottom: 16 }}>
-        <h3 style={{ margin: 0, color: '#e2e8f0', fontSize: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-          Rollback Tax Calculator
-          <Tip text="Calculates rollback taxes per RCW 84.33.140 / 84.34.108 when land is removed from current use">
-            <span style={{ fontSize: 13, color: '#64748b', cursor: 'help' }}>?</span>
-          </Tip>
-        </h3>
-        <p style={{ margin: '4px 0 0', fontSize: 12, color: '#64748b' }}>
-          DFL: 7-year lookback (RCW 84.33) · CUFA/CUOS/CUTL: 10-year lookback (RCW 84.34) · 20% penalty unless exception applies
-        </p>
+    <section className="tf-section">
+      <div className="cu-rcw-callout">
+        <div className="cu-rcw-callout__label">RCW 84.33.140 / RCW 84.34.108</div>
+        DFL: 7-year lookback · CUFA/CUOS/CUTL: 10-year lookback · 20% penalty unless exception applies
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(155px, 1fr))', gap: 12, marginBottom: 16 }}>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
-          Parcel ID
-          <input type="text" value={parcelId} onChange={e => setParcelId(e.target.value)} placeholder="1-0567-200-0045"
-            style={{ background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.12)', color: '#e2e8f0', borderRadius: 6, padding: '7px 10px', fontSize: 13 }} />
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
-          Classification
-          <select value={classCode} onChange={e => setClassCode(e.target.value)}
-            style={{ background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.12)', color: '#e2e8f0', borderRadius: 6, padding: '7px 10px', fontSize: 13 }}>
-            {Object.entries(CU_CODES).map(([code, info]) => (
-              <option key={code} value={code}>{code} — {info.label} ({info.maxYears}yr)</option>
-            ))}
-          </select>
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
-          Enrollment Year
-          <input type="number" value={enrollYear} onChange={e => setEnrollYear(Number(e.target.value))} min={2000} max={2025}
-            style={{ background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.12)', color: '#e2e8f0', borderRadius: 6, padding: '7px 10px', fontSize: 13 }} />
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
-          Removal Year
-          <input type="number" value={removalYear} onChange={e => setRemovalYear(Number(e.target.value))} min={2016} max={2026}
-            style={{ background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.12)', color: '#e2e8f0', borderRadius: 6, padding: '7px 10px', fontSize: 13 }} />
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
-          Penalty Exception <Tip text="20% penalty waived if qualifying exception applies"><span style={{ cursor: 'help' }}>?</span></Tip>
-          <select value={penaltyException} onChange={e => setPenaltyException(e.target.value)}
-            style={{ background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.12)', color: '#e2e8f0', borderRadius: 6, padding: '7px 10px', fontSize: 13 }}>
-            <option value="">None (20% penalty applies)</option>
-            {PENALTY_EXCEPTIONS.map(pe => (
-              <option key={pe.code} value={pe.code}>{pe.label}</option>
-            ))}
-          </select>
-        </label>
+      <div className="cu-filterbar" style={{ marginTop: 14 }}>
+        <div className="cu-filter-row">
+          <div className="cu-filter-group">
+            <span className="cu-filter-label">Parcel ID</span>
+            <input type="text" value={parcelId} onChange={e => setParcelId(e.target.value)} placeholder="1-0567-200-0045" className="cu-filter-input" />
+          </div>
+          <div className="cu-filter-group">
+            <span className="cu-filter-label">Classification</span>
+            <select value={classCode} onChange={e => setClassCode(e.target.value)} className="cu-filter-input">
+              {Object.entries(CU_CODES).map(([code, info]) => (
+                <option key={code} value={code}>{code} — {info.label} ({info.maxYears}yr)</option>
+              ))}
+            </select>
+          </div>
+          <div className="cu-filter-group">
+            <span className="cu-filter-label">Enrollment Year</span>
+            <input type="number" value={enrollYear} onChange={e => setEnrollYear(Number(e.target.value))} min={2000} max={2025} className="cu-filter-input" style={{ width: 80 }} />
+          </div>
+          <div className="cu-filter-group">
+            <span className="cu-filter-label">Removal Year</span>
+            <input type="number" value={removalYear} onChange={e => setRemovalYear(Number(e.target.value))} min={2016} max={2026} className="cu-filter-input" style={{ width: 80 }} />
+          </div>
+          <div className="cu-filter-group">
+            <span className="cu-filter-label">Penalty Exception</span>
+            <select value={penaltyException} onChange={e => setPenaltyException(e.target.value)} className="cu-filter-input">
+              <option value="">None (20% penalty)</option>
+              {PENALTY_EXCEPTIONS.map(pe => (
+                <option key={pe.code} value={pe.code}>{pe.label}</option>
+              ))}
+            </select>
+          </div>
+          <div className="cu-filter-actions">
+            <button onClick={runCalculation} disabled={loading} className="cu-btn cu-btn--primary">
+              {loading ? 'Calculating…' : 'Calculate Rollback'}
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        <button onClick={runCalculation} disabled={loading} className="tf-btn" style={{ fontSize: 13 }}>
-          {loading ? 'Calculating…' : 'Calculate Rollback'}
-        </button>
-        {result && (
-          <>
-            <button onClick={exportCSV} style={{ background: 'none', border: '1px solid rgba(255,255,255,.12)', color: '#94a3b8', borderRadius: 6, padding: '7px 14px', fontSize: 12, cursor: 'pointer' }}>
-              Export CSV
-            </button>
-            <button onClick={() => window.print()} style={{ background: 'none', border: '1px solid rgba(255,255,255,.12)', color: '#94a3b8', borderRadius: 6, padding: '7px 14px', fontSize: 12, cursor: 'pointer' }}>
-              Print
-            </button>
-            <button onClick={downloadRollbackReport} style={{ background: 'none', border: '1px solid rgba(0,255,170,.3)', color: '#00FFAA', borderRadius: 6, padding: '7px 14px', fontSize: 12, cursor: 'pointer' }}>
-              ↓ Download Report (PDF)
-            </button>
-          </>
-        )}
-      </div>
-
-      {error && <p style={{ color: '#ff6b6b', fontSize: 12, marginTop: 12 }}>{error}</p>}
+      {error && <div className="cu-state cu-state--error">{error}</div>}
 
       {result && (
-        <div style={{ marginTop: 20 }}>
-          {/* Summary cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12, marginBottom: 20 }}>
+        <>
+          {/* Summary KPIs */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, margin: '16px 0' }}>
             {[
-              { label: 'Rollback Tax', value: result.totalRollbackTax, color: '#e2e8f0' },
-              { label: 'Interest', value: result.totalInterest, color: '#e2e8f0' },
-              { label: result.penaltyExceptionApplied ? 'Penalty (WAIVED)' : 'Penalty (20%)', value: result.totalPenalty, color: result.penaltyExceptionApplied ? '#00FFAA' : '#ff6b6b' },
-              { label: 'Grand Total Due', value: result.grandTotal, color: '#00FFAA' },
+              { label: 'Rollback Tax', value: result.totalRollbackTax, cls: '' },
+              { label: 'Interest', value: result.totalInterest, cls: '' },
+              { label: result.penaltyExceptionApplied ? 'Penalty (WAIVED)' : 'Penalty (20%)', value: result.totalPenalty, cls: result.penaltyExceptionApplied ? ' cu-stats-kpi__value--ok' : ' cu-stats-kpi__value--alert' },
+              { label: 'Grand Total Due', value: result.grandTotal, cls: ' cu-stats-kpi__value--warn' },
             ].map((card, i) => (
-              <div key={i} style={{ background: 'rgba(255,255,255,.03)', border: i === 3 ? '1px solid rgba(0,255,170,.3)' : '1px solid rgba(255,255,255,.08)', borderRadius: 8, padding: '14px 16px' }}>
-                <div style={{ fontSize: 11, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>{card.label}</div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: card.color, fontFamily: 'monospace' }}>{fmtFull$(card.value)}</div>
+              <div key={i} className="cu-stats-section" style={{ margin: 0, padding: '10px 12px', border: i === 3 ? '1px solid var(--cu-warn)' : undefined, borderRadius: 8 }}>
+                <div className="cu-stats-heading" style={{ marginBottom: 4 }}>{card.label}</div>
+                <div className={`cu-stats-kpi__value${card.cls}`} style={{ fontSize: '1.125rem' }}>{fmtFull$(card.value)}</div>
                 {i === 2 && result.penaltyExceptionApplied && (
-                  <div style={{ fontSize: 11, color: '#00FFAA', marginTop: 4 }}>Exception: {result.exceptionCode}</div>
+                  <div style={{ fontSize: '0.6875rem', color: 'var(--cu-success)', marginTop: 2 }}>Exception: {result.exceptionCode}</div>
                 )}
               </div>
             ))}
           </div>
 
+          {/* Action buttons */}
+          <div className="cu-action-bar">
+            <button onClick={exportCSV} className="cu-btn cu-btn--ghost">Export CSV</button>
+            <button onClick={() => window.print()} className="cu-btn cu-btn--ghost">Print</button>
+            <button onClick={downloadRollbackReport} className="cu-btn cu-btn--commit">↓ Download Report</button>
+          </div>
+
           {/* Year breakdown table */}
-          <div className="tf-table-wrap" style={{ overflowX: 'auto' }}>
-            <table className="tf-table" style={{ fontSize: 13 }}>
+          <div className="cu-table-scroll tf-table-wrap">
+            <table className="tf-table cu-table">
               <thead>
                 <tr>
                   <th>Year</th>
-                  <th className="tf-right">Market Value</th>
-                  <th className="tf-right">CU Value</th>
-                  <th className="tf-right">Difference</th>
-                  <th className="tf-right">Rate</th>
-                  <th className="tf-right">Interest</th>
-                  <th className="tf-right">Subtotal</th>
+                  <th className="cu-right tf-right">Market Value</th>
+                  <th className="cu-right tf-right">CU Value</th>
+                  <th className="cu-right tf-right">Difference</th>
+                  <th className="cu-right tf-right">Rate</th>
+                  <th className="cu-right tf-right">Interest</th>
+                  <th className="cu-right tf-right">Subtotal</th>
                 </tr>
               </thead>
               <tbody>
                 {result.yearBreakdowns.map(yb => (
-                  <tr key={yb.year} style={{ borderBottom: '1px solid rgba(255,255,255,.04)' }}>
-                    <td className="tf-mono">{yb.year}</td>
-                    <td className="tf-right tf-mono">{fmt$(yb.marketValue)}</td>
-                    <td className="tf-right tf-mono">{fmt$(yb.currentUseValue)}</td>
-                    <td className="tf-right tf-mono">{fmt$(yb.difference)}</td>
-                    <td className="tf-right tf-mono">{fmtPct(yb.interestRate)}</td>
-                    <td className="tf-right tf-mono">{fmtFull$(yb.interestAmount)}</td>
-                    <td className="tf-right tf-mono">{fmtFull$(yb.subtotal)}</td>
+                  <tr key={yb.year}>
+                    <td className="cu-mono tf-mono">{yb.year}</td>
+                    <td className="cu-right tf-right cu-mono tf-mono">{fmt$(yb.marketValue)}</td>
+                    <td className="cu-right tf-right cu-mono tf-mono">{fmt$(yb.currentUseValue)}</td>
+                    <td className="cu-right tf-right cu-mono tf-mono">{fmt$(yb.difference)}</td>
+                    <td className="cu-right tf-right cu-mono tf-mono">{fmtPct(yb.interestRate)}</td>
+                    <td className="cu-right tf-right cu-mono tf-mono">{fmtFull$(yb.interestAmount)}</td>
+                    <td className="cu-right tf-right cu-mono tf-mono">{fmtFull$(yb.subtotal)}</td>
                   </tr>
                 ))}
-                <tr style={{ borderTop: '2px solid rgba(0,255,170,.25)', fontWeight: 600 }}>
-                  <td colSpan={5} style={{ fontSize: 11, color: '#64748b' }}>
-                    {result.yearBreakdowns.length} year{result.yearBreakdowns.length !== 1 ? 's' : ''} · {classCode} ({CU_CODES[classCode]?.maxYears}yr max lookback)
-                  </td>
-                  <td className="tf-right" style={{ color: '#94a3b8', fontSize: 12 }}>Total</td>
-                  <td className="tf-right tf-mono" style={{ color: '#00FFAA', fontSize: 14 }}>{fmtFull$(result.grandTotal)}</td>
-                </tr>
               </tbody>
             </table>
           </div>
 
           {/* Legal disclaimer */}
-          <div style={{ marginTop: 16, padding: '10px 14px', background: 'rgba(255,255,255,.02)', borderRadius: 6, border: '1px solid rgba(255,255,255,.06)' }}>
-            <p style={{ margin: 0, fontSize: 11, color: '#64748b', lineHeight: 1.6 }}>
-              <strong style={{ color: '#94a3b8' }}>Disclaimer:</strong> This calculation is an estimate based on WA DOR published interest rates.
-              Actual rollback amounts are determined by the Benton County Assessor per RCW 84.33.140 / RCW 84.34.108.
-              Penalty exceptions require supporting documentation and county approval.
-            </p>
+          <div className="cu-rcw-callout" style={{ marginTop: 14 }}>
+            <div className="cu-rcw-callout__label">Disclaimer</div>
+            This calculation is an estimate based on WA DOR published interest rates.
+            Actual rollback amounts are determined by the Benton County Assessor per RCW 84.33.140 / RCW 84.34.108.
+            Penalty exceptions require supporting documentation and county approval.
           </div>
-        </div>
+        </>
       )}
     </section>
   );
 }
 
-// ── Page ───────────────────────────────────────────────────────────────────
+// ── Page Export ────────────────────────────────────────────────────────────
 
 export default function CurrentUsePage() {
+  const [activeTab, setActiveTab] = useState<'classifications' | 'rollback'>('classifications');
+
   return (
-    <div className="tf-page">
-      <div className="tf-page-header" style={{ marginBottom: 8 }}>
-        <h2 style={{ margin: 0, color: '#f1f5f9' }}>Current Use Program</h2>
-        <p className="tf-page-sub" style={{ marginTop: 4, color: '#64748b', fontSize: 13 }}>
-          Benton County WA — RCW 84.33/84.34 current use classifications, rollback tax calculations, and removal processing
-        </p>
+    <div className="tf-page cu-workspace" data-testid="cu-workspace">
+      <header className="cu-header">
+        <div className="cu-header__row">
+          <div>
+            <div className="cu-header__eyebrow">TerraFusion · Current Use Program</div>
+            <h1 className="cu-header__title">CUForge</h1>
+          </div>
+          <div className="cu-header__badges">
+            <span className="cu-class-badge cu-class-badge--dfl">DFL</span>
+            <span className="cu-class-badge cu-class-badge--cufa">CUFA</span>
+            <span className="cu-class-badge cu-class-badge--cuos">CUOS</span>
+            <span className="cu-class-badge cu-class-badge--cutl">CUTL</span>
+          </div>
+        </div>
+        <CuSubNav />
+      </header>
+
+      <div className="cu-body">
+        <div className="cu-layout">
+          <div className="cu-main">
+            {/* Internal tab bar for Classifications vs Rollback */}
+            <div className="cu-tabbar" style={{ marginBottom: 16, borderBottom: '1px solid var(--cu-border)', paddingBottom: 0 }}>
+              {(['classifications', 'rollback'] as const).map(tab => (
+                <button key={tab} type="button"
+                  className={`cu-tab${activeTab === tab ? ' cu-tab--active' : ''}`}
+                  onClick={() => setActiveTab(tab)}>
+                  {tab === 'classifications' ? 'Classifications' : 'Rollback Calculator'}
+                </button>
+              ))}
+            </div>
+
+            {activeTab === 'classifications' && <ClassificationsPanel />}
+            {activeTab === 'rollback' && <RollbackPanel />}
+          </div>
+          <CUForgeStatsRail />
+        </div>
       </div>
-      <CuSubNav />
-      <ClassificationsSection />
-      <RollbackCalculatorSection />
     </div>
   );
 }

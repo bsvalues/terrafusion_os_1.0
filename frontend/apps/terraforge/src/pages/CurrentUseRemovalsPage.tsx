@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { CuSubNav } from './CurrentUsePage';
+import './CUForge.css';
 
 const API = '/api/currentuse';
 
@@ -31,41 +32,6 @@ interface PenaltyException {
 
 const fmtFull$ = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
 const fmtDate = (s: string) => s ? new Date(s.slice(0, 10) + 'T12:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '—';
-
-function Skeleton({ rows = 4 }: { rows?: number }) {
-  return (
-    <div style={{ padding: '12px 0' }}>
-      {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} style={{
-          height: 34, background: 'linear-gradient(90deg, rgba(255,255,255,.03) 25%, rgba(255,255,255,.06) 50%, rgba(255,255,255,.03) 75%)',
-          backgroundSize: '200% 100%', borderRadius: 6, marginBottom: 6,
-          animation: 'shimmer 1.5s infinite',
-        }} />
-      ))}
-      <style>{`@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
-    </div>
-  );
-}
-
-function Tip({ text, children }: { text: string; children: React.ReactNode }) {
-  const [show, setShow] = useState(false);
-  return (
-    <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}
-      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
-      {children}
-      {show && (
-        <span style={{
-          position: 'absolute', bottom: 'calc(100% + 6px)', left: '50%', transform: 'translateX(-50%)',
-          background: '#1e293b', border: '1px solid rgba(255,255,255,.15)', borderRadius: 6,
-          padding: '6px 10px', fontSize: 11, color: '#e2e8f0', whiteSpace: 'nowrap', zIndex: 100,
-          boxShadow: '0 4px 12px rgba(0,0,0,.5)',
-        }}>
-          {text}
-        </span>
-      )}
-    </span>
-  );
-}
 
 const REMOVAL_REASONS = [
   'Voluntary withdrawal',
@@ -120,49 +86,45 @@ function InitiateRemovalForm({ onCreated }: { onCreated: () => void }) {
 
   if (!open) {
     return (
-      <button onClick={() => setOpen(true)} className="tf-btn" style={{ marginBottom: 16, fontSize: 13 }}>
+      <button onClick={() => setOpen(true)} className="cu-btn cu-btn--primary" style={{ marginBottom: 14 }}>
         + Initiate Removal
       </button>
     );
   }
 
-  const inputStyle = { background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.12)', color: '#e2e8f0', borderRadius: 6, padding: '7px 10px', fontSize: 13, width: '100%' };
-
   return (
-    <form onSubmit={handleSubmit} style={{ background: 'rgba(255,255,255,.02)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 10, padding: 20, marginBottom: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h4 style={{ margin: 0, color: '#e2e8f0', fontSize: 14 }}>Initiate Removal from Current Use</h4>
-        <button type="button" onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: 18, lineHeight: 1 }}>×</button>
+    <form onSubmit={handleSubmit} className="cu-filterbar" style={{ marginBottom: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <span style={{ fontWeight: 700, fontSize: '0.8125rem' }}>Initiate Removal from Current Use</span>
+        <button type="button" onClick={() => setOpen(false)} className="cu-btn cu-btn--ghost" style={{ padding: '2px 8px' }}>×</button>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 14 }}>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
-          Parcel ID <span style={{ color: '#ff6b6b', fontSize: 10 }}>required</span>
-          <input required type="text" value={form.parcelId} onChange={e => setForm(f => ({ ...f, parcelId: e.target.value }))} placeholder="1-0234-100-0001" style={inputStyle} />
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
-          Classification
-          <select value={form.classificationCode} onChange={e => setForm(f => ({ ...f, classificationCode: e.target.value }))} style={inputStyle}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10 }}>
+        <div className="cu-form-group">
+          <label className="cu-form-label">Parcel ID *</label>
+          <input required type="text" value={form.parcelId} onChange={e => setForm(f => ({ ...f, parcelId: e.target.value }))} placeholder="1-0234-100-0001" className="cu-form-input" />
+        </div>
+        <div className="cu-form-group">
+          <label className="cu-form-label">Classification</label>
+          <select value={form.classificationCode} onChange={e => setForm(f => ({ ...f, classificationCode: e.target.value }))} className="cu-form-select">
             {Object.entries(CU_CODES).map(([code, info]) => (
               <option key={code} value={code}>{code} — {info.label}</option>
             ))}
           </select>
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
-          Reason for Removal
-          <select value={form.reason} onChange={e => setForm(f => ({ ...f, reason: e.target.value }))} style={inputStyle}>
+        </div>
+        <div className="cu-form-group">
+          <label className="cu-form-label">Reason for Removal</label>
+          <select value={form.reason} onChange={e => setForm(f => ({ ...f, reason: e.target.value }))} className="cu-form-select">
             {REMOVAL_REASONS.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
-        </label>
+        </div>
       </div>
-      {error && <p style={{ color: '#ff6b6b', fontSize: 12, margin: '10px 0 0' }}>{error}</p>}
-      {success && <p style={{ color: '#00FFAA', fontSize: 12, margin: '10px 0 0' }}>Removal initiated successfully.</p>}
-      <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
-        <button type="submit" disabled={saving || !form.parcelId.trim()} className="tf-btn" style={{ fontSize: 13 }}>
+      {error && <div className="cu-state cu-state--error" style={{ padding: '6px 0', justifyContent: 'flex-start' }}>{error}</div>}
+      {success && <div style={{ fontSize: '0.75rem', color: 'var(--cu-success)', padding: '6px 0' }}>Removal initiated successfully.</div>}
+      <div className="cu-action-bar" style={{ marginTop: 12, marginBottom: 0 }}>
+        <button type="submit" disabled={saving || !form.parcelId.trim()} className="cu-btn cu-btn--primary">
           {saving ? 'Initiating…' : 'Initiate Removal'}
         </button>
-        <button type="button" onClick={() => setOpen(false)} style={{ background: 'none', border: '1px solid rgba(255,255,255,.12)', color: '#94a3b8', borderRadius: 6, padding: '7px 14px', fontSize: 13, cursor: 'pointer' }}>
-          Cancel
-        </button>
+        <button type="button" onClick={() => setOpen(false)} className="cu-btn cu-btn--ghost">Cancel</button>
       </div>
     </form>
   );
@@ -197,29 +159,24 @@ function RemovalsSection() {
 
   return (
     <section className="tf-section">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-        <div>
-          <h3 style={{ margin: 0, color: '#e2e8f0', fontSize: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-            Removal Proceedings
-            <Tip text="Tracks parcels being removed from current use classification with associated rollback obligations">
-              <span style={{ fontSize: 13, color: '#64748b', cursor: 'help' }}>?</span>
-            </Tip>
-          </h3>
-          <p style={{ margin: '4px 0 0', fontSize: 12, color: '#64748b' }}>
-            Active and completed removals with rollback tax obligations
-          </p>
-        </div>
-        {data && <span style={{ fontSize: 12, color: '#64748b', background: 'rgba(255,255,255,.04)', padding: '4px 10px', borderRadius: 12 }}>{data.length} removal{data.length !== 1 ? 's' : ''}</span>}
+      <div className="cu-action-bar" style={{ marginBottom: 14 }}>
+        <span style={{ fontWeight: 600 }}>Removal Proceedings</span>
+        {data && <span style={{ fontSize: '0.75rem', color: 'var(--cu-muted)' }}>{data.length} removal{data.length !== 1 ? 's' : ''}</span>}
+      </div>
+
+      <div className="cu-rcw-callout" style={{ marginBottom: 14 }}>
+        <div className="cu-rcw-callout__label">RCW 84.33.140 / RCW 84.34.108</div>
+        Active and completed removals with rollback tax obligations
       </div>
 
       <InitiateRemovalForm onCreated={fetchData} />
 
-      {loading && <Skeleton rows={4} />}
-      {error && <p style={{ color: '#ff6b6b', fontSize: 13 }}>{error}</p>}
+      {loading && <div className="cu-state" role="status">Loading removals…</div>}
+      {error && <div className="cu-state cu-state--error">{error}</div>}
 
       {!loading && data && (
-        <div className="tf-table-wrap" style={{ overflowX: 'auto' }}>
-          <table className="tf-table" style={{ fontSize: 13 }}>
+        <div className="cu-table-scroll tf-table-wrap">
+          <table className="tf-table cu-table">
             <thead>
               <tr>
                 <th>Parcel ID</th>
@@ -228,32 +185,32 @@ function RemovalsSection() {
                 <th>Initiated</th>
                 <th>Status</th>
                 <th>Removal Date</th>
-                <th className="tf-right">Rollback</th>
-                <th className="tf-right">Interest</th>
-                <th className="tf-right">Penalty</th>
-                <th className="tf-right">Total Due</th>
+                <th className="cu-right tf-right">Rollback</th>
+                <th className="cu-right tf-right">Interest</th>
+                <th className="cu-right tf-right">Penalty</th>
+                <th className="cu-right tf-right">Total Due</th>
               </tr>
             </thead>
             <tbody>
               {data.length === 0 && (
-                <tr><td colSpan={10} style={{ textAlign: 'center', color: '#64748b', padding: 24 }}>No removal proceedings found. Initiate one above.</td></tr>
+                <tr><td colSpan={10} className="cu-state">No removal proceedings found. Initiate one above.</td></tr>
               )}
               {data.map(r => (
-                <tr key={r.id} style={{ borderBottom: '1px solid rgba(255,255,255,.04)' }}>
-                  <td className="tf-mono" style={{ fontSize: 12 }}>{r.parcelId}</td>
+                <tr key={r.id}>
+                  <td className="cu-mono tf-mono">{r.parcelId}</td>
                   <td>
-                    <span className={`tf-badge tf-badge--${CU_CODES[r.classificationCode]?.color || 'gray'}`} style={{ fontSize: 11 }}>
+                    <span className={`cu-class-badge cu-class-badge--${r.classificationCode?.toLowerCase()}`}>
                       {r.classificationCode}
                     </span>
                   </td>
-                  <td style={{ fontSize: 12, maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.reason}</td>
-                  <td style={{ fontSize: 12 }}>{fmtDate(r.initiatedDate)}</td>
-                  <td><span className={`tf-badge ${statusColor(r.status)}`} style={{ fontSize: 11 }}>{r.status}</span></td>
-                  <td style={{ fontSize: 12 }}>{r.removalDate ? fmtDate(r.removalDate) : '—'}</td>
-                  <td className="tf-right tf-mono" style={{ fontSize: 12 }}>{r.rollbackAmount != null ? fmtFull$(r.rollbackAmount) : '—'}</td>
-                  <td className="tf-right tf-mono" style={{ fontSize: 12 }}>{r.interestAmount != null ? fmtFull$(r.interestAmount) : '—'}</td>
-                  <td className="tf-right tf-mono" style={{ fontSize: 12 }}>{r.penaltyAmount != null ? fmtFull$(r.penaltyAmount) : '—'}</td>
-                  <td className="tf-right tf-mono" style={{ fontSize: 12, color: r.totalDue && r.totalDue > 0 ? '#ff6b6b' : undefined, fontWeight: r.totalDue ? 600 : 400 }}>
+                  <td style={{ fontSize: '0.75rem', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.reason}</td>
+                  <td style={{ fontSize: '0.75rem' }}>{fmtDate(r.initiatedDate)}</td>
+                  <td><span className={`tf-badge ${statusColor(r.status)}`}>{r.status}</span></td>
+                  <td style={{ fontSize: '0.75rem' }}>{r.removalDate ? fmtDate(r.removalDate) : '—'}</td>
+                  <td className="cu-right tf-right cu-mono tf-mono">{r.rollbackAmount != null ? fmtFull$(r.rollbackAmount) : '—'}</td>
+                  <td className="cu-right tf-right cu-mono tf-mono">{r.interestAmount != null ? fmtFull$(r.interestAmount) : '—'}</td>
+                  <td className="cu-right tf-right cu-mono tf-mono">{r.penaltyAmount != null ? fmtFull$(r.penaltyAmount) : '—'}</td>
+                  <td className="cu-right tf-right cu-mono tf-mono" style={{ color: r.totalDue && r.totalDue > 0 ? 'var(--cu-alert)' : undefined, fontWeight: r.totalDue ? 600 : 400 }}>
                     {r.totalDue != null ? fmtFull$(r.totalDue) : '—'}
                   </td>
                 </tr>
@@ -285,35 +242,31 @@ function PenaltyExceptionsSection() {
   }
 
   return (
-    <section className="tf-section" style={{ marginTop: 32 }}>
-      <div style={{ marginBottom: 16 }}>
-        <h3 style={{ margin: 0, color: '#e2e8f0', fontSize: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-          Penalty Exception Evaluation
-          <Tip text="20% penalty can be waived under specific RCW exceptions — check eligibility here">
-            <span style={{ fontSize: 13, color: '#64748b', cursor: 'help' }}>?</span>
-          </Tip>
-        </h3>
-        <p style={{ margin: '4px 0 0', fontSize: 12, color: '#64748b' }}>
-          Check which 20% penalty exceptions apply per RCW 84.33.140 / 84.34.108
-        </p>
+    <section className="tf-section" style={{ marginTop: 24 }}>
+      <div className="cu-action-bar" style={{ marginBottom: 14 }}>
+        <span style={{ fontWeight: 600 }}>Penalty Exception Evaluation</span>
+        <span style={{ fontSize: '0.75rem', color: 'var(--cu-muted)' }}>20% penalty waiver eligibility check</span>
       </div>
 
-      <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end', marginBottom: 16 }}>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
-          Parcel ID
-          <input type="text" value={parcelId} onChange={e => setParcelId(e.target.value)} placeholder="1-0234-100-0001"
-            style={{ background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.12)', color: '#e2e8f0', borderRadius: 6, padding: '7px 10px', fontSize: 13, width: 180 }} />
-        </label>
-        <button onClick={checkExceptions} disabled={loading || !parcelId.trim()} className="tf-btn" style={{ fontSize: 13 }}>
-          {loading ? 'Evaluating…' : 'Evaluate Exceptions'}
-        </button>
+      <div className="cu-filterbar">
+        <div className="cu-filter-row">
+          <div className="cu-filter-group">
+            <span className="cu-filter-label">Parcel ID</span>
+            <input type="text" value={parcelId} onChange={e => setParcelId(e.target.value)} placeholder="1-0234-100-0001" className="cu-filter-input" />
+          </div>
+          <div className="cu-filter-actions">
+            <button onClick={checkExceptions} disabled={loading || !parcelId.trim()} className="cu-btn cu-btn--primary">
+              {loading ? 'Evaluating…' : 'Evaluate Exceptions'}
+            </button>
+          </div>
+        </div>
       </div>
 
-      {error && <p style={{ color: '#ff6b6b', fontSize: 12 }}>{error}</p>}
+      {error && <div className="cu-state cu-state--error">{error}</div>}
 
       {data && (
-        <div className="tf-table-wrap" style={{ overflowX: 'auto' }}>
-          <table className="tf-table" style={{ fontSize: 13 }}>
+        <div className="cu-table-scroll tf-table-wrap" style={{ marginTop: 14 }}>
+          <table className="tf-table cu-table">
             <thead>
               <tr>
                 <th>Code</th>
@@ -325,19 +278,19 @@ function PenaltyExceptionsSection() {
             </thead>
             <tbody>
               {data.length === 0 && (
-                <tr><td colSpan={5} style={{ textAlign: 'center', color: '#64748b', padding: 24 }}>No exceptions evaluated.</td></tr>
+                <tr><td colSpan={5} className="cu-state">No exceptions evaluated.</td></tr>
               )}
               {data.map(pe => (
-                <tr key={pe.code} style={{ borderBottom: '1px solid rgba(255,255,255,.04)' }}>
-                  <td className="tf-mono" style={{ fontSize: 12, fontWeight: 600 }}>{pe.code}</td>
-                  <td style={{ fontSize: 12 }}>{pe.description}</td>
-                  <td className="tf-mono" style={{ fontSize: 11, color: '#94a3b8' }}>{pe.rcwReference}</td>
+                <tr key={pe.code}>
+                  <td className="cu-mono tf-mono" style={{ fontWeight: 600 }}>{pe.code}</td>
+                  <td style={{ fontSize: '0.75rem' }}>{pe.description}</td>
+                  <td className="cu-mono tf-mono" style={{ fontSize: '0.6875rem', color: 'var(--cu-muted)' }}>{pe.rcwReference}</td>
                   <td>
-                    <span className={`tf-badge ${pe.eligible ? 'tf-badge--green' : 'tf-badge--red'}`} style={{ fontSize: 11 }}>
+                    <span className={`tf-badge ${pe.eligible ? 'tf-badge--green' : 'tf-badge--red'}`}>
                       {pe.eligible ? 'Eligible' : 'Not Eligible'}
                     </span>
                   </td>
-                  <td style={{ fontSize: 12, color: pe.eligible ? '#00FFAA' : '#94a3b8' }}>{pe.reason}</td>
+                  <td style={{ fontSize: '0.75rem', color: pe.eligible ? 'var(--cu-success)' : 'var(--cu-muted)' }}>{pe.reason}</td>
                 </tr>
               ))}
             </tbody>
@@ -346,9 +299,9 @@ function PenaltyExceptionsSection() {
       )}
 
       {/* Reference card */}
-      <div style={{ marginTop: 20, padding: '14px 16px', background: 'rgba(255,255,255,.02)', borderRadius: 8, border: '1px solid rgba(255,255,255,.06)' }}>
-        <h4 style={{ margin: '0 0 10px', fontSize: 13, color: '#94a3b8' }}>Penalty Exception Reference</h4>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 8 }}>
+      <div className="cu-rcw-callout" style={{ marginTop: 16 }}>
+        <div className="cu-rcw-callout__label">Penalty Exception Reference</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 6, marginTop: 8 }}>
           {[
             { code: 'DEATH', desc: 'Owner death', rcw: 'RCW 84.33.140(6)(a)' },
             { code: 'GOVT_ACQUISITION', desc: 'Government acquisition / eminent domain', rcw: 'RCW 84.33.140(6)(b)' },
@@ -356,10 +309,10 @@ function PenaltyExceptionsSection() {
             { code: 'FORCED_SALE', desc: 'Forced sale / condemnation', rcw: 'RCW 84.34.108(6)(b)' },
             { code: 'TRANSFER_TO_GOVT', desc: 'Transfer to government entity', rcw: 'RCW 84.34.108(6)(c)' },
           ].map(ex => (
-            <div key={ex.code} style={{ display: 'flex', gap: 8, alignItems: 'baseline', fontSize: 12 }}>
-              <span style={{ color: '#00FFAA', fontFamily: 'monospace', fontSize: 11, minWidth: 140 }}>{ex.code}</span>
-              <span style={{ color: '#94a3b8' }}>{ex.desc}</span>
-              <span style={{ color: '#64748b', fontSize: 10, marginLeft: 'auto' }}>{ex.rcw}</span>
+            <div key={ex.code} style={{ display: 'flex', gap: 8, alignItems: 'baseline', fontSize: '0.75rem' }}>
+              <span className="cu-mono" style={{ minWidth: 140, color: 'var(--cu-success)' }}>{ex.code}</span>
+              <span style={{ color: 'var(--cu-muted)' }}>{ex.desc}</span>
+              <span style={{ color: 'var(--cu-dim)', fontSize: '0.625rem', marginLeft: 'auto' }}>{ex.rcw}</span>
             </div>
           ))}
         </div>
@@ -372,16 +325,25 @@ function PenaltyExceptionsSection() {
 
 export default function CurrentUseRemovalsPage() {
   return (
-    <div className="tf-page">
-      <div className="tf-page-header" style={{ marginBottom: 8 }}>
-        <h2 style={{ margin: 0, color: '#f1f5f9' }}>Current Use Program</h2>
-        <p className="tf-page-sub" style={{ marginTop: 4, color: '#64748b', fontSize: 13 }}>
-          Benton County WA — Removal proceedings, rollback obligations, and penalty exception evaluation
-        </p>
+    <div className="tf-page cu-workspace" data-testid="cu-workspace">
+      <header className="cu-header">
+        <div className="cu-header__row">
+          <div>
+            <div className="cu-header__eyebrow">TerraFusion · Current Use Program</div>
+            <h1 className="cu-header__title">CUForge — Removals & Exceptions</h1>
+          </div>
+        </div>
+        <CuSubNav />
+      </header>
+
+      <div className="cu-body">
+        <div className="cu-layout" style={{ gridTemplateColumns: '1fr' }}>
+          <div className="cu-main">
+            <RemovalsSection />
+            <PenaltyExceptionsSection />
+          </div>
+        </div>
       </div>
-      <CuSubNav />
-      <RemovalsSection />
-      <PenaltyExceptionsSection />
     </div>
   );
 }

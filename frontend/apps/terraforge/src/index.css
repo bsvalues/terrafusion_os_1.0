@@ -2,10 +2,25 @@
   box-sizing: border-box;
 }
 
+/* ── TerraFusion Design Tokens ─────────────────────────────────── */
+:root {
+  --tf-bg:         215 28% 7%;
+  --tf-surface:    215 25% 11%;
+  --tf-border:     215 20% 18%;
+  --tf-text:       213 31% 91%;
+  --tf-suite-forge: 199 89% 48%;
+  --tf-info-hs:    199 89%;
+  --tf-success-hs: 160 84%;
+  --tf-warning-hs: 38 92%;
+  --tf-error-hs:   0 84%;
+  --tf-l-50:       50%;
+  --tf-l-60:       60%;
+}
+
 body {
   margin: 0;
-  background: #0f172a;
-  color: #e2e8f0;
+  background: hsl(var(--tf-bg));
+  color: hsl(var(--tf-text));
 }
 
 #root {

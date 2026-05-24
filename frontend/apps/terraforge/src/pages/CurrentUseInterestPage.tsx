@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CuSubNav } from './CurrentUsePage';
+import './CUForge.css';
 
 const API = '/api/currentuse';
 
@@ -26,60 +27,19 @@ interface InterestCalcResult {
 const fmtPct = (n: number) => `${(n * 100).toFixed(2)}%`;
 const fmtFull$ = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
 
-function Skeleton({ rows = 4 }: { rows?: number }) {
-  return (
-    <div style={{ padding: '12px 0' }}>
-      {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} style={{
-          height: 34, background: 'linear-gradient(90deg, rgba(255,255,255,.03) 25%, rgba(255,255,255,.06) 50%, rgba(255,255,255,.03) 75%)',
-          backgroundSize: '200% 100%', borderRadius: 6, marginBottom: 6,
-          animation: 'shimmer 1.5s infinite',
-        }} />
-      ))}
-      <style>{`@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
-    </div>
-  );
-}
-
-function Tip({ text, children }: { text: string; children: React.ReactNode }) {
-  const [show, setShow] = useState(false);
-  return (
-    <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}
-      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
-      {children}
-      {show && (
-        <span style={{
-          position: 'absolute', bottom: 'calc(100% + 6px)', left: '50%', transform: 'translateX(-50%)',
-          background: '#1e293b', border: '1px solid rgba(255,255,255,.15)', borderRadius: 6,
-          padding: '6px 10px', fontSize: 11, color: '#e2e8f0', whiteSpace: 'nowrap', zIndex: 100,
-          boxShadow: '0 4px 12px rgba(0,0,0,.5)',
-        }}>
-          {text}
-        </span>
-      )}
-    </span>
-  );
-}
-
 // ── Rate Bar Chart (CSS-only) ──────────────────────────────────────────────
 
 function RateChart({ rates }: { rates: InterestRate[] }) {
   const maxRate = Math.max(...rates.map(r => r.rate), 0.01);
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height: 80, marginBottom: 16, padding: '0 4px' }}>
+    <div className="cu-rate-chart">
       {rates.map(r => {
         const height = Math.max((r.rate / maxRate) * 70, 4);
         return (
-          <Tip key={r.year} text={`${r.year}: ${fmtPct(r.rate)}`}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
-              <div style={{
-                width: '100%', maxWidth: 28, height, borderRadius: '3px 3px 0 0',
-                background: `linear-gradient(180deg, #00FFAA, rgba(0,255,170,.4))`,
-                transition: 'height 0.3s ease',
-              }} />
-              <span style={{ fontSize: 9, color: '#64748b', marginTop: 4 }}>{String(r.year).slice(2)}</span>
-            </div>
-          </Tip>
+          <div key={r.year} className="cu-rate-chart__bar-wrap" title={`${r.year}: ${fmtPct(r.rate)}`}>
+            <div className="cu-rate-chart__bar" style={{ height }} />
+            <span className="cu-rate-chart__label">{String(r.year).slice(2)}</span>
+          </div>
         );
       })}
     </div>
@@ -104,44 +64,39 @@ function RatesSection() {
 
   return (
     <section className="tf-section">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-        <div>
-          <h3 style={{ margin: 0, color: '#e2e8f0', fontSize: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-            Published Interest Rates
-            <Tip text="WA DOR inflation rates per WAC 458-30-590, used for interest on rollback additional tax">
-              <span style={{ fontSize: 13, color: '#64748b', cursor: 'help' }}>?</span>
-            </Tip>
-          </h3>
-          <p style={{ margin: '4px 0 0', fontSize: 12, color: '#64748b' }}>
-            WA Department of Revenue inflation rates · WAC 458-30-590
-          </p>
-        </div>
-        {data && <span style={{ fontSize: 12, color: '#64748b', background: 'rgba(255,255,255,.04)', padding: '4px 10px', borderRadius: 12 }}>{data.length} years</span>}
+      <div className="cu-action-bar" style={{ marginBottom: 14 }}>
+        <span style={{ fontWeight: 600 }}>Published Interest Rates</span>
+        {data && <span style={{ fontSize: '0.75rem', color: 'var(--cu-muted)' }}>{data.length} years</span>}
       </div>
 
-      {loading && <Skeleton rows={6} />}
-      {error && <p style={{ color: '#ff6b6b', fontSize: 13 }}>{error}</p>}
+      <div className="cu-rcw-callout" style={{ marginBottom: 14 }}>
+        <div className="cu-rcw-callout__label">WAC 458-30-590</div>
+        WA DOR (Department of Revenue) inflation rates used for interest on rollback additional tax
+      </div>
+
+      {loading && <div className="cu-state" role="status">Loading rates…</div>}
+      {error && <div className="cu-state cu-state--error">{error}</div>}
 
       {data && data.length > 0 && (
         <>
           <RateChart rates={data} />
-          <div className="tf-table-wrap" style={{ overflowX: 'auto' }}>
-            <table className="tf-table" style={{ fontSize: 13 }}>
+          <div className="cu-table-scroll tf-table-wrap">
+            <table className="tf-table cu-table">
               <thead>
                 <tr>
                   <th>Year</th>
-                  <th className="tf-right">Rate</th>
+                  <th className="cu-right tf-right">Rate</th>
                   <th>Source</th>
                   <th>Effective Date</th>
                 </tr>
               </thead>
               <tbody>
                 {data.map(r => (
-                  <tr key={r.year} style={{ borderBottom: '1px solid rgba(255,255,255,.04)' }}>
-                    <td className="tf-mono">{r.year}</td>
-                    <td className="tf-right tf-mono" style={{ color: '#00FFAA' }}>{fmtPct(r.rate)}</td>
-                    <td style={{ fontSize: 12 }}>{r.source}</td>
-                    <td style={{ fontSize: 12 }}>{r.effectiveDate ? new Date(r.effectiveDate.slice(0, 10) + 'T12:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '—'}</td>
+                  <tr key={r.year}>
+                    <td className="cu-mono tf-mono">{r.year}</td>
+                    <td className="cu-right tf-right cu-mono tf-mono" style={{ color: 'var(--cu-success)' }}>{fmtPct(r.rate)}</td>
+                    <td style={{ fontSize: '0.75rem' }}>{r.source}</td>
+                    <td style={{ fontSize: '0.75rem' }}>{r.effectiveDate ? new Date(r.effectiveDate.slice(0, 10) + 'T12:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '—'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -186,92 +141,80 @@ function InterestCalculatorSection() {
     a.click();
   }
 
-  const inputStyle = { background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.12)', color: '#e2e8f0', borderRadius: 6, padding: '7px 10px', fontSize: 13 };
-
   return (
-    <section className="tf-section" style={{ marginTop: 32 }}>
-      <div style={{ marginBottom: 16 }}>
-        <h3 style={{ margin: 0, color: '#e2e8f0', fontSize: 16 }}>Interest Calculator</h3>
-        <p style={{ margin: '4px 0 0', fontSize: 12, color: '#64748b' }}>
-          Compute compound interest on rollback tax principal using DOR rates
-        </p>
+    <section className="tf-section" style={{ marginTop: 24 }}>
+      <div className="cu-action-bar" style={{ marginBottom: 14 }}>
+        <span style={{ fontWeight: 600 }}>Interest Calculator</span>
+        <span style={{ fontSize: '0.75rem', color: 'var(--cu-muted)' }}>Compound interest on rollback tax principal</span>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12, marginBottom: 16 }}>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
-          Principal ($)
-          <input type="number" value={principal} onChange={e => setPrincipal(e.target.value)} style={inputStyle} />
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
-          Start Year
-          <input type="number" value={startYear} onChange={e => setStartYear(Number(e.target.value))} min={2010} max={2026} style={inputStyle} />
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#94a3b8' }}>
-          End Year
-          <input type="number" value={endYear} onChange={e => setEndYear(Number(e.target.value))} min={2010} max={2026} style={inputStyle} />
-        </label>
+      <div className="cu-filterbar">
+        <div className="cu-filter-row">
+          <div className="cu-filter-group">
+            <span className="cu-filter-label">Principal ($)</span>
+            <input type="number" value={principal} onChange={e => setPrincipal(e.target.value)} className="cu-filter-input" style={{ width: 120 }} />
+          </div>
+          <div className="cu-filter-group">
+            <span className="cu-filter-label">Start Year</span>
+            <input type="number" value={startYear} onChange={e => setStartYear(Number(e.target.value))} min={2010} max={2026} className="cu-filter-input" style={{ width: 80 }} />
+          </div>
+          <div className="cu-filter-group">
+            <span className="cu-filter-label">End Year</span>
+            <input type="number" value={endYear} onChange={e => setEndYear(Number(e.target.value))} min={2010} max={2026} className="cu-filter-input" style={{ width: 80 }} />
+          </div>
+          <div className="cu-filter-actions">
+            <button onClick={runCalc} disabled={loading || !principal.trim()} className="cu-btn cu-btn--primary">
+              {loading ? 'Calculating…' : 'Calculate Interest'}
+            </button>
+            {result && <button onClick={exportCSV} className="cu-btn cu-btn--ghost">Export CSV</button>}
+          </div>
+        </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 8 }}>
-        <button onClick={runCalc} disabled={loading || !principal.trim()} className="tf-btn" style={{ fontSize: 13 }}>
-          {loading ? 'Calculating…' : 'Calculate Interest'}
-        </button>
-        {result && (
-          <button onClick={exportCSV} style={{ background: 'none', border: '1px solid rgba(255,255,255,.12)', color: '#94a3b8', borderRadius: 6, padding: '7px 14px', fontSize: 12, cursor: 'pointer' }}>
-            Export CSV
-          </button>
-        )}
-      </div>
-
-      {error && <p style={{ color: '#ff6b6b', fontSize: 12, marginTop: 12 }}>{error}</p>}
+      {error && <div className="cu-state cu-state--error">{error}</div>}
 
       {result && (
-        <div style={{ marginTop: 20 }}>
-          {/* Summary cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12, marginBottom: 20 }}>
-            <div style={{ background: 'rgba(255,255,255,.03)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 8, padding: '14px 16px' }}>
-              <div style={{ fontSize: 11, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>Principal</div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: '#e2e8f0', fontFamily: 'monospace' }}>{fmtFull$(result.principal)}</div>
+        <>
+          {/* Summary KPIs */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, margin: '16px 0' }}>
+            <div className="cu-stats-section" style={{ margin: 0, padding: '10px 12px', borderRadius: 8 }}>
+              <div className="cu-stats-heading" style={{ marginBottom: 4 }}>Principal</div>
+              <div className="cu-stats-kpi__value" style={{ fontSize: '1.125rem' }}>{fmtFull$(result.principal)}</div>
             </div>
-            <div style={{ background: 'rgba(255,255,255,.03)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 8, padding: '14px 16px' }}>
-              <div style={{ fontSize: 11, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>Total Interest</div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: '#e2e8f0', fontFamily: 'monospace' }}>{fmtFull$(result.totalInterest)}</div>
+            <div className="cu-stats-section" style={{ margin: 0, padding: '10px 12px', borderRadius: 8 }}>
+              <div className="cu-stats-heading" style={{ marginBottom: 4 }}>Total Interest</div>
+              <div className="cu-stats-kpi__value" style={{ fontSize: '1.125rem' }}>{fmtFull$(result.totalInterest)}</div>
             </div>
-            <div style={{ background: 'rgba(255,255,255,.03)', border: '1px solid rgba(0,255,170,.3)', borderRadius: 8, padding: '14px 16px' }}>
-              <div style={{ fontSize: 11, color: '#00FFAA', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>Total Due</div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: '#00FFAA', fontFamily: 'monospace' }}>{fmtFull$(result.totalDue)}</div>
+            <div className="cu-stats-section" style={{ margin: 0, padding: '10px 12px', borderRadius: 8, border: '1px solid var(--cu-success)' }}>
+              <div className="cu-stats-heading" style={{ marginBottom: 4 }}>Total Due</div>
+              <div className="cu-stats-kpi__value cu-stats-kpi__value--ok" style={{ fontSize: '1.125rem' }}>{fmtFull$(result.totalDue)}</div>
             </div>
           </div>
 
           {/* Breakdown table */}
-          <div className="tf-table-wrap" style={{ overflowX: 'auto' }}>
-            <table className="tf-table" style={{ fontSize: 13 }}>
+          <div className="cu-table-scroll tf-table-wrap">
+            <table className="tf-table cu-table">
               <thead>
                 <tr>
                   <th>Year</th>
-                  <th className="tf-right">Rate</th>
-                  <th className="tf-right">Year Interest</th>
-                  <th className="tf-right">Cumulative</th>
+                  <th className="cu-right tf-right">Rate</th>
+                  <th className="cu-right tf-right">Year Interest</th>
+                  <th className="cu-right tf-right">Cumulative</th>
                 </tr>
               </thead>
               <tbody>
                 {result.breakdown.map(b => (
-                  <tr key={b.year} style={{ borderBottom: '1px solid rgba(255,255,255,.04)' }}>
-                    <td className="tf-mono">{b.year}</td>
-                    <td className="tf-right tf-mono">{fmtPct(b.rate)}</td>
-                    <td className="tf-right tf-mono">{fmtFull$(b.yearInterest)}</td>
-                    <td className="tf-right tf-mono" style={{ color: '#00FFAA' }}>{fmtFull$(b.cumulative)}</td>
+                  <tr key={b.year}>
+                    <td className="cu-mono tf-mono">{b.year}</td>
+                    <td className="cu-right tf-right cu-mono tf-mono">{fmtPct(b.rate)}</td>
+                    <td className="cu-right tf-right cu-mono tf-mono">{fmtFull$(b.yearInterest)}</td>
+                    <td className="cu-right tf-right cu-mono tf-mono" style={{ color: 'var(--cu-success)' }}>{fmtFull$(b.cumulative)}</td>
                   </tr>
                 ))}
-                <tr style={{ borderTop: '2px solid rgba(0,255,170,.25)', fontWeight: 600 }}>
-                  <td colSpan={2} style={{ fontSize: 11, color: '#64748b' }}>{result.breakdown.length} years compound</td>
-                  <td className="tf-right" style={{ color: '#94a3b8', fontSize: 12 }}>Total</td>
-                  <td className="tf-right tf-mono" style={{ color: '#00FFAA', fontSize: 14 }}>{fmtFull$(result.totalDue)}</td>
-                </tr>
               </tbody>
             </table>
           </div>
-        </div>
+        </>
       )}
     </section>
   );
@@ -281,16 +224,25 @@ function InterestCalculatorSection() {
 
 export default function CurrentUseInterestPage() {
   return (
-    <div className="tf-page">
-      <div className="tf-page-header" style={{ marginBottom: 8 }}>
-        <h2 style={{ margin: 0, color: '#f1f5f9' }}>Current Use Program</h2>
-        <p className="tf-page-sub" style={{ marginTop: 4, color: '#64748b', fontSize: 13 }}>
-          Benton County WA — DOR interest rates and compound interest calculation for rollback taxes
-        </p>
+    <div className="tf-page cu-workspace" data-testid="cu-workspace">
+      <header className="cu-header">
+        <div className="cu-header__row">
+          <div>
+            <div className="cu-header__eyebrow">TerraFusion · Current Use Program</div>
+            <h1 className="cu-header__title">CUForge — Interest Rates</h1>
+          </div>
+        </div>
+        <CuSubNav />
+      </header>
+
+      <div className="cu-body">
+        <div className="cu-layout" style={{ gridTemplateColumns: '1fr' }}>
+          <div className="cu-main">
+            <RatesSection />
+            <InterestCalculatorSection />
+          </div>
+        </div>
       </div>
-      <CuSubNav />
-      <RatesSection />
-      <InterestCalculatorSection />
     </div>
   );
 }
