@@ -1,0 +1,325 @@
+/**
+ * CUForge — Current Use Program Module
+ * cu- namespace. Inherits forge workspace design tokens.
+ */
+
+/* ── Root workspace ────────────────────────────────────────────────────────── */
+
+.cu-workspace {
+  --cu-bg:          hsl(var(--tf-bg));
+  --cu-surface:     hsl(var(--tf-surface));
+  --cu-border:      hsl(var(--tf-border));
+  --cu-text:        hsl(var(--tf-text));
+  --cu-muted:       hsl(var(--tf-text) / 0.55);
+  --cu-subtle:      hsl(var(--tf-text) / 0.38);
+  --cu-info:        hsl(var(--tf-suite-forge));
+  --cu-success:     hsl(var(--tf-success-hs) var(--tf-l-50));
+  --cu-warn:        hsl(var(--tf-warning-hs, 32 86%) 60%);
+  --cu-danger:      hsl(var(--tf-error-hs) var(--tf-l-60));
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--cu-bg);
+  overflow: hidden;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────────── */
+
+.cu-header {
+  padding: 16px 20px 0;
+  flex-shrink: 0;
+}
+
+.cu-header__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cu-header__eyebrow {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--cu-subtle);
+  margin: 0;
+}
+
+.cu-header__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--cu-text);
+  margin: 2px 0 0;
+}
+
+.cu-header__badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ── Tab bar ─────────────────────────────────────────────────────────────────── */
+
+.cu-tabbar {
+  display: flex;
+  gap: 2px;
+  padding: 10px 20px 0;
+  border-bottom: 1px solid var(--cu-border);
+  flex-shrink: 0;
+}
+
+.cu-tab {
+  padding: 7px 14px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  color: var(--cu-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.cu-tab:hover {
+  color: var(--cu-text);
+}
+
+.cu-tab--active {
+  color: var(--cu-info);
+  border-bottom-color: var(--cu-info);
+  font-weight: 600;
+}
+
+/* ── Main layout (content + stats rail) ──────────────────────────────────────── */
+
+.cu-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.cu-layout {
+  display: grid;
+  grid-template-columns: 1fr 272px;
+  height: 100%;
+  min-height: 0;
+}
+
+.cu-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  border-right: 1px solid var(--cu-border);
+  padding: 16px 20px;
+}
+
+.cu-stats-rail {
+  overflow-y: auto;
+  padding: 16px 14px;
+  background: var(--cu-surface);
+  flex-shrink: 0;
+}
+
+/* ── Stats rail cards ──────────────────────────────────────────────────────── */
+
+.cu-stat-card {
+  background: var(--cu-bg);
+  border: 1px solid var(--cu-border);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.cu-stat-card__label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cu-muted);
+  margin: 0 0 4px;
+}
+
+.cu-stat-card__value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--cu-text);
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+
+.cu-stat-card__value--success { color: var(--cu-success); }
+.cu-stat-card__value--warn    { color: var(--cu-warn); }
+.cu-stat-card__value--danger  { color: var(--cu-danger); }
+
+/* ── Table ───────────────────────────────────────────────────────────────────── */
+
+.cu-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.cu-table th {
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cu-muted);
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--cu-border);
+  background: var(--cu-surface);
+  position: sticky;
+  top: 0;
+}
+
+.cu-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--cu-border);
+  color: var(--cu-text);
+}
+
+.cu-table tr:hover td {
+  background: color-mix(in srgb, var(--cu-info) 6%, transparent);
+}
+
+.cu-table td.cu-cell--num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────────── */
+
+.cu-btn {
+  padding: 5px 12px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.12s, border-color 0.12s;
+  white-space: nowrap;
+}
+
+.cu-btn--primary {
+  background: color-mix(in srgb, var(--cu-info) 15%, transparent);
+  color: var(--cu-info);
+  border-color: color-mix(in srgb, var(--cu-info) 35%, transparent);
+}
+
+.cu-btn--primary:hover {
+  background: color-mix(in srgb, var(--cu-info) 25%, transparent);
+}
+
+.cu-btn--ghost {
+  background: transparent;
+  color: var(--cu-muted);
+  border-color: var(--cu-border);
+}
+
+.cu-btn--ghost:hover {
+  color: var(--cu-text);
+  border-color: var(--cu-text);
+}
+
+.cu-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ── RCW callout ─────────────────────────────────────────────────────────────── */
+
+.cu-rcw-callout {
+  background: color-mix(in srgb, var(--cu-info) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cu-info) 25%, transparent);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 12px 0;
+  font-size: 0.75rem;
+  color: var(--cu-muted);
+  line-height: 1.5;
+}
+
+.cu-rcw-callout strong {
+  color: var(--cu-info);
+}
+
+/* ── Form controls ───────────────────────────────────────────────────────────── */
+
+.cu-form-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 12px;
+}
+
+.cu-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1 1 160px;
+}
+
+.cu-form-label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cu-muted);
+}
+
+.cu-form-input {
+  background: var(--cu-bg);
+  border: 1px solid var(--cu-border);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 0.8125rem;
+  color: var(--cu-text);
+  outline: none;
+}
+
+.cu-form-input:focus {
+  border-color: var(--cu-info);
+}
+
+/* ── Section headings ────────────────────────────────────────────────────────── */
+
+.cu-section-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--cu-text);
+  margin: 0 0 8px;
+}
+
+/* ── State / loading ─────────────────────────────────────────────────────────── */
+
+.cu-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  color: var(--cu-muted);
+  font-size: 0.8125rem;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────────── */
+
+@media (max-width: 860px) {
+  .cu-layout {
+    grid-template-columns: 1fr;
+  }
+  .cu-stats-rail {
+    display: none;
+  }
+}
