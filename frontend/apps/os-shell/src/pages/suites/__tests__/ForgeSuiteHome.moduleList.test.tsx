@@ -5,7 +5,7 @@
  * PRIMARY_MODULES array to the wrong apps.
  *
  * Verified correct layout (current HEAD):
- *   PRIMARY   : CostForge, CompsForge, IncomeForge (queued), SalesForge
+ *   PRIMARY   : CostForge, CompsForge, IncomeForge (queued), SalesForge, CUForge
  *   SECONDARY : Batch Cost Runs, Regression Studio (queued),
  *               TerraGAMA (queued), Coefficient Preview (queued)
  *   COUNTY    : County Studio (default analytics workbench + VEI exploration)
@@ -70,12 +70,13 @@ function renderForge() {
 // ── Contract tests ─────────────────────────────────────────────────────────
 
 describe('ForgeSuiteHome — frozen module list', () => {
-  it('renders the four primary approach cards', () => {
+  it('renders the five primary approach cards', () => {
     renderForge();
     expect(screen.getByText('CostForge')).toBeInTheDocument();
     expect(screen.getByText('CompsForge')).toBeInTheDocument();
     expect(screen.getByText('IncomeForge')).toBeInTheDocument();
     expect(screen.getByText('SalesForge')).toBeInTheDocument();
+    expect(screen.getByText('CUForge')).toBeInTheDocument();
   });
 
   it('does not expose GeoForge or standalone Atlas as launcher products', () => {
@@ -141,11 +142,11 @@ describe('ForgeSuiteHome — frozen module list', () => {
     });
   });
 
-  it('primary section has exactly 4 cards', () => {
+  it('primary section has exactly 5 cards', () => {
     renderForge();
     const primarySection = screen.getByTestId('forge-primary-applications');
     const cards = primarySection.querySelectorAll('button.forge-card');
-    expect(cards).toHaveLength(4);
+    expect(cards).toHaveLength(5);
   });
 
   it('renders County Studio in the county-operations section', () => {

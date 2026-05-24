@@ -92,15 +92,20 @@ public class NoiCalculationRequestValidator : AbstractValidator<CostForgeControl
 {
     public NoiCalculationRequestValidator()
     {
-        RuleFor(x => x.GrossIncome)
-            .GreaterThan(0).WithMessage("Gross income must be positive")
-            .LessThanOrEqualTo(100_000_000).WithMessage("Gross income exceeds maximum ($100M)");
+        RuleFor(x => x.AnnualRentalIncome)
+            .GreaterThan(0).WithMessage("Annual rental income must be positive")
+            .LessThanOrEqualTo(100_000_000).WithMessage("Annual rental income exceeds maximum ($100M)");
 
         RuleFor(x => x.VacancyRate)
-            .InclusiveBetween(0, 1).WithMessage("Vacancy rate must be between 0 and 1 (0-100%)");
+            .InclusiveBetween(0, 100).WithMessage("Vacancy rate must be between 0 and 100");
 
-        RuleFor(x => x.OperatingExpenses)
-            .GreaterThanOrEqualTo(0).WithMessage("Operating expenses cannot be negative");
+        RuleFor(x => x.PropertyTaxes).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.Insurance).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.Utilities).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.Maintenance).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.ManagementFees).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.ReplacementReserves).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.OtherExpenses).GreaterThanOrEqualTo(0);
     }
 }
 
@@ -108,12 +113,24 @@ public class IncomeValuationRequestValidator : AbstractValidator<CostForgeContro
 {
     public IncomeValuationRequestValidator()
     {
-        RuleFor(x => x.Noi)
-            .GreaterThan(0).WithMessage("NOI must be positive for valuation");
+        RuleFor(x => x.AnnualRentalIncome)
+            .GreaterThan(0).WithMessage("Annual rental income must be positive")
+            .LessThanOrEqualTo(100_000_000).WithMessage("Annual rental income exceeds maximum ($100M)");
+
+        RuleFor(x => x.VacancyRate)
+            .InclusiveBetween(0, 100).WithMessage("Vacancy rate must be between 0 and 100");
 
         RuleFor(x => x.CapRate)
             .GreaterThan(0).WithMessage("Cap rate must be positive")
-            .LessThanOrEqualTo(0.30m).WithMessage("Cap rate exceeds reasonable maximum (30%)");
+            .LessThanOrEqualTo(25m).WithMessage("Cap rate exceeds reasonable maximum (25%)");
+
+        RuleFor(x => x.PropertyTaxes).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.Insurance).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.Utilities).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.Maintenance).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.ManagementFees).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.ReplacementReserves).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.OtherExpenses).GreaterThanOrEqualTo(0);
     }
 }
 
