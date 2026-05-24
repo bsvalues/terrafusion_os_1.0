@@ -1,0 +1,409 @@
+/* CUForge.css — cu-* namespace. Current Use program module.     */
+/* Mirrors CostForge.css (cf-*) / SalesForge.css (sf-*) exactly. */
+
+.cu-workspace {
+  --cu-bg:      hsl(var(--tf-bg));
+  --cu-surface: hsl(var(--tf-surface));
+  --cu-border:  hsl(var(--tf-border));
+  --cu-text:    hsl(var(--tf-text));
+  --cu-muted:   hsl(var(--tf-text) / 0.55);
+  --cu-subtle:  hsl(var(--tf-text) / 0.38);
+  --cu-accent:  hsl(var(--tf-suite-forge));
+  --cu-info:    hsl(var(--tf-info-hs) var(--tf-l-60));
+  --cu-success: hsl(var(--tf-success-hs) var(--tf-l-50));
+  --cu-warn:    hsl(var(--tf-warning-hs) var(--tf-l-50));
+  --cu-danger:  hsl(var(--tf-error-hs) var(--tf-l-60));
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--cu-bg);
+  color: var(--cu-text);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 0.875rem;
+}
+
+/* ── Header ──────────────────────────────────────────── */
+.cu-header {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--cu-border);
+  padding: 12px 20px 0;
+  background: var(--cu-surface);
+}
+.cu-header__row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.cu-header__eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cu-accent);
+  margin-bottom: 2px;
+}
+.cu-header__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--cu-text);
+  line-height: 1.2;
+}
+.cu-header__badges {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+  align-items: flex-start;
+  padding-top: 2px;
+}
+
+/* ── Tab bar ─────────────────────────────────────────── */
+.cu-tabbar {
+  display: flex;
+  gap: 0;
+  margin: 0 -20px;
+  padding: 0 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.cu-tabbar::-webkit-scrollbar { display: none; }
+.cu-tab {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--cu-muted);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.12s, border-color 0.12s;
+  white-space: nowrap;
+}
+.cu-tab:hover { color: var(--cu-text); }
+.cu-tab--active {
+  color: var(--cu-accent);
+  border-bottom-color: var(--cu-accent);
+}
+
+/* ── Body layout ─────────────────────────────────────── */
+.cu-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.cu-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  height: 100%;
+  min-height: 0;
+}
+.cu-main {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 20px;
+}
+.cu-stats-rail {
+  min-height: 0;
+  overflow-y: auto;
+  border-left: 1px solid var(--cu-border);
+  background: var(--cu-surface);
+  padding: 14px;
+}
+
+/* ── Stats rail ──────────────────────────────────────── */
+.cu-stats-section {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--cu-border);
+}
+.cu-stats-section:last-of-type { border-bottom: none; }
+.cu-stats-heading {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--cu-subtle);
+  margin-bottom: 10px;
+}
+.cu-stats-kpi {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--cu-border) 80%, var(--cu-bg));
+}
+.cu-stats-kpi:last-child { border-bottom: none; }
+.cu-stats-kpi__label { font-size: 0.75rem; color: var(--cu-muted); }
+.cu-stats-kpi__value {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--cu-text);
+}
+.cu-stats-kpi__value--warn  { color: var(--cu-warn); }
+.cu-stats-kpi__value--ok    { color: var(--cu-success); }
+.cu-stats-kpi__value--alert { color: var(--cu-danger); }
+
+/* ── Classification badge ────────────────────────────── */
+.cu-class-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.cu-class-badge--dfl  { background: color-mix(in srgb, var(--cu-success) 16%, var(--cu-bg)); color: var(--cu-success); }
+.cu-class-badge--cufa { background: color-mix(in srgb, var(--cu-info) 16%, var(--cu-bg)); color: var(--cu-info); }
+.cu-class-badge--cuos { background: color-mix(in srgb, #a78bfa 16%, var(--cu-bg)); color: #a78bfa; }
+.cu-class-badge--cutl { background: color-mix(in srgb, var(--cu-warn) 16%, var(--cu-bg)); color: var(--cu-warn); }
+
+/* ── Buttons ─────────────────────────────────────────── */
+.cu-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.12s, opacity 0.12s;
+}
+.cu-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.cu-btn--primary {
+  background: var(--cu-accent);
+  color: var(--cu-bg);
+  border-color: var(--cu-accent);
+}
+.cu-btn--primary:hover:not(:disabled) { opacity: 0.88; }
+.cu-btn--ghost {
+  background: transparent;
+  color: var(--cu-muted);
+  border-color: var(--cu-border);
+}
+.cu-btn--ghost:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--cu-surface) 85%, var(--cu-text) 6%);
+  color: var(--cu-text);
+}
+.cu-btn--danger {
+  background: transparent;
+  color: var(--cu-danger);
+  border-color: var(--cu-danger);
+}
+.cu-btn--danger:hover:not(:disabled) { background: color-mix(in srgb, var(--cu-danger) 22%, var(--cu-bg)); }
+.cu-btn--commit {
+  background: var(--cu-success);
+  color: var(--cu-bg);
+  border-color: var(--cu-success);
+}
+.cu-btn--commit:hover:not(:disabled) { opacity: 0.88; }
+
+/* ── Filter bar ──────────────────────────────────────── */
+.cu-filterbar {
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: var(--cu-surface);
+  border: 1px solid var(--cu-border);
+  border-radius: 8px;
+}
+.cu-filter-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+.cu-filter-group { display: flex; flex-direction: column; gap: 3px; }
+.cu-filter-label { font-size: 0.6875rem; color: var(--cu-muted); font-weight: 500; }
+.cu-filter-input {
+  padding: 5px 9px;
+  background: var(--cu-bg);
+  border: 1px solid var(--cu-border);
+  border-radius: 5px;
+  color: var(--cu-text);
+  font-size: 0.8125rem;
+}
+.cu-filter-input:focus { outline: none; border-color: var(--cu-accent); }
+.cu-filter-actions { display: flex; gap: 6px; margin-left: auto; }
+
+/* ── Tables ──────────────────────────────────────────── */
+.cu-table-scroll { overflow-x: auto; }
+.cu-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+.cu-table th {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--cu-muted);
+  padding: 7px 10px;
+  text-align: left;
+  border-bottom: 2px solid var(--cu-border);
+  background: var(--cu-surface);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.cu-table th.cu-right { text-align: right; }
+.cu-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--cu-border);
+  color: var(--cu-text);
+}
+.cu-table td.cu-right { text-align: right; font-variant-numeric: tabular-nums; }
+.cu-table td.cu-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.75rem; }
+.cu-table tr:hover td { background: color-mix(in srgb, var(--cu-surface) 85%, var(--cu-text) 6%); }
+
+/* ── Rollback breakdown ──────────────────────────────── */
+.cu-rollback-panel {
+  padding: 14px;
+  background: color-mix(in srgb, var(--cu-warn) 8%, var(--cu-bg));
+  border: 1px solid color-mix(in srgb, var(--cu-warn) 32%, var(--cu-border));
+  border-radius: 8px;
+  margin-top: 12px;
+}
+.cu-rollback-panel__heading {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cu-warn);
+  margin-bottom: 10px;
+}
+.cu-rollback-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 0.8125rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--cu-warn) 18%, var(--cu-border));
+}
+.cu-rollback-row:last-child { border-bottom: none; }
+.cu-rollback-row__label { color: var(--cu-muted); }
+.cu-rollback-row__value { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--cu-text); }
+.cu-rollback-total { font-size: 0.9375rem; color: var(--cu-warn); }
+
+/* ── RCW callout ─────────────────────────────────────── */
+.cu-rcw-callout {
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  background: color-mix(in srgb, var(--cu-info) 10%, var(--cu-bg));
+  border: 1px solid color-mix(in srgb, var(--cu-info) 32%, var(--cu-border));
+  border-left: 3px solid var(--cu-info);
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  color: var(--cu-text);
+}
+.cu-rcw-callout__label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cu-info);
+  margin-bottom: 4px;
+}
+
+/* ── Interest rate chart ─────────────────────────────── */
+.cu-rate-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 80px;
+  padding: 8px 0;
+}
+.cu-rate-bar {
+  flex: 1;
+  min-width: 12px;
+  background: var(--cu-accent);
+  border-radius: 3px 3px 0 0;
+  transition: height 0.2s ease;
+  position: relative;
+}
+.cu-rate-bar:hover { opacity: 0.8; }
+.cu-rate-bar__tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 6px;
+  background: var(--cu-surface);
+  border: 1px solid var(--cu-border);
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.cu-rate-bar:hover .cu-rate-bar__tooltip { opacity: 1; }
+
+/* ── State messages ──────────────────────────────────── */
+.cu-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  font-size: 0.875rem;
+  color: var(--cu-muted);
+}
+.cu-state--error { color: var(--cu-danger); }
+
+/* ── Action bar ──────────────────────────────────────── */
+.cu-action-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.cu-action-bar__spacer { flex: 1; }
+
+/* ── Penalty exception panel ─────────────────────────── */
+.cu-exception-panel {
+  padding: 14px;
+  background: color-mix(in srgb, var(--cu-success) 8%, var(--cu-bg));
+  border: 1px solid color-mix(in srgb, var(--cu-success) 24%, var(--cu-border));
+  border-radius: 8px;
+  margin-top: 12px;
+}
+.cu-exception-panel--applied {
+  background: color-mix(in srgb, var(--cu-success) 12%, var(--cu-bg));
+  border-color: color-mix(in srgb, var(--cu-success) 40%, var(--cu-border));
+}
+
+/* ── Form inputs ─────────────────────────────────────── */
+.cu-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.cu-form-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--cu-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.cu-form-input {
+  padding: 7px 10px;
+  background: var(--cu-bg);
+  border: 1px solid var(--cu-border);
+  border-radius: 5px;
+  color: var(--cu-text);
+  font-size: 0.8125rem;
+}
+.cu-form-input:focus { outline: none; border-color: var(--cu-accent); }
+.cu-form-select {
+  padding: 7px 10px;
+  background: var(--cu-bg);
+  border: 1px solid var(--cu-border);
+  border-radius: 5px;
+  color: var(--cu-text);
+  font-size: 0.8125rem;
+  appearance: none;
+}
+.cu-form-select:focus { outline: none; border-color: var(--cu-accent); }
