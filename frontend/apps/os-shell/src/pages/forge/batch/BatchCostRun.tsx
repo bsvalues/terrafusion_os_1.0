@@ -177,7 +177,7 @@ function CostMatrixTab() {
           <label className="text-xs text-muted-foreground block mb-1">Filter Region</label>
           <input
             className="border rounded px-2 py-1 text-sm w-40"
-            placeholder="e.g. Urban"
+            placeholder="e.g. Reval 1"
             value={filterRegion}
             onChange={(e) => setFilterRegion(e.target.value)}
           />
@@ -289,7 +289,7 @@ function EstimatorTab() {
     useBatchCostRunStore();
   const [form, setForm] = useState<CostEstimateRequest>({
     buildingType: 'SFR',
-    region: 'Urban',
+    region: 'Reval 1',
     squareFeet: 2000,
     yearBuilt: 2005,
     qualityGrade: 'STANDARD',
@@ -320,7 +320,6 @@ function EstimatorTab() {
             <option value="COM">COM (Commercial)</option>
             <option value="IND">IND (Industrial)</option>
             <option value="AGR">AGR (Agricultural)</option>
-            <option value="MHP">MHP (Manufactured Home)</option>
           </select>
         </div>
         <div>
@@ -330,9 +329,12 @@ function EstimatorTab() {
             value={form.region}
             onChange={(e) => handleChange('region', e.target.value)}
           >
-            <option value="Urban">Urban</option>
-            <option value="Suburban">Suburban</option>
-            <option value="Rural">Rural</option>
+            <option value="Reval 1">Reval 1 — Kennewick Urban Core</option>
+            <option value="Reval 2">Reval 2 — West Richland / Badger Mountain</option>
+            <option value="Reval 3">Reval 3 — North Richland / Horn Rapids</option>
+            <option value="Reval 4">Reval 4 — East Benton / Benton City</option>
+            <option value="Reval 5">Reval 5 — Prosser / Wine Country</option>
+            <option value="Reval 6">Reval 6 — Rural / Agricultural Lands</option>
           </select>
         </div>
         <div>
