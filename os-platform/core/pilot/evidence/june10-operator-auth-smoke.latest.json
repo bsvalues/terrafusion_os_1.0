@@ -1,0 +1,61 @@
+{
+  "generatedAt": "2026-05-24T16:01:34.850Z",
+  "baseUrl": "https://terrafusionmarket.com",
+  "email": "june10-operator@terrafusionmarket.com",
+  "passwordSupplied": "yes (redacted)",
+  "apiLogin": {
+    "status": 200,
+    "contentType": "application/json; charset=utf-8",
+    "tokenIssued": true,
+    "tokenLength": 1025,
+    "refreshTokenIssued": true,
+    "returnedEmail": "june10-operator@terrafusionmarket.com",
+    "roles": ["GovernmentUser", "Administrator"]
+  },
+  "claims": {
+    "email": "june10-operator@terrafusionmarket.com",
+    "roles": ["GovernmentUser", "Administrator"],
+    "permissions": [
+      "runtime:read",
+      "county:read",
+      "june10:smoke",
+      "ecosystem:view",
+      "workbench:access",
+      "costforge:read",
+      "atlas:read",
+      "salesforge:read"
+    ],
+    "countyId": "19190019-1919-1919-1919-191919191919",
+    "countyName": "Benton",
+    "countyState": "WA",
+    "countyFipsCode": "53005"
+  },
+  "browser": {
+    "attempted": true,
+    "required": true,
+    "currentUrl": "https://terrafusionmarket.com/canon",
+    "loginResponseStatus": 200,
+    "accessPolicyStatus": 200,
+    "redirectedOutOfLogin": true,
+    "tokenStoredInBrowser": true,
+    "tokenLength": 1025,
+    "localStorageKeys": [
+      "authToken",
+      "i18nextLng",
+      "tf-theme",
+      "tf.canon.layout.v1",
+      "tf.canon.tabs.v1"
+    ],
+    "shellTextSignals": {
+      "terraFusion": true,
+      "signInAbsent": true,
+      "loginErrorAbsent": true,
+      "bodyTextLength": 2382
+    },
+    "screenshotPath": "os-platform/core/pilot/evidence/screenshots/june10-operator-authenticated-shell.latest.png",
+    "passed": true,
+    "error": null
+  },
+  "passed": true,
+  "blockers": []
+}

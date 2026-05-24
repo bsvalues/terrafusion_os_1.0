@@ -112,6 +112,7 @@
     "truth:june10-endpoint-contract-smoke": "node os-platform/core/pilot/june10-endpoint-contract-smoke.mjs",
     "truth:june10-public-site-smoke": "node os-platform/core/pilot/june10-public-site-smoke.mjs",
     "truth:june10-launch-gate": "node os-platform/core/pilot/june10-launch-gate.mjs",
+    "truth:june10-operator-auth-smoke": "node os-platform/core/pilot/june10-operator-auth-smoke.mjs",
     "truth:june10-full-production-data-gate": "node os-platform/core/pilot/june10-full-production-data-gate.mjs",
     "truth:washington-runtime-expansion-phase-a": "node os-platform/core/pilot/washington-runtime-expansion-phase-a.mjs",
     "truth:compose-health-dependency-guard": "node os-platform/core/pilot/compose-health-dependency-guard.mjs",
