@@ -6,7 +6,7 @@
  *
  * Verified correct layout (current HEAD):
  *   PRIMARY   : CostForge, CompsForge, IncomeForge, SalesForge, CUForge
- *   SECONDARY : Batch Cost Runs, Regression Studio (queued),
+ *   SECONDARY : Batch Cost Runs, Regression Studio,
  *               TerraGAMA (queued), Coefficient Preview (queued)
  *   COUNTY    : County Studio (default analytics workbench + VEI exploration)
  *
@@ -93,15 +93,12 @@ describe('ForgeSuiteHome — frozen module list', () => {
     expect(secondarySection).not.toHaveTextContent(/legacy specialist/i);
   });
 
-  it('renders queued specialist apps in the secondary section', () => {
-    // Regression Studio, TerraGAMA, Coefficient Preview are present as queued
-    // secondary modules in the frozen component. They are disabled (truthState: 'queued').
+  it('Regression Studio is enabled as a live specialist module while planned apps remain queued', () => {
     renderForge();
     expect(screen.getByText('Regression Studio')).toBeInTheDocument();
     expect(screen.getByText('TerraGAMA')).toBeInTheDocument();
     expect(screen.getByText('Coefficient Preview')).toBeInTheDocument();
-    // All three must be disabled (queued state)
-    expect(screen.getByText('Regression Studio').closest('button')).toBeDisabled();
+    expect(screen.getByText('Regression Studio').closest('button')).not.toBeDisabled();
     expect(screen.getByText('TerraGAMA').closest('button')).toBeDisabled();
     expect(screen.getByText('Coefficient Preview').closest('button')).toBeDisabled();
   });

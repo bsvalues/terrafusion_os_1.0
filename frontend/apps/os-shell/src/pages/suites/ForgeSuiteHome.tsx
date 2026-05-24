@@ -158,8 +158,7 @@ const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
     priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'regression-studio',
-    truthState: 'queued',
-    chipLabel: 'Planned scene',
+    chipLabel: 'Live regression',
   },
   {
     id: 'terra-gama',
