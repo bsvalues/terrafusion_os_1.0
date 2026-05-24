@@ -11,7 +11,8 @@ import { promisify } from "node:util";
 
 import {
   buildJune10OperatorPostLoginSmokeReport,
-  fetchJsonWithBearer
+  fetchJsonWithBearer,
+  LOGIN_SUBMIT_BUTTON_NAME_PATTERN
 } from "./june10-operator-post-login-smoke.mjs";
 
 const execFileAsync = promisify(execFile);
@@ -85,6 +86,11 @@ test("passes when post-login shell, identity, Benton context, logout, and invali
 
   assert.equal(report.passed, true);
   assert.deepEqual(report.blockers, []);
+});
+
+test("login smoke accepts the constitutional production submit label", () => {
+  assert.match("Enter TerraFusion OS", LOGIN_SUBMIT_BUTTON_NAME_PATTERN);
+  assert.match("Sign In", LOGIN_SUBMIT_BUTTON_NAME_PATTERN);
 });
 
 test("blocks when profile identity is missing even if JWT identity and protected Benton API are proven", () => {

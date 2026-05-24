@@ -37,6 +37,7 @@ const DEFAULT_SCREENSHOT = path.join(
 
 const REQUIRED_JWT_ROLES = ["GovernmentUser"];
 const REQUIRED_JWT_PERMISSIONS = ["runtime:read", "county:read", "workbench:access"];
+export const LOGIN_SUBMIT_BUTTON_NAME_PATTERN = /enter terrafusion os|sign in/i;
 
 function normalizeBaseUrl(baseUrl) {
   return String(baseUrl ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
@@ -184,7 +185,7 @@ export async function fetchJsonWithBearer(url, token) {
 async function fillLoginForm(page, email, password) {
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(password);
-  await page.getByRole("button", { name: /sign in/i }).click();
+  await page.getByRole("button", { name: LOGIN_SUBMIT_BUTTON_NAME_PATTERN }).click();
 }
 
 async function clickLogoutIfPresent(page) {
@@ -335,7 +336,12 @@ async function runBrowserSmoke({ baseUrl, email, password, screenshotPath }) {
     ]);
     await page.waitForURL((url) => url.pathname.startsWith("/canon"), { timeout: 45000 }).catch(() => {});
     await page.waitForLoadState("networkidle", { timeout: 45000 }).catch(() => {});
-    await page.waitForTimeout(1500);
+    await page
+      .getByText(/TerraFusion OS Desktop|TerraCanon IDE|Benton County/i)
+      .first()
+      .waitFor({ timeout: 20000 })
+      .catch(() => {});
+    await page.waitForTimeout(1000);
 
     const finalUrl = page.url();
     const bodyText = await page.locator("body").innerText({ timeout: 15000 }).catch(() => "");

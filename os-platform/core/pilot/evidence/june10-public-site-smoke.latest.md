@@ -1,6 +1,6 @@
 # June 10 Public Site Smoke
 
-Generated: 2026-05-24T18:45:57.428Z
+Generated: 2026-05-24T20:24:43.845Z
 
 Base URL: https://terrafusionmarket.com
 Passed: true
@@ -29,15 +29,15 @@ Passed: true
 
 | Path | Status | OK | Final URL | Evidence |
 |---|---:|---:|---|---|
-/login | 200 | true | https://terrafusionmarket.com/login | BENTON COUNTY RUNTIME PILOT TerraFusion OS Government Access Authorized government operators use administrator-issued operator credentials to enter the governed TerraFusion runtime. Provisioned access only TerraFusion OS access is assigned
-/signup | 200 | true | https://terrafusionmarket.com/login | BENTON COUNTY RUNTIME PILOT TerraFusion OS Government Access Authorized government operators use administrator-issued operator credentials to enter the governed TerraFusion runtime. Provisioned access only TerraFusion OS access is assigned
+/login | 200 | true | https://terrafusionmarket.com/login | TerraFusion OS GOVERNMENT OPERATIONS RUNTIME WASHINGTON COUNTY OPERATIONS CONTROLLED PRODUCTION WASHINGTON COUNTY OPERATIONS Government Operations Runtime Controlled production access for authorized county operators entering the governed Te
+/signup | 200 | true | https://terrafusionmarket.com/login | TerraFusion OS GOVERNMENT OPERATIONS RUNTIME WASHINGTON COUNTY OPERATIONS CONTROLLED PRODUCTION WASHINGTON COUNTY OPERATIONS Government Operations Runtime Controlled production access for authorized county operators entering the governed Te
 
 ## API Probes
 
 | Path | Status | OK | Evidence |
 |---|---:|---:|---|
 /api/health | 401 | false | -
-/api/auth/access-policy | 200 | true | {"signupMode":"provisioned_access_only","publicSignupEnabled":false,"message":"TerraFusion OS access is assigned by the TerraFusion administrator for authorized Benton County Runtime Pilot operators. No public signup is available."}
+/api/auth/access-policy | 200 | true | {"signupMode":"provisioned_access_only","publicSignupEnabled":false,"message":"Access is issued through TerraFusion administration for authorized Washington county operators. No public signup is available."}
 
 ## Blockers
 
