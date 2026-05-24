@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-24T16:34:33.063Z",
+  "generatedAt": "2026-05-24T17:06:24.518Z",
   "baseUrl": "https://terrafusionmarket.com",
   "email": "june10-operator@terrafusionmarket.com",
   "passwordSupplied": "yes (redacted)",
@@ -33,7 +33,7 @@
       "bentonCounty": true,
       "canonWorkbench": true
     },
-    "bodyTextLength": 2382
+    "bodyTextLength": 2384
   },
   "protectedApis": {
     "profile": {
@@ -56,15 +56,15 @@
     "pageErrors": []
   },
   "logout": {
-    "controlFound": false,
-    "clicked": false,
-    "redirectedToLogin": false,
-    "tokenCleared": false
+    "controlFound": true,
+    "clicked": true,
+    "redirectedToLogin": true,
+    "tokenCleared": true
   },
   "invalidToken": {
-    "finalUrl": "https://terrafusionmarket.com/canon?invalidTokenSmoke=1779640468086",
-    "redirectedToLogin": false,
-    "tokenCleared": false,
+    "finalUrl": "https://terrafusionmarket.com/login",
+    "redirectedToLogin": true,
+    "tokenCleared": true,
     "protectedApiRejected": true,
     "status": 401,
     "error": null
@@ -76,9 +76,6 @@
   "warnings": [
     "/api/auth/profile did not recognize the logged-in operator identity."
   ],
-  "passed": false,
-  "blockers": [
-    "No visible logout/sign-out control found after login.",
-    "Invalid token did not return to login cleanly and clear browser token state."
-  ]
+  "passed": true,
+  "blockers": []
 }

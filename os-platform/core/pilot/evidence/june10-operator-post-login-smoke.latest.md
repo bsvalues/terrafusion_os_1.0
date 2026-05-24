@@ -1,11 +1,11 @@
 # June 10 Operator Post-Login Smoke
 
-Generated: 2026-05-24T16:34:33.063Z
+Generated: 2026-05-24T17:06:24.518Z
 Base URL: https://terrafusionmarket.com
 Operator: june10-operator@terrafusionmarket.com
 Password supplied: yes (redacted)
 
-Verdict: FAIL
+Verdict: PASS
 
 ## Shell
 
@@ -33,9 +33,9 @@ Verdict: FAIL
 
 - Auth console/runtime errors: 0
 - Page errors: 0
-- Logout control found: false
-- Logout returned to login: false
-- Invalid token returned to login: false
+- Logout control found: true
+- Logout returned to login: true
+- Invalid token returned to login: true
 - Invalid token protected API status: 401
 
 ## Auth Errors
@@ -48,5 +48,4 @@ Verdict: FAIL
 
 ## Blockers
 
-- No visible logout/sign-out control found after login.
-- Invalid token did not return to login cleanly and clear browser token state.
+- None
