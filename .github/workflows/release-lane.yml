@@ -273,6 +273,28 @@ jobs:
           set -euo pipefail
           scp -P "$DEPLOY_PORT" -r runtime/* "$DEPLOY_USER@$DEPLOY_HOST:$APP_ROOT/"
 
+      - name: Preflight - remote Docker disk cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" bash -s <<'SSH'
+          set -euo pipefail
+          echo "Docker disk before remote cleanup:"
+          docker system df || true
+
+          # Run this while the current app stack is still up. Active release
+          # images remain protected by running containers, while stale release
+          # images and build cache can be reclaimed before edge bootstrap stops
+          # the target stack.
+          docker container prune -f || true
+          docker builder prune -af || true
+          docker image prune -af || true
+
+          echo "Docker disk after remote cleanup:"
+          docker system df || true
+          df -h /
+          SSH
+
       - name: Bootstrap shared edge proxy
         shell: bash
         run: |
@@ -312,6 +334,13 @@ jobs:
             "docker login ghcr.io -u ${{ github.actor }} --password-stdin" >/dev/null 2>&1
           ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "BACKEND_IMAGE='$BACKEND_IMAGE' FRONTEND_IMAGE='$FRONTEND_IMAGE' bash -s" <<'SSH'
           set -euo pipefail
+          available_kb="$(df --output=avail / | tail -1 | tr -d ' ')"
+          if [ "${available_kb:-0}" -lt 4194304 ]; then
+            echo "ERROR: Less than 4 GiB available on / after Docker cleanup; refusing deploy before image pull."
+            df -h /
+            exit 1
+          fi
+
           echo "Pulling backend image..."
           docker pull "$BACKEND_IMAGE"
           echo "Pulling frontend image..."
