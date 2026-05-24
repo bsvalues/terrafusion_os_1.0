@@ -83,7 +83,10 @@ describe('useRegressionAnalysis', () => {
           adjustedRSquared: 0.8,
           mse: 0.03,
           coefficients: [
+            { feature: 'Intercept', coefficient: 10.2, stdError: 1.4, tStat: 7.29, pValue: 0.0002 },
             { feature: 'Log(GLA)', coefficient: 0.62, stdError: 0.08, tStat: 7.75, pValue: 0.0001 },
+            { feature: 'Lot Size Sqft', coefficient: 0.12, stdError: 0.04, tStat: 3, pValue: 0.01 },
+            { feature: 'YearBuilt (since 1980)', coefficient: 0.31, stdError: 0.11, tStat: 2.82, pValue: 0.02 },
           ],
           interpretation: 'Hedonic fit complete.',
         }));
@@ -131,6 +134,18 @@ describe('useRegressionAnalysis', () => {
     expect(result.current.data?.coefficients[1]).toMatchObject({
       variable: 'GLA_sqft',
       coefficient: 145.25,
+      stdError: 0.08,
+      tStatistic: 7.75,
+      pValue: 0.0001,
+      significant: true,
+    });
+    expect(result.current.data?.coefficients[3]).toMatchObject({
+      variable: 'YearBuilt',
+      coefficient: 950,
+      stdError: 0.11,
+      tStatistic: 2.82,
+      pValue: 0.02,
+      significant: true,
     });
     expect(result.current.data?.diagnosticPlots.residualsVsFitted[0]).toMatchObject({
       x: 300000,

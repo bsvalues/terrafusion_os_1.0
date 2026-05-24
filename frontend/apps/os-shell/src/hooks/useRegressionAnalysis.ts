@@ -209,6 +209,28 @@ function emptyResult(unavailableReason: string, n = 0): RegressionResult {
   };
 }
 
+function canonicalCoefficientKey(value: string | undefined): string {
+  const normalized = (value ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+  if (normalized === 'intercept' || normalized.includes('constant')) {
+    return 'intercept';
+  }
+
+  if (normalized.includes('gla') || normalized.includes('grosslivingarea') || normalized.includes('livingsqft')) {
+    return 'glasqft';
+  }
+
+  if (normalized.includes('lotsize') || normalized.includes('landarea') || normalized.includes('landsqft')) {
+    return 'lotsizesqft';
+  }
+
+  if (normalized.includes('yearbuilt')) {
+    return 'yearbuilt';
+  }
+
+  return normalized;
+}
+
 function normalizeRegression(
   regression: TerraForgeRegressionResponse,
   hedonic?: HedonicResponse,
@@ -226,8 +248,16 @@ function normalizeRegression(
 
   const predictors = regression.model.predictors ?? [];
   const beta = regression.model.beta ?? [];
+  const hedonicCoefficients = hedonic?.coefficients ?? [];
+  const hedonicByKey = new Map<string, HedonicCoefficient>();
+  hedonicCoefficients.forEach((row) => {
+    const key = canonicalCoefficientKey(row.feature);
+    if (key && !hedonicByKey.has(key)) {
+      hedonicByKey.set(key, row);
+    }
+  });
   const coefficients: CoefficientRow[] = predictors.map((predictor, index) => {
-    const hedonicCoefficient = hedonic?.coefficients?.find((row) => row.feature === predictor);
+    const hedonicCoefficient = hedonicByKey.get(canonicalCoefficientKey(predictor)) ?? hedonicCoefficients[index];
     const coefficient = finite(beta[index], finite(hedonicCoefficient?.coefficient));
     const pValue = finite(hedonicCoefficient?.pValue, index === 0 ? 0 : 1);
     return {
