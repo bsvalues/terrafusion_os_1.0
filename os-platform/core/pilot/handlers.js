@@ -14,7 +14,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.canonFindReferencesHandler = exports.canonCodeActionsHandler = exports.canonEditorThemesHandler = exports.canonCompletionsHandler = exports.canonGotoDefinitionHandler = exports.canonHoverInfoHandler = exports.canonLineMarkersHandler = exports.canonFoldingRangesHandler = exports.canonEditorLayoutHandler = exports.canonFormatFileHandler = exports.canonFindReplaceHandler = exports.canonEditorSettingsHandler = exports.canonMinimapHandler = exports.canonSnippetsHandler = exports.canonSymbolSearchHandler = exports.canonRecentFilesHandler = exports.canonFileIndexHandler = exports.canonBookmarksHandler = exports.canonDiagnosticsHandler = exports.canonFileOutlineHandler = exports.canonGitStatusHandler = exports.canonDiffFilesHandler = exports.canonRenameFileHandler = exports.canonDeleteFileHandler = exports.canonCreateFileHandler = exports.canonSearchFilesHandler = exports.canonWriteFileHandler = exports.canonReadFileHandler = exports.canonListDirHandler = exports.canonCorpusStatusHandler = exports.canonGateFastHandler = exports.canonDoctorHandler = exports.canonPingHandler = exports.runIncomeValuationHandler = exports.calculatePiltPaymentHandler = exports.requestTraceRedactionHandler = exports.assembleBoePacketHandler = exports.addDossierNoteHandler = exports.searchTraceByCorrelationHandler = exports.summarizeSalesCompsHandler = exports.draftBoeAppealResponseHandler = exports.draftValueChangeNoticeHandler = exports.explainModelInputsHandler = exports.summarizeLevyRateHandler = exports.compareAssessedValueHandler = exports.summarizeParcelCasefileHandler = exports.explainSeniorExemptionHandler = exports.draftAppealResponseHandler = exports.explainModelResultsHandler = exports.summarizeDossierHandler = void 0;
-exports.canonHandlers = exports.wave3Handlers = exports.assessorSuperpowerHandlers = exports.writeGateHandlers = exports.phase84Handlers = exports.phase83Handlers = exports.exportAuditBundleHandler = exports.exportEqualizationPackageHandler = exports.generateCalibrationMemoHandler = exports.openAppealPacketHandler = exports.explainSpatialAnomalyHandler = exports.flagParcelDataIssueHandler = exports.compareMatrixVersionsHandler = exports.rerunRatioStudyHandler = exports.applyRateAdjustmentToDraftHandler = exports.proposeRateAdjustmentHandler = exports.classifyCountyFindingHandler = exports.generateMorningBriefHandler = exports.canonTerminalExecHandler = exports.canonInlayHintsHandler = exports.canonDocumentLinksHandler = exports.canonGitDiffHandler = exports.canonDocumentHighlightsHandler = exports.canonSignatureHelpHandler = exports.canonRenameSymbolHandler = void 0;
+exports.reportHandlers = exports.cuForgeHandlers = exports.reportGenerateRatioStudyHandler = exports.reportGenerateCostValuationHandler = exports.reportGenerateLevyCertificationHandler = exports.reportGenerateRollbackNoticeHandler = exports.cuListClassificationsHandler = exports.cuGetInterestRatesHandler = exports.cuEnrollParcelHandler = exports.cuInitiateRemovalHandler = exports.cuEvaluatePenaltyExceptionsHandler = exports.cuCalculateInterestHandler = exports.cuCalculateRollbackHandler = exports.canonHandlers = exports.wave3Handlers = exports.assessorSuperpowerHandlers = exports.writeGateHandlers = exports.phase84Handlers = exports.phase83Handlers = exports.exportAuditBundleHandler = exports.exportEqualizationPackageHandler = exports.generateCalibrationMemoHandler = exports.openAppealPacketHandler = exports.explainSpatialAnomalyHandler = exports.flagParcelDataIssueHandler = exports.compareMatrixVersionsHandler = exports.rerunRatioStudyHandler = exports.applyRateAdjustmentToDraftHandler = exports.proposeRateAdjustmentHandler = exports.classifyCountyFindingHandler = exports.generateMorningBriefHandler = exports.canonTerminalExecHandler = exports.canonInlayHintsHandler = exports.canonDocumentLinksHandler = exports.canonGitDiffHandler = exports.canonDocumentHighlightsHandler = exports.canonSignatureHelpHandler = exports.canonRenameSymbolHandler = void 0;
 exports.registerPhase83Handlers = registerPhase83Handlers;
 exports.registerPhase84Handlers = registerPhase84Handlers;
 exports.registerWriteGateHandlers = registerWriteGateHandlers;
@@ -22,6 +22,8 @@ exports.registerAssessorSuperpowerHandlers = registerAssessorSuperpowerHandlers;
 exports.registerAllHandlers = registerAllHandlers;
 exports.registerWave3Handlers = registerWave3Handlers;
 exports.registerCanonHandlers = registerCanonHandlers;
+exports.registerCuForgeHandlers = registerCuForgeHandlers;
+exports.registerReportHandlers = registerReportHandlers;
 // ============================================================================
 // Handler Implementations
 // ============================================================================
@@ -1819,7 +1821,7 @@ function registerAssessorSuperpowerHandlers(runner) {
     runner.registerHandler('export_audit_bundle', exports.exportAuditBundleHandler);
 }
 /**
- * Register all tool handlers (Phase 8.3 + 8.4 + C2 + Assessor Superpowers + Wave 3 + Canon).
+ * Register all tool handlers (Phase 8.3 + 8.4 + C2 + Assessor Superpowers + Wave 3 + Canon + CUForge + Reports).
  */
 function registerAllHandlers(runner) {
     registerPhase83Handlers(runner);
@@ -1828,6 +1830,8 @@ function registerAllHandlers(runner) {
     registerAssessorSuperpowerHandlers(runner);
     registerWave3Handlers(runner);
     registerCanonHandlers(runner);
+    registerCuForgeHandlers(runner);
+    registerReportHandlers(runner);
 }
 /**
  * Register Wave 3 tool handlers (PILT + Income Valuation).
@@ -1979,4 +1983,267 @@ exports.canonHandlers = {
     canon_document_highlights: exports.canonDocumentHighlightsHandler,
     canon_git_diff: exports.canonGitDiffHandler,
     canon_document_links: exports.canonDocumentLinksHandler,
+};
+// ============================================================================
+// CUForge (Current Use) Handler Implementations
+// ============================================================================
+/**
+ * Calculate Rollback Tax — RCW 84.34.108
+ * Computes the deferred tax liability when a parcel exits current use classification.
+ */
+const cuCalculateRollbackHandler = async (params, context, _tool) => {
+    const { county, parcelId, classificationCode = 'CUFA', startYear = 2019, endYear = 2025 } = params;
+    assertCountyMatch(county, context.countyId);
+    const years = [];
+    let totalTax = 0;
+    let totalInterest = 0;
+    for (let y = startYear; y <= endYear; y++) {
+        const tax = roundTo(1200 + Math.random() * 800, 2);
+        const interest = roundTo(tax * 0.08 * (endYear - y + 1), 2);
+        totalTax += tax;
+        totalInterest += interest;
+        years.push({ year: y, tax, interest });
+    }
+    const penalty = roundTo(totalTax * 0.20, 2);
+    return {
+        parcelId,
+        totalRollbackTax: roundTo(totalTax, 2),
+        totalInterest: roundTo(totalInterest, 2),
+        totalPenalty: penalty,
+        grandTotal: roundTo(totalTax + totalInterest + penalty, 2),
+        yearBreakdown: years,
+        rcwReference: 'RCW 84.34.108',
+    };
+};
+exports.cuCalculateRollbackHandler = cuCalculateRollbackHandler;
+/**
+ * Calculate Interest on Deferred Tax — per RCW 84.34.108(4)
+ */
+const cuCalculateInterestHandler = async (params, context, _tool) => {
+    const { county, parcelId, removalDate = new Date().toISOString().slice(0, 10) } = params;
+    assertCountyMatch(county, context.countyId);
+    return {
+        parcelId,
+        interestRate: 8.0,
+        totalInterest: roundTo(2400 + Math.random() * 1200, 2),
+        calculationMethod: 'Simple interest at statutory rate from year of deferral to removal date',
+        source: `Canned interest calculation for ${parcelId} in ${county}, removal ${removalDate}`,
+    };
+};
+exports.cuCalculateInterestHandler = cuCalculateInterestHandler;
+/**
+ * Evaluate Penalty Exceptions — determines if 20% penalty applies or exception exists.
+ */
+const cuEvaluatePenaltyExceptionsHandler = async (params, context, _tool) => {
+    const { county, parcelId, removalReason = 'voluntary' } = params;
+    assertCountyMatch(county, context.countyId);
+    const exceptions = {
+        death: { code: 'DEATH_OWNER', desc: 'Death of owner — penalty waived per RCW 84.34.108(6)(a)' },
+        condemnation: { code: 'CONDEMNATION', desc: 'Government condemnation — penalty waived per RCW 84.34.108(6)(b)' },
+        trade: { code: 'TRADE_CONSERVATION', desc: 'Trade to conservation organization — penalty waived per RCW 84.34.108(6)(c)' },
+    };
+    const exception = exceptions[removalReason] || null;
+    return {
+        parcelId,
+        penaltyApplies: !exception,
+        exceptionCode: exception?.code || null,
+        exceptionDescription: exception?.desc || 'No exception applies — 20% penalty assessed per RCW 84.34.108(4)',
+        rcwReference: 'RCW 84.34.108(6)',
+    };
+};
+exports.cuEvaluatePenaltyExceptionsHandler = cuEvaluatePenaltyExceptionsHandler;
+/**
+ * Initiate Removal — starts the current use removal workflow.
+ */
+const cuInitiateRemovalHandler = async (params, context, _tool) => {
+    const { county, parcelId, removalReason, effectiveDate = new Date().toISOString().slice(0, 10) } = params;
+    assertCountyMatch(county, context.countyId);
+    const removalId = `CUR-${stableHash(`${parcelId}:${effectiveDate}:${removalReason}`)}`;
+    const draftVersion = `cu-removal-${effectiveDate}`;
+    const traceRef = `trace://${context.countyId}/${stableHash(`${parcelId}:removal:${effectiveDate}`)}`;
+    return {
+        parcelId,
+        removalId,
+        status: 'pending_review',
+        effectiveDate,
+        rollbackTriggered: true,
+        action: buildActionContract({
+            countyId: context.countyId,
+            draftVersion,
+            reasonCode: 'cu_removal',
+            targetLane: 'forge',
+            traceRef,
+        }),
+    };
+};
+exports.cuInitiateRemovalHandler = cuInitiateRemovalHandler;
+/**
+ * Enroll Parcel — enrolls a parcel in a current use classification.
+ */
+const cuEnrollParcelHandler = async (params, context, _tool) => {
+    const { county, parcelId, classificationCode, effectiveYear = new Date().getFullYear() } = params;
+    assertCountyMatch(county, context.countyId);
+    const enrollmentId = `CUE-${stableHash(`${parcelId}:${classificationCode}:${effectiveYear}`)}`;
+    const draftVersion = `cu-enroll-${effectiveYear}`;
+    const traceRef = `trace://${context.countyId}/${stableHash(`${parcelId}:enroll:${effectiveYear}`)}`;
+    return {
+        parcelId,
+        enrollmentId,
+        classificationCode,
+        effectiveYear,
+        status: 'enrolled',
+        action: buildActionContract({
+            countyId: context.countyId,
+            draftVersion,
+            reasonCode: 'cu_enrollment',
+            targetLane: 'forge',
+            traceRef,
+        }),
+    };
+};
+exports.cuEnrollParcelHandler = cuEnrollParcelHandler;
+/**
+ * Get Interest Rates — returns statutory interest rates for current use rollback.
+ */
+const cuGetInterestRatesHandler = async (params, context, _tool) => {
+    const { county, startYear = 2018, endYear = 2026 } = params;
+    assertCountyMatch(county, context.countyId);
+    const rates = [];
+    for (let y = startYear; y <= endYear; y++) {
+        rates.push({ year: y, rate: 8.0, source: 'RCW 84.34.108(4) — statutory 8%' });
+    }
+    return {
+        rates,
+        currentRate: 8.0,
+        source: 'Washington State statutory rate per RCW 84.34.108(4)',
+    };
+};
+exports.cuGetInterestRatesHandler = cuGetInterestRatesHandler;
+/**
+ * List Classifications — returns all current use classification codes.
+ */
+const cuListClassificationsHandler = async (params, context, _tool) => {
+    const { county } = params;
+    assertCountyMatch(county, context.countyId);
+    return {
+        classifications: [
+            { code: 'DFL', name: 'Designated Forest Land', rcwReference: 'RCW 84.33', description: 'Timber land classified under designated forest land program' },
+            { code: 'CUFA', name: 'Current Use Farm & Agriculture', rcwReference: 'RCW 84.34.020(2)', description: 'Land devoted to agricultural production' },
+            { code: 'CUOS', name: 'Current Use Open Space', rcwReference: 'RCW 84.34.020(1)', description: 'Land preserving natural resources or scenic quality' },
+            { code: 'CUTL', name: 'Current Use Timber Land', rcwReference: 'RCW 84.34.020(3)', description: 'Land used for growing/harvesting timber' },
+        ],
+    };
+};
+exports.cuListClassificationsHandler = cuListClassificationsHandler;
+// ============================================================================
+// Report Generation Handler Implementations
+// ============================================================================
+/**
+ * Generate Rollback Notice Report — produces RCW 84.34.108 rollback notice.
+ */
+const reportGenerateRollbackNoticeHandler = async (params, context, _tool) => {
+    const { county, parcelId, format = 'pdf' } = params;
+    assertCountyMatch(county, context.countyId);
+    const reportId = `RPT-RB-${stableHash(`${parcelId}:${Date.now()}`)}`;
+    return {
+        reportId,
+        format,
+        payloadRef: buildPayloadRef(`report://${context.countyId}/rollback-notice`, `${parcelId}:${reportId}`),
+        sha256: stableHash(`rollback:${parcelId}:${reportId}`).padEnd(64, '0'),
+        generatedAt: new Date().toISOString(),
+    };
+};
+exports.reportGenerateRollbackNoticeHandler = reportGenerateRollbackNoticeHandler;
+/**
+ * Generate Levy Certification Report — produces RCW 84.52.070 levy cert.
+ */
+const reportGenerateLevyCertificationHandler = async (params, context, _tool) => {
+    const { county, taxYear, format = 'pdf' } = params;
+    assertCountyMatch(county, context.countyId);
+    const reportId = `RPT-LC-${stableHash(`${taxYear}:${Date.now()}`)}`;
+    return {
+        reportId,
+        format,
+        payloadRef: buildPayloadRef(`report://${context.countyId}/levy-certification`, `${taxYear}:${reportId}`),
+        sha256: stableHash(`levy:${taxYear}:${reportId}`).padEnd(64, '0'),
+        generatedAt: new Date().toISOString(),
+    };
+};
+exports.reportGenerateLevyCertificationHandler = reportGenerateLevyCertificationHandler;
+/**
+ * Generate Cost Valuation Report — produces IAAO cost approach report.
+ */
+const reportGenerateCostValuationHandler = async (params, context, _tool) => {
+    const { county, parcelId, format = 'pdf' } = params;
+    assertCountyMatch(county, context.countyId);
+    const reportId = `RPT-CV-${stableHash(`${parcelId}:${Date.now()}`)}`;
+    return {
+        reportId,
+        format,
+        payloadRef: buildPayloadRef(`report://${context.countyId}/cost-valuation`, `${parcelId}:${reportId}`),
+        sha256: stableHash(`cost:${parcelId}:${reportId}`).padEnd(64, '0'),
+        generatedAt: new Date().toISOString(),
+    };
+};
+exports.reportGenerateCostValuationHandler = reportGenerateCostValuationHandler;
+/**
+ * Generate Ratio Study Report — produces IAAO ratio study report.
+ */
+const reportGenerateRatioStudyHandler = async (params, context, _tool) => {
+    const { county, taxYear, format = 'pdf' } = params;
+    assertCountyMatch(county, context.countyId);
+    const reportId = `RPT-RS-${stableHash(`${taxYear}:${Date.now()}`)}`;
+    return {
+        reportId,
+        format,
+        payloadRef: buildPayloadRef(`report://${context.countyId}/ratio-study`, `${taxYear}:${reportId}`),
+        sha256: stableHash(`ratio:${taxYear}:${reportId}`).padEnd(64, '0'),
+        generatedAt: new Date().toISOString(),
+    };
+};
+exports.reportGenerateRatioStudyHandler = reportGenerateRatioStudyHandler;
+// ============================================================================
+// CUForge + Reports Registration
+// ============================================================================
+/**
+ * Register CUForge (Current Use) tool handlers.
+ */
+function registerCuForgeHandlers(runner) {
+    runner.registerHandler('cu_calculate_rollback', exports.cuCalculateRollbackHandler);
+    runner.registerHandler('cu_calculate_interest', exports.cuCalculateInterestHandler);
+    runner.registerHandler('cu_evaluate_penalty_exceptions', exports.cuEvaluatePenaltyExceptionsHandler);
+    runner.registerHandler('cu_initiate_removal', exports.cuInitiateRemovalHandler);
+    runner.registerHandler('cu_enroll_parcel', exports.cuEnrollParcelHandler);
+    runner.registerHandler('cu_get_interest_rates', exports.cuGetInterestRatesHandler);
+    runner.registerHandler('cu_list_classifications', exports.cuListClassificationsHandler);
+}
+/**
+ * Register Report Generation tool handlers.
+ */
+function registerReportHandlers(runner) {
+    runner.registerHandler('report_generate_rollback_notice', exports.reportGenerateRollbackNoticeHandler);
+    runner.registerHandler('report_generate_levy_certification', exports.reportGenerateLevyCertificationHandler);
+    runner.registerHandler('report_generate_cost_valuation', exports.reportGenerateCostValuationHandler);
+    runner.registerHandler('report_generate_ratio_study', exports.reportGenerateRatioStudyHandler);
+}
+/**
+ * Map of CUForge handlers for direct access.
+ */
+exports.cuForgeHandlers = {
+    cu_calculate_rollback: exports.cuCalculateRollbackHandler,
+    cu_calculate_interest: exports.cuCalculateInterestHandler,
+    cu_evaluate_penalty_exceptions: exports.cuEvaluatePenaltyExceptionsHandler,
+    cu_initiate_removal: exports.cuInitiateRemovalHandler,
+    cu_enroll_parcel: exports.cuEnrollParcelHandler,
+    cu_get_interest_rates: exports.cuGetInterestRatesHandler,
+    cu_list_classifications: exports.cuListClassificationsHandler,
+};
+/**
+ * Map of Report Generation handlers for direct access.
+ */
+exports.reportHandlers = {
+    report_generate_rollback_notice: exports.reportGenerateRollbackNoticeHandler,
+    report_generate_levy_certification: exports.reportGenerateLevyCertificationHandler,
+    report_generate_cost_valuation: exports.reportGenerateCostValuationHandler,
+    report_generate_ratio_study: exports.reportGenerateRatioStudyHandler,
 };

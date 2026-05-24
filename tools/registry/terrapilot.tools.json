@@ -4347,7 +4347,7 @@
         "owner_death"
       ],
       "piiHandling": "none",
-      "tracePolicy": "full",
+      "tracePolicy": "summary_only",
       "officeScope": "assessor",
       "paramsSchema": {
         "type": "object",
@@ -4398,7 +4398,7 @@
         "correction"
       ],
       "piiHandling": "none",
-      "tracePolicy": "full",
+      "tracePolicy": "summary_only",
       "officeScope": "assessor",
       "paramsSchema": {
         "type": "object",
@@ -4521,17 +4521,17 @@
       "suite": "forge",
       "mode": "pilot",
       "risk": "write_low",
-      "writeLane": "reports",
+      "writeLane": "forge",
       "touches": [
         "parcel",
         "current_use",
         "reports"
       ],
       "description": "Generate a Current Use Rollback Notice (RCW 84.34.108) as HTML/PDF with year-by-year tax breakdown, interest calculation, and penalty assessment",
-      "requiresConfirmation": false,
-      "reasonCodeRequired": false,
-      "piiHandling": "contains_pii",
-      "tracePolicy": "full_audit",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "piiHandling": "payload_ref",
+      "tracePolicy": "summary_only",
       "officeScope": "assessor",
       "paramsSchema": {
         "type": "object",
@@ -4574,7 +4574,12 @@
         "required": [
           "parcelId"
         ]
-      }
+      },
+      "reasonCodes": [
+        "report_generation",
+        "annual_certification"
+      ],
+      "payloadStore": "dossier"
     },
     {
       "toolId": "report_generate_levy_certification",
@@ -4582,17 +4587,17 @@
       "suite": "forge",
       "mode": "pilot",
       "risk": "write_low",
-      "writeLane": "reports",
+      "writeLane": "forge",
       "touches": [
         "levy",
         "district",
         "reports"
       ],
       "description": "Generate a Levy Certification Report (RCW 84.52.070) with all district rates, assessed values, and statutory compliance verification",
-      "requiresConfirmation": false,
-      "reasonCodeRequired": false,
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
       "piiHandling": "none",
-      "tracePolicy": "full_audit",
+      "tracePolicy": "summary_only",
       "officeScope": "assessor",
       "paramsSchema": {
         "type": "object",
@@ -4617,7 +4622,11 @@
         "required": [
           "taxYear"
         ]
-      }
+      },
+      "reasonCodes": [
+        "report_generation",
+        "annual_certification"
+      ]
     },
     {
       "toolId": "report_generate_cost_valuation",
@@ -4625,17 +4634,17 @@
       "suite": "forge",
       "mode": "pilot",
       "risk": "write_low",
-      "writeLane": "reports",
+      "writeLane": "forge",
       "touches": [
         "parcel",
         "cost",
         "reports"
       ],
       "description": "Generate a Cost Approach Valuation Report (IAAO Standard) with RCN, depreciation, RCNLD, and total assessed value for a property",
-      "requiresConfirmation": false,
-      "reasonCodeRequired": false,
-      "piiHandling": "contains_pii",
-      "tracePolicy": "full_audit",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "piiHandling": "payload_ref",
+      "tracePolicy": "summary_only",
       "officeScope": "assessor",
       "paramsSchema": {
         "type": "object",
@@ -4676,7 +4685,12 @@
         "required": [
           "parcelId"
         ]
-      }
+      },
+      "reasonCodes": [
+        "report_generation",
+        "annual_certification"
+      ],
+      "payloadStore": "dossier"
     },
     {
       "toolId": "report_generate_ratio_study",
@@ -4684,17 +4698,17 @@
       "suite": "forge",
       "mode": "pilot",
       "risk": "write_low",
-      "writeLane": "reports",
+      "writeLane": "forge",
       "touches": [
         "sales",
         "ratio_study",
         "reports"
       ],
       "description": "Generate an IAAO Ratio Study Report with COD, PRD, PRB metrics, stratified analysis, and compliance determination",
-      "requiresConfirmation": false,
-      "reasonCodeRequired": false,
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
       "piiHandling": "none",
-      "tracePolicy": "full_audit",
+      "tracePolicy": "summary_only",
       "officeScope": "assessor",
       "paramsSchema": {
         "type": "object",
@@ -4723,7 +4737,11 @@
         "required": [
           "taxYear"
         ]
-      }
+      },
+      "reasonCodes": [
+        "report_generation",
+        "annual_certification"
+      ]
     }
   ]
 }
