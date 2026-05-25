@@ -164,8 +164,13 @@
 
 .cu-table {
   width: 100%;
+  min-width: 720px;
   border-collapse: collapse;
   font-size: 0.8125rem;
+}
+
+.cu-table-scroll {
+  overflow-x: auto;
 }
 
 .cu-table th {
@@ -373,7 +378,7 @@
 
 .cu-case-layout {
   display: grid;
-  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr) minmax(260px, 340px);
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
   gap: 14px;
   min-height: 0;
   flex: 1 1 auto;
@@ -415,6 +420,10 @@
 .cu-work-queue,
 .cu-chief-panel {
   overflow-y: auto;
+}
+
+.cu-chief-panel {
+  grid-column: 1 / -1;
 }
 
 .cu-queue-buttons {
@@ -477,6 +486,38 @@
 .cu-case-list-item__meta {
   color: var(--cu-muted);
   font-size: 0.75rem;
+}
+
+.cu-status-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cu-status-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.cu-status-step {
+  border: 1px solid var(--cu-border);
+  border-radius: 999px;
+  color: var(--cu-muted);
+  background: var(--cu-bg);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 6px 8px;
+}
+
+.cu-status-step--active {
+  border-color: color-mix(in srgb, var(--cu-info) 58%, var(--cu-border));
+  color: var(--cu-info);
+  background: color-mix(in srgb, var(--cu-info) 10%, var(--cu-bg));
 }
 
 .cu-case-main {
@@ -607,6 +648,25 @@
   padding: 10px;
 }
 
+.cu-notice-preview {
+  border: 1px solid var(--cu-border);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--cu-info) 6%, var(--cu-bg));
+  color: var(--cu-text);
+  font-size: 0.8125rem;
+  margin-top: 10px;
+  padding: 10px;
+}
+
+.cu-notice-preview strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.cu-notice-preview p {
+  margin: 0;
+}
+
 .cu-worksheet-total {
   display: flex;
   align-items: center;
@@ -646,13 +706,27 @@
   line-height: 1.35;
 }
 
-@media (max-width: 1180px) {
+.cu-chief-reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.cu-chief-reasons span {
+  border: 1px solid color-mix(in srgb, var(--cu-warn) 35%, var(--cu-border));
+  border-radius: 999px;
+  color: var(--cu-warn);
+  padding: 3px 7px;
+}
+
+@media (min-width: 1500px) {
   .cu-case-layout {
-    grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr) minmax(260px, 340px);
   }
 
   .cu-chief-panel {
-    grid-column: 1 / -1;
+    grid-column: auto;
   }
 }
 

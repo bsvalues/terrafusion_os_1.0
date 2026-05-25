@@ -261,16 +261,88 @@ describe('CUForge review regressions', () => {
     expect(await screen.findByRole('heading', { name: 'Current Use Case Desk' })).toBeInTheDocument();
     expect(screen.getByText('Case Desk derived from live Current Use records.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Missing Evidence 1/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Inspection Needed 2/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Rollback Review 1/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Inspection Required 2/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Rollback Incomplete 1/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Pending Owner Response 1/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Notice Ready 2/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Pending Chief Review 2/i })).toBeInTheDocument();
     expect(screen.getAllByText('Orchard continuance missing acreage evidence').length).toBeGreaterThan(0);
-    expect(screen.getByText('Checklist')).toBeInTheDocument();
+    expect(screen.getByText('Compliance Checklist')).toBeInTheDocument();
     expect(screen.getByText('Evidence gap: acreage missing')).toBeInTheDocument();
     expect(screen.getByText('Chief Appraiser Review Queue')).toBeInTheDocument();
-    expect(screen.getByText(/High rollback exposure/)).toBeInTheDocument();
+    expect(screen.getByText('High-dollar rollback')).toBeInTheDocument();
+    expect(screen.getByText('Case Status')).toBeInTheDocument();
+    expect(screen.getByText('Assigned To')).toBeInTheDocument();
+    expect(screen.getByText('Aging')).toBeInTheDocument();
   });
 
-  it('uses the existing rollback endpoint to produce a transparent worksheet for the selected case', async () => {
+  it('supports assessor-grade local case transitions without claiming persistence', async () => {
+    apiFetchJsonMock.mockImplementation((path: string) => {
+      if (path.startsWith('/currentuse/classifications')) {
+        return Promise.resolve({
+          total: 2,
+          page: 1,
+          pageSize: 50,
+          items: [
+            classification('3001', 'CUFA', 0, {
+              parcelId: '1-5555-500-0005',
+              acreage: null,
+              currentUseValue: null,
+              description: 'Missing farm plan continuance',
+            }),
+            classification('3002', 'DFL', 92_000, {
+              parcelId: '1-6666-600-0006',
+              acreage: 67,
+              currentMarketValue: 840_000,
+              currentUseValue: 110_000,
+              description: 'Forest land withdrawal review',
+            }),
+          ],
+        });
+      }
+      if (path === '/currentuse/interest-rates') {
+        return Promise.resolve([{ year: 2026, rate: 0.05, source: 'WA DOR', effectiveDate: '2026-01-01' }]);
+      }
+      if (path === '/currentuse/removals') {
+        return Promise.resolve([
+          removal('r3', '1-6666-600-0006', 'Pending', {
+            classificationCode: 'DFL',
+            reason: 'Owner withdrawal; penalty exception requested',
+          }),
+        ]);
+      }
+      return Promise.reject(new Error(`Unexpected request: ${path}`));
+    });
+
+    await act(async () => {
+      render(<CUForge />);
+    });
+
+    await screen.findByRole('heading', { name: 'Current Use Case Desk' });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /Rollback Incomplete 1/i }));
+    });
+
+    expect(screen.getByRole('heading', { name: 'ROLLBACK_REVIEW' })).toBeInTheDocument();
+    expect(screen.getByText('Penalty suppression review')).toBeInTheDocument();
+    expect(screen.getByText('Statutory exception claimed')).toBeInTheDocument();
+    expect(screen.getByText('Staged locally until case persistence is added.')).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Advance case' }));
+    });
+
+    expect(screen.getByRole('heading', { name: 'NOTICE_PENDING_APPROVAL' })).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Return to monitoring' }));
+    });
+
+    expect(screen.getByRole('heading', { name: 'MONITORING' })).toBeInTheDocument();
+  });
+
+  it('uses the existing rollback endpoint to produce an assessor-grade worksheet for the selected case', async () => {
     apiFetchJsonMock.mockImplementation((path: string) => {
       if (path.startsWith('/currentuse/classifications')) {
         return Promise.resolve({
@@ -344,9 +416,13 @@ describe('CUForge review regressions', () => {
     expect(body.parcelId).toBe('1-4444-400-0004');
     expect(body.classificationCode).toBe('CUFA');
     expect(screen.getByText('Tax Year 2026')).toBeInTheDocument();
-    expect(screen.getAllByText('TFV').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('CUV').length).toBeGreaterThan(0);
+    expect(screen.getByRole('columnheader', { name: 'CU Value' })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: 'TFV' })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: 'Difference' })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: 'Levy' })).toBeInTheDocument();
     expect(screen.getByText('Additional Tax')).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: 'Penalty' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Print worksheet' })).toBeInTheDocument();
     expect(screen.getByText('$16,100.00')).toBeInTheDocument();
   });
 });

@@ -7,7 +7,9 @@ import {
   buildChiefReviewCases,
   buildCurrentUseQueues,
   deriveCurrentUseCases,
+  nextCurrentUseStatus,
   type CurrentUseCase,
+  type CurrentUseCaseStatus,
   type CurrentUseQueue,
   type CurrentUseQueueId,
 } from './currentUseCaseDeskModel';
@@ -49,6 +51,7 @@ export default function CurrentUseCaseDeskPage() {
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
   const [noticeAction, setNoticeAction] = useState<string>('Missing evidence request staged');
   const [chiefDecision, setChiefDecision] = useState<string>('No chief action staged');
+  const [stagedStatusByCaseId, setStagedStatusByCaseId] = useState<Record<string, CurrentUseCaseStatus>>({});
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -61,8 +64,13 @@ export default function CurrentUseCaseDeskPage() {
   }, []);
 
   const cases = useMemo(
-    () => deriveCurrentUseCases(store.classifications, store.removals, store.interestRates),
-    [store.classifications, store.removals, store.interestRates],
+    () => deriveCurrentUseCases(
+      store.classifications,
+      store.removals,
+      store.interestRates,
+      `${store.taxYear}-05-25`,
+    ),
+    [store.classifications, store.removals, store.interestRates, store.taxYear],
   );
   const queues = useMemo(() => buildCurrentUseQueues(cases), [cases]);
   const chiefReviewCases = useMemo(() => buildChiefReviewCases(cases), [cases]);
@@ -72,6 +80,9 @@ export default function CurrentUseCaseDeskPage() {
     ?? activeQueue?.cases[0]
     ?? cases[0]
     ?? null;
+  const selectedStatus = selectedCase
+    ? stagedStatusByCaseId[selectedCase.id] ?? selectedCase.operationalStatus
+    : null;
 
   useEffect(() => {
     if (!selectedCase && selectedCaseId !== null) {
@@ -121,6 +132,13 @@ export default function CurrentUseCaseDeskPage() {
           {selectedCase ? (
             <>
               <CurrentUseCaseFile currentCase={selectedCase} />
+              <CurrentUseCaseStatusPanel
+                currentCase={selectedCase}
+                status={selectedStatus ?? selectedCase.operationalStatus}
+                onStatusChange={(status) => {
+                  setStagedStatusByCaseId(previous => ({ ...previous, [selectedCase.id]: status }));
+                }}
+              />
               <div className="cu-case-split">
                 <CurrentUseChecklist currentCase={selectedCase} />
                 <CurrentUseNoticeActionPanel
@@ -188,7 +206,9 @@ export function CurrentUseWorkQueue({ queues, activeQueueId, selectedCaseId, onQ
           >
             <span className="cu-case-list-item__parcel">{currentCase.parcelId}</span>
             <span>{currentCase.description}</span>
-            <span className="cu-case-list-item__meta">{currentCase.classificationCode} · {fmtCurrency(currentCase.estimatedRollbackExposure)}</span>
+            <span className="cu-case-list-item__meta">
+              {currentCase.operationalStatus} · {currentCase.assignment} · {currentCase.agingDays} days
+            </span>
           </button>
         )) : (
           <div className="cu-empty">No cases in this queue.</div>
@@ -214,9 +234,12 @@ export function CurrentUseCaseFile({ currentCase }: { currentCase: CurrentUseCas
         <div><span>Acres</span><strong>{currentCase.acreage == null ? 'Missing' : currentCase.acreage.toFixed(1)}</strong></div>
         <div><span>Enrolled</span><strong>{currentCase.enrollmentDate}</strong></div>
         <div><span>TFV</span><strong>{fmtCurrency(currentCase.currentMarketValue)}</strong></div>
-        <div><span>CUV</span><strong>{fmtCurrency(currentCase.currentUseValue)}</strong></div>
+        <div><span>CU Value</span><strong>{fmtCurrency(currentCase.currentUseValue)}</strong></div>
         <div><span>Tax Benefit</span><strong>{fmtCurrency(currentCase.taxSavings)}</strong></div>
         <div><span>Rollback Exposure</span><strong>{fmtCurrency(currentCase.estimatedRollbackExposure)}</strong></div>
+        <div><span>Assigned To</span><strong>{currentCase.assignment}</strong></div>
+        <div><span>Aging</span><strong>{currentCase.agingDays} days</strong></div>
+        <div><span>Next Action</span><strong>{currentCase.nextAction}</strong></div>
       </div>
 
       <div className="cu-case-timeline">
@@ -229,10 +252,56 @@ export function CurrentUseCaseFile({ currentCase }: { currentCase: CurrentUseCas
   );
 }
 
+export function CurrentUseCaseStatusPanel({
+  currentCase,
+  status,
+  onStatusChange,
+}: {
+  currentCase: CurrentUseCase;
+  status: CurrentUseCaseStatus;
+  onStatusChange(status: CurrentUseCaseStatus): void;
+}) {
+  return (
+    <section className="cu-case-panel">
+      <div className="cu-case-file-header">
+        <div>
+          <p className="cu-header__eyebrow">Case Status</p>
+          <h2>{status}</h2>
+          <p>Staged locally until case persistence is added.</p>
+        </div>
+        <div className="cu-status-actions">
+          <button type="button" className="cu-btn cu-btn--primary" onClick={() => onStatusChange(nextCurrentUseStatus(status))}>
+            Advance case
+          </button>
+          <button type="button" className="cu-btn" onClick={() => onStatusChange('MONITORING')}>
+            Return to monitoring
+          </button>
+        </div>
+      </div>
+      <div className="cu-status-flow" aria-label={`Case status flow for ${currentCase.parcelId}`}>
+        {[
+          'ACTIVE',
+          'MONITORING',
+          'CONTINUANCE_PENDING',
+          'WITHDRAWAL_REQUESTED',
+          'ROLLBACK_REVIEW',
+          'NOTICE_PENDING_APPROVAL',
+          'CHIEF_REVIEW',
+          'ISSUED',
+          'APPEAL',
+          'CLOSED',
+        ].map(step => (
+          <span key={step} className={`cu-status-step ${step === status ? 'cu-status-step--active' : ''}`}>{step}</span>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function CurrentUseChecklist({ currentCase }: { currentCase: CurrentUseCase }) {
   return (
     <section className="cu-case-panel">
-      <h2>Checklist</h2>
+      <h2>Compliance Checklist</h2>
       <div className="cu-checklist">
         {currentCase.checklist.map(item => (
           <div key={item.id} className={`cu-checklist-item ${item.complete ? 'cu-checklist-item--complete' : ''}`}>
@@ -259,8 +328,8 @@ export function CurrentUseNoticeActionPanel({
 }) {
   return (
     <section className="cu-case-panel">
-      <h2>Notice Builder</h2>
-      <p className="cu-muted">Draft workflow only until persistent case/approval state is added.</p>
+      <h2>Notice Action Panel</h2>
+      <p className="cu-muted">Preview only. Mail dates, certified tracking, and approvals require persistent case state.</p>
       <div className="cu-notice-actions">
         <button type="button" className="cu-btn" onClick={() => onNoticeAction(`Missing evidence request staged for ${currentCase.parcelId}`)}>
           Missing Evidence Request
@@ -273,6 +342,10 @@ export function CurrentUseNoticeActionPanel({
         </button>
       </div>
       <div className="cu-notice-status">{noticeAction}</div>
+      <div className="cu-notice-preview">
+        <strong>Notice preview</strong>
+        <p>{currentCase.parcelId}: {currentCase.nextAction}. Staff must verify owner address and appeal deadline before issuance.</p>
+      </div>
     </section>
   );
 }
@@ -307,49 +380,67 @@ export function CurrentUseRollbackWorksheet({ currentCase }: { currentCase: Curr
       currentUseValues,
     );
   };
+  const penaltyPerRow = rollbackResult && rollbackResult.yearBreakdowns.length > 0
+    ? rollbackResult.totalPenalty / rollbackResult.yearBreakdowns.length
+    : 0;
+  const additionalTaxFor = (year: RollbackYear) => Math.max(year.subtotal - year.interestAmount, 0);
+  const levyFor = (year: RollbackYear) => {
+    const additionalTax = additionalTaxFor(year);
+    if (year.difference <= 0) return '0.0000';
+    return ((additionalTax / year.difference) * 1000).toFixed(4);
+  };
 
   return (
     <section className="cu-case-panel">
       <div className="cu-case-file-header">
         <div>
           <h2>Rollback Worksheet</h2>
-          <p className="cu-muted">Transparent worksheet using existing CurrentUse rollback calculation.</p>
+          <p className="cu-muted">Assessor worksheet using existing CurrentUse rollback calculation.</p>
         </div>
-        <button type="button" className="cu-btn cu-btn--primary" onClick={handleCalculate} disabled={rollbackLoading}>
-          {rollbackLoading ? 'Calculating…' : 'Calculate worksheet'}
-        </button>
+        <div className="cu-status-actions">
+          <button type="button" className="cu-btn cu-btn--primary" onClick={handleCalculate} disabled={rollbackLoading}>
+            {rollbackLoading ? 'Calculating…' : 'Calculate worksheet'}
+          </button>
+          <button type="button" className="cu-btn" onClick={() => window.print()}>
+            Print worksheet
+          </button>
+        </div>
       </div>
 
       {rollbackError && <div className="cu-error">{rollbackError}</div>}
 
       {rollbackResult && (
         <>
-          <table className="cu-table tf-table">
-            <thead>
-              <tr>
-                <th>Tax Year</th>
-                <th>TFV</th>
-                <th>CUV</th>
-                <th>Difference</th>
-                <th>Levy / Interest</th>
-                <th>Additional Tax</th>
-                <th>Interest</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rollbackResult.yearBreakdowns.map((year: RollbackYear) => (
-                <tr key={year.year}>
-                  <td>Tax Year {year.year}</td>
-                  <td>{fmtCurrency(year.marketValue)}</td>
-                  <td>{fmtCurrency(year.currentUseValue)}</td>
-                  <td>{fmtCurrency(year.difference)}</td>
-                  <td>{(year.interestRate * 100).toFixed(2)}%</td>
-                  <td>{fmtCurrency(year.subtotal - year.interestAmount, 2)}</td>
-                  <td>{fmtCurrency(year.interestAmount, 2)}</td>
+          <div className="cu-table-scroll">
+            <table className="cu-table tf-table">
+              <thead>
+                <tr>
+                  <th>Tax Year</th>
+                  <th>CU Value</th>
+                  <th>TFV</th>
+                  <th>Difference</th>
+                  <th>Levy</th>
+                  <th>Additional Tax</th>
+                  <th>Interest</th>
+                  <th>Penalty</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {rollbackResult.yearBreakdowns.map((year: RollbackYear) => (
+                  <tr key={year.year}>
+                    <td>Tax Year {year.year}</td>
+                    <td>{fmtCurrency(year.currentUseValue)}</td>
+                    <td>{fmtCurrency(year.marketValue)}</td>
+                    <td>{fmtCurrency(year.difference)}</td>
+                    <td>{levyFor(year)}</td>
+                    <td>{fmtCurrency(additionalTaxFor(year), 2)}</td>
+                    <td>{fmtCurrency(year.interestAmount, 2)}</td>
+                    <td>{fmtCurrency(penaltyPerRow, 2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           <div className="cu-worksheet-total">
             <span>Grand Total</span>
             <strong>{fmtCurrency(rollbackResult.grandTotal, 2)}</strong>
@@ -376,7 +467,7 @@ export function CurrentUseChiefReviewPanel({
   return (
     <aside className="cu-case-panel cu-chief-panel" aria-label="Chief Appraiser Review Queue">
       <h2>Chief Appraiser Review Queue</h2>
-      <p className="cu-muted">Approval staging derived from live records; persistent approval state is next slice.</p>
+      <p className="cu-muted">Liability control before rollback, notice, exception, override, or appeal action.</p>
       <div className="cu-chief-list">
         {cases.length ? cases.map(currentCase => (
           <button
@@ -386,7 +477,10 @@ export function CurrentUseChiefReviewPanel({
             onClick={() => onSelectCase(currentCase.id)}
           >
             <strong>{currentCase.parcelId}</strong>
-            <span>{currentCase.chiefReviewReasons.join(' · ')}</span>
+            <span>{fmtCurrency(currentCase.estimatedRollbackExposure)} exposure</span>
+            <div className="cu-chief-reasons">
+              {currentCase.chiefReviewReasons.map(reason => <span key={reason}>{reason}</span>)}
+            </div>
           </button>
         )) : (
           <div className="cu-empty">No chief review cases derived from current records.</div>
@@ -394,7 +488,7 @@ export function CurrentUseChiefReviewPanel({
       </div>
       <div className="cu-chief-actions">
         <button type="button" className="cu-btn" onClick={() => onChiefDecision('Approval staged for selected case')}>
-          Stage Approval
+          Approve
         </button>
         <button type="button" className="cu-btn" onClick={() => onChiefDecision('Return for correction staged for selected case')}>
           Return for Correction
