@@ -324,22 +324,22 @@ describe('CUForge review regressions', () => {
       fireEvent.click(screen.getByRole('button', { name: /Rollback Incomplete 1/i }));
     });
 
-    expect(screen.getByRole('heading', { name: 'ROLLBACK_REVIEW' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Rollback Review' })).toBeInTheDocument();
     expect(screen.getByText('Penalty suppression review')).toBeInTheDocument();
     expect(screen.getByText('Statutory exception claimed')).toBeInTheDocument();
-    expect(screen.getByText('Staged locally until case persistence is added.')).toBeInTheDocument();
+    expect(screen.getByText('Working action - not saved to the case record.')).toBeInTheDocument();
 
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'Advance case' }));
     });
 
-    expect(screen.getByRole('heading', { name: 'NOTICE_PENDING_APPROVAL' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Notice Pending Approval' })).toBeInTheDocument();
 
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'Return to monitoring' }));
     });
 
-    expect(screen.getByRole('heading', { name: 'MONITORING' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Monitoring' })).toBeInTheDocument();
   });
 
   it('uses the existing rollback endpoint to produce an assessor-grade worksheet for the selected case', async () => {

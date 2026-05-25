@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build the frontend-only Current Use Operational Case Desk in the canonical OS shell CUForge module.
+**Goal:** Build the frontend-only Current Use Case Desk in the canonical OS shell CUForge module.
 
-**Architecture:** Keep the existing Zustand store and live CurrentUse endpoints. Add derived case-desk helpers and focused React components under `frontend/apps/os-shell/src/pages/forge/current-use/*`, then replace the old dashboard/tab host with the case desk.
+**Architecture:** Keep the existing Zustand store and live CurrentUse endpoints. Add derived case-desk helpers and focused React components under `frontend/apps/os-shell/src/pages/forge/current-use/*`, then replace the previous tabbed view with the case desk.
 
 **Tech Stack:** React, TypeScript, Zustand, Vitest, Testing Library, existing `apiFetchJson` CurrentUse API wrapper.
 

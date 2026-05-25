@@ -2,7 +2,7 @@
 
 ## Goal
 
-Replace CUForge's dashboard-first posture with an operational case desk for Ag Appraisers and Chief Appraisers.
+Replace CUForge's previous tabbed view with a case desk for Ag Appraisers and Chief Appraisers.
 
 ## Scope
 
@@ -38,9 +38,9 @@ Primary units:
 - `CurrentUseCaseDeskPage`: host for derived case data, queue selection, case selection, and appraiser/chief work surfaces.
 - `CurrentUseWorkQueue`: daily Ag Appraiser queue with actionable lanes.
 - `CurrentUseCaseFile`: selected parcel case file with classification, acreage, value exposure, status, removal context, and timeline.
-- `CurrentUseChecklist`: operational compliance checklist derived from live fields.
+- `CurrentUseChecklist`: staff compliance checklist derived from live fields.
 - `CurrentUseRollbackWorksheet`: row-level rollback worksheet using existing rollback calculation output.
-- `CurrentUseNoticeActionPanel`: non-persistent notice workflow staging for missing evidence, intent to remove, and final notice actions.
+- `CurrentUseNoticeActionPanel`: non-persistent notice preparation for missing evidence, intent to remove, and final notice actions.
 - `CurrentUseChiefReviewPanel`: Chief Appraiser review queue derived from high-risk, high-dollar, removal, and notice-ready cases.
 
 ## Derived Queue Rules
@@ -48,20 +48,22 @@ Primary units:
 The first version uses deterministic derived rules:
 
 - Missing Evidence: classification has no acreage, no current use value, no market value, or no tax savings.
-- Pending Continuance: active classifications with no removal and complete core values.
-- Inspection Needed: active cases with missing evidence or acreage greater than 20.
-- Rollback Review: cases with active removal or estimated rollback exposure greater than $100,000.
-- Draft Notices: cases with removal status pending, initiated, or missing evidence.
-- Supervisor Review: cases with removal status pending, initiated, confirmed, or completed.
-- Chief Approval: high-dollar rollback exposure, removal cases, notice-ready cases, or missing evidence cases.
+- Pending Owner Response: files waiting on owner/operator documents or withdrawal clarification.
+- Continuance Pending: active classifications with no removal and complete core values.
+- Inspection Required: files needing field inspection, aerial review, or land-use verification.
+- Rollback Incomplete: removal files without a completed rollback worksheet.
+- Notice Ready: files ready for missing evidence, intent to remove, or final notice preparation.
+- Pending Chief Review: missing evidence, high-dollar rollback exposure, exception, appeal, or removal decision files requiring Chief Appraiser review.
+- Waiting on Treasurer: issued or confirmed rollback files waiting for Treasurer billing or receipt.
+- Appeal Active: files with active appeal, hearing, or board review posture.
 
 ## Non-Persistent Interaction Rules
 
 Because this slice is frontend-operational first:
 
 - Checklist items are computed and may show session-only visual state if needed.
-- Notice actions are staged in the UI and labeled as draft workflow.
-- Chief approve/return actions are review staging only.
+- Notice actions are prepared in the UI and labeled as not saved to the case record.
+- Chief approve/return actions are review preparation only.
 - No user action claims to persist to backend.
 
 ## Testing
@@ -73,4 +75,3 @@ Tests must prove:
 - Selecting a queue and case updates the case file.
 - Rollback worksheet sends the existing rollback calculation request and renders row-level detail.
 - Chief review queue exposes high-liability cases without backend persistence claims.
-

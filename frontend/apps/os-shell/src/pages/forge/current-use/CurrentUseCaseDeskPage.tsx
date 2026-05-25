@@ -6,6 +6,8 @@ import {
 import {
   buildChiefReviewCases,
   buildCurrentUseQueues,
+  CURRENT_USE_STATUS_FLOW,
+  CURRENT_USE_STATUS_LABELS,
   deriveCurrentUseCases,
   nextCurrentUseStatus,
   type CurrentUseCase,
@@ -25,6 +27,8 @@ const fmtCurrency = (value: number | null | undefined, digits = 0) =>
   });
 
 const rollbackLookbackYears = (classificationCode: string) => classificationCode === 'DFL' ? 7 : 10;
+
+const caseStatusLabel = (status: CurrentUseCaseStatus) => CURRENT_USE_STATUS_LABELS[status];
 
 const rollbackValueYears = (classificationCode: string, enrollmentYear: number, removalYear: number) => {
   const lookbackYears = rollbackLookbackYears(classificationCode);
@@ -49,8 +53,8 @@ export default function CurrentUseCaseDeskPage() {
   const store = useCUForgeWorkspaceStore();
   const [activeQueueId, setActiveQueueId] = useState<CurrentUseQueueId>('missingEvidence');
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
-  const [noticeAction, setNoticeAction] = useState<string>('Missing evidence request staged');
-  const [chiefDecision, setChiefDecision] = useState<string>('No chief action staged');
+  const [noticeAction, setNoticeAction] = useState<string>('Missing evidence request prepared');
+  const [chiefDecision, setChiefDecision] = useState<string>('No Chief decision prepared');
   const [stagedStatusByCaseId, setStagedStatusByCaseId] = useState<Record<string, CurrentUseCaseStatus>>({});
 
   useEffect(() => {
@@ -106,7 +110,7 @@ export default function CurrentUseCaseDeskPage() {
           <div className="cu-header__badges">
             <span className="forge-chip forge-chip--neutral">{store.taxYear} tax year</span>
             <span className="forge-chip forge-chip--success">RCW 84.33 / 84.34</span>
-            <span className="forge-chip forge-chip--warn">No backend case persistence yet</span>
+            <span className="forge-chip forge-chip--warn">Case actions not saved yet</span>
           </div>
         </div>
       </header>
@@ -207,7 +211,7 @@ export function CurrentUseWorkQueue({ queues, activeQueueId, selectedCaseId, onQ
             <span className="cu-case-list-item__parcel">{currentCase.parcelId}</span>
             <span>{currentCase.description}</span>
             <span className="cu-case-list-item__meta">
-              {currentCase.operationalStatus} · {currentCase.assignment} · {currentCase.agingDays} days
+              {caseStatusLabel(currentCase.operationalStatus)} · {currentCase.assignment} · {currentCase.agingDays} days
             </span>
           </button>
         )) : (
@@ -266,8 +270,8 @@ export function CurrentUseCaseStatusPanel({
       <div className="cu-case-file-header">
         <div>
           <p className="cu-header__eyebrow">Case Status</p>
-          <h2>{status}</h2>
-          <p>Staged locally until case persistence is added.</p>
+          <h2>{caseStatusLabel(status)}</h2>
+          <p>Working action - not saved to the case record.</p>
         </div>
         <div className="cu-status-actions">
           <button type="button" className="cu-btn cu-btn--primary" onClick={() => onStatusChange(nextCurrentUseStatus(status))}>
@@ -279,19 +283,8 @@ export function CurrentUseCaseStatusPanel({
         </div>
       </div>
       <div className="cu-status-flow" aria-label={`Case status flow for ${currentCase.parcelId}`}>
-        {[
-          'ACTIVE',
-          'MONITORING',
-          'CONTINUANCE_PENDING',
-          'WITHDRAWAL_REQUESTED',
-          'ROLLBACK_REVIEW',
-          'NOTICE_PENDING_APPROVAL',
-          'CHIEF_REVIEW',
-          'ISSUED',
-          'APPEAL',
-          'CLOSED',
-        ].map(step => (
-          <span key={step} className={`cu-status-step ${step === status ? 'cu-status-step--active' : ''}`}>{step}</span>
+        {CURRENT_USE_STATUS_FLOW.map(step => (
+          <span key={step} className={`cu-status-step ${step === status ? 'cu-status-step--active' : ''}`}>{caseStatusLabel(step)}</span>
         ))}
       </div>
     </section>
@@ -329,15 +322,15 @@ export function CurrentUseNoticeActionPanel({
   return (
     <section className="cu-case-panel">
       <h2>Notice Action Panel</h2>
-      <p className="cu-muted">Preview only. Mail dates, certified tracking, and approvals require persistent case state.</p>
+      <p className="cu-muted">Preview only. Mail dates, certified tracking, and approvals are not saved to the case record yet.</p>
       <div className="cu-notice-actions">
-        <button type="button" className="cu-btn" onClick={() => onNoticeAction(`Missing evidence request staged for ${currentCase.parcelId}`)}>
+        <button type="button" className="cu-btn" onClick={() => onNoticeAction(`Missing evidence request prepared for ${currentCase.parcelId}`)}>
           Missing Evidence Request
         </button>
-        <button type="button" className="cu-btn" onClick={() => onNoticeAction(`Intent to remove staged for ${currentCase.parcelId}`)}>
+        <button type="button" className="cu-btn" onClick={() => onNoticeAction(`Intent to remove prepared for ${currentCase.parcelId}`)}>
           Intent to Remove
         </button>
-        <button type="button" className="cu-btn" onClick={() => onNoticeAction(`Final notice staged for ${currentCase.parcelId}`)}>
+        <button type="button" className="cu-btn" onClick={() => onNoticeAction(`Final notice prepared for ${currentCase.parcelId}`)}>
           Final Notice
         </button>
       </div>
@@ -395,7 +388,7 @@ export function CurrentUseRollbackWorksheet({ currentCase }: { currentCase: Curr
       <div className="cu-case-file-header">
         <div>
           <h2>Rollback Worksheet</h2>
-          <p className="cu-muted">Assessor worksheet using existing CurrentUse rollback calculation.</p>
+          <p className="cu-muted">Assessor worksheet using the county rollback calculation.</p>
         </div>
         <div className="cu-status-actions">
           <button type="button" className="cu-btn cu-btn--primary" onClick={handleCalculate} disabled={rollbackLoading}>
@@ -467,7 +460,7 @@ export function CurrentUseChiefReviewPanel({
   return (
     <aside className="cu-case-panel cu-chief-panel" aria-label="Chief Appraiser Review Queue">
       <h2>Chief Appraiser Review Queue</h2>
-      <p className="cu-muted">Liability control before rollback, notice, exception, override, or appeal action.</p>
+      <p className="cu-muted">Chief review before rollback, notice, exception, override, or appeal action.</p>
       <div className="cu-chief-list">
         {cases.length ? cases.map(currentCase => (
           <button
@@ -487,10 +480,10 @@ export function CurrentUseChiefReviewPanel({
         )}
       </div>
       <div className="cu-chief-actions">
-        <button type="button" className="cu-btn" onClick={() => onChiefDecision('Approval staged for selected case')}>
+        <button type="button" className="cu-btn" onClick={() => onChiefDecision('Approval prepared for selected case')}>
           Approve
         </button>
-        <button type="button" className="cu-btn" onClick={() => onChiefDecision('Return for correction staged for selected case')}>
+        <button type="button" className="cu-btn" onClick={() => onChiefDecision('Return for correction prepared for selected case')}>
           Return for Correction
         </button>
       </div>

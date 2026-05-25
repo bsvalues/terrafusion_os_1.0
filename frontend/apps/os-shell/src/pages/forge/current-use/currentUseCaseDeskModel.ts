@@ -91,6 +91,18 @@ const REMOVAL_REVIEW_STATUSES = new Set(['Pending', 'Initiated']);
 const TREASURER_STATUSES = new Set(['Confirmed', 'Completed', 'Issued']);
 const HIGH_ROLLBACK_THRESHOLD = 100_000;
 const DEFAULT_AS_OF_DATE = '2026-05-25';
+export const CURRENT_USE_STATUS_LABELS: Record<CurrentUseCaseStatus, string> = {
+  ACTIVE: 'Active',
+  MONITORING: 'Monitoring',
+  CONTINUANCE_PENDING: 'Continuance Pending',
+  WITHDRAWAL_REQUESTED: 'Withdrawal Requested',
+  ROLLBACK_REVIEW: 'Rollback Review',
+  NOTICE_PENDING_APPROVAL: 'Notice Pending Approval',
+  CHIEF_REVIEW: 'Chief Review',
+  ISSUED: 'Issued',
+  APPEAL: 'Appeal',
+  CLOSED: 'Closed',
+};
 
 function latestRate(rates: InterestRate[]): InterestRate | null {
   return [...rates].sort((a, b) => b.year - a.year)[0] ?? null;
@@ -286,7 +298,7 @@ function chiefReasonsFor(removal: Removal | null, missingEvidence: string[], exp
 function timelineFor(classification: Classification, removal: Removal | null, operationalStatus: CurrentUseCaseStatus): string[] {
   const timeline = [`${classification.enrollmentDate}: enrollment recorded as ${classification.classificationCode}`];
   if (classification.status) timeline.push(`Program status: ${classification.status}`);
-  timeline.push(`Case status: ${operationalStatus}`);
+  timeline.push(`Case status: ${CURRENT_USE_STATUS_LABELS[operationalStatus]}`);
   if (removal) {
     timeline.push(`${removal.initiatedDate}: removal file opened - ${removal.reason}`);
     if (removal.removalDate) timeline.push(`${removal.removalDate}: removal date on file`);
