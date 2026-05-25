@@ -335,6 +335,43 @@ jobs:
           docker compose -f runtime-compose.yml --env-file release.env up -d
           SSH
 
+      - name: Provision DB-backed operator account
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROVISION_JSON="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' bash -s" <<'SSH'
+          set -euo pipefail
+          cd "$APP_ROOT"
+          docker compose -f runtime-compose.yml --env-file release.env run --rm --no-deps \
+            --entrypoint sh \
+            backend \
+            -c 'set -eu
+              dotnet /app/tools/TerraFusion.AuthProvisioner/TerraFusion.AuthProvisioner.dll \
+                --provider Sqlite \
+                --connection-string "Data Source=/app/data/terrafusion.db" \
+                --email "$TERRAFUSION_BOOTSTRAP_EMAIL" \
+                --password-env TERRAFUSION_BOOTSTRAP_PASSWORD \
+                --roles "${TERRAFUSION_BOOTSTRAP_ROLES:-GovernmentUser,Administrator,FullSystemAccess}" \
+                --permissions "runtime:read,county:read,workbench:access" \
+                --county-name Benton \
+                --county-state WA \
+                --county-fips 53005 \
+                --create-county' >/tmp/terrafusion-auth-provisioner.json
+          cat /tmp/terrafusion-auth-provisioner.json
+          rm -f /tmp/terrafusion-auth-provisioner.json
+          SSH
+          )"
+          PROVISION_JSON="$PROVISION_JSON" node <<'NODE'
+          const receipt = JSON.parse(process.env.PROVISION_JSON || "{}");
+          if (!receipt.passwordHashStored) {
+            throw new Error("AuthProvisioner did not store a password hash");
+          }
+          if (!receipt.countyId) {
+            throw new Error("AuthProvisioner did not bind the operator to a county");
+          }
+          console.log(`DB-backed operator account ${receipt.result}; password hash stored; county bound.`);
+          NODE
+
       - name: Verify public health and release header
         shell: bash
         run: |
