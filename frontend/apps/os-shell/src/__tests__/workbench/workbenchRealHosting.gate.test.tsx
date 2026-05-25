@@ -548,14 +548,14 @@ describe('Workbench Real Hosting Gate', () => {
   // =========================================================================
 
   describe('WORKBENCH-LEVEL', () => {
-    it('VALID_WORKBENCH_TAB_IDS has exactly 10 entries', async () => {
+    it('VALID_WORKBENCH_TAB_IDS has exactly 11 entries', async () => {
       const { VALID_WORKBENCH_TAB_IDS } = await import('../../config/suiteRegistry');
-      expect(VALID_WORKBENCH_TAB_IDS).toHaveLength(10);
+      expect(VALID_WORKBENCH_TAB_IDS).toHaveLength(11);
     });
 
-    it('VALID_WORKBENCH_TAB_IDS contains the 10 canonical tabs in order', async () => {
+    it('VALID_WORKBENCH_TAB_IDS contains the 11 canonical tabs in order', async () => {
       const { VALID_WORKBENCH_TAB_IDS } = await import('../../config/suiteRegistry');
-      const expected = ['summary', 'forge', 'atlas', 'dais', 'dossier', 'clerk', 'treasury', 'audit', 'pilot', 'trace'];
+      const expected = ['summary', 'forge', 'atlas', 'dais', 'dossier', 'clerk', 'treasury', 'audit', 'pilot', 'trace', 'current-use'];
       expect(VALID_WORKBENCH_TAB_IDS).toEqual(expected);
     });
 

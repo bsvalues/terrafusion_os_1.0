@@ -36,6 +36,7 @@ using TerraFusion.Sync.Workbench.Mapping;
 using TerraFusion.Sync.Workbench.Schema;
 using TerraFusion.Sync.Workbench.Transforms.Sales;
 using TerraFusion.API.Services.SpecLock;
+using TerraFusion.CurrentUse;
 using TerraFusion.API.Services.Marketplace;
 using TerraFusion.API.Services.Telemetry;
 // Conditional DB providers
@@ -2519,6 +2520,9 @@ builder.Services.AddScoped<IAdvancedQuantumCountyFederation, AdvancedQuantumCoun
 // 99.9% accuracy, Factor 999, 1,000,000 agents, 147-dimensional analysis
 // RE-ENABLED: Championship-level property intelligence with quantum optimization
 builder.Services.AddUltimateCostForgeAPI(builder.Configuration, builder.Environment);
+
+// Terra Current Use Alpha — RCW 84.34 rollback engine
+builder.Services.AddTerraCurrentUseAlpha();
 
 // ⚡ QUANTUM METRICS REAL-TIME INTEGRATION - Championship-Level WebSocket Performance
 // Real-time government operations monitoring with 99.99% uptime targets

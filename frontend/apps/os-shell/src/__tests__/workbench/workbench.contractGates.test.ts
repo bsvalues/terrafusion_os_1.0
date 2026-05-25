@@ -73,18 +73,18 @@ vi.mock('../../services/api/activityApi', () => ({
 // ============================================================================
 
 describe('Gate 1: Contract Types', () => {
-  it('WorkbenchTabSlug type covers all 10 canonical tabs', () => {
+  it('WorkbenchTabSlug type covers all 11 canonical tabs', () => {
     // This is enforced at compile time by TypeScript, but we
     // verify the runtime constant matches.
-    const expected = ['summary', 'forge', 'atlas', 'dais', 'dossier', 'clerk', 'treasury', 'audit', 'pilot', 'trace'];
+    const expected = ['summary', 'forge', 'atlas', 'dais', 'dossier', 'clerk', 'treasury', 'audit', 'pilot', 'trace', 'current-use'];
     for (const tab of expected) {
       expect(VALID_WORKBENCH_TAB_IDS).toContain(tab);
     }
   });
 
-  it('tab slug set is exactly 10 members (no drift)', () => {
+  it('tab slug set is exactly 11 members (no drift)', () => {
     // Gate 5 locks the canonical parcel workbench list.
-    expect(VALID_WORKBENCH_TAB_IDS).toHaveLength(10);
+    expect(VALID_WORKBENCH_TAB_IDS).toHaveLength(11);
   });
 });
 
@@ -210,7 +210,7 @@ describe('Gate 4: Workbench Component Barrel', () => {
 describe('Gate 5: Tab Slug Canonical Order', () => {
   it('tab order is exactly: primary parcel, linked county offices, OS support', () => {
     // This prevents accidental reordering which would confuse users
-    const expected = ['summary', 'forge', 'atlas', 'dais', 'dossier', 'clerk', 'treasury', 'audit', 'pilot', 'trace'];
+    const expected = ['summary', 'forge', 'atlas', 'dais', 'dossier', 'clerk', 'treasury', 'audit', 'pilot', 'trace', 'current-use'];
     expect(VALID_WORKBENCH_TAB_IDS).toEqual(expected);
   });
 
@@ -225,7 +225,7 @@ describe('Gate 5: Tab Slug Canonical Order', () => {
 
   it('tab grouping separates primary parcel, linked county offices, and OS support', () => {
     expect(WORKBENCH_TABS.filter((tab) => tab.group === 'primary-parcel').map((tab) => tab.id))
-      .toEqual(['summary', 'forge', 'atlas', 'dais', 'dossier']);
+      .toEqual(['summary', 'forge', 'atlas', 'dais', 'dossier', 'current-use']);
     expect(WORKBENCH_TABS.filter((tab) => tab.group === 'linked-county-office').map((tab) => tab.id))
       .toEqual(['clerk', 'treasury', 'audit']);
     expect(WORKBENCH_TABS.filter((tab) => tab.group === 'os-support').map((tab) => tab.id))

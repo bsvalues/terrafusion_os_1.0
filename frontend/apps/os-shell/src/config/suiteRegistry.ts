@@ -15,7 +15,6 @@
  */
 
 import { WORKBENCH_TAB_IDS } from './workbenchTabs';
-import type { WorkbenchTabSlug } from '../contracts/workbench';
 
 export type SuiteId =
   | 'forge' // TerraForge - Property Valuation & Cost Analysis
@@ -40,8 +39,20 @@ const ACTIVE_SUITE_REGISTRY_STATUS: SuiteRegistryStatus = 'live';
  *
  * These are the ONLY valid tab identifiers for PropertyWorkbench.
  * Adding a new tab requires governance review.
+ * MUST stay in sync with WorkbenchTabSlug in contracts/workbench.ts
  */
-export type WorkbenchTabId = WorkbenchTabSlug;
+export type WorkbenchTabId =
+  | 'summary'   // Property overview (index route)
+  | 'forge'     // AI valuation & appeals
+  | 'atlas'     // GIS & mapping
+  | 'dais'      // Workflow status
+  | 'clerk'     // County office (linked)
+  | 'treasury'  // Tax & billing (linked)
+  | 'audit'     // Audit trail (linked)
+  | 'dossier'   // Documents
+  | 'pilot'       // AI assistant rail
+  | 'trace'       // Evidence trail
+  | 'current-use'; // Current Use (RCW 84.34)
 
 /**
  * Workbench target configuration for suites with workbench intent.
@@ -576,7 +587,7 @@ export function isValidPrimaryAction(
  * This is the canonical list - PropertyWorkbench should use this.
  *
  * Gate 5 of workbench.contractGates locks this list to exactly:
- *   summary, forge, atlas, dais, dossier, clerk, treasury, audit, pilot, trace
+ *   summary, forge, atlas, dais, dossier, clerk, treasury, audit, pilot, trace, current-use
  */
 export const VALID_WORKBENCH_TAB_IDS: readonly WorkbenchTabId[] = WORKBENCH_TAB_IDS;
 

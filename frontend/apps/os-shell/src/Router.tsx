@@ -58,6 +58,7 @@ const PropertyDais = lazy(() => import('./pages/workbench/tabs/PropertyDais'));
 const PropertyDossier = lazy(() => import('./pages/workbench/tabs/PropertyDossier'));
 const PropertyPilot = lazy(() => import('./pages/workbench/tabs/PropertyPilot'));
 const PropertyTrace = lazy(() => import('./pages/workbench/tabs/PropertyTrace'));
+const PropertyCurrentUse = lazy(() => import('./pages/workbench/tabs/PropertyCurrentUse'));
 const PropertyClerk = lazy(() => import('./pages/workbench/tabs/PropertyClerk'));
 const PropertyTreasury = lazy(() => import('./pages/workbench/tabs/PropertyTreasury'));
 const PropertyAudit = lazy(() => import('./pages/workbench/tabs/PropertyAudit'));
@@ -223,6 +224,7 @@ const Router: React.FC = () => {
                     <Route path='dossier' element={<PropertyDossier />} />
                     <Route path='pilot' element={<PropertyPilot />} />
                     <Route path='trace' element={<PropertyTrace />} />
+                    <Route path='current-use' element={<PropertyCurrentUse />} />
                   </Route>
 
                   {/* Legacy Redirects - Demote broken defaults with telemetry */}

@@ -40,7 +40,7 @@ import { executeOsAction, type OsAction, type OsActionContext } from '../../serv
 import { usePropertyStore } from '../../stores/propertyStore';
 import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
 import { useWorkbenchRoles } from '../../hooks/useWorkbenchRoles';
-import { WORKBENCH_TABS, isCanonicalWorkbenchTab } from '../../config/workbenchTabs';
+import { WORKBENCH_TABS } from '../../config/workbenchTabs';
 import { useSession } from '../../auth/useSession';
 import { useAuthContext, toOsActor } from '../../auth/useAuthContext';
 import { buildContextRibbonFacts as _buildContextRibbonFacts } from '../../components/workbench/parcelContextFacts';
@@ -72,8 +72,20 @@ function getCurrentTabFromPath(pathname: string, parcelId: string): WorkbenchTab
   const basePath = `/property/${parcelId}`;
   const pathAfterBase = pathname.replace(basePath, '').replace(/^\//, '');
 
-  if (!pathAfterBase || pathAfterBase === '') return 'summary';
-  return (isCanonicalWorkbenchTab(pathAfterBase) ? pathAfterBase : null) ?? 'summary';
+  const tabPathMap: Record<string, WorkbenchTabSlug> = {
+    forge: 'forge',
+    atlas: 'atlas',
+    dais: 'dais',
+    clerk: 'clerk',
+    treasury: 'treasury',
+    audit: 'audit',
+    dossier: 'dossier',
+    pilot: 'pilot',
+    trace: 'trace',
+    'current-use': 'current-use',
+  };
+
+  return tabPathMap[pathAfterBase] ?? 'summary';
 }
 
 // ============================================================================

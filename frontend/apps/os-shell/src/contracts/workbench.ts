@@ -24,7 +24,8 @@ export type WorkbenchTabSlug =
   | 'audit'
   | 'dossier'
   | 'pilot'
-  | 'trace';
+  | 'trace'
+  | 'current-use';
 
 /** Data classification per FISMA-HIGH policy. */
 export type DataClassification = 'PUBLIC' | 'CONFIDENTIAL' | 'RESTRICTED';

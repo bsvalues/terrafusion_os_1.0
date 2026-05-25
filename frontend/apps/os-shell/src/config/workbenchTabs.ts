@@ -20,6 +20,7 @@ export const WORKBENCH_TABS: readonly WorkbenchTabDefinition[] = [
   { id: 'audit', label: 'Audit', path: 'audit', enabled: true, group: 'linked-county-office', owner: 'office' },
   { id: 'pilot', label: 'Pilot', path: 'pilot', enabled: true, group: 'os-support', owner: 'os' },
   { id: 'trace', label: 'Trace', path: 'trace', enabled: true, group: 'os-support', owner: 'os' },
+  { id: 'current-use', label: 'Current Use', path: 'current-use', enabled: true, group: 'primary-parcel', owner: 'suite' },
 ] as const;
 
 export const WORKBENCH_TAB_IDS: readonly WorkbenchTabSlug[] = WORKBENCH_TABS.map((tab) => tab.id);

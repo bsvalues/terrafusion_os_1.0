@@ -58,9 +58,9 @@ describe('Phase 25: Shell Anti-Drift Governance', () => {
       expect(ids).toEqual(['forge', 'atlas', 'dais', 'dossier', 'gpt']);
     });
 
-    it('workbench has exactly 10 tab IDs', () => {
-      expect(VALID_WORKBENCH_TAB_IDS).toHaveLength(10);
-      const expected = ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot', 'trace'];
+    it('workbench has exactly 11 tab IDs', () => {
+      expect(VALID_WORKBENCH_TAB_IDS).toHaveLength(11);
+      const expected = ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot', 'trace', 'current-use'];
       expect([...VALID_WORKBENCH_TAB_IDS].sort()).toEqual([...expected].sort());
     });
 
