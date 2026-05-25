@@ -329,8 +329,14 @@ describe('D. CI release gate coverage', () => {
     assert.ok(
       content.includes('--entrypoint sh') &&
         content.includes('TERRAFUSION_BOOTSTRAP_EMAIL') &&
-        content.includes('PROVISION_JSON='),
+        content.includes('PROVISION_OUTPUT=') &&
+        content.includes('PROVISION_JSON=') &&
+        content.includes("awk '/^\\{/{line=$0} END{print line}'"),
       'Release lane must expand bootstrap credentials inside the env-file-backed container and validate provisioner JSON on the runner',
+    );
+    assert.ok(
+      !content.includes('/tmp/terrafusion-auth-provisioner.json'),
+      'Release lane must stream AuthProvisioner JSON from the one-off container instead of reading a host /tmp file',
     );
   });
 });
