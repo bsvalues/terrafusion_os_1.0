@@ -456,7 +456,7 @@ jobs:
           NODE
           )"
 
-          LOGIN_RESPONSE="$(curl -fsS --max-time 10 \
+          LOGIN_RESPONSE="$(curl -fsS --max-time 30 \
             -H 'Content-Type: application/json' \
             -d "$LOGIN_PAYLOAD" \
             "${PUBLIC_URL}/api/auth/login")"

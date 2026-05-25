@@ -338,6 +338,10 @@ describe('D. CI release gate coverage', () => {
       !content.includes('/tmp/terrafusion-auth-provisioner.json'),
       'Release lane must stream AuthProvisioner JSON from the one-off container instead of reading a host /tmp file',
     );
+    assert.ok(
+      content.includes('LOGIN_RESPONSE="$(curl -fsS --max-time 30'),
+      'Release lane must give the post-deploy DB-backed login smoke enough time for cold auth/session persistence while still requiring a real token',
+    );
   });
 });
 
