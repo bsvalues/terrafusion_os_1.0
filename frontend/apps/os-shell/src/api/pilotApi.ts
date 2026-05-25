@@ -3,29 +3,23 @@
  * TERRAFUSION PILOT API CLIENT
  * Phase 5: GovernanceLock - Single Choke Point Integration
  *
- * All tool invocations MUST go through POST /pilot/invoke.
+ * All tool invocations MUST go through POST /api/pilot/invoke.
  * This client enforces the single execution path from the UI.
  *
  * Phase 1 Day 2: Added error normalization helpers to populate
  * correlationId into ErrorInfo for consistent UI display.
  *
- * NOTE: This is the Pilot subsystem (port 5000) - intentionally
- * NOT using centralized apiBase.ts because Pilot has its own
- * URL resolution pattern. Do NOT migrate to buildApiUrl().
- *
  * Government. Transcended.
  * ═══════════════════════════════════════════════════════════════
  */
 
+import { getToken } from '../auth/authStorage';
 import { getSession } from '../auth/session';
 import { ErrorInfo } from '../hooks/useErrorHandler';
-import { getViteEnv } from '../shared/viteEnv';
+import { getApiBase } from '../lib/apiBase';
 
-// Pilot API Base URL — always relative so requests go through the Vite dev proxy.
-// The Vite `/pilot` proxy forwards to the pilot runtime (port 4317 by default).
-// VITE_API_URL points at the .NET backend, NOT the pilot runtime.
-const env = getViteEnv();
-const API_BASE_URL = '';
+// Pilot routes are served by the .NET backend under /api/pilot in production.
+const API_BASE_URL = getApiBase();
 
 /**
  * Build standard Pilot API headers including identity from current session.
@@ -35,6 +29,10 @@ function buildPilotHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
+  const token = getToken();
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
   const session = getSession();
   if (session) {
     headers['x-user-id'] = session.userId;
