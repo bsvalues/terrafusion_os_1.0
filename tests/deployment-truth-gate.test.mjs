@@ -301,6 +301,38 @@ describe('D. CI release gate coverage', () => {
     assert.ok(hasTest, 'PR gate must include test step');
     assert.ok(hasLint, 'PR gate must include lint step');
   });
+
+  it('D8: backend runtime image packages the DB-backed AuthProvisioner', () => {
+    const content = readFileSync(join(ROOT, 'backend', 'Dockerfile'), 'utf8');
+    assert.ok(
+      content.includes('RUN dotnet publish tools/TerraFusion.AuthProvisioner/TerraFusion.AuthProvisioner.csproj'),
+      'Backend build stage must publish TerraFusion.AuthProvisioner',
+    );
+    assert.ok(
+      content.includes('COPY --from=build /app/auth-provisioner ./tools/TerraFusion.AuthProvisioner/'),
+      'Backend runtime image must package TerraFusion.AuthProvisioner for DB-backed production operator provisioning',
+    );
+  });
+
+  it('D9: release-lane provisions DB-backed operator before auth smoke', () => {
+    const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+    const provisionerIndex = content.indexOf('TerraFusion.AuthProvisioner.dll');
+    const smokeIndex = content.indexOf('Provisioned auth contract smoke');
+    assert.ok(
+      provisionerIndex >= 0,
+      'Release lane must invoke TerraFusion.AuthProvisioner against the runtime TerraFusion DB',
+    );
+    assert.ok(
+      smokeIndex >= 0 && provisionerIndex < smokeIndex,
+      'Release lane must provision/reset the operator account before the provisioned auth smoke',
+    );
+    assert.ok(
+      content.includes('--entrypoint sh') &&
+        content.includes('TERRAFUSION_BOOTSTRAP_EMAIL') &&
+        content.includes('PROVISION_JSON='),
+      'Release lane must expand bootstrap credentials inside the env-file-backed container and validate provisioner JSON on the runner',
+    );
+  });
 });
 
 // ============================================================================

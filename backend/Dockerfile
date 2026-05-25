@@ -18,10 +18,12 @@ COPY src/TerraFusion.CostForge/*.csproj ./src/TerraFusion.CostForge/
 COPY src/TerraFusion.CurrentUse/*.csproj ./src/TerraFusion.CurrentUse/
 COPY src/TerraFusion.Operations/*.csproj ./src/TerraFusion.Operations/
 COPY src/TerraFusion.Levy/*.csproj ./src/TerraFusion.Levy/
+COPY tools/TerraFusion.AuthProvisioner/*.csproj ./tools/TerraFusion.AuthProvisioner/
 
 # Restore dependencies (project-level restore resolves transitive deps without
 # requiring test projects, which are excluded by .dockerignore)
 RUN dotnet restore src/TerraFusion.API/TerraFusion.API.csproj --verbosity minimal
+RUN dotnet restore tools/TerraFusion.AuthProvisioner/TerraFusion.AuthProvisioner.csproj --verbosity minimal
 
 # Copy source
 COPY src/TerraFusion.Abstractions/ ./src/TerraFusion.Abstractions/
@@ -35,11 +37,18 @@ COPY src/TerraFusion.CostForge/ ./src/TerraFusion.CostForge/
 COPY src/TerraFusion.CurrentUse/ ./src/TerraFusion.CurrentUse/
 COPY src/TerraFusion.Operations/ ./src/TerraFusion.Operations/
 COPY src/TerraFusion.Levy/ ./src/TerraFusion.Levy/
+COPY tools/TerraFusion.AuthProvisioner/ ./tools/TerraFusion.AuthProvisioner/
 
 # Publish
 RUN dotnet publish src/TerraFusion.API/TerraFusion.API.csproj \
     -c Release \
     -o /app/publish \
+    --no-restore \
+    --verbosity minimal
+
+RUN dotnet publish tools/TerraFusion.AuthProvisioner/TerraFusion.AuthProvisioner.csproj \
+    -c Release \
+    -o /app/auth-provisioner \
     --no-restore \
     --verbosity minimal
 
@@ -97,6 +106,7 @@ ENV TF_GIT_SHA=${GIT_SHA}
 
 # Copy published app
 COPY --from=build /app/publish ./
+COPY --from=build /app/auth-provisioner ./tools/TerraFusion.AuthProvisioner/
 
 # Expose and healthcheck
 EXPOSE 5000
