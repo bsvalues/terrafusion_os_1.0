@@ -1,4 +1,4 @@
-import type { Classification, InterestRate, Removal } from './cuForgeWorkspaceStore';
+import type { CaseState, Classification, InterestRate, Removal } from './cuForgeWorkspaceStore';
 
 export type CurrentUseQueueId =
   | 'missingEvidence'
@@ -53,6 +53,7 @@ export interface CurrentUseCase {
   missingEvidence: string[];
   checklist: CurrentUseChecklistItem[];
   timeline: string[];
+  workflowState: CaseState | null;
 }
 
 export interface CurrentUseQueue {
@@ -102,6 +103,8 @@ export const CURRENT_USE_STATUS_LABELS: Record<CurrentUseCaseStatus, string> = {
   APPEAL: 'Appeal',
   CLOSED: 'Closed',
 };
+
+const CURRENT_USE_STATUS_SET = new Set<CurrentUseCaseStatus>(CURRENT_USE_STATUS_FLOW);
 
 function latestRate(rates: InterestRate[]): InterestRate | null {
   return [...rates].sort((a, b) => b.year - a.year)[0] ?? null;
@@ -222,6 +225,17 @@ function nextActionFor(status: CurrentUseCaseStatus, missingEvidence: string[], 
   return 'Review continuance';
 }
 
+function workflowStateFor(classification: Classification, caseStates: CaseState[]): CaseState | null {
+  const caseId = classification.id.toLowerCase();
+  return caseStates.find(state => state.caseId.toLowerCase() === caseId) ?? null;
+}
+
+function persistedStageFor(state: CaseState | null, fallback: CurrentUseCaseStatus): CurrentUseCaseStatus {
+  return state && CURRENT_USE_STATUS_SET.has(state.caseStage as CurrentUseCaseStatus)
+    ? state.caseStage as CurrentUseCaseStatus
+    : fallback;
+}
+
 function buildChecklist(classification: Classification, removal: Removal | null, missingEvidence: string[]): CurrentUseChecklistItem[] {
   return [
     {
@@ -326,6 +340,7 @@ export function deriveCurrentUseCases(
   removals: Removal[],
   rates: InterestRate[] = [],
   asOfDate = todayIsoDate(),
+  caseStates: CaseState[] = [],
 ): CurrentUseCase[] {
   const rate = latestRate(rates);
 
@@ -333,9 +348,11 @@ export function deriveCurrentUseCases(
     const removal = matchingRemoval(classification, removals);
     const missingEvidence = missingEvidenceFor(classification);
     const estimatedRollbackExposure = rollbackExposure(classification, removal);
-    const operationalStatus = operationalStatusFor(classification, removal, missingEvidence, estimatedRollbackExposure);
+    const workflowState = workflowStateFor(classification, caseStates);
+    const derivedStatus = operationalStatusFor(classification, removal, missingEvidence, estimatedRollbackExposure);
+    const operationalStatus = persistedStageFor(workflowState, derivedStatus);
     const queueIds = queueIdsFor(classification, removal, missingEvidence, estimatedRollbackExposure);
-    const agingAnchor = removal?.initiatedDate ?? classification.enrollmentDate;
+    const agingAnchor = workflowState?.agingBasisDate ?? removal?.initiatedDate ?? classification.enrollmentDate;
 
     return {
       id: classification.id,
@@ -344,7 +361,7 @@ export function deriveCurrentUseCases(
       description: classification.description,
       sourceStatus: classification.status,
       operationalStatus,
-      assignment: assignmentFor(operationalStatus, removal),
+      assignment: workflowState?.assignedAppraiser || assignmentFor(operationalStatus, removal),
       nextAction: nextActionFor(operationalStatus, missingEvidence, removal),
       agingDays: daysBetween(agingAnchor, asOfDate),
       enrollmentDate: classification.enrollmentDate,
@@ -360,6 +377,7 @@ export function deriveCurrentUseCases(
       missingEvidence,
       checklist: buildChecklist(classification, removal, missingEvidence),
       timeline: timelineFor(classification, removal, operationalStatus),
+      workflowState,
     };
   });
 }

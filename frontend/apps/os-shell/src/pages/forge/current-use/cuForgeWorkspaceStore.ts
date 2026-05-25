@@ -98,6 +98,27 @@ export interface CUForgeStats {
   currentInterestRate: number; // as percentage (e.g. 2.44)
 }
 
+/** Backend CaseStateDto shape. Stores human workflow state only. */
+export interface CaseState {
+  caseId: string;
+  caseStage: string;
+  assignedAppraiser: string;
+  chiefReviewStatus: string;
+  noticeApprovalStatus: string;
+  localCaseNotes: string;
+  agingBasisDate: string;
+  lastTouchedAt: string;
+}
+
+export interface CaseStateUpsertRequest {
+  caseStage: string;
+  assignedAppraiser: string;
+  chiefReviewStatus: string;
+  noticeApprovalStatus: string;
+  localCaseNotes: string;
+  agingBasisDate: string;
+}
+
 // ── Store Interface ──────────────────────────────────────────────────────────
 
 interface CUForgeWorkspaceState {
@@ -131,6 +152,11 @@ interface CUForgeWorkspaceState {
   removalsLoading: boolean;
   removalsError: string | null;
 
+  // Case Desk workflow state
+  caseStates: CaseState[];
+  caseStatesLoading: boolean;
+  caseStatesError: string | null;
+
   // Actions
   setActiveTab(tab: CUForgeTab): void;
   setTaxYear(year: number): void;
@@ -140,6 +166,8 @@ interface CUForgeWorkspaceState {
   clearRollbackResult(): void;
   fetchInterestRates(signal?: AbortSignal): Promise<void>;
   fetchRemovals(signal?: AbortSignal): Promise<void>;
+  fetchCaseStates(signal?: AbortSignal): Promise<void>;
+  updateCaseState(caseId: string, request: CaseStateUpsertRequest, signal?: AbortSignal): Promise<CaseState>;
 }
 
 async function fetchAllClassificationsForStats(signal?: AbortSignal): Promise<Classification[]> {
@@ -193,6 +221,10 @@ export const useCUForgeWorkspaceStore = create<CUForgeWorkspaceState>((set, get)
   removals: [],
   removalsLoading: false,
   removalsError: null,
+
+  caseStates: [],
+  caseStatesLoading: false,
+  caseStatesError: null,
 
   setActiveTab: (tab) => set({ activeTab: tab }),
   setTaxYear: (year) => set({ taxYear: year, stats: null }),
@@ -343,6 +375,59 @@ export const useCUForgeWorkspaceStore = create<CUForgeWorkspaceState>((set, get)
         removalsError: err instanceof Error ? err.message : 'Failed to fetch removals',
         removalsLoading: false,
       });
+    }
+  },
+
+  fetchCaseStates: async (signal) => {
+    set({ caseStatesLoading: true, caseStatesError: null });
+    try {
+      const data = await apiFetchJson<CaseState[]>(
+        '/currentuse/case-states',
+        { signal }
+      );
+      set({ caseStates: data, caseStatesLoading: false });
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        set({ caseStatesLoading: false });
+        return;
+      }
+      set({
+        caseStatesError: err instanceof Error ? err.message : 'Failed to fetch case state',
+        caseStatesLoading: false,
+      });
+    }
+  },
+
+  updateCaseState: async (caseId, request, signal) => {
+    set({ caseStatesError: null });
+    try {
+      const data = await apiFetchJson<CaseState>(
+        `/currentuse/case-states/${caseId}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(request),
+          signal,
+        }
+      );
+
+      set(state => ({
+        caseStates: [
+          data,
+          ...state.caseStates.filter(existing => existing.caseId !== caseId),
+        ],
+        caseStatesError: null,
+      }));
+
+      return data;
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        throw err;
+      }
+      set({
+        caseStatesError: err instanceof Error ? err.message : 'Failed to save case state',
+      });
+      throw err;
     }
   },
 }));

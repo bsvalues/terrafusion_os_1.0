@@ -35,6 +35,15 @@ public record RemovalInitiateRequest(
     DateOnly? RemovalDate
 );
 
+public record CaseStateUpsertRequest(
+    string CaseStage,
+    string AssignedAppraiser,
+    string ChiefReviewStatus,
+    string NoticeApprovalStatus,
+    string LocalCaseNotes,
+    DateOnly AgingBasisDate
+);
+
 // ── Response DTOs ──────────────────────────────────────────────────────────
 
 public record ClassificationsResponse(
@@ -122,4 +131,15 @@ public record PenaltyExceptionDto(
     string RcwReference,
     bool Eligible,
     string Reason
+);
+
+public record CaseStateDto(
+    Guid CaseId,
+    string CaseStage,
+    string AssignedAppraiser,
+    string ChiefReviewStatus,
+    string NoticeApprovalStatus,
+    string LocalCaseNotes,
+    string AgingBasisDate,
+    string LastTouchedAt
 );

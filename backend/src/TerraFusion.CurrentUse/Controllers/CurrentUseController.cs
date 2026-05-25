@@ -19,6 +19,7 @@ public class CurrentUseController : ControllerBase
     private readonly IInterestService _interest;
     private readonly IRemovalService _removals;
     private readonly IPenaltyExceptionService _penaltyExceptions;
+    private readonly ICaseStateService _caseStates;
     private readonly ILogger<CurrentUseController> _logger;
 
     public CurrentUseController(
@@ -27,6 +28,7 @@ public class CurrentUseController : ControllerBase
         IInterestService interest,
         IRemovalService removals,
         IPenaltyExceptionService penaltyExceptions,
+        ICaseStateService caseStates,
         ILogger<CurrentUseController> logger)
     {
         _classifications = classifications;
@@ -34,6 +36,7 @@ public class CurrentUseController : ControllerBase
         _interest = interest;
         _removals = removals;
         _penaltyExceptions = penaltyExceptions;
+        _caseStates = caseStates;
         _logger = logger;
     }
 
@@ -130,6 +133,32 @@ public class CurrentUseController : ControllerBase
         if (string.IsNullOrWhiteSpace(parcelId)) return BadRequest("parcelId is required.");
 
         var result = await _penaltyExceptions.EvaluateAsync(parcelId, ct);
+        return Ok(result);
+    }
+
+    // ── Case Desk Workflow State ───────────────────────────────────────────
+
+    /// <summary>List persisted CUForge case desk workflow state.</summary>
+    [HttpGet("case-states")]
+    public async Task<IActionResult> ListCaseStates(CancellationToken ct)
+    {
+        var result = await _caseStates.ListAsync(ct);
+        return Ok(result);
+    }
+
+    /// <summary>Get persisted workflow state for a derived Current Use case.</summary>
+    [HttpGet("case-states/{caseId:guid}")]
+    public async Task<IActionResult> GetCaseState(Guid caseId, CancellationToken ct)
+    {
+        var result = await _caseStates.GetByCaseIdAsync(caseId, ct);
+        return result != null ? Ok(result) : NotFound();
+    }
+
+    /// <summary>Upsert human workflow state for a derived Current Use case.</summary>
+    [HttpPut("case-states/{caseId:guid}")]
+    public async Task<IActionResult> UpsertCaseState(Guid caseId, [FromBody] CaseStateUpsertRequest request, CancellationToken ct)
+    {
+        var result = await _caseStates.UpsertAsync(caseId, request, ct);
         return Ok(result);
     }
 }

@@ -2,7 +2,7 @@ import React, { act } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import CUForge from '../CUForge';
-import { useCUForgeWorkspaceStore, type Classification, type Removal } from '../cuForgeWorkspaceStore';
+import { useCUForgeWorkspaceStore, type CaseState, type CaseStateUpsertRequest, type Classification, type Removal } from '../cuForgeWorkspaceStore';
 import { deriveCurrentUseCases } from '../currentUseCaseDeskModel';
 
 const apiFetchJsonMock = vi.hoisted(() => vi.fn());
@@ -51,6 +51,31 @@ const removal = (
   ...overrides,
 });
 
+const savedCaseState = (
+  caseId: string,
+  overrides: Partial<CaseState> = {},
+): CaseState => ({
+  caseId,
+  caseStage: 'MONITORING',
+  assignedAppraiser: 'Ag Appraiser',
+  chiefReviewStatus: 'NotRequired',
+  noticeApprovalStatus: 'NotStarted',
+  localCaseNotes: '',
+  agingBasisDate: '2026-05-20',
+  lastTouchedAt: '2026-05-25T12:00:00.0000000Z',
+  ...overrides,
+});
+
+const savedCaseStateFromPut = (path: string, init?: RequestInit) => {
+  if (!path.startsWith('/currentuse/case-states/') || init?.method !== 'PUT') {
+    return null;
+  }
+
+  const caseId = path.split('/').at(-1) ?? '';
+  const request = JSON.parse(String(init.body)) as CaseStateUpsertRequest;
+  return savedCaseState(caseId, request);
+};
+
 describe('CUForge review regressions', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -74,6 +99,9 @@ describe('CUForge review regressions', () => {
       removals: [],
       removalsLoading: false,
       removalsError: null,
+      caseStates: [],
+      caseStatesLoading: false,
+      caseStatesError: null,
     });
   });
 
@@ -112,6 +140,122 @@ describe('CUForge review regressions', () => {
 
     expect(currentCase?.removal?.id).toBe('active');
     expect(currentCase?.operationalStatus).toBe('ROLLBACK_REVIEW');
+  });
+
+  it('overlays persisted human workflow state without replacing derived parcel facts', async () => {
+    apiFetchJsonMock.mockImplementation((path: string) => {
+      if (path.startsWith('/currentuse/classifications')) {
+        return Promise.resolve({
+          total: 1,
+          page: 1,
+          pageSize: 50,
+          items: [
+            classification('5001', 'CUFA', 2_000, {
+              parcelId: '1-5001-100-0001',
+              enrollmentDate: '2015-01-01',
+              description: 'Irrigated farm continuance',
+            }),
+          ],
+        });
+      }
+      if (path === '/currentuse/interest-rates') {
+        return Promise.resolve([]);
+      }
+      if (path === '/currentuse/removals') {
+        return Promise.resolve([]);
+      }
+      if (path === '/currentuse/case-states') {
+        return Promise.resolve([
+          {
+            caseId: '5001',
+            caseStage: 'CHIEF_REVIEW',
+            assignedAppraiser: 'Senior Ag Appraiser',
+            chiefReviewStatus: 'PendingReview',
+            noticeApprovalStatus: 'PendingApproval',
+            localCaseNotes: 'Owner called; waiting on lease evidence.',
+            agingBasisDate: '2026-05-20',
+            lastTouchedAt: '2026-05-25T12:00:00.0000000Z',
+          },
+        ]);
+      }
+      return Promise.reject(new Error(`Unexpected request: ${path}`));
+    });
+
+    await act(async () => {
+      render(<CUForge />);
+    });
+
+    await screen.findByRole('heading', { name: 'Current Use Case Desk' });
+
+    expect(apiFetchJsonMock).toHaveBeenCalledWith('/currentuse/case-states', expect.any(Object));
+    expect(screen.getByRole('heading', { name: 'Chief Review' })).toBeInTheDocument();
+    expect(screen.getByText('Senior Ag Appraiser')).toBeInTheDocument();
+    expect(screen.getByText('Chief review: PendingReview')).toBeInTheDocument();
+    expect(screen.getByText('Notice approval: PendingApproval')).toBeInTheDocument();
+    expect(screen.getByText('Owner called; waiting on lease evidence.')).toBeInTheDocument();
+    expect(screen.getByText('Irrigated farm continuance')).toBeInTheDocument();
+  });
+
+  it('saves case stage transitions to the case-state API', async () => {
+    apiFetchJsonMock.mockImplementation((path: string, init?: RequestInit) => {
+      if (path.startsWith('/currentuse/classifications')) {
+        return Promise.resolve({
+          total: 1,
+          page: 1,
+          pageSize: 50,
+          items: [
+            classification('6001', 'CUFA', 2_000, {
+              parcelId: '1-6001-100-0001',
+              enrollmentDate: '2026-05-20',
+              description: 'Farm continuance ready for review',
+            }),
+          ],
+        });
+      }
+      if (path === '/currentuse/interest-rates') {
+        return Promise.resolve([]);
+      }
+      if (path === '/currentuse/removals') {
+        return Promise.resolve([]);
+      }
+      if (path === '/currentuse/case-states') {
+        return Promise.resolve([]);
+      }
+      const caseState = savedCaseStateFromPut(path, init);
+      if (caseState) {
+        return Promise.resolve(caseState);
+      }
+      return Promise.reject(new Error(`Unexpected request: ${path}`));
+    });
+
+    await act(async () => {
+      render(<CUForge />);
+    });
+
+    await screen.findByText('Farm continuance ready for review');
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Advance case' }));
+    });
+
+    await waitFor(() => {
+      expect(apiFetchJsonMock).toHaveBeenCalledWith(
+        '/currentuse/case-states/6001',
+        expect.objectContaining({ method: 'PUT' }),
+      );
+    });
+
+    const updateCall = apiFetchJsonMock.mock.calls.find(([path]) => path === '/currentuse/case-states/6001');
+    const body = JSON.parse(String(updateCall?.[1]?.body));
+
+    expect(body).toMatchObject({
+      caseStage: 'CONTINUANCE_PENDING',
+      assignedAppraiser: 'Ag Appraiser',
+      chiefReviewStatus: 'NotRequired',
+      noticeApprovalStatus: 'NotStarted',
+      localCaseNotes: '',
+      agingBasisDate: '2026-05-20',
+    });
   });
 
   it('derives county stats from every classifications page, not only the first page', async () => {
@@ -179,6 +323,9 @@ describe('CUForge review regressions', () => {
         return Promise.resolve([]);
       }
       if (path === '/currentuse/removals') {
+        return Promise.resolve([]);
+      }
+      if (path === '/currentuse/case-states') {
         return Promise.resolve([]);
       }
       if (path === '/currentuse/rollback/calculate') {
@@ -289,6 +436,9 @@ describe('CUForge review regressions', () => {
           removal('r1', '1-2222-200-0002', 'Pending', { classificationCode: 'DFL' }),
         ]);
       }
+      if (path === '/currentuse/case-states') {
+        return Promise.resolve([]);
+      }
       return Promise.reject(new Error(`Unexpected request: ${path}`));
     });
 
@@ -314,8 +464,8 @@ describe('CUForge review regressions', () => {
     expect(screen.getByText('Aging')).toBeInTheDocument();
   });
 
-  it('supports assessor-grade local case transitions without claiming persistence', async () => {
-    apiFetchJsonMock.mockImplementation((path: string) => {
+  it('persists assessor-grade case transitions to the case record', async () => {
+    apiFetchJsonMock.mockImplementation((path: string, init?: RequestInit) => {
       if (path.startsWith('/currentuse/classifications')) {
         return Promise.resolve({
           total: 2,
@@ -349,6 +499,13 @@ describe('CUForge review regressions', () => {
           }),
         ]);
       }
+      if (path === '/currentuse/case-states') {
+        return Promise.resolve([]);
+      }
+      const caseState = savedCaseStateFromPut(path, init);
+      if (caseState) {
+        return Promise.resolve(caseState);
+      }
       return Promise.reject(new Error(`Unexpected request: ${path}`));
     });
 
@@ -365,7 +522,7 @@ describe('CUForge review regressions', () => {
     expect(screen.getByRole('heading', { name: 'Rollback Review' })).toBeInTheDocument();
     expect(screen.getByText('Penalty suppression review')).toBeInTheDocument();
     expect(screen.getByText('Statutory exception claimed')).toBeInTheDocument();
-    expect(screen.getByText('Working action - not saved to the case record.')).toBeInTheDocument();
+    expect(screen.getByText('Staff workflow state saved to the CUForge case record.')).toBeInTheDocument();
 
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'Advance case' }));
@@ -381,7 +538,7 @@ describe('CUForge review regressions', () => {
   });
 
   it('does not carry prepared notice or rollback worksheet output across selected cases', async () => {
-    apiFetchJsonMock.mockImplementation((path: string) => {
+    apiFetchJsonMock.mockImplementation((path: string, init?: RequestInit) => {
       if (path.startsWith('/currentuse/classifications')) {
         return Promise.resolve({
           total: 2,
@@ -412,6 +569,9 @@ describe('CUForge review regressions', () => {
           removal('r4', '1-4444-400-0004', 'Pending', { classificationCode: 'CUFA' }),
         ]);
       }
+      if (path === '/currentuse/case-states') {
+        return Promise.resolve([]);
+      }
       if (path === '/currentuse/rollback/calculate') {
         return Promise.resolve({
           totalRollbackTax: 12_500,
@@ -433,6 +593,10 @@ describe('CUForge review regressions', () => {
             },
           ],
         });
+      }
+      const caseState = savedCaseStateFromPut(path, init);
+      if (caseState) {
+        return Promise.resolve(caseState);
       }
       return Promise.reject(new Error(`Unexpected request: ${path}`));
     });
@@ -493,6 +657,9 @@ describe('CUForge review regressions', () => {
         return Promise.resolve([
           removal('r2', '1-4444-400-0004', 'Pending', { classificationCode: 'CUFA' }),
         ]);
+      }
+      if (path === '/currentuse/case-states') {
+        return Promise.resolve([]);
       }
       if (path === '/currentuse/rollback/calculate') {
         return Promise.resolve({

@@ -59,6 +59,7 @@ public static class CurrentUseServiceExtensions
         services.AddScoped<IInterestService, InterestService>();
         services.AddScoped<IRemovalService, RemovalService>();
         services.AddScoped<IPenaltyExceptionService, PenaltyExceptionService>();
+        services.AddScoped<ICaseStateService, CaseStateService>();
         services.AddScoped<IAuditService, AuditService>();
 
         // Register FluentValidation validators
@@ -121,13 +122,34 @@ public static class CurrentUseServiceExtensions
 
     private static async Task EnsureSqliteCurrentUseTablesCreatedAsync(CurrentUseDbContext db)
     {
-        if (await SqliteTableExistsAsync(db, "interest_rates"))
+        if (!await SqliteTableExistsAsync(db, "interest_rates"))
         {
+            var creator = db.GetService<IRelationalDatabaseCreator>();
+            await creator.CreateTablesAsync();
             return;
         }
 
-        var creator = db.GetService<IRelationalDatabaseCreator>();
-        await creator.CreateTablesAsync();
+        if (!await SqliteTableExistsAsync(db, "case_states"))
+        {
+            await db.Database.ExecuteSqlRawAsync("""
+                CREATE TABLE IF NOT EXISTS "case_states" (
+                    "Id" TEXT NOT NULL CONSTRAINT "PK_case_states" PRIMARY KEY,
+                    "CaseId" TEXT NOT NULL,
+                    "CaseStage" TEXT NOT NULL,
+                    "AssignedAppraiser" TEXT NOT NULL,
+                    "ChiefReviewStatus" TEXT NOT NULL,
+                    "NoticeApprovalStatus" TEXT NOT NULL,
+                    "LocalCaseNotes" TEXT NOT NULL,
+                    "AgingBasisDate" TEXT NOT NULL,
+                    "LastTouchedAt" TEXT NOT NULL
+                );
+
+                CREATE UNIQUE INDEX IF NOT EXISTS "IX_case_states_CaseId" ON "case_states" ("CaseId");
+                CREATE INDEX IF NOT EXISTS "IX_case_states_AssignedAppraiser" ON "case_states" ("AssignedAppraiser");
+                CREATE INDEX IF NOT EXISTS "IX_case_states_CaseStage" ON "case_states" ("CaseStage");
+                CREATE INDEX IF NOT EXISTS "IX_case_states_LastTouchedAt" ON "case_states" ("LastTouchedAt");
+                """);
+        }
     }
 
     private static async Task<bool> SqliteTableExistsAsync(CurrentUseDbContext db, string tableName)

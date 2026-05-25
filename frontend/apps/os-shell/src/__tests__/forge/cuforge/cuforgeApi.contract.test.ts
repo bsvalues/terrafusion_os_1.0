@@ -59,6 +59,13 @@ describe('CUForge API contract (backend source truth)', () => {
       const controller = read('Controllers/CurrentUseController.cs');
       expect(controller).toContain('[HttpGet("penalty-exceptions")]');
     });
+
+    it('exposes persisted case-state endpoints for human workflow state', () => {
+      const controller = read('Controllers/CurrentUseController.cs');
+      expect(controller).toContain('[HttpGet("case-states")]');
+      expect(controller).toContain('[HttpGet("case-states/{caseId:guid}")]');
+      expect(controller).toContain('[HttpPut("case-states/{caseId:guid}")]');
+    });
   });
 
   describe('DTO shape contract', () => {
@@ -97,6 +104,25 @@ describe('CUForge API contract (backend source truth)', () => {
       expect(dtos).toContain('string RcwReference');
       expect(dtos).toContain('bool Eligible');
     });
+
+    it('CaseStateDto stores human workflow fields only', () => {
+      const dtos = read('DTOs/CurrentUseDtos.cs');
+      const dtoStart = dtos.indexOf('record CaseStateDto');
+      const nextDtoStart = dtos.indexOf('public record', dtoStart + 1);
+      const caseStateDto = dtos.slice(dtoStart, nextDtoStart === -1 ? undefined : nextDtoStart);
+
+      expect(caseStateDto).toContain('Guid CaseId');
+      expect(caseStateDto).toContain('string CaseStage');
+      expect(caseStateDto).toContain('string AssignedAppraiser');
+      expect(caseStateDto).toContain('string ChiefReviewStatus');
+      expect(caseStateDto).toContain('string NoticeApprovalStatus');
+      expect(caseStateDto).toContain('string LocalCaseNotes');
+      expect(caseStateDto).toContain('string AgingBasisDate');
+      expect(caseStateDto).toContain('string LastTouchedAt');
+      expect(caseStateDto).not.toContain('ParcelId');
+      expect(caseStateDto).not.toContain('CurrentUseValue');
+      expect(caseStateDto).not.toContain('CurrentMarketValue');
+    });
   });
 
   describe('domain model contract', () => {
@@ -132,6 +158,25 @@ describe('CUForge API contract (backend source truth)', () => {
       expect(models).toContain('string? PreviousHash');
       expect(models).toContain('string Hash');
     });
+
+    it('CurrentUseCaseState model avoids duplicating derived program facts', () => {
+      const models = read('Models/CurrentUseModels.cs');
+      const caseStateStart = models.indexOf('class CurrentUseCaseState');
+      const nextModelStart = models.indexOf('class', caseStateStart + 1);
+      const caseStateModel = models.slice(caseStateStart, nextModelStart === -1 ? undefined : nextModelStart);
+
+      expect(caseStateModel).toContain('Guid CaseId');
+      expect(caseStateModel).toContain('string CaseStage');
+      expect(caseStateModel).toContain('string AssignedAppraiser');
+      expect(caseStateModel).toContain('string ChiefReviewStatus');
+      expect(caseStateModel).toContain('string NoticeApprovalStatus');
+      expect(caseStateModel).toContain('string LocalCaseNotes');
+      expect(caseStateModel).toContain('DateOnly AgingBasisDate');
+      expect(caseStateModel).toContain('DateTime LastTouchedAt');
+      expect(caseStateModel).not.toContain('ParcelId');
+      expect(caseStateModel).not.toContain('CurrentUseValue');
+      expect(caseStateModel).not.toContain('CurrentMarketValue');
+    });
   });
 
   describe('service registration contract', () => {
@@ -143,6 +188,7 @@ describe('CUForge API contract (backend source truth)', () => {
       expect(ext).toContain('IInterestService');
       expect(ext).toContain('IRemovalService');
       expect(ext).toContain('IPenaltyExceptionService');
+      expect(ext).toContain('ICaseStateService');
     });
 
     it('supports InMemory database for development', () => {

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   useCUForgeWorkspaceStore,
+  type CaseStateUpsertRequest,
   type RollbackYear,
 } from './cuForgeWorkspaceStore';
 import {
@@ -43,6 +44,18 @@ const enrollmentYearFor = (value: string) => {
   return Number.isFinite(parsed) ? parsed : new Date().getFullYear();
 };
 
+const caseStateRequestFor = (
+  currentCase: CurrentUseCase,
+  overrides: Partial<CaseStateUpsertRequest> = {},
+): CaseStateUpsertRequest => ({
+  caseStage: overrides.caseStage ?? currentCase.workflowState?.caseStage ?? currentCase.operationalStatus,
+  assignedAppraiser: overrides.assignedAppraiser ?? currentCase.workflowState?.assignedAppraiser ?? currentCase.assignment,
+  chiefReviewStatus: overrides.chiefReviewStatus ?? currentCase.workflowState?.chiefReviewStatus ?? 'NotRequired',
+  noticeApprovalStatus: overrides.noticeApprovalStatus ?? currentCase.workflowState?.noticeApprovalStatus ?? 'NotStarted',
+  localCaseNotes: overrides.localCaseNotes ?? currentCase.workflowState?.localCaseNotes ?? '',
+  agingBasisDate: overrides.agingBasisDate ?? currentCase.workflowState?.agingBasisDate ?? currentCase.removal?.initiatedDate ?? currentCase.enrollmentDate,
+});
+
 function programBadge(code: string) {
   const cls = code === 'DFL' ? 'forge-chip--success' :
               code === 'CUFA' ? 'forge-chip--info' :
@@ -55,15 +68,13 @@ export default function CurrentUseCaseDeskPage() {
   const store = useCUForgeWorkspaceStore();
   const [activeQueueId, setActiveQueueId] = useState<CurrentUseQueueId>('missingEvidence');
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
-  const [noticeActionByCaseId, setNoticeActionByCaseId] = useState<Record<string, string>>({});
-  const [chiefDecisionByCaseId, setChiefDecisionByCaseId] = useState<Record<string, string>>({});
-  const [stagedStatusByCaseId, setStagedStatusByCaseId] = useState<Record<string, CurrentUseCaseStatus>>({});
 
   useEffect(() => {
     const ctrl = new AbortController();
     void store.fetchClassifications(1, ctrl.signal);
     void store.fetchRemovals(ctrl.signal);
     void store.fetchInterestRates(ctrl.signal);
+    void store.fetchCaseStates(ctrl.signal);
     return () => ctrl.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -73,8 +84,10 @@ export default function CurrentUseCaseDeskPage() {
       store.classifications,
       store.removals,
       store.interestRates,
+      undefined,
+      store.caseStates,
     ),
-    [store.classifications, store.removals, store.interestRates],
+    [store.classifications, store.removals, store.interestRates, store.caseStates],
   );
   const queues = useMemo(() => buildCurrentUseQueues(cases), [cases]);
   const chiefReviewCases = useMemo(() => buildChiefReviewCases(cases), [cases]);
@@ -84,9 +97,11 @@ export default function CurrentUseCaseDeskPage() {
     ?? activeQueue?.cases[0]
     ?? cases[0]
     ?? null;
-  const selectedStatus = selectedCase
-    ? stagedStatusByCaseId[selectedCase.id] ?? selectedCase.operationalStatus
-    : null;
+  const selectedStatus = selectedCase?.operationalStatus ?? null;
+
+  const saveCaseState = (currentCase: CurrentUseCase, overrides: Partial<CaseStateUpsertRequest>) => {
+    void store.updateCaseState(currentCase.id, caseStateRequestFor(currentCase, overrides)).catch(() => undefined);
+  };
 
   useEffect(() => {
     if (!selectedCase && selectedCaseId !== null) {
@@ -110,14 +125,14 @@ export default function CurrentUseCaseDeskPage() {
           <div className="cu-header__badges">
             <span className="forge-chip forge-chip--neutral">{store.taxYear} tax year</span>
             <span className="forge-chip forge-chip--success">RCW 84.33 / 84.34</span>
-            <span className="forge-chip forge-chip--warn">Case actions not saved yet</span>
+            <span className="forge-chip forge-chip--warn">Case actions saved separately</span>
           </div>
         </div>
       </header>
 
       {(store.classificationsLoading || store.removalsLoading) && <div className="cu-loading">Loading live Current Use records…</div>}
-      {(store.classificationsError || store.removalsError || store.interestRatesError) && (
-        <div className="cu-error">{store.classificationsError || store.removalsError || store.interestRatesError}</div>
+      {(store.classificationsError || store.removalsError || store.interestRatesError || store.caseStatesError) && (
+        <div className="cu-error">{store.classificationsError || store.removalsError || store.interestRatesError || store.caseStatesError}</div>
       )}
 
       <div className="cu-case-layout">
@@ -140,16 +155,17 @@ export default function CurrentUseCaseDeskPage() {
                 currentCase={selectedCase}
                 status={selectedStatus ?? selectedCase.operationalStatus}
                 onStatusChange={(status) => {
-                  setStagedStatusByCaseId(previous => ({ ...previous, [selectedCase.id]: status }));
+                  saveCaseState(selectedCase, { caseStage: status });
                 }}
               />
               <div className="cu-case-split">
                 <CurrentUseChecklist currentCase={selectedCase} />
                 <CurrentUseNoticeActionPanel
                   currentCase={selectedCase}
-                  noticeAction={noticeActionByCaseId[selectedCase.id] ?? 'No notice prepared for selected case.'}
-                  onNoticeAction={(action) => {
-                    setNoticeActionByCaseId(previous => ({ ...previous, [selectedCase.id]: action }));
+                  noticeAction={selectedCase.workflowState?.localCaseNotes || 'No notice prepared for selected case.'}
+                  noticeApprovalStatus={selectedCase.workflowState?.noticeApprovalStatus ?? 'NotStarted'}
+                  onNoticeAction={(action, noticeApprovalStatus) => {
+                    saveCaseState(selectedCase, { localCaseNotes: action, noticeApprovalStatus });
                   }}
                 />
               </div>
@@ -163,11 +179,11 @@ export default function CurrentUseCaseDeskPage() {
         <CurrentUseChiefReviewPanel
           cases={chiefReviewCases}
           selectedCaseId={selectedCase?.id ?? null}
-          chiefDecision={selectedCase ? chiefDecisionByCaseId[selectedCase.id] ?? 'No Chief review action prepared for selected case.' : 'No Chief review action prepared for selected case.'}
+          chiefDecision={selectedCase ? `Chief review: ${selectedCase.workflowState?.chiefReviewStatus ?? 'NotRequired'}` : 'Chief review: NotRequired'}
           onSelectCase={setSelectedCaseId}
           onChiefDecision={(decision) => {
             if (!selectedCase) return;
-            setChiefDecisionByCaseId(previous => ({ ...previous, [selectedCase.id]: decision }));
+            saveCaseState(selectedCase, { chiefReviewStatus: decision });
           }}
         />
       </div>
@@ -248,6 +264,8 @@ export function CurrentUseCaseFile({ currentCase }: { currentCase: CurrentUseCas
         <div><span>Rollback Exposure</span><strong>{fmtCurrency(currentCase.estimatedRollbackExposure)}</strong></div>
         <div><span>Assigned To</span><strong>{currentCase.assignment}</strong></div>
         <div><span>Aging</span><strong>{currentCase.agingDays} days</strong></div>
+        <div><span>Aging Basis</span><strong>{currentCase.workflowState?.agingBasisDate ?? currentCase.removal?.initiatedDate ?? currentCase.enrollmentDate}</strong></div>
+        <div><span>Last Touched</span><strong>{currentCase.workflowState?.lastTouchedAt ? new Date(currentCase.workflowState.lastTouchedAt).toLocaleDateString() : 'Not saved'}</strong></div>
         <div><span>Next Action</span><strong>{currentCase.nextAction}</strong></div>
       </div>
 
@@ -276,7 +294,7 @@ export function CurrentUseCaseStatusPanel({
         <div>
           <p className="cu-header__eyebrow">Case Status</p>
           <h2>{caseStatusLabel(status)}</h2>
-          <p>Working action - not saved to the case record.</p>
+          <p>Staff workflow state saved to the CUForge case record.</p>
         </div>
         <div className="cu-status-actions">
           <button type="button" className="cu-btn cu-btn--primary" onClick={() => onStatusChange(nextCurrentUseStatus(status))}>
@@ -318,27 +336,30 @@ export function CurrentUseChecklist({ currentCase }: { currentCase: CurrentUseCa
 export function CurrentUseNoticeActionPanel({
   currentCase,
   noticeAction,
+  noticeApprovalStatus,
   onNoticeAction,
 }: {
   currentCase: CurrentUseCase;
   noticeAction: string;
-  onNoticeAction(action: string): void;
+  noticeApprovalStatus: string;
+  onNoticeAction(action: string, noticeApprovalStatus: string): void;
 }) {
   return (
     <section className="cu-case-panel">
       <h2>Notice Action Panel</h2>
-      <p className="cu-muted">Preview only. Mail dates, certified tracking, and approvals are not saved to the case record yet.</p>
+      <p className="cu-muted">Notice approval status is saved. Mail dates and certified tracking are still outside this slice.</p>
       <div className="cu-notice-actions">
-        <button type="button" className="cu-btn" onClick={() => onNoticeAction(`Missing evidence request prepared for ${currentCase.parcelId}`)}>
+        <button type="button" className="cu-btn" onClick={() => onNoticeAction(`Missing evidence request prepared for ${currentCase.parcelId}`, 'Drafted')}>
           Missing Evidence Request
         </button>
-        <button type="button" className="cu-btn" onClick={() => onNoticeAction(`Intent to remove prepared for ${currentCase.parcelId}`)}>
+        <button type="button" className="cu-btn" onClick={() => onNoticeAction(`Intent to remove prepared for ${currentCase.parcelId}`, 'PendingApproval')}>
           Intent to Remove
         </button>
-        <button type="button" className="cu-btn" onClick={() => onNoticeAction(`Final notice prepared for ${currentCase.parcelId}`)}>
+        <button type="button" className="cu-btn" onClick={() => onNoticeAction(`Final notice prepared for ${currentCase.parcelId}`, 'Approved')}>
           Final Notice
         </button>
       </div>
+      <div className="cu-notice-status">Notice approval: {noticeApprovalStatus}</div>
       <div className="cu-notice-status">{noticeAction}</div>
       <div className="cu-notice-preview">
         <strong>Notice preview</strong>
@@ -502,10 +523,10 @@ export function CurrentUseChiefReviewPanel({
         )}
       </div>
       <div className="cu-chief-actions">
-        <button type="button" className="cu-btn" onClick={() => onChiefDecision('Approval prepared for selected case')}>
+        <button type="button" className="cu-btn" onClick={() => onChiefDecision('Approved')}>
           Approve
         </button>
-        <button type="button" className="cu-btn" onClick={() => onChiefDecision('Return for correction prepared for selected case')}>
+        <button type="button" className="cu-btn" onClick={() => onChiefDecision('ReturnedForCorrection')}>
           Return for Correction
         </button>
       </div>

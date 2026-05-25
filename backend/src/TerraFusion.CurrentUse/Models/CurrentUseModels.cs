@@ -74,3 +74,21 @@ public class CurrentUseAuditEntry
     public string? PreviousHash { get; set; }
     public string Hash { get; set; } = string.Empty;
 }
+
+/// <summary>
+/// Human workflow state for the CUForge case desk.
+/// Program facts remain derived from Current Use records; this model stores only staff action state.
+/// </summary>
+public class CurrentUseCaseState
+{
+    [Key]
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid CaseId { get; set; }
+    public string CaseStage { get; set; } = "MONITORING";
+    public string AssignedAppraiser { get; set; } = "Ag Appraiser";
+    public string ChiefReviewStatus { get; set; } = "NotRequired";
+    public string NoticeApprovalStatus { get; set; } = "NotStarted";
+    public string LocalCaseNotes { get; set; } = string.Empty;
+    public DateOnly AgingBasisDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
+    public DateTime LastTouchedAt { get; set; } = DateTime.UtcNow;
+}

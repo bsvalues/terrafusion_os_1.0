@@ -20,6 +20,7 @@ public class CurrentUseControllerTests
     private readonly Mock<IInterestService> _interestMock = new();
     private readonly Mock<IRemovalService> _removalsMock = new();
     private readonly Mock<IPenaltyExceptionService> _penaltyMock = new();
+    private readonly Mock<ICaseStateService> _caseStatesMock = new();
     private readonly Mock<ILogger<CurrentUseController>> _loggerMock = new();
 
     private CurrentUseController CreateController() => new(
@@ -28,6 +29,7 @@ public class CurrentUseControllerTests
         _interestMock.Object,
         _removalsMock.Object,
         _penaltyMock.Object,
+        _caseStatesMock.Object,
         _loggerMock.Object
     );
 
@@ -184,5 +186,62 @@ public class CurrentUseControllerTests
         var result = await controller.InitiateRemoval(request, CancellationToken.None);
 
         result.Should().BeOfType<CreatedAtActionResult>();
+    }
+
+    [Fact]
+    public async Task ListCaseStates_ReturnsOk()
+    {
+        _caseStatesMock.Setup(s => s.ListAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<CaseStateDto>());
+
+        var controller = CreateController();
+        var result = await controller.ListCaseStates(CancellationToken.None);
+
+        result.Should().BeOfType<OkObjectResult>();
+    }
+
+    [Fact]
+    public async Task GetCaseState_NotFound_Returns404()
+    {
+        _caseStatesMock.Setup(s => s.GetByCaseIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((CaseStateDto?)null);
+
+        var controller = CreateController();
+        var result = await controller.GetCaseState(Guid.NewGuid(), CancellationToken.None);
+
+        result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [Fact]
+    public async Task UpsertCaseState_ReturnsOk()
+    {
+        var caseId = Guid.NewGuid();
+        var dto = new CaseStateDto(
+            caseId,
+            "ROLLBACK_REVIEW",
+            "Ag Appraiser",
+            "PendingReview",
+            "Drafted",
+            "Waiting on lease evidence.",
+            "2026-05-20",
+            DateTime.UtcNow.ToString("O")
+        );
+
+        _caseStatesMock.Setup(s => s.UpsertAsync(caseId, It.IsAny<CaseStateUpsertRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(dto);
+
+        var controller = CreateController();
+        var request = new CaseStateUpsertRequest(
+            "ROLLBACK_REVIEW",
+            "Ag Appraiser",
+            "PendingReview",
+            "Drafted",
+            "Waiting on lease evidence.",
+            new DateOnly(2026, 5, 20)
+        );
+        var result = await controller.UpsertCaseState(caseId, request, CancellationToken.None);
+
+        result.Should().BeOfType<OkObjectResult>();
+        ((OkObjectResult)result).Value.Should().Be(dto);
     }
 }

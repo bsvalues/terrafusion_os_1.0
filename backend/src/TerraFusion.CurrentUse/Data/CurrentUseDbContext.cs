@@ -11,6 +11,7 @@ public class CurrentUseDbContext : DbContext
     public DbSet<InterestRate> InterestRates => Set<InterestRate>();
     public DbSet<Removal> Removals => Set<Removal>();
     public DbSet<CurrentUseAuditEntry> AuditEntries => Set<CurrentUseAuditEntry>();
+    public DbSet<CurrentUseCaseState> CaseStates => Set<CurrentUseCaseState>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -44,6 +45,20 @@ public class CurrentUseDbContext : DbContext
             e.ToTable("audit_entries");
             e.HasIndex(a => a.ParcelId);
             e.HasIndex(a => a.Timestamp);
+        });
+
+        modelBuilder.Entity<CurrentUseCaseState>(e =>
+        {
+            e.ToTable("case_states");
+            e.HasIndex(s => s.CaseId).IsUnique();
+            e.HasIndex(s => s.CaseStage);
+            e.HasIndex(s => s.AssignedAppraiser);
+            e.HasIndex(s => s.LastTouchedAt);
+            e.Property(s => s.CaseStage).HasMaxLength(40);
+            e.Property(s => s.AssignedAppraiser).HasMaxLength(120);
+            e.Property(s => s.ChiefReviewStatus).HasMaxLength(40);
+            e.Property(s => s.NoticeApprovalStatus).HasMaxLength(40);
+            e.Property(s => s.LocalCaseNotes).HasMaxLength(4000);
         });
 
         // Seed WAC 458-30-590 inflation rates (official WA DOR current use interest rates)

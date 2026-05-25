@@ -30,3 +30,10 @@ public interface IPenaltyExceptionService
 {
     Task<List<PenaltyExceptionDto>> EvaluateAsync(string parcelId, CancellationToken ct = default);
 }
+
+public interface ICaseStateService
+{
+    Task<List<CaseStateDto>> ListAsync(CancellationToken ct = default);
+    Task<CaseStateDto?> GetByCaseIdAsync(Guid caseId, CancellationToken ct = default);
+    Task<CaseStateDto> UpsertAsync(Guid caseId, CaseStateUpsertRequest request, CancellationToken ct = default);
+}
