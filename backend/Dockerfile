@@ -15,6 +15,7 @@ COPY src/TerraFusion.API/*.csproj ./src/TerraFusion.API/
 COPY src/TerraFusion.Sync/*.csproj ./src/TerraFusion.Sync/
 COPY src/TerraFusion.Consciousness/*.csproj ./src/TerraFusion.Consciousness/
 COPY src/TerraFusion.CostForge/*.csproj ./src/TerraFusion.CostForge/
+COPY src/TerraFusion.CurrentUse/*.csproj ./src/TerraFusion.CurrentUse/
 COPY src/TerraFusion.Operations/*.csproj ./src/TerraFusion.Operations/
 COPY src/TerraFusion.Levy/*.csproj ./src/TerraFusion.Levy/
 
@@ -31,6 +32,7 @@ COPY src/TerraFusion.API/ ./src/TerraFusion.API/
 COPY src/TerraFusion.Sync/ ./src/TerraFusion.Sync/
 COPY src/TerraFusion.Consciousness/ ./src/TerraFusion.Consciousness/
 COPY src/TerraFusion.CostForge/ ./src/TerraFusion.CostForge/
+COPY src/TerraFusion.CurrentUse/ ./src/TerraFusion.CurrentUse/
 COPY src/TerraFusion.Operations/ ./src/TerraFusion.Operations/
 COPY src/TerraFusion.Levy/ ./src/TerraFusion.Levy/
 
@@ -56,6 +58,7 @@ COPY src/TerraFusion.API/*.csproj ./src/TerraFusion.API/
 COPY src/TerraFusion.Sync/*.csproj ./src/TerraFusion.Sync/
 COPY src/TerraFusion.Consciousness/*.csproj ./src/TerraFusion.Consciousness/
 COPY src/TerraFusion.CostForge/*.csproj ./src/TerraFusion.CostForge/
+COPY src/TerraFusion.CurrentUse/*.csproj ./src/TerraFusion.CurrentUse/
 COPY src/TerraFusion.Operations/*.csproj ./src/TerraFusion.Operations/
 COPY src/TerraFusion.Levy/*.csproj ./src/TerraFusion.Levy/
 
