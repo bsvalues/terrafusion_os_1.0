@@ -1,6 +1,9 @@
+using System.Data;
 using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -21,14 +24,27 @@ public static class CurrentUseServiceExtensions
     public static IServiceCollection AddCurrentUseServices(this IServiceCollection services, IConfiguration configuration)
     {
         // Register DbContext — uses same connection string as the host or a dedicated one
-        var connectionString = configuration.GetConnectionString("CurrentUse")
+        var currentUseConnectionString = configuration.GetConnectionString("CurrentUse");
+        var hasDedicatedCurrentUseConnection = !string.IsNullOrWhiteSpace(currentUseConnectionString);
+        var connectionString = currentUseConnectionString
             ?? configuration.GetConnectionString("DefaultConnection")
             ?? "Host=localhost;Database=terrafusion;Username=postgres;Password=postgres";
+
+        var provider = configuration["CurrentUse:DatabaseProvider"]
+            ?? (hasDedicatedCurrentUseConnection ? null : configuration["DatabaseProvider"]);
+        var useSqlite =
+            IsSqliteProvider(provider) ||
+            IsSqliteConnectionString(connectionString);
 
         if (connectionString.Contains("InMemory", StringComparison.OrdinalIgnoreCase))
         {
             services.AddDbContext<CurrentUseDbContext>(options =>
                 options.UseInMemoryDatabase("CurrentUse"));
+        }
+        else if (useSqlite)
+        {
+            services.AddDbContext<CurrentUseDbContext>(options =>
+                options.UseSqlite(connectionString));
         }
         else
         {
@@ -79,14 +95,69 @@ public static class CurrentUseServiceExtensions
         using var scope = services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<CurrentUseDbContext>();
 
-        // Apply migrations if using a real database
-        if (db.Database.ProviderName != "Microsoft.EntityFrameworkCore.InMemory")
+        if (db.Database.ProviderName == "Microsoft.EntityFrameworkCore.InMemory")
         {
-            await db.Database.MigrateAsync();
+            await db.Database.EnsureCreatedAsync();
+        }
+        else if (db.Database.ProviderName == "Microsoft.EntityFrameworkCore.Sqlite")
+        {
+            await EnsureSqliteCurrentUseTablesCreatedAsync(db);
         }
         else
         {
-            await db.Database.EnsureCreatedAsync();
+            await db.Database.MigrateAsync();
+        }
+    }
+
+    private static bool IsSqliteProvider(string? provider)
+    {
+        return string.Equals(provider, "Sqlite", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsSqliteConnectionString(string connectionString)
+    {
+        return connectionString.Contains("Data Source=", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static async Task EnsureSqliteCurrentUseTablesCreatedAsync(CurrentUseDbContext db)
+    {
+        if (await SqliteTableExistsAsync(db, "interest_rates"))
+        {
+            return;
+        }
+
+        var creator = db.GetService<IRelationalDatabaseCreator>();
+        await creator.CreateTablesAsync();
+    }
+
+    private static async Task<bool> SqliteTableExistsAsync(CurrentUseDbContext db, string tableName)
+    {
+        var connection = db.Database.GetDbConnection();
+        var shouldClose = connection.State == ConnectionState.Closed;
+
+        if (shouldClose)
+        {
+            await connection.OpenAsync();
+        }
+
+        try
+        {
+            await using var command = connection.CreateCommand();
+            command.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = $tableName;";
+            var parameter = command.CreateParameter();
+            parameter.ParameterName = "$tableName";
+            parameter.Value = tableName;
+            command.Parameters.Add(parameter);
+
+            var result = await command.ExecuteScalarAsync();
+            return Convert.ToInt64(result) > 0;
+        }
+        finally
+        {
+            if (shouldClose)
+            {
+                await connection.CloseAsync();
+            }
         }
     }
 }
