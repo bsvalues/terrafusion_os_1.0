@@ -52,6 +52,11 @@ vi.mock('../../auth/authStorage', () => ({
   clearToken: vi.fn(),
 }));
 
+vi.mock('../../auth/authPolicy', () => ({
+  isDevPreviewMode: () => false,
+  shouldForceLoginRedirect: () => false,
+}));
+
 vi.mock('../../auth/authBridge', () => ({
   registerLogoutHandler: vi.fn(),
   unregisterLogoutHandler: vi.fn(),
@@ -119,7 +124,6 @@ function simulateCrossTabWrite(key: string, newValue: string | null, oldValue: s
 describe('Phase 40 contract: cross-tab sync reloads workspace state from storage events', () => {
   beforeAll(() => {
     localStorage.clear();
-    vi.useFakeTimers({ shouldAdvanceTime: true });
   });
 
   beforeEach(() => {
