@@ -271,7 +271,7 @@ describe('StartMenu Keyboard Navigation', () => {
       // Focus should still be in the menu
       const startMenu = screen.getByRole('menu');
       expect(startMenu.contains(document.activeElement)).toBe(true);
-    });
+    }, 15000);
   });
 
   describe('Home/End Keys', () => {

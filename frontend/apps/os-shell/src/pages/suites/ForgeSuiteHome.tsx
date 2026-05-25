@@ -2,6 +2,7 @@
  * TerraFusion OS — TerraForge Suite Home
  *
  * TerraForge launcher posture is governed by the current Suite layer contract:
+ * Temporary shells outside County Studio remain bounded launch surfaces.
  * County Studio is the countywide workbench; Atlas is its embedded/pop-out
  * spatial surface; GeoForge remains internal compatibility infrastructure.
  *

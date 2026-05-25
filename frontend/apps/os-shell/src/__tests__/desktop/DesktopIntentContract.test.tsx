@@ -43,7 +43,7 @@ vi.mock('react-router-dom', async () => {
 });
 
 vi.mock('../../auth/authStorage', () => ({
-  getToken: () => 'smoke-test-token',
+  getToken: () => 'eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJleHAiOjQxMDI0NDQ4MDAsInVzZXJJZCI6InRlc3QtdXNlciIsImNvdW50eUlkIjoiNTMwMDUiLCJyb2xlcyI6WyJvcGVyYXRvciJdfQ.test-signature',
   setToken: vi.fn(),
   clearToken: vi.fn(),
 }));

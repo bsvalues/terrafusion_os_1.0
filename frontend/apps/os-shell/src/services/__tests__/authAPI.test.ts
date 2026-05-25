@@ -56,7 +56,7 @@ describe('authAPI.login', () => {
     await expect(getAccessPolicy()).resolves.toEqual({
       signupMode: 'provisioned_access_only',
       publicSignupEnabled: false,
-      message: 'TerraFusion access is provisioned by an administrator. Public self-signup is disabled.',
+      message: 'TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled.',
     });
   });
 });
