@@ -8,6 +8,7 @@
  * Endpoints (see backend FullCorpusController):
  *   POST /api/sync/corpus/start             → 202 { runId, status }
  *   POST /api/sync/corpus/{runId}/resume    → 202 | 404 | 409
+ *   GET  /api/sync/corpus/recent            → { runs }
  *   GET  /api/sync/corpus/{runId}           → { run, lanes }
  *   GET  /api/sync/corpus/{runId}/reconciliation
  *                                           → { run, reconciliations }
@@ -134,6 +135,22 @@ export interface CorpusStartOrResumeResponse {
   status: RunStatus;
 }
 
+export interface RecentRunEntry {
+  runId: string;
+  operatorName: string;
+  workingYear: number;
+  status: RunStatus;
+  currentLane: LaneName | null;
+  nextLaneOnResume: LaneName | null;
+  startedAt: string;
+  finishedAt: string | null;
+  errorMessage: string | null;
+}
+
+export interface CorpusRecentRunsResponseEnvelope {
+  runs: RecentRunEntry[];
+}
+
 /** Resume mutation outcome. */
 export type ResumeOutcome =
   | { kind: 'ok'; runId: string; status: RunStatus }
@@ -208,6 +225,23 @@ export async function postCorpusResume(
   throw new Error(`postCorpusResume failed: HTTP ${res.status} ${res.statusText}`);
 }
 
+/** Fetch recent persisted full-corpus runs from backend state. */
+export async function getCorpusRecentRuns(
+  limit = 10,
+  signal?: AbortSignal,
+): Promise<RecentRunEntry[]> {
+  const boundedLimit = Math.max(1, Math.min(50, Math.trunc(limit)));
+  const url = `${API_BASE_URL}/api/sync/corpus/recent?limit=${boundedLimit}`;
+  const res = await fetch(url, { signal });
+  if (!res.ok) {
+    throw new Error(
+      `getCorpusRecentRuns failed: HTTP ${res.status} ${res.statusText}`,
+    );
+  }
+  const body = (await res.json()) as CorpusRecentRunsResponseEnvelope;
+  return Array.isArray(body.runs) ? body.runs : [];
+}
+
 /** Fetch run + 6 lane results. */
 export async function getCorpusStatus(
   runId: string,
@@ -245,47 +279,4 @@ export async function getCorpusReconciliation(
 /** Direct download URL for the corpus evidence ZIP. */
 export function getCorpusEvidenceZipUrl(runId: string): string {
   return `${API_BASE_URL}/api/sync/corpus/${encodeURIComponent(runId)}/evidence.zip`;
-}
-
-// ───────────────────────────────────────────────────────────────
-// Recent-runs persistence — backend has no list endpoint, so the
-// browser keeps the last 10 runIds it has seen in localStorage.
-// ───────────────────────────────────────────────────────────────
-
-const RECENT_RUNS_KEY = 'tf.sync.corpus.recentRuns';
-const RECENT_RUNS_LIMIT = 10;
-
-export interface RecentRunEntry {
-  runId: string;
-  operatorName: string;
-  workingYear: number;
-  startedAt: string;
-}
-
-export function readRecentRuns(): RecentRunEntry[] {
-  try {
-    const raw = localStorage.getItem(RECENT_RUNS_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as unknown;
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter(
-      (e): e is RecentRunEntry =>
-        !!e &&
-        typeof e === 'object' &&
-        typeof (e as RecentRunEntry).runId === 'string',
-    );
-  } catch {
-    return [];
-  }
-}
-
-export function recordRecentRun(entry: RecentRunEntry): RecentRunEntry[] {
-  const existing = readRecentRuns().filter((e) => e.runId !== entry.runId);
-  const next = [entry, ...existing].slice(0, RECENT_RUNS_LIMIT);
-  try {
-    localStorage.setItem(RECENT_RUNS_KEY, JSON.stringify(next));
-  } catch {
-    // ignore quota errors
-  }
-  return next;
 }

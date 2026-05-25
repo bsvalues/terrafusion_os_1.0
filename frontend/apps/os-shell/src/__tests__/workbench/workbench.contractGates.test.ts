@@ -26,6 +26,8 @@ import { vi, describe, it, expect } from 'vitest';
 import { BADGE_PROVIDERS } from '../../services/badges';
 import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { VALID_WORKBENCH_TAB_IDS } from '../../config/suiteRegistry';
+import { WORKBENCH_TABS } from '../../config/workbenchTabs';
+import { ALL_TAB_SLUGS, getVisibleTabs } from '../../config/workbenchRoles';
 
 // Mock the badge API so providers don't hit a real server in tests
 vi.mock('../../services/api/workbenchBadgeApi', () => ({
@@ -71,18 +73,18 @@ vi.mock('../../services/api/activityApi', () => ({
 // ============================================================================
 
 describe('Gate 1: Contract Types', () => {
-  it('WorkbenchTabSlug type covers all 8 canonical tabs', () => {
+  it('WorkbenchTabSlug type covers all 10 canonical tabs', () => {
     // This is enforced at compile time by TypeScript, but we
     // verify the runtime constant matches.
-    const expected = ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier'];
+    const expected = ['summary', 'forge', 'atlas', 'dais', 'dossier', 'clerk', 'treasury', 'audit', 'pilot', 'trace'];
     for (const tab of expected) {
       expect(VALID_WORKBENCH_TAB_IDS).toContain(tab);
     }
   });
 
-  it('tab slug set is exactly 9 members (no drift)', () => {
-    // Gate 5 locks the canonical 9-tab list (summary..dossier + pilot).
-    expect(VALID_WORKBENCH_TAB_IDS).toHaveLength(9);
+  it('tab slug set is exactly 10 members (no drift)', () => {
+    // Gate 5 locks the canonical parcel workbench list.
+    expect(VALID_WORKBENCH_TAB_IDS).toHaveLength(10);
   });
 });
 
@@ -206,10 +208,28 @@ describe('Gate 4: Workbench Component Barrel', () => {
 // ============================================================================
 
 describe('Gate 5: Tab Slug Canonical Order', () => {
-  it('tab order is exactly: summary, forge, atlas, dais, clerk, treasury, audit, dossier, pilot', () => {
+  it('tab order is exactly: primary parcel, linked county offices, OS support', () => {
     // This prevents accidental reordering which would confuse users
-    const expected = ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot'];
+    const expected = ['summary', 'forge', 'atlas', 'dais', 'dossier', 'clerk', 'treasury', 'audit', 'pilot', 'trace'];
     expect(VALID_WORKBENCH_TAB_IDS).toEqual(expected);
+  });
+
+  it('role-visible tab spine includes linked county offices and OS support tabs', () => {
+    expect(ALL_TAB_SLUGS).toEqual(VALID_WORKBENCH_TAB_IDS);
+    expect(getVisibleTabs(['assessor'])).toEqual(VALID_WORKBENCH_TAB_IDS);
+    expect(getVisibleTabs(['residential_appraiser'])).toEqual(VALID_WORKBENCH_TAB_IDS);
+    expect(getVisibleTabs(['assessor'])).toEqual(expect.arrayContaining(['clerk', 'treasury', 'audit']));
+    expect(getVisibleTabs(['assessor'])).toContain('pilot');
+    expect(getVisibleTabs(['assessor'])).toContain('trace');
+  });
+
+  it('tab grouping separates primary parcel, linked county offices, and OS support', () => {
+    expect(WORKBENCH_TABS.filter((tab) => tab.group === 'primary-parcel').map((tab) => tab.id))
+      .toEqual(['summary', 'forge', 'atlas', 'dais', 'dossier']);
+    expect(WORKBENCH_TABS.filter((tab) => tab.group === 'linked-county-office').map((tab) => tab.id))
+      .toEqual(['clerk', 'treasury', 'audit']);
+    expect(WORKBENCH_TABS.filter((tab) => tab.group === 'os-support').map((tab) => tab.id))
+      .toEqual(['pilot', 'trace']);
   });
 });
 

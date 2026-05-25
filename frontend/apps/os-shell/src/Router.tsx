@@ -57,6 +57,7 @@ const PropertyAtlas = lazy(() => import('./pages/workbench/tabs/PropertyAtlas'))
 const PropertyDais = lazy(() => import('./pages/workbench/tabs/PropertyDais'));
 const PropertyDossier = lazy(() => import('./pages/workbench/tabs/PropertyDossier'));
 const PropertyPilot = lazy(() => import('./pages/workbench/tabs/PropertyPilot'));
+const PropertyTrace = lazy(() => import('./pages/workbench/tabs/PropertyTrace'));
 const PropertyClerk = lazy(() => import('./pages/workbench/tabs/PropertyClerk'));
 const PropertyTreasury = lazy(() => import('./pages/workbench/tabs/PropertyTreasury'));
 const PropertyAudit = lazy(() => import('./pages/workbench/tabs/PropertyAudit'));
@@ -212,6 +213,7 @@ const Router: React.FC = () => {
                   {/* Property Workbench - Parcel-context hub (Tier-0 OS Surface) */}
                   <Route path='property/:parcelId' element={<PropertyWorkbench />}>
                     <Route index element={<PropertySummary />} />
+                    <Route path='summary' element={<PropertySummary />} />
                     <Route path='forge' element={<PropertyForge />} />
                     <Route path='atlas' element={<PropertyAtlas />} />
                     <Route path='dais' element={<PropertyDais />} />
@@ -220,6 +222,7 @@ const Router: React.FC = () => {
                     <Route path='audit' element={<PropertyAudit />} />
                     <Route path='dossier' element={<PropertyDossier />} />
                     <Route path='pilot' element={<PropertyPilot />} />
+                    <Route path='trace' element={<PropertyTrace />} />
                   </Route>
 
                   {/* Legacy Redirects - Demote broken defaults with telemetry */}

@@ -165,6 +165,25 @@ interface QueueNoticeResult { queued: number; batchId: string; deliveryMethod: s
 /** R2.9 — Queue statistics from get_queue_statistics */
 interface QueueStatsResult { county: string; period: string; totalTasks: number; completedTasks: number; slaCompliance: number; overdueCount: number }
 
+type DaisJsonResult = Record<string, unknown>;
+
+const HUMAN_CERTIFICATION_SIGN_OFF_STEPS = new Set(['SUPERVISORY_REVIEW', 'ASSESSOR_SIGNOFF']);
+
+function nextCertificationSignOffStep(result: DaisJsonResult): string | null {
+  const steps = Array.isArray(result.steps) ? result.steps : [];
+  const actionable = steps.find(step => {
+    if (!step || typeof step !== 'object') return false;
+    const item = step as Record<string, unknown>;
+    return typeof item.name === 'string' &&
+      HUMAN_CERTIFICATION_SIGN_OFF_STEPS.has(item.name) &&
+      item.status === 'in_progress';
+  });
+
+  if (!actionable || typeof actionable !== 'object') return null;
+  const name = (actionable as Record<string, unknown>).name;
+  return typeof name === 'string' ? name : null;
+}
+
 /** R2.9 — Task escalation from escalate_task */
 interface EscalateResult { taskId: string; escalatedTo: string; status: string; payloadRef: string }
 
@@ -246,6 +265,24 @@ export const PropertyDais: React.FC = () => {
   const [morningBriefState, setMorningBriefState] = useState<DaisToolState<MorningBriefResult>>({ status: 'idle' });
   const [morningBriefRole, setMorningBriefRole] = useState<(typeof MORNING_BRIEF_ROLES)[number]['value']>('chief_appraiser');
   const [morningBriefTaxYear, setMorningBriefTaxYear] = useState<number>(new Date().getFullYear());
+  const [certStatusState, setCertStatusState] = useState<DaisToolState<DaisJsonResult>>({ status: 'idle' });
+  const [piltState, setPiltState] = useState<DaisToolState<DaisJsonResult>>({ status: 'idle' });
+  const [memoState, setMemoState] = useState<DaisToolState<DaisJsonResult>>({ status: 'idle' });
+  const [certProgressState, setCertProgressState] = useState<DaisToolState<DaisJsonResult>>({ status: 'idle' });
+  const [queueStatsState, setQueueStatsState] = useState<DaisToolState<DaisJsonResult>>({ status: 'idle' });
+  const [signOffState, setSignOffState] = useState<DaisToolState<DaisJsonResult>>({ status: 'idle' });
+  const [levyCertificationNoticeState, setLevyCertificationNoticeState] = useState<DaisToolState<DaisJsonResult>>({ status: 'idle' });
+  const [dorSubmissionState, setDorSubmissionState] = useState<DaisToolState<DaisJsonResult>>({ status: 'idle' });
+  const [dorAcceptanceState, setDorAcceptanceState] = useState<DaisToolState<DaisJsonResult>>({ status: 'idle' });
+  const [piltFiscalYear, setPiltFiscalYear] = useState<number>(new Date().getFullYear());
+  const [memoTopic, setMemoTopic] = useState('annual certification readiness');
+  const [queueStatsPeriod, setQueueStatsPeriod] = useState('30d');
+  const [certStepId, setCertStepId] = useState('SUPERVISORY_REVIEW');
+  const [certSignedBy, setCertSignedBy] = useState('');
+  const [certSignOffReason, setCertSignOffReason] = useState<'step_verified' | 'conditional_approval'>('step_verified');
+  const [certSignOffConfirmed, setCertSignOffConfirmed] = useState(false);
+  const [dorSubmittedBy, setDorSubmittedBy] = useState('');
+  const [dorSubmissionConfirmed, setDorSubmissionConfirmed] = useState(false);
   /** explain_senior_exemption_impact — senior exemption impact summary */
   const handleExemptionImpact = useCallback(async () => {
     setExemptionState({ status: 'loading' });
@@ -340,6 +377,147 @@ export const PropertyDais: React.FC = () => {
       setMorningBriefState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [morningBriefRole, morningBriefTaxYear, parcelId]);
+
+  const runDaisJsonTool = useCallback(async (
+    toolId: string,
+    setState: React.Dispatch<React.SetStateAction<DaisToolState<DaisJsonResult>>>,
+    request: () => ReturnType<typeof invokeTool>,
+    onSuccess?: (result: DaisJsonResult) => void,
+  ) => {
+    setState({ status: 'loading' });
+    try {
+      const response = await request();
+      if (response.success) {
+        const parsed = typeof response.result?.output === 'string' ? JSON.parse(response.result.output) : response.result?.output;
+        setState({ status: 'success', result: parsed as DaisJsonResult, correlationId: response.correlationId });
+        onSuccess?.(parsed as DaisJsonResult);
+        setHistory(prev => [{ id: crypto.randomUUID(), toolId, status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { parcelId } }, ...prev.slice(0, 19)]);
+      } else {
+        setState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'TOOL_FAILED', message: response.error?.message || 'Tool request failed', severity: 'error', correlationId: response.correlationId } });
+        setHistory(prev => [{ id: crypto.randomUUID(), toolId, status: 'error', correlationId: response.correlationId || 'unknown', timestamp: new Date(), errorCode: response.error?.code }, ...prev.slice(0, 19)]);
+      }
+    } catch (err) {
+      const cid = `net-${crypto.randomUUID()}`;
+      setState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+      setHistory(prev => [{ id: crypto.randomUUID(), toolId, status: 'error', correlationId: cid, timestamp: new Date(), errorCode: 'NETWORK_ERROR' }, ...prev.slice(0, 19)]);
+    }
+  }, [parcelId]);
+
+  const currentTaxYear = new Date().getFullYear();
+  const handleCheckCertStatus = useCallback(() => runDaisJsonTool(
+    'check_cert_status',
+    setCertStatusState,
+    () => invokeTool({ toolId: 'check_cert_status', params: { county: 'benton', taxYear: currentTaxYear }, parcelId }),
+  ), [currentTaxYear, parcelId, runDaisJsonTool]);
+
+  const handleCertificationProgress = useCallback(() => runDaisJsonTool(
+    'get_certification_progress',
+    setCertProgressState,
+    () => invokeTool({ toolId: 'get_certification_progress', params: { county: 'benton', taxYear: currentTaxYear }, parcelId }),
+    result => {
+      const nextStep = nextCertificationSignOffStep(result);
+      if (nextStep) setCertStepId(nextStep);
+    },
+  ), [currentTaxYear, parcelId, runDaisJsonTool]);
+
+  const handlePiltPayment = useCallback(() => runDaisJsonTool(
+    'calculate_pilt_payment',
+    setPiltState,
+    () => invokeTool({ toolId: 'calculate_pilt_payment', params: { county: 'benton', fiscalYear: piltFiscalYear }, parcelId }),
+  ), [parcelId, piltFiscalYear, runDaisJsonTool]);
+
+  const handleCommissionerMemo = useCallback(() => runDaisJsonTool(
+    'generate_commissioner_memo',
+    setMemoState,
+    () => invokeTool({ toolId: 'generate_commissioner_memo', params: { county: 'benton', topic: memoTopic.trim(), taxYear: currentTaxYear, format: 'brief' }, parcelId }),
+  ), [currentTaxYear, memoTopic, parcelId, runDaisJsonTool]);
+
+  const handleQueueStatistics = useCallback(() => runDaisJsonTool(
+    'get_queue_statistics',
+    setQueueStatsState,
+    () => invokeTool({ toolId: 'get_queue_statistics', params: { county: 'benton', period: queueStatsPeriod.trim(), assignee: 'all' }, parcelId }),
+  ), [parcelId, queueStatsPeriod, runDaisJsonTool]);
+
+  const handleCertificationSignOff = useCallback(() => runDaisJsonTool(
+    'sign_off_certification_step',
+    setSignOffState,
+    () => invokeTool({
+      toolId: 'sign_off_certification_step',
+      params: {
+        county: 'benton',
+        taxYear: currentTaxYear,
+        stepId: certStepId.trim(),
+        signedBy: certSignedBy.trim(),
+        notes: certSignOffReason === 'conditional_approval' ? 'Conditional approval recorded from Property Workbench.' : 'Step verified from Property Workbench.',
+      },
+      parcelId,
+      confirmation: { confirmed: true, reasonCode: certSignOffReason },
+    }),
+    () => {
+      if (certStepId.trim().toUpperCase() === 'SUPERVISORY_REVIEW') setCertStepId('ASSESSOR_SIGNOFF');
+    },
+  ), [certSignOffReason, certSignedBy, certStepId, currentTaxYear, parcelId, runDaisJsonTool]);
+
+  const handleGenerateLevyCertificationNotice = useCallback(() => runDaisJsonTool(
+    'generate_levy_certification_notice',
+    setLevyCertificationNoticeState,
+    () => invokeTool({
+      toolId: 'generate_levy_certification_notice',
+      params: { county: 'benton', taxYear: currentTaxYear, deliveryMethod: 'mail' },
+      parcelId,
+      confirmation: { confirmed: true, reasonCode: 'dor_packet_ready' },
+    }),
+    result => {
+      const noticeId = result.noticeId;
+      if (typeof noticeId === 'string' && noticeId.trim()) setQueueNoticeIds(noticeId.trim());
+    },
+  ), [currentTaxYear, parcelId, runDaisJsonTool]);
+
+  const handleSubmitCertificationToDor = useCallback(() => runDaisJsonTool(
+    'submit_certification_to_dor',
+    setDorSubmissionState,
+    () => invokeTool({
+      toolId: 'submit_certification_to_dor',
+      params: {
+        county: 'benton',
+        taxYear: currentTaxYear,
+        signedBy: dorSubmittedBy.trim(),
+        notes: 'DOR submission requested from Property Workbench.',
+      },
+      parcelId,
+      confirmation: { confirmed: true, reasonCode: 'dor_submission' },
+    }),
+  ), [currentTaxYear, dorSubmittedBy, parcelId, runDaisJsonTool]);
+
+  const handleAcceptCertificationFromDor = useCallback(() => runDaisJsonTool(
+    'accept_certification_from_dor',
+    setDorAcceptanceState,
+    () => invokeTool({
+      toolId: 'accept_certification_from_dor',
+      params: {
+        county: 'benton',
+        taxYear: currentTaxYear,
+        signedBy: dorSubmittedBy.trim(),
+        notes: 'DOR acceptance recorded from Property Workbench.',
+      },
+      parcelId,
+      confirmation: { confirmed: true, reasonCode: 'dor_acceptance' },
+    }),
+  ), [currentTaxYear, dorSubmittedBy, parcelId, runDaisJsonTool]);
+
+  const renderJsonToolState = (state: DaisToolState<DaisJsonResult>) => (
+    <>
+      {state.status === 'loading' && <div role='status' className='flex items-center justify-center py-3 gap-3'><div className='tf-spinner h-5 w-5' /><span className='tf-text-tertiary'>Submitting request...</span></div>}
+      {state.status === 'success' && state.result && (
+        <div className='space-y-2'>
+          <pre className='tf-panel p-3 rounded-lg text-xs tf-text-secondary overflow-x-auto'>{JSON.stringify(state.result, null, 2)}</pre>
+          {state.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>Ref: <code className='tf-suite-accent-text font-mono'>{state.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
+        </div>
+      )}
+      {state.status === 'error' && state.error && <ErrorDisplay error={{ message: state.error.message, errorCode: state.error.code, correlationId: state.correlationId }} />}
+    </>
+  );
+
   /** Invoke draft_value_change_notice — write_low notice draft */
   const handleDraftNotice = useCallback(async () => {
     const codes = noticeReasons.split(',').map(s => s.trim()).filter(Boolean);
@@ -614,6 +792,118 @@ export const PropertyDais: React.FC = () => {
         </p>
         <WorkbenchSourceBadge source="unavailable" />
       </div>
+
+      <BentoCard title='Governed Dais Operations' actions={<span className='text-xs tf-badge-info px-2 py-0.5 rounded'>TerraPilot</span>}>
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+          <div className='tf-panel p-3 rounded-lg space-y-3'>
+            <div>
+              <h4 className='font-semibold tf-text'>Certification Status</h4>
+              <p className='text-xs tf-text-dim'>Benton County, tax year {currentTaxYear}</p>
+            </div>
+            <button onClick={handleCheckCertStatus} disabled={certStatusState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta'>
+              {certStatusState.status === 'loading' ? 'Submitting...' : 'Submit Certification Status Request'}
+            </button>
+            {renderJsonToolState(certStatusState)}
+          </div>
+
+          <div className='tf-panel p-3 rounded-lg space-y-3'>
+            <div>
+              <h4 className='font-semibold tf-text'>Certification Progress</h4>
+              <p className='text-xs tf-text-dim'>Returned progress and blockers from get_certification_progress.</p>
+            </div>
+            <button onClick={handleCertificationProgress} disabled={certProgressState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta'>
+              {certProgressState.status === 'loading' ? 'Submitting...' : 'Get Certification Progress'}
+            </button>
+            {renderJsonToolState(certProgressState)}
+          </div>
+
+          <div className='tf-panel p-3 rounded-lg space-y-3'>
+            <div>
+              <h4 className='font-semibold tf-text'>PILT Payment</h4>
+              <p className='text-xs tf-text-dim'>Fiscal year input is sent to calculate_pilt_payment.</p>
+            </div>
+            <input type='number' value={piltFiscalYear} onChange={event => setPiltFiscalYear(Number(event.target.value))} className='w-full p-2 rounded-lg tf-input' aria-label='PILT fiscal year' />
+            <button onClick={handlePiltPayment} disabled={piltState.status === 'loading' || !piltFiscalYear} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta'>
+              {piltState.status === 'loading' ? 'Submitting...' : 'Calculate PILT Payment'}
+            </button>
+            {renderJsonToolState(piltState)}
+          </div>
+
+          <div className='tf-panel p-3 rounded-lg space-y-3'>
+            <div>
+              <h4 className='font-semibold tf-text'>Commissioner Memo</h4>
+              <p className='text-xs tf-text-dim'>Topic and tax year are submitted to generate_commissioner_memo.</p>
+            </div>
+            <input type='text' value={memoTopic} onChange={event => setMemoTopic(event.target.value)} className='w-full p-2 rounded-lg tf-input' aria-label='Commissioner memo topic' />
+            <button onClick={handleCommissionerMemo} disabled={memoState.status === 'loading' || !memoTopic.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta'>
+              {memoState.status === 'loading' ? 'Submitting...' : 'Generate Commissioner Memo'}
+            </button>
+            {renderJsonToolState(memoState)}
+          </div>
+
+          <div className='tf-panel p-3 rounded-lg space-y-3'>
+            <div>
+              <h4 className='font-semibold tf-text'>Queue Statistics</h4>
+              <p className='text-xs tf-text-dim'>Period and assignee filters are sent to get_queue_statistics.</p>
+            </div>
+            <input type='text' value={queueStatsPeriod} onChange={event => setQueueStatsPeriod(event.target.value)} className='w-full p-2 rounded-lg tf-input' aria-label='Queue statistics period' />
+            <button onClick={handleQueueStatistics} disabled={queueStatsState.status === 'loading' || !queueStatsPeriod.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta'>
+              {queueStatsState.status === 'loading' ? 'Submitting...' : 'Get Queue Statistics'}
+            </button>
+            {renderJsonToolState(queueStatsState)}
+          </div>
+
+          <div className='tf-panel p-3 rounded-lg space-y-3'>
+            <div className='flex items-center justify-between gap-2'>
+              <div>
+                <h4 className='font-semibold tf-text'>Certification Sign-Off</h4>
+                <p className='text-xs tf-text-dim'>Requires explicit confirmation and reason code.</p>
+              </div>
+              <span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_high</span>
+            </div>
+            <input type='text' value={certStepId} onChange={event => setCertStepId(event.target.value)} className='w-full p-2 rounded-lg tf-input' aria-label='Certification step ID' />
+            <input type='text' value={certSignedBy} onChange={event => setCertSignedBy(event.target.value)} className='w-full p-2 rounded-lg tf-input' aria-label='Certification signed by' placeholder='Signed by' />
+            <select value={certSignOffReason} onChange={event => setCertSignOffReason(event.target.value as 'step_verified' | 'conditional_approval')} className='w-full p-2 rounded-lg tf-input' aria-label='Certification sign-off reason'>
+              <option value='step_verified'>Step verified</option>
+              <option value='conditional_approval'>Conditional approval</option>
+            </select>
+            <label className='flex items-center gap-2 text-sm tf-text-secondary'>
+              <input type='checkbox' checked={certSignOffConfirmed} onChange={event => setCertSignOffConfirmed(event.target.checked)} />
+              Confirm certification step sign-off
+            </label>
+            <button onClick={handleCertificationSignOff} disabled={signOffState.status === 'loading' || !certStepId.trim() || !certSignedBy.trim() || !certSignOffConfirmed} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta'>
+              {signOffState.status === 'loading' ? 'Submitting...' : 'Sign Off Certification Step'}
+            </button>
+            {renderJsonToolState(signOffState)}
+          </div>
+          <div className='space-y-3 tf-panel p-4'>
+            <div className='flex items-center justify-between gap-2'>
+              <div>
+                <h4 className='font-semibold tf-text'>DOR Submission</h4>
+                <p className='text-xs tf-text-dim'>Requires assessor sign-off, a queued levy certification notice, and explicit confirmation.</p>
+              </div>
+              <span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_high</span>
+            </div>
+            <input type='text' value={dorSubmittedBy} onChange={event => setDorSubmittedBy(event.target.value)} className='w-full p-2 rounded-lg tf-input' aria-label='DOR submitted by' placeholder='Submitted by' />
+            <label className='flex items-center gap-2 text-sm tf-text-secondary'>
+              <input type='checkbox' checked={dorSubmissionConfirmed} onChange={event => setDorSubmissionConfirmed(event.target.checked)} />
+              Confirm DOR certification packet actions
+            </label>
+            <button onClick={handleGenerateLevyCertificationNotice} disabled={levyCertificationNoticeState.status === 'loading' || !dorSubmissionConfirmed} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta'>
+              {levyCertificationNoticeState.status === 'loading' ? 'Submitting...' : 'Generate Levy Certification Notice'}
+            </button>
+            {renderJsonToolState(levyCertificationNoticeState)}
+            <button onClick={handleSubmitCertificationToDor} disabled={dorSubmissionState.status === 'loading' || !dorSubmittedBy.trim() || !dorSubmissionConfirmed} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta'>
+              {dorSubmissionState.status === 'loading' ? 'Submitting...' : 'Submit Certification to DOR'}
+            </button>
+            {renderJsonToolState(dorSubmissionState)}
+            <button onClick={handleAcceptCertificationFromDor} disabled={dorAcceptanceState.status === 'loading' || !dorSubmittedBy.trim() || !dorSubmissionConfirmed} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta'>
+              {dorAcceptanceState.status === 'loading' ? 'Submitting...' : 'Record DOR Acceptance'}
+            </button>
+            {renderJsonToolState(dorAcceptanceState)}
+          </div>
+        </div>
+      </BentoCard>
 
       {/* Active Appeals from Store */}
       {appeals.length > 0 && (

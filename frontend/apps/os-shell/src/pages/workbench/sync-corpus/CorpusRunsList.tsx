@@ -1,17 +1,10 @@
-/**
- * SYNC-UX-1C: recent runs list (no-detail state).
- *
- * Reads up to the last 10 runs from localStorage. Click a row to
- * open the detail page for that run.
- */
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCorpusRunsList } from './useCorpusRunsList';
 
 export default function CorpusRunsList(): React.ReactElement {
   const navigate = useNavigate();
-  const { runs } = useCorpusRunsList();
+  const { runs, isLoading, error } = useCorpusRunsList();
 
   return (
     <section
@@ -20,15 +13,31 @@ export default function CorpusRunsList(): React.ReactElement {
       className='tf-panel p-4 mt-4'
     >
       <h3 className='tf-text font-medium mb-3' style={{ fontSize: '0.95rem' }}>
-        Recent runs (this browser)
+        Recent runs
       </h3>
-      {runs.length === 0 ? (
+      {isLoading ? (
+        <p
+          className='tf-text-secondary'
+          data-testid='recent-runs-loading'
+          style={{ fontSize: '0.85rem' }}
+        >
+          Loading recent runs...
+        </p>
+      ) : error ? (
+        <p
+          className='tf-text-secondary'
+          data-testid='recent-runs-error'
+          style={{ fontSize: '0.85rem' }}
+        >
+          Recent runs unavailable: {error.message}
+        </p>
+      ) : runs.length === 0 ? (
         <p
           className='tf-text-secondary'
           data-testid='recent-runs-empty'
           style={{ fontSize: '0.85rem' }}
         >
-          No runs recorded yet from this browser. Start a new drain above.
+          No persisted runs returned yet. Start a new drain above.
         </p>
       ) : (
         <ul
@@ -54,7 +63,7 @@ export default function CorpusRunsList(): React.ReactElement {
                 className='tf-text-secondary'
                 style={{ fontSize: '0.75rem', marginTop: 2 }}
               >
-                {r.operatorName} · year {r.workingYear} ·{' '}
+                {r.operatorName} · year {r.workingYear} · {r.status} ·{' '}
                 {new Date(r.startedAt).toLocaleString()}
               </div>
             </li>

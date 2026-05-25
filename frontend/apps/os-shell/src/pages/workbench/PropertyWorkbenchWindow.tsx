@@ -30,6 +30,8 @@ import { WorkbenchTabCtx } from '../../context/workbenchTabContext';
 import type { WorkbenchSegmentHandoffContext } from '../../context/workbenchTabContext';
 import { emitTraceEvent } from '../../services/terraTrace';
 import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
+import { WORKBENCH_TABS } from '../../config/workbenchTabs';
+import { WorkbenchRail } from '../../components/workbench/WorkbenchRail';
 import { useWorkbenchRoles } from '../../hooks/useWorkbenchRoles';
 import { validateWorkbenchHost } from '../../contracts/objectPlacement';
 import type { WorkbenchHostViolation } from '../../contracts/objectPlacement';
@@ -62,8 +64,20 @@ const PropertyDais = lazy(() =>
 const PropertyDossier = lazy(() =>
   import('./tabs/PropertyDossier').then((m) => ({ default: m.PropertyDossier }))
 );
+const PropertyClerk = lazy(() =>
+  import('./tabs/PropertyClerk').then((m) => ({ default: m.PropertyClerk }))
+);
+const PropertyTreasury = lazy(() =>
+  import('./tabs/PropertyTreasury').then((m) => ({ default: m.PropertyTreasury }))
+);
+const PropertyAudit = lazy(() =>
+  import('./tabs/PropertyAudit').then((m) => ({ default: m.PropertyAudit }))
+);
 const PropertyPilot = lazy(() =>
   import('./tabs/PropertyPilot').then((m) => ({ default: m.PropertyPilot }))
+);
+const PropertyTrace = lazy(() =>
+  import('./tabs/PropertyTrace').then((m) => ({ default: m.PropertyTrace }))
 );
 
 // ============================================================================
@@ -75,11 +89,12 @@ const TAB_COMPONENTS: Record<WorkbenchTabSlug, React.LazyExoticComponent<React.F
   forge: PropertyForge,
   atlas: PropertyAtlas,
   dais: PropertyDais,
-  clerk: PropertyDossier,
-  treasury: PropertyDais,
-  audit: PropertyDossier,
   dossier: PropertyDossier,
+  clerk: PropertyClerk,
+  treasury: PropertyTreasury,
+  audit: PropertyAudit,
   pilot: PropertyPilot,
+  trace: PropertyTrace,
 };
 
 // ============================================================================
@@ -89,25 +104,6 @@ const TAB_COMPONENTS: Record<WorkbenchTabSlug, React.LazyExoticComponent<React.F
 export interface PropertyWorkbenchWindowProps {
   metadata?: Record<string, unknown>;
 }
-
-interface TabDef {
-  id: WorkbenchTabSlug;
-  label: string;
-}
-
-// ============================================================================
-// Constants
-// ============================================================================
-
-/** Canonical tab order — locked per spec. */
-const TABS: readonly TabDef[] = [
-  { id: 'summary', label: 'Summary' },
-  { id: 'forge', label: 'Forge' },
-  { id: 'atlas', label: 'Atlas' },
-  { id: 'dais', label: 'Dais' },
-  { id: 'dossier', label: 'Dossier' },
-  { id: 'pilot', label: 'Pilot' },
-] as const;
 
 // ============================================================================
 // Loading Fallback
@@ -610,75 +606,6 @@ const WorkbenchHostViolationNotice: React.FC<{ violation: WorkbenchHostViolation
 };
 
 // ============================================================================
-// Tab Navigation Bar (state-based, no Router dependency)
-// ============================================================================
-
-interface TabBarProps {
-  activeTab: WorkbenchTabSlug;
-  onTabChange: (tab: WorkbenchTabSlug) => void;
-  /** Filtered tabs to display (Phase 2 role visibility) */
-  tabs?: readonly TabDef[];
-  /** Number of hidden tabs (for toggle badge) */
-  hiddenCount?: number;
-  /** Whether showing all tabs */
-  showAll?: boolean;
-  /** Toggle show-all override */
-  onToggleShowAll?: () => void;
-}
-
-const TabBar: React.FC<TabBarProps> = ({
-  activeTab,
-  onTabChange,
-  tabs = TABS,
-  hiddenCount = 0,
-  showAll = false,
-  onToggleShowAll,
-}) => (
-  <div className="flex items-center">
-    <nav
-      className="flex-1 min-w-0 border-b px-4 flex gap-1 overflow-x-auto"
-      style={{
-        borderColor: 'hsl(var(--tf-border) / 0.4)',
-        background: 'hsl(var(--tf-surface) / 0.92)',
-      }}
-    >
-      {tabs.map((tab) => {
-        const isActive = tab.id === activeTab;
-        return (
-          <button
-            key={tab.id}
-            onClick={() => onTabChange(tab.id)}
-            className="flex items-center px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap"
-            style={{
-              color: isActive ? 'hsl(var(--tf-accent))' : 'hsl(var(--tf-text) / 0.6)',
-              borderBottom: isActive ? '2px solid hsl(var(--tf-accent))' : '2px solid transparent',
-              background: isActive ? 'hsl(var(--tf-accent) / 0.08)' : 'transparent',
-            }}
-            aria-selected={isActive}
-            role="tab"
-          >
-            <span>{tab.label}</span>
-          </button>
-        );
-      })}
-    </nav>
-    {hiddenCount > 0 && onToggleShowAll && (
-      <button
-        onClick={onToggleShowAll}
-        className="shrink-0 px-3 py-1 mr-2 text-xs rounded transition-colors"
-        style={{
-          color: showAll ? 'hsl(var(--tf-accent))' : 'hsl(var(--tf-text) / 0.4)',
-          background: showAll ? 'hsl(var(--tf-accent) / 0.1)' : 'transparent',
-        }}
-        title={showAll ? 'Show role-default tabs' : `Show all tabs (+${hiddenCount} hidden)`}
-      >
-        {showAll ? 'Role view' : `+${hiddenCount} more`}
-      </button>
-    )}
-  </div>
-);
-
-// ============================================================================
 // Inner Layout Types
 // ============================================================================
 
@@ -713,7 +640,7 @@ interface PropertyData {
  */
 const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metadata }) => {
   const parcelId = (metadata?.parcelId as string) ?? null;
-  const initialTab = (metadata?.tabId as WorkbenchTabSlug) ?? 'summary';
+  const initialTab = (metadata?.tabId as string | undefined) ?? 'summary';
   const segmentHandoff = useMemo(
     () => buildSegmentHandoffContext(metadata),
     [metadata],
@@ -723,10 +650,8 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
 
   // Resolve initial tab from metadata slug
   const resolvedInitialTab = useMemo<WorkbenchTabSlug>(() => {
-    if (!initialTab || initialTab === '/' as string) return 'summary';
-    if (initialTab === 'clerk' || initialTab === 'audit') return 'dossier';
-    if (initialTab === 'treasury') return 'dais';
-    const valid = TABS.find((t) => t.id === initialTab);
+    if (!initialTab || initialTab === '/') return 'summary';
+    const valid = WORKBENCH_TABS.find((t) => t.id === initialTab);
     return valid?.id ?? 'summary';
   }, [initialTab]);
 
@@ -788,7 +713,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
 
   /** Tabs filtered by role visibility — order preserved */
   const filteredTabs = useMemo(
-    () => TABS.filter((tab) => visibleTabs.includes(tab.id)),
+    () => WORKBENCH_TABS.filter((tab) => visibleTabs.includes(tab.id)),
     [visibleTabs]
   );
 
@@ -912,16 +837,15 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
       {/* Workbench content — state-based tabs, no Router needed */}
       <WorkbenchTabCtx.Provider value={tabContextValue}>
         <div className="flex flex-1 min-h-0">
+          {/* Left rail — vertical Workbench section nav (state-based, no URL navigation) */}
+          <WorkbenchRail
+            tabs={filteredTabs}
+            parcelId={parcelId}
+            currentTabId={activeTab}
+            onTabChange={handleTabChange}
+          />
           {/* Main content area */}
           <div className="flex flex-col flex-1 min-w-0">
-            <TabBar
-              activeTab={activeTab}
-              onTabChange={handleTabChange}
-              tabs={filteredTabs}
-              hiddenCount={hiddenCount}
-              showAll={showAll}
-              onToggleShowAll={toggleShowAll}
-            />
             {/*
               Stable tabpanel containers — one per top tab entry.
               Inactive panels use the HTML `hidden` attribute (display:none),

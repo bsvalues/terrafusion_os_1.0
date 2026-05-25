@@ -21,6 +21,7 @@
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act } from 'react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
 import * as pilotApi from '../../api/pilotApi';
 import PropertyDais from '../../pages/workbench/tabs/PropertyDais';
@@ -168,6 +169,104 @@ describe('PropertyDais', () => {
     });
   });
   describe('Tool Invocation', () => {
+    it('invokes the governed TerraDais registry tools from the operations panel', async () => {
+      const currentYear = new Date().getFullYear();
+      mockInvokeTool.mockImplementation(async request => ({
+        success: true,
+        correlationId: `corr-${request.toolId}`,
+        result: {
+          toolId: request.toolId,
+          output: JSON.stringify({ toolId: request.toolId }),
+        },
+      }));
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /Submit Certification Status Request/i }));
+        fireEvent.click(screen.getByRole('button', { name: /Get Certification Progress/i }));
+        fireEvent.click(screen.getByRole('button', { name: /Calculate PILT Payment/i }));
+        fireEvent.click(screen.getByRole('button', { name: /Generate Commissioner Memo/i }));
+        fireEvent.click(screen.getByRole('button', { name: /Get Queue Statistics/i }));
+        fireEvent.change(screen.getByLabelText(/Certification signed by/i), { target: { value: 'Assessor Reviewer' } });
+        fireEvent.click(screen.getByLabelText(/Confirm certification step sign-off/i));
+        fireEvent.click(screen.getByRole('button', { name: /Sign Off Certification Step/i }));
+        fireEvent.change(screen.getByLabelText(/DOR submitted by/i), { target: { value: 'Assessor Reviewer' } });
+        fireEvent.click(screen.getByLabelText(/Confirm DOR certification packet actions/i));
+        fireEvent.click(screen.getByRole('button', { name: /Generate Levy Certification Notice/i }));
+        fireEvent.click(screen.getByRole('button', { name: /Submit Certification to DOR/i }));
+        fireEvent.click(screen.getByRole('button', { name: /Record DOR Acceptance/i }));
+      });
+
+      await waitFor(() => expect(mockInvokeTool).toHaveBeenCalledTimes(9));
+
+      expect(mockInvokeTool).toHaveBeenCalledWith({
+        toolId: 'check_cert_status',
+        params: { county: 'benton', taxYear: currentYear },
+        parcelId: '12345-001',
+      });
+      expect(mockInvokeTool).toHaveBeenCalledWith({
+        toolId: 'get_certification_progress',
+        params: { county: 'benton', taxYear: currentYear },
+        parcelId: '12345-001',
+      });
+      expect(mockInvokeTool).toHaveBeenCalledWith({
+        toolId: 'calculate_pilt_payment',
+        params: { county: 'benton', fiscalYear: currentYear },
+        parcelId: '12345-001',
+      });
+      expect(mockInvokeTool).toHaveBeenCalledWith({
+        toolId: 'generate_commissioner_memo',
+        params: { county: 'benton', topic: 'annual certification readiness', taxYear: currentYear, format: 'brief' },
+        parcelId: '12345-001',
+      });
+      expect(mockInvokeTool).toHaveBeenCalledWith({
+        toolId: 'get_queue_statistics',
+        params: { county: 'benton', period: '30d', assignee: 'all' },
+        parcelId: '12345-001',
+      });
+      expect(mockInvokeTool).toHaveBeenCalledWith({
+        toolId: 'sign_off_certification_step',
+        params: {
+          county: 'benton',
+          taxYear: currentYear,
+          stepId: 'SUPERVISORY_REVIEW',
+          signedBy: 'Assessor Reviewer',
+          notes: 'Step verified from Property Workbench.',
+        },
+        parcelId: '12345-001',
+        confirmation: { confirmed: true, reasonCode: 'step_verified' },
+      });
+      expect(mockInvokeTool).toHaveBeenCalledWith({
+        toolId: 'generate_levy_certification_notice',
+        params: { county: 'benton', taxYear: currentYear, deliveryMethod: 'mail' },
+        parcelId: '12345-001',
+        confirmation: { confirmed: true, reasonCode: 'dor_packet_ready' },
+      });
+      expect(mockInvokeTool).toHaveBeenCalledWith({
+        toolId: 'submit_certification_to_dor',
+        params: {
+          county: 'benton',
+          taxYear: currentYear,
+          signedBy: 'Assessor Reviewer',
+          notes: 'DOR submission requested from Property Workbench.',
+        },
+        parcelId: '12345-001',
+        confirmation: { confirmed: true, reasonCode: 'dor_submission' },
+      });
+      expect(mockInvokeTool).toHaveBeenCalledWith({
+        toolId: 'accept_certification_from_dor',
+        params: {
+          county: 'benton',
+          taxYear: currentYear,
+          signedBy: 'Assessor Reviewer',
+          notes: 'DOR acceptance recorded from Property Workbench.',
+        },
+        parcelId: '12345-001',
+        confirmation: { confirmed: true, reasonCode: 'dor_acceptance' },
+      });
+    });
+
     it.skip('invokes check_cert_status with request wording and returned-status disclosure', async () => {
       const currentYear = new Date().getFullYear();
       const mockResponse = {

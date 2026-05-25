@@ -3,7 +3,9 @@ import { getViteEnv } from '../shared/viteEnv';
 export type Session = {
   userId: string;
   countyId: string;
+  countyCode?: string;
   role?: string;
+  officeId?: string;
   permissions?: string[];
   mode?: 'pilot' | 'muse';
   parcelId?: string;
@@ -32,7 +34,9 @@ export function getSession(): Session | null {
   return {
     userId,
     countyId,
+    countyCode: env.VITE_DEV_COUNTY_CODE as string | undefined,
     role: (env.VITE_DEV_ROLE as string | undefined) ?? 'dev',
+    officeId: env.VITE_DEV_OFFICE_ID as string | undefined,
     permissions: permissionsRaw
       ? permissionsRaw
           .split(',')

@@ -14,7 +14,7 @@ import {
   type PersistedDesktopState,
   type PersistedStartMenuState,
 } from '../services/persistenceService';
-import { useDesktopStore } from '../stores/desktopStore';
+import { getModuleWindowSize, useDesktopStore } from '../stores/desktopStore';
 import { useModuleRegistryStore } from '../stores/moduleRegistryStore';
 import { useStartMenuStore, type Module } from '../stores/startMenuStore';
 import { useLogger } from '@/hooks/useLogger';
@@ -101,17 +101,24 @@ export function useHydration(): HydrationResult {
           return;
         }
 
+        const normalizePriorityWorkbench =
+          w.moduleId === 'property-workbench' && (w.state === 'maximized' || w.state === 'snapped');
+
         // Open window
         const windowId = openWindow(w.moduleId, w.title, w.icon);
 
-        // Restore position and size
-        updateWindowPosition(windowId, w.position);
-        updateWindowSize(windowId, w.size);
+        if (normalizePriorityWorkbench) {
+          updateWindowSize(windowId, getModuleWindowSize(w.moduleId).size);
+        } else {
+          // Restore position and size
+          updateWindowPosition(windowId, w.position);
+          updateWindowSize(windowId, w.size);
+        }
 
         // Restore window state
-        if (w.state === 'maximized') {
+        if (!normalizePriorityWorkbench && w.state === 'maximized') {
           maximizeWindow(windowId);
-        } else if (w.state === 'snapped' && w.snapZone) {
+        } else if (!normalizePriorityWorkbench && w.state === 'snapped' && w.snapZone) {
           // For snapped windows, we need viewport dimensions
           // Use stored position/size as approximation
           snapWindow(
@@ -239,15 +246,19 @@ export function useDesktopPersistence(): void {
 
     // Debounced save
     persistenceService.saveDesktopStateDebounced({
-      windows: windows.map((w) => ({
-        moduleId: w.moduleId,
-        title: w.title,
-        icon: w.icon,
-        position: w.position,
-        size: w.size,
-        state: w.state,
-        snapZone: w.snapZone,
-      })),
+      windows: windows.map((w) => {
+        const state = w.moduleId === 'property-workbench' && w.state !== 'minimized' ? 'normal' : w.state;
+
+        return {
+          moduleId: w.moduleId,
+          title: w.title,
+          icon: w.icon,
+          position: w.position,
+          size: w.size,
+          state,
+          snapZone: state === 'snapped' ? w.snapZone : undefined,
+        };
+      }),
     });
   }, [windows]);
 }

@@ -54,7 +54,7 @@ vi.mock('../../auth/useAuthContext', () => ({
 
 vi.mock('../../hooks/useWorkbenchRoles', () => ({
   useWorkbenchRoles: () => ({
-    visibleTabs: ['summary', 'forge', 'atlas', 'dais', 'dossier', 'pilot'],
+    visibleTabs: ['summary', 'forge', 'atlas', 'dais', 'dossier', 'pilot', 'trace'],
     hiddenCount: 0,
     showAll: false,
     toggleShowAll: vi.fn(),

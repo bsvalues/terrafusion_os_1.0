@@ -26,6 +26,26 @@ import { getViteEnv } from '../shared/viteEnv';
 // VITE_API_URL points at the .NET backend, NOT the pilot runtime.
 const env = getViteEnv();
 const API_BASE_URL = '';
+const BENTON_COUNTY_ID = '19190019-1919-1919-1919-191919191919';
+
+function normalizePilotCountyScope(session: ReturnType<typeof getSession>): string | null {
+  if (!session) return null;
+  if (session.countyCode?.trim()) return session.countyCode.trim().toLowerCase();
+  if (session.countyId.trim().toLowerCase() === BENTON_COUNTY_ID) return 'benton';
+  return session.countyId;
+}
+
+function normalizePilotRole(role: string | undefined): string | undefined {
+  if (!role) return undefined;
+  return role.trim().toLowerCase() === 'dev' ? 'appraiser' : role;
+}
+
+function inferPilotOfficeId(role: string | undefined, explicitOfficeId: string | undefined): string | undefined {
+  if (explicitOfficeId?.trim()) return explicitOfficeId.trim();
+  const normalizedRole = normalizePilotRole(role)?.trim().toLowerCase();
+  if (normalizedRole === 'appraiser' || normalizedRole === 'assessor' || normalizedRole === 'supervisor') return 'assessor';
+  return undefined;
+}
 
 /**
  * Build standard Pilot API headers including identity from current session.
@@ -37,9 +57,14 @@ function buildPilotHeaders(): Record<string, string> {
   };
   const session = getSession();
   if (session) {
+    const countyScope = normalizePilotCountyScope(session);
+    const role = normalizePilotRole(session.role);
+    const officeId = inferPilotOfficeId(session.role, session.officeId);
     headers['x-user-id'] = session.userId;
-    headers['x-county-id'] = session.countyId;
-    if (session.role) headers['x-role'] = session.role;
+    if (countyScope) headers['x-county-id'] = countyScope;
+    headers['x-county-guid'] = session.countyId;
+    if (role) headers['x-role'] = role;
+    if (officeId) headers['x-office-id'] = officeId;
     if (session.mode) headers['x-mode'] = session.mode;
   }
   return headers;

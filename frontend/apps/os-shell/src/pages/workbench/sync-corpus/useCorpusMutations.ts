@@ -6,7 +6,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   postCorpusStart,
   postCorpusResume,
-  recordRecentRun,
   type CorpusStartOrResumeResponse,
   type ResumeOutcome,
   type StartCorpusRequest,
@@ -16,14 +15,9 @@ export function useStartCorpusRun() {
   const qc = useQueryClient();
   return useMutation<CorpusStartOrResumeResponse, Error, StartCorpusRequest>({
     mutationFn: (req) => postCorpusStart(req),
-    onSuccess: (data, vars) => {
-      recordRecentRun({
-        runId: data.runId,
-        operatorName: vars.operatorName,
-        workingYear: vars.workingYear,
-        startedAt: new Date().toISOString(),
-      });
+    onSuccess: (data) => {
       void qc.invalidateQueries({ queryKey: ['sync-corpus-run', data.runId] });
+      void qc.invalidateQueries({ queryKey: ['sync-corpus-runs'] });
     },
   });
 }

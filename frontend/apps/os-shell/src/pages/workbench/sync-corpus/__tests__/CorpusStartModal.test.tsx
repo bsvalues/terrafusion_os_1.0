@@ -16,8 +16,6 @@ vi.mock('@/api/syncCorpus', async () => {
   return {
     ...actual,
     postCorpusStart: vi.fn(),
-    recordRecentRun: vi.fn(),
-    readRecentRuns: vi.fn(() => []),
   };
 });
 

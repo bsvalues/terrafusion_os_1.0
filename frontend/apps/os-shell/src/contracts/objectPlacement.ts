@@ -90,6 +90,14 @@ export type RenderMode = (typeof RENDER_MODES)[number];
  */
 export interface ObjectClassification {
   objectType: TerraFusionObjectType;
+  surface?: 'tier0';
+  defaultPlacement?: 'large' | 'near-full-stage';
+  movable?: boolean;
+  resizable?: boolean;
+  restorable?: boolean;
+  deepLinkable?: boolean;
+  canMaximize?: boolean;
+  mustRemainMaximized?: boolean;
   hostSurface?: TerraFusionObjectType;
   /** Phase 10: Completion metadata — required for completionRequired types. */
   entryPath?: string;
@@ -150,7 +158,7 @@ export const PLACEMENT_POLICY: Record<TerraFusionObjectType, PlacementRule> = {
     parcelScoped: true,
     completionRequired: true,
     evidenceRequired: true,
-    driftForbidden: 'Must not float as popup — opens maximized',
+    driftForbidden: 'Must remain an OS-managed priority window, not an immovable fullscreen surface',
     examples: ['property-workbench'],
   },
   'parcel-scoped-app': {
@@ -286,7 +294,20 @@ export const MODULE_OBJECT_TYPES: Record<string, ObjectClassification> = {
   'suite-gpt':            { objectType: 'suite-workspace', entryPath: 'desktop-icon:gpt', hasActionableUI: true },
 
   // ── Tier-0 Workbench host (layer 4) ───────────────────────────────────
-  'property-workbench':   { objectType: 'tier0-workbench', entryPath: 'desktop-icon:workbench', hasActionableUI: true, hasEvidenceExport: true },
+  'property-workbench': {
+    objectType: 'tier0-workbench',
+    surface: 'tier0',
+    defaultPlacement: 'near-full-stage',
+    movable: true,
+    resizable: true,
+    restorable: true,
+    deepLinkable: true,
+    canMaximize: true,
+    mustRemainMaximized: false,
+    entryPath: 'desktop-icon:workbench',
+    hasActionableUI: true,
+    hasEvidenceExport: true,
+  },
 
   // ── Workbench tabs — parcel-scoped apps hosted IN workbench ───────────
   'summary':              { objectType: 'parcel-scoped-app', hostSurface: 'tier0-workbench', entryPath: 'workbench-tab:summary', hasActionableUI: true, hasEvidenceExport: true },

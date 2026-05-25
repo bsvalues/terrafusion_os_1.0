@@ -80,16 +80,17 @@ describe('probeHealth', () => {
     expect(result.warnings.join(' ')).toMatch(/Network Error/);
   });
 
-  it('adds warning when no active modules are loaded', async () => {
+  it('adds warning when discovered modules are loaded but none are active', async () => {
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({
         status: 'Healthy',
-        moduleCount: 0,
+        moduleCount: 2,
         healthyModules: 0,
         warnings: [],
         systemComponents: {},
         moduleCountActive: 0,
+        moduleCountTotal: 2,
       }),
     } as Response);
 
@@ -97,5 +98,29 @@ describe('probeHealth', () => {
 
     expect(result.ok).toBe(true);
     expect(result.warnings.join(' ')).toMatch(/No active modules loaded/);
+  });
+
+  it('does not warn when a healthy inventory intentionally has no modules', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        status: 'Healthy',
+        moduleCount: 0,
+        healthyModules: 0,
+        warnings: [],
+        systemComponents: { ModuleLoader: true },
+        moduleCountActive: 0,
+        moduleCountTotal: 0,
+        moduleCountFilteredOut: 0,
+      }),
+    } as Response);
+
+    const result = await probeHealth('/api/system/health', 1000);
+
+    expect(result.ok).toBe(true);
+    expect(result.status).toBe('healthy');
+    expect(result.moduleCountActive).toBe(0);
+    expect(result.moduleCountTotal).toBe(0);
+    expect(result.warnings.join(' ')).not.toMatch(/No active modules loaded/);
   });
 });

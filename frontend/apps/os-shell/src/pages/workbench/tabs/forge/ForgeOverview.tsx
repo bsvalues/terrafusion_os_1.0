@@ -101,6 +101,7 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
   const [matrixCompareState, setMatrixCompareState] = useState<ToolState<MatrixComparisonResult>>({ status: 'idle' });
   const [calibrationMemoState, setCalibrationMemoState] = useState<ToolState<CalibrationMemoResult>>({ status: 'idle' });
   const [parcelIssueState, setParcelIssueState] = useState<ToolState<ParcelDataIssueResult>>({ status: 'idle' });
+  const [findingClassificationState, setFindingClassificationState] = useState<ToolState<Record<string, unknown>>>({ status: 'idle' });
   const [valuationModelType, setValuationModelType] = useState<'cost' | 'income' | 'sales'>('cost');
   const [valuationReasonCode, setValuationReasonCode] = useState<string>('annual_certification');
   const [valuationConfirmed, setValuationConfirmed] = useState(false);
@@ -536,6 +537,45 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
       setParcelFlagConfirmed(false);
     }
   }, [findingId, parcelFlagConfirmed, parcelId, parcelIssueType, parseToolOutput, recordHistory, toNetworkError]);
+
+  const handleClassifyCountyFinding = useCallback(async () => {
+    setFindingClassificationState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'classify_county_finding',
+        params: {
+          county: 'benton',
+          taxYear,
+          scope: 'parcel',
+          signal: parcelIssueType,
+          subjectId: findingId.trim() || parcelId,
+          includeSpatialContext: true,
+        },
+        parcelId,
+      });
+      if (response.success && response.result) {
+        const parsed = parseToolOutput<Record<string, unknown>>(response.result.output, {});
+        setFindingClassificationState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        recordHistory('classify_county_finding', 'success', response.correlationId || 'unknown', { parcelId, findingId, issueType: parcelIssueType });
+      } else {
+        setFindingClassificationState({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: {
+            code: response.error?.code || 'CLASSIFY_FINDING_FAILED',
+            message: response.error?.message || 'County finding classification failed',
+            severity: 'error',
+            correlationId: response.correlationId,
+          },
+        });
+        recordHistory('classify_county_finding', 'error', response.correlationId || 'unknown', { parcelId, findingId, issueType: parcelIssueType }, response.error?.code || 'CLASSIFY_FINDING_FAILED');
+      }
+    } catch (err) {
+      const correlationId = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setFindingClassificationState({ status: 'error', correlationId, error: toNetworkError(err, correlationId) });
+      recordHistory('classify_county_finding', 'error', correlationId, { parcelId, findingId, issueType: parcelIssueType }, 'NETWORK_ERROR');
+    }
+  }, [findingId, parcelId, parcelIssueType, parseToolOutput, recordHistory, taxYear, toNetworkError]);
 
   /* ── Render ───────────────────────────────────────────── */
 
@@ -1146,6 +1186,24 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
                     <option key={item.value} value={item.value}>{item.label}</option>
                   ))}
                 </select>
+              </div>
+              <div className="tf-panel p-3 rounded-lg space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <div className="tf-text-tertiary text-xs font-semibold uppercase tracking-wide">County Finding Classification</div>
+                    <p className="tf-text-dim text-xs mt-1">Classifies the selected finding before routing a correction.</p>
+                  </div>
+                  <WorkbenchSourceBadge source={findingClassificationState.status === 'success' ? 'live' : 'unavailable'} />
+                </div>
+                <button onClick={handleClassifyCountyFinding} disabled={findingClassificationState.status === 'loading' || !findingId.trim()} className="w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta disabled:opacity-50">
+                  {findingClassificationState.status === 'loading' ? 'Classifying...' : 'Classify County Finding'}
+                </button>
+                {findingClassificationState.status === 'success' && findingClassificationState.result && (
+                  <pre className="tf-overlay rounded-lg p-3 text-xs tf-text-secondary overflow-x-auto">{JSON.stringify(findingClassificationState.result, null, 2)}</pre>
+                )}
+                {findingClassificationState.status === 'error' && findingClassificationState.error && (
+                  <ErrorDisplay error={{ message: findingClassificationState.error.message, errorCode: findingClassificationState.error.code, correlationId: findingClassificationState.correlationId }} />
+                )}
               </div>
               <div className="tf-panel p-3 rounded-lg border-l-4" style={{ borderLeftColor: 'hsl(var(--tf-warning))' }}>
                 <label className="flex items-center gap-3 cursor-pointer">

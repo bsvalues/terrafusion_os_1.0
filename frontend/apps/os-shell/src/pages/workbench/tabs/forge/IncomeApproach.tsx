@@ -233,8 +233,8 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
               <span className="tf-text-tertiary">Confidence:</span>
               <span className="tf-suite-accent-text font-semibold">{formatConfidence(incomeAPI.data.confidence)}</span>
               <span className="tf-text-dim text-xs ml-auto">
-                {incomeAPI.data.source === 'stub' && !incomeAPI.data.incomeApproachApplicable
-                  ? 'N/A — residential'
+                {!incomeAPI.data.incomeApproachApplicable
+                  ? 'Income approach not applicable'
                   : `Source: ${incomeAPI.data.source}`}
               </span>
             </div>

@@ -12,11 +12,12 @@
  *   - User override always available in settings
  *   - FORBIDDEN: hard-locking tabs away from any role, changing tab order per role
  *
- * Tab order is LOCKED per TF-052 Art. IV:
- *   Summary → Forge → Atlas → Dais → Clerk → Treasury → Audit → Dossier → Pilot
+ * Tab order is LOCKED by the shared Workbench registry:
+ *   Summary → Forge → Atlas → Dais → Dossier → Pilot → Trace
  */
 
 import type { WorkbenchTabSlug } from '../contracts/workbench';
+import { WORKBENCH_TAB_IDS } from './workbenchTabs';
 
 // ============================================================================
 // Role Identifiers
@@ -96,7 +97,7 @@ export const ROLE_DEFINITIONS: readonly RoleDefinition[] = [
     id: 'clerk',
     label: 'Clerk (Recording / Ownership)',
     description: 'Document recording, chain of title, ownership changes',
-    primaryEntry: 'Property Workbench → Clerk tab',
+    primaryEntry: 'Property Workbench → Dossier',
     writeLane: 'TerraClerk (future)',
   },
   {
@@ -149,28 +150,27 @@ export const ROLE_DEFINITIONS: readonly RoleDefinition[] = [
 
 /**
  * Default visible tabs per role.
- * Directly transcribed from Document A v2.0 §Role → Tab Visibility Summary.
  *
- * Tab ORDER never changes — this only controls which tabs are shown by default.
- * Users can override in settings to show all tabs.
- *
- * Roles 11 (IT Director) and 12 (DevOps) have no workbench tabs because
- * they are system-level users whose primary workspace is TerraCanon.
- * They still get Summary if they happen to open a parcel.
+ * Every tab in this registry is parcel-scoped. Linked county office tabs expose
+ * the parcel slice of county-wide offices; OS support tabs assist and defend
+ * parcel work without owning parcel data. Permissions still govern actions
+ * inside each tab.
  */
+const DEFAULT_VISIBLE_TABS: readonly WorkbenchTabSlug[] = WORKBENCH_TAB_IDS;
+
 const ROLE_VISIBLE_TABS: Record<CountyRole, readonly WorkbenchTabSlug[]> = {
-  residential_appraiser: ['summary', 'forge', 'atlas', 'dossier'],
-  commercial_appraiser:  ['summary', 'forge', 'atlas', 'dossier'],
-  mass_appraisal_analyst: ['summary', 'forge', 'atlas'],
-  gis_technician:        ['summary', 'atlas', 'dossier'],
-  spatial_analyst:       ['summary', 'forge', 'atlas'],
-  clerk:                 ['summary', 'clerk', 'dossier'],
-  exemption_clerk:       ['summary', 'dais', 'clerk', 'dossier'],
-  assessor:              ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier'],
-  deputy_chief:          ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier'],
-  bpp_specialist:        ['summary'],
-  it_director:           ['summary'],
-  devops_admin:          ['summary'],
+  residential_appraiser: DEFAULT_VISIBLE_TABS,
+  commercial_appraiser:  DEFAULT_VISIBLE_TABS,
+  mass_appraisal_analyst: DEFAULT_VISIBLE_TABS,
+  gis_technician:        DEFAULT_VISIBLE_TABS,
+  spatial_analyst:       DEFAULT_VISIBLE_TABS,
+  clerk:                 DEFAULT_VISIBLE_TABS,
+  exemption_clerk:       DEFAULT_VISIBLE_TABS,
+  assessor:              DEFAULT_VISIBLE_TABS,
+  deputy_chief:          DEFAULT_VISIBLE_TABS,
+  bpp_specialist:        DEFAULT_VISIBLE_TABS,
+  it_director:           DEFAULT_VISIBLE_TABS,
+  devops_admin:          DEFAULT_VISIBLE_TABS,
 };
 
 // ============================================================================
@@ -178,9 +178,7 @@ const ROLE_VISIBLE_TABS: Record<CountyRole, readonly WorkbenchTabSlug[]> = {
 // ============================================================================
 
 /** Canonical tab order — NEVER mutate. */
-export const ALL_TAB_SLUGS: readonly WorkbenchTabSlug[] = [
-  'summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier',
-] as const;
+export const ALL_TAB_SLUGS: readonly WorkbenchTabSlug[] = WORKBENCH_TAB_IDS;
 
 // ============================================================================
 // API

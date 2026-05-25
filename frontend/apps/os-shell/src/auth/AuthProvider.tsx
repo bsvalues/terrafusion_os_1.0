@@ -32,7 +32,9 @@ function seedDevPreviewSession(): void {
     JSON.stringify({
       userId: 'dev-user',
       countyId: '19190019-1919-1919-1919-191919191919',
-      role: 'dev',
+      countyCode: 'benton',
+      role: 'supervisor',
+      officeId: 'assessor',
       mode: 'pilot',
     })
   );
@@ -69,6 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Re-run whenever the stored token changes so an expired token is replaced.
   useEffect(() => {
     if (!isDevPreviewMode()) return;
+    seedDevPreviewSession();
     if (!isTokenExpiredOrMissing(token)) return; // token is present and not expired
 
     let cancelled = false;

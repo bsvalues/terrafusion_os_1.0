@@ -8,9 +8,9 @@
  *
  * Gate hierarchy:
  *   PRIMARY (MUST PASS):  Forge, Atlas, Dais
- *   SECONDARY (SHOULD):   Dossier, Pilot
- *   REGISTRY (INVENTORY): Clerk, Treasury, Audit exist in VALID_WORKBENCH_TAB_IDS
- *   WORKBENCH-LEVEL:      9 tab IDs, maximized window size
+ *   SECONDARY (SHOULD):   Dossier, Pilot, Trace
+ *   REGISTRY (INVENTORY): seven canonical Workbench tabs
+ *   WORKBENCH-LEVEL:      7 tab IDs, restorable window size
  * ======================================================================
  */
 
@@ -294,6 +294,9 @@ const LazyDossier = React.lazy(() =>
 const LazyPilot = React.lazy(() =>
   import('../../pages/workbench/tabs/PropertyPilot').then((m) => ({ default: m.PropertyPilot }))
 );
+const LazyTrace = React.lazy(() =>
+  import('../../pages/workbench/tabs/PropertyTrace').then((m) => ({ default: m.PropertyTrace }))
+);
 
 // =========================================================================
 // PRIMARY GATE — MUST PASS: Forge, Atlas, Dais
@@ -310,6 +313,7 @@ describe('Workbench Real Hosting Gate', () => {
     await import('../../pages/workbench/tabs/PropertyDais');
     await import('../../pages/workbench/tabs/PropertyDossier');
     await import('../../pages/workbench/tabs/PropertyPilot');
+    await import('../../pages/workbench/tabs/PropertyTrace');
   }, 90000);
 
   beforeEach(() => {
@@ -505,24 +509,37 @@ describe('Workbench Real Hosting Gate', () => {
     });
   });
 
+  describe('SECONDARY — Trace', () => {
+    it('renders a real surface, not a PlaceholderModule', async () => {
+      render(
+        <TabTestWrapper tabSlug="trace">
+          <Suspense fallback={<div>Loading...</div>}>
+            <LazyTrace />
+          </Suspense>
+        </TabTestWrapper>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('TerraTrace')).toBeInTheDocument();
+      });
+
+      expect(screen.getByTestId('mock-evidence-rail')).toBeInTheDocument();
+      expect(screen.queryByTestId('placeholder-module')).not.toBeInTheDocument();
+    });
+  });
+
   // =========================================================================
-  // REGISTRY ASSERTIONS — Clerk, Treasury, Audit exist in valid tab IDs
+  // REGISTRY ASSERTIONS — canonical Workbench tabs only
   // =========================================================================
 
   describe('REGISTRY — tab ID inventory', () => {
-    it('clerk exists in VALID_WORKBENCH_TAB_IDS', async () => {
+    it('includes linked county office and OS support surfaces', async () => {
       const { VALID_WORKBENCH_TAB_IDS } = await import('../../config/suiteRegistry');
       expect(VALID_WORKBENCH_TAB_IDS).toContain('clerk');
-    });
-
-    it('treasury exists in VALID_WORKBENCH_TAB_IDS', async () => {
-      const { VALID_WORKBENCH_TAB_IDS } = await import('../../config/suiteRegistry');
       expect(VALID_WORKBENCH_TAB_IDS).toContain('treasury');
-    });
-
-    it('audit exists in VALID_WORKBENCH_TAB_IDS', async () => {
-      const { VALID_WORKBENCH_TAB_IDS } = await import('../../config/suiteRegistry');
       expect(VALID_WORKBENCH_TAB_IDS).toContain('audit');
+      expect(VALID_WORKBENCH_TAB_IDS).toContain('pilot');
+      expect(VALID_WORKBENCH_TAB_IDS).toContain('trace');
     });
   });
 
@@ -531,23 +548,23 @@ describe('Workbench Real Hosting Gate', () => {
   // =========================================================================
 
   describe('WORKBENCH-LEVEL', () => {
-    it('VALID_WORKBENCH_TAB_IDS has exactly 9 entries', async () => {
+    it('VALID_WORKBENCH_TAB_IDS has exactly 10 entries', async () => {
       const { VALID_WORKBENCH_TAB_IDS } = await import('../../config/suiteRegistry');
-      expect(VALID_WORKBENCH_TAB_IDS).toHaveLength(9);
+      expect(VALID_WORKBENCH_TAB_IDS).toHaveLength(10);
     });
 
-    it('VALID_WORKBENCH_TAB_IDS contains all 9 canonical tabs', async () => {
+    it('VALID_WORKBENCH_TAB_IDS contains the 10 canonical tabs in order', async () => {
       const { VALID_WORKBENCH_TAB_IDS } = await import('../../config/suiteRegistry');
-      const expected = ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot'];
-      for (const tabId of expected) {
-        expect(VALID_WORKBENCH_TAB_IDS).toContain(tabId);
-      }
+      const expected = ['summary', 'forge', 'atlas', 'dais', 'dossier', 'clerk', 'treasury', 'audit', 'pilot', 'trace'];
+      expect(VALID_WORKBENCH_TAB_IDS).toEqual(expected);
     });
 
-    it('getModuleWindowSize("property-workbench") returns maximized: true', async () => {
+    it('getModuleWindowSize("property-workbench") returns a restorable priority window', async () => {
       const { getModuleWindowSize } = await import('../../stores/desktopStore');
       const result = getModuleWindowSize('property-workbench');
-      expect(result.maximized).toBe(true);
+      expect(result.maximized).toBe(false);
+      expect(result.size.width).toBeGreaterThan(0);
+      expect(result.size.height).toBeGreaterThan(0);
     });
   });
 });

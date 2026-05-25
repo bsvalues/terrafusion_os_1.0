@@ -19,7 +19,6 @@ import { Rnd, RndDragCallback, RndResizeCallback } from 'react-rnd';
 import { getLucideIcon } from '../../config/iconMap';
 import { useContextMenu } from '../../hooks/useContextMenu';
 import { DesktopWindow, useDesktopStore } from '../../stores/desktopStore';
-import { getObjectClassification } from '../../contracts/objectPlacement';
 import { TerraSphereIcon } from '../../ui/brand/TerraSphereIcon';
 import { LiquidPanel } from '../../ui/materials';
 import { useWindowSnap } from './useWindowSnap';
@@ -298,7 +297,6 @@ interface TitleBarProps {
   icon: string;
   isActive: boolean;
   isMaximized: boolean;
-  isTier0?: boolean;
   isPersistent?: boolean;
   onMinimize: () => void;
   onMaximize: () => void;
@@ -311,7 +309,6 @@ const TitleBar: React.FC<TitleBarProps> = ({
   icon,
   isActive,
   isMaximized,
-  isTier0 = false,
   isPersistent = false,
   onMinimize,
   onMaximize,
@@ -384,7 +381,6 @@ const TitleBar: React.FC<TitleBarProps> = ({
           label={isMaximized ? 'Restore' : 'Maximize'}
           onClick={handleMaximize}
           variant='maximize'
-          disabled={isTier0}
         />
       </div>
 
@@ -431,10 +427,6 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
   const isActive = windowData.id === activeWindowId;
   const isMaximized = windowData.state === 'maximized';
   const isMinimized = windowData.state === 'minimized';
-
-  // Tier-0 workbench must stay maximized — no restore, no drag, no resize
-  const classification = getObjectClassification(windowData.moduleId);
-  const isTier0 = classification?.objectType === 'tier0-workbench';
 
   // Animation state tracking
   const [animationState, setAnimationState] = useState<'opening' | 'open' | 'focused'>('opening');
@@ -491,14 +483,12 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
   }, [minimizeWindow, windowData.id]);
 
   const handleMaximize = useCallback(() => {
-    // Tier-0 windows must stay maximized — block restore
-    if (isTier0) return;
     if (isMaximized) {
       restoreWindow(windowData.id);
     } else {
       maximizeWindow(windowData.id);
     }
-  }, [isTier0, isMaximized, maximizeWindow, restoreWindow, windowData.id]);
+  }, [isMaximized, maximizeWindow, restoreWindow, windowData.id]);
 
   const handleFocus = useCallback(() => {
     // Only bring to front if this is NOT already the active window.
@@ -624,9 +614,9 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
         bounds='window'
         dragHandleClassName='window-drag-handle'
         cancel='[data-testid="window-controls"], [data-testid="window-controls"] *'
-        disableDragging={isMaximized || isTier0}
+        disableDragging={isMaximized}
         enableResizing={
-          isMaximized || isTier0
+          isMaximized
             ? false
             : {
                 top: true,
@@ -666,19 +656,7 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
           data-testid='tf-window-animation'
           className='w-full h-full'
         >
-        {/* ── Tier-0 surface (property-workbench) — no chrome, no titlebar ── */}
-        {isTier0 ? (
-          <div
-            data-testid='tf-window-chrome'
-            data-tier0='true'
-            className='w-full h-full overflow-hidden'
-            style={{ background: 'hsl(var(--tf-bg))' }}
-          >
-            <WindowInteractionContext.Provider value={{ isInteracting }}>
-              {children}
-            </WindowInteractionContext.Provider>
-          </div>
-        ) : (
+        {/* OS-managed window chrome: Workbench is Tier-0 by priority, not by immovable fullscreen behavior. */}
         <LiquidPanel
           variant='shell'
           radius='lg'
@@ -714,7 +692,6 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
             icon={windowData.icon}
             isActive={isActive}
             isMaximized={isMaximized}
-            isTier0={isTier0}
             isPersistent={!!windowData.metadata?.persistent}
             onMinimize={handleMinimize}
             onMaximize={handleMaximize}
@@ -740,7 +717,7 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
               userSelect: isInteracting ? 'none' : 'auto',
             }}
             onMouseDownCapture={
-              isMaximized || isTier0
+              isMaximized
                 ? undefined
                 : (e) => {
                     // Guard zone slightly wider than the handle itself so near-miss
@@ -791,7 +768,6 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
             </WindowInteractionContext.Provider>
           </div>
         </LiquidPanel>
-        )}
         </motion.div>
       </Rnd>
 

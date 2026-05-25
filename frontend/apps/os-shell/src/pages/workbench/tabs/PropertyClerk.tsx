@@ -67,8 +67,13 @@ interface ReleaseLienResult {
   lienId: string;
   status: string;
   releasedAt: string;
-  documentId: string;
+  payloadRef?: string;
 }
+
+type ReleaseReason = 'satisfied' | 'discharged' | 'expired';
+
+const CLERK_COUNTY = 'benton';
+const CLERK_LIEN_UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 interface RecordingSummaryResult {
   parcelId: string;
@@ -99,6 +104,8 @@ export const PropertyClerk: React.FC = () => {
   const [recordConfirmed, setRecordConfirmed] = useState(false);
   const [releaseState, setReleaseState] = useState<DaisToolState<ReleaseLienResult>>({ status: 'idle' });
   const [releaseLienId, setReleaseLienId] = useState('');
+  const [releaseReason, setReleaseReason] = useState<ReleaseReason>('satisfied');
+  const [releaseConfirmed, setReleaseConfirmed] = useState(false);
   const [summaryState, setSummaryState] = useState<DaisToolState<RecordingSummaryResult>>({ status: 'idle' });
 
   const formatDate = (dateStr: string | undefined) => {
@@ -200,9 +207,39 @@ export const PropertyClerk: React.FC = () => {
   }, [parcelId, recordDocType, recordGrantor, recordGrantee, addToHistory]);
 
   const handleReleaseLien = useCallback(async () => {
+    const normalizedLienId = releaseLienId.trim();
+    if (!CLERK_LIEN_UUID_PATTERN.test(normalizedLienId)) {
+      setReleaseState({
+        status: 'error',
+        error: {
+          code: 'INVALID_LIEN_ID_FORMAT',
+          message: 'Enter an existing Clerk lien UUID before requesting release.',
+          severity: 'error',
+        },
+      });
+      return;
+    }
+
+    if (!releaseConfirmed) {
+      setReleaseState({
+        status: 'error',
+        error: {
+          code: 'RELEASE_CONFIRMATION_REQUIRED',
+          message: 'Confirm the lien release request before submission.',
+          severity: 'error',
+        },
+      });
+      return;
+    }
+
     setReleaseState({ status: 'loading' });
     try {
-      const response = await invokeTool({ toolId: 'release_lien', params: { parcelId, lienId: releaseLienId }, parcelId });
+      const response = await invokeTool({
+        toolId: 'release_lien',
+        params: { county: CLERK_COUNTY, lienId: normalizedLienId, releaseReason },
+        parcelId,
+        confirmation: { confirmed: true, reasonCode: releaseReason },
+      });
       if (response.success) {
         const parsed = typeof response.result?.output === 'string' ? JSON.parse(response.result.output) : response.result?.output;
         setReleaseState({ status: 'success', result: parsed, correlationId: response.correlationId });
@@ -216,7 +253,7 @@ export const PropertyClerk: React.FC = () => {
       setReleaseState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error' } });
       addToHistory('release_lien', 'error', cid);
     }
-  }, [parcelId, releaseLienId, addToHistory]);
+  }, [parcelId, releaseLienId, releaseReason, releaseConfirmed, addToHistory]);
 
   const handleSummarizeRecordings = useCallback(async () => {
     setSummaryState({ status: 'loading' });
@@ -387,15 +424,24 @@ export const PropertyClerk: React.FC = () => {
 
         {/* Release Lien (write_low) */}
         <BentoCard title='🔓 Release Lien' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-          <p className='tf-text-tertiary text-sm mb-3'>Release an existing lien on this parcel</p>
-          <input type='text' value={releaseLienId} onChange={e => setReleaseLienId(e.target.value)} placeholder='Lien ID (e.g. LIEN-2026-001)' className='w-full p-2 rounded-lg tf-input mb-3' />
-          <button onClick={handleReleaseLien} disabled={releaseState.status === 'loading' || !releaseLienId.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
-            {releaseState.status === 'loading' ? 'Releasing...' : 'Release Lien'}
+          <p className='tf-text-tertiary text-sm mb-3'>Request release for an existing Clerk lien UUID. Release is not official until the governed tool confirms the result.</p>
+          <input type='text' value={releaseLienId} onChange={e => setReleaseLienId(e.target.value)} placeholder='Existing Clerk lien UUID' className='w-full p-2 rounded-lg tf-input mb-3' />
+          <select value={releaseReason} onChange={e => setReleaseReason(e.target.value as ReleaseReason)} className='w-full p-2 rounded-lg tf-input mb-3'>
+            <option value='satisfied'>Satisfied</option>
+            <option value='discharged'>Discharged</option>
+            <option value='expired'>Expired</option>
+          </select>
+          <label className='flex items-start gap-2 tf-text-secondary text-sm mb-3'>
+            <input type='checkbox' checked={releaseConfirmed} onChange={e => setReleaseConfirmed(e.target.checked)} className='mt-1' />
+            <span>I confirm this is an existing Clerk lien UUID and the selected release reason is ready for governed submission.</span>
+          </label>
+          <button onClick={handleReleaseLien} disabled={releaseState.status === 'loading' || !CLERK_LIEN_UUID_PATTERN.test(releaseLienId.trim()) || !releaseConfirmed} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
+            {releaseState.status === 'loading' ? 'Requesting...' : 'Request Lien Release'}
           </button>
-          {releaseState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Releasing lien...</span></div>}
+          {releaseState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting lien release request...</span></div>}
           {releaseState.status === 'success' && releaseState.result && (
             <div className='space-y-2'>
-              <div className='tf-panel p-4'><span className='font-semibold tf-text'>Lien {releaseState.result.lienId} Released</span><p className='tf-text-secondary text-sm'>Status: {releaseState.result.status} | Doc: {releaseState.result.documentId}</p></div>
+              <div className='tf-panel p-4'><span className='font-semibold tf-text'>Lien {releaseState.result.lienId} Release Confirmed</span><p className='tf-text-secondary text-sm'>Status: {releaseState.result.status} | Ref: {releaseState.result.payloadRef ?? 'not returned'}</p></div>
               {releaseState.correlationId && <div className='text-xs tf-text-dim'>Ref: <code className='tf-suite-accent-text font-mono'>{releaseState.correlationId.slice(0, 16)}...</code></div>}
             </div>
           )}

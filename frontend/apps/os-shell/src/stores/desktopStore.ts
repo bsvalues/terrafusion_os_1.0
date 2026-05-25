@@ -80,6 +80,15 @@ export function deriveWindowType(moduleId: string): WindowType {
   return 'normal';
 }
 
+function isPriorityWindowModule(moduleId: string): boolean {
+  const classification = MODULE_OBJECT_TYPES[moduleId];
+  return (
+    classification?.objectType === 'tier0-workbench' &&
+    classification.defaultPlacement === 'near-full-stage' &&
+    classification.mustRemainMaximized === false
+  );
+}
+
 export interface DesktopWindow {
   id: string;
   moduleId: string;
@@ -175,7 +184,7 @@ const TOP_BAR_HEIGHT = 44;
 
 /**
  * Returns the correct window size for a module based on its type.
- * - All suites, workbench, and OS features → near-full-stage
+ * - All suites, Workbench, and OS features → near-full-stage
  * - Everything else → DEFAULT_WINDOW_SIZE
  */
 export function getModuleWindowSize(moduleId: string): { size: Size; maximized: boolean } {
@@ -195,11 +204,11 @@ export function getModuleWindowSize(moduleId: string): { size: Size; maximized: 
   if (classification) {
     const { objectType } = classification;
 
-    // Tier-0 workbench → MAXIMIZED (fills usable area between top bar and taskbar)
+    // Tier-0 Workbench → priority window: large, OS-managed, movable, resizable, restorable
     if (objectType === 'tier0-workbench') {
       return {
-        size: { width: vw, height: vh - TOP_BAR_HEIGHT - TASKBAR_HEIGHT },
-        maximized: true,
+        size: { width: vw - 40, height: vh - 120 },
+        maximized: false,
       };
     }
 
@@ -568,11 +577,18 @@ export const useDesktopStore = create<DesktopState>()(
 
         const id = generateWindowId();
 
-        // Use module-aware sizing (suites → near-full-stage, workbench → maximized)
+        // Use module-aware sizing (suites/workbench/features → near-full-stage priority windows)
         const { size: moduleSize, maximized: moduleMaximized } = getModuleWindowSize(moduleId);
 
-        // Respect defaultMaximized metadata hint — caller can force maximized regardless of module default
-        const shouldMaximize = metadata?.defaultMaximized === true || moduleMaximized;
+        const callerRequestedMaximized = metadata?.defaultMaximized === true;
+        const priorityWindowModule = isPriorityWindowModule(moduleId);
+        const shouldMaximize =
+          moduleMaximized || (callerRequestedMaximized && !priorityWindowModule);
+        const windowMetadata = priorityWindowModule && metadata
+          ? Object.fromEntries(
+              Object.entries(metadata).filter(([key]) => key !== 'defaultMaximized')
+            )
+          : metadata;
 
         // Allow caller to pin the spawn position (e.g. companion window → bottom-right)
         const defaultPosition = metadata?.defaultPosition as { x: number; y: number } | undefined;
@@ -595,7 +611,7 @@ export const useDesktopStore = create<DesktopState>()(
           state: shouldMaximize ? 'maximized' : 'normal',
           zIndex: nextZIndex,
           windowType: deriveWindowType(moduleId),
-          metadata,
+          metadata: windowMetadata,
         };
 
         set({

@@ -6,6 +6,7 @@
  *
  * Tools hosted here:
  *   - explain_model_inputs: Model input factor breakdown with PII flags
+ *   - calculate_depreciation: Governed depreciation calculation
  */
 
 import React, { useCallback, useState } from 'react';
@@ -34,6 +35,7 @@ export const CostApproach: React.FC<ForgeSubTabProps> = ({
 
   const [modelId, setModelId] = useState<string>('cost-approach');
   const [modelInputsState, setModelInputsState] = useState<ToolState<ModelInputsResult>>({ status: 'idle' });
+  const [depreciationState, setDepreciationState] = useState<ToolState<Record<string, unknown>>>({ status: 'idle' });
 
   /* ── explain_model_inputs ─────────────────────────────── */
 
@@ -84,6 +86,36 @@ export const CostApproach: React.FC<ForgeSubTabProps> = ({
       });
     }
   }, [parcelId, modelId, taxYear, onHistoryRecord]);
+
+  const handleCalculateDepreciation = useCallback(async () => {
+    if (!costAPI.data) return;
+    const actualAge = costAPI.data.yearBuilt ? Math.max(0, taxYear - costAPI.data.yearBuilt) : (costAPI.data.effectiveAge ?? 0);
+    setDepreciationState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'calculate_depreciation',
+        params: {
+          county: 'benton',
+          actualAge,
+          effectiveAge: costAPI.data.effectiveAge ?? actualAge,
+          condition: costAPI.data.conditionGrade ?? 'average',
+          quality: costAPI.data.qualityGrade ?? 'standard',
+          replacementCostNew: costAPI.data.replacementCostNew,
+        },
+        parcelId,
+      });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setDepreciationState({ status: 'success', result: parsed as Record<string, unknown>, correlationId: response.correlationId });
+        onHistoryRecord({ id: crypto.randomUUID(), toolId: 'calculate_depreciation', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { parcelId, taxYear } });
+      } else {
+        setDepreciationState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'DEPRECIATION_FAILED', message: response.error?.message || 'Depreciation calculation failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setDepreciationState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [costAPI.data, onHistoryRecord, parcelId, taxYear]);
 
   /* ── Render ───────────────────────────────────────────── */
 
@@ -154,6 +186,24 @@ export const CostApproach: React.FC<ForgeSubTabProps> = ({
                   <div className="text-xs tf-text-dim mt-0.5">{costAPI.data.externalObsolescencePct.toFixed(1)}% of RCN</div>
                 )}
               </div>
+            </div>
+            <div className="tf-panel p-3 rounded-lg space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <div className="tf-text-tertiary text-xs font-semibold uppercase tracking-wide">Governed Depreciation</div>
+                  <p className="tf-text-dim text-xs mt-1">Uses returned parcel cost fields for calculate_depreciation.</p>
+                </div>
+                <WorkbenchSourceBadge source={depreciationState.status === 'success' ? 'live' : 'unavailable'} />
+              </div>
+              <button onClick={handleCalculateDepreciation} disabled={depreciationState.status === 'loading' || !costAPI.data} className="w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta">
+                {depreciationState.status === 'loading' ? 'Calculating...' : 'Calculate Depreciation'}
+              </button>
+              {depreciationState.status === 'success' && depreciationState.result && (
+                <pre className="tf-overlay rounded-lg p-3 text-xs tf-text-secondary overflow-x-auto">{JSON.stringify(depreciationState.result, null, 2)}</pre>
+              )}
+              {depreciationState.status === 'error' && depreciationState.error && (
+                <ErrorDisplay error={{ message: depreciationState.error.message, errorCode: depreciationState.error.code, correlationId: depreciationState.correlationId }} />
+              )}
             </div>
             {/* Building + land characteristics */}
             {(costAPI.data.yearBuilt || costAPI.data.buildingSqFt || costAPI.data.qualityGrade || costAPI.data.landAreaSqFt) && (
@@ -297,7 +347,7 @@ export const CostApproach: React.FC<ForgeSubTabProps> = ({
                     </thead>
                     <tbody>
                       {costAPI.data.segments.map((seg, i) => (
-                        <tr key={i} className="border-t border-white/5">
+                        <tr key={i} className="border-t tf-border">
                           <td className="py-1 pr-3 tf-text-secondary">
                             {seg.segmentDesc || seg.segmentType || '—'}
                           </td>

@@ -28,11 +28,11 @@ describe('Phase 25: Shell Anti-Drift Governance', () => {
       expect(size.maximized).not.toBe(true);
     });
 
-    it('property-workbench: opens standalone, maximized', () => {
+    it('property-workbench: opens standalone as a priority window', () => {
       const verdict = evaluateSpawnIntent('property-workbench');
       expect(verdict.decision).toBe('open');
       const size = getModuleWindowSize('property-workbench');
-      expect(size.maximized).toBe(true);
+      expect(size.maximized).not.toBe(true);
     });
 
     it('os-pilot: opens standalone, near-full-stage', () => {
@@ -58,9 +58,9 @@ describe('Phase 25: Shell Anti-Drift Governance', () => {
       expect(ids).toEqual(['forge', 'atlas', 'dais', 'dossier', 'gpt']);
     });
 
-    it('workbench has exactly 9 tab IDs', () => {
-      expect(VALID_WORKBENCH_TAB_IDS).toHaveLength(9);
-      const expected = ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot'];
+    it('workbench has exactly 10 tab IDs', () => {
+      expect(VALID_WORKBENCH_TAB_IDS).toHaveLength(10);
+      const expected = ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot', 'trace'];
       expect([...VALID_WORKBENCH_TAB_IDS].sort()).toEqual([...expected].sort());
     });
 
@@ -116,16 +116,25 @@ describe('Phase 25: Shell Anti-Drift Governance', () => {
       const wbEntry = MODULE_OBJECT_TYPES['property-workbench'];
       expect(wbEntry).toBeDefined();
       expect(wbEntry.objectType).toBe('tier0-workbench');
+      expect(wbEntry.defaultPlacement).toBe('near-full-stage');
+      expect(wbEntry.mustRemainMaximized).toBe(false);
     });
 
-    it('Path B: Home -> Recent Parcel -> Workbench (maximized with parcel context)', () => {
+    it('Path B: Home -> Recent Parcel -> Workbench (OS-managed priority window)', () => {
       // Recent parcel click -> opens workbench
       const verdict = evaluateSpawnIntent('property-workbench');
       expect(verdict.decision).toBe('open');
 
-      // Verify workbench opens maximized
+      // Tier-0 defines operational importance, not immovable fullscreen behavior.
       const size = getModuleWindowSize('property-workbench');
-      expect(size.maximized).toBe(true);
+      expect(size.maximized).not.toBe(true);
+
+      const wbEntry = MODULE_OBJECT_TYPES['property-workbench'];
+      expect(wbEntry.movable).toBe(true);
+      expect(wbEntry.resizable).toBe(true);
+      expect(wbEntry.restorable).toBe(true);
+      expect(wbEntry.canMaximize).toBe(true);
+      expect(wbEntry.mustRemainMaximized).toBe(false);
 
       // Verify default landing tab exists
       expect(VALID_WORKBENCH_TAB_IDS).toContain('summary');

@@ -14,6 +14,11 @@ export default defineConfig(({ mode }) => {
     configuredApiUrl && /^https?:\/\//i.test(configuredApiUrl)
       ? configuredApiUrl
       : `http://localhost:${process.env.TF_API_PORT || process.env.VITE_API_PORT || 5000}`;
+  const configuredPilotUrl = process.env.VITE_PILOT_API_URL || process.env.PILOT_API_URL;
+  const pilotRuntimeUrl =
+    configuredPilotUrl && /^https?:\/\//i.test(configuredPilotUrl)
+      ? configuredPilotUrl
+      : `http://localhost:${process.env.TF_PILOT_PORT || process.env.VITE_PILOT_PORT || 4317}`;
 
   // Dev-mode middleware: serves service-registry.json directly from disk.
   // The .NET ServiceRegistryController serves this in production. In dev, this
@@ -183,14 +188,13 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
-        // Proxy Pilot runtime — routes /pilot/** to .NET backend /api/pilot/**
-        // The dedicated pilot runtime (port 4317) is optional; when offline the
-        // backend stubs return gracefully-degraded responses.
+        // Proxy Pilot runtime. Workbench must hit governed Pilot directly; if the
+        // runtime is offline, requests fail loudly instead of falling back to
+        // backend /api/pilot stubs.
         '/pilot': {
-          target: backendUrl,
+          target: pilotRuntimeUrl,
           changeOrigin: true,
           secure: false,
-          rewrite: (path: string) => path.replace(/^\/pilot/, '/api/pilot'),
         },
       },
     },

@@ -4,12 +4,13 @@
  * Enforces:
  *   1. Zero hardcoded z-depth Tailwind classes in governed shell files
  *   2. Suite windows open near-full-stage (not maximized)
- *   3. Property Workbench opens maximized
+ *   3. Property Workbench is an OS-managed priority window
  *   4. OS feature windows open near-full-stage
  */
 import { describe, it, expect } from 'vitest';
 import fs from 'fs';
 import path from 'path';
+import { MODULE_OBJECT_TYPES } from '@/contracts/objectPlacement';
 import { getModuleWindowSize } from '@/stores/desktopStore';
 
 function readShellFile(relativePath: string): string {
@@ -47,11 +48,23 @@ describe('Phase 22: Shell Chrome Contract', () => {
   });
 
   describe('Workbench sizing', () => {
-    it('property-workbench opens maximized', () => {
+    it('property-workbench opens as a near-full-stage priority window', () => {
       const result = getModuleWindowSize('property-workbench');
-      expect(result.maximized).toBe(true);
+      expect(result.maximized).not.toBe(true);
       expect(result.size.width).toBeGreaterThan(0);
       expect(result.size.height).toBeGreaterThan(0);
+    });
+
+    it('property-workbench remains movable, resizable, restorable, and maximizable', () => {
+      const workbench = MODULE_OBJECT_TYPES['property-workbench'];
+      expect(workbench.surface).toBe('tier0');
+      expect(workbench.defaultPlacement).toBe('near-full-stage');
+      expect(workbench.movable).toBe(true);
+      expect(workbench.resizable).toBe(true);
+      expect(workbench.restorable).toBe(true);
+      expect(workbench.deepLinkable).toBe(true);
+      expect(workbench.canMaximize).toBe(true);
+      expect(workbench.mustRemainMaximized).toBe(false);
     });
   });
 

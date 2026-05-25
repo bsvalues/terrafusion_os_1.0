@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 // Mock common hooks to avoid network/store dependencies
@@ -91,7 +91,7 @@ describe('Wave 3 — Placeholder Integrity', () => {
     );
     const match = hasPlaceholderText(container);
     expect(match, `ForgeSuiteHome contains placeholder text matching /${match}/`).toBeNull();
-    expect(screen.getByTestId('suite-forge-root')).toBeDefined();
+    expect(within(container).getByTestId('suite-forge-root')).toBeDefined();
   });
 
   it('AtlasSuiteHome renders real content (no placeholder text)', async () => {
@@ -103,7 +103,7 @@ describe('Wave 3 — Placeholder Integrity', () => {
     );
     const match = hasPlaceholderText(container);
     expect(match, `AtlasSuiteHome contains placeholder text matching /${match}/`).toBeNull();
-    expect(screen.getByTestId('suite-atlas-root')).toBeDefined();
+    expect(within(container).getByTestId('suite-atlas-root')).toBeDefined();
   });
 
   it('DossierSuiteHome renders real content (no placeholder text)', async () => {
@@ -115,6 +115,6 @@ describe('Wave 3 — Placeholder Integrity', () => {
     );
     const match = hasPlaceholderText(container);
     expect(match, `DossierSuiteHome contains placeholder text matching /${match}/`).toBeNull();
-    expect(screen.getByTestId('suite-dossier-root')).toBeDefined();
+    expect(within(container).getByTestId('suite-dossier-root')).toBeDefined();
   });
 });

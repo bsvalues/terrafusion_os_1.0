@@ -16,7 +16,8 @@
  * 3. Atlas — GIS & mapping
  * 4. Dais — Workflow status
  * 5. Dossier — Documents
- * 6. Pilot — Tool execution log
+ * 6. Pilot — Assistant rail
+ * 7. Trace — Evidence trail
  *
  * @see 01_PROPERTY_WORKBENCH_SPEC_v3.1.md — Tier-0 OS Surface
  * @see PropertyWorkbenchWindow.tsx — Desktop window adapter (same layout)
@@ -39,6 +40,7 @@ import { executeOsAction, type OsAction, type OsActionContext } from '../../serv
 import { usePropertyStore } from '../../stores/propertyStore';
 import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
 import { useWorkbenchRoles } from '../../hooks/useWorkbenchRoles';
+import { WORKBENCH_TABS, isCanonicalWorkbenchTab } from '../../config/workbenchTabs';
 import { useSession } from '../../auth/useSession';
 import { useAuthContext, toOsActor } from '../../auth/useAuthContext';
 import { buildContextRibbonFacts as _buildContextRibbonFacts } from '../../components/workbench/parcelContextFacts';
@@ -46,13 +48,6 @@ import { buildContextRibbonFacts as _buildContextRibbonFacts } from '../../compo
 // ============================================================================
 // Types
 // ============================================================================
-
-interface WorkbenchTab {
-  id: WorkbenchTabSlug;
-  label: string;
-  path: string;
-  enabled: boolean;
-}
 
 // ============================================================================
 // Utilities
@@ -78,35 +73,8 @@ function getCurrentTabFromPath(pathname: string, parcelId: string): WorkbenchTab
   const pathAfterBase = pathname.replace(basePath, '').replace(/^\//, '');
 
   if (!pathAfterBase || pathAfterBase === '') return 'summary';
-  const tabPathMap: Record<string, WorkbenchTabSlug> = {
-    forge: 'forge',
-    atlas: 'atlas',
-    dais: 'dais',
-    clerk: 'clerk',
-    treasury: 'treasury',
-    audit: 'audit',
-    dossier: 'dossier',
-    pilot: 'pilot',
-  };
-  return tabPathMap[pathAfterBase] ?? 'summary';
+  return (isCanonicalWorkbenchTab(pathAfterBase) ? pathAfterBase : null) ?? 'summary';
 }
-
-// ============================================================================
-// Tab Configuration (Locked Order)
-// ============================================================================
-
-const WORKBENCH_TABS: WorkbenchTab[] = [
-  { id: 'summary', label: 'Summary', path: '', enabled: true },
-  { id: 'forge', label: 'Forge', path: 'forge', enabled: true },
-  { id: 'atlas', label: 'Atlas', path: 'atlas', enabled: true },
-  { id: 'dais', label: 'Dais', path: 'dais', enabled: true },
-  { id: 'clerk', label: 'Clerk', path: 'clerk', enabled: true },
-  { id: 'treasury', label: 'Treasury', path: 'treasury', enabled: true },
-  { id: 'audit', label: 'Audit', path: 'audit', enabled: true },
-  { id: 'dossier', label: 'Dossier', path: 'dossier', enabled: true },
-  { id: 'pilot', label: 'Pilot', path: 'pilot', enabled: true },
-];
-
 
 // ============================================================================
 // Tab Content Components (Lazy Loaded)

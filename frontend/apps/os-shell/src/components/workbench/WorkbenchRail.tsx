@@ -22,6 +22,11 @@ import {
   Globe,
   ClipboardList,
   FolderOpen,
+  Bot,
+  Activity,
+  FileText,
+  Receipt,
+  ShieldCheck,
   PanelLeftClose,
   PanelLeftOpen,
   PanelLeft,
@@ -45,6 +50,11 @@ export interface WorkbenchRailProps {
   tabs: WorkbenchRailTab[];
   parcelId: string;
   currentTabId: WorkbenchTabSlug;
+  /**
+   * When provided, renders <button> elements (state-based, no URL navigation).
+   * Used by the window host (PropertyWorkbenchWindow). Omit for router-based host.
+   */
+  onTabChange?: (slug: WorkbenchTabSlug) => void;
 }
 
 // ============================================================================
@@ -57,6 +67,11 @@ const TAB_ICONS: Partial<Record<WorkbenchTabSlug, React.ElementType>> = {
   atlas:    Globe,
   dais:     ClipboardList,
   dossier:  FolderOpen,
+  clerk:    FileText,
+  treasury: Receipt,
+  audit:    ShieldCheck,
+  pilot:    Bot,
+  trace:    Activity,
 };
 
 function TabIcon({ slug, size = 20 }: { slug: WorkbenchTabSlug; size?: number }) {
@@ -83,6 +98,7 @@ export const WorkbenchRail: React.FC<WorkbenchRailProps> = ({
   tabs,
   parcelId,
   currentTabId,
+  onTabChange,
 }) => {
   const [railState, setRailState] = useState<RailState>(() => {
     try {
@@ -202,6 +218,87 @@ export const WorkbenchRail: React.FC<WorkbenchRailProps> = ({
             ? `/property/${parcelId}/${tab.path}`
             : `/property/${parcelId}`;
 
+          // Shared style factory
+          const sharedStyle = (active: boolean): React.CSSProperties => ({
+            display: 'flex',
+            alignItems: 'center',
+            gap: isExpanded ? 10 : 0,
+            justifyContent: isExpanded ? 'flex-start' : 'center',
+            padding: isExpanded ? '9px 12px' : '10px',
+            borderRadius: 10,
+            textDecoration: 'none',
+            fontSize: 13,
+            fontWeight: active ? 600 : 400,
+            color: active ? 'hsl(var(--tf-accent))' : 'hsl(var(--tf-text) / 0.62)',
+            background: active ? 'hsl(var(--tf-accent) / 0.12)' : 'transparent',
+            border: `1px solid ${active ? 'hsl(var(--tf-accent) / 0.25)' : 'transparent'}`,
+            opacity: tab.enabled ? 1 : 0.4,
+            cursor: tab.enabled ? 'pointer' : 'not-allowed',
+            transition: 'background 140ms ease, color 140ms ease, border-color 140ms ease',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+          });
+
+          // Shared content factory
+          const itemContent = (active: boolean) => (
+            <>
+              <span
+                style={{
+                  position: 'relative',
+                  flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <TabIcon slug={tab.id} size={18} />
+                {active && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      bottom: -3,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: 4,
+                      height: 4,
+                      borderRadius: '50%',
+                      background: 'hsl(var(--tf-accent))',
+                    }}
+                  />
+                )}
+              </span>
+              {isExpanded && (
+                <span
+                  style={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    color: active ? 'hsl(var(--tf-accent))' : 'hsl(var(--tf-text) / 0.75)',
+                  }}
+                >
+                  {tab.label}
+                </span>
+              )}
+            </>
+          );
+
+          // State-based mode (window host — no URL navigation)
+          if (onTabChange) {
+            return (
+              <button
+                key={tab.id}
+                onClick={() => { if (tab.enabled) onTabChange(tab.id); }}
+                title={!isExpanded ? tab.label : undefined}
+                aria-label={tab.label}
+                aria-selected={isActive}
+                role="tab"
+                style={{ ...sharedStyle(isActive), width: '100%', textAlign: 'left' }}
+              >
+                {itemContent(isActive)}
+              </button>
+            );
+          }
+
+          // Router-based mode (direct route host — NavLink)
           return (
             <NavLink
               key={tab.id}
@@ -210,32 +307,7 @@ export const WorkbenchRail: React.FC<WorkbenchRailProps> = ({
               title={!isExpanded ? tab.label : undefined}
               aria-label={tab.label}
               onClick={(e) => { if (!tab.enabled) e.preventDefault(); }}
-              style={({ isActive: linkActive }) => {
-                const active = linkActive || isActive;
-                return {
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: isExpanded ? 10 : 0,
-                  justifyContent: isExpanded ? 'flex-start' : 'center',
-                  padding: isExpanded ? '9px 12px' : '10px',
-                  borderRadius: 10,
-                  textDecoration: 'none',
-                  fontSize: 13,
-                  fontWeight: active ? 600 : 400,
-                  color: active
-                    ? 'hsl(var(--tf-accent))'
-                    : 'hsl(var(--tf-text) / 0.62)',
-                  background: active
-                    ? 'hsl(var(--tf-accent) / 0.12)'
-                    : 'transparent',
-                  border: `1px solid ${active ? 'hsl(var(--tf-accent) / 0.25)' : 'transparent'}`,
-                  opacity: tab.enabled ? 1 : 0.4,
-                  cursor: tab.enabled ? 'pointer' : 'not-allowed',
-                  transition: 'background 140ms ease, color 140ms ease, border-color 140ms ease',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                };
-              }}
+              style={({ isActive: linkActive }) => sharedStyle(linkActive || isActive)}
             >
               {({ isActive: linkActive }) => {
                 const active = linkActive || isActive;

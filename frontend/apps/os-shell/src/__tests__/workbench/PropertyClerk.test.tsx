@@ -350,6 +350,61 @@ describe('PropertyClerk', () => {
       });
     });
 
+    it('blocks synthetic lien ids before invoking release_lien', () => {
+      render(<TestWrapper />);
+
+      fireEvent.change(screen.getByPlaceholderText(/Existing Clerk lien UUID/i), { target: { value: 'LIEN-2026-001' } });
+      fireEvent.click(screen.getByRole('checkbox', { name: /I confirm this is an existing Clerk lien UUID/i }));
+
+      const submit = screen.getByRole('button', { name: /Request Lien Release/i });
+      expect(submit).toBeDisabled();
+      fireEvent.click(submit);
+
+      expect(mockInvokeTool).not.toHaveBeenCalled();
+    });
+
+    it('invokes release_lien with county, UUID, release reason, and confirmation', async () => {
+      const lienId = '7db7eb98-1d98-4f86-bf0e-8752bc20dc53';
+      mockInvokeTool.mockResolvedValue({
+        success: true,
+        correlationId: 'corr-release-001',
+        result: {
+          toolId: 'release_lien',
+          output: JSON.stringify({
+            lienId,
+            status: 'released',
+            releasedAt: '2026-03-21T15:45:00Z',
+            payloadRef: `clerk://benton/liens/${lienId}/release`,
+          }),
+        },
+      });
+
+      render(<TestWrapper />);
+
+      fireEvent.change(screen.getByPlaceholderText(/Existing Clerk lien UUID/i), { target: { value: lienId } });
+      fireEvent.change(screen.getByDisplayValue('Satisfied'), { target: { value: 'discharged' } });
+      fireEvent.click(screen.getByRole('checkbox', { name: /I confirm this is an existing Clerk lien UUID/i }));
+      fireEvent.click(screen.getByRole('button', { name: /Request Lien Release/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'release_lien',
+          params: {
+            county: 'benton',
+            lienId,
+            releaseReason: 'discharged',
+          },
+          parcelId: PARCEL_ID,
+          confirmation: { confirmed: true, reasonCode: 'discharged' },
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Release Confirmed/i)).toBeInTheDocument();
+        expect(screen.getByText(new RegExp(`clerk://benton/liens/${lienId}/release`, 'i'))).toBeInTheDocument();
+      });
+    });
+
     it('invokes summarize_parcel_recordings and renders counts', async () => {
       mockInvokeTool.mockResolvedValue({
         success: true,

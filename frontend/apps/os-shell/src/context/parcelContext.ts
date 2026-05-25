@@ -451,7 +451,7 @@ export function openWorkbenchWindow(parcelId?: string, tabId?: string): void {
       focusWindow(blankExisting.id);
       return;
     }
-    openWindow('property-workbench', 'Property Workbench', '🏠', { defaultMaximized: true });
+    openWindow('property-workbench', 'Property Workbench', '🏠');
     return;
   }
 
@@ -488,6 +488,6 @@ export function openWorkbenchWindow(parcelId?: string, tabId?: string): void {
     'property-workbench',
     `Property: ${truncatedId}`,
     '🏠',
-    { parcelId, tabId: tabId ?? 'summary', defaultMaximized: true }
+    { parcelId, tabId: tabId ?? 'summary' }
   );
 }
