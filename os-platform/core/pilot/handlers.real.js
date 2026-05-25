@@ -47,8 +47,8 @@
  *  26. run_income_valuation      → POST /api/costforge/income-approach/calculate-valuation
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.submitAuditFindingRealHandler = exports.checkLevyComplianceRealHandler = exports.auditRollSummaryRealHandler = exports.initiateTaxSaleRealHandler = exports.summarizeCollectionStatsRealHandler = exports.createInstallmentPlanRealHandler = exports.checkDelinquencyStatusRealHandler = exports.recordPaymentRealHandler = exports.explainTaxBreakdownRealHandler = exports.getTaxStatementRealHandler = exports.summarizeParcelRecordingsRealHandler = exports.releaseLienRealHandler = exports.recordDocumentRealHandler = exports.explainRecordingFeesRealHandler = exports.getTitleChainRealHandler = exports.searchRecordedDocumentsRealHandler = exports.escalateTaskRealHandler = exports.getQueueStatisticsRealHandler = exports.queueNoticeForMailingRealHandler = exports.signOffCertificationStepRealHandler = exports.getCertificationProgressRealHandler = exports.scheduleBoeHearingRealHandler = exports.fileAppealRealHandler = exports.processExemptionRenewalRealHandler = exports.checkExemptionEligibilityRealHandler = exports.calculateDepreciationRealHandler = exports.runIncomeValuationRealHandler = exports.calculatePiltPaymentRealHandler = exports.assembleBoePacketRealHandler = exports.generateCommissionerMemoRealHandler = exports.synthesizeEvidenceRealHandler = exports.draftNoticeRealHandler = exports.draftBoeAppealResponseRealHandler = exports.draftAppealResponseRealHandler = exports.draftValueChangeNoticeRealHandler = exports.explainSeniorExemptionRealHandler = exports.summarizeDossierRealHandler = exports.checkCertStatusRealHandler = exports.assignTaskRealHandler = exports.summarizeSalesCompsRealHandler = exports.explainModelResultsRealHandler = exports.queryParcelLayersRealHandler = exports.addDossierNoteRealHandler = exports.summarizeParcelCasefileRealHandler = exports.compareAssessedValueHistoryRealHandler = exports.explainModelInputsRealHandler = exports.summarizeLevyRateRealHandler = exports.routeToParcelHandler = exports.explainValueChangeHandler = exports.runValuationModelHandler = void 0;
-exports.generateComplianceReportRealHandler = exports.reconcileCrossOfficeRealHandler = void 0;
+exports.initiateTaxSaleRealHandler = exports.summarizeCollectionStatsRealHandler = exports.createInstallmentPlanRealHandler = exports.checkDelinquencyStatusRealHandler = exports.recordPaymentRealHandler = exports.explainTaxBreakdownRealHandler = exports.getTaxStatementRealHandler = exports.summarizeParcelRecordingsRealHandler = exports.releaseLienRealHandler = exports.recordDocumentRealHandler = exports.explainRecordingFeesRealHandler = exports.getTitleChainRealHandler = exports.searchRecordedDocumentsRealHandler = exports.escalateTaskRealHandler = exports.getQueueStatisticsRealHandler = exports.acceptCertificationFromDorRealHandler = exports.submitCertificationToDorRealHandler = exports.queueNoticeForMailingRealHandler = exports.generateLevyCertificationNoticeRealHandler = exports.signOffCertificationStepRealHandler = exports.getCertificationProgressRealHandler = exports.scheduleBoeHearingRealHandler = exports.fileAppealRealHandler = exports.processExemptionRenewalRealHandler = exports.checkExemptionEligibilityRealHandler = exports.calculateDepreciationRealHandler = exports.runIncomeValuationRealHandler = exports.calculatePiltPaymentRealHandler = exports.assembleBoePacketRealHandler = exports.generateCommissionerMemoRealHandler = exports.synthesizeEvidenceRealHandler = exports.draftNoticeRealHandler = exports.draftBoeAppealResponseRealHandler = exports.draftAppealResponseRealHandler = exports.draftValueChangeNoticeRealHandler = exports.explainSeniorExemptionRealHandler = exports.summarizeDossierRealHandler = exports.checkCertStatusRealHandler = exports.assignTaskRealHandler = exports.summarizeSalesCompsRealHandler = exports.explainModelResultsRealHandler = exports.queryParcelLayersRealHandler = exports.addDossierNoteRealHandler = exports.summarizeParcelCasefileRealHandler = exports.compareAssessedValueHistoryRealHandler = exports.explainModelInputsRealHandler = exports.summarizeLevyRateRealHandler = exports.routeToParcelHandler = exports.explainValueChangeHandler = exports.runValuationModelHandler = void 0;
+exports.generateComplianceReportRealHandler = exports.reconcileCrossOfficeRealHandler = exports.submitAuditFindingRealHandler = exports.checkLevyComplianceRealHandler = exports.auditRollSummaryRealHandler = void 0;
 exports.createSearchTraceHandler = createSearchTraceHandler;
 exports.createRequestTraceRedactionHandler = createRequestTraceRedactionHandler;
 exports.registerR1Handlers = registerR1Handlers;
@@ -1071,7 +1071,31 @@ const signOffCertificationStepRealHandler = async (params, context, _tool) => {
 };
 exports.signOffCertificationStepRealHandler = signOffCertificationStepRealHandler;
 // ============================================================================
-// R2.9 — Handler 33: queue_notice_for_mailing
+// R2.9 — Handler 33: generate_levy_certification_notice
+// Write-high. Generates the persisted LEVY_RATE notice required before DOR submission.
+// Endpoint: POST /api/dais/notice/generate
+// ============================================================================
+const generateLevyCertificationNoticeRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendPost)('/api/dais/notice/generate', {
+        templateId: 'LEVY_RATE',
+        taxYear: params.taxYear,
+        deliveryMethod: params.deliveryMethod ?? 'mail',
+        fields: {},
+    }, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Levy certification notice generation failed');
+    return {
+        noticeId: data.noticeId ?? 'pending',
+        templateId: data.templateId ?? 'LEVY_RATE',
+        status: data.status ?? 'generated',
+        deliveryMethod: data.deliveryMethod ?? params.deliveryMethod ?? 'mail',
+        payloadRef: `dais://${context.countyId}/certification/${normalizeCountyCode(params.county)}/${params.taxYear}/notice/${data.noticeId ?? 'latest'}`,
+    };
+};
+exports.generateLevyCertificationNoticeRealHandler = generateLevyCertificationNoticeRealHandler;
+// ============================================================================
+// R2.9 — Handler 34: queue_notice_for_mailing
 // Write-low. Queues generated notices for batch mailing.
 // Endpoint: POST /api/dais/notices/queue
 // ============================================================================
@@ -1096,7 +1120,57 @@ const queueNoticeForMailingRealHandler = async (params, context, _tool) => {
 };
 exports.queueNoticeForMailingRealHandler = queueNoticeForMailingRealHandler;
 // ============================================================================
-// R2.9 — Handler 34: get_queue_statistics
+// R2.9 — Handler 35: submit_certification_to_dor
+// Write-high. Completes the DOR submission step after the LEVY_RATE notice is queued.
+// Endpoint: POST /api/dais/certification/{county}/{taxYear}/submit-dor
+// ============================================================================
+const submitCertificationToDorRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const countyCode = normalizeCountyCode(params.county);
+    const raw = await (0, backendClient_js_1.backendPost)(`/api/dais/certification/${encodeURIComponent(countyCode)}/${params.taxYear}/submit-dor`, {
+        signedBy: params.signedBy,
+        notes: params.notes ?? 'DOR submission completed through governed Pilot runtime.',
+    }, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'DOR certification submission failed');
+    return {
+        stepId: data.stepId ?? 'pending',
+        stepCode: data.stepCode ?? 'DOR_SUBMISSION',
+        status: data.status ?? 'completed',
+        submittedBy: data.submittedBy ?? params.signedBy,
+        submittedAt: data.submittedAt ?? new Date().toISOString(),
+        levyNoticeId: data.levyNoticeId ?? 'unknown',
+        levyNoticeStatus: data.levyNoticeStatus ?? 'unknown',
+        payloadRef: `dais://${context.countyId}/certification/${countyCode}/${params.taxYear}/dor-submission/${data.stepId ?? 'latest'}`,
+    };
+};
+exports.submitCertificationToDorRealHandler = submitCertificationToDorRealHandler;
+// ============================================================================
+// R2.9 — Handler 36: accept_certification_from_dor
+// Write-high. Records Department of Revenue acceptance after submission.
+// Endpoint: POST /api/dais/certification/{county}/{taxYear}/accept-dor
+// ============================================================================
+const acceptCertificationFromDorRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const countyCode = normalizeCountyCode(params.county);
+    const raw = await (0, backendClient_js_1.backendPost)(`/api/dais/certification/${encodeURIComponent(countyCode)}/${params.taxYear}/accept-dor`, {
+        signedBy: params.signedBy,
+        notes: params.notes ?? 'DOR acceptance recorded through governed Pilot runtime.',
+    }, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'DOR certification acceptance failed');
+    return {
+        stepId: data.stepId ?? 'pending',
+        stepCode: data.stepCode ?? 'DOR_ACCEPTANCE',
+        status: data.status ?? 'completed',
+        acceptedBy: data.acceptedBy ?? params.signedBy,
+        acceptedAt: data.acceptedAt ?? new Date().toISOString(),
+        payloadRef: `dais://${context.countyId}/certification/${countyCode}/${params.taxYear}/dor-acceptance/${data.stepId ?? 'latest'}`,
+    };
+};
+exports.acceptCertificationFromDorRealHandler = acceptCertificationFromDorRealHandler;
+// ============================================================================
+// R2.9 — Handler 37: get_queue_statistics
 // Read-only. Gets task queue statistics with SLA compliance metrics.
 // Endpoint: GET /api/dais/queue/statistics
 // ============================================================================
@@ -1605,7 +1679,10 @@ function registerR1Handlers(runner, traceService) {
     runner.registerHandler('schedule_boe_hearing', exports.scheduleBoeHearingRealHandler);
     runner.registerHandler('get_certification_progress', exports.getCertificationProgressRealHandler);
     runner.registerHandler('sign_off_certification_step', exports.signOffCertificationStepRealHandler);
+    runner.registerHandler('generate_levy_certification_notice', exports.generateLevyCertificationNoticeRealHandler);
     runner.registerHandler('queue_notice_for_mailing', exports.queueNoticeForMailingRealHandler);
+    runner.registerHandler('submit_certification_to_dor', exports.submitCertificationToDorRealHandler);
+    runner.registerHandler('accept_certification_from_dor', exports.acceptCertificationFromDorRealHandler);
     runner.registerHandler('get_queue_statistics', exports.getQueueStatisticsRealHandler);
     runner.registerHandler('escalate_task', exports.escalateTaskRealHandler);
     // R3.2 TerraClerk handlers (6)

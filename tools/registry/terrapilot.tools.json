@@ -1477,6 +1477,42 @@
       "officeScope": "assessor"
     },
     {
+      "toolId": "generate_levy_certification_notice",
+      "displayName": "Generate Levy Certification Notice",
+      "suite": "dais",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "dais",
+      "touches": ["workflow"],
+      "description": "Generate the persisted LEVY_RATE notice required before Department of Revenue submission",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["dor_packet_ready", "assessor_signoff_complete"],
+      "piiHandling": "sanitize",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "dossier",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year"
+          },
+          "deliveryMethod": {
+            "type": "string",
+            "enum": ["mail"],
+            "default": "mail"
+          }
+        },
+        "required": ["county", "taxYear"]
+      },
+      "officeScope": "assessor"
+    },
+    {
       "toolId": "queue_notice_for_mailing",
       "displayName": "Queue Notice for Mailing",
       "suite": "dais",
@@ -1512,6 +1548,84 @@
           }
         },
         "required": ["county", "noticeIds"]
+      },
+      "officeScope": "assessor"
+    },
+    {
+      "toolId": "submit_certification_to_dor",
+      "displayName": "Submit Certification to DOR",
+      "suite": "dais",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "dais",
+      "touches": ["workflow"],
+      "description": "Submit the signed assessment roll certification to the Department of Revenue after the levy notice is queued",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["dor_submission", "certification_packet_ready"],
+      "piiHandling": "sanitize",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "dossier",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year"
+          },
+          "signedBy": {
+            "type": "string",
+            "description": "Submitting assessor or delegate"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Submission notes"
+          }
+        },
+        "required": ["county", "taxYear", "signedBy"]
+      },
+      "officeScope": "assessor"
+    },
+    {
+      "toolId": "accept_certification_from_dor",
+      "displayName": "Accept Certification from DOR",
+      "suite": "dais",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "dais",
+      "touches": ["workflow"],
+      "description": "Record Department of Revenue acceptance after certification submission",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["dor_acceptance", "dor_response_received"],
+      "piiHandling": "sanitize",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "dossier",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year"
+          },
+          "signedBy": {
+            "type": "string",
+            "description": "DOR acceptance recorder"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Acceptance notes"
+          }
+        },
+        "required": ["county", "taxYear", "signedBy"]
       },
       "officeScope": "assessor"
     },

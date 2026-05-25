@@ -4,9 +4,12 @@
  * TerraFusion OS — Pilot Auth
  *
  * Service-account token acquisition for the Pilot runtime.
- * Calls POST /api/auth/login with configurable credentials.
+ * Uses an injected bearer token, an explicit development-only backend token,
+ * or POST /api/auth/login with configurable credentials.
  *
  * Credentials are resolved from environment variables:
+ *   TF_PILOT_BEARER_TOKEN       (preferred external token injection)
+ *   TF_PILOT_USE_DEV_TOKEN=1    (uses backend Development-only /api/auth/dev-token)
  *   TF_PILOT_EMAIL     (default: admin@gov.)
  *   TF_PILOT_PASSWORD  (default: TerraFusion2026!)
  *
@@ -30,6 +33,30 @@ let cachedToken = null;
 async function acquirePilotToken() {
     const bufferMs = 5 * 60 * 1000;
     if (cachedToken && cachedToken.expiresAt.getTime() > Date.now() + bufferMs) {
+        return cachedToken;
+    }
+    const injectedBearerToken = process.env.TF_PILOT_BEARER_TOKEN?.trim();
+    if (injectedBearerToken) {
+        cachedToken = {
+            token: injectedBearerToken,
+            email: process.env.TF_PILOT_EMAIL || 'pilot-service@terrafusion.local',
+            roles: ['GovernmentUser', 'Assessor'],
+            expiresAt: new Date(Date.now() + 55 * 60 * 1000),
+        };
+        return cachedToken;
+    }
+    if (process.env.TF_PILOT_USE_DEV_TOKEN === '1') {
+        const result = await (0, backendClient_js_1.backendGet)('/api/auth/dev-token');
+        if (result.ok === false) {
+            cachedToken = null;
+            throw new Error(`Pilot dev-token auth failed: ${result.error}`);
+        }
+        cachedToken = {
+            token: result.data.token,
+            email: 'dev@terrafusion.local',
+            roles: ['Developer', 'Assessor', 'GovernmentUser'],
+            expiresAt: new Date(Date.now() + (result.data.expiresIn ?? 120) * 60 * 1000),
+        };
         return cachedToken;
     }
     const email = process.env.TF_PILOT_EMAIL || 'admin@gov.';

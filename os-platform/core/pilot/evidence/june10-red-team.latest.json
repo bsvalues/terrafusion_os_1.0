@@ -1,15 +1,15 @@
 {
-  "generatedAtUtc": "2026-05-14T22:13:04.152Z",
+  "generatedAtUtc": "2026-05-19T18:25:03.858Z",
   "verdict": "RED",
   "summary": {
     "verdict": "RED",
-    "attacks": 7,
-    "criticalAttacks": 3,
+    "attacks": 6,
+    "criticalAttacks": 2,
     "highAttacks": 3,
     "shipBlockers": 23,
     "seedReceiptsFound": 0,
     "seedRuntimeClaimAllowed": false,
-    "bentonCorpusSealed": false,
+    "bentonCorpusSealed": null,
     "readinessStatus": "FAIL"
   },
   "credibilityAttacks": [
@@ -26,13 +26,6 @@
       "attack": "Rows may exist in TerraFusion DB, but product-load lineage is not proven enough for audit-grade trust.",
       "evidence": "lineageProven=0; rowsExistLineageUnproven=4.",
       "likelyFailureMoment": "State auditor asks when each product table was loaded and which receipt proves it."
-    },
-    {
-      "surface": "benton_realism",
-      "severity": "CRITICAL",
-      "attack": "Benton full-corpus proof is an ATTEMPT, not a seal; six-lane completion and API readback are not proven.",
-      "evidence": "runStatus=Interrupted; lanesCompleted=0; sealed=false.",
-      "likelyFailureMoment": "Benton staff asks whether the full corpus is complete and API-verified."
     },
     {
       "surface": "uat_survivability",
@@ -66,7 +59,6 @@
   "likelyFailureMoments": [
     "Executive or IT reviewer asks for go/no-go evidence and the packet says FAIL.",
     "State auditor asks when each product table was loaded and which receipt proves it.",
-    "Benton staff asks whether the full corpus is complete and API-verified.",
     "Operator tries to complete the Benton workflow from data load through closure.",
     "A county asks whether its data was actually acquired, loaded, or smoke-tested.",
     "Leadership repeats a 39-county runtime claim and a reviewer asks for county-by-county proof.",
@@ -114,7 +106,7 @@
   "sourceArtifacts": {
     "readinessStatus": "FAIL",
     "seedLanePassed": true,
-    "bentonCorpusRunStatus": "Interrupted",
+    "bentonCorpusRunStatus": null,
     "coverageStatus": "PASS_WITH_LIMITATIONS"
   }
 }

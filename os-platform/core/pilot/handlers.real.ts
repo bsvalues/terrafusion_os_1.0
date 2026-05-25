@@ -1880,7 +1880,42 @@ export const signOffCertificationStepRealHandler: ToolHandler<
 };
 
 // ============================================================================
-// R2.9 — Handler 33: queue_notice_for_mailing
+// R2.9 — Handler 33: generate_levy_certification_notice
+// Write-high. Generates the persisted LEVY_RATE notice required before DOR submission.
+// Endpoint: POST /api/dais/notice/generate
+// ============================================================================
+
+export const generateLevyCertificationNoticeRealHandler: ToolHandler<
+  { county: string; taxYear: number; deliveryMethod?: string },
+  { noticeId: string; templateId: string; status: string; deliveryMethod: string; payloadRef: string }
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+
+  const { token } = await acquirePilotToken();
+  const raw = await backendPost<{
+    noticeId?: string;
+    templateId?: string;
+    status?: string;
+    deliveryMethod?: string;
+  }>('/api/dais/notice/generate', {
+    templateId: 'LEVY_RATE',
+    taxYear: params.taxYear,
+    deliveryMethod: params.deliveryMethod ?? 'mail',
+    fields: {},
+  }, { token });
+  const data = unwrapBackend(raw, 'Levy certification notice generation failed');
+
+  return {
+    noticeId: data.noticeId ?? 'pending',
+    templateId: data.templateId ?? 'LEVY_RATE',
+    status: data.status ?? 'generated',
+    deliveryMethod: data.deliveryMethod ?? params.deliveryMethod ?? 'mail',
+    payloadRef: `dais://${context.countyId}/certification/${normalizeCountyCode(params.county)}/${params.taxYear}/notice/${data.noticeId ?? 'latest'}`,
+  };
+};
+
+// ============================================================================
+// R2.9 — Handler 34: queue_notice_for_mailing
 // Write-low. Queues generated notices for batch mailing.
 // Endpoint: POST /api/dais/notices/queue
 // ============================================================================
@@ -1913,7 +1948,83 @@ export const queueNoticeForMailingRealHandler: ToolHandler<
 };
 
 // ============================================================================
-// R2.9 — Handler 34: get_queue_statistics
+// R2.9 — Handler 35: submit_certification_to_dor
+// Write-high. Completes the DOR submission step after the LEVY_RATE notice is queued.
+// Endpoint: POST /api/dais/certification/{county}/{taxYear}/submit-dor
+// ============================================================================
+
+export const submitCertificationToDorRealHandler: ToolHandler<
+  { county: string; taxYear: number; signedBy: string; notes?: string },
+  { stepId: string; stepCode: string; status: string; submittedBy: string; submittedAt: string; levyNoticeId: string; levyNoticeStatus: string; payloadRef: string }
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+
+  const { token } = await acquirePilotToken();
+  const countyCode = normalizeCountyCode(params.county);
+  const raw = await backendPost<{
+    stepId?: string;
+    stepCode?: string;
+    status?: string;
+    submittedBy?: string;
+    submittedAt?: string;
+    levyNoticeId?: string;
+    levyNoticeStatus?: string;
+  }>(`/api/dais/certification/${encodeURIComponent(countyCode)}/${params.taxYear}/submit-dor`, {
+    signedBy: params.signedBy,
+    notes: params.notes ?? 'DOR submission completed through governed Pilot runtime.',
+  }, { token });
+  const data = unwrapBackend(raw, 'DOR certification submission failed');
+
+  return {
+    stepId: data.stepId ?? 'pending',
+    stepCode: data.stepCode ?? 'DOR_SUBMISSION',
+    status: data.status ?? 'completed',
+    submittedBy: data.submittedBy ?? params.signedBy,
+    submittedAt: data.submittedAt ?? new Date().toISOString(),
+    levyNoticeId: data.levyNoticeId ?? 'unknown',
+    levyNoticeStatus: data.levyNoticeStatus ?? 'unknown',
+    payloadRef: `dais://${context.countyId}/certification/${countyCode}/${params.taxYear}/dor-submission/${data.stepId ?? 'latest'}`,
+  };
+};
+
+// ============================================================================
+// R2.9 — Handler 36: accept_certification_from_dor
+// Write-high. Records Department of Revenue acceptance after submission.
+// Endpoint: POST /api/dais/certification/{county}/{taxYear}/accept-dor
+// ============================================================================
+
+export const acceptCertificationFromDorRealHandler: ToolHandler<
+  { county: string; taxYear: number; signedBy: string; notes?: string },
+  { stepId: string; stepCode: string; status: string; acceptedBy: string; acceptedAt: string; payloadRef: string }
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+
+  const { token } = await acquirePilotToken();
+  const countyCode = normalizeCountyCode(params.county);
+  const raw = await backendPost<{
+    stepId?: string;
+    stepCode?: string;
+    status?: string;
+    acceptedBy?: string;
+    acceptedAt?: string;
+  }>(`/api/dais/certification/${encodeURIComponent(countyCode)}/${params.taxYear}/accept-dor`, {
+    signedBy: params.signedBy,
+    notes: params.notes ?? 'DOR acceptance recorded through governed Pilot runtime.',
+  }, { token });
+  const data = unwrapBackend(raw, 'DOR certification acceptance failed');
+
+  return {
+    stepId: data.stepId ?? 'pending',
+    stepCode: data.stepCode ?? 'DOR_ACCEPTANCE',
+    status: data.status ?? 'completed',
+    acceptedBy: data.acceptedBy ?? params.signedBy,
+    acceptedAt: data.acceptedAt ?? new Date().toISOString(),
+    payloadRef: `dais://${context.countyId}/certification/${countyCode}/${params.taxYear}/dor-acceptance/${data.stepId ?? 'latest'}`,
+  };
+};
+
+// ============================================================================
+// R2.9 — Handler 37: get_queue_statistics
 // Read-only. Gets task queue statistics with SLA compliance metrics.
 // Endpoint: GET /api/dais/queue/statistics
 // ============================================================================
@@ -2594,7 +2705,10 @@ export function registerR1Handlers(
   runner.registerHandler('schedule_boe_hearing', scheduleBoeHearingRealHandler);
   runner.registerHandler('get_certification_progress', getCertificationProgressRealHandler);
   runner.registerHandler('sign_off_certification_step', signOffCertificationStepRealHandler);
+  runner.registerHandler('generate_levy_certification_notice', generateLevyCertificationNoticeRealHandler);
   runner.registerHandler('queue_notice_for_mailing', queueNoticeForMailingRealHandler);
+  runner.registerHandler('submit_certification_to_dor', submitCertificationToDorRealHandler);
+  runner.registerHandler('accept_certification_from_dor', acceptCertificationFromDorRealHandler);
   runner.registerHandler('get_queue_statistics', getQueueStatisticsRealHandler);
   runner.registerHandler('escalate_task', escalateTaskRealHandler);
 
