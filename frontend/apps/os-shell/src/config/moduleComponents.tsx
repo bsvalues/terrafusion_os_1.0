@@ -161,6 +161,7 @@ export const MODULE_REGISTRY = new Set<string>([
   'federation-dashboard',
   'costforge',
   'comps-forge',
+  'income-forge',
   'terra-gaia',
   'levy-calculator',
   'gis-viewer',
@@ -336,6 +337,9 @@ const SovereignDashboardWindow = lazy(() =>
 const CompsForgeModule = lazy(
   () => import('../pages/suites/modules/CompsForgeModule')
 );
+const IncomeForge = lazy(
+  () => import('../pages/forge/income/IncomeForge')
+);
 
 // ============================================================================
 // Phase C: Rehosted Module Components
@@ -348,6 +352,9 @@ const BatchCostRun = lazy(
 );
 const CoefficientPreview = lazy(
   () => import('../pages/forge/batch/CoefficientPreview')
+);
+const TerraGamaPage = lazy(
+  () => import('../pages/atlas/TerraGamaPage')
 );
 // Phase 36: Atlas & Forge standalone modules
 const GeoEquityDashboard = lazy(
@@ -481,8 +488,10 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   // Forge standalone modules (Tranche 1D)
   'batch-cost-run': { Component: BatchCostRun },
   'coefficient-preview': { Component: CoefficientPreview },
+  'income-forge': { Component: IncomeForge },
   // Forge standalone modules (Gen2)
   'regression-studio': { Component: RegressionStudio },
+  'terra-gama': { Component: TerraGamaPage },
   // Dais standalone modules
   'terra-queue': { Component: TerraQueue },
   // OS Features (in-shell windows)
@@ -754,6 +763,14 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
         </Suspense>
       );
 
+    // IncomeForge — income approach valuation with CostForge API authority.
+    case 'income-forge':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <IncomeForge metadata={metadata as Record<string, unknown> | undefined} />
+        </Suspense>
+      );
+
     // TerraGaia - Natural Language AI Assistant
     case 'terra-gaia':
       return (
@@ -864,18 +881,9 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'terra-gama':
       return (
-        <AppFrame
-          moduleId="terra-gama"
-          parcelContext={
-            metadata?.parcelId
-              ? {
-                  parcelId: String(metadata.parcelId),
-                  countyId: String(metadata.countyId ?? ''),
-                  assessmentYear: Number(metadata.assessmentYear ?? new Date().getFullYear()),
-                }
-              : undefined
-          }
-        />
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading TerraGAMA...</span></div>}>
+          <TerraGamaPage />
+        </Suspense>
       );
 
     // TerraPilt — OS-native PILT module (no iframe, no external server).

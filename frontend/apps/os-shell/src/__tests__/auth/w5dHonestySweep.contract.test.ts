@@ -6,7 +6,7 @@
  *   - useTodaysWork exposes explicit live/unavailable read state
  *   - useBudgetData exposes an explicit live-data gap instead of sample fallback
  *   - CostManual renders governed live/unavailable states instead of fixture fallback
- *   - BatchCostRun renders an explicit governed unavailable state
+ *   - BatchCostRun renders live API provenance without fixture fallback
  *   - Sealed wave regression (W4A, W4B, W5B, W5C)
  */
 
@@ -114,32 +114,37 @@ describe('Gate 3 — CostManual renders governed live/unavailable state', () => 
 });
 
 // ============================================================================
-// Gate 4 — BatchCostRun: explicit governed unavailable state
+// Gate 4 — BatchCostRun: live API provenance
 // ============================================================================
 
-describe('Gate 4 — BatchCostRun: explicit governed unavailable state', () => {
+describe('Gate 4 — BatchCostRun: live API-backed module', () => {
   const src = readSrc('pages/forge/batch/BatchCostRun.tsx');
+  const store = readSrc('pages/forge/batch/batchCostRunStore.ts');
 
   it('does not import DemoDataBanner or define fixture history', () => {
     expect(src).not.toContain('DemoDataBanner');
     expect(src).not.toContain('FIXTURE_HISTORY');
+    expect(store).not.toContain('FIXTURE_HISTORY');
   });
 
-  it('declares the governed unavailable state with a test landmark', () => {
-    expect(src).toContain('data-testid="batch-cost-run-unavailable"');
-    expect(src).toContain('Governed batch cost run unavailable.');
+  it('declares the live module landmark and source badge', () => {
+    expect(src).toContain('data-testid="batch-cost-run"');
+    expect(src).toContain('Live API');
   });
 
-  it('states the three blocked execution lanes explicitly', () => {
-    expect(src).toContain("lane: 'Preview Engine'");
-    expect(src).toContain("lane: 'Apply Endpoint'");
-    expect(src).toContain("lane: 'Run History'");
+  it('consumes governed CostForge endpoints through the store', () => {
+    expect(src).toContain('useBatchCostRunStore');
+    expect(store).toContain('/forge/cost/batch/preview');
+    expect(store).toContain('/forge/cost/batch/history');
+    expect(store).toContain('/costforge/cost-matrix/benton');
+    expect(store).toContain('/costforge/depreciation-schedule');
+    expect(store).toContain('/costforge/cost-estimate');
   });
 
-  it('makes operator guidance explicit instead of rendering fake preview/apply flow', () => {
-    expect(src).toContain('Use Cost Manual for certified county schedule review where available.');
-    expect(src).toContain('Use Coefficient Preview for controlled coefficient what-if work');
-    expect(src).toContain('Do not treat batch preview, apply, or history output from this lane as production evidence');
+  it('does not keep the old governed unavailable posture', () => {
+    expect(src).not.toContain('data-testid="batch-cost-run-unavailable"');
+    expect(src).not.toContain('Governed batch cost run unavailable.');
+    expect(src).not.toContain('Governed batch engine unavailable');
   });
 });
 

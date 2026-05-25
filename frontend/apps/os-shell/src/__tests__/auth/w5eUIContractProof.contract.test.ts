@@ -45,11 +45,15 @@ describe('Gate 1 — DemoDataBanner inventory: every fixture surface discloses',
     expect(src).toContain('Live cost schedule unavailable.');
   });
 
-  it('BatchCostRun renders an explicit unavailable state instead of DemoDataBanner', () => {
+  it('BatchCostRun renders live API provenance instead of DemoDataBanner', () => {
     const src = readSrc('pages/forge/batch/BatchCostRun.tsx');
+    const store = readSrc('pages/forge/batch/batchCostRunStore.ts');
     expect(src).not.toContain('DemoDataBanner');
-    expect(src).toContain('data-testid="batch-cost-run-unavailable"');
-    expect(src).toContain('Governed batch cost run unavailable.');
+    expect(src).toContain('data-testid="batch-cost-run"');
+    expect(src).toContain('Live API');
+    expect(src).toContain('useBatchCostRunStore');
+    expect(store).toContain('/forge/cost/batch/preview');
+    expect(store).toContain('/forge/cost/batch/history');
   });
 
   it('TerraLevyDashboard stays on live levy services and does not import DemoDataBanner', () => {
@@ -146,11 +150,13 @@ describe('Gate 2 — provenance tracking: hooks and components expose data origi
     expect(src).not.toContain('isFixture');
   });
 
-  it('BatchCostRun exposes explicit governed blockers instead of a fake apply gate', () => {
+  it('BatchCostRun exposes governed live endpoints instead of fake apply fixtures', () => {
     const src = readSrc('pages/forge/batch/BatchCostRun.tsx');
-    expect(src).toContain("lane: 'Preview Engine'");
-    expect(src).toContain("lane: 'Apply Endpoint'");
-    expect(src).toContain("lane: 'Run History'");
+    const store = readSrc('pages/forge/batch/batchCostRunStore.ts');
+    expect(src).toContain('useBatchCostRunStore');
+    expect(store).toContain('/costforge/cost-matrix/benton');
+    expect(store).toContain('/costforge/depreciation-schedule');
+    expect(store).toContain('/costforge/cost-estimate');
     expect(src).not.toContain('BACKEND_APPLY_CAPABLE');
   });
 
@@ -295,7 +301,8 @@ describe('Gate 5 — no fake surfaces: governed pages disclose fixture status', 
     const src = readSrc('pages/forge/batch/BatchCostRun.tsx');
     expect(src).not.toContain('FIXTURE_HISTORY');
     expect(src).not.toContain('DemoDataBanner');
-    expect(src).toContain('Governed batch engine unavailable');
+    expect(src).toContain('Benton County 2025 cost schedule, depreciation, and batch preview engine');
+    expect(src).toContain('Live API');
   });
 
   it('no governed forge page has stray console.log (debug noise)', () => {
@@ -425,10 +432,12 @@ describe('Gate 7 — sealed wave regression wall', () => {
     expect(src).not.toContain('isSampleData');
   });
 
-  it('BatchCostRun keeps the explicit unavailable posture (W5D)', () => {
+  it('BatchCostRun keeps the explicit live API posture (W5D)', () => {
     const src = readSrc('pages/forge/batch/BatchCostRun.tsx');
-    expect(src).toContain('Governed batch cost run unavailable.');
-    expect(src).toContain("lane: 'Apply Endpoint'");
+    const store = readSrc('pages/forge/batch/batchCostRunStore.ts');
+    expect(src).toContain('data-testid="batch-cost-run"');
+    expect(src).toContain('Live API');
+    expect(store).toContain('/forge/cost/batch/preview');
     expect(src).not.toContain('DemoDataBanner');
   });
 });

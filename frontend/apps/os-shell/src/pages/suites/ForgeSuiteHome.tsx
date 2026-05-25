@@ -17,9 +17,9 @@
  * Verified layout (matches screenshot from 2026-04-09):
  *   PRIMARY   : CostForge (cost approach, AppFrame → port 5002)
  *               CompsForge (sales comparison, standalone React module)
- *               IncomeForge (income approach, queued)
+ *               IncomeForge (income approach, live)
  *   SPECIALIST: Batch Cost Runs (batch execution)
- *               Regression Studio / TerraGAMA / Coefficient Preview (queued)
+ *               Regression Studio / TerraGAMA / Coefficient Preview live
  *   DEFAULT ANALYTICS: County Studio (study-anchored Operational Health +
  *                      Statistics Compat + VEI exploration)
  */
@@ -117,7 +117,6 @@ const PRIMARY_MODULES: readonly ForgeModuleDef[] = [
     priority: 'primary',
     launchMode: 'standalone',
     moduleId: 'income-forge',
-    truthState: 'queued',
     chipLabel: 'Income approach',
   },
   {
@@ -159,8 +158,7 @@ const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
     priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'regression-studio',
-    truthState: 'queued',
-    chipLabel: 'Planned scene',
+    chipLabel: 'Live regression',
   },
   {
     id: 'terra-gama',
@@ -169,8 +167,7 @@ const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
     priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'terra-gama',
-    truthState: 'queued',
-    chipLabel: 'Planned scene',
+    chipLabel: 'Live spatial',
   },
   {
     id: 'coefficient-preview',
@@ -179,8 +176,7 @@ const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
     priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'coefficient-preview',
-    truthState: 'queued',
-    chipLabel: 'Planned scene',
+    chipLabel: 'Live preview',
   },
 ] as const;
 
