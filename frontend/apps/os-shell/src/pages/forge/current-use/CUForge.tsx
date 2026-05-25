@@ -2,57 +2,25 @@
  * CUForge — Current Use Program Module (RCW 84.33 / 84.34)
  * Full standalone OS window. Four tabs, live program stats, county-wide enrollment management.
  *
- * Architecture: Statistics Studio pattern (React module, not AppFrame iframe).
+ * Architecture: Zustand workspace store + apiFetchJson (same as CostForge).
  * Data: TerraFusion CurrentUse API — classifications, rollback, interest, removals.
  *
  * Tabs:
  *   1. Classifications — DFL/CUFA/CUOS/CUTL enrollment registry
  *   2. Rollback — RCW 84.34.108 penalty calculator
- *   3. Interest — DOR-published interest rate table + calculator
+ *   3. Interest — DOR-published interest rate table
  *   4. Removals — Removal proceedings & penalty exceptions
  */
-
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './CUForge.css';
-
-// ── Types ────────────────────────────────────────────────────────────────────
-
-type CUForgeTab = 'classifications' | 'rollback' | 'interest' | 'removals';
-
-interface Classification {
-  parcelId: string;
-  owner: string;
-  program: string;
-  acres: number;
-  enrolledDate: string;
-  currentUseValue: number;
-  marketValue: number;
-}
-
-interface RollbackYear {
-  year: number;
-  marketValue: number;
-  currentUseValue: number;
-  difference: number;
-  interest: number;
-  penalty: number;
-}
-
-interface InterestRate {
-  year: number;
-  rate: number;
-  source: string;
-}
-
-interface Removal {
-  parcelId: string;
-  owner: string;
-  program: string;
-  removalDate: string;
-  reason: string;
-  status: string;
-  totalPenalty: number;
-}
+import {
+  useCUForgeWorkspaceStore,
+  type CUForgeTab,
+  type Classification,
+  type InterestRate,
+  type Removal,
+  type RollbackYear,
+} from './cuForgeWorkspaceStore';
 
 // ── Tab definitions ──────────────────────────────────────────────────────────
 
@@ -63,250 +31,26 @@ const TABS: { id: CUForgeTab; label: string; title: string }[] = [
   { id: 'removals',        label: 'Removals',        title: 'Removal proceedings & penalty exceptions' },
 ];
 
-// ── Sample data (seeded — matches backend InMemory provider) ─────────────────
+// ── Helpers ──────────────────────────────────────────────────────────────────
 
-const SAMPLE_CLASSIFICATIONS: Classification[] = [
-  { parcelId: '10234-001', owner: 'Anderson Farm LLC', program: 'DFL', acres: 120.5, enrolledDate: '2018-03-15', currentUseValue: 245000, marketValue: 890000 },
-  { parcelId: '10234-002', owner: 'Pacific Timber Co', program: 'CUFA', acres: 340.0, enrolledDate: '2015-06-22', currentUseValue: 180000, marketValue: 1250000 },
-  { parcelId: '10234-003', owner: 'Green Valley Ranch', program: 'CUOS', acres: 45.2, enrolledDate: '2020-01-10', currentUseValue: 95000, marketValue: 420000 },
-  { parcelId: '10234-004', owner: 'Heritage Timber LLC', program: 'CUTL', acres: 680.0, enrolledDate: '2012-09-01', currentUseValue: 320000, marketValue: 2100000 },
-  { parcelId: '10234-005', owner: 'Sunrise Organics', program: 'DFL', acres: 85.3, enrolledDate: '2019-04-20', currentUseValue: 175000, marketValue: 650000 },
-  { parcelId: '10234-006', owner: 'Cascade Forestry', program: 'CUFA', acres: 520.0, enrolledDate: '2014-11-30', currentUseValue: 410000, marketValue: 1800000 },
-];
+const fmt = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+const fmtFull = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
 
-const SAMPLE_INTEREST_RATES: InterestRate[] = [
-  { year: 2026, rate: 9.0, source: 'WA DOR' },
-  { year: 2025, rate: 8.5, source: 'WA DOR' },
-  { year: 2024, rate: 8.0, source: 'WA DOR' },
-  { year: 2023, rate: 7.5, source: 'WA DOR' },
-  { year: 2022, rate: 5.0, source: 'WA DOR' },
-  { year: 2021, rate: 4.5, source: 'WA DOR' },
-  { year: 2020, rate: 5.5, source: 'WA DOR' },
-  { year: 2019, rate: 5.75, source: 'WA DOR' },
-];
+const rollbackLookbackYears = (classificationCode: string) => classificationCode === 'DFL' ? 7 : 10;
 
-const SAMPLE_REMOVALS: Removal[] = [
-  { parcelId: '10234-007', owner: 'Valley Dev Corp', program: 'DFL', removalDate: '2025-08-15', reason: 'Voluntary withdrawal', status: 'Completed', totalPenalty: 45230 },
-  { parcelId: '10234-008', owner: 'Metro Builders', program: 'CUOS', removalDate: '2025-11-01', reason: 'Change of use', status: 'Pending', totalPenalty: 28750 },
-  { parcelId: '10234-009', owner: 'Lakeside Holdings', program: 'CUFA', removalDate: '2026-01-20', reason: 'Sale to non-qualifying', status: 'Under review', totalPenalty: 67890 },
-];
+const rollbackValueYears = (classificationCode: string, enrollmentYear: number, removalYear: number) => {
+  const lookbackYears = rollbackLookbackYears(classificationCode);
+  const startYear = Math.max(enrollmentYear, removalYear - lookbackYears + 1);
+  return Array.from({ length: removalYear - startYear + 1 }, (_, index) => startYear + index);
+};
 
-// ── Panels ───────────────────────────────────────────────────────────────────
-
-function ClassificationsPanel() {
-  return (
-    <div>
-      <div className="cu-rcw-callout">
-        <strong>RCW 84.33 / 84.34</strong> — Current Use Program enrollment. Parcels classified under
-        Designated Forest Land (DFL), Current Use Farm &amp; Agriculture (CUFA), Open Space (CUOS),
-        or Classified Timber Land (CUTL) receive reduced assessed values.
-      </div>
-      <table className="cu-table tf-table">
-        <thead>
-          <tr>
-            <th>Parcel ID</th>
-            <th>Owner</th>
-            <th>Program</th>
-            <th>Acres</th>
-            <th>Enrolled</th>
-            <th>CU Value</th>
-            <th>Market Value</th>
-            <th>Benefit</th>
-          </tr>
-        </thead>
-        <tbody>
-          {SAMPLE_CLASSIFICATIONS.map((c) => (
-            <tr key={c.parcelId}>
-              <td>{c.parcelId}</td>
-              <td>{c.owner}</td>
-              <td><span className="forge-chip forge-chip--neutral">{c.program}</span></td>
-              <td className="cu-cell--num">{c.acres.toFixed(1)}</td>
-              <td>{c.enrolledDate}</td>
-              <td className="cu-cell--num">${c.currentUseValue.toLocaleString()}</td>
-              <td className="cu-cell--num">${c.marketValue.toLocaleString()}</td>
-              <td className="cu-cell--num">${(c.marketValue - c.currentUseValue).toLocaleString()}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function RollbackPanel() {
-  const [years] = useState<RollbackYear[]>([
-    { year: 2026, marketValue: 890000, currentUseValue: 245000, difference: 645000, interest: 58050, penalty: 703050 },
-    { year: 2025, marketValue: 850000, currentUseValue: 240000, difference: 610000, interest: 51850, penalty: 661850 },
-    { year: 2024, marketValue: 810000, currentUseValue: 235000, difference: 575000, interest: 46000, penalty: 621000 },
-    { year: 2023, marketValue: 780000, currentUseValue: 230000, difference: 550000, interest: 41250, penalty: 591250 },
-    { year: 2022, marketValue: 720000, currentUseValue: 225000, difference: 495000, interest: 24750, penalty: 519750 },
-    { year: 2021, marketValue: 680000, currentUseValue: 220000, difference: 460000, interest: 20700, penalty: 480700 },
-    { year: 2020, marketValue: 650000, currentUseValue: 215000, difference: 435000, interest: 23925, penalty: 458925 },
-  ]);
-
-  const grandTotal = years.reduce((sum, y) => sum + y.penalty, 0);
-
-  return (
-    <div>
-      <div className="cu-rcw-callout">
-        <strong>RCW 84.34.108</strong> — When land is removed from current use classification,
-        additional tax (rollback) is imposed for each year of classification, plus interest.
-        The rollback period is limited to 7 years.
-      </div>
-      <h3 className="cu-section-title">Rollback Calculation — Parcel 10234-001</h3>
-      <table className="cu-table tf-table">
-        <thead>
-          <tr>
-            <th>Year</th>
-            <th>Market Value</th>
-            <th>CU Value</th>
-            <th>Difference</th>
-            <th>Interest</th>
-            <th>Year Penalty</th>
-          </tr>
-        </thead>
-        <tbody>
-          {years.map((y) => (
-            <tr key={y.year}>
-              <td>{y.year}</td>
-              <td className="cu-cell--num">${y.marketValue.toLocaleString()}</td>
-              <td className="cu-cell--num">${y.currentUseValue.toLocaleString()}</td>
-              <td className="cu-cell--num">${y.difference.toLocaleString()}</td>
-              <td className="cu-cell--num">${y.interest.toLocaleString()}</td>
-              <td className="cu-cell--num">${y.penalty.toLocaleString()}</td>
-            </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colSpan={5} style={{ fontWeight: 700 }}>Grand Total</td>
-            <td className="cu-cell--num" style={{ fontWeight: 700, color: 'var(--cu-danger)' }}>
-              ${grandTotal.toLocaleString()}
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-  );
-}
-
-function InterestPanel() {
-  return (
-    <div>
-      <div className="cu-rcw-callout">
-        <strong>RCW 84.34.080</strong> — Interest rates are published annually by the Washington
-        Department of Revenue (DOR). These rates apply to rollback tax calculations for
-        current use program removals.
-      </div>
-      <h3 className="cu-section-title">DOR Published Interest Rates</h3>
-      <table className="cu-table tf-table">
-        <thead>
-          <tr>
-            <th>Year</th>
-            <th>Rate</th>
-            <th>Source</th>
-          </tr>
-        </thead>
-        <tbody>
-          {SAMPLE_INTEREST_RATES.map((r) => (
-            <tr key={r.year}>
-              <td>{r.year}</td>
-              <td className="cu-cell--num">{r.rate.toFixed(1)}%</td>
-              <td>{r.source}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function RemovalsPanel() {
-  return (
-    <div>
-      <div className="cu-rcw-callout">
-        <strong>RCW 84.34.108(6)</strong> — Removal proceedings track parcels exiting current use
-        classification. Penalty exceptions may apply for involuntary destruction, government
-        acquisition, or transfer to qualifying family members.
-      </div>
-      <h3 className="cu-section-title">Active Removal Proceedings</h3>
-      <table className="cu-table tf-table">
-        <thead>
-          <tr>
-            <th>Parcel ID</th>
-            <th>Owner</th>
-            <th>Program</th>
-            <th>Removal Date</th>
-            <th>Reason</th>
-            <th>Status</th>
-            <th>Total Penalty</th>
-          </tr>
-        </thead>
-        <tbody>
-          {SAMPLE_REMOVALS.map((r) => (
-            <tr key={r.parcelId}>
-              <td>{r.parcelId}</td>
-              <td>{r.owner}</td>
-              <td><span className="forge-chip forge-chip--neutral">{r.program}</span></td>
-              <td>{r.removalDate}</td>
-              <td>{r.reason}</td>
-              <td>
-                <span className={`forge-chip ${
-                  r.status === 'Completed' ? 'forge-chip--success' :
-                  r.status === 'Pending' ? 'forge-chip--warn' : 'forge-chip--neutral'
-                }`}>
-                  {r.status}
-                </span>
-              </td>
-              <td className="cu-cell--num">${r.totalPenalty.toLocaleString()}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-// ── Stats Rail ───────────────────────────────────────────────────────────────
-
-function StatsRail() {
-  return (
-    <aside className="cu-stats-rail">
-      <div className="cu-stat-card">
-        <p className="cu-stat-card__label">Total Enrolled</p>
-        <p className="cu-stat-card__value">1,847</p>
-      </div>
-      <div className="cu-stat-card">
-        <p className="cu-stat-card__label">DFL Parcels</p>
-        <p className="cu-stat-card__value">623</p>
-      </div>
-      <div className="cu-stat-card">
-        <p className="cu-stat-card__label">CUFA Parcels</p>
-        <p className="cu-stat-card__value">412</p>
-      </div>
-      <div className="cu-stat-card">
-        <p className="cu-stat-card__label">CUOS Parcels</p>
-        <p className="cu-stat-card__value">589</p>
-      </div>
-      <div className="cu-stat-card">
-        <p className="cu-stat-card__label">CUTL Parcels</p>
-        <p className="cu-stat-card__value">223</p>
-      </div>
-      <div className="cu-stat-card">
-        <p className="cu-stat-card__label">Tax Benefit (County)</p>
-        <p className="cu-stat-card__value cu-stat-card__value--success">$42.3M</p>
-      </div>
-      <div className="cu-stat-card">
-        <p className="cu-stat-card__label">Pending Removals</p>
-        <p className="cu-stat-card__value cu-stat-card__value--warn">12</p>
-      </div>
-      <div className="cu-stat-card">
-        <p className="cu-stat-card__label">Current Interest Rate</p>
-        <p className="cu-stat-card__value">9.0%</p>
-      </div>
-    </aside>
-  );
-}
+const programBadge = (code: string) => {
+  const cls = code === 'DFL' ? 'forge-chip--success' :
+              code === 'CUFA' ? 'forge-chip--info' :
+              code === 'CUOS' ? 'forge-chip--accent' :
+              code === 'CUTL' ? 'forge-chip--warn' : 'forge-chip--neutral';
+  return <span className={`forge-chip ${cls}`}>{code}</span>;
+};
 
 // ── Main Component ───────────────────────────────────────────────────────────
 
@@ -315,7 +59,37 @@ export interface CUForgeProps {
 }
 
 export default function CUForge({ metadata: _metadata }: CUForgeProps = {}) {
-  const [activeTab, setActiveTab] = useState<CUForgeTab>('classifications');
+  const store = useCUForgeWorkspaceStore();
+  const abortRef = useRef<AbortController>(new AbortController());
+
+  // Fetch stats + initial tab data on mount
+  useEffect(() => {
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+    void store.fetchStats(ctrl.signal);
+    void store.fetchClassifications(1, ctrl.signal);
+    return () => ctrl.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Fetch data when tab changes
+  useEffect(() => {
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+    switch (store.activeTab) {
+      case 'classifications':
+        void store.fetchClassifications(1, ctrl.signal);
+        break;
+      case 'interest':
+        void store.fetchInterestRates(ctrl.signal);
+        break;
+      case 'removals':
+        void store.fetchRemovals(ctrl.signal);
+        break;
+    }
+    return () => ctrl.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [store.activeTab]);
 
   return (
     <div className="cu-workspace tf-page">
@@ -327,7 +101,7 @@ export default function CUForge({ metadata: _metadata }: CUForgeProps = {}) {
             <h1 className="cu-header__title">CUForge</h1>
           </div>
           <div className="cu-header__badges">
-            <span className="forge-chip forge-chip--neutral">2026 tax year</span>
+            <span className="forge-chip forge-chip--neutral">{store.taxYear} tax year</span>
             <span className="forge-chip forge-chip--success">RCW 84.33 / 84.34</span>
           </div>
         </div>
@@ -340,9 +114,9 @@ export default function CUForge({ metadata: _metadata }: CUForgeProps = {}) {
             key={tab.id}
             type="button"
             role="tab"
-            aria-selected={activeTab === tab.id}
-            className={`cu-tab ${activeTab === tab.id ? 'cu-tab--active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
+            aria-selected={store.activeTab === tab.id}
+            className={`cu-tab ${store.activeTab === tab.id ? 'cu-tab--active' : ''}`}
+            onClick={() => store.setActiveTab(tab.id)}
             title={tab.title}
           >
             {tab.label}
@@ -352,14 +126,360 @@ export default function CUForge({ metadata: _metadata }: CUForgeProps = {}) {
 
       {/* Main layout: content + stats rail */}
       <div className="cu-layout">
-        <main className="cu-main">
-          {activeTab === 'classifications' && <ClassificationsPanel />}
-          {activeTab === 'rollback'        && <RollbackPanel />}
-          {activeTab === 'interest'        && <InterestPanel />}
-          {activeTab === 'removals'        && <RemovalsPanel />}
+        <main className="cu-main tf-section">
+          {store.activeTab === 'classifications' && <ClassificationsPanel />}
+          {store.activeTab === 'rollback'        && <RollbackPanel />}
+          {store.activeTab === 'interest'        && <InterestPanel />}
+          {store.activeTab === 'removals'        && <RemovalsPanel />}
         </main>
         <StatsRail />
       </div>
+    </div>
+  );
+}
+
+// ── Stats Rail ───────────────────────────────────────────────────────────────
+
+function StatsRail() {
+  const { stats, statsLoading, statsError } = useCUForgeWorkspaceStore();
+
+  if (statsLoading) return (
+    <aside className="cu-stats-rail">
+      <div className="cu-stat-card"><p className="cu-stat-card__label">Loading…</p></div>
+    </aside>
+  );
+
+  if (statsError) return (
+    <aside className="cu-stats-rail">
+      <div className="cu-stat-card cu-stat-card--error"><p className="cu-stat-card__label">{statsError}</p></div>
+    </aside>
+  );
+
+  if (!stats) return (
+    <aside className="cu-stats-rail">
+      <div className="cu-stat-card"><p className="cu-stat-card__label">No data</p></div>
+    </aside>
+  );
+
+  const items = [
+    { label: 'Total Enrolled', value: stats.totalEnrolled.toLocaleString() },
+    { label: 'DFL Parcels', value: stats.dflCount.toLocaleString() },
+    { label: 'CUFA Parcels', value: stats.cufaCount.toLocaleString() },
+    { label: 'CUOS Parcels', value: stats.cuosCount.toLocaleString() },
+    { label: 'CUTL Parcels', value: stats.cutlCount.toLocaleString() },
+    { label: 'Tax Benefit (County)', value: `$${(stats.totalTaxBenefit / 1_000_000).toFixed(1)}M`, cls: 'cu-stat-card__value--success' },
+    { label: 'Pending Removals', value: stats.pendingRemovals.toLocaleString(), cls: 'cu-stat-card__value--warn' },
+    { label: 'Current Interest Rate', value: `${stats.currentInterestRate.toFixed(1)}%` },
+  ];
+
+  return (
+    <aside className="cu-stats-rail">
+      {items.map((item) => (
+        <div key={item.label} className="cu-stat-card">
+          <p className="cu-stat-card__label">{item.label}</p>
+          <p className={`cu-stat-card__value ${item.cls || ''}`}>{item.value}</p>
+        </div>
+      ))}
+    </aside>
+  );
+}
+
+// ── Classifications Panel ────────────────────────────────────────────────────
+
+function ClassificationsPanel() {
+  const { classifications, classificationsTotal, classificationsLoading, classificationsError } = useCUForgeWorkspaceStore();
+
+  return (
+    <div>
+      <div className="cu-rcw-callout">
+        <strong>RCW 84.33 / 84.34</strong> — Current Use Program enrollment. Parcels classified under
+        Designated Forest Land (DFL), Current Use Farm &amp; Agriculture (CUFA), Open Space (CUOS),
+        or Classified Timber Land (CUTL) receive reduced assessed values.
+      </div>
+
+      {classificationsLoading && <div className="cu-loading">Loading classifications…</div>}
+      {classificationsError && <div className="cu-error">{classificationsError}</div>}
+
+      {!classificationsLoading && classifications.length > 0 && (
+        <table className="cu-table tf-table">
+          <thead>
+            <tr>
+              <th>Parcel ID</th>
+              <th>Program</th>
+              <th>Description</th>
+              <th>Acres</th>
+              <th>Enrolled</th>
+              <th>CU Value</th>
+              <th>Market Value</th>
+              <th>Tax Savings</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {classifications.map((c: Classification) => (
+              <tr key={c.id}>
+                <td className="cu-cell--mono">{c.parcelId}</td>
+                <td>{programBadge(c.classificationCode)}</td>
+                <td>{c.description}</td>
+                <td className="cu-cell--num">{(c.acreage ?? 0).toFixed(1)}</td>
+                <td>{c.enrollmentDate}</td>
+                <td className="cu-cell--num">{fmt(c.currentUseValue ?? 0)}</td>
+                <td className="cu-cell--num">{fmt(c.currentMarketValue ?? 0)}</td>
+                <td className="cu-cell--num cu-cell--positive">{fmt(c.taxSavings ?? 0)}</td>
+                <td>
+                  <span className={`forge-chip ${c.status === 'Active' ? 'forge-chip--success' : 'forge-chip--neutral'}`}>
+                    {c.status}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      {!classificationsLoading && classifications.length === 0 && !classificationsError && (
+        <div className="cu-empty">No classifications found.</div>
+      )}
+
+      <div className="cu-table-footer">
+        <span>{classificationsTotal} total enrollment{classificationsTotal !== 1 ? 's' : ''}</span>
+      </div>
+    </div>
+  );
+}
+
+// ── Rollback Panel ───────────────────────────────────────────────────────────
+
+function RollbackPanel() {
+  const { rollbackResult, rollbackLoading, rollbackError, calculateRollback } = useCUForgeWorkspaceStore();
+  const [parcelId, setParcelId] = useState('1-0234-100-0001');
+  const [classificationCode, setClassificationCode] = useState('DFL');
+  const [enrollmentYear, setEnrollmentYear] = useState(2015);
+  const [removalYear, setRemovalYear] = useState(2026);
+
+  // Generate sample market/CU values for the lookback window
+  const handleCalculate = () => {
+    const marketValues: Record<string, number> = {};
+    const currentUseValues: Record<string, number> = {};
+    const years = rollbackValueYears(classificationCode, enrollmentYear, removalYear);
+    const startYear = years[0] ?? removalYear;
+
+    for (const y of years) {
+      marketValues[y.toString()] = 450000 + (y - startYear) * 25000;
+      currentUseValues[y.toString()] = 52000 + (y - startYear) * 2000;
+    }
+    void calculateRollback(parcelId, classificationCode, enrollmentYear, removalYear, marketValues, currentUseValues);
+  };
+
+  return (
+    <div>
+      <div className="cu-rcw-callout">
+        <strong>RCW 84.34.108</strong> — When land is removed from current use classification,
+        additional tax (rollback) is imposed for each year of classification, plus interest.
+        The rollback period is limited to 7 years for DFL and up to 10 years for CUFA/CUOS/CUTL.
+      </div>
+
+      <div className="cu-form-row">
+        <div className="cu-form-group">
+          <label className="cu-label" htmlFor="cu-rollback-parcel">Parcel ID</label>
+          <input id="cu-rollback-parcel" className="cu-input" value={parcelId} onChange={(e) => setParcelId(e.target.value)} />
+        </div>
+        <div className="cu-form-group">
+          <label className="cu-label" htmlFor="cu-rollback-program">Program</label>
+          <select id="cu-rollback-program" className="cu-input" value={classificationCode} onChange={(e) => setClassificationCode(e.target.value)}>
+            <option value="DFL">DFL</option>
+            <option value="CUFA">CUFA</option>
+            <option value="CUOS">CUOS</option>
+            <option value="CUTL">CUTL</option>
+          </select>
+        </div>
+        <div className="cu-form-group">
+          <label className="cu-label" htmlFor="cu-rollback-enrollment">Enrollment Year</label>
+          <input id="cu-rollback-enrollment" className="cu-input" type="number" value={enrollmentYear} onChange={(e) => setEnrollmentYear(+e.target.value)} />
+        </div>
+        <div className="cu-form-group">
+          <label className="cu-label" htmlFor="cu-rollback-removal">Removal Year</label>
+          <input id="cu-rollback-removal" className="cu-input" type="number" value={removalYear} onChange={(e) => setRemovalYear(+e.target.value)} />
+        </div>
+        <button className="cu-btn cu-btn--primary" onClick={handleCalculate} disabled={rollbackLoading}>
+          {rollbackLoading ? 'Calculating…' : 'Calculate Rollback'}
+        </button>
+      </div>
+
+      {rollbackError && <div className="cu-error">{rollbackError}</div>}
+
+      {rollbackResult && (
+        <>
+          <h3 className="cu-section-title">Rollback Calculation — Parcel {parcelId}</h3>
+          <table className="cu-table tf-table">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Market Value</th>
+                <th>CU Value</th>
+                <th>Difference</th>
+                <th>Rate</th>
+                <th>Interest</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rollbackResult.yearBreakdowns.map((y: RollbackYear) => (
+                <tr key={y.year}>
+                  <td>{y.year}</td>
+                  <td className="cu-cell--num">{fmt(y.marketValue)}</td>
+                  <td className="cu-cell--num">{fmt(y.currentUseValue)}</td>
+                  <td className="cu-cell--num">{fmt(y.difference)}</td>
+                  <td className="cu-cell--num">{(y.interestRate * 100).toFixed(2)}%</td>
+                  <td className="cu-cell--num">{fmtFull(y.interestAmount)}</td>
+                  <td className="cu-cell--num">{fmtFull(y.subtotal)}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colSpan={4} style={{ fontWeight: 700 }}>Totals</td>
+                <td></td>
+                <td className="cu-cell--num" style={{ fontWeight: 700 }}>{fmtFull(rollbackResult.totalInterest)}</td>
+                <td className="cu-cell--num" style={{ fontWeight: 700 }}>{fmtFull(rollbackResult.totalRollbackTax + rollbackResult.totalInterest)}</td>
+              </tr>
+              <tr>
+                <td colSpan={5} style={{ fontWeight: 700 }}>20% Penalty</td>
+                <td colSpan={2} className="cu-cell--num" style={{ fontWeight: 700, color: 'var(--cu-danger)' }}>
+                  {fmtFull(rollbackResult.totalPenalty)}
+                </td>
+              </tr>
+              <tr>
+                <td colSpan={5} style={{ fontWeight: 700, fontSize: '1.1em' }}>Grand Total</td>
+                <td colSpan={2} className="cu-cell--num" style={{ fontWeight: 700, fontSize: '1.1em', color: 'var(--cu-danger)' }}>
+                  {fmtFull(rollbackResult.grandTotal)}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ── Interest Panel ───────────────────────────────────────────────────────────
+
+function InterestPanel() {
+  const { interestRates, interestRatesLoading, interestRatesError } = useCUForgeWorkspaceStore();
+
+  return (
+    <div>
+      <div className="cu-rcw-callout">
+        <strong>RCW 84.34.080</strong> — Interest rates are published annually by the Washington
+        Department of Revenue (DOR). These rates apply to rollback tax calculations for
+        current use program removals.
+      </div>
+
+      {interestRatesLoading && <div className="cu-loading">Loading interest rates…</div>}
+      {interestRatesError && <div className="cu-error">{interestRatesError}</div>}
+
+      {!interestRatesLoading && interestRates.length > 0 && (
+        <>
+          {/* Bar chart visualization */}
+          <div className="cu-chart">
+            {interestRates.map((r: InterestRate) => (
+              <div key={r.year} className="cu-chart-bar-group">
+                <div className="cu-chart-bar" style={{ height: `${(r.rate * 100 / 8) * 100}%` }}>
+                  <span className="cu-chart-bar__label">{(r.rate * 100).toFixed(1)}%</span>
+                </div>
+                <span className="cu-chart-bar__year">{r.year}</span>
+              </div>
+            ))}
+          </div>
+
+          <h3 className="cu-section-title">DOR Published Interest Rates</h3>
+          <table className="cu-table tf-table">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Rate</th>
+                <th>Source</th>
+                <th>Effective Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {interestRates.map((r: InterestRate) => (
+                <tr key={r.year}>
+                  <td>{r.year}</td>
+                  <td className="cu-cell--num">{(r.rate * 100).toFixed(2)}%</td>
+                  <td>{r.source}</td>
+                  <td>{r.effectiveDate}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ── Removals Panel ───────────────────────────────────────────────────────────
+
+function RemovalsPanel() {
+  const { removals, removalsLoading, removalsError } = useCUForgeWorkspaceStore();
+
+  return (
+    <div>
+      <div className="cu-rcw-callout">
+        <strong>RCW 84.34.108(6)</strong> — Removal proceedings track parcels exiting current use
+        classification. Penalty exceptions may apply for involuntary destruction, government
+        acquisition, or transfer to qualifying family members.
+      </div>
+
+      {removalsLoading && <div className="cu-loading">Loading removals…</div>}
+      {removalsError && <div className="cu-error">{removalsError}</div>}
+
+      {!removalsLoading && removals.length > 0 && (
+        <>
+          <h3 className="cu-section-title">Active Removal Proceedings</h3>
+          <table className="cu-table tf-table">
+            <thead>
+              <tr>
+                <th>Parcel ID</th>
+                <th>Program</th>
+                <th>Removal Date</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>Penalty</th>
+                <th>Interest</th>
+                <th>Total Owed</th>
+              </tr>
+            </thead>
+            <tbody>
+              {removals.map((r: Removal) => (
+                <tr key={r.id}>
+                  <td className="cu-cell--mono">{r.parcelId}</td>
+                  <td>{programBadge(r.classificationCode)}</td>
+                  <td>{r.removalDate ?? r.initiatedDate}</td>
+                  <td>{r.reason}</td>
+                  <td>
+                    <span className={`forge-chip ${
+                      r.status === 'Completed' ? 'forge-chip--success' :
+                      r.status === 'Pending' ? 'forge-chip--warn' : 'forge-chip--neutral'
+                    }`}>
+                      {r.status}
+                    </span>
+                  </td>
+                  <td className="cu-cell--num">{fmtFull(r.penaltyAmount ?? 0)}</td>
+                  <td className="cu-cell--num">{fmtFull(r.interestAmount ?? 0)}</td>
+                  <td className="cu-cell--num cu-cell--negative">{fmtFull(r.totalDue ?? 0)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      {!removalsLoading && removals.length === 0 && !removalsError && (
+        <div className="cu-empty">No removal proceedings found.</div>
+      )}
     </div>
   );
 }
