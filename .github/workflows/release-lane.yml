@@ -339,7 +339,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          PROVISION_JSON="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' bash -s" <<'SSH'
+          PROVISION_OUTPUT="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' bash -s" <<'SSH'
           set -euo pipefail
           cd "$APP_ROOT"
           docker compose -f runtime-compose.yml --env-file release.env run --rm --no-deps \
@@ -356,11 +356,10 @@ jobs:
                 --county-name Benton \
                 --county-state WA \
                 --county-fips 53005 \
-                --create-county' >/tmp/terrafusion-auth-provisioner.json
-          cat /tmp/terrafusion-auth-provisioner.json
-          rm -f /tmp/terrafusion-auth-provisioner.json
+                --create-county'
           SSH
           )"
+          PROVISION_JSON="$(printf '%s\n' "$PROVISION_OUTPUT" | awk '/^\{/{line=$0} END{print line}')"
           PROVISION_JSON="$PROVISION_JSON" node <<'NODE'
           const receipt = JSON.parse(process.env.PROVISION_JSON || "{}");
           if (!receipt.passwordHashStored) {
