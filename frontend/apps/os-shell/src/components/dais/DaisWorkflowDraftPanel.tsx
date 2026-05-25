@@ -20,7 +20,7 @@ import {
   useDownstreamClosureReceiptStore,
   type DownstreamClosureReceipt,
 } from '../../pages/suites/downstreamClosureReceiptStore';
-import { exceptionApi } from '../../pages/forge/county-studio/countyStudyApi';
+import { exceptionApi } from '../../services/countyStudyHandoffApi';
 
 function formatTimestamp(iso: string): string {
   try {

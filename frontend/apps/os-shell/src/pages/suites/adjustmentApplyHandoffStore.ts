@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { CountyApplyHandoffReceiptDto, CountyApplyHandoffReceiptStatus } from '../forge/county-studio/countyStudyApi';
+import type { CountyApplyHandoffReceiptDto, CountyApplyHandoffReceiptStatus } from '../../services/countyStudyHandoffApi';
 
 export type AdjustmentApplyHandoffStatus = CountyApplyHandoffReceiptStatus;
 

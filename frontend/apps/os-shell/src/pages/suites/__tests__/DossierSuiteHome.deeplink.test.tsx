@@ -26,7 +26,7 @@ vi.mock('@/orchestration/moduleActivation', () => ({
   default: activateModuleMock,
   activateModule: activateModuleMock,
 }));
-vi.mock('../../forge/county-studio/countyStudyApi', () => ({
+vi.mock('../../../services/countyStudyHandoffApi', () => ({
   adjustmentSetApi: {
     recordApplyHandoffReceipt: recordApplyHandoffReceiptMock,
   },
