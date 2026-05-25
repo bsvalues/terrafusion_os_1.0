@@ -19,6 +19,15 @@ namespace TerraFusion.Core.Services
         Task<string> GenerateJwtTokenAsync(string userId, string email, IEnumerable<string> roles);
 
         /// <summary>
+        /// Generate a JWT access token with explicit database-backed county and permission claims.
+        /// </summary>
+        Task<string> GenerateJwtTokenAsync(
+            string userId,
+            string email,
+            IEnumerable<string> roles,
+            IDictionary<string, object> customClaims);
+
+        /// <summary>
         /// Validate a JWT token and extract claims principal
         /// </summary>
         /// <param name="token">JWT token to validate</param>
@@ -33,6 +42,15 @@ namespace TerraFusion.Core.Services
         /// <param name="roles">User's assigned roles</param>
         /// <returns>Tuple of access token and refresh token</returns>
         Task<(string AccessToken, string RefreshToken)> GenerateTokenPairAsync(string userId, string email, IEnumerable<string> roles);
+
+        /// <summary>
+        /// Generate an access/refresh token pair with explicit database-backed claims.
+        /// </summary>
+        Task<(string AccessToken, string RefreshToken)> GenerateTokenPairAsync(
+            string userId,
+            string email,
+            IEnumerable<string> roles,
+            IDictionary<string, object> customClaims);
 
         /// <summary>
         /// Validate a refresh token for a specific user

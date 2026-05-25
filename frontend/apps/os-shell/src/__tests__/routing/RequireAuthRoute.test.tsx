@@ -56,6 +56,15 @@ describe('RequireAuth / AuthGuard route guard', () => {
     expect(screen.queryByTestId('protected')).not.toBeInTheDocument();
   });
 
+  it('invalid_stored_token_redirects_to_login', () => {
+    authStorage.setToken('expired.invalid.token');
+
+    renderGuardedRoute('/dashboard');
+
+    expect(screen.getByTestId('login-page')).toBeInTheDocument();
+    expect(screen.queryByTestId('protected')).not.toBeInTheDocument();
+  });
+
   it('authenticated_renders_children', () => {
     // Pre-seed token in storage
     authStorage.setToken(validJwt());
