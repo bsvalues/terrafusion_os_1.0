@@ -90,7 +90,6 @@ export const CURRENT_USE_QUEUE_DEFINITIONS: Array<Omit<CurrentUseQueue, 'cases'>
 const REMOVAL_REVIEW_STATUSES = new Set(['Pending', 'Initiated']);
 const TREASURER_STATUSES = new Set(['Confirmed', 'Completed', 'Issued']);
 const HIGH_ROLLBACK_THRESHOLD = 100_000;
-const DEFAULT_AS_OF_DATE = '2026-05-25';
 export const CURRENT_USE_STATUS_LABELS: Record<CurrentUseCaseStatus, string> = {
   ACTIVE: 'Active',
   MONITORING: 'Monitoring',
@@ -109,12 +108,28 @@ function latestRate(rates: InterestRate[]): InterestRate | null {
 }
 
 function matchingRemoval(classification: Classification, removals: Removal[]): Removal | null {
-  return removals.find(removal => removal.parcelId === classification.parcelId) ?? null;
+  const matching = removals.filter(removal => removal.parcelId === classification.parcelId);
+  if (matching.length === 0) return null;
+
+  return [...matching].sort((a, b) => {
+    const activeRank = Number(REMOVAL_REVIEW_STATUSES.has(b.status)) - Number(REMOVAL_REVIEW_STATUSES.has(a.status));
+    if (activeRank !== 0) return activeRank;
+
+    const bDate = normalizeDate(b.removalDate ?? b.initiatedDate).getTime();
+    const aDate = normalizeDate(a.removalDate ?? a.initiatedDate).getTime();
+    if (bDate !== aDate) return bDate - aDate;
+
+    return (b.totalDue ?? b.rollbackAmount ?? 0) - (a.totalDue ?? a.rollbackAmount ?? 0);
+  })[0] ?? null;
+}
+
+function todayIsoDate(): string {
+  return new Date().toISOString().slice(0, 10);
 }
 
 function normalizeDate(value: string | null | undefined): Date {
   const parsed = value ? new Date(`${value.slice(0, 10)}T00:00:00Z`) : null;
-  return parsed && Number.isFinite(parsed.getTime()) ? parsed : new Date(`${DEFAULT_AS_OF_DATE}T00:00:00Z`);
+  return parsed && Number.isFinite(parsed.getTime()) ? parsed : new Date(`${todayIsoDate()}T00:00:00Z`);
 }
 
 function daysBetween(start: string | null | undefined, end: string): number {
@@ -235,8 +250,8 @@ function buildChecklist(classification: Classification, removal: Removal | null,
     },
     {
       id: 'notice',
-      label: 'Notice path selected',
-      complete: Boolean(removal) || missingEvidence.length > 0,
+      label: 'Notice path reviewed',
+      complete: true,
       detail: removal ? 'Removal notice path available' : missingEvidence.length > 0 ? 'Missing evidence request path available' : 'No notice needed',
     },
   ];
@@ -310,7 +325,7 @@ export function deriveCurrentUseCases(
   classifications: Classification[],
   removals: Removal[],
   rates: InterestRate[] = [],
-  asOfDate = DEFAULT_AS_OF_DATE,
+  asOfDate = todayIsoDate(),
 ): CurrentUseCase[] {
   const rate = latestRate(rates);
 

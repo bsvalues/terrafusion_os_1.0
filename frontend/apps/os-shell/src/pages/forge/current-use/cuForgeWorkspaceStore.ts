@@ -137,6 +137,7 @@ interface CUForgeWorkspaceState {
   fetchStats(signal?: AbortSignal): Promise<void>;
   fetchClassifications(page?: number, signal?: AbortSignal): Promise<void>;
   calculateRollback(parcelId: string, classificationCode: string, enrollmentYear: number, removalYear: number, marketValues: Record<string, number>, currentUseValues: Record<string, number>, signal?: AbortSignal): Promise<void>;
+  clearRollbackResult(): void;
   fetchInterestRates(signal?: AbortSignal): Promise<void>;
   fetchRemovals(signal?: AbortSignal): Promise<void>;
 }
@@ -302,6 +303,8 @@ export const useCUForgeWorkspaceStore = create<CUForgeWorkspaceState>((set, get)
       });
     }
   },
+
+  clearRollbackResult: () => set({ rollbackResult: null, rollbackError: null, rollbackLoading: false }),
 
   fetchInterestRates: async (signal) => {
     set({ interestRatesLoading: true, interestRatesError: null });

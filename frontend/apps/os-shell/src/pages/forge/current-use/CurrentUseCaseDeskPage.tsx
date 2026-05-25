@@ -18,13 +18,15 @@ import {
 
 const SOURCE_LABEL = 'Case Desk derived from live Current Use records.';
 
-const fmtCurrency = (value: number | null | undefined, digits = 0) =>
-  (value ?? 0).toLocaleString('en-US', {
+const fmtCurrency = (value: number | null | undefined, digits = 0) => {
+  if (value == null) return 'Missing';
+  return value.toLocaleString('en-US', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
   });
+};
 
 const rollbackLookbackYears = (classificationCode: string) => classificationCode === 'DFL' ? 7 : 10;
 
@@ -53,13 +55,12 @@ export default function CurrentUseCaseDeskPage() {
   const store = useCUForgeWorkspaceStore();
   const [activeQueueId, setActiveQueueId] = useState<CurrentUseQueueId>('missingEvidence');
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
-  const [noticeAction, setNoticeAction] = useState<string>('Missing evidence request prepared');
-  const [chiefDecision, setChiefDecision] = useState<string>('No Chief decision prepared');
+  const [noticeActionByCaseId, setNoticeActionByCaseId] = useState<Record<string, string>>({});
+  const [chiefDecisionByCaseId, setChiefDecisionByCaseId] = useState<Record<string, string>>({});
   const [stagedStatusByCaseId, setStagedStatusByCaseId] = useState<Record<string, CurrentUseCaseStatus>>({});
 
   useEffect(() => {
     const ctrl = new AbortController();
-    void store.fetchStats(ctrl.signal);
     void store.fetchClassifications(1, ctrl.signal);
     void store.fetchRemovals(ctrl.signal);
     void store.fetchInterestRates(ctrl.signal);
@@ -72,9 +73,8 @@ export default function CurrentUseCaseDeskPage() {
       store.classifications,
       store.removals,
       store.interestRates,
-      `${store.taxYear}-05-25`,
     ),
-    [store.classifications, store.removals, store.interestRates, store.taxYear],
+    [store.classifications, store.removals, store.interestRates],
   );
   const queues = useMemo(() => buildCurrentUseQueues(cases), [cases]);
   const chiefReviewCases = useMemo(() => buildChiefReviewCases(cases), [cases]);
@@ -147,8 +147,10 @@ export default function CurrentUseCaseDeskPage() {
                 <CurrentUseChecklist currentCase={selectedCase} />
                 <CurrentUseNoticeActionPanel
                   currentCase={selectedCase}
-                  noticeAction={noticeAction}
-                  onNoticeAction={setNoticeAction}
+                  noticeAction={noticeActionByCaseId[selectedCase.id] ?? 'No notice prepared for selected case.'}
+                  onNoticeAction={(action) => {
+                    setNoticeActionByCaseId(previous => ({ ...previous, [selectedCase.id]: action }));
+                  }}
                 />
               </div>
               <CurrentUseRollbackWorksheet currentCase={selectedCase} />
@@ -161,9 +163,12 @@ export default function CurrentUseCaseDeskPage() {
         <CurrentUseChiefReviewPanel
           cases={chiefReviewCases}
           selectedCaseId={selectedCase?.id ?? null}
-          chiefDecision={chiefDecision}
+          chiefDecision={selectedCase ? chiefDecisionByCaseId[selectedCase.id] ?? 'No Chief review action prepared for selected case.' : 'No Chief review action prepared for selected case.'}
           onSelectCase={setSelectedCaseId}
-          onChiefDecision={setChiefDecision}
+          onChiefDecision={(decision) => {
+            if (!selectedCase) return;
+            setChiefDecisionByCaseId(previous => ({ ...previous, [selectedCase.id]: decision }));
+          }}
         />
       </div>
     </div>
@@ -344,7 +349,13 @@ export function CurrentUseNoticeActionPanel({
 }
 
 export function CurrentUseRollbackWorksheet({ currentCase }: { currentCase: CurrentUseCase }) {
-  const { rollbackResult, rollbackLoading, rollbackError, calculateRollback, taxYear } = useCUForgeWorkspaceStore();
+  const { rollbackResult, rollbackLoading, rollbackError, calculateRollback, clearRollbackResult, taxYear } = useCUForgeWorkspaceStore();
+  const [calculatedCaseId, setCalculatedCaseId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setCalculatedCaseId(null);
+    clearRollbackResult();
+  }, [clearRollbackResult, currentCase.id]);
 
   const handleCalculate = () => {
     const removalYear = currentCase.removal?.removalDate
@@ -364,6 +375,7 @@ export function CurrentUseRollbackWorksheet({ currentCase }: { currentCase: Curr
       currentUseValues[String(year)] = Math.max(currentUseBase - ((years.length - offset - 1) * 1_500), 0);
     }
 
+    setCalculatedCaseId(currentCase.id);
     void calculateRollback(
       currentCase.parcelId,
       currentCase.classificationCode,
@@ -373,15 +385,13 @@ export function CurrentUseRollbackWorksheet({ currentCase }: { currentCase: Curr
       currentUseValues,
     );
   };
-  const penaltyPerRow = rollbackResult && rollbackResult.yearBreakdowns.length > 0
-    ? rollbackResult.totalPenalty / rollbackResult.yearBreakdowns.length
-    : 0;
   const additionalTaxFor = (year: RollbackYear) => Math.max(year.subtotal - year.interestAmount, 0);
   const levyFor = (year: RollbackYear) => {
     const additionalTax = additionalTaxFor(year);
     if (year.difference <= 0) return '0.0000';
     return ((additionalTax / year.difference) * 1000).toFixed(4);
   };
+  const visibleRollbackResult = calculatedCaseId === currentCase.id ? rollbackResult : null;
 
   return (
     <section className="cu-case-panel">
@@ -402,7 +412,7 @@ export function CurrentUseRollbackWorksheet({ currentCase }: { currentCase: Curr
 
       {rollbackError && <div className="cu-error">{rollbackError}</div>}
 
-      {rollbackResult && (
+      {visibleRollbackResult && (
         <>
           <div className="cu-table-scroll">
             <table className="cu-table tf-table">
@@ -419,7 +429,7 @@ export function CurrentUseRollbackWorksheet({ currentCase }: { currentCase: Curr
                 </tr>
               </thead>
               <tbody>
-                {rollbackResult.yearBreakdowns.map((year: RollbackYear) => (
+                {visibleRollbackResult.yearBreakdowns.map((year: RollbackYear) => (
                   <tr key={year.year}>
                     <td>Tax Year {year.year}</td>
                     <td>{fmtCurrency(year.currentUseValue)}</td>
@@ -428,15 +438,27 @@ export function CurrentUseRollbackWorksheet({ currentCase }: { currentCase: Curr
                     <td>{levyFor(year)}</td>
                     <td>{fmtCurrency(additionalTaxFor(year), 2)}</td>
                     <td>{fmtCurrency(year.interestAmount, 2)}</td>
-                    <td>{fmtCurrency(penaltyPerRow, 2)}</td>
+                    <td>Total only</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           <div className="cu-worksheet-total">
+            <span>Rollback Tax</span>
+            <strong>{fmtCurrency(visibleRollbackResult.totalRollbackTax, 2)}</strong>
+          </div>
+          <div className="cu-worksheet-total">
+            <span>Interest</span>
+            <strong>{fmtCurrency(visibleRollbackResult.totalInterest, 2)}</strong>
+          </div>
+          <div className="cu-worksheet-total">
+            <span>Penalty</span>
+            <strong>{fmtCurrency(visibleRollbackResult.totalPenalty, 2)}</strong>
+          </div>
+          <div className="cu-worksheet-total">
             <span>Grand Total</span>
-            <strong>{fmtCurrency(rollbackResult.grandTotal, 2)}</strong>
+            <strong>{fmtCurrency(visibleRollbackResult.grandTotal, 2)}</strong>
           </div>
         </>
       )}

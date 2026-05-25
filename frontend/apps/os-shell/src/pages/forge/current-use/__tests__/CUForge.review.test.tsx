@@ -1,8 +1,9 @@
 import React, { act } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import CUForge from '../CUForge';
 import { useCUForgeWorkspaceStore, type Classification, type Removal } from '../cuForgeWorkspaceStore';
+import { deriveCurrentUseCases } from '../currentUseCaseDeskModel';
 
 const apiFetchJsonMock = vi.hoisted(() => vi.fn());
 
@@ -74,6 +75,43 @@ describe('CUForge review regressions', () => {
       removalsLoading: false,
       removalsError: null,
     });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('uses the current date for case aging when no test as-of date is supplied', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-06-01T12:00:00Z'));
+
+    const [currentCase] = deriveCurrentUseCases([
+      classification('aging', 'CUFA', 1_000, {
+        enrollmentDate: '2026-05-30',
+      }),
+    ], [], []);
+
+    expect(currentCase?.agingDays).toBe(2);
+  });
+
+  it('uses the active removal file when a parcel has older completed removals', () => {
+    const parcelId = '1-7777-700-0007';
+    const [currentCase] = deriveCurrentUseCases([
+      classification('7001', 'CUFA', 1_000, { parcelId }),
+    ], [
+      removal('old', parcelId, 'Completed', {
+        initiatedDate: '2025-01-01',
+        removalDate: '2025-03-01',
+        totalDue: 10_000,
+      }),
+      removal('active', parcelId, 'Pending', {
+        initiatedDate: '2026-04-01',
+        totalDue: 25_000,
+      }),
+    ], [], '2026-06-01');
+
+    expect(currentCase?.removal?.id).toBe('active');
+    expect(currentCase?.operationalStatus).toBe('ROLLBACK_REVIEW');
   });
 
   it('derives county stats from every classifications page, not only the first page', async () => {
@@ -342,6 +380,94 @@ describe('CUForge review regressions', () => {
     expect(screen.getByRole('heading', { name: 'Monitoring' })).toBeInTheDocument();
   });
 
+  it('does not carry prepared notice or rollback worksheet output across selected cases', async () => {
+    apiFetchJsonMock.mockImplementation((path: string) => {
+      if (path.startsWith('/currentuse/classifications')) {
+        return Promise.resolve({
+          total: 2,
+          page: 1,
+          pageSize: 50,
+          items: [
+            classification('4001', 'CUFA', 72_000, {
+              parcelId: '1-4444-400-0004',
+              enrollmentDate: '2016-01-01',
+              currentMarketValue: 500_000,
+              currentUseValue: 44_000,
+              description: 'Farm and agriculture rollback review',
+            }),
+            classification('4002', 'CUFA', 0, {
+              parcelId: '1-8888-800-0008',
+              acreage: null,
+              currentUseValue: null,
+              description: 'Missing lease evidence continuance',
+            }),
+          ],
+        });
+      }
+      if (path === '/currentuse/interest-rates') {
+        return Promise.resolve([{ year: 2026, rate: 0.05, source: 'WA DOR', effectiveDate: '2026-01-01' }]);
+      }
+      if (path === '/currentuse/removals') {
+        return Promise.resolve([
+          removal('r4', '1-4444-400-0004', 'Pending', { classificationCode: 'CUFA' }),
+        ]);
+      }
+      if (path === '/currentuse/rollback/calculate') {
+        return Promise.resolve({
+          totalRollbackTax: 12_500,
+          totalInterest: 1_100,
+          totalPenalty: 2_500,
+          grandTotal: 16_100,
+          penaltyApplied: true,
+          penaltyExceptionApplied: false,
+          exceptionCode: null,
+          yearBreakdowns: [
+            {
+              year: 2026,
+              marketValue: 500_000,
+              currentUseValue: 44_000,
+              difference: 456_000,
+              interestRate: 0.05,
+              interestAmount: 1_100,
+              subtotal: 13_600,
+            },
+          ],
+        });
+      }
+      return Promise.reject(new Error(`Unexpected request: ${path}`));
+    });
+
+    await act(async () => {
+      render(<CUForge />);
+    });
+
+    await screen.findByRole('heading', { name: 'Current Use Case Desk' });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /Rollback Incomplete 1/i }));
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Calculate worksheet' }));
+    });
+    await waitFor(() => {
+      expect(screen.getByText('$16,100.00')).toBeInTheDocument();
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Missing Evidence Request' }));
+    });
+    expect(screen.getByText('Missing evidence request prepared for 1-4444-400-0004')).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /Missing Evidence 1/i }));
+    });
+
+    expect(screen.getAllByText('Missing lease evidence continuance').length).toBeGreaterThan(0);
+    expect(screen.queryByText('$16,100.00')).not.toBeInTheDocument();
+    expect(screen.queryByText('Missing evidence request prepared for 1-4444-400-0004')).not.toBeInTheDocument();
+    expect(screen.getByText('No notice prepared for selected case.')).toBeInTheDocument();
+  });
+
   it('uses the existing rollback endpoint to produce an assessor-grade worksheet for the selected case', async () => {
     apiFetchJsonMock.mockImplementation((path: string) => {
       if (path.startsWith('/currentuse/classifications')) {
@@ -422,6 +548,8 @@ describe('CUForge review regressions', () => {
     expect(screen.getByRole('columnheader', { name: 'Levy' })).toBeInTheDocument();
     expect(screen.getByText('Additional Tax')).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: 'Penalty' })).toBeInTheDocument();
+    expect(screen.getByText('Total only')).toBeInTheDocument();
+    expect(screen.getByText('$2,500.00')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Print worksheet' })).toBeInTheDocument();
     expect(screen.getByText('$16,100.00')).toBeInTheDocument();
   });
