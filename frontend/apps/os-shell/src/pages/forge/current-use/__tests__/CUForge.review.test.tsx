@@ -2,7 +2,7 @@ import React, { act } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import CUForge from '../CUForge';
-import { useCUForgeWorkspaceStore, type Classification } from '../cuForgeWorkspaceStore';
+import { useCUForgeWorkspaceStore, type Classification, type Removal } from '../cuForgeWorkspaceStore';
 
 const apiFetchJsonMock = vi.hoisted(() => vi.fn());
 
@@ -14,6 +14,7 @@ const classification = (
   id: string,
   code: string,
   taxSavings: number,
+  overrides: Partial<Classification> = {},
 ): Classification => ({
   id,
   parcelId: `1-0000-${id}`,
@@ -26,6 +27,27 @@ const classification = (
   currentUseValue: 50_000,
   taxSavings,
   countyId: 'benton-wa',
+  ...overrides,
+});
+
+const removal = (
+  id: string,
+  parcelId: string,
+  status: string,
+  overrides: Partial<Removal> = {},
+): Removal => ({
+  id,
+  parcelId,
+  classificationCode: 'CUFA',
+  reason: 'Failure to meet requirements',
+  initiatedDate: '2026-03-01',
+  status,
+  removalDate: null,
+  rollbackAmount: 125_000,
+  interestAmount: 18_000,
+  penaltyAmount: 25_000,
+  totalDue: 168_000,
+  ...overrides,
 });
 
 describe('CUForge review regressions', () => {
@@ -100,7 +122,20 @@ describe('CUForge review regressions', () => {
   it('sends a 10-year rollback value window for non-DFL current use programs', async () => {
     apiFetchJsonMock.mockImplementation((path: string) => {
       if (path.startsWith('/currentuse/classifications')) {
-        return Promise.resolve({ total: 0, page: 1, pageSize: 50, items: [] });
+        return Promise.resolve({
+          total: 1,
+          page: 1,
+          pageSize: 50,
+          items: [
+            classification('0003', 'CUFA', 2_000, {
+              parcelId: '1-0234-100-0001',
+              enrollmentDate: '2015-01-01',
+              currentMarketValue: 300_000,
+              currentUseValue: 60_000,
+              description: 'Farm and agriculture continuance',
+            }),
+          ],
+        });
       }
       if (path === '/currentuse/interest-rates') {
         return Promise.resolve([]);
@@ -127,16 +162,10 @@ describe('CUForge review regressions', () => {
       render(<CUForge />);
     });
 
-    await screen.findByText('Total Enrolled');
+    await screen.findByText('Farm and agriculture continuance');
 
     await act(async () => {
-      fireEvent.click(screen.getByRole('tab', { name: 'Rollback' }));
-    });
-    const programSelect = await screen.findByLabelText('Program');
-
-    await act(async () => {
-      fireEvent.change(programSelect, { target: { value: 'CUFA' } });
-      fireEvent.click(screen.getByRole('button', { name: 'Calculate Rollback' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Calculate worksheet' }));
     });
 
     await waitFor(() => {
@@ -156,5 +185,168 @@ describe('CUForge review regressions', () => {
     expect(Object.keys(body.currentUseValues).map(Number).sort((a, b) => a - b)).toEqual([
       2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026,
     ]);
+  });
+
+  it('renders the operational case desk with work queues derived from live current use records', async () => {
+    apiFetchJsonMock.mockImplementation((path: string) => {
+      if (path === '/currentuse/classifications?page=1&pageSize=1000') {
+        return Promise.resolve({
+          total: 3,
+          page: 1,
+          pageSize: 1000,
+          items: [
+            classification('1001', 'CUFA', 0, {
+              parcelId: '1-1111-100-0001',
+              acreage: null,
+              currentUseValue: null,
+              description: 'Orchard continuance missing acreage evidence',
+            }),
+            classification('1002', 'DFL', 58_000, {
+              parcelId: '1-2222-200-0002',
+              acreage: 42,
+              currentMarketValue: 620_000,
+              currentUseValue: 80_000,
+              description: 'Designated forest land removal review',
+            }),
+            classification('1003', 'CUOS', 12_000, {
+              parcelId: '1-3333-300-0003',
+              acreage: 7,
+              description: 'Open space continuance',
+            }),
+          ],
+        });
+      }
+      if (path === '/currentuse/classifications?page=1&pageSize=50') {
+        return Promise.resolve({
+          total: 3,
+          page: 1,
+          pageSize: 50,
+          items: [
+            classification('1001', 'CUFA', 0, {
+              parcelId: '1-1111-100-0001',
+              acreage: null,
+              currentUseValue: null,
+              description: 'Orchard continuance missing acreage evidence',
+            }),
+            classification('1002', 'DFL', 58_000, {
+              parcelId: '1-2222-200-0002',
+              acreage: 42,
+              currentMarketValue: 620_000,
+              currentUseValue: 80_000,
+              description: 'Designated forest land removal review',
+            }),
+            classification('1003', 'CUOS', 12_000, {
+              parcelId: '1-3333-300-0003',
+              acreage: 7,
+              description: 'Open space continuance',
+            }),
+          ],
+        });
+      }
+      if (path === '/currentuse/interest-rates') {
+        return Promise.resolve([{ year: 2026, rate: 0.05, source: 'WA DOR', effectiveDate: '2026-01-01' }]);
+      }
+      if (path === '/currentuse/removals') {
+        return Promise.resolve([
+          removal('r1', '1-2222-200-0002', 'Pending', { classificationCode: 'DFL' }),
+        ]);
+      }
+      return Promise.reject(new Error(`Unexpected request: ${path}`));
+    });
+
+    await act(async () => {
+      render(<CUForge />);
+    });
+
+    expect(await screen.findByRole('heading', { name: 'Current Use Case Desk' })).toBeInTheDocument();
+    expect(screen.getByText('Case Desk derived from live Current Use records.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Missing Evidence 1/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Inspection Needed 2/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Rollback Review 1/i })).toBeInTheDocument();
+    expect(screen.getAllByText('Orchard continuance missing acreage evidence').length).toBeGreaterThan(0);
+    expect(screen.getByText('Checklist')).toBeInTheDocument();
+    expect(screen.getByText('Evidence gap: acreage missing')).toBeInTheDocument();
+    expect(screen.getByText('Chief Appraiser Review Queue')).toBeInTheDocument();
+    expect(screen.getByText(/High rollback exposure/)).toBeInTheDocument();
+  });
+
+  it('uses the existing rollback endpoint to produce a transparent worksheet for the selected case', async () => {
+    apiFetchJsonMock.mockImplementation((path: string) => {
+      if (path.startsWith('/currentuse/classifications')) {
+        return Promise.resolve({
+          total: 1,
+          page: 1,
+          pageSize: 50,
+          items: [
+            classification('2001', 'CUFA', 72_000, {
+              parcelId: '1-4444-400-0004',
+              enrollmentDate: '2016-01-01',
+              currentMarketValue: 500_000,
+              currentUseValue: 44_000,
+              description: 'Farm and agriculture rollback review',
+            }),
+          ],
+        });
+      }
+      if (path === '/currentuse/interest-rates') {
+        return Promise.resolve([{ year: 2026, rate: 0.05, source: 'WA DOR', effectiveDate: '2026-01-01' }]);
+      }
+      if (path === '/currentuse/removals') {
+        return Promise.resolve([
+          removal('r2', '1-4444-400-0004', 'Pending', { classificationCode: 'CUFA' }),
+        ]);
+      }
+      if (path === '/currentuse/rollback/calculate') {
+        return Promise.resolve({
+          totalRollbackTax: 12_500,
+          totalInterest: 1_100,
+          totalPenalty: 2_500,
+          grandTotal: 16_100,
+          penaltyApplied: true,
+          penaltyExceptionApplied: false,
+          exceptionCode: null,
+          yearBreakdowns: [
+            {
+              year: 2026,
+              marketValue: 500_000,
+              currentUseValue: 44_000,
+              difference: 456_000,
+              interestRate: 0.05,
+              interestAmount: 1_100,
+              subtotal: 13_600,
+            },
+          ],
+        });
+      }
+      return Promise.reject(new Error(`Unexpected request: ${path}`));
+    });
+
+    await act(async () => {
+      render(<CUForge />);
+    });
+
+    await screen.findByText('Farm and agriculture rollback review');
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Calculate worksheet' }));
+    });
+
+    await waitFor(() => {
+      expect(apiFetchJsonMock).toHaveBeenCalledWith(
+        '/currentuse/rollback/calculate',
+        expect.objectContaining({ method: 'POST' }),
+      );
+    });
+
+    const rollbackCall = apiFetchJsonMock.mock.calls.find(([path]) => path === '/currentuse/rollback/calculate');
+    const body = JSON.parse(String(rollbackCall?.[1]?.body));
+
+    expect(body.parcelId).toBe('1-4444-400-0004');
+    expect(body.classificationCode).toBe('CUFA');
+    expect(screen.getByText('Tax Year 2026')).toBeInTheDocument();
+    expect(screen.getAllByText('TFV').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('CUV').length).toBeGreaterThan(0);
+    expect(screen.getByText('Additional Tax')).toBeInTheDocument();
+    expect(screen.getByText('$16,100.00')).toBeInTheDocument();
   });
 });

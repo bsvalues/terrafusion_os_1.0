@@ -323,3 +323,356 @@
     display: none;
   }
 }
+
+/* ── Operational Case Desk ─────────────────────────────────────────────────── */
+
+.cu-case-desk {
+  --cu-bg: hsl(var(--tf-bg));
+  --cu-surface: hsl(var(--tf-surface));
+  --cu-border: hsl(var(--tf-border));
+  --cu-text: hsl(var(--tf-text));
+  --cu-muted: hsl(var(--tf-text) / 0.62);
+  --cu-subtle: hsl(var(--tf-text) / 0.42);
+  --cu-info: hsl(var(--tf-suite-forge));
+  --cu-success: hsl(var(--tf-success-hs) var(--tf-l-50));
+  --cu-warn: hsl(var(--tf-warning-hs, 32 86%) 60%);
+  --cu-danger: hsl(var(--tf-error-hs) var(--tf-l-60));
+
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  height: 100%;
+  background: var(--cu-bg);
+  color: var(--cu-text);
+  overflow: hidden;
+}
+
+.cu-case-header {
+  border-bottom: 1px solid var(--cu-border);
+  padding-bottom: 14px;
+}
+
+.cu-case-header__source {
+  color: var(--cu-muted);
+  font-size: 0.8125rem;
+  margin: 8px 0 0;
+}
+
+.cu-loading,
+.cu-error,
+.cu-empty {
+  color: var(--cu-muted);
+  font-size: 0.8125rem;
+  padding: 10px 0;
+}
+
+.cu-error {
+  color: var(--cu-danger);
+  padding: 10px 20px;
+}
+
+.cu-case-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr) minmax(260px, 340px);
+  gap: 14px;
+  min-height: 0;
+  flex: 1 1 auto;
+  padding: 14px;
+  overflow: hidden;
+}
+
+.cu-case-panel {
+  background: var(--cu-surface);
+  border: 1px solid var(--cu-border);
+  border-radius: 6px;
+  padding: 14px;
+  min-width: 0;
+}
+
+.cu-case-panel h2,
+.cu-case-panel h3 {
+  color: var(--cu-text);
+  margin: 0;
+}
+
+.cu-case-panel h2 {
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.cu-case-panel h3 {
+  font-size: 0.8125rem;
+  margin-bottom: 8px;
+}
+
+.cu-case-panel p {
+  color: var(--cu-muted);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  margin: 4px 0 0;
+}
+
+.cu-work-queue,
+.cu-chief-panel {
+  overflow-y: auto;
+}
+
+.cu-queue-buttons {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.cu-queue-button,
+.cu-case-list-item,
+.cu-chief-item {
+  width: 100%;
+  border: 1px solid var(--cu-border);
+  background: var(--cu-bg);
+  color: var(--cu-text);
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.cu-queue-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  font-size: 0.8125rem;
+}
+
+.cu-queue-button strong {
+  font-variant-numeric: tabular-nums;
+  color: var(--cu-info);
+}
+
+.cu-queue-button--active,
+.cu-case-list-item--active,
+.cu-chief-item--active {
+  border-color: color-mix(in srgb, var(--cu-info) 58%, var(--cu-border));
+  background: color-mix(in srgb, var(--cu-info) 10%, var(--cu-bg));
+}
+
+.cu-case-list {
+  margin-top: 16px;
+}
+
+.cu-case-list-item {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  margin-bottom: 8px;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+.cu-case-list-item__parcel {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.cu-case-list-item__meta {
+  color: var(--cu-muted);
+  font-size: 0.75rem;
+}
+
+.cu-case-main {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  overflow-y: auto;
+  min-width: 0;
+}
+
+.cu-case-file-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cu-case-file-header h2 {
+  font-size: 1.05rem;
+}
+
+.cu-case-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(120px, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.cu-case-facts div {
+  border: 1px solid var(--cu-border);
+  border-radius: 6px;
+  background: var(--cu-bg);
+  padding: 10px;
+}
+
+.cu-case-facts span {
+  display: block;
+  color: var(--cu-muted);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.cu-case-facts strong {
+  display: block;
+  color: var(--cu-text);
+  font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
+  margin-top: 3px;
+}
+
+.cu-case-timeline {
+  margin-top: 14px;
+}
+
+.cu-case-timeline ul {
+  color: var(--cu-muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.cu-case-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(240px, 0.85fr);
+  gap: 14px;
+}
+
+.cu-checklist {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.cu-checklist-item {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  border: 1px solid var(--cu-border);
+  border-radius: 6px;
+  background: var(--cu-bg);
+  padding: 10px;
+}
+
+.cu-checklist-item > span {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--cu-warn) 18%, transparent);
+  color: var(--cu-warn);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.cu-checklist-item--complete > span {
+  background: color-mix(in srgb, var(--cu-success) 18%, transparent);
+  color: var(--cu-success);
+}
+
+.cu-checklist-item strong {
+  color: var(--cu-text);
+  font-size: 0.8125rem;
+}
+
+.cu-muted {
+  color: var(--cu-muted);
+}
+
+.cu-notice-actions,
+.cu-chief-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.cu-notice-status {
+  border: 1px solid var(--cu-border);
+  border-radius: 6px;
+  background: var(--cu-bg);
+  color: var(--cu-muted);
+  font-size: 0.8125rem;
+  margin-top: 12px;
+  padding: 10px;
+}
+
+.cu-worksheet-total {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  border-top: 1px solid var(--cu-border);
+  color: var(--cu-muted);
+  margin-top: 12px;
+  padding-top: 12px;
+}
+
+.cu-worksheet-total strong {
+  color: var(--cu-text);
+  font-size: 1.125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.cu-chief-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.cu-chief-item {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+}
+
+.cu-chief-item strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.cu-chief-item span {
+  color: var(--cu-muted);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+@media (max-width: 1180px) {
+  .cu-case-layout {
+    grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+  }
+
+  .cu-chief-panel {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 820px) {
+  .cu-case-layout,
+  .cu-case-split {
+    grid-template-columns: 1fr;
+  }
+
+  .cu-case-layout {
+    overflow-y: auto;
+  }
+
+  .cu-work-queue,
+  .cu-case-main,
+  .cu-chief-panel {
+    overflow: visible;
+  }
+
+  .cu-case-facts {
+    grid-template-columns: 1fr 1fr;
+  }
+}
