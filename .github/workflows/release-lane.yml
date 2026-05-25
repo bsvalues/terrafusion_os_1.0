@@ -456,10 +456,54 @@ jobs:
           NODE
           )"
 
-          LOGIN_RESPONSE="$(curl -fsS --max-time 10 \
-            -H 'Content-Type: application/json' \
-            -d "$LOGIN_PAYLOAD" \
-            "${PUBLIC_URL}/api/auth/login")"
+          LOGIN_RESPONSE=""
+          LOGIN_STATUS=1
+          LOGIN_BODY="$(mktemp)"
+          LOGIN_ERROR="$(mktemp)"
+          trap 'rm -f "$LOGIN_BODY" "$LOGIN_ERROR"' EXIT
+
+          for attempt in $(seq 1 12); do
+            : > "$LOGIN_BODY"
+            : > "$LOGIN_ERROR"
+
+            CURL_EXIT=0
+            HTTP_CODE="$(curl -sS --max-time 30 \
+              -H 'Content-Type: application/json' \
+              -d "$LOGIN_PAYLOAD" \
+              -o "$LOGIN_BODY" \
+              -w '%{http_code}' \
+              "${PUBLIC_URL}/api/auth/login" 2>"$LOGIN_ERROR")" || CURL_EXIT=$?
+
+            if [ "$CURL_EXIT" -eq 0 ] && [[ "$HTTP_CODE" =~ ^2 ]]; then
+              LOGIN_RESPONSE="$(cat "$LOGIN_BODY")"
+              LOGIN_STATUS=0
+              echo "Provisioned auth login responded on attempt $attempt/12"
+              break
+            fi
+
+            if [[ "$HTTP_CODE" =~ ^(400|401|403|404|405)$ ]]; then
+              echo "::error::Provisioned auth login failed with non-retryable HTTP $HTTP_CODE."
+              head -5 "$LOGIN_BODY"
+              exit 1
+            fi
+
+            echo "Provisioned auth login not ready on attempt $attempt/12 (curl=$CURL_EXIT http=${HTTP_CODE:-000})"
+            if [ "$attempt" -eq 12 ]; then
+              echo "::error::Provisioned auth login did not succeed after retry window."
+              head -5 "$LOGIN_ERROR"
+              exit 1
+            fi
+
+            sleep 10
+          done
+
+          rm -f "$LOGIN_BODY" "$LOGIN_ERROR"
+          trap - EXIT
+
+          if [ "$LOGIN_STATUS" -ne 0 ] || [ -z "$LOGIN_RESPONSE" ]; then
+            echo "::error::Provisioned auth smoke did not receive a login response."
+            exit 1
+          fi
 
           LOGIN_RESPONSE="$LOGIN_RESPONSE" node <<'NODE'
           const response = JSON.parse(process.env.LOGIN_RESPONSE || "{}");
