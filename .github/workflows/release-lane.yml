@@ -461,7 +461,7 @@ jobs:
             -d "$LOGIN_PAYLOAD" \
             "${PUBLIC_URL}/api/auth/login")"
 
-          LOGIN_RESPONSE="$LOGIN_RESPONSE" node <<'NODE'
+          TOKEN="$(LOGIN_RESPONSE="$LOGIN_RESPONSE" node <<'NODE'
           const response = JSON.parse(process.env.LOGIN_RESPONSE || "{}");
           const token = response.token || response.Token;
           const email = response.email || response.Email || response.user?.email || response.User?.Email;
@@ -472,7 +472,38 @@ jobs:
           if (email !== process.env.TF_AUTH_BOOTSTRAP_EMAIL) {
             throw new Error(`Provisioned auth smoke returned unexpected email: ${email}`);
           }
-          console.log(`Provisioned login returned token for ${email} with ${Array.isArray(roles) ? roles.length : 0} roles`);
+          console.error(`Provisioned login returned token for ${email} with ${Array.isArray(roles) ? roles.length : 0} roles`);
+          process.stdout.write(token);
+          NODE
+          )"
+
+          PROFILE_RESPONSE="$(curl -fsS --max-time 30 \
+            -H "Authorization: Bearer ${TOKEN}" \
+            "${PUBLIC_URL}/api/auth/profile")"
+
+          PROFILE_RESPONSE="$PROFILE_RESPONSE" node <<'NODE'
+          const profile = JSON.parse(process.env.PROFILE_RESPONSE || "{}");
+          const roles = profile.roles || profile.Roles || [];
+          const permissions = profile.permissions || profile.Permissions || [];
+          const email = profile.email || profile.Email;
+          const countyFipsCode = profile.countyFipsCode || profile.CountyFipsCode;
+          const sessionValid = profile.sessionValid ?? profile.SessionValid;
+          if (email !== process.env.TF_AUTH_BOOTSTRAP_EMAIL) {
+            throw new Error(`Profile returned unexpected email: ${email}`);
+          }
+          if (!Array.isArray(roles) || roles.length === 0) {
+            throw new Error("Profile did not return role claims");
+          }
+          if (!Array.isArray(permissions) || permissions.length === 0) {
+            throw new Error("Profile did not return permission claims");
+          }
+          if (countyFipsCode !== "53005") {
+            throw new Error(`Profile returned unexpected countyFipsCode: ${countyFipsCode}`);
+          }
+          if (sessionValid !== true) {
+            throw new Error("Profile did not report a valid session");
+          }
+          console.log(`Profile identity verified for ${email} in FIPS ${countyFipsCode}`);
           NODE
 
       - name: Finalize current SHA on VPS

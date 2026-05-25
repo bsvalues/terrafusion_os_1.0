@@ -342,6 +342,14 @@ describe('D. CI release gate coverage', () => {
       content.includes('LOGIN_RESPONSE="$(curl -fsS --max-time 30'),
       'Release lane must give the post-deploy DB-backed login smoke enough time for cold auth/session persistence while still requiring a real token',
     );
+    assert.ok(
+      content.includes('PROFILE_RESPONSE="$(curl -fsS --max-time 30') &&
+        content.includes('${PUBLIC_URL}/api/auth/profile') &&
+        content.includes('Authorization: Bearer ${TOKEN}') &&
+        content.includes('sessionValid') &&
+        content.includes('countyFipsCode'),
+      'Release lane must prove the issued JWT against /api/auth/profile, including session validity and county/FIPS identity',
+    );
   });
 });
 
