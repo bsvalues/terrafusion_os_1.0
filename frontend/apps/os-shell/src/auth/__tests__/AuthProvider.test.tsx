@@ -14,6 +14,9 @@ import { AuthProvider } from '../AuthProvider';
 import * as authStorage from '../authStorage';
 import { useAuth } from '../useAuth';
 
+const VALID_TEST_TOKEN =
+  'eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJleHAiOjQxMDI0NDQ4MDAsInVzZXJJZCI6InRlc3QtdXNlciIsImNvdW50eUlkIjoiNTMwMDUiLCJyb2xlcyI6WyJvcGVyYXRvciJdfQ.test-signature';
+
 // Spy helper to wrap AuthProvider + expose hook values
 function AuthProbe({ onAuth }: { onAuth: (val: ReturnType<typeof useAuth>) => void }) {
   const auth = useAuth();
@@ -37,7 +40,7 @@ describe('AuthProvider', () => {
 
   it('initializes_from_storage_token', () => {
     // Pre-seed storage with a token
-    authStorage.setToken('STORED_TOKEN');
+    authStorage.setToken(VALID_TEST_TOKEN);
 
     let captured: ReturnType<typeof useAuth> | undefined;
     renderWithAuth(
@@ -49,7 +52,7 @@ describe('AuthProvider', () => {
     );
 
     expect(captured).toBeDefined();
-    expect(captured!.token).toBe('STORED_TOKEN');
+    expect(captured!.token).toBe(VALID_TEST_TOKEN);
     expect(captured!.isAuthenticated).toBe(true);
   });
 
@@ -91,7 +94,7 @@ describe('AuthProvider', () => {
   });
 
   it('logout_clears_token_and_marks_unauthenticated', () => {
-    authStorage.setToken('ACTIVE_TOKEN');
+    authStorage.setToken(VALID_TEST_TOKEN);
 
     let captured: ReturnType<typeof useAuth> | undefined;
     renderWithAuth(

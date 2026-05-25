@@ -47,9 +47,14 @@ vi.mock('react-router-dom', async () => {
 });
 
 vi.mock('../../auth/authStorage', () => ({
-  getToken: () => 'smoke-test-token',
+  getToken: () => 'eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJleHAiOjQxMDI0NDQ4MDAsInVzZXJJZCI6InRlc3QtdXNlciIsImNvdW50eUlkIjoiNTMwMDUiLCJyb2xlcyI6WyJvcGVyYXRvciJdfQ.test-signature',
   setToken: vi.fn(),
   clearToken: vi.fn(),
+}));
+
+vi.mock('../../auth/authPolicy', () => ({
+  isDevPreviewMode: () => false,
+  shouldForceLoginRedirect: () => false,
 }));
 
 vi.mock('../../auth/authBridge', () => ({
@@ -119,7 +124,6 @@ function simulateCrossTabWrite(key: string, newValue: string | null, oldValue: s
 describe('Phase 40 contract: cross-tab sync reloads workspace state from storage events', () => {
   beforeAll(() => {
     localStorage.clear();
-    vi.useFakeTimers({ shouldAdvanceTime: true });
   });
 
   beforeEach(() => {

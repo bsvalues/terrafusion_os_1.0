@@ -25,7 +25,7 @@ import SupervisorFlagQueue from '../../components/dais/SupervisorFlagQueue';
 import { useDaisSuiteStats } from './useDaisSuiteStats';
 import { useSegmentWorkflowDraftStore } from './segmentWorkflowDraftStore';
 import { useDownstreamClosureReceiptStore } from './downstreamClosureReceiptStore';
-import { exceptionApi } from '../forge/county-studio/countyStudyApi';
+import { exceptionApi } from '../../services/countyStudyHandoffApi';
 import {
   Scale,
   Receipt,

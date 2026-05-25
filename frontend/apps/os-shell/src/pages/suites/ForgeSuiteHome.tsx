@@ -2,6 +2,7 @@
  * TerraFusion OS — TerraForge Suite Home
  *
  * TerraForge launcher posture is governed by the current Suite layer contract:
+ * Temporary shells outside County Studio remain bounded launch surfaces.
  * County Studio is the countywide workbench; Atlas is its embedded/pop-out
  * spatial surface; GeoForge remains internal compatibility infrastructure.
  *
@@ -355,9 +356,9 @@ export default function ForgeSuiteHome() {
         <div className="forge-workspace__stage">
           <header className="forge-workspace__header">
             <div>
-              <p className="forge-workspace__eyebrow">Suite-Forge · County-Wide Workspace</p>
+              <p className="forge-workspace__eyebrow">TerraForge · County valuation workspace</p>
               <h1 className="forge-workspace__title">TerraForge</h1>
-              <p className="forge-workspace__subtitle">Property Valuation &amp; Cost Analysis Engine</p>
+              <p className="forge-workspace__subtitle">County valuation operations, model review, and evidence-ready assessment workflows.</p>
             </div>
             <div className="forge-workspace__status">
               <span className="forge-chip forge-chip--neutral">Layer 2 Workspace</span>
@@ -396,7 +397,7 @@ export default function ForgeSuiteHome() {
             <div className="forge-panel__header">
               <div>
                 <p className="forge-panel__eyebrow">County Calibration Desk</p>
-                <h2 className="forge-panel__title">Chief appraiser command posture</h2>
+                <h2 className="forge-panel__title">County calibration posture</h2>
               </div>
             </div>
 
@@ -405,7 +406,7 @@ export default function ForgeSuiteHome() {
                 <div className="forge-ops-card__head">
                   <div>
                     <div className="forge-ops-card__title">Morning Brief</div>
-                    <div className="forge-ops-card__sub">Ranked findings and recommended next tool for Benton County.</div>
+                    <div className="forge-ops-card__sub">Ranked findings and recommended next action for Benton County valuation review.</div>
                   </div>
                   <button type="button" className="forge-ops-btn" onClick={handleRefreshBrief} disabled={briefState.status === 'loading'}>
                     {briefState.status === 'loading' ? 'Refreshing…' : 'Refresh Brief'}
@@ -485,7 +486,7 @@ export default function ForgeSuiteHome() {
                 <div className="forge-ops-card__head">
                   <div>
                     <div className="forge-ops-card__title">Board Memo Packet</div>
-                    <div className="forge-ops-card__sub">Draft the governed board-facing calibration memo and jump directly into the live Forge applications.</div>
+                    <div className="forge-ops-card__sub">Draft the governed board-facing calibration memo and open the supporting Forge applications.</div>
                   </div>
                   <div className="forge-ops-actions">
                     <button type="button" className="forge-ops-btn" onClick={handleDraftBoardMemo} disabled={memoState.status === 'loading'}>
@@ -560,8 +561,8 @@ export default function ForgeSuiteHome() {
           <section className="forge-panel" data-testid="forge-secondary-applications">
             <div className="forge-panel__header">
               <div>
-                <p className="forge-panel__eyebrow">Specialist &amp; Legacy Tools</p>
-                <h2 className="forge-panel__title">Temporary shells outside County Studio</h2>
+                <p className="forge-panel__eyebrow">Specialist Valuation Tools</p>
+                <h2 className="forge-panel__title">Focused model review and batch operations</h2>
               </div>
             </div>
             <div className="forge-primary-grid">

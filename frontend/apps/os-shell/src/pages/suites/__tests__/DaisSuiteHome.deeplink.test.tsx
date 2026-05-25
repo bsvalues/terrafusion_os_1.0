@@ -13,7 +13,7 @@ vi.mock('@/orchestration/moduleActivation', () => ({
   default: activateModuleMock,
   activateModule: activateModuleMock,
 }));
-vi.mock('../../forge/county-studio/countyStudyApi', () => ({
+vi.mock('../../../services/countyStudyHandoffApi', () => ({
   exceptionApi: {
     recordDownstreamReceipt: recordDownstreamReceiptMock,
     updateDownstreamReceiptStatus: updateDownstreamReceiptStatusMock,

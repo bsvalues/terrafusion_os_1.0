@@ -172,18 +172,18 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 | Class | Count |
 |-------|-------|
 | REQUIRED | 3 |
-| PUSH-OPTIONAL | 46 |
+| PUSH-OPTIONAL | 48 |
 | SCHEDULED | 18 |
 | MANUAL | 23 |
 | DEPRECATED | 2 |
-| **Total** | 92 |
+| **Total** | 94 |
 
 **REQUIRED** (3):
 - `core-governance-gates.yml`
 - `seal-gate-fast.yml`
 - `tier1-ui-harness.yml`
 
-**PUSH-OPTIONAL** (46):
+**PUSH-OPTIONAL** (48):
 - `accessibility.yml`
 - `accreditation-compat.yml`
 - `ai-swarm-safety.yml`
@@ -196,6 +196,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `autonomy-tpi-guard.yml`
 - `benton-runner-smoke.yml`
 - `benton.yml`
+- `branch-protection-snapshot.yml`
 - `build-validation.yml`
 - `ci-cd-pipeline.yml`
 - `ci-verified.yml`
@@ -211,6 +212,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `governance-proof.yml`
 - `gpt-rag.yml`
 - `markdown-lint.yml`
+- `migration-apply-gate.yml`
 - `observability-ci.yml`
 - `opa-policy-tests.yml`
 - `release-compliance.yml`

@@ -28,12 +28,14 @@ export const STALE_PATH_EXEMPTIONS = [
   {
     workflow: 'frontend-ci-isolated.yml',
     paths: ['terrafusion-cos', 'terrafusion-cos/e2e'],
-    reason: 'terrafusion-cos/ was quarantined (PR #291); workflow disabled to workflow_dispatch only',
+    reason:
+      'terrafusion-cos/ was quarantined (PR #291); workflow disabled to workflow_dispatch only',
   },
   {
     workflow: 'e2e-smoke.yml',
     paths: ['terrafusion-cos/frontend_engine', 'terrafusion-cos/e2e'],
-    reason: 'terrafusion-cos/ was quarantined (PR #291); workflow disabled to workflow_dispatch only',
+    reason:
+      'terrafusion-cos/ was quarantined (PR #291); workflow disabled to workflow_dispatch only',
   },
   {
     workflow: 'grfe-ci.yaml',
@@ -44,11 +46,6 @@ export const STALE_PATH_EXEMPTIONS = [
     workflow: 'benton.yml',
     paths: ['counties/benton'],
     reason: 'counties/ was quarantined; workflow triggers only on paths that no longer exist',
-  },
-  {
-    workflow: 'infrastructure-cicd.yml',
-    paths: ['infrastructure/terraform', 'infrastructure/helm'],
-    reason: 'infrastructure/ was quarantined; workflow is non-required',
   },
   {
     workflow: 'rust-security-gates.yml',
@@ -174,8 +171,11 @@ export function validateWorkflowPaths(workflowDir, gitRootEntries) {
         // Check if this is an exempted stale path
         const key = `${file}::${normalized}`;
         const keyRoot = `${file}::${root}`;
-        const isExempt = exemptions.has(key) ||
-          [...exemptions].some(e => e.startsWith(`${file}::`) && normalized.startsWith(e.split('::')[1]));
+        const isExempt =
+          exemptions.has(key) ||
+          [...exemptions].some(
+            e => e.startsWith(`${file}::`) && normalized.startsWith(e.split('::')[1])
+          );
         if (!isExempt) {
           violations.push({ workflow: file, line, path: normalized, rootDir: root });
         }

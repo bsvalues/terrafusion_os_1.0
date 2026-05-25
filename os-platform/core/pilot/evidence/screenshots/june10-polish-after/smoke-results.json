@@ -1,0 +1,127 @@
+{
+  "generatedAt": "2026-05-25T00:00:12.459Z",
+  "checks": [
+    {
+      "name": "login-after",
+      "url": "http://127.0.0.1:5173/login",
+      "expectations": {
+        "Government Operations Access": true,
+        "Operator Sign In": true,
+        "TerraFusion DB": true
+      },
+      "passed": true,
+      "file": "C:\\Users\\bsval\\.config\\superpowers\\worktrees\\terrafusion_os_1.0\\june10-operational-calm-polish\\os-platform\\core\\pilot\\evidence\\screenshots\\june10-polish-after\\login-after.png"
+    },
+    {
+      "name": "shell-home-after",
+      "url": "http://127.0.0.1:5173/",
+      "expectations": {
+        "TerraFusion OS": true,
+        "Benton County": true,
+        "Assessor Operations": true
+      },
+      "passed": true,
+      "file": "C:\\Users\\bsval\\.config\\superpowers\\worktrees\\terrafusion_os_1.0\\june10-operational-calm-polish\\os-platform\\core\\pilot\\evidence\\screenshots\\june10-polish-after\\shell-home-after.png"
+    },
+    {
+      "name": "forge-entry-after",
+      "url": "http://127.0.0.1:5173/forge",
+      "expectations": {
+        "TerraForge": true,
+        "County valuation operations": true,
+        "County calibration posture": true
+      },
+      "passed": true,
+      "file": "C:\\Users\\bsval\\.config\\superpowers\\worktrees\\terrafusion_os_1.0\\june10-operational-calm-polish\\os-platform\\core\\pilot\\evidence\\screenshots\\june10-polish-after\\forge-entry-after.png"
+    },
+    {
+      "name": "property-forge-after",
+      "url": "http://127.0.0.1:5173/property/1234567890/forge",
+      "expectations": {
+        "Forge valuation approaches": true,
+        "Forge Valuation Summary": true,
+        "Valuation Parameters": true
+      },
+      "passed": true,
+      "file": "C:\\Users\\bsval\\.config\\superpowers\\worktrees\\terrafusion_os_1.0\\june10-operational-calm-polish\\os-platform\\core\\pilot\\evidence\\screenshots\\june10-polish-after\\property-forge-after.png"
+    },
+    {
+      "name": "terraforge-launch-smoke",
+      "url": "http://127.0.0.1:5173/",
+      "expectations": {
+        "TerraForge": true
+      },
+      "passed": true
+    }
+  ],
+  "notes": [
+    "Local visual smoke ran with VITE_DEV_PREVIEW_BYPASS_AUTH=true; backend data calls may report 401/404 when no local API session is attached."
+  ],
+  "consoleErrors": [
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "url": "http://127.0.0.1:5173/forge"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "url": "http://127.0.0.1:5173/forge"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "url": "http://127.0.0.1:5173/forge"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "url": "http://127.0.0.1:5173/forge"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "url": "http://127.0.0.1:5173/property/1234567890/forge"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "url": "http://127.0.0.1:5173/property/1234567890/forge"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "url": "http://127.0.0.1:5173/property/1234567890/forge"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "url": "http://127.0.0.1:5173/property/1234567890/forge"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "url": "http://127.0.0.1:5173/property/1234567890/forge"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "url": "http://127.0.0.1:5173/property/1234567890/forge"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "url": "http://127.0.0.1:5173/property/1234567890/forge"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "url": "http://127.0.0.1:5173/property/1234567890/forge"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "url": "http://127.0.0.1:5173/property/1234567890/forge"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "url": "http://127.0.0.1:5173/property/1234567890/forge"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "url": "http://127.0.0.1:5173/property/1234567890/forge"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "url": "http://127.0.0.1:5173/property/1234567890/forge"
+    }
+  ],
+  "passed": true
+}

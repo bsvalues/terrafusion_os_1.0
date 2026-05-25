@@ -112,6 +112,43 @@ namespace TerraFusion.Core.Services
     }
 
     /// <summary>
+    /// Generate a JWT access token with caller-supplied database-backed claims.
+    /// </summary>
+    public async Task<string> GenerateJwtTokenAsync(
+        string userId,
+        string email,
+        IEnumerable<string> roles,
+        IDictionary<string, object> customClaims)
+    {
+      try
+      {
+        var roleList = roles.ToArray();
+        var claims = new Dictionary<string, object>(customClaims, StringComparer.Ordinal)
+        {
+          ["county_system"] = "TerraFusion",
+          ["version"] = "1.0",
+          ["modules_access"] = "32",
+          ["ai_agents"] = "2016",
+          ["security_level"] = "government"
+        };
+
+        var token = _jwtTokenService.GenerateAccessToken(userId, email, roleList, claims);
+
+        _logger.LogInformation(
+            "Generated database-claim JWT token for user {UserId} with email {EmailMasked}",
+            userId,
+            MaskEmail(email));
+
+        return await Task.FromResult(token);
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "Error generating database-claim JWT token for user {UserId}", userId);
+        throw;
+      }
+    }
+
+    /// <summary>
     /// CX-16: Map roles to granular permission claims.
     /// In production, this would be driven by a role-permission matrix in the database.
     /// </summary>
@@ -261,6 +298,61 @@ namespace TerraFusion.Core.Services
       catch (Exception ex)
       {
         _logger.LogError(ex, "Error generating token pair for user {UserId}", userId);
+        throw;
+      }
+    }
+
+    /// <summary>
+    /// Generate both access and refresh tokens with explicit database-backed claims.
+    /// </summary>
+    public async Task<(string AccessToken, string RefreshToken)> GenerateTokenPairAsync(
+        string userId,
+        string email,
+        IEnumerable<string> roles,
+        IDictionary<string, object> customClaims)
+    {
+      try
+      {
+        var roleList = roles.ToArray();
+        var accessToken = await GenerateJwtTokenAsync(userId, email, roleList, customClaims);
+        var refreshToken = GenerateSecureRefreshToken();
+
+        var refreshTokenKey = $"{REFRESH_TOKEN_PREFIX}{userId}:{refreshToken}";
+        var refreshTokenData = new RefreshTokenData
+        {
+          UserId = userId,
+          Email = email,
+          Roles = roleList.ToList(),
+          CreatedAt = DateTime.UtcNow,
+          ExpiresAt = DateTime.UtcNow.AddDays(7)
+        };
+
+        var options = new DistributedCacheEntryOptions
+        {
+          AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(7)
+        };
+
+        try
+        {
+          await _cache.SetStringAsync(
+              refreshTokenKey,
+              JsonSerializer.Serialize(refreshTokenData),
+              options);
+        }
+        catch (Exception ex)
+        {
+          _logger.LogWarning(ex,
+              "Refresh token cache write failed for database-backed user {UserId}; TerraFusion DB session persistence remains authoritative",
+              userId);
+        }
+
+        _logger.LogInformation("Generated database-claim token pair for user {UserId}", userId);
+
+        return (accessToken, refreshToken);
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "Error generating database-claim token pair for user {UserId}", userId);
         throw;
       }
     }

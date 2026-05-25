@@ -25,7 +25,7 @@ import DossierEvidenceDraftPanel from '../../components/dossier/DossierEvidenceD
 import { useSegmentEvidenceDraftStore } from './segmentEvidenceDraftStore';
 import { useDownstreamClosureReceiptStore } from './downstreamClosureReceiptStore';
 import { useAdjustmentApplyHandoffStore } from './adjustmentApplyHandoffStore';
-import { adjustmentSetApi, exceptionApi } from '../forge/county-studio/countyStudyApi';
+import { adjustmentSetApi, exceptionApi } from '../../services/countyStudyHandoffApi';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import {
   FolderOpen,
