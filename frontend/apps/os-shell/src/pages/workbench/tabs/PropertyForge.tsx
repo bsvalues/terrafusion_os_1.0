@@ -89,7 +89,7 @@ export const PropertyForge: React.FC = () => {
   /* Probe the cost endpoint to determine if the Forge API is reachable */
   const forgeProbe = useCostApproach(parcelId, CURRENT_YEAR);
 
-  /* PACS year layers for this parcel */
+  /* Tax-year layers for this parcel */
   const parcelYears = useParcelYears(parcelId);
 
   /* Shared state */
@@ -117,7 +117,7 @@ export const PropertyForge: React.FC = () => {
 
   return (
     <div className="tf-suite-forge space-y-4" data-testid="property-forge-tab">
-      {/* PACS Year Selector */}
+      {/* Tax-year selector */}
       <ForgeYearSelector
         parcelId={parcelId}
         taxYear={taxYear}
@@ -129,7 +129,7 @@ export const PropertyForge: React.FC = () => {
 
       <div className="flex items-center justify-between gap-3" data-testid="forge-baseline-disclosure">
         <p className="text-xs tf-text-dim">
-          Cost, comp, and income approaches are requested via governed tooling;
+          Forge valuation approaches are requested through governed tooling;
           values shown are returned from the live workbench API.
         </p>
         <WorkbenchSourceBadge source={forgeProbe.source} />
@@ -149,15 +149,15 @@ export const PropertyForge: React.FC = () => {
             aria-controls={`forge-panel-${tab.id}`}
             onClick={() => setActiveSubTab(tab.id)}
             className={`
-              flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full
+              flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md
               transition-all
               ${activeSubTab === tab.id
-                ? 'tf-suite-accent-text ring-1 ring-current/30'
+                ? 'tf-suite-accent-text ring-1 ring-current/30 bg-[hsl(var(--tf-text)_/_0.04)]'
                 : 'tf-text-tertiary hover:tf-text-secondary'
               }
             `}
           >
-            <span>{tab.icon}</span>
+            <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" aria-hidden="true" />
             <span>{tab.label}</span>
           </button>
         ))}

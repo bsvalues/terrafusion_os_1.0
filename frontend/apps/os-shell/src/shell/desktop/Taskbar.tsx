@@ -88,14 +88,14 @@ const DockHomeButton: React.FC = () => {
       aria-haspopup='menu'
       className={cn(
         'flex items-center justify-center',
-        'w-16 h-16 rounded-2xl',
+        'w-14 h-14 rounded-2xl',
         'transition-all duration-150',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]',
         'hover:bg-[hsl(var(--tf-text)_/_0.07)]',
         isOpen && 'bg-[hsl(var(--tf-text)_/_0.10)]'
       )}
     >
-      <TerraSphere size={56} state={isOpen ? 'processing' : 'idle'} />
+      <TerraSphere size={48} state={isOpen ? 'processing' : 'idle'} />
     </button>
   );
 };
@@ -135,7 +135,7 @@ const DockSuiteButton: React.FC<{
       title={suite.displayName}
       className={cn(
         'relative flex flex-col items-center justify-center gap-0.5',
-        'w-14 h-14 rounded-2xl',
+        'w-[52px] h-[52px] rounded-xl',
         'transition-all duration-150',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]',
         isActive && 'bg-[hsl(var(--tf-text)_/_0.10)]'
@@ -378,7 +378,7 @@ const PilotToggleButton: React.FC = () => {
       title="TerraPilot · Muse (Ctrl+\)"
       className={cn(
         'relative flex flex-col items-center justify-center gap-1',
-        'w-[52px] h-[52px] rounded-xl transition-colors',
+        'w-12 h-12 rounded-xl transition-colors',
         'hover:bg-[hsl(var(--tf-text)_/_0.07)]',
         isActive && 'bg-[hsl(var(--tf-text)_/_0.12)]'
       )}
@@ -447,9 +447,9 @@ export const Taskbar: React.FC<TaskbarProps> = ({
         aria-label={t('taskbar.ariaLabel')}
         className={cn(
           // Floating centered dock
-          'fixed bottom-4 left-1/2 -translate-x-1/2',
+          'fixed bottom-5 left-1/2 -translate-x-1/2',
           // Layout
-          'flex items-center gap-2 px-3 h-[68px]',
+          'flex items-center gap-1.5 px-3.5 h-16',
           className
         )}
         style={{ maxWidth: 'calc(100vw - 2rem)', zIndex: Z.dock }}

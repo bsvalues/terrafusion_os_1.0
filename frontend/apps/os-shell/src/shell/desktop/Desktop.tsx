@@ -90,25 +90,28 @@ const DesktopTopSystemBar: React.FC<{
     <LiquidPanel
       variant='shell'
       radius='none'
-      className='pointer-events-auto flex items-center justify-between px-4 py-1.5'
+      className='pointer-events-auto flex min-h-[42px] items-center justify-between px-5 py-1.5'
     >
       {/* Zone A: OS Identity (left) */}
-      <div className='flex items-center gap-3'>
+      <div className='flex items-baseline gap-3'>
         <span
           style={{
             fontSize: '0.8125rem',
             fontWeight: 600,
-            letterSpacing: '-0.01em',
+            letterSpacing: '0',
             color: 'hsl(var(--tf-text))',
           }}
         >
           TerraFusion OS
         </span>
+        <span className='hidden text-[11px] font-medium text-[hsl(var(--tf-muted))] md:inline'>
+          Government Operations Environment
+        </span>
       </div>
 
       {/* Zone B: County + Department Context (center) */}
-      <div className='absolute left-1/2 -translate-x-1/2 flex items-center gap-2'>
-        <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-muted))', fontWeight: 500 }}>
+      <div className='absolute left-1/2 hidden -translate-x-1/2 items-center gap-2 rounded-full border border-[hsl(var(--tf-border)_/_0.28)] bg-[hsl(var(--tf-text)_/_0.035)] px-3 py-1 md:flex'>
+        <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-text) / 0.78)', fontWeight: 600 }}>
           Benton County
         </span>
         <div
@@ -118,13 +121,13 @@ const DesktopTopSystemBar: React.FC<{
             background: 'hsl(var(--tf-border) / 0.5)',
           }}
         />
-        <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-text) / 0.7)', fontWeight: 500 }}>
-          Assessor&apos;s Office
+        <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-muted))', fontWeight: 500 }}>
+          Assessor Operations
         </span>
       </div>
 
       {/* Zone C: Global Actions + Utilities (right) */}
-      <div className='flex items-center gap-2' role='group' aria-label='System utilities'>
+      <div className='flex items-center gap-2.5' role='group' aria-label='System utilities'>
         {/* ⌘K Search */}
         <button
           onClick={onOpenCommandPalette}
@@ -578,7 +581,7 @@ export function Desktop({ className = '', children }: DesktopProps) {
         <>
           {/* Layer 0.3: Desktop Icons — only interactive when desktop surface is visible */}
           {surfaces.desktop !== 'hidden' && (
-            <DesktopIconGrid className='absolute top-12 left-4' />
+            <DesktopIconGrid className='absolute top-14 left-5' />
           )}
 
           {/* Layer 0.5: Stage Zero-State — gated by shell mode surface policy */}
