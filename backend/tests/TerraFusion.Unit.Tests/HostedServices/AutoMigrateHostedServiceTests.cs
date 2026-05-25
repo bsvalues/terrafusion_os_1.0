@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -119,6 +120,77 @@ public sealed class AutoMigrateHostedServiceTests
         await task; // sanity: does not throw.
         logger.Entries.Should().BeEmpty(
             because: "StopAsync should not log anything");
+    }
+
+    [Fact]
+    public async Task StartAsync_when_sqlite_partial_schema_blocks_migration_repairs_queue_table()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"tf-auto-migrate-partial-{Guid.NewGuid():N}.db");
+        try
+        {
+            await using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                await connection.OpenAsync();
+                var command = connection.CreateCommand();
+                command.CommandText = """
+                    CREATE TABLE "__EFMigrationsHistory" (
+                        "MigrationId" TEXT NOT NULL CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY,
+                        "ProductVersion" TEXT NOT NULL
+                    );
+                    CREATE TABLE "AIAgents" (
+                        "Id" TEXT NOT NULL CONSTRAINT "PK_AIAgents" PRIMARY KEY,
+                        "Name" TEXT NOT NULL
+                    );
+                    CREATE TABLE "Counties" (
+                        "Id" TEXT NOT NULL CONSTRAINT "PK_Counties" PRIMARY KEY,
+                        "Name" TEXT NOT NULL,
+                        "State" TEXT NOT NULL,
+                        "FipsCode" TEXT NULL
+                    );
+                    """;
+                await command.ExecuteNonQueryAsync();
+            }
+
+            var services = new ServiceCollection();
+            services.AddSingleton<IConfiguration>(
+                new ConfigurationBuilder()
+                    .AddInMemoryCollection(new Dictionary<string, string?>
+                    {
+                        ["ConnectionStrings:DefaultConnection"] = $"Data Source={dbPath}",
+                    })
+                    .Build());
+            services.AddDbContext<TerraFusionDbContext>(o => o.UseSqlite($"Data Source={dbPath}"));
+            var provider = services.BuildServiceProvider();
+            var logger = new CapturingLogger<AutoMigrateHostedService>();
+            var svc = new AutoMigrateHostedService(provider.GetRequiredService<IServiceScopeFactory>(), logger);
+
+            await svc.StartAsync(CancellationToken.None);
+
+            await using var verify = new SqliteConnection($"Data Source={dbPath}");
+            await verify.OpenAsync();
+            var tableCheck = verify.CreateCommand();
+            tableCheck.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = 'QueueItems';";
+            var queueTableCount = (long)(await tableCheck.ExecuteScalarAsync() ?? 0L);
+
+            queueTableCount.Should().Be(1, "the production SQLite drift path must repair the DAIS queue schema");
+            logger.Entries.Should().Contain(e =>
+                e.Level == LogLevel.Warning &&
+                e.Message.Contains("repaired SQLite DAIS QueueItems schema"));
+        }
+        finally
+        {
+            try
+            {
+                if (File.Exists(dbPath))
+                    File.Delete(dbPath);
+            }
+            catch (IOException)
+            {
+                // The SQLite provider can release temp files slightly after
+                // DbContext disposal on Windows; leaked temp files must not mask
+                // the assertion that proves the schema repair behavior.
+            }
+        }
     }
 
     // ------------------------------------------------------------------------
