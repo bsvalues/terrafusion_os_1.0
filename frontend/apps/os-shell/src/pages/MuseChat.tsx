@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { getToken } from '../auth/authStorage';
 import { getSession } from '../auth/session';
 import { useCompanionStore } from '../stores/companionStore';
 import type { EditorMarker } from '../stores/companionStore';
@@ -203,9 +204,15 @@ export async function callExplain(
   if (context.activeParcelId) body.parcelId = context.activeParcelId;
   if (parcelSummary) body.parcelSummary = parcelSummary;
 
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const token = getToken();
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
   const res = await fetch('/api/pilot/explain', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(body),
   });
 
