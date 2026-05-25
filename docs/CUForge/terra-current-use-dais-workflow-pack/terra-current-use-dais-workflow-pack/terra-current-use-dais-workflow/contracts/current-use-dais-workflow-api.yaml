@@ -1,0 +1,37 @@
+openapi: 3.0.3
+info:
+  title: TerraDais Current Use Workflow API
+  version: 0.1.0-phase2-scaffold
+paths:
+  /api/dais/current-use/parcels/{parcelId}/tasks:
+    get:
+      summary: Get workflow tasks for a Current Use parcel
+      parameters:
+        - name: parcelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Workflow task list
+  /api/dais/current-use/tasks:
+    post:
+      summary: Create Current Use workflow task
+      responses:
+        '200':
+          description: Created task
+  /api/dais/current-use/tasks/{taskId}/status:
+    patch:
+      summary: Update task status
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Updated task

@@ -1,0 +1,8 @@
+openapi: 3.0.3
+info:
+  title: TerraForge Current Use State Reporting API
+  version: 0.1.0
+paths:
+  /api/forge/current-use/reporting/generate:
+    post:
+      summary: Generate Current Use reporting batch

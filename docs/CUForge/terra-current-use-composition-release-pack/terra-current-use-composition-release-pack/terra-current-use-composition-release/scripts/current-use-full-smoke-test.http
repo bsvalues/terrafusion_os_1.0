@@ -1,0 +1,33 @@
+@baseUrl = http://localhost:5000
+@parcelId = aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+@countyId = bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb
+
+### Core overview
+GET {{baseUrl}}/api/forge/current-use/parcels/{{parcelId}}/overview
+
+### Core evidence
+GET {{baseUrl}}/api/forge/current-use/parcels/{{parcelId}}/evidence
+
+### Core timeline
+GET {{baseUrl}}/api/forge/current-use/parcels/{{parcelId}}/timeline
+
+### Trace
+GET {{baseUrl}}/api/trace/current-use/parcels/{{parcelId}}
+
+### Trace verify
+GET {{baseUrl}}/api/trace/current-use/parcels/{{parcelId}}/verify
+
+### Policy
+GET {{baseUrl}}/api/forge/current-use/policy/{{countyId}}
+
+### Policy resolve
+POST {{baseUrl}}/api/forge/current-use/policy/resolve
+Content-Type: application/json
+
+{
+  "countyId": "{{countyId}}",
+  "evaluationDate": "2026-03-15"
+}
+
+### Analytics
+GET {{baseUrl}}/api/forge/current-use/analytics/{{countyId}}/summary

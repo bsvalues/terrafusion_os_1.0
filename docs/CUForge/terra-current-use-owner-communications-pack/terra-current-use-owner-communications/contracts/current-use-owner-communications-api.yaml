@@ -1,0 +1,8 @@
+openapi: 3.0.3
+info:
+  title: TerraForge Current Use Owner Communications API
+  version: 0.1.0
+paths:
+  /api/forge/current-use/communications/generate:
+    post:
+      summary: Generate owner-facing communication summary

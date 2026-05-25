@@ -1,0 +1,18 @@
+{
+  "moduleId": "terra-current-use",
+  "tier1Recovery": [
+    "classifications",
+    "rollback-calculations",
+    "policy-packs",
+    "trace-events"
+  ],
+  "tier2Recovery": ["notices", "evidence-metadata", "workflow-state"],
+  "tier3Recovery": ["analytics", "dashboards", "imports"],
+  "degradedModeAllowed": true,
+  "writesBlockedInDegradedMode": [
+    "rollback-commit",
+    "notice-issuance",
+    "import-commit",
+    "policy-activation"
+  ]
+}

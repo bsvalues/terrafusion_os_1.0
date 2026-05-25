@@ -1,0 +1,25 @@
+@baseUrl = http://localhost:5000
+@parcelId = aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+@countyId = bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb
+
+### Overview
+GET {{baseUrl}}/api/forge/current-use/parcels/{{parcelId}}/overview
+
+### Rollback
+POST {{baseUrl}}/api/forge/current-use/rollback/calculate
+Content-Type: application/json
+
+{
+  "parcelId": "{{parcelId}}",
+  "countyId": "{{countyId}}",
+  "classificationType": "FARM_AND_AGRICULTURAL",
+  "removalDate": "2026-03-15",
+  "taxYearOfRemoval": 2026,
+  "penaltySuppressed": true,
+  "taxYears": [
+    { "taxYear": 2022, "currentUseValue": 39000, "trueAndFairValue": 280000, "levyRatePerThousand": 10.1, "annualInterestRate": 0.12 },
+    { "taxYear": 2023, "currentUseValue": 40500, "trueAndFairValue": 295000, "levyRatePerThousand": 9.95, "annualInterestRate": 0.12 },
+    { "taxYear": 2024, "currentUseValue": 41750, "trueAndFairValue": 307000, "levyRatePerThousand": 9.8, "annualInterestRate": 0.12 },
+    { "taxYear": 2025, "currentUseValue": 42500, "trueAndFairValue": 318000, "levyRatePerThousand": 9.7, "annualInterestRate": 0.12 }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "coreWorkbench": true,
+  "rollbackCalculator": true,
+  "notices": true,
+  "terraTraceAudit": true,
+  "policyGovernance": true,
+  "securityRbac": true,
+  "observability": true,
+  "statutoryInterest": false,
+  "controlledNoticeIssuance": false,
+  "dossierEvidence": false,
+  "daisWorkflow": false,
+  "atlasSpatial": false,
+  "treasurerHandoff": false,
+  "appealsReclassification": false,
+  "complianceMonitoring": false,
+  "aiAssist": false,
+  "analytics": false,
+  "importMigration": false,
+  "multiCounty": false,
+  "stateAbstraction": false
+}

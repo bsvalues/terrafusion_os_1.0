@@ -1,0 +1,11 @@
+openapi: 3.0.3
+info:
+  title: TerraForge Current Use Statutory Interest API
+  version: 0.1.0
+paths:
+  /api/forge/current-use/interest/calculate:
+    post:
+      summary: Calculate date-based Current Use interest accrual
+      responses:
+        '200':
+          description: Interest accrual result

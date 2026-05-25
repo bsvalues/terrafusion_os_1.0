@@ -1,0 +1,20 @@
+export const currentUseAlphaFlags = {
+  coreWorkbench: true,
+  rollbackCalculator: true,
+  noticePreview: true,
+  policyVersion: true,
+  traceAudit: true,
+  securityRbac: true,
+  observability: true,
+
+  aiAssist: false,
+  atlasSpatial: false,
+  daisWorkflow: false,
+  dossierEvidence: false,
+  treasurerHandoff: false,
+  appealsReclassification: false,
+  complianceMonitoring: false,
+  analytics: false,
+  importMigration: false,
+  multiCounty: false,
+};

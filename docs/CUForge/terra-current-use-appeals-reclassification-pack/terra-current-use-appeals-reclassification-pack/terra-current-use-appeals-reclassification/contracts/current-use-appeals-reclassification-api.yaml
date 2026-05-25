@@ -1,0 +1,48 @@
+openapi: 3.0.3
+info:
+  title: TerraForge Current Use Appeals and Reclassification API
+  version: 0.1.0
+paths:
+  /api/forge/current-use/appeals/parcels/{parcelId}:
+    get:
+      summary: Get appeals for a parcel
+      parameters:
+        - name: parcelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Appeals
+  /api/forge/current-use/appeals:
+    post:
+      summary: Create appeal window
+      responses:
+        '200':
+          description: Appeal window created
+  /api/forge/current-use/appeals/{appealId}/filed:
+    post:
+      summary: Mark appeal filed
+      responses:
+        '200':
+          description: Appeal filed
+  /api/forge/current-use/appeals/parcels/{parcelId}/reclassification-options:
+    get:
+      summary: Get reclassification options
+      responses:
+        '200':
+          description: Reclassification options
+  /api/forge/current-use/appeals/reclassification-options:
+    post:
+      summary: Create reclassification option
+      responses:
+        '200':
+          description: Reclassification option created
+  /api/forge/current-use/appeals/reclassification-options/{reclassificationId}/application-received:
+    post:
+      summary: Mark reclassification application received
+      responses:
+        '200':
+          description: Reclassification application received

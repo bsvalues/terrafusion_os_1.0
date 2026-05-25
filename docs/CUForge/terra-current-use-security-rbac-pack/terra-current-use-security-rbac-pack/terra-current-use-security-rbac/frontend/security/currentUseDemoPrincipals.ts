@@ -1,0 +1,50 @@
+import type { CurrentUsePrincipal } from './currentUsePermissions';
+
+export const currentUseDemoAppraiser: CurrentUsePrincipal = {
+  userId: 'appraiser.demo@county.gov',
+  displayName: 'Demo Appraiser',
+  roles: ['current-use.appraiser'],
+  permissions: [
+    'VIEW_CURRENT_USE',
+    'EDIT_CLASSIFICATION_METADATA',
+    'RUN_ROLLBACK_CALCULATION',
+    'PREVIEW_NOTICE',
+    'VIEW_EVIDENCE',
+    'REVIEW_EVIDENCE',
+    'LINK_EVIDENCE_DOCUMENT',
+    'VIEW_AUDIT_TRACE',
+    'VIEW_WORKFLOW_TASKS',
+    'MANAGE_WORKFLOW_TASKS',
+    'VIEW_SPATIAL_REVIEW',
+    'VIEW_APPEALS',
+    'VIEW_COMPLIANCE',
+    'MANAGE_INSPECTIONS',
+  ],
+};
+
+export const currentUseDemoSupervisor: CurrentUsePrincipal = {
+  userId: 'supervisor.demo@county.gov',
+  displayName: 'Demo Supervisor',
+  roles: ['current-use.supervisor'],
+  permissions: [
+    'VIEW_CURRENT_USE',
+    'EDIT_CLASSIFICATION_METADATA',
+    'RUN_ROLLBACK_CALCULATION',
+    'LOCK_ROLLBACK_CALCULATION',
+    'PREVIEW_NOTICE',
+    'APPROVE_NOTICE',
+    'ISSUE_NOTICE',
+    'VIEW_EVIDENCE',
+    'REVIEW_EVIDENCE',
+    'LINK_EVIDENCE_DOCUMENT',
+    'VIEW_AUDIT_TRACE',
+    'VIEW_POLICY_PACKS',
+    'VIEW_WORKFLOW_TASKS',
+    'MANAGE_WORKFLOW_TASKS',
+    'VIEW_APPEALS',
+    'MANAGE_APPEALS',
+    'VIEW_COMPLIANCE',
+    'MANAGE_INSPECTIONS',
+    'USE_AI_ASSIST',
+  ],
+};

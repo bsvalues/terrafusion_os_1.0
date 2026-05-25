@@ -1,0 +1,83 @@
+{
+  "parcelId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+  "countyId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+  "removalDate": "2026-03-15",
+  "taxYearOfRemoval": 2026,
+  "classificationType": "FarmAndAgricultural",
+  "removalType": "OwnerVoluntaryWithdrawal",
+  "currentUseAssessedValuesByYear": [
+    {
+      "taxYear": 2022,
+      "value": 39000
+    },
+    {
+      "taxYear": 2023,
+      "value": 40500
+    },
+    {
+      "taxYear": 2024,
+      "value": 41750
+    },
+    {
+      "taxYear": 2025,
+      "value": 42500
+    }
+  ],
+  "trueAndFairValuesByYear": [
+    {
+      "taxYear": 2022,
+      "value": 280000
+    },
+    {
+      "taxYear": 2023,
+      "value": 295000
+    },
+    {
+      "taxYear": 2024,
+      "value": 307000
+    },
+    {
+      "taxYear": 2025,
+      "value": 318000
+    }
+  ],
+  "levyRatesByYear": [
+    {
+      "taxYear": 2022,
+      "ratePerThousand": 10.1
+    },
+    {
+      "taxYear": 2023,
+      "ratePerThousand": 9.95
+    },
+    {
+      "taxYear": 2024,
+      "ratePerThousand": 9.8
+    },
+    {
+      "taxYear": 2025,
+      "ratePerThousand": 9.7
+    }
+  ],
+  "interestRatesByYear": [
+    {
+      "taxYear": 2022,
+      "annualRate": 0.12
+    },
+    {
+      "taxYear": 2023,
+      "annualRate": 0.12
+    },
+    {
+      "taxYear": 2024,
+      "annualRate": 0.12
+    },
+    {
+      "taxYear": 2025,
+      "annualRate": 0.12
+    }
+  ],
+  "penaltySuppressionReason": "QualifyingVoluntaryWithdrawal",
+  "statutoryExceptionReason": "None",
+  "createdBy": "demo.assessor@county.gov"
+}

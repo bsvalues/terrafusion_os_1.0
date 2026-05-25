@@ -1,0 +1,16 @@
+@baseUrl = http://localhost:5000
+@parcelId = aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+
+### Overview
+GET {{baseUrl}}/api/forge/current-use/alpha/parcels/{{parcelId}}/overview
+
+### Rollback
+POST {{baseUrl}}/api/forge/current-use/alpha/rollback/calculate
+Content-Type: application/json
+
+{
+  "parcelId": "{{parcelId}}",
+  "classificationType": "FARM_AND_AGRICULTURAL",
+  "removalDate": "2026-03-15",
+  "taxYearOfRemoval": 2026
+}

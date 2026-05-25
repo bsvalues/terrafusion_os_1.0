@@ -1,0 +1,50 @@
+openapi: 3.0.3
+info:
+  title: TerraTreasury Current Use Payment Handoff API
+  version: 0.1.0
+paths:
+  /api/treasurer/current-use/parcels/{parcelId}/payment-packets:
+    get:
+      summary: Get Current Use payment packets for parcel
+      parameters:
+        - name: parcelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Payment packets
+  /api/treasurer/current-use/payment-packets:
+    post:
+      summary: Create Current Use payment packet
+      responses:
+        '200':
+          description: Created payment packet
+  /api/treasurer/current-use/payment-packets/{paymentPacketId}/send:
+    post:
+      summary: Send payment packet to Treasurer
+      parameters:
+        - name: paymentPacketId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Sent packet
+  /api/treasurer/current-use/payment-packets/{paymentPacketId}/mark-paid:
+    post:
+      summary: Mark Current Use payment as paid
+      parameters:
+        - name: paymentPacketId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Paid packet

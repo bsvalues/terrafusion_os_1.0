@@ -1,0 +1,11 @@
+openapi: 3.0.3
+info:
+  title: TerraForge Current Use Statute Reference API
+  version: 0.1.0
+paths:
+  /api/forge/current-use/statutes/{stateCode}:
+    get:
+      summary: Get statute references
+  /api/forge/current-use/statutes/rule-provenance:
+    get:
+      summary: Get rollback rule provenance

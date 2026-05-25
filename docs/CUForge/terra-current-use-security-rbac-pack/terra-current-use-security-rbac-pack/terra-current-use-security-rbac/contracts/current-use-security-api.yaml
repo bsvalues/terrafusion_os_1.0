@@ -1,0 +1,11 @@
+openapi: 3.0.3
+info:
+  title: TerraForge Current Use Security API
+  version: 0.1.0
+paths:
+  /api/forge/current-use/security/roles:
+    get:
+      summary: Get Current Use role catalog
+  /api/forge/current-use/security/authorize:
+    post:
+      summary: Authorize Current Use permission

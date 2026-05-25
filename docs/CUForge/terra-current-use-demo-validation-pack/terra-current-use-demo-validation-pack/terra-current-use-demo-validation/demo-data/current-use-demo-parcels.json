@@ -1,0 +1,45 @@
+{
+  "scenarios": [
+    {
+      "scenarioId": "CU-DEMO-001",
+      "title": "Farm & Ag Voluntary Withdrawal",
+      "parcelId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "countyId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      "classificationType": "FARM_AND_AGRICULTURAL",
+      "lifecycleState": "OWNER_WITHDRAWAL_REQUESTED",
+      "ownerName": "Sample Owner",
+      "classifiedAcres": 18.42,
+      "homesiteExcludedAcres": 0.76,
+      "expectedRollbackYears": 4,
+      "expectedPenaltyApplied": false,
+      "demoPurpose": "Show four-year rollback and penalty suppression for qualifying voluntary withdrawal."
+    },
+    {
+      "scenarioId": "CU-DEMO-002",
+      "title": "Open Space Removal Review",
+      "parcelId": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+      "countyId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      "classificationType": "OPEN_SPACE",
+      "lifecycleState": "INTENT_TO_REMOVE_ISSUED",
+      "ownerName": "Open Space Owner",
+      "classifiedAcres": 40.0,
+      "homesiteExcludedAcres": 1.0,
+      "expectedRollbackYears": 7,
+      "expectedPenaltyApplied": true,
+      "demoPurpose": "Show seven-year rollback, notice review, appeal window, and Trace."
+    },
+    {
+      "scenarioId": "CU-DEMO-003",
+      "title": "Continuance Evidence Missing",
+      "parcelId": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+      "countyId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      "classificationType": "FARM_AND_AGRICULTURAL",
+      "lifecycleState": "CONTINUANCE_PENDING",
+      "ownerName": "New Owner",
+      "classifiedAcres": 22.5,
+      "homesiteExcludedAcres": 0.5,
+      "expectedMissingEvidence": ["OWNER_INTENT_RESPONSE", "LEASE_AGREEMENT"],
+      "demoPurpose": "Show evidence packet, missing docs, and Dais follow-up handoff."
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+openapi: 3.0.3
+info:
+  title: TerraForge Current Use Controlled Notice Issuance API
+  version: 0.1.0
+paths:
+  /api/forge/current-use/notices/issuance/parcels/{parcelId}:
+    get:
+      summary: Get issued/current notice records for parcel
+  /api/forge/current-use/notices/issuance/pending:
+    post:
+      summary: Create pending notice for approval
+  /api/forge/current-use/notices/issuance/{noticeId}/approve:
+    post:
+      summary: Approve notice for issuance
+  /api/forge/current-use/notices/issuance/{noticeId}/issue:
+    post:
+      summary: Issue approved notice
+  /api/forge/current-use/notices/issuance/{noticeId}/void:
+    post:
+      summary: Void non-issued notice

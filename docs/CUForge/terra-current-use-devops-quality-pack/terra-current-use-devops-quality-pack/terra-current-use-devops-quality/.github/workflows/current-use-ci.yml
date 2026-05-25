@@ -1,0 +1,48 @@
+name: Current Use CI
+
+on:
+  pull_request:
+    paths:
+      - 'src/modules/terra-current-use/**'
+      - 'backend/**CurrentUse**'
+      - 'tests/**CurrentUse**'
+      - '.github/workflows/current-use-ci.yml'
+
+jobs:
+  frontend-current-use:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck Current Use frontend
+        run: pnpm exec tsc --noEmit
+
+      - name: Run Current Use frontend tests
+        run: pnpm test -- current-use --runInBand
+
+  backend-current-use:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Run Current Use backend tests
+        run: dotnet test --no-build --configuration Release --filter "FullyQualifiedName~CurrentUse"

@@ -1,0 +1,37 @@
+openapi: 3.0.3
+info:
+  title: TerraTrace Current Use Audit API
+  version: 0.1.0
+paths:
+  /api/trace/current-use/parcels/{parcelId}:
+    get:
+      summary: Get Current Use audit trace for parcel
+      parameters:
+        - name: parcelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Trace events
+  /api/trace/current-use/events:
+    post:
+      summary: Append Current Use trace event
+      responses:
+        '200':
+          description: Appended trace event
+  /api/trace/current-use/parcels/{parcelId}/verify:
+    get:
+      summary: Verify hash chain for parcel trace
+      parameters:
+        - name: parcelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Chain verification result

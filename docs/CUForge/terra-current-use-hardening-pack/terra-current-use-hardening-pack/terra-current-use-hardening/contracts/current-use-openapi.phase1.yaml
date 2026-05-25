@@ -1,0 +1,159 @@
+openapi: 3.0.3
+info:
+  title: TerraForge Current Use API
+  version: 0.1.0-phase1
+  description: Phase 1 API contract for TerraForge Current Use Command Center.
+paths:
+  /api/forge/current-use/parcels/{parcelId}/overview:
+    get:
+      summary: Get Current Use parcel overview
+      parameters:
+        - name: parcelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Current Use overview
+  /api/forge/current-use/parcels/{parcelId}/evidence:
+    get:
+      summary: Get Current Use evidence checklist items
+      parameters:
+        - name: parcelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Evidence items
+  /api/forge/current-use/parcels/{parcelId}/timeline:
+    get:
+      summary: Get Current Use assessor timeline events
+      parameters:
+        - name: parcelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Timeline events
+  /api/forge/current-use/rollback/calculate:
+    post:
+      summary: Calculate Current Use rollback estimate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RollbackCalculationInput'
+      responses:
+        '200':
+          description: Rollback calculation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RollbackCalculationResult'
+components:
+  schemas:
+    RollbackCalculationInput:
+      type: object
+      required:
+        - parcelId
+        - countyId
+        - removalDate
+        - taxYearOfRemoval
+        - classificationType
+        - removalType
+        - currentUseAssessedValuesByYear
+        - trueAndFairValuesByYear
+        - levyRatesByYear
+        - interestRatesByYear
+        - createdBy
+      properties:
+        parcelId:
+          type: string
+          format: uuid
+        countyId:
+          type: string
+          format: uuid
+        removalDate:
+          type: string
+          format: date
+        taxYearOfRemoval:
+          type: integer
+        classificationType:
+          type: string
+        removalType:
+          type: string
+        currentUseAssessedValuesByYear:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxYearValue'
+        trueAndFairValuesByYear:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxYearValue'
+        levyRatesByYear:
+          type: array
+          items:
+            $ref: '#/components/schemas/LevyRate'
+        interestRatesByYear:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterestRate'
+        createdBy:
+          type: string
+    TaxYearValue:
+      type: object
+      properties:
+        taxYear:
+          type: integer
+        value:
+          type: number
+    LevyRate:
+      type: object
+      properties:
+        taxYear:
+          type: integer
+        ratePerThousand:
+          type: number
+    InterestRate:
+      type: object
+      properties:
+        taxYear:
+          type: integer
+        annualRate:
+          type: number
+    RollbackCalculationResult:
+      type: object
+      properties:
+        calculationId:
+          type: string
+          format: uuid
+        parcelId:
+          type: string
+          format: uuid
+        rollbackYears:
+          type: array
+          items:
+            type: integer
+        additionalTaxSubtotal:
+          type: number
+        interestSubtotal:
+          type: number
+        penaltyAmount:
+          type: number
+        totalDue:
+          type: number
+        calculationVersion:
+          type: string
+        explanation:
+          type: array
+          items:
+            type: object

@@ -1,0 +1,35 @@
+release:
+  moduleId: terra-current-use
+  releaseName: current-use-internal-alpha
+  targetEnvironment: internal-alpha
+
+enabledSlices:
+  - coreWorkbench
+  - rollbackCalculator
+  - notices
+  - terraTraceAudit
+  - policyGovernance
+
+disabledSlices:
+  - aiAssist
+  - atlasSpatial
+  - daisWorkflow
+  - dossierEvidence
+  - treasurerHandoff
+  - appealsReclassification
+  - complianceMonitoring
+  - analytics
+
+requiredChecks:
+  - frontend-build-pass
+  - backend-build-pass
+  - rollback-tests-pass
+  - policy-resolution-pass
+  - trace-append-pass
+  - notice-human-review-visible
+
+rollbackPlan:
+  - disable current-use tab feature flag
+  - keep backend endpoints deployed
+  - preserve audit and calculation records
+  - do not delete persisted calculations

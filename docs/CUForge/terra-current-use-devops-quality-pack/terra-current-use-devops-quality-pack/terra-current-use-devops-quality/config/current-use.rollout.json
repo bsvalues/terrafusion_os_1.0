@@ -1,0 +1,43 @@
+{
+  "moduleId": "terra-current-use",
+  "displayName": "Current Use Command Center",
+  "defaultEnvironment": "internal-alpha",
+  "featureFlags": {
+    "coreWorkbench": true,
+    "rollbackCalculator": true,
+    "notices": true,
+    "terraTraceAudit": true,
+    "policyGovernance": true,
+    "aiAssist": false,
+    "atlasSpatial": false,
+    "daisWorkflow": false,
+    "dossierEvidence": false,
+    "treasurerHandoff": false,
+    "appealsReclassification": false,
+    "complianceMonitoring": false,
+    "analytics": false
+  },
+  "promotionGates": {
+    "internal-alpha": [
+      "frontend-build-pass",
+      "backend-build-pass",
+      "rollback-tests-pass",
+      "workbench-tab-renders",
+      "trace-event-emitted"
+    ],
+    "assessor-demo": [
+      "notice-preview-human-review-visible",
+      "policy-version-visible",
+      "calculation-explanation-visible",
+      "no-ai-decisioning",
+      "no-final-notice-issuance"
+    ],
+    "pilot": [
+      "persistence-enabled",
+      "real-parcel-id-source",
+      "real-levy-rate-source",
+      "date-based-interest-implemented",
+      "audit-sink-terraTrace"
+    ]
+  }
+}

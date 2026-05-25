@@ -1,0 +1,17 @@
+openapi: 3.0.3
+info:
+  title: TerraForge Current Use Import API
+  version: 0.1.0
+paths:
+  /api/forge/current-use/import/{countyId}/batches:
+    get:
+      summary: Get import batches
+  /api/forge/current-use/import/batches:
+    post:
+      summary: Create import batch
+  /api/forge/current-use/import/batches/{importBatchId}/validate:
+    post:
+      summary: Validate import rows
+  /api/forge/current-use/import/batches/{importBatchId}/commit:
+    post:
+      summary: Commit validated import batch

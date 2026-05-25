@@ -1,0 +1,37 @@
+openapi: 3.0.3
+info:
+  title: TerraDossier Current Use Evidence API
+  version: 0.1.0-phase3-scaffold
+paths:
+  /api/dossier/current-use/parcels/{parcelId}/evidence-packet:
+    get:
+      summary: Get Current Use evidence packet
+      parameters:
+        - name: parcelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Evidence packet
+  /api/dossier/current-use/documents/link:
+    post:
+      summary: Link a Dossier document to Current Use review
+      responses:
+        '200':
+          description: Linked document
+  /api/dossier/current-use/documents/{documentId}/status:
+    patch:
+      summary: Update linked document review status
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Updated document link

@@ -1,0 +1,19 @@
+{
+  "moduleId": "terra-current-use",
+  "readinessStage": "pilot-candidate",
+  "requiredSignoffs": [
+    "assessor-workflow",
+    "supervisor-notice-control",
+    "technical-build",
+    "security-rbac",
+    "data-validation",
+    "support-runbook"
+  ],
+  "blockedIf": [
+    "notice issuance without approval",
+    "rollback calculation lacks policy version",
+    "trace unavailable",
+    "appraiser can issue final notice",
+    "source value data unvalidated"
+  ]
+}

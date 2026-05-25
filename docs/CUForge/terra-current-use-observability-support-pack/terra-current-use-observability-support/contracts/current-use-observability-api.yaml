@@ -1,0 +1,14 @@
+openapi: 3.0.3
+info:
+  title: TerraForge Current Use Observability API
+  version: 0.1.0
+paths:
+  /api/forge/current-use/observability/health:
+    get:
+      summary: Get Current Use module health
+  /api/forge/current-use/observability/metrics/recent:
+    get:
+      summary: Get recent Current Use metrics
+  /api/forge/current-use/observability/errors/recent:
+    get:
+      summary: Get recent Current Use errors

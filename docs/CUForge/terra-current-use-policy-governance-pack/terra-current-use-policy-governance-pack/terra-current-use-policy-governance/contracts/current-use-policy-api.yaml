@@ -1,0 +1,11 @@
+openapi: 3.0.3
+info:
+  title: TerraForge Current Use Policy Governance API
+  version: 0.1.0
+paths:
+  /api/forge/current-use/policy/{countyId}:
+    get:
+      summary: Get Current Use policy packs
+  /api/forge/current-use/policy/resolve:
+    post:
+      summary: Resolve active policy

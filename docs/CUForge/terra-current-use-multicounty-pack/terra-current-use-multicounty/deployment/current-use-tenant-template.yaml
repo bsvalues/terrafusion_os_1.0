@@ -1,0 +1,30 @@
+tenant:
+  countyId: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb'
+  countyName: 'Example County'
+  stateCode: 'WA'
+
+policy:
+  version: '2025.09.01'
+
+features:
+  coreWorkbench: true
+  rollbackCalculator: true
+  notices: true
+  terraTraceAudit: true
+  policyGovernance: true
+
+  aiAssist: false
+  atlasSpatial: false
+  daisWorkflow: false
+  dossierEvidence: false
+  treasurerHandoff: false
+  appealsReclassification: false
+  complianceMonitoring: false
+  analytics: false
+
+branding:
+  theme: 'terrafusion-default'
+
+security:
+  requireSupervisorNoticeApproval: true
+  requireTraceAudit: true

@@ -1,0 +1,30 @@
+openapi: 3.0.3
+info:
+  title: TerraForge Current Use Compliance API
+  version: 0.1.0
+paths:
+  /api/forge/current-use/compliance/parcels/{parcelId}/summary:
+    get:
+      summary: Get compliance summary
+      parameters:
+        - name: parcelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Compliance summary
+  /api/forge/current-use/compliance/inspections:
+    post:
+      summary: Schedule Current Use inspection
+      responses:
+        '200':
+          description: Scheduled inspection
+  /api/forge/current-use/compliance/inspections/{inspectionId}/complete:
+    post:
+      summary: Complete Current Use inspection
+      responses:
+        '200':
+          description: Completed inspection

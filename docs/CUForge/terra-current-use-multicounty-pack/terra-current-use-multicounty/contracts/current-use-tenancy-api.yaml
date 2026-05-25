@@ -1,0 +1,13 @@
+openapi: 3.0.3
+info:
+  title: TerraForge Current Use Multi-County API
+  version: 0.1.0
+paths:
+  /api/forge/current-use/tenancy/counties:
+    get:
+      summary: Get Current Use county tenants
+    post:
+      summary: Create county tenant
+  /api/forge/current-use/tenancy/counties/{countyId}:
+    get:
+      summary: Get county tenant

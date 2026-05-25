@@ -1,0 +1,8 @@
+openapi: 3.0.3
+info:
+  title: TerraForge Current Use Analytics API
+  version: 0.1.0
+paths:
+  /api/forge/current-use/analytics/{countyId}/summary:
+    get:
+      summary: Get Current Use operational summary
