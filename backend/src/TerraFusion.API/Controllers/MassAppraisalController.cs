@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 using TerraFusion.API.Interfaces;
+using TerraFusion.API.Seeds;
+using ICountyResolver = TerraFusion.Core.Services.ICountyResolver;
+using CountyNotFoundException = TerraFusion.Core.Services.CountyNotFoundException;
 
 namespace TerraFusion.API.Controllers
 {
@@ -19,18 +22,44 @@ namespace TerraFusion.API.Controllers
   {
     private readonly IMassAppraisalService _massAppraisalService;
     private readonly IForgeStatisticsService _statisticsService;
+    private readonly ICountyResolver _countyResolver;
     private readonly ILogger<MassAppraisalController> _logger;
 
-    private static readonly Guid FallbackCountyId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+    private static readonly Guid FallbackCountyId = DatabaseSeeder.BentonCountyId;
 
     public MassAppraisalController(
         IMassAppraisalService massAppraisalService,
         IForgeStatisticsService statisticsService,
+        ICountyResolver countyResolver,
         ILogger<MassAppraisalController> logger)
     {
       _massAppraisalService = massAppraisalService;
       _statisticsService = statisticsService;
+      _countyResolver = countyResolver;
       _logger = logger;
+    }
+
+    private string? ResolveCountyScopeToken()
+    {
+      var candidates = new[]
+      {
+        User.FindFirst("county_id")?.Value,
+        User.FindFirst("countyId")?.Value,
+        Request.Headers["x-county-id"].FirstOrDefault(),
+        Request.Headers["X-County-Id"].FirstOrDefault(),
+        Request.Headers["X-TerraFusion-County"].FirstOrDefault(),
+      };
+
+      return candidates.FirstOrDefault(candidate => !string.IsNullOrWhiteSpace(candidate))?.Trim();
+    }
+
+    private async Task<Guid> ResolveCountyIdAsync(CancellationToken ct = default)
+    {
+      var countyToken = ResolveCountyScopeToken();
+      if (string.IsNullOrWhiteSpace(countyToken))
+        return FallbackCountyId;
+
+      return await _countyResolver.ResolveAsync(countyToken, ct);
     }
 
     /// <summary>
@@ -165,8 +194,13 @@ namespace TerraFusion.API.Controllers
     {
       try
       {
-        var strata = await _statisticsService.GetStrataAsync(modelId, FallbackCountyId);
+        var countyId = await ResolveCountyIdAsync();
+        var strata = await _statisticsService.GetStrataAsync(modelId, countyId);
         return Ok(strata);
+      }
+      catch (CountyNotFoundException ex)
+      {
+        return BadRequest(new { error = ex.Message, field = "countyId" });
       }
       catch (Exception ex)
       {
@@ -186,8 +220,13 @@ namespace TerraFusion.API.Controllers
     {
       try
       {
-        var outliers = await _statisticsService.GetOutliersAsync(modelId, FallbackCountyId);
+        var countyId = await ResolveCountyIdAsync();
+        var outliers = await _statisticsService.GetOutliersAsync(modelId, countyId);
         return Ok(outliers);
+      }
+      catch (CountyNotFoundException ex)
+      {
+        return BadRequest(new { error = ex.Message, field = "countyId" });
       }
       catch (Exception ex)
       {
@@ -211,8 +250,13 @@ namespace TerraFusion.API.Controllers
 
       try
       {
-        var comparison = await _statisticsService.CompareModelsAsync(request, FallbackCountyId);
+        var countyId = await ResolveCountyIdAsync();
+        var comparison = await _statisticsService.CompareModelsAsync(request, countyId);
         return Ok(comparison);
+      }
+      catch (CountyNotFoundException ex)
+      {
+        return BadRequest(new { error = ex.Message, field = "countyId" });
       }
       catch (Exception ex)
       {
@@ -232,8 +276,13 @@ namespace TerraFusion.API.Controllers
     {
       try
       {
-        var segments = await _statisticsService.DiscoverSegmentsAsync(modelId, FallbackCountyId);
+        var countyId = await ResolveCountyIdAsync();
+        var segments = await _statisticsService.DiscoverSegmentsAsync(modelId, countyId);
         return Ok(segments);
+      }
+      catch (CountyNotFoundException ex)
+      {
+        return BadRequest(new { error = ex.Message, field = "countyId" });
       }
       catch (Exception ex)
       {
