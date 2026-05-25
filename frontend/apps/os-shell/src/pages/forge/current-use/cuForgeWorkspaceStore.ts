@@ -12,6 +12,8 @@
 import { create } from 'zustand';
 import { apiFetchJson } from '@/lib/apiBase';
 
+const CLASSIFICATION_STATS_PAGE_SIZE = 1000;
+
 // ── Types ────────────────────────────────────────────────────────────────────
 
 export type CUForgeTab = 'classifications' | 'rollback' | 'interest' | 'removals';
@@ -139,6 +141,30 @@ interface CUForgeWorkspaceState {
   fetchRemovals(signal?: AbortSignal): Promise<void>;
 }
 
+async function fetchAllClassificationsForStats(signal?: AbortSignal): Promise<Classification[]> {
+  const firstPage = await apiFetchJson<ClassificationsResponse>(
+    `/currentuse/classifications?page=1&pageSize=${CLASSIFICATION_STATS_PAGE_SIZE}`,
+    { signal }
+  );
+  const pageSize = firstPage.pageSize || CLASSIFICATION_STATS_PAGE_SIZE;
+  const totalPages = Math.ceil(firstPage.total / pageSize);
+
+  if (totalPages <= 1) {
+    return firstPage.items;
+  }
+
+  const remainingPages = await Promise.all(
+    Array.from({ length: totalPages - 1 }, (_, index) =>
+      apiFetchJson<ClassificationsResponse>(
+        `/currentuse/classifications?page=${index + 2}&pageSize=${pageSize}`,
+        { signal }
+      )
+    )
+  );
+
+  return [firstPage, ...remainingPages].flatMap(page => page.items);
+}
+
 // ── Store Implementation ─────────────────────────────────────────────────────
 
 export const useCUForgeWorkspaceStore = create<CUForgeWorkspaceState>((set, get) => ({
@@ -177,13 +203,12 @@ export const useCUForgeWorkspaceStore = create<CUForgeWorkspaceState>((set, get)
   fetchStats: async (signal) => {
     set({ statsLoading: true, statsError: null });
     try {
-      const [classData, rates, removals] = await Promise.all([
-        apiFetchJson<ClassificationsResponse>('/currentuse/classifications?page=1&pageSize=1000', { signal }),
+      const [items, rates, removals] = await Promise.all([
+        fetchAllClassificationsForStats(signal),
         apiFetchJson<InterestRate[]>('/currentuse/interest-rates', { signal }),
         apiFetchJson<Removal[]>('/currentuse/removals', { signal }),
       ]);
 
-      const items = classData.items;
       const activeItems = items.filter(c => c.status === 'Active');
       const dflCount = activeItems.filter(c => c.classificationCode === 'DFL').length;
       const cufaCount = activeItems.filter(c => c.classificationCode === 'CUFA').length;

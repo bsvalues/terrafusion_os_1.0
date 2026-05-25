@@ -36,6 +36,14 @@ const TABS: { id: CUForgeTab; label: string; title: string }[] = [
 const fmt = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 const fmtFull = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
 
+const rollbackLookbackYears = (classificationCode: string) => classificationCode === 'DFL' ? 7 : 10;
+
+const rollbackValueYears = (classificationCode: string, enrollmentYear: number, removalYear: number) => {
+  const lookbackYears = rollbackLookbackYears(classificationCode);
+  const startYear = Math.max(enrollmentYear, removalYear - lookbackYears + 1);
+  return Array.from({ length: removalYear - startYear + 1 }, (_, index) => startYear + index);
+};
+
 const programBadge = (code: string) => {
   const cls = code === 'DFL' ? 'forge-chip--success' :
               code === 'CUFA' ? 'forge-chip--info' :
@@ -251,10 +259,12 @@ function RollbackPanel() {
 
   // Generate sample market/CU values for the lookback window
   const handleCalculate = () => {
-    const startYear = Math.max(enrollmentYear, removalYear - 6);
     const marketValues: Record<string, number> = {};
     const currentUseValues: Record<string, number> = {};
-    for (let y = startYear; y <= removalYear; y++) {
+    const years = rollbackValueYears(classificationCode, enrollmentYear, removalYear);
+    const startYear = years[0] ?? removalYear;
+
+    for (const y of years) {
       marketValues[y.toString()] = 450000 + (y - startYear) * 25000;
       currentUseValues[y.toString()] = 52000 + (y - startYear) * 2000;
     }
@@ -266,17 +276,17 @@ function RollbackPanel() {
       <div className="cu-rcw-callout">
         <strong>RCW 84.34.108</strong> — When land is removed from current use classification,
         additional tax (rollback) is imposed for each year of classification, plus interest.
-        The rollback period is limited to 7 years.
+        The rollback period is limited to 7 years for DFL and up to 10 years for CUFA/CUOS/CUTL.
       </div>
 
       <div className="cu-form-row">
         <div className="cu-form-group">
-          <label className="cu-label">Parcel ID</label>
-          <input className="cu-input" value={parcelId} onChange={(e) => setParcelId(e.target.value)} />
+          <label className="cu-label" htmlFor="cu-rollback-parcel">Parcel ID</label>
+          <input id="cu-rollback-parcel" className="cu-input" value={parcelId} onChange={(e) => setParcelId(e.target.value)} />
         </div>
         <div className="cu-form-group">
-          <label className="cu-label">Program</label>
-          <select className="cu-input" value={classificationCode} onChange={(e) => setClassificationCode(e.target.value)}>
+          <label className="cu-label" htmlFor="cu-rollback-program">Program</label>
+          <select id="cu-rollback-program" className="cu-input" value={classificationCode} onChange={(e) => setClassificationCode(e.target.value)}>
             <option value="DFL">DFL</option>
             <option value="CUFA">CUFA</option>
             <option value="CUOS">CUOS</option>
@@ -284,12 +294,12 @@ function RollbackPanel() {
           </select>
         </div>
         <div className="cu-form-group">
-          <label className="cu-label">Enrollment Year</label>
-          <input className="cu-input" type="number" value={enrollmentYear} onChange={(e) => setEnrollmentYear(+e.target.value)} />
+          <label className="cu-label" htmlFor="cu-rollback-enrollment">Enrollment Year</label>
+          <input id="cu-rollback-enrollment" className="cu-input" type="number" value={enrollmentYear} onChange={(e) => setEnrollmentYear(+e.target.value)} />
         </div>
         <div className="cu-form-group">
-          <label className="cu-label">Removal Year</label>
-          <input className="cu-input" type="number" value={removalYear} onChange={(e) => setRemovalYear(+e.target.value)} />
+          <label className="cu-label" htmlFor="cu-rollback-removal">Removal Year</label>
+          <input id="cu-rollback-removal" className="cu-input" type="number" value={removalYear} onChange={(e) => setRemovalYear(+e.target.value)} />
         </div>
         <button className="cu-btn cu-btn--primary" onClick={handleCalculate} disabled={rollbackLoading}>
           {rollbackLoading ? 'Calculating…' : 'Calculate Rollback'}
