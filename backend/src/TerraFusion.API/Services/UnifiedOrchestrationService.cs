@@ -393,8 +393,8 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
     {
         try
         {
-            var modules = await _moduleLoader.LoadDiscoveredModulesAsync();
-            return modules.Count > 0;
+            await _moduleLoader.LoadDiscoveredModulesAsync();
+            return true;
         }
         catch
         {

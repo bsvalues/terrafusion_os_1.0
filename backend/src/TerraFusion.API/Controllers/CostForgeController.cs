@@ -6626,30 +6626,73 @@ public class CostForgeController : ControllerBase
       withinConstitutionalLimit = true;
     }
 
-    var entity = new TerraFusion.Core.Entities.LevyCertification
+    var taxYear = req.TaxYear > 0 ? req.TaxYear : DateTime.UtcNow.Year;
+    var districtCode = (req.DistrictCode?.Trim() ?? "").ToUpperInvariant();
+    var districtName = req.DistrictName?.Trim() ?? "";
+    var createdBy = User.FindFirst("sub")?.Value ?? "system";
+
+    var matchingCertifications = await _db.Set<TerraFusion.Core.Entities.LevyCertification>()
+      .Where(e =>
+        e.CountyId == ctx.CountyId &&
+        e.TaxYear == taxYear &&
+        e.DistrictCode.Trim().ToUpper() == districtCode)
+      .OrderByDescending(e => e.Status == "certified")
+      .ThenByDescending(e => e.CreatedAt)
+      .ThenByDescending(e => e.Id)
+      .ToListAsync();
+
+    var entity = matchingCertifications.FirstOrDefault();
+    if (matchingCertifications.Count > 1)
+      _db.Set<TerraFusion.Core.Entities.LevyCertification>().RemoveRange(matchingCertifications.Skip(1));
+
+    var isNew = entity is null;
+    entity ??= new TerraFusion.Core.Entities.LevyCertification
     {
       CountyId = ctx.CountyId,
-      TaxYear = req.TaxYear > 0 ? req.TaxYear : DateTime.UtcNow.Year,
-      DistrictCode = req.DistrictCode ?? "",
-      DistrictName = req.DistrictName ?? "",
-      PriorYearLevy = req.PriorYearLevy,
-      RequestedLevy = req.RequestedLevy,
-      CertifiedLevy = certifiedLevy,
-      AssessedValue = req.AssessedValue,
-      NewConstructionValue = req.NewConstructionValue,
-      AnnexationValue = req.AnnexationValue,
-      LevyRate = levyRate,
-      StatutoryLimit = statutoryLimit,
-      ConstitutionalLimit = 10.0,
-      AggregateLimit = 5.90,
-      WithinConstitutionalLimit = withinConstitutionalLimit,
-      WithinAggregateLimit = withinAggregateLimit,
-      WasReduced = wasReduced,
-      ReductionAmount = reductionAmount,
+      TaxYear = taxYear,
+      DistrictCode = districtCode,
+      CreatedBy = createdBy,
       Status = "draft",
-      CreatedBy = User.FindFirst("sub")?.Value ?? "system",
     };
-    _db.Set<TerraFusion.Core.Entities.LevyCertification>().Add(entity);
+
+    var valuesChanged =
+      entity.DistrictName != districtName ||
+      entity.PriorYearLevy != req.PriorYearLevy ||
+      entity.RequestedLevy != req.RequestedLevy ||
+      entity.CertifiedLevy != certifiedLevy ||
+      entity.AssessedValue != req.AssessedValue ||
+      entity.NewConstructionValue != req.NewConstructionValue ||
+      entity.AnnexationValue != req.AnnexationValue ||
+      Math.Abs(entity.LevyRate - levyRate) > 0.000001 ||
+      entity.StatutoryLimit != statutoryLimit ||
+      entity.WithinConstitutionalLimit != withinConstitutionalLimit ||
+      entity.WithinAggregateLimit != withinAggregateLimit ||
+      entity.WasReduced != wasReduced ||
+      entity.ReductionAmount != reductionAmount;
+
+    entity.DistrictName = districtName;
+    entity.PriorYearLevy = req.PriorYearLevy;
+    entity.RequestedLevy = req.RequestedLevy;
+    entity.CertifiedLevy = certifiedLevy;
+    entity.AssessedValue = req.AssessedValue;
+    entity.NewConstructionValue = req.NewConstructionValue;
+    entity.AnnexationValue = req.AnnexationValue;
+    entity.LevyRate = levyRate;
+    entity.StatutoryLimit = statutoryLimit;
+    entity.ConstitutionalLimit = 10.0;
+    entity.AggregateLimit = 5.90;
+    entity.WithinConstitutionalLimit = withinConstitutionalLimit;
+    entity.WithinAggregateLimit = withinAggregateLimit;
+    entity.WasReduced = wasReduced;
+    entity.ReductionAmount = reductionAmount;
+    entity.CreatedBy = string.IsNullOrWhiteSpace(entity.CreatedBy) ? createdBy : entity.CreatedBy;
+
+    if (!isNew && valuesChanged && string.Equals(entity.Status, "certified", StringComparison.OrdinalIgnoreCase))
+      entity.Status = "draft";
+
+    if (isNew)
+      _db.Set<TerraFusion.Core.Entities.LevyCertification>().Add(entity);
+
     await _db.SaveChangesAsync();
 
     return Ok(new

@@ -145,6 +145,24 @@ public sealed class FullCorpusOrchestrator : IFullCorpusOrchestrator
             lanes.Select(ToSnapshot).ToList());
     }
 
+    public async Task<CorpusRecentRunsResult> ListRecentAsync(
+        int limit,
+        CancellationToken cancellationToken)
+    {
+        var boundedLimit = Math.Clamp(limit, 1, 50);
+        var runs = await _db.FullCorpusRuns
+            .AsNoTracking()
+            .OrderByDescending(r => r.StartedAt)
+            .Take(boundedLimit)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return new CorpusRecentRunsResult(
+            CorpusOutcome.Ok,
+            null,
+            runs.Select(ToSnapshot).ToList());
+    }
+
     public async Task<CorpusReconciliationViewResult> GetReconciliationAsync(
         Guid runId,
         CancellationToken cancellationToken)

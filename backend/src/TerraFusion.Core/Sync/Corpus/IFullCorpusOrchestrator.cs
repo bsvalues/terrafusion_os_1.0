@@ -33,6 +33,10 @@ public interface IFullCorpusOrchestrator
         Guid runId,
         CancellationToken cancellationToken);
 
+    Task<CorpusRecentRunsResult> ListRecentAsync(
+        int limit,
+        CancellationToken cancellationToken);
+
     Task<CorpusReconciliationViewResult> GetReconciliationAsync(
         Guid runId,
         CancellationToken cancellationToken);
@@ -62,6 +66,11 @@ public sealed record CorpusStatusResult(
     string? ErrorMessage,
     CorpusRunSnapshot? Run,
     IReadOnlyList<CorpusLaneSnapshot>? Lanes);
+
+public sealed record CorpusRecentRunsResult(
+    CorpusOutcome Outcome,
+    string? ErrorMessage,
+    IReadOnlyList<CorpusRunSnapshot> Runs);
 
 public sealed record CorpusReconciliationViewResult(
     CorpusOutcome Outcome,

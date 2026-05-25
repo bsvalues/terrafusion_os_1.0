@@ -2705,12 +2705,50 @@ app.MapControllers();
 // GUARDED: Only available when app.Environment.IsDevelopment() is true.
 if (app.Environment.IsDevelopment())
 {
-  app.MapGet("/api/auth/dev-token", (
-      TerraFusion.API.Services.IJwtTokenService jwtService,
-      IConfiguration config) =>
+    app.MapGet("/api/auth/dev-token", async (
+            TerraFusion.API.Services.IJwtTokenService jwtService,
+            IConfiguration config,
+            TerraFusion.Data.TerraFusionDbContext db,
+            HttpContext httpContext) =>
   {
-    var defaultCountyId = config["DefaultCounty:Id"] ?? TerraFusion.API.Seeds.DatabaseSeeder.BentonCountyId.ToString();
     var defaultCountyCode = config["DefaultCounty:Code"] ?? "benton";
+        var configuredCountyId = config["DefaultCounty:Id"];
+        var requestedCountyCode = defaultCountyCode.Trim();
+        var countyNameCandidates = new HashSet<string>(StringComparer.Ordinal)
+        {
+            requestedCountyCode,
+            requestedCountyCode.ToUpperInvariant(),
+            requestedCountyCode.ToLowerInvariant()
+        };
+
+        if (requestedCountyCode.Length > 0)
+        {
+            var titleCaseCountyCode = char.ToUpperInvariant(requestedCountyCode[0]) + requestedCountyCode[1..].ToLowerInvariant();
+            countyNameCandidates.Add(titleCaseCountyCode);
+            countyNameCandidates.Add($"{titleCaseCountyCode} County");
+        }
+
+        var countyFipsCandidates = new HashSet<string>(StringComparer.Ordinal);
+        if (requestedCountyCode.All(char.IsDigit))
+        {
+            countyFipsCandidates.Add(requestedCountyCode);
+            countyFipsCandidates.Add(requestedCountyCode.PadLeft(5, '0'));
+        }
+
+        if (string.Equals(requestedCountyCode, "benton", StringComparison.OrdinalIgnoreCase))
+        {
+            countyFipsCandidates.Add("53005");
+        }
+
+        var county = await db.Counties
+            .AsNoTracking()
+            .Where(c =>
+                countyNameCandidates.Contains(c.Name) ||
+                (c.FipsCode != null && countyFipsCandidates.Contains(c.FipsCode)))
+            .Select(c => new { c.Id, c.Name, c.FipsCode })
+            .FirstOrDefaultAsync(httpContext.RequestAborted);
+
+        var defaultCountyId = county?.Id.ToString() ?? configuredCountyId ?? TerraFusion.API.Seeds.DatabaseSeeder.BentonCountyId.ToString();
 
     var customClaims = new Dictionary<string, object>
     {

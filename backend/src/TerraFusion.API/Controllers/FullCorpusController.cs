@@ -27,6 +27,7 @@ namespace TerraFusion.API.Controllers;
 ///   run to Queued so the worker resumes from
 ///   <c>NextLaneOnResume</c>.</item>
 ///   <item><c>GET /{runId}</c> — run + 6 lane results.</item>
+///   <item><c>GET /recent</c> — recent persisted run rows.</item>
 ///   <item><c>GET /{runId}/reconciliation</c> — run + 6 reconciliation
 ///   rows (empty array if not yet computed).</item>
 ///   <item><c>GET /{runId}/evidence.zip</c> — corpus-scope evidence
@@ -109,6 +110,29 @@ public sealed class FullCorpusController : ControllerBase
                 error = result.ErrorMessage,
                 status = result.Status,
             }),
+            _ => StatusCode(500, new { error = result.ErrorMessage }),
+        };
+    }
+
+    /// <summary>
+    /// <c>GET /api/sync/corpus/recent</c>
+    /// </summary>
+    [HttpGet("recent")]
+    public async Task<IActionResult> ListRecent(
+        [FromQuery] int limit = 10,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _orchestrator.ListRecentAsync(limit, cancellationToken)
+            .ConfigureAwait(false);
+
+        _logger.LogInformation(
+            "[Corpus] Listed recent runs count={Count} limit={Limit}",
+            result.Runs.Count,
+            limit);
+
+        return result.Outcome switch
+        {
+            CorpusOutcome.Ok => Ok(new { runs = result.Runs }),
             _ => StatusCode(500, new { error = result.ErrorMessage }),
         };
     }

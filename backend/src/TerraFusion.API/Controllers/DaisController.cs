@@ -102,7 +102,12 @@ public class DaisController : ControllerBase
       candidates.Add(trimmed.ToUpperInvariant());
       candidates.Add(trimmed.ToLowerInvariant());
       if (trimmed.Length > 0)
-        candidates.Add(char.ToUpperInvariant(trimmed[0]) + trimmed[1..].ToLowerInvariant());
+      {
+        var titleCaseCounty = char.ToUpperInvariant(trimmed[0]) + trimmed[1..].ToLowerInvariant();
+        candidates.Add(titleCaseCounty);
+        if (!titleCaseCounty.EndsWith(" County", StringComparison.OrdinalIgnoreCase))
+          candidates.Add($"{titleCaseCounty} County");
+      }
     }
     return candidates.ToArray();
   }
@@ -147,9 +152,11 @@ public class DaisController : ControllerBase
     if (county is null)
       return (null, Forbid());
 
-    var matchesName = string.Equals(county.Name, requestedCountyValue, StringComparison.OrdinalIgnoreCase);
+    var requestedCountyNameCandidates = BuildCountyNameCandidates(requestedCountyValue);
+    var requestedCountyFipsCandidates = BuildFipsCandidates(requestedCountyValue);
+    var matchesName = requestedCountyNameCandidates.Contains(county.Name);
     var matchesFips = !string.IsNullOrWhiteSpace(county.FipsCode) &&
-      string.Equals(county.FipsCode, requestedCountyValue, StringComparison.OrdinalIgnoreCase);
+      requestedCountyFipsCandidates.Contains(county.FipsCode);
 
     return matchesName || matchesFips
       ? (countyId.Value, null)
@@ -1664,12 +1671,21 @@ public class DaisController : ControllerBase
       return countyAccess.ErrorResult;
 
     var effectiveCountyId = countyAccess.CountyId!.Value;
+    var requestedStepCode = request.StepId.Trim().ToUpperInvariant();
+    if (!IsHumanCertificationSignOffStep(requestedStepCode))
+    {
+      return Conflict(new
+      {
+        error = $"Certification step {request.StepId} cannot be completed by the generic sign-off endpoint.",
+        allowedSteps = new[] { "SUPERVISORY_REVIEW", "ASSESSOR_SIGNOFF" },
+      });
+    }
 
     CertificationStep completedStep;
     try
     {
       completedStep = await _certificationService.CompleteStepAsync(
-        request.StepId,
+        requestedStepCode,
         request.SignedBy,
         request.Notes,
         taxYear,
@@ -2092,6 +2108,10 @@ public class DaisController : ControllerBase
     "DOR_ACCEPTANCE" => "WA Dept of Revenue",
     _ => "Unassigned",
   };
+
+  private static bool IsHumanCertificationSignOffStep(string stepCode) =>
+    string.Equals(stepCode, "SUPERVISORY_REVIEW", StringComparison.OrdinalIgnoreCase) ||
+    string.Equals(stepCode, "ASSESSOR_SIGNOFF", StringComparison.OrdinalIgnoreCase);
 
   private static List<string> BuildCertificationBlockers(IEnumerable<CertificationStep> steps)
   {

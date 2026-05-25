@@ -809,6 +809,18 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       entity.HasIndex(e => new { e.CountyId, e.BuildingType, e.Region, e.MatrixYear });
     });
 
+    modelBuilder.Entity<LevyCertification>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.Property(e => e.DistrictCode).IsRequired().HasMaxLength(100);
+      entity.Property(e => e.DistrictName).HasMaxLength(250);
+      entity.Property(e => e.Status).IsRequired().HasMaxLength(50);
+      entity.Property(e => e.CreatedBy).HasMaxLength(200);
+      entity.HasIndex(e => new { e.CountyId, e.TaxYear, e.DistrictCode })
+        .IsUnique()
+        .HasDatabaseName("UX_LevyCertifications_County_TaxYear_DistrictCode");
+    });
+
     // PACS Lookup Tables (R2 Wave 38 — FK-aware qualification)
     // Mirrors PACS dbo.sale_ratio_type: WA DOR-defined sale qualification codes.
     // invalid_sale=true means the code disqualifies the sale from ratio study.

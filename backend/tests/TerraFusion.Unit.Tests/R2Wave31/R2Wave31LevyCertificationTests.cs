@@ -69,7 +69,84 @@ public sealed class R2Wave31LevyCertificationTests
     }
   }
 
-  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  [Fact]
+  public async Task CalculateLevy_ReconcilesExistingDuplicateDistrictYearCertifications()
+  {
+    using var db = CreateDbContext(nameof(CalculateLevy_ReconcilesExistingDuplicateDistrictYearCertifications));
+    await SeedCounty(db, BentonCountyId);
+    db.Set<LevyCertification>().AddRange(
+      new LevyCertification
+      {
+        CountyId = BentonCountyId,
+        TaxYear = 2026,
+        DistrictCode = "CTY",
+        DistrictName = "County General",
+        PriorYearLevy = 1_000_000m,
+        RequestedLevy = 1_010_000m,
+        CertifiedLevy = 1_010_000m,
+        AssessedValue = 500_000_000m,
+        StatutoryLimit = 1_010_000m,
+        LevyRate = 2.02,
+        WithinConstitutionalLimit = true,
+        WithinAggregateLimit = true,
+        Status = "certified",
+        CreatedAt = DateTime.UtcNow,
+      },
+      new LevyCertification
+      {
+        CountyId = BentonCountyId,
+        TaxYear = 2026,
+        DistrictCode = " cty ",
+        DistrictName = "County General Duplicate",
+        PriorYearLevy = 1_000_000m,
+        RequestedLevy = 1_010_000m,
+        CertifiedLevy = 1_010_000m,
+        AssessedValue = 500_000_000m,
+        StatutoryLimit = 1_010_000m,
+        LevyRate = 2.02,
+        WithinConstitutionalLimit = true,
+        WithinAggregateLimit = true,
+        Status = "draft",
+        CreatedAt = DateTime.UtcNow.AddMinutes(-5),
+      });
+    await db.SaveChangesAsync();
+    var controller = CreateController(db);
+
+    await controller.CalculateLevy(new LevyCalculateRequest
+    {
+      DistrictCode = "cty",
+      DistrictName = "County General",
+      PriorYearLevy = 1_000_000m,
+      RequestedLevy = 1_010_000m,
+      AssessedValue = 500_000_000m,
+      TaxYear = 2026,
+    });
+
+    var entities = await db.Set<LevyCertification>().ToListAsync();
+    entities.Should().HaveCount(1);
+    entities[0].DistrictCode.Should().Be("CTY");
+    entities[0].Status.Should().Be("certified");
+  }
+
+  [Fact]
+  public void LevyCertification_ModelDefinesCanonicalUniqueIndex()
+  {
+    using var db = CreateDbContext(nameof(LevyCertification_ModelDefinesCanonicalUniqueIndex));
+
+    var entityType = db.Model.FindEntityType(typeof(LevyCertification));
+    var uniqueIndex = entityType!.GetIndexes().SingleOrDefault(index =>
+      index.IsUnique &&
+      index.Properties.Select(property => property.Name).SequenceEqual(
+      [
+        nameof(LevyCertification.CountyId),
+        nameof(LevyCertification.TaxYear),
+        nameof(LevyCertification.DistrictCode),
+      ]));
+
+    uniqueIndex.Should().NotBeNull();
+  }
+
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
   // Levy Calculation
   // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
@@ -192,6 +269,39 @@ public sealed class R2Wave31LevyCertificationTests
     var entities = await db.Set<LevyCertification>().ToListAsync();
     entities.Should().HaveCount(1);
     entities[0].DistrictCode.Should().Be("CTY");
+  }
+
+  [Fact]
+  public async Task CalculateLevy_RepeatedDistrictYear_UpdatesExistingCertification()
+  {
+    using var db = CreateDbContext(nameof(CalculateLevy_RepeatedDistrictYear_UpdatesExistingCertification));
+    await SeedCounty(db, BentonCountyId);
+    var controller = CreateController(db);
+
+    await controller.CalculateLevy(new LevyCalculateRequest
+    {
+      DistrictCode = "CTY",
+      DistrictName = "County General",
+      PriorYearLevy = 1_000_000m,
+      RequestedLevy = 1_010_000m,
+      AssessedValue = 500_000_000m,
+      TaxYear = 2026,
+    });
+
+    await controller.CalculateLevy(new LevyCalculateRequest
+    {
+      DistrictCode = "CTY",
+      DistrictName = "County General Updated",
+      PriorYearLevy = 1_000_000m,
+      RequestedLevy = 1_010_000m,
+      AssessedValue = 500_000_000m,
+      TaxYear = 2026,
+    });
+
+    var entities = await db.Set<LevyCertification>().ToListAsync();
+    entities.Should().HaveCount(1);
+    entities[0].DistrictName.Should().Be("County General Updated");
+    entities[0].TaxYear.Should().Be(2026);
   }
 
   // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
