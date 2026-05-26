@@ -1,0 +1,51 @@
+{
+  "generatedAt": "2026-05-26T17:06:00.000Z",
+  "auditType": "king_shell_correction_post_execution_audit",
+  "countyName": "King County",
+  "fips": "53033",
+  "databaseMutationAttempted": true,
+  "transactionCommitted": true,
+  "certificationAllowed": false,
+  "productionBindingAllowed": false,
+  "directDatabaseVerification": {
+    "receiptRows": 1600,
+    "receiptActive": 1149,
+    "receiptSuperseded": 451,
+    "activeDuplicateGroups": 0,
+    "kingActiveRows": 635872
+  },
+  "sourceCanonicalIdentityVerification": {
+    "sourceDistinct": 635896,
+    "canonicalActiveDistinct": 635872,
+    "exactOverlap": 635872,
+    "sourceOnly": 24,
+    "sourceOnlyNonPlaceholder": 0,
+    "canonicalOnly": 0,
+    "sourceOnlySample": [
+      "012605Tr-A",
+      "013300TR-A",
+      "022206Tr-A",
+      "112605TR-x",
+      "124500TR-1",
+      "132204Unkn",
+      "152403UNKN",
+      "202505TR-a",
+      "212970TR-A",
+      "218250TR-A"
+    ]
+  },
+  "postExecutionVerdict": {
+    "boundedShellCorrectionSucceeded": true,
+    "identityParityAchievedUnderPolicyApprovedScope": true,
+    "placeholderRowsRemainExcluded": true,
+    "kingCertificationStillBlocked": true,
+    "productionBindingStillBlocked": true
+  },
+  "notes": [
+    "The 24 remaining source-only identifiers are all policy-held placeholder/tract rows.",
+    "No active canonical-only King parcel numbers remain after the transaction.",
+    "No active CountyId + ParcelNumber duplicate groups remain for King County.",
+    "KING_PUBLIC_PARCEL_SHELL trust posture is represented by execution receipt and IdentityRepairReceiptId, because canonical_tf.tf_parcel has no TrustLabel column.",
+    "This audit does not certify King workflow completeness."
+  ]
+}

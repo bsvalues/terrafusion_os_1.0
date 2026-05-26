@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-05-26T17:01:13.217Z",
+  "receiptType": "king_shell_correction_execution_receipt",
+  "receiptVersion": "june10-king-shell-correction-v1",
+  "countyName": "King County",
+  "fips": "53033",
+  "approvalToken": "KING-SHELL-CORRECTION:acc0e825d473835534bef688914238b9fbf743425bca192b54185974c3315787:85308b22d13b647bd3bdbd0eee42f9c2a7e9b120849fea859364b62be66ad472:9f72b9fa3bd633d8f383214f97011d4438cd48376c113f25c085a7b0473e6c6f",
+  "databaseMutationAttempted": true,
+  "transactionCommitted": true,
+  "certificationAllowed": false,
+  "productionBindingAllowed": false,
+  "backupPath": "os-platform/core/pilot/evidence/june10-king-shell-correction-execution/pre-mutation-backup.json",
+  "expectedCounts": {
+    "caseCorrections": 12,
+    "supersedes": 451,
+    "shellInserts": 1137,
+    "placeholderHeld": 24
+  },
+  "verification": {
+    "superseded": 451,
+    "trustPosture": "KING_PUBLIC_PARCEL_SHELL",
+    "caseCorrected": 12,
+    "shellInserted": 1137,
+    "kingActiveRows": 635872,
+    "receiptRowsTotal": 1600,
+    "trustLabelStorage": "execution_receipt_and_identity_repair_receipt_id",
+    "placeholderInserted": 0,
+    "certificationAllowed": false,
+    "activeDuplicateGroups": 0,
+    "productionBindingAllowed": false
+  },
+  "boundaries": [
+    "King workflow certification remains blocked.",
+    "Owner/address/value-dependent workflows remain blocked for shell rows.",
+    "Placeholder/tract rows remain excluded.",
+    "Production binding remains blocked."
+  ]
+}

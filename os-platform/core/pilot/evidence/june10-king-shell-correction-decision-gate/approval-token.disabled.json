@@ -2,8 +2,8 @@
   "enabled": false,
   "tokenFormat": "KING-SHELL-CORRECTION:<packet-sha256>:<dry-run-sha256>:<source-sha256>",
   "token": null,
-  "state": "READY_FOR_HUMAN_DECISION",
-  "unlocks": [],
+  "state": "APPROVED_FOR_SHELL_CORRECTION",
+  "unlocks": ["bounded_king_shell_identity_correction"],
   "remainsForbidden": [
     "King certification",
     "workflow-complete claims",

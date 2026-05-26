@@ -1,20 +1,20 @@
 {
-  "generatedAt": "2026-05-26T16:45:44.974Z",
+  "generatedAt": "2026-05-26T17:00:05.520Z",
   "gateType": "king_shell_correction_decision_gate",
   "countyName": "King County",
   "fips": "53033",
-  "state": "READY_FOR_HUMAN_DECISION",
-  "decision": "none",
-  "executionEnabled": false,
+  "state": "APPROVED_FOR_SHELL_CORRECTION",
+  "decision": "approve",
+  "executionEnabled": true,
   "databaseMutationAttempted": false,
   "certificationAllowed": false,
   "productionBindingAllowed": false,
   "approvalToken": {
-    "enabled": false,
+    "enabled": true,
     "tokenFormat": "KING-SHELL-CORRECTION:<packet-sha256>:<dry-run-sha256>:<source-sha256>",
-    "token": null,
-    "state": "READY_FOR_HUMAN_DECISION",
-    "unlocks": [],
+    "token": "KING-SHELL-CORRECTION:acc0e825d473835534bef688914238b9fbf743425bca192b54185974c3315787:85308b22d13b647bd3bdbd0eee42f9c2a7e9b120849fea859364b62be66ad472:9f72b9fa3bd633d8f383214f97011d4438cd48376c113f25c085a7b0473e6c6f",
+    "state": "APPROVED_FOR_SHELL_CORRECTION",
+    "unlocks": ["bounded_king_shell_identity_correction"],
     "remainsForbidden": [
       "King certification",
       "workflow-complete claims",
@@ -44,10 +44,10 @@
     "rollbackSqlExists": true,
     "worktreeClean": true,
     "latestTestsPassed": true,
-    "humanApprovalPhraseMatches": false,
-    "humanApprovalChecklistAccepted": false
+    "humanApprovalPhraseMatches": true,
+    "humanApprovalChecklistAccepted": true
   },
-  "allowedUnlocks": [],
+  "allowedUnlocks": ["bounded_king_shell_identity_correction"],
   "forbiddenApprovals": [
     "King certification",
     "workflow-complete claims",

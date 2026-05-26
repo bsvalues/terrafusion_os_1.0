@@ -1,12 +1,12 @@
 # King Shell Correction Decision Gate
 
-Generated: 2026-05-26T16:45:44.974Z
+Generated: 2026-05-26T17:00:05.520Z
 
 ## Verdict
 
-- State: READY_FOR_HUMAN_DECISION
-- Decision input: none
-- Execution enabled: no
+- State: APPROVED_FOR_SHELL_CORRECTION
+- Decision input: approve
+- Execution enabled: yes
 - Database mutation attempted: no
 - Certification allowed: no
 - Production binding allowed: no
@@ -26,12 +26,12 @@ Generated: 2026-05-26T16:45:44.974Z
 | Rollback SQL exists | yes |
 | Worktree clean | yes |
 | Latest tests passed | yes |
-| Human approval phrase matches | no |
-| Human approval checklist accepted | no |
+| Human approval phrase matches | yes |
+| Human approval checklist accepted | yes |
 
 ## Approval Token
 
-- Enabled: no
+- Enabled: yes
 - Format: KING-SHELL-CORRECTION:<packet-sha256>:<dry-run-sha256>:<source-sha256>
 
 ## Still Forbidden
