@@ -1,0 +1,52 @@
+{
+  "receiptVersion": "wa_initial_seed_prefixed_identity_repair_dry_run_v1",
+  "receiptId": "wave2_53047_prefixed_identity_repair_dry_run_2026_05_26",
+  "countyName": "Okanogan County",
+  "fips": "53047",
+  "sourceClass": "WA_INITIAL_SEED",
+  "sourceReceiptCandidate": {
+    "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+    "countyName": "Okanogan County",
+    "fips": "53047",
+    "sourceClass": "WA_INITIAL_SEED",
+    "sourceParcelIdField": "parcel/account number from Okanogan comparable sales workbook",
+    "artifacts": [
+      {
+        "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/047-okanogan-8ba26dbb173f.xlsx",
+        "sizeBytes": 3798860,
+        "sha256": "34f9d552229dfe69be32d672f3ec72824a219afbd842708dbd3fb7fbbb7c6b7c",
+        "lastWriteTime": "2026-04-24T16:58:09.871Z"
+      },
+      {
+        "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/okanogan/source-native-parcel-ids.jsonl",
+        "sizeBytes": 460776,
+        "sha256": "deb03fe42ab52e214a3e4b9a740c70c46ffdc4e282b8ce82b26f369c26586ca5",
+        "generatedArtifact": true
+      }
+    ],
+    "counts": {
+      "sourceDistinctParcelIds": 6312,
+      "canonicalActiveDistinctParcelNumbers": 49386,
+      "exactSourceCanonicalOverlap": 0,
+      "transformedSourceCanonicalOverlap": 5854
+    },
+    "classification": "blocked_transform",
+    "certificationAllowed": false,
+    "productionBindingAllowed": false
+  },
+  "repairSemantics": {
+    "sourceNativeParcelNumberTarget": true,
+    "preservePrefixedValueAsLegacyImportedParcelKey": true,
+    "generateTerraFusionParcelKey": "53047:{sourceNativeParcelNumber}",
+    "deleteRows": false
+  },
+  "counts": {
+    "proposedRows": 49386,
+    "sourceDistinctIds": 6312,
+    "sourceOverlapAfterPrefixRemoval": 5854,
+    "duplicateCountyIdParcelNumberAfter": 0
+  },
+  "classification": "dry_run_pass_pending_delta_adjudication",
+  "certificationAllowed": false,
+  "productionBindingAllowed": false
+}

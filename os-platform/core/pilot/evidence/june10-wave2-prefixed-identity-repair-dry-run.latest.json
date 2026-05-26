@@ -1,0 +1,764 @@
+{
+  "generatedAt": "2026-05-26T22:59:49.386Z",
+  "scope": "Wave 2 prefixed identity repair dry-run for Kitsap, Pierce, Klickitat, and Okanogan. San Juan excluded because source access is blocked.",
+  "summary": {
+    "countiesChecked": 4,
+    "proposedRows": 516423,
+    "duplicateRiskCount": 0,
+    "byClassification": {
+      "dry_run_pass_pending_delta_adjudication": 4
+    }
+  },
+  "excluded": [
+    {
+      "county": "San Juan",
+      "fips": "53055",
+      "reason": "blocked_source_access"
+    }
+  ],
+  "counties": [
+    {
+      "county": "Kitsap",
+      "fips": "53035",
+      "countyId": "500ef839-e1cf-9c95-60b5-3b1b12f5851d",
+      "classification": "dry_run_pass_pending_delta_adjudication",
+      "validation": {
+        "activeCanonicalRows": 116900,
+        "proposedRows": 116900,
+        "sourceDistinctCount": 23126,
+        "sourceOverlapAfterPrefixRemoval": 20406,
+        "duplicateCountyIdParcelNumberAfter": 0,
+        "proposedRowsSha256": "1428f4f83a285c0de37c51a4ffae3cff16ce13dcce5cdca9a7862a6ac112c804",
+        "proposedRowsSample": [
+          {
+            "tfParcelId": "497d8308-f4e1-6c8b-732e-e88d28ce968d",
+            "currentParcelNumber": "035-012201-1-001-1007",
+            "proposedParcelNumber": "012201-1-001-1007",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "035-012201-1-001-1007",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53035:012201-1-001-1007",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "f4f9f4d8-083e-3ed0-a829-e7dbf0d4b9ce",
+            "currentParcelNumber": "035-012201-1-005-2001",
+            "proposedParcelNumber": "012201-1-005-2001",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "035-012201-1-005-2001",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53035:012201-1-005-2001",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "d913982a-8247-fe27-9cee-bb4f63d0538c",
+            "currentParcelNumber": "035-012201-1-007-2009",
+            "proposedParcelNumber": "012201-1-007-2009",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "035-012201-1-007-2009",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53035:012201-1-007-2009",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "bc83aedc-bc1d-212e-f10b-fe6de777b5c7",
+            "currentParcelNumber": "035-012201-1-008-2008",
+            "proposedParcelNumber": "012201-1-008-2008",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "035-012201-1-008-2008",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53035:012201-1-008-2008",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "a339842d-3dd4-41d1-3907-a391c986b9b4",
+            "currentParcelNumber": "035-012201-1-009-2007",
+            "proposedParcelNumber": "012201-1-009-2007",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "035-012201-1-009-2007",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53035:012201-1-009-2007",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "94db850c-d196-685c-30d8-d77e501edfed",
+            "currentParcelNumber": "035-012201-1-010-2004",
+            "proposedParcelNumber": "012201-1-010-2004",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "035-012201-1-010-2004",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53035:012201-1-010-2004",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "c1ab8048-0309-7814-e312-13b440f7dc42",
+            "currentParcelNumber": "035-012201-1-014-2000",
+            "proposedParcelNumber": "012201-1-014-2000",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "035-012201-1-014-2000",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53035:012201-1-014-2000",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "a7954b19-4b07-fae1-a8e6-48349186f439",
+            "currentParcelNumber": "035-012201-1-015-2009",
+            "proposedParcelNumber": "012201-1-015-2009",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "035-012201-1-015-2009",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53035:012201-1-015-2009",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          }
+        ]
+      },
+      "receiptCandidate": {
+        "receiptVersion": "wa_initial_seed_prefixed_identity_repair_dry_run_v1",
+        "receiptId": "wave2_53035_prefixed_identity_repair_dry_run_2026_05_26",
+        "countyName": "Kitsap County",
+        "fips": "53035",
+        "sourceClass": "WA_INITIAL_SEED",
+        "sourceReceiptCandidate": {
+          "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+          "countyName": "Kitsap County",
+          "fips": "53035",
+          "sourceClass": "WA_INITIAL_SEED",
+          "sourceParcelIdField": "parcel/account number from Kitsap sales workbooks",
+          "artifacts": [
+            {
+              "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205359Z/kitsap-workbooks/035-kitsap-commercial-sales-2021-2026.xlsx",
+              "sizeBytes": 254463,
+              "sha256": "f814b04f504410a5214bb5593cdc6d62118e4d7e500c9c6a09395d128ab4710a",
+              "lastWriteTime": "2026-04-24T20:54:11.507Z"
+            },
+            {
+              "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205359Z/kitsap-workbooks/035-kitsap-residential-sales-2021-2026.xlsx",
+              "sizeBytes": 3517769,
+              "sha256": "b4eb63b0550da380f11f2c1e8e372db177e2e3cb6d0de76333d50252ac1dbbd9",
+              "lastWriteTime": "2026-04-24T20:54:06.061Z"
+            },
+            {
+              "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/kitsap/source-native-parcel-ids.jsonl",
+              "sizeBytes": 1797037,
+              "sha256": "fe64110aff16a4a0723a837fc8e487603b3678cba29d5affd8b334755d6a4281",
+              "generatedArtifact": true
+            }
+          ],
+          "counts": {
+            "sourceDistinctParcelIds": 23126,
+            "canonicalActiveDistinctParcelNumbers": 116900,
+            "exactSourceCanonicalOverlap": 0,
+            "transformedSourceCanonicalOverlap": 20406
+          },
+          "classification": "blocked_transform",
+          "certificationAllowed": false,
+          "productionBindingAllowed": false
+        },
+        "repairSemantics": {
+          "sourceNativeParcelNumberTarget": true,
+          "preservePrefixedValueAsLegacyImportedParcelKey": true,
+          "generateTerraFusionParcelKey": "53035:{sourceNativeParcelNumber}",
+          "deleteRows": false
+        },
+        "counts": {
+          "proposedRows": 116900,
+          "sourceDistinctIds": 23126,
+          "sourceOverlapAfterPrefixRemoval": 20406,
+          "duplicateCountyIdParcelNumberAfter": 0
+        },
+        "classification": "dry_run_pass_pending_delta_adjudication",
+        "certificationAllowed": false,
+        "productionBindingAllowed": false
+      },
+      "rollbackPlan": {
+        "requiredPreMutationBackup": "Before any execution, export affected active canonical_tf.tf_parcel rows for Kitsap 53035 where CountyId=500ef839-e1cf-9c95-60b5-3b1b12f5851d.",
+        "rollbackStrategy": "Restore ParcelNumber, LegacyImportedParcelKey, TerraFusionParcelKey, IdentityRepairReceiptId, and UpdatedAt from the pre-mutation backup inside one transaction.",
+        "rollbackSqlTemplate": "-- Template only. Requires backup table populated before execution.\nBEGIN;\n\n-- UPDATE canonical_tf.tf_parcel p\n-- SET\n--   \"ParcelNumber\" = b.\"ParcelNumber\",\n--   \"LegacyImportedParcelKey\" = b.\"LegacyImportedParcelKey\",\n--   \"TerraFusionParcelKey\" = b.\"TerraFusionParcelKey\",\n--   \"IdentityRepairReceiptId\" = b.\"IdentityRepairReceiptId\",\n--   \"UpdatedAt\" = b.\"UpdatedAt\"\n-- FROM backup.wave2_53035_tf_parcel_identity b\n-- WHERE p.\"TfParcelId\" = b.\"TfParcelId\";\n\nROLLBACK; -- template only\n",
+        "receiptId": "wave2_53035_prefixed_identity_repair_dry_run_2026_05_26"
+      },
+      "blockers": [
+        "Dry-run repair is duplicate-safe, but source artifact is partial; county delta adjudication is still required before receipt-backed closure."
+      ],
+      "doctrine": {
+        "databaseMutationAttempted": false,
+        "productionBindingAllowed": false,
+        "runtimeClaimAllowed": false,
+        "certificationAllowed": false
+      },
+      "outputArtifacts": {
+        "repairReceiptCandidatePath": "os-platform/core/pilot/evidence/june10-wave2-prefixed-identity-repair-dry-run/kitsap/repair-receipt-candidate.json",
+        "rollbackPlanPath": "os-platform/core/pilot/evidence/june10-wave2-prefixed-identity-repair-dry-run/kitsap/rollback-plan.md",
+        "repairReceiptCandidateSha256": "2a19a7e0cdd9c2fb3c8db0318b63c7b33c80ecf9afc930d2b8b75e66d171caee",
+        "rollbackPlanSha256": "142cd45320a327c4f2a628bfd0c7046a97eb568e089633a0f867e6e41da0c16f"
+      }
+    },
+    {
+      "county": "Pierce",
+      "fips": "53053",
+      "countyId": "d4f5c5a1-8c6d-d91e-932e-de7f6b4f83e8",
+      "classification": "dry_run_pass_pending_delta_adjudication",
+      "validation": {
+        "activeCanonicalRows": 328832,
+        "proposedRows": 328832,
+        "sourceDistinctCount": 262058,
+        "sourceOverlapAfterPrefixRemoval": 252992,
+        "duplicateCountyIdParcelNumberAfter": 0,
+        "proposedRowsSha256": "c31ea27a497ec7c5d8436e36f307f882ffa9f37635353a0494063ce67b3c0e46",
+        "proposedRowsSample": [
+          {
+            "tfParcelId": "06560ba5-95ad-335f-70ff-52439b60337e",
+            "currentParcelNumber": "053-0019012000",
+            "proposedParcelNumber": "0019012000",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "053-0019012000",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53053:0019012000",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "98f5c204-d23f-1b11-9283-a9caa4265fe4",
+            "currentParcelNumber": "053-0019014000",
+            "proposedParcelNumber": "0019014000",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "053-0019014000",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53053:0019014000",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "9199ff4b-85c1-368d-270f-36750338aeab",
+            "currentParcelNumber": "053-0019021000",
+            "proposedParcelNumber": "0019021000",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "053-0019021000",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53053:0019021000",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "ac727bf2-7a96-7f36-65ca-ecb00b943ddf",
+            "currentParcelNumber": "053-0019121002",
+            "proposedParcelNumber": "0019121002",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "053-0019121002",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53053:0019121002",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "ad85658d-67a5-da54-6d89-e659317b17b9",
+            "currentParcelNumber": "053-0019121003",
+            "proposedParcelNumber": "0019121003",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "053-0019121003",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53053:0019121003",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "92f1fc75-45c0-6c9a-1b4f-9f10ef795a1f",
+            "currentParcelNumber": "053-0019121004",
+            "proposedParcelNumber": "0019121004",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "053-0019121004",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53053:0019121004",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "36bd803f-f78b-38ae-f046-cfef0c161ed4",
+            "currentParcelNumber": "053-0019121006",
+            "proposedParcelNumber": "0019121006",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "053-0019121006",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53053:0019121006",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "f27e57a1-4f92-8ba8-93ca-fd5eafafe4f4",
+            "currentParcelNumber": "053-0019121007",
+            "proposedParcelNumber": "0019121007",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "053-0019121007",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53053:0019121007",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          }
+        ]
+      },
+      "receiptCandidate": {
+        "receiptVersion": "wa_initial_seed_prefixed_identity_repair_dry_run_v1",
+        "receiptId": "wave2_53053_prefixed_identity_repair_dry_run_2026_05_26",
+        "countyName": "Pierce County",
+        "fips": "53053",
+        "sourceClass": "WA_INITIAL_SEED",
+        "sourceReceiptCandidate": {
+          "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+          "countyName": "Pierce County",
+          "fips": "53053",
+          "sourceClass": "WA_INITIAL_SEED",
+          "sourceParcelIdField": "sale.txt field 3 parcel/account number",
+          "artifacts": [
+            {
+              "path": "docs/Washington Counties/implementation/reports/payloads/20260424T204521Z/pierce-datamart/053-pierce-sale.zip",
+              "sizeBytes": 20560588,
+              "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+              "lastWriteTime": "2026-04-24T20:45:34.102Z"
+            },
+            {
+              "path": "docs/Washington Counties/implementation/reports/payloads/20260424T204815Z/pierce-datamart/053-pierce-sale.zip",
+              "sizeBytes": 20560588,
+              "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+              "lastWriteTime": "2026-04-24T20:48:18.383Z"
+            },
+            {
+              "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205531Z/pierce-datamart/053-pierce-sale.zip",
+              "sizeBytes": 20560588,
+              "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+              "lastWriteTime": "2026-04-24T20:55:39.244Z"
+            },
+            {
+              "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/pierce/source-native-parcel-ids.jsonl",
+              "sizeBytes": 18606118,
+              "sha256": "4fc57b83ed6838ce4d463840b1ba021ac3d1509cd5988bcb4e7e0dad3c8a806f",
+              "generatedArtifact": true
+            }
+          ],
+          "counts": {
+            "sourceDistinctParcelIds": 262058,
+            "canonicalActiveDistinctParcelNumbers": 328832,
+            "exactSourceCanonicalOverlap": 0,
+            "transformedSourceCanonicalOverlap": 252992
+          },
+          "classification": "blocked_transform",
+          "certificationAllowed": false,
+          "productionBindingAllowed": false
+        },
+        "repairSemantics": {
+          "sourceNativeParcelNumberTarget": true,
+          "preservePrefixedValueAsLegacyImportedParcelKey": true,
+          "generateTerraFusionParcelKey": "53053:{sourceNativeParcelNumber}",
+          "deleteRows": false
+        },
+        "counts": {
+          "proposedRows": 328832,
+          "sourceDistinctIds": 262058,
+          "sourceOverlapAfterPrefixRemoval": 252992,
+          "duplicateCountyIdParcelNumberAfter": 0
+        },
+        "classification": "dry_run_pass_pending_delta_adjudication",
+        "certificationAllowed": false,
+        "productionBindingAllowed": false
+      },
+      "rollbackPlan": {
+        "requiredPreMutationBackup": "Before any execution, export affected active canonical_tf.tf_parcel rows for Pierce 53053 where CountyId=d4f5c5a1-8c6d-d91e-932e-de7f6b4f83e8.",
+        "rollbackStrategy": "Restore ParcelNumber, LegacyImportedParcelKey, TerraFusionParcelKey, IdentityRepairReceiptId, and UpdatedAt from the pre-mutation backup inside one transaction.",
+        "rollbackSqlTemplate": "-- Template only. Requires backup table populated before execution.\nBEGIN;\n\n-- UPDATE canonical_tf.tf_parcel p\n-- SET\n--   \"ParcelNumber\" = b.\"ParcelNumber\",\n--   \"LegacyImportedParcelKey\" = b.\"LegacyImportedParcelKey\",\n--   \"TerraFusionParcelKey\" = b.\"TerraFusionParcelKey\",\n--   \"IdentityRepairReceiptId\" = b.\"IdentityRepairReceiptId\",\n--   \"UpdatedAt\" = b.\"UpdatedAt\"\n-- FROM backup.wave2_53053_tf_parcel_identity b\n-- WHERE p.\"TfParcelId\" = b.\"TfParcelId\";\n\nROLLBACK; -- template only\n",
+        "receiptId": "wave2_53053_prefixed_identity_repair_dry_run_2026_05_26"
+      },
+      "blockers": [
+        "Dry-run repair is duplicate-safe, but source artifact is partial; county delta adjudication is still required before receipt-backed closure."
+      ],
+      "doctrine": {
+        "databaseMutationAttempted": false,
+        "productionBindingAllowed": false,
+        "runtimeClaimAllowed": false,
+        "certificationAllowed": false
+      },
+      "outputArtifacts": {
+        "repairReceiptCandidatePath": "os-platform/core/pilot/evidence/june10-wave2-prefixed-identity-repair-dry-run/pierce/repair-receipt-candidate.json",
+        "rollbackPlanPath": "os-platform/core/pilot/evidence/june10-wave2-prefixed-identity-repair-dry-run/pierce/rollback-plan.md",
+        "repairReceiptCandidateSha256": "36e32dcaae097a59eeea4e479d7613e60db5b2ca669efaf811084ee4af7f7281",
+        "rollbackPlanSha256": "54223200aae16eeeefad61aa8fd7fc63534bbbc3ca2e900293fb8a83c7211080"
+      }
+    },
+    {
+      "county": "Klickitat",
+      "fips": "53039",
+      "countyId": "9d619518-23ca-f6e9-03c9-6219db494501",
+      "classification": "dry_run_pass_pending_delta_adjudication",
+      "validation": {
+        "activeCanonicalRows": 21305,
+        "proposedRows": 21305,
+        "sourceDistinctCount": 665,
+        "sourceOverlapAfterPrefixRemoval": 653,
+        "duplicateCountyIdParcelNumberAfter": 0,
+        "proposedRowsSha256": "b864a20e54f57b21afb7e893446e0836ca0d045320e573b142d3ffdf51a032d8",
+        "proposedRowsSample": [
+          {
+            "tfParcelId": "8b8fcb2d-1a99-1928-173b-404e233df899",
+            "currentParcelNumber": "039-02120100000100",
+            "proposedParcelNumber": "02120100000100",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "039-02120100000100",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53039:02120100000100",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "4a1409f3-6299-5607-5217-7d7d88bd95f5",
+            "currentParcelNumber": "039-02120100000200",
+            "proposedParcelNumber": "02120100000200",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "039-02120100000200",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53039:02120100000200",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "3162171b-672d-bb40-2dda-8e0223d5edd8",
+            "currentParcelNumber": "039-02120100000300",
+            "proposedParcelNumber": "02120100000300",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "039-02120100000300",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53039:02120100000300",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "caca545b-b977-0cdb-8d25-7c83de69052b",
+            "currentParcelNumber": "039-02120100000400",
+            "proposedParcelNumber": "02120100000400",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "039-02120100000400",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53039:02120100000400",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "f97337a2-d326-41f0-886c-931196bd9ae2",
+            "currentParcelNumber": "039-02120100000500",
+            "proposedParcelNumber": "02120100000500",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "039-02120100000500",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53039:02120100000500",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "5964df47-fa02-ce82-2117-33bc36714b64",
+            "currentParcelNumber": "039-02120100000600",
+            "proposedParcelNumber": "02120100000600",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "039-02120100000600",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53039:02120100000600",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "2b412fe7-968c-b3d8-48d9-89b5d5f4126b",
+            "currentParcelNumber": "039-02120200000100",
+            "proposedParcelNumber": "02120200000100",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "039-02120200000100",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53039:02120200000100",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "802bbaa9-e43c-b259-3774-b8f30232c941",
+            "currentParcelNumber": "039-02120200000200",
+            "proposedParcelNumber": "02120200000200",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "039-02120200000200",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53039:02120200000200",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          }
+        ]
+      },
+      "receiptCandidate": {
+        "receiptVersion": "wa_initial_seed_prefixed_identity_repair_dry_run_v1",
+        "receiptId": "wave2_53039_prefixed_identity_repair_dry_run_2026_05_26",
+        "countyName": "Klickitat County",
+        "fips": "53039",
+        "sourceClass": "WA_INITIAL_SEED",
+        "sourceReceiptCandidate": {
+          "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+          "countyName": "Klickitat County",
+          "fips": "53039",
+          "sourceClass": "WA_INITIAL_SEED",
+          "sourceParcelIdField": "parcel/account number from Klickitat sales reports",
+          "artifacts": [
+            {
+              "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/039-klickitat-33cbff5f37aa.xlsx",
+              "sizeBytes": 27672,
+              "sha256": "9d985fa0341362f485b32c1cb44b90979481142f3e8d22794632659a7ea4e138",
+              "lastWriteTime": "2026-04-24T16:57:59.925Z"
+            },
+            {
+              "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/039-klickitat-cdf4b89b0615.xlsx",
+              "sizeBytes": 43829,
+              "sha256": "1ae0b53fd40ab31232c6299d43d37ec9ada927acfe1b04ce64c6666cc3fd942c",
+              "lastWriteTime": "2026-04-24T16:57:59.869Z"
+            },
+            {
+              "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/klickitat/source-native-parcel-ids.jsonl",
+              "sizeBytes": 51870,
+              "sha256": "a9cf3916c5e8ca9a36ee5947ee6374e050b0613be0132c11a24d44eca8c4aeb7",
+              "generatedArtifact": true
+            }
+          ],
+          "counts": {
+            "sourceDistinctParcelIds": 665,
+            "canonicalActiveDistinctParcelNumbers": 21305,
+            "exactSourceCanonicalOverlap": 0,
+            "transformedSourceCanonicalOverlap": 653
+          },
+          "classification": "blocked_transform",
+          "certificationAllowed": false,
+          "productionBindingAllowed": false
+        },
+        "repairSemantics": {
+          "sourceNativeParcelNumberTarget": true,
+          "preservePrefixedValueAsLegacyImportedParcelKey": true,
+          "generateTerraFusionParcelKey": "53039:{sourceNativeParcelNumber}",
+          "deleteRows": false
+        },
+        "counts": {
+          "proposedRows": 21305,
+          "sourceDistinctIds": 665,
+          "sourceOverlapAfterPrefixRemoval": 653,
+          "duplicateCountyIdParcelNumberAfter": 0
+        },
+        "classification": "dry_run_pass_pending_delta_adjudication",
+        "certificationAllowed": false,
+        "productionBindingAllowed": false
+      },
+      "rollbackPlan": {
+        "requiredPreMutationBackup": "Before any execution, export affected active canonical_tf.tf_parcel rows for Klickitat 53039 where CountyId=9d619518-23ca-f6e9-03c9-6219db494501.",
+        "rollbackStrategy": "Restore ParcelNumber, LegacyImportedParcelKey, TerraFusionParcelKey, IdentityRepairReceiptId, and UpdatedAt from the pre-mutation backup inside one transaction.",
+        "rollbackSqlTemplate": "-- Template only. Requires backup table populated before execution.\nBEGIN;\n\n-- UPDATE canonical_tf.tf_parcel p\n-- SET\n--   \"ParcelNumber\" = b.\"ParcelNumber\",\n--   \"LegacyImportedParcelKey\" = b.\"LegacyImportedParcelKey\",\n--   \"TerraFusionParcelKey\" = b.\"TerraFusionParcelKey\",\n--   \"IdentityRepairReceiptId\" = b.\"IdentityRepairReceiptId\",\n--   \"UpdatedAt\" = b.\"UpdatedAt\"\n-- FROM backup.wave2_53039_tf_parcel_identity b\n-- WHERE p.\"TfParcelId\" = b.\"TfParcelId\";\n\nROLLBACK; -- template only\n",
+        "receiptId": "wave2_53039_prefixed_identity_repair_dry_run_2026_05_26"
+      },
+      "blockers": [
+        "Dry-run repair is duplicate-safe, but source artifact is partial; county delta adjudication is still required before receipt-backed closure."
+      ],
+      "doctrine": {
+        "databaseMutationAttempted": false,
+        "productionBindingAllowed": false,
+        "runtimeClaimAllowed": false,
+        "certificationAllowed": false
+      },
+      "outputArtifacts": {
+        "repairReceiptCandidatePath": "os-platform/core/pilot/evidence/june10-wave2-prefixed-identity-repair-dry-run/klickitat/repair-receipt-candidate.json",
+        "rollbackPlanPath": "os-platform/core/pilot/evidence/june10-wave2-prefixed-identity-repair-dry-run/klickitat/rollback-plan.md",
+        "repairReceiptCandidateSha256": "d7ade13b7abb2cc87078f3d1881b5fb1dc7ba856c8f3d49ac6e476770a8e0d43",
+        "rollbackPlanSha256": "29339e724166de414ae8955fb2d4577a8bda3fe5bee85c3e311e4b2b6de5dc70"
+      }
+    },
+    {
+      "county": "Okanogan",
+      "fips": "53047",
+      "countyId": "2ca5f53a-275d-d1b7-3266-80383d5e2387",
+      "classification": "dry_run_pass_pending_delta_adjudication",
+      "validation": {
+        "activeCanonicalRows": 49386,
+        "proposedRows": 49386,
+        "sourceDistinctCount": 6312,
+        "sourceOverlapAfterPrefixRemoval": 5854,
+        "duplicateCountyIdParcelNumberAfter": 0,
+        "proposedRowsSha256": "45e3b012fdb43fb4c890144761a8892e2bd6eda0068775d9a02396a4e7cf8d36",
+        "proposedRowsSample": [
+          {
+            "tfParcelId": "f7f05f26-00ed-96d8-1987-362162b9ea30",
+            "currentParcelNumber": "047-0020010100",
+            "proposedParcelNumber": "0020010100",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "047-0020010100",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53047:0020010100",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "b226878a-5f7a-78c8-2226-29c41d78d399",
+            "currentParcelNumber": "047-0020010301",
+            "proposedParcelNumber": "0020010301",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "047-0020010301",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53047:0020010301",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "040d28d4-2bd8-7eb6-0fb3-e1ff563e6d43",
+            "currentParcelNumber": "047-0020010302",
+            "proposedParcelNumber": "0020010302",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "047-0020010302",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53047:0020010302",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "69369d26-ffc2-20a6-dbc3-7b54a1c58109",
+            "currentParcelNumber": "047-0020010303",
+            "proposedParcelNumber": "0020010303",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "047-0020010303",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53047:0020010303",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "1f390390-fee1-d032-e4fc-e14248002312",
+            "currentParcelNumber": "047-0020010504",
+            "proposedParcelNumber": "0020010504",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "047-0020010504",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53047:0020010504",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "82eb2a83-46be-2f39-f2d7-db115751a193",
+            "currentParcelNumber": "047-0020010701",
+            "proposedParcelNumber": "0020010701",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "047-0020010701",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53047:0020010701",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "58376862-80bf-8723-82de-470138ad632c",
+            "currentParcelNumber": "047-0020010801",
+            "proposedParcelNumber": "0020010801",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "047-0020010801",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53047:0020010801",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          },
+          {
+            "tfParcelId": "d537526a-3e73-a055-c118-50805fb90ad7",
+            "currentParcelNumber": "047-0020010802",
+            "proposedParcelNumber": "0020010802",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "047-0020010802",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53047:0020010802",
+            "deleteRow": false,
+            "action": "restore_source_native_parcel_number_preserve_prefixed_key"
+          }
+        ]
+      },
+      "receiptCandidate": {
+        "receiptVersion": "wa_initial_seed_prefixed_identity_repair_dry_run_v1",
+        "receiptId": "wave2_53047_prefixed_identity_repair_dry_run_2026_05_26",
+        "countyName": "Okanogan County",
+        "fips": "53047",
+        "sourceClass": "WA_INITIAL_SEED",
+        "sourceReceiptCandidate": {
+          "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+          "countyName": "Okanogan County",
+          "fips": "53047",
+          "sourceClass": "WA_INITIAL_SEED",
+          "sourceParcelIdField": "parcel/account number from Okanogan comparable sales workbook",
+          "artifacts": [
+            {
+              "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/047-okanogan-8ba26dbb173f.xlsx",
+              "sizeBytes": 3798860,
+              "sha256": "34f9d552229dfe69be32d672f3ec72824a219afbd842708dbd3fb7fbbb7c6b7c",
+              "lastWriteTime": "2026-04-24T16:58:09.871Z"
+            },
+            {
+              "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/okanogan/source-native-parcel-ids.jsonl",
+              "sizeBytes": 460776,
+              "sha256": "deb03fe42ab52e214a3e4b9a740c70c46ffdc4e282b8ce82b26f369c26586ca5",
+              "generatedArtifact": true
+            }
+          ],
+          "counts": {
+            "sourceDistinctParcelIds": 6312,
+            "canonicalActiveDistinctParcelNumbers": 49386,
+            "exactSourceCanonicalOverlap": 0,
+            "transformedSourceCanonicalOverlap": 5854
+          },
+          "classification": "blocked_transform",
+          "certificationAllowed": false,
+          "productionBindingAllowed": false
+        },
+        "repairSemantics": {
+          "sourceNativeParcelNumberTarget": true,
+          "preservePrefixedValueAsLegacyImportedParcelKey": true,
+          "generateTerraFusionParcelKey": "53047:{sourceNativeParcelNumber}",
+          "deleteRows": false
+        },
+        "counts": {
+          "proposedRows": 49386,
+          "sourceDistinctIds": 6312,
+          "sourceOverlapAfterPrefixRemoval": 5854,
+          "duplicateCountyIdParcelNumberAfter": 0
+        },
+        "classification": "dry_run_pass_pending_delta_adjudication",
+        "certificationAllowed": false,
+        "productionBindingAllowed": false
+      },
+      "rollbackPlan": {
+        "requiredPreMutationBackup": "Before any execution, export affected active canonical_tf.tf_parcel rows for Okanogan 53047 where CountyId=2ca5f53a-275d-d1b7-3266-80383d5e2387.",
+        "rollbackStrategy": "Restore ParcelNumber, LegacyImportedParcelKey, TerraFusionParcelKey, IdentityRepairReceiptId, and UpdatedAt from the pre-mutation backup inside one transaction.",
+        "rollbackSqlTemplate": "-- Template only. Requires backup table populated before execution.\nBEGIN;\n\n-- UPDATE canonical_tf.tf_parcel p\n-- SET\n--   \"ParcelNumber\" = b.\"ParcelNumber\",\n--   \"LegacyImportedParcelKey\" = b.\"LegacyImportedParcelKey\",\n--   \"TerraFusionParcelKey\" = b.\"TerraFusionParcelKey\",\n--   \"IdentityRepairReceiptId\" = b.\"IdentityRepairReceiptId\",\n--   \"UpdatedAt\" = b.\"UpdatedAt\"\n-- FROM backup.wave2_53047_tf_parcel_identity b\n-- WHERE p.\"TfParcelId\" = b.\"TfParcelId\";\n\nROLLBACK; -- template only\n",
+        "receiptId": "wave2_53047_prefixed_identity_repair_dry_run_2026_05_26"
+      },
+      "blockers": [
+        "Dry-run repair is duplicate-safe, but source artifact is partial; county delta adjudication is still required before receipt-backed closure."
+      ],
+      "doctrine": {
+        "databaseMutationAttempted": false,
+        "productionBindingAllowed": false,
+        "runtimeClaimAllowed": false,
+        "certificationAllowed": false
+      },
+      "outputArtifacts": {
+        "repairReceiptCandidatePath": "os-platform/core/pilot/evidence/june10-wave2-prefixed-identity-repair-dry-run/okanogan/repair-receipt-candidate.json",
+        "rollbackPlanPath": "os-platform/core/pilot/evidence/june10-wave2-prefixed-identity-repair-dry-run/okanogan/rollback-plan.md",
+        "repairReceiptCandidateSha256": "1794cce3ae61a4d4492c4b85caa0ca59923b3745271abf2af320442fcbe7b3f1",
+        "rollbackPlanSha256": "8e59bbf330fc8389008a224c3ffed6ab9dbbba73b4bb2255e63638d082be67bb"
+      }
+    }
+  ],
+  "doctrine": {
+    "databaseMutationAttempted": false,
+    "productionBindingAllowed": false,
+    "runtimeClaimAllowed": false,
+    "certificationAllowed": false
+  },
+  "blockers": [
+    "No DB mutation has been authorized or attempted.",
+    "Dry-run pass means duplicate-safe prefix repair only; each county still needs delta adjudication before receipt-backed closure.",
+    "Production binding remains blocked."
+  ]
+}

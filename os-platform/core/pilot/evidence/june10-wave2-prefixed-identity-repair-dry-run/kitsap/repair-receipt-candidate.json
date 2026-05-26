@@ -1,0 +1,58 @@
+{
+  "receiptVersion": "wa_initial_seed_prefixed_identity_repair_dry_run_v1",
+  "receiptId": "wave2_53035_prefixed_identity_repair_dry_run_2026_05_26",
+  "countyName": "Kitsap County",
+  "fips": "53035",
+  "sourceClass": "WA_INITIAL_SEED",
+  "sourceReceiptCandidate": {
+    "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+    "countyName": "Kitsap County",
+    "fips": "53035",
+    "sourceClass": "WA_INITIAL_SEED",
+    "sourceParcelIdField": "parcel/account number from Kitsap sales workbooks",
+    "artifacts": [
+      {
+        "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205359Z/kitsap-workbooks/035-kitsap-commercial-sales-2021-2026.xlsx",
+        "sizeBytes": 254463,
+        "sha256": "f814b04f504410a5214bb5593cdc6d62118e4d7e500c9c6a09395d128ab4710a",
+        "lastWriteTime": "2026-04-24T20:54:11.507Z"
+      },
+      {
+        "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205359Z/kitsap-workbooks/035-kitsap-residential-sales-2021-2026.xlsx",
+        "sizeBytes": 3517769,
+        "sha256": "b4eb63b0550da380f11f2c1e8e372db177e2e3cb6d0de76333d50252ac1dbbd9",
+        "lastWriteTime": "2026-04-24T20:54:06.061Z"
+      },
+      {
+        "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/kitsap/source-native-parcel-ids.jsonl",
+        "sizeBytes": 1797037,
+        "sha256": "fe64110aff16a4a0723a837fc8e487603b3678cba29d5affd8b334755d6a4281",
+        "generatedArtifact": true
+      }
+    ],
+    "counts": {
+      "sourceDistinctParcelIds": 23126,
+      "canonicalActiveDistinctParcelNumbers": 116900,
+      "exactSourceCanonicalOverlap": 0,
+      "transformedSourceCanonicalOverlap": 20406
+    },
+    "classification": "blocked_transform",
+    "certificationAllowed": false,
+    "productionBindingAllowed": false
+  },
+  "repairSemantics": {
+    "sourceNativeParcelNumberTarget": true,
+    "preservePrefixedValueAsLegacyImportedParcelKey": true,
+    "generateTerraFusionParcelKey": "53035:{sourceNativeParcelNumber}",
+    "deleteRows": false
+  },
+  "counts": {
+    "proposedRows": 116900,
+    "sourceDistinctIds": 23126,
+    "sourceOverlapAfterPrefixRemoval": 20406,
+    "duplicateCountyIdParcelNumberAfter": 0
+  },
+  "classification": "dry_run_pass_pending_delta_adjudication",
+  "certificationAllowed": false,
+  "productionBindingAllowed": false
+}
