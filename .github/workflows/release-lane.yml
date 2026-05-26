@@ -311,6 +311,75 @@ jobs:
             "docker login ghcr.io -u ${{ github.actor }} --password-stdin" >/dev/null 2>&1
           ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "BACKEND_IMAGE='$BACKEND_IMAGE' FRONTEND_IMAGE='$FRONTEND_IMAGE' bash -s" <<'SSH'
           set -euo pipefail
+
+          print_release_disk() {
+            echo "Docker disk usage:"
+            docker system df || true
+
+            local docker_root
+            docker_root="$(docker info --format '{{.DockerRootDir}}' 2>/dev/null || true)"
+
+            echo "Filesystem free space:"
+            for path in "$docker_root" /var/lib/containerd /; do
+              if [ -e "$path" ]; then
+                df -h "$path" || true
+              fi
+            done
+          }
+
+          available_kb_for_path() {
+            local path="$1"
+            local available
+
+            if [ -z "$path" ] || [ ! -e "$path" ]; then
+              echo 0
+              return
+            fi
+
+            available="$(df -Pk "$path" 2>/dev/null | awk 'NR==2 && $4 ~ /^[0-9]+$/ {print $4}' || true)"
+            if [ -z "$available" ]; then
+              echo 0
+              return
+            fi
+
+            echo "$available"
+          }
+
+          require_release_disk() {
+            local min_kb="${MIN_RELEASE_DISK_KB:-6291456}"
+            local docker_root
+            local docker_kb
+            local containerd_kb
+
+            docker_root="$(docker info --format '{{.DockerRootDir}}' 2>/dev/null || true)"
+            docker_kb="$(available_kb_for_path "$docker_root")"
+            containerd_kb="$(available_kb_for_path /var/lib/containerd)"
+
+            if [ "$docker_kb" -lt "$min_kb" ] && [ "$containerd_kb" -lt "$min_kb" ]; then
+              echo "ERROR: VPS does not have enough Docker/containerd disk for release image pull."
+              echo "Required free space on Docker root or /var/lib/containerd: ${min_kb} KiB."
+              echo "Observed Docker root (${docker_root:-unknown}) free: ${docker_kb} KiB."
+              echo "Observed /var/lib/containerd free: ${containerd_kb} KiB."
+              print_release_disk
+              exit 1
+            fi
+          }
+
+          echo "Release disk state before safe cleanup:"
+          print_release_disk
+
+          # Safe release cleanup only. This removes stopped containers, build
+          # cache, dangling layers, and unused images older than 24h. It does
+          # not prune Docker volumes or application data.
+          docker container prune -f || true
+          docker builder prune -af || true
+          docker image prune -f || true
+          docker image prune -af --filter "until=24h" || true
+
+          echo "Release disk state after safe cleanup:"
+          print_release_disk
+          require_release_disk
+
           echo "Pulling backend image..."
           docker pull "$BACKEND_IMAGE"
           echo "Pulling frontend image..."
