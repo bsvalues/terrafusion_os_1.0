@@ -1,0 +1,612 @@
+{
+  "generatedAt": "2026-05-26T22:45:29.939Z",
+  "scope": "Wave 2 source-native parcel ID acquisition for Kitsap, Pierce, Klickitat, Okanogan, and San Juan.",
+  "summary": {
+    "countiesChecked": 5,
+    "sourceArtifactsCaptured": 4,
+    "byClassification": {
+      "blocked_transform": 4,
+      "blocked_source_access": 1
+    }
+  },
+  "counties": [
+    {
+      "county": "Kitsap",
+      "fips": "53035",
+      "accessPath": "existing_governed_payload_file",
+      "sourceParcelIdField": "parcel/account number from Kitsap sales workbooks",
+      "classification": "blocked_transform",
+      "receiptCandidate": {
+        "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+        "countyName": "Kitsap County",
+        "fips": "53035",
+        "sourceClass": "WA_INITIAL_SEED",
+        "sourceParcelIdField": "parcel/account number from Kitsap sales workbooks",
+        "artifacts": [
+          {
+            "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205359Z/kitsap-workbooks/035-kitsap-commercial-sales-2021-2026.xlsx",
+            "sizeBytes": 254463,
+            "sha256": "f814b04f504410a5214bb5593cdc6d62118e4d7e500c9c6a09395d128ab4710a",
+            "lastWriteTime": "2026-04-24T20:54:11.507Z"
+          },
+          {
+            "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205359Z/kitsap-workbooks/035-kitsap-residential-sales-2021-2026.xlsx",
+            "sizeBytes": 3517769,
+            "sha256": "b4eb63b0550da380f11f2c1e8e372db177e2e3cb6d0de76333d50252ac1dbbd9",
+            "lastWriteTime": "2026-04-24T20:54:06.061Z"
+          },
+          {
+            "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/kitsap/source-native-parcel-ids.jsonl",
+            "sizeBytes": 1797037,
+            "sha256": "fe64110aff16a4a0723a837fc8e487603b3678cba29d5affd8b334755d6a4281",
+            "generatedArtifact": true
+          }
+        ],
+        "counts": {
+          "sourceDistinctParcelIds": 23126,
+          "canonicalActiveDistinctParcelNumbers": 116900,
+          "exactSourceCanonicalOverlap": 0,
+          "transformedSourceCanonicalOverlap": 20406
+        },
+        "classification": "blocked_transform",
+        "certificationAllowed": false,
+        "productionBindingAllowed": false
+      },
+      "parserSummaries": [
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205359Z/kitsap-workbooks/035-kitsap-commercial-sales-2021-2026.xlsx",
+          "idField": "parcel/account number from Kitsap sales workbooks",
+          "idsExtracted": 1131,
+          "rowCount": 1647,
+          "nullOrBlank": 0,
+          "duplicates": 515,
+          "sheetSummaries": [
+            {
+              "sheet": "sheet1.xml",
+              "idField": "parcel/account number from Kitsap sales workbooks",
+              "idsExtracted": 937,
+              "rowCount": 937,
+              "nullOrBlank": 0,
+              "duplicates": 0
+            },
+            {
+              "sheet": "sheet2.xml",
+              "idField": "parcel/account number from Kitsap sales workbooks",
+              "idsExtracted": 195,
+              "rowCount": 710,
+              "nullOrBlank": 0,
+              "duplicates": 515
+            }
+          ]
+        },
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205359Z/kitsap-workbooks/035-kitsap-residential-sales-2021-2026.xlsx",
+          "idField": "parcel/account number from Kitsap sales workbooks",
+          "idsExtracted": 21995,
+          "rowCount": 24306,
+          "nullOrBlank": 0,
+          "duplicates": 2179,
+          "sheetSummaries": [
+            {
+              "sheet": "sheet1.xml",
+              "idField": "parcel/account number from Kitsap sales workbooks",
+              "idsExtracted": 21042,
+              "rowCount": 23128,
+              "nullOrBlank": 0,
+              "duplicates": 2086
+            },
+            {
+              "sheet": "sheet2.xml",
+              "idField": "parcel/account number from Kitsap sales workbooks",
+              "idsExtracted": 1085,
+              "rowCount": 1178,
+              "nullOrBlank": 0,
+              "duplicates": 93
+            }
+          ]
+        }
+      ],
+      "identityComparison": {
+        "sourceDistinctCount": 23126,
+        "canonicalDistinctCount": 116900,
+        "exactOverlapCount": 0,
+        "transformedOverlapCount": 20406,
+        "sourceSamples": [
+          "012201-1-019-2005",
+          "012201-2-002-2002",
+          "012201-2-007-2007",
+          "012201-2-010-2002",
+          "012201-2-015-2007",
+          "012201-2-017-2005",
+          "012201-3-003-1001",
+          "012201-4-015-2003"
+        ],
+        "canonicalSamples": [
+          "035-012201-1-001-1007",
+          "035-012201-1-005-2001",
+          "035-012201-1-007-2009",
+          "035-012201-1-008-2008",
+          "035-012201-1-009-2007",
+          "035-012201-1-010-2004",
+          "035-012201-1-014-2000",
+          "035-012201-1-015-2009"
+        ],
+        "canonicalStrippedSamples": [
+          "012201-1-001-1007",
+          "012201-1-005-2001",
+          "012201-1-007-2009",
+          "012201-1-008-2008",
+          "012201-1-009-2007",
+          "012201-1-010-2004",
+          "012201-1-014-2000",
+          "012201-1-015-2009"
+        ]
+      },
+      "blockers": [
+        "Exact source-native overlap is 0, but overlap after stripping known three-digit WA_INITIAL_SEED prefix is 20406; source-native ParcelNumber contract is not met."
+      ],
+      "doctrine": {
+        "databaseMutationAttempted": false,
+        "productionBindingAllowed": false,
+        "runtimeClaimAllowed": false,
+        "certificationAllowed": false
+      }
+    },
+    {
+      "county": "Pierce",
+      "fips": "53053",
+      "accessPath": "existing_governed_payload_file",
+      "sourceParcelIdField": "sale.txt field 3 parcel/account number",
+      "classification": "blocked_transform",
+      "receiptCandidate": {
+        "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+        "countyName": "Pierce County",
+        "fips": "53053",
+        "sourceClass": "WA_INITIAL_SEED",
+        "sourceParcelIdField": "sale.txt field 3 parcel/account number",
+        "artifacts": [
+          {
+            "path": "docs/Washington Counties/implementation/reports/payloads/20260424T204521Z/pierce-datamart/053-pierce-sale.zip",
+            "sizeBytes": 20560588,
+            "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+            "lastWriteTime": "2026-04-24T20:45:34.102Z"
+          },
+          {
+            "path": "docs/Washington Counties/implementation/reports/payloads/20260424T204815Z/pierce-datamart/053-pierce-sale.zip",
+            "sizeBytes": 20560588,
+            "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+            "lastWriteTime": "2026-04-24T20:48:18.383Z"
+          },
+          {
+            "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205531Z/pierce-datamart/053-pierce-sale.zip",
+            "sizeBytes": 20560588,
+            "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+            "lastWriteTime": "2026-04-24T20:55:39.244Z"
+          },
+          {
+            "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/pierce/source-native-parcel-ids.jsonl",
+            "sizeBytes": 18606118,
+            "sha256": "4fc57b83ed6838ce4d463840b1ba021ac3d1509cd5988bcb4e7e0dad3c8a806f",
+            "generatedArtifact": true
+          }
+        ],
+        "counts": {
+          "sourceDistinctParcelIds": 262058,
+          "canonicalActiveDistinctParcelNumbers": 328832,
+          "exactSourceCanonicalOverlap": 0,
+          "transformedSourceCanonicalOverlap": 252992
+        },
+        "classification": "blocked_transform",
+        "certificationAllowed": false,
+        "productionBindingAllowed": false
+      },
+      "parserSummaries": [
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T204521Z/pierce-datamart/053-pierce-sale.zip",
+          "idField": "Pierce sale.txt field 3 parcel/account number",
+          "idsExtracted": 262058,
+          "rowCount": 640028,
+          "nullOrBlank": 0,
+          "duplicates": 377970,
+          "nestedSummaries": [
+            {
+              "path": "sale.txt",
+              "idField": "Pierce sale.txt field 3 parcel/account number",
+              "idsExtracted": 262058,
+              "rowCount": 640028,
+              "nullOrBlank": 0,
+              "duplicates": 377970
+            }
+          ]
+        },
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T204815Z/pierce-datamart/053-pierce-sale.zip",
+          "idField": "Pierce sale.txt field 3 parcel/account number",
+          "idsExtracted": 262058,
+          "rowCount": 640028,
+          "nullOrBlank": 0,
+          "duplicates": 377970,
+          "nestedSummaries": [
+            {
+              "path": "sale.txt",
+              "idField": "Pierce sale.txt field 3 parcel/account number",
+              "idsExtracted": 262058,
+              "rowCount": 640028,
+              "nullOrBlank": 0,
+              "duplicates": 377970
+            }
+          ]
+        },
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205531Z/pierce-datamart/053-pierce-sale.zip",
+          "idField": "Pierce sale.txt field 3 parcel/account number",
+          "idsExtracted": 262058,
+          "rowCount": 640028,
+          "nullOrBlank": 0,
+          "duplicates": 377970,
+          "nestedSummaries": [
+            {
+              "path": "sale.txt",
+              "idField": "Pierce sale.txt field 3 parcel/account number",
+              "idsExtracted": 262058,
+              "rowCount": 640028,
+              "nullOrBlank": 0,
+              "duplicates": 377970
+            }
+          ]
+        }
+      ],
+      "identityComparison": {
+        "sourceDistinctCount": 262058,
+        "canonicalDistinctCount": 328832,
+        "exactOverlapCount": 0,
+        "transformedOverlapCount": 252992,
+        "sourceSamples": [
+          "0019012000",
+          "0019014000",
+          "0019021000",
+          "0019121002",
+          "0019121006",
+          "0019121007",
+          "0019121008",
+          "0020011002"
+        ],
+        "canonicalSamples": [
+          "053-0019012000",
+          "053-0019014000",
+          "053-0019021000",
+          "053-0019121002",
+          "053-0019121003",
+          "053-0019121004",
+          "053-0019121006",
+          "053-0019121007"
+        ],
+        "canonicalStrippedSamples": [
+          "0019012000",
+          "0019014000",
+          "0019021000",
+          "0019121002",
+          "0019121003",
+          "0019121004",
+          "0019121006",
+          "0019121007"
+        ]
+      },
+      "blockers": [
+        "Exact source-native overlap is 0, but overlap after stripping known three-digit WA_INITIAL_SEED prefix is 252992; source-native ParcelNumber contract is not met."
+      ],
+      "doctrine": {
+        "databaseMutationAttempted": false,
+        "productionBindingAllowed": false,
+        "runtimeClaimAllowed": false,
+        "certificationAllowed": false
+      }
+    },
+    {
+      "county": "Klickitat",
+      "fips": "53039",
+      "accessPath": "existing_governed_payload_file",
+      "sourceParcelIdField": "parcel/account number from Klickitat sales reports",
+      "classification": "blocked_transform",
+      "receiptCandidate": {
+        "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+        "countyName": "Klickitat County",
+        "fips": "53039",
+        "sourceClass": "WA_INITIAL_SEED",
+        "sourceParcelIdField": "parcel/account number from Klickitat sales reports",
+        "artifacts": [
+          {
+            "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/039-klickitat-33cbff5f37aa.xlsx",
+            "sizeBytes": 27672,
+            "sha256": "9d985fa0341362f485b32c1cb44b90979481142f3e8d22794632659a7ea4e138",
+            "lastWriteTime": "2026-04-24T16:57:59.925Z"
+          },
+          {
+            "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/039-klickitat-cdf4b89b0615.xlsx",
+            "sizeBytes": 43829,
+            "sha256": "1ae0b53fd40ab31232c6299d43d37ec9ada927acfe1b04ce64c6666cc3fd942c",
+            "lastWriteTime": "2026-04-24T16:57:59.869Z"
+          },
+          {
+            "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/klickitat/source-native-parcel-ids.jsonl",
+            "sizeBytes": 51870,
+            "sha256": "a9cf3916c5e8ca9a36ee5947ee6374e050b0613be0132c11a24d44eca8c4aeb7",
+            "generatedArtifact": true
+          }
+        ],
+        "counts": {
+          "sourceDistinctParcelIds": 665,
+          "canonicalActiveDistinctParcelNumbers": 21305,
+          "exactSourceCanonicalOverlap": 0,
+          "transformedSourceCanonicalOverlap": 653
+        },
+        "classification": "blocked_transform",
+        "certificationAllowed": false,
+        "productionBindingAllowed": false
+      },
+      "parserSummaries": [
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/039-klickitat-33cbff5f37aa.xlsx",
+          "idField": "parcel/account number from Klickitat sales reports",
+          "idsExtracted": 241,
+          "rowCount": 252,
+          "nullOrBlank": 0,
+          "duplicates": 11,
+          "sheetSummaries": [
+            {
+              "sheet": "sheet1.xml",
+              "idField": "parcel/account number from Klickitat sales reports",
+              "idsExtracted": 241,
+              "rowCount": 252,
+              "nullOrBlank": 0,
+              "duplicates": 11
+            }
+          ]
+        },
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/039-klickitat-cdf4b89b0615.xlsx",
+          "idField": "parcel/account number from Klickitat sales reports",
+          "idsExtracted": 424,
+          "rowCount": 436,
+          "nullOrBlank": 0,
+          "duplicates": 12,
+          "sheetSummaries": [
+            {
+              "sheet": "sheet1.xml",
+              "idField": "parcel/account number from Klickitat sales reports",
+              "idsExtracted": 424,
+              "rowCount": 436,
+              "nullOrBlank": 0,
+              "duplicates": 12
+            }
+          ]
+        }
+      ],
+      "identityComparison": {
+        "sourceDistinctCount": 665,
+        "canonicalDistinctCount": 21305,
+        "exactOverlapCount": 0,
+        "transformedOverlapCount": 653,
+        "sourceSamples": [
+          "02120311000201",
+          "02120323040100",
+          "02120355001000",
+          "02120358142400",
+          "02120358170900",
+          "02131623020100",
+          "02131660010100",
+          "02131660021400"
+        ],
+        "canonicalSamples": [
+          "039-02120100000100",
+          "039-02120100000200",
+          "039-02120100000300",
+          "039-02120100000400",
+          "039-02120100000500",
+          "039-02120100000600",
+          "039-02120200000100",
+          "039-02120200000200"
+        ],
+        "canonicalStrippedSamples": [
+          "02120100000100",
+          "02120100000200",
+          "02120100000300",
+          "02120100000400",
+          "02120100000500",
+          "02120100000600",
+          "02120200000100",
+          "02120200000200"
+        ]
+      },
+      "blockers": [
+        "Exact source-native overlap is 0, but overlap after stripping known three-digit WA_INITIAL_SEED prefix is 653; source-native ParcelNumber contract is not met."
+      ],
+      "doctrine": {
+        "databaseMutationAttempted": false,
+        "productionBindingAllowed": false,
+        "runtimeClaimAllowed": false,
+        "certificationAllowed": false
+      }
+    },
+    {
+      "county": "Okanogan",
+      "fips": "53047",
+      "accessPath": "existing_governed_payload_file",
+      "sourceParcelIdField": "parcel/account number from Okanogan comparable sales workbook",
+      "classification": "blocked_transform",
+      "receiptCandidate": {
+        "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+        "countyName": "Okanogan County",
+        "fips": "53047",
+        "sourceClass": "WA_INITIAL_SEED",
+        "sourceParcelIdField": "parcel/account number from Okanogan comparable sales workbook",
+        "artifacts": [
+          {
+            "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/047-okanogan-8ba26dbb173f.xlsx",
+            "sizeBytes": 3798860,
+            "sha256": "34f9d552229dfe69be32d672f3ec72824a219afbd842708dbd3fb7fbbb7c6b7c",
+            "lastWriteTime": "2026-04-24T16:58:09.871Z"
+          },
+          {
+            "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/okanogan/source-native-parcel-ids.jsonl",
+            "sizeBytes": 460776,
+            "sha256": "deb03fe42ab52e214a3e4b9a740c70c46ffdc4e282b8ce82b26f369c26586ca5",
+            "generatedArtifact": true
+          }
+        ],
+        "counts": {
+          "sourceDistinctParcelIds": 6312,
+          "canonicalActiveDistinctParcelNumbers": 49386,
+          "exactSourceCanonicalOverlap": 0,
+          "transformedSourceCanonicalOverlap": 5854
+        },
+        "classification": "blocked_transform",
+        "certificationAllowed": false,
+        "productionBindingAllowed": false
+      },
+      "parserSummaries": [
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/047-okanogan-8ba26dbb173f.xlsx",
+          "idField": "parcel/account number from Okanogan comparable sales workbook",
+          "idsExtracted": 6312,
+          "rowCount": 7057,
+          "nullOrBlank": 0,
+          "duplicates": 745,
+          "sheetSummaries": [
+            {
+              "sheet": "sheet1.xml",
+              "idField": "parcel/account number from Okanogan comparable sales workbook",
+              "idsExtracted": 6312,
+              "rowCount": 7057,
+              "nullOrBlank": 0,
+              "duplicates": 745
+            }
+          ]
+        }
+      ],
+      "identityComparison": {
+        "sourceDistinctCount": 6312,
+        "canonicalDistinctCount": 49386,
+        "exactOverlapCount": 0,
+        "transformedOverlapCount": 5854,
+        "sourceSamples": [
+          "0020020300",
+          "0020061200",
+          "0020070300",
+          "0030100100",
+          "0030111700",
+          "0040221301",
+          "0040222201",
+          "0040242100"
+        ],
+        "canonicalSamples": [
+          "047-0020010100",
+          "047-0020010301",
+          "047-0020010302",
+          "047-0020010303",
+          "047-0020010504",
+          "047-0020010701",
+          "047-0020010801",
+          "047-0020010802"
+        ],
+        "canonicalStrippedSamples": [
+          "0020010100",
+          "0020010301",
+          "0020010302",
+          "0020010303",
+          "0020010504",
+          "0020010701",
+          "0020010801",
+          "0020010802"
+        ]
+      },
+      "blockers": [
+        "Exact source-native overlap is 0, but overlap after stripping known three-digit WA_INITIAL_SEED prefix is 5854; source-native ParcelNumber contract is not met."
+      ],
+      "doctrine": {
+        "databaseMutationAttempted": false,
+        "productionBindingAllowed": false,
+        "runtimeClaimAllowed": false,
+        "certificationAllowed": false
+      }
+    },
+    {
+      "county": "San Juan",
+      "fips": "53055",
+      "accessPath": "blocked_no_receipt_grade_payload",
+      "sourceParcelIdField": "source-native parcel identifier from governed source artifact",
+      "classification": "blocked_source_access",
+      "receiptCandidate": {
+        "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+        "countyName": "San Juan County",
+        "fips": "53055",
+        "sourceClass": "WA_INITIAL_SEED",
+        "sourceParcelIdField": "source-native parcel identifier from governed source artifact",
+        "artifacts": [
+          {
+            "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/san-juan/source-native-parcel-ids.jsonl",
+            "sizeBytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "generatedArtifact": true
+          }
+        ],
+        "counts": {
+          "sourceDistinctParcelIds": 0,
+          "canonicalActiveDistinctParcelNumbers": 17399,
+          "exactSourceCanonicalOverlap": 0,
+          "transformedSourceCanonicalOverlap": 0
+        },
+        "classification": "blocked_source_access",
+        "certificationAllowed": false,
+        "productionBindingAllowed": false
+      },
+      "parserSummaries": [],
+      "identityComparison": {
+        "sourceDistinctCount": 0,
+        "canonicalDistinctCount": 17399,
+        "exactOverlapCount": 0,
+        "transformedOverlapCount": 0,
+        "sourceSamples": [],
+        "canonicalSamples": [
+          "055-140422002000",
+          "055-140423001000",
+          "055-140424002000",
+          "055-140433001000",
+          "055-140433002000",
+          "055-140511002000",
+          "055-140512001000",
+          "055-140534001000"
+        ],
+        "canonicalStrippedSamples": [
+          "140422002000",
+          "140423001000",
+          "140424002000",
+          "140433001000",
+          "140433002000",
+          "140511002000",
+          "140512001000",
+          "140534001000"
+        ]
+      },
+      "blockers": [
+        "No governed receipt-grade source-native parcel ID artifact was parsed for this county."
+      ],
+      "doctrine": {
+        "databaseMutationAttempted": false,
+        "productionBindingAllowed": false,
+        "runtimeClaimAllowed": false,
+        "certificationAllowed": false
+      }
+    }
+  ],
+  "doctrine": {
+    "databaseMutationAttempted": false,
+    "productionBindingAllowed": false,
+    "runtimeClaimAllowed": false,
+    "certificationAllowed": false
+  },
+  "blockers": [
+    "This slice captures source-native parcel ID evidence only; it does not load or mutate canonical data.",
+    "Production binding remains blocked until the remaining WA_INITIAL_SEED receipt posture is reconciled."
+  ]
+}

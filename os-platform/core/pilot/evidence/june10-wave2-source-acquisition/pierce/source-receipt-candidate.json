@@ -1,0 +1,42 @@
+{
+  "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+  "countyName": "Pierce County",
+  "fips": "53053",
+  "sourceClass": "WA_INITIAL_SEED",
+  "sourceParcelIdField": "sale.txt field 3 parcel/account number",
+  "artifacts": [
+    {
+      "path": "docs/Washington Counties/implementation/reports/payloads/20260424T204521Z/pierce-datamart/053-pierce-sale.zip",
+      "sizeBytes": 20560588,
+      "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+      "lastWriteTime": "2026-04-24T20:45:34.102Z"
+    },
+    {
+      "path": "docs/Washington Counties/implementation/reports/payloads/20260424T204815Z/pierce-datamart/053-pierce-sale.zip",
+      "sizeBytes": 20560588,
+      "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+      "lastWriteTime": "2026-04-24T20:48:18.383Z"
+    },
+    {
+      "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205531Z/pierce-datamart/053-pierce-sale.zip",
+      "sizeBytes": 20560588,
+      "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+      "lastWriteTime": "2026-04-24T20:55:39.244Z"
+    },
+    {
+      "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/pierce/source-native-parcel-ids.jsonl",
+      "sizeBytes": 18606118,
+      "sha256": "4fc57b83ed6838ce4d463840b1ba021ac3d1509cd5988bcb4e7e0dad3c8a806f",
+      "generatedArtifact": true
+    }
+  ],
+  "counts": {
+    "sourceDistinctParcelIds": 262058,
+    "canonicalActiveDistinctParcelNumbers": 328832,
+    "exactSourceCanonicalOverlap": 0,
+    "transformedSourceCanonicalOverlap": 252992
+  },
+  "classification": "blocked_transform",
+  "certificationAllowed": false,
+  "productionBindingAllowed": false
+}

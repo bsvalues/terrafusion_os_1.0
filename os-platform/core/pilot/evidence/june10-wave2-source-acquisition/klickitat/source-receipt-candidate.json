@@ -1,0 +1,36 @@
+{
+  "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+  "countyName": "Klickitat County",
+  "fips": "53039",
+  "sourceClass": "WA_INITIAL_SEED",
+  "sourceParcelIdField": "parcel/account number from Klickitat sales reports",
+  "artifacts": [
+    {
+      "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/039-klickitat-33cbff5f37aa.xlsx",
+      "sizeBytes": 27672,
+      "sha256": "9d985fa0341362f485b32c1cb44b90979481142f3e8d22794632659a7ea4e138",
+      "lastWriteTime": "2026-04-24T16:57:59.925Z"
+    },
+    {
+      "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/039-klickitat-cdf4b89b0615.xlsx",
+      "sizeBytes": 43829,
+      "sha256": "1ae0b53fd40ab31232c6299d43d37ec9ada927acfe1b04ce64c6666cc3fd942c",
+      "lastWriteTime": "2026-04-24T16:57:59.869Z"
+    },
+    {
+      "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/klickitat/source-native-parcel-ids.jsonl",
+      "sizeBytes": 51870,
+      "sha256": "a9cf3916c5e8ca9a36ee5947ee6374e050b0613be0132c11a24d44eca8c4aeb7",
+      "generatedArtifact": true
+    }
+  ],
+  "counts": {
+    "sourceDistinctParcelIds": 665,
+    "canonicalActiveDistinctParcelNumbers": 21305,
+    "exactSourceCanonicalOverlap": 0,
+    "transformedSourceCanonicalOverlap": 653
+  },
+  "classification": "blocked_transform",
+  "certificationAllowed": false,
+  "productionBindingAllowed": false
+}

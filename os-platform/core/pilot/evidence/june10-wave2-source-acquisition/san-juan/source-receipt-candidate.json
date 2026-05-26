@@ -1,0 +1,24 @@
+{
+  "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+  "countyName": "San Juan County",
+  "fips": "53055",
+  "sourceClass": "WA_INITIAL_SEED",
+  "sourceParcelIdField": "source-native parcel identifier from governed source artifact",
+  "artifacts": [
+    {
+      "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/san-juan/source-native-parcel-ids.jsonl",
+      "sizeBytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "generatedArtifact": true
+    }
+  ],
+  "counts": {
+    "sourceDistinctParcelIds": 0,
+    "canonicalActiveDistinctParcelNumbers": 17399,
+    "exactSourceCanonicalOverlap": 0,
+    "transformedSourceCanonicalOverlap": 0
+  },
+  "classification": "blocked_source_access",
+  "certificationAllowed": false,
+  "productionBindingAllowed": false
+}
