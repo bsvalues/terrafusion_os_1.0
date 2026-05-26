@@ -78,15 +78,40 @@ counter; do not reframe.
 - **Result: features and truth fully reconciled, zero data loss across 2
   overnight sleeps + 1 hard restart.**
 
+### v213–v221 — clean run (2026-05-25)
+All +5,490 features / +554 truth / zombies=0 per chunk.
+- v213: 1,219,300 → 1,224,790; truth 133,232
+- v214: 1,224,790 → 1,230,280; truth 133,786
+- v215: 1,230,280 → 1,235,770; truth 134,340
+- v216: 1,235,770 → 1,241,260; truth 134,894
+- v217: 1,241,260 → 1,246,750; truth 135,448
+- v218: 1,246,750 → 1,252,240; truth 136,002
+- v219: 1,252,240 → 1,257,730; truth 136,556
+- v220: 1,257,730 → 1,263,220; truth 137,110
+- v221: 1,263,220 → 1,268,710; truth 137,664
+- Note: several Claude-app restarts during this run did NOT touch the drain infra
+  (backend + containers stayed up); affected chunks completed normally.
+
+### v222 / v222-rerun — 2nd restart-recovery + catch-up (2026-05-25)
+- A hard laptop restart killed the backend mid-v222-projection (truth had committed
+  → 138,218; projector orphaned IN_PROGRESS at age 13min). tf-mssql also stopped.
+- Atomicity held: features stayed at 1,268,710, zero corruption.
+- Recovery: force-cleared the <30min zombie by batch-id (clear-all-zombies only
+  touches >30min); restarted tf-mssql BEFORE backend → dictionary 193 codes;
+  restarted backend on :5000.
+- v222-rerun: features 1,268,710 → **1,279,690 (+10,980 = 2 chunks)** — caught up
+  the orphaned v222 backlog + its own. truth 138,218 → 138,772. Fully reconciled.
+
 ## Cumulative since atomicity fix (075c0156d)
-- ~187 successful improvement chunks since fix — **zero regressions.**
-- canonical_tf.tf_improvement_feature: 1,520 → **1,219,300** (+1,217,780 net)
-- truth_pacs.imprv_current: 12,725 → **132,678** (+119,953)
-- legacy_pacs_raw.imprv_attr: → 2,412,731
-- Infrastructure events survived: 6+ laptop restarts, 1 PG crash + WAL recovery,
-  1 Docker engine failure, multiple overnight laptop sleeps, ~8 AuditLogs
-  VACUUM/prune cycles. The atomicity fix held through every one.
-- truth_pacs.imprv_current vs legacy_pacs_raw.imprv ceiling: 132,678 / ~290,000 ≈ 46%
+- ~197 successful improvement chunks since fix — **zero regressions.**
+- canonical_tf.tf_improvement_feature: 1,520 → **1,279,690** (+1,278,170 net)
+- truth_pacs.imprv_current: 12,725 → **138,772** (+126,047)
+- legacy_pacs_raw.imprv_attr: → 2,495,473
+- Infrastructure events survived: 7+ laptop restarts (2 hard, mid-projection),
+  1 PG crash + WAL recovery, 1 Docker engine failure, multiple overnight laptop
+  sleeps, ~8 AuditLogs VACUUM/prune cycles. The atomicity fix + catch-up
+  re-projection held through every one with zero data loss.
+- truth_pacs.imprv_current vs legacy_pacs_raw.imprv ceiling: 138,772 / ~290,000 ≈ 48%
 - Source-exhaustion signal (rowsPromotedToTruth < 554): STILL NOT triggered.
 
 ## Operational lessons
