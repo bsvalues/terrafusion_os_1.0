@@ -168,13 +168,55 @@ jobs:
             set +e
             ssh -o ConnectTimeout=30 -o ServerAliveInterval=15 \
                 -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
-                "APP_ROOT='$APP_ROOT' bash -s" <<'SSH'
+                "APP_ROOT='$APP_ROOT' TARGET_ENV='$TARGET_ENV' bash -s" <<'SSH'
           set -euo pipefail
           command -v docker >/dev/null
           docker compose version >/dev/null
           test -d "$APP_ROOT"
           test -w "$APP_ROOT"
           test -f "$APP_ROOT/app.env"
+          if ! grep -q '^ConnectionStrings__DefaultConnection=' "$APP_ROOT/app.env"; then
+            echo "APP_ENV_MISSING_CONNECTION_STRING"
+            exit 1
+          fi
+          if ! grep -q '^DatabaseProvider=' "$APP_ROOT/app.env"; then
+            echo "APP_ENV_MISSING_DATABASE_PROVIDER"
+            exit 1
+          fi
+
+          provider="$(grep '^DatabaseProvider=' "$APP_ROOT/app.env" | tail -n1 | cut -d= -f2- | tr -d '\r' | xargs)"
+          provider_key="$(printf '%s' "$provider" | tr '[:upper:]' '[:lower:]')"
+          connection="$(grep '^ConnectionStrings__DefaultConnection=' "$APP_ROOT/app.env" | tail -n1 | cut -d= -f2- | tr -d '\r')"
+          connection_key="$(printf '%s' "$connection" | tr '[:upper:]' '[:lower:]')"
+
+          if [ "$TARGET_ENV" = "production" ]; then
+            case "$provider_key" in
+              postgres|postgresql|npgsql) ;;
+              sqlite)
+                echo "APP_ENV_PRODUCTION_DB_PROVIDER_SQLITE"
+                exit 1
+                ;;
+              *)
+                echo "APP_ENV_PRODUCTION_DB_PROVIDER_UNSUPPORTED_FOR_RELEASE_LANE"
+                exit 1
+                ;;
+            esac
+
+            case "$connection_key" in
+              *"data source="*".db"*|*"data source="*"/app/data/"*|*"data source="*"\\app\\data\\"*)
+                echo "APP_ENV_PRODUCTION_DB_CONNECTION_SQLITE"
+                exit 1
+                ;;
+            esac
+
+            case "$connection_key" in
+              *"host="*|*"server="*) ;;
+              *)
+                echo "APP_ENV_PRODUCTION_DB_CONNECTION_NOT_SERVER_BACKED"
+                exit 1
+                ;;
+            esac
+          fi
           SSH
             rc=$?
             set -e
@@ -415,9 +457,9 @@ jobs:
             --entrypoint sh \
             backend \
             -c 'set -eu
+              : "${DatabaseProvider:?DatabaseProvider missing from runtime environment}"
+              : "${ConnectionStrings__DefaultConnection:?ConnectionStrings__DefaultConnection missing from runtime environment}"
               dotnet /app/tools/TerraFusion.AuthProvisioner/TerraFusion.AuthProvisioner.dll \
-                --provider Sqlite \
-                --connection-string "Data Source=/app/data/terrafusion.db" \
                 --email "$TERRAFUSION_BOOTSTRAP_EMAIL" \
                 --password-env TERRAFUSION_BOOTSTRAP_PASSWORD \
                 --roles "${TERRAFUSION_BOOTSTRAP_ROLES:-GovernmentUser,Administrator,FullSystemAccess}" \
