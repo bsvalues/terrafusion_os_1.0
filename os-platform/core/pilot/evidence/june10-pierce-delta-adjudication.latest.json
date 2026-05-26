@@ -1,0 +1,254 @@
+{
+  "generatedAt": "2026-05-26T23:42:18.400Z",
+  "countyName": "Pierce County",
+  "fips": "53053",
+  "decision": "blocked_source_semantics",
+  "summary": {
+    "sourceRows": 1920084,
+    "sourceDistinctParcelIds": 262058,
+    "canonicalDistinctParcelIdsAfterPrefixRepair": 328832,
+    "overlapCount": 252992,
+    "sourceOnlyCount": 9066,
+    "canonicalOnlyCount": 75840,
+    "sourceCoverageRatio": 0.769366,
+    "duplicateSourceRows": 1133910,
+    "nullOrBlankSourceRows": 0,
+    "duplicateCountyIdParcelNumberAfterPrefixRepair": 0
+  },
+  "sourceOnly": {
+    "count": 9066,
+    "sample": [
+      "0221221801",
+      "0221221804",
+      "0221221809",
+      "0221221812",
+      "0221221814",
+      "0221221820",
+      "0221221821",
+      "0221221824",
+      "0221221826",
+      "0221221827",
+      "0221221828",
+      "0221221829",
+      "0221221831",
+      "0221221832",
+      "0221221836",
+      "0221221837",
+      "0221221839",
+      "0221221840",
+      "0221221842",
+      "0221221844",
+      "0221221845",
+      "0221221846",
+      "0221221849",
+      "0221221850",
+      "0320316800",
+      "0420044802",
+      "0519032800",
+      "0520104800",
+      "0520104802",
+      "0520104803",
+      "0520104804",
+      "0520104805",
+      "0520104807",
+      "0520104808",
+      "0520104809",
+      "0520104810",
+      "0520104811",
+      "0520104814",
+      "0520104816",
+      "0520104818",
+      "0520104819",
+      "0520182041",
+      "0520182042",
+      "0520182043",
+      "1117311001",
+      "1119353000",
+      "4002000600",
+      "4002002500",
+      "4002002800",
+      "4002003400"
+    ]
+  },
+  "canonicalOnly": {
+    "count": 75840,
+    "sample": [
+      "0019121003",
+      "0019121004",
+      "0019121009",
+      "0019121010",
+      "0019121011",
+      "0020011003",
+      "0020011007",
+      "0020011011",
+      "0020011012",
+      "0020011013",
+      "0020012003",
+      "0020012004",
+      "0020012015",
+      "0020012017",
+      "0020012030",
+      "0020012040",
+      "0020012046",
+      "0020012047",
+      "0020012048",
+      "0020012056",
+      "0020012057",
+      "0020012066",
+      "0020012075",
+      "0020013004",
+      "0020013011",
+      "0020013014",
+      "0020013015",
+      "0020014003",
+      "0020014006",
+      "0020014010",
+      "0020014012",
+      "0020014018",
+      "0020015004",
+      "0020016001",
+      "0020018003",
+      "0020021002",
+      "0020021004",
+      "0020021005",
+      "0020021008",
+      "0020021009",
+      "0020021015",
+      "0020021025",
+      "0020021028",
+      "0020021037",
+      "0020021049",
+      "0020021050",
+      "0020021051",
+      "0020022002",
+      "0020022005",
+      "0020022020"
+    ]
+  },
+  "duplicateNullSummary": {
+    "rowCount": 1920084,
+    "idsExtracted": 786174,
+    "duplicateRows": 1133910,
+    "nullOrBlankRows": 0
+  },
+  "currentSourceProbe": {
+    "attempted": false,
+    "sourceArtifactKind": "sales_history_datamart",
+    "reason": "Pierce evidence is a sale.txt sales-history datamart export, not a governed full parcel inventory or current parcel query endpoint."
+  },
+  "sourceReceiptCandidate": {
+    "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+    "countyName": "Pierce County",
+    "fips": "53053",
+    "sourceClass": "WA_INITIAL_SEED",
+    "sourceParcelIdField": "sale.txt field 3 parcel/account number",
+    "artifacts": [
+      {
+        "path": "docs/Washington Counties/implementation/reports/payloads/20260424T204521Z/pierce-datamart/053-pierce-sale.zip",
+        "sizeBytes": 20560588,
+        "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+        "lastWriteTime": "2026-04-24T20:45:34.102Z"
+      },
+      {
+        "path": "docs/Washington Counties/implementation/reports/payloads/20260424T204815Z/pierce-datamart/053-pierce-sale.zip",
+        "sizeBytes": 20560588,
+        "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+        "lastWriteTime": "2026-04-24T20:48:18.383Z"
+      },
+      {
+        "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205531Z/pierce-datamart/053-pierce-sale.zip",
+        "sizeBytes": 20560588,
+        "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+        "lastWriteTime": "2026-04-24T20:55:39.244Z"
+      },
+      {
+        "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/pierce/source-native-parcel-ids.jsonl",
+        "sizeBytes": 18606118,
+        "sha256": "4fc57b83ed6838ce4d463840b1ba021ac3d1509cd5988bcb4e7e0dad3c8a806f",
+        "generatedArtifact": true
+      }
+    ],
+    "counts": {
+      "sourceDistinctParcelIds": 262058,
+      "canonicalActiveDistinctParcelNumbers": 328832,
+      "exactSourceCanonicalOverlap": 0,
+      "transformedSourceCanonicalOverlap": 252992
+    },
+    "classification": "blocked_transform",
+    "certificationAllowed": false,
+    "productionBindingAllowed": false
+  },
+  "repairReceiptCandidate": {
+    "receiptVersion": "wa_initial_seed_prefixed_identity_repair_dry_run_v1",
+    "receiptId": "wave2_53053_prefixed_identity_repair_dry_run_2026_05_26",
+    "countyName": "Pierce County",
+    "fips": "53053",
+    "sourceClass": "WA_INITIAL_SEED",
+    "sourceReceiptCandidate": {
+      "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+      "countyName": "Pierce County",
+      "fips": "53053",
+      "sourceClass": "WA_INITIAL_SEED",
+      "sourceParcelIdField": "sale.txt field 3 parcel/account number",
+      "artifacts": [
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T204521Z/pierce-datamart/053-pierce-sale.zip",
+          "sizeBytes": 20560588,
+          "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+          "lastWriteTime": "2026-04-24T20:45:34.102Z"
+        },
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T204815Z/pierce-datamart/053-pierce-sale.zip",
+          "sizeBytes": 20560588,
+          "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+          "lastWriteTime": "2026-04-24T20:48:18.383Z"
+        },
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205531Z/pierce-datamart/053-pierce-sale.zip",
+          "sizeBytes": 20560588,
+          "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+          "lastWriteTime": "2026-04-24T20:55:39.244Z"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/pierce/source-native-parcel-ids.jsonl",
+          "sizeBytes": 18606118,
+          "sha256": "4fc57b83ed6838ce4d463840b1ba021ac3d1509cd5988bcb4e7e0dad3c8a806f",
+          "generatedArtifact": true
+        }
+      ],
+      "counts": {
+        "sourceDistinctParcelIds": 262058,
+        "canonicalActiveDistinctParcelNumbers": 328832,
+        "exactSourceCanonicalOverlap": 0,
+        "transformedSourceCanonicalOverlap": 252992
+      },
+      "classification": "blocked_transform",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false
+    },
+    "repairSemantics": {
+      "sourceNativeParcelNumberTarget": true,
+      "preservePrefixedValueAsLegacyImportedParcelKey": true,
+      "generateTerraFusionParcelKey": "53053:{sourceNativeParcelNumber}",
+      "deleteRows": false
+    },
+    "counts": {
+      "proposedRows": 328832,
+      "sourceDistinctIds": 262058,
+      "sourceOverlapAfterPrefixRemoval": 252992,
+      "duplicateCountyIdParcelNumberAfter": 0
+    },
+    "classification": "dry_run_pass_pending_delta_adjudication",
+    "certificationAllowed": false,
+    "productionBindingAllowed": false
+  },
+  "blockers": [
+    "Pierce source artifact is not a governed full parcel inventory, so canonical-only rows cannot be adjudicated.",
+    "9066 source-only parcel IDs require current source semantics before correction.",
+    "75840 canonical-only parcel IDs require full source inventory or current-source probe before closure."
+  ],
+  "databaseMutationAttempted": false,
+  "productionBindingAllowed": false,
+  "certificationAllowed": false,
+  "runtimeClaimAllowed": false
+}
