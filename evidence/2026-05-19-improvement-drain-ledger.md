@@ -102,17 +102,36 @@ All +5,490 features / +554 truth / zombies=0 per chunk.
 - v222-rerun: features 1,268,710 → **1,279,690 (+10,980 = 2 chunks)** — caught up
   the orphaned v222 backlog + its own. truth 138,218 → 138,772. Fully reconciled.
 
+### v223–v230 — clean run + sleep-stall + move-shutdown recovery (2026-05-25/26)
+Per-chunk +5,490 features / +554 truth / zombies=0 except where noted.
+- v223: 1,279,690 → 1,285,180; truth 139,326
+- v224: 1,285,180 → 1,290,670; truth 139,880
+- v225: 1,290,670 → 1,296,160; truth 140,434 (crossed 140K truth)
+- v226: 1,296,160 → 1,301,650; truth 140,988
+- v227: 1,301,650 → 1,307,140; truth 141,542
+- v228 / v228-rerun: overnight sleep-stall (projector hung age=526min, socket dead);
+  atomicity held features at 1,307,140; rerun caught up backlog. truth → 142,096+.
+- v229 (post location-move shutdown): 1,323,610 → 1,329,100; truth 143,758.
+  **Near-miss caught:** backend's first start loaded dictionary before MSSQL was
+  query-ready → refresh FAILED (v49b quarantine trap). Detected before firing any
+  chunk; bounced backend against ready MSSQL → 193 codes loaded; no bad chunk fired.
+- v230: 1,329,100 → 1,334,590; truth 144,312.
+
 ## Cumulative since atomicity fix (075c0156d)
-- ~197 successful improvement chunks since fix — **zero regressions.**
-- canonical_tf.tf_improvement_feature: 1,520 → **1,279,690** (+1,278,170 net)
-- truth_pacs.imprv_current: 12,725 → **138,772** (+126,047)
-- legacy_pacs_raw.imprv_attr: → 2,495,473
-- Infrastructure events survived: 7+ laptop restarts (2 hard, mid-projection),
-  1 PG crash + WAL recovery, 1 Docker engine failure, multiple overnight laptop
-  sleeps, ~8 AuditLogs VACUUM/prune cycles. The atomicity fix + catch-up
-  re-projection held through every one with zero data loss.
-- truth_pacs.imprv_current vs legacy_pacs_raw.imprv ceiling: 138,772 / ~290,000 ≈ 48%
+- ~204 successful improvement chunks since fix — **zero regressions.**
+- canonical_tf.tf_improvement_feature: 1,520 → **1,334,590** (+1,333,070 net)
+- truth_pacs.imprv_current: 12,725 → **144,312** (+131,587)
+- legacy_pacs_raw.imprv_attr: → 2,570,693
+- Infrastructure events survived: 8+ laptop restarts (incl. hard mid-projection +
+  a location-move shutdown), 1 PG crash + WAL recovery, 1 Docker engine failure,
+  multiple overnight sleeps, ~9 AuditLogs prune cycles, 1 dictionary-refresh
+  near-miss caught before firing. Atomicity fix + catch-up re-projection +
+  pre-fire dictionary verification held through every one with zero data loss.
+- truth_pacs.imprv_current vs legacy_pacs_raw.imprv ceiling: 144,312 / ~290,000 ≈ 50%
 - Source-exhaustion signal (rowsPromotedToTruth < 554): STILL NOT triggered.
+- **Operational guardrail reinforced: after any restart, verify dictionary loaded
+  193 codes BEFORE firing — MSSQL "Recovery is complete" does not guarantee
+  query-readiness for the backend's startup hosted service.**
 
 ## Operational lessons
 - AuditLogs needs periodic prune; the long-held projector txn blocks autovacuum.
