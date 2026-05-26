@@ -63,7 +63,6 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - TF_STATE_MESH_ENFORCE=true
-      - DatabaseProvider=Sqlite
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     healthcheck:
@@ -92,8 +91,6 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - TF_STATE_MESH_ENFORCE=true
       - TF_PROVENANCE_PATH=/app/provenance.json
-      - DatabaseProvider=Sqlite
-      # Neural Link: Connect to Host MSSQL
       # Connection string injected via secrets.prod.env
     extra_hosts:
       - 'host.docker.internal:host-gateway'

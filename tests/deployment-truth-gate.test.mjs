@@ -339,6 +339,73 @@ describe('D. CI release gate coverage', () => {
       'Release lane must stream AuthProvisioner JSON from the one-off container instead of reading a host /tmp file',
     );
   });
+
+  it('D10: production runtime compose does not override app.env TerraFusion DB binding', () => {
+    const content = readFileSync(join(ROOT, 'ops', 'prod', 'runtime-compose.template.yml'), 'utf8');
+    assert.ok(
+      content.includes('- ./app.env'),
+      'Production runtime compose must load operator-managed app.env',
+    );
+    assert.ok(
+      !content.includes('DatabaseProvider: Sqlite'),
+      'Production runtime compose must not force SQLite over app.env',
+    );
+    assert.ok(
+      !content.includes('ConnectionStrings__DefaultConnection: Data Source=data/terrafusion.db'),
+      'Production runtime compose must not force the local SQLite file over app.env',
+    );
+  });
+
+  it('D11: no production compose file pins runtime to SQLite', () => {
+    for (const composeFile of [
+      'ops/prod/runtime-compose.template.yml',
+      'ops/prod/docker-compose.prod.server.yml',
+    ]) {
+      const content = readFileSync(join(ROOT, composeFile), 'utf8');
+      assert.ok(
+        !content.includes('DatabaseProvider=Sqlite') &&
+          !content.includes('DatabaseProvider: Sqlite'),
+        `${composeFile} must not force SQLite over its production env file`,
+      );
+      assert.ok(
+        !content.includes('ConnectionStrings__DefaultConnection: Data Source=data/terrafusion.db'),
+        `${composeFile} must not pin the runtime connection string to local SQLite`,
+      );
+    }
+  });
+
+  it('D12: release-lane provisions auth against the same configured TerraFusion DB as runtime', () => {
+    const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+    assert.ok(
+      content.includes('ConnectionStrings__DefaultConnection') &&
+        content.includes('DatabaseProvider'),
+      'Release lane must validate the runtime DB provider and connection string from app.env',
+    );
+    assert.ok(
+      !content.includes('--provider Sqlite') &&
+        !content.includes('--connection-string "Data Source=/app/data/terrafusion.db"'),
+      'AuthProvisioner must not be pinned to a separate SQLite DB in production',
+    );
+  });
+
+  it('D13: release-lane production DB preflight rejects SQLite without blocking Postgres aliases', () => {
+    const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+    assert.ok(
+      content.includes('provider_key=') &&
+        content.includes('postgres|postgresql|npgsql'),
+      'Release lane must normalize and accept governed Postgres provider aliases',
+    );
+    assert.ok(
+      content.includes('APP_ENV_PRODUCTION_DB_PROVIDER_SQLITE') &&
+        content.includes('APP_ENV_PRODUCTION_DB_CONNECTION_SQLITE'),
+      'Release lane must explicitly reject SQLite provider and local-file DB bindings',
+    );
+    assert.ok(
+      content.includes('connection_key=') &&
+        content.includes('*"host="*|*"server="*'),
+      'Release lane must evaluate server-backed connection keys case-insensitively',
+    );
+  });
 });
 
 // ============================================================================
