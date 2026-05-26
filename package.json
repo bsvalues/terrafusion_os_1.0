@@ -120,6 +120,7 @@
     "truth:june10-source-acquisition-prioritization": "node os-platform/core/pilot/june10-source-acquisition-prioritization.mjs",
     "truth:june10-wave2-source-acquisition": "node os-platform/core/pilot/june10-wave2-source-acquisition.mjs",
     "truth:june10-wave2-prefixed-identity-repair-dry-run": "node os-platform/core/pilot/june10-wave2-prefixed-identity-repair-dry-run.mjs",
+    "truth:june10-klickitat-delta-adjudication": "node os-platform/core/pilot/june10-klickitat-delta-adjudication.mjs",
     "truth:june10-wa-initial-seed-receipt-reconciliation": "node os-platform/core/pilot/june10-wa-initial-seed-receipt-reconciliation.mjs",
     "truth:june10-production-db-binding-plan": "node os-platform/core/pilot/june10-production-db-binding-plan.mjs",
     "truth:county-runtime-contract": "node scripts/truth/county-runtime-contract.mjs",

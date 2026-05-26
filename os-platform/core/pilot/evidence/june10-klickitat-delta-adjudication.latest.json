@@ -1,0 +1,204 @@
+{
+  "generatedAt": "2026-05-26T23:14:31.805Z",
+  "countyName": "Klickitat County",
+  "fips": "53039",
+  "decision": "blocked_source_semantics",
+  "summary": {
+    "sourceRows": 688,
+    "sourceDistinctParcelIds": 665,
+    "canonicalDistinctParcelIdsAfterPrefixRepair": 21305,
+    "overlapCount": 653,
+    "sourceOnlyCount": 12,
+    "canonicalOnlyCount": 20652,
+    "sourceCoverageRatio": 0.03065,
+    "duplicateSourceRows": 23,
+    "nullOrBlankSourceRows": 0,
+    "duplicateCountyIdParcelNumberAfterPrefixRepair": 0
+  },
+  "sourceOnly": {
+    "count": 12,
+    "sample": [
+      "04152000000301",
+      "04162107030300",
+      "04162142000100",
+      "05163422090200",
+      "05172355000300",
+      "05172355000400",
+      "55000000002400",
+      "70000000030400",
+      "70000000039500",
+      "70000000699300",
+      "70000000898700",
+      "70000011000500"
+    ]
+  },
+  "canonicalOnly": {
+    "count": 20652,
+    "sample": [
+      "02120100000100",
+      "02120100000200",
+      "02120100000300",
+      "02120100000400",
+      "02120100000500",
+      "02120100000600",
+      "02120200000100",
+      "02120200000200",
+      "02120200000300",
+      "02120200000400",
+      "02120200000500",
+      "02120200000600",
+      "02120200000700",
+      "02120200000900",
+      "02120200001000",
+      "02120215000100",
+      "02120215000200",
+      "02120222000200",
+      "02120222000300",
+      "02120222000400",
+      "02120222000800",
+      "02120222002500",
+      "02120258280100",
+      "02120258280300",
+      "02120258280900",
+      "02120258440700",
+      "02120258690500",
+      "02120258690600",
+      "02120258691000",
+      "02120258700100",
+      "02120259000700",
+      "02120300000100",
+      "02120300000201",
+      "02120300000300",
+      "02120300009800",
+      "02120300009900",
+      "02120309010100",
+      "02120309010200",
+      "02120309010300",
+      "02120309010400",
+      "02120311000400",
+      "02120311000500",
+      "02120311000600",
+      "02120311000700",
+      "02120311002100",
+      "02120312000200",
+      "02120312000300",
+      "02120312000400",
+      "02120312000500",
+      "02120312000600"
+    ]
+  },
+  "duplicateNullSummary": {
+    "rowCount": 688,
+    "idsExtracted": 665,
+    "duplicateRows": 23,
+    "nullOrBlankRows": 0
+  },
+  "currentSourceProbe": {
+    "attempted": false,
+    "sourceArtifactKind": "sales_report",
+    "reason": "Klickitat evidence is static sales-report workbook data, not a governed parcel inventory or query endpoint."
+  },
+  "sourceReceiptCandidate": {
+    "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+    "countyName": "Klickitat County",
+    "fips": "53039",
+    "sourceClass": "WA_INITIAL_SEED",
+    "sourceParcelIdField": "parcel/account number from Klickitat sales reports",
+    "artifacts": [
+      {
+        "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/039-klickitat-33cbff5f37aa.xlsx",
+        "sizeBytes": 27672,
+        "sha256": "9d985fa0341362f485b32c1cb44b90979481142f3e8d22794632659a7ea4e138",
+        "lastWriteTime": "2026-04-24T16:57:59.925Z"
+      },
+      {
+        "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/039-klickitat-cdf4b89b0615.xlsx",
+        "sizeBytes": 43829,
+        "sha256": "1ae0b53fd40ab31232c6299d43d37ec9ada927acfe1b04ce64c6666cc3fd942c",
+        "lastWriteTime": "2026-04-24T16:57:59.869Z"
+      },
+      {
+        "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/klickitat/source-native-parcel-ids.jsonl",
+        "sizeBytes": 51870,
+        "sha256": "a9cf3916c5e8ca9a36ee5947ee6374e050b0613be0132c11a24d44eca8c4aeb7",
+        "generatedArtifact": true
+      }
+    ],
+    "counts": {
+      "sourceDistinctParcelIds": 665,
+      "canonicalActiveDistinctParcelNumbers": 21305,
+      "exactSourceCanonicalOverlap": 0,
+      "transformedSourceCanonicalOverlap": 653
+    },
+    "classification": "blocked_transform",
+    "certificationAllowed": false,
+    "productionBindingAllowed": false
+  },
+  "repairReceiptCandidate": {
+    "receiptVersion": "wa_initial_seed_prefixed_identity_repair_dry_run_v1",
+    "receiptId": "wave2_53039_prefixed_identity_repair_dry_run_2026_05_26",
+    "countyName": "Klickitat County",
+    "fips": "53039",
+    "sourceClass": "WA_INITIAL_SEED",
+    "sourceReceiptCandidate": {
+      "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+      "countyName": "Klickitat County",
+      "fips": "53039",
+      "sourceClass": "WA_INITIAL_SEED",
+      "sourceParcelIdField": "parcel/account number from Klickitat sales reports",
+      "artifacts": [
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/039-klickitat-33cbff5f37aa.xlsx",
+          "sizeBytes": 27672,
+          "sha256": "9d985fa0341362f485b32c1cb44b90979481142f3e8d22794632659a7ea4e138",
+          "lastWriteTime": "2026-04-24T16:57:59.925Z"
+        },
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/039-klickitat-cdf4b89b0615.xlsx",
+          "sizeBytes": 43829,
+          "sha256": "1ae0b53fd40ab31232c6299d43d37ec9ada927acfe1b04ce64c6666cc3fd942c",
+          "lastWriteTime": "2026-04-24T16:57:59.869Z"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/klickitat/source-native-parcel-ids.jsonl",
+          "sizeBytes": 51870,
+          "sha256": "a9cf3916c5e8ca9a36ee5947ee6374e050b0613be0132c11a24d44eca8c4aeb7",
+          "generatedArtifact": true
+        }
+      ],
+      "counts": {
+        "sourceDistinctParcelIds": 665,
+        "canonicalActiveDistinctParcelNumbers": 21305,
+        "exactSourceCanonicalOverlap": 0,
+        "transformedSourceCanonicalOverlap": 653
+      },
+      "classification": "blocked_transform",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false
+    },
+    "repairSemantics": {
+      "sourceNativeParcelNumberTarget": true,
+      "preservePrefixedValueAsLegacyImportedParcelKey": true,
+      "generateTerraFusionParcelKey": "53039:{sourceNativeParcelNumber}",
+      "deleteRows": false
+    },
+    "counts": {
+      "proposedRows": 21305,
+      "sourceDistinctIds": 665,
+      "sourceOverlapAfterPrefixRemoval": 653,
+      "duplicateCountyIdParcelNumberAfter": 0
+    },
+    "classification": "dry_run_pass_pending_delta_adjudication",
+    "certificationAllowed": false,
+    "productionBindingAllowed": false
+  },
+  "blockers": [
+    "Klickitat source artifact is not a governed full parcel inventory, so canonical-only rows cannot be adjudicated.",
+    "12 source-only parcel IDs require current source semantics before correction.",
+    "20652 canonical-only parcel IDs require full source inventory or current-source probe before closure."
+  ],
+  "databaseMutationAttempted": false,
+  "productionBindingAllowed": false,
+  "certificationAllowed": false,
+  "runtimeClaimAllowed": false
+}
