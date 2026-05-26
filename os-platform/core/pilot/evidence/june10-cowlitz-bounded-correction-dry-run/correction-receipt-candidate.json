@@ -1,0 +1,19 @@
+{
+  "receiptVersion": "cowlitz_bounded_correction_dry_run_v1",
+  "countyName": "Cowlitz County",
+  "fips": "53015",
+  "sourceClass": "WA_INITIAL_SEED",
+  "sourceParcelIdField": "PARCNO",
+  "status": "dry_run_blocked",
+  "counts": {
+    "sourceOnly": 321,
+    "canonicalOnly": 125,
+    "proposedSupersedes": 125,
+    "proposedStageInserts": 321,
+    "duplicateGroupsAfter": 0,
+    "postCorrectionDistinct": 57558
+  },
+  "productionBindingAllowed": false,
+  "certificationAllowed": false,
+  "databaseMutationAttempted": false
+}

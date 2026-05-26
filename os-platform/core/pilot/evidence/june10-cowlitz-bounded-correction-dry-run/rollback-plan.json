@@ -1,0 +1,10 @@
+{
+  "rollbackRequired": true,
+  "mutationAuthorized": false,
+  "rollbackMode": "no_op_dry_run",
+  "ifExecutedLater": [
+    "restore superseded canonical rows to active/current state",
+    "remove or supersede inserted staged Cowlitz rows by correction receipt id",
+    "re-run Cowlitz identity closure and receipt reconciliation"
+  ]
+}

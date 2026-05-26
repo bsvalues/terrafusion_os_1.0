@@ -1,0 +1,4175 @@
+[
+  {
+    "parcelNumber": "020650100",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "023170100",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "023170101",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "025720100",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "030350100",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "030370100",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "052882250",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "052882251",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "067636000",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "105720600",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "107240116",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "204880100",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "226010100",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "234160100",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "302160300",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "302160301",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "302160302",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "302160303",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "403420400",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "404840100",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840121",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840122",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840123",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840124",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840125",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840126",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840127",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840128",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840129",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840130",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840131",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840132",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840133",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840134",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840135",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840136",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840137",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840138",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840139",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840140",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840141",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840142",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840143",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840144",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840145",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840146",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840147",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840148",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840149",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840150",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840151",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840152",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840153",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840154",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840155",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840156",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840157",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840158",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840159",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840160",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840161",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840162",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840163",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840164",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840165",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "411840166",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500201",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500202",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500203",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500204",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500205",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500206",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500207",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500208",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500209",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500210",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500211",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500212",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500213",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500237",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500238",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500239",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500240",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500241",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500242",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500243",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500244",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500245",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500246",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500247",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500248",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500249",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500250",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500251",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500252",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500253",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500254",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500255",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500256",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500257",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500258",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500259",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500260",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500261",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500262",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500263",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500264",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500265",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500266",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500267",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500268",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500269",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500270",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500271",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500272",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500273",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500274",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500275",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500276",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500277",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500278",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500279",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500280",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500281",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500282",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500283",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500284",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "506500285",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300207",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300208",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300209",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300210",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300211",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300212",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300213",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300214",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300215",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300216",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300217",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300218",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300219",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300220",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300221",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300222",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300223",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300224",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300225",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300226",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300227",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300228",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300229",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300230",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300231",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300232",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300233",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300234",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300235",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300236",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300237",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300238",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300239",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300240",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300241",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300242",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300243",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300244",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300245",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300246",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300247",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300248",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300249",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300250",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300251",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300252",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300253",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300254",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "508300255",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "605780600",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "605780700",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "605780800",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "605780900",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "609070018",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "609070019",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "609070020",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "609070021",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "609070022",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "609070023",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "609070024",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "609070025",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "609070026",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "609070027",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "609070028",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "609110101",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "618980100",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "618980101",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "618980102",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "618980103",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "618980104",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "618980105",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "618980106",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "620590101",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "626020100",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "626020200",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "626020300",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "7103121",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "7105850",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "7105850B",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "72009001",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "759006006",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "7591003",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "7591082",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "759150",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "7591714",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "7591906",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "759644",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "759997",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "766185",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "810121",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "82350431",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "82350433",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "82350434",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "866560",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "EA0207003",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "EA0207004",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "EA0401012",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "EB3411009",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "EB3411010",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "EC3114000",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "EC3114001",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "EF3001025",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "EG0609011",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "EH1303003",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "EH1401005",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "EH1416000",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "EH2306003",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "EM2405011",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "EM2405012",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "EM2405013",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "ER1902007",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "ER1902008",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "ER1902009",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WC1103009",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WC1109005",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WC2314011",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WC2610003",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WC2610004",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WC2610005",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WC2610006",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WC2610007",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WC3406003",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WC3406004",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WC3410006",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WC3515019",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WC3515020",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WC3515021",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WD0908012",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WD0908013",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WD0909007",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WE1312022",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WE2011008",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WE2011009",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WE3415011",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WE3509004",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WE3509005",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WE3509006",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WE3511003",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WE3511004",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WE3511005",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WE3511006",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WF0510012",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WF0620115",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WF0620116",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WF0620117",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WF0620118",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WF0703006",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WF0703007",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WF0703008",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WF2007000",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WF2012014",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WF2012015",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WF2012016",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WG1920012",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WG2311007",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WG2311008",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WG2505005",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WG2803010",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WG3002014",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WG3002015",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WG3114003",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WG3303007",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WG3503002",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WG3503003",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WG3503004",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WG3503005",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WJ0714011",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WJ1512009",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WJ1512010",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WJ1902018",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WJ2310012",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WJ2310013",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WJ2706010",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WK2806005",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WK2907007",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WK2907008",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WK2907009",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WK2907010",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WK2907011",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WK2907012",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WK2907013",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WK2907014",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WK2907015",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WK3609009",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WM2502002",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WM2508003",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WM2601001",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WM2615009",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WM2716006",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WM2716007",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WM3403002",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WO0108003",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  },
+  {
+    "parcelNumber": "WO0109000",
+    "action": "stage_insert_if_runtime_fields_captured",
+    "classification": "source_only_identity_candidate",
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY_PENDING_RUNTIME_FIELDS",
+    "loadableNow": false,
+    "requiredBeforeInsert": [
+      "runtime-complete source fields",
+      "lineage receipt",
+      "rollback receipt",
+      "post-correction duplicate proof"
+    ]
+  }
+]

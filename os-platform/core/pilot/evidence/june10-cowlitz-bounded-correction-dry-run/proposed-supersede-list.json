@@ -1,0 +1,877 @@
+[
+  {
+    "parcelNumber": "02066",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "02067",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "033440757",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "033440759",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "054838495",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "1018101",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "1072401116",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "22501",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "225020100",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "22503",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "302160101",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "302160102",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "302160103",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "302160104",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "302160105",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "302160106",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "302160107",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "302160108",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "50457",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "506500300",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "506500400",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "604350800",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "60576",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "605780200",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "605780300",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "605780400",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "605780500",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "609070004",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "609070014",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "609070015",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "609070016",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "6188201",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "61886",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "61887",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "61888",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "618930100",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "62829",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "628290801",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "628290802",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "628290803",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "700705",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "701400401",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "703666066",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "7083",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "7102369",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "7105313",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "716307",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "719605002",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "7227",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "726800101",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "728207",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "732103010",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "738602",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "7412",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "7413001",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "7439",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "746305",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "748206",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "752405",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "75524411",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "75524415",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "758101",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "759108",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "759205",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "762609",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "7633",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "7667407",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "7669066",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "772805",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "7728747",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "7769",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "783407001",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "786206",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "790703",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "7948001",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "796241",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "804452",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "805107",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "809003002",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "81011368",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "8105530",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "8121406",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "819500001",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "821407",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "823146",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "823147",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "824703",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "825005",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "825207",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "826110",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "827201",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "862057",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "871167",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "895121",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "EH1303001",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "EH1309002",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "EH1313002",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "EH1401003",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "EH1404001",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "EH2301005",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "EH2301013",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "EH2320015",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WC2605015",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WC2615002",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WC2615017",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WC3401103",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WD1013001",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WE3503002",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WE3509001",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WE3509002",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WE3509003",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WE3511000",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WE3511001",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WE3511002",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WG2505002",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WG3101014",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WH1304001",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WJ0506007",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WJ1512001",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WJ1512006",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WJ1706006",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WJ1910002",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WJ3402002",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WM2612004",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  },
+  {
+    "parcelNumber": "WM2704010",
+    "action": "supersede_if_authorized",
+    "classification": "stale_canonical_candidate",
+    "currentSourceStatus": "absent_from_current_source",
+    "deleteAllowed": false
+  }
+]
