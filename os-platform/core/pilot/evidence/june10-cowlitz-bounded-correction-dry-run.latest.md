@@ -1,10 +1,10 @@
 # Cowlitz Bounded Correction Dry-Run
 
-Generated: 2026-05-26T18:55:35.274Z
+Generated: 2026-05-26T19:36:31.427Z
 
 ## Verdict
 
-- Status: dry_run_blocked
+- Status: dry_run_pass_pending_authorization
 - DB mutation attempted: no
 - Production binding allowed: no
 - Certification allowed: no
@@ -44,4 +44,4 @@ Generated: 2026-05-26T18:55:35.274Z
 
 ## Blockers
 
-- Source raw artifact hash does not match the source snapshot receipt.
+- none

@@ -1,0 +1,126 @@
+{
+  "generatedAt": "2026-05-26T19:36:23.908Z",
+  "countyName": "Cowlitz County",
+  "fips": "53015",
+  "databaseMutationAttempted": false,
+  "productionBindingAllowed": false,
+  "cowlitzCorrectionAuthorizationReady": false,
+  "dryRunInvalidated": false,
+  "hashParityRestored": true,
+  "parityMode": "lf_to_crlf",
+  "decision": "receipt_corrected",
+  "rawArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-public-source-captures/cowlitz/cowlitz-parcels-parcno-raw.jsonl",
+    "currentSha256": "b1c30d8f72b5cd81bdabcb6a01e006e8cdf74b789cd226e2bcda0a2686445174",
+    "currentBytes": 2116474,
+    "currentModifiedAtUtc": "2026-05-26T18:43:17.658Z",
+    "lineCount": 29,
+    "totalFeatures": 57705
+  },
+  "receiptArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-public-source-captures/cowlitz/cowlitz-parcels-parcno-raw.jsonl",
+    "sha256": "90c663bb977e69155625df5a73a66c59f40a42ef9ff797a89fcb4deccf3b35e1",
+    "capturedAtUtc": "2026-05-26T05:15:28.190Z",
+    "parcelRowsExtracted": 57705,
+    "parcelRowsNormalized": 57705
+  },
+  "captureMetadata": {
+    "path": "os-platform/core/pilot/evidence/june10-public-source-captures/cowlitz/cowlitz-parcels-parcno-capture-metadata.json",
+    "sha256": "90c663bb977e69155625df5a73a66c59f40a42ef9ff797a89fcb4deccf3b35e1",
+    "capturedAtUtc": "2026-05-26T05:15:15.6517820Z",
+    "expectedSourceCount": 57705,
+    "capturedFeatureRows": 57705,
+    "pageSize": 2000,
+    "pages": 29
+  },
+  "sourceCaptureTimestampComparison": {
+    "metadataCapturedAtUtc": "2026-05-26T05:15:15.6517820Z",
+    "receiptCapturedAtUtc": "2026-05-26T05:15:28.190Z",
+    "rawArtifactModifiedAtUtc": "2026-05-26T18:43:17.658Z",
+    "dryRunGeneratedAtUtc": "2026-05-26T19:26:13.746Z",
+    "receiptAndMetadataHashesAgree": true,
+    "receiptAndCurrentRawHashesAgree": false
+  },
+  "hashVariantChecks": [
+    {
+      "name": "raw_current_bytes",
+      "sha256": "b1c30d8f72b5cd81bdabcb6a01e006e8cdf74b789cd226e2bcda0a2686445174",
+      "matchesReceipt": false
+    },
+    {
+      "name": "ensure_final_lf",
+      "sha256": "b1c30d8f72b5cd81bdabcb6a01e006e8cdf74b789cd226e2bcda0a2686445174",
+      "matchesReceipt": false
+    },
+    {
+      "name": "trim_end",
+      "sha256": "6419ffda1d4a522db59109a6d2531e897ca7b124d9e50907c3c19f1315e42fa8",
+      "matchesReceipt": false
+    },
+    {
+      "name": "crlf_to_lf",
+      "sha256": "b1c30d8f72b5cd81bdabcb6a01e006e8cdf74b789cd226e2bcda0a2686445174",
+      "matchesReceipt": false
+    },
+    {
+      "name": "lf_to_crlf",
+      "sha256": "90c663bb977e69155625df5a73a66c59f40a42ef9ff797a89fcb4deccf3b35e1",
+      "matchesReceipt": true
+    },
+    {
+      "name": "first_jsonl_line_only",
+      "sha256": "437d78b4a608e36b8053a7b9a6f6b5d342ffad4dfaa2027492e1c3db42af21d1",
+      "matchesReceipt": false
+    },
+    {
+      "name": "first_jsonl_line_with_lf",
+      "sha256": "f8467c83676248e2dcf117a31de85200e5be88ca1aeaa73f022cf540c69783e6",
+      "matchesReceipt": false
+    },
+    {
+      "name": "jsonl_pages_minified",
+      "sha256": "6419ffda1d4a522db59109a6d2531e897ca7b124d9e50907c3c19f1315e42fa8",
+      "matchesReceipt": false
+    },
+    {
+      "name": "jsonl_pages_minified_with_lf",
+      "sha256": "b1c30d8f72b5cd81bdabcb6a01e006e8cdf74b789cd226e2bcda0a2686445174",
+      "matchesReceipt": false
+    }
+  ],
+  "pageSummary": {
+    "firstPage": {
+      "page": 1,
+      "features": 2000,
+      "exceededTransferLimit": true,
+      "firstParcelNumber": "403670200",
+      "lastParcelNumber": "21025",
+      "lineSha256": "437d78b4a608e36b8053a7b9a6f6b5d342ffad4dfaa2027492e1c3db42af21d1"
+    },
+    "lastPage": {
+      "page": 29,
+      "features": 1705,
+      "exceededTransferLimit": false,
+      "firstParcelNumber": "6279329",
+      "lastParcelNumber": "411840113",
+      "lineSha256": "fe885c13363a4ece21409b9bdf40d31204367dde06d3cc59bb389de69a6de5a7"
+    },
+    "pagesWithTransferLimit": 28,
+    "pagesWithoutTransferLimit": 1
+  },
+  "ruledOutCauses": [
+    "ensure_final_lf",
+    "trim_end",
+    "crlf_to_lf",
+    "first_jsonl_line_only",
+    "first_jsonl_line_with_lf",
+    "jsonl_pages_minified",
+    "jsonl_pages_minified_with_lf"
+  ],
+  "likelyCause": "receipt hash was computed over CRLF-normalized JSONL bytes while the current artifact is stored with LF line endings",
+  "requiredNextAction": "rerun Cowlitz bounded correction dry-run with this line-ending-aware receipt reconciliation evidence",
+  "blockers": [
+    "Raw-byte hash differs because the receipt hash matches line-ending variant(s): lf_to_crlf.",
+    "Cowlitz correction authorization remains blocked until the dry-run consumes this reconciliation evidence."
+  ]
+}

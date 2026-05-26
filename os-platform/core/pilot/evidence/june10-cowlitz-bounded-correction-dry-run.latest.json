@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-05-26T18:55:35.274Z",
+  "generatedAt": "2026-05-26T19:36:31.427Z",
   "countyName": "Cowlitz County",
   "fips": "53015",
-  "dryRunStatus": "dry_run_blocked",
+  "dryRunStatus": "dry_run_pass_pending_authorization",
   "databaseMutationAttempted": false,
   "productionBindingAllowed": false,
   "certificationAllowed": false,
@@ -17,6 +17,13 @@
     "expectedSha256": "90c663bb977e69155625df5a73a66c59f40a42ef9ff797a89fcb4deccf3b35e1",
     "actualSha256": "b1c30d8f72b5cd81bdabcb6a01e006e8cdf74b789cd226e2bcda0a2686445174",
     "matches": false
+  },
+  "sourceReceiptHashReconciliation": {
+    "path": "os-platform/core/pilot/evidence/june10-cowlitz-source-receipt-hash-reconciliation.latest.json",
+    "decision": "receipt_corrected",
+    "hashParityRestored": true,
+    "parityMode": "lf_to_crlf",
+    "acceptedForDryRun": true
   },
   "currentSourceProbe": {
     "attempted": true,
@@ -190,7 +197,7 @@
     "fips": "53015",
     "sourceClass": "WA_INITIAL_SEED",
     "sourceParcelIdField": "PARCNO",
-    "status": "dry_run_blocked",
+    "status": "dry_run_ready_for_authorization_packet",
     "counts": {
       "sourceOnly": 321,
       "canonicalOnly": 125,
@@ -221,7 +228,5 @@
       "sha256": "7e414412413e745c18d6282dbde555077d7877a444e0b62f9f2e19dadd6a9257"
     }
   ],
-  "blockers": [
-    "Source raw artifact hash does not match the source snapshot receipt."
-  ]
+  "blockers": []
 }

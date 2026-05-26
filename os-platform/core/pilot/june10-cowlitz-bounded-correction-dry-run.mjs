@@ -47,6 +47,14 @@ const DEFAULT_CLOSURE = path.join(
   "evidence",
   "june10-cowlitz-receipt-closure.latest.json"
 );
+const DEFAULT_HASH_RECONCILIATION = path.join(
+  repoRoot,
+  "os-platform",
+  "core",
+  "pilot",
+  "evidence",
+  "june10-cowlitz-source-receipt-hash-reconciliation.latest.json"
+);
 const DEFAULT_OUT_ROOT = path.join(
   repoRoot,
   "os-platform",
@@ -229,7 +237,8 @@ export function buildCowlitzBoundedCorrectionDryRun({
   closure,
   sourceReceipt,
   currentSourceProbe,
-  sourceArtifactIntegrity = null
+  sourceArtifactIntegrity = null,
+  sourceReceiptHashReconciliation = null
 }) {
   const sourceOnly = setDifference(source.distinct, canonical.distinct);
   const canonicalOnly = setDifference(canonical.distinct, source.distinct);
@@ -304,7 +313,13 @@ export function buildCowlitzBoundedCorrectionDryRun({
   if (duplicateAfter !== 0) blockers.push("Dry-run correction would create duplicate parcel identifiers.");
   if (probeHadErrors) blockers.push("Current source probe had errors; canonical-only supersede authorization is not closed.");
   if (proposedStage.some((row) => row.loadableNow !== false)) blockers.push("Source-only rows must remain no-op staged until runtime fields are captured.");
-  if (sourceArtifactIntegrity && sourceArtifactIntegrity.matches !== true) {
+  const hashMismatchReconciled =
+    sourceArtifactIntegrity?.matches === false &&
+    sourceReceiptHashReconciliation?.hashParityRestored === true &&
+    sourceReceiptHashReconciliation?.receiptArtifact?.sha256 === sourceArtifactIntegrity.expectedSha256 &&
+    sourceReceiptHashReconciliation?.rawArtifact?.currentSha256 === sourceArtifactIntegrity.actualSha256;
+
+  if (sourceArtifactIntegrity && sourceArtifactIntegrity.matches !== true && !hashMismatchReconciled) {
     blockers.push("Source raw artifact hash does not match the source snapshot receipt.");
   }
 
@@ -324,6 +339,16 @@ export function buildCowlitzBoundedCorrectionDryRun({
     sourceSystem: sourceReceipt.sourceSystem,
     closureStatus: closure.status,
     sourceArtifactIntegrity,
+    sourceReceiptHashReconciliation: sourceReceiptHashReconciliation
+      ? {
+          path:
+            "os-platform/core/pilot/evidence/june10-cowlitz-source-receipt-hash-reconciliation.latest.json",
+          decision: sourceReceiptHashReconciliation.decision,
+          hashParityRestored: sourceReceiptHashReconciliation.hashParityRestored,
+          parityMode: sourceReceiptHashReconciliation.parityMode,
+          acceptedForDryRun: hashMismatchReconciled
+        }
+      : null,
     currentSourceProbe: currentSourceProbe ?? {
       attempted: false,
       requestedCount: canonicalOnly.length,
@@ -435,6 +460,7 @@ async function main() {
   const canonicalCsvPath = args.get("canonical-csv") ?? DEFAULT_CANONICAL_CSV;
   const sourceReceiptPath = args.get("source-receipt") ?? DEFAULT_SOURCE_RECEIPT;
   const closurePath = args.get("closure") ?? DEFAULT_CLOSURE;
+  const hashReconciliationPath = args.get("hash-reconciliation") ?? DEFAULT_HASH_RECONCILIATION;
   const outRoot = args.get("out-root") ?? DEFAULT_OUT_ROOT;
   const outJson = args.get("out-json") ?? DEFAULT_OUT_JSON;
   const outMd = args.get("out-md") ?? DEFAULT_OUT_MD;
@@ -444,6 +470,9 @@ async function main() {
   const canonical = parseCanonicalParcelNumbers(fs.readFileSync(canonicalCsvPath, "utf8"));
   const sourceReceipt = readJson(sourceReceiptPath);
   const closure = readJson(closurePath);
+  const sourceReceiptHashReconciliation = fs.existsSync(hashReconciliationPath)
+    ? readJson(hashReconciliationPath)
+    : null;
   const expectedSourceHash = sourceReceipt.rawArtifacts?.[0]?.sha256 ?? null;
   const actualSourceHash = sha256File(sourceRawPath);
   const sourceArtifactIntegrity = {
@@ -472,7 +501,8 @@ async function main() {
     closure,
     sourceReceipt,
     currentSourceProbe,
-    sourceArtifactIntegrity
+    sourceArtifactIntegrity,
+    sourceReceiptHashReconciliation
   });
 
   writeJson(outJson, {
