@@ -1,0 +1,202 @@
+{
+  "generatedAt": "2026-05-26T21:47:25.633Z",
+  "countyName": "Yakima County",
+  "fips": "53077",
+  "status": "blocked_source_canonical_delta",
+  "receiptConverted": false,
+  "productionBindingAllowed": false,
+  "certificationAllowed": false,
+  "sourceParcelIdField": "AssessorNumber",
+  "liveDbSnapshot": {
+    "activeRows": 102238,
+    "activeDistinct": 102238,
+    "supersededRows": 0,
+    "activeDuplicateGroups": 0,
+    "identityRepairReceiptRows": 102238
+  },
+  "postRepairIdentityOverlap": {
+    "sourceDistinct": 98978,
+    "canonicalDistinct": 102238,
+    "exactOverlap": 98878,
+    "sourceCoverageRatio": 0.9989896744731153,
+    "canonicalCoverageRatio": 0.9671355073456054,
+    "sourceOnlyCount": 100,
+    "canonicalOnlyCount": 3360,
+    "rowCountMatches": false,
+    "sourceCountSemanticsAccepted": false
+  },
+  "repairProof": {
+    "repairCommitted": true,
+    "repairedRows": 102238,
+    "repairedRowsMatch": true,
+    "legacyImportedParcelKeyPreserved": true,
+    "terraFusionParcelKeyPopulated": true
+  },
+  "deltaClassification": {
+    "sourceOnly": {
+      "count": 100,
+      "classification": "cannot_adjudicate_without_raw_source_artifact",
+      "sample": [
+        "17140922403",
+        "17140922404",
+        "18131924517",
+        "18131924518",
+        "18131924519",
+        "18131924520",
+        "18131924516",
+        "18131924515",
+        "18131924512",
+        "18131924511",
+        "18131924508",
+        "18131924521",
+        "18131924507",
+        "18131924506",
+        "18131924522",
+        "18131924523",
+        "18131924524",
+        "18131924525",
+        "18131924526",
+        "18131924509",
+        "18131924513",
+        "18131924505",
+        "18131924504",
+        "18131924510",
+        "18131924527",
+        "18131924528",
+        "18131924514",
+        "23092334495",
+        "23092334499",
+        "23092334493",
+        "23092334494",
+        "23092334496",
+        "23092334498",
+        "23092334497",
+        "23092334500",
+        "22102631614",
+        "22102631611",
+        "22102631612",
+        "22102631610",
+        "22102631613",
+        "22102631609",
+        "22102631615",
+        "22102631616",
+        "20100443031",
+        "20100443033",
+        "20100443032",
+        "18131733466",
+        "18131733467",
+        "18120423007",
+        "18120724415"
+      ]
+    },
+    "canonicalOnly": {
+      "count": 3360,
+      "classification": "cannot_adjudicate_without_raw_source_artifact",
+      "sample": [
+        "10070199992",
+        "10070299992",
+        "10071199992",
+        "10071299992",
+        "10071399992",
+        "10071499992",
+        "10072399992",
+        "10072499992",
+        "10072599992",
+        "10072699992",
+        "10073599992",
+        "10073699992",
+        "10080199990",
+        "10080199992",
+        "10080299992",
+        "10081199992",
+        "10081299990",
+        "10081299992",
+        "10081399992",
+        "10081499992",
+        "10082399992",
+        "10082499992",
+        "10082599992",
+        "10082699992",
+        "10083599992",
+        "10083699992",
+        "10090199992",
+        "10090299992",
+        "10091199992",
+        "10091299992",
+        "10091399992",
+        "10091499992",
+        "10092399992",
+        "10092499992",
+        "10092599992",
+        "10092699992",
+        "10093599992",
+        "10093699992",
+        "10100199990",
+        "10100299992",
+        "10101199992",
+        "10101299990",
+        "10101299992",
+        "10101399990",
+        "10101399992",
+        "10101499992",
+        "10102399992",
+        "10102499990",
+        "10102499992",
+        "10102599990"
+      ]
+    },
+    "duplicateNullSemantics": {
+      "status": "not_rerunnable_without_raw_source_artifact",
+      "liveCanonicalDuplicateGroups": 0,
+      "sourceNullOrBlank": null,
+      "sourceDuplicateGroups": null
+    }
+  },
+  "boundedCorrectionPlan": {
+    "planStatus": "required_before_receipt_conversion",
+    "allowedMutation": false,
+    "productionBindingAllowed": false,
+    "steps": [
+      "Recover or recapture Yakima source-native parcel identifier artifact and receipt.",
+      "Recompute source duplicate/null semantics from raw artifact.",
+      "Probe/classify the 3,360 canonical-only identifiers as stale, source-filtered, or import artifacts.",
+      "Classify the 100 source-only identifiers as loadable identity rows, source drift, or capture artifacts.",
+      "Only after classification, create a bounded no-delete correction dry-run if needed.",
+      "Do not convert Yakima to WA_INITIAL_SEED receipt posture until source/canonical parity is proven."
+    ],
+    "proposedCorrectionClasses": {
+      "sourceOnly": 100,
+      "canonicalOnly": 3360,
+      "canonicalDuplicateGroups": 0
+    }
+  },
+  "receipt": null,
+  "supportingArtifacts": [
+    {
+      "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-post-repair-certification-closure.latest.json",
+      "exists": true,
+      "sha256": "0ec2cc7382a1a7521d329868f6fdbc069dcac824ec2a2dd787b3bee942be0f63"
+    },
+    {
+      "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-pilot-repair-execution/repair-receipt.after-execution.json",
+      "exists": true,
+      "sha256": "66beb049c989059d61d6c54a24f115352f7655552721afc077e41904d0097d4f"
+    },
+    {
+      "path": "os-platform/core/pilot/evidence/june10-public-source-captures/yakima/yakima-canonical-parcelnumbers.csv",
+      "exists": true,
+      "sha256": "f0706d0a859d6f2c44b93975f3649e7fd268564d4413938f22921a1f8929e872"
+    },
+    {
+      "path": "os-platform/core/pilot/evidence/june10-38-county-seed/yakima/source-snapshot-receipt.json",
+      "exists": false,
+      "sha256": null
+    }
+  ],
+  "blockers": [
+    "Yakima source snapshot receipt is missing.",
+    "Yakima raw source artifact is missing; duplicate/null/source semantics cannot be independently rerun.",
+    "100 source parcel identifiers are not present in canonical after repair.",
+    "3360 canonical parcel identifiers are not present in source evidence after repair."
+  ]
+}

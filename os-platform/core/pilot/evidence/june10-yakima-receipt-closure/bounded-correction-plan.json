@@ -1,0 +1,18 @@
+{
+  "planStatus": "required_before_receipt_conversion",
+  "allowedMutation": false,
+  "productionBindingAllowed": false,
+  "steps": [
+    "Recover or recapture Yakima source-native parcel identifier artifact and receipt.",
+    "Recompute source duplicate/null semantics from raw artifact.",
+    "Probe/classify the 3,360 canonical-only identifiers as stale, source-filtered, or import artifacts.",
+    "Classify the 100 source-only identifiers as loadable identity rows, source drift, or capture artifacts.",
+    "Only after classification, create a bounded no-delete correction dry-run if needed.",
+    "Do not convert Yakima to WA_INITIAL_SEED receipt posture until source/canonical parity is proven."
+  ],
+  "proposedCorrectionClasses": {
+    "sourceOnly": 100,
+    "canonicalOnly": 3360,
+    "canonicalDuplicateGroups": 0
+  }
+}
