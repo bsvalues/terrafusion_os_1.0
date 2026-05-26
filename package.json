@@ -116,6 +116,7 @@
     "truth:june10-cowlitz-bounded-correction-execute": "node os-platform/core/pilot/june10-cowlitz-bounded-correction-execute.mjs",
     "truth:june10-cowlitz-source-receipt-hash-reconciliation": "node os-platform/core/pilot/june10-cowlitz-source-receipt-hash-reconciliation.mjs",
     "truth:june10-yakima-receipt-closure": "node os-platform/core/pilot/june10-yakima-receipt-closure.mjs",
+    "truth:june10-yakima-source-artifact-recapture": "node os-platform/core/pilot/june10-yakima-source-artifact-recapture.mjs",
     "truth:june10-wa-initial-seed-receipt-reconciliation": "node os-platform/core/pilot/june10-wa-initial-seed-receipt-reconciliation.mjs",
     "truth:june10-production-db-binding-plan": "node os-platform/core/pilot/june10-production-db-binding-plan.mjs",
     "truth:county-runtime-contract": "node scripts/truth/county-runtime-contract.mjs",

@@ -1,0 +1,19 @@
+{
+  "receiptVersion": "yakima_source_probe_v1",
+  "countyName": "Yakima County",
+  "fips": "53077",
+  "capturedAt": "2026-05-26T22:06:58.691Z",
+  "sourceSearchPage": "https://yes.co.yakima.wa.us/AssessorAPI/Property_Search.html",
+  "sourceApplicationScript": "https://yes.co.yakima.wa.us/AssessorAPI/JS/property-search-ng-app.js",
+  "sourceApplicationScriptSha256": "89dcd0401eceeffe0256c983bf389362c0b1375e8834eb60b40ee79626474695",
+  "rawArtifacts": [
+    {
+      "path": "os-platform/core/pilot/evidence/june10-public-source-captures/yakima/yakima-source-recapture-probe-2026-05-26T220658688Z.jsonl",
+      "sha256": "3b3ad738bf17fbf2bc97f583bac23d9324bb005560d0dd2ab37d1b75d83e297f",
+      "rows": 100
+    }
+  ],
+  "sourceSnapshotReceipt": false,
+  "productionBindingAllowed": false,
+  "databaseMutationAttempted": false
+}
