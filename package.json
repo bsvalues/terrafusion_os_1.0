@@ -113,6 +113,7 @@
     "truth:june10-king-post-repair-certification-closure": "node os-platform/core/pilot/june10-king-post-repair-certification-closure.mjs",
     "truth:june10-cowlitz-receipt-closure": "node os-platform/core/pilot/june10-cowlitz-receipt-closure.mjs",
     "truth:june10-cowlitz-bounded-correction-dry-run": "node os-platform/core/pilot/june10-cowlitz-bounded-correction-dry-run.mjs",
+    "truth:june10-cowlitz-bounded-correction-execute": "node os-platform/core/pilot/june10-cowlitz-bounded-correction-execute.mjs",
     "truth:june10-cowlitz-source-receipt-hash-reconciliation": "node os-platform/core/pilot/june10-cowlitz-source-receipt-hash-reconciliation.mjs",
     "truth:june10-wa-initial-seed-receipt-reconciliation": "node os-platform/core/pilot/june10-wa-initial-seed-receipt-reconciliation.mjs",
     "truth:june10-production-db-binding-plan": "node os-platform/core/pilot/june10-production-db-binding-plan.mjs",

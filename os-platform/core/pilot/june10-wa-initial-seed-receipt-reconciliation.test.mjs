@@ -18,3 +18,19 @@ test("receipt reconciliation counts Spokane and King while keeping production bi
   assert.equal(report.summary.shellPresentReceipts, 1);
   assert.equal(report.productionBindingAllowed, false);
 });
+
+test("receipt reconciliation counts Cowlitz shell-present posture", () => {
+  const report = buildWaInitialSeedReceiptReconciliation({
+    receipts: [
+      { countyName: "Spokane County", fips: "53063", status: "receipt_backed_full_identity" },
+      { countyName: "King County", fips: "53033", status: "receipt_backed_shell_present" },
+      { countyName: "Cowlitz County", fips: "53015", status: "receipt_backed_shell_present" }
+    ]
+  });
+
+  assert.equal(report.summary.receiptsVerified, 3);
+  assert.equal(report.summary.receiptsMissing, 35);
+  assert.equal(report.summary.fullIdentityReceipts, 1);
+  assert.equal(report.summary.shellPresentReceipts, 2);
+  assert.equal(report.productionBindingAllowed, false);
+});

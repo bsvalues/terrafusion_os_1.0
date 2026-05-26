@@ -1,0 +1,34 @@
+{
+  "receiptVersion": "wa_initial_seed_shell_present_v1",
+  "countyName": "Cowlitz County",
+  "fips": "53015",
+  "sourceClass": "WA_INITIAL_SEED",
+  "sourceParcelIdField": "PARCNO",
+  "receiptStatus": "receipt_backed_shell_present",
+  "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY",
+  "counts": {
+    "sourceDistinct": 57558,
+    "canonicalActiveDistinct": 57558,
+    "activeRows": 57558,
+    "supersededRows": 125,
+    "shellInsertedRows": 321,
+    "sourceOnlyRemaining": 0,
+    "canonicalOnlyRemaining": 0,
+    "activeDuplicateGroups": 0
+  },
+  "lineage": {
+    "executionReceiptId": "cowlitz_public_parcel_identity_correction_2026_05_26",
+    "executionReceiptPath": "os-platform/core/pilot/evidence/june10-cowlitz-bounded-correction-execution.latest.json",
+    "backupPath": "os-platform/core/pilot/evidence/june10-cowlitz-bounded-correction-execution/pre-mutation-backup.json",
+    "rollbackPath": "os-platform/core/pilot/evidence/june10-cowlitz-bounded-correction-execution/rollback.sql"
+  },
+  "workflowLabels": {
+    "parcelIdentity": "receipt_backed",
+    "parcelSearch": "identity_shell_only",
+    "officialValuation": "blocked",
+    "productionCertification": "blocked"
+  },
+  "productionBindingAllowed": false,
+  "certificationAllowed": false,
+  "databaseMutationAttempted": true
+}

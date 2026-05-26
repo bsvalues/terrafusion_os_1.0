@@ -1,0 +1,43 @@
+{
+  "generatedAt": "2026-05-26T21:36:41.436Z",
+  "receiptType": "cowlitz_bounded_identity_correction_execution_receipt",
+  "receiptVersion": "june10-cowlitz-bounded-correction-v1",
+  "receiptId": "cowlitz_public_parcel_identity_correction_2026_05_26",
+  "countyName": "Cowlitz County",
+  "fips": "53015",
+  "databaseMutationAttempted": true,
+  "transactionCommitted": true,
+  "noDeletes": true,
+  "certificationAllowed": false,
+  "productionBindingAllowed": false,
+  "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY",
+  "backupPath": "os-platform/core/pilot/evidence/june10-cowlitz-bounded-correction-execution/pre-mutation-backup.json",
+  "rollbackPath": "os-platform/core/pilot/evidence/june10-cowlitz-bounded-correction-execution/rollback.sql",
+  "expectedCounts": {
+    "supersedes": 125,
+    "shellInserts": 321
+  },
+  "verification": {
+    "sourceDistinct": 57558,
+    "activeDistinct": 57558,
+    "activeRows": 57558,
+    "superseded": 125,
+    "shellInserted": 321,
+    "activeDuplicateGroups": 0,
+    "sourceOnlyRemaining": 0,
+    "canonicalOnlyRemaining": 0,
+    "proposedSupersedes": 125,
+    "proposedShellInserts": 321,
+    "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY",
+    "trustLabelStorage": "execution_receipt_and_identity_repair_receipt_id"
+  },
+  "parityAchieved": true,
+  "receiptPosture": "receipt_backed_shell_present",
+  "boundaries": [
+    "Cowlitz source-native parcel identity parity is distinct from workflow certification.",
+    "Inserted Cowlitz rows are identity shell rows from PARCNO-only public capture.",
+    "Owner/address/value-dependent workflows remain blocked for inserted shell rows.",
+    "Production binding remains blocked while other WA_INITIAL_SEED receipt gaps remain."
+  ],
+  "executionMode": "already_committed_verified"
+}

@@ -76,3 +76,31 @@ test("Cowlitz can only convert to full identity when overlap is complete and blo
   assert.equal(report.receipt.receiptVersion, "wa_initial_seed_post_repair_v1");
   assert.equal(report.boundedCorrectionPlan, null);
 });
+
+test("Cowlitz converts to shell-present receipt after bounded correction parity closes", () => {
+  const report = buildCowlitzReceiptClosure({
+    ...baseInput,
+    boundedExecutionReceipt: {
+      transactionCommitted: true,
+      parityAchieved: true,
+      receiptId: "cowlitz_public_parcel_identity_correction_2026_05_26",
+      verification: {
+        sourceDistinct: 57558,
+        activeDistinct: 57558,
+        sourceOnlyRemaining: 0,
+        canonicalOnlyRemaining: 0,
+        activeDuplicateGroups: 0,
+        shellInserted: 321,
+        superseded: 125
+      }
+    }
+  });
+
+  assert.equal(report.status, "receipt_backed_shell_present");
+  assert.equal(report.receiptConverted, true);
+  assert.equal(report.receipt.receiptVersion, "wa_initial_seed_shell_present_v1");
+  assert.equal(report.receipt.trustPosture, "COWLITZ_PUBLIC_PARCEL_IDENTITY");
+  assert.equal(report.boundedCorrectionPlan, null);
+  assert.equal(report.productionBindingAllowed, false);
+  assert.equal(report.certificationAllowed, false);
+});

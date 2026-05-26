@@ -64,6 +64,14 @@ const DEFAULT_SOURCE_METADATA = path.join(
   "cowlitz",
   "cowlitz-parcels-parcno-capture-metadata.json"
 );
+const DEFAULT_BOUNDED_EXECUTION_RECEIPT = path.join(
+  repoRoot,
+  "os-platform",
+  "core",
+  "pilot",
+  "evidence",
+  "june10-cowlitz-bounded-correction-execution.latest.json"
+);
 const DEFAULT_OUT_ROOT = path.join(
   repoRoot,
   "os-platform",
@@ -134,7 +142,8 @@ export function buildCowlitzReceiptClosure({
   rowCountAdjudication,
   identifierRootCause,
   repairDryRun,
-  repairReceipt
+  repairReceipt,
+  boundedExecutionReceipt = null
 }) {
   const blockers = [];
   const sourceOnlyCount = Number(postRepairCounty.sourceOnlyCount ?? 0);
@@ -147,6 +156,12 @@ export function buildCowlitzReceiptClosure({
   const sourceNullOrBlank = Number(rowCountAdjudication.summary?.sourceNullOrBlank ?? 0);
   const canonicalDuplicateGroups = Number(rowCountAdjudication.summary?.canonicalDuplicateGroups ?? 0);
   const repairCounty = repairReceipt.counties?.find((county) => county.fips === "53015");
+  const boundedParityClosed =
+    boundedExecutionReceipt?.transactionCommitted === true &&
+    boundedExecutionReceipt?.parityAchieved === true &&
+    boundedExecutionReceipt?.verification?.sourceOnlyRemaining === 0 &&
+    boundedExecutionReceipt?.verification?.canonicalOnlyRemaining === 0 &&
+    boundedExecutionReceipt?.verification?.activeDuplicateGroups === 0;
 
   if (repairReceipt.committed !== true) blockers.push("Pilot identity repair transaction is not committed.");
   if (repairCounty?.repairedRows !== 57362) blockers.push("Expected 57,362 repaired Cowlitz rows in repair receipt.");
@@ -155,8 +170,8 @@ export function buildCowlitzReceiptClosure({
   if (postRepairCounty.terraFusionParcelKeyPopulated !== true) blockers.push("TerraFusionParcelKey population is not proven.");
   if (canonicalDuplicateGroups !== 0) blockers.push("Canonical duplicate parcel identifiers remain.");
   if (sourceNullOrBlank !== 0) blockers.push("Source artifact contains null or blank parcel identifiers.");
-  if (sourceOnlyCount > 0) blockers.push(`${sourceOnlyCount} source parcel identifiers are not present in canonical after repair.`);
-  if (canonicalOnlyCount > 0) blockers.push(`${canonicalOnlyCount} canonical parcel identifiers are not present in source after repair.`);
+  if (sourceOnlyCount > 0 && !boundedParityClosed) blockers.push(`${sourceOnlyCount} source parcel identifiers are not present in canonical after repair.`);
+  if (canonicalOnlyCount > 0 && !boundedParityClosed) blockers.push(`${canonicalOnlyCount} canonical parcel identifiers are not present in source after repair.`);
 
   const fullIdentityClosed =
     blockers.length === 0 &&
@@ -165,18 +180,23 @@ export function buildCowlitzReceiptClosure({
     sourceOnlyCount === 0 &&
     canonicalOnlyCount === 0;
 
-  const status = fullIdentityClosed ? "receipt_backed_full_identity" : "bounded_correction_plan_required";
+  const shellIdentityClosed = !fullIdentityClosed && blockers.length === 0 && boundedParityClosed;
+  const status = fullIdentityClosed
+    ? "receipt_backed_full_identity"
+    : shellIdentityClosed
+      ? "receipt_backed_shell_present"
+      : "bounded_correction_plan_required";
   const overlap = {
-    sourceDistinct,
-    canonicalDistinct,
-    exactOverlap,
-    sourceCoverageRatio: sourceDistinct > 0 ? exactOverlap / sourceDistinct : 0,
-    canonicalCoverageRatio: canonicalDistinct > 0 ? exactOverlap / canonicalDistinct : 0,
-    sourceOnlyCount,
-    canonicalOnlyCount
+    sourceDistinct: boundedParityClosed ? boundedExecutionReceipt.verification.sourceDistinct : sourceDistinct,
+    canonicalDistinct: boundedParityClosed ? boundedExecutionReceipt.verification.activeDistinct : canonicalDistinct,
+    exactOverlap: boundedParityClosed ? boundedExecutionReceipt.verification.sourceDistinct : exactOverlap,
+    sourceCoverageRatio: boundedParityClosed ? 1 : sourceDistinct > 0 ? exactOverlap / sourceDistinct : 0,
+    canonicalCoverageRatio: boundedParityClosed ? 1 : canonicalDistinct > 0 ? exactOverlap / canonicalDistinct : 0,
+    sourceOnlyCount: boundedParityClosed ? 0 : sourceOnlyCount,
+    canonicalOnlyCount: boundedParityClosed ? 0 : canonicalOnlyCount
   };
 
-  const boundedCorrectionPlan = fullIdentityClosed
+  const boundedCorrectionPlan = fullIdentityClosed || shellIdentityClosed
     ? null
     : {
         planStatus: "required_before_receipt_conversion",
@@ -207,18 +227,19 @@ export function buildCowlitzReceiptClosure({
         }
       };
 
-  const receipt = fullIdentityClosed
+  const receipt = fullIdentityClosed || shellIdentityClosed
     ? {
-        receiptVersion: "wa_initial_seed_post_repair_v1",
+        receiptVersion: fullIdentityClosed ? "wa_initial_seed_post_repair_v1" : "wa_initial_seed_shell_present_v1",
         countyName: "Cowlitz County",
         fips: "53015",
         sourceClass: "WA_INITIAL_SEED",
         sourceParcelIdField: "PARCNO",
         receiptStatus: status,
+        trustPosture: shellIdentityClosed ? "COWLITZ_PUBLIC_PARCEL_IDENTITY" : "COWLITZ_PUBLIC_PARCEL_FULL_IDENTITY",
         counts: {
-          sourceDistinct,
-          canonicalDistinct,
-          exactOverlap
+          sourceDistinct: overlap.sourceDistinct,
+          canonicalDistinct: overlap.canonicalDistinct,
+          exactOverlap: overlap.exactOverlap
         },
         productionBindingAllowed: false,
         certificationAllowed: false
@@ -234,7 +255,7 @@ export function buildCowlitzReceiptClosure({
     cowlitzMovesTo: status,
     productionBindingAllowed: false,
     certificationAllowed: false,
-    receiptConverted: fullIdentityClosed,
+    receiptConverted: fullIdentityClosed || shellIdentityClosed,
     sourceParcelIdField: "PARCNO",
     sourceDuplicateNullSemantics: {
       sourceNullOrBlank,
@@ -253,7 +274,11 @@ export function buildCowlitzReceiptClosure({
       dryRunStatus: repairDryRun.dryRunStatus,
       duplicateCountyIdParcelNumberAfterDryRun: repairDryRun.duplicateCountyIdParcelNumberAfter,
       legacyImportedParcelKeyPreserved: postRepairCounty.legacyImportedParcelKeyPreserved === true,
-      terraFusionParcelKeyPopulated: postRepairCounty.terraFusionParcelKeyPopulated === true
+      terraFusionParcelKeyPopulated: postRepairCounty.terraFusionParcelKeyPopulated === true,
+      boundedCorrectionReceiptId: boundedExecutionReceipt?.receiptId ?? null,
+      boundedCorrectionCommitted: boundedExecutionReceipt?.transactionCommitted === true,
+      boundedCorrectionShellInserted: boundedExecutionReceipt?.verification?.shellInserted ?? null,
+      boundedCorrectionSuperseded: boundedExecutionReceipt?.verification?.superseded ?? null
     },
     rootCauseCarriedForward: {
       priorRootCause: identifierRootCause.recommendedRootCause?.id ?? null,
@@ -268,7 +293,8 @@ export function buildCowlitzReceiptClosure({
       artifact(DEFAULT_REPAIR_DRY_RUN),
       artifact(DEFAULT_REPAIR_RECEIPT),
       artifact(DEFAULT_SOURCE_SNAPSHOT_RECEIPT),
-      artifact(DEFAULT_SOURCE_METADATA)
+      artifact(DEFAULT_SOURCE_METADATA),
+      artifact(DEFAULT_BOUNDED_EXECUTION_RECEIPT)
     ],
     blockers
   };
@@ -328,6 +354,7 @@ function main() {
   const identifierRootCausePath = args.get("identifier-root-cause") ?? DEFAULT_IDENTIFIER_ROOT_CAUSE;
   const repairDryRunPath = args.get("repair-dry-run") ?? DEFAULT_REPAIR_DRY_RUN;
   const repairReceiptPath = args.get("repair-receipt") ?? DEFAULT_REPAIR_RECEIPT;
+  const boundedExecutionReceiptPath = args.get("bounded-execution-receipt") ?? DEFAULT_BOUNDED_EXECUTION_RECEIPT;
   const outRoot = args.get("out-root") ?? DEFAULT_OUT_ROOT;
   const outJson = args.get("out-json") ?? DEFAULT_OUT_JSON;
   const outMd = args.get("out-md") ?? DEFAULT_OUT_MD;
@@ -342,7 +369,10 @@ function main() {
     rowCountAdjudication: identifierRootCause,
     identifierRootCause,
     repairDryRun: readJson(repairDryRunPath),
-    repairReceipt: readJson(repairReceiptPath)
+    repairReceipt: readJson(repairReceiptPath),
+    boundedExecutionReceipt: fs.existsSync(boundedExecutionReceiptPath)
+      ? readJson(boundedExecutionReceiptPath)
+      : null
   });
 
   writeJson(outJson, report);

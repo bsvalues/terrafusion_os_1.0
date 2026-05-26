@@ -1,15 +1,26 @@
 {
-  "generatedAt": "2026-05-26T18:56:55.864Z",
+  "generatedAt": "2026-05-26T21:36:46.275Z",
   "scope": "38 WA_INITIAL_SEED counties; Benton is excluded from this public-source seed receipt count.",
   "productionBindingAllowed": false,
   "summary": {
     "expectedSeedCounties": 38,
-    "receiptsVerified": 2,
+    "receiptsVerified": 3,
     "fullIdentityReceipts": 1,
-    "shellPresentReceipts": 1,
-    "receiptsMissing": 36
+    "shellPresentReceipts": 2,
+    "receiptsMissing": 35
   },
   "verifiedReceipts": [
+    {
+      "countySlug": "cowlitz",
+      "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-receipt-posture/cowlitz/source-snapshot-receipt.json",
+      "countyName": "Cowlitz County",
+      "fips": "53015",
+      "receiptVersion": "wa_initial_seed_shell_present_v1",
+      "status": "receipt_backed_shell_present",
+      "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY",
+      "productionBindingAllowed": false,
+      "certificationAllowed": false
+    },
     {
       "countySlug": "king",
       "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-receipt-posture/king/source-snapshot-receipt.json",
@@ -40,7 +51,6 @@
     "53009",
     "53011",
     "53013",
-    "53015",
     "53017",
     "53019",
     "53021",
@@ -72,7 +82,7 @@
     "53077"
   ],
   "blockers": [
-    "36 WA_INITIAL_SEED counties still lack verified receipt posture."
+    "35 WA_INITIAL_SEED counties still lack verified receipt posture."
   ],
   "notes": [
     "King shell-present receipt is identity/context only and does not certify workflow completeness.",
