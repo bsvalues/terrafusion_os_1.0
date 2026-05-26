@@ -1,0 +1,230 @@
+{
+  "generatedAt": "2026-05-26T23:26:40.104Z",
+  "countyName": "Okanogan County",
+  "fips": "53047",
+  "decision": "blocked_source_semantics",
+  "summary": {
+    "sourceRows": 7057,
+    "sourceDistinctParcelIds": 6312,
+    "canonicalDistinctParcelIdsAfterPrefixRepair": 49386,
+    "overlapCount": 5854,
+    "sourceOnlyCount": 458,
+    "canonicalOnlyCount": 43532,
+    "sourceCoverageRatio": 0.118536,
+    "duplicateSourceRows": 745,
+    "nullOrBlankSourceRows": 0,
+    "duplicateCountyIdParcelNumberAfterPrefixRepair": 0
+  },
+  "sourceOnly": {
+    "count": 458,
+    "sample": [
+      "0100011300",
+      "0340440000",
+      "0510261200",
+      "0550161900",
+      "0570012001",
+      "1160060400",
+      "1420040600",
+      "1640020000",
+      "1770080500",
+      "1960001600",
+      "1960001800",
+      "1960001900",
+      "2040701600",
+      "2190140200",
+      "2780042100",
+      "2820070402",
+      "2890001300",
+      "2890001400",
+      "3023050008",
+      "3023060002",
+      "3023214004",
+      "3023214005",
+      "3023250010",
+      "3023350119",
+      "3024010106",
+      "3024103010",
+      "3024140078",
+      "3024149608",
+      "3025179605",
+      "3025260012",
+      "3122080015",
+      "3122350028",
+      "3123333007",
+      "3125300018",
+      "3222030018",
+      "3222290181",
+      "3224110007",
+      "3225090071",
+      "3225090137",
+      "3322070217",
+      "3322080056",
+      "3322170117",
+      "3322170395",
+      "3322170429",
+      "3322170433",
+      "3322180121",
+      "3322200050",
+      "3322219627",
+      "3322219643",
+      "3322219644"
+    ]
+  },
+  "canonicalOnly": {
+    "count": 43532,
+    "sample": [
+      "0020010100",
+      "0020010301",
+      "0020010302",
+      "0020010303",
+      "0020010504",
+      "0020010701",
+      "0020010801",
+      "0020010802",
+      "0020020103",
+      "0020020104",
+      "0020020500",
+      "0020020700",
+      "0020020900",
+      "0020021100",
+      "0020021301",
+      "0020021502",
+      "0020021600",
+      "0020021800",
+      "0020022000",
+      "0020022101",
+      "0020022102",
+      "0020022200",
+      "0020030100",
+      "0020030200",
+      "0020030400",
+      "0020030500",
+      "0020030600",
+      "0020030801",
+      "0020030802",
+      "0020040100",
+      "0020040300",
+      "0020040400",
+      "0020040600",
+      "0020040701",
+      "0020040702",
+      "0020040703",
+      "0020050100",
+      "0020050101",
+      "0020050200",
+      "0020050500",
+      "0020050502",
+      "0020050600",
+      "0020050700",
+      "0020050800",
+      "0020050900",
+      "0020051100",
+      "0020051200",
+      "0020051300",
+      "0020051500",
+      "0020052300"
+    ]
+  },
+  "duplicateNullSummary": {
+    "rowCount": 7057,
+    "idsExtracted": 6312,
+    "duplicateRows": 745,
+    "nullOrBlankRows": 0
+  },
+  "currentSourceProbe": {
+    "attempted": false,
+    "sourceArtifactKind": "comparable_sales_workbook",
+    "reason": "Okanogan evidence is a static comparable-sales workbook, not a governed full parcel inventory or current parcel query endpoint."
+  },
+  "sourceReceiptCandidate": {
+    "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+    "countyName": "Okanogan County",
+    "fips": "53047",
+    "sourceClass": "WA_INITIAL_SEED",
+    "sourceParcelIdField": "parcel/account number from Okanogan comparable sales workbook",
+    "artifacts": [
+      {
+        "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/047-okanogan-8ba26dbb173f.xlsx",
+        "sizeBytes": 3798860,
+        "sha256": "34f9d552229dfe69be32d672f3ec72824a219afbd842708dbd3fb7fbbb7c6b7c",
+        "lastWriteTime": "2026-04-24T16:58:09.871Z"
+      },
+      {
+        "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/okanogan/source-native-parcel-ids.jsonl",
+        "sizeBytes": 460776,
+        "sha256": "deb03fe42ab52e214a3e4b9a740c70c46ffdc4e282b8ce82b26f369c26586ca5",
+        "generatedArtifact": true
+      }
+    ],
+    "counts": {
+      "sourceDistinctParcelIds": 6312,
+      "canonicalActiveDistinctParcelNumbers": 49386,
+      "exactSourceCanonicalOverlap": 0,
+      "transformedSourceCanonicalOverlap": 5854
+    },
+    "classification": "blocked_transform",
+    "certificationAllowed": false,
+    "productionBindingAllowed": false
+  },
+  "repairReceiptCandidate": {
+    "receiptVersion": "wa_initial_seed_prefixed_identity_repair_dry_run_v1",
+    "receiptId": "wave2_53047_prefixed_identity_repair_dry_run_2026_05_26",
+    "countyName": "Okanogan County",
+    "fips": "53047",
+    "sourceClass": "WA_INITIAL_SEED",
+    "sourceReceiptCandidate": {
+      "receiptVersion": "wa_initial_seed_source_identity_candidate_v1",
+      "countyName": "Okanogan County",
+      "fips": "53047",
+      "sourceClass": "WA_INITIAL_SEED",
+      "sourceParcelIdField": "parcel/account number from Okanogan comparable sales workbook",
+      "artifacts": [
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/047-okanogan-8ba26dbb173f.xlsx",
+          "sizeBytes": 3798860,
+          "sha256": "34f9d552229dfe69be32d672f3ec72824a219afbd842708dbd3fb7fbbb7c6b7c",
+          "lastWriteTime": "2026-04-24T16:58:09.871Z"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/okanogan/source-native-parcel-ids.jsonl",
+          "sizeBytes": 460776,
+          "sha256": "deb03fe42ab52e214a3e4b9a740c70c46ffdc4e282b8ce82b26f369c26586ca5",
+          "generatedArtifact": true
+        }
+      ],
+      "counts": {
+        "sourceDistinctParcelIds": 6312,
+        "canonicalActiveDistinctParcelNumbers": 49386,
+        "exactSourceCanonicalOverlap": 0,
+        "transformedSourceCanonicalOverlap": 5854
+      },
+      "classification": "blocked_transform",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false
+    },
+    "repairSemantics": {
+      "sourceNativeParcelNumberTarget": true,
+      "preservePrefixedValueAsLegacyImportedParcelKey": true,
+      "generateTerraFusionParcelKey": "53047:{sourceNativeParcelNumber}",
+      "deleteRows": false
+    },
+    "counts": {
+      "proposedRows": 49386,
+      "sourceDistinctIds": 6312,
+      "sourceOverlapAfterPrefixRemoval": 5854,
+      "duplicateCountyIdParcelNumberAfter": 0
+    },
+    "classification": "dry_run_pass_pending_delta_adjudication",
+    "certificationAllowed": false,
+    "productionBindingAllowed": false
+  },
+  "blockers": [
+    "Okanogan source artifact is not a governed full parcel inventory, so canonical-only rows cannot be adjudicated.",
+    "458 source-only parcel IDs require current source semantics before correction.",
+    "43532 canonical-only parcel IDs require full source inventory or current-source probe before closure."
+  ],
+  "databaseMutationAttempted": false,
+  "productionBindingAllowed": false,
+  "certificationAllowed": false,
+  "runtimeClaimAllowed": false
+}
