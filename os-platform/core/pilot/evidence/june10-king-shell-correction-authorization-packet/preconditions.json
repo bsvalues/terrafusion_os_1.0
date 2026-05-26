@@ -1,0 +1,44 @@
+[
+  {
+    "id": "dry_run_receipt_hash_recorded",
+    "required": true,
+    "passed": true,
+    "evidence": "85308b22d13b647bd3bdbd0eee42f9c2a7e9b120849fea859364b62be66ad472",
+    "statement": "Latest King transaction dry-run receipt hash is recorded before authorization."
+  },
+  {
+    "id": "source_artifact_hash_matches",
+    "required": true,
+    "passed": true,
+    "evidence": "9f72b9fa3bd633d8f383214f97011d4438cd48376c113f25c085a7b0473e6c6f",
+    "statement": "King source artifact hash matches the source-completeness receipt."
+  },
+  {
+    "id": "rollback_sql_exists",
+    "required": true,
+    "passed": true,
+    "evidence": "os-platform/core/pilot/evidence/june10-king-parcel-shell-correction-transaction-dry-run/rollback.sql",
+    "statement": "Rollback SQL exists before any execution authorization."
+  },
+  {
+    "id": "bounded_king_only_unit",
+    "required": true,
+    "passed": true,
+    "evidence": "King County 53033",
+    "statement": "Execution scope is King County only."
+  },
+  {
+    "id": "duplicate_targets_zero",
+    "required": true,
+    "passed": true,
+    "evidence": 0,
+    "statement": "Dry-run proves post-mutation duplicate target groups remain zero."
+  },
+  {
+    "id": "shell_policy_blocks_certification",
+    "required": true,
+    "passed": true,
+    "evidence": "KING_PUBLIC_PARCEL_SHELL",
+    "statement": "Shell rows stay non-certified and workflow-complete claims remain blocked."
+  }
+]

@@ -1,0 +1,1 @@
+DISABLED: node os-platform/core/pilot/june10-king-shell-correction-execute.mjs --requires-explicit-human-authorization

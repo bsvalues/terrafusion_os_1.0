@@ -1,0 +1,27 @@
+[
+  {
+    "id": "approve_scope",
+    "required": true,
+    "text": "I approve King County only: 12 case corrections, 451 supersedes, 1,137 KING_PUBLIC_PARCEL_SHELL inserts, and 24 placeholder rows excluded."
+  },
+  {
+    "id": "acknowledge_not_certification",
+    "required": true,
+    "text": "I acknowledge this authorization is not approval for King workflow certification or production certification."
+  },
+  {
+    "id": "acknowledge_shell_limit",
+    "required": true,
+    "text": "I acknowledge shell rows are identity/context-only and lack owner/address/value fields."
+  },
+  {
+    "id": "confirm_rollback",
+    "required": true,
+    "text": "I confirm rollback SQL and rollback verification are available before execution."
+  },
+  {
+    "id": "authorize_execution_phrase",
+    "required": true,
+    "text": "Required phrase for a future mutation slice: I explicitly authorize the King shell identity correction transaction only."
+  }
+]

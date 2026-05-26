@@ -1,0 +1,34 @@
+{
+  "receiptType": "king_public_parcel_shell_correction_transaction_dry_run",
+  "receiptVersion": "june10-king-shell-correction-v1",
+  "countyName": "King County",
+  "fips": "53033",
+  "databaseMutationAttempted": false,
+  "productionBindingAllowed": false,
+  "certificationAllowed": false,
+  "trustLabel": "KING_PUBLIC_PARCEL_SHELL",
+  "counts": {
+    "staleCanonicalSupersedes": 451,
+    "sourceExactCaseCorrections": 12,
+    "shellInserts": 1137,
+    "placeholderReviewHeld": 24
+  },
+  "parityProof": {
+    "staleCanonicalRowsSupersededWithoutIdentityLoss": true,
+    "policyApprovedSourceOnlyRowsInserted": 1137,
+    "placeholderTractRowsExcluded": 24,
+    "sourceExactCaseCorrectionsApplied": 12,
+    "countyIdParcelNumberDuplicatesAfter": 0,
+    "shellRowsReceiveTrustLabel": true,
+    "shellRowsBlockedFromWorkflowCompleteClaims": true,
+    "policyApprovedIdentityParityWouldBeAchieved": true,
+    "fullSourceParityBlockedByPlaceholderQueue": true
+  },
+  "receiptLanguage": [
+    "This is a dry-run receipt only; no database mutation was executed.",
+    "451 stale King canonical rows may be superseded only because current source absence was already proven.",
+    "KING_PUBLIC_PARCEL_SHELL inserts are source-backed identity/context rows, not workflow-complete rows.",
+    "Placeholder/tract-style PINs remain excluded from this transaction and held for review.",
+    "Owner/address/value-dependent workflows and certification claims remain blocked."
+  ]
+}

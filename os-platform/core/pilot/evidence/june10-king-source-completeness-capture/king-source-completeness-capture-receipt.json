@@ -1,0 +1,37 @@
+{
+  "receiptType": "king_source_completeness_capture",
+  "receiptVersion": "june10-king-source-completeness-v1",
+  "capturedAtUtc": "2026-05-26T16:17:18.195Z",
+  "countyName": "King County",
+  "fips": "53033",
+  "sourceClass": "WA_INITIAL_SEED_SOURCE_COMPLETENESS_CAPTURE",
+  "sourceUrl": "https://gisdata.kingcounty.gov/arcgis/rest/services/OpenDataPortal/property__parcel_area/MapServer/439",
+  "accessMethod": "ArcGIS REST exact PIN query, returnGeometry=false, runtime shell fields only",
+  "fieldsCaptured": [
+    "OBJECTID",
+    "PIN",
+    "MAJOR",
+    "MINOR",
+    "Shape_Length",
+    "Shape_Area"
+  ],
+  "rawArtifacts": [
+    {
+      "path": "os-platform/core/pilot/evidence/june10-king-source-completeness-capture/king-source-only-runtime-fields-raw.jsonl",
+      "sha256": "9f72b9fa3bd633d8f383214f97011d4438cd48376c113f25c085a7b0473e6c6f",
+      "capturedAtUtc": "2026-05-26T16:17:18.195Z"
+    }
+  ],
+  "counts": {
+    "requestedSourceOnlyPins": 1161,
+    "presentInRicherSourceArtifact": 1161,
+    "loadableAsRuntimeParcelShell": 1161,
+    "missingFromRicherSourceArtifact": 0,
+    "rejectedRows": 0,
+    "duplicateGeometryRows": 0,
+    "placeholderReviewRows": 24
+  },
+  "databaseWritesAttempted": false,
+  "productionBindingAllowed": false,
+  "certificationAllowed": false
+}

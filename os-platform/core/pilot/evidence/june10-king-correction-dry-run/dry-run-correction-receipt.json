@@ -1,0 +1,12 @@
+{
+  "receiptType": "king_wa_initial_seed_identity_correction_dry_run",
+  "sourceClass": "WA_INITIAL_SEED",
+  "countyName": "King County",
+  "fips": "53033",
+  "databaseMutationAttempted": false,
+  "productionBindingAllowed": false,
+  "proposedCaseCorrections": 12,
+  "proposedSupersedes": 451,
+  "proposedStageRows": 1161,
+  "result": "DRY_RUN_BLOCKED_REQUIRED_FIELDS"
+}

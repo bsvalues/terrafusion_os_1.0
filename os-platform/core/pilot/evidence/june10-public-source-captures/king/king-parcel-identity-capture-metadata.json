@@ -1,0 +1,21 @@
+{
+  "capturedAt": "2026-05-26T05:50:02.686Z",
+  "countyName": "King County",
+  "countyFips": "53033",
+  "countySlug": "king",
+  "sourceUrl": "https://gisdata.kingcounty.gov/arcgis/rest/services/OpenDataPortal/property__parcel_area/MapServer/439",
+  "accessMethod": "ArcGIS REST query, returnGeometry=false, parcel identifier field only",
+  "termsPosture": "public_parcel_id_only",
+  "termsNote": "King County public parcel area service documents PIN as the parcel identification number; capture is limited to PIN and omits geometry.",
+  "parcelIdField": "PIN",
+  "fieldsCaptured": ["PIN"],
+  "geometryCaptured": false,
+  "ownerFieldsCaptured": false,
+  "expectedSourceCount": 638476,
+  "capturedFeatureRows": 638476,
+  "pages": 160,
+  "sourceArtifactSha256": "64f7317024eaecf6fbe8a9e7378716d46c9ac50fed13c4eecde527c7b6fb42cd",
+  "maxRecordCount": 4000,
+  "databaseWritesAttempted": false,
+  "productionBindingAllowed": false
+}

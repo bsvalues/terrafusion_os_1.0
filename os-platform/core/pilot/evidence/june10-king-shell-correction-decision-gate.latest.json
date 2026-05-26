@@ -1,0 +1,59 @@
+{
+  "generatedAt": "2026-05-26T16:37:24.434Z",
+  "gateType": "king_shell_correction_decision_gate",
+  "countyName": "King County",
+  "fips": "53033",
+  "state": "READY_FOR_HUMAN_DECISION",
+  "decision": "none",
+  "executionEnabled": false,
+  "databaseMutationAttempted": false,
+  "certificationAllowed": false,
+  "productionBindingAllowed": false,
+  "approvalToken": {
+    "enabled": false,
+    "tokenFormat": "KING-SHELL-CORRECTION:<packet-sha256>:<dry-run-sha256>:<source-sha256>",
+    "token": null,
+    "state": "READY_FOR_HUMAN_DECISION",
+    "unlocks": [],
+    "remainsForbidden": [
+      "King certification",
+      "workflow-complete claims",
+      "owner/address/value claims",
+      "placeholder/tract insertion",
+      "production binding"
+    ]
+  },
+  "evidenceHashes": {
+    "authorizationPacket": {
+      "expected": "acc0e825d473835534bef688914238b9fbf743425bca192b54185974c3315787",
+      "actual": "acc0e825d473835534bef688914238b9fbf743425bca192b54185974c3315787",
+      "matches": true
+    },
+    "transactionDryRun": {
+      "expected": "85308b22d13b647bd3bdbd0eee42f9c2a7e9b120849fea859364b62be66ad472",
+      "actual": "85308b22d13b647bd3bdbd0eee42f9c2a7e9b120849fea859364b62be66ad472",
+      "matches": true
+    },
+    "sourceArtifact": {
+      "expected": "9f72b9fa3bd633d8f383214f97011d4438cd48376c113f25c085a7b0473e6c6f",
+      "actual": "9f72b9fa3bd633d8f383214f97011d4438cd48376c113f25c085a7b0473e6c6f",
+      "matches": true
+    }
+  },
+  "approvalChecks": {
+    "rollbackSqlExists": true,
+    "worktreeClean": false,
+    "latestTestsPassed": true,
+    "humanApprovalPhraseMatches": false,
+    "humanApprovalChecklistAccepted": false
+  },
+  "allowedUnlocks": [],
+  "forbiddenApprovals": [
+    "King certification",
+    "workflow-complete claims",
+    "owner/address/value claims",
+    "placeholder/tract insertion",
+    "production binding"
+  ],
+  "blockers": ["Branch/worktree is not clean."]
+}

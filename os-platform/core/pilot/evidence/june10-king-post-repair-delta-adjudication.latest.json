@@ -1,0 +1,453 @@
+{
+  "generatedAt": "2026-05-26T15:54:00.982Z",
+  "countyName": "King County",
+  "fips": "53033",
+  "scope": "King only",
+  "sourceUrl": "https://gisdata.kingcounty.gov/arcgis/rest/services/OpenDataPortal/property__parcel_area/MapServer/439",
+  "sourceParcelIdField": "PIN",
+  "databaseMutationAllowed": false,
+  "databaseMutationAttempted": false,
+  "productionBindingAllowed": false,
+  "closureBaseline": {
+    "sourceOnlyCount": 1173,
+    "canonicalOnlyCount": 463,
+    "certificationStatus": "blocked_crosswalk_delta"
+  },
+  "summary": {
+    "sourceRows": 638476,
+    "sourceDistinctParcelIds": 635896,
+    "sourceBlankRows": 0,
+    "sourceDuplicateIdCount": 1110,
+    "sourceDuplicateExtraRows": 2580,
+    "canonicalRows": 635186,
+    "canonicalDistinctParcelIds": 635186,
+    "canonicalBlankRows": 0,
+    "canonicalDuplicateIdCount": 0,
+    "canonicalDuplicateExtraRows": 0,
+    "exactOverlap": 634723,
+    "sourceOnlyCount": 1173,
+    "canonicalOnlyCount": 463,
+    "capturedFeatureRows": 638476,
+    "expectedSourceCount": 638476,
+    "sourceCaptureComplete": true
+  },
+  "sourceOnlySample": [
+    "0009100000",
+    "012303tr-B",
+    "0126049178",
+    "0126049179",
+    "0126049180",
+    "0126049181",
+    "0126049182",
+    "0126049288",
+    "0126049289",
+    "0126049290",
+    "012605TR-x",
+    "012605Tr-A",
+    "0133000276",
+    "0133000277",
+    "013300TR-A",
+    "022206Tr-A",
+    "022206Tr-B",
+    "022206Tr-C",
+    "022605TR-a",
+    "0235700000",
+    "0254000655",
+    "0299960000",
+    "0321069089",
+    "0323049680",
+    "0323049681",
+    "0394500051",
+    "0394500052",
+    "0394500053",
+    "0394500054",
+    "0425079110",
+    "0510000844",
+    "0510000846",
+    "0510001181",
+    "0510001182",
+    "0510001183",
+    "0510002086",
+    "0510002087",
+    "0510002088",
+    "0510002089",
+    "0510002090",
+    "0510004686",
+    "0517000000",
+    "0526059320",
+    "0526059321",
+    "0564700010",
+    "0564700020",
+    "0564700030",
+    "0564700040",
+    "0564700050",
+    "0564700060"
+  ],
+  "canonicalOnlySample": [
+    "0007200168",
+    "0037000275",
+    "0040001046",
+    "0066000200",
+    "0084000045",
+    "0106000300",
+    "012303TR-B",
+    "0126039343",
+    "012605TR-X",
+    "0179000420",
+    "0179001660",
+    "0203900200",
+    "022206TR-B",
+    "022206TR-C",
+    "0223039338",
+    "0225059037",
+    "0225059064",
+    "0225059073",
+    "0225059076",
+    "022605TR-A",
+    "0323049058",
+    "0422049287",
+    "0423059063",
+    "0423059067",
+    "0423059099",
+    "0423059100",
+    "0423059101",
+    "0423059140",
+    "0423059247",
+    "0439000525",
+    "0452001760",
+    "0486000484",
+    "0486000485",
+    "0510004585",
+    "0519000175",
+    "0603000360",
+    "0621069149",
+    "0621069291",
+    "0720069049",
+    "0723049502",
+    "0748000230",
+    "0748000325",
+    "0802000140",
+    "0829000065",
+    "0856001600",
+    "0886000160",
+    "0913000300",
+    "0945000500",
+    "0946000010",
+    "0952003695"
+  ],
+  "caseNormalizationEdges": {
+    "count": 12,
+    "sourceOnlyCaseMatchCount": 12,
+    "canonicalOnlyCaseMatchCount": 12,
+    "sample": [
+      {
+        "sourceValue": "012303tr-B",
+        "canonicalValue": "012303TR-B"
+      },
+      {
+        "sourceValue": "012605TR-x",
+        "canonicalValue": "012605TR-X"
+      },
+      {
+        "sourceValue": "022206Tr-B",
+        "canonicalValue": "022206TR-B"
+      },
+      {
+        "sourceValue": "022206Tr-C",
+        "canonicalValue": "022206TR-C"
+      },
+      {
+        "sourceValue": "022605TR-a",
+        "canonicalValue": "022605TR-A"
+      },
+      {
+        "sourceValue": "142605tr-B",
+        "canonicalValue": "142605TR-B"
+      },
+      {
+        "sourceValue": "162605tr-a",
+        "canonicalValue": "162605TR-A"
+      },
+      {
+        "sourceValue": "162606TR_a",
+        "canonicalValue": "162606TR_A"
+      },
+      {
+        "sourceValue": "212406TR-a",
+        "canonicalValue": "212406TR-A"
+      },
+      {
+        "sourceValue": "300180tr a",
+        "canonicalValue": "300180TR A"
+      },
+      {
+        "sourceValue": "340170tr-B",
+        "canonicalValue": "340170TR-B"
+      },
+      {
+        "sourceValue": "352306tr-A",
+        "canonicalValue": "352306TR-A"
+      }
+    ]
+  },
+  "sourceOnlyPatterns": {
+    "allDigits": 1136,
+    "containsLetters": 37,
+    "containsDash": 27,
+    "unknownSuffix": 4,
+    "tractOrPlaceholderHint": 36,
+    "leadingZero": 68
+  },
+  "canonicalOnlyPatterns": {
+    "allDigits": 445,
+    "containsLetters": 18,
+    "containsDash": 13,
+    "unknownSuffix": 0,
+    "tractOrPlaceholderHint": 17,
+    "leadingZero": 53
+  },
+  "duplicateSourceSample": [
+    {
+      "parcelNumber": "402410TRCT",
+      "count": 21
+    },
+    {
+      "parcelNumber": "423940TRCT",
+      "count": 20
+    },
+    {
+      "parcelNumber": "402770TRCT",
+      "count": 19
+    },
+    {
+      "parcelNumber": "720235TRCT",
+      "count": 18
+    },
+    {
+      "parcelNumber": "868230TRCT",
+      "count": 18
+    },
+    {
+      "parcelNumber": "510451TRCT",
+      "count": 16
+    },
+    {
+      "parcelNumber": "863575TRCT",
+      "count": 16
+    },
+    {
+      "parcelNumber": "402290TRCT",
+      "count": 15
+    },
+    {
+      "parcelNumber": "202506TRCT",
+      "count": 14
+    },
+    {
+      "parcelNumber": "720238TRCT",
+      "count": 14
+    },
+    {
+      "parcelNumber": "865161TRCT",
+      "count": 14
+    },
+    {
+      "parcelNumber": "062981TRCT",
+      "count": 13
+    },
+    {
+      "parcelNumber": "721572TRCT",
+      "count": 13
+    },
+    {
+      "parcelNumber": "868229TRCT",
+      "count": 13
+    },
+    {
+      "parcelNumber": "868232TRCT",
+      "count": 13
+    },
+    {
+      "parcelNumber": "869139TRCT",
+      "count": 13
+    },
+    {
+      "parcelNumber": "563150TRCT",
+      "count": 12
+    },
+    {
+      "parcelNumber": "785213TRCT",
+      "count": 12
+    },
+    {
+      "parcelNumber": "131044TRCT",
+      "count": 11
+    },
+    {
+      "parcelNumber": "332607TRCT",
+      "count": 11
+    },
+    {
+      "parcelNumber": "364910TRCT",
+      "count": 11
+    },
+    {
+      "parcelNumber": "402770TR-A",
+      "count": 11
+    },
+    {
+      "parcelNumber": "663290TRCT",
+      "count": 11
+    },
+    {
+      "parcelNumber": "868228TRCT",
+      "count": 11
+    },
+    {
+      "parcelNumber": "145410TRCT",
+      "count": 10
+    },
+    {
+      "parcelNumber": "182604TRCT",
+      "count": 10
+    },
+    {
+      "parcelNumber": "252404TRCT",
+      "count": 10
+    },
+    {
+      "parcelNumber": "313410TRCT",
+      "count": 10
+    },
+    {
+      "parcelNumber": "370590TRCT",
+      "count": 10
+    },
+    {
+      "parcelNumber": "720310TRCT",
+      "count": 10
+    },
+    {
+      "parcelNumber": "723750TRCT",
+      "count": 10
+    },
+    {
+      "parcelNumber": "800147TRCT",
+      "count": 10
+    },
+    {
+      "parcelNumber": "869137TRCT",
+      "count": 10
+    },
+    {
+      "parcelNumber": "062980TRCT",
+      "count": 9
+    },
+    {
+      "parcelNumber": "132140TRCT",
+      "count": 9
+    },
+    {
+      "parcelNumber": "172304TRCT",
+      "count": 9
+    },
+    {
+      "parcelNumber": "282607TRCT",
+      "count": 9
+    },
+    {
+      "parcelNumber": "395590TRCT",
+      "count": 9
+    },
+    {
+      "parcelNumber": "402290TR-A",
+      "count": 9
+    },
+    {
+      "parcelNumber": "402350TRCT",
+      "count": 9
+    },
+    {
+      "parcelNumber": "563150TR-A",
+      "count": 9
+    },
+    {
+      "parcelNumber": "616390TRCT",
+      "count": 9
+    },
+    {
+      "parcelNumber": "619070TRCT",
+      "count": 9
+    },
+    {
+      "parcelNumber": "721573TRCT",
+      "count": 9
+    },
+    {
+      "parcelNumber": "728390TRCT",
+      "count": 9
+    },
+    {
+      "parcelNumber": "785202TRCT",
+      "count": 9
+    },
+    {
+      "parcelNumber": "011410TRCT",
+      "count": 8
+    },
+    {
+      "parcelNumber": "020360TRCT",
+      "count": 8
+    },
+    {
+      "parcelNumber": "042406TRCT",
+      "count": 8
+    },
+    {
+      "parcelNumber": "062605TR-A",
+      "count": 8
+    }
+  ],
+  "serviceFacts": {
+    "documentsPlaceholderPolygons": true,
+    "documentsStackedGeometry": true,
+    "pinIndexUnique": false,
+    "geometryCaptured": false,
+    "ownerFieldsCaptured": false,
+    "termsPosture": "public_parcel_id_only"
+  },
+  "decision": "require_bounded_reimport_and_supersede_plan",
+  "classifications": [
+    {
+      "class": "duplicate_source_geometry_semantics",
+      "count": 2580,
+      "disposition": "Source raw row count includes duplicate PIN rows from documented stacked polygon / vertical parcel geometry; this explains raw-row surplus, not source/canonical identity drift."
+    },
+    {
+      "class": "source_update_drift_or_canonical_import_gap",
+      "count": 1173,
+      "disposition": "Current complete source artifact contains distinct PINs that are absent from canonical export; King cannot certify until these are loaded, intentionally filtered with evidence, or mapped by an approved crosswalk."
+    },
+    {
+      "class": "canonical_stale_or_unproven_seed_rows",
+      "count": 463,
+      "disposition": "Canonical ParcelNumber values are absent from the current complete source PIN artifact; they require DB-row detail and source recapture/probe before any supersede or rollback decision."
+    },
+    {
+      "class": "identifier_case_normalization_edge_cases",
+      "count": 12,
+      "disposition": "Some source-only and canonical-only values differ only by letter case. Source-native ParcelNumber policy must decide whether exact source case is preserved or whether uppercase normalization is an approved transform."
+    },
+    {
+      "class": "placeholder_polygon_terms_risk",
+      "count": null,
+      "disposition": "King source explicitly includes placeholder polygons that do not represent tax parcels; load rules must decide whether those are excluded from runtime parcel identity."
+    }
+  ],
+  "recommendedNextAction": "Do not certify King. Build a King-only correction plan: preserve the existing repaired rows, acquire the full allowed source payload if needed, load or account for the 1,173 source-only PINs, and separately adjudicate the 463 canonical-only rows before any mutation.",
+  "blockers": [
+    "1173 current source PINs are missing from canonical ParcelNumber.",
+    "463 canonical ParcelNumber values are absent from the current source PIN artifact.",
+    "12 source/canonical identifier pairs differ only by case or casing style."
+  ]
+}

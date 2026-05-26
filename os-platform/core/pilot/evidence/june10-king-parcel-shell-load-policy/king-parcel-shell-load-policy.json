@@ -1,0 +1,22 @@
+{
+  "allowParcelShellRowsInCanonicalRuntime": true,
+  "shellRowsAreWorkflowComplete": false,
+  "normalSourceOnlyDisposition": "shell_load_candidate",
+  "placeholderTractDisposition": "hold_in_review_queue",
+  "requiredFutureReceipt": "king_public_parcel_shell_enrichment_receipt",
+  "requiredFutureFields": ["owner name", "situs address", "assessed value"],
+  "allowedActions": [
+    "parcel_identity_context_representation",
+    "county_scoped_parcel_lookup",
+    "source_lineage_review",
+    "future_enrichment_queueing"
+  ],
+  "blockedActions": [
+    "owner_address_value_dependent_workflows",
+    "valuation_or_cost_claims",
+    "appeal_defense_packet_generation",
+    "taxpayer_notice_or_official_explanation",
+    "sales_ratio_or_assessment_analytics",
+    "workflow_certification_or_county_readiness_claim"
+  ]
+}

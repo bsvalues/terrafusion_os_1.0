@@ -1,0 +1,4512 @@
+[
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "03b2d32c-04b6-2510-b760-4ff42805df5a",
+    "parcelNumber": "0007200168",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "efac3474-3b4b-1d4a-c0fb-a2c2e356595a",
+    "parcelNumber": "0037000275",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "88622087-cbaf-7e54-6d05-ab3ae6c31998",
+    "parcelNumber": "0040001046",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "178d99e8-7544-10ea-9095-569bf8c6d262",
+    "parcelNumber": "0066000200",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "aeb6a0cb-b05b-ab93-df5c-a56776ba27c1",
+    "parcelNumber": "0084000045",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "9edc9a57-72d5-dcae-6254-d6c583b359f2",
+    "parcelNumber": "0106000300",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d9bef567-4b90-038f-fe76-c61ba88de603",
+    "parcelNumber": "0126039343",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "b0150c2a-b556-027a-a127-6f9157b7bc7d",
+    "parcelNumber": "0179000420",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "87bbae56-2344-1311-5d4c-cffff90b0489",
+    "parcelNumber": "0179001660",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d332bf20-8482-27c8-6215-4bb0aa3262f7",
+    "parcelNumber": "0203900200",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "319e8cfb-0fc4-2d1a-f015-4686272f7e38",
+    "parcelNumber": "0223039338",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "caefb2aa-9731-7918-e4b8-d24ee3bc757c",
+    "parcelNumber": "0225059037",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e3d14dbb-2c93-30da-c743-e8df7beee54b",
+    "parcelNumber": "0225059064",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "59f3a898-c679-60ff-3183-04dafd2fd85b",
+    "parcelNumber": "0225059073",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "9a932fbb-a6ab-509c-fc7e-828b6c234396",
+    "parcelNumber": "0225059076",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "dc7818cc-e378-26e7-45e3-88b40c7ad042",
+    "parcelNumber": "0323049058",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "87ab3137-be01-e542-3fae-97c1adfeddef",
+    "parcelNumber": "0422049287",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "9bc1e80d-61c7-8d34-76b1-fb1ecc5ed36e",
+    "parcelNumber": "0423059063",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "dabb3323-2055-5ad9-c1c7-51f79a19d30d",
+    "parcelNumber": "0423059067",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "076eba63-f03b-b5ba-ea07-e59deed08585",
+    "parcelNumber": "0423059099",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "8b5497e3-580a-9a52-5b1c-924c520728d8",
+    "parcelNumber": "0423059100",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "2f9d481b-977e-51d9-6a5c-758813d34652",
+    "parcelNumber": "0423059101",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e81c00fa-0c8e-a730-51d0-8a8bf92e6b4d",
+    "parcelNumber": "0423059140",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "dc548f83-d50b-3270-18f6-f704a06dfa08",
+    "parcelNumber": "0423059247",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "befe1b48-bd2f-a624-460e-3de665ea0d28",
+    "parcelNumber": "0439000525",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "2ae632df-4b3d-5ddc-9425-ac370c1d2306",
+    "parcelNumber": "0452001760",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "bf06b473-9cfe-eec6-4038-12d475dda6f6",
+    "parcelNumber": "0486000484",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "1e0cc4c7-d3cd-efc4-89e4-1c8adfea7c72",
+    "parcelNumber": "0486000485",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "466a3520-7c95-2767-5243-f1e2bfd230e1",
+    "parcelNumber": "0510004585",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "10ce0b59-d94e-9ce9-72ac-a36ab4f855f6",
+    "parcelNumber": "0519000175",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "70121565-3626-0b14-23a6-ebecdac04082",
+    "parcelNumber": "0603000360",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "bfd1cf93-fad2-1bfd-0fe3-7624fe6e3da1",
+    "parcelNumber": "0621069149",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "7240a311-0cfc-eb28-d20f-55100eb28025",
+    "parcelNumber": "0621069291",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "89f2de51-3082-c0ef-0e09-d9b3a52b4139",
+    "parcelNumber": "0720069049",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "4890c73f-e6f3-eacd-7af9-d94fa4eab6e6",
+    "parcelNumber": "0723049502",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "4b148366-d830-1688-b65e-d10b0547449b",
+    "parcelNumber": "0748000230",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "1a98ddbd-3a92-b93c-9363-4b1b25c0731a",
+    "parcelNumber": "0748000325",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "080c3267-c15e-050d-6331-5991d5fe6fd1",
+    "parcelNumber": "0802000140",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "57f0bf67-c01a-2bcf-7370-64283a006fbe",
+    "parcelNumber": "0829000065",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "f479e617-9e42-6956-676c-ef2a8ede8879",
+    "parcelNumber": "0856001600",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "176c104f-8c0c-1db8-e916-1a87c2734d77",
+    "parcelNumber": "0886000160",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "2c4a3aa7-b138-82f8-f7a7-324df275de9f",
+    "parcelNumber": "0913000300",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "cef77b8a-325a-dbd7-387b-0be19f6896b9",
+    "parcelNumber": "0945000500",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "249ef2fd-21af-8edf-8cf5-739d4322651f",
+    "parcelNumber": "0946000010",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "3c17a28d-739a-f62d-9dac-f0906893cdd3",
+    "parcelNumber": "0952003695",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e3dc5418-1c55-64a9-b66a-12a3ead89cfc",
+    "parcelNumber": "0955000250",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "c7d06ccf-8010-dfea-6d51-32888a58f15b",
+    "parcelNumber": "0999000155",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "7834e87e-b041-50b7-55cc-a86b5395bea3",
+    "parcelNumber": "0999000175",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e88a3a7a-cbe0-c24e-1e07-799f4c623470",
+    "parcelNumber": "1005000225",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "66854c92-1d95-1494-fbda-78ac15b415c3",
+    "parcelNumber": "1123049125",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "108e68bd-42e2-07d1-b8b7-617696960f0d",
+    "parcelNumber": "1139000425",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ecaab60b-8057-ef4a-6a75-fc9002c2d521",
+    "parcelNumber": "1160000060",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "69d20882-ad3e-2765-f6ad-33ac1e794200",
+    "parcelNumber": "1160000065",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "b255976c-f2ea-12e1-b5d1-da630b31552d",
+    "parcelNumber": "1176000705",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "50927619-5c4a-651b-e094-62b8ab166036",
+    "parcelNumber": "1176000730",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "5ffa88dc-bd18-3230-c76e-499731914a0d",
+    "parcelNumber": "1189000240",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "84528fde-11a7-6e82-17e9-1493368a435d",
+    "parcelNumber": "1189000950",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "bf17d5bc-e670-c109-3ccf-e7d1adf1de2c",
+    "parcelNumber": "1189000955",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d1be33aa-9375-5b0f-64c0-34f8f6197c89",
+    "parcelNumber": "1233100885",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "5e9df1aa-1739-c5ee-6cb4-8ab2eaac5fdb",
+    "parcelNumber": "1234000580",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d29b3a85-24b3-c819-b584-4959a004ad95",
+    "parcelNumber": "1236300285",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "f346cd69-90fc-2ab0-6a31-b609b30b4bb3",
+    "parcelNumber": "1238500453",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "2b82c63e-afb6-8d7b-bff2-8681f5fa3f8d",
+    "parcelNumber": "1238501118",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "b3e5d19b-a0a6-d319-6dc3-377ed58e5637",
+    "parcelNumber": "1241500225",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "483766c7-5b06-9ba0-13df-882cc9c4b08f",
+    "parcelNumber": "1245000330",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "f295d56d-6b8a-e94f-dcba-3a6b9c46c50e",
+    "parcelNumber": "1245001680",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "529865f3-2e8a-e636-2a1e-9d4e3790be8f",
+    "parcelNumber": "1245001739",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0a1f7f4c-2a62-c913-0734-81f7e73cd14b",
+    "parcelNumber": "1245500190",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "6cb61a6d-9f06-b0d5-e0be-b46ede7468cd",
+    "parcelNumber": "1245500840",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "734150c6-8097-873d-2933-8a5ee0a4ac55",
+    "parcelNumber": "1257200835",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "5396f1b5-3d35-d1dd-e5a3-da9db2416a87",
+    "parcelNumber": "1257202465",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "b18e4912-fa19-c934-d00c-f132a35f94f0",
+    "parcelNumber": "1262400150",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "4197a5ae-515b-40e9-d8d6-32130b69de34",
+    "parcelNumber": "1377800215",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "a51a0087-18d3-a05e-4e1d-86ab21619dbb",
+    "parcelNumber": "1422069087",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e792dd36-86fd-af76-5c74-e79339188361",
+    "parcelNumber": "1425039026",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "30ad8c65-5506-bf11-a4bb-af752459e0e8",
+    "parcelNumber": "1443500140",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "72e9b3dc-ab4a-e3d5-b7ae-5bbb7ecf54e2",
+    "parcelNumber": "1453602480",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "9bf85110-b565-4c16-59e7-19bb14c4d6bf",
+    "parcelNumber": "1453602481",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "6dc4dc38-4de0-be8a-b37e-5808a4fdc60d",
+    "parcelNumber": "1453602500",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "389486d8-1462-0c37-3221-5e2249a5853d",
+    "parcelNumber": "1454100430",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "f28ab9dd-414b-7a2b-5a7b-a8c2ea1c29f0",
+    "parcelNumber": "1498301885",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "4f4fedd4-853c-1f2e-e80a-35ea62928d3d",
+    "parcelNumber": "1501300240",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "4401b2be-8c4e-96e0-6b38-e093aac17c79",
+    "parcelNumber": "1522059144",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "dbfe6a33-7029-4b02-319e-a5f5ff878a39",
+    "parcelNumber": "1522069004",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "bbd8a64c-dc97-91d5-ffe7-a5333beb0ffc",
+    "parcelNumber": "1529300230",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "37836ce5-a7bb-fa8a-4a56-41d929eec0c8",
+    "parcelNumber": "1535200815",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "6d085315-2453-42d1-f897-11c3d7a839f1",
+    "parcelNumber": "1535200835",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "1066f61d-405c-5cc2-ff9a-1f99292cf036",
+    "parcelNumber": "1588600160",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "cb9aa3a4-71af-8e98-7e93-fba0df431cfa",
+    "parcelNumber": "1612000235",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "544e8d5e-bc35-9934-2c52-db7fe86013e4",
+    "parcelNumber": "1702900350",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "645f44ed-53bb-6354-12a1-836d526ac2ef",
+    "parcelNumber": "1714900075",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "86c26d59-8790-4f86-2d1f-3034d62f0bf6",
+    "parcelNumber": "1723049187",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "6b584c9a-f3ea-4730-516b-487488812753",
+    "parcelNumber": "1732801425",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "5cbcac0e-9cce-da6f-fe90-3b4ccbcb73f9",
+    "parcelNumber": "1772600625",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "5791e4af-92f4-6e9c-f193-5476fab2621c",
+    "parcelNumber": "1773100644",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "f4eb43f7-60b9-0d76-aa38-6887e1cd15f7",
+    "parcelNumber": "1773101240",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "9d5337ce-c376-e896-bb2e-e65d0ecf4d5e",
+    "parcelNumber": "1773600845",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "cd0126ad-7ba0-46f0-6c8b-4f58f020658a",
+    "parcelNumber": "1773600855",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "158f6e1d-3b2a-81a7-16f8-e7f13ce4cdfa",
+    "parcelNumber": "1785500143",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "82b42113-d198-8dda-3820-32999c926eae",
+    "parcelNumber": "1814800285",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "7cc73fdc-c465-9367-89ea-cc41ff7dbe09",
+    "parcelNumber": "1814800630",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "5d88b8ef-c51d-3861-f7a7-4ea4ccf6148d",
+    "parcelNumber": "1814800860",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e60e9273-580b-f44d-512d-5b9f8aff16b6",
+    "parcelNumber": "1822039038",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "5cb96ced-1392-1826-142c-4d84178f1a53",
+    "parcelNumber": "1822039195",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "2d568be8-df12-d1e7-503e-afee35d680c8",
+    "parcelNumber": "182605T995",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "7b6beb4f-d64f-c844-7a9a-6849f10fc4d5",
+    "parcelNumber": "1842650170",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "18b00a6e-62b3-8d64-c2cb-a843130645f8",
+    "parcelNumber": "1862400045",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "16fb6a9b-db41-2605-8099-0af13cbc5e8b",
+    "parcelNumber": "1921059131",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ac1ccb44-f294-7ad3-71a8-34571605e3fa",
+    "parcelNumber": "1921059328",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "a65cd431-4a27-1141-1f64-327dd0c770b2",
+    "parcelNumber": "1923800205",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "de29e36d-316c-2602-53b6-0936534559c1",
+    "parcelNumber": "1926049106",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ad3f6a15-8278-2b88-3bb9-156d3270d17e",
+    "parcelNumber": "1932300145",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "376b640b-279d-403d-9d66-4b92f68f7893",
+    "parcelNumber": "1932300405",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0b1938ad-c89c-6973-1fb4-8eb8af13b062",
+    "parcelNumber": "1972205195",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "a89424dd-0ce8-3bc9-434f-0ad074ec3d79",
+    "parcelNumber": "1982200855",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "8dd453a6-9cf0-6b5b-ebd4-4bb304d54fbc",
+    "parcelNumber": "1985200140",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "531ffbf0-770f-3268-8bf7-7856ce6562fd",
+    "parcelNumber": "1993200125",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "adf06d04-f94d-f7a9-bcb6-9f5bd0e0b4a1",
+    "parcelNumber": "1997200210",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "8e491bf9-beca-6a1f-00fd-503609a30b30",
+    "parcelNumber": "2022059032",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "c6920d8c-68a2-0688-5ef6-4ce5018a00c8",
+    "parcelNumber": "2022059371",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "c6f09946-33f7-dd78-a4de-9d73f6f2e507",
+    "parcelNumber": "2023049497",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "f3c398db-47ea-23f1-07b6-e28a096b4385",
+    "parcelNumber": "2028700455",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "a2cbed3b-13c4-dd61-39ea-af743f0b03c9",
+    "parcelNumber": "2028700965",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "c78015b2-8136-067c-6e52-8777716f7ff2",
+    "parcelNumber": "2056100055",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "89a01644-05b7-908b-4da0-9abaa7cf8288",
+    "parcelNumber": "2056100056",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "03bb1ef0-e0ee-f61e-6ccc-80440f41e946",
+    "parcelNumber": "2062400005",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "c6cd6e86-a28b-f871-8db9-ec1f49e1e8e3",
+    "parcelNumber": "2110200010",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e9343dc8-73e6-c34f-3402-31440937a91a",
+    "parcelNumber": "2112701170",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "bfaab1ca-9ba9-c15a-4da0-f337146a1dcb",
+    "parcelNumber": "2113700200",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "95d934c7-0a59-d1c3-3733-9ac8e4a1f514",
+    "parcelNumber": "2120200215",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0b5f0b79-8130-dae9-d850-1900cb20650c",
+    "parcelNumber": "2126059205",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "aa5af3b1-0dfe-5125-bdfd-2020c26bad86",
+    "parcelNumber": "2129700190",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "3e9b716f-3bd5-c87c-9267-4d6cda106027",
+    "parcelNumber": "2163900280",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "61b91a46-4f01-2e10-8f33-28ce5bd7b414",
+    "parcelNumber": "2188201795",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "77aabe31-2b87-c984-3b91-1803a3f0aabb",
+    "parcelNumber": "2188201800",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "bafbf372-baa3-58b9-0af8-14e5dd2b6cfb",
+    "parcelNumber": "2224069039",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d25bc894-1c4e-d769-448e-167123aed6e3",
+    "parcelNumber": "2224069053",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "a426b1ea-e225-9064-ffae-9995b96cd7a8",
+    "parcelNumber": "222406TRCT",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d0cc84cf-ea1c-9401-3631-9fe4843e96d5",
+    "parcelNumber": "2225039006",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "08a180cf-3ec5-8cfc-107f-fc54837883b5",
+    "parcelNumber": "2225039134",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ca3a4110-eb1d-5355-0ca1-800fe3a9e0a7",
+    "parcelNumber": "2238000050",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "c4dc5ae0-42b2-25c1-bbf5-85bb75b67499",
+    "parcelNumber": "2291400610",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "77665439-bccf-b7af-6bbb-e0f5fa7eb184",
+    "parcelNumber": "2291400676",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "cffc6045-a0cf-a7c4-6e61-51ba960b9c8c",
+    "parcelNumber": "2291400677",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0d91ad28-1dbc-035d-0c5a-c3c8d3026968",
+    "parcelNumber": "2372800150",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "bd9164ef-f8b1-982b-51fc-c547fe32d06c",
+    "parcelNumber": "2391601085",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "09c635fb-2de5-130e-1897-e050e347e85d",
+    "parcelNumber": "2391602600",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "2fc35859-94b5-10c7-9c44-d8025d32defa",
+    "parcelNumber": "2423039202",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "2bbd829d-eda2-c3d7-f9fe-b9c5cab9ea83",
+    "parcelNumber": "2436700115",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "9a75f94e-4b29-17dc-7794-55e7c6f0d600",
+    "parcelNumber": "2436701120",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "fa3a6113-cba7-fb11-d447-f9311b133008",
+    "parcelNumber": "2473100670",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "1848932e-ea40-5c9b-3661-ecd438e7f2e8",
+    "parcelNumber": "2491200118",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "f58459e3-63f9-ef13-62e1-d972d3829387",
+    "parcelNumber": "2491200195",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "035102a8-5324-1d7d-a8e7-d3f1daecae5c",
+    "parcelNumber": "2492200400",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "26929715-21fe-c7cc-7d3f-75bd48fb5a43",
+    "parcelNumber": "2492200505",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ccb30949-9265-f0be-8f85-3155310fd5f5",
+    "parcelNumber": "2493200025",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "650ca8af-2f96-a7b4-c93f-50dbfbf5e11d",
+    "parcelNumber": "2500600520",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "af6c790d-a355-79f0-12c6-0221d5c222f0",
+    "parcelNumber": "2500600530",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0f4ddb84-868c-269a-2e27-2ffd48d3d2c1",
+    "parcelNumber": "2500600531",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "08f99071-f3c3-f435-ceab-7f56dd5d5f36",
+    "parcelNumber": "2500600535",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "fd63e7e6-0f33-0dcb-d78a-6febc6324550",
+    "parcelNumber": "2660500365",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e8033c46-55ec-ecc4-4678-5a5a908d0103",
+    "parcelNumber": "2708100120",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "b11a5607-8e05-536f-3316-e7203308185e",
+    "parcelNumber": "2724069208",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "95f4c16f-95a7-a198-65a5-a44b0d87e5ab",
+    "parcelNumber": "2724201290",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "653d85c9-2fe8-30f0-b636-d0dbe7d21704",
+    "parcelNumber": "2741100220",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "f5927b6b-9793-7ba1-d611-a860794e64ca",
+    "parcelNumber": "2741100540",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "8b216fc7-8b59-2a5b-bad2-e8e6695ddc2e",
+    "parcelNumber": "2767600755",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "fb57f28f-e6e6-f8e7-96d2-01f1625cc6da",
+    "parcelNumber": "2769601955",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "4136f1d6-7f10-cffb-35db-a1d65d47318d",
+    "parcelNumber": "2770601425",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d753540f-2aa1-adce-1c8b-09a75f1f32e7",
+    "parcelNumber": "2770602165",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "167a7c6c-6c18-ac57-c9a4-d0c24244da4b",
+    "parcelNumber": "2803200065",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "98a0b55b-15d4-9bd3-e824-8153cb944735",
+    "parcelNumber": "2807100265",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "28ff3100-42f7-f801-4c72-9b63db11513a",
+    "parcelNumber": "2807600020",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d110d7de-7149-bde1-7395-eb30d4405d34",
+    "parcelNumber": "2815600210",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "11dcbed5-4f78-22b0-07cc-5e38df6b390f",
+    "parcelNumber": "2826049127",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "4557c6a9-6ae5-36f8-b3c7-987b09c9fab5",
+    "parcelNumber": "2856100591",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "8c2d251d-5d94-38df-6822-567bb7475f50",
+    "parcelNumber": "2867100136",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ded708ca-298c-4a64-ea9b-267f8e726d6b",
+    "parcelNumber": "2902200325",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "bd846500-e71a-1c35-31d4-487ec7d13803",
+    "parcelNumber": "2916200035",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "3e9aa7e9-5f8e-5c25-fa03-240ef4b5da6b",
+    "parcelNumber": "2916200051",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "fd83fbca-5082-b3ae-25de-9b7ccf274d22",
+    "parcelNumber": "2917200471",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "dc5ccf89-4f27-b6d2-fa08-348cb65d793d",
+    "parcelNumber": "2917200501",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "4cd5efe5-616b-33c1-f1b9-1af7b71d4bc9",
+    "parcelNumber": "2919200250",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "8b0beb7b-af1f-7994-c4be-f58d0a7006e6",
+    "parcelNumber": "2919200785",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "358a30c7-cbab-50a7-431d-b1a36b5b951c",
+    "parcelNumber": "2919701875",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "50d044e6-fa14-459a-c0b9-f01a01fdb316",
+    "parcelNumber": "2921700405",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "234ac10b-7790-6196-572f-9a44a9d258fd",
+    "parcelNumber": "2926049288",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "7d230756-2338-c1cc-3229-326724a9084d",
+    "parcelNumber": "2979800245",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "6d8c215e-9de5-a226-cc7d-857fbde11844",
+    "parcelNumber": "3034200008",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "181d2b88-2617-19ba-92d0-9224c8e52dbc",
+    "parcelNumber": "3131200289",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "acce900c-f12c-9ab9-cf31-19fc550e96e3",
+    "parcelNumber": "3131200298",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "afa812dc-02cd-3bc2-31cf-4d16f3e59b80",
+    "parcelNumber": "3131200302",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "5ac8758f-0173-48a0-4806-97b921fa14af",
+    "parcelNumber": "3131200303",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0e8668d5-72ca-daf7-cf4a-0199c0aced4c",
+    "parcelNumber": "3131200304",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d651311a-db94-b326-e702-382fe7dfd68d",
+    "parcelNumber": "3131200305",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "bf5d1224-7bf4-bb43-da9b-6e111ce3b28f",
+    "parcelNumber": "3131200306",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "a4136979-049f-a88e-8b06-fbe4d38e4834",
+    "parcelNumber": "3175600035",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "619b58d4-398d-f282-fc98-6b4907818880",
+    "parcelNumber": "3222049092",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "4074d7ab-c5b9-82ca-dd77-44ed781f8c25",
+    "parcelNumber": "3225059061",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ebc6eefe-d722-5a60-346d-e0ca5d5238f8",
+    "parcelNumber": "3226049325",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "b349e5a4-7f26-4baf-1102-6ecea1f1d093",
+    "parcelNumber": "3253500020",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "81e56691-6371-b620-0c8f-fef2ee8ec2e9",
+    "parcelNumber": "3265300090",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "7ad0566c-284f-10eb-22fd-ada6cd44d09e",
+    "parcelNumber": "3298200450",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "8bdf5fd1-3cff-68ed-8704-33728a5fecb5",
+    "parcelNumber": "3298200500",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "edccb661-9410-5d9d-20f4-33003f577146",
+    "parcelNumber": "3300701580",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "14ba35d6-0bc2-fb5f-2ea1-af842c11aece",
+    "parcelNumber": "3321049104",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "9c60cce6-f9d4-a26c-753e-a67c018d61c3",
+    "parcelNumber": "3324069036",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e1bcc010-75d9-fde6-d09e-95b8ce0e95b0",
+    "parcelNumber": "3324069039",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "4c490022-430a-a57f-ce1a-7ea5384bb740",
+    "parcelNumber": "3325069024",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "962a671c-8780-fb45-033f-13a6f1b18266",
+    "parcelNumber": "3331002405",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "7bd7a600-cbc2-8544-ace6-ecca8351c8f9",
+    "parcelNumber": "3331500875",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "8a285255-f96a-58e8-09fb-2ca7517fb9e5",
+    "parcelNumber": "3333001640",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "dff4369e-a816-e3cc-9df4-3c47fcd6b848",
+    "parcelNumber": "3333002030",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "4754c8d3-c1b4-df32-8eac-3ee436e8b40e",
+    "parcelNumber": "3333002032",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "37ee493c-ee36-d5bf-04a0-91b46a0c4afc",
+    "parcelNumber": "3333002033",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ecbbc80d-f8ad-efec-7f4c-8de6d67b2ee1",
+    "parcelNumber": "3343301725",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "fa618f05-4f0b-03cb-6d7f-e102ad8fd6f2",
+    "parcelNumber": "3343301726",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "890c2465-8480-d224-dc61-e6f77f7c8cab",
+    "parcelNumber": "3348401430",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "1ffdf0f7-a547-6e3e-d521-bbe8e326a26d",
+    "parcelNumber": "3353401515",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "14392a8f-31d2-1c55-260b-1aa053f27956",
+    "parcelNumber": "3362401800",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "a8475335-7ed6-40a6-6896-26f4f5e26be3",
+    "parcelNumber": "3363400575",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "6ffa813f-d5b3-8efa-52b7-e8a2e8954f9a",
+    "parcelNumber": "3419600145",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "652d4851-2d90-bf6a-c3f0-24509ed56c75",
+    "parcelNumber": "3423059010",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "a5949a94-6400-81c4-3d13-be02a96f2b1e",
+    "parcelNumber": "3423059104",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "df566888-1502-c927-d0f3-a8e82f6247a1",
+    "parcelNumber": "3423059105",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "27cc676a-1391-f1cc-b443-a3e8c32731b6",
+    "parcelNumber": "3424069015",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "287633ca-d8f3-8b60-778a-829deb195d6c",
+    "parcelNumber": "3425059022",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "fab918ec-f105-7c56-6b8c-fe557f9373b7",
+    "parcelNumber": "3435500040",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d8205959-1e25-39f1-5a93-4706b38aef45",
+    "parcelNumber": "3435500045",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d568c4cf-7c20-735b-8e58-1a6519628989",
+    "parcelNumber": "3467800063",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "598992f0-aa0e-7375-3d49-970edeac8c0a",
+    "parcelNumber": "3468800370",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "f33a6a59-20a9-6ada-b780-84fdc71cc4f7",
+    "parcelNumber": "3501100140",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d064c323-7c08-feb4-4489-4622110a744e",
+    "parcelNumber": "3501100185",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "6c17bc43-a3b4-bc55-8430-480613790313",
+    "parcelNumber": "3505100470",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "4aba201b-5a6b-7b3c-63b0-16fe56b1ee28",
+    "parcelNumber": "3531900020",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "701ebae0-57b7-cb7d-0d0c-ddb37fdb8ca1",
+    "parcelNumber": "3534900435",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "f1b24a45-aae0-c1d5-2b84-3da6e4858947",
+    "parcelNumber": "3566800145",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "9f7dcc7c-83e0-3f83-3df1-a4023906cdf8",
+    "parcelNumber": "3620069041",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "32bd504f-e967-aa79-5614-3c8627e54b58",
+    "parcelNumber": "3622059100",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ea2d6874-23b6-596b-ec12-7e56a3dbd440",
+    "parcelNumber": "3624039071",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "1eee1e56-03d0-5b7a-a164-3139a4ac367d",
+    "parcelNumber": "3626039100",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "9ddf58b7-366d-0eb8-9965-9264eb6e1c29",
+    "parcelNumber": "3670500580",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ce486287-c1a0-e356-3fef-e90621a7467c",
+    "parcelNumber": "3677400665",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "4e8f2ce7-d278-f120-f365-d4be357b260f",
+    "parcelNumber": "3693900255",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "df6c0be3-e3c0-647e-7a6c-ee54407d21f2",
+    "parcelNumber": "3731800030",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "4e191f54-78b1-77ab-1d08-57e7f5c6ccef",
+    "parcelNumber": "3732800285",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "3925f28d-29f3-4ad1-e2ef-26f65bc75214",
+    "parcelNumber": "3755000150",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "243ebd22-9206-5331-4061-9629bcce2873",
+    "parcelNumber": "3755500010",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "77e14d2f-51f2-bac6-972b-20266b051758",
+    "parcelNumber": "3756100020",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "a8707cb8-337e-8edf-d361-5854e822c6bd",
+    "parcelNumber": "3756100025",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "9b03c00e-096a-3019-7d7d-3607bfd807b4",
+    "parcelNumber": "3756500280",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "9037e94e-d31b-429e-527b-aa915ad7b4c8",
+    "parcelNumber": "3764300015",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0a1e25e0-6bc2-7bd7-db9b-45323fcc2d4a",
+    "parcelNumber": "3812400566",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "31a19e67-5804-cf51-17d0-0bb764d3b23b",
+    "parcelNumber": "3812400567",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "9add00c7-7a7b-9a72-b637-70b54ebc56c1",
+    "parcelNumber": "3856902130",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "59ea8744-fa44-8057-d48f-cc6e95815028",
+    "parcelNumber": "3856904970",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "6b6c124f-5fac-03d6-ba82-994939aa7823",
+    "parcelNumber": "3856905682",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "720977ec-0177-741d-35cf-0486af60baaf",
+    "parcelNumber": "3886902640",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "77496f52-422c-1b36-c69f-d84eca276c22",
+    "parcelNumber": "3886903635",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "2313e757-4311-b2af-7e05-9237f9e08364",
+    "parcelNumber": "3888100121",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "6fd41d4c-d64f-4506-f379-c8f28f356769",
+    "parcelNumber": "3888100171",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "7233c1e1-7fca-d0b6-0af0-ae35dfda6fc2",
+    "parcelNumber": "3889100005",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0bf85d1d-eef2-29f3-3d6d-103bd9c489a9",
+    "parcelNumber": "3893100825",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "239f9690-ddfc-076d-4c1d-c1caad67fa46",
+    "parcelNumber": "3901000050",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e2b6682d-2573-2c37-03cf-55faea69b1e0",
+    "parcelNumber": "3902300310",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "9a18ff95-b9a6-a3e7-5e4a-db232e4be350",
+    "parcelNumber": "3904100017",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "b4d78c53-edc0-89f8-8f9d-d69c4bef87d9",
+    "parcelNumber": "3904100275",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "f77b4ed5-5570-a784-b5c7-0fdf68685299",
+    "parcelNumber": "3904100290",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d9555725-4f64-bf28-fa7b-4ff08892d57b",
+    "parcelNumber": "3992700305",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "81c26ee7-97f0-fb73-4c67-898b9371bec1",
+    "parcelNumber": "3992700350",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "2d96b310-3a55-87f6-9dc2-15b1107de04b",
+    "parcelNumber": "4077800136",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "2a4c0b7a-3348-6d79-ed26-88b98f396978",
+    "parcelNumber": "4083304640",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "74ac0162-9f33-304e-8b19-84c878c9e8f4",
+    "parcelNumber": "4122300075",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "cfa1ccad-6e61-b873-fcc2-5cb39b28ac31",
+    "parcelNumber": "4240400194",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "82202848-e081-b781-4ad0-f42b28bec0f3",
+    "parcelNumber": "4302700155",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "6e94c1a1-fed4-ffa2-b162-d21f64512c0d",
+    "parcelNumber": "4302700160",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d6e071d8-653c-f59d-274b-e755562ea51e",
+    "parcelNumber": "4303200295",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "cbe25322-3254-efe3-da4c-7d0522c05151",
+    "parcelNumber": "4319200340",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e7a67ec0-7f37-cc78-497b-77245e066d5c",
+    "parcelNumber": "4338800450",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "be84f8f8-251d-66be-5135-b3a9b4734b87",
+    "parcelNumber": "4365200630",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "976e4efc-c423-f53e-dc8c-dc711fdf0eeb",
+    "parcelNumber": "4365200845",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "5002b013-6905-8c21-f681-45849acca987",
+    "parcelNumber": "4370700105",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0797df85-df16-289c-6248-1cf9f3480fb3",
+    "parcelNumber": "4375700125",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ef5610f1-0e09-9677-3b3a-753e0d303212",
+    "parcelNumber": "4397700125",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ba641e50-1510-9865-0fcc-9fb52cd4be3c",
+    "parcelNumber": "4443801715",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "11f54113-5c80-d5c2-6b18-076d497eee69",
+    "parcelNumber": "4443801720",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "6ab69158-0538-c5df-85be-e0a541430fad",
+    "parcelNumber": "4449800045",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0b66d0a2-e7f6-0bb3-6251-d1cdd365f7e9",
+    "parcelNumber": "4449800525",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "8b5d7d4b-7822-1e4c-48d5-bf561471b41b",
+    "parcelNumber": "5013500105",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "8e36c1a0-154a-2918-2ded-6b66cba716b7",
+    "parcelNumber": "5013500345",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "c1f95223-63ae-4fff-e7a4-60b7f498a1ec",
+    "parcelNumber": "5015001405",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "78ee50b0-1627-aa73-6231-dd14546050e9",
+    "parcelNumber": "5100401055",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "da208cf9-cda7-9371-22ce-e669127e409f",
+    "parcelNumber": "5100401056",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "a19b2dce-2f41-69ec-4a59-0e3829c7012c",
+    "parcelNumber": "5100401627",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "89daa0a6-f0f0-a057-a888-4f2cfdc4acb5",
+    "parcelNumber": "5100402543",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e49cd4c4-9228-b828-36d0-2ac81bdae42d",
+    "parcelNumber": "5101404887",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "864ead2c-aa00-afc0-0bb5-f79fa1a85134",
+    "parcelNumber": "5101406477",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "62a275ee-5518-058f-cf8c-e9479aadd423",
+    "parcelNumber": "5151200245",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "23e9a3fc-feb0-6d5b-ff76-531543047e2d",
+    "parcelNumber": "5153000055",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "26a37468-0635-e8f3-e0a3-11ffb95e3daa",
+    "parcelNumber": "5195100050",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0e17bee5-ff02-86bd-35e6-e5a8a3b46c02",
+    "parcelNumber": "5195100060",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "caa52d93-b39b-edc2-1d90-55c03445e460",
+    "parcelNumber": "5249800035",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "3ebabbab-dab5-f7a9-550f-5364eec57d79",
+    "parcelNumber": "5309100805",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d7e0dff5-e91e-c6ee-a6c2-5a851d69c43c",
+    "parcelNumber": "5309100885",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "b6a3a63b-90f5-132c-3fb2-6f9e53dd2292",
+    "parcelNumber": "5326800015",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "569573eb-5b38-8bb4-c0a2-8bc0de8d4481",
+    "parcelNumber": "5379200175",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ab5fc1fe-b903-8420-e44e-e44475bb940b",
+    "parcelNumber": "5394600101",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "f6a865f3-4c13-17e0-e1c7-e24c170636db",
+    "parcelNumber": "5449300080",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "7455d0da-a6ed-db76-96ce-11767fa0c980",
+    "parcelNumber": "5476200128",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e5fdb4e1-09b0-8d8e-1743-3d38c83c3fcd",
+    "parcelNumber": "5489200093",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "76e31543-95d8-b6ac-b694-e2f952d02f20",
+    "parcelNumber": "5700002355",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "31f7af29-2a8c-84db-9f6f-0e5b4ea9cdac",
+    "parcelNumber": "6003000895",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d66f9fd8-3b87-d459-cce4-19c86a6bdcc4",
+    "parcelNumber": "6028000050",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "6b4119a3-befd-9e8b-c7f4-16ab5bbe1346",
+    "parcelNumber": "6076500340",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e3671344-d722-eaf4-8bf4-95832b4cc44d",
+    "parcelNumber": "6087101145",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "07b4a9dc-70f1-74f9-d17c-8455ab2fa1c4",
+    "parcelNumber": "6094220000",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "72fb5778-91bd-0ae7-a409-fa3a0c543649",
+    "parcelNumber": "6140100075",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "f508a27f-74eb-7a4f-2148-523b7b568928",
+    "parcelNumber": "6141100390",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "08a354a1-7f71-07b2-18e1-8e67ae09e500",
+    "parcelNumber": "6141100690",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "64f3a5cf-8a53-0bb8-6a5e-993de3941371",
+    "parcelNumber": "6145600240",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "2a4057cd-1500-b28d-c1e7-88936d592c63",
+    "parcelNumber": "6149700166",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ac249da2-0c53-b8e7-84b9-006935d184bc",
+    "parcelNumber": "6149700320",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ae52a100-4eb3-3845-c839-822cb34f57eb",
+    "parcelNumber": "6150200085",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "17018f42-3dde-3814-6a45-14de3ff381d6",
+    "parcelNumber": "6166900055",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "23a5639d-fb7c-7dd7-9743-7cb4ad6356f5",
+    "parcelNumber": "6178000080",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "629724c6-bf6e-79a7-22d8-211685c224db",
+    "parcelNumber": "6178000130",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "60e6ff69-5e7f-7c2a-2628-a95503aab648",
+    "parcelNumber": "6362900245",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "82dfee71-b306-ad45-8957-9cbaf2d1c006",
+    "parcelNumber": "6378500300",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "f83cace8-544f-c5b7-1d3c-00e03d31c36f",
+    "parcelNumber": "6381501700",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "7601d90d-ec72-7eea-e6eb-5a93f32c43d8",
+    "parcelNumber": "6398600047",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "30fa9fa8-a0b6-830d-032d-34f7e14a6f55",
+    "parcelNumber": "6400700266",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "aef78ec8-fd1d-7d36-24aa-e09b37a30d67",
+    "parcelNumber": "6402700060",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "3c2a1ab9-8976-37f3-eb52-9f34f673d818",
+    "parcelNumber": "6402700070",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d3bb477d-bfc7-5c03-4884-02a60bf36333",
+    "parcelNumber": "6413600040",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "c8c94b1b-fd86-dba5-3707-c4a5d0ac4c76",
+    "parcelNumber": "6413600052",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e6944ff9-3f46-3e79-b30d-c5a1a2f9986e",
+    "parcelNumber": "6413600288",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "85e876f9-3ef2-2d32-610f-cb830a066ad0",
+    "parcelNumber": "6414600302",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "4899dd8a-8628-aee0-3f30-e415bfce1072",
+    "parcelNumber": "6430500355",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "8df44e5a-13d2-2661-8f86-3b9614c4b846",
+    "parcelNumber": "6430500357",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "3ece0a56-16da-3ac4-a124-4ffa7797b738",
+    "parcelNumber": "6444400011",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "c491fd42-39a8-cc0b-ae74-ceb4fb890de1",
+    "parcelNumber": "6450301174",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0b08c5a5-e043-0c0d-79b1-f16aea13ce0e",
+    "parcelNumber": "6450302595",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "c5165cd5-6c11-4323-46e3-e6b763fb8a50",
+    "parcelNumber": "6450303760",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0df7dd9a-6351-d47d-bb85-fa6e3dff163e",
+    "parcelNumber": "6610000340",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "abadfa2b-3d9e-5c50-8a52-fc8a37d949a7",
+    "parcelNumber": "6667000020",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d9edc7d9-8586-6751-acc2-f2b6d6118838",
+    "parcelNumber": "6742700250",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "3bc21ce0-189c-db85-edc9-7447d719c7b1",
+    "parcelNumber": "6762700800",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "a6a34fa9-9d55-a44e-9124-58956243f8d2",
+    "parcelNumber": "6798100380",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "094470e3-c19e-ed1d-d89f-d21099aabe7a",
+    "parcelNumber": "6798100550",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "2bcc8d8e-3146-b43c-e7a2-c85facc567cd",
+    "parcelNumber": "6821101100",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d949adf8-ee00-12be-a2e3-66882077f58c",
+    "parcelNumber": "6821101916",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "cbe2768d-3279-9308-2b70-fbc193fd0831",
+    "parcelNumber": "6821101951",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "af2ec28d-5724-0b19-5d77-438fd6616539",
+    "parcelNumber": "6821600195",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "820485a8-38dc-ed98-f1ef-7d4105dfc300",
+    "parcelNumber": "6833200060",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "4545b18a-a50a-9480-510a-7e83f229816c",
+    "parcelNumber": "6840700095",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "a482fed2-57dc-3c62-ec4c-53b8d8bf520c",
+    "parcelNumber": "6840700980",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "cf1368ab-b967-ebb9-801b-ee27e39de5eb",
+    "parcelNumber": "6840701690",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "f246ccea-f8e6-7b79-17e0-0a5b21bd6c9f",
+    "parcelNumber": "6844702810",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e3d579f8-4ffc-063a-7966-5d5581f5b2de",
+    "parcelNumber": "6889900035",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "2bb01a19-3a82-4317-3e26-783ca81ddf73",
+    "parcelNumber": "6917700025",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "b1fb54d0-e481-3ea9-c9bc-f6d79e407f62",
+    "parcelNumber": "6917700985",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0beaecce-3dd0-bd77-510c-93c435b0bddf",
+    "parcelNumber": "7129300406",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "c3155e79-ebd9-475b-9609-53407b236c61",
+    "parcelNumber": "7165200090",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "b1d3a62f-bcf6-1cb0-2492-e5116e8ddf84",
+    "parcelNumber": "7176300020",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d42fce88-889c-6e71-69ee-75b3a40cb397",
+    "parcelNumber": "7180800040",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ceafb183-f19c-21d2-364e-c792376715c5",
+    "parcelNumber": "7189800055",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ba4b89ac-85b2-fa65-e9d7-11d7dff2b968",
+    "parcelNumber": "7217400320",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "9d29867a-a307-61fb-3700-f6be954a00f5",
+    "parcelNumber": "7217400431",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "4d22fccf-3d75-8777-8944-9c3eb3fb0290",
+    "parcelNumber": "7228500820",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "c8eebf65-74a6-0a67-b875-3a9f5d240341",
+    "parcelNumber": "7228500920",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "b264f127-f419-e161-ffa2-f344717386fa",
+    "parcelNumber": "7325800030",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "37bf10a2-02f5-1168-b8ed-8ad2bef37cde",
+    "parcelNumber": "7325800040",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ed8d6732-a8f8-fcfb-ad0d-3f570ce24575",
+    "parcelNumber": "7411200091",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d2c97a16-7d41-0b1c-97e5-4b04836e9b0d",
+    "parcelNumber": "7420400020",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0948705e-a477-ba74-18fb-805061eb1ae1",
+    "parcelNumber": "7424400150",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e5b9fc11-c234-68d7-0598-a830b89923fa",
+    "parcelNumber": "7454000130",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "6bac294a-4703-5270-cf35-ec69197fa2f0",
+    "parcelNumber": "7515000063",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "3ad1f1aa-4459-c47a-089d-c38e7a543d35",
+    "parcelNumber": "7518503670",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "aeaa9d1b-726f-17a8-31ff-dd9d52f57f26",
+    "parcelNumber": "7518504505",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0a64b9ff-4130-e219-55b7-c74b3e62dc89",
+    "parcelNumber": "7518506185",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "f5db166b-9b3a-16b3-65f0-ccefa8777ebc",
+    "parcelNumber": "7518506195",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "33a2731b-4756-595d-8830-8faa4d6b29b6",
+    "parcelNumber": "7522500010",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "509003ec-41ff-d81b-d014-bd797a979425",
+    "parcelNumber": "7550800360",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "88b997e3-2d4f-94ff-56bc-3e848fc2ddb6",
+    "parcelNumber": "7577700176",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "2501a148-5da0-2fdf-5596-cf909a4983bf",
+    "parcelNumber": "7657000530",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "b67b8ca0-305f-9738-3dfe-215e98ca5d42",
+    "parcelNumber": "7663700523",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0ed4ac39-10b0-ed59-1843-3e809dec2e7c",
+    "parcelNumber": "781250TR-A",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "b4bbc699-d18d-e5c5-87d3-fb05627bf4ee",
+    "parcelNumber": "781250TR-B",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e66b7feb-6f16-6406-11cc-48f7076c32a2",
+    "parcelNumber": "781250TR-G",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "36caad3c-8d00-3f77-b2ea-f207c2757146",
+    "parcelNumber": "7883600986",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "be2e0506-036f-e0ca-8a98-ff4fd3e96d9b",
+    "parcelNumber": "7883603430",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0ce0ac0e-591d-0a10-5526-0cdd04905de9",
+    "parcelNumber": "7883603605",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "a67514d5-d09e-49e7-d0e7-3a34baa4f7db",
+    "parcelNumber": "7883604030",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e6944949-6d10-3a76-e608-f18566179afb",
+    "parcelNumber": "7883604450",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "5a5d649c-ce67-33b4-d4c6-86d2c84c9741",
+    "parcelNumber": "7896300062",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "760a2c6f-b636-9d36-b80a-fefe1a5269b7",
+    "parcelNumber": "7942602170",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0f86a6e5-2f83-6ffe-9d9f-025073437e61",
+    "parcelNumber": "7950300955",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "6b9fed53-aa41-d8db-dc3f-da74ee4f5697",
+    "parcelNumber": "7967600140",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "f6f82fef-3a9b-e44b-6466-dd1a1f23d45f",
+    "parcelNumber": "7967600160",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "92489a1f-00be-6335-d5bd-af2813cb42c3",
+    "parcelNumber": "7974200523",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "37ed0d88-f218-d1e3-4083-068f29cfe7dd",
+    "parcelNumber": "7977200465",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "06e7c237-991d-d06d-0124-694610ba5e78",
+    "parcelNumber": "7978200550",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "546ab713-e0d9-8c6d-58b6-3eef11f8f0ad",
+    "parcelNumber": "7978200560",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "a057cae1-bdf2-4cff-84be-fe6ba9998eec",
+    "parcelNumber": "7978200930",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "e995de73-32e2-d96a-d746-8d4e4ab6db38",
+    "parcelNumber": "7978200940",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d64b19cf-bbb2-0aee-2fb0-ef6b0a34d597",
+    "parcelNumber": "8024200965",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "18231a4c-84b1-8217-d7bd-71ec53c2109c",
+    "parcelNumber": "8024202116",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "acedecac-f433-095b-5ebc-4354f83856a2",
+    "parcelNumber": "8122100660",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "29dad92d-38e0-7c8e-1cbc-f7d6367949ec",
+    "parcelNumber": "8127700285",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "f6c53719-116c-7b25-0b93-2d762c6a065a",
+    "parcelNumber": "8137700055",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "878624fd-2a78-6eb7-6a57-72daf2bf0697",
+    "parcelNumber": "8150100290",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "6a79eb00-630e-cd04-5784-1cb2d7177df8",
+    "parcelNumber": "8815400760",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "6ec81607-e5cf-d444-907b-ab12d24dd50d",
+    "parcelNumber": "8820901170",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "6df8e46e-daa1-2a2f-f5fc-7ab82e54ccd4",
+    "parcelNumber": "8827900039",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "b8b2357d-29f0-bb05-be17-12d477ad4cc1",
+    "parcelNumber": "8843900500",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "cb5b6724-988c-64d1-d178-02a55c9b181f",
+    "parcelNumber": "8844300027",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "63f7c089-3cf8-596d-d30a-8f7594036473",
+    "parcelNumber": "8858900010",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "dfca029a-a060-d82c-628a-9064b9c71965",
+    "parcelNumber": "8901000664",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "79f5a01b-411c-5f01-f3df-f811657abeef",
+    "parcelNumber": "8902000185",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "0fd54d71-a747-d011-18bd-def1d8a8eabc",
+    "parcelNumber": "8910500540",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "cdd98fb7-a90b-f06f-8d21-34fd09e6b445",
+    "parcelNumber": "9100000050",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "765dc504-7ce2-7b14-8584-89f00c652a54",
+    "parcelNumber": "9144100365",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "404af9c5-5963-dc11-468a-18436167ad9d",
+    "parcelNumber": "9165100050",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "75c2a8c0-b785-f8f3-62c5-6bad6e19fd5a",
+    "parcelNumber": "9191201415",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "2aaee935-a115-1c18-f121-2d5870b5a25c",
+    "parcelNumber": "9266700700",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "fcf10abd-5876-9f2f-bdc7-429ea5fa694f",
+    "parcelNumber": "9268200060",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "5c195f2d-1db3-58bf-d8ea-ae1d5d1a898e",
+    "parcelNumber": "9268200061",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "080de50c-7fb2-0afe-809a-f1352ac90406",
+    "parcelNumber": "9268200753",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ff912716-f010-c7ab-de4e-ee1ae6b6d78d",
+    "parcelNumber": "9268200755",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "4168b93a-ad6f-17d6-8e39-1134a219117c",
+    "parcelNumber": "9269200330",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "baae719b-390a-cef7-c676-bbabd3951a84",
+    "parcelNumber": "9304300168",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "18c4e6c9-8082-7ba1-65a7-18975c4edd5b",
+    "parcelNumber": "9353900005",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "30678cb5-7bd8-a7ae-b585-1f17506a4a7a",
+    "parcelNumber": "9353900386",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "4d07f987-4e95-12f7-b713-c3c90398946a",
+    "parcelNumber": "9424400160",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ef67d5ef-3cb4-8c87-3c80-eb06ce15176a",
+    "parcelNumber": "9455200300",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "565562ec-f42e-4ff5-7c86-6565d0c03991",
+    "parcelNumber": "9465200370",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "2e27412c-3391-23f9-880a-be66a366439a",
+    "parcelNumber": "9498200015",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "9795e54b-10c5-0105-35f9-e3e5f3f84df5",
+    "parcelNumber": "9523103980",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "c76e3374-6fe6-4817-dfd3-0f10c46551b3",
+    "parcelNumber": "9530100465",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "a314d6f2-4ea0-494f-048b-49e9a9bf3ef0",
+    "parcelNumber": "953660TRCT",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "dd4dbe29-639f-3b75-b8a1-00eb03578de1",
+    "parcelNumber": "9547202885",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "867e0789-1b32-6d65-6f95-863b1cf3f136",
+    "parcelNumber": "9554200095",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "d6c3a0b9-6609-a556-9fa3-cfc1ee7bd8b1",
+    "parcelNumber": "9568800045",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "004243a8-1998-8ef6-6e97-26604511a8b7",
+    "parcelNumber": "9825700875",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "ed2a36a4-2cc0-379e-b1c7-9ec93dfe9849",
+    "parcelNumber": "9825700945",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "bf0240c9-7fe7-776a-c7b5-07ed9af64599",
+    "parcelNumber": "9825700950",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "895bf3de-2194-caca-9f98-28c214cc231c",
+    "parcelNumber": "9828200475",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "28fa9c07-704c-d395-a94e-223627b368a9",
+    "parcelNumber": "9828201455",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "b50bcd7e-3709-cea0-89a5-48ff496cfef6",
+    "parcelNumber": "9839300673",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "299f4b25-5d0d-eb6e-8584-00862f15e5fc",
+    "parcelNumber": "9900000420",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  },
+  {
+    "action": "mark_superseded_inactive",
+    "tfParcelId": "37efeadd-4565-6a47-8f39-2359c30fc3be",
+    "parcelNumber": "9904000090",
+    "sourceProbePresent": false,
+    "preserveRow": true,
+    "deleteRow": false,
+    "proposedParcelStatus": "SUPERSEDED",
+    "correctionReceiptId": "king_public_parcel_shell_correction_dry_run_2026_05_26"
+  }
+]

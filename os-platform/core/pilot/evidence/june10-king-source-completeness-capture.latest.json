@@ -1,0 +1,52 @@
+{
+  "generatedAt": "2026-05-26T16:17:18.195Z",
+  "countyName": "King County",
+  "fips": "53033",
+  "scope": "King source completeness capture",
+  "sourceUrl": "https://gisdata.kingcounty.gov/arcgis/rest/services/OpenDataPortal/property__parcel_area/MapServer/439",
+  "accessMethod": "ArcGIS REST exact PIN query, returnGeometry=false, runtime shell fields only",
+  "fieldsCaptured": [
+    "OBJECTID",
+    "PIN",
+    "MAJOR",
+    "MINOR",
+    "Shape_Length",
+    "Shape_Area"
+  ],
+  "geometryCaptured": false,
+  "databaseMutationAllowed": false,
+  "databaseMutationAttempted": false,
+  "productionBindingAllowed": false,
+  "certificationAllowed": false,
+  "summary": {
+    "requestedSourceOnlyPins": 1161,
+    "presentInRicherSourceArtifact": 1161,
+    "loadableAsRuntimeParcelShell": 1161,
+    "missingFromRicherSourceArtifact": 0,
+    "rejectedRows": 0,
+    "duplicateGeometryRows": 0,
+    "placeholderReviewRows": 24
+  },
+  "validation": {
+    "allSourceOnlyPinsAccountedFor": true,
+    "runtimeShellFieldsComplete": true,
+    "ownerAddressValueWorkflowComplete": false,
+    "noDatabaseWrites": true
+  },
+  "terms": {
+    "termsPosture": "public_arcgis_query_runtime_fields_only",
+    "termsNote": "King County public parcel_area service is queried read-only with returnGeometry=false and only OBJECTID/PIN/MAJOR/MINOR/Shape_Length/Shape_Area fields.",
+    "documentsPlaceholderPolygons": true,
+    "documentsStackedGeometry": true,
+    "pinIndexUnique": false
+  },
+  "artifacts": {
+    "rawArtifactPath": "os-platform/core/pilot/evidence/june10-king-source-completeness-capture/king-source-only-runtime-fields-raw.jsonl",
+    "rawArtifactSha256": "9f72b9fa3bd633d8f383214f97011d4438cd48376c113f25c085a7b0473e6c6f",
+    "captureReceiptPath": "os-platform/core/pilot/evidence/june10-king-source-completeness-capture/king-source-completeness-capture-receipt.json"
+  },
+  "blockers": [
+    "King parcel_area source does not expose owner/address/value fields; parcel shell loadability does not prove full workflow completeness.",
+    "24 source-only PINs look like tract/placeholder identifiers and require explicit load policy."
+  ]
+}

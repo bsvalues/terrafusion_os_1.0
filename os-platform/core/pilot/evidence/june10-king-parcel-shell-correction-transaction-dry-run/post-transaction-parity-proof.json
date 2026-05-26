@@ -1,0 +1,11 @@
+{
+  "staleCanonicalRowsSupersededWithoutIdentityLoss": true,
+  "policyApprovedSourceOnlyRowsInserted": 1137,
+  "placeholderTractRowsExcluded": 24,
+  "sourceExactCaseCorrectionsApplied": 12,
+  "countyIdParcelNumberDuplicatesAfter": 0,
+  "shellRowsReceiveTrustLabel": true,
+  "shellRowsBlockedFromWorkflowCompleteClaims": true,
+  "policyApprovedIdentityParityWouldBeAchieved": true,
+  "fullSourceParityBlockedByPlaceholderQueue": true
+}

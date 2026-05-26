@@ -1,0 +1,216 @@
+{
+  "currentVersion": 10.91,
+  "cimVersion": "2.9.0",
+  "id": 439,
+  "name": "parcel_area",
+  "type": "Feature Layer",
+  "description": "This layer represents the tax parcels in King County. This layer also includes place-holder polygons which do not represent tax parcels but are included to identify platted and unplatted land descriptions. The layer includes stacked polygon geometry for undivided interest and vertical parcels. King County parcel numbers may include leading zeros in PIN, Major or Minor. The data is created for Assessment purposes and is not guaranteed to represent accurate measurements or to reflect salability or buildability of a tax parcel. These tax parcel boundaries represent general location only, and they should not be considered or used as the exact legal parcel boundary location. Do not use for survey purposes.",
+  "geometryType": "esriGeometryPolygon",
+  "sourceSpatialReference": {
+    "wkid": 2926,
+    "latestWkid": 2926,
+    "xyTolerance": 0.002,
+    "zTolerance": 0.001,
+    "mTolerance": 0.001,
+    "falseX": -117104300,
+    "falseY": -99539600,
+    "xyUnits": 2000,
+    "falseZ": 0,
+    "zUnits": 1,
+    "falseM": 0,
+    "mUnits": 1
+  },
+  "copyrightText": "King County",
+  "parentLayer": null,
+  "subLayers": [],
+  "minScale": 10000,
+  "maxScale": 0,
+  "referenceScale": 0,
+  "drawingInfo": {
+    "renderer": {
+      "type": "simple",
+      "symbol": {
+        "type": "esriSFS",
+        "style": "esriSFSSolid",
+        "color": [199, 245, 188, 255],
+        "outline": {
+          "type": "esriSLS",
+          "style": "esriSLSSolid",
+          "color": [110, 110, 110, 255],
+          "width": 0.4
+        }
+      }
+    },
+    "scaleSymbols": true,
+    "transparency": 0,
+    "labelingInfo": null
+  },
+  "defaultVisibility": false,
+  "extent": {
+    "xmin": 1218256.2234999985,
+    "ymin": 30932.680000007153,
+    "xmax": 1577865.299999997,
+    "ymax": 287704.24400000274,
+    "spatialReference": {
+      "wkid": 2926,
+      "latestWkid": 2926,
+      "xyTolerance": 0.002,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -117104300,
+      "falseY": -99539600,
+      "xyUnits": 37926742.22403606,
+      "falseZ": -100000,
+      "zUnits": 10000,
+      "falseM": -100000,
+      "mUnits": 10000
+    }
+  },
+  "hasAttachments": false,
+  "htmlPopupType": "esriServerHTMLPopupTypeAsHTMLText",
+  "displayField": "MAJOR",
+  "typeIdField": null,
+  "subtypeFieldName": null,
+  "subtypeField": null,
+  "defaultSubtypeCode": null,
+  "fields": [
+    {
+      "name": "OBJECTID",
+      "type": "esriFieldTypeOID",
+      "alias": "OBJECTID",
+      "domain": null
+    },
+    {
+      "name": "Shape",
+      "type": "esriFieldTypeGeometry",
+      "alias": "Shape",
+      "domain": null
+    },
+    {
+      "name": "MAJOR",
+      "type": "esriFieldTypeString",
+      "alias": "MAJOR",
+      "length": 6,
+      "domain": null
+    },
+    {
+      "name": "MINOR",
+      "type": "esriFieldTypeString",
+      "alias": "MINOR",
+      "length": 4,
+      "domain": null
+    },
+    {
+      "name": "PIN",
+      "type": "esriFieldTypeString",
+      "alias": "PIN",
+      "length": 10,
+      "domain": null
+    },
+    {
+      "name": "Shape_Length",
+      "type": "esriFieldTypeDouble",
+      "alias": "Shape_Length",
+      "domain": null
+    },
+    {
+      "name": "Shape_Area",
+      "type": "esriFieldTypeDouble",
+      "alias": "Shape_Area",
+      "domain": null
+    }
+  ],
+  "geometryField": {
+    "name": "Shape",
+    "type": "esriFieldTypeGeometry",
+    "alias": "Shape"
+  },
+  "indexes": [
+    {
+      "name": "FDO_OBJECTID",
+      "fields": "OBJECTID",
+      "isAscending": true,
+      "isUnique": true,
+      "description": ""
+    },
+    {
+      "name": "FDO_Shape",
+      "fields": "Shape",
+      "isAscending": true,
+      "isUnique": false,
+      "description": ""
+    },
+    {
+      "name": "I390PIN",
+      "fields": "PIN",
+      "isAscending": true,
+      "isUnique": false,
+      "description": ""
+    }
+  ],
+  "subtypes": [],
+  "relationships": [],
+  "canModifyLayer": false,
+  "canScaleSymbols": false,
+  "hasLabels": false,
+  "capabilities": "Map,Query,Data",
+  "maxRecordCount": 4000,
+  "supportsStatistics": true,
+  "supportsExceedsLimitStatistics": true,
+  "supportsAdvancedQueries": true,
+  "supportedQueryFormats": "JSON, geoJSON, PBF",
+  "isDataVersioned": false,
+  "ownershipBasedAccessControlForFeatures": {
+    "allowOthersToQuery": true
+  },
+  "useStandardizedQueries": true,
+  "supportedSpatialRelationships": [
+    "esriSpatialRelIntersects",
+    "esriSpatialRelContains",
+    "esriSpatialRelCrosses",
+    "esriSpatialRelEnvelopeIntersects",
+    "esriSpatialRelIndexIntersects",
+    "esriSpatialRelOverlaps",
+    "esriSpatialRelTouches",
+    "esriSpatialRelWithin",
+    "esriSpatialRelRelation"
+  ],
+  "advancedQueryCapabilities": {
+    "useStandardizedQueries": true,
+    "supportsStatistics": true,
+    "supportsPercentileStatistics": true,
+    "supportsHavingClause": true,
+    "supportsOrderBy": true,
+    "supportsDistinct": true,
+    "supportsCountDistinct": true,
+    "supportsPagination": true,
+    "supportsLod": false,
+    "supportsQueryWithLodSR": false,
+    "supportsTrueCurve": true,
+    "supportsQueryWithDatumTransformation": true,
+    "supportsReturningQueryExtent": true,
+    "supportsQueryWithDistance": true,
+    "supportsSqlExpression": true,
+    "supportsTimeRelation": true,
+    "supportsSqlFormat": false,
+    "supportsQueryAnalytic": false
+  },
+  "supportsDatumTransformation": true,
+  "dateFieldsTimeReference": null,
+  "preferredTimeReference": null,
+  "datesInUnknownTimezone": false,
+  "hasGeometryProperties": true,
+  "geometryProperties": {
+    "shapeAreaFieldName": "Shape_Area",
+    "shapeLengthFieldName": "Shape_Length",
+    "units": "esriFeet"
+  },
+  "hasMetadata": false,
+  "isDataArchived": false,
+  "archivingInfo": {
+    "supportsQueryWithHistoricMoment": false,
+    "startArchivingMoment": -1
+  },
+  "supportsCoordinatesQuantization": true,
+  "supportsDynamicLegends": true
+}

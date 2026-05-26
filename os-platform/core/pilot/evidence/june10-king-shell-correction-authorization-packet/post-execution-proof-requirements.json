@@ -1,0 +1,10 @@
+[
+  "accepted correction receipt emitted after commit",
+  "identity parity proof rerun after mutation",
+  "CountyId + ParcelNumber duplicate proof equals 0",
+  "451 stale rows marked superseded/inactive, not deleted",
+  "1,137 shell rows inserted with KING_PUBLIC_PARCEL_SHELL trust label",
+  "24 placeholder rows remain excluded/review-held",
+  "workflow-complete and certification blockers remain true",
+  "rollback verification command available and documented"
+]

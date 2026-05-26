@@ -1,0 +1,134 @@
+[
+  {
+    "action": "update_case_to_source_exact",
+    "sourceValue": "012303tr-B",
+    "currentCanonicalValue": "012303TR-B",
+    "tfParcelId": "a893e85f-ee9f-e43e-c84e-4c33c964b493",
+    "currentTerraFusionParcelKey": "53033:012303TR-B",
+    "proposedParcelNumber": "012303tr-B",
+    "proposedTerraFusionParcelKey": "53033:012303tr-B",
+    "preserveLegacyImportedParcelKey": "033-012303TR-B",
+    "safeForDryRun": true
+  },
+  {
+    "action": "update_case_to_source_exact",
+    "sourceValue": "012605TR-x",
+    "currentCanonicalValue": "012605TR-X",
+    "tfParcelId": "520d1633-98e9-f4ba-eb59-44c4f5352b38",
+    "currentTerraFusionParcelKey": "53033:012605TR-X",
+    "proposedParcelNumber": "012605TR-x",
+    "proposedTerraFusionParcelKey": "53033:012605TR-x",
+    "preserveLegacyImportedParcelKey": "033-012605TR-X",
+    "safeForDryRun": true
+  },
+  {
+    "action": "update_case_to_source_exact",
+    "sourceValue": "022206Tr-B",
+    "currentCanonicalValue": "022206TR-B",
+    "tfParcelId": "01ca2f1c-dbbe-1351-03de-8aa4cb4254a6",
+    "currentTerraFusionParcelKey": "53033:022206TR-B",
+    "proposedParcelNumber": "022206Tr-B",
+    "proposedTerraFusionParcelKey": "53033:022206Tr-B",
+    "preserveLegacyImportedParcelKey": "033-022206TR-B",
+    "safeForDryRun": true
+  },
+  {
+    "action": "update_case_to_source_exact",
+    "sourceValue": "022206Tr-C",
+    "currentCanonicalValue": "022206TR-C",
+    "tfParcelId": "76dbb7a2-c109-d545-db23-d51e617cc01f",
+    "currentTerraFusionParcelKey": "53033:022206TR-C",
+    "proposedParcelNumber": "022206Tr-C",
+    "proposedTerraFusionParcelKey": "53033:022206Tr-C",
+    "preserveLegacyImportedParcelKey": "033-022206TR-C",
+    "safeForDryRun": true
+  },
+  {
+    "action": "update_case_to_source_exact",
+    "sourceValue": "022605TR-a",
+    "currentCanonicalValue": "022605TR-A",
+    "tfParcelId": "b7a8628a-c2c0-76be-1b55-8ee8e1ea82e2",
+    "currentTerraFusionParcelKey": "53033:022605TR-A",
+    "proposedParcelNumber": "022605TR-a",
+    "proposedTerraFusionParcelKey": "53033:022605TR-a",
+    "preserveLegacyImportedParcelKey": "033-022605TR-A",
+    "safeForDryRun": true
+  },
+  {
+    "action": "update_case_to_source_exact",
+    "sourceValue": "142605tr-B",
+    "currentCanonicalValue": "142605TR-B",
+    "tfParcelId": "2a10cc3c-0e2b-72f9-4c09-07050738fd2c",
+    "currentTerraFusionParcelKey": "53033:142605TR-B",
+    "proposedParcelNumber": "142605tr-B",
+    "proposedTerraFusionParcelKey": "53033:142605tr-B",
+    "preserveLegacyImportedParcelKey": "033-142605TR-B",
+    "safeForDryRun": true
+  },
+  {
+    "action": "update_case_to_source_exact",
+    "sourceValue": "162605tr-a",
+    "currentCanonicalValue": "162605TR-A",
+    "tfParcelId": "41027c8c-5e2b-8a1e-af69-2b3facbf6bbe",
+    "currentTerraFusionParcelKey": "53033:162605TR-A",
+    "proposedParcelNumber": "162605tr-a",
+    "proposedTerraFusionParcelKey": "53033:162605tr-a",
+    "preserveLegacyImportedParcelKey": "033-162605TR-A",
+    "safeForDryRun": true
+  },
+  {
+    "action": "update_case_to_source_exact",
+    "sourceValue": "162606TR_a",
+    "currentCanonicalValue": "162606TR_A",
+    "tfParcelId": "f11a39e5-0d22-8cab-66d0-1266ef18331d",
+    "currentTerraFusionParcelKey": "53033:162606TR_A",
+    "proposedParcelNumber": "162606TR_a",
+    "proposedTerraFusionParcelKey": "53033:162606TR_a",
+    "preserveLegacyImportedParcelKey": "033-162606TR_A",
+    "safeForDryRun": true
+  },
+  {
+    "action": "update_case_to_source_exact",
+    "sourceValue": "212406TR-a",
+    "currentCanonicalValue": "212406TR-A",
+    "tfParcelId": "4143daaa-9894-924e-5295-674441f85949",
+    "currentTerraFusionParcelKey": "53033:212406TR-A",
+    "proposedParcelNumber": "212406TR-a",
+    "proposedTerraFusionParcelKey": "53033:212406TR-a",
+    "preserveLegacyImportedParcelKey": "033-212406TR-A",
+    "safeForDryRun": true
+  },
+  {
+    "action": "update_case_to_source_exact",
+    "sourceValue": "300180tr a",
+    "currentCanonicalValue": "300180TR A",
+    "tfParcelId": "4825d424-457d-734c-5b2f-957a08a8fc9f",
+    "currentTerraFusionParcelKey": "53033:300180TR A",
+    "proposedParcelNumber": "300180tr a",
+    "proposedTerraFusionParcelKey": "53033:300180tr a",
+    "preserveLegacyImportedParcelKey": "033-300180TR A",
+    "safeForDryRun": true
+  },
+  {
+    "action": "update_case_to_source_exact",
+    "sourceValue": "340170tr-B",
+    "currentCanonicalValue": "340170TR-B",
+    "tfParcelId": "c2617328-002b-b381-e84c-25f09dfe7250",
+    "currentTerraFusionParcelKey": "53033:340170TR-B",
+    "proposedParcelNumber": "340170tr-B",
+    "proposedTerraFusionParcelKey": "53033:340170tr-B",
+    "preserveLegacyImportedParcelKey": "033-340170TR-B",
+    "safeForDryRun": true
+  },
+  {
+    "action": "update_case_to_source_exact",
+    "sourceValue": "352306tr-A",
+    "currentCanonicalValue": "352306TR-A",
+    "tfParcelId": "41594dfc-ce26-d324-3e08-be81fe435517",
+    "currentTerraFusionParcelKey": "53033:352306TR-A",
+    "proposedParcelNumber": "352306tr-A",
+    "proposedTerraFusionParcelKey": "53033:352306tr-A",
+    "preserveLegacyImportedParcelKey": "033-352306TR-A",
+    "safeForDryRun": true
+  }
+]

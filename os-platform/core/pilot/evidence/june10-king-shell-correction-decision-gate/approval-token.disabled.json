@@ -1,0 +1,15 @@
+{
+  "enabled": false,
+  "tokenFormat": "KING-SHELL-CORRECTION:<packet-sha256>:<dry-run-sha256>:<source-sha256>",
+  "token": null,
+  "state": "READY_FOR_HUMAN_DECISION",
+  "unlocks": [],
+  "remainsForbidden": [
+    "King certification",
+    "workflow-complete claims",
+    "owner/address/value claims",
+    "placeholder/tract insertion",
+    "production binding"
+  ],
+  "note": "Token is disabled by default; approval requires explicit human phrase and fresh precondition checks."
+}
