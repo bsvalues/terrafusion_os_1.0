@@ -1,0 +1,50 @@
+{
+  "receiptVersion": "wa_initial_seed_post_repair_v1",
+  "generatedAt": "2026-05-26T15:37:47.233Z",
+  "countyName": "Spokane County",
+  "fips": "53063",
+  "sourceClass": "WA_INITIAL_SEED",
+  "sourceParcelIdField": "parcel",
+  "counts": {
+    "parcelRowsLoaded": 214004,
+    "distinctParcelIdsLoaded": 214004
+  },
+  "rawArtifacts": [
+    {
+      "path": "os-platform/core/pilot/evidence/june10-public-source-captures/spokane/spokane-parcels-source-native-raw.jsonl",
+      "sha256": "dc2bcb337b62b69ce7624fb899b4a461dda90d9c376bcd775b88a687b7805437"
+    }
+  ],
+  "normalizedArtifacts": [
+    {
+      "path": "os-platform/core/pilot/evidence/june10-public-source-captures/spokane/spokane-canonical-parcelnumbers.csv",
+      "sha256": "5af15213509203fbdbb6808b9460b1f05f1bebe358571d5d675dc11267f31760"
+    }
+  ],
+  "supportingArtifacts": [
+    {
+      "path": "os-platform/core/pilot/evidence/june10-public-source-captures/spokane/spokane-parcel-identity-capture-metadata.json",
+      "sha256": "66ed70317372edb7dbec8b82ec92d4a84ca955ab7c18b930652518c8f7d7bfd1"
+    },
+    {
+      "path": "os-platform/core/pilot/evidence/june10-spokane-source-count-semantics-adjudication.latest.json",
+      "sha256": "33d444cf16d162b74a4457472d0427c40db4f295fb88b213328d7147cfb2a10a"
+    },
+    {
+      "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-pilot-repair-execution/repair-receipt.after-execution.json",
+      "sha256": null
+    }
+  ],
+  "transformationPath": [
+    "public-source parcel id capture",
+    "WA_INITIAL_SEED canonical import",
+    "post-repair ParcelNumber source-native identity correction",
+    "canonical_tf.tf_parcel"
+  ],
+  "target": {
+    "terrafusionDbIdentity": "local canonical Postgres terrafusion/canonical_tf.tf_parcel"
+  },
+  "repairReceiptId": "wa_initial_seed_identity_repair_2026_05_26_pilot4",
+  "noSecretValuesRecorded": true,
+  "productionBindingAllowed": false
+}

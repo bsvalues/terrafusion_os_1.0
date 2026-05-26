@@ -1,0 +1,27 @@
+{
+  "generatedAt": "2026-05-26T17:40:36.319Z",
+  "planType": "june10_canonical_postgres_production_binding_plan",
+  "productionBindingAllowed": false,
+  "targetRuntimeModel": "TerraFusion canonical Postgres DB -> terrafusionmarket.com runtime",
+  "currentPosture": {
+    "receiptsVerified": 2,
+    "receiptsMissing": 36,
+    "fullIdentityReceipts": 1,
+    "shellPresentReceipts": 1
+  },
+  "decision": "BLOCKED",
+  "blockers": [
+    "36 WA_INITIAL_SEED counties still lack verified receipt posture.",
+    "WA_INITIAL_SEED receipt reconciliation does not allow production binding."
+  ],
+  "allowedNextActions": [
+    "Continue county-by-county receipt closure.",
+    "Adjudicate Cowlitz or Yakima next.",
+    "Do not bind production until receipt posture is acceptable."
+  ],
+  "forbiddenActions": [
+    "Do not bind terrafusionmarket.com to the canonical DB from this posture.",
+    "Do not claim 39-county production certification.",
+    "Do not treat shell-present King as workflow-certified."
+  ]
+}

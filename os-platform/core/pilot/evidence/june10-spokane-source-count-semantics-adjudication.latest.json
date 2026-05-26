@@ -1,0 +1,41 @@
+{
+  "generatedAt": "2026-05-26T15:20:01.198Z",
+  "countyName": "Spokane County",
+  "fips": "53063",
+  "scope": "Spokane only",
+  "evidencePath": "os-platform/core/pilot/evidence/june10-spokane-source-count-semantics-adjudication.latest.json",
+  "sourceArtifact": "os-platform/core/pilot/evidence/june10-public-source-captures/spokane/spokane-parcels-source-native-raw.jsonl",
+  "canonicalExport": "os-platform/core/pilot/evidence/june10-public-source-captures/spokane/spokane-canonical-parcelnumbers.csv",
+  "sourceArtifactSha256": "dc2bcb337b62b69ce7624fb899b4a461dda90d9c376bcd775b88a687b7805437",
+  "canonicalExportSha256": "5af15213509203fbdbb6808b9460b1f05f1bebe358571d5d675dc11267f31760",
+  "parcelIdField": "parcel",
+  "databaseMutationAttempted": false,
+  "productionBindingAllowed": false,
+  "summary": {
+    "rawSourceRows": 214024,
+    "sourceDistinctParcelIds": 214004,
+    "canonicalParcelIds": 214004,
+    "rawRowDelta": 20,
+    "blankSourceRows": 18,
+    "duplicateSourceParcelIds": 2,
+    "duplicateExtraRows": 2,
+    "normalizedDelta": 20,
+    "sourceOnlyCount": 0,
+    "canonicalOnlyCount": 0
+  },
+  "classifications": {
+    "blank_source_parcel_id": 18,
+    "duplicate_source_parcel_id_extra_row": 2,
+    "source_export_duplicate_parcel_ids": 2,
+    "geometry_multipart_duplicates": 0,
+    "retired_source_artifacts": 0
+  },
+  "rejectedRowsReportPath": "os-platform/core/pilot/evidence/june10-spokane-source-count-semantics-adjudication/blank-source-parcel-id-rejected-rows.json",
+  "duplicateRowsReportPath": "os-platform/core/pilot/evidence/june10-spokane-source-count-semantics-adjudication/duplicate-source-parcel-id-report.json",
+  "sourceOnlySample": [],
+  "canonicalOnlySample": [],
+  "decision": "accept_with_blank_id_rejection_and_duplicate_source_normalization",
+  "receiptConversionAllowed": true,
+  "recommendedNextAction": "Allow Spokane receipt conversion with blank source ID rejection and duplicate source parcel normalization noted.",
+  "blockers": []
+}

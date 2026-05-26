@@ -1,0 +1,67 @@
+{
+  "receiptVersion": "wa_initial_seed_shell_present_v1",
+  "generatedAt": "2026-05-26T17:40:22.244Z",
+  "countyName": "King County",
+  "fips": "53033",
+  "sourceClass": "WA_INITIAL_SEED",
+  "sourceParcelIdField": "PIN",
+  "receiptStatus": "receipt_backed_shell_present",
+  "trustPosture": "KING_PUBLIC_PARCEL_SHELL",
+  "counts": {
+    "parcelRowsLoaded": 635872,
+    "distinctParcelIdsLoaded": 635872,
+    "shellRowsInserted": 1137,
+    "supersededRows": 451,
+    "placeholderRowsHeld": 24,
+    "canonicalOnlyAfter": 0,
+    "sourceOnlyNonPlaceholderAfter": 0
+  },
+  "rawArtifacts": [
+    {
+      "path": "os-platform/core/pilot/evidence/june10-public-source-captures/king/king-parcels-source-native-raw.jsonl",
+      "sha256": "64f7317024eaecf6fbe8a9e7378716d46c9ac50fed13c4eecde527c7b6fb42cd"
+    }
+  ],
+  "normalizedArtifacts": [
+    {
+      "path": "canonical_tf.tf_parcel",
+      "sha256": null,
+      "note": "Runtime canonical table; row-level proof is in the execution receipt and post-execution audit."
+    }
+  ],
+  "supportingArtifacts": [
+    {
+      "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-execution.latest.json",
+      "sha256": "a693f63659fcf6fe17897fd15abe50e9e1c31428a6de92057e2c05f907fbab4e"
+    },
+    {
+      "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-post-execution-audit.latest.json",
+      "sha256": "fc1187c9bc6566bd6133286f259d565ddd5c71d3b9ba3d27a1e5c7c1ca6b0cb7"
+    },
+    {
+      "path": "os-platform/core/pilot/evidence/june10-public-source-captures/king/king-parcel-identity-capture-metadata.json",
+      "sha256": "bb5278f64a2061630faebe0f2f93864fc5f9e354e140c1fcdd8342453991e19f"
+    }
+  ],
+  "transformationPath": [
+    "public-source parcel identity capture",
+    "King shell correction execution",
+    "canonical_tf.tf_parcel source-native ParcelNumber posture",
+    "KING_PUBLIC_PARCEL_SHELL trust posture"
+  ],
+  "target": {
+    "terrafusionDbIdentity": "local canonical Postgres terrafusion/canonical_tf.tf_parcel",
+    "schema": "canonical_tf",
+    "table": "tf_parcel"
+  },
+  "workflowLabels": {
+    "parcelIdentity": "available",
+    "ownerAddressValueDependentWorkflows": "blocked",
+    "officialValuation": "blocked",
+    "workflowCertification": "blocked"
+  },
+  "noSecretValuesRecorded": true,
+  "productionBindingAllowed": false,
+  "certificationAllowed": false,
+  "blockers": []
+}

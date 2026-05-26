@@ -1,0 +1,21 @@
+{
+  "capturedAt": "2026-05-26T05:50:02.686Z",
+  "countyName": "Spokane County",
+  "countyFips": "53063",
+  "countySlug": "spokane",
+  "sourceUrl": "https://services.arcgis.com/3PDwyTturHqnGCu0/ArcGIS/rest/services/Parcel/FeatureServer/4",
+  "accessMethod": "ArcGIS REST query, returnGeometry=false, parcel identifier field only",
+  "termsPosture": "public_parcel_id_only",
+  "termsNote": "Public Spokane assessor parcel FeatureServer exposes a parcel field; capture is limited to parcel and omits site address, geometry, and other fields.",
+  "parcelIdField": "parcel",
+  "fieldsCaptured": ["parcel"],
+  "geometryCaptured": false,
+  "ownerFieldsCaptured": false,
+  "expectedSourceCount": 214024,
+  "capturedFeatureRows": 214024,
+  "pages": 108,
+  "sourceArtifactSha256": "dc2bcb337b62b69ce7624fb899b4a461dda90d9c376bcd775b88a687b7805437",
+  "maxRecordCount": 2000,
+  "databaseWritesAttempted": false,
+  "productionBindingAllowed": false
+}

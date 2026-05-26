@@ -1,0 +1,48 @@
+{
+  "generatedAt": "2026-05-26T07:56:44.0411678Z",
+  "receiptId": "wa_initial_seed_identity_repair_2026_05_26_pilot4",
+  "repairType": "wa_initial_seed_parcel_identity_repair",
+  "databaseContainer": "terrafusion-postgres-dev",
+  "databaseName": "terrafusion",
+  "table": "canonical_tf.tf_parcel",
+  "backupReceiptPath": "os-platform/core/pilot/evidence/june10-wa-initial-seed-pilot-repair-execution/backup-receipt.json",
+  "transactionScriptPath": "os-platform/core/pilot/evidence/june10-wa-initial-seed-pilot-repair-execution/transaction-plan.sql",
+  "rollbackScriptPath": "os-platform/core/pilot/evidence/june10-wa-initial-seed-pilot-repair-execution/rollback-plan.sql",
+  "repairedRows": 1008805,
+  "duplicateGroupsAfter": 0,
+  "missingLineageRowsAfter": 0,
+  "counties": [
+    {
+      "countyName": "Cowlitz County",
+      "fips": "53015",
+      "countyId": "6504d940-242e-26c1-8715-6809ca9df7fb",
+      "repairedRows": 57362,
+      "sourceParcelIdField": "PARCNO"
+    },
+    {
+      "countyName": "King County",
+      "fips": "53033",
+      "countyId": "3cb43a41-480a-bbaf-cfd3-f62d403225b7",
+      "repairedRows": 635186,
+      "sourceParcelIdField": "PIN"
+    },
+    {
+      "countyName": "Spokane County",
+      "fips": "53063",
+      "countyId": "f8484ef2-4eff-18d5-bb23-bdfb56db0610",
+      "repairedRows": 214019,
+      "sourceParcelIdField": "parcel"
+    },
+    {
+      "countyName": "Yakima County",
+      "fips": "53077",
+      "countyId": "760e72c5-5244-5052-29e3-eb19011b3bc1",
+      "repairedRows": 102238,
+      "sourceParcelIdField": "AssessorNumber"
+    }
+  ],
+  "productionBindingAllowed": false,
+  "databaseMutationAttempted": true,
+  "committed": true,
+  "note": "Host shell timed out before receipt write; committed state verified by canonical_tf.tf_parcel IdentityRepairReceiptId counts."
+}

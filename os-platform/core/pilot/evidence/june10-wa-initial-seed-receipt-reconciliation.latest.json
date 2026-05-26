@@ -1,0 +1,82 @@
+{
+  "generatedAt": "2026-05-26T17:40:30.512Z",
+  "scope": "38 WA_INITIAL_SEED counties; Benton is excluded from this public-source seed receipt count.",
+  "productionBindingAllowed": false,
+  "summary": {
+    "expectedSeedCounties": 38,
+    "receiptsVerified": 2,
+    "fullIdentityReceipts": 1,
+    "shellPresentReceipts": 1,
+    "receiptsMissing": 36
+  },
+  "verifiedReceipts": [
+    {
+      "countySlug": "king",
+      "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-receipt-posture/king/source-snapshot-receipt.json",
+      "countyName": "King County",
+      "fips": "53033",
+      "receiptVersion": "wa_initial_seed_shell_present_v1",
+      "status": "receipt_backed_shell_present",
+      "trustPosture": "KING_PUBLIC_PARCEL_SHELL",
+      "productionBindingAllowed": false,
+      "certificationAllowed": false
+    },
+    {
+      "countySlug": "spokane",
+      "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-receipt-posture/spokane/source-snapshot-receipt.json",
+      "countyName": "Spokane County",
+      "fips": "53063",
+      "receiptVersion": "wa_initial_seed_post_repair_v1",
+      "status": "receipt_backed_full_identity",
+      "trustPosture": null,
+      "productionBindingAllowed": false,
+      "certificationAllowed": false
+    }
+  ],
+  "missingFips": [
+    "53001",
+    "53003",
+    "53007",
+    "53009",
+    "53011",
+    "53013",
+    "53015",
+    "53017",
+    "53019",
+    "53021",
+    "53023",
+    "53025",
+    "53027",
+    "53029",
+    "53031",
+    "53035",
+    "53037",
+    "53039",
+    "53041",
+    "53043",
+    "53045",
+    "53047",
+    "53049",
+    "53051",
+    "53053",
+    "53055",
+    "53057",
+    "53059",
+    "53061",
+    "53065",
+    "53067",
+    "53069",
+    "53071",
+    "53073",
+    "53075",
+    "53077"
+  ],
+  "blockers": [
+    "36 WA_INITIAL_SEED counties still lack verified receipt posture."
+  ],
+  "notes": [
+    "King shell-present receipt is identity/context only and does not certify workflow completeness.",
+    "Spokane full-identity receipt remains receipt-backed.",
+    "Production binding remains blocked while any WA_INITIAL_SEED receipt gaps remain."
+  ]
+}
