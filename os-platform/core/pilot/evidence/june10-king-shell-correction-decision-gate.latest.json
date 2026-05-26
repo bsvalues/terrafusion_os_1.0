@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-26T16:37:24.434Z",
+  "generatedAt": "2026-05-26T16:45:44.974Z",
   "gateType": "king_shell_correction_decision_gate",
   "countyName": "King County",
   "fips": "53033",
@@ -42,7 +42,7 @@
   },
   "approvalChecks": {
     "rollbackSqlExists": true,
-    "worktreeClean": false,
+    "worktreeClean": true,
     "latestTestsPassed": true,
     "humanApprovalPhraseMatches": false,
     "humanApprovalChecklistAccepted": false
@@ -55,5 +55,5 @@
     "placeholder/tract insertion",
     "production binding"
   ],
-  "blockers": ["Branch/worktree is not clean."]
+  "blockers": []
 }

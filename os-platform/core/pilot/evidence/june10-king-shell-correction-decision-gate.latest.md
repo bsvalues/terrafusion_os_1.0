@@ -1,6 +1,6 @@
 # King Shell Correction Decision Gate
 
-Generated: 2026-05-26T16:37:24.434Z
+Generated: 2026-05-26T16:45:44.974Z
 
 ## Verdict
 
@@ -24,7 +24,7 @@ Generated: 2026-05-26T16:37:24.434Z
 | Check | Passed |
 | --- | --- |
 | Rollback SQL exists | yes |
-| Worktree clean | no |
+| Worktree clean | yes |
 | Latest tests passed | yes |
 | Human approval phrase matches | no |
 | Human approval checklist accepted | no |
@@ -44,4 +44,4 @@ Generated: 2026-05-26T16:37:24.434Z
 
 ## Blockers
 
-- Branch/worktree is not clean.
+- none

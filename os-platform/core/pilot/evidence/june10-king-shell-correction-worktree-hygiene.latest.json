@@ -1,0 +1,52 @@
+{
+  "generatedAt": "2026-05-26T16:50:00.000Z",
+  "reportType": "king_shell_correction_worktree_hygiene",
+  "scope": "King County shell correction approval readiness",
+  "branch": "fix/projector-delete-insert-atomicity",
+  "kingPacketCommit": "40b5da1e15",
+  "databaseMutationAttempted": false,
+  "humanApprovalAccepted": false,
+  "executionEnabled": false,
+  "certificationAllowed": false,
+  "expectedKingOnlyChanges": [
+    "os-platform/core/pilot/june10-king-*.mjs",
+    "os-platform/core/pilot/june10-king-*.test.mjs",
+    "os-platform/core/pilot/evidence/june10-king-*",
+    "os-platform/core/pilot/evidence/june10-public-source-captures/king/*",
+    "package.json King-only truth scripts"
+  ],
+  "isolatedUnrelatedDrift": [
+    {
+      "stash": "king-hygiene-unrelated-compose-drift",
+      "classification": "unrelated production compose drift",
+      "action": "stashed, not deleted"
+    },
+    {
+      "stash": "pre-king-shell-hygiene-full-dirty-state",
+      "classification": "full pre-hygiene dirty state including non-King WA artifacts",
+      "action": "preserved as recovery snapshot"
+    }
+  ],
+  "verification": {
+    "kingFocusedTests": "passed",
+    "typeCheck": "passed",
+    "phase83Tools": "passed",
+    "decisionGateState": "READY_FOR_HUMAN_DECISION",
+    "worktreeCleanInput": true,
+    "latestTestsPassedInput": true
+  },
+  "stopConditionsMaintained": [
+    "No King shell correction approval accepted.",
+    "No King shell correction execution enabled.",
+    "No database mutation attempted.",
+    "No King certification allowed.",
+    "No production binding allowed."
+  ],
+  "expectedFinalState": {
+    "worktreeClean": true,
+    "humanApprovalStillNotAccepted": true,
+    "executionEnabled": false,
+    "state": "READY_FOR_HUMAN_DECISION",
+    "certificationRemainsBlocked": true
+  }
+}
