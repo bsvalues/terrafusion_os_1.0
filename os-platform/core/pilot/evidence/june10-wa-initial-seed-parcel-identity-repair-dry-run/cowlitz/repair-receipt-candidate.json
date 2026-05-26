@@ -1,0 +1,16 @@
+{
+  "receiptType": "wa_initial_seed_parcel_identity_repair_dry_run",
+  "generatedAt": "2026-05-26T06:06:47.179Z",
+  "countyName": "Cowlitz County",
+  "countyFips": "53015",
+  "sourceParcelIdField": "PARCNO",
+  "rowsScanned": 57362,
+  "rowsRepairable": 57362,
+  "rowsRejected": 0,
+  "exactOverlapBefore": 0,
+  "exactOverlapAfter": 57237,
+  "duplicateCountyIdParcelNumberAfter": 0,
+  "databaseWritesAttempted": false,
+  "productionBindingAllowed": false,
+  "dryRunPassed": true
+}

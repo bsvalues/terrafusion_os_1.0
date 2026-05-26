@@ -1,0 +1,36 @@
+{
+  "planStatus": "required_before_receipt_conversion",
+  "allowedMutation": false,
+  "productionBindingAllowed": false,
+  "steps": [
+    "Probe the 125 Cowlitz canonical-only parcel identifiers against the current public source.",
+    "Classify canonical-only rows as stale canonical rows, source capture filter gaps, or transform edge cases.",
+    "Capture runtime-complete source rows for the 321 Cowlitz source-only parcel identifiers.",
+    "Stage a no-op correction plan: supersede stale canonical-only rows only if source absence is proven.",
+    "Stage source-only inserts only if required runtime fields and lineage receipts are present.",
+    "Re-run Cowlitz closure and convert a receipt only after source-only and canonical-only counts are both zero."
+  ],
+  "proposedCorrectionClasses": {
+    "canonicalOnly": {
+      "count": 125,
+      "likelyActions": [
+        "probe_current_source",
+        "supersede_if_absent_from_source",
+        "preserve_no_delete"
+      ]
+    },
+    "sourceOnly": {
+      "count": 321,
+      "likelyActions": [
+        "capture_required_runtime_fields",
+        "stage_insert_if_loadable",
+        "emit_load_receipt"
+      ]
+    },
+    "sourceDuplicates": {
+      "groups": 25,
+      "duplicateRows": 147,
+      "policy": "Not a receipt blocker by itself if canonical remains one active row per source-native parcel identifier."
+    }
+  }
+}

@@ -1,0 +1,244 @@
+{
+  "generatedAt": "2026-05-26T05:38:49.719Z",
+  "county": {
+    "countyName": "Cowlitz County",
+    "countyFips": "53015"
+  },
+  "databaseWritesAttempted": false,
+  "productionBindingAllowed": false,
+  "certificationAllowed": false,
+  "sourceSamples": {
+    "fieldName": "PARCNO",
+    "values": [
+      "403670200",
+      "725403",
+      "WK3504006",
+      "62857",
+      "752407",
+      "507060143",
+      "WJ0510001",
+      "08285",
+      "241280101",
+      "05360920",
+      "307800110",
+      "741069"
+    ]
+  },
+  "canonicalSamples": {
+    "fieldName": "canonical_tf.tf_parcel.ParcelNumber",
+    "values": [
+      "015-00001",
+      "015-00002",
+      "015-00003",
+      "015-00004",
+      "015-00005",
+      "015-00006",
+      "015-00007",
+      "015-00009",
+      "015-00010",
+      "015-00011",
+      "015-00012",
+      "015-00013"
+    ]
+  },
+  "prefixTransformSamples": [
+    {
+      "sourceParcno": "403670200",
+      "canonicalParcelNumber": "015-403670200"
+    },
+    {
+      "sourceParcno": "725403",
+      "canonicalParcelNumber": "015-725403"
+    },
+    {
+      "sourceParcno": "WK3504006",
+      "canonicalParcelNumber": "015-WK3504006"
+    },
+    {
+      "sourceParcno": "62857",
+      "canonicalParcelNumber": "015-62857"
+    },
+    {
+      "sourceParcno": "752407",
+      "canonicalParcelNumber": "015-752407"
+    },
+    {
+      "sourceParcno": "507060143",
+      "canonicalParcelNumber": "015-507060143"
+    },
+    {
+      "sourceParcno": "WJ0510001",
+      "canonicalParcelNumber": "015-WJ0510001"
+    },
+    {
+      "sourceParcno": "08285",
+      "canonicalParcelNumber": "015-08285"
+    },
+    {
+      "sourceParcno": "241280101",
+      "canonicalParcelNumber": "015-241280101"
+    },
+    {
+      "sourceParcno": "05360920",
+      "canonicalParcelNumber": "015-05360920"
+    },
+    {
+      "sourceParcno": "307800110",
+      "canonicalParcelNumber": "015-307800110"
+    },
+    {
+      "sourceParcno": "741069",
+      "canonicalParcelNumber": "015-741069"
+    }
+  ],
+  "identityContract": {
+    "contractStatus": "unapproved_transform_detected",
+    "certificationAllowed": false,
+    "metrics": {
+      "sourceDistinct": 57558,
+      "canonicalDistinct": 57362,
+      "exactOverlap": 0,
+      "exactOverlapRatio": 0,
+      "prefixRemovedOverlap": 57237,
+      "prefixRemovedOverlapRatio": 0.994423016783071
+    },
+    "approvedTransform": null,
+    "transformReceiptValid": false,
+    "blockers": [
+      "ParcelNumber contract is source-native; canonical values apply a county prefix transform.",
+      "Store county-scoped TerraFusion identity separately from ParcelNumber or provide an approved contract change."
+    ]
+  },
+  "fieldComparison": {
+    "sourceField": {
+      "name": "PARCNO",
+      "sourceSystemRole": "public ArcGIS parcel identifier field",
+      "capturedFrom": "Cowlitz public ArcGIS Assessor/Parcels layer",
+      "ownerFieldsCaptured": false
+    },
+    "canonicalField": {
+      "name": "ParcelNumber",
+      "table": "canonical_tf.tf_parcel",
+      "expectedRuntimeRole": "TerraFusion canonical parcel identity"
+    },
+    "overlapRule": "ParcelNumber is the source-native county parcel identifier after lossless whitespace/case cleanup only; it must not silently add county/FIPS/vendor prefixes."
+  },
+  "summary": {
+    "sourceRows": 57705,
+    "sourceDistinctNonNull": 57558,
+    "sourceNullOrBlank": 0,
+    "sourceDuplicateGroups": 25,
+    "canonicalRows": 57362,
+    "canonicalDistinctNonNull": 57362,
+    "canonicalNullOrBlank": 0,
+    "canonicalDuplicateGroups": 0,
+    "commonDistinct": 0,
+    "compactCommonDistinct": 1,
+    "countyPrefixRemovedCommonDistinct": 57237,
+    "countyPrefixRemovedOverlapRatio": 0.994423016783071,
+    "canonicalSequentialPatternCount": 16601,
+    "canonicalSequentialPatternRatio": 0.2894076217705101
+  },
+  "hypotheses": [
+    {
+      "id": "county_prefix_transform_without_documented_crosswalk",
+      "classification": "likely_root_cause",
+      "confidence": "high",
+      "evidence": [
+        "Removing the canonical 015- county prefix creates 57237 source/canonical matches.",
+        "Exact source PARCNO to canonical ParcelNumber overlap remains 0."
+      ]
+    },
+    {
+      "id": "synthetic_generated_canonical_ids",
+      "classification": "not_proven",
+      "confidence": "low",
+      "evidence": [
+        "16601 of 57362 canonical parcel numbers match the county-sequential pattern 015-\\d{5}.",
+        "Source PARCNO and canonical ParcelNumber common distinct count is 0."
+      ]
+    },
+    {
+      "id": "transformed_padded_normalized_id_format",
+      "classification": "possible_root_cause",
+      "confidence": "medium",
+      "evidence": [
+        "Compact normalized source/canonical overlap is 1.",
+        "Hyphen stripping, case normalization, and leading-zero trimming do not create overlap when this is zero."
+      ]
+    },
+    {
+      "id": "wrong_source_field_used_in_original_seed",
+      "classification": "possible_root_cause",
+      "confidence": "medium",
+      "evidence": [
+        "Current captured source layer identifies PARCNO as the parcel identifier field.",
+        "Canonical ParcelNumber does not match PARCNO; the original seed may have used a generated ordinal or a different field."
+      ]
+    },
+    {
+      "id": "different_county_identifier_field_or_crosswalk",
+      "classification": "unproven",
+      "confidence": "low",
+      "evidence": [
+        "No crosswalk artifact is present in current evidence.",
+        "Certification requires either canonical ParcelNumber preserving PARCNO or a documented crosswalk."
+      ]
+    },
+    {
+      "id": "wrong_county_mapping",
+      "classification": "unlikely_root_cause",
+      "confidence": "low",
+      "evidence": [
+        "Canonical Cowlitz row count is near the public source count, which argues against a completely wrong county mapping.",
+        "The identifier shape still indicates a seed/projection identity issue."
+      ]
+    },
+    {
+      "id": "stale_canonical_seed",
+      "classification": "possible_contributor",
+      "confidence": "low",
+      "evidence": [
+        "Staleness can explain row-count deltas but does not explain zero identifier overlap by itself.",
+        "Even stale rows should preserve PARCNO if the canonical identity semantics were correct."
+      ]
+    },
+    {
+      "id": "source_duplicate_or_null",
+      "classification": "not_root_cause",
+      "confidence": "high",
+      "evidence": [
+        "Source duplicate groups: 25; source null/blank rows: 0.",
+        "Duplicate/null source conditions are too small and cannot explain zero identity overlap."
+      ]
+    }
+  ],
+  "recommendedRootCause": {
+    "id": "county_prefix_transform_without_documented_crosswalk",
+    "confidence": "high",
+    "summary": "Canonical Cowlitz ParcelNumber appears to be source PARCNO with a 015- county prefix added, but no current evidence documents that transform as the canonical identity contract.",
+    "evidence": [
+      "Removing the canonical 015- county prefix creates 57237 source/canonical matches.",
+      "Exact source PARCNO to canonical ParcelNumber overlap remains 0."
+    ]
+  },
+  "recommendedCorrectionPath": [
+    "Do not certify Cowlitz.",
+    "Trace the WA_INITIAL_SEED importer or projection that produced the 015- prefixed canonical IDs.",
+    "Decide whether canonical ParcelNumber must equal source PARCNO or whether the 015- prefix is an approved TerraFusion canonical county-scope identity format.",
+    "If source preservation is required, correct the importer/projection to preserve PARCNO as canonical ParcelNumber.",
+    "If a different identifier field was intentionally used, produce a crosswalk proving deterministic mapping from canonical ParcelNumber to source PARCNO.",
+    "If the 015- prefix remains, emit a documented transform receipt and update certification gates to compare the approved transform explicitly.",
+    "Re-run the Cowlitz dry-run with receipt generation.",
+    "Re-run Cowlitz row-count adjudication and require non-zero identity overlap before certification.",
+    "Only then consider projection/import authorization; keep production binding blocked until receipts and identity semantics are reconciled."
+  ],
+  "blockers": [
+    "Canonical Cowlitz ParcelNumber does not preserve source PARCNO in current evidence.",
+    "Canonical Cowlitz ParcelNumber appears to apply an undocumented 015- prefix transform to source PARCNO.",
+    "ParcelNumber contract is source-native; canonical values apply a county prefix transform.",
+    "Store county-scoped TerraFusion identity separately from ParcelNumber or provide an approved contract change.",
+    "No approved identity transform receipt or crosswalk exists in current evidence.",
+    "Cowlitz remains blocked from certification until parcel identity semantics are corrected or proven."
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "receiptVersion": "june10-seed-v1",
+  "status": "NORMALIZED_READY",
+  "capturedAtUtc": "2026-05-26T05:15:28.190Z",
+  "county": "Cowlitz County",
+  "countyToken": "cowlitz-county",
+  "state": "WA",
+  "fips": "53015",
+  "sourceClass": "WA_INITIAL_SEED_RECEIPT_BACKED_DRY_RUN",
+  "sourceSystem": {
+    "url": "https://gis.cowlitzwa.gov/ccserver/rest/services/Assessor/Parcels/MapServer/0/query",
+    "accessMethod": "arcgis_rest_query_outfields_parcno_only",
+    "termsStatus": "public_query_owner_fields_omitted_due_license"
+  },
+  "rawArtifacts": [
+    {
+      "path": "os-platform/core/pilot/evidence/june10-public-source-captures/cowlitz/cowlitz-parcels-parcno-raw.jsonl",
+      "sha256": "90c663bb977e69155625df5a73a66c59f40a42ef9ff797a89fcb4deccf3b35e1",
+      "capturedAtUtc": "2026-05-26T05:15:28.190Z"
+    }
+  ],
+  "normalizedArtifacts": [
+    {
+      "path": "os-platform/core/pilot/evidence/june10-38-county-reimport-dry-run/cowlitz/normalized-parcels.jsonl",
+      "schema": "terrafusion-wa-initial-seed-parcel-v1",
+      "sha256": "d77242ce712047aa2f088b9f31cad51f0875c9fcda7841d4064ccd844122563b",
+      "capturedAtUtc": "2026-05-26T05:15:28.190Z"
+    }
+  ],
+  "transformationPath": [
+    "source_capture",
+    "raw_hash",
+    "normalize_to_staging",
+    "validate_staging",
+    "dry_run_projection"
+  ],
+  "counts": {
+    "parcelRowsExtracted": 57705,
+    "parcelRowsNormalized": 57705,
+    "rejectedRows": 0
+  },
+  "workflowLabels": {
+    "parcelSearch": "blocked",
+    "officialValuation": "blocked",
+    "productionCertification": "blocked"
+  },
+  "noSecretValuesRecorded": true,
+  "rejectedRowsArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-38-county-reimport-dry-run/cowlitz/rejected-rows.jsonl",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

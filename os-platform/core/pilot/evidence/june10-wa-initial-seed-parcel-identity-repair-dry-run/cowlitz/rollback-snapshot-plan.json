@@ -1,0 +1,8 @@
+{
+  "countyName": "Cowlitz County",
+  "fips": "53015",
+  "backupRequiredBeforeMutation": true,
+  "backupScope": "WA_INITIAL_SEED rows for county before any ParcelNumber identity repair",
+  "rollbackRule": "Restore ParcelNumber from LegacyImportedParcelKey for rows associated with the repair receipt and clear TerraFusionParcelKey/IdentityRepairReceiptId values.",
+  "databaseWritesAttempted": false
+}

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-26T17:40:36.319Z",
+  "generatedAt": "2026-05-26T17:50:11.400Z",
   "planType": "june10_canonical_postgres_production_binding_plan",
   "productionBindingAllowed": false,
   "targetRuntimeModel": "TerraFusion canonical Postgres DB -> terrafusionmarket.com runtime",

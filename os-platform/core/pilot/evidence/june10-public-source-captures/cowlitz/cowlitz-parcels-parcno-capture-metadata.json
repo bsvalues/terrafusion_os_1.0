@@ -1,0 +1,25 @@
+{
+  "countyName": "Cowlitz County",
+  "countyFips": "53015",
+  "sourceUrl": "https://gis.cowlitzwa.gov/ccserver/rest/services/Assessor/Parcels/MapServer/0/query",
+  "query": "where=1=1; outFields=PARCNO; returnGeometry=false; orderByFields=OBJECTID; f=json",
+  "accessMethod": "arcgis_rest_query_outfields_parcno_only",
+  "sourceTermsStatus": "public query; owner fields omitted because item license says owner information cannot be disseminated en masse without Assessor data share agreement",
+  "capturedAtUtc": "2026-05-26T05:15:15.6517820Z",
+  "expectedSourceCount": 57705,
+  "capturedFeatureRows": 57705,
+  "pageSize": 2000,
+  "pages": 29.0,
+  "rawArtifactPath": "C:\\Users\\bsval\\terrafusion_os_1.0\\os-platform\\core\\pilot\\evidence\\june10-public-source-captures\\cowlitz\\cowlitz-parcels-parcno-raw.jsonl",
+  "rawArtifactSha256": "90c663bb977e69155625df5a73a66c59f40a42ef9ff797a89fcb4deccf3b35e1",
+  "fieldsCaptured": ["PARCNO"],
+  "fieldsExplicitlyOmitted": [
+    "DEED_HOLDER_NAME",
+    "DEED_HOLDER_ADDRESS_1",
+    "DEED_HOLDER_ADDRESS_2",
+    "DEED_HOLDER_CITY",
+    "DEED_HOLDER_STATE",
+    "DEED_HOLDER_ZIPCODE"
+  ],
+  "databaseWritesAttempted": false
+}

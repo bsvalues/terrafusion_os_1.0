@@ -1,0 +1,109 @@
+{
+  "generatedAt": "2026-05-26T17:50:09.757Z",
+  "countyName": "Cowlitz County",
+  "fips": "53015",
+  "status": "bounded_correction_plan_required",
+  "cowlitzMovesFrom": "blocked_crosswalk_delta",
+  "cowlitzMovesTo": "bounded_correction_plan_required",
+  "productionBindingAllowed": false,
+  "certificationAllowed": false,
+  "receiptConverted": false,
+  "sourceParcelIdField": "PARCNO",
+  "sourceDuplicateNullSemantics": {
+    "sourceNullOrBlank": 0,
+    "sourceDuplicateGroups": 25,
+    "sourceDuplicateRows": 147,
+    "canonicalDuplicateGroups": 0,
+    "classification": "duplicates_do_not_explain_remaining_identity_delta"
+  },
+  "postRepairIdentityOverlap": {
+    "sourceDistinct": 57558,
+    "canonicalDistinct": 57362,
+    "exactOverlap": 57237,
+    "sourceCoverageRatio": 0.994423016783071,
+    "canonicalCoverageRatio": 0.9978208570133538,
+    "sourceOnlyCount": 321,
+    "canonicalOnlyCount": 125
+  },
+  "repairProof": {
+    "repairReceiptId": "wa_initial_seed_identity_repair_2026_05_26_pilot4",
+    "repairCommitted": true,
+    "repairedRows": 57362,
+    "dryRunStatus": "dry_run_pass",
+    "duplicateCountyIdParcelNumberAfterDryRun": 0,
+    "legacyImportedParcelKeyPreserved": true,
+    "terraFusionParcelKeyPopulated": true
+  },
+  "rootCauseCarriedForward": {
+    "priorRootCause": "county_prefix_transform_without_documented_crosswalk",
+    "prefixRepairResolved": true,
+    "remainingIssue": "post_repair_source_canonical_delta"
+  },
+  "receipt": null,
+  "boundedCorrectionPlan": {
+    "planStatus": "required_before_receipt_conversion",
+    "allowedMutation": false,
+    "productionBindingAllowed": false,
+    "steps": [
+      "Probe the 125 Cowlitz canonical-only parcel identifiers against the current public source.",
+      "Classify canonical-only rows as stale canonical rows, source capture filter gaps, or transform edge cases.",
+      "Capture runtime-complete source rows for the 321 Cowlitz source-only parcel identifiers.",
+      "Stage a no-op correction plan: supersede stale canonical-only rows only if source absence is proven.",
+      "Stage source-only inserts only if required runtime fields and lineage receipts are present.",
+      "Re-run Cowlitz closure and convert a receipt only after source-only and canonical-only counts are both zero."
+    ],
+    "proposedCorrectionClasses": {
+      "canonicalOnly": {
+        "count": 125,
+        "likelyActions": [
+          "probe_current_source",
+          "supersede_if_absent_from_source",
+          "preserve_no_delete"
+        ]
+      },
+      "sourceOnly": {
+        "count": 321,
+        "likelyActions": [
+          "capture_required_runtime_fields",
+          "stage_insert_if_loadable",
+          "emit_load_receipt"
+        ]
+      },
+      "sourceDuplicates": {
+        "groups": 25,
+        "duplicateRows": 147,
+        "policy": "Not a receipt blocker by itself if canonical remains one active row per source-native parcel identifier."
+      }
+    }
+  },
+  "supportingArtifacts": [
+    {
+      "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-post-repair-certification-closure.latest.json",
+      "sha256": "0ec2cc7382a1a7521d329868f6fdbc069dcac824ec2a2dd787b3bee942be0f63"
+    },
+    {
+      "path": "os-platform/core/pilot/evidence/june10-cowlitz-parcel-identifier-root-cause.latest.json",
+      "sha256": "ae921afbd8f4f7ec6f41a0b755c88d2a854c822e797fbb613e2b3f8794634183"
+    },
+    {
+      "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-parcel-identity-repair-dry-run/cowlitz/dry-run-report.json",
+      "sha256": "16c1c59c6ca72be728139ed0fc5e9df2ae3da159a617ef176c25019de85f9d59"
+    },
+    {
+      "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-pilot-repair-execution/repair-receipt.after-execution.json",
+      "sha256": "66beb049c989059d61d6c54a24f115352f7655552721afc077e41904d0097d4f"
+    },
+    {
+      "path": "os-platform/core/pilot/evidence/june10-38-county-reimport-dry-run/cowlitz/source-snapshot-receipt.json",
+      "sha256": "0a226c9d3e7eb2d41703778bb628fe2289262e215b62bc2f1a415fdc399f50a4"
+    },
+    {
+      "path": "os-platform/core/pilot/evidence/june10-public-source-captures/cowlitz/cowlitz-parcels-parcno-capture-metadata.json",
+      "sha256": "d9eec6f7fcc0cca28f51e28460bd2469b13cc29229afef6b95a61435079d3728"
+    }
+  ],
+  "blockers": [
+    "321 source parcel identifiers are not present in canonical after repair.",
+    "125 canonical parcel identifiers are not present in source after repair."
+  ]
+}
