@@ -1,0 +1,80 @@
+{
+  "receiptVersion": "arcgis_source_native_identity_repair_dry_run_v1",
+  "receiptId": "arcgis_wave2_53009_source_native_identity_repair_dry_run",
+  "countyName": "Clallam County",
+  "fips": "53009",
+  "sourceCaptureReceipt": {
+    "receiptVersion": "arcgis_source_capture_v1",
+    "valid": true,
+    "county": "Clallam",
+    "fips": "53009",
+    "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+    "accessMethod": "arcgis_rest_county_filtered_query",
+    "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+    "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+    "sourceArtifact": {
+      "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53009-clallam/source-native-parcel-ids.jsonl",
+      "sizeBytes": 9049756,
+      "sha256": "3538707cce4aa90609caddbda90eb9babee0c0c212885fa97c1aa8c527e672ea",
+      "lastWriteTime": "2026-05-27T16:54:19.336Z"
+    },
+    "identityComparison": {
+      "sourceNativeDistinctCount": 54516,
+      "sourcePrefixedDistinctCount": 54516,
+      "canonicalDistinctCount": 54516,
+      "exactSourceNativeOverlapCount": 0,
+      "prefixedSourceOverlapCount": 54516,
+      "prefixStrippedCanonicalOverlapCount": 54516,
+      "sourceNativeOnlyCount": 0,
+      "canonicalOnlyAfterPrefixStripCount": 0,
+      "sourceNativeOnlySamples": [],
+      "canonicalOnlyAfterPrefixStripSamples": [],
+      "sourceNativeSamples": [
+        "022804onf001",
+        "022805onf001",
+        "022806onf001",
+        "022807onf001",
+        "022808onf001",
+        "022809onf001",
+        "022816onf001",
+        "022817onf001",
+        "022818110000",
+        "022819onf001"
+      ],
+      "canonicalSamples": [
+        "009-022804onf001",
+        "009-022805onf001",
+        "009-022806onf001",
+        "009-022807onf001",
+        "009-022808onf001",
+        "009-022809onf001",
+        "009-022816onf001",
+        "009-022817onf001",
+        "009-022818110000",
+        "009-022819onf001"
+      ]
+    }
+  },
+  "sourceArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53009-clallam/source-native-parcel-ids.jsonl",
+    "sizeBytes": 9049756,
+    "sha256": "3538707cce4aa90609caddbda90eb9babee0c0c212885fa97c1aa8c527e672ea",
+    "lastWriteTime": "2026-05-27T16:54:19.336Z"
+  },
+  "repairSemantics": {
+    "setParcelNumberFrom": "ORIG_PARCEL_ID",
+    "preservePrefixedValueAs": "LegacyImportedParcelKey",
+    "generateTerraFusionParcelKey": "53009:{ORIG_PARCEL_ID}",
+    "deleteRows": false
+  },
+  "counts": {
+    "activeCanonicalRows": 54516,
+    "proposedRows": 54516,
+    "duplicateCountyIdParcelNumberAfter": 0,
+    "missingSourceMappings": 0,
+    "blankProposedParcelNumbers": 0
+  },
+  "classification": "repair_dry_run_ready_for_authorization",
+  "certificationAllowed": false,
+  "productionBindingAllowed": false
+}

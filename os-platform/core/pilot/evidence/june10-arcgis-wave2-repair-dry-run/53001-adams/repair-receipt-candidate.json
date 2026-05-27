@@ -1,0 +1,80 @@
+{
+  "receiptVersion": "arcgis_source_native_identity_repair_dry_run_v1",
+  "receiptId": "arcgis_wave2_53001_source_native_identity_repair_dry_run",
+  "countyName": "Adams County",
+  "fips": "53001",
+  "sourceCaptureReceipt": {
+    "receiptVersion": "arcgis_source_capture_v1",
+    "valid": true,
+    "county": "Adams",
+    "fips": "53001",
+    "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+    "accessMethod": "arcgis_rest_county_filtered_query",
+    "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+    "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+    "sourceArtifact": {
+      "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53001-adams/source-native-parcel-ids.jsonl",
+      "sizeBytes": 2278581,
+      "sha256": "d52f7134be7c872a19e2681b73130bd73bf631494eff0fc0f6a931ff162877b2",
+      "lastWriteTime": "2026-05-27T16:53:06.614Z"
+    },
+    "identityComparison": {
+      "sourceNativeDistinctCount": 13324,
+      "sourcePrefixedDistinctCount": 13324,
+      "canonicalDistinctCount": 13324,
+      "exactSourceNativeOverlapCount": 0,
+      "prefixedSourceOverlapCount": 13324,
+      "prefixStrippedCanonicalOverlapCount": 13324,
+      "sourceNativeOnlyCount": 0,
+      "canonicalOnlyAfterPrefixStripCount": 0,
+      "sourceNativeOnlySamples": [],
+      "canonicalOnlyAfterPrefixStripSamples": [],
+      "sourceNativeSamples": [
+        "1032040100001",
+        "1032040100002",
+        "1034230500601",
+        "1035150500004",
+        "1035150500112",
+        "1035150500401",
+        "1035150500501",
+        "1035150500601",
+        "1035150501201",
+        "1529030500101"
+      ],
+      "canonicalSamples": [
+        "001-1032040100001",
+        "001-1032040100002",
+        "001-1034230500601",
+        "001-1035150500004",
+        "001-1035150500112",
+        "001-1035150500401",
+        "001-1035150500501",
+        "001-1035150500601",
+        "001-1035150501201",
+        "001-1529030500101"
+      ]
+    }
+  },
+  "sourceArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53001-adams/source-native-parcel-ids.jsonl",
+    "sizeBytes": 2278581,
+    "sha256": "d52f7134be7c872a19e2681b73130bd73bf631494eff0fc0f6a931ff162877b2",
+    "lastWriteTime": "2026-05-27T16:53:06.614Z"
+  },
+  "repairSemantics": {
+    "setParcelNumberFrom": "ORIG_PARCEL_ID",
+    "preservePrefixedValueAs": "LegacyImportedParcelKey",
+    "generateTerraFusionParcelKey": "53001:{ORIG_PARCEL_ID}",
+    "deleteRows": false
+  },
+  "counts": {
+    "activeCanonicalRows": 13324,
+    "proposedRows": 13324,
+    "duplicateCountyIdParcelNumberAfter": 0,
+    "missingSourceMappings": 0,
+    "blankProposedParcelNumbers": 0
+  },
+  "classification": "repair_dry_run_ready_for_authorization",
+  "certificationAllowed": false,
+  "productionBindingAllowed": false
+}

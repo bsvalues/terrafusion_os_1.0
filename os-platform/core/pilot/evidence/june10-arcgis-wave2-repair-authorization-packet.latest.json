@@ -1,0 +1,272 @@
+{
+  "generatedAt": "2026-05-27T17:19:43.740Z",
+  "sourceDryRunGeneratedAt": "2026-05-27T17:19:12.842Z",
+  "waveLabel": "Wave 2",
+  "waveId": "wave2",
+  "scope": {
+    "name": "ArcGIS Wave 2 source-native identity repair authorization packet.",
+    "countiesIncluded": [
+      {
+        "county": "Adams",
+        "fips": "53001"
+      },
+      {
+        "county": "Chelan",
+        "fips": "53007"
+      },
+      {
+        "county": "Clallam",
+        "fips": "53009"
+      },
+      {
+        "county": "Douglas",
+        "fips": "53017"
+      },
+      {
+        "county": "Franklin",
+        "fips": "53021"
+      }
+    ],
+    "countiesExcluded": []
+  },
+  "state": "READY_FOR_HUMAN_DECISION",
+  "executionEnabled": false,
+  "approvalRequired": true,
+  "summary": {
+    "countiesIncluded": 5,
+    "proposedRows": 180783,
+    "duplicateCountyIdParcelNumberAfter": 0,
+    "dryRunHash": "2572298d84f8b1004ae285b5299b0ad1043bd535f823ef857e692ec4cf59fc39:99da815d7fb012c050b1cd6944ec006dcd9880dd6cc5d7cfe3702beed54b1557:a10dba3a79f0143ab85c94a7ba0ae80dd562b395013eb972cca5058519c0b4eb:1a4d3ad5f619cff3ec49f0037bbeb330a1a334ae136e4b3cd3064ba492320c79:2da6fa4eb2a1771c96bbe83c908ab6f0bc86403015ea6327632958fac4282128"
+  },
+  "counties": [
+    {
+      "county": "Adams",
+      "fips": "53001",
+      "proposedRows": 13324,
+      "duplicateCountyIdParcelNumberAfter": 0,
+      "missingSourceMappings": 0,
+      "blankProposedParcelNumbers": 0,
+      "sourceNativeField": "ORIG_PARCEL_ID",
+      "preservedPrefixedField": "PARCEL_ID_NR",
+      "repairSemantics": {
+        "setParcelNumberFrom": "ORIG_PARCEL_ID",
+        "preserveCurrentCanonicalValueAs": "LegacyImportedParcelKey",
+        "generateTerraFusionParcelKey": "53001:{ORIG_PARCEL_ID}",
+        "deleteRows": false
+      },
+      "artifacts": {
+        "sourceArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53001-adams/source-native-parcel-ids.jsonl",
+          "sha256": "d52f7134be7c872a19e2681b73130bd73bf631494eff0fc0f6a931ff162877b2"
+        },
+        "dryRun": {
+          "sha256": "2572298d84f8b1004ae285b5299b0ad1043bd535f823ef857e692ec4cf59fc39"
+        },
+        "proposedRows": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-wave2-repair-dry-run/53001-adams/proposed-repair-rows.jsonl",
+          "sha256": "62b8bf7b994e7b38313e0e54515c3a6fda0c69e0f9a395036354592e7fc9200a"
+        },
+        "repairReceiptCandidate": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-wave2-repair-dry-run/53001-adams/repair-receipt-candidate.json",
+          "sha256": "b6c14350b2889be18baab5a25686b7789704f5800b5f4513570809c444fa7728"
+        },
+        "rollbackPlan": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-wave2-repair-dry-run/53001-adams/rollback-plan.md",
+          "sha256": "206c9a93216c587526308fc27799d66a6fa1d1b2f096506a79d9c6a01f4bc5de"
+        }
+      }
+    },
+    {
+      "county": "Chelan",
+      "fips": "53007",
+      "proposedRows": 48640,
+      "duplicateCountyIdParcelNumberAfter": 0,
+      "missingSourceMappings": 0,
+      "blankProposedParcelNumbers": 0,
+      "sourceNativeField": "ORIG_PARCEL_ID",
+      "preservedPrefixedField": "PARCEL_ID_NR",
+      "repairSemantics": {
+        "setParcelNumberFrom": "ORIG_PARCEL_ID",
+        "preserveCurrentCanonicalValueAs": "LegacyImportedParcelKey",
+        "generateTerraFusionParcelKey": "53007:{ORIG_PARCEL_ID}",
+        "deleteRows": false
+      },
+      "artifacts": {
+        "sourceArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53007-chelan/source-native-parcel-ids.jsonl",
+          "sha256": "669a35b9f6f59663dd7cf754c66c6a3ecbad3ba56d406b92316b51f58ae0b524"
+        },
+        "dryRun": {
+          "sha256": "99da815d7fb012c050b1cd6944ec006dcd9880dd6cc5d7cfe3702beed54b1557"
+        },
+        "proposedRows": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-wave2-repair-dry-run/53007-chelan/proposed-repair-rows.jsonl",
+          "sha256": "b434bb54391fb3020b6be3ff314bdca57a87872ce318b17b19739a42e0435cca"
+        },
+        "repairReceiptCandidate": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-wave2-repair-dry-run/53007-chelan/repair-receipt-candidate.json",
+          "sha256": "45d028c65c2ddc844727d0ad74f010240c94ba72e53a0508ffe13d32275c7d86"
+        },
+        "rollbackPlan": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-wave2-repair-dry-run/53007-chelan/rollback-plan.md",
+          "sha256": "5d24388c6d81b02b262aa0f1470fbc088ec481c0cd559049290784bc78ba0f2b"
+        }
+      }
+    },
+    {
+      "county": "Clallam",
+      "fips": "53009",
+      "proposedRows": 54516,
+      "duplicateCountyIdParcelNumberAfter": 0,
+      "missingSourceMappings": 0,
+      "blankProposedParcelNumbers": 0,
+      "sourceNativeField": "ORIG_PARCEL_ID",
+      "preservedPrefixedField": "PARCEL_ID_NR",
+      "repairSemantics": {
+        "setParcelNumberFrom": "ORIG_PARCEL_ID",
+        "preserveCurrentCanonicalValueAs": "LegacyImportedParcelKey",
+        "generateTerraFusionParcelKey": "53009:{ORIG_PARCEL_ID}",
+        "deleteRows": false
+      },
+      "artifacts": {
+        "sourceArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53009-clallam/source-native-parcel-ids.jsonl",
+          "sha256": "3538707cce4aa90609caddbda90eb9babee0c0c212885fa97c1aa8c527e672ea"
+        },
+        "dryRun": {
+          "sha256": "a10dba3a79f0143ab85c94a7ba0ae80dd562b395013eb972cca5058519c0b4eb"
+        },
+        "proposedRows": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-wave2-repair-dry-run/53009-clallam/proposed-repair-rows.jsonl",
+          "sha256": "2d11db3457083618140efaa22aca4e4224186782271248613e977c44e9138e5a"
+        },
+        "repairReceiptCandidate": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-wave2-repair-dry-run/53009-clallam/repair-receipt-candidate.json",
+          "sha256": "2976b28ec7930430aa5d860b4552f51193d855d8488f9f42f51bc09fb4421dd4"
+        },
+        "rollbackPlan": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-wave2-repair-dry-run/53009-clallam/rollback-plan.md",
+          "sha256": "b92dafbc4c7292843227e4c83bedec0827b093e8cd79452cc849fcd8cb971186"
+        }
+      }
+    },
+    {
+      "county": "Douglas",
+      "fips": "53017",
+      "proposedRows": 29778,
+      "duplicateCountyIdParcelNumberAfter": 0,
+      "missingSourceMappings": 0,
+      "blankProposedParcelNumbers": 0,
+      "sourceNativeField": "ORIG_PARCEL_ID",
+      "preservedPrefixedField": "PARCEL_ID_NR",
+      "repairSemantics": {
+        "setParcelNumberFrom": "ORIG_PARCEL_ID",
+        "preserveCurrentCanonicalValueAs": "LegacyImportedParcelKey",
+        "generateTerraFusionParcelKey": "53017:{ORIG_PARCEL_ID}",
+        "deleteRows": false
+      },
+      "artifacts": {
+        "sourceArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53017-douglas/source-native-parcel-ids.jsonl",
+          "sha256": "248597bc4350ee26a2b14d873129b64b2d58c2890d5e23846b7dded044e89166"
+        },
+        "dryRun": {
+          "sha256": "1a4d3ad5f619cff3ec49f0037bbeb330a1a334ae136e4b3cd3064ba492320c79"
+        },
+        "proposedRows": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-wave2-repair-dry-run/53017-douglas/proposed-repair-rows.jsonl",
+          "sha256": "2d1289fe2cdeafeae9e72c1d2b0a3595c7439912fe9b8cd1db7229bc1460098e"
+        },
+        "repairReceiptCandidate": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-wave2-repair-dry-run/53017-douglas/repair-receipt-candidate.json",
+          "sha256": "6a57e420c4bd74bf407cda2531a898b5307021366c32fe35945fcdb45b81952a"
+        },
+        "rollbackPlan": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-wave2-repair-dry-run/53017-douglas/rollback-plan.md",
+          "sha256": "2cbe0ff45e09eae7f04a15f24dc11ab84f34127cd710d39a72a352d29815e9f3"
+        }
+      }
+    },
+    {
+      "county": "Franklin",
+      "fips": "53021",
+      "proposedRows": 34525,
+      "duplicateCountyIdParcelNumberAfter": 0,
+      "missingSourceMappings": 0,
+      "blankProposedParcelNumbers": 0,
+      "sourceNativeField": "ORIG_PARCEL_ID",
+      "preservedPrefixedField": "PARCEL_ID_NR",
+      "repairSemantics": {
+        "setParcelNumberFrom": "ORIG_PARCEL_ID",
+        "preserveCurrentCanonicalValueAs": "LegacyImportedParcelKey",
+        "generateTerraFusionParcelKey": "53021:{ORIG_PARCEL_ID}",
+        "deleteRows": false
+      },
+      "artifacts": {
+        "sourceArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53021-franklin/source-native-parcel-ids.jsonl",
+          "sha256": "736e7e981c3f6a8f5b8707d90820aee469a0af145ba74b745a033f2d875c14f5"
+        },
+        "dryRun": {
+          "sha256": "2da6fa4eb2a1771c96bbe83c908ab6f0bc86403015ea6327632958fac4282128"
+        },
+        "proposedRows": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-wave2-repair-dry-run/53021-franklin/proposed-repair-rows.jsonl",
+          "sha256": "f143cdd86cd657117b478c74decb042bae542477244fbb5dbc446e88fb2d0b07"
+        },
+        "repairReceiptCandidate": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-wave2-repair-dry-run/53021-franklin/repair-receipt-candidate.json",
+          "sha256": "31da849129274bc4a312f9ef4ba0f8076cdefd29b7a093c9dcdc9eaef0d72442"
+        },
+        "rollbackPlan": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-wave2-repair-dry-run/53021-franklin/rollback-plan.md",
+          "sha256": "9d7ac0f50fb9418ee7d9ad6ff1cc2c217b62765ac3424224d30e7febd6d735cf"
+        }
+      }
+    }
+  ],
+  "receiptFormat": {
+    "receiptVersion": "arcgis_wave1_source_native_identity_repair_authorization_v1",
+    "requiredFields": [
+      "county",
+      "fips",
+      "sourceArtifact.sha256",
+      "proposedRows.sha256",
+      "repairReceiptCandidate.sha256",
+      "rollbackPlan.sha256",
+      "postRepairAudit"
+    ]
+  },
+  "postRepairAuditCommands": [
+    "verify CountyId + ParcelNumber duplicate groups = 0 for each repaired county",
+    "verify LegacyImportedParcelKey preserves previous PARCEL_ID_NR values",
+    "verify TerraFusionParcelKey is populated as FIPS:ORIG_PARCEL_ID",
+    "rerun ArcGIS Wave 2 source capture comparison",
+    "rerun WA_INITIAL_SEED receipt reconciliation",
+    "rerun production DB binding plan; production binding must remain blocked until all required receipt posture is acceptable"
+  ],
+  "stopConditions": [
+    "Stop if any artifact hash differs from this packet.",
+    "Stop if source capture evidence is regenerated before execution.",
+    "Stop if dry-run evidence is regenerated before execution.",
+    "Stop if worktree contains unrelated changes.",
+    "Stop if tests or type-check fail.",
+    "Stop if backup snapshot cannot be created.",
+    "Stop if transaction cannot run as one bounded unit.",
+    "Stop if post-repair duplicate groups are not zero.",
+    "Stop if Garfield is accidentally included."
+  ],
+  "forbiddenClaims": [
+    "no_production_binding",
+    "no_certification_claim",
+    "no_runtime_promotion",
+    "no_workflow_complete_claims",
+    "no_garfield_repair",
+    "no_deletes"
+  ],
+  "blockers": [],
+  "databaseMutationAttempted": false,
+  "productionBindingAllowed": false,
+  "runtimeClaimAllowed": false,
+  "certificationAllowed": false
+}

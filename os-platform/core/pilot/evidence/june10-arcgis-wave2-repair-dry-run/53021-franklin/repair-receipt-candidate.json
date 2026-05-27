@@ -1,0 +1,80 @@
+{
+  "receiptVersion": "arcgis_source_native_identity_repair_dry_run_v1",
+  "receiptId": "arcgis_wave2_53021_source_native_identity_repair_dry_run",
+  "countyName": "Franklin County",
+  "fips": "53021",
+  "sourceCaptureReceipt": {
+    "receiptVersion": "arcgis_source_capture_v1",
+    "valid": true,
+    "county": "Franklin",
+    "fips": "53021",
+    "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+    "accessMethod": "arcgis_rest_county_filtered_query",
+    "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+    "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+    "sourceArtifact": {
+      "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53021-franklin/source-native-parcel-ids.jsonl",
+      "sizeBytes": 5711562,
+      "sha256": "736e7e981c3f6a8f5b8707d90820aee469a0af145ba74b745a033f2d875c14f5",
+      "lastWriteTime": "2026-05-27T16:55:03.185Z"
+    },
+    "identityComparison": {
+      "sourceNativeDistinctCount": 34525,
+      "sourcePrefixedDistinctCount": 34525,
+      "canonicalDistinctCount": 34525,
+      "exactSourceNativeOverlapCount": 0,
+      "prefixedSourceOverlapCount": 34525,
+      "prefixStrippedCanonicalOverlapCount": 34525,
+      "sourceNativeOnlyCount": 0,
+      "canonicalOnlyAfterPrefixStripCount": 0,
+      "sourceNativeOnlySamples": [],
+      "canonicalOnlyAfterPrefixStripSamples": [],
+      "sourceNativeSamples": [
+        "100010016",
+        "100020013",
+        "100020014",
+        "100020022",
+        "100020031",
+        "100020040",
+        "100030011",
+        "100040019",
+        "100040028",
+        "100050017"
+      ],
+      "canonicalSamples": [
+        "021-100010016",
+        "021-100020013",
+        "021-100020014",
+        "021-100020022",
+        "021-100020031",
+        "021-100020040",
+        "021-100030011",
+        "021-100040019",
+        "021-100040028",
+        "021-100050017"
+      ]
+    }
+  },
+  "sourceArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53021-franklin/source-native-parcel-ids.jsonl",
+    "sizeBytes": 5711562,
+    "sha256": "736e7e981c3f6a8f5b8707d90820aee469a0af145ba74b745a033f2d875c14f5",
+    "lastWriteTime": "2026-05-27T16:55:03.185Z"
+  },
+  "repairSemantics": {
+    "setParcelNumberFrom": "ORIG_PARCEL_ID",
+    "preservePrefixedValueAs": "LegacyImportedParcelKey",
+    "generateTerraFusionParcelKey": "53021:{ORIG_PARCEL_ID}",
+    "deleteRows": false
+  },
+  "counts": {
+    "activeCanonicalRows": 34525,
+    "proposedRows": 34525,
+    "duplicateCountyIdParcelNumberAfter": 0,
+    "missingSourceMappings": 0,
+    "blankProposedParcelNumbers": 0
+  },
+  "classification": "repair_dry_run_ready_for_authorization",
+  "certificationAllowed": false,
+  "productionBindingAllowed": false
+}

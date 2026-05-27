@@ -193,7 +193,7 @@ function fixtureCanonicalRows(county, sourceRows) {
     }));
 }
 
-function buildRollbackPlan({ county, receiptId }) {
+function buildRollbackPlan({ county, receiptId, waveId = "wave1" }) {
   return {
     requiredPreMutationBackup: `Before execution, export active canonical_tf.tf_parcel rows for ${county.county} ${county.fips} into a dated backup table.`,
     rollbackStrategy:
@@ -208,7 +208,7 @@ BEGIN;
 --   "TerraFusionParcelKey" = b."TerraFusionParcelKey",
 --   "IdentityRepairReceiptId" = b."IdentityRepairReceiptId",
 --   "UpdatedAt" = b."UpdatedAt"
--- FROM backup.arcgis_wave1_${county.fips}_tf_parcel_identity b
+-- FROM backup.arcgis_${waveId}_${county.fips}_tf_parcel_identity b
 -- WHERE p."TfParcelId" = b."TfParcelId";
 
 ROLLBACK; -- template only
@@ -217,7 +217,7 @@ ROLLBACK; -- template only
   };
 }
 
-export function buildCleanRepairDryRun({ county, captureRow, sourceRows, canonicalRows }) {
+export function buildCleanRepairDryRun({ county, captureRow, sourceRows, canonicalRows, waveId = "wave1" }) {
   const prefixedMap = sourceByPrefixedId(sourceRows);
   const proposedRows = canonicalRows.map((canonicalRow) =>
     plannedRepairRow({ county, canonicalRow, sourceByPrefixedId: prefixedMap })
@@ -227,7 +227,7 @@ export function buildCleanRepairDryRun({ county, captureRow, sourceRows, canonic
   const missingSourceMappings = proposedRows.filter((row) => !prefixedMap.has(row.currentParcelNumber)).length;
   const blankProposedParcelNumbers = proposedRows.filter((row) => !row.proposedParcelNumber).length;
   const proposedRowsText = proposedRows.map((row) => JSON.stringify(row)).join("\n");
-  const receiptId = `arcgis_wave1_${county.fips}_source_native_identity_repair_dry_run`;
+  const receiptId = `arcgis_${waveId}_${county.fips}_source_native_identity_repair_dry_run`;
   const blockers = [];
   if (duplicateCountyIdParcelNumberAfter > 0) blockers.push("Proposed source-native ParcelNumber values create duplicates.");
   if (missingSourceMappings > 0) blockers.push(`${missingSourceMappings} canonical rows lack matching PARCEL_ID_NR source rows.`);
@@ -254,7 +254,7 @@ export function buildCleanRepairDryRun({ county, captureRow, sourceRows, canonic
       proposedRowsSample: proposedRows.slice(0, 8)
     },
     receiptCandidate: {
-      receiptVersion: "arcgis_wave1_source_native_identity_repair_dry_run_v1",
+      receiptVersion: "arcgis_source_native_identity_repair_dry_run_v1",
       receiptId,
       countyName: `${county.county} County`,
       fips: county.fips,
@@ -277,7 +277,7 @@ export function buildCleanRepairDryRun({ county, captureRow, sourceRows, canonic
       certificationAllowed: false,
       productionBindingAllowed: false
     },
-    rollbackPlan: buildRollbackPlan({ county, receiptId }),
+    rollbackPlan: buildRollbackPlan({ county, receiptId, waveId }),
     blockers,
     doctrine: {
       databaseMutationAttempted: false,
@@ -317,7 +317,7 @@ export function buildGarfieldDeltaAdjudication({ captureRow, sourceRows }) {
   };
 }
 
-function writeCountyArtifacts(outRoot, dryRun) {
+function writeCountyArtifacts(outRoot, dryRun, waveLabel = "Wave 1") {
   const slug = `${dryRun.fips}-${dryRun.county.toLowerCase().replaceAll(" ", "-")}`;
   const countyRoot = path.join(outRoot, slug);
   fs.mkdirSync(countyRoot, { recursive: true });
@@ -328,7 +328,7 @@ function writeCountyArtifacts(outRoot, dryRun) {
   writeJson(receiptPath, dryRun.receiptCandidate);
   writeText(
     rollbackPath,
-    `# ${dryRun.county} ArcGIS Wave 1 Repair Rollback Plan
+    `# ${dryRun.county} ArcGIS ${waveLabel} Repair Rollback Plan
 
 Receipt: ${dryRun.rollbackPlan.receiptId}
 
@@ -372,7 +372,7 @@ function renderMarkdown(report) {
   const garfield = report.garfieldAdjudication
     ? `\n## Garfield Delta\n\n- Classification: ${report.garfieldAdjudication.classification}\n- Repair allowed: ${report.garfieldAdjudication.repairAllowed ? "yes" : "no"}\n- Reason: ${report.garfieldAdjudication.adjudication}\n`
     : "";
-  return `# ArcGIS Wave 1 Repair Dry-Run
+  return `# ArcGIS ${report.waveLabel} Repair Dry-Run
 
 Generated: ${report.generatedAt}
 
@@ -421,6 +421,8 @@ export async function main(argv = process.argv.slice(2)) {
     outRoot: args.get("out-root") ?? DEFAULT_OUT_ROOT,
     outJson: args.get("out-json") ?? DEFAULT_OUT_JSON,
     outMd: args.get("out-md") ?? DEFAULT_OUT_MD,
+    waveLabel: args.get("wave-label") ?? "Wave 1",
+    waveId: args.get("wave-id") ?? "wave1",
     fixture: args.has("fixture")
   };
   const capture = readJson(paths.capture);
@@ -441,8 +443,8 @@ export async function main(argv = process.argv.slice(2)) {
             terraFusionParcelKey: ""
           }))
       : fetchCanonicalRowsByCountyPrefix(captureRow.fips);
-    const dryRun = buildCleanRepairDryRun({ county: captureRow, captureRow, sourceRows, canonicalRows });
-    const artifacts = writeCountyArtifacts(paths.outRoot, dryRun);
+    const dryRun = buildCleanRepairDryRun({ county: captureRow, captureRow, sourceRows, canonicalRows, waveId: paths.waveId });
+    const artifacts = writeCountyArtifacts(paths.outRoot, dryRun, paths.waveLabel);
     repairDryRuns.push({ ...dryRun, artifacts, proposedRows: undefined });
   }
 
@@ -455,7 +457,9 @@ export async function main(argv = process.argv.slice(2)) {
 
   const report = {
     generatedAt: new Date().toISOString(),
-    scope: "ArcGIS Wave 1 source-native identity repair dry-run and Garfield delta adjudication.",
+    scope: `ArcGIS ${paths.waveLabel} source-native identity repair dry-run.`,
+    waveLabel: paths.waveLabel,
+    waveId: paths.waveId,
     summary: summarize(repairDryRuns, garfieldAdjudication),
     repairDryRuns,
     garfieldAdjudication,
@@ -467,7 +471,7 @@ export async function main(argv = process.argv.slice(2)) {
   };
   writeJson(paths.outJson, report);
   writeText(paths.outMd, renderMarkdown(report));
-  console.log(`ArcGIS Wave 1 repair dry-run written: ${repoRelative(paths.outJson)}`);
+  console.log(`ArcGIS ${paths.waveLabel} repair dry-run written: ${repoRelative(paths.outJson)}`);
   console.log(`Clean repair-ready counties: ${report.summary.cleanRepairReadyCount}`);
   console.log(`Production binding allowed: ${report.productionBindingAllowed ? "yes" : "no"}`);
 }

@@ -122,7 +122,7 @@ export function evaluateAuthorizationState({ repairDryRuns, garfieldAdjudication
     if (row.blockers?.length) blockers.push(`${row.county} still has blockers: ${row.blockers.join("; ")}`);
     if (!artifactHashesPresent(requiredCountyArtifacts(row))) blockers.push(`${row.county} is missing required artifact hashes.`);
   }
-  if (garfieldAdjudication?.repairAllowed !== false) {
+  if (garfieldAdjudication && garfieldAdjudication.repairAllowed !== false) {
     blockers.push("Garfield repair is not explicitly excluded.");
   }
 
@@ -160,13 +160,8 @@ export function buildAuthorizationPacket({ dryRun }) {
     garfieldAdjudication: dryRun.garfieldAdjudication
   });
   const countiesIncluded = includedRows.map(countyPacket);
-  return {
-    generatedAt: new Date().toISOString(),
-    sourceDryRunGeneratedAt: dryRun.generatedAt ?? null,
-    scope: {
-      name: "ArcGIS Wave 1 source-native identity repair authorization packet.",
-      countiesIncluded: countiesIncluded.map((row) => ({ county: row.county, fips: row.fips })),
-      countiesExcluded: [
+  const excludedCounties = dryRun.garfieldAdjudication
+    ? [
         {
           county: "Garfield",
           fips: "53023",
@@ -175,6 +170,17 @@ export function buildAuthorizationPacket({ dryRun }) {
             "excluded_until_blank_source_native_parcel_policy_is_decided"
         }
       ]
+    : [];
+  const waveLabel = dryRun.waveLabel ?? "Wave 1";
+  return {
+    generatedAt: new Date().toISOString(),
+    sourceDryRunGeneratedAt: dryRun.generatedAt ?? null,
+    waveLabel,
+    waveId: dryRun.waveId ?? "wave1",
+    scope: {
+      name: `ArcGIS ${waveLabel} source-native identity repair authorization packet.`,
+      countiesIncluded: countiesIncluded.map((row) => ({ county: row.county, fips: row.fips })),
+      countiesExcluded: excludedCounties
     },
     state: state.state,
     executionEnabled: false,
@@ -209,7 +215,7 @@ export function buildAuthorizationPacket({ dryRun }) {
       "verify CountyId + ParcelNumber duplicate groups = 0 for each repaired county",
       "verify LegacyImportedParcelKey preserves previous PARCEL_ID_NR values",
       "verify TerraFusionParcelKey is populated as FIPS:ORIG_PARCEL_ID",
-      "rerun ArcGIS Wave 1 source capture comparison",
+      `rerun ArcGIS ${waveLabel} source capture comparison`,
       "rerun WA_INITIAL_SEED receipt reconciliation",
       "rerun production DB binding plan; production binding must remain blocked until all required receipt posture is acceptable"
     ],
@@ -240,7 +246,7 @@ function renderMarkdown(packet) {
         `| ${row.county} | ${row.fips} | ${row.proposedRows} | ${row.duplicateCountyIdParcelNumberAfter} | ${row.artifacts.sourceArtifact.sha256 ?? "-"} | ${row.artifacts.proposedRows.sha256 ?? "-"} |`
     )
     .join("\n");
-  return `# ArcGIS Wave 1 Repair Authorization Packet
+  return `# ArcGIS ${packet.waveLabel} Repair Authorization Packet
 
 Generated: ${packet.generatedAt}
 
@@ -293,12 +299,15 @@ export async function main(argv = process.argv.slice(2)) {
   const paths = {
     dryRun: args.get("dry-run") ?? DEFAULT_DRY_RUN,
     outJson: args.get("out-json") ?? DEFAULT_OUT_JSON,
-    outMd: args.get("out-md") ?? DEFAULT_OUT_MD
+    outMd: args.get("out-md") ?? DEFAULT_OUT_MD,
+    waveLabel: args.get("wave-label") ?? null
   };
-  const packet = buildAuthorizationPacket({ dryRun: readJson(paths.dryRun) });
+  const dryRun = readJson(paths.dryRun);
+  if (paths.waveLabel) dryRun.waveLabel = paths.waveLabel;
+  const packet = buildAuthorizationPacket({ dryRun });
   writeJson(paths.outJson, packet);
   writeText(paths.outMd, renderMarkdown(packet));
-  console.log(`ArcGIS Wave 1 repair authorization packet written: ${path.relative(repoRoot, paths.outJson).replaceAll(path.sep, "/")}`);
+  console.log(`ArcGIS ${packet.waveLabel} repair authorization packet written: ${path.relative(repoRoot, paths.outJson).replaceAll(path.sep, "/")}`);
   console.log(`State: ${packet.state}`);
   console.log(`Execution enabled: ${packet.executionEnabled ? "yes" : "no"}`);
 }

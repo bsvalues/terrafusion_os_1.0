@@ -81,6 +81,16 @@ test("evaluateAuthorizationState is ready only when all counties are clean and G
   assert.match(blocked.blockers.join("\n"), /duplicate/i);
 });
 
+test("evaluateAuthorizationState does not require Garfield exclusion outside Garfield scope", () => {
+  assert.deepEqual(
+    evaluateAuthorizationState({
+      repairDryRuns: [cleanDryRunCounty({ county: "Adams", fips: "53001" })],
+      garfieldAdjudication: null
+    }),
+    { state: "READY_FOR_HUMAN_DECISION", executionEnabled: false, blockers: [] }
+  );
+});
+
 test("buildAuthorizationPacket keeps execution, production binding, and certification disabled", () => {
   const packet = buildAuthorizationPacket({
     dryRun: {
@@ -131,12 +141,15 @@ test("CLI writes authorization packet", () => {
       "--out-json",
       outJson,
       "--out-md",
-      outMd
+      outMd,
+      "--wave-label",
+      "Wave 2"
     ],
     { cwd: process.cwd(), stdio: "pipe" }
   );
 
   const packet = JSON.parse(fs.readFileSync(outJson, "utf8"));
   assert.equal(packet.state, "READY_FOR_HUMAN_DECISION");
-  assert.match(fs.readFileSync(outMd, "utf8"), /ArcGIS Wave 1 Repair Authorization Packet/);
+  assert.equal(packet.waveLabel, "Wave 2");
+  assert.match(fs.readFileSync(outMd, "utf8"), /ArcGIS Wave 2 Repair Authorization Packet/);
 });

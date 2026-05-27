@@ -140,6 +140,10 @@ test("CLI writes Wave 1 repair dry-run report in fixture mode", () => {
       outJson,
       "--out-md",
       outMd,
+      "--wave-label",
+      "Wave 2",
+      "--wave-id",
+      "wave2",
       "--fixture"
     ],
     { cwd: process.cwd(), stdio: "pipe" }
@@ -147,5 +151,7 @@ test("CLI writes Wave 1 repair dry-run report in fixture mode", () => {
 
   const report = JSON.parse(fs.readFileSync(outJson, "utf8"));
   assert.equal(report.summary.cleanRepairReadyCount, 1);
-  assert.match(fs.readFileSync(outMd, "utf8"), /ArcGIS Wave 1 Repair Dry-Run/);
+  assert.equal(report.waveLabel, "Wave 2");
+  assert.match(report.repairDryRuns[0].receiptCandidate.receiptId, /arcgis_wave2_53013/);
+  assert.match(fs.readFileSync(outMd, "utf8"), /ArcGIS Wave 2 Repair Dry-Run/);
 });

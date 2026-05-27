@@ -1,0 +1,80 @@
+{
+  "receiptVersion": "arcgis_source_native_identity_repair_dry_run_v1",
+  "receiptId": "arcgis_wave2_53007_source_native_identity_repair_dry_run",
+  "countyName": "Chelan County",
+  "fips": "53007",
+  "sourceCaptureReceipt": {
+    "receiptVersion": "arcgis_source_capture_v1",
+    "valid": true,
+    "county": "Chelan",
+    "fips": "53007",
+    "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+    "accessMethod": "arcgis_rest_county_filtered_query",
+    "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+    "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+    "sourceArtifact": {
+      "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53007-chelan/source-native-parcel-ids.jsonl",
+      "sizeBytes": 9204243,
+      "sha256": "669a35b9f6f59663dd7cf754c66c6a3ecbad3ba56d406b92316b51f58ae0b524",
+      "lastWriteTime": "2026-05-27T16:53:40.622Z"
+    },
+    "identityComparison": {
+      "sourceNativeDistinctCount": 48640,
+      "sourcePrefixedDistinctCount": 48640,
+      "canonicalDistinctCount": 48640,
+      "exactSourceNativeOverlapCount": 0,
+      "prefixedSourceOverlapCount": 48640,
+      "prefixStrippedCanonicalOverlapCount": 48640,
+      "sourceNativeOnlyCount": 0,
+      "canonicalOnlyAfterPrefixStripCount": 0,
+      "sourceNativeOnlySamples": [],
+      "canonicalOnlyAfterPrefixStripSamples": [],
+      "sourceNativeSamples": [
+        "211701000000",
+        "211702000000",
+        "211801000000",
+        "211802000000",
+        "211803000000",
+        "211804000000",
+        "211805000000",
+        "211806000000",
+        "211809000000",
+        "211810000000"
+      ],
+      "canonicalSamples": [
+        "007-211701000000",
+        "007-211702000000",
+        "007-211801000000",
+        "007-211802000000",
+        "007-211803000000",
+        "007-211804000000",
+        "007-211805000000",
+        "007-211806000000",
+        "007-211809000000",
+        "007-211810000000"
+      ]
+    }
+  },
+  "sourceArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53007-chelan/source-native-parcel-ids.jsonl",
+    "sizeBytes": 9204243,
+    "sha256": "669a35b9f6f59663dd7cf754c66c6a3ecbad3ba56d406b92316b51f58ae0b524",
+    "lastWriteTime": "2026-05-27T16:53:40.622Z"
+  },
+  "repairSemantics": {
+    "setParcelNumberFrom": "ORIG_PARCEL_ID",
+    "preservePrefixedValueAs": "LegacyImportedParcelKey",
+    "generateTerraFusionParcelKey": "53007:{ORIG_PARCEL_ID}",
+    "deleteRows": false
+  },
+  "counts": {
+    "activeCanonicalRows": 48640,
+    "proposedRows": 48640,
+    "duplicateCountyIdParcelNumberAfter": 0,
+    "missingSourceMappings": 0,
+    "blankProposedParcelNumbers": 0
+  },
+  "classification": "repair_dry_run_ready_for_authorization",
+  "certificationAllowed": false,
+  "productionBindingAllowed": false
+}
