@@ -1,0 +1,33 @@
+{
+  "receiptVersion": "authoritative_parcel_inventory_recapture_candidate_v1",
+  "valid": false,
+  "county": "Benton",
+  "fips": "53005",
+  "sourceUrl": "https://co.benton.wa.us",
+  "accessMethod": "official_site_research_required",
+  "termsPosture": "no_bulk_parcel_inventory_endpoint_proven",
+  "sourceParcelIdField": null,
+  "rowCount": 0,
+  "distinctSourceIds": 0,
+  "metadataArtifact": null,
+  "sourceIdArtifact": null,
+  "identityComparison": {
+    "sourceDistinctCount": 0,
+    "canonicalDistinctCount": 83296,
+    "exactOverlapCount": 0,
+    "prefixStrippedOverlapCount": 0,
+    "sourceOnlyCount": 0,
+    "canonicalOnlyCount": 83296,
+    "sourceSamples": [],
+    "canonicalSamples": [
+      "101040000000000",
+      "101050000000000",
+      "101070000000000",
+      "101140000000000",
+      "101151000000000",
+      "101240000000000",
+      "101250000000000",
+      "101440000000000"
+    ]
+  }
+}

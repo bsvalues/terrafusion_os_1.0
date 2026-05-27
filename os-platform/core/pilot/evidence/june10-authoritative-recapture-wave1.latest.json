@@ -1,0 +1,355 @@
+{
+  "generatedAt": "2026-05-27T00:52:16.432Z",
+  "scope": "Authoritative recapture wave 1 for current authoritative_inventory_recapture_candidate counties.",
+  "candidates": [
+    {
+      "county": "Benton",
+      "fips": "53005"
+    },
+    {
+      "county": "Kitsap",
+      "fips": "53035"
+    },
+    {
+      "county": "Skagit",
+      "fips": "53057"
+    }
+  ],
+  "summary": {
+    "countiesChecked": 3,
+    "captured": 2,
+    "validReceiptCandidates": 2,
+    "byClassification": {
+      "blocked_source_capture": 1,
+      "captured_terms_review_required": 2
+    }
+  },
+  "results": [
+    {
+      "county": "Benton",
+      "fips": "53005",
+      "source": {
+        "sourceUrl": "https://co.benton.wa.us",
+        "accessMethod": "official_site_research_required",
+        "termsPosture": "no_bulk_parcel_inventory_endpoint_proven",
+        "sourceParcelIdField": null
+      },
+      "capture": {
+        "status": "blocked_no_governed_bulk_endpoint",
+        "sourceParcelIdField": null,
+        "rowCount": 0,
+        "distinctSourceIds": 0,
+        "nullOrBlankIds": 0,
+        "duplicateIds": 0,
+        "metadataArtifact": null,
+        "sourceIdArtifact": null
+      },
+      "identityComparison": {
+        "sourceDistinctCount": 0,
+        "canonicalDistinctCount": 83296,
+        "exactOverlapCount": 0,
+        "prefixStrippedOverlapCount": 0,
+        "sourceOnlyCount": 0,
+        "canonicalOnlyCount": 83296,
+        "sourceSamples": [],
+        "canonicalSamples": [
+          "101040000000000",
+          "101050000000000",
+          "101070000000000",
+          "101140000000000",
+          "101151000000000",
+          "101240000000000",
+          "101250000000000",
+          "101440000000000"
+        ]
+      },
+      "receiptCandidate": {
+        "receiptVersion": "authoritative_parcel_inventory_recapture_candidate_v1",
+        "valid": false,
+        "county": "Benton",
+        "fips": "53005",
+        "sourceUrl": "https://co.benton.wa.us",
+        "accessMethod": "official_site_research_required",
+        "termsPosture": "no_bulk_parcel_inventory_endpoint_proven",
+        "sourceParcelIdField": null,
+        "rowCount": 0,
+        "distinctSourceIds": 0,
+        "metadataArtifact": null,
+        "sourceIdArtifact": null,
+        "identityComparison": {
+          "sourceDistinctCount": 0,
+          "canonicalDistinctCount": 83296,
+          "exactOverlapCount": 0,
+          "prefixStrippedOverlapCount": 0,
+          "sourceOnlyCount": 0,
+          "canonicalOnlyCount": 83296,
+          "sourceSamples": [],
+          "canonicalSamples": [
+            "101040000000000",
+            "101050000000000",
+            "101070000000000",
+            "101140000000000",
+            "101151000000000",
+            "101240000000000",
+            "101250000000000",
+            "101440000000000"
+          ]
+        }
+      },
+      "classification": "blocked_source_capture",
+      "blockers": [
+        "No receipt-grade source-native parcel ID artifact was captured.",
+        "Source terms posture still requires operator/legal review before certification."
+      ],
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Kitsap",
+      "fips": "53035",
+      "source": {
+        "sourceUrl": "https://services5.arcgis.com/0Q6HuHqqcg7Zo8zH/arcgis/rest/services/LU_BI_Parcels_07242024/FeatureServer/0",
+        "accessMethod": "arcgis_rest_query",
+        "termsPosture": "public_arcgis_rest_endpoint_terms_review_required",
+        "preferredParcelIdFields": [
+          "APN",
+          "PARCEL_ID_NR",
+          "ORIG_PARCEL_ID",
+          "ACCT_NO"
+        ]
+      },
+      "capture": {
+        "status": "captured",
+        "sourceParcelIdField": "APN",
+        "rowCount": 11371,
+        "distinctSourceIds": 11371,
+        "sourceObjectIdCount": 11371,
+        "nullOrBlankIds": 0,
+        "duplicateIds": 0,
+        "metadataArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-authoritative-recapture-wave1/kitsap/source-metadata.json",
+          "sizeBytes": 22439,
+          "sha256": "84342f44eafc07f00d87568d8a229b7beab88c5da9aa3d0272e9d3b425cd6db4",
+          "rawHttpSha256": "1857ebc6dc50a4493bf92d5416ced21c081430733f51b0d98670cbfcc1588ad4"
+        },
+        "sourceIdArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-authoritative-recapture-wave1/kitsap/source-native-parcel-ids.jsonl",
+          "sizeBytes": 397985,
+          "sha256": "e8234965204629707e0c0a6c63da43c4c31f0800fe00d4279d986072c61c3aed"
+        }
+      },
+      "identityComparison": {
+        "sourceDistinctCount": 11371,
+        "canonicalDistinctCount": 116900,
+        "exactOverlapCount": 0,
+        "prefixStrippedOverlapCount": 0,
+        "sourceOnlyCount": 11371,
+        "canonicalOnlyCount": 116900,
+        "sourceSamples": [
+          "1176387",
+          "1176460",
+          "1176478",
+          "1176486",
+          "1176528",
+          "1176536",
+          "1176551",
+          "1176585"
+        ],
+        "canonicalSamples": [
+          "035-012201-1-001-1007",
+          "035-012201-1-005-2001",
+          "035-012201-1-007-2009",
+          "035-012201-1-008-2008",
+          "035-012201-1-009-2007",
+          "035-012201-1-010-2004",
+          "035-012201-1-014-2000",
+          "035-012201-1-015-2009"
+        ]
+      },
+      "receiptCandidate": {
+        "receiptVersion": "authoritative_parcel_inventory_recapture_candidate_v1",
+        "valid": true,
+        "county": "Kitsap",
+        "fips": "53035",
+        "sourceUrl": "https://services5.arcgis.com/0Q6HuHqqcg7Zo8zH/arcgis/rest/services/LU_BI_Parcels_07242024/FeatureServer/0",
+        "accessMethod": "arcgis_rest_query",
+        "termsPosture": "public_arcgis_rest_endpoint_terms_review_required",
+        "sourceParcelIdField": "APN",
+        "rowCount": 11371,
+        "distinctSourceIds": 11371,
+        "metadataArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-authoritative-recapture-wave1/kitsap/source-metadata.json",
+          "sizeBytes": 22439,
+          "sha256": "84342f44eafc07f00d87568d8a229b7beab88c5da9aa3d0272e9d3b425cd6db4",
+          "rawHttpSha256": "1857ebc6dc50a4493bf92d5416ced21c081430733f51b0d98670cbfcc1588ad4"
+        },
+        "sourceIdArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-authoritative-recapture-wave1/kitsap/source-native-parcel-ids.jsonl",
+          "sizeBytes": 397985,
+          "sha256": "e8234965204629707e0c0a6c63da43c4c31f0800fe00d4279d986072c61c3aed"
+        },
+        "identityComparison": {
+          "sourceDistinctCount": 11371,
+          "canonicalDistinctCount": 116900,
+          "exactOverlapCount": 0,
+          "prefixStrippedOverlapCount": 0,
+          "sourceOnlyCount": 11371,
+          "canonicalOnlyCount": 116900,
+          "sourceSamples": [
+            "1176387",
+            "1176460",
+            "1176478",
+            "1176486",
+            "1176528",
+            "1176536",
+            "1176551",
+            "1176585"
+          ],
+          "canonicalSamples": [
+            "035-012201-1-001-1007",
+            "035-012201-1-005-2001",
+            "035-012201-1-007-2009",
+            "035-012201-1-008-2008",
+            "035-012201-1-009-2007",
+            "035-012201-1-010-2004",
+            "035-012201-1-014-2000",
+            "035-012201-1-015-2009"
+          ]
+        }
+      },
+      "classification": "captured_terms_review_required",
+      "blockers": [
+        "Source terms posture still requires operator/legal review before certification."
+      ],
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Skagit",
+      "fips": "53057",
+      "source": {
+        "sourceUrl": "https://gis.skagitcountywa.gov/arcgis/rest/services/OpenData/AssessorDataParcels/FeatureServer/0",
+        "accessMethod": "arcgis_rest_query",
+        "termsPosture": "public_arcgis_rest_endpoint_terms_review_required",
+        "preferredParcelIdFields": ["PARCELID", "PNumber"]
+      },
+      "capture": {
+        "status": "captured",
+        "sourceParcelIdField": "PARCELID",
+        "rowCount": 73016,
+        "distinctSourceIds": 73016,
+        "sourceObjectIdCount": 82944,
+        "nullOrBlankIds": 0,
+        "duplicateIds": 0,
+        "metadataArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-authoritative-recapture-wave1/skagit/source-metadata.json",
+          "sizeBytes": 28391,
+          "sha256": "9a6b55ee5292754dea1245d1ff6a1b493023b1b28ce753233303d351bd558a00",
+          "rawHttpSha256": "31186ba7a907d0ebe5d8e62a5922aed98cdfc1f9c62a2c4a1c3572c6be0f712d"
+        },
+        "sourceIdArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-authoritative-recapture-wave1/skagit/source-native-parcel-ids.jsonl",
+          "sizeBytes": 2501349,
+          "sha256": "6cbcb99a30e0dde1f2c839dba8c58f585348bac8365dd640013d8d005f4792f1"
+        }
+      },
+      "identityComparison": {
+        "sourceDistinctCount": 73016,
+        "canonicalDistinctCount": 72973,
+        "exactOverlapCount": 0,
+        "prefixStrippedOverlapCount": 72947,
+        "sourceOnlyCount": 73016,
+        "canonicalOnlyCount": 72973,
+        "sourceSamples": [
+          "P100005",
+          "P100014",
+          "P100017",
+          "P100018",
+          "P100019",
+          "P100021",
+          "P100022",
+          "P100024"
+        ],
+        "canonicalSamples": [
+          "057-P100005",
+          "057-P100014",
+          "057-P100017",
+          "057-P100018",
+          "057-P100019",
+          "057-P100021",
+          "057-P100022",
+          "057-P100024"
+        ]
+      },
+      "receiptCandidate": {
+        "receiptVersion": "authoritative_parcel_inventory_recapture_candidate_v1",
+        "valid": true,
+        "county": "Skagit",
+        "fips": "53057",
+        "sourceUrl": "https://gis.skagitcountywa.gov/arcgis/rest/services/OpenData/AssessorDataParcels/FeatureServer/0",
+        "accessMethod": "arcgis_rest_query",
+        "termsPosture": "public_arcgis_rest_endpoint_terms_review_required",
+        "sourceParcelIdField": "PARCELID",
+        "rowCount": 73016,
+        "distinctSourceIds": 73016,
+        "metadataArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-authoritative-recapture-wave1/skagit/source-metadata.json",
+          "sizeBytes": 28391,
+          "sha256": "9a6b55ee5292754dea1245d1ff6a1b493023b1b28ce753233303d351bd558a00",
+          "rawHttpSha256": "31186ba7a907d0ebe5d8e62a5922aed98cdfc1f9c62a2c4a1c3572c6be0f712d"
+        },
+        "sourceIdArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-authoritative-recapture-wave1/skagit/source-native-parcel-ids.jsonl",
+          "sizeBytes": 2501349,
+          "sha256": "6cbcb99a30e0dde1f2c839dba8c58f585348bac8365dd640013d8d005f4792f1"
+        },
+        "identityComparison": {
+          "sourceDistinctCount": 73016,
+          "canonicalDistinctCount": 72973,
+          "exactOverlapCount": 0,
+          "prefixStrippedOverlapCount": 72947,
+          "sourceOnlyCount": 73016,
+          "canonicalOnlyCount": 72973,
+          "sourceSamples": [
+            "P100005",
+            "P100014",
+            "P100017",
+            "P100018",
+            "P100019",
+            "P100021",
+            "P100022",
+            "P100024"
+          ],
+          "canonicalSamples": [
+            "057-P100005",
+            "057-P100014",
+            "057-P100017",
+            "057-P100018",
+            "057-P100019",
+            "057-P100021",
+            "057-P100022",
+            "057-P100024"
+          ]
+        }
+      },
+      "classification": "captured_terms_review_required",
+      "blockers": [
+        "Source terms posture still requires operator/legal review before certification.",
+        "Canonical ParcelNumber still appears transformed/prefixed relative to source-native IDs."
+      ],
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    }
+  ],
+  "blockers": ["1 wave 1 candidates did not produce valid receipt candidates."],
+  "databaseMutationAttempted": false,
+  "productionBindingAllowed": false,
+  "runtimeClaimAllowed": false,
+  "certificationAllowed": false
+}

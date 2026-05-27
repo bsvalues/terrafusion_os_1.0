@@ -1,0 +1,51 @@
+{
+  "receiptVersion": "authoritative_parcel_inventory_recapture_candidate_v1",
+  "valid": true,
+  "county": "Skagit",
+  "fips": "53057",
+  "sourceUrl": "https://gis.skagitcountywa.gov/arcgis/rest/services/OpenData/AssessorDataParcels/FeatureServer/0",
+  "accessMethod": "arcgis_rest_query",
+  "termsPosture": "public_arcgis_rest_endpoint_terms_review_required",
+  "sourceParcelIdField": "PARCELID",
+  "rowCount": 73016,
+  "distinctSourceIds": 73016,
+  "metadataArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-authoritative-recapture-wave1/skagit/source-metadata.json",
+    "sizeBytes": 28391,
+    "sha256": "9a6b55ee5292754dea1245d1ff6a1b493023b1b28ce753233303d351bd558a00",
+    "rawHttpSha256": "31186ba7a907d0ebe5d8e62a5922aed98cdfc1f9c62a2c4a1c3572c6be0f712d"
+  },
+  "sourceIdArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-authoritative-recapture-wave1/skagit/source-native-parcel-ids.jsonl",
+    "sizeBytes": 2501349,
+    "sha256": "6cbcb99a30e0dde1f2c839dba8c58f585348bac8365dd640013d8d005f4792f1"
+  },
+  "identityComparison": {
+    "sourceDistinctCount": 73016,
+    "canonicalDistinctCount": 72973,
+    "exactOverlapCount": 0,
+    "prefixStrippedOverlapCount": 72947,
+    "sourceOnlyCount": 73016,
+    "canonicalOnlyCount": 72973,
+    "sourceSamples": [
+      "P100005",
+      "P100014",
+      "P100017",
+      "P100018",
+      "P100019",
+      "P100021",
+      "P100022",
+      "P100024"
+    ],
+    "canonicalSamples": [
+      "057-P100005",
+      "057-P100014",
+      "057-P100017",
+      "057-P100018",
+      "057-P100019",
+      "057-P100021",
+      "057-P100022",
+      "057-P100024"
+    ]
+  }
+}

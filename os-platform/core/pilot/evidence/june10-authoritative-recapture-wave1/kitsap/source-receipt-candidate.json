@@ -1,0 +1,51 @@
+{
+  "receiptVersion": "authoritative_parcel_inventory_recapture_candidate_v1",
+  "valid": true,
+  "county": "Kitsap",
+  "fips": "53035",
+  "sourceUrl": "https://services5.arcgis.com/0Q6HuHqqcg7Zo8zH/arcgis/rest/services/LU_BI_Parcels_07242024/FeatureServer/0",
+  "accessMethod": "arcgis_rest_query",
+  "termsPosture": "public_arcgis_rest_endpoint_terms_review_required",
+  "sourceParcelIdField": "APN",
+  "rowCount": 11371,
+  "distinctSourceIds": 11371,
+  "metadataArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-authoritative-recapture-wave1/kitsap/source-metadata.json",
+    "sizeBytes": 22439,
+    "sha256": "84342f44eafc07f00d87568d8a229b7beab88c5da9aa3d0272e9d3b425cd6db4",
+    "rawHttpSha256": "1857ebc6dc50a4493bf92d5416ced21c081430733f51b0d98670cbfcc1588ad4"
+  },
+  "sourceIdArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-authoritative-recapture-wave1/kitsap/source-native-parcel-ids.jsonl",
+    "sizeBytes": 397985,
+    "sha256": "e8234965204629707e0c0a6c63da43c4c31f0800fe00d4279d986072c61c3aed"
+  },
+  "identityComparison": {
+    "sourceDistinctCount": 11371,
+    "canonicalDistinctCount": 116900,
+    "exactOverlapCount": 0,
+    "prefixStrippedOverlapCount": 0,
+    "sourceOnlyCount": 11371,
+    "canonicalOnlyCount": 116900,
+    "sourceSamples": [
+      "1176387",
+      "1176460",
+      "1176478",
+      "1176486",
+      "1176528",
+      "1176536",
+      "1176551",
+      "1176585"
+    ],
+    "canonicalSamples": [
+      "035-012201-1-001-1007",
+      "035-012201-1-005-2001",
+      "035-012201-1-007-2009",
+      "035-012201-1-008-2008",
+      "035-012201-1-009-2007",
+      "035-012201-1-010-2004",
+      "035-012201-1-014-2000",
+      "035-012201-1-015-2009"
+    ]
+  }
+}

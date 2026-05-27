@@ -125,6 +125,7 @@
     "truth:june10-pierce-delta-adjudication": "node os-platform/core/pilot/june10-pierce-delta-adjudication.mjs",
     "truth:june10-wave2-authoritative-source-reconstruction": "node os-platform/core/pilot/june10-wave2-authoritative-source-reconstruction.mjs",
     "truth:june10-authoritative-parcel-inventory-reconstruction": "node os-platform/core/pilot/june10-authoritative-parcel-inventory-reconstruction.mjs",
+    "truth:june10-authoritative-recapture-wave1": "node os-platform/core/pilot/june10-authoritative-recapture-wave1.mjs",
     "truth:june10-wa-initial-seed-receipt-reconciliation": "node os-platform/core/pilot/june10-wa-initial-seed-receipt-reconciliation.mjs",
     "truth:june10-production-db-binding-plan": "node os-platform/core/pilot/june10-production-db-binding-plan.mjs",
     "truth:county-runtime-contract": "node scripts/truth/county-runtime-contract.mjs",
