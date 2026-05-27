@@ -128,6 +128,7 @@
     "truth:june10-authoritative-recapture-wave1": "node os-platform/core/pilot/june10-authoritative-recapture-wave1.mjs",
     "truth:june10-skagit-identity-transform-adjudication": "node os-platform/core/pilot/june10-skagit-identity-transform-adjudication.mjs",
     "truth:june10-skagit-prefix-repair-dry-run": "node os-platform/core/pilot/june10-skagit-prefix-repair-dry-run.mjs",
+    "truth:june10-skagit-repair-authorization-packet": "node os-platform/core/pilot/june10-skagit-repair-authorization-packet.mjs",
     "truth:june10-wa-initial-seed-receipt-reconciliation": "node os-platform/core/pilot/june10-wa-initial-seed-receipt-reconciliation.mjs",
     "truth:june10-production-db-binding-plan": "node os-platform/core/pilot/june10-production-db-binding-plan.mjs",
     "truth:county-runtime-contract": "node scripts/truth/county-runtime-contract.mjs",
