@@ -25,10 +25,15 @@ public sealed class TfImprovementFeatureConfiguration
         // i_attr_val_cd is varchar(75); landing tier truncates to
         // 32 per its own configuration, which is the actual upper
         // bound that reaches this column).
-        builder.Property(x => x.FeatureCode).HasMaxLength(32).IsRequired();
-        builder.Property(x => x.MethodCd).HasMaxLength(32);
-        builder.Property(x => x.ClassCd).HasMaxLength(32);
-        builder.Property(x => x.SubClassCd).HasMaxLength(32);
+        // Widened 32 -> 128 (2026-05-27): the "landing truncates to 32" note
+        // above was wrong in practice — descriptive PACS attr codes (IAttrValCd,
+        // source varchar(75)) reach this column intact and overflowed varchar(32)
+        // (Npgsql 22001), failing every commercial-parcel projection. PG columns
+        // ALTERed to varchar(128) to match.
+        builder.Property(x => x.FeatureCode).HasMaxLength(128).IsRequired();
+        builder.Property(x => x.MethodCd).HasMaxLength(128);
+        builder.Property(x => x.ClassCd).HasMaxLength(128);
+        builder.Property(x => x.SubClassCd).HasMaxLength(128);
         builder.Property(x => x.ConditionCd).HasMaxLength(8);
 
         builder.Property(x => x.Area).HasPrecision(18, 2);

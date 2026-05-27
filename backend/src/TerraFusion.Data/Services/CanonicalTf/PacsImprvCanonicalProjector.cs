@@ -222,24 +222,38 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
                 .Select(t => (t.PropId, t.PropValYr, t.SupNum, t.ImprvId))
                 .ToHashSet();
 
-            var allDetails = await _db.LegacyPacsRawImprvDetails
+            // PERF + DEDUP FIX (2026-05-27): scope the detail fetch to THIS batch's
+            // parcels in SQL (was: load the ENTIRE imprv_detail table into memory
+            // every chunk, then filter — O(whole table) per chunk), AND dedup by
+            // the detail natural key (PropId,PropValYr,SupNum,ImprvId,ImprvDetId),
+            // keeping the latest landing. Re-landed duplicate detail rows otherwise
+            // each projected a duplicate feature (~5x feature inflation observed).
+            var batchPropIds = truthRows.Select(t => t.PropId).Distinct().ToList();
+            var scopedDetails = await _db.LegacyPacsRawImprvDetails
+                .Where(d => batchPropIds.Contains(d.PropId))
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
-            var detailsByKey = allDetails
+            var detailsByKey = scopedDetails
                 .Where(d => truthKeys.Contains((d.PropId, d.PropValYr, d.SupNum, d.ImprvId)))
                 .GroupBy(d => (d.PropId, d.PropValYr, d.SupNum, d.ImprvId))
-                .ToDictionary(g => g.Key, g => g.ToList());
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.GroupBy(d => d.ImprvDetId)
+                          .Select(dg => dg.OrderByDescending(x => x.LandedAt).First())
+                          .ToList());
 
-            // ── E4b (v1.5): pre-fetch raw imprv_attr rows that
-            //    could link to truth-pacs imprvs in this batch
-            //    (4-key match). The 5-key (incl. ImprvDetId) is
-            //    not used for batch scoping — multiple attr rows
-            //    can hang off the same parent improvement. ──
-            var allRawAttrs = await _db.LegacyPacsRawImprvAttrs
+            // ── E4b (v1.5): raw imprv_attr — same scope-to-batch + dedup. Dedup by
+            //    attr natural key (…,ImprvDetId,IAttrValId), latest landing wins. ──
+            var scopedAttrs = await _db.LegacyPacsRawImprvAttrs
+                .Where(a => batchPropIds.Contains(a.PropId))
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
-            var attrsByImprv = allRawAttrs
+            var attrsByImprv = scopedAttrs
                 .Where(a => attrTruthKeys.Contains((a.PropValYr, a.SupNum, a.PropId, a.ImprvId)))
                 .GroupBy(a => (a.PropValYr, a.SupNum, a.PropId, a.ImprvId))
-                .ToDictionary(g => g.Key, g => g.ToList());
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.GroupBy(a => (a.ImprvDetId, a.IAttrValId))
+                          .Select(ag => ag.OrderByDescending(x => x.LandedAt).First())
+                          .ToList());
 
             // ── E4b (v1.5): pre-fetch active attribute_definition
             //    rows. (CountyId, IAttrId) is uniquely indexed per
