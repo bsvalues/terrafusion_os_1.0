@@ -1,0 +1,657 @@
+{
+  "generatedAt": "2026-05-27T16:55:03.243Z",
+  "scope": "ArcGIS Wave 2 county-filtered source-native parcel ID capture.",
+  "waveLabel": "Wave 2",
+  "waveCounties": [
+    {
+      "county": "Adams",
+      "fips": "53001"
+    },
+    {
+      "county": "Chelan",
+      "fips": "53007"
+    },
+    {
+      "county": "Clallam",
+      "fips": "53009"
+    },
+    {
+      "county": "Douglas",
+      "fips": "53017"
+    },
+    {
+      "county": "Franklin",
+      "fips": "53021"
+    }
+  ],
+  "summary": {
+    "countiesChecked": 5,
+    "sourceRowsCaptured": 181309,
+    "byClassification": {
+      "prefixed_repair_candidate": 5
+    }
+  },
+  "rows": [
+    {
+      "county": "Adams",
+      "fips": "53001",
+      "shortFips": "001",
+      "source": {
+        "serviceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "termsPosture": "public_arcgis_rest_terms_review_required",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "rowCount": 13719,
+        "distinctSourceNativeIds": 13324,
+        "distinctPrefixedIds": 13324,
+        "nullOrBlankSourceNative": 10,
+        "duplicateSourceNativeIds": 240
+      },
+      "canonical": {
+        "activeDistinctParcelNumbers": 13324
+      },
+      "sourceArtifact": {
+        "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53001-adams/source-native-parcel-ids.jsonl",
+        "sizeBytes": 2278581,
+        "sha256": "d52f7134be7c872a19e2681b73130bd73bf631494eff0fc0f6a931ff162877b2",
+        "lastWriteTime": "2026-05-27T16:53:06.614Z"
+      },
+      "identityComparison": {
+        "sourceNativeDistinctCount": 13324,
+        "sourcePrefixedDistinctCount": 13324,
+        "canonicalDistinctCount": 13324,
+        "exactSourceNativeOverlapCount": 0,
+        "prefixedSourceOverlapCount": 13324,
+        "prefixStrippedCanonicalOverlapCount": 13324,
+        "sourceNativeOnlyCount": 0,
+        "canonicalOnlyAfterPrefixStripCount": 0,
+        "sourceNativeOnlySamples": [],
+        "canonicalOnlyAfterPrefixStripSamples": [],
+        "sourceNativeSamples": [
+          "1032040100001",
+          "1032040100002",
+          "1034230500601",
+          "1035150500004",
+          "1035150500112",
+          "1035150500401",
+          "1035150500501",
+          "1035150500601",
+          "1035150501201",
+          "1529030500101"
+        ],
+        "canonicalSamples": [
+          "001-1032040100001",
+          "001-1032040100002",
+          "001-1034230500601",
+          "001-1035150500004",
+          "001-1035150500112",
+          "001-1035150500401",
+          "001-1035150500501",
+          "001-1035150500601",
+          "001-1035150501201",
+          "001-1529030500101"
+        ]
+      },
+      "classification": "prefixed_repair_candidate",
+      "receiptCandidate": {
+        "receiptVersion": "arcgis_source_capture_v1",
+        "valid": true,
+        "county": "Adams",
+        "fips": "53001",
+        "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "sourceArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53001-adams/source-native-parcel-ids.jsonl",
+          "sizeBytes": 2278581,
+          "sha256": "d52f7134be7c872a19e2681b73130bd73bf631494eff0fc0f6a931ff162877b2",
+          "lastWriteTime": "2026-05-27T16:53:06.614Z"
+        },
+        "identityComparison": {
+          "sourceNativeDistinctCount": 13324,
+          "sourcePrefixedDistinctCount": 13324,
+          "canonicalDistinctCount": 13324,
+          "exactSourceNativeOverlapCount": 0,
+          "prefixedSourceOverlapCount": 13324,
+          "prefixStrippedCanonicalOverlapCount": 13324,
+          "sourceNativeOnlyCount": 0,
+          "canonicalOnlyAfterPrefixStripCount": 0,
+          "sourceNativeOnlySamples": [],
+          "canonicalOnlyAfterPrefixStripSamples": [],
+          "sourceNativeSamples": [
+            "1032040100001",
+            "1032040100002",
+            "1034230500601",
+            "1035150500004",
+            "1035150500112",
+            "1035150500401",
+            "1035150500501",
+            "1035150500601",
+            "1035150501201",
+            "1529030500101"
+          ],
+          "canonicalSamples": [
+            "001-1032040100001",
+            "001-1032040100002",
+            "001-1034230500601",
+            "001-1035150500004",
+            "001-1035150500112",
+            "001-1035150500401",
+            "001-1035150500501",
+            "001-1035150500601",
+            "001-1035150501201",
+            "001-1529030500101"
+          ]
+        }
+      },
+      "blockers": [
+        "10 source rows have blank ORIG_PARCEL_ID.",
+        "240 duplicate source-native parcel ID groups.",
+        "Canonical ParcelNumber appears to preserve statewide prefixed IDs; source-native repair remains required before certification."
+      ],
+      "databaseMutationAttempted": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "certificationAllowed": false
+    },
+    {
+      "county": "Chelan",
+      "fips": "53007",
+      "shortFips": "007",
+      "source": {
+        "serviceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "termsPosture": "public_arcgis_rest_terms_review_required",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "rowCount": 48714,
+        "distinctSourceNativeIds": 48640,
+        "distinctPrefixedIds": 48640,
+        "nullOrBlankSourceNative": 0,
+        "duplicateSourceNativeIds": 51
+      },
+      "canonical": {
+        "activeDistinctParcelNumbers": 48640
+      },
+      "sourceArtifact": {
+        "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53007-chelan/source-native-parcel-ids.jsonl",
+        "sizeBytes": 9204243,
+        "sha256": "669a35b9f6f59663dd7cf754c66c6a3ecbad3ba56d406b92316b51f58ae0b524",
+        "lastWriteTime": "2026-05-27T16:53:40.622Z"
+      },
+      "identityComparison": {
+        "sourceNativeDistinctCount": 48640,
+        "sourcePrefixedDistinctCount": 48640,
+        "canonicalDistinctCount": 48640,
+        "exactSourceNativeOverlapCount": 0,
+        "prefixedSourceOverlapCount": 48640,
+        "prefixStrippedCanonicalOverlapCount": 48640,
+        "sourceNativeOnlyCount": 0,
+        "canonicalOnlyAfterPrefixStripCount": 0,
+        "sourceNativeOnlySamples": [],
+        "canonicalOnlyAfterPrefixStripSamples": [],
+        "sourceNativeSamples": [
+          "211701000000",
+          "211702000000",
+          "211801000000",
+          "211802000000",
+          "211803000000",
+          "211804000000",
+          "211805000000",
+          "211806000000",
+          "211809000000",
+          "211810000000"
+        ],
+        "canonicalSamples": [
+          "007-211701000000",
+          "007-211702000000",
+          "007-211801000000",
+          "007-211802000000",
+          "007-211803000000",
+          "007-211804000000",
+          "007-211805000000",
+          "007-211806000000",
+          "007-211809000000",
+          "007-211810000000"
+        ]
+      },
+      "classification": "prefixed_repair_candidate",
+      "receiptCandidate": {
+        "receiptVersion": "arcgis_source_capture_v1",
+        "valid": true,
+        "county": "Chelan",
+        "fips": "53007",
+        "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "sourceArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53007-chelan/source-native-parcel-ids.jsonl",
+          "sizeBytes": 9204243,
+          "sha256": "669a35b9f6f59663dd7cf754c66c6a3ecbad3ba56d406b92316b51f58ae0b524",
+          "lastWriteTime": "2026-05-27T16:53:40.622Z"
+        },
+        "identityComparison": {
+          "sourceNativeDistinctCount": 48640,
+          "sourcePrefixedDistinctCount": 48640,
+          "canonicalDistinctCount": 48640,
+          "exactSourceNativeOverlapCount": 0,
+          "prefixedSourceOverlapCount": 48640,
+          "prefixStrippedCanonicalOverlapCount": 48640,
+          "sourceNativeOnlyCount": 0,
+          "canonicalOnlyAfterPrefixStripCount": 0,
+          "sourceNativeOnlySamples": [],
+          "canonicalOnlyAfterPrefixStripSamples": [],
+          "sourceNativeSamples": [
+            "211701000000",
+            "211702000000",
+            "211801000000",
+            "211802000000",
+            "211803000000",
+            "211804000000",
+            "211805000000",
+            "211806000000",
+            "211809000000",
+            "211810000000"
+          ],
+          "canonicalSamples": [
+            "007-211701000000",
+            "007-211702000000",
+            "007-211801000000",
+            "007-211802000000",
+            "007-211803000000",
+            "007-211804000000",
+            "007-211805000000",
+            "007-211806000000",
+            "007-211809000000",
+            "007-211810000000"
+          ]
+        }
+      },
+      "blockers": [
+        "51 duplicate source-native parcel ID groups.",
+        "Canonical ParcelNumber appears to preserve statewide prefixed IDs; source-native repair remains required before certification."
+      ],
+      "databaseMutationAttempted": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "certificationAllowed": false
+    },
+    {
+      "county": "Clallam",
+      "fips": "53009",
+      "shortFips": "009",
+      "source": {
+        "serviceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "termsPosture": "public_arcgis_rest_terms_review_required",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "rowCount": 54516,
+        "distinctSourceNativeIds": 54516,
+        "distinctPrefixedIds": 54516,
+        "nullOrBlankSourceNative": 0,
+        "duplicateSourceNativeIds": 0
+      },
+      "canonical": {
+        "activeDistinctParcelNumbers": 54516
+      },
+      "sourceArtifact": {
+        "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53009-clallam/source-native-parcel-ids.jsonl",
+        "sizeBytes": 9049756,
+        "sha256": "3538707cce4aa90609caddbda90eb9babee0c0c212885fa97c1aa8c527e672ea",
+        "lastWriteTime": "2026-05-27T16:54:19.336Z"
+      },
+      "identityComparison": {
+        "sourceNativeDistinctCount": 54516,
+        "sourcePrefixedDistinctCount": 54516,
+        "canonicalDistinctCount": 54516,
+        "exactSourceNativeOverlapCount": 0,
+        "prefixedSourceOverlapCount": 54516,
+        "prefixStrippedCanonicalOverlapCount": 54516,
+        "sourceNativeOnlyCount": 0,
+        "canonicalOnlyAfterPrefixStripCount": 0,
+        "sourceNativeOnlySamples": [],
+        "canonicalOnlyAfterPrefixStripSamples": [],
+        "sourceNativeSamples": [
+          "022804onf001",
+          "022805onf001",
+          "022806onf001",
+          "022807onf001",
+          "022808onf001",
+          "022809onf001",
+          "022816onf001",
+          "022817onf001",
+          "022818110000",
+          "022819onf001"
+        ],
+        "canonicalSamples": [
+          "009-022804onf001",
+          "009-022805onf001",
+          "009-022806onf001",
+          "009-022807onf001",
+          "009-022808onf001",
+          "009-022809onf001",
+          "009-022816onf001",
+          "009-022817onf001",
+          "009-022818110000",
+          "009-022819onf001"
+        ]
+      },
+      "classification": "prefixed_repair_candidate",
+      "receiptCandidate": {
+        "receiptVersion": "arcgis_source_capture_v1",
+        "valid": true,
+        "county": "Clallam",
+        "fips": "53009",
+        "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "sourceArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53009-clallam/source-native-parcel-ids.jsonl",
+          "sizeBytes": 9049756,
+          "sha256": "3538707cce4aa90609caddbda90eb9babee0c0c212885fa97c1aa8c527e672ea",
+          "lastWriteTime": "2026-05-27T16:54:19.336Z"
+        },
+        "identityComparison": {
+          "sourceNativeDistinctCount": 54516,
+          "sourcePrefixedDistinctCount": 54516,
+          "canonicalDistinctCount": 54516,
+          "exactSourceNativeOverlapCount": 0,
+          "prefixedSourceOverlapCount": 54516,
+          "prefixStrippedCanonicalOverlapCount": 54516,
+          "sourceNativeOnlyCount": 0,
+          "canonicalOnlyAfterPrefixStripCount": 0,
+          "sourceNativeOnlySamples": [],
+          "canonicalOnlyAfterPrefixStripSamples": [],
+          "sourceNativeSamples": [
+            "022804onf001",
+            "022805onf001",
+            "022806onf001",
+            "022807onf001",
+            "022808onf001",
+            "022809onf001",
+            "022816onf001",
+            "022817onf001",
+            "022818110000",
+            "022819onf001"
+          ],
+          "canonicalSamples": [
+            "009-022804onf001",
+            "009-022805onf001",
+            "009-022806onf001",
+            "009-022807onf001",
+            "009-022808onf001",
+            "009-022809onf001",
+            "009-022816onf001",
+            "009-022817onf001",
+            "009-022818110000",
+            "009-022819onf001"
+          ]
+        }
+      },
+      "blockers": [
+        "Canonical ParcelNumber appears to preserve statewide prefixed IDs; source-native repair remains required before certification."
+      ],
+      "databaseMutationAttempted": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "certificationAllowed": false
+    },
+    {
+      "county": "Douglas",
+      "fips": "53017",
+      "shortFips": "017",
+      "source": {
+        "serviceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "termsPosture": "public_arcgis_rest_terms_review_required",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "rowCount": 29832,
+        "distinctSourceNativeIds": 29778,
+        "distinctPrefixedIds": 29778,
+        "nullOrBlankSourceNative": 0,
+        "duplicateSourceNativeIds": 52
+      },
+      "canonical": {
+        "activeDistinctParcelNumbers": 29778
+      },
+      "sourceArtifact": {
+        "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53017-douglas/source-native-parcel-ids.jsonl",
+        "sizeBytes": 4950532,
+        "sha256": "248597bc4350ee26a2b14d873129b64b2d58c2890d5e23846b7dded044e89166",
+        "lastWriteTime": "2026-05-27T16:54:38.343Z"
+      },
+      "identityComparison": {
+        "sourceNativeDistinctCount": 29778,
+        "sourcePrefixedDistinctCount": 29778,
+        "canonicalDistinctCount": 29778,
+        "exactSourceNativeOverlapCount": 0,
+        "prefixedSourceOverlapCount": 29778,
+        "prefixStrippedCanonicalOverlapCount": 29778,
+        "sourceNativeOnlyCount": 0,
+        "canonicalOnlyAfterPrefixStripCount": 0,
+        "sourceNativeOnlySamples": [],
+        "canonicalOnlyAfterPrefixStripSamples": [],
+        "sourceNativeSamples": [
+          "00200000001",
+          "00200000003",
+          "00200000004",
+          "00200000005",
+          "00200000006",
+          "00200000007",
+          "00200000008",
+          "00200000009",
+          "00200000010",
+          "00200000011"
+        ],
+        "canonicalSamples": [
+          "017-00200000001",
+          "017-00200000003",
+          "017-00200000004",
+          "017-00200000005",
+          "017-00200000006",
+          "017-00200000007",
+          "017-00200000008",
+          "017-00200000009",
+          "017-00200000010",
+          "017-00200000011"
+        ]
+      },
+      "classification": "prefixed_repair_candidate",
+      "receiptCandidate": {
+        "receiptVersion": "arcgis_source_capture_v1",
+        "valid": true,
+        "county": "Douglas",
+        "fips": "53017",
+        "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "sourceArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53017-douglas/source-native-parcel-ids.jsonl",
+          "sizeBytes": 4950532,
+          "sha256": "248597bc4350ee26a2b14d873129b64b2d58c2890d5e23846b7dded044e89166",
+          "lastWriteTime": "2026-05-27T16:54:38.343Z"
+        },
+        "identityComparison": {
+          "sourceNativeDistinctCount": 29778,
+          "sourcePrefixedDistinctCount": 29778,
+          "canonicalDistinctCount": 29778,
+          "exactSourceNativeOverlapCount": 0,
+          "prefixedSourceOverlapCount": 29778,
+          "prefixStrippedCanonicalOverlapCount": 29778,
+          "sourceNativeOnlyCount": 0,
+          "canonicalOnlyAfterPrefixStripCount": 0,
+          "sourceNativeOnlySamples": [],
+          "canonicalOnlyAfterPrefixStripSamples": [],
+          "sourceNativeSamples": [
+            "00200000001",
+            "00200000003",
+            "00200000004",
+            "00200000005",
+            "00200000006",
+            "00200000007",
+            "00200000008",
+            "00200000009",
+            "00200000010",
+            "00200000011"
+          ],
+          "canonicalSamples": [
+            "017-00200000001",
+            "017-00200000003",
+            "017-00200000004",
+            "017-00200000005",
+            "017-00200000006",
+            "017-00200000007",
+            "017-00200000008",
+            "017-00200000009",
+            "017-00200000010",
+            "017-00200000011"
+          ]
+        }
+      },
+      "blockers": [
+        "52 duplicate source-native parcel ID groups.",
+        "Canonical ParcelNumber appears to preserve statewide prefixed IDs; source-native repair remains required before certification."
+      ],
+      "databaseMutationAttempted": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "certificationAllowed": false
+    },
+    {
+      "county": "Franklin",
+      "fips": "53021",
+      "shortFips": "021",
+      "source": {
+        "serviceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "termsPosture": "public_arcgis_rest_terms_review_required",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "rowCount": 34528,
+        "distinctSourceNativeIds": 34525,
+        "distinctPrefixedIds": 34525,
+        "nullOrBlankSourceNative": 0,
+        "duplicateSourceNativeIds": 2
+      },
+      "canonical": {
+        "activeDistinctParcelNumbers": 34525
+      },
+      "sourceArtifact": {
+        "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53021-franklin/source-native-parcel-ids.jsonl",
+        "sizeBytes": 5711562,
+        "sha256": "736e7e981c3f6a8f5b8707d90820aee469a0af145ba74b745a033f2d875c14f5",
+        "lastWriteTime": "2026-05-27T16:55:03.185Z"
+      },
+      "identityComparison": {
+        "sourceNativeDistinctCount": 34525,
+        "sourcePrefixedDistinctCount": 34525,
+        "canonicalDistinctCount": 34525,
+        "exactSourceNativeOverlapCount": 0,
+        "prefixedSourceOverlapCount": 34525,
+        "prefixStrippedCanonicalOverlapCount": 34525,
+        "sourceNativeOnlyCount": 0,
+        "canonicalOnlyAfterPrefixStripCount": 0,
+        "sourceNativeOnlySamples": [],
+        "canonicalOnlyAfterPrefixStripSamples": [],
+        "sourceNativeSamples": [
+          "100010016",
+          "100020013",
+          "100020014",
+          "100020022",
+          "100020031",
+          "100020040",
+          "100030011",
+          "100040019",
+          "100040028",
+          "100050017"
+        ],
+        "canonicalSamples": [
+          "021-100010016",
+          "021-100020013",
+          "021-100020014",
+          "021-100020022",
+          "021-100020031",
+          "021-100020040",
+          "021-100030011",
+          "021-100040019",
+          "021-100040028",
+          "021-100050017"
+        ]
+      },
+      "classification": "prefixed_repair_candidate",
+      "receiptCandidate": {
+        "receiptVersion": "arcgis_source_capture_v1",
+        "valid": true,
+        "county": "Franklin",
+        "fips": "53021",
+        "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "sourceArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2/53021-franklin/source-native-parcel-ids.jsonl",
+          "sizeBytes": 5711562,
+          "sha256": "736e7e981c3f6a8f5b8707d90820aee469a0af145ba74b745a033f2d875c14f5",
+          "lastWriteTime": "2026-05-27T16:55:03.185Z"
+        },
+        "identityComparison": {
+          "sourceNativeDistinctCount": 34525,
+          "sourcePrefixedDistinctCount": 34525,
+          "canonicalDistinctCount": 34525,
+          "exactSourceNativeOverlapCount": 0,
+          "prefixedSourceOverlapCount": 34525,
+          "prefixStrippedCanonicalOverlapCount": 34525,
+          "sourceNativeOnlyCount": 0,
+          "canonicalOnlyAfterPrefixStripCount": 0,
+          "sourceNativeOnlySamples": [],
+          "canonicalOnlyAfterPrefixStripSamples": [],
+          "sourceNativeSamples": [
+            "100010016",
+            "100020013",
+            "100020014",
+            "100020022",
+            "100020031",
+            "100020040",
+            "100030011",
+            "100040019",
+            "100040028",
+            "100050017"
+          ],
+          "canonicalSamples": [
+            "021-100010016",
+            "021-100020013",
+            "021-100020014",
+            "021-100020022",
+            "021-100020031",
+            "021-100020040",
+            "021-100030011",
+            "021-100040019",
+            "021-100040028",
+            "021-100050017"
+          ]
+        }
+      },
+      "blockers": [
+        "2 duplicate source-native parcel ID groups.",
+        "Canonical ParcelNumber appears to preserve statewide prefixed IDs; source-native repair remains required before certification."
+      ],
+      "databaseMutationAttempted": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "certificationAllowed": false
+    }
+  ],
+  "sourceArtifactRoot": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave2",
+  "sourceArtifactHash": "d70eacb8d393c351dde790af7e80c9cb02955f7f9611f97c3b5f27e75cbceeb9",
+  "databaseMutationAttempted": false,
+  "productionBindingAllowed": false,
+  "runtimeClaimAllowed": false,
+  "certificationAllowed": false
+}

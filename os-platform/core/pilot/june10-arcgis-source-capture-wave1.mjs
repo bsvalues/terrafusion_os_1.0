@@ -225,7 +225,7 @@ export function buildCountyCaptureResult({ county, source, canonicalIds, sourceA
     identityComparison: comparison,
     classification,
     receiptCandidate: {
-      receiptVersion: "arcgis_source_capture_wave1_v1",
+      receiptVersion: "arcgis_source_capture_v1",
       valid: source.rowCount > 0 && source.sourceNativeIds.size > 0,
       county: county.county,
       fips: county.fips,
@@ -266,17 +266,36 @@ function fixtureCanonical(fips) {
   return new Set([`${s}-100`, `${s}-200`]);
 }
 
-async function fetchJson(url, timeoutMs = 90000) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const response = await fetch(url, { signal: controller.signal });
-    const text = await response.text();
-    if (!response.ok) throw new Error(`${response.status} ${text.slice(0, 160)}`);
-    return JSON.parse(text);
-  } finally {
-    clearTimeout(timeout);
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function fetchJsonWithRetry(
+  url,
+  { timeoutMs = 90000, retries = 2, retryDelayMs = 750, fetchImpl = fetch } = {}
+) {
+  let lastError;
+  for (let attempt = 0; attempt <= retries; attempt += 1) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await fetchImpl(url, { signal: controller.signal });
+      const text = await response.text();
+      if (!response.ok) throw new Error(`${response.status} ${text.slice(0, 160)}`);
+      return JSON.parse(text);
+    } catch (error) {
+      lastError = error;
+      if (attempt === retries) break;
+      await sleep(retryDelayMs * (attempt + 1));
+    } finally {
+      clearTimeout(timeout);
+    }
   }
+  throw lastError;
+}
+
+async function fetchJson(url, timeoutMs = 90000) {
+  return fetchJsonWithRetry(url, { timeoutMs });
 }
 
 async function fetchCountyFeatures(county) {
@@ -334,7 +353,7 @@ function renderMarkdown(report) {
         `| ${row.county} | ${row.fips} | ${row.source.rowCount} | ${row.source.distinctSourceNativeIds} | ${row.canonical.activeDistinctParcelNumbers} | ${row.identityComparison.prefixStrippedCanonicalOverlapCount} | ${row.identityComparison.sourceNativeOnlyCount} | ${row.identityComparison.canonicalOnlyAfterPrefixStripCount} | ${row.classification} |`
     )
     .join("\n");
-  return `# ArcGIS Source Capture Wave 1
+  return `# ArcGIS Source Capture ${report.waveLabel}
 
 Generated: ${report.generatedAt}
 
@@ -376,6 +395,7 @@ export async function main(argv = process.argv.slice(2)) {
     outRoot: args.get("out-root") ?? DEFAULT_OUT_ROOT,
     outJson: args.get("out-json") ?? DEFAULT_OUT_JSON,
     outMd: args.get("out-md") ?? DEFAULT_OUT_MD,
+    waveLabel: args.get("wave-label") ?? "Wave 1",
     fixture: args.has("fixture")
   };
   const requested = (args.get("counties") ?? DEFAULT_WAVE.join(","))
@@ -397,7 +417,8 @@ export async function main(argv = process.argv.slice(2)) {
 
   const report = {
     generatedAt: new Date().toISOString(),
-    scope: "ArcGIS Wave 1 county-filtered source-native parcel ID capture.",
+    scope: `ArcGIS ${paths.waveLabel} county-filtered source-native parcel ID capture.`,
+    waveLabel: paths.waveLabel,
     waveCounties: counties.map((county) => ({ county: county.county, fips: county.fips })),
     summary: summarize(rows),
     rows,
@@ -411,7 +432,7 @@ export async function main(argv = process.argv.slice(2)) {
 
   writeJson(paths.outJson, report);
   writeText(paths.outMd, renderMarkdown(report));
-  console.log(`ArcGIS source capture Wave 1 written: ${repoRelative(paths.outJson)}`);
+  console.log(`ArcGIS source capture ${paths.waveLabel} written: ${repoRelative(paths.outJson)}`);
   console.log(`Counties captured: ${report.summary.countiesChecked}`);
   console.log(`Production binding allowed: ${report.productionBindingAllowed ? "yes" : "no"}`);
 }

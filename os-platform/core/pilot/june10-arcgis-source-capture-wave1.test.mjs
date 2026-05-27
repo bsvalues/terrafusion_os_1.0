@@ -9,6 +9,7 @@ import {
   buildCountyCaptureResult,
   compareIdentitySets,
   extractSourceIdentity,
+  fetchJsonWithRetry,
   selectWaveCounties,
   shortFips,
   stripSeedPrefix
@@ -88,6 +89,25 @@ test("buildCountyCaptureResult classifies bounded deltas and blocks certificatio
   assert.equal(result.certificationAllowed, false);
 });
 
+test("fetchJsonWithRetry retries transient ArcGIS socket failures", async () => {
+  let attempts = 0;
+  const payload = await fetchJsonWithRetry("https://example.test/query", {
+    retries: 1,
+    retryDelayMs: 0,
+    fetchImpl: async () => {
+      attempts += 1;
+      if (attempts === 1) throw new TypeError("fetch failed");
+      return {
+        ok: true,
+        text: async () => JSON.stringify({ features: [{ attributes: { ORIG_PARCEL_ID: "100" } }] })
+      };
+    }
+  });
+
+  assert.equal(attempts, 2);
+  assert.equal(payload.features[0].attributes.ORIG_PARCEL_ID, "100");
+});
+
 test("CLI writes Wave 1 source capture report in fixture mode", () => {
   const root = tmpRoot();
   const validationPath = path.join(root, "validation.json");
@@ -120,6 +140,8 @@ test("CLI writes Wave 1 source capture report in fixture mode", () => {
       outJson,
       "--out-md",
       outMd,
+      "--wave-label",
+      "Wave 2",
       "--fixture"
     ],
     { cwd: process.cwd(), stdio: "pipe" }
@@ -127,5 +149,6 @@ test("CLI writes Wave 1 source capture report in fixture mode", () => {
 
   const report = JSON.parse(fs.readFileSync(outJson, "utf8"));
   assert.equal(report.summary.countiesChecked, 1);
-  assert.match(fs.readFileSync(outMd, "utf8"), /ArcGIS Source Capture Wave 1/);
+  assert.equal(report.waveLabel, "Wave 2");
+  assert.match(fs.readFileSync(outMd, "utf8"), /ArcGIS Source Capture Wave 2/);
 });
