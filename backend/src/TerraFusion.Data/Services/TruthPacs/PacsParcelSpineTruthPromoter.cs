@@ -98,21 +98,26 @@ public sealed class PacsParcelSpineTruthPromoter : IPacsParcelSpineTruthPromoter
                 "source property batch COMPLETED", cancellationToken)
                 .ConfigureAwait(false);
 
-            // ── Idempotency: clear prior spine rows for this batch. ──
-            var priorRows = await _db.TruthPacsParcelSpines
-                .Where(t => t.PropertyLoadBatchId == propertyLoadBatchId)
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
-            var priorRowsRemoved = priorRows.Count;
-            if (priorRowsRemoved > 0)
-            {
-                _db.TruthPacsParcelSpines.RemoveRange(priorRows);
-                await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            }
+            // ── Idempotency (FIX 2026-05-27): dedup by NATURAL KEY (prop_id),
+            //    NOT PropertyLoadBatchId. Clearing only same-landing-batch rows
+            //    let re-drains of the same parcels under new landing batches stack
+            //    duplicate spine rows (observed 8.2x: 681,457 rows / 83,326 distinct
+            //    prop_id across 321 batches). The real delete — keyed by the
+            //    prop_ids this batch promotes — runs after we load the parcels. ──
+            var priorRowsRemoved = 0;
 
             // ── Iterate and project. ──
             var parcels = await _db.LegacyPacsRawProperties
                 .Where(p => p.LoadBatchId == propertyLoadBatchId)
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
+
+            var batchPropIds = parcels.Select(p => p.PropId).Distinct().ToList();
+            if (batchPropIds.Count > 0)
+            {
+                priorRowsRemoved = await _db.TruthPacsParcelSpines
+                    .Where(t => batchPropIds.Contains(t.PropId))
+                    .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
+            }
 
             var considered = parcels.Count;
             var promoted = 0;
