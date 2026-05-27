@@ -1,0 +1,33 @@
+{
+  "receiptVersion": "wa_initial_seed_post_repair_v1",
+  "countyName": "Wahkiakum County",
+  "fips": "53069",
+  "sourceClass": "WA_INITIAL_SEED",
+  "sourceSystem": "WA_STATEWIDE_ARCGIS_CURRENT_PARCELS",
+  "sourceParcelIdField": "ORIG_PARCEL_ID",
+  "preservedPrefixedField": "PARCEL_ID_NR",
+  "receiptStatus": "receipt_backed_full_identity",
+  "trustPosture": "WA_STATEWIDE_ARCGIS_SOURCE_NATIVE_IDENTITY",
+  "sourceArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53069-wahkiakum/source-native-parcel-ids.jsonl",
+    "sha256": "43b8fbf59cae5f1ce6115a534704ad38493b1af1936f0b155f8575a4a895d4b8"
+  },
+  "executionReceiptPath": "os-platform/core/pilot/evidence/june10-arcgis-wave1-repair-execution/53069-wahkiakum/execution-receipt.json",
+  "counts": {
+    "activeRows": 4428,
+    "repairedRows": 4428,
+    "duplicateGroups": 0,
+    "legacyPreservedRows": 4428,
+    "terraFusionKeyRows": 4428,
+    "sourceParcelIdFieldRows": 4428
+  },
+  "productionBindingAllowed": false,
+  "certificationAllowed": false,
+  "runtimeClaimAllowed": false,
+  "workflowCompleteClaimAllowed": false,
+  "notes": [
+    "Receipt proves source-native parcel identity repair for this county.",
+    "This receipt does not independently certify owner/address/value-dependent workflow completeness.",
+    "Production binding remains blocked while other WA_INITIAL_SEED receipt gaps remain."
+  ]
+}

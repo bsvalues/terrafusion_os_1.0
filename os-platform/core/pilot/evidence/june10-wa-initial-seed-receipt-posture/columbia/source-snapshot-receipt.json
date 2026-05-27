@@ -1,0 +1,33 @@
+{
+  "receiptVersion": "wa_initial_seed_post_repair_v1",
+  "countyName": "Columbia County",
+  "fips": "53013",
+  "sourceClass": "WA_INITIAL_SEED",
+  "sourceSystem": "WA_STATEWIDE_ARCGIS_CURRENT_PARCELS",
+  "sourceParcelIdField": "ORIG_PARCEL_ID",
+  "preservedPrefixedField": "PARCEL_ID_NR",
+  "receiptStatus": "receipt_backed_full_identity",
+  "trustPosture": "WA_STATEWIDE_ARCGIS_SOURCE_NATIVE_IDENTITY",
+  "sourceArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53013-columbia/source-native-parcel-ids.jsonl",
+    "sha256": "4d3e83ea2f0844d7488202b3f521370cb14510a50e4b31d7ecd8cfbbdc7d1027"
+  },
+  "executionReceiptPath": "os-platform/core/pilot/evidence/june10-arcgis-wave1-repair-execution/53013-columbia/execution-receipt.json",
+  "counts": {
+    "activeRows": 5280,
+    "repairedRows": 5280,
+    "duplicateGroups": 0,
+    "legacyPreservedRows": 5280,
+    "terraFusionKeyRows": 5280,
+    "sourceParcelIdFieldRows": 5280
+  },
+  "productionBindingAllowed": false,
+  "certificationAllowed": false,
+  "runtimeClaimAllowed": false,
+  "workflowCompleteClaimAllowed": false,
+  "notes": [
+    "Receipt proves source-native parcel identity repair for this county.",
+    "This receipt does not independently certify owner/address/value-dependent workflow completeness.",
+    "Production binding remains blocked while other WA_INITIAL_SEED receipt gaps remain."
+  ]
+}

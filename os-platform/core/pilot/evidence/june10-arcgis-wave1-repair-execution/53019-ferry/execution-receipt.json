@@ -1,0 +1,21 @@
+{
+  "county": "Ferry",
+  "fips": "53019",
+  "receiptId": "arcgis_wave1_source_native_identity_repair_2026_05_27",
+  "backupTable": "backup.arcgis_wave1_53019_identity_20260527T161009Z",
+  "audit": {
+    "activeRows": 9195,
+    "repairedRows": 9195,
+    "duplicateGroups": 0,
+    "terraFusionKeyRows": 9195,
+    "legacyPreservedRows": 9195,
+    "sourceParcelIdFieldRows": 9195
+  },
+  "sourceArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53019-ferry/source-native-parcel-ids.jsonl",
+    "sha256": "44385e42e868f962b495ea4eafdc223988e966a1148353aa0f1f81113ff57555"
+  },
+  "postureReceiptPath": "os-platform/core/pilot/evidence/june10-wa-initial-seed-receipt-posture/ferry/source-snapshot-receipt.json",
+  "productionBindingAllowed": false,
+  "certificationAllowed": false
+}

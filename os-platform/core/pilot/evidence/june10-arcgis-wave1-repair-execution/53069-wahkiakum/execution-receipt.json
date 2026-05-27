@@ -1,0 +1,21 @@
+{
+  "county": "Wahkiakum",
+  "fips": "53069",
+  "receiptId": "arcgis_wave1_source_native_identity_repair_2026_05_27",
+  "backupTable": "backup.arcgis_wave1_53069_identity_20260527T161009Z",
+  "audit": {
+    "activeRows": 4428,
+    "repairedRows": 4428,
+    "duplicateGroups": 0,
+    "terraFusionKeyRows": 4428,
+    "legacyPreservedRows": 4428,
+    "sourceParcelIdFieldRows": 4428
+  },
+  "sourceArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53069-wahkiakum/source-native-parcel-ids.jsonl",
+    "sha256": "43b8fbf59cae5f1ce6115a534704ad38493b1af1936f0b155f8575a4a895d4b8"
+  },
+  "postureReceiptPath": "os-platform/core/pilot/evidence/june10-wa-initial-seed-receipt-posture/wahkiakum/source-snapshot-receipt.json",
+  "productionBindingAllowed": false,
+  "certificationAllowed": false
+}

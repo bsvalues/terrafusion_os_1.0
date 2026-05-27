@@ -1,15 +1,26 @@
 {
-  "generatedAt": "2026-05-26T22:11:43.155Z",
+  "generatedAt": "2026-05-27T16:29:59.488Z",
   "scope": "38 WA_INITIAL_SEED counties; Benton is excluded from this public-source seed receipt count.",
   "productionBindingAllowed": false,
   "summary": {
     "expectedSeedCounties": 38,
-    "receiptsVerified": 3,
-    "fullIdentityReceipts": 1,
+    "receiptsVerified": 7,
+    "fullIdentityReceipts": 5,
     "shellPresentReceipts": 2,
-    "receiptsMissing": 35
+    "receiptsMissing": 31
   },
   "verifiedReceipts": [
+    {
+      "countySlug": "columbia",
+      "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-receipt-posture/columbia/source-snapshot-receipt.json",
+      "countyName": "Columbia County",
+      "fips": "53013",
+      "receiptVersion": "wa_initial_seed_post_repair_v1",
+      "status": "receipt_backed_full_identity",
+      "trustPosture": "WA_STATEWIDE_ARCGIS_SOURCE_NATIVE_IDENTITY",
+      "productionBindingAllowed": false,
+      "certificationAllowed": false
+    },
     {
       "countySlug": "cowlitz",
       "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-receipt-posture/cowlitz/source-snapshot-receipt.json",
@@ -18,6 +29,17 @@
       "receiptVersion": "wa_initial_seed_shell_present_v1",
       "status": "receipt_backed_shell_present",
       "trustPosture": "COWLITZ_PUBLIC_PARCEL_IDENTITY",
+      "productionBindingAllowed": false,
+      "certificationAllowed": false
+    },
+    {
+      "countySlug": "ferry",
+      "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-receipt-posture/ferry/source-snapshot-receipt.json",
+      "countyName": "Ferry County",
+      "fips": "53019",
+      "receiptVersion": "wa_initial_seed_post_repair_v1",
+      "status": "receipt_backed_full_identity",
+      "trustPosture": "WA_STATEWIDE_ARCGIS_SOURCE_NATIVE_IDENTITY",
       "productionBindingAllowed": false,
       "certificationAllowed": false
     },
@@ -33,6 +55,17 @@
       "certificationAllowed": false
     },
     {
+      "countySlug": "pend-oreille",
+      "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-receipt-posture/pend-oreille/source-snapshot-receipt.json",
+      "countyName": "Pend Oreille County",
+      "fips": "53051",
+      "receiptVersion": "wa_initial_seed_post_repair_v1",
+      "status": "receipt_backed_full_identity",
+      "trustPosture": "WA_STATEWIDE_ARCGIS_SOURCE_NATIVE_IDENTITY",
+      "productionBindingAllowed": false,
+      "certificationAllowed": false
+    },
+    {
       "countySlug": "spokane",
       "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-receipt-posture/spokane/source-snapshot-receipt.json",
       "countyName": "Spokane County",
@@ -40,6 +73,17 @@
       "receiptVersion": "wa_initial_seed_post_repair_v1",
       "status": "receipt_backed_full_identity",
       "trustPosture": null,
+      "productionBindingAllowed": false,
+      "certificationAllowed": false
+    },
+    {
+      "countySlug": "wahkiakum",
+      "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-receipt-posture/wahkiakum/source-snapshot-receipt.json",
+      "countyName": "Wahkiakum County",
+      "fips": "53069",
+      "receiptVersion": "wa_initial_seed_post_repair_v1",
+      "status": "receipt_backed_full_identity",
+      "trustPosture": "WA_STATEWIDE_ARCGIS_SOURCE_NATIVE_IDENTITY",
       "productionBindingAllowed": false,
       "certificationAllowed": false
     }
@@ -50,9 +94,7 @@
     "53007",
     "53009",
     "53011",
-    "53013",
     "53017",
-    "53019",
     "53021",
     "53023",
     "53025",
@@ -67,7 +109,6 @@
     "53045",
     "53047",
     "53049",
-    "53051",
     "53053",
     "53055",
     "53057",
@@ -75,14 +116,13 @@
     "53061",
     "53065",
     "53067",
-    "53069",
     "53071",
     "53073",
     "53075",
     "53077"
   ],
   "blockers": [
-    "35 WA_INITIAL_SEED counties still lack verified receipt posture."
+    "31 WA_INITIAL_SEED counties still lack verified receipt posture."
   ],
   "notes": [
     "King shell-present receipt is identity/context only and does not certify workflow completeness.",

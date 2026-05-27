@@ -1,0 +1,21 @@
+{
+  "county": "Pend Oreille",
+  "fips": "53051",
+  "receiptId": "arcgis_wave1_source_native_identity_repair_2026_05_27",
+  "backupTable": "backup.arcgis_wave1_53051_identity_20260527T161009Z",
+  "audit": {
+    "activeRows": 15633,
+    "repairedRows": 15633,
+    "duplicateGroups": 0,
+    "terraFusionKeyRows": 15633,
+    "legacyPreservedRows": 15633,
+    "sourceParcelIdFieldRows": 15633
+  },
+  "sourceArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53051-pend-oreille/source-native-parcel-ids.jsonl",
+    "sha256": "219749131e11c3884bf134795ead5004b03b77ebf45f55b7bc0bc567d075c2db"
+  },
+  "postureReceiptPath": "os-platform/core/pilot/evidence/june10-wa-initial-seed-receipt-posture/pend-oreille/source-snapshot-receipt.json",
+  "productionBindingAllowed": false,
+  "certificationAllowed": false
+}

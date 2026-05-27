@@ -1,0 +1,33 @@
+{
+  "receiptVersion": "wa_initial_seed_post_repair_v1",
+  "countyName": "Pend Oreille County",
+  "fips": "53051",
+  "sourceClass": "WA_INITIAL_SEED",
+  "sourceSystem": "WA_STATEWIDE_ARCGIS_CURRENT_PARCELS",
+  "sourceParcelIdField": "ORIG_PARCEL_ID",
+  "preservedPrefixedField": "PARCEL_ID_NR",
+  "receiptStatus": "receipt_backed_full_identity",
+  "trustPosture": "WA_STATEWIDE_ARCGIS_SOURCE_NATIVE_IDENTITY",
+  "sourceArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53051-pend-oreille/source-native-parcel-ids.jsonl",
+    "sha256": "219749131e11c3884bf134795ead5004b03b77ebf45f55b7bc0bc567d075c2db"
+  },
+  "executionReceiptPath": "os-platform/core/pilot/evidence/june10-arcgis-wave1-repair-execution/53051-pend-oreille/execution-receipt.json",
+  "counts": {
+    "activeRows": 15633,
+    "repairedRows": 15633,
+    "duplicateGroups": 0,
+    "legacyPreservedRows": 15633,
+    "terraFusionKeyRows": 15633,
+    "sourceParcelIdFieldRows": 15633
+  },
+  "productionBindingAllowed": false,
+  "certificationAllowed": false,
+  "runtimeClaimAllowed": false,
+  "workflowCompleteClaimAllowed": false,
+  "notes": [
+    "Receipt proves source-native parcel identity repair for this county.",
+    "This receipt does not independently certify owner/address/value-dependent workflow completeness.",
+    "Production binding remains blocked while other WA_INITIAL_SEED receipt gaps remain."
+  ]
+}
