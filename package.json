@@ -132,6 +132,7 @@
     "truth:june10-arcgis-candidate-field-validation": "node os-platform/core/pilot/june10-arcgis-candidate-field-validation.mjs",
     "truth:june10-arcgis-source-capture-wave1": "node os-platform/core/pilot/june10-arcgis-source-capture-wave1.mjs",
     "truth:june10-arcgis-wave1-repair-dry-run": "node os-platform/core/pilot/june10-arcgis-wave1-repair-dry-run.mjs",
+    "truth:june10-arcgis-wave1-repair-authorization-packet": "node os-platform/core/pilot/june10-arcgis-wave1-repair-authorization-packet.mjs",
     "truth:june10-statewide-arcgis-source-discovery": "node os-platform/core/pilot/june10-statewide-arcgis-source-discovery.mjs",
     "truth:june10-wa-initial-seed-receipt-reconciliation": "node os-platform/core/pilot/june10-wa-initial-seed-receipt-reconciliation.mjs",
     "truth:june10-production-db-binding-plan": "node os-platform/core/pilot/june10-production-db-binding-plan.mjs",
