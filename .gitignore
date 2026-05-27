@@ -683,3 +683,6 @@ backend/TerraFusion.API.Tests/Services/ModuleRuntimeHealthTest.txt
 # Generated june10 ArcGIS source-discovery outputs (machine-generated)
 os-platform/core/pilot/evidence/june10-statewide-arcgis-source-discovery.latest.json
 os-platform/core/pilot/evidence/june10-statewide-arcgis-source-discovery.latest.md
+
+# Generated june10 ArcGIS evidence artifacts
+os-platform/core/pilot/evidence/june10-*/

@@ -25,13 +25,23 @@ public sealed class SqlServerPacsOwnerSource : IPacsOwnerSource
 {
     private readonly string _connectionString;
     private readonly int? _topN;
+    private readonly int? _afterPropId;
 
-    public SqlServerPacsOwnerSource(string connectionString, int? topN = null)
+    /// <param name="afterPropId">
+    /// ADVANCEMENT CURSOR (2026-05-27). When set, the stream returns only owners
+    /// with <c>prop_id &gt; afterPropId</c>, ordered by <c>prop_id</c> — a keyset
+    /// cursor so successive bounded (TopN) drains cover NEW parcels instead of
+    /// re-pulling the same top-N every chunk. When null, the original
+    /// (owner_tax_yr DESC, prop_id, owner_id) ordering is preserved unchanged so
+    /// other lanes are unaffected.
+    /// </param>
+    public SqlServerPacsOwnerSource(string connectionString, int? topN = null, int? afterPropId = null)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
             throw new ArgumentException("PACS connection string is required.", nameof(connectionString));
         _connectionString = connectionString;
         _topN = topN;
+        _afterPropId = afterPropId;
     }
 
     public string SourceSystem => "JCHARRISPACS";
@@ -60,23 +70,54 @@ public sealed class SqlServerPacsOwnerSource : IPacsOwnerSource
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var topClause = _topN.HasValue ? $"TOP {_topN.Value} " : "";
-        var sql = $@"
-            SELECT {topClause}CAST(owner_tax_yr AS smallint) AS owner_tax_yr,
-                   CAST(sup_num AS smallint) AS sup_num,
-                   prop_id,
-                   owner_id,
-                   pct_ownership,
-                   type_of_int AS type_of_owner,
-                   CAST(NULL AS varchar(8)) AS udi_status,
-                   birth_dt
-            FROM dbo.owner
-            WHERE sup_num = 0 AND owner_tax_yr >= 2018
-            ORDER BY owner_tax_yr DESC, prop_id, owner_id";
+        string sql;
+        if (_afterPropId.HasValue)
+        {
+            // ADVANCEMENT CURSOR (2026-05-27): keyset-paginate by prop_id so each
+            // bounded chunk advances to NEW parcels. The owner table has ~1 row
+            // per (prop_id, tax_year); to make TOP N ≈ N DISTINCT parcels (not N
+            // owner-rows spread thin across years), collapse to the latest year
+            // per prop_id via ROW_NUMBER before applying TOP N.
+            sql = $@"
+                WITH ranked AS (
+                    SELECT CAST(owner_tax_yr AS smallint) AS owner_tax_yr,
+                           CAST(sup_num AS smallint) AS sup_num,
+                           prop_id, owner_id, pct_ownership,
+                           type_of_int AS type_of_owner,
+                           CAST(NULL AS varchar(8)) AS udi_status,
+                           birth_dt,
+                           ROW_NUMBER() OVER (PARTITION BY prop_id
+                                              ORDER BY owner_tax_yr DESC, owner_id) AS rn
+                    FROM dbo.owner
+                    WHERE sup_num = 0 AND owner_tax_yr >= 2018 AND prop_id > @afterPropId)
+                SELECT {topClause}owner_tax_yr, sup_num, prop_id, owner_id, pct_ownership,
+                       type_of_owner, udi_status, birth_dt
+                FROM ranked WHERE rn = 1
+                ORDER BY prop_id";
+        }
+        else
+        {
+            // Original ordering preserved exactly (other lanes rely on it).
+            sql = $@"
+                SELECT {topClause}CAST(owner_tax_yr AS smallint) AS owner_tax_yr,
+                       CAST(sup_num AS smallint) AS sup_num,
+                       prop_id,
+                       owner_id,
+                       pct_ownership,
+                       type_of_int AS type_of_owner,
+                       CAST(NULL AS varchar(8)) AS udi_status,
+                       birth_dt
+                FROM dbo.owner
+                WHERE sup_num = 0 AND owner_tax_yr >= 2018
+                ORDER BY owner_tax_yr DESC, prop_id, owner_id";
+        }
 
         await using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
         await using var cmd = new SqlCommand(sql, conn) { CommandTimeout = 600 };
+        if (_afterPropId.HasValue)
+            cmd.Parameters.AddWithValue("@afterPropId", _afterPropId.Value);
         await using var rdr = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
 
         var oOwnerTaxYr   = rdr.GetOrdinal("owner_tax_yr");
