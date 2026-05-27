@@ -1,0 +1,660 @@
+{
+  "generatedAt": "2026-05-27T15:37:45.282Z",
+  "scope": "ArcGIS Wave 1 county-filtered source-native parcel ID capture.",
+  "waveCounties": [
+    {
+      "county": "Columbia",
+      "fips": "53013"
+    },
+    {
+      "county": "Ferry",
+      "fips": "53019"
+    },
+    {
+      "county": "Garfield",
+      "fips": "53023"
+    },
+    {
+      "county": "Pend Oreille",
+      "fips": "53051"
+    },
+    {
+      "county": "Wahkiakum",
+      "fips": "53069"
+    }
+  ],
+  "summary": {
+    "countiesChecked": 5,
+    "sourceRowsCaptured": 40158,
+    "byClassification": {
+      "prefixed_repair_candidate": 4,
+      "bounded_delta_candidate": 1
+    }
+  },
+  "rows": [
+    {
+      "county": "Columbia",
+      "fips": "53013",
+      "shortFips": "013",
+      "source": {
+        "serviceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "termsPosture": "public_arcgis_rest_terms_review_required",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "rowCount": 5477,
+        "distinctSourceNativeIds": 5280,
+        "distinctPrefixedIds": 5280,
+        "nullOrBlankSourceNative": 7,
+        "duplicateSourceNativeIds": 152
+      },
+      "canonical": {
+        "activeDistinctParcelNumbers": 5280
+      },
+      "sourceArtifact": {
+        "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53013-columbia/source-native-parcel-ids.jsonl",
+        "sizeBytes": 913119,
+        "sha256": "4d3e83ea2f0844d7488202b3f521370cb14510a50e4b31d7ecd8cfbbdc7d1027",
+        "lastWriteTime": "2026-05-27T15:37:02.438Z"
+      },
+      "identityComparison": {
+        "sourceNativeDistinctCount": 5280,
+        "sourcePrefixedDistinctCount": 5280,
+        "canonicalDistinctCount": 5280,
+        "exactSourceNativeOverlapCount": 0,
+        "prefixedSourceOverlapCount": 5280,
+        "prefixStrippedCanonicalOverlapCount": 5280,
+        "sourceNativeOnlyCount": 0,
+        "canonicalOnlyAfterPrefixStripCount": 0,
+        "sourceNativeOnlySamples": [],
+        "canonicalOnlyAfterPrefixStripSamples": [],
+        "sourceNativeSamples": [
+          "1000000100060",
+          "1000000300010",
+          "1010430020001",
+          "1010430020002",
+          "1010430120001",
+          "1010431020000",
+          "1010431060000",
+          "1010440010000",
+          "1010450020001",
+          "1010450020002"
+        ],
+        "canonicalSamples": [
+          "013-1000000100060",
+          "013-1000000300010",
+          "013-1010430020001",
+          "013-1010430020002",
+          "013-1010430120001",
+          "013-1010431020000",
+          "013-1010431060000",
+          "013-1010440010000",
+          "013-1010450020001",
+          "013-1010450020002"
+        ]
+      },
+      "classification": "prefixed_repair_candidate",
+      "receiptCandidate": {
+        "receiptVersion": "arcgis_source_capture_wave1_v1",
+        "valid": true,
+        "county": "Columbia",
+        "fips": "53013",
+        "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "sourceArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53013-columbia/source-native-parcel-ids.jsonl",
+          "sizeBytes": 913119,
+          "sha256": "4d3e83ea2f0844d7488202b3f521370cb14510a50e4b31d7ecd8cfbbdc7d1027",
+          "lastWriteTime": "2026-05-27T15:37:02.438Z"
+        },
+        "identityComparison": {
+          "sourceNativeDistinctCount": 5280,
+          "sourcePrefixedDistinctCount": 5280,
+          "canonicalDistinctCount": 5280,
+          "exactSourceNativeOverlapCount": 0,
+          "prefixedSourceOverlapCount": 5280,
+          "prefixStrippedCanonicalOverlapCount": 5280,
+          "sourceNativeOnlyCount": 0,
+          "canonicalOnlyAfterPrefixStripCount": 0,
+          "sourceNativeOnlySamples": [],
+          "canonicalOnlyAfterPrefixStripSamples": [],
+          "sourceNativeSamples": [
+            "1000000100060",
+            "1000000300010",
+            "1010430020001",
+            "1010430020002",
+            "1010430120001",
+            "1010431020000",
+            "1010431060000",
+            "1010440010000",
+            "1010450020001",
+            "1010450020002"
+          ],
+          "canonicalSamples": [
+            "013-1000000100060",
+            "013-1000000300010",
+            "013-1010430020001",
+            "013-1010430020002",
+            "013-1010430120001",
+            "013-1010431020000",
+            "013-1010431060000",
+            "013-1010440010000",
+            "013-1010450020001",
+            "013-1010450020002"
+          ]
+        }
+      },
+      "blockers": [
+        "7 source rows have blank ORIG_PARCEL_ID.",
+        "152 duplicate source-native parcel ID groups.",
+        "Canonical ParcelNumber appears to preserve statewide prefixed IDs; source-native repair remains required before certification."
+      ],
+      "databaseMutationAttempted": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "certificationAllowed": false
+    },
+    {
+      "county": "Ferry",
+      "fips": "53019",
+      "shortFips": "019",
+      "source": {
+        "serviceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "termsPosture": "public_arcgis_rest_terms_review_required",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "rowCount": 9229,
+        "distinctSourceNativeIds": 9195,
+        "distinctPrefixedIds": 9195,
+        "nullOrBlankSourceNative": 9,
+        "duplicateSourceNativeIds": 23
+      },
+      "canonical": {
+        "activeDistinctParcelNumbers": 9195
+      },
+      "sourceArtifact": {
+        "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53019-ferry/source-native-parcel-ids.jsonl",
+        "sizeBytes": 1556249,
+        "sha256": "44385e42e868f962b495ea4eafdc223988e966a1148353aa0f1f81113ff57555",
+        "lastWriteTime": "2026-05-27T15:37:12.836Z"
+      },
+      "identityComparison": {
+        "sourceNativeDistinctCount": 9195,
+        "sourcePrefixedDistinctCount": 9195,
+        "canonicalDistinctCount": 9195,
+        "exactSourceNativeOverlapCount": 0,
+        "prefixedSourceOverlapCount": 9195,
+        "prefixStrippedCanonicalOverlapCount": 9195,
+        "sourceNativeOnlyCount": 0,
+        "canonicalOnlyAfterPrefixStripCount": 0,
+        "sourceNativeOnlySamples": [],
+        "canonicalOnlyAfterPrefixStripSamples": [],
+        "sourceNativeSamples": [
+          "22801110001000",
+          "22802110001000",
+          "22803110001000",
+          "22804210002000",
+          "22804310001000",
+          "22804430001000",
+          "22805120001000",
+          "22805130001000",
+          "22805500001000",
+          "22805500003000"
+        ],
+        "canonicalSamples": [
+          "019-22801110001000",
+          "019-22802110001000",
+          "019-22803110001000",
+          "019-22804210002000",
+          "019-22804310001000",
+          "019-22804430001000",
+          "019-22805120001000",
+          "019-22805130001000",
+          "019-22805500001000",
+          "019-22805500003000"
+        ]
+      },
+      "classification": "prefixed_repair_candidate",
+      "receiptCandidate": {
+        "receiptVersion": "arcgis_source_capture_wave1_v1",
+        "valid": true,
+        "county": "Ferry",
+        "fips": "53019",
+        "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "sourceArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53019-ferry/source-native-parcel-ids.jsonl",
+          "sizeBytes": 1556249,
+          "sha256": "44385e42e868f962b495ea4eafdc223988e966a1148353aa0f1f81113ff57555",
+          "lastWriteTime": "2026-05-27T15:37:12.836Z"
+        },
+        "identityComparison": {
+          "sourceNativeDistinctCount": 9195,
+          "sourcePrefixedDistinctCount": 9195,
+          "canonicalDistinctCount": 9195,
+          "exactSourceNativeOverlapCount": 0,
+          "prefixedSourceOverlapCount": 9195,
+          "prefixStrippedCanonicalOverlapCount": 9195,
+          "sourceNativeOnlyCount": 0,
+          "canonicalOnlyAfterPrefixStripCount": 0,
+          "sourceNativeOnlySamples": [],
+          "canonicalOnlyAfterPrefixStripSamples": [],
+          "sourceNativeSamples": [
+            "22801110001000",
+            "22802110001000",
+            "22803110001000",
+            "22804210002000",
+            "22804310001000",
+            "22804430001000",
+            "22805120001000",
+            "22805130001000",
+            "22805500001000",
+            "22805500003000"
+          ],
+          "canonicalSamples": [
+            "019-22801110001000",
+            "019-22802110001000",
+            "019-22803110001000",
+            "019-22804210002000",
+            "019-22804310001000",
+            "019-22804430001000",
+            "019-22805120001000",
+            "019-22805130001000",
+            "019-22805500001000",
+            "019-22805500003000"
+          ]
+        }
+      },
+      "blockers": [
+        "9 source rows have blank ORIG_PARCEL_ID.",
+        "23 duplicate source-native parcel ID groups.",
+        "Canonical ParcelNumber appears to preserve statewide prefixed IDs; source-native repair remains required before certification."
+      ],
+      "databaseMutationAttempted": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "certificationAllowed": false
+    },
+    {
+      "county": "Garfield",
+      "fips": "53023",
+      "shortFips": "023",
+      "source": {
+        "serviceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "termsPosture": "public_arcgis_rest_terms_review_required",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "rowCount": 4159,
+        "distinctSourceNativeIds": 4158,
+        "distinctPrefixedIds": 4159,
+        "nullOrBlankSourceNative": 1,
+        "duplicateSourceNativeIds": 0
+      },
+      "canonical": {
+        "activeDistinctParcelNumbers": 4159
+      },
+      "sourceArtifact": {
+        "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53023-garfield/source-native-parcel-ids.jsonl",
+        "sizeBytes": 711583,
+        "sha256": "c5671b2ec682da197b32621a2616d4725ee325a8598e887d3c9e2700d146693e",
+        "lastWriteTime": "2026-05-27T15:37:20.680Z"
+      },
+      "identityComparison": {
+        "sourceNativeDistinctCount": 4158,
+        "sourcePrefixedDistinctCount": 4159,
+        "canonicalDistinctCount": 4159,
+        "exactSourceNativeOverlapCount": 0,
+        "prefixedSourceOverlapCount": 4159,
+        "prefixStrippedCanonicalOverlapCount": 4158,
+        "sourceNativeOnlyCount": 0,
+        "canonicalOnlyAfterPrefixStripCount": 1,
+        "sourceNativeOnlySamples": [],
+        "canonicalOnlyAfterPrefixStripSamples": [""],
+        "sourceNativeSamples": [
+          "10000100000000000",
+          "10500100114200000",
+          "10500100114300000",
+          "10500200113300000",
+          "10500200313400000",
+          "10500200413200000",
+          "10500300112400000",
+          "10500300212500000",
+          "10500300212700000",
+          "10500300312700000"
+        ],
+        "canonicalSamples": [
+          "023-",
+          "023-10000100000000000",
+          "023-10500100114200000",
+          "023-10500100114300000",
+          "023-10500200113300000",
+          "023-10500200313400000",
+          "023-10500200413200000",
+          "023-10500300112400000",
+          "023-10500300212500000",
+          "023-10500300212700000"
+        ]
+      },
+      "classification": "bounded_delta_candidate",
+      "receiptCandidate": {
+        "receiptVersion": "arcgis_source_capture_wave1_v1",
+        "valid": true,
+        "county": "Garfield",
+        "fips": "53023",
+        "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "sourceArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53023-garfield/source-native-parcel-ids.jsonl",
+          "sizeBytes": 711583,
+          "sha256": "c5671b2ec682da197b32621a2616d4725ee325a8598e887d3c9e2700d146693e",
+          "lastWriteTime": "2026-05-27T15:37:20.680Z"
+        },
+        "identityComparison": {
+          "sourceNativeDistinctCount": 4158,
+          "sourcePrefixedDistinctCount": 4159,
+          "canonicalDistinctCount": 4159,
+          "exactSourceNativeOverlapCount": 0,
+          "prefixedSourceOverlapCount": 4159,
+          "prefixStrippedCanonicalOverlapCount": 4158,
+          "sourceNativeOnlyCount": 0,
+          "canonicalOnlyAfterPrefixStripCount": 1,
+          "sourceNativeOnlySamples": [],
+          "canonicalOnlyAfterPrefixStripSamples": [""],
+          "sourceNativeSamples": [
+            "10000100000000000",
+            "10500100114200000",
+            "10500100114300000",
+            "10500200113300000",
+            "10500200313400000",
+            "10500200413200000",
+            "10500300112400000",
+            "10500300212500000",
+            "10500300212700000",
+            "10500300312700000"
+          ],
+          "canonicalSamples": [
+            "023-",
+            "023-10000100000000000",
+            "023-10500100114200000",
+            "023-10500100114300000",
+            "023-10500200113300000",
+            "023-10500200313400000",
+            "023-10500200413200000",
+            "023-10500300112400000",
+            "023-10500300212500000",
+            "023-10500300212700000"
+          ]
+        }
+      },
+      "blockers": [
+        "1 source rows have blank ORIG_PARCEL_ID.",
+        "Source/canonical identity delta requires county-specific adjudication before receipt conversion."
+      ],
+      "databaseMutationAttempted": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "certificationAllowed": false
+    },
+    {
+      "county": "Pend Oreille",
+      "fips": "53051",
+      "shortFips": "051",
+      "source": {
+        "serviceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "termsPosture": "public_arcgis_rest_terms_review_required",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "rowCount": 16852,
+        "distinctSourceNativeIds": 15633,
+        "distinctPrefixedIds": 15633,
+        "nullOrBlankSourceNative": 1203,
+        "duplicateSourceNativeIds": 16
+      },
+      "canonical": {
+        "activeDistinctParcelNumbers": 15633
+      },
+      "sourceArtifact": {
+        "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53051-pend-oreille/source-native-parcel-ids.jsonl",
+        "sizeBytes": 2994585,
+        "sha256": "219749131e11c3884bf134795ead5004b03b77ebf45f55b7bc0bc567d075c2db",
+        "lastWriteTime": "2026-05-27T15:37:40.407Z"
+      },
+      "identityComparison": {
+        "sourceNativeDistinctCount": 15633,
+        "sourcePrefixedDistinctCount": 15633,
+        "canonicalDistinctCount": 15633,
+        "exactSourceNativeOverlapCount": 0,
+        "prefixedSourceOverlapCount": 15633,
+        "prefixStrippedCanonicalOverlapCount": 15633,
+        "sourceNativeOnlyCount": 0,
+        "canonicalOnlyAfterPrefixStripCount": 0,
+        "sourceNativeOnlySamples": [],
+        "canonicalOnlyAfterPrefixStripSamples": [],
+        "sourceNativeSamples": [
+          "413701400001",
+          "413710300001",
+          "413712100001",
+          "413713230001",
+          "413713310001",
+          "413713320001",
+          "413713320003",
+          "413714410001",
+          "413715200001",
+          "413715220001"
+        ],
+        "canonicalSamples": [
+          "051-413701400001",
+          "051-413710300001",
+          "051-413712100001",
+          "051-413713230001",
+          "051-413713310001",
+          "051-413713320001",
+          "051-413713320003",
+          "051-413714410001",
+          "051-413715200001",
+          "051-413715220001"
+        ]
+      },
+      "classification": "prefixed_repair_candidate",
+      "receiptCandidate": {
+        "receiptVersion": "arcgis_source_capture_wave1_v1",
+        "valid": true,
+        "county": "Pend Oreille",
+        "fips": "53051",
+        "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "sourceArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53051-pend-oreille/source-native-parcel-ids.jsonl",
+          "sizeBytes": 2994585,
+          "sha256": "219749131e11c3884bf134795ead5004b03b77ebf45f55b7bc0bc567d075c2db",
+          "lastWriteTime": "2026-05-27T15:37:40.407Z"
+        },
+        "identityComparison": {
+          "sourceNativeDistinctCount": 15633,
+          "sourcePrefixedDistinctCount": 15633,
+          "canonicalDistinctCount": 15633,
+          "exactSourceNativeOverlapCount": 0,
+          "prefixedSourceOverlapCount": 15633,
+          "prefixStrippedCanonicalOverlapCount": 15633,
+          "sourceNativeOnlyCount": 0,
+          "canonicalOnlyAfterPrefixStripCount": 0,
+          "sourceNativeOnlySamples": [],
+          "canonicalOnlyAfterPrefixStripSamples": [],
+          "sourceNativeSamples": [
+            "413701400001",
+            "413710300001",
+            "413712100001",
+            "413713230001",
+            "413713310001",
+            "413713320001",
+            "413713320003",
+            "413714410001",
+            "413715200001",
+            "413715220001"
+          ],
+          "canonicalSamples": [
+            "051-413701400001",
+            "051-413710300001",
+            "051-413712100001",
+            "051-413713230001",
+            "051-413713310001",
+            "051-413713320001",
+            "051-413713320003",
+            "051-413714410001",
+            "051-413715200001",
+            "051-413715220001"
+          ]
+        }
+      },
+      "blockers": [
+        "1203 source rows have blank ORIG_PARCEL_ID.",
+        "16 duplicate source-native parcel ID groups.",
+        "Canonical ParcelNumber appears to preserve statewide prefixed IDs; source-native repair remains required before certification."
+      ],
+      "databaseMutationAttempted": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "certificationAllowed": false
+    },
+    {
+      "county": "Wahkiakum",
+      "fips": "53069",
+      "shortFips": "069",
+      "source": {
+        "serviceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "termsPosture": "public_arcgis_rest_terms_review_required",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "rowCount": 4441,
+        "distinctSourceNativeIds": 4428,
+        "distinctPrefixedIds": 4428,
+        "nullOrBlankSourceNative": 0,
+        "duplicateSourceNativeIds": 13
+      },
+      "canonical": {
+        "activeDistinctParcelNumbers": 4428
+      },
+      "sourceArtifact": {
+        "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53069-wahkiakum/source-native-parcel-ids.jsonl",
+        "sizeBytes": 743721,
+        "sha256": "43b8fbf59cae5f1ce6115a534704ad38493b1af1936f0b155f8575a4a895d4b8",
+        "lastWriteTime": "2026-05-27T15:37:45.277Z"
+      },
+      "identityComparison": {
+        "sourceNativeDistinctCount": 4428,
+        "sourcePrefixedDistinctCount": 4428,
+        "canonicalDistinctCount": 4428,
+        "exactSourceNativeOverlapCount": 0,
+        "prefixedSourceOverlapCount": 4428,
+        "prefixStrippedCanonicalOverlapCount": 4428,
+        "sourceNativeOnlyCount": 0,
+        "canonicalOnlyAfterPrefixStripCount": 0,
+        "sourceNativeOnlySamples": [],
+        "canonicalOnlyAfterPrefixStripSamples": [],
+        "sourceNativeSamples": [
+          "010805110001",
+          "010805220001",
+          "010805230001",
+          "010805310005",
+          "010806110001",
+          "010806110002",
+          "010806110003",
+          "010806130001",
+          "010806130003",
+          "010806140001"
+        ],
+        "canonicalSamples": [
+          "069-010805110001",
+          "069-010805220001",
+          "069-010805230001",
+          "069-010805310005",
+          "069-010806110001",
+          "069-010806110002",
+          "069-010806110003",
+          "069-010806130001",
+          "069-010806130003",
+          "069-010806140001"
+        ]
+      },
+      "classification": "prefixed_repair_candidate",
+      "receiptCandidate": {
+        "receiptVersion": "arcgis_source_capture_wave1_v1",
+        "valid": true,
+        "county": "Wahkiakum",
+        "fips": "53069",
+        "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+        "accessMethod": "arcgis_rest_county_filtered_query",
+        "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+        "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+        "sourceArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53069-wahkiakum/source-native-parcel-ids.jsonl",
+          "sizeBytes": 743721,
+          "sha256": "43b8fbf59cae5f1ce6115a534704ad38493b1af1936f0b155f8575a4a895d4b8",
+          "lastWriteTime": "2026-05-27T15:37:45.277Z"
+        },
+        "identityComparison": {
+          "sourceNativeDistinctCount": 4428,
+          "sourcePrefixedDistinctCount": 4428,
+          "canonicalDistinctCount": 4428,
+          "exactSourceNativeOverlapCount": 0,
+          "prefixedSourceOverlapCount": 4428,
+          "prefixStrippedCanonicalOverlapCount": 4428,
+          "sourceNativeOnlyCount": 0,
+          "canonicalOnlyAfterPrefixStripCount": 0,
+          "sourceNativeOnlySamples": [],
+          "canonicalOnlyAfterPrefixStripSamples": [],
+          "sourceNativeSamples": [
+            "010805110001",
+            "010805220001",
+            "010805230001",
+            "010805310005",
+            "010806110001",
+            "010806110002",
+            "010806110003",
+            "010806130001",
+            "010806130003",
+            "010806140001"
+          ],
+          "canonicalSamples": [
+            "069-010805110001",
+            "069-010805220001",
+            "069-010805230001",
+            "069-010805310005",
+            "069-010806110001",
+            "069-010806110002",
+            "069-010806110003",
+            "069-010806130001",
+            "069-010806130003",
+            "069-010806140001"
+          ]
+        }
+      },
+      "blockers": [
+        "13 duplicate source-native parcel ID groups.",
+        "Canonical ParcelNumber appears to preserve statewide prefixed IDs; source-native repair remains required before certification."
+      ],
+      "databaseMutationAttempted": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "certificationAllowed": false
+    }
+  ],
+  "sourceArtifactRoot": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1",
+  "sourceArtifactHash": "04a84b4403de03e3ded8e6c4f6cca416ce2a3d951d9464918257a0e1b39bd47c",
+  "databaseMutationAttempted": false,
+  "productionBindingAllowed": false,
+  "runtimeClaimAllowed": false,
+  "certificationAllowed": false
+}
