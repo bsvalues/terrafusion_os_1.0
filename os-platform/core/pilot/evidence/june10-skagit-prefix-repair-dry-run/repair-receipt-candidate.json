@@ -1,0 +1,44 @@
+{
+  "receiptVersion": "skagit_prefix_repair_dry_run_v1",
+  "receiptId": "skagit_prefix_repair_dry_run_2026_05_27",
+  "county": "Skagit",
+  "fips": "53057",
+  "sourceNativeField": "PARCELID",
+  "sourceNativeContract": "ParcelNumber must equal source PARCELID; prior 057-prefixed value is preserved as LegacyImportedParcelKey.",
+  "counts": {
+    "repairUpdates": 72947,
+    "supersedes": 26,
+    "stagedShellInserts": 69,
+    "postRepairDuplicateGroups": 0,
+    "postRepairSourceOnly": 0,
+    "postRepairCanonicalOnly": 0
+  },
+  "artifacts": {
+    "updateTargets": {
+      "path": "os-platform/core/pilot/evidence/june10-skagit-prefix-repair-dry-run/update-targets.jsonl",
+      "rows": 72947,
+      "sizeBytes": 25606406,
+      "sha256": "94e52792ae7dcc1496496ec546684402189a9488052398fdabd1a7cb81cb9c61"
+    },
+    "supersedeTargets": {
+      "path": "os-platform/core/pilot/evidence/june10-skagit-prefix-repair-dry-run/supersede-targets.jsonl",
+      "rows": 26,
+      "sizeBytes": 7196,
+      "sha256": "751dadc68582b2f8d758ee9738f0d5d4bb47b66b372e7c2b215aa494dafb67bb"
+    },
+    "stageInsertTargets": {
+      "path": "os-platform/core/pilot/evidence/june10-skagit-prefix-repair-dry-run/stage-insert-targets.jsonl",
+      "rows": 69,
+      "sizeBytes": 30354,
+      "sha256": "59ff0fbc578d44028ae31a0fe67bbba7fa112ac54370e64a769ac7f9e14764c1"
+    },
+    "rollbackPlan": {
+      "path": "os-platform/core/pilot/evidence/june10-skagit-prefix-repair-dry-run/rollback-plan.md",
+      "sizeBytes": 1794,
+      "sha256": "3e6549201819d44ac9016bd8e5b5ddf196a29a7dc621d705526e60dc4c02a20f"
+    }
+  },
+  "certificationAllowed": false,
+  "productionBindingAllowed": false,
+  "databaseMutationAttempted": false
+}

@@ -1,0 +1,102 @@
+{
+  "generatedAt": "2026-05-27T01:17:08.503Z",
+  "county": "Skagit",
+  "fips": "53057",
+  "status": "DRY_RUN_REPAIR_PARITY_PROJECTED",
+  "counts": {
+    "sourceIds": 73016,
+    "canonicalRows": 72973,
+    "updateTargets": 72947,
+    "supersedeTargets": 26,
+    "stageInsertTargets": 69
+  },
+  "postRepairProjection": {
+    "projectedActiveParcelNumbers": 73016,
+    "projectedDistinctActiveParcelNumbers": 73016,
+    "duplicateGroups": 0,
+    "sourceOnlyCount": 0,
+    "canonicalOnlyCount": 0,
+    "sourceOnlySamples": [],
+    "canonicalOnlySamples": []
+  },
+  "artifacts": {
+    "updateTargets": {
+      "path": "os-platform/core/pilot/evidence/june10-skagit-prefix-repair-dry-run/update-targets.jsonl",
+      "rows": 72947,
+      "sizeBytes": 25606406,
+      "sha256": "94e52792ae7dcc1496496ec546684402189a9488052398fdabd1a7cb81cb9c61"
+    },
+    "supersedeTargets": {
+      "path": "os-platform/core/pilot/evidence/june10-skagit-prefix-repair-dry-run/supersede-targets.jsonl",
+      "rows": 26,
+      "sizeBytes": 7196,
+      "sha256": "751dadc68582b2f8d758ee9738f0d5d4bb47b66b372e7c2b215aa494dafb67bb"
+    },
+    "stageInsertTargets": {
+      "path": "os-platform/core/pilot/evidence/june10-skagit-prefix-repair-dry-run/stage-insert-targets.jsonl",
+      "rows": 69,
+      "sizeBytes": 30354,
+      "sha256": "59ff0fbc578d44028ae31a0fe67bbba7fa112ac54370e64a769ac7f9e14764c1"
+    },
+    "rollbackPlan": {
+      "path": "os-platform/core/pilot/evidence/june10-skagit-prefix-repair-dry-run/rollback-plan.md",
+      "sizeBytes": 1794,
+      "sha256": "3e6549201819d44ac9016bd8e5b5ddf196a29a7dc621d705526e60dc4c02a20f"
+    },
+    "repairReceipt": {
+      "path": "os-platform/core/pilot/evidence/june10-skagit-prefix-repair-dry-run/repair-receipt-candidate.json",
+      "sizeBytes": 1706,
+      "sha256": "99ca025315d085f750fd5543d5baa785272e19741516e1a18b40075b01171812"
+    }
+  },
+  "sqlPreview": {
+    "updateTemplate": "UPDATE canonical_tf.tf_parcel SET \"LegacyImportedParcelKey\" = \"ParcelNumber\", \"ParcelNumber\" = <source PARCELID>, \"TerraFusionParcelKey\" = '53057:' || <source PARCELID>, \"IdentityRepairReceiptId\" = 'skagit_prefix_repair_dry_run_2026_05_27' WHERE \"CountyId\"='a1c87e81-4825-f488-040b-2faa433b9905'::uuid AND \"ParcelStatus\"='ACTIVE';",
+    "supersedeTemplate": "UPDATE canonical_tf.tf_parcel SET \"ParcelStatus\"='SUPERSEDED', \"IdentityRepairReceiptId\"='skagit_prefix_repair_dry_run_2026_05_27' WHERE \"CountyId\"='a1c87e81-4825-f488-040b-2faa433b9905'::uuid AND \"ParcelStatus\"='ACTIVE';",
+    "insertTemplate": "INSERT INTO canonical_tf.tf_parcel (...) VALUES (... source PARCELID shell row ...) -- disabled in dry-run",
+    "updateSample": [
+      {
+        "where": {
+          "TfParcelId": "c95bc54b-037d-3627-8a56-b4e6c6540708",
+          "ParcelNumber": "057-P100005"
+        },
+        "set": {
+          "LegacyImportedParcelKey": "057-P100005",
+          "ParcelNumber": "P100005",
+          "TerraFusionParcelKey": "53057:P100005"
+        }
+      },
+      {
+        "where": {
+          "TfParcelId": "6ae2a019-183c-cf69-1119-ab8d4959e906",
+          "ParcelNumber": "057-P100014"
+        },
+        "set": {
+          "LegacyImportedParcelKey": "057-P100014",
+          "ParcelNumber": "P100014",
+          "TerraFusionParcelKey": "53057:P100014"
+        }
+      },
+      {
+        "where": {
+          "TfParcelId": "2ea884a6-d59c-83e5-27cb-659b995bb810",
+          "ParcelNumber": "057-P100017"
+        },
+        "set": {
+          "LegacyImportedParcelKey": "057-P100017",
+          "ParcelNumber": "P100017",
+          "TerraFusionParcelKey": "53057:P100017"
+        }
+      }
+    ]
+  },
+  "stopConditions": [
+    "No DB mutation is authorized by this dry-run.",
+    "Production binding remains blocked.",
+    "Source terms posture must be reviewed before certification.",
+    "Future execution requires explicit human authorization, backup, transaction, and post-repair audit."
+  ],
+  "databaseMutationAttempted": false,
+  "productionBindingAllowed": false,
+  "runtimeClaimAllowed": false,
+  "certificationAllowed": false
+}
