@@ -32,6 +32,7 @@ const DEFAULT_OUT_MD = path.join(
   "evidence",
   "june10-statewide-arcgis-source-discovery.latest.md"
 );
+const DEFAULT_TOKEN_FILE = path.join(repoRoot, ".env.arcgis.local");
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -61,6 +62,52 @@ function parseArgs(argv) {
     index += 1;
   }
   return args;
+}
+
+function readTokenFile(tokenFile) {
+  if (!tokenFile || !fs.existsSync(tokenFile)) return null;
+  const content = fs.readFileSync(tokenFile, "utf8").trim();
+  if (!content) return null;
+  const envMatch = content.match(/^ARCGIS_TOKEN\s*=\s*(.+)$/m);
+  return (envMatch?.[1] ?? content).trim().replace(/^["']|["']$/g, "");
+}
+
+export function resolveArcgisAuth({ env = process.env, tokenFile = DEFAULT_TOKEN_FILE } = {}) {
+  const envToken = env.ARCGIS_TOKEN?.trim();
+  if (envToken) {
+    return {
+      accessMode: "authenticated",
+      tokenPresent: true,
+      tokenSource: "env:ARCGIS_TOKEN",
+      token: envToken
+    };
+  }
+
+  const explicitTokenFile = env.ARCGIS_TOKEN_FILE?.trim() || tokenFile;
+  const fileToken = readTokenFile(explicitTokenFile);
+  if (fileToken) {
+    return {
+      accessMode: "authenticated",
+      tokenPresent: true,
+      tokenSource: `file:${path.relative(repoRoot, explicitTokenFile).replaceAll(path.sep, "/")}`,
+      token: fileToken
+    };
+  }
+
+  return {
+    accessMode: "anonymous",
+    tokenPresent: false,
+    tokenSource: null,
+    token: null
+  };
+}
+
+function sanitizeAuth(auth) {
+  return {
+    accessMode: auth.accessMode,
+    tokenPresent: auth.tokenPresent,
+    tokenSource: auth.tokenSource
+  };
 }
 
 export function buildCountySearchQueries({ county }) {
@@ -118,20 +165,52 @@ function statusFor(items) {
   return "no_arcgis_candidate_found";
 }
 
-export function buildDiscoveryReport({ matrix, discoveries }) {
+function emptyAuthComparison() {
+  return {
+    anonymousCandidateCount: null,
+    authenticatedCandidateCount: null,
+    changed: false
+  };
+}
+
+function candidateCountFor(items, countyRow) {
+  return items
+    .map((item) => summarizeDiscoveryItem(item, countyRow))
+    .filter((item) => item.classification !== "secondary_or_irrelevant").length;
+}
+
+export function buildDiscoveryReport({
+  matrix,
+  discoveries,
+  accessMode = "anonymous",
+  authComparison = new Map(),
+  authSummary = null
+}) {
   const rows = (matrix.rows ?? [])
     .filter((row) => row.certifiable !== true)
     .map((countyRow) => {
       const items = (discoveries.get(countyRow.county) ?? []).map((item) => summarizeDiscoveryItem(item, countyRow));
       const candidates = items.filter((item) => item.classification !== "secondary_or_irrelevant").slice(0, 5);
+      const countyAuthComparison = authComparison.get(countyRow.county) ?? emptyAuthComparison();
       return {
         county: countyRow.county,
         fips: countyRow.fips,
         priorInventoryAccess: countyRow.inventoryAccess ?? null,
+        accessMode,
         status: statusFor(items),
         candidateCount: candidates.length,
         candidates,
         searchedQueries: buildCountySearchQueries(countyRow),
+        authComparison: countyAuthComparison,
+        authChangedCandidateVisibility: Boolean(countyAuthComparison.changed),
+        authImprovementSignals: {
+          metadataVisibility:
+            countyAuthComparison.changed === true ? "candidate_visibility_changed" : "no_candidate_visibility_change",
+          exportAvailability: "not_evaluated_in_discovery",
+          querySuccess: "portal_search_only",
+          fieldVisibility: "not_evaluated_in_discovery",
+          rowCount: "not_evaluated_in_discovery"
+        },
         nextAction:
           candidates.length > 0
             ? "validate_candidate_layer_fields_and_capture_source_native_ids"
@@ -154,6 +233,8 @@ export function buildDiscoveryReport({ matrix, discoveries }) {
   return {
     generatedAt: new Date().toISOString(),
     scope: "Statewide ArcGIS/open-data source discovery for non-certifiable Washington counties.",
+    accessMode,
+    authSummary,
     summary,
     rows,
     databaseMutationAttempted: false,
@@ -163,20 +244,21 @@ export function buildDiscoveryReport({ matrix, discoveries }) {
   };
 }
 
-async function arcgisSearch(query) {
+async function arcgisSearch(query, auth) {
   const url = new URL("https://www.arcgis.com/sharing/rest/search");
   url.searchParams.set("f", "json");
   url.searchParams.set("num", "8");
   url.searchParams.set("sortField", "numViews");
   url.searchParams.set("sortOrder", "desc");
   url.searchParams.set("q", `${query} Washington type:"Feature Service" OR type:"Map Service"`);
+  if (auth?.token) url.searchParams.set("token", auth.token);
   const response = await fetch(url);
   const text = await response.text();
   if (!response.ok) throw new Error(`ArcGIS search failed for ${query}: ${response.status} ${text.slice(0, 120)}`);
   return JSON.parse(text).results ?? [];
 }
 
-async function discoverCounty(countyRow, fixture) {
+async function discoverCounty(countyRow, { fixture = false, auth = null } = {}) {
   if (fixture) {
     return [
       {
@@ -192,7 +274,7 @@ async function discoverCounty(countyRow, fixture) {
   const seen = new Set();
   const items = [];
   for (const query of buildCountySearchQueries(countyRow).slice(0, 3)) {
-    const results = await arcgisSearch(query);
+    const results = await arcgisSearch(query, auth);
     for (const item of results) {
       const key = item.id ?? item.url ?? item.title;
       if (!key || seen.has(key)) continue;
@@ -203,12 +285,12 @@ async function discoverCounty(countyRow, fixture) {
   return items;
 }
 
-async function discoverAll(matrix, fixture) {
+async function discoverAll(matrix, { fixture = false, auth = null } = {}) {
   const rows = (matrix.rows ?? []).filter((row) => row.certifiable !== true);
   const discoveries = new Map();
   for (const row of rows) {
     try {
-      discoveries.set(row.county, await discoverCounty(row, fixture));
+      discoveries.set(row.county, await discoverCounty(row, { fixture, auth }));
     } catch (error) {
       discoveries.set(row.county, [
         {
@@ -222,6 +304,20 @@ async function discoverAll(matrix, fixture) {
   return discoveries;
 }
 
+function buildAuthComparison({ matrix, anonymousDiscoveries, authenticatedDiscoveries }) {
+  const comparison = new Map();
+  for (const countyRow of (matrix.rows ?? []).filter((row) => row.certifiable !== true)) {
+    const anonymousCandidateCount = candidateCountFor(anonymousDiscoveries.get(countyRow.county) ?? [], countyRow);
+    const authenticatedCandidateCount = candidateCountFor(authenticatedDiscoveries.get(countyRow.county) ?? [], countyRow);
+    comparison.set(countyRow.county, {
+      anonymousCandidateCount,
+      authenticatedCandidateCount,
+      changed: anonymousCandidateCount !== authenticatedCandidateCount
+    });
+  }
+  return comparison;
+}
+
 function renderMarkdown(report) {
   const rows = report.rows
     .map(
@@ -232,11 +328,13 @@ function renderMarkdown(report) {
   return `# Statewide ArcGIS Source Discovery
 
 Generated: ${report.generatedAt}
+Access mode: ${report.accessMode}
 
 ## Summary
 
 - Counties checked: ${report.summary.countiesChecked}
 - Counties with candidates: ${report.summary.countiesWithCandidates}
+- Auth changed candidate visibility: ${report.rows.filter((row) => row.authChangedCandidateVisibility).length}
 - Database mutation attempted: ${report.databaseMutationAttempted ? "yes" : "no"}
 - Production binding allowed: ${report.productionBindingAllowed ? "yes" : "no"}
 - Certification allowed: ${report.certificationAllowed ? "yes" : "no"}
@@ -246,6 +344,13 @@ Generated: ${report.generatedAt}
 | County | FIPS | Prior access | Discovery status | Candidates | Top candidate | URL |
 | --- | --- | --- | --- | ---: | --- | --- |
 ${rows}
+
+## Auth Posture
+
+- Anonymous access remains the default.
+- Authenticated access is optional and only used when a local token is provided.
+- Token value recorded in evidence: no.
+- Authenticated discovery can improve source discovery, but it does not authorize certification, production binding, or DB mutation.
 `;
 }
 
@@ -255,14 +360,33 @@ export async function main(argv = process.argv.slice(2)) {
     matrix: args.get("matrix") ?? DEFAULT_MATRIX,
     outJson: args.get("out-json") ?? DEFAULT_OUT_JSON,
     outMd: args.get("out-md") ?? DEFAULT_OUT_MD,
-    fixture: args.has("fixture")
+    fixture: args.has("fixture"),
+    tokenFile: args.has("token-file") ? path.resolve(args.get("token-file")) : DEFAULT_TOKEN_FILE
   };
   const matrix = readJson(paths.matrix);
-  const discoveries = await discoverAll(matrix, paths.fixture);
-  const report = buildDiscoveryReport({ matrix, discoveries });
+  const auth = resolveArcgisAuth({ tokenFile: paths.tokenFile });
+  const discoveries = await discoverAll(matrix, { fixture: paths.fixture, auth });
+  let authComparison = new Map();
+  if (auth.accessMode === "authenticated") {
+    const anonymousAuth = resolveArcgisAuth({ env: {}, tokenFile: null });
+    const anonymousDiscoveries = await discoverAll(matrix, { fixture: paths.fixture, auth: anonymousAuth });
+    authComparison = buildAuthComparison({
+      matrix,
+      anonymousDiscoveries,
+      authenticatedDiscoveries: discoveries
+    });
+  }
+  const report = buildDiscoveryReport({
+    matrix,
+    discoveries,
+    accessMode: auth.accessMode,
+    authComparison,
+    authSummary: sanitizeAuth(auth)
+  });
   writeJson(paths.outJson, report);
   writeText(paths.outMd, renderMarkdown(report));
   console.log(`Statewide ArcGIS source discovery written: ${path.relative(repoRoot, paths.outJson).replaceAll(path.sep, "/")}`);
+  console.log(`ArcGIS access mode: ${report.accessMode}`);
   console.log(`Counties with candidates: ${report.summary.countiesWithCandidates}/${report.summary.countiesChecked}`);
   console.log(`Production binding allowed: ${report.productionBindingAllowed ? "yes" : "no"}`);
 }
