@@ -1,0 +1,80 @@
+{
+  "receiptVersion": "arcgis_wave1_source_native_identity_repair_dry_run_v1",
+  "receiptId": "arcgis_wave1_53019_source_native_identity_repair_dry_run",
+  "countyName": "Ferry County",
+  "fips": "53019",
+  "sourceCaptureReceipt": {
+    "receiptVersion": "arcgis_source_capture_wave1_v1",
+    "valid": true,
+    "county": "Ferry",
+    "fips": "53019",
+    "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+    "accessMethod": "arcgis_rest_county_filtered_query",
+    "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+    "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+    "sourceArtifact": {
+      "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53019-ferry/source-native-parcel-ids.jsonl",
+      "sizeBytes": 1556249,
+      "sha256": "44385e42e868f962b495ea4eafdc223988e966a1148353aa0f1f81113ff57555",
+      "lastWriteTime": "2026-05-27T15:37:12.836Z"
+    },
+    "identityComparison": {
+      "sourceNativeDistinctCount": 9195,
+      "sourcePrefixedDistinctCount": 9195,
+      "canonicalDistinctCount": 9195,
+      "exactSourceNativeOverlapCount": 0,
+      "prefixedSourceOverlapCount": 9195,
+      "prefixStrippedCanonicalOverlapCount": 9195,
+      "sourceNativeOnlyCount": 0,
+      "canonicalOnlyAfterPrefixStripCount": 0,
+      "sourceNativeOnlySamples": [],
+      "canonicalOnlyAfterPrefixStripSamples": [],
+      "sourceNativeSamples": [
+        "22801110001000",
+        "22802110001000",
+        "22803110001000",
+        "22804210002000",
+        "22804310001000",
+        "22804430001000",
+        "22805120001000",
+        "22805130001000",
+        "22805500001000",
+        "22805500003000"
+      ],
+      "canonicalSamples": [
+        "019-22801110001000",
+        "019-22802110001000",
+        "019-22803110001000",
+        "019-22804210002000",
+        "019-22804310001000",
+        "019-22804430001000",
+        "019-22805120001000",
+        "019-22805130001000",
+        "019-22805500001000",
+        "019-22805500003000"
+      ]
+    }
+  },
+  "sourceArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53019-ferry/source-native-parcel-ids.jsonl",
+    "sizeBytes": 1556249,
+    "sha256": "44385e42e868f962b495ea4eafdc223988e966a1148353aa0f1f81113ff57555",
+    "lastWriteTime": "2026-05-27T15:37:12.836Z"
+  },
+  "repairSemantics": {
+    "setParcelNumberFrom": "ORIG_PARCEL_ID",
+    "preservePrefixedValueAs": "LegacyImportedParcelKey",
+    "generateTerraFusionParcelKey": "53019:{ORIG_PARCEL_ID}",
+    "deleteRows": false
+  },
+  "counts": {
+    "activeCanonicalRows": 9195,
+    "proposedRows": 9195,
+    "duplicateCountyIdParcelNumberAfter": 0,
+    "missingSourceMappings": 0,
+    "blankProposedParcelNumbers": 0
+  },
+  "classification": "repair_dry_run_ready_for_authorization",
+  "certificationAllowed": false,
+  "productionBindingAllowed": false
+}

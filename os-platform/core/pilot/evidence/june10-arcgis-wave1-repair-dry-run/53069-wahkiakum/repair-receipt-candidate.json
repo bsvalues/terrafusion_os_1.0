@@ -1,0 +1,80 @@
+{
+  "receiptVersion": "arcgis_wave1_source_native_identity_repair_dry_run_v1",
+  "receiptId": "arcgis_wave1_53069_source_native_identity_repair_dry_run",
+  "countyName": "Wahkiakum County",
+  "fips": "53069",
+  "sourceCaptureReceipt": {
+    "receiptVersion": "arcgis_source_capture_wave1_v1",
+    "valid": true,
+    "county": "Wahkiakum",
+    "fips": "53069",
+    "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+    "accessMethod": "arcgis_rest_county_filtered_query",
+    "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+    "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+    "sourceArtifact": {
+      "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53069-wahkiakum/source-native-parcel-ids.jsonl",
+      "sizeBytes": 743721,
+      "sha256": "43b8fbf59cae5f1ce6115a534704ad38493b1af1936f0b155f8575a4a895d4b8",
+      "lastWriteTime": "2026-05-27T15:37:45.277Z"
+    },
+    "identityComparison": {
+      "sourceNativeDistinctCount": 4428,
+      "sourcePrefixedDistinctCount": 4428,
+      "canonicalDistinctCount": 4428,
+      "exactSourceNativeOverlapCount": 0,
+      "prefixedSourceOverlapCount": 4428,
+      "prefixStrippedCanonicalOverlapCount": 4428,
+      "sourceNativeOnlyCount": 0,
+      "canonicalOnlyAfterPrefixStripCount": 0,
+      "sourceNativeOnlySamples": [],
+      "canonicalOnlyAfterPrefixStripSamples": [],
+      "sourceNativeSamples": [
+        "010805110001",
+        "010805220001",
+        "010805230001",
+        "010805310005",
+        "010806110001",
+        "010806110002",
+        "010806110003",
+        "010806130001",
+        "010806130003",
+        "010806140001"
+      ],
+      "canonicalSamples": [
+        "069-010805110001",
+        "069-010805220001",
+        "069-010805230001",
+        "069-010805310005",
+        "069-010806110001",
+        "069-010806110002",
+        "069-010806110003",
+        "069-010806130001",
+        "069-010806130003",
+        "069-010806140001"
+      ]
+    }
+  },
+  "sourceArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53069-wahkiakum/source-native-parcel-ids.jsonl",
+    "sizeBytes": 743721,
+    "sha256": "43b8fbf59cae5f1ce6115a534704ad38493b1af1936f0b155f8575a4a895d4b8",
+    "lastWriteTime": "2026-05-27T15:37:45.277Z"
+  },
+  "repairSemantics": {
+    "setParcelNumberFrom": "ORIG_PARCEL_ID",
+    "preservePrefixedValueAs": "LegacyImportedParcelKey",
+    "generateTerraFusionParcelKey": "53069:{ORIG_PARCEL_ID}",
+    "deleteRows": false
+  },
+  "counts": {
+    "activeCanonicalRows": 4428,
+    "proposedRows": 4428,
+    "duplicateCountyIdParcelNumberAfter": 0,
+    "missingSourceMappings": 0,
+    "blankProposedParcelNumbers": 0
+  },
+  "classification": "repair_dry_run_ready_for_authorization",
+  "certificationAllowed": false,
+  "productionBindingAllowed": false
+}

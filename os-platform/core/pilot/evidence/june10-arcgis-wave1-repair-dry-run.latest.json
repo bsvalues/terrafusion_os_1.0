@@ -1,0 +1,963 @@
+{
+  "generatedAt": "2026-05-27T15:48:44.487Z",
+  "scope": "ArcGIS Wave 1 source-native identity repair dry-run and Garfield delta adjudication.",
+  "summary": {
+    "cleanRepairReadyCount": 4,
+    "proposedRows": 34536,
+    "duplicateCountyIdParcelNumberAfter": 0,
+    "garfieldRepairAllowed": false,
+    "byClassification": {
+      "repair_dry_run_ready_for_authorization": 4
+    }
+  },
+  "repairDryRuns": [
+    {
+      "county": "Columbia",
+      "fips": "53013",
+      "classification": "repair_dry_run_ready_for_authorization",
+      "validation": {
+        "activeCanonicalRows": 5280,
+        "proposedRows": 5280,
+        "sourceRows": 5477,
+        "duplicateCountyIdParcelNumberAfter": 0,
+        "missingSourceMappings": 0,
+        "blankProposedParcelNumbers": 0,
+        "proposedRowsSha256": "5ba6cfc97fe601e3832fd3d5d25a7a5ed16ed013cb338da3f12c85e438eca3b0",
+        "proposedRowsSample": [
+          {
+            "tfParcelId": "ecc83347-13a3-9da0-f45e-72596839c058",
+            "countyId": "9b67897f-57b2-8bb2-5e7f-8918958ea004",
+            "currentParcelNumber": "013-1000000100060",
+            "proposedParcelNumber": "1000000100060",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "013-1000000100060",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53013:1000000100060",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "43e50329-3bb6-b25a-5f29-93643aba9f72",
+            "countyId": "9b67897f-57b2-8bb2-5e7f-8918958ea004",
+            "currentParcelNumber": "013-1000000300010",
+            "proposedParcelNumber": "1000000300010",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "013-1000000300010",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53013:1000000300010",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "7043c93a-9f73-0df7-4643-403ecfa9c5e7",
+            "countyId": "9b67897f-57b2-8bb2-5e7f-8918958ea004",
+            "currentParcelNumber": "013-1010430020001",
+            "proposedParcelNumber": "1010430020001",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "013-1010430020001",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53013:1010430020001",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "1fc939c8-3e7f-b95e-008a-6c9bfbad673c",
+            "countyId": "9b67897f-57b2-8bb2-5e7f-8918958ea004",
+            "currentParcelNumber": "013-1010430020002",
+            "proposedParcelNumber": "1010430020002",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "013-1010430020002",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53013:1010430020002",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "456eb2a3-405c-4afc-0384-35a9a1234a14",
+            "countyId": "9b67897f-57b2-8bb2-5e7f-8918958ea004",
+            "currentParcelNumber": "013-1010430120001",
+            "proposedParcelNumber": "1010430120001",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "013-1010430120001",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53013:1010430120001",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "8aec7bcc-c0e1-cf1e-f5ed-245f2ff6e582",
+            "countyId": "9b67897f-57b2-8bb2-5e7f-8918958ea004",
+            "currentParcelNumber": "013-1010431020000",
+            "proposedParcelNumber": "1010431020000",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "013-1010431020000",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53013:1010431020000",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "6c4ba412-f4d1-128c-22ec-ed645309ee56",
+            "countyId": "9b67897f-57b2-8bb2-5e7f-8918958ea004",
+            "currentParcelNumber": "013-1010431060000",
+            "proposedParcelNumber": "1010431060000",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "013-1010431060000",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53013:1010431060000",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "0ddb809d-993b-1877-210e-2cb3d874a4ca",
+            "countyId": "9b67897f-57b2-8bb2-5e7f-8918958ea004",
+            "currentParcelNumber": "013-1010440010000",
+            "proposedParcelNumber": "1010440010000",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "013-1010440010000",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53013:1010440010000",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          }
+        ]
+      },
+      "receiptCandidate": {
+        "receiptVersion": "arcgis_wave1_source_native_identity_repair_dry_run_v1",
+        "receiptId": "arcgis_wave1_53013_source_native_identity_repair_dry_run",
+        "countyName": "Columbia County",
+        "fips": "53013",
+        "sourceCaptureReceipt": {
+          "receiptVersion": "arcgis_source_capture_wave1_v1",
+          "valid": true,
+          "county": "Columbia",
+          "fips": "53013",
+          "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+          "accessMethod": "arcgis_rest_county_filtered_query",
+          "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+          "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+          "sourceArtifact": {
+            "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53013-columbia/source-native-parcel-ids.jsonl",
+            "sizeBytes": 913119,
+            "sha256": "4d3e83ea2f0844d7488202b3f521370cb14510a50e4b31d7ecd8cfbbdc7d1027",
+            "lastWriteTime": "2026-05-27T15:37:02.438Z"
+          },
+          "identityComparison": {
+            "sourceNativeDistinctCount": 5280,
+            "sourcePrefixedDistinctCount": 5280,
+            "canonicalDistinctCount": 5280,
+            "exactSourceNativeOverlapCount": 0,
+            "prefixedSourceOverlapCount": 5280,
+            "prefixStrippedCanonicalOverlapCount": 5280,
+            "sourceNativeOnlyCount": 0,
+            "canonicalOnlyAfterPrefixStripCount": 0,
+            "sourceNativeOnlySamples": [],
+            "canonicalOnlyAfterPrefixStripSamples": [],
+            "sourceNativeSamples": [
+              "1000000100060",
+              "1000000300010",
+              "1010430020001",
+              "1010430020002",
+              "1010430120001",
+              "1010431020000",
+              "1010431060000",
+              "1010440010000",
+              "1010450020001",
+              "1010450020002"
+            ],
+            "canonicalSamples": [
+              "013-1000000100060",
+              "013-1000000300010",
+              "013-1010430020001",
+              "013-1010430020002",
+              "013-1010430120001",
+              "013-1010431020000",
+              "013-1010431060000",
+              "013-1010440010000",
+              "013-1010450020001",
+              "013-1010450020002"
+            ]
+          }
+        },
+        "sourceArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53013-columbia/source-native-parcel-ids.jsonl",
+          "sizeBytes": 913119,
+          "sha256": "4d3e83ea2f0844d7488202b3f521370cb14510a50e4b31d7ecd8cfbbdc7d1027",
+          "lastWriteTime": "2026-05-27T15:37:02.438Z"
+        },
+        "repairSemantics": {
+          "setParcelNumberFrom": "ORIG_PARCEL_ID",
+          "preservePrefixedValueAs": "LegacyImportedParcelKey",
+          "generateTerraFusionParcelKey": "53013:{ORIG_PARCEL_ID}",
+          "deleteRows": false
+        },
+        "counts": {
+          "activeCanonicalRows": 5280,
+          "proposedRows": 5280,
+          "duplicateCountyIdParcelNumberAfter": 0,
+          "missingSourceMappings": 0,
+          "blankProposedParcelNumbers": 0
+        },
+        "classification": "repair_dry_run_ready_for_authorization",
+        "certificationAllowed": false,
+        "productionBindingAllowed": false
+      },
+      "rollbackPlan": {
+        "requiredPreMutationBackup": "Before execution, export active canonical_tf.tf_parcel rows for Columbia 53013 into a dated backup table.",
+        "rollbackStrategy": "Restore ParcelNumber, LegacyImportedParcelKey, TerraFusionParcelKey, IdentityRepairReceiptId, and UpdatedAt from the pre-mutation backup in one transaction.",
+        "rollbackSqlTemplate": "-- Template only. Requires a populated backup table before any mutation.\nBEGIN;\n\n-- UPDATE canonical_tf.tf_parcel p\n-- SET\n--   \"ParcelNumber\" = b.\"ParcelNumber\",\n--   \"LegacyImportedParcelKey\" = b.\"LegacyImportedParcelKey\",\n--   \"TerraFusionParcelKey\" = b.\"TerraFusionParcelKey\",\n--   \"IdentityRepairReceiptId\" = b.\"IdentityRepairReceiptId\",\n--   \"UpdatedAt\" = b.\"UpdatedAt\"\n-- FROM backup.arcgis_wave1_53013_tf_parcel_identity b\n-- WHERE p.\"TfParcelId\" = b.\"TfParcelId\";\n\nROLLBACK; -- template only\n",
+        "receiptId": "arcgis_wave1_53013_source_native_identity_repair_dry_run"
+      },
+      "blockers": [],
+      "doctrine": {
+        "databaseMutationAttempted": false,
+        "productionBindingAllowed": false,
+        "runtimeClaimAllowed": false,
+        "certificationAllowed": false
+      },
+      "artifacts": {
+        "proposedRowsPath": "os-platform/core/pilot/evidence/june10-arcgis-wave1-repair-dry-run/53013-columbia/proposed-repair-rows.jsonl",
+        "repairReceiptCandidatePath": "os-platform/core/pilot/evidence/june10-arcgis-wave1-repair-dry-run/53013-columbia/repair-receipt-candidate.json",
+        "rollbackPlanPath": "os-platform/core/pilot/evidence/june10-arcgis-wave1-repair-dry-run/53013-columbia/rollback-plan.md",
+        "proposedRowsSha256": "a61da0637e3dfa5e34bbd88b07352c669880421e9b9624ce6c44dfc4f73f2d04",
+        "repairReceiptCandidateSha256": "6c349d3d90be1dcbf29311dd588e61296f81fb38f09500a17f3cb316838302ff",
+        "rollbackPlanSha256": "45af43bcc1c8a6140343e3971ca060ea058115e56f758e04c268662a8def015e"
+      }
+    },
+    {
+      "county": "Ferry",
+      "fips": "53019",
+      "classification": "repair_dry_run_ready_for_authorization",
+      "validation": {
+        "activeCanonicalRows": 9195,
+        "proposedRows": 9195,
+        "sourceRows": 9229,
+        "duplicateCountyIdParcelNumberAfter": 0,
+        "missingSourceMappings": 0,
+        "blankProposedParcelNumbers": 0,
+        "proposedRowsSha256": "d54c8946ef1a9eb1d9692cb78d2082202c9e8c80e2f93664b0edb6815cb58325",
+        "proposedRowsSample": [
+          {
+            "tfParcelId": "809aa782-b131-8fd4-3f5c-e866a73630db",
+            "countyId": "23bfb659-7ed8-4f4f-47e4-84e2eaece11c",
+            "currentParcelNumber": "019-22801110001000",
+            "proposedParcelNumber": "22801110001000",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "019-22801110001000",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53019:22801110001000",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "dc183fbd-c19f-99ba-b5d8-c55bdbfe037f",
+            "countyId": "23bfb659-7ed8-4f4f-47e4-84e2eaece11c",
+            "currentParcelNumber": "019-22802110001000",
+            "proposedParcelNumber": "22802110001000",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "019-22802110001000",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53019:22802110001000",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "626aecc9-0532-1b3c-6bb2-cc4a58a39724",
+            "countyId": "23bfb659-7ed8-4f4f-47e4-84e2eaece11c",
+            "currentParcelNumber": "019-22803110001000",
+            "proposedParcelNumber": "22803110001000",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "019-22803110001000",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53019:22803110001000",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "a8f08e3f-e41b-b54c-a03a-952d6c2676bb",
+            "countyId": "23bfb659-7ed8-4f4f-47e4-84e2eaece11c",
+            "currentParcelNumber": "019-22804210002000",
+            "proposedParcelNumber": "22804210002000",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "019-22804210002000",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53019:22804210002000",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "5329ee2d-484c-7fb6-9614-84a3f97f4c92",
+            "countyId": "23bfb659-7ed8-4f4f-47e4-84e2eaece11c",
+            "currentParcelNumber": "019-22804310001000",
+            "proposedParcelNumber": "22804310001000",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "019-22804310001000",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53019:22804310001000",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "715c77cb-f56b-5e2a-cb0e-dddf6893d33f",
+            "countyId": "23bfb659-7ed8-4f4f-47e4-84e2eaece11c",
+            "currentParcelNumber": "019-22804430001000",
+            "proposedParcelNumber": "22804430001000",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "019-22804430001000",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53019:22804430001000",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "eb3a7166-c408-b986-a553-8fd208f218cc",
+            "countyId": "23bfb659-7ed8-4f4f-47e4-84e2eaece11c",
+            "currentParcelNumber": "019-22805120001000",
+            "proposedParcelNumber": "22805120001000",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "019-22805120001000",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53019:22805120001000",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "6cde5d50-0a31-89fe-25f1-eab3df922919",
+            "countyId": "23bfb659-7ed8-4f4f-47e4-84e2eaece11c",
+            "currentParcelNumber": "019-22805130001000",
+            "proposedParcelNumber": "22805130001000",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "019-22805130001000",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53019:22805130001000",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          }
+        ]
+      },
+      "receiptCandidate": {
+        "receiptVersion": "arcgis_wave1_source_native_identity_repair_dry_run_v1",
+        "receiptId": "arcgis_wave1_53019_source_native_identity_repair_dry_run",
+        "countyName": "Ferry County",
+        "fips": "53019",
+        "sourceCaptureReceipt": {
+          "receiptVersion": "arcgis_source_capture_wave1_v1",
+          "valid": true,
+          "county": "Ferry",
+          "fips": "53019",
+          "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+          "accessMethod": "arcgis_rest_county_filtered_query",
+          "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+          "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+          "sourceArtifact": {
+            "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53019-ferry/source-native-parcel-ids.jsonl",
+            "sizeBytes": 1556249,
+            "sha256": "44385e42e868f962b495ea4eafdc223988e966a1148353aa0f1f81113ff57555",
+            "lastWriteTime": "2026-05-27T15:37:12.836Z"
+          },
+          "identityComparison": {
+            "sourceNativeDistinctCount": 9195,
+            "sourcePrefixedDistinctCount": 9195,
+            "canonicalDistinctCount": 9195,
+            "exactSourceNativeOverlapCount": 0,
+            "prefixedSourceOverlapCount": 9195,
+            "prefixStrippedCanonicalOverlapCount": 9195,
+            "sourceNativeOnlyCount": 0,
+            "canonicalOnlyAfterPrefixStripCount": 0,
+            "sourceNativeOnlySamples": [],
+            "canonicalOnlyAfterPrefixStripSamples": [],
+            "sourceNativeSamples": [
+              "22801110001000",
+              "22802110001000",
+              "22803110001000",
+              "22804210002000",
+              "22804310001000",
+              "22804430001000",
+              "22805120001000",
+              "22805130001000",
+              "22805500001000",
+              "22805500003000"
+            ],
+            "canonicalSamples": [
+              "019-22801110001000",
+              "019-22802110001000",
+              "019-22803110001000",
+              "019-22804210002000",
+              "019-22804310001000",
+              "019-22804430001000",
+              "019-22805120001000",
+              "019-22805130001000",
+              "019-22805500001000",
+              "019-22805500003000"
+            ]
+          }
+        },
+        "sourceArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53019-ferry/source-native-parcel-ids.jsonl",
+          "sizeBytes": 1556249,
+          "sha256": "44385e42e868f962b495ea4eafdc223988e966a1148353aa0f1f81113ff57555",
+          "lastWriteTime": "2026-05-27T15:37:12.836Z"
+        },
+        "repairSemantics": {
+          "setParcelNumberFrom": "ORIG_PARCEL_ID",
+          "preservePrefixedValueAs": "LegacyImportedParcelKey",
+          "generateTerraFusionParcelKey": "53019:{ORIG_PARCEL_ID}",
+          "deleteRows": false
+        },
+        "counts": {
+          "activeCanonicalRows": 9195,
+          "proposedRows": 9195,
+          "duplicateCountyIdParcelNumberAfter": 0,
+          "missingSourceMappings": 0,
+          "blankProposedParcelNumbers": 0
+        },
+        "classification": "repair_dry_run_ready_for_authorization",
+        "certificationAllowed": false,
+        "productionBindingAllowed": false
+      },
+      "rollbackPlan": {
+        "requiredPreMutationBackup": "Before execution, export active canonical_tf.tf_parcel rows for Ferry 53019 into a dated backup table.",
+        "rollbackStrategy": "Restore ParcelNumber, LegacyImportedParcelKey, TerraFusionParcelKey, IdentityRepairReceiptId, and UpdatedAt from the pre-mutation backup in one transaction.",
+        "rollbackSqlTemplate": "-- Template only. Requires a populated backup table before any mutation.\nBEGIN;\n\n-- UPDATE canonical_tf.tf_parcel p\n-- SET\n--   \"ParcelNumber\" = b.\"ParcelNumber\",\n--   \"LegacyImportedParcelKey\" = b.\"LegacyImportedParcelKey\",\n--   \"TerraFusionParcelKey\" = b.\"TerraFusionParcelKey\",\n--   \"IdentityRepairReceiptId\" = b.\"IdentityRepairReceiptId\",\n--   \"UpdatedAt\" = b.\"UpdatedAt\"\n-- FROM backup.arcgis_wave1_53019_tf_parcel_identity b\n-- WHERE p.\"TfParcelId\" = b.\"TfParcelId\";\n\nROLLBACK; -- template only\n",
+        "receiptId": "arcgis_wave1_53019_source_native_identity_repair_dry_run"
+      },
+      "blockers": [],
+      "doctrine": {
+        "databaseMutationAttempted": false,
+        "productionBindingAllowed": false,
+        "runtimeClaimAllowed": false,
+        "certificationAllowed": false
+      },
+      "artifacts": {
+        "proposedRowsPath": "os-platform/core/pilot/evidence/june10-arcgis-wave1-repair-dry-run/53019-ferry/proposed-repair-rows.jsonl",
+        "repairReceiptCandidatePath": "os-platform/core/pilot/evidence/june10-arcgis-wave1-repair-dry-run/53019-ferry/repair-receipt-candidate.json",
+        "rollbackPlanPath": "os-platform/core/pilot/evidence/june10-arcgis-wave1-repair-dry-run/53019-ferry/rollback-plan.md",
+        "proposedRowsSha256": "b2c8f57b7e2b49442205e802264803d1cb1a356eb8f1e089c5a78436e1874735",
+        "repairReceiptCandidateSha256": "3db6cd3f476541727532712157521ccd8dfe6c7a40640c34b3d68a8a43078a31",
+        "rollbackPlanSha256": "7bb7de2d937cbe7a8111ad00a3bc5ed7a5d2cbd92e626aae4faa091c1b0d83a1"
+      }
+    },
+    {
+      "county": "Pend Oreille",
+      "fips": "53051",
+      "classification": "repair_dry_run_ready_for_authorization",
+      "validation": {
+        "activeCanonicalRows": 15633,
+        "proposedRows": 15633,
+        "sourceRows": 16852,
+        "duplicateCountyIdParcelNumberAfter": 0,
+        "missingSourceMappings": 0,
+        "blankProposedParcelNumbers": 0,
+        "proposedRowsSha256": "0e1a220e3830d67ae97c4b4ed6d3d30d14f7e8b86b745d06168b792f954419e5",
+        "proposedRowsSample": [
+          {
+            "tfParcelId": "d5c6699f-b868-3356-12b5-0b128890157a",
+            "countyId": "731dcce0-3af7-50d8-b7e0-ea5a5f54cd81",
+            "currentParcelNumber": "051-413701400001",
+            "proposedParcelNumber": "413701400001",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "051-413701400001",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53051:413701400001",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "30db169e-90a8-7e8a-c50c-30a826a74804",
+            "countyId": "731dcce0-3af7-50d8-b7e0-ea5a5f54cd81",
+            "currentParcelNumber": "051-413710300001",
+            "proposedParcelNumber": "413710300001",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "051-413710300001",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53051:413710300001",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "12123e8c-7140-7b03-7ad1-59ea02a08a2a",
+            "countyId": "731dcce0-3af7-50d8-b7e0-ea5a5f54cd81",
+            "currentParcelNumber": "051-413712100001",
+            "proposedParcelNumber": "413712100001",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "051-413712100001",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53051:413712100001",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "f89468b3-42a9-de2c-f6c4-d276e151016b",
+            "countyId": "731dcce0-3af7-50d8-b7e0-ea5a5f54cd81",
+            "currentParcelNumber": "051-413713230001",
+            "proposedParcelNumber": "413713230001",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "051-413713230001",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53051:413713230001",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "5b0db1b3-4811-85c5-ce4f-fcf329e1ecab",
+            "countyId": "731dcce0-3af7-50d8-b7e0-ea5a5f54cd81",
+            "currentParcelNumber": "051-413713310001",
+            "proposedParcelNumber": "413713310001",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "051-413713310001",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53051:413713310001",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "e4abe17d-9794-7fef-0281-b8a5a7a51407",
+            "countyId": "731dcce0-3af7-50d8-b7e0-ea5a5f54cd81",
+            "currentParcelNumber": "051-413713320001",
+            "proposedParcelNumber": "413713320001",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "051-413713320001",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53051:413713320001",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "46c0829b-fdab-6034-5bec-d2f210e258d1",
+            "countyId": "731dcce0-3af7-50d8-b7e0-ea5a5f54cd81",
+            "currentParcelNumber": "051-413713320003",
+            "proposedParcelNumber": "413713320003",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "051-413713320003",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53051:413713320003",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "b339bcfa-c5d4-b332-b079-6be8bca0e6ee",
+            "countyId": "731dcce0-3af7-50d8-b7e0-ea5a5f54cd81",
+            "currentParcelNumber": "051-413714410001",
+            "proposedParcelNumber": "413714410001",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "051-413714410001",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53051:413714410001",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          }
+        ]
+      },
+      "receiptCandidate": {
+        "receiptVersion": "arcgis_wave1_source_native_identity_repair_dry_run_v1",
+        "receiptId": "arcgis_wave1_53051_source_native_identity_repair_dry_run",
+        "countyName": "Pend Oreille County",
+        "fips": "53051",
+        "sourceCaptureReceipt": {
+          "receiptVersion": "arcgis_source_capture_wave1_v1",
+          "valid": true,
+          "county": "Pend Oreille",
+          "fips": "53051",
+          "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+          "accessMethod": "arcgis_rest_county_filtered_query",
+          "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+          "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+          "sourceArtifact": {
+            "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53051-pend-oreille/source-native-parcel-ids.jsonl",
+            "sizeBytes": 2994585,
+            "sha256": "219749131e11c3884bf134795ead5004b03b77ebf45f55b7bc0bc567d075c2db",
+            "lastWriteTime": "2026-05-27T15:37:40.407Z"
+          },
+          "identityComparison": {
+            "sourceNativeDistinctCount": 15633,
+            "sourcePrefixedDistinctCount": 15633,
+            "canonicalDistinctCount": 15633,
+            "exactSourceNativeOverlapCount": 0,
+            "prefixedSourceOverlapCount": 15633,
+            "prefixStrippedCanonicalOverlapCount": 15633,
+            "sourceNativeOnlyCount": 0,
+            "canonicalOnlyAfterPrefixStripCount": 0,
+            "sourceNativeOnlySamples": [],
+            "canonicalOnlyAfterPrefixStripSamples": [],
+            "sourceNativeSamples": [
+              "413701400001",
+              "413710300001",
+              "413712100001",
+              "413713230001",
+              "413713310001",
+              "413713320001",
+              "413713320003",
+              "413714410001",
+              "413715200001",
+              "413715220001"
+            ],
+            "canonicalSamples": [
+              "051-413701400001",
+              "051-413710300001",
+              "051-413712100001",
+              "051-413713230001",
+              "051-413713310001",
+              "051-413713320001",
+              "051-413713320003",
+              "051-413714410001",
+              "051-413715200001",
+              "051-413715220001"
+            ]
+          }
+        },
+        "sourceArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53051-pend-oreille/source-native-parcel-ids.jsonl",
+          "sizeBytes": 2994585,
+          "sha256": "219749131e11c3884bf134795ead5004b03b77ebf45f55b7bc0bc567d075c2db",
+          "lastWriteTime": "2026-05-27T15:37:40.407Z"
+        },
+        "repairSemantics": {
+          "setParcelNumberFrom": "ORIG_PARCEL_ID",
+          "preservePrefixedValueAs": "LegacyImportedParcelKey",
+          "generateTerraFusionParcelKey": "53051:{ORIG_PARCEL_ID}",
+          "deleteRows": false
+        },
+        "counts": {
+          "activeCanonicalRows": 15633,
+          "proposedRows": 15633,
+          "duplicateCountyIdParcelNumberAfter": 0,
+          "missingSourceMappings": 0,
+          "blankProposedParcelNumbers": 0
+        },
+        "classification": "repair_dry_run_ready_for_authorization",
+        "certificationAllowed": false,
+        "productionBindingAllowed": false
+      },
+      "rollbackPlan": {
+        "requiredPreMutationBackup": "Before execution, export active canonical_tf.tf_parcel rows for Pend Oreille 53051 into a dated backup table.",
+        "rollbackStrategy": "Restore ParcelNumber, LegacyImportedParcelKey, TerraFusionParcelKey, IdentityRepairReceiptId, and UpdatedAt from the pre-mutation backup in one transaction.",
+        "rollbackSqlTemplate": "-- Template only. Requires a populated backup table before any mutation.\nBEGIN;\n\n-- UPDATE canonical_tf.tf_parcel p\n-- SET\n--   \"ParcelNumber\" = b.\"ParcelNumber\",\n--   \"LegacyImportedParcelKey\" = b.\"LegacyImportedParcelKey\",\n--   \"TerraFusionParcelKey\" = b.\"TerraFusionParcelKey\",\n--   \"IdentityRepairReceiptId\" = b.\"IdentityRepairReceiptId\",\n--   \"UpdatedAt\" = b.\"UpdatedAt\"\n-- FROM backup.arcgis_wave1_53051_tf_parcel_identity b\n-- WHERE p.\"TfParcelId\" = b.\"TfParcelId\";\n\nROLLBACK; -- template only\n",
+        "receiptId": "arcgis_wave1_53051_source_native_identity_repair_dry_run"
+      },
+      "blockers": [],
+      "doctrine": {
+        "databaseMutationAttempted": false,
+        "productionBindingAllowed": false,
+        "runtimeClaimAllowed": false,
+        "certificationAllowed": false
+      },
+      "artifacts": {
+        "proposedRowsPath": "os-platform/core/pilot/evidence/june10-arcgis-wave1-repair-dry-run/53051-pend-oreille/proposed-repair-rows.jsonl",
+        "repairReceiptCandidatePath": "os-platform/core/pilot/evidence/june10-arcgis-wave1-repair-dry-run/53051-pend-oreille/repair-receipt-candidate.json",
+        "rollbackPlanPath": "os-platform/core/pilot/evidence/june10-arcgis-wave1-repair-dry-run/53051-pend-oreille/rollback-plan.md",
+        "proposedRowsSha256": "95f6471151ab2905328b101faab5b79ee2cadaf7a2a78d73c1088acbe0c24974",
+        "repairReceiptCandidateSha256": "e6c569ab5ff078be532432593c92ff3703e9635605386e66834b2c6d45f693e8",
+        "rollbackPlanSha256": "478e042cbaf7cf7452f13f0e02665465b63f84b97b7bda149855ca8fc15c783c"
+      }
+    },
+    {
+      "county": "Wahkiakum",
+      "fips": "53069",
+      "classification": "repair_dry_run_ready_for_authorization",
+      "validation": {
+        "activeCanonicalRows": 4428,
+        "proposedRows": 4428,
+        "sourceRows": 4441,
+        "duplicateCountyIdParcelNumberAfter": 0,
+        "missingSourceMappings": 0,
+        "blankProposedParcelNumbers": 0,
+        "proposedRowsSha256": "6af9aeda7773da2b0414de15c35a68c2efb651b80a7fe82614025927a8523a63",
+        "proposedRowsSample": [
+          {
+            "tfParcelId": "f77da313-35d8-4ff0-5c43-09124d2b47c9",
+            "countyId": "b0e8369a-87dd-1927-9e3a-205b6d7914f2",
+            "currentParcelNumber": "069-010805110001",
+            "proposedParcelNumber": "010805110001",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "069-010805110001",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53069:010805110001",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "4fa03902-ab91-3552-19d0-dc54ceb5c594",
+            "countyId": "b0e8369a-87dd-1927-9e3a-205b6d7914f2",
+            "currentParcelNumber": "069-010805220001",
+            "proposedParcelNumber": "010805220001",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "069-010805220001",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53069:010805220001",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "6ddad783-94cb-c93e-66ec-dd1d67f7459f",
+            "countyId": "b0e8369a-87dd-1927-9e3a-205b6d7914f2",
+            "currentParcelNumber": "069-010805230001",
+            "proposedParcelNumber": "010805230001",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "069-010805230001",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53069:010805230001",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "8f76b1b5-4a7b-e821-cdeb-4ed4cb717ca7",
+            "countyId": "b0e8369a-87dd-1927-9e3a-205b6d7914f2",
+            "currentParcelNumber": "069-010805310005",
+            "proposedParcelNumber": "010805310005",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "069-010805310005",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53069:010805310005",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "c6739205-6a1c-3a25-4d6a-9d23f35b24d4",
+            "countyId": "b0e8369a-87dd-1927-9e3a-205b6d7914f2",
+            "currentParcelNumber": "069-010806110001",
+            "proposedParcelNumber": "010806110001",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "069-010806110001",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53069:010806110001",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "41e7c36a-04e9-938f-f1cd-3605c6f18a3a",
+            "countyId": "b0e8369a-87dd-1927-9e3a-205b6d7914f2",
+            "currentParcelNumber": "069-010806110002",
+            "proposedParcelNumber": "010806110002",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "069-010806110002",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53069:010806110002",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "ea7a4462-8e7b-0690-c776-0e41ab8de0c0",
+            "countyId": "b0e8369a-87dd-1927-9e3a-205b6d7914f2",
+            "currentParcelNumber": "069-010806110003",
+            "proposedParcelNumber": "010806110003",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "069-010806110003",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53069:010806110003",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          },
+          {
+            "tfParcelId": "ece8425f-7149-f9a2-7a25-62c8e935c66f",
+            "countyId": "b0e8369a-87dd-1927-9e3a-205b6d7914f2",
+            "currentParcelNumber": "069-010806130001",
+            "proposedParcelNumber": "010806130001",
+            "currentLegacyImportedParcelKey": null,
+            "proposedLegacyImportedParcelKey": "069-010806130001",
+            "currentTerraFusionParcelKey": null,
+            "proposedTerraFusionParcelKey": "53069:010806130001",
+            "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+            "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+            "action": "restore_source_native_parcel_number_from_arcgis_orig_parcel_id",
+            "deleteRow": false
+          }
+        ]
+      },
+      "receiptCandidate": {
+        "receiptVersion": "arcgis_wave1_source_native_identity_repair_dry_run_v1",
+        "receiptId": "arcgis_wave1_53069_source_native_identity_repair_dry_run",
+        "countyName": "Wahkiakum County",
+        "fips": "53069",
+        "sourceCaptureReceipt": {
+          "receiptVersion": "arcgis_source_capture_wave1_v1",
+          "valid": true,
+          "county": "Wahkiakum",
+          "fips": "53069",
+          "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+          "accessMethod": "arcgis_rest_county_filtered_query",
+          "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+          "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+          "sourceArtifact": {
+            "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53069-wahkiakum/source-native-parcel-ids.jsonl",
+            "sizeBytes": 743721,
+            "sha256": "43b8fbf59cae5f1ce6115a534704ad38493b1af1936f0b155f8575a4a895d4b8",
+            "lastWriteTime": "2026-05-27T15:37:45.277Z"
+          },
+          "identityComparison": {
+            "sourceNativeDistinctCount": 4428,
+            "sourcePrefixedDistinctCount": 4428,
+            "canonicalDistinctCount": 4428,
+            "exactSourceNativeOverlapCount": 0,
+            "prefixedSourceOverlapCount": 4428,
+            "prefixStrippedCanonicalOverlapCount": 4428,
+            "sourceNativeOnlyCount": 0,
+            "canonicalOnlyAfterPrefixStripCount": 0,
+            "sourceNativeOnlySamples": [],
+            "canonicalOnlyAfterPrefixStripSamples": [],
+            "sourceNativeSamples": [
+              "010805110001",
+              "010805220001",
+              "010805230001",
+              "010805310005",
+              "010806110001",
+              "010806110002",
+              "010806110003",
+              "010806130001",
+              "010806130003",
+              "010806140001"
+            ],
+            "canonicalSamples": [
+              "069-010805110001",
+              "069-010805220001",
+              "069-010805230001",
+              "069-010805310005",
+              "069-010806110001",
+              "069-010806110002",
+              "069-010806110003",
+              "069-010806130001",
+              "069-010806130003",
+              "069-010806140001"
+            ]
+          }
+        },
+        "sourceArtifact": {
+          "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53069-wahkiakum/source-native-parcel-ids.jsonl",
+          "sizeBytes": 743721,
+          "sha256": "43b8fbf59cae5f1ce6115a534704ad38493b1af1936f0b155f8575a4a895d4b8",
+          "lastWriteTime": "2026-05-27T15:37:45.277Z"
+        },
+        "repairSemantics": {
+          "setParcelNumberFrom": "ORIG_PARCEL_ID",
+          "preservePrefixedValueAs": "LegacyImportedParcelKey",
+          "generateTerraFusionParcelKey": "53069:{ORIG_PARCEL_ID}",
+          "deleteRows": false
+        },
+        "counts": {
+          "activeCanonicalRows": 4428,
+          "proposedRows": 4428,
+          "duplicateCountyIdParcelNumberAfter": 0,
+          "missingSourceMappings": 0,
+          "blankProposedParcelNumbers": 0
+        },
+        "classification": "repair_dry_run_ready_for_authorization",
+        "certificationAllowed": false,
+        "productionBindingAllowed": false
+      },
+      "rollbackPlan": {
+        "requiredPreMutationBackup": "Before execution, export active canonical_tf.tf_parcel rows for Wahkiakum 53069 into a dated backup table.",
+        "rollbackStrategy": "Restore ParcelNumber, LegacyImportedParcelKey, TerraFusionParcelKey, IdentityRepairReceiptId, and UpdatedAt from the pre-mutation backup in one transaction.",
+        "rollbackSqlTemplate": "-- Template only. Requires a populated backup table before any mutation.\nBEGIN;\n\n-- UPDATE canonical_tf.tf_parcel p\n-- SET\n--   \"ParcelNumber\" = b.\"ParcelNumber\",\n--   \"LegacyImportedParcelKey\" = b.\"LegacyImportedParcelKey\",\n--   \"TerraFusionParcelKey\" = b.\"TerraFusionParcelKey\",\n--   \"IdentityRepairReceiptId\" = b.\"IdentityRepairReceiptId\",\n--   \"UpdatedAt\" = b.\"UpdatedAt\"\n-- FROM backup.arcgis_wave1_53069_tf_parcel_identity b\n-- WHERE p.\"TfParcelId\" = b.\"TfParcelId\";\n\nROLLBACK; -- template only\n",
+        "receiptId": "arcgis_wave1_53069_source_native_identity_repair_dry_run"
+      },
+      "blockers": [],
+      "doctrine": {
+        "databaseMutationAttempted": false,
+        "productionBindingAllowed": false,
+        "runtimeClaimAllowed": false,
+        "certificationAllowed": false
+      },
+      "artifacts": {
+        "proposedRowsPath": "os-platform/core/pilot/evidence/june10-arcgis-wave1-repair-dry-run/53069-wahkiakum/proposed-repair-rows.jsonl",
+        "repairReceiptCandidatePath": "os-platform/core/pilot/evidence/june10-arcgis-wave1-repair-dry-run/53069-wahkiakum/repair-receipt-candidate.json",
+        "rollbackPlanPath": "os-platform/core/pilot/evidence/june10-arcgis-wave1-repair-dry-run/53069-wahkiakum/rollback-plan.md",
+        "proposedRowsSha256": "672a1a88b747cb31addebdf7f49d34b60ea195e428005d50cdd3ba456780bbc7",
+        "repairReceiptCandidateSha256": "9d738fdc0d3673b409d663212198477ed8daddd770dc57df077dc85fcad2fe5c",
+        "rollbackPlanSha256": "ea9379b51b00f578fb2621ccd09fbb0b7d5d04ee1a0c22374540fa7e1fcc9eff"
+      }
+    }
+  ],
+  "garfieldAdjudication": {
+    "county": "Garfield",
+    "fips": "53023",
+    "classification": "garfield_blank_source_native_delta_hold",
+    "canonicalOnlyAfterPrefixStripSamples": [""],
+    "blankSourceRows": [
+      {
+        "sourceNativeParcelNumber": "",
+        "legacyImportedParcelKey": "023-",
+        "fipsSuffix": "023",
+        "countyName": "23"
+      }
+    ],
+    "blankSourceRowCount": 1,
+    "sourceOnlyCount": 0,
+    "canonicalOnlyCount": 1,
+    "adjudication": "Garfield has a canonical prefixed row that strips to an empty ParcelNumber. It aligns with a source row whose ORIG_PARCEL_ID is blank. Do not repair this row into a blank ParcelNumber; hold for county-specific supersede/exclude policy.",
+    "repairAllowed": false,
+    "productionBindingAllowed": false,
+    "runtimeClaimAllowed": false,
+    "certificationAllowed": false,
+    "databaseMutationAttempted": false,
+    "artifacts": {
+      "adjudicationPath": "os-platform/core/pilot/evidence/june10-arcgis-wave1-repair-dry-run/53023-garfield/delta-adjudication.json",
+      "adjudicationSha256": "7fc227854928a252f3760c6ff8c1579feac3c5312a81ea9daa1a7724be26a517"
+    }
+  },
+  "artifactRoot": "os-platform/core/pilot/evidence/june10-arcgis-wave1-repair-dry-run",
+  "databaseMutationAttempted": false,
+  "productionBindingAllowed": false,
+  "runtimeClaimAllowed": false,
+  "certificationAllowed": false
+}

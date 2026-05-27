@@ -1,0 +1,80 @@
+{
+  "receiptVersion": "arcgis_wave1_source_native_identity_repair_dry_run_v1",
+  "receiptId": "arcgis_wave1_53013_source_native_identity_repair_dry_run",
+  "countyName": "Columbia County",
+  "fips": "53013",
+  "sourceCaptureReceipt": {
+    "receiptVersion": "arcgis_source_capture_wave1_v1",
+    "valid": true,
+    "county": "Columbia",
+    "fips": "53013",
+    "sourceUrl": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer",
+    "accessMethod": "arcgis_rest_county_filtered_query",
+    "sourceNativeParcelIdField": "ORIG_PARCEL_ID",
+    "statewidePrefixedParcelIdField": "PARCEL_ID_NR",
+    "sourceArtifact": {
+      "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53013-columbia/source-native-parcel-ids.jsonl",
+      "sizeBytes": 913119,
+      "sha256": "4d3e83ea2f0844d7488202b3f521370cb14510a50e4b31d7ecd8cfbbdc7d1027",
+      "lastWriteTime": "2026-05-27T15:37:02.438Z"
+    },
+    "identityComparison": {
+      "sourceNativeDistinctCount": 5280,
+      "sourcePrefixedDistinctCount": 5280,
+      "canonicalDistinctCount": 5280,
+      "exactSourceNativeOverlapCount": 0,
+      "prefixedSourceOverlapCount": 5280,
+      "prefixStrippedCanonicalOverlapCount": 5280,
+      "sourceNativeOnlyCount": 0,
+      "canonicalOnlyAfterPrefixStripCount": 0,
+      "sourceNativeOnlySamples": [],
+      "canonicalOnlyAfterPrefixStripSamples": [],
+      "sourceNativeSamples": [
+        "1000000100060",
+        "1000000300010",
+        "1010430020001",
+        "1010430020002",
+        "1010430120001",
+        "1010431020000",
+        "1010431060000",
+        "1010440010000",
+        "1010450020001",
+        "1010450020002"
+      ],
+      "canonicalSamples": [
+        "013-1000000100060",
+        "013-1000000300010",
+        "013-1010430020001",
+        "013-1010430020002",
+        "013-1010430120001",
+        "013-1010431020000",
+        "013-1010431060000",
+        "013-1010440010000",
+        "013-1010450020001",
+        "013-1010450020002"
+      ]
+    }
+  },
+  "sourceArtifact": {
+    "path": "os-platform/core/pilot/evidence/june10-arcgis-source-capture-wave1/53013-columbia/source-native-parcel-ids.jsonl",
+    "sizeBytes": 913119,
+    "sha256": "4d3e83ea2f0844d7488202b3f521370cb14510a50e4b31d7ecd8cfbbdc7d1027",
+    "lastWriteTime": "2026-05-27T15:37:02.438Z"
+  },
+  "repairSemantics": {
+    "setParcelNumberFrom": "ORIG_PARCEL_ID",
+    "preservePrefixedValueAs": "LegacyImportedParcelKey",
+    "generateTerraFusionParcelKey": "53013:{ORIG_PARCEL_ID}",
+    "deleteRows": false
+  },
+  "counts": {
+    "activeCanonicalRows": 5280,
+    "proposedRows": 5280,
+    "duplicateCountyIdParcelNumberAfter": 0,
+    "missingSourceMappings": 0,
+    "blankProposedParcelNumbers": 0
+  },
+  "classification": "repair_dry_run_ready_for_authorization",
+  "certificationAllowed": false,
+  "productionBindingAllowed": false
+}

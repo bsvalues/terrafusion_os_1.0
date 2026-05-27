@@ -1,0 +1,23 @@
+{
+  "county": "Garfield",
+  "fips": "53023",
+  "classification": "garfield_blank_source_native_delta_hold",
+  "canonicalOnlyAfterPrefixStripSamples": [""],
+  "blankSourceRows": [
+    {
+      "sourceNativeParcelNumber": "",
+      "legacyImportedParcelKey": "023-",
+      "fipsSuffix": "023",
+      "countyName": "23"
+    }
+  ],
+  "blankSourceRowCount": 1,
+  "sourceOnlyCount": 0,
+  "canonicalOnlyCount": 1,
+  "adjudication": "Garfield has a canonical prefixed row that strips to an empty ParcelNumber. It aligns with a source row whose ORIG_PARCEL_ID is blank. Do not repair this row into a blank ParcelNumber; hold for county-specific supersede/exclude policy.",
+  "repairAllowed": false,
+  "productionBindingAllowed": false,
+  "runtimeClaimAllowed": false,
+  "certificationAllowed": false,
+  "databaseMutationAttempted": false
+}
