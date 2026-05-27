@@ -133,6 +133,31 @@ Per-chunk +5,490 features / +554 truth / zombies=0 except where noted.
   193 codes BEFORE firing — MSSQL "Recovery is complete" does not guarantee
   query-readiness for the backend's startup hosted service.**
 
+## Durable automation landed (2026-05-27)
+Two recurring failure modes were eliminated at the source, plus an autonomous driver:
+
+1. **Laptop sleep (root cause of every multi-hour stall):** disabled via
+   `powercfg` — sleep + hibernate + disk-spindown = Never (AC and DC), lid-close
+   = Do Nothing. The projector socket no longer dies on idle/lid-close.
+2. **AuditLogs dead-tuple bloat (starved the projector at ~2 GB):** VACUUM FULL
+   reclaimed 1,946 MB → 479 MB. Root contention cleared.
+3. **Autonomous watchdog** `~/.tf-pg-shim/drain-watchdog.mjs`, registered as
+   Windows Scheduled Task `TF-DrainWatchdog` (every 10 min, survives Claude
+   session ends + reboots). Each cycle it: ensures PG/MSSQL/backend up (cold-start
+   verifies 193-code dictionary, never bounces a healthy backend), clears stalls
+   >35 min, runs a VACUUM FULL cycle when AuditLogs >2.5 GB, and fires the next
+   chunk **only when no batch is active** (serial-safe). A quarantine-spike guard
+   (>100 rows/tick) HALTS firing and alerts — catches any empty-dictionary/bad-chunk
+   condition before it can run wild. Heartbeats to `~/.tf-pg-shim/watchdog.log`.
+   Operator label for autonomous chunks: `watchdog-auto-tn500-vNN`.
+   **The watchdog now OWNS chunk-firing** — manual firing is suspended to avoid races.
+
+## Cumulative as of watchdog handoff (2026-05-27)
+- canonical_tf.tf_improvement_feature: **1,351,060** (+1,349,540 net since 1,520 baseline)
+- truth_pacs.imprv_current: **146,528** (~51% of ~290,000 source ceiling)
+- ~209 successful chunks since atomicity fix 075c0156d — zero regressions.
+- AuditLogs: 479 MB post-VACUUM. Source-exhaustion: STILL NOT triggered.
+
 ## Operational lessons
 - AuditLogs needs periodic prune; the long-held projector txn blocks autovacuum.
   A hard restart fully reclaims it. Scheduled maintenance job is the durable fix (POST-SEAL).
