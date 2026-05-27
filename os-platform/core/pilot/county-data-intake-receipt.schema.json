@@ -1,0 +1,447 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.local/schemas/county-data-intake-receipt.schema.json",
+  "title": "TerraFusion County Data Intake Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receiptVersion",
+    "receiptId",
+    "intakeId",
+    "status",
+    "createdAtUtc",
+    "county",
+    "uploader",
+    "sourceExport",
+    "sourceArtifacts",
+    "validation",
+    "dryRunImport",
+    "approval",
+    "rollback",
+    "noSecretValuesRecorded"
+  ],
+  "properties": {
+    "receiptVersion": {
+      "type": "string",
+      "const": "county-data-intake-v1"
+    },
+    "receiptId": {
+      "type": "string",
+      "pattern": "^cdi-rec-[a-z0-9][a-z0-9-]{6,80}$"
+    },
+    "intakeId": {
+      "type": "string",
+      "pattern": "^cdi-[a-z0-9][a-z0-9-]{6,80}$"
+    },
+    "supersedesReceiptId": {
+      "type": "string",
+      "pattern": "^cdi-rec-[a-z0-9][a-z0-9-]{6,80}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "UPLOADED",
+        "VALIDATING",
+        "VALIDATED",
+        "PENDING_APPROVAL",
+        "APPROVED_FOR_IMPORT",
+        "REJECTED",
+        "REJECTED_BINDING_CONFLICT",
+        "REJECTED_SCHEMA",
+        "REJECTED_SECRET",
+        "REJECTED_UNSUPPORTED_FORMAT"
+      ]
+    },
+    "createdAtUtc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAtUtc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "county": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "countyName",
+        "countyToken",
+        "fips",
+        "assessorOfficeId"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "const": "WA"
+        },
+        "countyName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "countyToken": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "fips": {
+          "type": "string",
+          "pattern": "^53[0-9]{3}$"
+        },
+        "assessorOfficeId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 120
+        }
+      }
+    },
+    "uploader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "email",
+        "displayName",
+        "organization",
+        "authorizedCountyFips",
+        "authMethod"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 120
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "organization": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 160
+        },
+        "authorizedCountyFips": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^53[0-9]{3}$"
+          }
+        },
+        "authMethod": {
+          "type": "string",
+          "enum": ["sso", "invited-county-user", "admin-attested"]
+        }
+      }
+    },
+    "sourceExport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceSystem",
+        "exportedAtUtc",
+        "classification",
+        "declaredFormat",
+        "contains"
+      ],
+      "properties": {
+        "sourceSystem": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 160
+        },
+        "exportedAtUtc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "classification": {
+          "type": "string",
+          "enum": [
+            "authoritative_parcel_inventory",
+            "authoritative_valuation_export",
+            "authoritative_sales_export",
+            "authoritative_assessment_export",
+            "authoritative_exemption_export",
+            "authoritative_geometry_export",
+            "mixed_authoritative_export"
+          ]
+        },
+        "declaredFormat": {
+          "type": "string",
+          "enum": [
+            "csv",
+            "txt",
+            "xlsx",
+            "fgdb_directory",
+            "zipped_fgdb",
+            "zip_generic"
+          ]
+        },
+        "contains": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": [
+              "parcel",
+              "valuation",
+              "sales",
+              "assessment",
+              "exemption",
+              "geometry"
+            ]
+          }
+        },
+        "schemaVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
+      }
+    },
+    "sourceArtifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "role",
+          "fileName",
+          "mediaType",
+          "byteSize",
+          "sha256",
+          "receivedAtUtc"
+        ],
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "original-upload",
+              "archive-entry",
+              "extracted-tabular-candidate",
+              "geometry-layer",
+              "manifest"
+            ]
+          },
+          "fileName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "mediaType": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 120
+          },
+          "byteSize": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "receivedAtUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "rowCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "layerName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "schemaValidationPassed",
+        "countyBindingPassed",
+        "parcelIdUniquenessPassed",
+        "requiredFieldsPassed",
+        "secretScanPassed",
+        "rowCount",
+        "rejectedRowCount",
+        "rejectedRowsArtifact"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["not_started", "passed", "passed_with_warnings", "failed"]
+        },
+        "schemaValidationPassed": {
+          "type": "boolean"
+        },
+        "countyBindingPassed": {
+          "type": "boolean"
+        },
+        "parcelIdUniquenessPassed": {
+          "type": "boolean"
+        },
+        "requiredFieldsPassed": {
+          "type": "boolean"
+        },
+        "secretScanPassed": {
+          "type": "boolean"
+        },
+        "rowCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rejectedRowCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rejectedRowsArtifact": {
+          "$ref": "#/$defs/evidenceArtifact"
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "blockers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "dryRunImport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["performed", "canonicalImportAllowed", "reportArtifact"],
+      "properties": {
+        "performed": {
+          "type": "boolean"
+        },
+        "canonicalImportAllowed": {
+          "type": "boolean",
+          "const": false
+        },
+        "candidateRows": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "insertCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "updateCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unchangedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rejectedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reportArtifact": {
+          "$ref": "#/$defs/evidenceArtifact"
+        }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["not_requested", "pending", "approved", "rejected"]
+        },
+        "reviewerId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 120
+        },
+        "reviewedAtUtc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "decisionReason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "approvalArtifact": {
+          "$ref": "#/$defs/evidenceArtifact"
+        }
+      }
+    },
+    "rollback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rollbackRequiredIfImported", "rollbackPlanStatus"],
+      "properties": {
+        "rollbackRequiredIfImported": {
+          "type": "boolean",
+          "const": true
+        },
+        "rollbackPlanStatus": {
+          "type": "string",
+          "enum": [
+            "not_applicable_before_import",
+            "required_before_import",
+            "available",
+            "executed"
+          ]
+        },
+        "rollbackPlanArtifact": {
+          "$ref": "#/$defs/evidenceArtifact"
+        },
+        "rollbackReceiptId": {
+          "type": "string",
+          "pattern": "^cdi-rec-[a-z0-9][a-z0-9-]{6,80}$"
+        }
+      }
+    },
+    "evidenceArtifacts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidenceArtifact"
+      }
+    },
+    "noSecretValuesRecorded": {
+      "type": "boolean",
+      "const": true
+    }
+  },
+  "$defs": {
+    "evidenceArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    }
+  }
+}

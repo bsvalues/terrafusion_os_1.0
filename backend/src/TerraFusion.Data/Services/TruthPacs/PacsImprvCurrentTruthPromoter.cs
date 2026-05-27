@@ -107,16 +107,15 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
             await RecordSourceBatchGateAsync(batch, "PASS",
                 "both source batches COMPLETED", cancellationToken).ConfigureAwait(false);
 
-            // Idempotency: clear prior truth rows for this imprv batch.
-            var priorRows = await _db.TruthPacsImprvCurrents
-                .Where(t => t.ImprvLoadBatchId == imprvLoadBatchId)
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
-            var priorRowsRemoved = priorRows.Count;
-            if (priorRowsRemoved > 0)
-            {
-                _db.TruthPacsImprvCurrents.RemoveRange(priorRows);
-                await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            }
+            // Idempotency (FIX 2026-05-27 — duplication root cause):
+            // Dedup by NATURAL KEY (parcel-year), NOT by ImprvLoadBatchId.
+            // The prior behaviour cleared only rows sharing this landing
+            // batch id; because every drain chunk creates a NEW landing
+            // batch, re-draining the same parcels stacked duplicate truth
+            // rows (observed 21.7x, up to 262x). The real delete (keyed by
+            // the parcel-years actually being promoted) runs AFTER we load
+            // this batch's imprv rows — see below.
+            var priorRowsRemoved = 0;
 
             // Build supp pointer index from supp batch.
             var suppRows = await _db.LegacyPacsRawPropSuppAssocs
@@ -132,6 +131,22 @@ public sealed class PacsImprvCurrentTruthPromoter : IPacsImprvCurrentTruthPromot
             var imprvRows = await _db.LegacyPacsRawImprvs
                 .Where(i => i.LoadBatchId == imprvLoadBatchId)
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
+
+            // Idempotency delete (FIX 2026-05-27): remove any existing truth
+            // rows for the parcel-years this batch is about to promote, so a
+            // re-drain REPLACES rather than DUPLICATES. Natural-key grain is
+            // (PropId, PropValYr); a chunk lands all of a parcel's current
+            // improvements, so clearing the parcel-year and re-inserting is
+            // the correct idempotent unit.
+            var batchPropIds = imprvRows.Select(i => i.PropId).Distinct().ToList();
+            var batchYears = imprvRows.Select(i => i.PropValYr).Distinct().ToList();
+            if (batchPropIds.Count > 0)
+            {
+                priorRowsRemoved = await _db.TruthPacsImprvCurrents
+                    .Where(t => batchPropIds.Contains(t.PropId)
+                                && batchYears.Contains(t.PropValYr))
+                    .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
+            }
 
             // SYNC-DOCTRINE-4: build a property-row index for universe
             // classification. Latest LandedAt per prop_id wins. Property
