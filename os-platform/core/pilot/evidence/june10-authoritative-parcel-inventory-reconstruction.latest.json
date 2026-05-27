@@ -1,0 +1,3949 @@
+{
+  "generatedAt": "2026-05-27T00:22:16.215Z",
+  "scope": "Washington 39-county authoritative parcel inventory reconstruction from repository evidence.",
+  "doctrine": {
+    "parcelRuntimeSource": "Canonical parcels must be backed by official assessor/GIS/open-data parcel inventory sources, not sales/comparable artifacts.",
+    "productionCertification": "Rows without receipt-grade parcel inventory evidence remain real but not production-certifiable.",
+    "databaseMutation": "This gate is read-only and performs no database mutation."
+  },
+  "summary": {
+    "countiesChecked": 39,
+    "officialParcelInventorySignals": 13,
+    "gisLayerSignals": 1,
+    "arcgisRestSignals": 0,
+    "downloadableExportSignals": 2,
+    "searchOnlySignals": 7,
+    "certifiableCount": 3,
+    "byInventoryAccess": {
+      "search_only_requires_export_policy": 7,
+      "secondary_evidence_only": 26,
+      "authoritative_inventory_recapture_candidate": 3,
+      "authoritative_inventory_receipt_found": 3
+    }
+  },
+  "rows": [
+    {
+      "county": "Adams",
+      "fips": "53001",
+      "officialAssessorBaseUrl": "https://co.adams.wa.us",
+      "officialParcelInventory": true,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": true,
+      "certifiable": false,
+      "inventoryAccess": "search_only_requires_export_policy",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Parcel search surface exists, but governed bulk/export authority is not proven."
+      ],
+      "nextAction": "confirm_export_or_bulk_query_terms_before_capture",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Asotin",
+      "fips": "53003",
+      "officialAssessorBaseUrl": "https://co.asotin.wa.us",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Benton",
+      "fips": "53005",
+      "officialAssessorBaseUrl": "https://co.benton.wa.us",
+      "officialParcelInventory": true,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": true,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "authoritative_inventory_recapture_candidate",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "data/benton/MSSQL.rar",
+          "exists": true,
+          "sizeBytes": 5346266151,
+          "sha256": null,
+          "hashStatus": "skipped_large_artifact",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/benton/PACS.zip",
+          "exists": true,
+          "sizeBytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/benton/README.md",
+          "exists": true,
+          "sizeBytes": 123,
+          "sha256": "9b64387fb35c2e4f69bdf0e5a4d949aca2bc98e8467f2d2c1576d9ae84f6c854",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/benton/_listing.txt",
+          "exists": true,
+          "sizeBytes": 310,
+          "sha256": "d7085c006d1e8c8b1899992dd3a9d3ac205dc880abf3a923d7389eed033afe38",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/benton/extracted/MSSQL/MSSQL15.MSSQLSERVER/MSSQL/Backup/pacs_golive_manual-backup",
+          "exists": true,
+          "sizeBytes": 7391481856,
+          "sha256": null,
+          "hashStatus": "skipped_large_artifact",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "data/benton/extracted/MSSQL/MSSQL15.MSSQLSERVER/MSSQL/DATA/model_msdbdata.mdf",
+          "exists": true,
+          "sizeBytes": 14024704,
+          "sha256": "851acc6a72bc08362a6bc6c745d36515a4a7ad3342cac27ee3403452f17f28b3",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/benton/extracted/MSSQL/MSSQL15.MSSQLSERVER/MSSQL/DATA/model_msdblog.ldf",
+          "exists": true,
+          "sizeBytes": 524288,
+          "sha256": "7d711dd59dbe5d9aaed2b0cd5ff215af60fe5db30d1079dfbb78407d64f3af78",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/benton/extracted/MSSQL/MSSQL15.MSSQLSERVER/MSSQL/DATA/model_replicatedmaster.ldf",
+          "exists": true,
+          "sizeBytes": 524288,
+          "sha256": "81f9ef8470a882d01aa9ae606c0272213dca5f1947bf1e3a5d4d58167fc07de7",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/benton/extracted/MSSQL/MSSQL15.MSSQLSERVER/MSSQL/DATA/model_replicatedmaster.mdf",
+          "exists": true,
+          "sizeBytes": 4653056,
+          "sha256": "e473e4798e1343904e0e916390d74ddde777ddd19c490ba2cdc9570f1fe7fe9f",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/benton/pacs_benton_122915.rar",
+          "exists": true,
+          "sizeBytes": 2214390760,
+          "sha256": null,
+          "hashStatus": "skipped_large_artifact",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/benton/sizes.txt",
+          "exists": true,
+          "sizeBytes": 141,
+          "sha256": "9a568527db7a4f67e311afda98c0269c8650637c595fdf7e9605c110b5ecb616",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/cost-matrices/benton_cost_matrix.json",
+          "exists": true,
+          "sizeBytes": 3473,
+          "sha256": "ba0fb0a231a8ddaac60ef0fe9a7212bd7b1c171d2d78844f92c3a7f8a80cc613",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/cost-matrices/benton_cost_matrix_live.json",
+          "exists": true,
+          "sizeBytes": 21566,
+          "sha256": "39fe1e9b25f37a63481af75b2d89e332ddbd57b341e28d12579cc255da679521",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/cost-matrices/benton_cost_matrix_proper.json",
+          "exists": true,
+          "sizeBytes": 17718,
+          "sha256": "aed4ed003692907f36becb90b621cb19ba77d8f0dcf9a6815f0ecd2d57b4556d",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/cost-matrices/benton_county_data.json",
+          "exists": true,
+          "sizeBytes": 30448,
+          "sha256": "338c0cb32d89857df4dc3bf2d8b347b4586b0a85ef525ead325d453128b0a523",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/cost-matrices/benton_county_data_summary.json",
+          "exists": true,
+          "sizeBytes": 3591,
+          "sha256": "b66324302fe204e65586d20cc9ebbf05bb36878a67684bd52e7d29e96d74eef3",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/cost-matrices/benton_matrix_exact_identifiers.json",
+          "exists": true,
+          "sizeBytes": 17050,
+          "sha256": "5476408ff6908b109b492bfd4c1a5d7bc59b2d94dec133c2967f14fc9ed25cbe",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/cost-matrices/extracted_cost_matrix.json",
+          "exists": true,
+          "sizeBytes": 17882,
+          "sha256": "7d3f7e0220f293603e4f55ded9121dd118501cf0d105dfbda3b8cdcecfb33823",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/cost-matrices/sample_cost_matrix.json",
+          "exists": true,
+          "sizeBytes": 3172,
+          "sha256": "cac8f378b239a7d1a00a952c4ccadf03eb5b1a54e38c98298231894dd1afdbd0",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/cost-matrices/test_output.json",
+          "exists": true,
+          "sizeBytes": 459951,
+          "sha256": "52aeb4fa1512e2b920d1a1be926c956b6a86062fd6812ca685d784bde110fa8b",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "exists": true,
+          "sizeBytes": 2377,
+          "sha256": "5cf42f6c50bd8f55dc956a63a0d2d45b567a622933851c2ce8f8f7a53235fefc",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/benton_analysis.json",
+          "exists": true,
+          "sizeBytes": 553,
+          "sha256": "9cdc43c380f5802842e6f9fdacc85b7b575e66842f13c552af952e29209926d7",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/benton_extraction.json",
+          "exists": true,
+          "sizeBytes": 266,
+          "sha256": "f91c65796f57f9e2957ece3de1bc57047b367f98ffe341aabb1578eb9a465c65",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/benton_valuations.json",
+          "exists": true,
+          "sizeBytes": 937,
+          "sha256": "c73d3fe51dba81d3c2b75364af20462af2d5dd803a9afe5827f5337092a46d73",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/benton_analysis.json",
+          "exists": true,
+          "sizeBytes": 553,
+          "sha256": "9cdc43c380f5802842e6f9fdacc85b7b575e66842f13c552af952e29209926d7",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/benton_extraction.json",
+          "exists": true,
+          "sizeBytes": 266,
+          "sha256": "f91c65796f57f9e2957ece3de1bc57047b367f98ffe341aabb1578eb9a465c65",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/benton_valuations.json",
+          "exists": true,
+          "sizeBytes": 937,
+          "sha256": "c73d3fe51dba81d3c2b75364af20462af2d5dd803a9afe5827f5337092a46d73",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
+          "exists": true,
+          "sizeBytes": 355548,
+          "sha256": "c60e4d5e4f08a9eec9070d407aff7b52f2303bf493d5b7ecc58ac86984a2fc64",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
+          "exists": true,
+          "sizeBytes": 15034,
+          "sha256": "3c34621d31a05a97beb47c079c3da4957f682a3769b11f7ff4033856ef08cc95",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs",
+          "exists": true,
+          "sizeBytes": 63532,
+          "sha256": "04c763fb2fdc8a18d1c8f054f0e6087edbaed6299f5041feba120b7f89b6e8ca",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "backend/src/TerraFusion.API/Controllers/TerraForgeController.cs",
+          "exists": true,
+          "sizeBytes": 161955,
+          "sha256": "c5bbb195d07ff98cc7bfa58c0764f0789084178fb2a0012e6736742232d18cda",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/atlas-live/AtlasLivePage.tsx",
+          "exists": true,
+          "sizeBytes": 13478,
+          "sha256": "d72e0051d1bc25c770c2abc34536e0319fa781c70327cbf72d562b5579298d18",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/atlas-live/__tests__/AtlasLivePage.test.tsx",
+          "exists": true,
+          "sizeBytes": 4522,
+          "sha256": "68750870b85080e142cdab710a32e49420132fa153205b1ceb126d1da2edd517",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/atlas-live/__tests__/AtlasOverlayManager.test.tsx",
+          "exists": true,
+          "sizeBytes": 2644,
+          "sha256": "e16a2e307862931c5edbe14f3f4c123bb24c7cd69c5add79ccadc51b9335701c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/atlas-live/__tests__/atlasLiveApi.contracts.test.ts",
+          "exists": true,
+          "sizeBytes": 4273,
+          "sha256": "15b2c084eef5f0d0142f57fb6c1857d6b496bb01f87eeab92c6e61a4c48586c5",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/atlas-live/__tests__/atlasLiveStore.test.ts",
+          "exists": true,
+          "sizeBytes": 3494,
+          "sha256": "7c6d07a5352c2611d6b9d36a6ef7ebf78c7cb64a049ebc111e83c6242b224c28",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/atlas-live/__tests__/useAtlasMapData.test.ts",
+          "exists": true,
+          "sizeBytes": 5120,
+          "sha256": "e5bd86048cfb67b9bbf6e378e67a3e978e202a287e450d55ca68ba3ea6a49653",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts",
+          "exists": true,
+          "sizeBytes": 7659,
+          "sha256": "2fac14e01280d444b50a2d47637ccb7328a398b748e4baca6ea6918fa58d5d87",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/batch/BatchCostRun.tsx",
+          "exists": true,
+          "sizeBytes": 23461,
+          "sha256": "49c94c764bc603a8f199605d4ad6fe813d88fce8e30a9c3f7bf02216902123bf",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/batch/CoefficientPreview.tsx",
+          "exists": true,
+          "sizeBytes": 22881,
+          "sha256": "38d44c1ec434c56d4edb402f5c3932cb072eb52243e2b76b3be8ccd26da38406",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/batch/__tests__/CoefficientPreview.test.tsx",
+          "exists": true,
+          "sizeBytes": 5419,
+          "sha256": "25a7c9af54c9213fe94628fe69be07c8385229bb4d373ea14dc577d22b6f18f2",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/batch/batchCostRunStore.ts",
+          "exists": true,
+          "sizeBytes": 8440,
+          "sha256": "b449cc4fca5222562b50e95c01ddeae95507631e79d210b4b0acd37ef68974f7",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/cost/__tests__/CostForge.contracts.test.tsx",
+          "exists": true,
+          "sizeBytes": 2037,
+          "sha256": "51954481fc608e6883f4324d3bf18673250d8106ae22b8d37689664b19f5ff8a",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/cost/__tests__/CostForge.deeplink.test.tsx",
+          "exists": true,
+          "sizeBytes": 5902,
+          "sha256": "3e541bc386913b431ee3b09bcdc7c891467a87aac6468c811ac90eda17d2b169",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CityInspector.test.tsx",
+          "exists": true,
+          "sizeBytes": 8500,
+          "sha256": "4d005d5027847998044389aa06b9fa9226ee978945e033ff6782cc1bcf223c79",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CohortCreationDialog.test.tsx",
+          "exists": true,
+          "sizeBytes": 4295,
+          "sha256": "bf4693c5babf5dda167d7bb70061e7210b653e17e19a84c0e085a5de97850f88",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CorrectionDefensePanel.test.tsx",
+          "exists": true,
+          "sizeBytes": 8773,
+          "sha256": "c52e33f6430a333358802c719265c04d8113c09c63c71b69ca60f3ff31d446ac",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyCommandStrip.test.tsx",
+          "exists": true,
+          "sizeBytes": 4837,
+          "sha256": "af86263deecab3492727022d8489fca8fb791745f5a2ceb38ded0e27c0f47a40",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyDiagnosisModal.test.tsx",
+          "exists": true,
+          "sizeBytes": 5603,
+          "sha256": "7fcd9496eaf8425ca9ae1eebcd8a0f60761710debfd74daf535079a26c4e43ca",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyHealthPanel.test.tsx",
+          "exists": true,
+          "sizeBytes": 12091,
+          "sha256": "652b8cf6de66f609764b38eca759c83cab31c092158a3ca48a482b3e496830ac",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
+          "exists": true,
+          "sizeBytes": 13274,
+          "sha256": "ea12d5ddcc4d65f47d926789bb5095cbfebaf8e3e3f10446cd973956b59e7dd9",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStudyPage.test.tsx",
+          "exists": true,
+          "sizeBytes": 10487,
+          "sha256": "bf4b8a4698ae74e2f5e68b82ffee1a3d4079b6f9af18900504d03a1ed561c71e",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ExportPacketModal.test.tsx",
+          "exists": true,
+          "sizeBytes": 8000,
+          "sha256": "18dd9af02008c2a5a27702f1689892fc52f85484abdc292ce41e965022b02944",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/LeftRail.test.tsx",
+          "exists": true,
+          "sizeBytes": 9535,
+          "sha256": "303b9841e11235806e98b6e66e8f57b135fa1ddeca229e61b293b6139d346aa9",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/NeighborhoodInspector.test.tsx",
+          "exists": true,
+          "sizeBytes": 7521,
+          "sha256": "ffa747bed895d17c9749c3cfb4475c8991417251d8651bd40d110bec37948d87",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ObjectInspector.test.tsx",
+          "exists": true,
+          "sizeBytes": 19605,
+          "sha256": "99c3ed78fd469069ca385a2081587c5b3da8c97426ced413d121cc3274c899bc",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/OpenStudyDialog.test.tsx",
+          "exists": true,
+          "sizeBytes": 2761,
+          "sha256": "cff54fa51062243af19187237af89ba25ace76d832291c3f3ab905a9c78295be",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/RightRail.test.tsx",
+          "exists": true,
+          "sizeBytes": 7137,
+          "sha256": "245ff0c8321d0c7edc7efde0e28541cb228bdb6158ee66f01846a4e733b656dc",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/ScenarioWorksheet.test.tsx",
+          "exists": true,
+          "sizeBytes": 9287,
+          "sha256": "48ce1cdf6e7df47439a16aabfa45dbb6e5526472be1406a2a32fd78a1976c4e9",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/SegmentFilters.nullGuard.test.tsx",
+          "exists": true,
+          "sizeBytes": 7775,
+          "sha256": "effc237b4e3fb0475dc8fee4371272bdada1ece4a74f74aabf95d169edb9f979",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/SegmentTable.test.tsx",
+          "exists": true,
+          "sizeBytes": 5129,
+          "sha256": "e88c05a9f5ff4f6cd4a426682fb06f726d4f6e6581dcaba085b39d5aed78ec7b",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/countyStudioStore.test.ts",
+          "exists": true,
+          "sizeBytes": 4330,
+          "sha256": "f4b6201f3394cab00cfaabdd568c5696419b92018c151bf3986c450d8010eee1",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/evidencePacketMarkdown.test.ts",
+          "exists": true,
+          "sizeBytes": 4025,
+          "sha256": "b7174ccf881494df232a399056bc0af4e11856f45fd2e2963a6857cfd4cb2179",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/segmentIdentity.test.ts",
+          "exists": true,
+          "sizeBytes": 3397,
+          "sha256": "b56dc4fc47b1ac37818641d15fa1968e3aafd610d491ff2d5e11e1743f0e6409",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/useCountyStudyHub.test.ts",
+          "exists": true,
+          "sizeBytes": 6906,
+          "sha256": "bed4c8ed9aacfbb0068ffa8a5ec38783823efd460a424b1d2275fa2fed973d3d",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/useStudyData.test.tsx",
+          "exists": true,
+          "sizeBytes": 6129,
+          "sha256": "3b7b5d2f65bbb023158413d586c1960ef9259ddd3c0c72a5a8e81f841041bd5e",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/components/ContractLineage.tsx",
+          "exists": true,
+          "sizeBytes": 2640,
+          "sha256": "e1708b780a1c75e24f429b4405f044ba55a889fde39458b770dbc08335fa3e4a",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx",
+          "exists": true,
+          "sizeBytes": 43310,
+          "sha256": "e2a57412d2ce85a861735a30d6ef911163856a526e1540afcf672b2380d183e8",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/hooks/useStudyData.ts",
+          "exists": true,
+          "sizeBytes": 6242,
+          "sha256": "69536c176adc0b25344b83d7384ae69a7265e87c16dcc50c0120593934a1d98c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/countyCertification.ts",
+          "exists": true,
+          "sizeBytes": 1635,
+          "sha256": "2a9e0f2152cc93bb3c60e63308db896c378a98e0ad218cd9a6c7e379f5e44c1f",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/current-use/__tests__/CUForge.review.test.tsx",
+          "exists": true,
+          "sizeBytes": 5091,
+          "sha256": "4cc56b92efdf60d9e91392ebb4d0c39a25918da906bdcd1ae519bc64591a7edd",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/geo/GeoForgeMap.tsx",
+          "exists": true,
+          "sizeBytes": 48196,
+          "sha256": "b44f817e3ce92af6611fcccf8ba36193e37c2e86a2329145fb82d4b4e8a0719f",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/geo/panels/CertificationPanel.tsx",
+          "exists": true,
+          "sizeBytes": 7355,
+          "sha256": "2f62933a5f0f0c9fca99747c7eaf66e6f2221c3114ad4fb1beeb927b3b4d0bad",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/geo/panels/DorMemoPanel.tsx",
+          "exists": true,
+          "sizeBytes": 6043,
+          "sha256": "9d513dc90bf82f9d41510552a8cc2463222f1df1d236b2d7f82b352effc4f267",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/geo/panels/ExportPanel.tsx",
+          "exists": true,
+          "sizeBytes": 6694,
+          "sha256": "56e1839c9ca4332f04fc94ebcdf87598018be3d365f187be5fb0ecda6440259f",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/geo/v2/GeoForgeV2Page.tsx",
+          "exists": true,
+          "sizeBytes": 22416,
+          "sha256": "9480fd9be0958d955d5aa0a14d5ed6b2e8a62fc46a538d18485a8cc47c7de642",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/income/IncomeApproachPanel.tsx",
+          "exists": true,
+          "sizeBytes": 7766,
+          "sha256": "98be5c188c3282c8d1a436b490dadccf64c2432bf55a210e9c0b4c88d6a373a7",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/income/IncomeForge.tsx",
+          "exists": true,
+          "sizeBytes": 19701,
+          "sha256": "d532a7e4e59d6257c0c0d9a8c1777bab4ec43a8364e69aab7d1965fcacf8a123",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/income/__tests__/IncomeForge.test.tsx",
+          "exists": true,
+          "sizeBytes": 4391,
+          "sha256": "c0c1b8ee2c5adcc6892d9fb36aed2b75074f3096750a133483575c167bdda159",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/income/incomeForgeStore.ts",
+          "exists": true,
+          "sizeBytes": 10753,
+          "sha256": "4b1e4de8ce578642e04fb4f3983c668277b701cd34cc9e005001bc7418ca39b7",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/mass-appraisal/MassAppraisalPage.tsx",
+          "exists": true,
+          "sizeBytes": 3167,
+          "sha256": "32f6d5f51df62e89f163e2d6e162b4aafc511db4852b5a00cf892828e1fe8661",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/__tests__/SalesForge.contracts.test.tsx",
+          "exists": true,
+          "sizeBytes": 4183,
+          "sha256": "4f10cfb394a80f9eaa010b16fb96720723392560b9f72ef47c3daf0ac9e14e09",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/__tests__/SalesForge.deeplink.test.tsx",
+          "exists": true,
+          "sizeBytes": 6872,
+          "sha256": "1f324cd01a0d732e842b9147740331720351ce28bf2aef878799ddc3853ddf40",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/valuation/AvmRunPanel.tsx",
+          "exists": true,
+          "sizeBytes": 8862,
+          "sha256": "263678d196b97378eed8c56ad58b21e1930cfe248e6353cd9496542a7c1f46da",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/valuation/NeighborhoodRatioStudyDashboard.tsx",
+          "exists": true,
+          "sizeBytes": 6381,
+          "sha256": "dbbb95fa25bdd64593484a4f6699947b6561f63e4a4beba42dfca7a4d3f38dc0",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/benton-comps-proof.latest.json",
+          "exists": true,
+          "sizeBytes": 526,
+          "sha256": "afeb94ab46ccad005871fc9fee0781cc607dfab105458bdd7d5aafe6791f076c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/benton-sync-proof.latest.json",
+          "exists": true,
+          "sizeBytes": 482,
+          "sha256": "2acc5cbdd41602c13ea6bcc12c56d095c958c579efe4ed101f71f4fa738a9e4a",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/phase14-benton-operator-workflow.latest.json",
+          "exists": true,
+          "sizeBytes": 18280,
+          "sha256": "2da4f1cd02930587319755bf68c6bd1138a831a21c6e479cb8548e12ba760044",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/phase20-benton-acceptance-uat.latest.json",
+          "exists": true,
+          "sizeBytes": 5965,
+          "sha256": "d866d6e4e984c2b7f8204f0155c580ea85a6130d0a8826c409d18e87a811f06e",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/terraforge-benton-posture.latest.json",
+          "exists": true,
+          "sizeBytes": 2042,
+          "sha256": "52cb26462b33d4b066248bb38473e1ff9091d5cbca72c0c05f5ba38de0849306",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage."
+      ],
+      "nextAction": "recapture_authoritative_parcel_inventory_source_and_emit_receipt",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Chelan",
+      "fips": "53007",
+      "officialAssessorBaseUrl": "https://co.chelan.wa.us",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "data/cost-matrices/extracted_cost_matrix.json",
+          "exists": true,
+          "sizeBytes": 17882,
+          "sha256": "7d3f7e0220f293603e4f55ded9121dd118501cf0d105dfbda3b8cdcecfb33823",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/cost-matrices/test_output.json",
+          "exists": true,
+          "sizeBytes": 459951,
+          "sha256": "52aeb4fa1512e2b920d1a1be926c956b6a86062fd6812ca685d784bde110fa8b",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Clallam",
+      "fips": "53009",
+      "officialAssessorBaseUrl": "https://clallamcountywa.gov",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Clark",
+      "fips": "53011",
+      "officialAssessorBaseUrl": "https://clark.wa.gov",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "exists": true,
+          "sizeBytes": 2377,
+          "sha256": "5cf42f6c50bd8f55dc956a63a0d2d45b567a622933851c2ce8f8f7a53235fefc",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/clark_analysis.json",
+          "exists": true,
+          "sizeBytes": 552,
+          "sha256": "f132e9015cd0d42dd4e68ba6b8783b5b662db48a752b659b2888735b09d470bb",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/clark_extraction.json",
+          "exists": true,
+          "sizeBytes": 267,
+          "sha256": "399265a9e5c35b0cf795c6146f9fc43025d58a9d34c09fa4fdd91cab6fc3a480",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/clark_valuations.json",
+          "exists": true,
+          "sizeBytes": 933,
+          "sha256": "b046e519d74457192a0edad819cc1eaf214d026bdb5af4ae62762428211ec9f4",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/databases/county-databases/clark_data.sql",
+          "exists": true,
+          "sizeBytes": 3327,
+          "sha256": "472fb966dbfbcdc8b6a8ee9e62b3b0e135a45deb39c4d6a8f74bb030bb387828",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/intelligence/clark_analysis.json",
+          "exists": true,
+          "sizeBytes": 552,
+          "sha256": "f132e9015cd0d42dd4e68ba6b8783b5b662db48a752b659b2888735b09d470bb",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/clark_extraction.json",
+          "exists": true,
+          "sizeBytes": 267,
+          "sha256": "399265a9e5c35b0cf795c6146f9fc43025d58a9d34c09fa4fdd91cab6fc3a480",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/clark_valuations.json",
+          "exists": true,
+          "sizeBytes": 933,
+          "sha256": "b046e519d74457192a0edad819cc1eaf214d026bdb5af4ae62762428211ec9f4",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Columbia",
+      "fips": "53013",
+      "officialAssessorBaseUrl": "https://columbiaco.com",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
+          "exists": true,
+          "sizeBytes": 355548,
+          "sha256": "c60e4d5e4f08a9eec9070d407aff7b52f2303bf493d5b7ecc58ac86984a2fc64",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Cowlitz",
+      "fips": "53015",
+      "officialAssessorBaseUrl": "https://www.co.cowlitz.wa.us",
+      "officialParcelInventory": true,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": true,
+      "inventoryAccess": "authoritative_inventory_receipt_found",
+      "sourceEvidenceRole": "authoritative_parcel_inventory_receipt",
+      "artifacts": [
+        {
+          "path": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "exists": true,
+          "sizeBytes": 2377,
+          "sha256": "5cf42f6c50bd8f55dc956a63a0d2d45b567a622933851c2ce8f8f7a53235fefc",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/cowlitz_analysis.json",
+          "exists": true,
+          "sizeBytes": 554,
+          "sha256": "e06ce6a4cfa2a6b903a0ff0b8ca29da50ff53b80d9784252fc9043f3d0ec6d6d",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/cowlitz_extraction.json",
+          "exists": true,
+          "sizeBytes": 267,
+          "sha256": "4fb636dc52bbb5f990574c410f1dd468a04e917711f95e3d50a03e785d6d4f46",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/cowlitz_valuations.json",
+          "exists": true,
+          "sizeBytes": 941,
+          "sha256": "2c32eea5257f0acf71f5425099b7942f8817aa0b7945d4e1dbbcfcb31f8f4583",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/databases/county-databases/cowlitz_data.sql",
+          "exists": true,
+          "sizeBytes": 3351,
+          "sha256": "5304b8da92571c17e053573818069ebb34fc11e94e301b2c1beeacc5bb9288c6",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/intelligence/cowlitz_analysis.json",
+          "exists": true,
+          "sizeBytes": 554,
+          "sha256": "e06ce6a4cfa2a6b903a0ff0b8ca29da50ff53b80d9784252fc9043f3d0ec6d6d",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/cowlitz_extraction.json",
+          "exists": true,
+          "sizeBytes": 267,
+          "sha256": "4fb636dc52bbb5f990574c410f1dd468a04e917711f95e3d50a03e785d6d4f46",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/cowlitz_valuations.json",
+          "exists": true,
+          "sizeBytes": 941,
+          "sha256": "2c32eea5257f0acf71f5425099b7942f8817aa0b7945d4e1dbbcfcb31f8f4583",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/income/__tests__/IncomeForge.test.tsx",
+          "exists": true,
+          "sizeBytes": 4391,
+          "sha256": "c0c1b8ee2c5adcc6892d9fb36aed2b75074f3096750a133483575c167bdda159",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-38-county-reimport-dry-run/cowlitz/source-snapshot-receipt.json",
+          "exists": true,
+          "sizeBytes": 1823,
+          "sha256": "0a226c9d3e7eb2d41703778bb628fe2289262e215b62bc2f1a415fdc399f50a4",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "authoritative_parcel_inventory_receipt"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-cowlitz-bounded-correction-dry-run/correction-receipt-candidate.json",
+          "exists": true,
+          "sizeBytes": 549,
+          "sha256": "c6d16de50d9407c01e2fa90961d2f5dc46bc43938588183db01ae8f1ccc6cf4d",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-cowlitz-bounded-correction-dry-run/proposed-stage-insert-list.json",
+          "exists": true,
+          "sizeBytes": 136393,
+          "sha256": "d28f93211450006915bd8a98930a17d54e4acb0d0b999115ae622f1f01ef7446",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-cowlitz-bounded-correction-dry-run/proposed-supersede-list.json",
+          "exists": true,
+          "sizeBytes": 27075,
+          "sha256": "11955065b02121a012d08d8ce49027774392e4f3e2798824a7ea21c7ca60a4cc",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-cowlitz-bounded-correction-dry-run/rollback-plan.json",
+          "exists": true,
+          "sizeBytes": 336,
+          "sha256": "412c4a0c001c1c44140c120faffaf3247fc2e1603c67313620ed32bf727f91ec",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-cowlitz-bounded-correction-dry-run.latest.json",
+          "exists": true,
+          "sizeBytes": 6493,
+          "sha256": "82c4d561ab841c8c4e191d16ad8306ac7e37fb255a8976edf480fb77e8900e1c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-cowlitz-bounded-correction-dry-run.latest.md",
+          "exists": true,
+          "sizeBytes": 1007,
+          "sha256": "62988950724f39b75a4eb10711ecbb755e3081150b14cab27bf865c1faf78335",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-cowlitz-bounded-correction-execution/execution-receipt.json",
+          "exists": true,
+          "sizeBytes": 1774,
+          "sha256": "d21fb72f272ebf842440001b29c670dcf542e2f09321eee3d32d327c0899ddc9",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-cowlitz-bounded-correction-execution/pre-mutation-backup.json",
+          "exists": true,
+          "sizeBytes": 87643,
+          "sha256": "b5ae631503001dd1bdc3b1487d5b2f1cd55ae2b00fd45507edc0435e2eb983bf",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-cowlitz-bounded-correction-execution/rollback.sql",
+          "exists": true,
+          "sizeBytes": 8073,
+          "sha256": "5c752220bf0e4b8dea23ac5eaf3dbbc681c9054f2a69efec401cc004080ee989",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-cowlitz-bounded-correction-execution.latest.json",
+          "exists": true,
+          "sizeBytes": 1774,
+          "sha256": "d21fb72f272ebf842440001b29c670dcf542e2f09321eee3d32d327c0899ddc9",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-cowlitz-bounded-correction-execution.latest.md",
+          "exists": true,
+          "sizeBytes": 935,
+          "sha256": "41201dc6a692392386e7d86c3dc6c000603148bfa32100812cf93b6553d38732",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-cowlitz-parcel-identifier-root-cause.latest.json",
+          "exists": true,
+          "sizeBytes": 8828,
+          "sha256": "ae921afbd8f4f7ec6f41a0b755c88d2a854c822e797fbb613e2b3f8794634183",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-cowlitz-parcel-identifier-root-cause.latest.md",
+          "exists": true,
+          "sizeBytes": 5707,
+          "sha256": "4f727ac3ee162c3197381226c8a7d8425acc8fa4b604d44e839d3aa616cb25d8",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-cowlitz-receipt-closure/bounded-correction-plan.json",
+          "exists": true,
+          "sizeBytes": 3,
+          "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-cowlitz-receipt-closure.latest.json",
+          "exists": true,
+          "sizeBytes": 3719,
+          "sha256": "6c982e19dd85dc0ddf573c67493e3c08cad4f28df94bc3572f0d7f88b3b8b0cc",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-cowlitz-receipt-closure.latest.md",
+          "exists": true,
+          "sizeBytes": 733,
+          "sha256": "8eea3fd7696ab980573bc52f712b012c4912bbf2dc1713a1845502961c8f10a1",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-cowlitz-source-receipt-hash-reconciliation.latest.json",
+          "exists": true,
+          "sizeBytes": 4641,
+          "sha256": "be0f7c0a297d35b831fa82685989384d0f2d202502552a6c3a94ac0300655414",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-cowlitz-source-receipt-hash-reconciliation.latest.md",
+          "exists": true,
+          "sizeBytes": 2520,
+          "sha256": "4a1934b537af5b4d5132b0586f5dce64f99386c0ed8513519d29020ec42136d2",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-public-source-captures/cowlitz/cowlitz-canonical-parcelnumbers.csv",
+          "exists": true,
+          "sizeBytes": 549459,
+          "sha256": "6744bfdf0ae76fa7432b23c1ad66fec4a7b9c885c88b5d72530e2439ac1d8a38",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-public-source-captures/cowlitz/cowlitz-parcels-parcno-capture-metadata.json",
+          "exists": true,
+          "sizeBytes": 1171,
+          "sha256": "294f6ac5f373fbe3b186e3ac33d077ef4c4ab9b9ae04e38812776dada91ebdc4",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-public-source-captures/cowlitz/cowlitz-parcels-parcno-raw.jsonl",
+          "exists": true,
+          "sizeBytes": 2116474,
+          "sha256": "b1c30d8f72b5cd81bdabcb6a01e006e8cdf74b789cd226e2bcda0a2686445174",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-parcel-identity-repair-dry-run/cowlitz/dry-run-report.json",
+          "exists": true,
+          "sizeBytes": 3879,
+          "sha256": "16c1c59c6ca72be728139ed0fc5e9df2ae3da159a617ef176c25019de85f9d59",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-parcel-identity-repair-dry-run/cowlitz/rejected-rows.jsonl",
+          "exists": true,
+          "sizeBytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-parcel-identity-repair-dry-run/cowlitz/repair-receipt-candidate.json",
+          "exists": true,
+          "sizeBytes": 478,
+          "sha256": "08740be03bca611c40acb3afe681a58af119b6fb7336736c08b4b2da0e6aa90c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-parcel-identity-repair-dry-run/cowlitz/rollback-snapshot-plan.json",
+          "exists": true,
+          "sizeBytes": 402,
+          "sha256": "bf0c0febb90bb598e3d4876aac649cad423eeb5bb96cf4613d09f58631983b35",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-parcel-identity-repair-dry-run/cowlitz/sample-repair-rows.jsonl",
+          "exists": true,
+          "sizeBytes": 1908,
+          "sha256": "66bff9bef12fd5da91a8945072e1e526d0ab16184f6763e724e444bdc6264481",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-post-repair-certification-closure/cowlitz/canonical-only-sample.json",
+          "exists": true,
+          "sizeBytes": 6,
+          "sha256": "2deb4176287e8803490852ee8d4da55ffaa4530a01cff15897991214684728a8",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-post-repair-certification-closure/cowlitz/source-only-sample.json",
+          "exists": true,
+          "sizeBytes": 6,
+          "sha256": "af1998adb5f50ed3d8c527a60f160ac4dc1eb7b4e0f7bf670e8542f834539440",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-receipt-posture/cowlitz/source-snapshot-receipt.json",
+          "exists": true,
+          "sizeBytes": 1296,
+          "sha256": "b56a7b42476f92542b30ac09f504f0dc1a4651089abd3f077bee3da740920e6a",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "authoritative_parcel_inventory_receipt"
+        }
+      ],
+      "blockers": [],
+      "nextAction": "reconcile_receipt_counts_and_prepare_certification_gate",
+      "certificationAllowed": true,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Douglas",
+      "fips": "53017",
+      "officialAssessorBaseUrl": "https://www.douglascountywa.gov",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Ferry",
+      "fips": "53019",
+      "officialAssessorBaseUrl": "https://www.ferry-county.com",
+      "officialParcelInventory": true,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": true,
+      "certifiable": false,
+      "inventoryAccess": "search_only_requires_export_policy",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Parcel search surface exists, but governed bulk/export authority is not proven."
+      ],
+      "nextAction": "confirm_export_or_bulk_query_terms_before_capture",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Franklin",
+      "fips": "53021",
+      "officialAssessorBaseUrl": "https://www.franklincountywa.gov",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
+          "exists": true,
+          "sizeBytes": 355548,
+          "sha256": "c60e4d5e4f08a9eec9070d407aff7b52f2303bf493d5b7ecc58ac86984a2fc64",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/county-studio/__tests__/CountyStatisticsWorkbenchPanel.test.tsx",
+          "exists": true,
+          "sizeBytes": 13274,
+          "sha256": "ea12d5ddcc4d65f47d926789bb5095cbfebaf8e3e3f10446cd973956b59e7dd9",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/income/__tests__/IncomeForge.test.tsx",
+          "exists": true,
+          "sizeBytes": 4391,
+          "sha256": "c0c1b8ee2c5adcc6892d9fb36aed2b75074f3096750a133483575c167bdda159",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Garfield",
+      "fips": "53023",
+      "officialAssessorBaseUrl": "https://www.co.garfield.wa.us",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Grant",
+      "fips": "53025",
+      "officialAssessorBaseUrl": "https://www.grantcountywa.gov",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "exists": true,
+          "sizeBytes": 2377,
+          "sha256": "5cf42f6c50bd8f55dc956a63a0d2d45b567a622933851c2ce8f8f7a53235fefc",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/grant_analysis.json",
+          "exists": true,
+          "sizeBytes": 552,
+          "sha256": "905af5fcd54dfee570de0701d68250bc3439b4baf70fbeee06e25f40d87e1015",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/grant_extraction.json",
+          "exists": true,
+          "sizeBytes": 265,
+          "sha256": "27fc573a0b91f824a0c6f39f5944b8127545b37bc6d4a2ef77fe67823e2100f6",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/grant_valuations.json",
+          "exists": true,
+          "sizeBytes": 933,
+          "sha256": "bac4473ec02b4ff64edcfcc10649f153dbd9c56e4b92bcdfbc7510fe0f3e2bcb",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/databases/county-databases/grant_data.sql",
+          "exists": true,
+          "sizeBytes": 3331,
+          "sha256": "b965a40c15770fbceae70d77752e47d4af51efe8c8e2e8cd7dd97ae6c75c7bf4",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/intelligence/grant_analysis.json",
+          "exists": true,
+          "sizeBytes": 552,
+          "sha256": "905af5fcd54dfee570de0701d68250bc3439b4baf70fbeee06e25f40d87e1015",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/grant_extraction.json",
+          "exists": true,
+          "sizeBytes": 265,
+          "sha256": "27fc573a0b91f824a0c6f39f5944b8127545b37bc6d4a2ef77fe67823e2100f6",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/grant_valuations.json",
+          "exists": true,
+          "sizeBytes": 933,
+          "sha256": "bac4473ec02b4ff64edcfcc10649f153dbd9c56e4b92bcdfbc7510fe0f3e2bcb",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Grays Harbor",
+      "fips": "53027",
+      "officialAssessorBaseUrl": "https://www.co.grays-harbor.wa.us",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Island",
+      "fips": "53029",
+      "officialAssessorBaseUrl": "https://www.islandcountywa.gov",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "exists": true,
+          "sizeBytes": 2377,
+          "sha256": "5cf42f6c50bd8f55dc956a63a0d2d45b567a622933851c2ce8f8f7a53235fefc",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/island_analysis.json",
+          "exists": true,
+          "sizeBytes": 553,
+          "sha256": "184823ded70d3fdd2c50d51e655313ab9ffa3fe1be558e78273f3e141bca0df7",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/island_extraction.json",
+          "exists": true,
+          "sizeBytes": 323,
+          "sha256": "6fdc73a5c1b47cf5b59537d9bea96cd9a554f901b71deca326795112748f494a",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/island_valuations.json",
+          "exists": true,
+          "sizeBytes": 937,
+          "sha256": "84034acd908a809ac6be3ef0be0ac7ccb5c6fb0b8d849a6d0b94227c0f192138",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/databases/county-databases/island_data.sql",
+          "exists": true,
+          "sizeBytes": 3345,
+          "sha256": "6c7d5e783e36bc70de4b7495e213cbcf107aaa9bb1a3f2ff5d09ecd66ab97dd5",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/intelligence/island_analysis.json",
+          "exists": true,
+          "sizeBytes": 553,
+          "sha256": "184823ded70d3fdd2c50d51e655313ab9ffa3fe1be558e78273f3e141bca0df7",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/island_extraction.json",
+          "exists": true,
+          "sizeBytes": 323,
+          "sha256": "6fdc73a5c1b47cf5b59537d9bea96cd9a554f901b71deca326795112748f494a",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/island_valuations.json",
+          "exists": true,
+          "sizeBytes": 937,
+          "sha256": "84034acd908a809ac6be3ef0be0ac7ccb5c6fb0b8d849a6d0b94227c0f192138",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/geo/utils/spatialStats.ts",
+          "exists": true,
+          "sizeBytes": 6125,
+          "sha256": "16ac43d879b286230147d193415f42bf053f2ce2a7fd83b7819d07cab6011b3c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Jefferson",
+      "fips": "53031",
+      "officialAssessorBaseUrl": "https://www.co.jefferson.wa.us",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "King",
+      "fips": "53033",
+      "officialAssessorBaseUrl": "https://kingcounty.gov",
+      "officialParcelInventory": true,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": true,
+      "inventoryAccess": "authoritative_inventory_receipt_found",
+      "sourceEvidenceRole": "authoritative_parcel_inventory_receipt",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-correction-dry-run/dry-run-correction-receipt.json",
+          "exists": true,
+          "sizeBytes": 371,
+          "sha256": "69a79fdb2fc9bfa34a55c17eca013cc776c850a9437f6e21dcedf2e40ca0c0c4",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-correction-dry-run/king-canonical-only-source-probe.json",
+          "exists": true,
+          "sizeBytes": 346314,
+          "sha256": "9832337c470099dea5d5dc7fc17e1c4c64ecbe226cab99feee39fd97cbf920cb",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-correction-dry-run/proposed-case-correction-list.json",
+          "exists": true,
+          "sizeBytes": 5091,
+          "sha256": "fb7d30a7faaa4a5f6b623326a2f506c02bddd6bb9a60aa8b05b3115ef1e47057",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-correction-dry-run/proposed-stage-list.json",
+          "exists": true,
+          "sizeBytes": 530556,
+          "sha256": "293c0249c2fdb360f3cbebef2efec559b1c41d4f2410264f2ef85a3012140de0",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-correction-dry-run/proposed-supersede-list.json",
+          "exists": true,
+          "sizeBytes": 182696,
+          "sha256": "3451df391c8ba62b93bec5d6d277e48663ff8f0c13c412b4e96471ac12b694ba",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-correction-dry-run/rollback-plan.sql",
+          "exists": true,
+          "sizeBytes": 6986,
+          "sha256": "22f4911ea1dd1786fbd86a047878eb2b2766c7f42a845fa6e6af37c75d7f9ac2",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-correction-dry-run.latest.json",
+          "exists": true,
+          "sizeBytes": 768200,
+          "sha256": "e299aad70a01367b1b18689a934ae2416849d6e6bda115d09980a76521274f21",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-correction-dry-run.latest.md",
+          "exists": true,
+          "sizeBytes": 884,
+          "sha256": "3e6f62f56ff98dbc1439068a21d58360a66a2208b371cc2f6a5c36c2942a00b5",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-correction-plan/king-canonical-only-db-detail.json",
+          "exists": true,
+          "sizeBytes": 275676,
+          "sha256": "0cfaf8e2e56d00de4f12bf78412fde5ddcc27e7cb71d47f92c9f8190c7584c24",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-correction-plan.latest.json",
+          "exists": true,
+          "sizeBytes": 11128,
+          "sha256": "82011cb862cbfe99e644208cf472691b1fd72d7cf763a4b14645757107885823",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-correction-plan.latest.md",
+          "exists": true,
+          "sizeBytes": 3937,
+          "sha256": "73a2187e9983c082348713d889c6ffc885556f3763d2cc55793a4ccfd9d7b6cb",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-parcel-shell-correction-transaction-dry-run/excluded-placeholder-queue.json",
+          "exists": true,
+          "sizeBytes": 11613,
+          "sha256": "aaf749af067ca3904bd08c82b8687753fdb012e1b4837cf3b0569c3deaac8fdf",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-parcel-shell-correction-transaction-dry-run/post-transaction-parity-proof.json",
+          "exists": true,
+          "sizeBytes": 435,
+          "sha256": "528fecb55cfdfabdb516e2cdbfb88adce3f7eb58aafcfd93af5b6be905a637b5",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-parcel-shell-correction-transaction-dry-run/proposed-case-correction-list.json",
+          "exists": true,
+          "sizeBytes": 4047,
+          "sha256": "43d8e4961ee863ba6bc8082083721c8749673a929e1914778f6c194433ba5967",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-parcel-shell-correction-transaction-dry-run/proposed-case-correction.sql",
+          "exists": true,
+          "sizeBytes": 2138,
+          "sha256": "405679d577378ee2b1d184572c91d64bdcb9a631fd81b01027f295ee93d7fb81",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-parcel-shell-correction-transaction-dry-run/proposed-insert-list.json",
+          "exists": true,
+          "sizeBytes": 1046646,
+          "sha256": "4815fe859b5e3eb98dd3c45d92ddd8a56da44bebde4c0a7a1c7e415daab8faf7",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-parcel-shell-correction-transaction-dry-run/proposed-insert.sql",
+          "exists": true,
+          "sizeBytes": 149377,
+          "sha256": "365a230f0ab5e642377c6ca2489f578c26807134443f8ea2b76aadad47d43bf5",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-parcel-shell-correction-transaction-dry-run/proposed-supersede-list.json",
+          "exists": true,
+          "sizeBytes": 158304,
+          "sha256": "754460e5a1fb56350d1d225581b810d88c86a4324e75a44d0c64c47829789c4f",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-parcel-shell-correction-transaction-dry-run/proposed-supersede.sql",
+          "exists": true,
+          "sizeBytes": 26856,
+          "sha256": "a5d19de8d4efec69a445c79ecd987034852507be32ac94439ab9dbed785a233a",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-parcel-shell-correction-transaction-dry-run/proposed-transaction-receipt.json",
+          "exists": true,
+          "sizeBytes": 1465,
+          "sha256": "0cc050844159cf656027f9ddb1b4b1cbacf39561d5b2f173f6f4d9a89f38fb24",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-parcel-shell-correction-transaction-dry-run/rollback.sql",
+          "exists": true,
+          "sizeBytes": 41919,
+          "sha256": "bdc369066e85a6a52617103f7136d1dde305521f140550c850a232fb608d0484",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-parcel-shell-correction-transaction-dry-run.latest.json",
+          "exists": true,
+          "sizeBytes": 1515296,
+          "sha256": "85308b22d13b647bd3bdbd0eee42f9c2a7e9b120849fea859364b62be66ad472",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-parcel-shell-correction-transaction-dry-run.latest.md",
+          "exists": true,
+          "sizeBytes": 809,
+          "sha256": "a7ef19a57127900ce7eeebaf0dbe80cd1a63de22e5d2da05f231e81efbdaca28",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-parcel-shell-load-policy/king-parcel-shell-load-candidates.json",
+          "exists": true,
+          "sizeBytes": 550914,
+          "sha256": "ebd6338b58280649aa6316a7fb41d91ac08d07b7667afb9efa9017d18bc7614d",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-parcel-shell-load-policy/king-parcel-shell-load-policy.json",
+          "exists": true,
+          "sizeBytes": 820,
+          "sha256": "e7834132ea6a37bd4ae338a196d80109c6005d009cffb4bfdf68166553434304",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-parcel-shell-load-policy/king-parcel-shell-loadability-matrix.json",
+          "exists": true,
+          "sizeBytes": 228,
+          "sha256": "d59fdb2df731b99e04d580dd936e38b6af675db9f9994a44bc96fad91f11a241",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-parcel-shell-load-policy/king-placeholder-review-queue.json",
+          "exists": true,
+          "sizeBytes": 11613,
+          "sha256": "aaf749af067ca3904bd08c82b8687753fdb012e1b4837cf3b0569c3deaac8fdf",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-parcel-shell-load-policy.latest.json",
+          "exists": true,
+          "sizeBytes": 635724,
+          "sha256": "9647abade1d1f9f2345b1ec267eae13d25dfcea191c37c32fba756e11f3079bb",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-parcel-shell-load-policy.latest.md",
+          "exists": true,
+          "sizeBytes": 1940,
+          "sha256": "6b30c956057d66626b4ad809e6780efd4c76b0fb17ecb45aeb183b56fea5be90",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-post-repair-certification-closure/king-receipt.json",
+          "exists": true,
+          "sizeBytes": 2385,
+          "sha256": "887e238638836fb6cb1c0d9b13da81de85a0c6d9f2b6aab7cfc1ae554fae958a",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-post-repair-certification-closure.latest.json",
+          "exists": true,
+          "sizeBytes": 2881,
+          "sha256": "1f3d063f433219cef020b7b20976fdc7b821b8dacaaf46eed096b5c169ba0ebf",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-post-repair-certification-closure.latest.md",
+          "exists": true,
+          "sizeBytes": 536,
+          "sha256": "ba2099a2069e04d1400f3c4cfd46fb881b8623895f52a9a1411db0f6bc0f2f1c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-post-repair-delta-adjudication/king-canonical-only-parcels.txt",
+          "exists": true,
+          "sizeBytes": 5093,
+          "sha256": "e535c10c8f2bb95c5b87c0b72397fcfad8e681184ad50dcc13740d723aaab21a",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-post-repair-delta-adjudication/king-duplicate-source-pin-report.json",
+          "exists": true,
+          "sizeBytes": 2936,
+          "sha256": "e7934fdc74464252ca7d3bec770b62637180b2c06823f42e60f74e56ba91273b",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-post-repair-delta-adjudication/king-source-only-parcels.txt",
+          "exists": true,
+          "sizeBytes": 12903,
+          "sha256": "57584c0c2860eaa15fcddd463a23d733beaaeba3e95fea0777727a8733e227cd",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-post-repair-delta-adjudication.latest.json",
+          "exists": true,
+          "sizeBytes": 10353,
+          "sha256": "087e65ab7332dea8d1e3dca1acf2f2054d75194e0a825ff933e0194e8cca5b0d",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-post-repair-delta-adjudication.latest.md",
+          "exists": true,
+          "sizeBytes": 4303,
+          "sha256": "0513ba4436a2168e007e44e8c00f49c3fc6be637d711d720fcdf7e42e0235d31",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-authorization-packet/execution-command.disabled.txt",
+          "exists": true,
+          "sizeBytes": 119,
+          "sha256": "179da21b10896151b3d54579cf24eb0647a735a4017aec7ae93935974c71d0de",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-authorization-packet/human-approval-checklist.json",
+          "exists": true,
+          "sizeBytes": 944,
+          "sha256": "ce98d93a0abf64f21afd11f20a0bb98125e107ba67aec5ec049e2a1e31c6226b",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-authorization-packet/post-execution-proof-requirements.json",
+          "exists": true,
+          "sizeBytes": 467,
+          "sha256": "7b461fe035466e2f14611a6a7323bf606732ec5a9f486a084dbcaee99e3826f3",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-authorization-packet/preconditions.json",
+          "exists": true,
+          "sizeBytes": 1428,
+          "sha256": "00e8d6105cae2f35a8835a09ae91c36ba02c4571cc27a7775b95a50dd33f93ce",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-authorization-packet.latest.json",
+          "exists": true,
+          "sizeBytes": 5596,
+          "sha256": "acc0e825d473835534bef688914238b9fbf743425bca192b54185974c3315787",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-authorization-packet.latest.md",
+          "exists": true,
+          "sizeBytes": 3717,
+          "sha256": "3df5bb32a0652e459e5edcd7d83716cab23d6b42d058027bbf8d23c63c15263c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-decision-gate/approval-token.disabled.json",
+          "exists": true,
+          "sizeBytes": 527,
+          "sha256": "dbdf56e5c098f68e3f6cf0a4d29469a0db0565489ca9a6616e74ccffebc2b211",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-decision-gate/decision-gate-state.json",
+          "exists": true,
+          "sizeBytes": 2195,
+          "sha256": "26549f751c8628d1d035bd9f5cfae0f4eee1a7a0e782eeb3f3c802f1a05d5e6d",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-decision-gate/forbidden-approvals.json",
+          "exists": true,
+          "sizeBytes": 146,
+          "sha256": "b0f1ea39658dc93eab83429cdc0ca3649270db9f29ccf75347b55b9f3abd3bb7",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-decision-gate.latest.json",
+          "exists": true,
+          "sizeBytes": 2195,
+          "sha256": "26549f751c8628d1d035bd9f5cfae0f4eee1a7a0e782eeb3f3c802f1a05d5e6d",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-decision-gate.latest.md",
+          "exists": true,
+          "sizeBytes": 927,
+          "sha256": "cbbe03ad1675762b43a41a0def41767985145ce92d111d44154badac04158a03",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-execution/execution-receipt.json",
+          "exists": true,
+          "sizeBytes": 1497,
+          "sha256": "a693f63659fcf6fe17897fd15abe50e9e1c31428a6de92057e2c05f907fbab4e",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-execution/pre-mutation-backup.json",
+          "exists": true,
+          "sizeBytes": 332155,
+          "sha256": "1b705de1453fb790c29d78f43a0d8467d1c7c97da2209bf57f6beb29df836333",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-execution.latest.json",
+          "exists": true,
+          "sizeBytes": 1497,
+          "sha256": "a693f63659fcf6fe17897fd15abe50e9e1c31428a6de92057e2c05f907fbab4e",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-execution.latest.md",
+          "exists": true,
+          "sizeBytes": 870,
+          "sha256": "5c2974097fda53d5aafec34f0e8bf4a0a89db18dc3b9d2c7ddb6e1117c5b760f",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-post-execution-audit.latest.json",
+          "exists": true,
+          "sizeBytes": 1707,
+          "sha256": "fc1187c9bc6566bd6133286f259d565ddd5c71d3b9ba3d27a1e5c7c1ca6b0cb7",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-post-execution-audit.latest.md",
+          "exists": true,
+          "sizeBytes": 1182,
+          "sha256": "8a7c978e60dbe8ae2460a57f64ddf24a6bc83d606f648be7fca520edc6846148",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-worktree-hygiene.latest.json",
+          "exists": true,
+          "sizeBytes": 1813,
+          "sha256": "557c3c67961da6f02cd151d718c80c2b56c7afcbcfe2a296a015bb05c1c23774",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-shell-correction-worktree-hygiene.latest.md",
+          "exists": true,
+          "sizeBytes": 1462,
+          "sha256": "96af637ca0b98aa96431023dc2d00ebbd0e32da04ca5be9fe29d3b2f3e5af8ed",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-source-completeness-capture/king-source-completeness-capture-receipt.json",
+          "exists": true,
+          "sizeBytes": 1289,
+          "sha256": "eacb02b04ea4dc08cc91158c578960feb52f03d52aa9e9475f1ad081d5c9f0af",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-source-completeness-capture/king-source-completeness-missing-pins.json",
+          "exists": true,
+          "sizeBytes": 3,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-source-completeness-capture/king-source-completeness-rejected-rows.json",
+          "exists": true,
+          "sizeBytes": 3,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-source-completeness-capture/king-source-only-runtime-fields-raw.jsonl",
+          "exists": true,
+          "sizeBytes": 225599,
+          "sha256": "9f72b9fa3bd633d8f383214f97011d4438cd48376c113f25c085a7b0473e6c6f",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-source-completeness-capture/king-source-only-runtime-shell-stage-list.json",
+          "exists": true,
+          "sizeBytes": 562524,
+          "sha256": "a38faa626b0babe103c75186de2f1d4c9f97b7af1715f9f60c209243e426403d",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-source-completeness-capture.latest.json",
+          "exists": true,
+          "sizeBytes": 2134,
+          "sha256": "b547e892f576c7338af6557ec898ad84be2af63dae28f5ae6143229ff60200d4",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-king-source-completeness-capture.latest.md",
+          "exists": true,
+          "sizeBytes": 1468,
+          "sha256": "8ff11630967ba4351437176400c9b30d7131978c9a5a41d0113d8c78f5b9947b",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-public-source-captures/king/king-canonical-parcelnumbers.csv",
+          "exists": true,
+          "sizeBytes": 7622239,
+          "sha256": "dda5a2d5117ecc6371e2fd8b41515d87a99476d9b63ed2e4678e337ae4f5ffbd",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-public-source-captures/king/king-parcel-identity-capture-metadata.json",
+          "exists": true,
+          "sizeBytes": 927,
+          "sha256": "bb5278f64a2061630faebe0f2f93864fc5f9e354e140c1fcdd8342453991e19f",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-public-source-captures/king/king-parcel-identity-service-metadata.json",
+          "exists": true,
+          "sizeBytes": 5985,
+          "sha256": "8a8b7cf7fbdfab27e281f1d56525cc54d351722d49b4062af3d7528f4be8fe6c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-public-source-captures/king/king-parcels-source-native-raw.jsonl",
+          "exists": true,
+          "sizeBytes": 22987529,
+          "sha256": "64f7317024eaecf6fbe8a9e7378716d46c9ac50fed13c4eecde527c7b6fb42cd",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-receipt-posture/king/source-snapshot-receipt.json",
+          "exists": true,
+          "sizeBytes": 2385,
+          "sha256": "887e238638836fb6cb1c0d9b13da81de85a0c6d9f2b6aab7cfc1ae554fae958a",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "authoritative_parcel_inventory_receipt"
+        }
+      ],
+      "blockers": [],
+      "nextAction": "reconcile_receipt_counts_and_prepare_certification_gate",
+      "certificationAllowed": true,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Kitsap",
+      "fips": "53035",
+      "officialAssessorBaseUrl": "https://www.kitsapgov.com",
+      "officialParcelInventory": true,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": true,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "authoritative_inventory_recapture_candidate",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205359Z/kitsap-workbooks/035-kitsap-commercial-sales-2021-2026.xlsx",
+          "exists": true,
+          "sizeBytes": 254463,
+          "sha256": "f814b04f504410a5214bb5593cdc6d62118e4d7e500c9c6a09395d128ab4710a",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "secondary_sales_or_comparable"
+        },
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205359Z/kitsap-workbooks/035-kitsap-residential-sales-2021-2026.xlsx",
+          "exists": true,
+          "sizeBytes": 3517769,
+          "sha256": "b4eb63b0550da380f11f2c1e8e372db177e2e3cb6d0de76333d50252ac1dbbd9",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "secondary_sales_or_comparable"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-prefixed-identity-repair-dry-run/kitsap/repair-receipt-candidate.json",
+          "exists": true,
+          "sizeBytes": 2360,
+          "sha256": "2a19a7e0cdd9c2fb3c8db0318b63c7b33c80ecf9afc930d2b8b75e66d171caee",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-prefixed-identity-repair-dry-run/kitsap/rollback-plan.md",
+          "exists": true,
+          "sizeBytes": 918,
+          "sha256": "142cd45320a327c4f2a628bfd0c7046a97eb568e089633a0f867e6e41da0c16f",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/kitsap/source-native-parcel-ids.jsonl",
+          "exists": true,
+          "sizeBytes": 1797037,
+          "sha256": "fe64110aff16a4a0723a837fc8e487603b3678cba29d5affd8b334755d6a4281",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/kitsap/source-receipt-candidate.json",
+          "exists": true,
+          "sizeBytes": 1491,
+          "sha256": "81f9ebee35d9d71b7d14108b97998afb91db7a0374223e0e163629677b0b6fcc",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage."
+      ],
+      "nextAction": "recapture_authoritative_parcel_inventory_source_and_emit_receipt",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Kittitas",
+      "fips": "53037",
+      "officialAssessorBaseUrl": "https://www.co.kittitas.wa.us",
+      "officialParcelInventory": true,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": true,
+      "certifiable": false,
+      "inventoryAccess": "search_only_requires_export_policy",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Parcel search surface exists, but governed bulk/export authority is not proven."
+      ],
+      "nextAction": "confirm_export_or_bulk_query_terms_before_capture",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Klickitat",
+      "fips": "53039",
+      "officialAssessorBaseUrl": "https://www.klickitatcounty.org",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/039-klickitat-33cbff5f37aa.xlsx",
+          "exists": true,
+          "sizeBytes": 27672,
+          "sha256": "9d985fa0341362f485b32c1cb44b90979481142f3e8d22794632659a7ea4e138",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/039-klickitat-cdf4b89b0615.xlsx",
+          "exists": true,
+          "sizeBytes": 43829,
+          "sha256": "1ae0b53fd40ab31232c6299d43d37ec9ada927acfe1b04ce64c6666cc3fd942c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-klickitat-delta-adjudication/klickitat-canonical-only-parcels.txt",
+          "exists": true,
+          "sizeBytes": 309780,
+          "sha256": "aada6e91a924c3919b6edca33902b34d518db7ec4fe535957d6292141de5239a",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-klickitat-delta-adjudication/klickitat-overlap-parcels.txt",
+          "exists": true,
+          "sizeBytes": 9795,
+          "sha256": "9292f1606d52df7a209ace7a4416be66f0dce678383d60a870c00b56f90bb3bb",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-klickitat-delta-adjudication/klickitat-source-only-parcels.txt",
+          "exists": true,
+          "sizeBytes": 180,
+          "sha256": "fce4b41b21b313ac12a2aa3fd0601014c63a411ad1773922e935392c1b7e25f7",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-klickitat-delta-adjudication.latest.json",
+          "exists": true,
+          "sizeBytes": 6925,
+          "sha256": "fa20c1411e1eb24b98b1b7b8ede8677b985b085f03c0bd8bff67c99ea2c5cd72",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-klickitat-delta-adjudication.latest.md",
+          "exists": true,
+          "sizeBytes": 942,
+          "sha256": "4c2b30a7d2b10781b92b16b225977fa72dffa9889ee7279ca017786567bc3cc5",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-prefixed-identity-repair-dry-run/klickitat/repair-receipt-candidate.json",
+          "exists": true,
+          "sizeBytes": 2294,
+          "sha256": "d7ade13b7abb2cc87078f3d1881b5fb1dc7ba856c8f3d49ac6e476770a8e0d43",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-prefixed-identity-repair-dry-run/klickitat/rollback-plan.md",
+          "exists": true,
+          "sizeBytes": 924,
+          "sha256": "29339e724166de414ae8955fb2d4577a8bda3fe5bee85c3e311e4b2b6de5dc70",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/klickitat/source-native-parcel-ids.jsonl",
+          "exists": true,
+          "sizeBytes": 51870,
+          "sha256": "a9cf3916c5e8ca9a36ee5947ee6374e050b0613be0132c11a24d44eca8c4aeb7",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/klickitat/source-receipt-candidate.json",
+          "exists": true,
+          "sizeBytes": 1427,
+          "sha256": "bf2b9ad6f57bc9e8ba6999850753e58112d4bec60ede20807eb78d649ac6d9ad",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Lewis",
+      "fips": "53041",
+      "officialAssessorBaseUrl": "https://lewiscountywa.gov",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Lincoln",
+      "fips": "53043",
+      "officialAssessorBaseUrl": "https://www.co.lincoln.wa.us",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Mason",
+      "fips": "53045",
+      "officialAssessorBaseUrl": "https://masoncountywa.gov",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Okanogan",
+      "fips": "53047",
+      "officialAssessorBaseUrl": "https://okanogancounty.org",
+      "officialParcelInventory": true,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": true,
+      "certifiable": false,
+      "inventoryAccess": "search_only_requires_export_policy",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/047-okanogan-8ba26dbb173f.xlsx",
+          "exists": true,
+          "sizeBytes": 3798860,
+          "sha256": "34f9d552229dfe69be32d672f3ec72824a219afbd842708dbd3fb7fbbb7c6b7c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-okanogan-delta-adjudication/okanogan-canonical-only-parcels.txt",
+          "exists": true,
+          "sizeBytes": 478445,
+          "sha256": "52f87459c627c1aa4bca6a5300c11c6b66d03ba10505c0c30c6c34553f00fc36",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-okanogan-delta-adjudication/okanogan-overlap-parcels.txt",
+          "exists": true,
+          "sizeBytes": 64394,
+          "sha256": "7f6b8adb9e1135f66369da74a9ac4d7b644e7451192aa1c2e30608acb219efd0",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-okanogan-delta-adjudication/okanogan-source-only-parcels.txt",
+          "exists": true,
+          "sizeBytes": 5038,
+          "sha256": "5cb6657c602d3fd3c35eb9ca198e2e08c39d99ff9c4adcce002d5bf4dc6aa0a9",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-okanogan-delta-adjudication.latest.json",
+          "exists": true,
+          "sizeBytes": 6882,
+          "sha256": "991bd7a1102d1bc94d2cddbc22a10ac9e19b214608f664483b7dbfa11beb6c3b",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-okanogan-delta-adjudication.latest.md",
+          "exists": true,
+          "sizeBytes": 967,
+          "sha256": "3804af23fb84f6c0a54223638caf1c0c692869390d0194ea57b5aaf0f77e339e",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-prefixed-identity-repair-dry-run/okanogan/repair-receipt-candidate.json",
+          "exists": true,
+          "sizeBytes": 2002,
+          "sha256": "1794cce3ae61a4d4492c4b85caa0ca59923b3745271abf2af320442fcbe7b3f1",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-prefixed-identity-repair-dry-run/okanogan/rollback-plan.md",
+          "exists": true,
+          "sizeBytes": 922,
+          "sha256": "8e59bbf330fc8389008a224c3ffed6ab9dbbba73b4bb2255e63638d082be67bb",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/okanogan/source-native-parcel-ids.jsonl",
+          "exists": true,
+          "sizeBytes": 460776,
+          "sha256": "deb03fe42ab52e214a3e4b9a740c70c46ffdc4e282b8ce82b26f369c26586ca5",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/okanogan/source-receipt-candidate.json",
+          "exists": true,
+          "sizeBytes": 1146,
+          "sha256": "81a58b44754c9b608f111c840800c3d4dc83e32e7e3cfe43a85fc1baac44b5a6",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Parcel search surface exists, but governed bulk/export authority is not proven."
+      ],
+      "nextAction": "confirm_export_or_bulk_query_terms_before_capture",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Pacific",
+      "fips": "53049",
+      "officialAssessorBaseUrl": "https://www.co.pacific.wa.us",
+      "officialParcelInventory": true,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": true,
+      "certifiable": false,
+      "inventoryAccess": "search_only_requires_export_policy",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Parcel search surface exists, but governed bulk/export authority is not proven."
+      ],
+      "nextAction": "confirm_export_or_bulk_query_terms_before_capture",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Pend Oreille",
+      "fips": "53051",
+      "officialAssessorBaseUrl": "https://www.pendoreilleco.org",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Pierce",
+      "fips": "53053",
+      "officialAssessorBaseUrl": "https://www.co.pierce.wa.us",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T204521Z/pierce-datamart/053-pierce-sale.zip",
+          "exists": true,
+          "sizeBytes": 20560588,
+          "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "secondary_sales_or_comparable"
+        },
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T204815Z/pierce-datamart/053-pierce-sale.zip",
+          "exists": true,
+          "sizeBytes": 20560588,
+          "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "secondary_sales_or_comparable"
+        },
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205531Z/pierce-datamart/053-pierce-sale.zip",
+          "exists": true,
+          "sizeBytes": 20560588,
+          "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "secondary_sales_or_comparable"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-pierce-delta-adjudication/pierce-canonical-only-parcels.txt",
+          "exists": true,
+          "sizeBytes": 834240,
+          "sha256": "e067d7ab6b597fc7e4b44a7c5e28d1660629f360df4f21cded60d7d3e1b84df6",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-pierce-delta-adjudication/pierce-overlap-parcels.txt",
+          "exists": true,
+          "sizeBytes": 2782912,
+          "sha256": "e1c7c6b7a4edb56c1fabbc30f2b6d9a51dfc520f576f7c90eab6f173adea8c89",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-pierce-delta-adjudication/pierce-source-only-parcels.txt",
+          "exists": true,
+          "sizeBytes": 99726,
+          "sha256": "fe54da4efb81a931868be2d4894f6b5193972d377e4dee8e5fe40240b067934b",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-pierce-delta-adjudication.latest.json",
+          "exists": true,
+          "sizeBytes": 8166,
+          "sha256": "22367cc5612b87ae94c5e1707558488618870ef581a2f2b91a02016feefc8383",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-pierce-delta-adjudication.latest.md",
+          "exists": true,
+          "sizeBytes": 981,
+          "sha256": "96ecc055e15ce8c1d37159dacdd1c832239cac35cb5b102a6d1e08dd57557c5c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-prefixed-identity-repair-dry-run/pierce/repair-receipt-candidate.json",
+          "exists": true,
+          "sizeBytes": 2623,
+          "sha256": "36e32dcaae097a59eeea4e479d7613e60db5b2ca669efaf811084ee4af7f7281",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-prefixed-identity-repair-dry-run/pierce/rollback-plan.md",
+          "exists": true,
+          "sizeBytes": 918,
+          "sha256": "54223200aae16eeeefad61aa8fd7fc63534bbbc3ca2e900293fb8a83c7211080",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/pierce/source-native-parcel-ids.jsonl",
+          "exists": true,
+          "sizeBytes": 18606118,
+          "sha256": "4fc57b83ed6838ce4d463840b1ba021ac3d1509cd5988bcb4e7e0dad3c8a806f",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/pierce/source-receipt-candidate.json",
+          "exists": true,
+          "sizeBytes": 1740,
+          "sha256": "ff0b3bd509c759a47d49aec03983f28d59783eb3f97425d3c9b3f94b4d1b02c0",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "San Juan",
+      "fips": "53055",
+      "officialAssessorBaseUrl": "https://www.sanjuanco.com",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "exists": true,
+          "sizeBytes": 2377,
+          "sha256": "5cf42f6c50bd8f55dc956a63a0d2d45b567a622933851c2ce8f8f7a53235fefc",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/sanjuan_analysis.json",
+          "exists": true,
+          "sizeBytes": 554,
+          "sha256": "9f95851b4f1b2d8e54040f7ca12bf90962f046524ec60b4dc5a62710246366b0",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/sanjuan_extraction.json",
+          "exists": true,
+          "sizeBytes": 266,
+          "sha256": "66848ff7874d1425f8fd2205950a8b8e6086694e4986579b31fccaf657800754",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/sanjuan_valuations.json",
+          "exists": true,
+          "sizeBytes": 941,
+          "sha256": "2b4db6a122f67ea912f55f23c006b615fa646bde2ad46981de22ea6d0c1e0a5a",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/databases/county-databases/sanjuan_data.sql",
+          "exists": true,
+          "sizeBytes": 3346,
+          "sha256": "c3dbab1bf16e9806c0decf23fa7e40530af3d39f5dd37189871a76992ee9d7d5",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/intelligence/sanjuan_analysis.json",
+          "exists": true,
+          "sizeBytes": 554,
+          "sha256": "9f95851b4f1b2d8e54040f7ca12bf90962f046524ec60b4dc5a62710246366b0",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/sanjuan_extraction.json",
+          "exists": true,
+          "sizeBytes": 266,
+          "sha256": "66848ff7874d1425f8fd2205950a8b8e6086694e4986579b31fccaf657800754",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/sanjuan_valuations.json",
+          "exists": true,
+          "sizeBytes": 941,
+          "sha256": "2b4db6a122f67ea912f55f23c006b615fa646bde2ad46981de22ea6d0c1e0a5a",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/san-juan/source-native-parcel-ids.jsonl",
+          "exists": true,
+          "sizeBytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wave2-source-acquisition/san-juan/source-receipt-candidate.json",
+          "exists": true,
+          "sizeBytes": 844,
+          "sha256": "09d65779449f0ad82828ab080987e9ed0c0d673ad2e9fc0ea24a0e2be2a4989a",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Skagit",
+      "fips": "53057",
+      "officialAssessorBaseUrl": "https://skagitcounty.net",
+      "officialParcelInventory": true,
+      "gisLayer": true,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "authoritative_inventory_recapture_candidate",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage."
+      ],
+      "nextAction": "recapture_authoritative_parcel_inventory_source_and_emit_receipt",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Skamania",
+      "fips": "53059",
+      "officialAssessorBaseUrl": "https://www.skamaniacounty.org",
+      "officialParcelInventory": true,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": true,
+      "certifiable": false,
+      "inventoryAccess": "search_only_requires_export_policy",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Parcel search surface exists, but governed bulk/export authority is not proven."
+      ],
+      "nextAction": "confirm_export_or_bulk_query_terms_before_capture",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Snohomish",
+      "fips": "53061",
+      "officialAssessorBaseUrl": "https://snohomishcountywa.gov",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "exists": true,
+          "sizeBytes": 2377,
+          "sha256": "5cf42f6c50bd8f55dc956a63a0d2d45b567a622933851c2ce8f8f7a53235fefc",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/snohomish_analysis.json",
+          "exists": true,
+          "sizeBytes": 556,
+          "sha256": "99d54810bb5d4ef88ed09c618aea3136f4eb64f631b13f7156cc4921b37eeef6",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/snohomish_extraction.json",
+          "exists": true,
+          "sizeBytes": 272,
+          "sha256": "def782c0edc9d6c5cbcb2911fb71a199b4582b5df76dce21c3f32869937f8ccd",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/snohomish_valuations.json",
+          "exists": true,
+          "sizeBytes": 949,
+          "sha256": "89bf631d2281d1c42711a391a81b6769846637824ad38d01f97ed03add6f2d43",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/databases/county-databases/snohomish_data.sql",
+          "exists": true,
+          "sizeBytes": 3374,
+          "sha256": "e9040b6ae2bde9d74a4c129c1a83e81064248e916fdb9cb0fee3b47c88d4919d",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/intelligence/snohomish_analysis.json",
+          "exists": true,
+          "sizeBytes": 556,
+          "sha256": "99d54810bb5d4ef88ed09c618aea3136f4eb64f631b13f7156cc4921b37eeef6",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/snohomish_extraction.json",
+          "exists": true,
+          "sizeBytes": 272,
+          "sha256": "def782c0edc9d6c5cbcb2911fb71a199b4582b5df76dce21c3f32869937f8ccd",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/snohomish_valuations.json",
+          "exists": true,
+          "sizeBytes": 949,
+          "sha256": "89bf631d2281d1c42711a391a81b6769846637824ad38d01f97ed03add6f2d43",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Spokane",
+      "fips": "53063",
+      "officialAssessorBaseUrl": "https://www.spokanecounty.org",
+      "officialParcelInventory": true,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": true,
+      "inventoryAccess": "authoritative_inventory_receipt_found",
+      "sourceEvidenceRole": "authoritative_parcel_inventory_receipt",
+      "artifacts": [
+        {
+          "path": "data/county-intelligence/spokane_extraction.json",
+          "exists": true,
+          "sizeBytes": 268,
+          "sha256": "e9278b6e531722913ab4d5e7aea4fa12120023663e2bb551db14f027f711b6fe",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/spokane_valuations.json",
+          "exists": true,
+          "sizeBytes": 951,
+          "sha256": "7400f1068aac379a9de96e36896f340100c4835bd958cf7951a84bb492fb3317",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/databases/county-databases/spokane_data.sql",
+          "exists": true,
+          "sizeBytes": 3363,
+          "sha256": "70344dfc0e7d57ea3504749494556e2538f005600e70f720b2144b1596ba1444",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/intelligence/spokane_extraction.json",
+          "exists": true,
+          "sizeBytes": 268,
+          "sha256": "e9278b6e531722913ab4d5e7aea4fa12120023663e2bb551db14f027f711b6fe",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/spokane_valuations.json",
+          "exists": true,
+          "sizeBytes": 951,
+          "sha256": "7400f1068aac379a9de96e36896f340100c4835bd958cf7951a84bb492fb3317",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/atlas-live/__tests__/atlasLiveApi.contracts.test.ts",
+          "exists": true,
+          "sizeBytes": 4273,
+          "sha256": "15b2c084eef5f0d0142f57fb6c1857d6b496bb01f87eeab92c6e61a4c48586c5",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/atlas-live/__tests__/useAtlasMapData.test.ts",
+          "exists": true,
+          "sizeBytes": 5120,
+          "sha256": "e5bd86048cfb67b9bbf6e378e67a3e978e202a287e450d55ca68ba3ea6a49653",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-public-source-captures/spokane/spokane-canonical-parcelnumbers.csv",
+          "exists": true,
+          "sizeBytes": 2782065,
+          "sha256": "5af15213509203fbdbb6808b9460b1f05f1bebe358571d5d675dc11267f31760",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-public-source-captures/spokane/spokane-parcel-identity-capture-metadata.json",
+          "exists": true,
+          "sizeBytes": 939,
+          "sha256": "3e364846f37045f644e033da0449b5bfaa31f170831226d36684250296cc9150",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-public-source-captures/spokane/spokane-parcel-identity-service-metadata.json",
+          "exists": true,
+          "sizeBytes": 11410,
+          "sha256": "27e24ba6f9d7e290bc4cefaabdf3d32a44c03ccb4a5fd414ca3bd5de4c4e8d25",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-public-source-captures/spokane/spokane-parcels-source-native-raw.jsonl",
+          "exists": true,
+          "sizeBytes": 8348412,
+          "sha256": "dc2bcb337b62b69ce7624fb899b4a461dda90d9c376bcd775b88a687b7805437",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-spokane-source-count-semantics-adjudication/blank-source-parcel-id-rejected-rows.json",
+          "exists": true,
+          "sizeBytes": 1716,
+          "sha256": "1380a80d9743c2604ee8f462c010dd235bfa814a7c6606da7b180a4dbb6a6d56",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-spokane-source-count-semantics-adjudication/duplicate-source-parcel-id-report.json",
+          "exists": true,
+          "sizeBytes": 171,
+          "sha256": "4612133e4ae33514c87d30c1b3088064e6f125bc48264bcdca3b88e833eb0cdb",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-spokane-source-count-semantics-adjudication.latest.json",
+          "exists": true,
+          "sizeBytes": 1990,
+          "sha256": "33d444cf16d162b74a4457472d0427c40db4f295fb88b213328d7147cfb2a10a",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-spokane-source-count-semantics-adjudication.latest.md",
+          "exists": true,
+          "sizeBytes": 932,
+          "sha256": "3d0d9daa189e35c7799bb22c812e4d1578fca1203f70f6623845256e41f7a7f6",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-wa-initial-seed-receipt-posture/spokane/source-snapshot-receipt.json",
+          "exists": true,
+          "sizeBytes": 1905,
+          "sha256": "cd195652fd5ab3be0175140a9894f7dc6221668205615b179d483742a2c7131f",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "authoritative_parcel_inventory_receipt"
+        }
+      ],
+      "blockers": [],
+      "nextAction": "reconcile_receipt_counts_and_prepare_certification_gate",
+      "certificationAllowed": true,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Stevens",
+      "fips": "53065",
+      "officialAssessorBaseUrl": "https://stevenscountywa.gov",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "exists": true,
+          "sizeBytes": 2377,
+          "sha256": "5cf42f6c50bd8f55dc956a63a0d2d45b567a622933851c2ce8f8f7a53235fefc",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/stevens_analysis.json",
+          "exists": true,
+          "sizeBytes": 554,
+          "sha256": "21a4a20ee5297d846b72d3a398bcba543ac7a89940eaa2ee9918256e45e52017",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/stevens_extraction.json",
+          "exists": true,
+          "sizeBytes": 265,
+          "sha256": "4c46ba9de371a63a94a15ebddf013d4e91ee8017c0170c19e99665d444686625",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/stevens_valuations.json",
+          "exists": true,
+          "sizeBytes": 941,
+          "sha256": "ce6bd38163b9913d883434f887b08454efc5de222df44ec193b432854dad01c2",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/databases/county-databases/stevens_data.sql",
+          "exists": true,
+          "sizeBytes": 3352,
+          "sha256": "1367c79ede4405dbca6f608a3cc412dd9aad2c97327814a4b3ec106024e44c46",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/intelligence/stevens_analysis.json",
+          "exists": true,
+          "sizeBytes": 554,
+          "sha256": "21a4a20ee5297d846b72d3a398bcba543ac7a89940eaa2ee9918256e45e52017",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/stevens_extraction.json",
+          "exists": true,
+          "sizeBytes": 265,
+          "sha256": "4c46ba9de371a63a94a15ebddf013d4e91ee8017c0170c19e99665d444686625",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/stevens_valuations.json",
+          "exists": true,
+          "sizeBytes": 941,
+          "sha256": "ce6bd38163b9913d883434f887b08454efc5de222df44ec193b432854dad01c2",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Thurston",
+      "fips": "53067",
+      "officialAssessorBaseUrl": "https://www.co.thurston.wa.us",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Wahkiakum",
+      "fips": "53069",
+      "officialAssessorBaseUrl": "https://www.co.wahkiakum.wa.us",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Walla Walla",
+      "fips": "53071",
+      "officialAssessorBaseUrl": "https://www.co.walla-walla.wa.us",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Whatcom",
+      "fips": "53073",
+      "officialAssessorBaseUrl": "https://www.co.whatcom.wa.us",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "exists": true,
+          "sizeBytes": 2377,
+          "sha256": "5cf42f6c50bd8f55dc956a63a0d2d45b567a622933851c2ce8f8f7a53235fefc",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/whatcom_analysis.json",
+          "exists": true,
+          "sizeBytes": 554,
+          "sha256": "9555e163776c2818a3da6db036d3ee216e5effeefa73ac64c027e457fdbbe65a",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/whatcom_extraction.json",
+          "exists": true,
+          "sizeBytes": 268,
+          "sha256": "0f178cae6518c9a52d69ac20e1369f40b0f39e3b05d75b0631c12e1496472d04",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/whatcom_valuations.json",
+          "exists": true,
+          "sizeBytes": 941,
+          "sha256": "39e85e7bc01583e4fb02869d4ecd60d1bd009dd6e166fac08ccf454f89cecee0",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/databases/county-databases/whatcom_data.sql",
+          "exists": true,
+          "sizeBytes": 3352,
+          "sha256": "32c03c86dfd5a3c9b2bff8ac786742efcab699f8b9cd1f15e005c3f96ce4720f",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/intelligence/whatcom_analysis.json",
+          "exists": true,
+          "sizeBytes": 554,
+          "sha256": "9555e163776c2818a3da6db036d3ee216e5effeefa73ac64c027e457fdbbe65a",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/whatcom_extraction.json",
+          "exists": true,
+          "sizeBytes": 268,
+          "sha256": "0f178cae6518c9a52d69ac20e1369f40b0f39e3b05d75b0631c12e1496472d04",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/whatcom_valuations.json",
+          "exists": true,
+          "sizeBytes": 941,
+          "sha256": "39e85e7bc01583e4fb02869d4ecd60d1bd009dd6e166fac08ccf454f89cecee0",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Whitman",
+      "fips": "53075",
+      "officialAssessorBaseUrl": "https://www.whitmancounty.org",
+      "officialParcelInventory": true,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": true,
+      "certifiable": false,
+      "inventoryAccess": "search_only_requires_export_policy",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Parcel search surface exists, but governed bulk/export authority is not proven."
+      ],
+      "nextAction": "confirm_export_or_bulk_query_terms_before_capture",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    },
+    {
+      "county": "Yakima",
+      "fips": "53077",
+      "officialAssessorBaseUrl": "https://www.yakimacounty.us",
+      "officialParcelInventory": false,
+      "gisLayer": false,
+      "arcgisRest": false,
+      "downloadableExport": false,
+      "searchOnly": false,
+      "certifiable": false,
+      "inventoryAccess": "secondary_evidence_only",
+      "sourceEvidenceRole": "reconstruction_required_before_certification",
+      "artifacts": [
+        {
+          "path": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "exists": true,
+          "sizeBytes": 2377,
+          "sha256": "5cf42f6c50bd8f55dc956a63a0d2d45b567a622933851c2ce8f8f7a53235fefc",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/yakima_analysis.json",
+          "exists": true,
+          "sizeBytes": 553,
+          "sha256": "6122de848e91a9c3e66b6a00ba82edb74dd145888e3f68dda3fb8c7db8178478",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/yakima_extraction.json",
+          "exists": true,
+          "sizeBytes": 268,
+          "sha256": "cb218ccaed2f99e429e5e9a071578bc10c6804088e7b3c099258b86b5fc3f3c3",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/yakima_valuations.json",
+          "exists": true,
+          "sizeBytes": 937,
+          "sha256": "ce73ac719e11e4cd6334781e975aa058cae241143cbb308dcf3719eac784c8c9",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/databases/county-databases/yakima_data.sql",
+          "exists": true,
+          "sizeBytes": 3334,
+          "sha256": "7fb4ebd8506369318cd13c66f29a102f43afe4eb43ca0c9ca292514896f85212",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/intelligence/yakima_analysis.json",
+          "exists": true,
+          "sizeBytes": 553,
+          "sha256": "6122de848e91a9c3e66b6a00ba82edb74dd145888e3f68dda3fb8c7db8178478",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/yakima_extraction.json",
+          "exists": true,
+          "sizeBytes": 268,
+          "sha256": "cb218ccaed2f99e429e5e9a071578bc10c6804088e7b3c099258b86b5fc3f3c3",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/yakima_valuations.json",
+          "exists": true,
+          "sizeBytes": 937,
+          "sha256": "ce73ac719e11e4cd6334781e975aa058cae241143cbb308dcf3719eac784c8c9",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/yakima/README.md",
+          "exists": true,
+          "sizeBytes": 806,
+          "sha256": "baa5bdbc85192b17eb8fecb4cebbda518ca368ef4b9b1e16c3e261c36b284304",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/yakima/parcels/sample_yakima_properties.csv",
+          "exists": true,
+          "sizeBytes": 556,
+          "sha256": "18ac0dd6ac0c3070d9f70a22fbe5d1842f897e00bfda719701e1768eafd17fe4",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "api_ui_reference"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-public-source-captures/yakima/yakima-canonical-parcelnumbers.csv",
+          "exists": true,
+          "sizeBytes": 1329090,
+          "sha256": "f0706d0a859d6f2c44b93975f3649e7fd268564d4413938f22921a1f8929e872",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-public-source-captures/yakima/yakima-source-recapture-probe-2026-05-26T220658688Z.jsonl",
+          "exists": true,
+          "sizeBytes": 50900,
+          "sha256": "3b3ad738bf17fbf2bc97f583bac23d9324bb005560d0dd2ab37d1b75d83e297f",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-public-source-captures/yakima/yakima-source-recapture-probe-receipt-2026-05-26T220658688Z.json",
+          "exists": true,
+          "sizeBytes": 827,
+          "sha256": "4f500d43ab7c37724af0bedc883f2779e7c7e36147e1ba1c65c15cbc61351788",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-yakima-receipt-closure/bounded-correction-plan.json",
+          "exists": true,
+          "sizeBytes": 832,
+          "sha256": "88b7e50bd3e15c920524e3188746d7f2851fcbb7601123269b35881ab5290114",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-yakima-receipt-closure.latest.json",
+          "exists": true,
+          "sizeBytes": 6041,
+          "sha256": "5da9978637e32d7dccefa1bdf4c1f9eafadeebc38c6ac5d8d804a46ee076e4a7",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-yakima-receipt-closure.latest.md",
+          "exists": true,
+          "sizeBytes": 1768,
+          "sha256": "2cd395f8c554a4cdf40fd7c8cc936a14c8507fafd02bef45af8379579d27d9d6",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "reconstruction_or_adjudication_evidence"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-yakima-source-artifact-recapture.latest.json",
+          "exists": true,
+          "sizeBytes": 17350,
+          "sha256": "13f95576f345d1d3f6798b25f1ba4ba2e5ead65342fe0949c5a785588f266d9c",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "os-platform/core/pilot/evidence/june10-yakima-source-artifact-recapture.latest.md",
+          "exists": true,
+          "sizeBytes": 2277,
+          "sha256": "ef3781863f42e5cde342e2de862186fc27365af41fce6bf3c8be682b59d4e8c3",
+          "hashStatus": "sha256_recorded",
+          "artifactClass": "unknown"
+        }
+      ],
+      "blockers": [
+        "No receipt-grade authoritative parcel inventory source proves this county's canonical parcel lineage.",
+        "Available evidence is sales/comparable-oriented and cannot certify parcel inventory lineage."
+      ],
+      "nextAction": "replace_secondary_evidence_with_official_parcel_inventory_source",
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "runtimeClaimAllowed": false,
+      "databaseMutationAttempted": false
+    }
+  ],
+  "blockers": [
+    "36 counties lack receipt-grade authoritative parcel inventory proof."
+  ],
+  "certificationAllowed": false,
+  "productionBindingAllowed": false,
+  "runtimeClaimAllowed": false,
+  "databaseMutationAttempted": false
+}

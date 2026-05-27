@@ -1,0 +1,453 @@
+{
+  "generatedAt": "2026-05-27T00:22:15.823Z",
+  "scope": "Wave 2 authoritative parcel-source reconstruction for Kitsap, Pierce, Klickitat, Okanogan, and San Juan.",
+  "summary": {
+    "countiesChecked": 5,
+    "authoritativeReceiptsFound": 0,
+    "recapturePossible": 2,
+    "secondaryEvidenceOnly": 2,
+    "blockedSourceAccess": 1,
+    "byPosture": {
+      "authoritative_source_recapture_possible": 2,
+      "secondary_evidence_only": 2,
+      "blocked_source_access": 1
+    }
+  },
+  "rows": [
+    {
+      "county": "Kitsap",
+      "fips": "53035",
+      "posture": "authoritative_source_recapture_possible",
+      "intendedSourceModel": "authoritative parcel inventory / GIS parcel layer / assessor parcel export, not sales workbook lineage",
+      "officialAssessorBaseUrl": "https://www.kitsapgov.com",
+      "primarySalesSource": "Parcel Details sales history + Sales Data / prior-year residential sales",
+      "acquisitionFamily": "Parcel transfer history / open data export",
+      "sourceSignals": {
+        "hasParcelInventorySignal": true,
+        "hasSalesOnlySignal": true,
+        "signals": ["open data", "data export"],
+        "salesSignals": ["sale", "sales", "transfer history"]
+      },
+      "counts": {
+        "authoritativeReceiptCount": 0,
+        "secondaryEvidenceCount": 2,
+        "localIntelligenceCount": 0,
+        "totalArtifactRefs": 3
+      },
+      "authoritativeReceipts": [],
+      "secondaryEvidence": [
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205359Z/kitsap-workbooks/035-kitsap-commercial-sales-2021-2026.xlsx",
+          "exists": true,
+          "sizeBytes": 254463,
+          "sha256": "f814b04f504410a5214bb5593cdc6d62118e4d7e500c9c6a09395d128ab4710a",
+          "artifactClass": "secondary_sales_or_comparable"
+        },
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205359Z/kitsap-workbooks/035-kitsap-residential-sales-2021-2026.xlsx",
+          "exists": true,
+          "sizeBytes": 3517769,
+          "sha256": "b4eb63b0550da380f11f2c1e8e372db177e2e3cb6d0de76333d50252ac1dbbd9",
+          "artifactClass": "secondary_sales_or_comparable"
+        }
+      ],
+      "localIntelligence": [],
+      "artifacts": [
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205359Z/kitsap-workbooks/035-kitsap-commercial-sales-2021-2026.xlsx",
+          "exists": true,
+          "sizeBytes": 254463,
+          "sha256": "f814b04f504410a5214bb5593cdc6d62118e4d7e500c9c6a09395d128ab4710a",
+          "artifactClass": "secondary_sales_or_comparable"
+        },
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205359Z/kitsap-workbooks/035-kitsap-residential-sales-2021-2026.xlsx",
+          "exists": true,
+          "sizeBytes": 3517769,
+          "sha256": "b4eb63b0550da380f11f2c1e8e372db177e2e3cb6d0de76333d50252ac1dbbd9",
+          "artifactClass": "secondary_sales_or_comparable"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No authoritative parcel inventory receipt/source manifest is present for this county.",
+        "Secondary artifacts may support identity comparison only; they do not prove canonical tf_parcel load lineage."
+      ],
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "databaseMutationAttempted": false,
+      "runtimeClaimAllowed": false
+    },
+    {
+      "county": "Pierce",
+      "fips": "53053",
+      "posture": "secondary_evidence_only",
+      "intendedSourceModel": "authoritative parcel inventory / GIS parcel layer / assessor parcel export, not sales workbook lineage",
+      "officialAssessorBaseUrl": "https://www.co.pierce.wa.us",
+      "primarySalesSource": "ATIP comparable sales information",
+      "acquisitionFamily": "Direct sales search",
+      "sourceSignals": {
+        "hasParcelInventorySignal": false,
+        "hasSalesOnlySignal": true,
+        "signals": [],
+        "salesSignals": ["sale", "sales", "comparable", "atip"]
+      },
+      "counts": {
+        "authoritativeReceiptCount": 0,
+        "secondaryEvidenceCount": 3,
+        "localIntelligenceCount": 0,
+        "totalArtifactRefs": 4
+      },
+      "authoritativeReceipts": [],
+      "secondaryEvidence": [
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T204521Z/pierce-datamart/053-pierce-sale.zip",
+          "exists": true,
+          "sizeBytes": 20560588,
+          "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+          "artifactClass": "secondary_sales_or_comparable"
+        },
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T204815Z/pierce-datamart/053-pierce-sale.zip",
+          "exists": true,
+          "sizeBytes": 20560588,
+          "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+          "artifactClass": "secondary_sales_or_comparable"
+        },
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205531Z/pierce-datamart/053-pierce-sale.zip",
+          "exists": true,
+          "sizeBytes": 20560588,
+          "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+          "artifactClass": "secondary_sales_or_comparable"
+        }
+      ],
+      "localIntelligence": [],
+      "artifacts": [
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T204521Z/pierce-datamart/053-pierce-sale.zip",
+          "exists": true,
+          "sizeBytes": 20560588,
+          "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+          "artifactClass": "secondary_sales_or_comparable"
+        },
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T204815Z/pierce-datamart/053-pierce-sale.zip",
+          "exists": true,
+          "sizeBytes": 20560588,
+          "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+          "artifactClass": "secondary_sales_or_comparable"
+        },
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424T205531Z/pierce-datamart/053-pierce-sale.zip",
+          "exists": true,
+          "sizeBytes": 20560588,
+          "sha256": "179e4499070f5a26c55e9a13ff637c220d1e43b8a6d2d989a3ff903b4d135565",
+          "artifactClass": "secondary_sales_or_comparable"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No authoritative parcel inventory receipt/source manifest is present for this county.",
+        "Available artifacts are secondary sales/comparable evidence and cannot certify canonical parcel inventory lineage.",
+        "Secondary artifacts may support identity comparison only; they do not prove canonical tf_parcel load lineage."
+      ],
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "databaseMutationAttempted": false,
+      "runtimeClaimAllowed": false
+    },
+    {
+      "county": "Klickitat",
+      "fips": "53039",
+      "posture": "secondary_evidence_only",
+      "intendedSourceModel": "authoritative parcel inventory / GIS parcel layer / assessor parcel export, not sales workbook lineage",
+      "officialAssessorBaseUrl": "https://www.klickitatcounty.org",
+      "primarySalesSource": "Klickitat County Assessor Sales Reports",
+      "acquisitionFamily": "Monthly sales report",
+      "sourceSignals": {
+        "hasParcelInventorySignal": false,
+        "hasSalesOnlySignal": true,
+        "signals": [],
+        "salesSignals": ["sale", "sales"]
+      },
+      "counts": {
+        "authoritativeReceiptCount": 0,
+        "secondaryEvidenceCount": 2,
+        "localIntelligenceCount": 0,
+        "totalArtifactRefs": 3
+      },
+      "authoritativeReceipts": [],
+      "secondaryEvidence": [
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/039-klickitat-33cbff5f37aa.xlsx",
+          "exists": true,
+          "sizeBytes": 27672,
+          "sha256": "9d985fa0341362f485b32c1cb44b90979481142f3e8d22794632659a7ea4e138",
+          "artifactClass": "secondary_sales_or_comparable"
+        },
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/039-klickitat-cdf4b89b0615.xlsx",
+          "exists": true,
+          "sizeBytes": 43829,
+          "sha256": "1ae0b53fd40ab31232c6299d43d37ec9ada927acfe1b04ce64c6666cc3fd942c",
+          "artifactClass": "secondary_sales_or_comparable"
+        }
+      ],
+      "localIntelligence": [],
+      "artifacts": [
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/039-klickitat-33cbff5f37aa.xlsx",
+          "exists": true,
+          "sizeBytes": 27672,
+          "sha256": "9d985fa0341362f485b32c1cb44b90979481142f3e8d22794632659a7ea4e138",
+          "artifactClass": "secondary_sales_or_comparable"
+        },
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/039-klickitat-cdf4b89b0615.xlsx",
+          "exists": true,
+          "sizeBytes": 43829,
+          "sha256": "1ae0b53fd40ab31232c6299d43d37ec9ada927acfe1b04ce64c6666cc3fd942c",
+          "artifactClass": "secondary_sales_or_comparable"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No authoritative parcel inventory receipt/source manifest is present for this county.",
+        "Available artifacts are secondary sales/comparable evidence and cannot certify canonical parcel inventory lineage.",
+        "Secondary artifacts may support identity comparison only; they do not prove canonical tf_parcel load lineage."
+      ],
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "databaseMutationAttempted": false,
+      "runtimeClaimAllowed": false
+    },
+    {
+      "county": "Okanogan",
+      "fips": "53047",
+      "posture": "authoritative_source_recapture_possible",
+      "intendedSourceModel": "authoritative parcel inventory / GIS parcel layer / assessor parcel export, not sales workbook lineage",
+      "officialAssessorBaseUrl": "https://okanogancounty.org",
+      "primarySalesSource": "Comparable Sales + TaxSifter parcel/property records",
+      "acquisitionFamily": "Direct sales search",
+      "sourceSignals": {
+        "hasParcelInventorySignal": true,
+        "hasSalesOnlySignal": true,
+        "signals": ["parcel/property", "property records", "taxsifter"],
+        "salesSignals": ["sale", "sales", "comparable"]
+      },
+      "counts": {
+        "authoritativeReceiptCount": 0,
+        "secondaryEvidenceCount": 1,
+        "localIntelligenceCount": 0,
+        "totalArtifactRefs": 2
+      },
+      "authoritativeReceipts": [],
+      "secondaryEvidence": [
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/047-okanogan-8ba26dbb173f.xlsx",
+          "exists": true,
+          "sizeBytes": 3798860,
+          "sha256": "34f9d552229dfe69be32d672f3ec72824a219afbd842708dbd3fb7fbbb7c6b7c",
+          "artifactClass": "secondary_sales_or_comparable"
+        }
+      ],
+      "localIntelligence": [],
+      "artifacts": [
+        {
+          "path": "docs/Washington Counties/implementation/reports/payloads/20260424165752/047-okanogan-8ba26dbb173f.xlsx",
+          "exists": true,
+          "sizeBytes": 3798860,
+          "sha256": "34f9d552229dfe69be32d672f3ec72824a219afbd842708dbd3fb7fbbb7c6b7c",
+          "artifactClass": "secondary_sales_or_comparable"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No authoritative parcel inventory receipt/source manifest is present for this county.",
+        "Secondary artifacts may support identity comparison only; they do not prove canonical tf_parcel load lineage."
+      ],
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "databaseMutationAttempted": false,
+      "runtimeClaimAllowed": false
+    },
+    {
+      "county": "San Juan",
+      "fips": "53055",
+      "posture": "blocked_source_access",
+      "intendedSourceModel": "authoritative parcel inventory / GIS parcel layer / assessor parcel export, not sales workbook lineage",
+      "officialAssessorBaseUrl": "https://www.sanjuanco.com",
+      "primarySalesSource": "Sales Search + Sales Data page",
+      "acquisitionFamily": "Direct sales search",
+      "sourceSignals": {
+        "hasParcelInventorySignal": false,
+        "hasSalesOnlySignal": true,
+        "signals": [],
+        "salesSignals": ["sale", "sales"]
+      },
+      "counts": {
+        "authoritativeReceiptCount": 0,
+        "secondaryEvidenceCount": 0,
+        "localIntelligenceCount": 7,
+        "totalArtifactRefs": 9
+      },
+      "authoritativeReceipts": [],
+      "secondaryEvidence": [],
+      "localIntelligence": [
+        {
+          "path": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "exists": true,
+          "sizeBytes": 2377,
+          "sha256": "5cf42f6c50bd8f55dc956a63a0d2d45b567a622933851c2ce8f8f7a53235fefc",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/sanjuan_analysis.json",
+          "exists": true,
+          "sizeBytes": 554,
+          "sha256": "9f95851b4f1b2d8e54040f7ca12bf90962f046524ec60b4dc5a62710246366b0",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/sanjuan_extraction.json",
+          "exists": true,
+          "sizeBytes": 266,
+          "sha256": "66848ff7874d1425f8fd2205950a8b8e6086694e4986579b31fccaf657800754",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/sanjuan_valuations.json",
+          "exists": true,
+          "sizeBytes": 941,
+          "sha256": "2b4db6a122f67ea912f55f23c006b615fa646bde2ad46981de22ea6d0c1e0a5a",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/sanjuan_analysis.json",
+          "exists": true,
+          "sizeBytes": 554,
+          "sha256": "9f95851b4f1b2d8e54040f7ca12bf90962f046524ec60b4dc5a62710246366b0",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/sanjuan_extraction.json",
+          "exists": true,
+          "sizeBytes": 266,
+          "sha256": "66848ff7874d1425f8fd2205950a8b8e6086694e4986579b31fccaf657800754",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/sanjuan_valuations.json",
+          "exists": true,
+          "sizeBytes": 941,
+          "sha256": "2b4db6a122f67ea912f55f23c006b615fa646bde2ad46981de22ea6d0c1e0a5a",
+          "artifactClass": "local_intelligence_only"
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "data/county-intelligence/MASTER_INTELLIGENCE_REPORT.md",
+          "exists": true,
+          "sizeBytes": 2377,
+          "sha256": "5cf42f6c50bd8f55dc956a63a0d2d45b567a622933851c2ce8f8f7a53235fefc",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/sanjuan_analysis.json",
+          "exists": true,
+          "sizeBytes": 554,
+          "sha256": "9f95851b4f1b2d8e54040f7ca12bf90962f046524ec60b4dc5a62710246366b0",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/sanjuan_extraction.json",
+          "exists": true,
+          "sizeBytes": 266,
+          "sha256": "66848ff7874d1425f8fd2205950a8b8e6086694e4986579b31fccaf657800754",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/county-intelligence/sanjuan_valuations.json",
+          "exists": true,
+          "sizeBytes": 941,
+          "sha256": "2b4db6a122f67ea912f55f23c006b615fa646bde2ad46981de22ea6d0c1e0a5a",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/databases/county-databases/sanjuan_data.sql",
+          "exists": true,
+          "sizeBytes": 3346,
+          "sha256": "c3dbab1bf16e9806c0decf23fa7e40530af3d39f5dd37189871a76992ee9d7d5",
+          "artifactClass": "unknown"
+        },
+        {
+          "path": "data/intelligence/sanjuan_analysis.json",
+          "exists": true,
+          "sizeBytes": 554,
+          "sha256": "9f95851b4f1b2d8e54040f7ca12bf90962f046524ec60b4dc5a62710246366b0",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/sanjuan_extraction.json",
+          "exists": true,
+          "sizeBytes": 266,
+          "sha256": "66848ff7874d1425f8fd2205950a8b8e6086694e4986579b31fccaf657800754",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "data/intelligence/sanjuan_valuations.json",
+          "exists": true,
+          "sizeBytes": 941,
+          "sha256": "2b4db6a122f67ea912f55f23c006b615fa646bde2ad46981de22ea6d0c1e0a5a",
+          "artifactClass": "local_intelligence_only"
+        },
+        {
+          "path": "frontend/apps/os-shell/src/pages/forge/sales/washingtonLaunchApi.ts",
+          "exists": true,
+          "sizeBytes": 19676,
+          "sha256": "d7f2a713a83fa3e2150ccb701ab690efc4534d09fb0eebcbb9b1bd2c31fdeb0c",
+          "artifactClass": "api_ui_reference"
+        }
+      ],
+      "blockers": [
+        "No authoritative parcel inventory receipt/source manifest is present for this county.",
+        "No governed receipt-grade parcel inventory source or recapture path is proven in repo evidence."
+      ],
+      "certificationAllowed": false,
+      "productionBindingAllowed": false,
+      "databaseMutationAttempted": false,
+      "runtimeClaimAllowed": false
+    }
+  ],
+  "blockers": [
+    "5 Wave 2 counties still lack authoritative parcel inventory receipts."
+  ],
+  "productionBindingAllowed": false,
+  "databaseMutationAttempted": false,
+  "runtimeClaimAllowed": false
+}
