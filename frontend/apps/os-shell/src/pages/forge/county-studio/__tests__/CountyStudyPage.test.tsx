@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import { act } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
@@ -50,6 +50,32 @@ const FAILING_SEG: CountySegmentDto = {
   segmentType: 'Commercial', parcelCount: 89, medianRatio: 0.84,
   cod: 22.8, prd: 1.06, stabilityScore: 48, riskScore: 78,
   exceptionCount: 22, geographyRef: 'NBHD-K1',
+};
+
+const LARGE_EXPOSURE_SEG: CountySegmentDto = {
+  segmentId: 's3', segmentSetId: 'ss1', name: 'NBHD-LOW - R1 - STANDARD',
+  revalArea: 7,
+  buildingType: 'R1',
+  qualityGrade: 'STANDARD',
+  modelGroup: 'MG-LOW',
+  valueTier: 'Entry',
+  taxingDistrict: 'Large Rural District',
+  segmentType: 'Residential', parcelCount: 2000, medianRatio: 0.98,
+  cod: 10.1, prd: 1.01, stabilityScore: 90, riskScore: 18,
+  exceptionCount: 0, geographyRef: 'NBHD-LOW',
+};
+
+const HIGH_RISK_SEG: CountySegmentDto = {
+  segmentId: 's4', segmentSetId: 'ss1', name: 'NBHD-HIGH - R1 - AVERAGE',
+  revalArea: 8,
+  buildingType: 'R1',
+  qualityGrade: 'AVERAGE',
+  modelGroup: 'MG-HIGH',
+  valueTier: 'Middle',
+  taxingDistrict: 'Mid County District',
+  segmentType: 'Residential', parcelCount: 120, medianRatio: 0.91,
+  cod: 18.5, prd: 1.04, stabilityScore: 58, riskScore: 64,
+  exceptionCount: 8, geographyRef: 'NBHD-HIGH',
 };
 
 const MOCK_CITY_ROW: CityRollupRowDto = {
@@ -192,6 +218,45 @@ describe('CountyStudyPage', () => {
     expect(screen.getByText('Unified Risk Ledger')).toBeInTheDocument();
     expect(screen.queryByText('Kennewick')).not.toBeInTheDocument();
     expect(screen.getByTestId('county-operational-scope-note')).toHaveTextContent(/valuation decisions are made and defended/i);
+  });
+
+  it('renders the unified risk ledger as the first command queue before supporting boards', () => {
+    act(() => {
+      useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG, LARGE_EXPOSURE_SEG, HIGH_RISK_SEG]);
+    });
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+
+    const commandCenter = screen.getByTestId('risk-surface-command-center');
+    const ledger = screen.getByTestId('unified-risk-ledger');
+    const firstBoard = screen.getByTestId('risk-board-revaluation-cycle');
+
+    expect(commandCenter.compareDocumentPosition(ledger) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(ledger.compareDocumentPosition(firstBoard) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(ledger).toHaveTextContent('Critical');
+    expect(ledger).toHaveTextContent('High');
+    expect(ledger).toHaveTextContent('Medium');
+    expect(ledger).toHaveTextContent('Low');
+  });
+
+  it('filters and sorts the unified risk ledger without introducing city grouping', () => {
+    act(() => {
+      useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG, LARGE_EXPOSURE_SEG, HIGH_RISK_SEG]);
+      useCountyStudioStore.getState().setCityRollup([MOCK_CITY_ROW]);
+    });
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+
+    const ledger = screen.getByTestId('unified-risk-ledger');
+    fireEvent.click(screen.getByTestId('risk-ledger-filter-critical'));
+
+    expect(ledger).toHaveTextContent('MG-12');
+    expect(ledger).not.toHaveTextContent('Neighborhood NBHD-LOW');
+    expect(ledger).not.toHaveTextContent('Kennewick');
+
+    fireEvent.click(screen.getByTestId('risk-ledger-filter-all'));
+    fireEvent.click(screen.getByTestId('risk-ledger-sort-exposure'));
+
+    const labels = within(ledger).getAllByTestId('risk-ledger-object').map((node) => node.textContent);
+    expect(labels[0]).toBe('Neighborhood NBHD-LOW');
   });
 
   it('risk ledger opens neighborhood evidence without routing through a city crumb', () => {

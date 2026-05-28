@@ -7,7 +7,7 @@ export type RiskSurfaceType =
   | 'taxingDistrict'
   | 'valueTier';
 
-export type RiskLevel = 'Critical' | 'High' | 'Moderate' | 'Healthy';
+export type RiskLevel = 'Critical' | 'High' | 'Medium' | 'Low';
 
 export interface RiskSurfaceRow {
   key: string;
@@ -104,8 +104,8 @@ function normalizeLabel(value: string | null | undefined): string | null {
 function riskLevel(score: number): RiskLevel {
   if (score >= 75) return 'Critical';
   if (score >= 60) return 'High';
-  if (score >= 35) return 'Moderate';
-  return 'Healthy';
+  if (score >= 35) return 'Medium';
+  return 'Low';
 }
 
 function primaryReason(row: Pick<RiskSurfaceRow, 'cod' | 'prd' | 'prb' | 'medianRatio' | 'exceptionCount' | 'riskScore'>): string {
@@ -198,7 +198,7 @@ function buildRows(
         prb: round(weightedAverage(group.segments, (segment) => segment.prb), 3),
         exceptionCount: sum(group.segments, (segment) => segment.exceptionCount),
         riskScore: Math.round(weightedAverage(group.segments, (segment) => segment.riskScore) ?? 0),
-        riskLevel: 'Healthy' as RiskLevel,
+        riskLevel: 'Low' as RiskLevel,
         primaryReason: '',
         action: actionFor(group.type),
         evidenceSegmentId: evidence?.segmentId ?? null,

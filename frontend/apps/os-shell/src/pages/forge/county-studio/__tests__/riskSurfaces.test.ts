@@ -161,4 +161,23 @@ describe('risk surface command center', () => {
       expect.arrayContaining(['Kennewick', 'Richland']),
     );
   });
+
+  it('uses command-queue severity bands instead of dashboard health labels', () => {
+    const commandCenter = buildRiskSurfaceCommandCenter([
+      segment({ segmentId: 'seg-critical', modelGroup: 'MG-Critical', riskScore: 88 }),
+      segment({ segmentId: 'seg-high', modelGroup: 'MG-High', riskScore: 64 }),
+      segment({ segmentId: 'seg-medium', modelGroup: 'MG-Medium', riskScore: 45 }),
+      segment({ segmentId: 'seg-low', modelGroup: 'MG-Low', riskScore: 18 }),
+    ]);
+
+    const modelBands = new Map(
+      commandCenter.boards.modelGroups.map((row) => [row.key, row.riskLevel]),
+    );
+
+    expect(modelBands.get('MG-Critical')).toBe('Critical');
+    expect(modelBands.get('MG-High')).toBe('High');
+    expect(modelBands.get('MG-Medium')).toBe('Medium');
+    expect(modelBands.get('MG-Low')).toBe('Low');
+    expect([...modelBands.values()]).not.toEqual(expect.arrayContaining(['Moderate', 'Healthy']));
+  });
 });

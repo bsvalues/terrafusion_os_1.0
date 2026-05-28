@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import {
   buildRiskSurfaceCommandCenter,
@@ -10,17 +10,34 @@ import {
 const riskColor: Record<RiskLevel, string> = {
   Critical: '#ef4444',
   High: '#f59e0b',
-  Moderate: '#3b82f6',
-  Healthy: '#22c55e',
+  Medium: '#3b82f6',
+  Low: '#22c55e',
+};
+
+type LedgerFilter = 'All' | RiskLevel;
+type LedgerSort = 'priority' | 'risk' | 'exposure' | 'type';
+
+const riskFilters: LedgerFilter[] = ['All', 'Critical', 'High', 'Medium', 'Low'];
+
+const sortLabels: Record<LedgerSort, string> = {
+  priority: 'Priority',
+  risk: 'Risk',
+  exposure: 'Exposure',
+  type: 'Type',
 };
 
 function formatNumber(value: number | null, digits = 2): string {
   return value === null ? 'n/a' : value.toFixed(digits);
 }
 
+function slug(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
 function BoardTable({ title, rows, empty }: { title: string; rows: RiskSurfaceRow[]; empty: string }) {
   return (
     <section
+      data-testid={`risk-board-${slug(title.replace(' Risk', ''))}`}
       style={{
         minWidth: 0,
         overflowX: 'auto',
@@ -78,8 +95,31 @@ function UnifiedRiskLedger({
   rows: UnifiedRiskLedgerRow[];
   onOpenEvidence: (row: UnifiedRiskLedgerRow) => void;
 }) {
+  const [filter, setFilter] = useState<LedgerFilter>('All');
+  const [sort, setSort] = useState<LedgerSort>('priority');
+
+  const visibleRows = useMemo(() => {
+    const filtered = filter === 'All' ? rows : rows.filter((row) => row.riskLevel === filter);
+    return [...filtered].sort((a, b) => {
+      switch (sort) {
+        case 'risk':
+          return b.riskScore - a.riskScore || a.rank - b.rank;
+        case 'exposure':
+          return b.parcelCount - a.parcelCount || b.riskScore - a.riskScore || a.rank - b.rank;
+        case 'type':
+          return a.type.localeCompare(b.type) || a.rank - b.rank;
+        case 'priority':
+        default:
+          return a.rank - b.rank;
+      }
+    });
+  }, [filter, rows, sort]);
+
   return (
-    <section style={{ minWidth: 0, overflowX: 'auto', borderTop: '1px solid hsl(var(--tf-border))' }}>
+    <section
+      data-testid="unified-risk-ledger"
+      style={{ minWidth: 0, overflowX: 'auto', borderTop: '1px solid hsl(var(--tf-border))' }}
+    >
       <div
         style={{
           display: 'flex',
@@ -92,6 +132,65 @@ function UnifiedRiskLedger({
         <h3 style={{ margin: 0, fontSize: 12, fontWeight: 800 }}>Unified Risk Ledger</h3>
         <span style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>county command queue</span>
       </div>
+      {rows.length > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+            gap: 8,
+            padding: '8px 10px',
+            borderBottom: '1px solid hsl(var(--tf-border))',
+          }}
+        >
+          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+            {riskFilters.map((item) => (
+              <button
+                key={item}
+                type="button"
+                data-testid={`risk-ledger-filter-${item.toLowerCase()}`}
+                aria-pressed={filter === item}
+                onClick={() => setFilter(item)}
+                style={{
+                  padding: '3px 7px',
+                  border: '1px solid hsl(var(--tf-border))',
+                  borderRadius: 4,
+                  background: filter === item ? 'hsl(var(--tf-surface))' : 'transparent',
+                  color: filter === item ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))',
+                  fontSize: 10,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                }}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+            {(Object.keys(sortLabels) as LedgerSort[]).map((item) => (
+              <button
+                key={item}
+                type="button"
+                data-testid={`risk-ledger-sort-${item}`}
+                aria-pressed={sort === item}
+                onClick={() => setSort(item)}
+                style={{
+                  padding: '3px 7px',
+                  border: '1px solid hsl(var(--tf-border))',
+                  borderRadius: 4,
+                  background: sort === item ? 'hsl(var(--tf-surface))' : 'transparent',
+                  color: sort === item ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))',
+                  fontSize: 10,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                }}
+              >
+                {sortLabels[item]}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       {rows.length === 0 ? (
         <div style={{ padding: '14px 10px', fontSize: 11, color: 'hsl(var(--tf-muted))' }}>
           No active segment risk evidence yet. Derive segment metrics to populate the county command queue.
@@ -109,10 +208,10 @@ function UnifiedRiskLedger({
             </tr>
           </thead>
           <tbody>
-            {rows.slice(0, 8).map((row) => (
+            {visibleRows.map((row) => (
               <tr key={`${row.type}:${row.key}`} style={{ borderTop: '1px solid hsl(var(--tf-border))' }}>
                 <td style={{ padding: '7px 10px', fontWeight: 800 }}>{row.rank}</td>
-                <td style={{ padding: '7px 8px', fontWeight: 700 }}>{row.label}</td>
+                <td data-testid="risk-ledger-object" style={{ padding: '7px 8px', fontWeight: 700 }}>{row.label}</td>
                 <td style={{ padding: '7px 8px', color: 'hsl(var(--tf-muted))' }}>{row.type}</td>
                 <td style={{ padding: '7px 8px', color: riskColor[row.riskLevel], fontWeight: 800 }}>
                   {row.riskLevel}
@@ -202,6 +301,8 @@ export function RiskSurfaceCommandCenter() {
         )}
       </div>
 
+      <UnifiedRiskLedger rows={commandCenter.ledger} onOpenEvidence={openLedgerRow} />
+
       <div
         style={{
           display: 'grid',
@@ -234,7 +335,6 @@ export function RiskSurfaceCommandCenter() {
           rows={commandCenter.boards.valueTiers}
           empty="No value tier field is available on active segments."
         />
-        <UnifiedRiskLedger rows={commandCenter.ledger} onOpenEvidence={openLedgerRow} />
       </div>
     </div>
   );
