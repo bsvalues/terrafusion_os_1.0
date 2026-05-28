@@ -66,6 +66,13 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
         string operatorName,
         CancellationToken cancellationToken = default)
     {
+        // PERF (2026-05-27): suppress per-row audit logging for this bulk
+        // projection. Inserting thousands of features/chunk under the default
+        // audit path (one AuditLog row + JSON serialize per entity, then a 2nd
+        // SaveChanges) made the projector ~9 min/chunk. Provenance is preserved
+        // via load_batch + source_xref + PromotionLoadBatchId.
+        _db.SuppressAuditLogging = true;
+
         var batch = new LoadBatch
         {
             SourceFamily = SourceFamilies.PacsOltp,
@@ -213,7 +220,11 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
                 await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
             // ── Build parcel xref index. ──
-            var parcelIndex = await BuildParcelIndexAsync(cancellationToken)
+            // PERF (2026-05-27): compute the batch's distinct prop_ids once and
+            // scope ALL per-chunk lookups (parcel index, details, attrs) to them.
+            var batchPropIds = truthRows.Select(t => t.PropId).Distinct().ToList();
+
+            var parcelIndex = await BuildParcelIndexAsync(batchPropIds, cancellationToken)
                 .ConfigureAwait(false);
 
             // ── Pre-fetch all imprv_detail rows that COULD link to
@@ -228,7 +239,6 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
             // the detail natural key (PropId,PropValYr,SupNum,ImprvId,ImprvDetId),
             // keeping the latest landing. Re-landed duplicate detail rows otherwise
             // each projected a duplicate feature (~5x feature inflation observed).
-            var batchPropIds = truthRows.Select(t => t.PropId).Distinct().ToList();
             var scopedDetails = await _db.LegacyPacsRawImprvDetails
                 .Where(d => batchPropIds.Contains(d.PropId))
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
@@ -581,10 +591,23 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
     }
 
     private async Task<IReadOnlyDictionary<int, ParcelLookup>> BuildParcelIndexAsync(
+        IReadOnlyList<int> batchPropIds,
         CancellationToken cancellationToken)
     {
+        // PERF (2026-05-27): scope to THIS batch's parcels only. Was loading ALL
+        // ~85K active parcel xrefs + their tf_parcel rows into memory EVERY chunk
+        // (O(whole county) per chunk — the dominant projector cost after audit
+        // suppression). Filter by prop_id extracted from the xref SourceKeyJson so
+        // we load only the ~500 parcels we actually project. The regex guard
+        // ensures only numeric prop_ids reach the ::int cast.
+        var propIdArr = batchPropIds.ToArray();
         var parcelXrefs = await _db.SyncBridgeSourceXrefs
-            .Where(x => x.TfEntityType == ParcelEntityType && x.IsActive)
+            .FromSqlRaw(
+                @"SELECT * FROM sync_bridge.source_xref
+                  WHERE ""TfEntityType"" = {0} AND ""IsActive"" = true
+                    AND (""SourceKeyJson""::jsonb->>'prop_id') ~ '^[0-9]+$'
+                    AND (""SourceKeyJson""::jsonb->>'prop_id')::int = ANY({1})",
+                ParcelEntityType, propIdArr)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
         if (parcelXrefs.Count == 0)

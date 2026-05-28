@@ -1566,8 +1566,22 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     }
   }
 
+  /// <summary>
+  /// PERF (2026-05-27): when true, SaveChangesAsync skips per-row audit-log
+  /// creation + JSON change serialization + the second audit SaveChanges.
+  /// Bulk sync drains (e.g. the canonical improvement projector inserting
+  /// thousands of features per chunk) do NOT need per-row audit — provenance
+  /// is captured by sync_bridge.load_batch + source_xref + PromotionLoadBatchId.
+  /// Leaving audit on doubled write volume and serialized every entity to JSON,
+  /// which made the projector ~9 min/chunk. Off by default; set around bulk ops.
+  /// </summary>
+  public bool SuppressAuditLogging { get; set; }
+
   public override async System.Threading.Tasks.Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
   {
+    if (SuppressAuditLogging)
+      return await base.SaveChangesAsync(cancellationToken);
+
     // Add audit logging for all changes
     var auditEntries = CreateAuditEntries();
 
