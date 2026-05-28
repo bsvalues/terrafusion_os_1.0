@@ -743,6 +743,13 @@ public class DoctrineDrainController : ControllerBase
         try
         {
             var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            // PERF (2026-05-28): suppress per-row audit logging for the ENTIRE bulk
+            // improvement drain. Landing + promotion + projection share this scoped
+            // DbContext, so one toggle covers all stages. Audit-per-row (one AuditLog
+            // + JSON serialize per entity, then a 2nd SaveChanges) was a major landing
+            // cost AND the source of AuditLogs growth that forced backend-stopping
+            // VACUUM cycles mid-sweep. Provenance preserved via load_batch + source_xref.
+            _db.SuppressAuditLogging = true;
             var seedTopN = fullCorpus ? (int?)null : (topN ?? 200);
 
             // ADVANCEMENT CURSOR (2026-05-27): bounded improvement drains keyset-
