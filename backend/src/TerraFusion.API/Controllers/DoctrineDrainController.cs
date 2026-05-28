@@ -808,65 +808,86 @@ public class DoctrineDrainController : ControllerBase
                 _logger.LogInformation("[Drain:improvement] cursor advanced to prop_id={Max}", maxSeeded);
             }
 
-            // Stage 2: Parcel-S1.
-            Guid parcelS1BatchId;
-            if (resume.ShouldSkip("Parcel-S1"))
+            // IMPROVEMENT-ONLY MODE (2026-05-28, co-founder-approved slice): if EVERY
+            // seeded parcel is already in the parcel spine (drained by a prior chunk),
+            // skip the redundant parcel prelude (Parcel-S1 + Spine + Parcel-Canonical).
+            // Auto-fallback to the FULL prelude if ANY seeded parcel is missing, so
+            // truth semantics/correctness are preserved. This removes the biggest
+            // per-chunk waste once parcels are substantially drained.
+            var spinePresent = seedPropIds.Count == 0
+                ? new System.Collections.Generic.List<int>()
+                : await _db.TruthPacsParcelSpines.AsNoTracking()
+                    .Where(t => seedPropIds.Contains(t.PropId))
+                    .Select(t => t.PropId).Distinct().ToListAsync(cancellationToken);
+            var skipPrelude = seedPropIds.Count > 0 && spinePresent.Count == seedPropIds.Count;
+            _logger.LogInformation("[Drain:improvement] parcel prelude {Mode} (seeded={Seed} spine-present={Present})",
+                skipPrelude ? "SKIPPED (improvement-only)" : "RUN", seedPropIds.Count, spinePresent.Count);
+
+            Guid parcelSpineBatchId = Guid.Empty;
+            if (!skipPrelude)
             {
-                parcelS1BatchId = resume.GetPriorBatchId("Parcel-S1") ?? throw new InvalidOperationException("Parcel-S1 missing.");
-                _logger.LogInformation("[Drain:improvement] SKIP Parcel-S1; batchId={Bid}", parcelS1BatchId);
-            }
-            else
-            {
-                var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs!, seedPropIds);
-                var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
-                batchIds.Add(parcelS1.LoadBatchId);
-                if (!IsCompleted(parcelS1.Status))
-                    return await FailLaneAsync(LaneName, "Parcel-S1", parcelS1.ErrorSummary,
-                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
-                parcelS1BatchId = parcelS1.LoadBatchId;
-                await resume.CheckpointAsync("Parcel-S1", batchIds, cancellationToken);
+                // Stage 2: Parcel-S1.
+                Guid parcelS1BatchId;
+                if (resume.ShouldSkip("Parcel-S1"))
+                {
+                    parcelS1BatchId = resume.GetPriorBatchId("Parcel-S1") ?? throw new InvalidOperationException("Parcel-S1 missing.");
+                    _logger.LogInformation("[Drain:improvement] SKIP Parcel-S1; batchId={Bid}", parcelS1BatchId);
+                }
+                else
+                {
+                    var parcelSrc = new KeyedSqlServerPacsPropertySource(pacsCs!, seedPropIds);
+                    var parcelS1 = await propSvc.LandPropertiesAsync(parcelSrc, operatorName, cancellationToken);
+                    batchIds.Add(parcelS1.LoadBatchId);
+                    if (!IsCompleted(parcelS1.Status))
+                        return await FailLaneAsync(LaneName, "Parcel-S1", parcelS1.ErrorSummary,
+                            batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+                    parcelS1BatchId = parcelS1.LoadBatchId;
+                    await resume.CheckpointAsync("Parcel-S1", batchIds, cancellationToken);
+                }
+
+                // Stage 3: Parcel-Spine.
+                if (resume.ShouldSkip("Parcel-Spine"))
+                {
+                    parcelSpineBatchId = resume.GetPriorBatchId("Parcel-Spine") ?? throw new InvalidOperationException("Parcel-Spine missing.");
+                    _logger.LogInformation("[Drain:improvement] SKIP Parcel-Spine; batchId={Bid}", parcelSpineBatchId);
+                }
+                else
+                {
+                    var parcelSpine = await spinePromoter.PromoteAsync(parcelS1BatchId, operatorName, cancellationToken);
+                    batchIds.Add(parcelSpine.PromotionLoadBatchId);
+                    if (!IsCompleted(parcelSpine.Status))
+                        return await FailLaneAsync(LaneName, "Parcel-Spine", parcelSpine.ErrorSummary,
+                            batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+                    parcelSpineBatchId = parcelSpine.PromotionLoadBatchId;
+                    await resume.CheckpointAsync("Parcel-Spine", batchIds, cancellationToken);
+                }
+
+                // Stage 4: Parcel-Canonical.
+                if (resume.ShouldSkip("Parcel-Canonical"))
+                {
+                    _logger.LogInformation("[Drain:improvement] SKIP Parcel-Canonical");
+                }
+                else
+                {
+                    var parcelCanon = await parcelCanonical.ProjectAsync(
+                        parcelSpineBatchId, bentonCountyId, operatorName, cancellationToken);
+                    batchIds.Add(parcelCanon.PromotionLoadBatchId);
+                    if (!IsCompleted(parcelCanon.Status))
+                        return await FailLaneAsync(LaneName, "Parcel-Canonical", parcelCanon.ErrorSummary,
+                            batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+                    await resume.CheckpointAsync("Parcel-Canonical", batchIds, cancellationToken);
+                }
             }
 
-            // Stage 3: Parcel-Spine.
-            Guid parcelSpineBatchId;
-            if (resume.ShouldSkip("Parcel-Spine"))
-            {
-                parcelSpineBatchId = resume.GetPriorBatchId("Parcel-Spine") ?? throw new InvalidOperationException("Parcel-Spine missing.");
-                _logger.LogInformation("[Drain:improvement] SKIP Parcel-Spine; batchId={Bid}", parcelSpineBatchId);
-            }
-            else
-            {
-                var parcelSpine = await spinePromoter.PromoteAsync(parcelS1BatchId, operatorName, cancellationToken);
-                batchIds.Add(parcelSpine.PromotionLoadBatchId);
-                if (!IsCompleted(parcelSpine.Status))
-                    return await FailLaneAsync(LaneName, "Parcel-Spine", parcelSpine.ErrorSummary,
-                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
-                parcelSpineBatchId = parcelSpine.PromotionLoadBatchId;
-                await resume.CheckpointAsync("Parcel-Spine", batchIds, cancellationToken);
-            }
-
-            // Stage 4: Parcel-Canonical.
-            if (resume.ShouldSkip("Parcel-Canonical"))
-            {
-                _logger.LogInformation("[Drain:improvement] SKIP Parcel-Canonical");
-            }
-            else
-            {
-                var parcelCanon = await parcelCanonical.ProjectAsync(
-                    parcelSpineBatchId, bentonCountyId, operatorName, cancellationToken);
-                batchIds.Add(parcelCanon.PromotionLoadBatchId);
-                if (!IsCompleted(parcelCanon.Status))
-                    return await FailLaneAsync(LaneName, "Parcel-Canonical", parcelCanon.ErrorSummary,
-                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
-                await resume.CheckpointAsync("Parcel-Canonical", batchIds, cancellationToken);
-            }
-
-            // Build imprv keys from spine (independent of skip).
-            var spinePropIds = await _db.TruthPacsParcelSpines
-                .AsNoTracking()
-                .Where(t => t.PromotionLoadBatchId == parcelSpineBatchId)
-                .Select(t => t.PropId)
-                .ToListAsync(cancellationToken);
+            // Build imprv keys. Improvement-only mode uses the already-present spine
+            // parcels; full mode uses the parcels promoted by THIS chunk's spine batch.
+            var spinePropIds = skipPrelude
+                ? spinePresent
+                : await _db.TruthPacsParcelSpines
+                    .AsNoTracking()
+                    .Where(t => t.PromotionLoadBatchId == parcelSpineBatchId)
+                    .Select(t => t.PropId)
+                    .ToListAsync(cancellationToken);
             var imprvKeys = spinePropIds.Select(p => (p, workingYear)).ToList();
 
             // Stage 5: Supp-S1.
