@@ -195,8 +195,15 @@ describe('CountyStudyPage', () => {
   });
 
   it('risk ledger opens neighborhood evidence without routing through a city crumb', () => {
+    const sameNeighborhoodWrongCycle: CountySegmentDto = {
+      ...MOCK_SEG,
+      segmentId: 's-wrong-cycle',
+      name: 'NBHD-K1 - R5 - STANDARD',
+      revalArea: 5,
+    };
+
     act(() => {
-      useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG]);
+      useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG, sameNeighborhoodWrongCycle]);
       useCountyStudioStore.getState().drillToCounty();
     });
 
@@ -206,9 +213,12 @@ describe('CountyStudyPage', () => {
     const panel = screen.getByTestId('cs-drill-panel');
     expect(panel.dataset.drillLevel).toBe('neighborhood');
     expect(screen.getByTestId('crumb-risk-surface')).toHaveTextContent('Risk Surface');
-    expect(screen.getByTestId('crumb-neighborhood')).toHaveTextContent(/Neighborhood NBHD-K1/i);
+    expect(screen.getByTestId('crumb-neighborhood')).toHaveTextContent(/Neighborhood NBHD-K1 · Reval 2/i);
     expect(screen.queryByTestId('crumb-city')).not.toBeInTheDocument();
     expect(screen.getByText('Commercial · R1 · GOOD')).toBeInTheDocument();
+    expect(screen.queryByText('NBHD-K1 - R5 - STANDARD')).not.toBeInTheDocument();
+    expect(useCountyStudioStore.getState().selectedCity).toBeNull();
+    expect(useCountyStudioStore.getState().selectedNeighborhoodRevalArea).toBe(2);
   });
 
   it('city level renders the NeighborhoodRollupTable for selectedCity', () => {

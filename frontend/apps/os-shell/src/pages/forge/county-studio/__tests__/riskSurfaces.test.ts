@@ -1,4 +1,5 @@
 import type { CountySegmentDto } from '../types/countyStudio.types';
+import { COUNTY_STUDIO_PRIMARY_DRILL_INVARIANT } from '../countyStudioInvariants';
 import { buildRiskSurfaceCommandCenter } from '../utils/riskSurfaces';
 
 function segment(overrides: Partial<CountySegmentDto> & Record<string, unknown> = {}): CountySegmentDto {
@@ -124,6 +125,40 @@ describe('risk surface command center', () => {
         'No taxing district field is available on active segments.',
         'No value tier field is available on active segments.',
       ]),
+    );
+  });
+
+  it('locks the primary drill invariant that city remains metadata only', () => {
+    expect(COUNTY_STUDIO_PRIMARY_DRILL_INVARIANT).toBe('Primary drill paths must not depend on city.');
+
+    const commandCenter = buildRiskSurfaceCommandCenter([
+      segment({
+        segmentId: 'seg-kennewick',
+        geographyRef: 'NBHD-420',
+        taxingDistrict: 'Benton SD #17',
+        valueTier: 'Upper',
+        riskScore: 82,
+        city: 'Kennewick',
+      }),
+      segment({
+        segmentId: 'seg-richland',
+        geographyRef: 'NBHD-421',
+        taxingDistrict: 'Benton SD #17',
+        valueTier: 'Upper',
+        riskScore: 78,
+        city: 'Richland',
+      }),
+    ]);
+
+    expect(commandCenter.boards.districtExposure).toHaveLength(1);
+    expect(commandCenter.boards.districtExposure[0]).toMatchObject({
+      key: 'Benton SD #17',
+      label: 'Benton SD #17',
+      type: 'taxingDistrict',
+    });
+    expect(commandCenter.boards.districtExposure[0].segmentCount).toBe(2);
+    expect(commandCenter.ledger.map((row) => row.label)).not.toEqual(
+      expect.arrayContaining(['Kennewick', 'Richland']),
     );
   });
 });

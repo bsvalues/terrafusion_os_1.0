@@ -181,10 +181,8 @@ export interface NeighborhoodRollupRowDto {
 
 /**
  * Drill level for the County Studio center panel.
- *   'county'       — County health + city overview visible. Cities are overview
- *                    geography only; the operative assessment units remain
- *                    neighborhood and reval-area segments.
- *   'city'         — NeighborhoodRollupTable filtered to selectedCity.
+ *   'county'       — County health + primary Benton risk surfaces visible.
+ *   'city'         — legacy/reference-only NeighborhoodRollupTable filtered to selectedCity.
  *   'neighborhood' — SegmentTable filtered to selectedNeighborhood's GeographyRef.
  * Segment-level detail lives in the RightRail's ObjectInspector, selected via
  * selectedSegmentId; it is not a separate drillLevel because the segment table
