@@ -44,6 +44,9 @@ const FAILING_SEG: CountySegmentDto = {
   revalArea: 2,
   buildingType: 'R1',
   qualityGrade: 'GOOD',
+  modelGroup: 'MG-12',
+  valueTier: 'Upper',
+  taxingDistrict: 'Kiona-Benton SD #52',
   segmentType: 'Commercial', parcelCount: 89, medianRatio: 0.84,
   cod: 22.8, prd: 1.06, stabilityScore: 48, riskScore: 78,
   exceptionCount: 22, geographyRef: 'NBHD-K1',
@@ -172,15 +175,40 @@ describe('CountyStudyPage', () => {
     expect(screen.getByTestId('crumb-county')).toBeInTheDocument();
   });
 
-  it('county level renders the CityRollupTable', () => {
+  it('county level renders Benton valuation risk surfaces instead of a city-first table', () => {
     act(() => {
+      useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG]);
       useCountyStudioStore.getState().setCityRollup([MOCK_CITY_ROW]);
     });
     render(<CountyStudyPage />, { wrapper: Wrapper });
     const panel = screen.getByTestId('cs-drill-panel');
     expect(panel.dataset.drillLevel).toBe('county');
-    expect(screen.getByText('Kennewick')).toBeInTheDocument();
-    expect(screen.getByTestId('county-operational-scope-note')).toHaveTextContent(/neighborhood and reval-area segment/i);
+    expect(screen.getByTestId('risk-surface-command-center')).toBeInTheDocument();
+    expect(screen.getByText('Revaluation Cycle Risk')).toBeInTheDocument();
+    expect(screen.getByText('Neighborhood Risk')).toBeInTheDocument();
+    expect(screen.getByText('Model Group Risk')).toBeInTheDocument();
+    expect(screen.getByText('Taxing District Exposure')).toBeInTheDocument();
+    expect(screen.getByText('Value Tier Equity')).toBeInTheDocument();
+    expect(screen.getByText('Unified Risk Ledger')).toBeInTheDocument();
+    expect(screen.queryByText('Kennewick')).not.toBeInTheDocument();
+    expect(screen.getByTestId('county-operational-scope-note')).toHaveTextContent(/valuation decisions are made and defended/i);
+  });
+
+  it('risk ledger opens neighborhood evidence without routing through a city crumb', () => {
+    act(() => {
+      useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG]);
+      useCountyStudioStore.getState().drillToCounty();
+    });
+
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+    fireEvent.click(screen.getByRole('button', { name: /open neighborhood evidence for neighborhood NBHD-K1/i }));
+
+    const panel = screen.getByTestId('cs-drill-panel');
+    expect(panel.dataset.drillLevel).toBe('neighborhood');
+    expect(screen.getByTestId('crumb-risk-surface')).toHaveTextContent('Risk Surface');
+    expect(screen.getByTestId('crumb-neighborhood')).toHaveTextContent(/Neighborhood NBHD-K1/i);
+    expect(screen.queryByTestId('crumb-city')).not.toBeInTheDocument();
+    expect(screen.getByText('Commercial · R1 · GOOD')).toBeInTheDocument();
   });
 
   it('city level renders the NeighborhoodRollupTable for selectedCity', () => {

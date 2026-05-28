@@ -65,9 +65,14 @@ export interface CountySegmentDto {
   name: string;
   segmentType: string;
   geographyRef: string | null;
+  marketArea?: string | null;
   revalArea: number | null;
   buildingType: string | null;
   qualityGrade: string | null;
+  modelGroup?: string | null;
+  propertyClass?: string | null;
+  valueTier?: string | null;
+  taxingDistrict?: string | null;
   parcelCount: number;
   /** Nullable on server for sparse-sample segments — UI must null-guard. */
   medianRatio: number | null;

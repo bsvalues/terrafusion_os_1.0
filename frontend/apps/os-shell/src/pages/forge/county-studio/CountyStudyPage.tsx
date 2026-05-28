@@ -14,7 +14,6 @@ import { useNavigate } from 'react-router-dom';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { LeftRail } from './components/LeftRail';
 import { SegmentTable } from './components/SegmentTable';
-import { CityRollupTable } from './components/CityRollupTable';
 import { NeighborhoodRollupTable } from './components/NeighborhoodRollupTable';
 import { DrillBreadcrumb } from './components/DrillBreadcrumb';
 import { RightRail } from './components/RightRail';
@@ -25,6 +24,7 @@ import { LoadErrorBanner } from './components/LoadErrorBanner';
 import { CountyHealthPanel } from './components/CountyHealthPanel';
 import { CountyCommandStrip } from './components/CountyCommandStrip';
 import { CountyStatisticsWorkbenchPanel } from './components/CountyStatisticsWorkbenchPanel';
+import { RiskSurfaceCommandCenter } from './components/RiskSurfaceCommandCenter';
 import { useCountyStudyHub } from './hooks/useCountyStudyHub';
 import { useStudyData } from './hooks/useStudyData';
 import type { CountySegmentDto, SegmentSeverityFilter } from './types/countyStudio.types';
@@ -267,10 +267,10 @@ export function CountyStudyPage() {
                       color: 'hsl(var(--tf-muted))',
                     }}
                   >
-                    Cities stay overview-only here. Counties actually defend values and route action by neighborhood and reval-area segment.
+                    County Studio opens by how valuation decisions are made and defended: reval cycles, neighborhoods, model groups, districts, value tiers, and parcel evidence.
                   </div>
                   <div style={{ flex: 1, minHeight: 0 }}>
-                    <CityRollupTable />
+                    <RiskSurfaceCommandCenter />
                   </div>
                 </div>
               )}
