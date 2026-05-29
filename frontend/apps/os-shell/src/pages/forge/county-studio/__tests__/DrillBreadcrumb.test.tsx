@@ -39,6 +39,17 @@ describe('DrillBreadcrumb', () => {
     expect(screen.getByTestId('crumb-neighborhood')).toHaveTextContent('Neighborhood NBHD-R1 · Reval 2');
   });
 
+  it('renders the primary risk-surface path without a city crumb', () => {
+    act(() => {
+      useCountyStudioStore.getState().drillToRiskSurfaceNeighborhood('NBHD-R1', 2, 'seg-1');
+    });
+    render(<DrillBreadcrumb />);
+    expect(screen.getByTestId('crumb-county')).toBeInTheDocument();
+    expect(screen.getByTestId('crumb-risk-surface')).toHaveTextContent('Risk Surface');
+    expect(screen.getByTestId('crumb-neighborhood')).toHaveTextContent('Neighborhood NBHD-R1 · Reval 2');
+    expect(screen.queryByTestId('crumb-city')).not.toBeInTheDocument();
+  });
+
   it('renders segment crumb when a segment is selected', () => {
     const segment: CountySegmentDto = {
       segmentId: 'seg-1', segmentSetId: 'ss-1',
