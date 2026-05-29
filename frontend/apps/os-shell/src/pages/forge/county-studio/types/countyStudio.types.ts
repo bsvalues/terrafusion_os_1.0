@@ -451,7 +451,7 @@ export interface SegmentRecommendedAction {
   /** 1 = highest priority. */
   priority: number;
   rationale: string;
-  /** Passed verbatim as metadata to activateModule() when the user fires the action. */
+  /** Backend-prepared action context; UI removes city fields before downstream activation. */
   prebuiltContext: Record<string, unknown> | null;
 }
 
